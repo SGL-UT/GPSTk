@@ -15,13 +15,11 @@ else
       ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp ComputeLinear.cpp
       ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp ComputePC.cpp
       ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp
-      ComputeTropModel.cpp ComputeWindUp.cpp CorrectObservables.cpp 
-      CorrectCodeBiases.cpp
-      DataHeaders.cpp DataStructures.cpp Decimate.cpp DeltaOp.cpp Dumper.cpp
-      DoubleOp.cpp
-      EclipsedSatFilter.cpp Equation.cpp EquationSystem.cpp
-      GravitationalDelay.cpp IonexModel.cpp Keeper.cpp LICSDetector.cpp
-      LICSDetector2.cpp LinearCombinations.cpp ModeledPR.cpp
+      ComputeTropModel.cpp ComputeWindUp.cpp CorrectCodeBiases.cpp 
+      CorrectObservables.cpp DataHeaders.cpp DataStructures.cpp Decimate.cpp
+      DeltaOp.cpp DoubleOp.cpp Dumper.cpp EclipsedSatFilter.cpp Equation.cpp
+      EquationSystem.cpp GravitationalDelay.cpp IonexModel.cpp Keeper.cpp
+      LICSDetector.cpp LICSDetector2.cpp LinearCombinations.cpp ModeledPR.cpp
       ModeledReferencePR.cpp ModelObs.cpp ModelObsFixedStation.cpp
       MWCSDetector.cpp NablaOp.cpp OneFreqCSDetector.cpp PhaseCodeAlignment.cpp
       PCSmoother.cpp ProcessingList.cpp ProcessingVector.cpp Pruner.cpp
@@ -36,13 +34,11 @@ else
       ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp  ComputeLinear.hpp
       ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp ComputePC.hpp
       ComputePdelta.hpp ComputePI.hpp  ComputeSatPCenter.hpp
-      ComputeTropModel.hpp ComputeWindUp.hpp CorrectObservables.hpp 
-      CorrectCodeBiases.hpp
-      DataHeaders.hpp DataStructures.hpp Decimate.hpp DeltaOp.hpp Dumper.hpp
-      DoubleOp.hpp
-      EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp
-      GravitationalDelay.hpp IonexModel.hpp Keeper.hpp LICSDetector.hpp
-      LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp
+      ComputeTropModel.hpp ComputeWindUp.hpp CorrectCodeBiases.hpp
+      CorrectObservables.hpp DataHeaders.hpp DataStructures.hpp Decimate.hpp
+      DeltaOp.hpp DoubleOp.hpp Dumper.hpp EclipsedSatFilter.hpp Equation.hpp
+      EquationSystem.hpp GravitationalDelay.hpp IonexModel.hpp Keeper.hpp
+      LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp
       ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp
       MWCSDetector.hpp NablaOp.hpp OneFreqCSDetector.hpp PhaseCodeAlignment.hpp
       PCSmoother.hpp ProcessingClass.hpp ProcessingList.hpp Pruner.hpp

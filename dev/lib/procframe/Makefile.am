@@ -10,7 +10,8 @@ ComputeIURAWeights.cpp ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp \
 ComputeLinear.cpp ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp \
 ComputePC.cpp ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp \
 ComputeTropModel.cpp ComputeWindUp.cpp CorrectObservables.cpp \
-DataHeaders.cpp DataStructures.cpp Decimate.cpp DeltaOp.cpp Dumper.cpp \
+CorrectCodeBiases.cpp DataHeaders.cpp DataStructures.cpp Decimate.cpp \
+DeltaOp.cpp DoubleOp.cpp Dumper.cpp \
 EclipsedSatFilter.cpp Equation.cpp EquationSystem.cpp GravitationalDelay.cpp \
 IonexModel.cpp Keeper.cpp LICSDetector.cpp LICSDetector2.cpp \
 LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp \
@@ -27,8 +28,9 @@ ComputeCombination.hpp ComputeDOP.hpp ComputeIURAWeights.hpp ComputeLC.hpp \
 ComputeLdelta.hpp ComputeLI.hpp ComputeLinear.hpp ComputeMelbourneWubbena.hpp \
 ComputeMOPSWeights.hpp ComputePC.hpp ComputePdelta.hpp ComputePI.hpp \
 ComputeSatPCenter.hpp ComputeTropModel.hpp ComputeWindUp.hpp \
-CorrectObservables.hpp DataHeaders.hpp DataStructures.hpp Decimate.hpp \
-DeltaOp.hpp Dumper.hpp EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp \
+CorrectObservables.hpp CorrectCodeBiases.hpp DataHeaders.hpp \
+DataStructures.hpp Decimate.hpp DeltaOp.hpp DoubleOp.hpp Dumper.hpp \
+EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp \
 GravitationalDelay.hpp IonexModel.hpp Keeper.hpp \
 LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp \
 ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp \
