@@ -56,7 +56,7 @@
 using namespace std;
 using namespace gpstk::StringUtils;
 
-#ifdef _MSC_VER
+#if ( _MSC_VER < 1600 )
 #define min(VAL1, VAL2) _cpp_min(VAL1, VAL2)
 #define max(VAL1, VAL2) _cpp_max(VAL1, VAL2)
 #endif
