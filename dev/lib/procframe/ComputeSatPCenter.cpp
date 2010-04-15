@@ -230,7 +230,17 @@ namespace gpstk
 
             // We will need the elevation, in degrees. It is found using
             // dot product and the corresponding unitary angles
-         double elev( 90.0 - (std::acos( rrho.dot(rk) ) * RAD_TO_DEG) );
+
+         double nadir = std::acos( rrho.dot(rk) ) * RAD_TO_DEG;
+
+            // The nadir angle should always smaller than 14.0 deg, 
+            // but some times it's a bit bigger than 14.0 deg, we 
+            // force it to 14.0 deg to stop throwing an exception.
+            // The Reference is available at:
+            // http://igscb.jpl.nasa.gov/igscb/resource/pubs/02_ott/session_8.pdf
+         nadir = (nadir>14) ? 14.0 : nadir;
+
+         double elev( 90.0 - nadir );
 
             // Get satellite information in Antex format. Currently this
             // only works for GPS and Glonass.
