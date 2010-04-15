@@ -65,7 +65,9 @@ namespace gpstk
                                     filename + "'." );
                GPSTK_THROW(e);
             }
-
+              // Skip the blank line
+            if(line.size()<1) continue;
+            	
                // Let's find and strip comment lines
             if( (StringUtils::firstWord(line)[0] == '#') ||
                 (StringUtils::firstWord(line)[0] == ';')  )
