@@ -52,7 +52,7 @@ namespace gpstk
             return false;
          }
             // Open the file
-         oData.pObsStream->exceptions(ios::failbit);
+         oData.pObsStream->exceptions(std::ios::failbit);
          oData.pObsStream->open(oData.obsFile, std::ios::in);
 
             // We reader the header of the obs file
@@ -125,9 +125,9 @@ namespace gpstk
             {
                if(synchronizeException)
                {
-                  stringstream ss;
+                  std::stringstream ss;
                   ss << "Exception when try to synchronize at epoch: "
-                     << gRef.header.epoch << endl;
+                     << gRef.header.epoch << std::endl;
 
                   SynchronizeException e(ss.str());
 
@@ -171,7 +171,7 @@ namespace gpstk
       try
       {
          RinexObsStream rin;
-         rin.exceptions(ios::failbit);
+         rin.exceptions(std::ios::failbit);
          rin.open(obsFile, std::ios::in);
  
          gnssRinex gRin;
