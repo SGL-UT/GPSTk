@@ -16,10 +16,10 @@ EclipsedSatFilter.cpp Equation.cpp EquationSystem.cpp GravitationalDelay.cpp \
 IonexModel.cpp Keeper.cpp LICSDetector.cpp LICSDetector2.cpp \
 LinearCombinations.cpp ModeledPR.cpp ModeledReferencePR.cpp \
 ModelObs.cpp ModelObsFixedStation.cpp MWCSDetector.cpp NablaOp.cpp \
-OneFreqCSDetector.cpp PhaseCodeAlignment.cpp PCSmoother.cpp \
-ProcessingList.cpp ProcessingVector.cpp Pruner.cpp RequireObservables.cpp \
-SatArcMarker.cpp SimpleFilter.cpp SolverGeneral.cpp SolverLMS.cpp \
-SolverPPP.cpp SolverPPPFB.cpp SolverWMS.cpp StochasticModel.cpp \
+NetworkObsStreams.cpp OneFreqCSDetector.cpp PhaseCodeAlignment.cpp \
+PCSmoother.cpp ProcessingList.cpp ProcessingVector.cpp Pruner.cpp \
+RequireObservables.cpp SatArcMarker.cpp SimpleFilter.cpp SolverGeneral.cpp \
+SolverLMS.cpp SolverPPP.cpp SolverPPPFB.cpp SolverWMS.cpp StochasticModel.cpp \
 Synchronize.cpp Variable.cpp XYZ2NED.cpp XYZ2NEU.cpp
 
 incldir = $(includedir)/gpstk
@@ -34,8 +34,9 @@ EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp \
 GravitationalDelay.hpp IonexModel.hpp Keeper.hpp \
 LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp \
 ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp MWCSDetector.hpp \
-NablaOp.hpp OneFreqCSDetector.hpp PhaseCodeAlignment.hpp PCSmoother.hpp \
-ProcessingClass.hpp ProcessingList.hpp ProcessingVector.hpp Pruner.hpp \
-RequireObservables.hpp SatArcMarker.hpp SimpleFilter.hpp  SolverGeneral.hpp \
-SolverLMS.hpp SolverPPP.hpp SolverPPPFB.hpp SolverWMS.hpp StochasticModel.hpp \
-Synchronize.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
+NablaOp.hpp NetworkObsStreams.hpp OneFreqCSDetector.hpp \
+PhaseCodeAlignment.hpp PCSmoother.hpp ProcessingClass.hpp ProcessingList.hpp \
+ProcessingVector.hpp Pruner.hpp RequireObservables.hpp SatArcMarker.hpp \
+SimpleFilter.hpp  SolverGeneral.hpp SolverLMS.hpp SolverPPP.hpp \
+SolverPPPFB.hpp SolverWMS.hpp StochasticModel.hpp Synchronize.hpp \
+Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
