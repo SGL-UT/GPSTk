@@ -373,6 +373,30 @@ namespace gpstk
       return toReturn;
    }
 
+
+/**
+ * Returns the diagonal matrix  of \c m .
+ */
+   template <class T, class BaseClass>
+   inline Matrix<T> diag(const ConstMatrixBase<T, BaseClass>& m)
+      throw(MatrixException)
+   {
+      if ( (m.rows() != m.cols()) || (m.cols() < 1) )
+      {
+         MatrixException e("invalid matrix dimensions for ident()");
+         GPSTK_THROW(e);
+      }
+
+      const size_t dim = m.rows();
+
+      Matrix<T> temp(dim, dim, T(0));
+      for (size_t i = 0; i < dim; i++)
+         temp(i,i) = m(i,i);
+
+      return temp;
+   }
+
+
 /**
  * Return a rotation matrix [dimensioned 3x3, inverse() = transpose()]
  * for the rotation through \c angle radians about \c axis number (= 1, 2 or 3).
