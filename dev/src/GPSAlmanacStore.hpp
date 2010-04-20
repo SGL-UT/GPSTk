@@ -86,6 +86,21 @@ namespace gpstk
       virtual Xvt getXvt(const SatID id, const DayTime& t) 
          const throw(InvalidRequest);
       
+      /// Returns the position, velocity, and clock offset of the indicated
+      /// object in ECEF coordinates (meters) at the indicated time.
+      /// It differs from getXvt in that it uses a different search
+      /// algorithm - It will use the most recently received almanac 
+      /// information, thereby imitating what a receiver would be doing
+      /// in real-time.  If there is no almanac data for that object prior
+      /// to the requested time, InvalidRequest will be thrown. 
+      /// @param[in] id the object's identifier
+      /// @param[in] t the time to look up
+      /// @return the Xvt of the object at the indicated time
+      /// @throw InvalidRequest If the request can not be completed for any
+      ///    reason, this is thrown. The text may have additional
+      ///    information as to why the request failed.
+      virtual Xvt getXvtMostRecentXmit(const SatID id, const DayTime& t) 
+         const throw(InvalidRequest);
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
@@ -147,10 +162,19 @@ namespace gpstk
       bool addAlmanac(const EngAlmanac& alm) throw();
 
       /// gets the closest almanac for the given time and satellite id,
-      /// closest being in the past or future.
+      /// closest being in the past or future and "closest" being defined
+      /// in terms of almanc time of epoch.
       /// @param sat the satellite's SatID
       /// @param t the time of interest
       AlmOrbit findAlmanac(const SatID sat, const DayTime& t) 
+         const throw(InvalidRequest);
+
+      /// gets the most recent almanac for the given time and satellite id,
+      /// most recent meaning it must have a transmit time before
+      /// the specified time.
+      /// @param sat the satellite's SatID
+      /// @param t the time of interest
+      AlmOrbit findMostRecentAlmanac(const SatID sat, const DayTime& t) 
          const throw(InvalidRequest);
 
       /// returns all almanacs closest to t for all satellites

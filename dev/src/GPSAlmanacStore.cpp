@@ -56,6 +56,13 @@ namespace gpstk
       return a.svXvt(t);
    }
 
+   Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const DayTime& t) 
+         const throw(InvalidRequest)
+   {
+      AlmOrbit a = findMostRecentAlmanac(sat, t);
+      return a.svXvt(t);
+   }
+   
    short GPSAlmanacStore::getSatHealth(const SatID sat, const DayTime& t)
       const throw(InvalidRequest)
    {
@@ -139,6 +146,43 @@ namespace gpstk
       return (*almItr).second;
    }
 
+   AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const DayTime& t) 
+         const throw(InvalidRequest)
+   {
+      UBAMap::const_iterator satItr = uba.find(sat);
+      if (satItr == uba.end())
+      {
+         InvalidRequest e("No almanacs for satellite " +
+                        StringUtils::asString(sat));
+         GPSTK_THROW(e);
+      }
+         
+      const EngAlmMap& eam = satItr->second;
+
+      // find the closest almanac BEFORE t, if any.
+      EngAlmMap::const_iterator nextItr = eam.begin(), almItr = eam.end();
+         
+      while ( (nextItr != eam.end()) &&
+              (nextItr->second.getTransmitTime() < t) )
+      {
+         almItr = nextItr;
+         nextItr++;
+      }
+
+      if (almItr == eam.end())
+      {
+         if (nextItr == eam.end()) 
+         {
+            InvalidRequest e("No almanacs for time " + t.asString());
+            GPSTK_THROW(e);
+         }
+         else
+         {
+            almItr = nextItr;
+         }
+      }
+      return (*almItr).second;     
+   }
 
    AlmOrbits GPSAlmanacStore::findAlmanacs(const DayTime& t) 
       const throw(InvalidRequest)
