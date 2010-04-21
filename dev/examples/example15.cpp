@@ -111,15 +111,9 @@ int main(int argc, char* argv[])
          thirdStats.Add(s[i]);
       }
 					       
-      // Show the sample mean and std deviation before adding perturbed samples.
-      cout  << endl << "After perturbation:  sample mean is                " 
-	    << secondStats.Average() << ", " << endl;
-      cout  << "                     sample standard deviation is " 
-	    << secondStats.StdDev() << endl << endl;
-
 
       // Compute the mean and std deviation now given robust statistics.
-      cout  << endl << "After robust stats:  sample mean is                " 
+      cout  << endl << "Using robust stats:  sample mean is                " 
 	    << thirdStats.Average() << ", " << endl;
       cout  << "                     sample standard deviation is " 
 	    << thirdStats.StdDev() << endl << endl;
