@@ -1,0 +1,23 @@
+# $Id: Jamfile 2293 2010-02-12 18:14:16Z btolman $
+
+SubDir TOP lib geodyn ;
+
+if $(PREPROCESSING)
+{
+  GPSSetupLibrary geodyn : geomatics ;
+}
+else
+{
+   GPSBuildLibrary geodyn : 
+         EarthBody.cpp EarthOceanTide.cpp EarthPoleTide.cpp EarthSolidTide.cpp IERS.cpp ForceModelList.cpp KeplerOrbit.cpp ReferenceFrames.cpp RungeKuttaFehlberg.cpp 
+         Spacecraft.cpp UTCTime.cpp
+      ;
+
+   InstallFile $(INCDIR) :
+         ASConstant.hpp EarthBody.hpp EarthOceanTide.hpp EarthPoleTide.hpp EarthSolidTide.hpp EquationOfMotion.hpp ForceModel.hpp ForceModelList.hpp 
+         IERS.hpp Integrator.hpp 
+         KeplerOrbit.hpp ReferenceFrames.hpp RungeKuttaFehlberg.hpp
+         Spacecraft.hpp UTCTime.hpp
+      ;
+}
+ 
