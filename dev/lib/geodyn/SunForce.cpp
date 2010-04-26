@@ -36,64 +36,64 @@
 namespace gpstk
 {
       // Default constructor
-	SunForce::SunForce()
+   SunForce::SunForce()
       : mu(ASConstant::GM_Sun)
-	{ }
-	
-	
-	   /* Call the relevant methods to compute the acceleration.
-	    * @param t Time reference class
-	    * @param bRef Body reference class
-	    * @param sc Spacecraft parameters and state
-	    * @return the acceleration [m/s^s]
-	    */
-	void SunForce::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
-	{
-		Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Sun);
+   { }
+   
+   
+      /* Call the relevant methods to compute the acceleration.
+       * @param t Time reference class
+       * @param bRef Body reference class
+       * @param sc Spacecraft parameters and state
+       * @return the acceleration [m/s^s]
+       */
+   void SunForce::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
+   {
+      Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Sun);
 
-		r_sun = r_sun * 1000.0;				              // from km to m
+      r_sun = r_sun * 1000.0;                          // from km to m
 
-		Vector<double> d = sc.R() - r_sun;
-		double dmag = norm(d);
-		double dcubed = dmag * dmag *dmag;
+      Vector<double> d = sc.R() - r_sun;
+      double dmag = norm(d);
+      double dcubed = dmag * dmag *dmag;
 
-		Vector<double> temp1 = d / dcubed;			     //  detRJ/detRJ^3
+      Vector<double> temp1 = d / dcubed;              //  detRJ/detRJ^3
 
-		double smag = norm(r_sun);
-		double scubed = smag * smag * smag;
+      double smag = norm(r_sun);
+      double scubed = smag * smag * smag;
 
-		Vector<double> temp2 = r_sun / scubed;	         //  Rj/Rj^3
+      Vector<double> temp2 = r_sun / scubed;            //  Rj/Rj^3
 
-		Vector<double> sum = temp1 + temp2;
-		a = sum * (-mu);
+      Vector<double> sum = temp1 + temp2;
+      a = sum * (-mu);
 
-		// da_dr
-		da_dr.resize(3,3,0.0);
-		double muod3 = mu / dcubed;
-		double jk = 3.0 * muod3/dmag/dmag; 
+      // da_dr
+      da_dr.resize(3,3,0.0);
+      double muod3 = mu / dcubed;
+      double jk = 3.0 * muod3/dmag/dmag; 
 
-		double xx = d(0);
-		double yy = d(1);
-		double zz = d(2);
+      double xx = d(0);
+      double yy = d(1);
+      double zz = d(2);
 
-		da_dr(0,0) = jk * xx * xx - muod3;
-		da_dr(0,1) = jk * xx * yy;
-		da_dr(0,2) = jk * xx * zz;
+      da_dr(0,0) = jk * xx * xx - muod3;
+      da_dr(0,1) = jk * xx * yy;
+      da_dr(0,2) = jk * xx * zz;
 
-		da_dr(1,0) = da_dr(0,1);
-		da_dr(1,1) = jk * yy * yy - muod3;
-		da_dr(1,2) = jk * yy * zz;
+      da_dr(1,0) = da_dr(0,1);
+      da_dr(1,1) = jk * yy * yy - muod3;
+      da_dr(1,2) = jk * yy * zz;
 
-		da_dr(2,0) = da_dr(0,2);
-		da_dr(2,1) = da_dr(1,2);
-		da_dr(2,2) = jk * zz * zz - muod3;
+      da_dr(2,0) = da_dr(0,2);
+      da_dr(2,1) = da_dr(1,2);
+      da_dr(2,2) = jk * zz * zz - muod3;
 
-		// da_dv
-		da_dv.resize(3,3,0.0);
+      // da_dv
+      da_dv.resize(3,3,0.0);
 
-		//da_dp
-		
-	}  // End of method 'SunForce::doCompute()'
+      //da_dp
+      
+   }  // End of method 'SunForce::doCompute()'
 
 
 }  // End of namespace 'gpstk'

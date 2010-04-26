@@ -37,27 +37,27 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * Solid Earth Pole Tide
-	    * reference: IERS Conventions 2003
-	    */
-	class EarthPoleTide
-	{
-	public:
+      /**
+       * Solid Earth Pole Tide
+       * reference: IERS Conventions 2003
+       */
+   class EarthPoleTide
+   {
+   public:
          /// Default constructor
-		EarthPoleTide(){}
+      EarthPoleTide(){}
 
          /// Default destructor
-		~EarthPoleTide(){}
+      ~EarthPoleTide(){}
 
-		
-		   /** Solid pole tide to normalized earth potential coefficients
-		    *
-		    * @param mjdUtc   UTC in MJD
-		    * @param dC21     correction to normalized coefficients dC21
-		    * @param dS21     correction to normalized coefficients dS21
-		    */
-		void getPoleTide(double mjdUtc, double& dC21, double& dS21 );
+      
+         /** Solid pole tide to normalized earth potential coefficients
+          *
+          * @param mjdUtc   UTC in MJD
+          * @param dC21     correction to normalized coefficients dC21
+          * @param dS21     correction to normalized coefficients dS21
+          */
+      void getPoleTide(double mjdUtc, double& dC21, double& dS21 );
 
 
    }; // End of class 'EarthPoleTide'

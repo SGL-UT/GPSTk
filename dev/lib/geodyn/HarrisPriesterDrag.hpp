@@ -5,8 +5,8 @@
  * The HarrisPriester class computes the Harris-Priester atmosphere model.
  */
 
-#ifndef	GPSTK_HARRIS_PRIESTER_DRAG_HPP
-#define	GPSTK_HARRIS_PRIESTER_DRAG_HPP
+#ifndef   GPSTK_HARRIS_PRIESTER_DRAG_HPP
+#define   GPSTK_HARRIS_PRIESTER_DRAG_HPP
 
 
 //============================================================================
@@ -41,35 +41,35 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * The HarrisPriester class computes the Harris-Priester atmosphere model.
-	    * This code is from Montenbruck. Good for 100 - 2000 km altitude only.
-	    * 
-	    * This Model is checked on Sep 28th,2009, OK!!!
-	    */
-	class HarrisPriesterDrag : public AtmosphericDrag
-	{
-	public:
+      /**
+       * The HarrisPriester class computes the Harris-Priester atmosphere model.
+       * This code is from Montenbruck. Good for 100 - 2000 km altitude only.
+       * 
+       * This Model is checked on Sep 28th,2009, OK!!!
+       */
+   class HarrisPriesterDrag : public AtmosphericDrag
+   {
+   public:
          /// Default constructor
-		HarrisPriesterDrag();
+      HarrisPriesterDrag();
 
          /// Default destructor
       virtual ~HarrisPriesterDrag() {};
 
-		void test();
+      void test();
 
          /// Update woring F107(Mean Solar Flux)
-		void updateF107(double f107 = 157);
+      void updateF107(double f107 = 157);
 
 
-		   /** Abstract class requires the subclass to compute the atmospheric density.
+         /** Abstract class requires the subclass to compute the atmospheric density.
           * @param utc epoch in UTC
-		    * @param rb  EarthRef object.
-		    * @param r   Position vector.
+          * @param rb  EarthRef object.
+          * @param r   Position vector.
           * @param v   Velocity vector
-		    * @return Atmospheric density in kg/m^3
-		    */
-		virtual double computeDensity(UTCTime utc, EarthBody& rb, Vector<double> r, Vector<double> v);
+          * @return Atmospheric density in kg/m^3
+          */
+      virtual double computeDensity(UTCTime utc, EarthBody& rb, Vector<double> r, Vector<double> v);
 
    protected:
 
@@ -78,18 +78,18 @@ namespace gpstk
 
       Matrix<double> getDensityCoeficentsByF107(double f107 = 157);
 
-	protected:
+   protected:
          /// Upper height limit 2000.0 [km]
-		static const double upper_limit;        
+      static const double upper_limit;        
 
          /// Lower height limit 100.0 [km]
-		static const double lower_limit;
+      static const double lower_limit;
          
          /// Right ascension lag 0.523599 [rad]
-		static const double ra_lag;       
-	 
-		   /// F10.7 cm Mean Solar Flux 157 by Default
-		double woringF107;
+      static const double ra_lag;       
+    
+         /// F10.7 cm Mean Solar Flux 157 by Default
+      double woringF107;
 
          /// HP coefficient for the workingF107
       Matrix<double> workingDens;
@@ -102,7 +102,7 @@ namespace gpstk
          /// it's modified from JAT by Richard C.
       static const double hpcoef[10][177];
 
-	}; // End of class 'HarrisPriesterDrag'
+   }; // End of class 'HarrisPriesterDrag'
 
       // @}
 

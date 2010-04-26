@@ -38,32 +38,32 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /** This class calculate Relativity Effect to earth satellite.
-	    *  
-	    *  Reference: Jisheng Li, P109
-	    *
-	    *  This Model is checked on Sep 25th,2009, OK!!!
-	    */
-	class RelativityEffect : public ForceModel
-	{
-	public:
+      /** This class calculate Relativity Effect to earth satellite.
+       *  
+       *  Reference: Jisheng Li, P109
+       *
+       *  This Model is checked on Sep 25th,2009, OK!!!
+       */
+   class RelativityEffect : public ForceModel
+   {
+   public:
          /// Default constructor
-		RelativityEffect(){}
+      RelativityEffect(){}
 
          /// Default destructor
-		virtual ~RelativityEffect(){}
-		
-		   // this is the real one
-		virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
+      virtual ~RelativityEffect(){}
+      
+         // this is the real one
+      virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
          // Return force model name
-		virtual std::string modelName()
+      virtual std::string modelName()
       { return "RelativityEffect"; }
 
-	protected:
+   protected:
 
 
-	}; // End of class 'RelativityEffect'
+   }; // End of class 'RelativityEffect'
 
       // @}
 

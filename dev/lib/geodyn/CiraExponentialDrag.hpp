@@ -6,8 +6,8 @@
  * using an exponential Earth atmosphere model.
  */
 
-#ifndef	GPSTK_CIRA_EXPONENTIAL_DRAG_HPP
-#define	GPSTK_CIRA_EXPONENTIAL_DRAG_HPP
+#ifndef   GPSTK_CIRA_EXPONENTIAL_DRAG_HPP
+#define   GPSTK_CIRA_EXPONENTIAL_DRAG_HPP
 
 
 //============================================================================
@@ -40,45 +40,45 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * This class computes the acceleration due to drag on a satellite
-	    * using an exponential Earth atmosphere model. The min altitude is
-	    * currently 200 km. To go lower, just need to add more values from 
-	    * the table.
-	    *
-	    * This Model is checked on Sep 28th,2009, OK!!!
-	    *
-	    * Reference: Vallado, Table 8-4.
-	    */
-	class CiraExponentialDrag : public AtmosphericDrag
-	{
-	public:
+      /**
+       * This class computes the acceleration due to drag on a satellite
+       * using an exponential Earth atmosphere model. The min altitude is
+       * currently 200 km. To go lower, just need to add more values from 
+       * the table.
+       *
+       * This Model is checked on Sep 28th,2009, OK!!!
+       *
+       * Reference: Vallado, Table 8-4.
+       */
+   class CiraExponentialDrag : public AtmosphericDrag
+   {
+   public:
          /// Default construtor
       CiraExponentialDrag() {};
 
          /// Default destructor
       virtual ~CiraExponentialDrag() {};
 
-		void test();
+      void test();
 
-		
-		   /** Compute the atmospheric density using an exponential atmosphere model.
-		    * @param utc Time reference object.
-		    * @param rb  Reference body object.
-		    * @param r   ECI position vector in meters.
+      
+         /** Compute the atmospheric density using an exponential atmosphere model.
+          * @param utc Time reference object.
+          * @param rb  Reference body object.
+          * @param r   ECI position vector in meters.
           * @param v   ECI velocity vector in m/s
-		    * @return Atmospheric density in kg/m^3.
-		    */
-		virtual double computeDensity(UTCTime utc, 
+          * @return Atmospheric density in kg/m^3.
+          */
+      virtual double computeDensity(UTCTime utc, 
                                     EarthBody& rb, 
                                     Vector<double> r, 
                                     Vector<double> v);
 
-	protected:
+   protected:
 
-		int brack;
+      int brack;
 
-	}; // End of class 'CiraExponentialDrag'
+   }; // End of class 'CiraExponentialDrag'
 
       // @}
 

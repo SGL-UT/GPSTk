@@ -38,41 +38,41 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * This class calculate the gravitational effect of the Sun.
-	    *
-	    *  This Model is checked on Sep 25th,2009, OK!!!
-	    */
-	class SunForce : public ForceModel
-	{
-	public:
+      /**
+       * This class calculate the gravitational effect of the Sun.
+       *
+       *  This Model is checked on Sep 25th,2009, OK!!!
+       */
+   class SunForce : public ForceModel
+   {
+   public:
          /// Default constructor
-		SunForce();
+      SunForce();
 
          /// Default destructor
       ~SunForce(void){};
 
 
-		   /** Call the relevant methods to compute the acceleration.
-		    * @param t  Time reference class
-		    * @param rb Reference Body class
-		    * @param sc Spacecraft parameters and state
-		    * @return the acceleration [m/s^s]
-		    */
-		virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
+         /** Call the relevant methods to compute the acceleration.
+          * @param t  Time reference class
+          * @param rb Reference Body class
+          * @param sc Spacecraft parameters and state
+          * @return the acceleration [m/s^s]
+          */
+      virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
          /// Return force model name
-		virtual std::string modelName()  const
+      virtual std::string modelName()  const
       { return "SunForce"; }
 
 
-	protected:
+   protected:
 
-		   /// Gravitational constant for the body. [m^3/s^2]
-		double mu;
+         /// Gravitational constant for the body. [m^3/s^2]
+      double mu;
 
 
-	}; // End of class 'SunForce'
+   }; // End of class 'SunForce'
 
       // @}
 

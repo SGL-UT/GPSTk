@@ -39,13 +39,13 @@ namespace gpstk
 
 
       // Upper height limit [km]
-	const double HarrisPriesterDrag::upper_limit = 2000.0;         
+   const double HarrisPriesterDrag::upper_limit = 2000.0;         
       
       // Lower height limit [km]
-	const double HarrisPriesterDrag::lower_limit = 100.0;  
+   const double HarrisPriesterDrag::lower_limit = 100.0;  
 
       // Right ascension lag [rad]
-	const double HarrisPriesterDrag::ra_lag		= 0.523599;		    
+   const double HarrisPriesterDrag::ra_lag      = 0.523599;          
 
       // Harris-Priester atmospheric density coefficients
       // it's modified from JAT by Richard C.
@@ -665,11 +665,11 @@ namespace gpstk
    } };
 
       // Constructor
-	HarrisPriesterDrag::HarrisPriesterDrag()
+   HarrisPriesterDrag::HarrisPriesterDrag()
       : woringF107(157.0)
-	{
+   {
       init();
-	}
+   }
 
    
    void HarrisPriesterDrag::init()
@@ -734,66 +734,66 @@ namespace gpstk
 
 
       // do some test here
-	void HarrisPriesterDrag::test()
-	{
-		cout<<"testing HarrisPriesterDrag"<<endl;
-		
-		
-		Vector<double> r(3),v(3);
-		r(0)=-4453783.586;
-		r(1)=-5038203.756;
-		r(2)=-426384.456;
+   void HarrisPriesterDrag::test()
+   {
+      cout<<"testing HarrisPriesterDrag"<<endl;
+      
+      
+      Vector<double> r(3),v(3);
+      r(0)=-4453783.586;
+      r(1)=-5038203.756;
+      r(2)=-426384.456;
 
-		v(0) =  3831.888;
-		v(1) = -2887.221;
-		v(2) = -6.018232;
-		
-		EarthBody body;
-		UTCTime t;
-		Spacecraft sc;
+      v(0) =  3831.888;
+      v(1) = -2887.221;
+      v(2) = -6.018232;
+      
+      EarthBody body;
+      UTCTime t;
+      Spacecraft sc;
 
-		double den = computeDensity(t,body,r,v);
-		doCompute(t,body,sc);
-		
-		Vector<double> accl = getAccel();
-		
-		double ax = accl(0);
-		double ay = accl(1);
-		double az = accl(2);
+      double den = computeDensity(t,body,r,v);
+      doCompute(t,body,sc);
+      
+      Vector<double> accl = getAccel();
+      
+      double ax = accl(0);
+      double ay = accl(1);
+      double az = accl(2);
 
-	}
-	
-	void HarrisPriesterDrag::updateF107(double f107)
-	{
-		woringF107 = f107;
+   }
+   
+   void HarrisPriesterDrag::updateF107(double f107)
+   {
+      woringF107 = f107;
       workingDens = getDensityCoeficentsByF107(woringF107);
-	}
+   }
 
-	   /* Abstract class requires the subclass to compute the atmospheric density.
+      /* Abstract class requires the subclass to compute the atmospheric density.
        * @param utc epoch in UTC
-		 * @param rb  EarthRef object.
-		 * @param r   Position vector.
+       * @param rb  EarthRef object.
+       * @param r   Position vector.
        * @param v   Velocity vector
-		 * @return Atmospheric density in kg/m^3
-		 */
-	double HarrisPriesterDrag::computeDensity( UTCTime utc, 
+       * @return Atmospheric density in kg/m^3
+       */
+   double HarrisPriesterDrag::computeDensity( UTCTime utc, 
                                               EarthBody& rb, 
                                               Vector<double> r, 
                                               Vector<double> v)
-	{
-		double density = 0.0;
-		
-		// Get the J2000 to TOD transformation
+   {
+      double density = 0.0;
+      
+      // Get the J2000 to TOD transformation
       Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc.asTT());
-		
+      
       // Transform r from J2000 to TOD
-		Vector<double> r_tod = N * r;
+      Vector<double> r_tod = N * r;
 
-		double rmag = norm(r_tod);
-		
-		//* Satellite true altitude
-		Position pos(r_tod(0), r_tod(1), r_tod(2), Position::Cartesian);
-		double alt = pos.getAltitude()/1000.0;		// km
+      double rmag = norm(r_tod);
+      
+      //* Satellite true altitude
+      Position pos(r_tod(0), r_tod(1), r_tod(2), Position::Cartesian);
+      double alt = pos.getAltitude()/1000.0;      // km
 
       if ( alt >= upper_limit || alt <= lower_limit ) 
       { 
@@ -806,7 +806,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-		Vector<double> r_Sun = ReferenceFrames::getJ2kPosition( utc.asTDB(),
+      Vector<double> r_Sun = ReferenceFrames::getJ2kPosition( utc.asTDB(),
                                                               SolarSystem::Sun);
 
       double ra_Sun  = std::atan2( r_Sun(1), r_Sun(0));
@@ -818,54 +818,54 @@ namespace gpstk
         //* Unit vector u towards the apex of the diurnal bulge
         //* in inertial geocentric coordinates
       double c_dec = std::cos(dec_Sun);
-		
+      
 
-		Vector<double> u(3,0.0);      // Apex of diurnal bulge
+      Vector<double> u(3,0.0);      // Apex of diurnal bulge
       u(0) = c_dec * std::cos(ra_Sun + ra_lag);
       u(1) = c_dec * std::sin(ra_Sun + ra_lag);
       u(2) = std::sin(dec_Sun);
 
-		//* Cosine of half angle between satellite position vector and
-		//* apex of diurnal bulge
-		double c_psi2 = (0.5 + 0.5 * dot(r,u)/norm(r));
-		
-		int ih = 0;
+      //* Cosine of half angle between satellite position vector and
+      //* apex of diurnal bulge
+      double c_psi2 = (0.5 + 0.5 * dot(r,u)/norm(r));
+      
+      int ih = 0;
 
-		// index search
-		for(int i = 0; i < 59-1; i++)
-		{
-			if(alt >= workingDens[i][0] && alt < workingDens[i+1][0])
-			{
-				ih = i;
-				break;
-			}
-		}
-		
-		// exponential density interpolation
+      // index search
+      for(int i = 0; i < 59-1; i++)
+      {
+         if(alt >= workingDens[i][0] && alt < workingDens[i+1][0])
+         {
+            ih = i;
+            break;
+         }
+      }
+      
+      // exponential density interpolation
       double h_min = (workingDens[ih][0] - workingDens[ih+1][0]) 
                    / std::log(workingDens[ih+1][1] / workingDens[ih][1]);
 
       double h_max = (workingDens[ih][0] - workingDens[ih+1][0]) 
                    / std::log(workingDens[ih+1][2] 
                    / workingDens[ih][2]);
-		
+      
       double d_min = workingDens[ih][1]*std::exp((workingDens[ih][0]-alt)/h_min);
       double d_max = workingDens[ih][2]*std::exp((workingDens[ih][0]-alt)/h_max);
-		
-		// Density computation
-		//Use 2 for low inclination orbits and 6 for polar orbits
-		// Reference Montenbruck P90
-		double n_prm = 2.0;
-		Vector<double> h = cross(r,v);
+      
+      // Density computation
+      //Use 2 for low inclination orbits and 6 for polar orbits
+      // Reference Montenbruck P90
+      double n_prm = 2.0;
+      Vector<double> h = cross(r,v);
       double inc = std::acos(h(2) / norm(h));
-		n_prm = 2.0 + inc * 8.0 / ASConstant::PI;
+      n_prm = 2.0 + inc * 8.0 / ASConstant::PI;
 
 
       density = d_min + (d_max - d_min) * std::pow(c_psi2,n_prm / 2.0);
 
-		return density * 1.0e-9;	//[kg/m^3]
+      return density * 1.0e-9;   //[kg/m^3]
 
-	}  // End of method 'HarrisPriesterDrag::computeDensity()'
+   }  // End of method 'HarrisPriesterDrag::computeDensity()'
 
 
 }  // End of namespace 'gpstk'

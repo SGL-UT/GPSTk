@@ -39,60 +39,60 @@
 
 namespace gpstk
 {
-	
+   
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * This class computes the acceleration due to drag on a satellite
-	    * using an Earth atmosphere model that conforms to the computeDensity 
+      /**
+       * This class computes the acceleration due to drag on a satellite
+       * using an Earth atmosphere model that conforms to the computeDensity 
        * abstract method.
-	    *
-	    *  This Model is checked on Sep 28th,2009, OK!!!
-	    *
-	    */
-	class AtmosphericDrag : public ForceModel
-	{
-	public:
+       *
+       *  This Model is checked on Sep 28th,2009, OK!!!
+       *
+       */
+   class AtmosphericDrag : public ForceModel
+   {
+   public:
 
          /// Default constructor
-		AtmosphericDrag() {};
+      AtmosphericDrag() {};
 
          /// Default destructor
       virtual ~AtmosphericDrag() {};
 
 
-		   /** Abstract class requires the subclass to compute the atmospheric density.
-		    * @param ref EarthRef object.
-		    * @param r Position vector.
-		    * @param v Velocity vector
-		    * @return Atmospheric density in kg/m^3
-		    */
-		virtual double computeDensity(UTCTime t, EarthBody& ref, Vector<double> r,Vector<double> v) = 0;
-		
+         /** Abstract class requires the subclass to compute the atmospheric density.
+          * @param ref EarthRef object.
+          * @param r Position vector.
+          * @param v Velocity vector
+          * @return Atmospheric density in kg/m^3
+          */
+      virtual double computeDensity(UTCTime t, EarthBody& ref, Vector<double> r,Vector<double> v) = 0;
+      
 
          /// Return force model name
-		virtual std::string modelName()
+      virtual std::string modelName()
       {return "AtmosphericDrag";}
 
-		 
-		   /// this is the real one
-		virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
+       
+         /// this is the real one
+      virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
-	protected:
+   protected:
 
          /// dadcd
-		Vector<double> dadcd;
+      Vector<double> dadcd;
 
          // Constant
       enum CiraSize{ CIRA_SIZE = 24 };
 
-		   /// CIRA Coefficients, this is used to calcute da_dr
-		static const double rho_0[CIRA_SIZE];
-		static const double H[CIRA_SIZE];
-		static const double h0[CIRA_SIZE];
-		
-	}; // End of class 'gpstk'
+         /// CIRA Coefficients, this is used to calcute da_dr
+      static const double rho_0[CIRA_SIZE];
+      static const double H[CIRA_SIZE];
+      static const double h0[CIRA_SIZE];
+      
+   }; // End of class 'gpstk'
 
       // @}
 

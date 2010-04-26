@@ -212,7 +212,7 @@ namespace gpstk
       if ((mjd >=50630.0)&&(mjd < 51179.0)) return 31;
       if ((mjd >=51179.0)&&(mjd < 53736.0)) return 32;
       if ((mjd >=53736.0)&&(mjd < 54832.0)) return 33;
-      if  (mjd >=54832.0) return 34;						      // 2009-01-01
+      if  (mjd >=54832.0) return 34;                        // 2009-01-01
 
       // It should never go here and return 0 to avoid the warning
       return 0;

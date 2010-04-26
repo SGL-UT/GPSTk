@@ -63,7 +63,7 @@ namespace gpstk
       {
          double   KNMP[20];
          int      NTACT;
-         int		NDOD[1200][6];
+         int      NDOD[1200][6];
          double   CSPM[1200][4];
          int      NM[1200][2];  
       };
@@ -105,10 +105,10 @@ namespace gpstk
       double FAC[41];
 
       /// line 2
-      int    NWAV;	// number of lines to skip
-      int	   NTOT;	// number of data lines
-      int	   NMX;		// max degree
-      int	   MMX;     // max order 
+      int    NWAV;   // number of lines to skip
+      int      NTOT;   // number of data lines
+      int      NMX;      // max degree
+      int      MMX;     // max order 
       /// line 4
       double RRE;
       double RHOW;

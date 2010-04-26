@@ -52,17 +52,17 @@ namespace gpstk
 
       enum ForceModelType
       {
-         Cd,					// Coefficient of drag
-         Cr,					// Coefficient of Reflectivity
+         Cd,               // Coefficient of drag
+         Cr,               // Coefficient of Reflectivity
       };
 
          /// Default constructor
       ForceModel()
-      {			
+      {         
          a.resize(3,0.0);
          da_dr.resize(3,3,0.0);
          da_dv.resize(3,3,0.0);
-         da_dp.resize(3,0,0.0);		// default np = 0;
+         da_dp.resize(3,0,0.0);      // default np = 0;
 
          da_dcd.resize(3,1,0.0);
          da_dcr.resize(3,1,0.0);
@@ -78,7 +78,7 @@ namespace gpstk
          a.resize(3,0.0);
          da_dr.resize(3,3,0.0);
          da_dv.resize(3,3,0.0);
-         da_dp.resize(3,0,0.0);		// default np = 0;
+         da_dp.resize(3,0,0.0);      // default np = 0;
 
          da_dcd.resize(3,1,0.0);
          da_dcr.resize(3,1,0.0);
@@ -141,11 +141,11 @@ namespace gpstk
       {
             /* A Matrix
             |                        |
-            | 0			I		0      |
+            | 0         I      0      |
             |                        |
-         A =| da_dr		da_dv	da_dp  |
+         A =| da_dr      da_dv   da_dp  |
             |                        |
-            | 0			0		0      |
+            | 0         0      0      |
             |                        |
             */
 
@@ -209,22 +209,22 @@ namespace gpstk
    protected:
 
          /// Acceleration
-      Vector<double> a;			// 3
+      Vector<double> a;         // 3
       
          /// Partial derivative of acceleration wrt position
-      Matrix<double> da_dr;		// 3*3
+      Matrix<double> da_dr;      // 3*3
       
          /// Partial derivative of acceleration wrt velocity
-      Matrix<double> da_dv;		// 3*3
+      Matrix<double> da_dv;      // 3*3
       
          /// Partial derivative of acceleration wrt dynamic parameters
-      Matrix<double> da_dp;		// 3*np
+      Matrix<double> da_dp;      // 3*np
          
          /// Partial derivative of acceleration wrt Cd
-      Matrix<double> da_dcd;		// 3*1
+      Matrix<double> da_dcd;      // 3*1
          
          /// Partial derivative of acceleration wrt Cr
-      Matrix<double> da_dcr;		// 3*1
+      Matrix<double> da_dcr;      // 3*1
 
 
    }; // End of 'class ForceModel'

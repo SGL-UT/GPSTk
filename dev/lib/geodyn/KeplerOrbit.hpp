@@ -39,23 +39,23 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * This class do some useful Keplerian orbit computation.
-	    *
-	    * Reference:
+      /**
+       * This class do some useful Keplerian orbit computation.
+       *
+       * Reference:
        * Satellite orbits models methods applications
        * Montenbruck, E. Gill
-	    */
-	class KeplerOrbit
-	{
-	public:
+       */
+   class KeplerOrbit
+   {
+   public:
          /// Default constructor
-		KeplerOrbit();
+      KeplerOrbit();
 
          /// Default destructor
-		~KeplerOrbit();
+      ~KeplerOrbit();
 
-	
+   
          /**Computes the satellite state vector from osculating Keplerian 
           * elements for elliptic orbits.
           * @param GM       Gravitational coefficient
@@ -66,23 +66,23 @@ namespace gpstk
           * @warning  The semimajor axis a=Kep(0), dt and GM must be given in 
           *           consistent units 
           */
-		static Vector<double> State( double GM, const Vector<double>& Kep, double dt );
-		
-		
-		   /**Computes the partial derivatives of the satellite state vector with 
-		    * respect to the orbital elements for elliptic, Keplerian orbits
-		    *
-		    * @param GM   Gravitational coefficient
-		    * @param Kep  Keplerian elements (a,e,i,Omega,omega,M) 
-		    * @param dt   Time since epoch
-		    * @return     Partials derivatives of the state vector (x,y,z,vx,vy,vz) 
-		    *             at time dt with respect to the epoch orbital elements
-		    * warning The semimajor axis a=Kep(0), dt and GM must be given in consistent units, 
-		    * The function cannot be used with circular or non-inclined orbit.
+      static Vector<double> State( double GM, const Vector<double>& Kep, double dt );
+      
+      
+         /**Computes the partial derivatives of the satellite state vector with 
+          * respect to the orbital elements for elliptic, Keplerian orbits
+          *
+          * @param GM   Gravitational coefficient
+          * @param Kep  Keplerian elements (a,e,i,Omega,omega,M) 
+          * @param dt   Time since epoch
+          * @return     Partials derivatives of the state vector (x,y,z,vx,vy,vz) 
+          *             at time dt with respect to the epoch orbital elements
+          * warning The semimajor axis a=Kep(0), dt and GM must be given in consistent units, 
+          * The function cannot be used with circular or non-inclined orbit.
           */
-		static gpstk::Matrix<double> StatePartials ( double GM, const Vector<double>& Kep, double dt );
-		
-		
+      static gpstk::Matrix<double> StatePartials ( double GM, const Vector<double>& Kep, double dt );
+      
+      
          /** Computes the osculating Keplerian elements from the satellite 
           * state vector for elliptic orbits.
           * @ GM       Gravitational coefficient
@@ -90,62 +90,62 @@ namespace gpstk
           * @ return   Keplerian elements(a e i OGM omg M)
           * @ warning  The state vector and GM must be given in consistent units
           */
-		static Vector<double> Elements ( double GM, const Vector<double>& y );
-		
-		
-		
-		   /**Computes orbital elements from two given position vectors and 
-		    *associated times 
-		    * @param GM        Gravitational coefficient
-		    * @param Mjda     Time ta (Modified Julian Date)
-		    * @param Mjdb     Time tb (Modified Julian Date)
-		    * @param ra       Position vector at time t_a
-		    * @param rb       Position vector at time t_b
-		    * @return>   Keplerian elements (a,e,i,Omega,omega,M) at ta
-		    *
-		    * @warning   The function cannot be used with state vectors describing a 
-		    *            circular or non-inclined orbit.
+      static Vector<double> Elements ( double GM, const Vector<double>& y );
+      
+      
+      
+         /**Computes orbital elements from two given position vectors and 
+          *associated times 
+          * @param GM        Gravitational coefficient
+          * @param Mjda     Time ta (Modified Julian Date)
+          * @param Mjdb     Time tb (Modified Julian Date)
+          * @param ra       Position vector at time t_a
+          * @param rb       Position vector at time t_b
+          * @return>   Keplerian elements (a,e,i,Omega,omega,M) at ta
+          *
+          * @warning   The function cannot be used with state vectors describing a 
+          *            circular or non-inclined orbit.
           */
-		static Vector<double> Elements( double GM, double Mjda, double Mjdb, 
-			const Vector<double>& ra, const Vector<double>& rb );
-		
-	
+      static Vector<double> Elements( double GM, double Mjda, double Mjdb, 
+         const Vector<double>& ra, const Vector<double>& rb );
+      
+   
          /**Propagates a given state vector and computes the state transition  
-		    * matrix for elliptical Keplerian orbits
-		    *
-		    * @param GM        Gravitational coefficient
-		    * @param Y0        Epoch state vector (position and velocity)
-		    * @param dt        Time since epoch
-		    * @param Y         State vector (position and velocity)
-		    * @param dYdY0     State transition matrix d(x,y,z,vx,vy,vz)/d(x,y,z,vx,vy,vz)_0
-		    * @warning         The state vector, dt and GM must be given in consistent units. 
+          * matrix for elliptical Keplerian orbits
+          *
+          * @param GM        Gravitational coefficient
+          * @param Y0        Epoch state vector (position and velocity)
+          * @param dt        Time since epoch
+          * @param Y         State vector (position and velocity)
+          * @param dYdY0     State transition matrix d(x,y,z,vx,vy,vz)/d(x,y,z,vx,vy,vz)_0
+          * @warning         The state vector, dt and GM must be given in consistent units. 
           *   Due to the internal use of Keplerian elements, the function cannot be used with
           *   epoch state vectors describing a circular or non-inclined orbit.
           */
-		static void TwoBody ( double GM, const Vector<double>& Y0, double dt, 
-			Vector<double>& Y, Matrix<double>& dYdY0 );
+      static void TwoBody ( double GM, const Vector<double>& Y0, double dt, 
+         Vector<double>& Y, Matrix<double>& dYdY0 );
 
          /** Computes the eccentric anomaly for elliptic orbits
-		    * @param M    Mean anomaly in [rad]
-		    * @param e    Eccentricity of the orbit [0,1]
-		    * @return     Eccentric anomaly in [rad]
-	       */
-		static double EccentricAnomaly (double M, double e);
+          * @param M    Mean anomaly in [rad]
+          * @param e    Eccentricity of the orbit [0,1]
+          * @return     Eccentric anomaly in [rad]
+          */
+      static double EccentricAnomaly (double M, double e);
 
          /** Computes the true anomaly for elliptic orbits
-		    * @param M    Mean anomaly in [rad]
-		    * @param e    Eccentricity of the orbit [0,1]
-		    * @return     True anomaly in [rad]
-	       */
-		static double TrueAnomaly (double M, double e);
+          * @param M    Mean anomaly in [rad]
+          * @param e    Eccentricity of the orbit [0,1]
+          * @return     True anomaly in [rad]
+          */
+      static double TrueAnomaly (double M, double e);
 
 
          /** Computes the true anomaly for elliptic orbits
-		    * @param cta  True anomaly in [rad]
-		    * @param e    Eccentricity of the orbit [0,1]
-		    * @return     Mean anomaly in [rad]
-	       */
-		static double MeanAnomaly (double cta, double e);
+          * @param cta  True anomaly in [rad]
+          * @param e    Eccentricity of the orbit [0,1]
+          * @return     Mean anomaly in [rad]
+          */
+      static double MeanAnomaly (double cta, double e);
 
 
          /// Get the period of the orbit
@@ -160,43 +160,43 @@ namespace gpstk
       static double getPerigee(double GM, const Vector<double>& Kep);
 
 
-		static void test();
+      static void test();
 
-	protected:
+   protected:
 
 
-	      /**Computes the sector-triangle ratio from two position vectors and 
-		    * the intermediate time 
-		    * @param r_a     Position at time t_a
-		    * @param r_a     Position at time t_b
-		    * @param tau     Normalized time (sqrt(GM)*(t_a-t_b))
-		    * @return        Sector-triangle ratio
+         /**Computes the sector-triangle ratio from two position vectors and 
+          * the intermediate time 
+          * @param r_a     Position at time t_a
+          * @param r_a     Position at time t_b
+          * @param tau     Normalized time (sqrt(GM)*(t_a-t_b))
+          * @return        Sector-triangle ratio
           */
-		static double FindEta (const Vector<double>& r_a, const Vector<double>& r_b, double tau);
+      static double FindEta (const Vector<double>& r_a, const Vector<double>& r_b, double tau);
 
 
-		
-		   /// Fractional part of a number (y=x-[x])
-		static double Frac (double x) { return x-floor(x); };
+      
+         /// Fractional part of a number (y=x-[x])
+      static double Frac (double x) { return x-floor(x); };
 
-		
-		   /// x mod y
-		static double Modulo (double x, double y) { return y*Frac(x/y); }
+      
+         /// x mod y
+      static double Modulo (double x, double y) { return y*Frac(x/y); }
 
-		
-		   /// local function for use by FindEta()
-		static double F (double eta, double m, double l);
+      
+         /// local function for use by FindEta()
+      static double F (double eta, double m, double l);
 
          /// connect two vector
-		static Vector<double> Stack(Vector<double> r,Vector<double> v);
-		
-	private:
+      static Vector<double> Stack(Vector<double> r,Vector<double> v);
+      
+   private:
 
          /// numeric limits
-		 static const double eps_mach;		// = numeric_limits<double>::epsilon();
+       static const double eps_mach;      // = numeric_limits<double>::epsilon();
 
-		
-	}; // End of class 'KeplerOrbit'
+      
+   }; // End of class 'KeplerOrbit'
 
       // @}
 

@@ -405,8 +405,8 @@ namespace gpstk
 
       /*Earth rotation angle first order rate.
        *  @param mjdTT         Modified Julian Date in TT
-	    *  @return              d(GAST)/d(t) in [rad]
-	    */
+       *  @return              d(GAST)/d(t) in [rad]
+       */
    double ReferenceFrames::earthRotationAngleRate1(const double& mjdTT)
    {
       double T = (mjdTT - (JD_TO_MJD - DJ00) )/36525.0;
@@ -417,10 +417,10 @@ namespace gpstk
    }
 
 
-	   /*Earth rotation angle second order rate .
-	    * @param   Modified Julian Date in TT
+      /*Earth rotation angle second order rate .
+       * @param   Modified Julian Date in TT
        * @return  d(GAST)2/d(t)2 in [rad]
-	    */
+       */
    double ReferenceFrames::earthRotationAngleRate2(const double& mjdTT)
    {
       double T = ( mjdTT - (JD_TO_MJD - DJ00) ) / 36525.0;
@@ -430,10 +430,10 @@ namespace gpstk
    }
 
 
-	   /*Earth rotation angle third order rate.
-	    * @param   Modified Julian Date in TT
+      /*Earth rotation angle third order rate.
+       * @param   Modified Julian Date in TT
        * @return  d(GAST)3/d(t)3 in [rad]
-	    */
+       */
    double ReferenceFrames::earthRotationAngleRate3(const double& mjdTT)
    {
       double T = ( mjdTT - (JD_TO_MJD - DJ00) ) / 36525.0;
@@ -486,7 +486,7 @@ namespace gpstk
          t * (          0.051635 +
          t * (        - 0.00024470 ) ) ) ), TURNAS ) * DAS2R;
 
-      double F1 = normalizeAngle(temp);			// -pi,pi
+      double F1 = normalizeAngle(temp);         // -pi,pi
 
       // Mean anomaly of the Sun
       temp = fmod(         1287104.793048 +
@@ -495,7 +495,7 @@ namespace gpstk
          t * (         0.000136 +
          t * (       - 0.00001149 ) ) ) ), TURNAS ) * DAS2R;
 
-      double F2 = normalizeAngle(temp);		// -pi,pi
+      double F2 = normalizeAngle(temp);      // -pi,pi
       
       // Mean longitude of the Moon minus that of the ascending node.
       temp = fmod(           335779.526232 +
@@ -503,7 +503,7 @@ namespace gpstk
          t * (       - 12.7512 +
          t * (        - 0.001037 +
          t * (          0.00000417 ) ) ) ), TURNAS ) * DAS2R;
-      double F3 = normalizeAngle(temp);			// -pi,pi
+      double F3 = normalizeAngle(temp);         // -pi,pi
       
       // Mean elongation of the Moon from the Sun. 
       temp = fmod(          1072260.703692 +
@@ -512,7 +512,7 @@ namespace gpstk
          t * (          0.006593 +
          t * (        - 0.00003169 ) ) ) ), TURNAS ) * DAS2R;
 
-      double F4 = normalizeAngle(temp);			// -pi,pi
+      double F4 = normalizeAngle(temp);         // -pi,pi
       
       // Mean longitude of the ascending node of the Moon.
       temp = fmod(          450160.398036 +
@@ -520,7 +520,7 @@ namespace gpstk
          t * (         7.4722 +
          t * (         0.007702 +
          t * (       - 0.00005939 ) ) ) ), TURNAS ) * DAS2R;
-      double F5 = normalizeAngle(temp);		// -pi,pi
+      double F5 = normalizeAngle(temp);      // -pi,pi
 
       FNUT[0] = F1;
       FNUT[1] = F2;

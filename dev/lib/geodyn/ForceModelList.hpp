@@ -41,47 +41,47 @@ namespace gpstk
 {
       /** @addtogroup GeoDynamics */
       //@{
-	   
+      
       /**
-	    * ForceModelList is a countainer for force models. It allows the simulation to encapsulate
-	    * a number of different force models and obtain their combined effect on a spacecraft. 
-	    */
-	class ForceModelList : public ForceModel
-	{
-	public:
+       * ForceModelList is a countainer for force models. It allows the simulation to encapsulate
+       * a number of different force models and obtain their combined effect on a spacecraft. 
+       */
+   class ForceModelList : public ForceModel
+   {
+   public:
 
          /// Default constructor
-		ForceModelList();
+      ForceModelList();
 
          /// Default destructor
-		virtual ~ForceModelList()
+      virtual ~ForceModelList()
       {};
          
          /// Clear the force model list
       void clear()
       { setFMT.clear(); }
 
-		   /**
-		   * Adds a generic force to the list
-		   * @param f Object which implements the ForceModel interface
-		   */
-		void addForce(ForceModel* pForce)
+         /**
+         * Adds a generic force to the list
+         * @param f Object which implements the ForceModel interface
+         */
+      void addForce(ForceModel* pForce)
       { forceList.push_back(pForce); };
-		
+      
          /// interface implementation for the 'ForceModel'
-		virtual Vector<double> getDerivatives(UTCTime utc, EarthBody& bref, Spacecraft& sc);
-		
+      virtual Vector<double> getDerivatives(UTCTime utc, EarthBody& bref, Spacecraft& sc);
+      
 
-		void setForceModelType(std::set<ForceModel::ForceModelType> fmt);
+      void setForceModelType(std::set<ForceModel::ForceModelType> fmt);
 
-	protected:
+   protected:
 
-		   /// List of forces
-		list<ForceModel*> forceList;
+         /// List of forces
+      list<ForceModel*> forceList;
 
-		std::set<ForceModel::ForceModelType> setFMT;
+      std::set<ForceModel::ForceModelType> setFMT;
 
-	}; // End of class 'ForceModelList'
+   }; // End of class 'ForceModelList'
 
       // @}
 

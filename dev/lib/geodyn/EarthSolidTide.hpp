@@ -37,45 +37,45 @@ namespace gpstk
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**Class to do Earth Solid Tide correction
-	    * reference: IERS Conventions 2003
-	    */
-	class EarthSolidTide
-	{
-	public:
+      /**Class to do Earth Solid Tide correction
+       * reference: IERS Conventions 2003
+       */
+   class EarthSolidTide
+   {
+   public:
 
          /// Default constructor
-		EarthSolidTide(){}
+      EarthSolidTide(){}
 
          /// Default destructor
-		~EarthSolidTide(){}
+      ~EarthSolidTide(){}
 
-		   /**
-		    * Solid tide to normalized earth potential coefficients
-		    *
-		    * @param mjdUtc  UTC in MJD
-		    * @param dC      correction to normalized coefficients dC
-		    * @param dS      correction to normalized coefficients dS
-		    */
-		void getSolidTide(double mjdUtc, double dC[], double dS[] );
+         /**
+          * Solid tide to normalized earth potential coefficients
+          *
+          * @param mjdUtc  UTC in MJD
+          * @param dC      correction to normalized coefficients dC
+          * @param dS      correction to normalized coefficients dS
+          */
+      void getSolidTide(double mjdUtc, double dC[], double dS[] );
 
 
-		void test();
+      void test();
 
-	protected:
+   protected:
 
          ///  Legendre polynomial
          //  relevant formula can be found in "satellite orbits"(3.23,3.24,3.25 in chapter 3.2.4)
       static double legendrePoly(int n,int m,double u);
 
-		double normFactor (int n, int m) ;
-		
+      double normFactor (int n, int m) ;
+      
          /// Objects to hold parameters
-		static const double Argu_C20[21][7];
-		static const double Argu_C21[48][7];
-		static const double Argu_C22[2][6];
-		
-	}; // End of class 'EarthSolidTide'
+      static const double Argu_C20[21][7];
+      static const double Argu_C21[48][7];
+      static const double Argu_C22[2][6];
+      
+   }; // End of class 'EarthSolidTide'
 
       // @}
 

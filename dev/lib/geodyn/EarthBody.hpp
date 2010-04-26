@@ -42,37 +42,37 @@ namespace gpstk
       /** Class to handle earth planet, it'll be taken as the central
        * body of the spacecraft.
        */
-	class EarthBody
-	{
-	public:
+   class EarthBody
+   {
+   public:
          /// Default constructor
-		EarthBody() {}
+      EarthBody() {}
 
          /// Default destructor
-		virtual ~EarthBody() {}
-		
-		   /**
-		    * Returnts the dynamic Earth rotation rate. 
+      virtual ~EarthBody() {}
+      
+         /**
+          * Returnts the dynamic Earth rotation rate. 
           * @t   epoch in UTC
-		    */
-		virtual double getSpinRate(UTCTime t);
-	
+          */
+      virtual double getSpinRate(UTCTime t);
+   
 
-	protected:
+   protected:
 
-		   /// Earth's rotation rate in rad/s.
-		static const double omegaEarth;
+         /// Earth's rotation rate in rad/s.
+      static const double omegaEarth;
 
-		   /// Equatorial radius of earth in m from WGS-84
-		static const double radiusEarth;
-		
+         /// Equatorial radius of earth in m from WGS-84
+      static const double radiusEarth;
+      
          /// Flattening factor of earth from WGS-84
-		static const double flatEarth;	
-		
+      static const double flatEarth;   
+      
          /// Earth gravity constant in m^3/s^2 WGS-84
-		static const double gmEarth;
+      static const double gmEarth;
 
-	}; // End of class 'EarthBody'
+   }; // End of class 'EarthBody'
 
       // @}
 

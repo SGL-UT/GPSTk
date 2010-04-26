@@ -44,7 +44,7 @@ namespace gpstk
       static const double SPEED_OF_LIGHT = 299792458.0;
 
          /// Astronomical Unit [m]; IAY 1976
-      static const double AU = 149597870000.0;		// [m]
+      static const double AU = 149597870000.0;      // [m]
 
 
 
@@ -64,7 +64,7 @@ namespace gpstk
       
       static const double JD_MJD_OFFSET = 2400000.5;    // Vallado page 187
 
-      static const double MJD_J2000 = 51544.5;			  //Modified Julian Date of the J2000 Epoch.
+      static const double MJD_J2000 = 51544.5;           //Modified Julian Date of the J2000 Epoch.
      
          
          /// GM of the Earth in km^3/s^2 from JGM-3.
@@ -90,7 +90,7 @@ namespace gpstk
 
       /// Earth's rotation rate in rad/s.
       //static const double omega_e = 7.2921157746E-05;   // earth rotation rate
-      static const double omega_e = 7.292115E-05;			// IERS 1996 conventions
+      static const double omega_e = 7.292115E-05;         // IERS 1996 conventions
       //static const double omega_e = 7.2921158553E-05;   // Vallado
 
          /// Equatorial radius of earth in m from WGS-84
@@ -101,10 +101,10 @@ namespace gpstk
 
 
          /// Mean radius of the Sun in m
-      static const double R_Sun  = 696.0e6;//6.9599e8;			   // [m] STK
+      static const double R_Sun  = 696.0e6;//6.9599e8;            // [m] STK
          
          /// Mean radius of the Moon in m
-      static const double R_Moon  = 1738000;//6.9599e8;			   // [m] STK
+      static const double R_Moon  = 1738000;//6.9599e8;            // [m] STK
 
       /// Solar radiation pressure at 1 AU in N/m^2
       static const double P_Sol      = 4.560E-6;          // [N/m^2] (~1367 W/m^2); IERS 96

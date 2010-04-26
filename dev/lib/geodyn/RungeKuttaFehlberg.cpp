@@ -512,11 +512,11 @@ namespace gpstk
    {
       TestEOM eom;
       
-      double t0	= 0.0;
-      double h	= 1.0;
+      double t0   = 0.0;
+      double h   = 1.0;
       gpstk::Vector<double> y0(1,0.0); 
-      int dim		= 1;
-      gpstk::Vector<double> y(1,0.0);	// = {0.0};
+      int dim      = 1;
+      gpstk::Vector<double> y(1,0.0);   // = {0.0};
       
       this->setStepSize(0.01);
       //this->setAdaptive(true);

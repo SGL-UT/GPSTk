@@ -45,17 +45,17 @@ namespace gpstk
        *-------------------------------------------------------------------
        *
        *          -14s
-       *   -----------------BDT(Compass Time)
-       *   |                                                                   
+       *   -----------------> BDT(Compass Time)
+       *   |                                                                    
        *   |         +19s             +32.184s           +rel.effects       
-       *	 GPST ------------> TAI ----------------> TT -----------------> TDB	
-       *	                    T |                                         
-       *          -(UT1-TAI) | |	 -leap seconds                          
-       *	 UT1 ---------------| |--------------------> UTC                
+       *  GPST ------------> TAI ----------------> TT -----------------> TDB   
+       *                        T |                                         
+       *           -(UT1-TAI) | |    -leap seconds                          
+       *   UT1 ---------------| |--------------------> UTC                
        *    |                                                              
        *    |   earth rotation                                            
-       *	   ---------------------> GAST                                   
-       *                                                                   
+       *      ---------------------> GAST                                   
+       *                                                                    
        */
    class UTCTime : public DayTime
    {
@@ -168,20 +168,20 @@ namespace gpstk
          /// Handy struct
       struct MJDTime 
       {
-         long	   MJDint;
-         double	MJDfr;
+         long      MJDint;
+         double   MJDfr;
       };
 
    public:
 
          /// Seconds per day.
-      static const double DAY_TO_SECOND;	   // = 86400; 
+      static const double DAY_TO_SECOND;      // = 86400; 
          
          /// Constant used for conversion to Terrestrial Time.
-      static const double TT_TAI;		     // = 32.184;  // constant
+      static const double TT_TAI;           // = 32.184;  // constant
          
          /// Constant used for conversion to GPS time.
-      static const double TAI_GPS;	        // = 19.0;  // constant 
+      static const double TAI_GPS;           // = 19.0;  // constant 
 
    }; // End of class 'UTCTime'
 

@@ -50,8 +50,8 @@ namespace gpstk
    public:
       enum ShadowModel 
       {
-         SM_CYLINDRICAL,			// cylindrical
-         SM_CONICAL				   // conical
+         SM_CYLINDRICAL,         // cylindrical
+         SM_CONICAL               // conical
       };
 
    public:
@@ -98,7 +98,7 @@ namespace gpstk
       double partial_illumination(Vector<double> r, Vector<double> r_Sun );
 
     
-   protected:		
+   protected:      
 
       // some local variables
 
@@ -110,7 +110,7 @@ namespace gpstk
       double dryMass;
 
          /// Satellite coefficient of reflectivity 
-      double reflectCoeff;		// CR
+      double reflectCoeff;      // CR
 
          /// Object hold da/dCr
       Vector<double> dadcr;

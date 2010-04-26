@@ -38,118 +38,118 @@
 
 namespace gpstk
 {
-	using namespace std;
+   using namespace std;
 
       /** @addtogroup GeoDynamics */
       //@{
 
-	   /**
-	    * The Spacecraft class encapsulates physical parameters
-	    * 
-	    */
-	class Spacecraft
-	{
-	public:
+      /**
+       * The Spacecraft class encapsulates physical parameters
+       * 
+       */
+   class Spacecraft
+   {
+   public:
 
          /// Default constructor
-		Spacecraft(std::string name = "spacecraft");
+      Spacecraft(std::string name = "spacecraft");
 
          /// Default destructor
       ~Spacecraft() {};
 
          /// SC position(R), velocity(V) and dynamic parameters(P)
-		Vector<double> R() {return r;}
-		Vector<double> V() {return v;}
-		Vector<double> P() {return p;}
-		
+      Vector<double> R() {return r;}
+      Vector<double> V() {return v;}
+      Vector<double> P() {return p;}
+      
          /// SC derivatives
       Vector<double> dR_dR0() {return dr_dr0;}
-		Vector<double> dR_dV0() {return dr_dv0;}
-		Vector<double> dR_dP0() {return dr_dp0;}
-		Vector<double> dV_dR0() {return dv_dr0;}
-		Vector<double> dV_dV0() {return dv_dv0;}
-		Vector<double> dV_dP0() {return dv_dp0;}
+      Vector<double> dR_dV0() {return dr_dv0;}
+      Vector<double> dR_dP0() {return dr_dp0;}
+      Vector<double> dV_dR0() {return dv_dr0;}
+      Vector<double> dV_dV0() {return dv_dv0;}
+      Vector<double> dV_dP0() {return dv_dp0;}
 
-		   /// Get number of force model parameters
-		int getNumOfP()
+         /// Get number of force model parameters
+      int getNumOfP()
       { return p.size(); }
-		
-		   /// initialize the state vector with position and velocity and force model parameters 
-		void initStateVector(Vector<double> rv, Vector<double> dp = Vector<double>(0,0.0));
-		
+      
+         /// initialize the state vector with position and velocity and force model parameters 
+      void initStateVector(Vector<double> rv, Vector<double> dp = Vector<double>(0,0.0));
+      
          /// Methods to handle SC state vector
-		Vector<double> getStateVector();
-		void setStateVector(Vector<double> y);
+      Vector<double> getStateVector();
+      void setStateVector(Vector<double> y);
 
          /// Methods to handle SC transition matrix
-		Matrix<double> getTransitionMatrix();
-		void setTransitionMatrix(Matrix<double> phiMatrix);
-		
-		   /// Method to get SC state transition matrix 6*6
-		Matrix<double> getStateTransitionMatrix();
+      Matrix<double> getTransitionMatrix();
+      void setTransitionMatrix(Matrix<double> phiMatrix);
+      
+         /// Method to get SC state transition matrix 6*6
+      Matrix<double> getStateTransitionMatrix();
 
-		   /// Method to get SC sensitivity matrix 6*np
-		Matrix<double> getSensitivityMatrix();
+         /// Method to get SC sensitivity matrix 6*np
+      Matrix<double> getSensitivityMatrix();
 
          /// Methods to handle SC physical parameters
-		double getReflectCoeff(){return reflectCoeff;}
-		void setReflectCoeff(double Cr){reflectCoeff = Cr;}
+      double getReflectCoeff(){return reflectCoeff;}
+      void setReflectCoeff(double Cr){reflectCoeff = Cr;}
 
-		double getDragCoeff(){return dragCoeff;}
-		void setDragCoeff(double Cd){dragCoeff = Cd;}
-		
-		double getDragArea(){return crossArea;}
-		void setDragArea(double satArea){crossArea = satArea;}
-		
-		double getSRPArea(){return crossArea;}
-		void setSRPArea(double satArea){crossArea = satArea;}
-		
-		double getDryMass(){return dryMass;}
-		void setDryMass(double satMass){dryMass = satMass;}
+      double getDragCoeff(){return dragCoeff;}
+      void setDragCoeff(double Cd){dragCoeff = Cd;}
+      
+      double getDragArea(){return crossArea;}
+      void setDragArea(double satArea){crossArea = satArea;}
+      
+      double getSRPArea(){return crossArea;}
+      void setSRPArea(double satArea){crossArea = satArea;}
+      
+      double getDryMass(){return dryMass;}
+      void setDryMass(double satMass){dryMass = satMass;}
       
       std::string Name()
       { return scName; }
 
          /// some basic test
-		void test();
+      void test();
 
 
 
-	protected:
+   protected:
 
-		void resetState();
-		
-		   /// name: The name of the spacecraft (e.g. "NCC-1701-D") 
-		string scName;
-		
+      void resetState();
+      
+         /// name: The name of the spacecraft (e.g. "NCC-1701-D") 
+      string scName;
+      
          /// Object to hold epoch in UTC
       UTCTime utc;
 
-		   /// state vector     6*n + 42
-		Vector<double> r;			// 3 Position
-		Vector<double> v;			// 3 Velocity
-		Vector<double> p;			// n dynamical parameters [this is important]
+         /// state vector     6*n + 42
+      Vector<double> r;         // 3 Position
+      Vector<double> v;         // 3 Velocity
+      Vector<double> p;         // n dynamical parameters [this is important]
 
-		Vector<double> dr_dr0;		// 3*3  I
-		Vector<double> dr_dv0;		// 3*3  0
-		Vector<double> dr_dp0;		// 3*n  0
-		Vector<double> dv_dr0;		// 3*3  0
-		Vector<double> dv_dv0;		// 3*3  I
-		Vector<double> dv_dp0;		// 3*n  0
+      Vector<double> dr_dr0;      // 3*3  I
+      Vector<double> dr_dv0;      // 3*3  0
+      Vector<double> dr_dp0;      // 3*n  0
+      Vector<double> dv_dr0;      // 3*3  0
+      Vector<double> dv_dv0;      // 3*3  I
+      Vector<double> dv_dp0;      // 3*n  0
 
-		   /// Coefficient of Reflectivity
-		double reflectCoeff;
+         /// Coefficient of Reflectivity
+      double reflectCoeff;
 
-		   /// Coefficient of drag
-		double dragCoeff;
+         /// Coefficient of drag
+      double dragCoeff;
 
-		   /// Cross sectional (reflective) area [m^2]
-		double crossArea;
+         /// Cross sectional (reflective) area [m^2]
+      double crossArea;
 
-		   /// mass [kg]
-		double dryMass;
+         /// mass [kg]
+      double dryMass;
 
-	}; // End of class 'Spacecraft'
+   }; // End of class 'Spacecraft'
 
 
       /**

@@ -34,31 +34,31 @@
 
 namespace gpstk
 {
-	   // Earth's rotation rate in rad/s.
-	const double EarthBody::omegaEarth = 7.292115E-05;  
-	
+      // Earth's rotation rate in rad/s.
+   const double EarthBody::omegaEarth = 7.292115E-05;  
+   
       // Equatorial radius of earth in m from WGS-84
-	const double EarthBody::radiusEarth = 6378.1363e3;
-	
+   const double EarthBody::radiusEarth = 6378.1363e3;
+   
       // Flattening factor of earth from WGS-84
-	const double EarthBody::flatEarth = 0.00335281; 
-	
+   const double EarthBody::flatEarth = 0.00335281; 
+   
       // Earth gravity constant in m^3/s^2 from JGM3
-	const double EarthBody::gmEarth = 398600.4415e+9;    // [m^3/s^2]; JGM3
+   const double EarthBody::gmEarth = 398600.4415e+9;    // [m^3/s^2]; JGM3
 
-	
-	
-	   // Returnts the dynamic Earth rotation rate. 
-	double EarthBody::getSpinRate(UTCTime t)
-	{
-		double mjdUT1 = t.mjdUT1();
-	
-		double Mjd0 = floor(mjdUT1);;
-		double Tu   = (Mjd0  - ASConstant::MJD_J2000)/36525.0;
+   
+   
+      // Returnts the dynamic Earth rotation rate. 
+   double EarthBody::getSpinRate(UTCTime t)
+   {
+      double mjdUT1 = t.mjdUT1();
+   
+      double Mjd0 = floor(mjdUT1);;
+      double Tu   = (Mjd0  - ASConstant::MJD_J2000)/36525.0;
 
-		return (7292115.8553e-11 + 4.3e-15 * Tu);
+      return (7292115.8553e-11 + 4.3e-15 * Tu);
 
-	}  // End of method 'EarthBody::getSpinRate()'
+   }  // End of method 'EarthBody::getSpinRate()'
 
 
 }  // End of namespace 'gpstk'

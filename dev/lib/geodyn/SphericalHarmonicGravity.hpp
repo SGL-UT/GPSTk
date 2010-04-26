@@ -39,7 +39,7 @@
 
 namespace gpstk
 {
-	using namespace StringUtils;
+   using namespace StringUtils;
 
       /** @addtogroup GeoDynamics */
       //@{
@@ -48,77 +48,77 @@ namespace gpstk
       /** This class computes the body fixed acceleration due to the harmonic 
        *  gravity field of the central body
        */
-	class SphericalHarmonicGravity : public ForceModel
-	{
-	public:
+   class SphericalHarmonicGravity : public ForceModel
+   {
+   public:
 
          /** Constructor.
-	       * @param n Desired degree.
-	       * @param m Desired order.
-	       */
-		SphericalHarmonicGravity(int n, int m);
+          * @param n Desired degree.
+          * @param m Desired order.
+          */
+      SphericalHarmonicGravity(int n, int m);
 
 
          /// Default destructor
-		virtual ~SphericalHarmonicGravity() {};
+      virtual ~SphericalHarmonicGravity() {};
 
 
          /// We declare a pure virtual function
-		virtual void initialize() = 0;
+      virtual void initialize() = 0;
 
-	
-		   /** Computes the acceleration due to gravity in m/s^2.
-		    * @param r ECI position vector.
-		    * @param E ECI to ECEF transformation matrix.
-		    * @return ECI acceleration in m/s^2.
-		    */
-		Vector<double> gravity(Vector<double> r, Matrix<double> E);
+   
+         /** Computes the acceleration due to gravity in m/s^2.
+          * @param r ECI position vector.
+          * @param E ECI to ECEF transformation matrix.
+          * @return ECI acceleration in m/s^2.
+          */
+      Vector<double> gravity(Vector<double> r, Matrix<double> E);
 
 
-		   /** Computes the partial derivative of gravity with respect to position.
-		    * @return ECI gravity gradient matrix.
-		    * @param r ECI position vector.
-		    * @param E ECI to ECEF transformation matrix.
-		    */
-		Matrix<double> gravityGradient(Vector<double> r, Matrix<double> E);
-		
+         /** Computes the partial derivative of gravity with respect to position.
+          * @return ECI gravity gradient matrix.
+          * @param r ECI position vector.
+          * @param E ECI to ECEF transformation matrix.
+          */
+      Matrix<double> gravityGradient(Vector<double> r, Matrix<double> E);
+      
 
-		   /** Call the relevant methods to compute the acceleration.
-		    * @param utc Time reference class
-		    * @param rb  Reference body class
-		    * @param sc  Spacecraft parameters and state
-		    * @return the acceleration [m/s^s]
-		    */
-		virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
+         /** Call the relevant methods to compute the acceleration.
+          * @param utc Time reference class
+          * @param rb  Reference body class
+          * @param sc  Spacecraft parameters and state
+          * @return the acceleration [m/s^s]
+          */
+      virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
-		   
+         
 
       /// Methods to enable earth tide correction
 
-		void enableSolidTide(bool b = true)
+      void enableSolidTide(bool b = true)
       { correctSolidTide = b; }
 
-		void enableOceanTide(bool b = true)
+      void enableOceanTide(bool b = true)
       { correctOceanTide = b; }
-		
+      
       void enablePoleTide(bool b = true)
       { correctPoleTide = b; }
 
-	protected:
+   protected:
 
-		   /** Evaluates the two harmonic functions V and W.
-		    * @param r ECI position vector.
-		    * @param E ECI to ECEF transformation matrix.
-		    */
-		void computeVW(Vector<double> r, Matrix<double> E);
+         /** Evaluates the two harmonic functions V and W.
+          * @param r ECI position vector.
+          * @param E ECI to ECEF transformation matrix.
+          */
+      void computeVW(Vector<double> r, Matrix<double> E);
 
-		   /// Add tides to coefficients 
-		void correctCSTides(UTCTime t,int solidFlag = 0, int oceanFlag = 0, int poleFlag = 0);
+         /// Add tides to coefficients 
+      void correctCSTides(UTCTime t,int solidFlag = 0, int oceanFlag = 0, int poleFlag = 0);
 
          /// normalized coefficient
-		double normFactor(int n, int m);
+      double normFactor(int n, int m);
 
-	protected:
+   protected:
 
       struct GravityModelData
       {
@@ -142,25 +142,25 @@ namespace gpstk
 
       } gmData;
 
-		   /// V W  (nmax+3)*(nmax+3)
-		   /// Harmonic function V and W
-		Matrix<double> V, W;
+         /// V W  (nmax+3)*(nmax+3)
+         /// Harmonic function V and W
+      Matrix<double> V, W;
 
-		   /// Degree and Order of gravity model desired.
-		int desiredDegree, desiredOrder;
-		   
+         /// Degree and Order of gravity model desired.
+      int desiredDegree, desiredOrder;
+         
          /// Flags to indicate earth tides correction
-      bool	correctSolidTide;
-		bool	correctPoleTide;
-		bool	correctOceanTide;
+      bool   correctSolidTide;
+      bool   correctPoleTide;
+      bool   correctOceanTide;
 
          /// Objects to do earth tides correction
-		EarthSolidTide	solidTide;
-		EarthPoleTide	poleTide;
-		EarthOceanTide  oceanTide;
+      EarthSolidTide   solidTide;
+      EarthPoleTide   poleTide;
+      EarthOceanTide  oceanTide;
 
 
-	}; // End of namespace 'gpstk'
+   }; // End of namespace 'gpstk'
 
       // @}
 

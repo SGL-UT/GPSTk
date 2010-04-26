@@ -249,23 +249,23 @@ namespace gpstk
 
          /**Earth rotation angle first order rate.
           *  @param mjdTT         Modified Julian Date in TT
-		    *  @return              d(GAST)/d(t) in [rad]
-		    */
-		static double earthRotationAngleRate1(const double& mjdTT);
+          *  @return              d(GAST)/d(t) in [rad]
+          */
+      static double earthRotationAngleRate1(const double& mjdTT);
 
 
-		   /**Earth rotation angle second order rate .
-		    * @param   Modified Julian Date in TT
+         /**Earth rotation angle second order rate .
+          * @param   Modified Julian Date in TT
           * @return  d(GAST)2/d(t)2 in [rad]
-		    */
-		static double earthRotationAngleRate2(const double& mjdTT);
+          */
+      static double earthRotationAngleRate2(const double& mjdTT);
 
 
-		   /**Earth rotation angle third order rate.
-		    * @param   Modified Julian Date in TT
+         /**Earth rotation angle third order rate.
+          * @param   Modified Julian Date in TT
           * @return  d(GAST)3/d(t)3 in [rad]
-		    */
-		static double earthRotationAngleRate3(const double& mjdTT);
+          */
+      static double earthRotationAngleRate3(const double& mjdTT);
 
   
          /// Normalize angle into the range -pi <= a < +pi.
