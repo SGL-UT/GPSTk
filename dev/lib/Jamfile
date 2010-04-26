@@ -7,5 +7,5 @@ SubInclude TOP lib vdraw ;
 SubInclude TOP lib vplot ;
 SubInclude TOP lib geomatics ;
 SubInclude TOP lib procframe ;
-SubInclude TOP lib geodyn ;
+#SubInclude TOP lib geodyn ;
 #SubInclude TOP lib Rinex3 ;
