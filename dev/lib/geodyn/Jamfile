@@ -9,15 +9,17 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary geodyn : 
-         EarthBody.cpp EarthOceanTide.cpp EarthPoleTide.cpp EarthSolidTide.cpp IERS.cpp ForceModelList.cpp KeplerOrbit.cpp ReferenceFrames.cpp RungeKuttaFehlberg.cpp 
-         Spacecraft.cpp UTCTime.cpp
+         AtmosphericDrag.cpp CiraExponentialDrag.cpp EarthBody.cpp EarthOceanTide.cpp EarthPoleTide.cpp EarthSolidTide.cpp IERS.cpp EGM96GravityModel.cpp ForceModelList.cpp 
+         HarrisPriesterDrag.cpp  JGM3GravityModel.cpp KeplerOrbit.cpp Msise00Drag.cpp MoonForce.cpp ReferenceFrames.cpp RelativityEffect.cpp RungeKuttaFehlberg.cpp 
+         Spacecraft.cpp SphericalHarmonicGravity.cpp UTCTime.cpp SolarRadiationPressure.cpp SunForce.cpp
       ;
 
    InstallFile $(INCDIR) :
-         ASConstant.hpp EarthBody.hpp EarthOceanTide.hpp EarthPoleTide.hpp EarthSolidTide.hpp EquationOfMotion.hpp ForceModel.hpp ForceModelList.hpp 
-         IERS.hpp Integrator.hpp 
-         KeplerOrbit.hpp ReferenceFrames.hpp RungeKuttaFehlberg.hpp
-         Spacecraft.hpp UTCTime.hpp
+         ASConstant.hpp AtmosphericDrag.hpp CiraExponentialDrag.hpp EarthBody.hpp EarthOceanTide.hpp EarthPoleTide.hpp EarthSolidTide.hpp EGM96GravityModel.hpp EquationOfMotion.hpp 
+         ForceModel.hpp ForceModelList.hpp HarrisPriesterDrag.hpp Msise00Drag.hpp
+         SphericalHarmonicGravity.hpp IERS.hpp Integrator.hpp JGM3GravityModel.hpp
+         KeplerOrbit.hpp MoonForce.hpp ReferenceFrames.hpp RelativityEffect.hpp RungeKuttaFehlberg.hpp SolarRadiationPressure.hpp
+         Spacecraft.hpp SunForce.hpp UTCTime.hpp
       ;
 }
- 
+  

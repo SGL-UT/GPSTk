@@ -40,6 +40,9 @@
 
 namespace gpstk
 {
+      /** @addtogroup GeoDynamics */
+      //@{
+
       /** This is an abstract base class for objects solving
        * a ODE system with integrator
        */
@@ -84,6 +87,8 @@ namespace gpstk
       double stepSize;
 
    }; // End of class 'Integrator'
+
+      // @}
 
 }  // End of namespace 'gpstk'
 
