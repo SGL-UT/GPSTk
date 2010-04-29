@@ -307,7 +307,7 @@ namespace gpstk
       struct ap_array aph;
 
       //* Get the J2000 to TOD transformation
-      Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc.asTT());
+      Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc);
 
       //* Transform r from J2000 to TOD
       Vector<double> r_tod = N*r;
@@ -2539,3 +2539,7 @@ namespace gpstk
 
 
 }  // End of namespace 'gpstk'
+
+
+
+

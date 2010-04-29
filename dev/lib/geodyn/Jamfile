@@ -11,7 +11,7 @@ else
    GPSBuildLibrary geodyn : 
          AtmosphericDrag.cpp CiraExponentialDrag.cpp EarthBody.cpp EarthOceanTide.cpp EarthPoleTide.cpp EarthSolidTide.cpp IERS.cpp EGM96GravityModel.cpp ForceModelList.cpp 
          HarrisPriesterDrag.cpp  JGM3GravityModel.cpp KeplerOrbit.cpp Msise00Drag.cpp MoonForce.cpp ReferenceFrames.cpp RelativityEffect.cpp RungeKuttaFehlberg.cpp 
-         Spacecraft.cpp SphericalHarmonicGravity.cpp UTCTime.cpp SolarRadiationPressure.cpp SunForce.cpp
+         Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
       ;
 
    InstallFile $(INCDIR) :

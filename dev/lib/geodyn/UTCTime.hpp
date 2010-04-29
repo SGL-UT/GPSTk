@@ -45,16 +45,16 @@ namespace gpstk
        *-------------------------------------------------------------------
        *
        *          -14s
-       *   -----------------> BDT(Compass Time)
-       *   |                                                                    
-       *   |         +19s             +32.184s           +rel.effects       
-       *  GPST ------------> TAI ----------------> TT -----------------> TDB   
-       *                        T |                                         
+       *    -----------------> BDT(Compass Time)
+       *    |                                                                    
+       *    |         +19s             +32.184s           +rel.effects       
+       *   GPST ------------> TAI ----------------> TT -----------------> TDB   
+       *                      T |                                         
        *           -(UT1-TAI) | |    -leap seconds                          
        *   UT1 ---------------| |--------------------> UTC                
        *    |                                                              
        *    |   earth rotation                                            
-       *      ---------------------> GAST                                   
+       *    ---------------------> GAST                                   
        *                                                                    
        */
    class UTCTime : public DayTime
@@ -240,7 +240,7 @@ namespace gpstk
 
    // @}
 
-}  // End of 'namespace gpstk'
+}  // End of namespace 'gpstk'
 
 #endif  // GPSTK_UTC_TIME_HPP
 

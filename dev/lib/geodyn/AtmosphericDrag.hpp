@@ -68,7 +68,7 @@ namespace gpstk
           * @param v Velocity vector
           * @return Atmospheric density in kg/m^3
           */
-      virtual double computeDensity(UTCTime t, EarthBody& ref, Vector<double> r,Vector<double> v) = 0;
+      virtual double computeDensity(UTCTime t, EarthBody& rb, Vector<double> r,Vector<double> v) = 0;
       
 
          /// Return force model name

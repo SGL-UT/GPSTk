@@ -106,9 +106,9 @@ namespace gpstk
 
       /// line 2
       int    NWAV;   // number of lines to skip
-      int      NTOT;   // number of data lines
-      int      NMX;      // max degree
-      int      MMX;     // max order 
+      int    NTOT;   // number of data lines
+      int    NMX;      // max degree
+      int    MMX;     // max order 
       /// line 4
       double RRE;
       double RHOW;

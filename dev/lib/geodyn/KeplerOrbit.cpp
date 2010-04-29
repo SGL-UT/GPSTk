@@ -742,9 +742,13 @@ namespace gpstk
 
       cout<<phi<<endl;
       */
-      
-      
-   }
+  
+   }	// End of method 'KeplerOrbit::test()'
 
 
-}
+}	// End of namespace 'gpstk'
+
+
+
+
+
