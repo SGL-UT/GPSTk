@@ -39,6 +39,14 @@
 *   new launch and disposal.  This is a sore point, but there appears to be
 *   no easy way around it. 
 *
+*   Note: The data in the module is derived from several sources and there 
+*   are some issues of interpretation.  
+*    - The USNO website ftp://tycho.usno.navy.mil/pub/gps/gpsb2.txt contains
+*      a very helpful history
+*    - This class only attempts to track the relationship between PRN ID and 
+*      NAVSTAR numbers.  There's no guarantee a SV was operationally, broadcasting,
+*      or healthy.  
+*
 *  MEMBER METHODS
 *     SVNumXRef( ); - Constructor.  Works from a fixed table that is compiled
 *                     into the code.
