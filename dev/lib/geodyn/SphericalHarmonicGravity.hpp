@@ -91,18 +91,21 @@ namespace gpstk
           */
       virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
-         
+
+      SphericalHarmonicGravity& setDesiredDegree(const int& n, const int& m)
+      { desiredDegree = n; desiredOrder = m; return (*this); }
+
 
       /// Methods to enable earth tide correction
 
-      void enableSolidTide(bool b = true)
-      { correctSolidTide = b; }
+      SphericalHarmonicGravity& enableSolidTide(bool b = true)
+      { correctSolidTide = b; return (*this);}
 
-      void enableOceanTide(bool b = true)
-      { correctOceanTide = b; }
+      SphericalHarmonicGravity& enableOceanTide(bool b = true)
+      { correctOceanTide = b; return (*this);}
       
-      void enablePoleTide(bool b = true)
-      { correctPoleTide = b; }
+      SphericalHarmonicGravity& enablePoleTide(bool b = true)
+      { correctPoleTide = b; return (*this);}
 
    protected:
 

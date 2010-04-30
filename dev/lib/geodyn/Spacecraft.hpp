@@ -91,28 +91,58 @@ namespace gpstk
          /// Method to get SC sensitivity matrix 6*np
       Matrix<double> getSensitivityMatrix();
 
-         /// Methods to handle SC physical parameters
-      double getReflectCoeff(){return reflectCoeff;}
-      void setReflectCoeff(double Cr){reflectCoeff = Cr;}
 
-      double getDragCoeff(){return dragCoeff;}
-      void setDragCoeff(double Cd){dragCoeff = Cd;}
+         // Methods to handle SC physical parameters
       
-      double getDragArea(){return crossArea;}
-      void setDragArea(double satArea){crossArea = satArea;}
-      
-      double getSRPArea(){return crossArea;}
-      void setSRPArea(double satArea){crossArea = satArea;}
-      
-      double getDryMass(){return dryMass;}
-      void setDryMass(double satMass){dryMass = satMass;}
-      
-      std::string Name()
+      std::string getName()
       { return scName; }
+
+
+      Spacecraft& setName(std::string satName)
+      { scName = satName; return (*this);}
+
+
+      double getReflectCoeff()
+      { return reflectCoeff; }
+
+
+      Spacecraft& setReflectCoeff(double Cr)
+      { reflectCoeff = Cr; return (*this); }
+
+      double getDragCoeff()
+      { return dragCoeff; }
+
+
+      Spacecraft& setDragCoeff(double Cd)
+      { dragCoeff = Cd; return (*this);}
+      
+
+      double getDragArea()
+      { return crossArea; }
+
+      Spacecraft& setDragArea(double satArea)
+      { crossArea = satArea; return (*this);}
+      
+
+      double getSRPArea()
+      { return crossArea; }
+
+
+      Spacecraft& setSRPArea(double satArea)
+      { crossArea = satArea; return (*this);}
+      
+
+      double getDryMass()
+      {return dryMass;}
+
+
+      Spacecraft& setDryMass(double satMass)
+      { dryMass = satMass; return (*this);}
+      
+
 
          /// some basic test
       void test();
-
 
 
    protected:
