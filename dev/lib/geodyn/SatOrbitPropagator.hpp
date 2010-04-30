@@ -120,7 +120,7 @@ namespace gpstk
 
          /// set step size of the integrator
       SatOrbitPropagator& setStepSize(double step_size = 10.0)
-      { pIntegrator->setStepSize(step_size); return (*this);}
+      { pIntegrator->setStepSize(step_size); return (*this); }
 
          /**set init state
           * @param utc0   init epoch
@@ -150,14 +150,15 @@ namespace gpstk
 
          /// return the current epoch
       UTCTime getCurTime()
-      { return (pOrbit->getRefEpoch() + curT);}
+      { UTCTime utc = pOrbit->getRefEpoch(); utc += curT; return utc;}
 
          /// return the current state
       Vector<double> getCurState()
       { return curState;}
 
          /// get numble of force model parameters
-      int getNP(){return (curState.size() - 42) / 6;}
+      int getNP()
+      { return (curState.size() - 42) / 6; }
 
          /// write curT curState to a file
       void writeToFile(ostream& s);
@@ -197,63 +198,64 @@ namespace gpstk
       * dv_dv0   3*3
       * dv_dp0   3*np
       */
-      void setState(gpstk::Vector<double> state);
+      void setState(Vector<double> state);
 
-      /* set reference epoch
-      */
-      void setRefEpoch(UTCTime utc){pOrbit->setRefEpoch(utc);}
+         /// set reference epoch
+      void setRefEpoch(UTCTime utc)
+      { pOrbit->setRefEpoch(utc); }
 
-      /* update phiMatrix sMatrix and rvState from curState
-      */
+         /// update phiMatrix sMatrix and rvState from curState
       void updateMatrix();
 
-      /// ode solver default is RungeKutta78
+         /// Pointer to an ode solver default is RungeKutta78
       Integrator*   pIntegrator;
-      /// Equation Of Motion
+
+         /// Pointer to the Equation Of Motion of a satellite
       SatOrbit*   pOrbit;
 
    private:
+
          /// The default integrator is RKF78
       RungeKuttaFehlberg rkfIntegrator;
 
          /// The default orbit is kepler orbit
       SatOrbit   defaultOrbit;
             
-      // current time
+         /// current time since reference epoch
       double curT;         
 
-         /* current state
-         * r      3
-         * v      3
-         * dr_dr0   3*3
-         * dr_dv0   3*3
-         * dr_dp0   3*np
-         * dv_dr0   3*3
-         * dv_dv0   3*3
-         * dv_dp0   3*np
-         */
+         /// current state
+         // r      3
+         // v      3
+         // dr_dr0   3*3
+         // dr_dv0   3*3
+         // dr_dp0   3*np
+         // dv_dr0   3*3
+         // dv_dv0   3*3
+         // dv_dp0   3*np
       Vector<double> curState;         // 42+6*np
       
-      /// state transition matrix
+         /// the position and velocity
+      Vector<double>   rvVector;      // 6
+
+         /// state transition matrix
       Matrix<double> phiMatrix;      // 6*6
       
          /// the sensitivity matrix 
       Matrix<double> sMatrix;         // 6*np
       
-         /// the position and velocity
-      Vector<double>   rvVector;      // 6
-
 
       std::set<ForceModel::ForceModelType> setFMT;
 
    }; // End of class 'SatOrbitPropagator'
    
-   /**
-   * Stream output for OrbitPropagator objects.  Typically used for debugging.
-   * @param s stream to append formatted DayTime to.
-   * @param t DayTime to append to stream  s.
-   * @return reference to  s.
-   */
+
+      /**
+       * Stream output for OrbitPropagator objects.  Typically used for debugging.
+       * @param s stream to append formatted DayTime to.
+       * @param t DayTime to append to stream  s.
+       * @return reference to  s.
+       */
    ostream& operator<<(ostream& s,SatOrbitPropagator& op);
 
       // @}

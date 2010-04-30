@@ -1,3 +1,4 @@
+#pragma ident "$Id: $"
 
 /**
  * @file SatOrbit.cpp
@@ -89,7 +90,8 @@ namespace gpstk
       // inport the state vector to sc
       sc.setStateVector(y);
 
-      UTCTime utc = utc0 + t;
+      UTCTime utc = utc0;
+      utc += t;
       return forceList.getDerivatives(utc, earthBody, sc);
    }
 
