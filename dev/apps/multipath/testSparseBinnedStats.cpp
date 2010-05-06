@@ -34,18 +34,24 @@ using namespace ValarrayUtils;
 
 int main(void)
 {
-   try 
+   try
    {
-      
-      double mpSrc[]= { 0.9, -1.6, 1.8, -.5,
-                        1.0,  1.1, -.5, -.3,
-                       .3,   -.25, 0.4, .05  };
+
+      double mpSrc[]=
+      {
+         0.9, -1.6, 1.8, -.5,
+         1.0,  1.1, -.5, -.3,
+         .3,   -.25, 0.4, .05
+      };
 
       valarray<double> mpVals(mpSrc,12);
 
-      double elSrc[]= {   5,   6,   7,    8, 
-                         11,  30,  34,   42,
-                         50,  60,  70,   80  };
+      double elSrc[]=
+      {
+         5,   6,   7,    8,
+         11,  30,  34,   42,
+         50,  60,  70,   80
+      };
 
       valarray<double> elVals(elSrc,12);
 
@@ -70,14 +76,12 @@ int main(void)
       }
       cout << "Total points used: " << mstats.usedCount << endl;
       cout << "         rejected: " << mstats.rejectedCount << endl;
-      
+
    }
    catch (Exception& e)
    {
       cerr << e << endl;
    }
-   
+
    return 0;
 }
-
-   

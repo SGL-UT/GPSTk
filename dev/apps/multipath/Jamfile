@@ -1,7 +1,7 @@
 SubDir TOP apps multipath ;
 
-# GPSLinkLibraries mpsolve mpsim : gpstk rxio geomatics ;
-GPSLinkLibraries mpsolve : gpstk rxio geomatics ;
+# GPSLinkLibraries mpsolve mpsim : gpstk rxio geomatics vdraw vplot ;
+GPSLinkLibraries mpsolve : gpstk rxio geomatics vdraw vplot ;
 BonkForte ; # bleah.
 
 GPSMain mpsolve : mpsolve.cpp ObsArray.cpp ;

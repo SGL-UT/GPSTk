@@ -29,9 +29,7 @@
 
 #include "ValarrayUtils.hpp"
 
-namespace gpstk::ValarrayUtils 
+namespace gpstk::ValarrayUtils
 {
-   
-} // end namespace gpstk::ValarrayUtils 
- 
 
+}                                // end namespace gpstk::ValarrayUtils

@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 /**
  * @file ValarrayUtils.cpp
@@ -22,11 +22,10 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-
 
 /**
  * @file ValarrayUtils.hpp
@@ -46,72 +45,69 @@
 
 namespace gpstk
 {
-      /**
-       * Provides basic operations available in matrix languages to
-       * the valarray template.
-       */
+   /**
+    * Provides basic operations available in matrix languages to
+    * the valarray template.
+    */
    namespace ValarrayUtils
    {
-         /** @defgroup valarrayutilsgroup Valarray Manipulation Tools */
-         //@{
+      /** @defgroup valarrayutilsgroup Valarray Manipulation Tools */
+      //@{
 
-         /// This is thrown instread of a std::exception when a
-         /// gpstk::ValarrayUtils function fails.
-         /// @ingroup exceptiongroup
+      /// This is thrown instread of a std::exception when a
+      /// gpstk::ValarrayUtils function fails.
+      /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(ValarrayException, Exception);
-         //@}
+      //@}
 
-      template<class T> std::ostream& operator<<(std::ostream& ostr, 
-                                                 const std::valarray<T>& x)
+      template<class T> std::ostream& operator<<(std::ostream& ostr,
+         const std::valarray<T>& x)
       {
-            for (size_t i=0; i<x.size(); i++)
+         for (size_t i=0; i<x.size(); i++)
             ostr << x[i] << " ";
-            return ostr;
-            // return copy(&x[0], &x[x.size()], std::ostream_iterator<T>(ostr));
+         return ostr;
+         // return copy(&x[0], &x[x.size()], std::ostream_iterator<T>(ostr));
       }
 
-      template<class T> std::ostream& operator<<(std::ostream& ostr, 
-                                                 const std::set<T>& x)
+      template<class T> std::ostream& operator<<(std::ostream& ostr,
+         const std::set<T>& x)
       {
          using namespace std;
          for (typename set<T>::const_iterator i = x.begin(); i!=x.end(); i++)
             ostr << *i << " ";
          return ostr;
-            // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
+         // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
       }
 
-      template<class T> std::ostream& operator<<(std::ostream& ostr, 
-                                                 const std::vector<T>& x)
+      template<class T> std::ostream& operator<<(std::ostream& ostr,
+         const std::vector<T>& x)
       {
          using namespace std;
          for (typename vector<T>::const_iterator i = x.begin(); i!=x.end(); i++)
             ostr << *i << " ";
          return ostr;
-            // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
+         // return copy(x.begin(), x.end(), std::ostream_iterator<T>(ostr));
       }
-      
+
       template<class T> std::set<T> unique(const std::valarray<T> & rhs)
       {
          using namespace std;
          int i;
-         
+
          valarray<T> newArray;
 
          set<T> newSet;
-                  
+
          for (i=0; i<rhs.size(); i++)
          {
-               //cout << rhs[i] << endl;
+            //cout << rhs[i] << endl;
             newSet.insert(rhs[i]);
          }
 
          return newSet;
       }
-  
-   } // namespace ValarrayUtils
 
-} // namespace gpstk
-#endif // GPSTK_VALARRAYUTILS_HPP
+   }                             // namespace ValarrayUtils
 
-
-
+}                                // namespace gpstk
+#endif                           // GPSTK_VALARRAYUTILS_HPP
