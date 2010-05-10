@@ -51,7 +51,7 @@ else
       SVNumXRef.cpp SVPCodeGen.cpp SatDataReader.cpp
       SimpleIURAWeight.cpp SimpleKalmanFilter.cpp SolidTides.cpp
       SourceID.cpp SpecialFunctions.cpp StudentDistribution.cpp
-      SunPosition.cpp SystemTime.cpp
+      SunPosition.cpp SuperKalmanFilter.cpp SystemTime.cpp
       TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp
       TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp
       VectorBase.cpp WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp
@@ -111,7 +111,7 @@ else
       SatDataReader.hpp SatID.hpp SimpleIURAWeight.hpp
       SimpleKalmanFilter.hpp SolidTides.hpp SolverBase.hpp
       SourceID.hpp SpecialFunctions.hpp Stats.hpp StringUtils.hpp
-      StudentDistribution.hpp SunPosition.hpp SystemTime.hpp
+      StudentDistribution.hpp SunPosition.hpp SuperKalmanFilter.hpp SystemTime.hpp
       TabularEphemerisStore.hpp TimeConstants.hpp TimeConverters.hpp
       TimeNamedFileStream.hpp TimeString.hpp TimeTag.hpp Triple.hpp
       TropModel.hpp TypeID.hpp UnixTime.hpp ValidType.hpp Vector.hpp
