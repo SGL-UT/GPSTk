@@ -117,8 +117,7 @@ namespace gpstk
       lcPrefit.body[TypeID::satPCenter]   = -1.0;
       lcPrefit.body[TypeID::tropoSlant]   = -1.0;
          // Coefficient for LC windUp is LC wavelenght/2*PI
-      lcPrefit.body[TypeID::windUp]       = -0.141876313121065 /TWO_PI;
-      //lcPrefit.body[TypeID::windUp]     = -0.1069533781421467/TWO_PI;
+      lcPrefit.body[TypeID::windUp]     = -0.1069533781421467/TWO_PI;
 
          // Definition to compute PI combination
       piCombination.header                = TypeID::PI;
