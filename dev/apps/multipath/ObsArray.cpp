@@ -37,6 +37,9 @@
 
 #include "ValarrayUtils.hpp"
 #include "PRSolution.hpp"
+#include "IonoModel.hpp"
+
+#include "ExtractPC.hpp"
 
 #include "RinexObsStream.hpp"
 #include "RinexObsHeader.hpp"
@@ -117,13 +120,57 @@ namespace gpstk
          {
             antPos=antennaPos;
             dR=dataRate;
+
+            if (antennaPos.mag()<1) // A reported antenna position near the
+                                    // center of the Earth. REcompute.
+	    {
+	       PRSolution prSolver;
+               prSolver.RMSLimit = 400;
+               GGTropModel ggTropModel; 
+	       ggTropModel.setWeather(20., 1000., 50.); // A default model for sea level.
+
+               RinexObsStream tempObsStream(obsList[i]);
+               RinexObsData   tempObsData;
+                
+               tempObsStream >> tempObsData;
+
+               ExtractPC ifObs;
+               ifObs.getData(tempObsData);
+
+	       std::vector<SatID> vsats(ifObs.availableSV.size());
+               for (size_t ii=0; ii<ifObs.availableSV.size(); ++ii)
+	       {
+                  vsats[ii]=ifObs.availableSV[ii];
+	       }
+
+	       std::vector<double> vranges(ifObs.obsData.size());
+               for (size_t ii=0; ii<ifObs.obsData.size(); ++ii)
+	       {
+                  vranges[ii]=ifObs.obsData[ii];
+	       }
+
+
+               prSolver.RAIMCompute(tempObsData.time,
+				    vsats, vranges, 
+				    ephStore, &ggTropModel);
+
+               antPos[0] = prSolver.Solution[0];
+               antPos[1] = prSolver.Solution[1];
+               antPos[2] = prSolver.Solution[2];
+	       /*
+	       std::cout << "Position resolved at " 
+			 << antPos[0] << ", " << antPos[1] << ", "
+		         << antPos[2] << std::endl;		
+	       */ 
+
+	    }
          }
 
          if (i!=0)
          {
-            if ( fabs(antPos[0] - antennaPos[0]) > 1 && fabs(antPos[1] - antennaPos[1]) > 1 && fabs(antPos[2] - antennaPos[2]) > 1)
+	   if ( (antPos - antennaPos).mag()>100.)
             {
-               ObsArrayException oae("Antenna position variation exceeds tolerance");
+               ObsArrayException oae("Antenna position approximation varies too much between input files.");
                GPSTK_THROW(oae);
             }
 

@@ -37,6 +37,10 @@
 #include "MatrixFunctors.hpp"
 #include "MatrixOperators.hpp"
 
+// For robust statistics
+#include "RobustStats.hpp"
+#include "Stats.hpp"
+
 // I added these
 #include "SVGImage.hpp"
 #include "SurfacePlot.hpp"
@@ -234,8 +238,10 @@ int main(int argc, char *argv[])
 
       }
 
-      if (verbose)
-         cout << "Procesing " << obsList.size() << " files." << endl;
+      if ((verbose) && !numeric)
+      {
+	cout << endl << "Using this combination for multipath: " <<mp_formula<<endl;
+      }
 
       if (!fileoption)
       {
@@ -284,7 +290,54 @@ int main(int argc, char *argv[])
          }
 
          oa.edit(removePts);
-                                 // TODO: ObsArray should maintain its own pass list.
+
+         // Now only long passes remain.
+         // Next use robust stats to remove cycle slips\
+         // Start with a clean slate
+         removePts.resize(oa.lli.size());
+         removePts = false;
+
+         allpasses = unique(oa.pass);
+
+         // Adjust remaining passes to the median.
+         if ((!numeric)&& (verbose))
+         {
+	   cout << "Computing the median of each pass and adjusting the pass by that value." << endl;
+	 }
+         
+         for (set<long>::iterator i=allpasses.begin() ; 
+	      i!=allpasses.end() ; i++)
+         {
+ 	    // Storage for robust statistics
+	    double median, mad; 
+            
+            valarray<bool> thisPass = (oa.pass==*i);
+            valarray<double> s = oa.observation[thisPass];
+            QSort(&s[0],s.size());
+            mad = Robust::MedianAbsoluteDeviation(&s[0],s.size(),median);
+            
+            valarray<double> mpVals = oa.observation[thisPass];
+            mpVals -= median;
+            oa.observation[thisPass]=mpVals;
+         }
+
+         // Now recompute the MAD
+         double allMedian, allMad;
+         valarray<double> allmp(oa.observation);
+         QSort(&allmp[0], allmp.size());
+         allMad = Robust::MedianAbsoluteDeviation(&allmp[0],
+						  allmp.size(),allMedian);
+         if ((!numeric)&& (verbose))
+         {
+	   cout << "Median Absolute Deviation (MAD) for all retained points is " << allMad << " meters." << endl;
+	 }
+	 
+         double mMAD = 5.0;
+         removePts = removePts || (oa.observation > allMedian+mMAD*allMad)
+	   || (oa.observation < allMedian-mMAD*allMad);
+
+         oa.edit(removePts);
+
          allpasses = unique(oa.pass);
          size_t editedLength = oa.getNumSatEpochs();
 
@@ -323,7 +376,6 @@ int main(int argc, char *argv[])
          {
             if (verbose)
             {
-               cout <<"Using this combination for multipath: " <<mp_formula<<endl;
                cout << "Data collection interval is " << setprecision(3)
                   << oa.interval << " seconds";
                if (oa.intervalInferred)
