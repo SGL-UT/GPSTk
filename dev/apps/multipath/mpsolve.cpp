@@ -200,42 +200,39 @@ int main(int argc, char *argv[])
             beginningYear = StringUtils::word(temp,1,',');
             endingDay = StringUtils::word(temp,2,',');
             endingYear = StringUtils::word(temp,3,',');
-         }
+        
+            int beginDOY = StringUtils::asInt(beginningDay);
+            int beginY = StringUtils::asInt(beginningYear);
+            int endDOY = StringUtils::asInt(endingDay);
+            int endY = StringUtils::asInt(endingYear);
 
-         int beginDOY,
-            beginY,
-            endDOY,
-            endY;
+            DayTime firstDay = DayTime::BEGINNING_OF_TIME;
+            DayTime lastDay = DayTime::END_OF_TIME;
+            firstDay.setYDoy(beginY, beginDOY);
+            lastDay.setYDoy(endY, endDOY);
 
-         beginDOY = StringUtils::asInt(beginningDay);
-         beginY = StringUtils::asInt(beginningYear);
-         endDOY = StringUtils::asInt(endingDay);
-         endY = StringUtils::asInt(endingYear);
-
-         DayTime firstDay = DayTime::BEGINNING_OF_TIME;
-         DayTime lastDay = DayTime::END_OF_TIME;
-         firstDay.setYDoy(beginY, beginDOY);
-         lastDay.setYDoy(endY, endDOY);
-
-         // The program won't run without an obsFileOption , don't need to check
-         if (obsFileOption.getCount()>0)
-         {
-            for (int i=0 ; i<obsFileOption.getCount() ; i++)
+            // The program won't run without an obsFileOption , don't need to check
+            if (obsFileOption.getCount()>0)
             {
-               FileHunter fhobs(obsFileOption.getValue()[i]);
-               obsList = fhobs.find(firstDay, lastDay, FileSpec::ascending);
-            }
-         }
+               for (int i=0 ; i<obsFileOption.getCount() ; i++)
+               {
+                  FileHunter fhobs(obsFileOption.getValue()[i]);
+                  vector<string> obsListNew = fhobs.find(firstDay, lastDay, FileSpec::ascending);
+                  obsList.insert(obsList.end(), obsListNew.begin(), obsListNew.end());
 
-         if (navFileOption.getCount()>0)
-         {
-            for (int i=0 ; i<navFileOption.getCount() ; i++)
+               }
+            }
+
+            if (navFileOption.getCount()>0)
             {
-               FileHunter fhnav(navFileOption.getValue()[i]);
-               navList = fhnav.find(firstDay, lastDay, FileSpec::ascending);
+               for (int i=0 ; i<navFileOption.getCount() ; i++)
+               {
+                  FileHunter fhnav(navFileOption.getValue()[i]);
+                  vector<string> navListNew = fhnav.find(firstDay, lastDay, FileSpec::ascending);
+                  navList.insert(navList.end(),navListNew.begin(), navListNew.end());
+               }
             }
-         }
-
+	 }
       }
 
       if ((verbose) && !numeric)
