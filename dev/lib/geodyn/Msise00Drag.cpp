@@ -310,7 +310,7 @@ namespace gpstk
       Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc);
 
       //* Transform r from J2000 to TOD
-      Vector<double> r_tod = N*r;
+      Vector<double> r_tod = N * r;
 
 
       Matrix<double> eci2ecef = ReferenceFrames::J2kToECEFMatrix(utc);
@@ -320,11 +320,11 @@ namespace gpstk
       Position geoidPos(r_ecef(0),r_ecef(1),r_ecef(3),Position::Cartesian);
       double alt = geoidPos.getAltitude() / 1000.0;    //* [km]
 
-      if (alt > 1000) 
+      if (alt > 1000.0) 
       {
          string msg("Msise00Drag only valid from 0 to 1000 km");
          Exception e(msg);
-         GPSTK_THROW(e);
+         //GPSTK_THROW(e);
       }
       
       //double dist2sun = norm(ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Sun))*1000.0;
@@ -353,7 +353,7 @@ namespace gpstk
       input.f107 = f107_in;
       input.ap = this->ap_opt;    //14.924291;//13.853964381; //???
 
-      if(alt > 500)
+      if(alt > 500.0)
       {
          gtd7d(&input, &flags, &output);
       }else

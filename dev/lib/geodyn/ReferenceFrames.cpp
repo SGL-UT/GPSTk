@@ -391,6 +391,176 @@ namespace gpstk
 
    }  // End of method 'ReferenceFrames::ECEFPosVelToJ2k()'
  
+      /// Convert state from J2000 to ECEF.
+   Vector<double> ReferenceFrames::J2kStateToECEF(UTCTime UTC, Vector<double> j2kState)
+      throw(Exception)
+   {
+      
+      Matrix<double> POM, Theta, NP;
+      J2kToECEFMatrix(UTC,POM,Theta,NP);
+
+      // get Theta rates
+      double dera1 = earthRotationAngleRate1(UTC.asTT().MJD());
+      double dera2 = earthRotationAngleRate2(UTC.asTT().MJD());
+      double dera3 = earthRotationAngleRate3(UTC.asTT().MJD());
+
+      double cs1[3][3]={{0,1,0},{-1,0,0},{0,0,0}};		
+      double cs2[3][3]={{-1,0,0},{0,-1,0},{0,0,0}};	
+      double cs3[3][3]={{0,-1,0},{1,0,0},{0,0,0}};	
+
+      Matrix<double> s1(3,3,0.0),s2(3,3,0.0),s3(3,3,0.0);
+      s1 = &cs1[0][0];
+      s2 = &cs2[0][0];
+      s3 = &cs3[0][0];
+
+      // dTheta1 dTheta2 dTheta3
+      Matrix<double> dTheta1 = s1 * Theta * dera1;
+
+      Matrix<double> dTheta2 = s2 * Theta * ( dera1 * dera1) 
+                             + dTheta1*dera2;
+
+      Matrix<double> dTheta3 = s3 * Theta * ( dera1 * dera1 * dera1)
+                             + s2 * Theta * (2.0 * dera1 * dera2) 
+                             + dTheta2 * dera2
+                             + dTheta1 * dera3;
+
+      Vector<double> r(3,0.0),v(3,0.0),a(3,0.0),d(3,0.0);
+      for(int i=0; i<3; i++)
+      {
+         r(i) =  j2kState(i+0);
+         v(i) =  j2kState(i+3);
+         a(i) =  j2kState(i+6);
+         d(i) =  j2kState(i+9);
+      }
+
+      // tm1 = POM*Theta*NP
+      Matrix<double> tm1 = POM * Theta * NP;
+      // tm2 = POM*dTheta1*NP
+      Matrix<double> tm2 = POM * dTheta1 * NP;
+      // tm3 = POM*dTheta3*NP
+      Matrix<double> tm3 = POM * dTheta2 * NP;
+      // tm4 = POM*dTheta4*NP
+      Matrix<double> tm4 = POM * dTheta3 * NP;
+     
+      Vector<double> r2, v2, a2, d2;
+
+      // r = tm1*r
+      r2 = tm1 * r;
+      
+      // v = tm1*v+tm2*r
+      v2 = tm1 * v 
+         + tm2 * r;
+
+      // a = tm1*a+2.0*tm2*v+tm3*r
+      a2 = tm1 * a
+         + tm2 * v * 2.0
+         + tm3 * r;
+
+      // da = tm1*da+3.0*tm2*a+3.0*tm3*v+tm4*r
+      d2 = tm1 * d
+         + tm2 * a * 3.0
+         + tm3 * v * 3.0 
+         + tm4 * r;
+
+      Vector<double> state(12,0.0);
+      for(int i=0; i<3; i++)
+      {
+         state(i+0) = r2(i);
+         state(i+3) = v2(i);
+         state(i+6) = a2(i);
+         state(i+9) = d2(i);
+      }
+      
+      return state;
+
+   }  // End of method 'ReferenceFrames::J2kStateToECEF()'
+
+
+   /// Convert state from ECEF to J2000.
+   Vector<double> ReferenceFrames::ECEFStateToJ2k(UTCTime UTC, Vector<double> ecefState)
+      throw(Exception)
+   {
+
+      Matrix<double> POM, Theta, NP;
+      J2kToECEFMatrix(UTC,POM,Theta,NP);
+
+      // get Theta rates
+      double dera1 = earthRotationAngleRate1(UTC.asTT().MJD());
+      double dera2 = earthRotationAngleRate2(UTC.asTT().MJD());
+      double dera3 = earthRotationAngleRate3(UTC.asTT().MJD());
+
+      double cs1[3][3]={{0,1,0},{-1,0,0},{0,0,0}};		
+      double cs2[3][3]={{-1,0,0},{0,-1,0},{0,0,0}};	
+      double cs3[3][3]={{0,-1,0},{1,0,0},{0,0,0}};	
+
+      Matrix<double> s1(3,3,0.0),s2(3,3,0.0),s3(3,3,0.0);
+      s1 = &cs1[0][0];
+      s2 = &cs2[0][0];
+      s3 = &cs3[0][0];
+
+      // dTheta1 dTheta2 dTheta3
+      Matrix<double> dTheta1 = s1 * Theta * dera1;
+
+      Matrix<double> dTheta2 = s2 * Theta * ( dera1 * dera1) 
+         + dTheta1*dera2;
+
+      Matrix<double> dTheta3 = s3 * Theta * ( dera1 * dera1 * dera1)
+         + s2 * Theta * (2.0 * dera1 * dera2) 
+         + dTheta2 * dera2
+         + dTheta1 * dera3;
+
+      Vector<double> r(3,0.0),v(3,0.0),a(3,0.0),d(3,0.0);
+      for(int i=0; i<3; i++)
+      {
+         r(i) =  ecefState(i+0);
+         v(i) =  ecefState(i+3);
+         a(i) =  ecefState(i+6);
+         d(i) =  ecefState(i+9);
+      }
+
+      // tm1 = POM*Theta*NP
+      Matrix<double> tm1 = transpose( POM * Theta * NP );
+      // tm2 = POM*dTheta1*NP
+      Matrix<double> tm2 = transpose( POM * dTheta1 * NP );
+      // tm3 = POM*dTheta3*NP
+      Matrix<double> tm3 = transpose( POM * dTheta2 * NP );
+      // tm4 = POM*dTheta4*NP
+      Matrix<double> tm4 = transpose( POM * dTheta3 * NP );
+
+      Vector<double> r2, v2, a2, d2;
+
+      // r = tm1*r
+      r2 = tm1 * r;
+
+      // v = tm1*v+tm2*r
+      v2 = tm1 * v 
+         + tm2 * r;
+
+      // a = tm1*a+2.0*tm2*v+tm3*r
+      a2 = tm1 * a
+         + tm2 * v * 2.0
+         + tm3 * r;
+
+      // da = tm1*da+3.0*tm2*a+3.0*tm3*v+tm4*r
+      d2 = tm1 * d
+         + tm2 * a * 3.0
+         + tm3 * v * 3.0 
+         + tm4 * r;
+
+      Vector<double> state(12,0.0);
+      for(int i=0; i<3; i++)
+      {
+         state(i+0) = r2(i);
+         state(i+3) = v2(i);
+         state(i+6) = a2(i);
+         state(i+9) = d2(i);
+      }
+
+      return state;
+
+   }  // End of method 'ReferenceFrames::ECEFStateToJ2k()'
+
+
       // Get earth rotation angle
    double ReferenceFrames::earthRotationAngle(DayTime UT1)
    {

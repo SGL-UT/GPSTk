@@ -115,7 +115,9 @@ namespace gpstk
        * @param tau     Normalized time (sqrt(GM)*(t_a-t_b))
        * @return        Sector-triangle ratio
         */
-   double KeplerOrbit::FindEta (const Vector<double>& r_a, const Vector<double>& r_b, double tau)
+   double KeplerOrbit::FindEta (const Vector<double>& r_a, 
+                                const Vector<double>& r_b, 
+                                double tau)
    {
       // Constants
 
@@ -674,11 +676,14 @@ namespace gpstk
       
       double rv[6]={-6345.000e3, -3723.000e3,  -580.000e3, +2.169000e3, -9.266000e3, -1.079000e3 };
 
-      gpstk::Vector<double> Y0_ref(6);
-      Y0_ref=rv;
+      Vector<double> Y0_ref(6);
+      Y0_ref = rv;
 
-      gpstk::Vector<double> Kep = Elements ( GM_Earth, Y0_ref );
+      Vector<double> Kep = Elements ( GM_Earth, Y0_ref );
+      double ceta = KeplerOrbit::TrueAnomaly(Kep(5),Kep(1));
+      double ecc = KeplerOrbit::EccentricAnomaly(Kep(5),Kep(1));
 
+      cout<<fixed<<setprecision(6);
       cout << "Orbital elements:" << endl << endl
          << setprecision(3)
          << "  Semimajor axis   " << setw(10) << Kep(0)/1000.0 << " km" << endl
@@ -689,11 +694,14 @@ namespace gpstk
          << "  RA ascend. node  " << setw(10) << Kep(3)*Deg << " deg"<< endl
          << "  Arg. of perigee  " << setw(10) << Kep(4)*Deg << " deg"<< endl
          << "  Mean anomaly     " << setw(10) << Kep(5)*Deg << " deg"<< endl
+         << "  True anomaly     " << setw(10) << ceta*Deg << " deg"<< endl
+         << "  Eccentric anomaly" << setw(10) << ecc*Deg << " deg"<< endl
          << endl;
       
-      gpstk::Vector<double> Y_ref = State(GM_Earth,Kep,0);
-      gpstk::Vector<double> Y(6);
-      gpstk::Matrix<double> phi(6,6);
+
+      Vector<double> Y_ref = State(GM_Earth,Kep,0);
+      Vector<double> Y(6);
+      Matrix<double> phi(6,6);
 
       KeplerOrbit::TwoBody ( GM_Earth,Y0_ref,0, Y,phi); // State vector
       
@@ -712,36 +720,15 @@ namespace gpstk
          cout<<endl;
       }
 
-      gpstk::Vector<double> Y2(6),diff(6);
-      Y2=phi*Y0_ref;
+      Vector<double> Y2(6),diff(6);
+      Y2 = phi*Y0_ref;
 
-      diff=Y2-Y;
+      diff = Y2-Y;
       for(int i=0;i<6;i++)
       {
          cout<<diff(i)<<endl;
       }
-      /*
       
-      gpstk::Vector<double> RV=State(GM_Earth,Kep,1.0);
-      
-      gpstk::Vector<double> y_out(6,0.0);
-      gpstk::Matrix<double> phi(6,6);
-      TwoBody(GM_Earth,Y0_ref,1.0,y_out,phi);
-
-      gpstk::Vector<double> rv0=y+phi*y;
-
-      cout<< Kep<<endl;
-   //   cout<<RV<<endl;
-      cout<<setw(12)<<setprecision(6);
-      gpstk::Vector<double> diff = y_out-RV;
-      gpstk::Vector<double> diff2 = rv0-RV;
-      
-      cout<<diff<<endl;
-
-      cout<<diff2<<endl;
-
-      cout<<phi<<endl;
-      */
   
    }	// End of method 'KeplerOrbit::test()'
 

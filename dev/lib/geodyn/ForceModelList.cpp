@@ -36,9 +36,9 @@ namespace gpstk
 
    ForceModelList::ForceModelList()
    {
-      setFMT.insert(ForceModel::Cd);
-      setFMT.insert(ForceModel::Cr);
-
+      //setFMT.insert(ForceModel::Cd);
+      //setFMT.insert(ForceModel::Cr);
+      setFMT.clear();
       clear();
    }
 
@@ -129,7 +129,7 @@ namespace gpstk
              |                          |
       dphi = | da_dr0   da_dv0   da_dp0 |
              |                          |
-             | 0         0         0      |
+             | 0         0         0    |
              |                          |
 
       da_dr0 = da_dr*dr_dr0 + da_dv*dv_dr0
@@ -159,13 +159,13 @@ namespace gpstk
          {
             dy(6+i*3+j) = dphi(i,j);            // dv_dr0
             dy(15+i*3+j) = dphi(i,j+3);         // dv_dv0
-            dy(24+3*np+i*3+j) = dphi(i+3,j);      // da_dr0
-            dy(33+3*np+i*3+j) = dphi(i+3,j+3);   // da_dv0   
+            dy(24+3*np+i*3+j) = dphi(i+3,j);    // da_dr0
+            dy(33+3*np+i*3+j) = dphi(i+3,j+3);  // da_dv0   
          }
          for(int k=0;k<np;k++)
          {
             dy(24+i*np+k) = dphi(i,i*np+k);         // dv_dp0
-            dy(42+3*np+i*np+k) = dphi(i+3,i*np+k);   // da_dp0
+            dy(42+3*np+i*np+k) = dphi(i+3,i*np+k);  // da_dp0
          }
       }
 
@@ -173,6 +173,24 @@ namespace gpstk
 
    }  // End of method 'ForceModelList::getDerivatives()'
 
+
+   void ForceModelList::printForceModel(std::ostream& s)
+   {
+      // a counter
+      int i(1);
+
+      for(list<ForceModel*>::iterator it = forceList.begin();
+         it != forceList.end();
+         ++it)
+      {
+         s << setw(3) << i << " "
+           << (*it)->forceIndex()<<" "
+           << (*it)->modelName()<<endl;
+
+         i++;
+      }
+
+   }  // End of method 'ForceModelList::printForceModel()'
 
    void ForceModelList::setForceModelType(std::set<ForceModel::ForceModelType> fmt)
    {
@@ -184,7 +202,9 @@ namespace gpstk
          setFMT.insert(*it);
       }
 
-   }
+   }  // End of method ''
+
+
 
 }  // End of namespace 'gpstk'
 

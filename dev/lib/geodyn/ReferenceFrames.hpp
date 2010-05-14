@@ -159,6 +159,13 @@ namespace gpstk
       static Vector<double> ECEFPosVelToJ2k(UTCTime UTC, Vector<double> ecefPosVel)
          throw(Exception);
 
+         /// Convert state from J2000 to ECEF.
+      static Vector<double> J2kStateToECEF(UTCTime UTC, Vector<double> j2kState)
+         throw(Exception);
+
+         /// Convert state from ECEF to J2000.
+      static Vector<double> ECEFStateToJ2k(UTCTime UTC, Vector<double> ecefState)
+         throw(Exception);
 
          /**
           * COMPUTE DOODSON'S FUNDAMENTAL ARGUMENTS (BETA)

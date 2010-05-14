@@ -44,9 +44,16 @@ namespace gpstk
    double IERS::UT1mUTC(double mjdUTC)
       throw (InvalidRequest)
    {
-      DayTime utc(mjdUTC);
-      EarthOrientation eop = eopStore.getEOP(utc);
-      return eop.UT1mUTC;
+      try
+      {
+         DayTime utc(mjdUTC);
+         EarthOrientation eop = eopStore.getEOP(utc);
+         return eop.UT1mUTC;
+      }
+      catch (...)
+      {
+         return 0.0;
+      }
    }
 
 
@@ -54,9 +61,17 @@ namespace gpstk
    double IERS::xPole(double mjdUTC)
       throw (InvalidRequest)
    {
-      DayTime utc(mjdUTC);
-      EarthOrientation eop = eopStore.getEOP(utc);
-      return eop.xp;
+      try
+      {
+         DayTime utc(mjdUTC);
+         EarthOrientation eop = eopStore.getEOP(utc);
+         return eop.xp;
+      }
+      catch (...)
+      {
+      	return 0.0;
+      }
+      
    }
 
 
@@ -64,9 +79,16 @@ namespace gpstk
    double IERS::yPole(double mjdUTC)
       throw (InvalidRequest)
    {
-      DayTime utc(mjdUTC);
-      EarthOrientation eop = eopStore.getEOP(utc);
-      return eop.yp;
+      try
+      {
+         DayTime utc(mjdUTC);
+         EarthOrientation eop = eopStore.getEOP(utc);
+         return eop.yp;
+      }
+      catch (...)
+      {
+         return 0.0;
+      }
    }
 
 

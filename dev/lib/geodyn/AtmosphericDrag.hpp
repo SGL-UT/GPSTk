@@ -56,7 +56,8 @@ namespace gpstk
    public:
 
          /// Default constructor
-      AtmosphericDrag() {};
+      AtmosphericDrag() : dailyF107(150.0), averageF107(150.0), dailyKp(3.0) 
+      {};
 
          /// Default destructor
       virtual ~AtmosphericDrag() {};
@@ -72,14 +73,24 @@ namespace gpstk
       
 
          /// Return force model name
-      virtual std::string modelName()
+      virtual std::string modelName() const
       {return "AtmosphericDrag";}
 
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_DRAG; }
        
          /// this is the real one
       virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
+      virtual void setSpaceData(double dayF107,double aveF107, double dayKp)
+      { dailyF107 = dayF107; averageF107 = aveF107; dailyKp = dayKp; }
+
+
    protected:
+      double dailyF107;
+      double averageF107;
+      double dailyKp;
 
          /// dadcd
       Vector<double> dadcd;

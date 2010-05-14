@@ -31,6 +31,8 @@
 
 #include "SunForce.hpp"
 #include "ASConstant.hpp"
+#include "DayTime.hpp"
+#include "IERS.hpp"
 #include "ReferenceFrames.hpp"
 
 namespace gpstk
@@ -49,6 +51,12 @@ namespace gpstk
        */
    void SunForce::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
    {
+      /* Oliver P69 and P248
+       * a = GM*( (s-r)/norm(s-r)^3 - s/norm(s)^3 )
+       *
+       * da/dr = -GM*( I/norm(r-s)^3 - 3(r-s)transpose(r-s)/norm(r-s)^5)
+       */
+
       Vector<double> r_sun = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Sun);
 
       r_sun = r_sun * 1000.0;                          // from km to m
@@ -95,6 +103,21 @@ namespace gpstk
       
    }  // End of method 'SunForce::doCompute()'
 
+
+   void SunForce::test()
+   {
+      //IERS::loadSTKFile("InputData\\EOP-v1.1.txt");
+      ReferenceFrames::setJPLEphFile("InputData\\DE405\\jplde405");
+
+      DayTime time(2000,1,1,0,0,0.0);
+      double mjd = time.MJD();
+
+      Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::Sun);
+
+      cout << posSun << endl;
+
+      int a =0;
+   }
 
 }  // End of namespace 'gpstk'
 

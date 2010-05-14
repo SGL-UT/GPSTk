@@ -144,14 +144,13 @@ namespace gpstk
    {
       UTCTime utc(mjdUtc);
           
-      //Matrix<double> E = ReferenceSystem::c2tMatrix(utc,xp,yp);
       Matrix<double> E = ReferenceFrames::J2kToECEFMatrix(utc);
       
       Vector<double> moonReci = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::Moon)*1000.0;
       Vector<double> sunReci = ReferenceFrames::getJ2kPosition(utc.asTDB(),SolarSystem::Sun)*1000.0;
 
-      Vector<double> moonR = E*moonReci;         // in ecef m
-      Vector<double> sunR = E*sunReci;            // in ecef m
+      Vector<double> moonR = E * moonReci;         // in ecef m
+      Vector<double> sunR = E * sunReci;           // in ecef m
       
       Position moonP(moonR(0),moonR(1),moonR(2));
       Position sunP(sunR(0),sunR(1),sunR(2));
@@ -186,18 +185,18 @@ namespace gpstk
       3 2 0.093 ?ก่ ?ก่ ?ก่ 
       3 3 0.094 ?ก่ ?ก่ ?ก่
       */
-      complex<double> k[10] =      /* Anelastic Earth*/
+      complex<double> k[10] =      // Anelastic Earth
       { 
-         complex<double >(0.30190, 0.0),         // 20
+         complex<double >(0.30190, 0.0),          // 20
          complex<double >(0.29830,-0.00144),      // 21
          complex<double >(0.30102,-0.00130),      // 22
-         complex<double >(0.093, 0.0),         // 30
-         complex<double >(0.093, 0.0),         // 31
-         complex<double >(0.093, 0.0),         // 32
-         complex<double >(0.094, 0.0),         // 33
-         complex<double >(-0.00089, 0.0),      // k+ 20
-         complex<double >(-0.00080, 0.0),      // k+ 21
-         complex<double >(-0.00057, 0.0)         // k+ 22
+         complex<double >(0.093, 0.0),            // 30
+         complex<double >(0.093, 0.0),            // 31
+         complex<double >(0.093, 0.0),            // 32
+         complex<double >(0.094, 0.0),            // 33
+         complex<double >(-0.00089, 0.0),         // k+ 20
+         complex<double >(-0.00080, 0.0),         // k+ 21
+         complex<double >(-0.00057, 0.0)          // k+ 22
       };
 
       complex<double> res[7];
@@ -209,7 +208,7 @@ namespace gpstk
       {
          for(int m=0;m<=n;m++)
          {
-            int index = n * n - 2 * n + m;            //index in the returning value array
+            int index = n * n - 2 * n + m;          //index in the returning value array
             
             double Nnm = normFactor( n, m );        //normalization coefficents of degree n and order m
 
@@ -239,7 +238,7 @@ namespace gpstk
       for(int n = 0; n <= 2; n ++ )
       {
          int index   = 2 * 2 - 2 * 2 + n;                     // liuwk            
-         complex<double> c_temp   = k[n+7 ] * res[ index ];           // liuwk
+         complex<double> c_temp   = k[n+7 ] * res[ index ];   // liuwk
          dC[7+n] = c_temp.real() / 5.0;
          dS[7+n] =-c_temp.imag() / 5.0;
       }

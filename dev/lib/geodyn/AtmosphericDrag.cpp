@@ -64,7 +64,9 @@ namespace gpstk
       // this is the real one
    void AtmosphericDrag::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
    {
-      double omega_e = rb.getSpinRate(utc);
+      // To consist with STK
+      double omega_e = 7.292115E-05;  // IERS 1996 conventions
+      //double omega_e = rb.getSpinRate(utc);
 
       Vector<double> r = sc.R();   // satellite position in m
       Vector<double> v = sc.V();   // satellite velocity in m/s
@@ -78,6 +80,9 @@ namespace gpstk
 
       // compute the atmospheric density
       double rho = computeDensity(utc, rb, r, v);   // [kg/m^3]
+
+      // debuging...
+      //rho  = 6.3097802844338E-12;
       
       // compute the relative velocity vector and magnitude
       Vector<double> we(3,0.0);
@@ -184,7 +189,6 @@ namespace gpstk
       this->da_dcd(2,0) = dadcd(2);
 
    }  // End of method 'AtmosphericDrag::doCompute()'
-
 
 }  // End of namespace 'gpstk'
 

@@ -49,12 +49,6 @@ namespace gpstk
    class KeplerOrbit
    {
    public:
-         /// Default constructor
-      KeplerOrbit();
-
-         /// Default destructor
-      ~KeplerOrbit();
-
    
          /**Computes the satellite state vector from osculating Keplerian 
           * elements for elliptic orbits.
@@ -93,7 +87,6 @@ namespace gpstk
       static Vector<double> Elements ( double GM, const Vector<double>& y );
       
       
-      
          /**Computes orbital elements from two given position vectors and 
           *associated times 
           * @param GM        Gravitational coefficient
@@ -125,12 +118,14 @@ namespace gpstk
       static void TwoBody ( double GM, const Vector<double>& Y0, double dt, 
          Vector<double>& Y, Matrix<double>& dYdY0 );
 
+
          /** Computes the eccentric anomaly for elliptic orbits
           * @param M    Mean anomaly in [rad]
           * @param e    Eccentricity of the orbit [0,1]
           * @return     Eccentric anomaly in [rad]
           */
       static double EccentricAnomaly (double M, double e);
+
 
          /** Computes the true anomaly for elliptic orbits
           * @param M    Mean anomaly in [rad]
@@ -163,7 +158,12 @@ namespace gpstk
       static void test();
 
    protected:
+         
+         /// Default constructor
+      KeplerOrbit(){};
 
+         /// Default destructor
+      ~KeplerOrbit(){};
 
          /**Computes the sector-triangle ratio from two position vectors and 
           * the intermediate time 
@@ -172,7 +172,9 @@ namespace gpstk
           * @param tau     Normalized time (sqrt(GM)*(t_a-t_b))
           * @return        Sector-triangle ratio
           */
-      static double FindEta (const Vector<double>& r_a, const Vector<double>& r_b, double tau);
+      static double FindEta (const Vector<double>& r_a, 
+                             const Vector<double>& r_b, 
+                             double tau);
 
 
       

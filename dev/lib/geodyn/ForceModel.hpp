@@ -50,6 +50,27 @@ namespace gpstk
    {
    public:
 
+         /// To identify every force model and make sure one type of
+         /// force exist only one instance in the force model list.
+         /// class indexed with FMI_BASE and FMI_LIST can't be added
+         /// to the force model list
+      enum ForceModelIndex
+      {
+         FMI_BASE       = 1000,  ///< For This class 'ForceModel'
+
+         FMI_GEOEARTH,           ///< Geopotential of Earth
+         FMI_GEOSUN,             ///< Geopotential of Sun
+         FMI_GEOMOON,            ///< Geopotential of Moon 
+         FMI_DRAG,               ///< Atmospheric Drag
+         FMI_SRP,                ///< Solar Radiation Pressure
+         FMI_RELATIVE,           ///< Relative Effect   
+         FMT_EMPIRICAL,          ///< Empirical Force 
+         
+         //... add more here
+
+         FMI_LIST   = 2000,      ///< For class 'ForceModelList'
+      };
+
       enum ForceModelType
       {
          Cd,               // Coefficient of drag
@@ -84,9 +105,15 @@ namespace gpstk
          da_dcr.resize(3,1,0.0);
 
       }
-
+         
+         /// return the force model name
       virtual std::string modelName() const
       { return "ForceModel"; };
+
+
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_BASE; }
 
 
          /**
@@ -226,6 +253,7 @@ namespace gpstk
          /// Partial derivative of acceleration wrt Cr
       Matrix<double> da_dcr;      // 3*1
 
+      
 
    }; // End of 'class ForceModel'
 

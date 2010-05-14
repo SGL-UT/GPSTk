@@ -157,7 +157,7 @@ namespace gpstk
 
    }
 
-      /* Solid pole tide to normalized earth potential coefficients
+      /* Ocean pole tide to normalized earth potential coefficients
        *
        * @param mjdUtc UTC in MJD
        * @param dC     Correction to normalized coefficients dC

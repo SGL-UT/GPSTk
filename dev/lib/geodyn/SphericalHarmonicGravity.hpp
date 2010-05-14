@@ -107,6 +107,17 @@ namespace gpstk
       SphericalHarmonicGravity& enablePoleTide(bool b = true)
       { correctPoleTide = b; return (*this);}
 
+         /// Return force model name
+      virtual std::string modelName() const
+      {return "SphericalHarmonicGravity";}
+
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_GEOEARTH; }
+
+
+      virtual void test();
+
    protected:
 
          /** Evaluates the two harmonic functions V and W.
@@ -116,7 +127,7 @@ namespace gpstk
       void computeVW(Vector<double> r, Matrix<double> E);
 
          /// Add tides to coefficients 
-      void correctCSTides(UTCTime t,int solidFlag = 0, int oceanFlag = 0, int poleFlag = 0);
+      void correctCSTides(UTCTime t,bool solidFlag = false, bool oceanFlag = false, bool poleFlag = false);
 
          /// normalized coefficient
       double normFactor(int n, int m);

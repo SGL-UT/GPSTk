@@ -63,8 +63,12 @@ namespace gpstk
       virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
       
          /// Return force model name
-      virtual std::string modelName()
+      virtual std::string modelName() const
       { return "MoonForce"; }
+
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_GEOMOON; }
 
    protected:
 

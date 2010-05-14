@@ -48,7 +48,7 @@ namespace gpstk
        * http://uap-www.nrl.navy.mil/models_web/msis/msis_home.htm
        *
        * Dominik Brodowski implemented and maintains this C version. You can
-       * reach him at devel@brodo.de. See the file "DOCUMENTATION" for details,
+       * reach him at devel@brodo.de.
        * and check http://www.brodo.de/english/pub/nrlmsise/index.html for
        * updated releases of this package.
        */
@@ -58,8 +58,8 @@ namespace gpstk
 
          /// Default constructor
       Msise00Drag()
-         : ap_opt(15),     // daily ap
-           f107_opt(150)   // daily f107
+         : ap_opt(16),     // daily ap 14.918648166
+           f107_opt(92.5)   // daily f107
       { }
       
 

@@ -67,12 +67,33 @@ namespace gpstk
          */
       void addForce(ForceModel* pForce)
       { forceList.push_back(pForce); };
+
+
+         /**
+         * Remove a generic force to the list
+         * @param f Object which implements the ForceModel interface
+         */
+      void removeForce(ForceModel* pForce)
+      { forceList.remove(pForce); }
       
+
          /// interface implementation for the 'ForceModel'
       virtual Vector<double> getDerivatives(UTCTime utc, EarthBody& bref, Spacecraft& sc);
       
 
       void setForceModelType(std::set<ForceModel::ForceModelType> fmt);
+
+         /// return the force model name
+      virtual std::string modelName() const
+      { return "ForceModelList"; };
+
+
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_LIST; }
+
+         /// Show the exist force model
+      void printForceModel(std::ostream& s);
 
    protected:
 

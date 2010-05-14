@@ -56,11 +56,11 @@ namespace gpstk
       // UTC time
       double leapYear = (mjdUtc-ASConstant::MJD_J2000)/365.25;
       
-      double xpm = xp0+leapYear*dxp0;
-      double ypm = yp0+leapYear*dyp0;
+      double xpm = xp0 + leapYear * dxp0;
+      double ypm = yp0 + leapYear * dyp0;
       
       double xp = IERS::xPole(mjdUtc);   // in arcsec
-      double yp =IERS::yPole(mjdUtc);   // in arcsec
+      double yp = IERS::yPole(mjdUtc);    // in arcsec
       
       double m1 =  xp - xpm;
       double m2 = -yp + ypm;

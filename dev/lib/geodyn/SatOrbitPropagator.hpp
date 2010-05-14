@@ -160,6 +160,10 @@ namespace gpstk
       int getNP()
       { return (curState.size() - 42) / 6; }
 
+         /// get the pointer to the satellite orbit object
+      SatOrbit* getSatOrbitPointer()
+      { return pOrbit; }
+
          /// write curT curState to a file
       void writeToFile(ostream& s);
 
@@ -175,7 +179,6 @@ namespace gpstk
       /* For Testing and Debuging...
       */
       void test();
-      void test2();
 
    protected:
 
@@ -225,8 +228,8 @@ namespace gpstk
       double curT;         
 
          /// current state
-         // r      3
-         // v      3
+         // r        3
+         // v        3
          // dr_dr0   3*3
          // dr_dv0   3*3
          // dr_dp0   3*np
@@ -256,7 +259,7 @@ namespace gpstk
        * @param t DayTime to append to stream  s.
        * @return reference to  s.
        */
-   ostream& operator<<(ostream& s,SatOrbitPropagator& op);
+   ostream& operator<<(ostream& s, SatOrbitPropagator& op);
 
       // @}
 

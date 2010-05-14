@@ -40,7 +40,7 @@ namespace gpstk
 
       /** This class calculate Relativity Effect to earth satellite.
        *  
-       *  Reference: Jisheng Li, P109
+       *  Reference: 'IERS STANDARDS 1996' Jisheng Li, P109
        *
        *  This Model is checked on Sep 25th,2009, OK!!!
        */
@@ -53,12 +53,16 @@ namespace gpstk
          /// Default destructor
       virtual ~RelativityEffect(){}
       
-         // this is the real one
+         /// this is the real one
       virtual void doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc);
 
-         // Return force model name
-      virtual std::string modelName()
+         /// Return force model name
+      virtual std::string modelName() const
       { return "RelativityEffect"; }
+
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_RELATIVE; }
 
    protected:
 

@@ -29,6 +29,7 @@
 
 
 #include "HarrisPriesterDrag.hpp"
+#include "IERS.hpp"
 #include "ReferenceFrames.hpp"
 #include "StringUtils.hpp"
 #include <map>
@@ -666,7 +667,7 @@ namespace gpstk
 
       // Constructor
    HarrisPriesterDrag::HarrisPriesterDrag()
-      : woringF107(157.0)
+      : workingF107(157.0)
    {
       init();
    }
@@ -738,7 +739,9 @@ namespace gpstk
    {
       cout<<"testing HarrisPriesterDrag"<<endl;
       
-      
+      IERS::loadSTKFile("InputData\\EOP-v1.1.txt");
+      ReferenceFrames::setJPLEphFile("InputData\\DE405\\jplde405");
+
       Vector<double> r(3),v(3);
       r(0)=-4453783.586;
       r(1)=-5038203.756;
@@ -750,7 +753,21 @@ namespace gpstk
       
       EarthBody body;
       UTCTime t;
+      t.setMJD(53157.5);
+
       Spacecraft sc;
+      sc.setDragArea(20.0);
+      sc.setDragCoeff(2.2);
+      sc.setDryMass(1000.0);
+
+      Vector<double> rv(6,0.0);
+      Vector<double> p(0,0);
+      for(int i=0;i<3;i++)
+      {
+         rv(i) = r(i);
+         rv(i+3) = v(i);
+      }
+      sc.initStateVector(rv);
 
       double den = computeDensity(t,body,r,v);
       doCompute(t,body,sc);
@@ -761,12 +778,13 @@ namespace gpstk
       double ay = accl(1);
       double az = accl(2);
 
+      int a = 0;
    }
    
    void HarrisPriesterDrag::updateF107(double f107)
    {
-      woringF107 = f107;
-      workingDens = getDensityCoeficentsByF107(woringF107);
+      workingF107 = f107;
+      workingDens = getDensityCoeficentsByF107(workingF107);
    }
 
       /* Abstract class requires the subclass to compute the atmospheric density.
@@ -785,7 +803,20 @@ namespace gpstk
       
       // Get the J2000 to TOD transformation
       Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc);
+
+      // Debuging
+      /*
+      double nn[3][3]={ {0.9999994803, -0.0009350126, -0.0004063480},
+      {0.0009349995, 0.9999995624, -0.0000322758},
+      {0.0004063780, 0.0000318958, 0.9999999169}};
       
+      N = &nn[0][0];
+
+      
+      cout<<fixed<<setprecision(6);
+      //cout<<workingDens<<endl;
+      */
+
       // Transform r from J2000 to TOD
       Vector<double> r_tod = N * r;
 
@@ -794,20 +825,34 @@ namespace gpstk
       //* Satellite true altitude
       Position pos(r_tod(0), r_tod(1), r_tod(2), Position::Cartesian);
       double alt = pos.getAltitude()/1000.0;      // km
-
+      
       if ( alt >= upper_limit || alt <= lower_limit ) 
       { 
+         //return 0.0;
+
          string msg = "HarrisPriesterDrag is good for 100.0 km t0 2000.0 km"
             + string("the altitude you try is ")
             + StringUtils::asString(alt) + " km!";
          
          Exception e(msg);
          
-         GPSTK_THROW(e);
+         //GPSTK_THROW(e);
       }
 
       Vector<double> r_Sun = ReferenceFrames::getJ2kPosition( utc.asTDB(),
                                                               SolarSystem::Sun);
+
+      // get coefficients for this F107
+      //updateF107(std::pow(149597870.0/norm(r_Sun),2)*dailyF107);
+      updateF107(averageF107);
+
+      // Debuging
+      /*
+      alt = 360.01323431364915;
+      cout<<r_Sun<<endl;
+      double rr[3] = {4.87202078904524E7,	1.318213179104784E8,	5.71498291483194E7};
+      r_Sun = &rr[0];
+      */
 
       double ra_Sun  = std::atan2( r_Sun(1), r_Sun(0));
       double dec_Sun = std::atan2( r_Sun(2), 

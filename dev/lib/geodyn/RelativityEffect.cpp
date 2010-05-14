@@ -37,7 +37,7 @@ namespace gpstk
    // this is the real one
    void RelativityEffect::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
    {
-      /* reference: Jisheng,Li P110
+      /* reference: Jisheng,Li P110 Bernese5 GENREL.f
          a_rl = a_rl1 + a_rl2 + a_rl3
 
          a_rl2 and a_rl3 are ignored for precise orbit determination
@@ -112,6 +112,7 @@ namespace gpstk
       //da_GM da_dbeta da_gama
       
    }  // End of method 'RelativityEffect::doCompute()'
+
 
 }  // End of namespace 'gpstk'
 

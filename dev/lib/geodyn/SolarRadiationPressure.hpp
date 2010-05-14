@@ -78,8 +78,12 @@ namespace gpstk
       virtual void doCompute(UTCTime t, EarthBody& bRef, Spacecraft& sc);
 
          /// Return force model name
-      virtual std::string modelName()
+      virtual std::string modelName() const
       { return "SolarRadiationPressure"; }
+
+         /// return the force model index
+      virtual int forceIndex() const
+      { return FMI_SRP; }
 
          /**Compute the acceleration due to a solar radiation pressure.
           * @param r ECI position vector [m].

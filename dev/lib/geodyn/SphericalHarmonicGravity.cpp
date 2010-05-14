@@ -109,7 +109,7 @@ namespace gpstk
       }
 
       // Calculate tesseral and sectorial terms
-      for (int m = 1; m <= (desiredOrder + 2); m++) 
+      for (int m = 1; m <= (desiredOrder+2); m++) 
       {
          // Calculate V(m,m) .. V(n_max+1,m)
 
@@ -154,9 +154,9 @@ namespace gpstk
       // Calculate accelerations ax,ay,az
       double ax(0.0), ay(0.0), az(0.0);
 
-      for (int m = 0; m <= (desiredOrder+1); m++)
+      for (int m = 0; m <= desiredOrder; m++)
       {
-         for (int n = m; n <= (desiredDegree+1) ; n++)
+         for (int n = m; n <= desiredDegree; n++)
          {
             if (m==0) 
             {
@@ -225,9 +225,9 @@ namespace gpstk
 
       Matrix<double> out(3, 3, 0.0);
 
-      for (int m = 0; m <= (desiredOrder+1); m++) 
+      for (int m = 0; m <= desiredOrder; m++) 
       {
-         for (int n = m; n <= (desiredDegree+1); n++) 
+         for (int n = m; n <= desiredDegree; n++) 
          {
             double Fac = (n-m+2)*(n-m+1);
             
@@ -352,7 +352,7 @@ namespace gpstk
    }
 
    // Correct tides to coefficients 
-   void SphericalHarmonicGravity::correctCSTides(UTCTime t,int solidFlag,int oceanFlag,int poleFlag)
+   void SphericalHarmonicGravity::correctCSTides(UTCTime t,bool solidFlag,bool oceanFlag,bool poleFlag)
    {
       // copy CS
       Matrix<double> CS = gmData.unnormalizedCS;
@@ -371,7 +371,7 @@ namespace gpstk
       CS(0,2) += detS21;
       
       // correct solid tide
-      if(solidFlag!=0)
+      if(solidFlag)
       {
          // C20 C21 C22 C30 C31 C32 C33 C40 C41 C42
          double dc[10] = {0.0};
@@ -404,7 +404,7 @@ namespace gpstk
       }
       
       // correct ocean tide
-      if(oceanFlag!=0)
+      if(oceanFlag)
       {
          // C20 C21 C22 C30 C31 C32 C33 C40 C41 C42 C43 C44
          double dc[12] = {0.0};
@@ -443,7 +443,7 @@ namespace gpstk
       }
       
       // correct pole tide
-      if(poleFlag!=0)
+      if(poleFlag)
       {
          double dC21=0.0;
          double dS21=0.0;
@@ -478,6 +478,31 @@ namespace gpstk
 
    }  // End of method 'SphericalHarmonicGravity::normFactor())
 
+   void SphericalHarmonicGravity::test()
+   {
+
+      Vector<double> r(3,0.0);
+      Matrix<double> E(3,3,0.0);
+
+      r(0) = 6525.919e3;
+      r(1) = 1710.416e3;
+      r(2) = 2508.886e3;
+
+      E = ident<double>(3);
+
+      computeVW(r, E);         // update VM
+
+      // a
+      Vector<double> a = gravity(r, E);
+
+      Matrix<double> da_dr = gravityGradient(r, E);
+
+      cout<<setprecision(12)<<a<<endl;
+      cout<<da_dr<<endl;
+
+      int aaa = 0;
+
+   }  // End of method 'SphericalHarmonicGravity::test()'
 
 }  // End of namespace 'gpstk'
 

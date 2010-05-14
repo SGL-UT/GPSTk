@@ -111,7 +111,7 @@ namespace gpstk
 
 
       /// Earth gravity constant in m^3/s^2 from JGM3
-      static const double GM_Earth   = 3.986004415e14;//398600.4415e+9;    // [m^3/s^2]; JGM3
+      static const double GM_Earth   = 3.986004415e14;    // [m^3/s^2]; JGM3
 
       /// Earth gravity constant in m^3/s^2 from JGM3
       static const double GM_WGS84    = 398600.5e+9;    // [m^3/s^2]; JGM3

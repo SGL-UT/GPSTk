@@ -56,6 +56,7 @@ namespace gpstk
          /// Default destructor
       virtual ~HarrisPriesterDrag() {};
 
+         ///
       void test();
 
          /// Update woring F107(Mean Solar Flux)
@@ -89,11 +90,10 @@ namespace gpstk
       static const double ra_lag;       
     
          /// F10.7 cm Mean Solar Flux 157 by Default
-      double woringF107;
+      double workingF107;
 
          /// HP coefficient for the workingF107
       Matrix<double> workingDens;
-
 
          /// Object holding HP coefficients
       std::map<int, Matrix<double> > hpCoeficient;

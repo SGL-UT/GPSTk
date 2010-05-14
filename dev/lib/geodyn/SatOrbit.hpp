@@ -36,16 +36,10 @@
 #include "Spacecraft.hpp"
 #include "ForceModelList.hpp"
 
-#include "MoonForce.hpp"
+#include "SphericalHarmonicGravity.hpp"
 #include "SunForce.hpp"
-
-#include "JGM3GravityModel.hpp"
-#include "EGM96GravityModel.hpp"
-
-#include "HarrisPriesterDrag.hpp"
-#include "Msise00Drag.hpp"
-#include "CiraExponentialDrag.hpp"
-
+#include "MoonForce.hpp"
+#include "AtmosphericDrag.hpp"
 #include "SolarRadiationPressure.hpp"
 #include "RelativityEffect.hpp"
 
@@ -96,30 +90,72 @@ namespace gpstk
          bool poleTide;
 
          AtmosphericModel atmModel;
-      };
 
-      struct SpacecraftData
-      {
-         string   scName;         //< default is 'sc-test01'         
-         double   scMass;         //< default is 1000.0 kg
-         double   scArea;         //< default is 20 m^2
-         double   scAreaSRP;      //< for SRP
-         double   scCr;           //< 1.0 Coefficient of Reflectivity
-         double   scCd;           //< default is 2.0
+         // We'll allocate memory in the heap for some of the models are memory
+         // consuming
+         
+         SphericalHarmonicGravity* pGeoEarth;
+         
+         SunForce* pGeoSun;
+         
+         MoonForce* pGeoMoon;
+         
+         AtmosphericDrag* pAtmDrag;
+         
+         SolarRadiationPressure* pSolarPressure;
+         
+         RelativityEffect* pRelEffect;
+
+         double dailyF107;
+         double averageF107;
+         double dailyKp;
+
+         FMCData()
+         {
+            geoEarth = true;
+            geoSun = geoMoon = false;
+            atmDrag = false;
+            relEffect = false;
+            solarPressure = false;
+
+            grvModel = GM_JGM3;
+            grvDegree = 1;
+            grvOrder = 1;
+
+            solidTide = oceanTide = poleTide = false;
+
+            atmModel = AM_HarrisPriester;
+
+            pGeoEarth = NULL;
+            pGeoSun   = NULL;
+            pGeoMoon  = NULL;
+            pAtmDrag  = NULL;
+            pSolarPressure  = NULL;
+            pRelEffect      = NULL;
+
+            dailyF107 = 150.0;
+            averageF107 = 150.0;
+            dailyKp = 3.0;
+         }
       };
 
    public:
 
          /// Default constructor
-      SatOrbit()
-      { init(); }
+      SatOrbit() : fmlPrepared(false)
+      { reset(); }
 
          /// Default destructor
-      virtual ~SatOrbit(){}
+      virtual ~SatOrbit()
+      { deleteFMObjects(forceConfig); }
 
        
       virtual Vector<double> getDerivatives(const double&         t,
                                             const Vector<double>& y );
+
+         /// Restore the default setting
+      SatOrbit& reset()
+      {deleteFMObjects(forceConfig);fmlPrepared = false;init();return(*this);}
 
          /// set reference epoch
       SatOrbit& setRefEpoch(UTCTime utc)
@@ -129,16 +165,23 @@ namespace gpstk
       UTCTime getRefEpoch() const
       { return utc0; }
 
+
          /// set spacecraft physical parameters
       SatOrbit& setSpacecraftData(std::string name = "sc-test01",
                                   const double& mass = 1000.0,
                                   const double& area = 20.0,
                                   const double& areaSRP = 20.0,
                                   const double& Cr = 1.0,
-                                  const double& Cd = 2.0);
+                                  const double& Cd = 2.2);
 
+         /// set space data
+      SatOrbit& setSpaceData(double dayF107 = 150.0,
+                             double aveF107 = 150.0, 
+                             double dayKp = 3.0);
+      
 
          // Methods to config the orbit perturbation force models
+         // call 'reset()' before call these methods
 
       SatOrbit& enableGeopotential(SatOrbit::GravityModel model = SatOrbit::GM_JGM3,
                                    const int& maxDegree = 1,
@@ -156,26 +199,24 @@ namespace gpstk
                                       const bool& bdrag = false);
 
 
-      SatOrbit& enableSolarRadiationPressure(bool bsrp = false)
-      { forceConfig.solarPressure = bsrp; return (*this);}
+      SatOrbit& enableSolarRadiationPressure(bool bsrp = false);
 
 
-      SatOrbit& enableRelativeEffect(const bool& brel = false)
-      { forceConfig.relEffect = brel; return (*this);}
+      SatOrbit& enableRelativeEffect(const bool& brel = false);
+
 
          /// For POD , and it's will be improved later
       void setForceModelType(std::set<ForceModel::ForceModelType> fmt)
       { forceList.setForceModelType(fmt); }
 
+
    protected:
 
       virtual void init();
 
-      void updateForceModelConfiguration(const FMCData& fmc);
+      void createFMObjects(FMCData& fmc);
 
-
-      void updateSpacecraftData(const SpacecraftData& scd);
-
+      void deleteFMObjects(FMCData& fmc);
 
          /**
           * Adds a generic force to the list
@@ -189,36 +230,20 @@ namespace gpstk
          /// Spacecraft object
       Spacecraft sc;
 
-         /// Spacecraft physical parameter
-      SpacecraftData spacecraftConfig;
+      ///  Earth Body
+      EarthBody  earthBody;     
 
          /// Object holding force model consiguration
       FMCData forceConfig;
   
+         /// Flag indicate if the ForceModelList has been prepared
+         /// 'forceConfig' can't be change when 'fmlPrepared' is true
+      bool fmlPrepared;
 
-         ///  Earth Body
-      EarthBody  earthBody;         
-      
-        
          /// Force Model List
       ForceModelList forceList;
 
-   private:
-
-         // Objects force model besides earth force
-
-      MoonForce              moonForce;
-      SunForce               sunForce;
-
-      JGM3GravityModel       grvJGM3Force;
-      EGM96GravityModel      grvEGM96Firce;
-
-      HarrisPriesterDrag     dragHPForce;
-      Msise00Drag            dragMSISEForce;
-      CiraExponentialDrag    dragCiraForce;
-
-      SolarRadiationPressure srpForce;
-      RelativityEffect       relForce;
+         // Objected
 
    }; // End of class 'SatOrbit'
 

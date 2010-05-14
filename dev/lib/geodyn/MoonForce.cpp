@@ -49,7 +49,12 @@ namespace gpstk
       */
    void MoonForce::doCompute(UTCTime utc, EarthBody& rb, Spacecraft& sc)
    {
-   
+      /* Oliver P69 and P248
+       * a = GM*( (s-r)/norm(s-r)^3 - s/norm(s)^3 )
+       *
+       * da/dr = -GM*( I/norm(r-s)^3 - 3(r-s)transpose(r-s)/norm(r-s)^5)
+       */
+
       Vector<double> r_moon = ReferenceFrames::getJ2kPosition(utc.asTDB(), SolarSystem::Moon);
       
       r_moon = r_moon * 1000.0;         // from km to m
@@ -66,7 +71,7 @@ namespace gpstk
       Vector<double> temp2 = r_moon / scubed;   //  Rj/Rj^3
 
       Vector<double> sum = temp1 + temp2;
-      a = sum * (-mu);               // a
+      a = sum * (-mu);                          // a
 
       // da_dr
       da_dr.resize(3,3,0.0);
