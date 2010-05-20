@@ -223,7 +223,6 @@ namespace gpstk
    {
    try {
       if(dynamic_cast<NovatelStream*>(&ffs)) {
-
          NovatelStream& strm = dynamic_cast<NovatelStream&>(ffs);
 
          unsigned char *p0 = &buffer[0];
@@ -441,7 +440,7 @@ namespace gpstk
                      // ---------------------------------------
                      // read the data message, but don't overwrite the header
                      // first check against buffer overflow
-                  if(datasize-28 >= 1024 || datasize-28 < 0) {
+                  if(datasize > 65536 || datasize < 0) {
                      //FFStreamError fe("Read error - buffer overflow");
                      //GPSTK_THROW(fe);
                      failure = 1;
@@ -488,19 +487,18 @@ namespace gpstk
                      }
                      else failure = 2;
 
-                  }  // end if datasize-28 < buffersize
+                  }  // end if datasize+28 < buffersize
                }  // end if rectype != Unknown
 
                   // failure - either type unknown, buffer overflow or failed checksum
-               if(debug) {
-                  cout << "Failure - ";
-                  if(failure == 0) cout << "type unknown";
-                  else if(failure == 1) cout << "buffer overflow";
-                  else if(failure == 2) cout << "failed checksum";
-                  cout << " for recnum " << recnum
-                     << " with headersize " << headersize
-                     << " and message size " << datasize << endl;
-               }
+               cout << "Failure - ";
+               if(failure == 0) cout << "type unknown";
+               else if(failure == 1) cout << "buffer overflow";
+               else if(failure == 2) cout << "failed checksum";
+               cout << " for recnum " << recnum
+                  << " with headersize " << headersize
+                  << " and message size " << datasize << endl;
+               
                strm.seekg(filepos);
                datasize = headersize = 0;               // marks an invalid object
 

@@ -165,7 +165,8 @@ namespace gpstk
 
    private:
          /// private data members
-      unsigned char buffer[1024];   ///< buffer for raw data
+         /// header length(28) + data length(max 65536) = 65564
+      unsigned char buffer[65564];   ///< buffer for raw data
 
          /// Reference GPS week, for OEM2, where the nav records require a GPS week,
          /// but only the obs records have one, and then it is 10-bit.

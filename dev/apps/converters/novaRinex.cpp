@@ -212,7 +212,9 @@ int main(int argc, char **argv)
             if(novad.isOEM4()) bytesread += 4;      // CRC bytes
 
             if(novad.isObs() && novad.datasize > 4) {   // obs only, with data
-               rod = RinexObsData(novad);    // convert
+	       try{
+                   rod = RinexObsData(novad);    // convert
+	       }catch(Exception e){cout << "Malformed Novatel obs record" << endl;}
                if(rod.time < BegTime) continue;
                if(rod.time > EndTime) break;
                if(Debug) rod.dump(cout);     // dump
@@ -223,7 +225,9 @@ int main(int argc, char **argv)
                UpdateInformation(rod);
             }
             else if(novad.isNav()) {                                 // nav only
-               rnd = RinexNavData(novad);    // convert
+	       try{
+                   rnd = RinexNavData(novad);    // convert
+	       }catch(Exception e){cout << "Malformed Novatel nav record" << endl;}
                if(Debug) rnd.dump(cout);     // dump
                rnstr << rnd;                 // write out
                nnav++;
