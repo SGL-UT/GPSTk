@@ -139,7 +139,7 @@ void OrdClock::process()
       if (ordEpoch.clockOffset.is_valid())
       {
          double clk_mag = std::abs(ordEpoch.clockOffset);
-         if (clk_mag > 1e6 || clk_mag < 1e-5)
+         if (clk_mag > 1e7 || clk_mag < 1e-5)
             ordEpoch.wonky = true;
       }
       else

@@ -180,7 +180,8 @@ def main():
     plotClocks = True
 
     if clocks.size==0 or options.ordsOnly: plotClocks = False
-    if ((clocks.size==0 and options.clockDelta) and ords.size == 0 and warts.size == 0 and ocds.size == 0) or options.clocksOnly: plotOrds = False
+    if ((clocks.size==0 and options.clockDelta) and ords.size == 0 and warts.size == 0 and ocds.size == 0) or options.clocksOnly:
+        plotOrds = False
 
     axesCount=0;
     if plotOrds: axesCount+=1
@@ -398,23 +399,23 @@ def parse_time(words):
 
 
 def strip_lim(y, limit, warts=numpy.array([])):
+    d=numpy.append(y, warts)
+    if not len(d):
+        d=numpy.array((0))
     if not limit or limit == "ignore" or limit == "none":
-        if len(warts) > 0:
-            lim = (min([y.min(), warts.min()]), max([y.max(), warts.max()]))
-        else:
-            lim = (y.min(), y.max())
+        lim = (d.min(), d.max())
     elif limit[-1] == "%":
         fraction = float(limit[:-1])/100.0
-        drop = int(numpy.floor(0.5 * (1-fraction) * len(y)))
-        ds = numpy.sort(y.tolist() + warts.tolist())
+        drop = int(numpy.floor(0.5 * (1-fraction) * len(d)))
+        ds = numpy.sort(d)
         lim = (ds[drop], ds[-(drop+1)])
     elif limit[-1] == "s":
         mult = float(limit[:-1])
-        sigma = numpy.std(y.tolist() + warts.tolist()) * mult        
+        sigma = numpy.std(d) * mult        
         lim = (-sigma , sigma)
     else:
         lim = (-float(limit), float(limit))
-                       
+
     return lim;
 #
 
