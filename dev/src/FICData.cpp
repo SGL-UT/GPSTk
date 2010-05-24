@@ -483,6 +483,12 @@ namespace gpstk
       {
             // Output of SV almanac data
          timeDisplay( os, "Epoch time", (short) f[18], f[8], 0);
+	 os << "Health        0x";
+	 os.width(2);
+         os.fill('0');
+         os << hex << (short) f[11] << dec;
+	 os.fill(' ');
+	 os << "\n";
          os << "\n";
          os << "CLOCK\n";
          os.setf(ios::scientific, ios::floatfield);

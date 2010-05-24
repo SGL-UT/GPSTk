@@ -85,16 +85,12 @@ namespace gpstk
                      //  as well as any PRNs 1-32 that were selected.
 
                case 62:
-                  if (l.i[3] >= 51)
-                     return false;
                   return find(prnList.begin(), prnList.end(), l.i[3]) ==
                      prnList.end();
                   
                   break;
 
                case 162:
-                  if (l.i[0] >= 51)
-                     return false;
                   return find(prnList.begin(), prnList.end(), l.i[0]) ==
                      prnList.end();
                   break;
