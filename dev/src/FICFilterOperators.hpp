@@ -114,6 +114,7 @@ namespace gpstk
          : blockList(lst)
          {}
 
+      /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
             return find(blockList.begin(), blockList.end(), l.blockNum) ==
@@ -122,6 +123,50 @@ namespace gpstk
 
    private:
       std::list<long> blockList;
+   };
+
+   struct FICDataFilterStartTime :
+      public std::unary_function<gpstk::FICData, bool>
+   {
+   public:
+      FICDataFilterStartTime(const gpstk::DayTime start)
+         : stime(start)
+         {}
+
+      /// This should return true when the data is to be erased.
+      bool operator() (const gpstk::FICData& l) const
+         {
+            DayTime dt(0,0.0);
+            if(l.getTransmitTime(dt)) //if valid trasmit time
+              return dt <= stime;
+            else
+              return true; // exclude data if no transmit time
+         }
+
+   private:
+      gpstk::DayTime stime;
+   };
+
+   struct FICDataFilterEndTime :
+      public std::unary_function<gpstk::FICData, bool>
+   {
+   public:
+      FICDataFilterEndTime(const gpstk::DayTime end)
+         : etime(end)
+         {}
+
+      /// This should return true when the data is to be erased.
+      bool operator() (const gpstk::FICData& l) const
+         {
+            DayTime dt(0,0.0);
+            if(l.getTransmitTime(dt)) //if valid trasmit time
+              return dt >= etime;
+            else
+              return true; // exclude data if no transmit time
+         }
+
+   private:
+      gpstk::DayTime etime;
    };
 
       /// Finds all data that matches the given block numbers

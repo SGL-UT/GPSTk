@@ -58,6 +58,7 @@
 #include "FICBase.hpp"
 #include "EngEphemeris.hpp"
 #include "AlmOrbit.hpp"
+#include "DayTime.hpp"
 
 namespace gpstk
 {
@@ -115,6 +116,13 @@ namespace gpstk
           * subframes and quantities.
           */
       void prettyDump(std::ostream& os) const;
+
+         /**
+          * Sets the transmit time of the current block of data.
+          * @param dt (output) a daytime object containing the transmit time
+          * @return if the process was sucessful, return true, else false
+          */
+      bool getTransmitTime(DayTime& dt) const;
 
          /**  
           * Cast *this to an Engineering Ephemeiris Object.

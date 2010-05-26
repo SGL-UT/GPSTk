@@ -365,10 +365,14 @@ void NavDump::process()
    {
          // filter the data...  first by block number, then by PRN
       FileFilterFrame<FICStream, FICData> data(inputFileOption.getValue()[0]);
-      if (!blockFilterList.empty())
+      if (!blockFilterList.empty()) // block filter
          data.filter(FICDataFilterBlock(blockFilterList));
-      if (!prnFilterList.empty())
+      if (!prnFilterList.empty()) // prn filter
          data.filter(FICDataFilterPRN(prnFilterList));
+      if (startTime > DayTime(0,0.0)) // start time filter
+         data.filter(FICDataFilterStartTime(startTime));
+      if (endTime < DayTime::END_OF_TIME) // end time filter
+         data.filter(FICDataFilterEndTime(endTime));
       
       list<FICData>& ficlist = data.getData();
       list<FICData>::iterator itr = ficlist.begin();

@@ -207,6 +207,36 @@ namespace gpstk
       }
    }
 
+   bool FICData::getTransmitTime(DayTime& dt) const
+   {
+      short week;
+      double SOW;
+      switch (blockNum)
+      {
+         case 9:
+            week = (short) f[5];
+            SOW  = f[2];
+            break;
+         case 109:
+            week = i[0];
+            SOW  = ((i[3] & 0x3FFFFFFFL) >> 13) * 6;
+            break;
+         case 62:
+            week = i[5];
+            SOW  = i[1];
+            break;
+         case 162:
+            week = i[14];
+            SOW  = ((i[2] & 0x3FFFFFFFL) >> 13) * 6;
+            break;
+         default:
+            return false;
+            break;
+      }
+      dt.setGPSfullweek(week, SOW);
+      return true;
+   }
+
    void FICData::prettyDump9(ostream& os) const
    {
       short j;
