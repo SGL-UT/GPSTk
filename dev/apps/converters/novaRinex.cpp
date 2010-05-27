@@ -319,7 +319,8 @@ try {
    // observation header
    roh.version = 2.1;
    roh.fileType = "Observation";
-   roh.system = RinexSatID();
+   //Currently only supports GPS data.  
+   roh.system = RinexSatID(-1, RinexSatID::systemGPS);
    // use same format as writer in RinexObsHeader.cpp uses
       // old "%04Y/%02m/%02d %02H:%02M:%02S");
    roh.date = CurrEpoch.printf("%02m/%02d/%04Y %02H:%02M:%02S");
