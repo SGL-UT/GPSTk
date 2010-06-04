@@ -220,7 +220,7 @@ namespace gpstk
       bool operator() (const gpstk::FICData& l, 
                        const gpstk::FICData& r) const
          {
-            if ( (l.blockNum != 9) || (r.blockNum != 9) )
+            if ( (l.blockNum != 109) || (r.blockNum != 109) )
                return false;
 
                // sort by transmit time, prn
@@ -306,6 +306,8 @@ namespace gpstk
       bool operator() (const gpstk::FICData& l, 
                        const gpstk::FICData& r) const
          {
+            if ( (l.blockNum != 9) || (r.blockNum != 9) )
+               return false;
                // the unique criteria are PRN, week, IODC, AS/alert bits
             return ( (l.f[19] == r.f[19]) &&
                      (l.f[3] == r.f[3]) &&
@@ -324,6 +326,8 @@ namespace gpstk
       bool operator() (const gpstk::FICData& l, 
                        const gpstk::FICData& r) const
       {
+         if ( (l.blockNum != 109) || (r.blockNum != 109) )
+            return false;
             // the unique criteria are PRN, week, IODC, AS/alert bits
          return ( (l.i[1] == r.i[1]) &&
                   (l.i[0] == r.i[0]) &&

@@ -1,6 +1,5 @@
 #pragma ident "$Id$"
 
-
 /**
  * @file fic2rin.cpp Convert FIC files to RINEX.
  */
@@ -41,11 +40,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "FICStream.hpp"
 #include "FICHeader.hpp"
 #include "FICData.hpp"
@@ -54,6 +48,7 @@
 #include "FICFilterOperators.hpp"
 #include "RinexNavFilterOperators.hpp"
 #include "FileFilterFrame.hpp"
+#include <string>
 
 using namespace std;
 using namespace gpstk;
@@ -62,19 +57,22 @@ int main(int argc, char* argv[])
 {
    try
    {
-      if (argc != 3)
+      if ((argc != 3) && (argc != 4))
       {
          cout << "fic2rin" << endl
               << "  converts a binary FIC file to a Rinex Nav file" << endl
               << endl
               << "usage:" << endl
-              << "    fic2rin inputfile outputfile" << endl
+              << "    fic2rin inputfile outputfile [param]" << endl
               << endl
               << "where:" << endl
               << "    inputfile: an input binary FIC file name" << endl
-              << "    outputfile: an output Rinex Nav file name" << endl;
+              << "    outputfile: an output Rinex Nav file name" << endl
+              << "    param (optional): --9 (default) or --109 or --all," << endl
+              << "                      which FIC block numbers to use" << endl;
          return 0;
       }
+
       // What is up
       FileFilterFrame<FICStream, FICData> input(argv[1]);
       list<FICData> alist = input.getData();
@@ -98,12 +96,37 @@ int main(int argc, char* argv[])
 
          // filter the FIC data for block 9
       list<long> blockList;
-      blockList.push_back(9);
-      input.filter(FICDataFilterBlock(blockList));
-      input.sort(FICDataOperatorLessThanBlock9());
-      input.unique(FICDataUniqueBlock9());
-
-
+      if (argc == 4)
+      {
+        string parg(argv[3]);
+        if (parg == "--109")
+        {
+          blockList.push_back(109); //block 109
+          input.filter(FICDataFilterBlock(blockList));
+          input.sort(FICDataOperatorLessThanBlock109());
+          input.unique(FICDataUniqueBlock109());
+        }
+        else if (parg == "--all") //block 9 and block 109
+        {
+          blockList.push_back(9);
+          blockList.push_back(109);
+          input.filter(FICDataFilterBlock(blockList));
+        }
+        else
+        {
+          blockList.push_back(9); //default to block 9
+          input.filter(FICDataFilterBlock(blockList));
+          input.sort(FICDataOperatorLessThanBlock9());
+          input.unique(FICDataUniqueBlock9());
+        }
+      }
+      else
+      {
+        blockList.push_back(9); //default to block 9
+        input.filter(FICDataFilterBlock(blockList));
+        input.sort(FICDataOperatorLessThanBlock9());
+        input.unique(FICDataUniqueBlock9());
+      }
          // some hand waving for the data conversion
       list<RinexNavData> rndList;
       list<FICData>& ficList = input.getData();
@@ -112,7 +135,10 @@ int main(int argc, char* argv[])
       {
             // use TOE and transmit week number to determine time
          DayTime time;
-         time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
+         if( (*itr).blockNum == 9 ) // block 9
+            time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
+         else // block 109
+            time.setGPSfullweek(short((*itr).i[0]), (double)(((*itr).i[21] & 0x3FFFFFFFL)>>14)*16);
             // this station number is bogus, but it's unused so it should be ok
          EngEphemeris ee(*itr);
          rndList.push_back(RinexNavData(ee));
