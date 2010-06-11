@@ -1307,16 +1307,16 @@ try {
    for(i=1; i<fixed.size(); i++) {
       Baselines.push_back(fixed[0] + string("-") + fixed[i]);
       if(CI.Verbose)
-         oflog << " Compute baseline : " << Baselines[i] << endl;
+         oflog << " Compute baseline : " << Baselines.back() << endl;
       if(CI.Screen)
-         cout << " Compute baseline : " << Baselines[i] << endl;
+         cout << " Compute baseline : " << Baselines.back() << endl;
    }
    for(i=0; i<notfixed.size(); i++) {
       Baselines.push_back(fixed[0] + string("-") + notfixed[i]);
       if(CI.Verbose) 
-         oflog << " Compute baseline : " << Baselines[i] << endl;
+         oflog << " Compute baseline : " << Baselines.back() << endl;
       if(CI.Screen)
-         cout << " Compute baseline : " << Baselines[i] << endl;
+         cout << " Compute baseline : " << Baselines.back() << endl;
    }
 
       // check that baselines for output are all valid
