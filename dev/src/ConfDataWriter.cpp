@@ -49,13 +49,14 @@ namespace gpstk
       // written by this class. 
 	void ConfDataWriter::writeHeader()
 	{
-      
-		writeCommentLine("This is a configuration file written by ConfDataWriter, and it ");
+     /* 
+	   writeCommentLine("This is a configuration file written by ConfDataWriter, and it ");
       writeCommentLine("can be read by ConfDataReader.");
-		//writeCommentLine("YAN Wei,Dec,8th 2009");
+		writeCommentLine("YAN Wei,Dec,8th 2009");
 		writeCommentLine("Enjoy!");
 		writeCommentLine("");
 		writeSeparatorLine();
+		*/
       
 	}
 
