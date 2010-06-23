@@ -266,7 +266,10 @@ try {
                             << setprecision(2) << st.press << " mbars, "
                             << setprecision(1) << st.rhumid << "%" << endl;
 
-      st.pTropModel->setWeather(st.temp,st.press,st.rhumid);
+      // For any trop. model except NewB, use provided or assumed weather values.
+      // For NewB, interpolate weather data
+      if (st.TropType != string("NewB"))
+         st.pTropModel->setWeather(st.temp,st.press,st.rhumid);
       st.pTropModel->setReceiverHeight(st.pos.getHeight());
       st.pTropModel->setReceiverLatitude(st.pos.getGeodeticLatitude());
       st.pTropModel->setDayOfYear(int(FirstEpoch.DOYday()));
