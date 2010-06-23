@@ -57,7 +57,8 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string Version("4.7 12/12/08");
+string Version("4.7b 6/23/10");
+// 4.7b 6/23/10 Minor change so NewB trop. model works properly
 // 4.7 12/10/08 Fix empty buffers bug (131) in Timetable
 // 4.6 12/5/08  Remove clock jump code in ClockModel.cpp
 // 4.5 11/11/08 Fixed bug in EditRawDataBuffers.cpp
