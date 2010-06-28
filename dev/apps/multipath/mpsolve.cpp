@@ -86,6 +86,8 @@ int main(int argc, char *argv[])
       // Default minimum length for a pass for use solution
       double minPassLength = 300;
       double angInterval = 15;
+      double upperZeroMeanElevation = 15; 
+      
 
       CommandOptionNoArg helpOption('h',"help","Display argument list",false);
       CommandOptionNoArg verboseOption('v',"verbose",
@@ -111,6 +113,13 @@ int main(int argc, char *argv[])
          "Dual frequency multipath combination to use. Default is " +
          mp_formula,false);
       mpOption.setMaxCount(1);
+
+      CommandOptionWithAnyArg
+	uzOption('u',
+		 "upper",
+		 "Set the upper limit on elevations assumed to have a zero mean multipath. Units degrees. Default is " +  asString(upperZeroMeanElevation,1)+ " degrees",
+		 false);
+      uzOption.setMaxCount(1);
 
       CommandOptionWithAnyArg plotOption('p',"plot",
          "Creates a surface plot with azimuth and elevation bins. The number of azimuth bins and elevation bins must be entered. Value is number of azimuth bins and number of elevation bins. Ex.: -p 36,6",false);
@@ -180,6 +189,11 @@ int main(int argc, char *argv[])
       }
 
       oa.add(mp_formula);
+
+      if (uzOption.getCount()>0)
+      {
+	 upperZeroMeanElevation	= asDouble(uzOption.getValue()[0]);
+      }
 
       vector<string> obsList;
       vector<string> navList;
@@ -367,6 +381,12 @@ int main(int argc, char *argv[])
          {                       //  deginning dfm
             removeBiases(oa,verbose);
          }
+
+         // Use the mean of low elevation data as zero.
+         valarray<bool> lowObsMask = (oa.elevation <= upperZeroMeanElevation) && (oa.elevation >= 0.);
+         valarray<double> mpVals = oa.observation[lowObsMask];
+         double lowObsMean = mpVals.sum() / mpVals.size();
+         oa.observation -= lowObsMean;
 
          allpasses = unique(oa.pass);
          if (!numeric)
@@ -942,7 +962,7 @@ void removeBiases(ObsArray& oa, bool verbose)
    Vector<double> xhat(intindex);
    xhat=ynew.resize(colind);
 
-   cout << xhat << endl;
+   //cout << xhat << endl;
 
                                  // Creates an iterator to step through the list of passes
    set<long>::iterator k_itr=passList.begin();

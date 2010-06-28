@@ -45,6 +45,7 @@
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
 #include "FileUtils.hpp"
+#include "StringUtils.hpp"
 #include "ObsArray.hpp"
 
 namespace gpstk 
@@ -168,12 +169,6 @@ namespace gpstk
 
          if (i!=0)
          {
-	   if ( (antPos - antennaPos).mag()>100.)
-            {
-               ObsArrayException oae("Antenna position approximation varies too much between input files.");
-               GPSTK_THROW(oae);
-            }
-
             if ( dataRate != dR )
             {
                ObsArrayException oae("Data rate is not consistent among files");
