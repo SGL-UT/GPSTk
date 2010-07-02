@@ -624,6 +624,12 @@ bool numeric, bool elevation, bool plot)
 
 int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valarray<double>& obsLow, valarray<double>& elevHigh, valarray<double>& azimHigh, valarray<double>& obsHigh, long& idx_i, long& idx_j, double& eint, double& aint, long& intindex)
 {
+   // Segmentation fault will occur if findIntersection attempts to find an intersection with a pass of size equal to one since a minimum of two points are required to find an intersection
+   if (elevLow.size()<=1 || elevHigh.size()<=1)
+   {
+      return(0);
+   }
+
    //Variable initialization
    valarray<double> e1slice(2),
       a1slice(2),
@@ -635,9 +641,6 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
    double inv[2][2];
    long startLow=0,
       startHigh=0;
-
-   //startLow=0;
-   //startHigh=0;
 
                                  // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
    while (startLow<(elevLow.size()-1))
@@ -887,27 +890,31 @@ void removeBiases(ObsArray& oa, bool verbose)
                jazsub=jaz[slice(idx_j*stride,stride+1,1)],
                                  // Reassign the observations for the current higher pass
                jobssub=jobs[slice(idx_j*stride,stride+1,1)];
-            //cout << "i: " << i << "\nj: " << j << endl;
-            //cout << "idx_i*stride: " << idx_i*stride << "\nidx_j*stride: " << idx_j*stride << endl;
                                  // If an intersection is found again, enter
             if (findIntersection(ielsub, iazsub, iobssub, jelsub, jazsub, jobssub, idx_i, idx_j, eint, aint, intindex)==1)
             {
                if (abs(iobssub[idx_i]-jobssub[idx_j])<5)
                {
-
                   boolean[i]=1;
                   boolean[j]=1;
                   H[intindex][i]=1;
                   H[intindex][j]=-1;
-
                   y[intindex]=iobssub[idx_i]-jobssub[idx_j];
-
                   intindex++;
                }
             }                    // found again
          }                       // found first time
       }                          // inner search
    }                             // outer search
+
+   if (intindex==0) // If no intersections were found, the function must be exited. Otherwise, a segmentation fault will occur.
+   {
+      if (verbose)
+      {
+         cout << "This particular file contained no pass intersections; therefore, the DFM was unable to be performed." << endl;
+      }
+      return;
+   }
 
    Matrix<int> Hnew(intindex,passList.size());
    Vector<double> ynew(intindex);
