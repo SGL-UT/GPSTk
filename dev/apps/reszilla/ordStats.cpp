@@ -38,9 +38,10 @@
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
 #include "icd_200_constants.hpp"
-//#include "util.hpp"
 #include <iostream>
 #include <list>
+#include <algorithm>
+#include <vector>
 
 #include "OrdApp.hpp"
 #include "ElevationRange.hpp"
@@ -61,12 +62,12 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionWithAnyArg elevBinsOption, statsFileOption;
+   CommandOptionWithAnyArg elevBinsOption;
    CommandOptionWithNumberArg sigmaOption;
-   CommandOptionNoArg wonkyOption;
+   CommandOptionNoArg wonkyOption, statsOnlyOption;
    ElevationRangeList elr;
    double sigmaMult;
-   bool useWonky;
+   bool useWonky,statsOnly;
 
 };
 
@@ -82,11 +83,35 @@ OrdStats::OrdStats() throw()
                     " 20-60 -b 10-90\"."),
      sigmaOption('s',"sigma","Multiplier for sigma stripping used in "
                     "statistical computations. The default value is 6."),
-     statsFileOption('o',"statsFile","Filename for output of stats only. Stats"
-                    " will still be included at the end of the ord file."),
      wonkyOption('w',"wonky","Use wonky data in stats computation. The"
-                    " default is to not use such data.")
+                 " default is to not use such data."),
+     statsOnlyOption('\0',"stats-only","Only output stats to stdout.")
 {}
+
+
+
+double median(vector<double>& v)
+{
+   sort(v.begin(), v.end());
+   size_t N=v.size();
+   double m=v[N/2];
+   if (! (N & 1))
+      m = 0.5 * (m + v[N/2-1]);
+   return m;
+}
+
+// median absolute deviation
+double mad(vector<double>& v)
+{
+   if (v.size() < 2)
+      return 0;
+
+   double med = median(v);
+   for(int i=0; i < v.size(); i++)
+      v[i] = std::abs(v[i]- med);
+
+   return median(v);
+}
 
 //-----------------------------------------------------------------------------
 bool OrdStats::initialize(int argc, char *argv[]) throw()
@@ -121,17 +146,16 @@ void OrdStats::process()
       sigmaMult = asDouble(sigmaOption.getValue().front());
    else
       sigmaMult = 6;
-   std::ofstream extraOutput;   
-   if (statsFileOption.getCount())
-   {
-      const string fn = statsFileOption.getValue()[0];
-      extraOutput.open(fn.c_str(), ios::out);
-   }  
    
    if (wonkyOption.getCount())
       useWonky = true;
    else 
       useWonky = false;
+
+   if (statsOnlyOption.getCount())
+      statsOnly = true;
+   else
+      statsOnly = false;
       
    // initialize some counters
    float totalEpochCount = 0; // cnt of total # of epochs from input
@@ -150,15 +174,13 @@ void OrdStats::process()
         wonkyEpochCount++;
       totalEpochCount++;    
       oem[ordEpoch.time] = ordEpoch;
-      write(output, ordEpoch);   
+      if (!statsOnly) 
+         write(output, ordEpoch);   
    }   
    
    // output clock offsets greater than 1ms
-   output << "#  Time \t\t\tOffsets > 1ms\n"
-          << "# ------\t\t\t-------------\n";  
-   if (statsFileOption.getCount())
-      extraOutput << "Time \t\t\tOffsets > 1ms\n"
-          << "------\t\t\t-------------\n";         
+   output << "# Time    Offsets > 1ms" << endl
+          << "# ------  -------------" << endl;  
    bool foundBigOffset = false;
    // find offsets > 1ms and get one more wonky count
    ORDEpochMap::iterator iter;
@@ -172,13 +194,9 @@ void OrdStats::process()
         if (abs(offset) > (C_GPS_M/1000))
         {
           foundBigOffset = true;
-          output << ">b  " << iter->second.time << "\t\t"
+          output << ">b " << iter->second.time << " "
                 << setprecision(5) << setw(12) 
                 << iter->second.clockOffset << endl;
-          if (statsFileOption.getCount())
-            extraOutput << iter->second.time << "\t"
-                        << setprecision(5) << setw(12) 
-                        << iter->second.clockOffset << endl;
         }       
         
         ORDEpoch::ORDMap::const_iterator pi;
@@ -197,17 +215,12 @@ void OrdStats::process()
       }
    }  
    
-   
    if (!foundBigOffset)
-      output << "#     No offsets greater than 1 millisecond found.\n";
-   if ((!foundBigOffset) && statsFileOption.getCount())
-      extraOutput << "     No offsets greater than 1 millisecond found.\n";
+      output << "# No offsets greater than 1 millisecond found." << endl;
    
    // output wonky stats
-   output << "# wonky epochs   total   % wonky epochs   # wonky ords   total "
-          << "ords   % wonky ords\n"
-          << "# ------------   -----   --------------   ------------"
-          << "   ----------   ------------\n";   
+   output << "# wonky epochs   total   % wonky epochs   # wonky ords   total ords   % wonky ords\n"
+          << "# ------------   -----   --------------   ------------   ----------   ------------\n";   
    char b1[200];
         // the high # after % symbol is just kinda lazy formatting...
    sprintf(b1, ">w %8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f",
@@ -217,32 +230,10 @@ void OrdStats::process()
            (100*(wonkyORDCount/totalORDCount)));
    output << b1 << endl; 
               
-   if (statsFileOption.getCount())
-   {
-      extraOutput << "wonky epochs   total   % wonky epochs   # wonky ords"
-             << "   total ords   % wonky ords\n"
-             << "------------   -----   --------------   ------------  "
-             << " ----------   ------------\n";
-      sprintf(b1, "%8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f", 
-              wonkyEpochCount,
-              totalEpochCount, (100*(wonkyEpochCount/totalEpochCount)),
-              wonkyORDCount,totalORDCount, 
-              (100*(wonkyORDCount/totalORDCount)));
-      extraOutput << b1 << endl;    
-   }
    
    // print some header info   
-   output << "#  elev\t  stddev      mean      # obs   # bad"
-          << "   max    strip\n"
-          << "#  ----\t  ------      ----      -----   -----"
-          << "  -----   -----\n"; 
-   if (statsFileOption.getCount())
-   {
-      extraOutput << "elev\t  stddev    mean      # obs   # bad"
-                  << "   max    strip\n"
-                  << "----\t  ------    ----      -----   -----"
-                  << "  -----   -----\n";
-   }
+   output << "#  elev     mad        med       stddev      mean     # obs   # bad   max    strip" << endl
+          << "#  ----    -----      -----      ------      ----     -----   -----  -----   -----" << endl; 
    
    // compute stats for each elevation range
    for (ElevationRangeList::const_iterator i = elr.begin(); 
@@ -253,6 +244,8 @@ void OrdStats::process()
       float maxElevation = er.second;
       
       Stats<double> fp;
+      vector<double> v;
+      v.reserve(totalORDCount);
       ORDEpochMap::iterator iter;
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
@@ -264,7 +257,10 @@ void OrdStats::process()
             const float el = pi->second.getElevation();
             const double ord = pi->second.getORD();
             if (el>minElevation && el<maxElevation)
+            {
                fp.Add(ord);
+               v.push_back(ord);
+            }
          }
       } 
       double strip = sigmaMult * fp.StdDev();
@@ -296,20 +292,12 @@ void OrdStats::process()
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
       double max = std::max(std::abs(good.Maximum()),
                    std::abs(good.Minimum()));
-      sprintf(b1, ">r %2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
-           (int)minElevation, (int)maxElevation,
-           good.StdDev()/sqrt((float)2), good.Average(),
-           good.N(), bad.N(), max, strip);
-      output << b1 << endl; 
-      
-      if (statsFileOption.getCount())
-      {
-        sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
-               (int)minElevation, (int)maxElevation,
-               good.StdDev()/sqrt((float)2), good.Average(),
-               good.N(), bad.N(), max, strip);
-        extraOutput << b1 << endl;   
-      }
+      sprintf(b1, ">r %2d-%2d  %8.5f  %8.3f    %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+              (int)minElevation, (int)maxElevation,
+              mad(v), median(v),
+              good.StdDev()/sqrt((float)2), good.Average(),
+              good.N(), bad.N(), max, strip);
+      output << b1 << endl;
    } 
 }
 
