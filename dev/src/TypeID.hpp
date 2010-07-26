@@ -206,6 +206,15 @@ namespace gpstk
          satAX,     ///< Satellite acceleration, X component
          satAY,     ///< Satellite acceleration, Y component
          satAZ,     ///< Satellite acceleration, Z component
+         satJ2kX,   ///< Satellite position in J2000, X component
+         satJ2kY,   ///< Satellite position in J2000, Y component
+         satJ2kZ,   ///< Satellite position in J2000, Z component
+         satJ2kVX,  ///< Satellite velocity in J2000, X component
+         satJ2kVY,  ///< Satellite velocity in J2000, Y component
+         satJ2kVZ,  ///< Satellite velocity in J2000, Z component
+         satJ2kAX,  ///< Satellite acceleration in J2000, X component
+         satJ2kAY,  ///< Satellite acceleration in J2000, Y component
+         satJ2kAZ,  ///< Satellite acceleration in J2000, Z component
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
             // Cycle slip flags
@@ -302,6 +311,15 @@ namespace gpstk
          recALat,   ///< Receiver acceleration, Latitude component
          recALon,   ///< Receiver acceleration, Longitude component
          recAH,     ///< Receiver acceleration, Height component
+         recJ2kX,   ///< Receiver position in J2000, X component
+         recJ2kY,   ///< Receiver position in J2000, Y component
+         recJ2kZ,   ///< Receiver position in J2000, Z component
+         recJ2kVX,  ///< Receiver velocity in J2000, X component
+         recJ2kVY,  ///< Receiver velocity in J2000, Y component
+         recJ2kVZ,  ///< Receiver velocity in J2000, Z component
+         recJ2kAX,  ///< Receiver acceleration in J2000, X component
+         recJ2kAY,  ///< Receiver acceleration in J2000, Y component
+         recJ2kAZ,  ///< Receiver acceleration in J2000, Z component
          sigma,     ///< Standard deviation
          iura,      ///< Index User Range Accuracy
             // Handy dummy types for non-standard processing
