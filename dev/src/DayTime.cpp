@@ -1824,6 +1824,13 @@ namespace gpstk
                                   double ds)
       throw(DayTime::DayTimeException)
    {
+         // We preprocess the input to avoid overflow when
+         // convert from double to long. Wei Yan(2010-07-27)
+        
+      ldd += long(ds / MS_PER_DAY);
+      ds -= long(ds / MS_PER_DAY) * double(MS_PER_DAY);   
+ 
+
          // Use temp variables so that we don't modify our
          // data members until we know these values are good.
       long workingJday(jday), workingMsod(mSod) ;
