@@ -34,6 +34,20 @@
 namespace gpstk
 {
    using namespace std;
+
+      // get epoch list stored in this object
+   EpochDataStore::EpochList EpochDataStore::epochList()
+   {
+      EpochList epochList;
+      for(EpochData::const_iterator it = allData.begin();
+         it != allData.end();
+         ++it)
+      {
+         epochList.push_back(it->first);
+      }
+      
+      return epochList;
+   }
    
       /* Edit the dataset, removing data outside the indicated time
        *  interval.

@@ -52,7 +52,9 @@ namespace gpstk
    public:
 
          /// Handy type definition
+      typedef std::list<DayTime> EpochList;
       typedef std::map<DayTime, std::vector<double>> EpochData;
+      
 
          /// Default constructor
       EpochDataStore()
@@ -64,7 +66,9 @@ namespace gpstk
          /// Default deconstructor
       virtual ~EpochDataStore()
       { allData.clear(); }
-      
+         
+         /// get epoch list stored in this object
+      EpochList epochList();
       
          /// clear the all the data
       void clear()
@@ -101,6 +105,8 @@ namespace gpstk
       { return finalTime; };
 
 
+   protected:
+
          /// Add to the store directly
       void addData(const DayTime& time,const std::vector<double>& data)
          throw();
@@ -116,7 +122,7 @@ namespace gpstk
          throw(InvalidRequest);
 
 
-   protected:
+   
       
          /// Object holding all the data for the vehicle
       EpochData allData;
