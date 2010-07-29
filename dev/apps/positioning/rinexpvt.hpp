@@ -51,6 +51,9 @@
 
 #include "SP3EphemerisStore.hpp"
 
+#include "YumaAlmanacStore.hpp"
+#include "SEMAlmanacStore.hpp"
+
 #include "PRSolution.hpp"
 
 #include "IonoModel.hpp"
@@ -79,10 +82,12 @@ public:
 protected:
    virtual void process();
    
-
    XvtStore<SatID> *virtualEphStore;
    GPSEphemerisStore bcestore;
    SP3EphemerisStore sp3store;
+   SEMAlmanacStore   semStore;
+   YumaAlmanacStore  yumaStore;
+
    PRSolution prSolver;
    GGTropModel ggTropModel;
 
@@ -120,6 +125,8 @@ protected:
    CommandOptionWithAnyArg elevationMaskOption;
    CommandOptionWithAnyArg logfileOption;
    CommandOptionWithAnyArg rateOption;
+   CommandOptionWithAnyArg yumaOption;
+   CommandOptionWithAnyArg semOption;
 
    CommandOptionNoArg spsOption;
    CommandOptionNoArg ppsOption;

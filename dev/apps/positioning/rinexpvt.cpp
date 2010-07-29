@@ -113,6 +113,8 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
       obsOption('o', "obs-file", "RINEX Obs File.", true),
       navOption('n', "nav-file", "RINEX Nav File. Required for single frequency ionosphere correction.", false),
       peOption('p', "pe-file",  "SP3 Precise Ephemeris File. Repeat this for each input file.", false),
+      yumaOption('y',"yuma", "Yuma almanac file.", false),
+      semOption('a',"sem", "SEM almanac file.",false),
       metOption('m', "met-file", "RINEX Met File.", false),
       spsOption('s', "single-frequency", "Use only C1 (SPS)"),
       ppsOption('f', "dual-frequency", "Use only P1 and P2 (PPS)"),
@@ -128,6 +130,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
   {
     obsOption.setMaxCount(1);
     navOption.setMaxCount(1);
+    yumaOption.setMaxCount(1);
     metOption.setMaxCount(1);
     spsOption.setMaxCount(1);
     ppsOption.setMaxCount(1);
@@ -257,7 +260,7 @@ void RINEXPVTSolution::process()
 {
     IonoModel spsIonoCorr;
     
-    // Read nav file and store unique list of ephemeredes
+    // Read nav file and store unique list of ephemerides
     if (navOption.getCount()>0)
     {       
        RinexNavStream rnffs(navOption.getValue().front().c_str());
@@ -273,6 +276,29 @@ void RINEXPVTSolution::process()
        {
           logStream << "! Rinex nav file : " << navOption.getValue().front() << endl;
        }
+    }
+
+    // Read Yuma file and store its almanac.
+    if (yumaOption.getCount()>0)
+    {
+       yumaStore.loadFile(yumaOption.getValue().front().c_str());
+       if (logfileOn)
+       {
+          logStream << "! Yuma almanac file : " << yumaOption.getValue().front() << endl;
+       }
+       virtualEphStore = &yumaStore;
+    }
+
+
+    // Read SEM file and store its almanac.
+    if (semOption.getCount()>0)
+    {
+       semStore.loadFile(semOption.getValue().front().c_str());
+       if (logfileOn)
+       {
+          logStream << "! SEM almanac file : " << semOption.getValue().front() << endl;
+       }
+       virtualEphStore = &semStore;
     }
 
     //
