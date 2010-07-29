@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <string>
+#include <set>
 #include <map>
 #include "DayTime.hpp"
 
@@ -52,7 +53,7 @@ namespace gpstk
    public:
 
          /// Handy type definition
-      typedef std::list<DayTime> EpochList;
+      typedef std::set<DayTime> EpochList;
       typedef std::map<DayTime, std::vector<double>> EpochData;
       
 
@@ -69,6 +70,9 @@ namespace gpstk
          
          /// get epoch list stored in this object
       EpochList epochList();
+
+      bool isEpochExist(DayTime t)
+      { return (allData.find(t) != allData.end()) ? true : false ; }
       
          /// clear the all the data
       void clear()
@@ -118,7 +122,7 @@ namespace gpstk
           *  @throw InvalidRequest if the epoch on either side of t
           *     cannot be found in the map.
           */
-      std::vector<double> getData(DayTime& t) const
+      std::vector<double> getData(const DayTime& t) const
          throw(InvalidRequest);
 
 

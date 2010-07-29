@@ -63,7 +63,7 @@ namespace gpstk
        *  @throw InvalidRequest if the epoch on either side of t
        *     cannot be found in the map.
        */
-   PvtStore::Pvt PvtStore::getPvt(DayTime& t) const
+   PvtStore::Pvt PvtStore::getPvt(const DayTime& t) const
          throw(InvalidRequest)
    {
       std::vector<double> data = getData(t);

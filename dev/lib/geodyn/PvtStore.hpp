@@ -70,7 +70,7 @@ namespace gpstk
       } Pvt;
 
          /// Default constructor
-      PvtStore(std::string desc = "PvtData",ReferenceFrame frame = Unknown) 
+      PvtStore(std::string desc = "PvtData", ReferenceFrame frame = Unknown) 
          : dataDesc(desc), dataFrame(frame) 
       {}
 
@@ -87,7 +87,7 @@ namespace gpstk
           *  @throw InvalidRequest if the epoch on either side of t
           *     cannot be found in the map.
           */
-      Pvt getPvt(DayTime& t) const
+      Pvt getPvt(const DayTime& t) const
          throw(InvalidRequest);
 
          /// Get a string 

@@ -43,7 +43,7 @@ namespace gpstk
          it != allData.end();
          ++it)
       {
-         epochList.push_back(it->first);
+         epochList.insert(it->first);
       }
       
       return epochList;
@@ -133,7 +133,7 @@ namespace gpstk
        *  @throw InvalidRequest if the epoch on either side of t
        *     cannot be found in the map.
        */
-   std::vector<double> EpochDataStore::getData(DayTime& t) const
+   std::vector<double> EpochDataStore::getData(const DayTime& t) const
          throw(InvalidRequest)
    {
       // check the time
