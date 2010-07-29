@@ -29,7 +29,7 @@ else
       CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp
       ConfDataWriter.cpp DOP.cpp DayTime.cpp DCBDataReader.cpp ECEF.cpp
       EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp ENUUtil.cpp EphemerisRange.cpp
-      Epoch.cpp EpochDataStore.cpp Exception.cpp Expression.cpp FFData.cpp
+      Epoch.cpp Exception.cpp Expression.cpp FFData.cpp
       FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp
       FICData62.cpp FICData9.cpp FICHeader.cpp FileHunter.cpp
       FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
