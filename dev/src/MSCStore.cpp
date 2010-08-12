@@ -198,7 +198,7 @@ namespace gpstk
          
          MSCData rec;
          while(strm >> rec)
-	      {
+         {
 	         addMSC(rec);
          }	 
       }
