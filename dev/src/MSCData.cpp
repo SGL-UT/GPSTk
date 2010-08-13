@@ -134,23 +134,13 @@ namespace gpstk
          epoch = asDouble(currentLine.substr(19, 7));
          frac = modf(epoch, &intg);
          doy = (short)(frac * SEC_YEAR / gpstk::DayTime::SEC_DAY);
-         sod = (short)((frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY));
-         while(sod < 0) //DayTime errors if input sod is less than 0, thus correct
-         {
-           doy -= 1;
-           sod += gpstk::DayTime::SEC_DAY;
-         }
+         sod = (frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY);
          refepoch = gpstk::DayTime((short)intg, doy+1, sod);
          
          epoch = asDouble(currentLine.substr(26, 7));
          frac = modf(epoch, &intg);
          doy = (short)(frac * SEC_YEAR / gpstk::DayTime::SEC_DAY);
          sod = (frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY);
-         while(sod < 0) //DayTime errors if input sod is less than 0, thus correct
-         {
-           doy -= 1;
-           sod += gpstk::DayTime::SEC_DAY;
-         }
          effepoch = gpstk::DayTime((short)intg, doy+1, sod);
          
          coordinates[0] = asDouble(currentLine.substr(33, 12));
