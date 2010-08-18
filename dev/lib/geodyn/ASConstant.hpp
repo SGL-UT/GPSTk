@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 #ifndef GPSTK_ASCONSTANT_HPP
 #define GPSTK_ASCONSTANT_HPP

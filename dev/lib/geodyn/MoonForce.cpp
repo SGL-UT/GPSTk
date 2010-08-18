@@ -1,5 +1,5 @@
 
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 /**
  * @file MoonForce.cpp
