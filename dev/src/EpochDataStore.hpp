@@ -54,7 +54,7 @@ namespace gpstk
 
          /// Handy type definition
       typedef std::set<DayTime> EpochList;
-      typedef std::map<DayTime, std::vector<double>> EpochData;
+      typedef std::map<DayTime, std::vector<double> > EpochData;
       
 
          /// Default constructor
