@@ -37,6 +37,7 @@ namespace gpstk
   
       // Add to the store directly
    void PvtStore::addPvt(const DayTime& time,const Pvt& d)
+    throw()
    {
       std::vector<double> data(8,0.0);
       
