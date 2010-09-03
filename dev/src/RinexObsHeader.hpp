@@ -222,7 +222,7 @@ namespace gpstk
       double version;                        ///< RINEX VERSION & TYPE
       std::string fileType;                  ///< RINEX FILETYPE (Observation Navigation etc)
       //std::string system_str;              ///< The string (for file i/o) giving the RINEX system 
-      RinexSatID system;                     ///< The RINEX satellite system
+      SatID system;                          ///< system; one of {RinexSatID.system, Mixed}
       std::string fileProgram,               ///< The program used to generate this file
          fileAgency,                         ///< Who ran the program.
          date;                               ///< When the program was run.

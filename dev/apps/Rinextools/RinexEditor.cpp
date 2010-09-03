@@ -617,7 +617,7 @@ try {
       tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
    RHOutput.date = currtime.printf("%04Y/%02m/%02d %02H:%02M:%02S");
    { // figure out system -- anything else will be up to caller
-      bool gps=true,glo=true,tra=true,geo=true;
+      bool gps=true,glo=true,tra=true,geo=true,gal=true;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGPS))
                   != DelSV.end()) gps=false;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGlonass))
@@ -626,10 +626,20 @@ try {
                   != DelSV.end()) tra=false;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGeosync))
                   != DelSV.end()) geo=false;
-      if(!glo && !tra && !geo) RHOutput.system.system = RinexSatID::systemGPS;
-      if(!gps && !tra && !geo) RHOutput.system.system = RinexSatID::systemGlonass;
-      if(!gps && !glo && !geo) RHOutput.system.system = RinexSatID::systemTransit;
-      if(!gps && !glo && !tra) RHOutput.system.system = RinexSatID::systemGeosync;
+      if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGalileo))
+                  != DelSV.end()) gal=false;
+      if(!glo && !tra && !geo && !gal)
+         RHOutput.system.system = RinexSatID::systemGPS;
+      else if(!gps && !tra && !geo && !gal)
+         RHOutput.system.system = RinexSatID::systemGlonass;
+      else if(!gps && !glo && !geo && !gal)
+         RHOutput.system.system = RinexSatID::systemTransit;
+      else if(!gps && !glo && !tra && !gal)
+         RHOutput.system.system = RinexSatID::systemGeosync;
+      else if(!gps && !glo && !tra && !geo)
+         RHOutput.system.system = RinexSatID::systemGalileo;
+      else
+         RHOutput.system.system = SatID::systemMixed;
    }
    if(HDDeleteOldComments) {
       RHOutput.commentList.clear();
@@ -978,13 +988,22 @@ try {
    RHOut.version = 2.1; RHOut.valid |= RinexObsHeader::versionValid;
    RHOut.interval = dt; RHOut.valid |= RinexObsHeader::intervalValid;
    RHOut.lastObs = CurrEpoch; RHOut.valid |= RinexObsHeader::lastTimeValid;
-      // now the table
+      // now the table - also use table to determine file system
+   RHOut.system.system = SatID::systemUnknown;
    RHOut.numSVs = table.size(); RHOut.valid |= RinexObsHeader::numSatsValid;
    RHOut.numObsForSat.clear();
    vector<TableData>::iterator tit;
    for(tit=table.begin(); tit!=table.end(); ++tit) {
       RHOut.numObsForSat.insert(map<SatID,
             vector<int> >::value_type(tit->prn,tit->nobs));
+      // change in system?
+      if(RHOut.system.system != SatID::systemMixed &&
+            tit->prn.system != RHOut.system.system) {
+         if(RHOut.system.system == SatID::systemUnknown)
+            RHOut.system.system = tit->prn.system;
+         else
+            RHOut.system.system = SatID::systemMixed;
+      }
    }
    RHOut.valid |= RinexObsHeader::prnObsValid;
 

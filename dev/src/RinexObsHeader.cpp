@@ -237,8 +237,12 @@ namespace gpstk
 
          line += leftJustify(string("Observation"), 20);
          std::string str;
-         str = system.systemChar();
-         str = str + " (" + system.systemString() + ")";
+         if(system.system == SatID::systemMixed)
+            str = "M (Mixed)";
+         else {
+            str = RinexSatID(system).systemChar();
+            str = str + " (" + RinexSatID(system).systemString() + ")";
+         }
          line += leftJustify(str, 20);
          line += versionString;
          strm << line << endl;
@@ -532,7 +536,9 @@ namespace gpstk
          }
          string system_str = strip(line.substr(40, 20));
          try {
-            system.fromString(system_str);
+            RinexSatID rsat;
+            rsat.fromString(system_str);     // fromString includes Mixed!
+            system.system = rsat.system;
          }
          catch (Exception& e)
          {
@@ -881,8 +887,12 @@ namespace gpstk
       int i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
       string str;
-      str = system.systemChar();
-      str = str + " (" + system.systemString() + ")";
+      if(system.system == SatID::systemMixed)
+         str = "M (Mixed)";
+      else {
+         str = RinexSatID(system).systemChar();
+         str = str + " (" + RinexSatID(system).systemString() + ")";
+      }
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
          << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
