@@ -125,6 +125,21 @@ namespace gpstk
          throw();
 
 
+         /** Process command line arguments. When this method is overridden,
+          *  make sure to call the parent class's initialize().
+          *
+          * @param cmdLine command line(command with arguments)
+          * @param pretty  Whether the 'pretty print' option will be used when
+          *                printing descriptions. It is 'TRUE' by default.
+          *
+          * @return true if normal processing should proceed (i.e. no
+          *         command line errors or help requests).
+          */
+      virtual bool initialize( std::string cmdLine,
+                               bool pretty = true )
+         throw();
+
+
          /** Run the program. Processes only once (refer to subclasses
           *  for looped processing).
           *

@@ -44,6 +44,7 @@
 
 #include "Exception.hpp"
 #include "BasicFramework.hpp"
+#include "StringUtils.hpp"
 
 
 namespace gpstk
@@ -98,6 +99,40 @@ namespace gpstk
 
    }  // End of method 'BasicFramework::initialize()'
 
+       
+   bool BasicFramework :: initialize( std::string cmdLine,
+                                      bool pretty )
+      throw()
+   {
+      std::vector<std::string> vArgs;
+      vArgs.clear();
+
+      std::string cmd(cmdLine);
+      while(cmd.length())
+      {
+         vArgs.push_back(StringUtils::stripFirstWord(cmd));
+      }
+
+      int argc = vArgs.size();
+      char** argv = new char*[argc];
+      if(!argv)
+      {
+         return false;
+      }
+
+      for(int i=0; i<argc; i++)
+      {
+         argv[i] = &vArgs[i][0];
+      }
+
+      bool state = initialize(argc, argv, pretty);
+
+      // delete memory *char[]
+      delete[] argv;
+
+      return state;
+
+   }  // End of method 'BasicFramework::initialize()'
 
 
    bool BasicFramework :: run()
