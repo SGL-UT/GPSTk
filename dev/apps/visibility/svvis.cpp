@@ -38,7 +38,13 @@
 
 #include <iostream>
 
-#include "LoopedFramework.hpp"
+#include <set>
+#include <list>
+#include <vector>
+#include <utility>
+#include <algorithm>
+
+#include "BasicFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 
 #include "EphReader.hpp"
@@ -76,6 +82,7 @@ private:
    double timeStep;
    bool printElev;
    int graphElev;
+   bool riseSet;
 };
 
 
@@ -127,7 +134,11 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       printElevOpt(
          '\0', "print-elev",
          "Print the elevation of the sv at each change in tracking. "
-         "The defaut is to just to output the PRN of the sv.");
+         "The defaut is to just to output the PRN of the sv."),
+
+      riseSetOpt(
+           '\0', "rise-set",
+           "Print the visibility data by PRN in rise-set pairs.");
    
    if (!BasicFramework::initialize(argc,argv)) return false;
 
@@ -217,6 +228,8 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
       graphElev = 0;
 
    printElev = printElevOpt.getCount() > 0;
+   
+   riseSet = riseSetOpt.getCount() > 0;
 
    if (debugLevel)
       cout << "debugLevel: " << debugLevel << endl
@@ -239,15 +252,30 @@ void SVVis::process()
    Xvt rxXvt;
    rxXvt.x = rxPos;
 
-   cout << "# date     time      #: ";
-   for (int prn=1; prn <= MAX_PRN; prn++)
-      cout << left << setw(3) << prn;
-   cout << endl;
+   typedef set<int> PRNSet;
+   PRNSet lastTrack, thisTrack;
+   typedef pair<DayTime, DayTime> RiseSetPair;
+   typedef list<RiseSetPair> RiseSetList;
+   typedef vector<RiseSetList> PRNRiseSets;
+   PRNRiseSets prs;
+
+   if (riseSet)
+   {
+      prs.resize(MAX_PRN + 1);
+   }
+   else
+   {
+      cout << "# date     time      #: ";
+      for (int prn=1; prn <= MAX_PRN; prn++)
+         cout << left << setw(3) << prn;
+      cout << endl;
+   }
 
    string up, prev_up, el;
    int n_up;
    for (DayTime t=startTime; t < stopTime; t+=1)
    {
+      thisTrack.clear();
       up = "";
       el = "";
       n_up = 0;
@@ -260,6 +288,9 @@ void SVVis::process()
             double elev = rxXvt.x.elvAngle(svXvt.x);
             if (elev>=minElev)
             {
+               if (riseSet)
+                  thisTrack.insert(prn);
+
                up += leftJustify(asString(prn), 3);
                el += leftJustify(asString(elev,0), 3);
                n_up++;
@@ -278,17 +309,56 @@ void SVVis::process()
                cout << e << endl;
          }
       }
-      long sod=static_cast<long>(t.DOYsecond());
-      if (up != prev_up || (graphElev && (sod % graphElev==0)) )
+      
+      if (riseSet)
       {
-         cout << t << " " << setw(2) << n_up << ": ";
-         if (printElev)
-            cout << el;
-         else
-            cout << up;
-         cout << endl;
+            // Compare thisTrack to lastTrack and record the values.
+         PRNSet diff;
+            // First, test for rises:
+         set_difference(thisTrack.begin(), thisTrack.end(),
+                        lastTrack.begin(), lastTrack.end(),
+                        inserter(diff, diff.end()));
+         PRNSet::const_iterator iter;
+         for (iter = diff.begin(); iter != diff.end(); iter++)
+            prs[*iter].push_back(make_pair(t, stopTime));
+         
+            // Now, test for sets:
+         diff.clear();
+         set_difference(lastTrack.begin(), lastTrack.end(),
+                        thisTrack.begin(), thisTrack.end(),
+                        inserter(diff, diff.end()));
+         for (iter = diff.begin(); iter != diff.end(); iter++)
+            prs[*iter].back().second = t;
+
+         lastTrack = thisTrack;
+      }
+      else
+      {
+         long sod=static_cast<long>(t.DOYsecond());
+         if (up != prev_up || (graphElev && (sod % graphElev==0)) )
+         {
+            cout << t << " " << setw(2) << n_up << ": ";
+            if (printElev)
+               cout << el;
+            else
+               cout << up;
+            cout << endl;
+         }
       }
       prev_up = up;
+   }
+
+   if (riseSet)
+   {
+      RiseSetList::const_iterator rsli;
+      for (int prn = 1; prn < prs.size(); prn++)
+      {
+         cout << setw(2) << left << prn ;
+         const RiseSetList& rsl = prs[prn];
+         for (rsli = rsl.begin(); rsli != rsl.end(); rsli++)
+            cout << " (" << rsli->first << ", " << rsli->second << ")";
+         cout << endl;
+      }
    }
 }
 
