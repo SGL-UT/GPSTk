@@ -223,6 +223,20 @@ namespace gpstk
       return (*i).second.OMEGAdot;
    }
 
+   short EngAlmanac::get6bitHealth(SatID sat) const
+      throw(EngAlmanac::SVNotPresentException)
+   {
+      SVBitsMap::const_iterator i = health.find(sat.id);
+      if (i == health.end())
+      {
+         SVNotPresentException svnpe("SV health not present for PRN " +
+                                     StringUtils::asString(sat.id));
+         GPSTK_THROW(svnpe);
+      }
+      
+      return i->second;
+   }
+
    short EngAlmanac::getSVHealth(SatID sat) const
       throw(EngAlmanac::SVNotPresentException)
    {
@@ -231,6 +245,20 @@ namespace gpstk
       
          // return value of SV_health for the given PRN
       return (*i).second.SV_health;
+   }
+
+   short EngAlmanac::getSVConfig(SatID sat) const
+      throw(EngAlmanac::SVNotPresentException)
+   {
+      SVBitsMap::const_iterator i = SV_config.find(sat.id);
+      if (i == SV_config.end())
+      {
+         SVNotPresentException svnpe("SV Configuration not present for PRN " +
+                                     StringUtils::asString(sat.id));
+         GPSTK_THROW(svnpe);
+      }
+      
+      return i->second;
    }
 
    double EngAlmanac::getAhalf(SatID sat) const

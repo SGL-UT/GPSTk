@@ -120,7 +120,7 @@ namespace gpstk
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
-      short get6bitHealth(SatID sat) const throw();
+      short get6bitHealth(SatID sat) const throw(SVNotPresentException);
       
          /** This function returns the value of the health of the given
           * PRN from the PRN specific page which might not be present.
@@ -130,6 +130,14 @@ namespace gpstk
           */
       short getSVHealth(SatID sat) const throw(SVNotPresentException);
       
+
+         /** This function returns the four-bit A/S-flag and configuration
+          * bits for the given PRN.
+          * @throw SVNotPresentException if almanac page for the given
+          * PRN isn't present.
+          */
+      short getSVConfig(SatID sat) const throw(SVNotPresentException);
+
          /** This function returns the value of the square root of the
           * semi-major axis in square root of meters for the given
           * PRN.
