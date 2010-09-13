@@ -81,6 +81,9 @@ namespace gpstk
       week = (short) asInt(line.substr(0,4));
       Toa = asInt(line.substr(5,6));
       
+      strm.header = *this;
+      strm.headerRead = true;
+      
    } // end of reallyGetRecord()
 
    void SEMHeader::dump(ostream& s) const 

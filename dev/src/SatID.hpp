@@ -84,23 +84,28 @@ namespace gpstk
 
       // operator=, copy constructor and destructor built by compiler
 
-      /// Convenience output method
+      /// Convenience method used by dump().
+      static std::string convertSatelliteSystemToString(SatelliteSystem s)
+      {
+         switch(s)
+         {
+            case systemGPS:     return "GPS";           break;
+            case systemGalileo: return "Galileo";       break;
+            case systemGlonass: return "GLONASS";       break;
+            case systemGeosync: return "Geostationary"; break;
+            case systemLEO:     return "LEO";           break;
+            case systemTransit: return "Transit";       break;
+            case systemMixed:   return "Mixed";         break;
+            case systemUserDefined:   return "UserDefined";         break;
+            case systemUnknown: return "Unknown";       break;
+            default:            return "??";            break;
+         };
+      }
+
+         /// Convenience output method.
       void dump(std::ostream& s) const
       {
-         switch(system)
-         {
-            case systemGPS:     s << "GPS";           break;
-            case systemGalileo: s << "Galileo";       break;
-            case systemGlonass: s << "GLONASS";       break;
-            case systemGeosync: s << "Geostationary"; break;
-            case systemLEO:     s << "LEO";           break;
-            case systemTransit: s << "Transit";       break;
-            case systemMixed:   s << "Mixed";         break;
-            case systemUserDefined:   s << "UserDefined";         break;
-            case systemUnknown: s << "Unknown";       break;
-            default:            s << "??";            break;
-         }
-         s << " " << id;
+         s << convertSatelliteSystemToString(system) << " " << id;
       }
 
       /// operator == for SatID
