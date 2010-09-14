@@ -61,6 +61,12 @@ namespace gpstk
          /// Destructor
       virtual ~YumaData() {}
       
+         /// This is is the nearest full GPS week to the 10-bit week
+         /// available in the SEM file.  If this value is 0 it is ignored.
+         /// Otherwise, the 10-bit week is moved into the GPS Epoch
+         /// centered on the given full week.
+      static short nearFullWeek;
+
       static const std::string sID;     // ID label string
       static const std::string sHlth;   // Satellite Health string
       static const std::string sEcc;    // Eccentricity string

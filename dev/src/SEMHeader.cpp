@@ -39,6 +39,8 @@ using namespace std;
 
 namespace gpstk
 {
+   short SEMHeader::nearFullWeek = 0;
+   
    void SEMHeader::reallyPutRecord(FFStream& ffs) const 
       throw(std::exception, FFStreamError, 
                gpstk::StringUtils::StringException)  
@@ -80,7 +82,19 @@ namespace gpstk
       strm.formattedGetLine(line);
       week = (short) asInt(line.substr(0,4));
       Toa = asInt(line.substr(5,6));
-      
+
+      if (nearFullWeek > 0)
+      {
+            // In case a full week is provided.
+         week %= 1024;
+         week += (nearFullWeek / 1024) * 1024;
+         short diff = nearFullWeek - week;
+         if (diff > 512)
+            week += 512;
+         else if(diff < -512)
+            week -= 512;
+      }
+
       strm.header = *this;
       strm.headerRead = true;
       

@@ -39,6 +39,8 @@ using namespace std;
 
 namespace gpstk
 {
+   short YumaData::nearFullWeek = 0;
+
    const std::string YumaData::sID   = "ID:";
    const std::string YumaData::sHlth = "Health:";
    const std::string YumaData::sEcc  = "Eccentricity:";
@@ -162,6 +164,18 @@ namespace gpstk
       // Its unclear whether this is a full week or week % 1024
       strm.formattedGetLine(line, true);
       week = asInt(lineParser(line, sweek));
+
+      if (nearFullWeek > 0)
+      {
+            // In case a full week is provided.
+         week %= 1024;
+         week += (nearFullWeek / 1024) * 1024;
+         short diff = nearFullWeek - week;
+         if (diff > 512)
+            week += 512;
+         else if(diff < -512)
+            week -= 512;
+      }
       
       xmit_time = 0;
       strm.formattedGetLine(line,true);
