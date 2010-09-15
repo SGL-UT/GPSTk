@@ -56,13 +56,39 @@
 using namespace std;
 using namespace gpstk;
 
+class TrackData
+{
+public:
+   TrackData(const SatID& s, const DayTime& u, const DayTime& d, float el)
+         :sat(s), up(u), down(d), maxEl(el) {}
+   TrackData& update(const DayTime& t, float el)
+   { down = t; maxEl = (maxEl > el ? maxEl : el); return *this; }
+   bool operator<(const TrackData& otr) const;
+   bool operator==(const TrackData& otr) const
+   { return (sat == otr.sat && up == otr.up); }
+
+
+   SatID sat;
+   DayTime up;
+   DayTime down;
+   float maxEl;
+};
+
+bool TrackData::operator<(const TrackData& otr) const
+{
+   if (up == otr.up)
+      return (sat < otr.sat);
+   return (up < otr.up);
+}
+
 class SVVis : public BasicFramework
 {
 public:
    SVVis(const string& applName) throw()
    : BasicFramework(
       applName,
-      "Compute when satellites are visible at a given point on the earth")
+      "Compute when satellites are visible at a given point on the earth"),
+     timeFormat("%4Y %03j %02H:%02M:%02S")
    {};
 
    bool initialize(int argc, char *argv[]) throw();
@@ -83,6 +109,8 @@ private:
    bool printElev;
    int graphElev;
    bool riseSet;
+   bool tabular;
+   string timeFormat;
 };
 
 
@@ -138,9 +166,31 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 
       riseSetOpt(
            '\0', "rise-set",
-           "Print the visibility data by PRN in rise-set pairs.");
+           "Print the visibility data by PRN in rise-set pairs."),
+      
+      tabularOpt(
+         '\0', "tabular",
+         "Print the visibility data in a tabular format."),
+      
+      recentDataOpt(
+         '\0', "recent-eph",
+         "Use this if the ephemeris data provided uses 10-bit GPS weeks "
+         "and it should be converted to the current epoch or to the "
+         "epoch current to the \"start-time\", if specified.");
+
+   CommandOptionMutex outputType;
+   outputType.addOption(&riseSetOpt);
+   outputType.addOption(&tabularOpt);
    
    if (!BasicFramework::initialize(argc,argv)) return false;
+
+   if (recentDataOpt.getCount())
+   {
+      DayTime t;
+      if (startTimeOpt.getCount())
+         t = startTimeOpt.getTime()[0];
+      EphReader::modify10bitWeeks(t.GPSfullweek());
+   }
 
    // get the minimum elevation
    if (minElevOpt.getCount())
@@ -148,7 +198,7 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    else
       minElev = 0;
 
-   // get the ephemeris source(s)
+      // get the ephemeris source(s)
    ephReader.verboseLevel = verboseLevel;
    FFIdentifier::debugLevel = debugLevel;
    for (int i=0; i<ephFileOpt.getCount(); i++)
@@ -230,6 +280,8 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    printElev = printElevOpt.getCount() > 0;
    
    riseSet = riseSetOpt.getCount() > 0;
+   
+   tabular = tabularOpt.getCount() > 0;
 
    if (debugLevel)
       cout << "debugLevel: " << debugLevel << endl
@@ -252,10 +304,12 @@ void SVVis::process()
    Xvt rxXvt;
    rxXvt.x = rxPos;
 
-   typedef set<int> PRNSet;
-   PRNSet lastTrack, thisTrack;
-   typedef pair<DayTime, DayTime> RiseSetPair;
-   typedef list<RiseSetPair> RiseSetList;
+   typedef map<int, TrackData> TrackDataMap;
+   TrackDataMap lastTrack, thisTrack;
+   typedef set<TrackData> TrackDataSet;
+   TrackDataSet passes;
+
+   typedef list<TrackData> RiseSetList;
    typedef vector<RiseSetList> PRNRiseSets;
    PRNRiseSets prs;
 
@@ -263,7 +317,7 @@ void SVVis::process()
    {
       prs.resize(MAX_PRN + 1);
    }
-   else
+   else if (!tabular)
    {
       cout << "# date     time      #: ";
       for (int prn=1; prn <= MAX_PRN; prn++)
@@ -279,19 +333,34 @@ void SVVis::process()
       up = "";
       el = "";
       n_up = 0;
-      for (int prn=1; prn <= MAX_PRN; prn++)
+      SatID sat(1, SatID::systemGPS);
+      for (sat.id = 1; sat.id <= MAX_PRN; sat.id++)
       {
          try
          {
             using namespace StringUtils;
-            Xvt svXvt = ephStore.getXvt(SatID(prn, SatID::systemGPS),t);
+            Xvt svXvt = ephStore.getXvt(sat, t);
             double elev = rxXvt.x.elvAngle(svXvt.x);
             if (elev>=minElev)
             {
-               if (riseSet)
-                  thisTrack.insert(prn);
-
-               up += leftJustify(asString(prn), 3);
+               if (riseSet || tabular)
+               {
+                  TrackDataMap::iterator tdmi = lastTrack.find(sat.id);
+                  if (tdmi == lastTrack.end())
+                  {
+                        // the PRN just came up
+                     thisTrack.insert(make_pair(sat.id, TrackData(sat, t, stopTime, elev)));
+                  }
+                  else
+                  {
+                        // the PRN is already in track
+                     tdmi->second.update(t, elev);
+                     thisTrack.insert(*tdmi);
+                     lastTrack.erase(tdmi);
+                  }
+               }
+               
+               up += leftJustify(asString(sat.id), 3);
                el += leftJustify(asString(elev,0), 3);
                n_up++;
             }
@@ -312,24 +381,22 @@ void SVVis::process()
       
       if (riseSet)
       {
-            // Compare thisTrack to lastTrack and record the values.
-         PRNSet diff;
-            // First, test for rises:
-         set_difference(thisTrack.begin(), thisTrack.end(),
-                        lastTrack.begin(), lastTrack.end(),
-                        inserter(diff, diff.end()));
-         PRNSet::const_iterator iter;
-         for (iter = diff.begin(); iter != diff.end(); iter++)
-            prs[*iter].push_back(make_pair(t, stopTime));
-         
-            // Now, test for sets:
-         diff.clear();
-         set_difference(lastTrack.begin(), lastTrack.end(),
-                        thisTrack.begin(), thisTrack.end(),
-                        inserter(diff, diff.end()));
-         for (iter = diff.begin(); iter != diff.end(); iter++)
-            prs[*iter].back().second = t;
-
+            // Move the objects left in lastTrack to the track collection.
+         for(TrackDataMap::const_iterator tdmci = lastTrack.begin();
+             tdmci != lastTrack.end(); tdmci++)
+         {
+            prs[tdmci->second.sat.id].push_back(tdmci->second);
+         }
+         lastTrack = thisTrack;         
+      }
+      else if (tabular)
+      {
+            // Move the objects left in lastTrack to the track collection.
+         for(TrackDataMap::const_iterator tdmci = lastTrack.begin();
+             tdmci != lastTrack.end(); tdmci++)
+         {
+            passes.insert(passes.end(), tdmci->second);
+         }
          lastTrack = thisTrack;
       }
       else
@@ -353,11 +420,36 @@ void SVVis::process()
       RiseSetList::const_iterator rsli;
       for (int prn = 1; prn < prs.size(); prn++)
       {
-         cout << setw(2) << left << prn ;
+         cout << setw(2) << left << prn;
          const RiseSetList& rsl = prs[prn];
          for (rsli = rsl.begin(); rsli != rsl.end(); rsli++)
-            cout << " (" << rsli->first << ", " << rsli->second << ")";
+            cout << " (" << rsli->up.printf(timeFormat) 
+                 << ", " << rsli->down.printf(timeFormat) << ")";
          cout << endl;
+      }
+   }
+   else if (tabular)
+   {
+      cout << "SEARCH_INTERVAL: " << startTime.printf(timeFormat)
+           << " to " << stopTime.printf(timeFormat)
+           << endl
+           << "ELEVATION_CUTOFF: " << setprecision(3) << fixed << minElev 
+           << endl
+           << "#     Rise (Yr DOY HMS) Set  (Yr DOY HMS) El Sys          Parameters"
+           << endl;
+
+      TrackDataSet::const_iterator tdsi;
+      for (tdsi = passes.begin(); tdsi != passes.end(); tdsi++)
+      {
+         cout << "PASS: "
+              << tdsi->up.printf(timeFormat) << " "
+              << tdsi->down.printf(timeFormat) << " "
+              << setfill('0') << right << setw(2)
+              << static_cast<int>(tdsi->maxEl) << " "
+              << setfill(' ') << left << setw(13) 
+              << SatID::convertSatelliteSystemToString(tdsi->sat.system)
+              << "PRN=" << setfill('0') << right << setw(2) << tdsi->sat.id
+              << endl;            
       }
    }
 }
