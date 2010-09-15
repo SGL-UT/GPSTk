@@ -72,6 +72,11 @@ namespace gpstk
 
       std::vector<std::string> filesRead;
 
+         /// Set the various file-reading classes to update their 10-bit
+         /// weeks to be within 1/2 a GPS Epoch (512 weeks) of the specified
+         /// week.
+      void static modify10bitWeeks(short week);
+
       typedef XvtStore<SatID> EphemerisStore;
       EphemerisStore* eph;
 

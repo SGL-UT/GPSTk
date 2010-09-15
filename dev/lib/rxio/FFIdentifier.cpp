@@ -225,7 +225,7 @@ namespace gpstk
          s >> data;
          if (s)
          {
-            fileType = tYuma;
+            fileType = tSEM;
             return;
          }
       }

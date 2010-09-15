@@ -72,7 +72,7 @@ namespace gpstk
       throw(FileMissingException)
    {
       FFIdentifier ffid(fn);
-
+      
       switch (ffid)
       {
          case FFIdentifier::tRinexNav: read_rinex_nav_data(fn); break;
@@ -92,6 +92,12 @@ namespace gpstk
               << ", final time: " << eph->getFinalTime() << endl;
    } // end of read()
 
+   void EphReader::modify10bitWeeks(short week)
+   {
+         // Add other readers as they are needed.
+      YumaData::nearFullWeek = week;
+      SEMHeader::nearFullWeek = week;
+   }
 
 // ---------------------------------------------------------------------
 // Read in ephemeris data in rinex format
@@ -358,7 +364,7 @@ namespace gpstk
       
       SEMHeader header;
       fs >> header;
-
+      
       SEMData data;
       while (fs)
       {
@@ -368,7 +374,7 @@ namespace gpstk
       }
 
       if (verboseLevel>1)
-         cout << "Read " << fn << " as Yuma almanac."<< endl;
+         cout << "Read " << fn << " as SEM almanac."<< endl;
    } // end of read_sem_data()
 
 }
