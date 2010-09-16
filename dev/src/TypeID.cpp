@@ -115,6 +115,12 @@ namespace gpstk
       tStrings[L2dot2]     = "L2dot2";
       tStrings[L5dot]      = "L5dot";
       tStrings[L5dot2]     = "L5dot2";
+      tStrings[P1dot]      = "P1dot";
+      tStrings[P1dot2]     = "P1dot2";
+      tStrings[P2dot]      = "P2dot";
+      tStrings[P2dot2]     = "P2dot2";
+      tStrings[P5dot]      = "P5dot";
+      tStrings[P5dot2]     = "P5dot2";
       tStrings[L6dot]      = "L6dot";
       tStrings[L6dot2]     = "L6dot2";
       tStrings[L7dot]      = "L7dot";
