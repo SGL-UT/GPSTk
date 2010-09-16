@@ -2839,6 +2839,118 @@ in matrix and number of types do not match") );
    }  // End of stream input for gnssRinex
 
 
+   // Stream output for gnssRinex
+   std::ostream& operator<<( std::ostream& s,
+	   gnssRinex& f )
+	   throw(FFStreamError, gpstk::StringUtils::StringException)
+   {
+      FFStream* ffs = dynamic_cast<FFStream*>(&s);
+      if(ffs)
+      {
+         try
+         {
+            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
+
+            // Clear out this object
+            RinexObsHeader& hdr = strm.header;
+            
+            RinexObsData rod;
+            
+            rod.time = f.header.epoch;
+            rod.epochFlag = f.header.epochFlag; 
+            rod.numSvs = f.numSats();
+            rod.clockOffset = 0.0;
+            rod.auxHeader = hdr;
+                        
+            SatIDSet satSet = f.getSatID();
+            for(SatIDSet::iterator itSat = satSet.begin();
+               itSat != satSet.end();
+               ++itSat)
+            {
+               vector<RinexObsHeader::RinexObsType>::iterator obsTypeItr = 
+                  hdr.obsTypeList.begin();
+
+               while (obsTypeItr != strm.header.obsTypeList.end())
+               {
+                  TypeID type( RinexType2TypeID( *obsTypeItr ) );
+                  
+                  RinexObsData::RinexDatum data;
+                  data.data = f.body[*itSat][type];
+                  
+                  if( type == TypeID::L1)
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI1];
+                     data.ssi = f.body[*itSat][TypeID::SSI1];
+                  }
+
+                  if( type == TypeID::L2)
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI2];
+                     data.ssi = f.body[*itSat][TypeID::SSI2];
+                  }
+
+                  if( type == TypeID::L5)
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI5];
+                     data.ssi = f.body[*itSat][TypeID::SSI5];
+                  }
+
+                  if( type == TypeID::L6)
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI6];
+                     data.ssi = f.body[*itSat][TypeID::SSI6];
+                  }
+
+                  if( type == TypeID::L7)
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI7];
+                     data.ssi = f.body[*itSat][TypeID::SSI7];
+                  }
+
+                  if( type == TypeID::L8)
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI8];
+                     data.ssi = f.body[*itSat][TypeID::SSI8];
+                  }
+
+
+                  rod.obs[*itSat][*obsTypeItr] = data;
+               
+                  obsTypeItr++;
+               }
+            }
+
+            strm << rod;
+
+            return s;
+
+         }  // End of "try" block
+         ////
+         //// ATENTION: This part is VERY UGLY
+         ////   Help from the guy who wrote
+         ////        FFStream::tryFFStreamGet(FFData& rec)
+         ////   will be very appreciated
+         ////
+         // EOF - do nothing - eof causes fail() to be set which
+         // is handled by std::fstream
+         catch (EndOfFile& e)
+         {
+            return s;
+         }
+         catch (...)
+         {
+            return s;
+         }
+
+      }  // End of block: "if (ffs)..."
+      else
+      {
+         FFStreamError e("operator<< stream argument must be an FFStream");
+         GPSTK_THROW(e);
+      }
+
+   }   // End of stream input for gnssRinex
+
 
       // Convenience function to convert from SatID system to SourceID type.
       // @param sid Satellite ID.

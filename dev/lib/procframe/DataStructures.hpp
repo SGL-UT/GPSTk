@@ -1479,6 +1479,42 @@ namespace gpstk
       throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
+	   /** Stream output for gnssRinex.
+       *
+       * This handy operator allows to output a gnssRinex data structure
+       * directly to an output stream such a RinexObsStream object.
+       * 
+       * The RinexObsHeader object of output stream should be initialized
+       * correctly before any output operation.
+       *
+       * For example:
+       *
+       * @code
+       *   // Create the input file stream
+       *   RinexObsStream rin("bahr1620.04o");
+       *
+       *   //Create the output file stream
+       *   RinexObsStream rout("bahr1620.04o.new", ios::out|ios::trunc);
+       *
+       *   // Read the RINEX header
+       *   RinexObsHeader head; //RINEX header object
+       *   rin >> head;
+       *   rout.header = rin.header;
+       *
+       *   rout << rout.header;
+       *
+       *   gnssRinex gRin;
+       *   while( rin >> gRin )
+       *   {
+       *       rout << gRin
+       *   }
+       * @endcode
+       */
+   std::ostream& operator<<( std::ostream& s,
+                             gnssRinex& f )
+      throw(FFStreamError, gpstk::StringUtils::StringException);
+
+
       /** This function constructs a DayTime object from the given parameters.
        * 
        * @param line    the encoded time string found in the RINEX record.
