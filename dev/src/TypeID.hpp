@@ -159,12 +159,12 @@ namespace gpstk
          L2dot2,    ///< GPS L2 phase observation second derivative
          L5dot,     ///< GPS L5 phase observation first derivative
          L5dot2,    ///< GPS L5 phase observation second derivative
-         P1dot,     ///< GPS P1 phase observation first derivative
-         P1dot2,    ///< GPS P1 phase observation second derivative
-         P2dot,     ///< GPS P2 phase observation first derivative
-         P2dot2,    ///< GPS P2 phase observation second derivative
-         P5dot,     ///< GPS P5 phase observation first derivative
-         P5dot2,    ///< GPS P5 phase observation second derivative
+         P1dot,     ///< GPS P1 precise code observation first derivative
+         P1dot2,    ///< GPS P1 precise code observation second derivative
+         P2dot,     ///< GPS P2 precise code observation first derivative
+         P2dot2,    ///< GPS P2 precise code observation second derivative
+         P5dot,     ///< GPS P5 precise code observation first derivative
+         P5dot2,    ///< GPS P5 precise code observation second derivative
          L6dot,     ///< Galileo L6 phase observation first derivative
          L6dot2,    ///< Galileo L6 phase observation second derivative
          L7dot,     ///< Galileo L7 phase observation first derivative
