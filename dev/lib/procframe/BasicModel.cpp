@@ -220,6 +220,16 @@ namespace gpstk
             (*stv).second[TypeID::satVY] = cerange.svPosVel.v[1];
             (*stv).second[TypeID::satVZ] = cerange.svPosVel.v[2];
 
+               // Let's insert receiver position 
+            (*stv).second[TypeID::recX] = rxPos.X();
+            (*stv).second[TypeID::recY] = rxPos.Y();
+            (*stv).second[TypeID::recZ] = rxPos.Z();
+
+               // Let's insert receiver velocity 
+            (*stv).second[TypeID::recVX] = 0.0;
+            (*stv).second[TypeID::recVY] = 0.0;
+            (*stv).second[TypeID::recVZ] = 0.0;
+
                // Apply correction to C1 observable, if appropriate
             if(useTGD)
             {
