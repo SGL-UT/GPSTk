@@ -96,7 +96,8 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 58,IIR_M));
    NtoBMap.insert( make_pair( 59,IIR ));
    NtoBMap.insert( make_pair( 60,IIR ));
-   NtoBMap.insert( make_pair( 61,IIR )); 
+   NtoBMap.insert( make_pair( 61,IIR ));
+   NtoBMap.insert( make_pair( 62,IIF )); 
 
       // Note: This table start with Block I values
       // Set up NAVSTAR -> PRN ID relationship
@@ -284,6 +285,9 @@ SVNumXRef::SVNumXRef( )
    NtoPMap.insert( std::pair<const int, XRefNode>( 61, XRefNode(  2, 
                                        DayTime( 2004,  6,  6,  0,  0,  0.0),
                                        DayTime::END_OF_TIME  )));
+   NtoPMap.insert( std::pair<const int, XRefNode>( 62, XRefNode( 25,
+                                       DayTime( 2010,  5, 28,  3,  0,  0.0),
+                                       DayTime::END_OF_TIME  )));
   
       // Set up PRN ID -> NAVSTAR relationship
       // Note: Because of a bug in the Solaris compler version 5.x,
@@ -437,8 +441,11 @@ SVNumXRef::SVNumXRef( )
    PtoNMap.insert( std::pair<const int, XRefNode>( 24, XRefNode( 24, 
                                        DayTime( 1991,  7,  4,  0,  0,  0.0),
                                        DayTime::END_OF_TIME  )));
-   PtoNMap.insert( std::pair<const int, XRefNode>( 25, XRefNode( 25, 
+   PtoNMap.insert( std::pair<const int, XRefNode>( 25, XRefNode( 25,
                                        DayTime( 1992,  2, 23,  0,  0,  0.0),
+                                       DayTime( 2009, 12, 18, 22, 28,  0.0))));
+   PtoNMap.insert( std::pair<const int, XRefNode>( 25, XRefNode( 62,
+                                       DayTime( 2010,  5, 28,  3,  0,  0.0),
                                        DayTime::END_OF_TIME  )));
    PtoNMap.insert( std::pair<const int, XRefNode>( 26, XRefNode( 26, 
                                        DayTime( 1992,  7,  7,  0,  0,  0.0),
