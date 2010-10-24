@@ -1674,6 +1674,7 @@ in matrix and number of types do not match") );
             toReturn.body = (*iter).second;
             toReturn.header.source = (*iter).first;
             toReturn.header.epoch = (*it).first;
+            toReturn.header.epochFlag = 0;
             found = true;
          }
 
@@ -2876,41 +2877,73 @@ in matrix and number of types do not match") );
                   
                   RinexObsData::RinexDatum data;
                   data.data = f.body[*itSat][type];
+                  data.ssi = 0;
+                  data.lli = 0;
                   
-                  if( type == TypeID::L1)
+                  if( (type == TypeID::P1) || (type == TypeID::L1) )
                   {
+                     if(type == TypeID::L1)
+                     {
+                        data.data /= L1_WAVELENGTH;
+                        data.ssi = f.body[*itSat][TypeID::SSI1];
+                     }
+ 
                      data.lli = f.body[*itSat][TypeID::LLI1];
-                     data.ssi = f.body[*itSat][TypeID::SSI1];
                   }
 
-                  if( type == TypeID::L2)
+                  if( (type == TypeID::P2) || (type == TypeID::L2))
                   {
+                     if(type == TypeID::L2)
+                     {
+                        data.data /= L2_WAVELENGTH;
+                        data.ssi = f.body[*itSat][TypeID::SSI2];
+                     }
+
                      data.lli = f.body[*itSat][TypeID::LLI2];
-                     data.ssi = f.body[*itSat][TypeID::SSI2];
                   }
 
-                  if( type == TypeID::L5)
+                  if( (type == TypeID::C5) || (type == TypeID::L5))
                   {
+                     if(type == TypeID::L5)
+                     {
+                        data.data /= L5_WAVELENGTH;
+                        data.ssi = f.body[*itSat][TypeID::SSI5];
+                     }
+
                      data.lli = f.body[*itSat][TypeID::LLI5];
-                     data.ssi = f.body[*itSat][TypeID::SSI5];
                   }
 
-                  if( type == TypeID::L6)
+                  if( (type == TypeID::C6) || (type == TypeID::L6) )
                   {
+                     if(type == TypeID::L6)
+                     {
+                        data.data /= L6_WAVELENGTH;
+                        data.ssi = f.body[*itSat][TypeID::SSI6];
+                     }
+
                      data.lli = f.body[*itSat][TypeID::LLI6];
-                     data.ssi = f.body[*itSat][TypeID::SSI6];
                   }
 
-                  if( type == TypeID::L7)
+                  if( (type == TypeID::C7) || (type == TypeID::L7) )
                   {
+                     if(type == TypeID::L7)
+                     {
+                        data.data /= L7_WAVELENGTH;
+                        data.ssi = f.body[*itSat][TypeID::SSI7];
+                     }
+
                      data.lli = f.body[*itSat][TypeID::LLI7];
-                     data.ssi = f.body[*itSat][TypeID::SSI7];
                   }
 
-                  if( type == TypeID::L8)
+                  if( (type == TypeID::C8) || (type == TypeID::L8))
                   {
+                     if(type == TypeID::L8)
+                     {
+                        data.data /= L8_WAVELENGTH;
+                        data.ssi = f.body[*itSat][TypeID::SSI8];
+                     }
+
                      data.lli = f.body[*itSat][TypeID::LLI8];
-                     data.ssi = f.body[*itSat][TypeID::SSI8];
                   }
 
 
