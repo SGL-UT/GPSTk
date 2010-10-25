@@ -225,6 +225,12 @@ namespace gpstk
       tStrings[postfitP2]  = "postfitResidualCodeP2";
       tStrings[postfitL1]  = "postfitResidualPhaseL1";
       tStrings[postfitL2]  = "postfitResidualPhaseL2";
+
+      tStrings[prefitC5]   = "prefitResidualCodeC5";
+      tStrings[prefitL5]   = "prefitResidualPhaseL5";
+      tStrings[postfitC5]  = "postfitResidualCodeC5";
+      tStrings[postfitL5]  = "postfitResidualPhaseL5";
+
       tStrings[prefitGRAPHIC1]  = "prefitResidualGRAPHIC1";
       tStrings[prefitGRAPHIC2]  = "prefitResidualGRAPHIC2";
       tStrings[postfitGRAPHIC1] = "postfitResidualGRAPHIC1";

@@ -275,6 +275,10 @@ namespace gpstk
          postfitP2, ///< Postfit residual, code P2
          postfitL1, ///< Postfit residual, phase L1
          postfitL2, ///< Postfit residual, phase L2
+         prefitC5,  ///< Prefit residual, code C5
+         prefitL5,  ///< Prefit residual, phase L5
+         postfitC5, ///< Postfit residual, code C5
+         postfitL5, ///< Postfit residual, phase L5
          prefitGRAPHIC1,   ///< Prefit residual, GRAPHIC1
          prefitGRAPHIC2,   ///< Prefit residual, GRAPHIC2
          postfitGRAPHIC1,  ///< Postfit residual, GRAPHIC1
