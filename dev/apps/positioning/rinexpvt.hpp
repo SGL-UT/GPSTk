@@ -94,6 +94,7 @@ protected:
    bool gotMet;
    bool spsSolution;
    bool ppsSolution;
+   bool noGlonassSolution;
    bool transformENU;
    bool removeIonosphere;
    bool hasBCEstore;
@@ -133,6 +134,7 @@ protected:
    CommandOptionNoArg ionoOption;
    CommandOptionNoArg searchNearOption;
    CommandOptionNoArg smootherOption;
+   CommandOptionNoArg noGlonass;
 
    ofstream logStream;
 };

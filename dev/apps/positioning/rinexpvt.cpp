@@ -109,7 +109,7 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
 }
 
 RINEXPVTSolution::RINEXPVTSolution(char *arg0)
-    : BasicFramework(arg0, "GPSTk PVT Generator\n\nThis application generates user positions based on RINEX observations.\n\nNOTE: Although the -n and -p arguments appear as optional below, one of the two must be used. An ephemeris source must be specified."),
+    : BasicFramework(arg0, "GPSTk PVT Generator\n\nThis application generates user positions based on RINEX observations.\n\nNOTE: Although the -n and -p arguments appear as optional below, one of the two must be used. An ephemeris source must be specified.\n\nNOTE: Although -z argument appears as optional below, in this release it is always turn on, but implementation will occur in a later release."),
       obsOption('o', "obs-file", "RINEX Obs File.", true),
       navOption('n', "nav-file", "RINEX Nav File. Required for single frequency ionosphere correction.", false),
       peOption('p', "pe-file",  "SP3 Precise Ephemeris File. Repeat this for each input file.", false),
@@ -117,6 +117,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
       semOption('a',"sem", "SEM almanac file.",false),
       metOption('m', "met-file", "RINEX Met File.", false),
       spsOption('s', "single-frequency", "Use only C1 (SPS)"),
+      noGlonass('z',"no-Glonass","Exclude Glonass Satellites from PVT solution"),
       ppsOption('f', "dual-frequency", "Use only P1 and P2 (PPS)"),
       timeFormatOption('t',"time-format","Alternate time format string."),
       ionoOption('i',"no-ionosphere", "Do NOT correct for ionosphere delay."),
@@ -134,6 +135,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
     metOption.setMaxCount(1);
     spsOption.setMaxCount(1);
     ppsOption.setMaxCount(1);
+    noGlonass.setMaxCount(1);
     searchNearOption.setMaxCount(1);
     elevationMaskOption.setMaxCount(1);
     rateOption.setMaxCount(1);
@@ -147,6 +149,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
     gotMet = false;
     spsSolution = false;
     ppsSolution = false;
+    noGlonassSolution = true;      //This option is not yet implemented, as rinexpvt is not GLONASS friendly yet.
     aprioriPositionDefined = false;
     transformENU = false;
     removeIonosphere = true;
@@ -176,6 +179,10 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
 
     spsSolution = (spsOption.getCount()>0);
     ppsSolution = (ppsOption.getCount()>0);
+    if(spsSolution || ppsSolution || noGlonass.getCount()>0)
+    {
+       noGlonassSolution = true;
+    }
 
     if (enuOption.getCount())
     {
@@ -379,7 +386,10 @@ void RINEXPVTSolution::process()
     }
 
     if ( !p1Found || !p2Found )
-       spsSolution = true;
+       {
+         spsSolution = true;
+         noGlonassSolution = true;
+       }
 
     if ((spsOption) && !caFound)
     {
@@ -426,9 +436,19 @@ void RINEXPVTSolution::process()
 	          RinexObsData::RinexSatMap::const_iterator it;
              for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
              {
-		          RinexObsData::RinexObsTypeMap otmap = (*it).second;
+		          
+              
+              
+	      if(noGlonassSolution)
+	      {
+		//Checks to see if Obs. comes from Glonass Sat. If it does then
+		//The satellite is skipped.
+		if ((*it).first.system == SatID::systemGlonass) 
+		{continue; }
+	      }
 
-                svpos = virtualEphStore->getXvt((*it).first,rod.time);
+ 		  RinexObsData::RinexObsTypeMap otmap = (*it).second;
+                  svpos = virtualEphStore->getXvt((*it).first,rod.time);
                 double elevation = aprioriPositionXYZ.elvAngle(svpos.x);
                 double azimuth =  aprioriPositionXYZ.azAngle(svpos.x);
                 
