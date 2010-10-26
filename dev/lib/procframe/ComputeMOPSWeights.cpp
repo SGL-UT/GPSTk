@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2010
 //
 //============================================================================
 
@@ -254,6 +254,10 @@ namespace gpstk
             // Estimate multipath noise according to satellite elevation
          sigma2multipath = 0.13 +
             ( 0.53 * std::exp( -(tvMap(TypeID::elevation)) / 10.0) );
+
+            // The former expression in DO-229D document is for sigma,
+            // not for sigma^2. Thanks to Everett Wang for the fix.
+         sigma2multipath *= sigma2multipath;
 
             // Use MOPSTropModel object to compute tropospheric noise
          sigma2trop = mopsTrop.MOPSsigma2(tvMap(TypeID::elevation));

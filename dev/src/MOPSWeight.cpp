@@ -241,6 +241,9 @@ compute weights.");
             sigma2ura = (1.0 / sIura.weightsVector(i));
             sigma2multipath = 0.13 + ( 0.53 *
                                        std::exp(-elevationVector(i)/10.0) );
+               // The former expression in DO-229D document is for sigma,
+               // not for sigma^2. Thanks to Everett Wang for the fix.
+            sigma2multipath *= sigma2multipath;
             sigma2trop = mopsTrop.MOPSsigma2(elevationVector(i));
             sigma2uire = sigma2iono( ionoCorrections(i),
                                      elevationVector(i),
@@ -275,6 +278,9 @@ compute weights.");
             sigma2ura = (1.0 / sIura.weightsVector(i));
             sigma2multipath = 0.13 + ( 0.53 *
                                        std::exp(-elevationVector(i)/10.0) );
+               // The former expression in DO-229D document is for sigma,
+               // not for sigma^2. Thanks to Everett Wang for the fix.
+            sigma2multipath *= sigma2multipath;                                      
             sigma2trop = mopsTrop.MOPSsigma2(elevationVector(i+offset));
             sigma2uire = sigma2iono( ionoCorrections(i+offset),
                                      elevationVector(i+offset),
