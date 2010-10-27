@@ -117,7 +117,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
       semOption('a',"sem", "SEM almanac file.",false),
       metOption('m', "met-file", "RINEX Met File.", false),
       spsOption('s', "single-frequency", "Use only C1 (SPS)"),
-      noGlonass('z',"no-Glonass","Exclude Glonass Satellites from PVT solution"),
+      noGlonass('z',"no-glonass","Exclude GLONASS Satellites from PVT solution"),
       ppsOption('f', "dual-frequency", "Use only P1 and P2 (PPS)"),
       timeFormatOption('t',"time-format","Alternate time format string."),
       ionoOption('i',"no-ionosphere", "Do NOT correct for ionosphere delay."),
