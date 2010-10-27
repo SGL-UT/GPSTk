@@ -1,0 +1,7 @@
+SubDir TOP PowerSum ;
+
+TestMain PowerSum/xPowerSum.tst : PowerSum/pstst.cpp PowerSum/PowerSum.cpp ;
+
+
+#GPSLinkLibraries pstst : gpstk ;
+#GPSMain pstst : pstst.cpp ;

@@ -1,0 +1,2 @@
+SubDir TOP CommonTime ;
+TestMain CommonTime/xCommonTime.tst : CommonTime/xCommonTimeM.cpp CommonTime/xCommonTime.cpp CommonTime/CommonTime.cpp ;

@@ -1,0 +1,18 @@
+#!/bin/bash
+# $Id: $
+# compute positions with GPS data from the GRACE satellite
+../PRSolve --obs grca304a.03o --nav brdc3040.03n --outRinex grca304a.prs.03o
+#
+# dump the position data using RinexDump and plot it, results in positions.PRSolve.jpg
+#../../Rinextools/RinexDump grca304a.prs.03o pos | plot -g 920x480 -x 2 -y 4 -y 5 -y 6 -xl "GPS seconds of week 1242" -yl "ECEF position components (m)" --Title "GRACE satellite positions, 10sec interval (gpstk::PRSolve)"
+../../Rinextools/RinexDump grca304a.prs.03o pos > rd.prs.out
+gnuplot -persist -geometry 920x480 rd.prs.gp
+#
+# dump the interpolated data using RinexDump and plot it, results in positions.posInterp.jpg
+../posInterp --obs grca304a.prs.03o --mult 10 --outRinex grca304a.pi.03o
+#../../Rinextools/RinexDump grca304a.pi.03o pos | plot -g 920x480 -x 2 -y 4 -y 5 -y 6 -xl "GPS seconds of week 1242" -yl "ECEF position components (m)" --Title "GRACE satellite positions, interpolated to 1 sec (gpstk::posInterp)"
+../../Rinextools/RinexDump grca304a.pi.03o pos > rd.pi.out
+gnuplot -persist -geometry 920x480 rd.pi.gp
+#
+# clean up
+#rm *.log *.out grca304a.p*
