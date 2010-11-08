@@ -2946,6 +2946,18 @@ in matrix and number of types do not match") );
                      data.lli = f.body[*itSat][TypeID::LLI8];
                   }
 
+                  if( (type == TypeID::D1) || 
+                      (type == TypeID::S1) ||
+                      (type == TypeID::C1) )
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI1];
+                  }
+
+                  if( (type == TypeID::D2) || (type == TypeID::S2) )
+                  {
+                     data.lli = f.body[*itSat][TypeID::LLI2];
+                  }
+
 
                   rod.obs[*itSat][*obsTypeItr] = data;
                
