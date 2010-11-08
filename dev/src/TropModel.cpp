@@ -2429,8 +2429,8 @@ namespace gpstk
          if ( (axfi > 15.0) && (axfi <= 30.0) ) index=1;
          if ( (axfi > 30.0) && (axfi <= 45.0) ) index=2;
          if ( (axfi > 45.0) && (axfi <= 60.0) ) index=3;
-         if ( (axfi > 60.0) && (axfi <= 75.0) ) index=4;
-         if ( axfi > 75.0 )                     index=5;
+         if ( (axfi > 60.0) && (axfi <  75.0) ) index=4;
+         if ( axfi >= 75.0 )                    index=5;
 
          for (j=0; j<5; j++)
          {
