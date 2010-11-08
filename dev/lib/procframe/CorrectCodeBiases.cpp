@@ -124,7 +124,19 @@ namespace gpstk
                   ++itt)
                {
                   TypeID type = itt->first;
-                  itt->second += getDCBCorrection(receiverName, sat, type, usingC1);
+                  //itt->second += getDCBCorrection(receiverName, sat, type, usingC1);
+                  
+                  if(type == TypeID::P1)
+                  {
+                     gData[sat][TypeID::instC1] = getDCBCorrection(receiverName,
+                        sat, type, usingC1);
+                  }
+                  else if(type == TypeID::P2)
+                  {
+                     gData[sat][TypeID::instC2] = getDCBCorrection(receiverName, 
+                        sat, type, usingC1);
+                  }
+
                }
 
             }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
