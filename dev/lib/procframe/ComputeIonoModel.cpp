@@ -74,19 +74,7 @@ namespace gpstk
          Geodetic rxGeo(rxPos.getGeodeticLatitude(),
             rxPos.getLongitude(),
             rxPos.getAltitude());
-         
-         double tecval = 0.0;
-         
-         if(ionoType == GridTec)
-         {
-            Position RxInGeocentric(rxPos);
-            RxInGeocentric.transformTo(Position::Geocentric);
-
-            Triple ionValue = gridStore.getIonexValue(time, RxInGeocentric);
-            tecval  = ionValue[0];
-         }
-
-       
+                
             // Loop through all the satellites
          satTypeValueMap::iterator stv;
          for(stv = gData.begin(); stv != gData.end(); ++stv) 
@@ -125,7 +113,32 @@ namespace gpstk
             
             if(ionoType == GridTec)
             {
-               ionL1 = gridStore.getIonoL1(elevation,tecval,"MSLM");
+               try
+               {
+                  Position IPP = rxPos.getIonosphericPiercePoint(elevation,
+                     azimuth,
+                     506700.0);
+
+                  Position pos(IPP);
+                  pos.transformTo(Position::Geocentric);
+
+                  Triple val = gridStore.getIonexValue( time, pos );
+
+                  double tecval = val[0];
+
+                  double ionMap = gridStore.iono_mapping_function(elevation,
+                     "MSLM");
+                  
+                  ionL1 = gridStore.getIonoL1(elevation,
+                     tecval,
+                     "MSLM");
+               }
+               catch(InvalidRequest& e)
+               {
+                  satRejectedSet.insert(stv->first);
+                  continue;
+               }
+
             }
 
             if(ionoType == Klobuchar)
