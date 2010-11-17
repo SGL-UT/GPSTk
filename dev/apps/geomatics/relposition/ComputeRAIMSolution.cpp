@@ -65,7 +65,7 @@ try {
    int nsvs,i,iret;
    double PR;
    vector<double> Ranges;
-   format f166(16,6),f62(6,2);
+   format f166(16,6),f62(6,2),f51(5,1),f82s(8,2,true);
 
    Sats.clear();
 
@@ -122,20 +122,6 @@ try {
          << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
       return iret;
    }
-   if(iret > 0) {
-      //oflog << "RAIM solution is suspect (" << iret << ")" << endl;
-      return iret;
-   }
-   if(!st.PRS.isValid()) return -5;
-   for(nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].id > 0) nsvs++;
-
-   if(iret < 0 || nsvs <= 4) {                // did not compute a solution
-      if(CI.Verbose) oflog << "At " << SolutionEpoch
-         << " RAIM returned " << iret << endl;
-      st.PRS.Valid = false;
-      if(iret >= 0) return -3;
-      return iret;
-   }
 
    // output to OutputPRSFile, opened in ReadAndProcessRawData()
    if(pofs) {
@@ -156,13 +142,28 @@ try {
 
       *pofs
          << " " << f166 << st.PRS.Solution(3)
-         << " " << f62 << st.PRS.RMSResidual;
-         //<< " " << f51 << st.PRS.MaxSlope
-         //<< " " << st.PRS.NIterations
-         //<< " " << f82s << st.PRS.Convergence;
+         << " " << f62 << st.PRS.RMSResidual
+         << " " << f51 << st.PRS.MaxSlope
+         << " " << st.PRS.NIterations
+         << " " << f82s << st.PRS.Convergence;
       for(i=0; i<Sats.size(); i++) *pofs << " " << setw(3) << Sats[i].id;
       *pofs << " (" << iret << ")" << (st.PRS.isValid() ? " V" : " NV");
       *pofs << endl;
+   }
+
+   if(iret > 0) {
+      //oflog << "RAIM solution is suspect (" << iret << ")" << endl;
+      return iret;
+   }
+   if(!st.PRS.isValid()) return -5;
+   for(nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].id > 0) nsvs++;
+
+   if(iret < 0 || nsvs <= 4) {                // did not compute a solution
+      if(CI.Verbose) oflog << "At " << SolutionEpoch
+         << " RAIM returned " << iret << endl;
+      st.PRS.Valid = false;
+      if(iret >= 0) return -3;
+      return iret;
    }
 
    return 0;

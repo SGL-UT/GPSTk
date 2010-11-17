@@ -296,8 +296,7 @@ namespace gpstk
    }
  
 /**
- * Uses an LU Decomposition to calculate the determinate of m. This is
- * faster than longDet() for large matricies.
+ * Uses an LU Decomposition to calculate the determinate of m.
  */
    template <class T, class BaseClass>
    inline T det(const ConstMatrixBase<T, BaseClass>& m) 
@@ -305,18 +304,9 @@ namespace gpstk
    {
       try
       {
-         LUDecomp<T> lud;
-         lud(m);
-         T det = 1;
-         size_t i;
-            // now just multiply down the main diagonal and then by the LUD sign.
-         for(i = 0; i < m.rows(); i++)
-            det *= lud.U(i,i);
-         return det * lud.sign;
-      }
-      catch(SingularMatrixException &e)
-      {
-         return 0;
+         LUDecomp<T> LU;
+         LU(m);
+         return LU.det();
       }
       catch(MatrixException& e)
       {
@@ -373,7 +363,6 @@ namespace gpstk
       return toReturn;
    }
 
-
 /**
  * Returns the diagonal matrix  of \c m .
  */
@@ -395,7 +384,6 @@ namespace gpstk
 
       return temp;
    }
-
 
 /**
  * Return a rotation matrix [dimensioned 3x3, inverse() = transpose()]
@@ -522,11 +510,44 @@ namespace gpstk
    }  // end inverseLUD
 
 /**
- * Inverts the square matrix M by SVD. Throws only on input of the zero matrix
+ * Inverts the matrix M by LU decomposition, and returns determinant as well
+ * Throws on non-square and singular matricies.
  */
    template <class T, class BaseClass>
-   inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m)
+   inline Matrix<T> inverseLUD(const ConstMatrixBase<T, BaseClass>& m, T& determ)
       throw (MatrixException)
+   {
+      if ((m.rows() != m.cols()) || (m.cols() == 0)) {
+         MatrixException e("inverseLUD() requires non-trivial square matrix");
+         GPSTK_THROW(e);
+      }
+
+      size_t i,j,N=m.rows();
+      Matrix<T> inv(m);
+      Vector<T> V(N);
+      LUDecomp<T> LU;
+      LU(m);
+      // compute determinant
+      determ = T(LU.parity);
+      for(i = 0; i < m.rows(); i++) determ *= LU.LU(i,i);
+      // compute inverse
+      for(j=0; j<N; j++) {    // loop over columns
+         V = T(0);
+         V(j) = T(1);
+         LU.backSub(V);
+         for(i=0; i<N; i++) inv(i,j)=V(i);
+      }
+      return inv;
+
+   }  // end inverseLUD
+
+/**
+ * Inverts the square matrix M by SVD, editing the singular values
+ * using tolerance tol. Throws only on input of the zero matrix.
+ */
+   template <class T, class BaseClass>
+   inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
+         const T tol=T(1.e-8)) throw (MatrixException)
    {
       if ((m.rows() != m.cols()) || (m.cols() == 0)) {
          MatrixException e("inverseSVD() requires non-trivial square matrix");
@@ -544,7 +565,50 @@ namespace gpstk
          GPSTK_THROW(e);
       }
       // edit singular values TD input tolerance, output edited SVs
-      for(i=1; i<N; i++) if(svd.S(i) < T(1.e-8)*svd.S(0)) svd.S(i)=T(0);
+      for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
+      // back substitution
+      Vector<T> V(N);
+      for(j=0; j<N; j++) {    //loop over columns
+         V = T(0);
+         V(j) = T(1);
+         svd.backSub(V);
+         for(i=0; i<N; i++) inv(i,j)=V(i);
+      }
+      return inv;
+
+   }  // end inverseSVD
+
+/**
+ * Invert the square matrix M by SVD, editing the singular values with tolerance tol,
+ * and return the largest and smallest singular values (before any editing).
+ * Throws only on input of the zero matrix.
+ */
+   template <class T, class BaseClass>
+   inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
+      T& big, T& small, const T tol=T(1.e-8)) throw (MatrixException)
+   {
+      if ((m.rows() != m.cols()) || (m.cols() == 0)) {
+         MatrixException e("inverseSVD() requires non-trivial square matrix");
+         GPSTK_THROW(e);
+      }
+
+      size_t i,j,N=m.rows();
+      Matrix<T> inv(m);
+      SVD<T> svd;
+      svd(m);
+      // SVD will not always sort singular values in descending order
+      svd.sort(true);
+      if(svd.S(0) == T(0)) {
+         MatrixException e("Input is the zero matrix");
+         GPSTK_THROW(e);
+      }
+
+      // compute condition number = big/small
+      big = svd.S(0);
+      small = svd.S(svd.S.size()-1);
+
+      // edit singular values using input tolerance, output edited SVs
+      for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
 
       // back substitution
       Vector<T> V(N);
@@ -558,6 +622,49 @@ namespace gpstk
 
    }  // end inverseSVD
 
+/**
+ * Invert the square matrix M by SVD, editing the singular values
+ * using tolerance tol, and return the singular values
+ * (before any editing). Throws only on input of the zero matrix.
+ */
+   template <class T, class BaseClass>
+   inline Matrix<T> inverseSVD(const ConstMatrixBase<T, BaseClass>& m,
+      Vector<T>& sv, const T tol=T(1.e-8)) throw (MatrixException)
+   {
+      if ((m.rows() != m.cols()) || (m.cols() == 0)) {
+         MatrixException e("inverseSVD() requires non-trivial square matrix");
+         GPSTK_THROW(e);
+      }
+
+      size_t i,j,N=m.rows();
+      Matrix<T> inv(m);
+      SVD<T> svd;
+      svd(m);
+      // SVD will not always sort singular values in descending order
+      svd.sort(true);
+      if(svd.S(0) == T(0)) {
+         MatrixException e("Input is the zero matrix");
+         GPSTK_THROW(e);
+      }
+
+      // save the singular values
+      sv = Vector<T>(N);
+      for(i=0; i<N; i++) sv(i) = svd.S(i);
+
+      // edit singular values using input tolerance, output edited SVs
+      for(i=1; i<N; i++) if(svd.S(i) < tol*svd.S(0)) svd.S(i)=T(0);
+
+      // back substitution
+      Vector<T> V(N);
+      for(j=0; j<N; j++) {    //loop over columns
+         V = T(0);
+         V(j) = T(1);
+         svd.backSub(V);
+         for(i=0; i<N; i++) inv(i,j)=V(i);
+      }
+      return inv;
+
+   }  // end inverseSVD
 
    /**
     * Inverts the square symetrix positive definite matrix M using Cholesky-Crout
