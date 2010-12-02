@@ -1,2 +1,2 @@
 # $Id$
-SUBDIRS = rxio vdraw vplot geomatics procframe
+SUBDIRS = rxio vdraw vplot geomatics procframe geodyn
