@@ -1,6 +1,6 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../src -I$(srcdir)/../lib/procframe -I$(srcdir)/../lib/vdraw -I$(srcdir)/../lib/vplot
-LDADD = ../src/libgpstk.la ../lib/procframe/libprocframe.la ../lib/vdraw/libvdraw.la ../lib/vplot/libvplot.la
+INCLUDES = -I$(srcdir)/../src -I$(srcdir)/../lib/procframe -I$(srcdir)/../lib/vdraw -I$(srcdir)/../lib/vplot -I$(srcdir)/../lib/geomatics
+LDADD = ../src/libgpstk.la ../lib/procframe/libprocframe.la ../lib/vdraw/libvdraw.la ../lib/vplot/libvplot.la ../lib/geomatics/libgeomatics.la
 
 bin_PROGRAMS = example1 example2 example3 example4 example5 example6 example7 \
 example8 example9 example10 example11 example12 example13 example14 example15

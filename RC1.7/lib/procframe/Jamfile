@@ -11,7 +11,7 @@ else
 {
    GPSBuildLibrary procframe :
       BasicModel.cpp CodeKalmanSolver.cpp CodeSmoother.cpp
-      ComputeCombination.cpp ComputeDOP.cpp ComputeIURAWeights.cpp
+      ComputeCombination.cpp ComputeDOP.cpp ComputeIonoModel.cpp ComputeIURAWeights.cpp
       ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp ComputeLinear.cpp
       ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp ComputePC.cpp
       ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp
@@ -31,7 +31,7 @@ else
 
    InstallFile $(INCDIR) :
       BasicModel.hpp CodeKalmanSolver.hpp CodeSmoother.hpp
-      ComputeCombination.hpp ComputeDOP.hpp ComputeIURAWeights.hpp
+      ComputeCombination.hpp ComputeDOP.hpp ComputeIonoModel.hpp ComputeIURAWeights.hpp
       ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp  ComputeLinear.hpp
       ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp ComputePC.hpp
       ComputePdelta.hpp ComputePI.hpp  ComputeSatPCenter.hpp

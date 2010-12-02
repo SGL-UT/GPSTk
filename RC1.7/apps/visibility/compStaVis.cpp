@@ -568,7 +568,8 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
               coordinates[1]/1000.0,
               coordinates[2]/1000.0 );
       }
-      fprintf(logfp,"Number of Stations: %d\n\n",stationPositions.size());
+      int nSta = stationPositions.size();
+      fprintf(logfp,"Number of Stations: %d\n\n", nSta);
    }
    else fprintf(logfp,"  All stations in coordinates file were included in the analysis.");
    

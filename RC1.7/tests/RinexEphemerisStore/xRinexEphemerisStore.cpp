@@ -370,6 +370,7 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 	
 	gpstk::DayTime Time(2006,1,31,11,45,0);
 	gpstk::DayTime TimeB(2006,1,31,9,59,44);
+        gpstk::DayTime TimeE(2006,1,31,13,59,44);
 	const gpstk::EngEphemeris& eph = Store.findEphemeris(sid,Time);
 
 	try
@@ -378,7 +379,7 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 		Blank.addEphemeris(eph);
 		
 		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getFinalTime());
+		CPPUNIT_ASSERT_EQUAL(TimeE,Blank.getFinalTime());
 		
 		Blank.dump(DumpData,1);
 	}
