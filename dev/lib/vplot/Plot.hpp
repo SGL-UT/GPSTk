@@ -64,10 +64,10 @@ namespace vplot
 
       /// Set the minimum and maximum for x axis (doesn't effect columns)
       inline void setXAxis(double min, double max, double gap=0) 
-      { minx=min; width=max-min; xgap=gap; }
+      { minx=min; width=max-min; xgap=gap; fixedXaxis = true;}
       /// Set the minimum and maximum for y axis (doesn't effect rows)
       inline void setYAxis(double min, double max, double gap=0) 
-      { miny=min; height=max-min; ygap=gap; }
+      { miny=min; height=max-min; ygap=gap; fixedYaxis = true; }
       /// Set the label for the x axis
       inline void setXLabel(const char* str) { xlabel = std::string(str); }
       /// Set the label for the x axis
@@ -118,6 +118,12 @@ namespace vplot
     protected:
       /// X axis label
       std::string xlabel;
+
+      /// User has set the Y axis
+      bool fixedYaxis;
+ 
+      /// User has set the X axis
+      bool fixedXaxis;
 
       /// Y axis label
       std::string ylabel;

@@ -37,6 +37,8 @@ namespace vplot
     xgap = ygap = 0;
     width = height = 0;
 
+    fixedXaxis = fixedYaxis = false;
+
     label_style = TextStyle();
 
     axis_top = AxisStyle();
@@ -65,6 +67,7 @@ namespace vplot
     axis_right.tick_position = AxisStyle::ABOVE;    
     axis_right.tight_bounds = true;
   }
+
   Frame Plot::getPlotArea(Frame* frame)
   {
     double left = (xlabel.size()?label_style.getPointSize():0)+40;

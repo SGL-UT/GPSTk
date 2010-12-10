@@ -95,8 +95,25 @@ namespace vplot
   {
     Frame innerFrame = getPlotArea(frame);
 
-    double minX, maxX, minY, maxY;
-    sl.findMinMax(minX,maxX,minY,maxY);
+    // Obtain mins and maxes from the data
+    double minXdata, maxXdata, minYdata, maxYdata;
+    sl.findMinMax(minXdata,maxXdata,minYdata,maxYdata);
+
+    // Assume these will be used as boundaries of the plots
+    double minX=minXdata, maxX=maxXdata, minY=minYdata, maxY=maxYdata;
+    
+    // See if the user overrode the axes limits
+    if (fixedXaxis)
+    {
+      minX = minx;
+      maxX = minx + width;
+    }
+
+    if (fixedYaxis)
+    {
+       minY = miny;
+       maxY = miny+height;
+    }
 
     // Use default min/max
     sl.drawInFrame(innerFrame,minX,maxX,minY,maxY);
