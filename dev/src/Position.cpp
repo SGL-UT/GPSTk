@@ -661,7 +661,7 @@ namespace gpstk
          string f = fmt;
          string s = str;
          stripLeading(s);
-         stripLeading(f);
+         stripTrailing(s);
          
             // parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
@@ -1048,9 +1048,7 @@ namespace gpstk
       throw()
    {
       tpr[2] = RSS(xyz[0],xyz[1],xyz[2]);
-      if(tpr[2] <= Position::POSITION_TOLERANCE/5)
-      {
-            // zero-length Cartesian vector
+      if(tpr[2] <= Position::POSITION_TOLERANCE/5) { // zero-length Cartesian vector
          tpr[0] = 90;
          tpr[1] = 0;
          return;
@@ -1082,9 +1080,10 @@ namespace gpstk
    {
       double p,slat,N,htold,latold;
       p = SQRT(xyz[0]*xyz[0]+xyz[1]*xyz[1]);
-      if(p < Position::POSITION_TOLERANCE/5) {   // pole or origin
-         llh[0] = llh[1] = 0;
-         llh[2] = fabs(xyz[2]) - A;
+      if(p < Position::POSITION_TOLERANCE/5) {  // pole or origin
+         llh[0] = (xyz[2] > 0 ? 90.0: -90.0);
+         llh[1] = 0;                            // lon undefined, really
+         llh[2] = fabs(xyz[2]) - A*SQRT(1.0-eccSq);
          return;
       }
       llh[0] = atan2(xyz[2], p*(1.0-eccSq));
@@ -1163,7 +1162,7 @@ namespace gpstk
       throw()
    {
       double cl,p,sl,slat,N,htold,latold;
-      llh[1] = llr[1]; // longitude is the same in both systems
+      llh[1] = llr[1];     // longitude is unchanged
       cl = sin((90-llr[0])*DEG_TO_RAD);
       sl = cos((90-llr[0])*DEG_TO_RAD);
       if(llr[2] <= Position::POSITION_TOLERANCE/5) {
@@ -1210,20 +1209,20 @@ namespace gpstk
    {
       double slat = sin(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
-      llr[1] = llh[1]; // longitude is the same in both systems
+      // longitude is unchanged
+      llr[1] = llh[1];
       // radius
       llr[2] = SQRT((N+llh[2])*(N+llh[2]) + N*eccSq*(N*eccSq-2*(N+llh[2]))*slat*slat);
-      if(llr[2] <= Position::POSITION_TOLERANCE/5)
-      {
-            // radius is below tolerance, hence assign zero-length
-            // arbitrarily set latitude = longitude = 0
+      if(llr[2] <= Position::POSITION_TOLERANCE/5) {
+         // radius is below tolerance, hence assign zero-length
+         // arbitrarily set latitude = longitude = 0
          llr[0] = llr[1] = llr[2] = 0;
          return;
       }
       if(1-fabs(slat) < 1.e-10) {             // at the pole
          if(slat < 0) llr[0] = -90;
          else         llr[0] =  90;
-         llr[1] = 0;
+         llr[1] = 0.0;
          return;
       }
       // theta
