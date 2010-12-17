@@ -29,15 +29,11 @@
  
 #include "MathBase.hpp"
 #include "PRSolution.hpp"
-#include "EphemerisRange.hpp"
 #include "GPSGeoid.hpp"
 
 // -----------------------------------------------------------------------------------
 // Combinations.hpp
 // Find all the combinations of n things taken k at a time.
-
-#include "Exception.hpp"
-
 /// Class Combinations will compute C(n,k), all the combinations of n things
 /// taken k at a time (where k <= n).
 /// Let n 'things' be indexed by i (i=0...n-1), e.g. stored in an array of length n.
@@ -213,15 +209,17 @@ namespace gpstk
          // NB this routine can set Satellite[.]=negative when no ephemeris
          i = PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP,
                pDebugStream);
-         //if(Debug) {
-         //   *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
-         //   for(j=0; j<Satellite.size(); j++)
-         //      *pDebugStream << " " << RinexSatID(Satellite[j]);
-         //   *pDebugStream << endl;
-         //   *pDebugStream << " SVP matrix("
-         //      << SVP.rows() << "," << SVP.cols() << ")" << endl;
-         //   *pDebugStream << fixed << setw(16) << setprecision(3) << SVP << endl;
-         //}
+         if(Debug) {
+            *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
+            for(j=0; j<Satellite.size(); j++) {
+               RinexSatID rs(::abs(Satellite[j].id), Satellite[j].system);
+               *pDebugStream << " " << (Satellite[j].id < 0 ? "-":"") << rs;
+            }
+            *pDebugStream << endl;
+            *pDebugStream << " SVP matrix("
+               << SVP.rows() << "," << SVP.cols() << ")" << endl;
+            *pDebugStream << fixed << setw(16) << setprecision(3) << SVP << endl;
+         }
          if(i) return i;  // return is 0(ok) or -4(no ephemeris)
 
          // count how many good satellites we have
@@ -404,6 +402,9 @@ namespace gpstk
       }
    }  // end PRSolution::RAIMCompute()
 
+   // -------------------------------------------------------------------------
+   // Prepare for the autonomous solution by computing direction cosines,
+   // corrected pseudoranges and satellite system.
    int PRSolution::PrepareAutonomousSolution(const DayTime& Tr,
                                              vector<SatID>& Satellite,
                                              const vector<double>& Pseudorange,
@@ -412,17 +413,30 @@ namespace gpstk
                                              ostream *pDebugStream)
       throw()
    {
+         if(pDebugStream) *pDebugStream << "PrepareAutomousSolution at time "
+            << Tr.printf("%4F %13.6g") << endl;
+
          int i,j,nsvs,N=Satellite.size();
          DayTime tx;                // transmit time
          Xvt PVT;
 
          if(N <= 0) return 0;
-         SVP = Matrix<double>(N,4);
+         SVP = Matrix<double>(N,4,0.0);
          SVP = 0.0;
 
          for(nsvs=0,i=0; i<N; i++) {
                // skip marked satellites
             if(Satellite[i].id <= 0) continue;
+
+            // test the system
+            if(Satellite[i].system == SatID::systemGPS)
+               ;
+            else {
+               Satellite[i].id = -::abs(Satellite[i].id);
+               if(pDebugStream) *pDebugStream
+                  << "Warning: Ignoring satellite (system) " << Satellite[i];
+               continue;
+            }
 
                // first estimate of transmit time
             tx = Tr;
@@ -433,6 +447,9 @@ namespace gpstk
             }
             catch(InvalidRequest& e) {
                Satellite[i].id = -::abs(Satellite[i].id);
+               if(pDebugStream) *pDebugStream
+                  << "Warning: PRSolution ignores satellite (ephemeris) "
+                  << Satellite[i] << endl;
                continue;
             }
 
@@ -449,6 +466,9 @@ namespace gpstk
                // SVP = {SV position at transmit time}, raw range + clk + rel
             for(j=0; j<3; j++) SVP(i,j) = PVT.x[j];
             SVP(i,3) = Pseudorange[i] + C_GPS_M * PVT.dtime;
+            if(pDebugStream) *pDebugStream << "SVP: Sat " << RinexSatID(Satellite[i])
+               << " PR " << fixed << setprecision(3) << Pseudorange[i]
+               << " dtime " << C_GPS_M*PVT.dtime << endl;
             nsvs++;
          }
 
@@ -526,7 +546,8 @@ namespace gpstk
       }
    }  // end PRSolution::AlgebraicSolution
 
-
+   // -------------------------------------------------------------------------
+   // Compute a straightforward solution using all the unmarked data.
    int PRSolution::AutonomousPRSolution(const DayTime& T,
                                         const vector<bool>& Use,
                                         const Matrix<double> SVP,
@@ -547,29 +568,29 @@ namespace gpstk
          }
 
       try {
-         int iret,i,j,n,N;
+         int iret,i,j,n,nsvs;
          double rho,wt,svxyz[3];
-         GPSGeoid geoid;               // WGS84?
+         GPSGeoid geoid;
 
          //if(pDebugStream) *pDebugStream << "Enter APRS " << n_iterate << " "
          //   << scientific << setprecision(3) << converge << endl;
 
             // find the number of good satellites
-         for(N=0,i=0; i<Use.size(); i++) if(Use[i]) N++;
-         if(N < 4) return -3;
+         for(nsvs=0,i=0; i<Use.size(); i++) if(Use[i]) nsvs++;
+         if(nsvs < 4) return -3;
 
             // define for computation
-         Vector<double> CRange(N),dX(4);
-         Matrix<double> P(N,4),PT,G(4,N),PG(N,N);
+         Vector<double> CRange(nsvs),dX(4);
+         Matrix<double> P(nsvs,4),PT,G(4,nsvs),PG(nsvs,nsvs);
          Xvt SV,RX;
 
          Sol.resize(4);
          Cov.resize(4,4);
-         Resid.resize(N);
+         Resid.resize(nsvs);
          Slope.resize(Use.size());
 
             // define for algebraic solution
-         Vector<double> U(4),Q(N);
+         Vector<double> U(4),Q(nsvs);
          Matrix<double> A(P);
             // and for linearized least squares
          int niter_limit = (n_iterate<2 ? 2 : n_iterate);
@@ -580,10 +601,12 @@ namespace gpstk
          n_iterate = 0;
          converge = 0.0;
 
-            // iteration loop
-            // do at least twice (even for algebraic solution) so that
-            // trop model gets evaluated
+         // iteration loop
+         // do at least twice so that trop model gets evaluated
+         bool applied_trop;
          do {
+            applied_trop = true;
+
                // current estimate of position solution
             RX.x = ECEF(Sol(0),Sol(1),Sol(2));
 
@@ -614,8 +637,13 @@ namespace gpstk
                   // must test RX for reasonableness to avoid corrupting TropModel
                   Position R(RX),S(SV);
                   double tc=R.getHeight(), elev = R.elevation(SV);
-                  if(elev < 0.0 || tc > 10000.0 || tc < -1000) tc=0.0;
+                  if(elev < 0.0 || fabs(tc) > 100000.0) {
+                     tc = 0.0;
+                     applied_trop = false;
+                  }
                   else tc = pTropModel->correction(R,S,T);
+                  //if(pDebugStream) *pDebugStream << "Trop " << i << " "
+                  //   << fixed << setprecision(3) << tc << endl;
                   CRange(n) -= tc;
                }
 
@@ -631,7 +659,7 @@ namespace gpstk
                   // data vector: corrected range residual
                Resid(n) = CRange(n) - rho - Sol(3);
 
-                  // TD: allow weight matrix = measurement covariance
+                  // TD: allow weight matrix = measurement covariance inverse
                // P *= MCov;
                // Resid *= MCov;
 
@@ -647,6 +675,11 @@ namespace gpstk
                n++;        // n is number of good satellites - used for Slope
             }  // end loop over satellites
 
+            //if(pDebugStream) *pDebugStream << "Partials\n"
+               //<< fixed << setprecision(4) << P << endl;
+            //if(pDebugStream) *pDebugStream << "Resid "
+               //<< fixed << setprecision(3) << Resid << endl;
+
                // compute information matrix = inverse covariance matrix
             PT = transpose(P);
             Cov = PT * P;
@@ -661,9 +694,15 @@ namespace gpstk
                return -2;
             }
 
+            //if(pDebugStream) *pDebugStream << "Covariance\n"
+               //<< fixed << setprecision(8) << Cov << endl;
+
                // generalized inverse
             G = Cov * PT;
             PG = P * G;                         // used for Slope
+
+            //if(pDebugStream) *pDebugStream << "Generalized inverse\n"
+               //<< fixed << setprecision(8) << G << endl;
 
             n_iterate++;                        // increment number iterations
 
@@ -696,6 +735,10 @@ namespace gpstk
                
 
          } while(1);    // end iteration loop
+
+         if(!applied_trop && pDebugStream)
+            *pDebugStream << "Warning - trop correction not applied at time "
+               << T.printf("%4F %10.3g\n");
 
             // compute slopes
          Slope = 0.0;
