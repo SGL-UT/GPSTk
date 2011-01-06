@@ -389,7 +389,7 @@ void FICDiff::printDiffSummary(const string fileName1,
 	 cout << endl << "Record: " << recordNumber << endl;
 
 	 cout << "Fuzzy match score: " << setprecision(4)
-	      << maximumScore*100 << "\%" << endl;
+	      << maximumScore*100 << "%%" << endl;
 
 	 printFICDataDiff(*i_lhs, *i_rhs_match);
 	 cout << endl;

@@ -53,6 +53,7 @@
 
 #include <functional>
 #include <algorithm>
+#include <iterator>
 
 #include "FFData.hpp"
 #include "FileSpec.hpp"

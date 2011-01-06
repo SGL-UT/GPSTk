@@ -165,7 +165,7 @@ bool EphSum::initialize(int argc, char *argv[])
 void EphSum::process()
 {
    int countByPRN[gpstk::MAX_PRN+1];
-   for (int i1=0;i1<=gpstk::MAX_PRN+1;++i1) countByPRN[i1] = 0;
+   for (int i1=0;i1<=gpstk::MAX_PRN;++i1) countByPRN[i1] = 0;
    
    bool successAtLeastOnce = false;
    

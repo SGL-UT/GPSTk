@@ -81,8 +81,20 @@ else if $(NT)
    #SUFLIBSHR       = .dll ;
 
    # Microsoft compilers define macro _MSC_VER = MMmm.mm MM=Major ver mm.mm=minor ver.
+   #
+   # Added for MSVS 2010 (S. Cummins)
+   #
+   # ------ MS VC++ 2010 : _MSC_VER >= 1600
+   if $(MSCVER) >= 1600 {
+      MSVCVersion = "VC++2010(VC10)" ;
+      LINKLIBS = regex.lib ;
+      CCFLAGS  += -D_CRT_SECURE_NO_DEPRECATE -wd4274 -wd4503 ;
+      C++FLAGS += /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES /EHsc /GR -wd4274 -wd4503 ;
+   }
+   #
+   #
    # ------ MS VC++ 2005 : _MSC_VER >= 1400
-   if $(MSCVER) >= 1400 {
+   else if $(MSCVER) >= 1400 {
       MSVCVersion = "VC++2005(VC8)" ;
       LINKLIBS   =  regex.lib ;
       # -wd turns off warnings; warning 4274 says its ignoring #ident
@@ -170,7 +182,7 @@ rule LibObjects
 
 
 # Useage :
-# GPSSetupLibrary target : depenancies ;
+# GPSSetupLibrary target : dependencies ;
 rule GPSSetupLibrary
 {
    local lib = [ FGristFiles $(LIBPREFIX)$(<:S=$(SUFLIB)) ] ;
