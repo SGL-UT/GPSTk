@@ -68,13 +68,13 @@ namespace gpstk
          
          //... add more here
 
-         FMI_LIST   = 2000,      ///< For class 'ForceModelList'
+         FMI_LIST   = 2000      ///< For class 'ForceModelList'
       };
 
       enum ForceModelType
       {
          Cd,               // Coefficient of drag
-         Cr,               // Coefficient of Reflectivity
+         Cr               // Coefficient of Reflectivity
       };
 
          /// Default constructor
@@ -263,7 +263,7 @@ namespace gpstk
        * @param t DayTime to append to stream \c s.
        * @return reference to \c s.
        */
-   inline std::ostream& operator<<( std::ostream& s,
+   void inline std::ostream& operator<<( std::ostream& s,
                                     const gpstk::ForceModel& fm )
    {
       Vector<double> a = fm.getAccel();

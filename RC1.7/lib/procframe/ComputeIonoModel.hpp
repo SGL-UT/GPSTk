@@ -91,7 +91,7 @@ namespace gpstk
       {
          Zero = 0,     ///< Don't do ionospheric delay correction
          Klobuchar,    ///< Klobuchar
-         GridTec,      ///< Ionospheric maps
+         GridTec      ///< Ionospheric maps
       };
 
    public:

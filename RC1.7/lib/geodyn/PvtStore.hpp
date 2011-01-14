@@ -51,7 +51,7 @@ namespace gpstk
       {
          Unknown    =0,   ///< unknown reference system
          ITRF,            ///< International Terrestial Reference Frame
-         ICRF,            ///< International Celestial Reference Frame
+         ICRF            ///< International Celestial Reference Frame
       };
 
       typedef struct PvtData
@@ -100,7 +100,7 @@ namespace gpstk
       ReferenceFrame  dataFrame;
 
          /// Description of the data
-      std::string dataDesc;;
+      std::string dataDesc;
 
    }; // End of class 'PvtStore'
 
