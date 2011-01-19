@@ -54,6 +54,7 @@ if $(UNIX)
             CCSHARE_FLAGS = -KPIC ;
             CCFLAGS += -Xc ;
             C++FLAGS += -compat=5 ;
+            C++FLAGS += -erroff=hidevf,wvarhidemem,badargtype2w ;
             AR = "CC -xar -o" ;
             NOARSCAN = true ;
             RM = "rm -rf" ;

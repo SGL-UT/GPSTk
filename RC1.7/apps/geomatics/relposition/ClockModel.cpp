@@ -98,7 +98,7 @@ try {
 
    bool jump;
    int i,n,iprev;
-   double curr,prev,prevprev,fdiff,sdiff,prevsdiff,frac,offset;
+   double curr,prev = 0,prevprev,fdiff,sdiff,prevsdiff,frac,offset;
    DayTime tt;
    map<int,double> jumps;
    map<string,Station>::iterator it;

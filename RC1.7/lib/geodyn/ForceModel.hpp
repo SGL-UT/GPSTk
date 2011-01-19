@@ -108,7 +108,7 @@ namespace gpstk
          
          /// return the force model name
       virtual std::string modelName() const
-      { return "ForceModel"; };
+      { return "ForceModel"; }
 
 
          /// return the force model index
@@ -121,7 +121,7 @@ namespace gpstk
           * @return  acceleration
           */
       virtual Vector<double> getAccel() const
-      { return a; };
+      { return a; }
 
          /**
           * Return the partial derivative of acceleration wrt position
@@ -161,7 +161,7 @@ namespace gpstk
          /** return number of np
           */
       int getNP() const
-      { return da_dp.cols(); };
+      { return da_dp.cols(); }
 
          /// get A Matrix
       Matrix<double> getAMatrix() const
@@ -263,7 +263,7 @@ namespace gpstk
        * @param t DayTime to append to stream \c s.
        * @return reference to \c s.
        */
-   void inline std::ostream& operator<<( std::ostream& s,
+   inline std::ostream& operator<<( std::ostream& s,
                                     const gpstk::ForceModel& fm )
    {
       Vector<double> a = fm.getAccel();
@@ -287,6 +287,9 @@ namespace gpstk
 
       s<<"A = ["<<A.rows()<<","<<A.cols()<<"]\n{\n"
          <<A<<endl<<"}\n\n";
+
+      return s;
+
    }
 
       // @}
