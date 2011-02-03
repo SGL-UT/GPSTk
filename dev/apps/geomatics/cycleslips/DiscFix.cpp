@@ -86,7 +86,7 @@ typedef struct configuration {
    //int MinPts;
       // processing
    double dt;
-   bool UseCA;
+   bool UseCA,ForceCA;
    vector<GSatID> ExSV;
    GSatID SVonly;
       // output files
@@ -307,13 +307,13 @@ int ReadFile(int nfile) throw(Exception)
          << " P2=" << inP2
          << endl;
 
-      if((inC1 == -1 && config.UseCA) ||             // no C1, but user wants C1
+      if((inC1 == -1 && config.ForceCA) ||           // no C1, but user wants C1
          (inP1 == -1 && inC1 == -1) ||               // no C1 and no P1
           inP2 == -1 || inL1 == -1 || inL2 == -1)
       {
          config.oflog << "Error: file " << name << " does not contain";
          if(inC1 == -1) config.oflog
-            << " C1 (--forceCA was" << (config.UseCA ? "" : " not") << " found)";
+           << " C1 (--forceCA was" << (config.ForceCA ? "" : " not") << " found)";
          if(inL1 == -1) config.oflog << " L1";
          if(inL2 == -1) config.oflog << " L2";
          if(inP1 == -1) config.oflog << " P1";
@@ -323,9 +323,8 @@ int ReadFile(int nfile) throw(Exception)
          irfstr.close();
          return 2;
       }
-      else if(inP1==-1) {
+      else if(inP1==-1 || config.ForceCA) {
          inP1 = inC1;
-         config.UseCA = true;
       }
 
       if(inP1 == inC1) UsingCA = true; else UsingCA = false;
@@ -949,8 +948,10 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    config.OutFile = string("df.out");
    config.format = string("%4F %10.3g");
 
-   config.UseCA = false;                  // meaning use P1 unless its absent, then C1
-                                          // true would mean use C1 only
+   // leave UseCA true; user overrides by setting ForceCA
+   config.UseCA = true;       // meaning use P1 unless it is absent, then C1
+   config.ForceCA = false;    // if true, use C1 even if P1 also present
+
    config.dt = -1.0;
    
    config.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
@@ -1237,7 +1238,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    }
 
    if(dashCA.getCount()) {
-      config.UseCA = true;
+      config.ForceCA = true;
       if(help) cout << "Input: Set the 'Use C/A code range' flag" << endl;
    }
    if(dashDT.getCount()) {
@@ -1397,7 +1398,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    GDConfig.setParameter("DT",config.dt);
 
       // print config to log, first DF
-   config.oflog << "Here is the " << PrgmName << " configuration:" << endl;
+   config.oflog << "\nHere is the " << PrgmName << " configuration:" << endl;
    config.oflog << " Input RINEX obs files are:" << endl;
    for(i=0; i<config.InputObsName.size(); i++) {
       config.oflog << "   " << config.InputObsName[i] << endl;
