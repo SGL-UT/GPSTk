@@ -1,9 +1,9 @@
 #						-*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
+AC_PREREQ(2.61)
 AC_INIT([GPSTK], [1.7], [http://www.gpstk.org/], [gpstk])
-AM_INIT_AUTOMAKE([1.7.6 foreign])
+AM_INIT_AUTOMAKE([1.10 foreign])
 AC_CONFIG_SRCDIR([src/DayTime.hpp])
 
 #gpstk 1.7 -> libgpstk.so.17.0, etc...
@@ -53,6 +53,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/vplot/Makefile
 		 lib/vdraw/Makefile
 		 lib/geomatics/Makefile
+		 lib/geodyn/Makefile
 		 lib/procframe/Makefile
 		 src/Makefile
 		 apps/Makefile
