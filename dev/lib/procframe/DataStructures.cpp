@@ -1498,6 +1498,28 @@ in matrix and number of types do not match") );
 
 
 
+      // Returns a gnssRinex with only these types of data.
+      // @param satSys Satellite System value to be kept. 
+   gnssRinex& gnssRinex::keepOnlySatSystem(const SatID::SatelliteSystem satSys)
+   {
+       satTypeValueMap stvMap( (*this).body );
+       
+       SatIDSet satRejectedSet;
+       for(satTypeValueMap::iterator it = stvMap.begin();
+           it != stvMap.end();
+           ++it)
+       {
+           if( it->first.system != satSys ) satRejectedSet.insert( it->first );
+       }
+       stvMap.removeSatID(satRejectedSet);
+
+
+       (*this).body = stvMap;
+
+       return (*this);
+   }  // End of method 'gnssRinex::keepOnlySatSystem()'
+
+
 
       //// Some other handy data structures
 

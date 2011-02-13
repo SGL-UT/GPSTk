@@ -1078,6 +1078,12 @@ namespace gpstk
       gnssRinex& keepOnlyTypeID(const TypeIDSet& typeSet);
 
 
+         /// Returns a gnssRinex with only these types of data.
+         /// @param satSys Satellite System value to be kept. 
+      gnssRinex& keepOnlySatSystem(const SatID::SatelliteSystem satSys);
+
+
+
          /// Destructor.
       virtual ~gnssRinex() {};
 
