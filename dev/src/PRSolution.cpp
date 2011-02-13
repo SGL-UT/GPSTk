@@ -208,8 +208,8 @@ namespace gpstk
          // fill the SVP matrix, and use it for every solution
          // NB this routine can set Satellite[.]=negative when no ephemeris
          i = PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP,
-               pDebugStream);
-         if(Debug) {
+             Debug?pDebugStream:0);
+         if(Debug && pDebugStream) {
             *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
             for(j=0; j<Satellite.size(); j++) {
                RinexSatID rs(::abs(Satellite[j].id), Satellite[j].system);
@@ -294,7 +294,7 @@ namespace gpstk
                Convergence = ConvergenceLimit;
                iret = AutonomousPRSolution(Tr, UseSat, SVP, pTropModel, Algebraic,
                   NIterations, Convergence, Solution, Covariance, Residuals, Slopes,
-                  pDebugStream);
+                  Debug?pDebugStream:0);
 
                // ----------------------------------------------------------------
                // Compute RMS residual...
@@ -315,7 +315,7 @@ namespace gpstk
 
                // ----------------------------------------------------------------
                // print solution with diagnostic information
-               if(Debug) {
+               if(Debug && pDebugStream) {
                   *pDebugStream << "RPS " << setw(2) << stage
                      << " " << setw(4) << Tr.GPSfullweek()
                      << " " << fixed << setw(10) << setprecision(3) << Tr.GPSsecond()
