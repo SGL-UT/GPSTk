@@ -45,7 +45,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    Xvt GPSEphemerisStore::getXvt(const SatID sat, const DayTime& t)
       const throw(InvalidRequest)
-   {
+   { 
       short ref;
       return getXvt(sat, t, ref);
    } // end of GPSEphemerisStore::getXvt()
@@ -79,6 +79,8 @@ namespace gpstk
    {
       try
       {
+          validSatSystem(sat);
+
          return method==0 ? findUserEphemeris(sat, t) : findNearEphemeris(sat, t);
       }
       catch(InvalidRequest& ir)
@@ -95,6 +97,8 @@ namespace gpstk
    {
       try
       {
+         validSatSystem(sat);
+
          // test for GPS satellite system in sat?
          const EngEphemeris& eph = findEphemeris(sat, t);
          short health = eph.getHealth();
@@ -249,6 +253,8 @@ namespace gpstk
    GPSEphemerisStore::findUserEphemeris(const SatID sat, const DayTime& t) 
       const throw(InvalidRequest)
    {
+      validSatSystem(sat);
+
       DayTime test;
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
@@ -320,6 +326,8 @@ namespace gpstk
    GPSEphemerisStore::findNearEphemeris(const SatID sat, const DayTime& t) 
       const throw(InvalidRequest)
    {
+      validSatSystem(sat);
+
       DayTime test;
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
@@ -408,6 +416,8 @@ namespace gpstk
    GPSEphemerisStore::getEphMap( const SatID sat )
             const throw(InvalidRequest)
    {
+      validSatSystem(sat);
+
       UBEMap::const_iterator prn_i = ube.find(sat.id);
       if (prn_i == ube.end())
       {
