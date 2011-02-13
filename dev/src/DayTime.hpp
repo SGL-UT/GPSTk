@@ -52,7 +52,7 @@
 
 
 #include <string>
-#if defined _MSC_VER and not defined _WINSOCKAPI_
+#if (defined _MSC_VER) && !(defined _WINSOCKAPI_)
 // timeval is defined in winsock.h, which we don't want to include
 // because it breaks lots of this code
    #ifndef timeval
