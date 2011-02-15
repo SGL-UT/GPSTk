@@ -31,7 +31,7 @@ Introduction
    GPSTk. Efforts are made to maintain both build environments for allowing
    flexibility when building the project.  However, the jam method of building
    is typically exercised more frequently and is the recommended choice.  If 
-   you don't know how use these makefile, the attached info at the bottom of 
+   you don't know how to use these makefiles, the attached info at the bottom of 
    this file from the Free Software Foundation will help.
 
    For more information about building the GPSTk, see the website at

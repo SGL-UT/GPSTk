@@ -92,17 +92,19 @@ supported platforms.
 GPSTk Auxiliary Libraries
 -------------------------
 The auxiliary libraries contains code that could be useful in GNSS processing 
-but do not fit this description and portability of the core library. This code
+but do not fit the description and portability of the core library. This code
 could contain highly specialized algorithms or be related to the message 
 format of a specific receiver. The code could require libraries or system 
 functions that are broadly available but not part of the C++ standard.  
 Currently the auxiliary libraries are:
 
    1. rxio - Receiver and input/output library
-   2. vplot - Vector graphics library
+   2. vplot, vdraw - Vector graphics libraries
    3. geomatics - Precise positioning library
    4. procframe - Framework for storage, filtering and processing of
                   observations, including 'PPP' processing.
+   5. geodyn - a library to model the effects of natural forces on 
+	       space vehicle dynamics.
 
 GPSTk Applications
 ------------------
