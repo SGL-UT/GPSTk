@@ -126,7 +126,7 @@ namespace gpstk
                   TypeID type = itt->first;
                   //itt->second += getDCBCorrection(receiverName, sat, type, usingC1);
                   
-                  if(type == TypeID::P1)
+                  if( (type == TypeID::C1) || (type == TypeID::P1))
                   {
                      gData[sat][TypeID::instC1] = getDCBCorrection(receiverName,
                         sat, type, usingC1);
@@ -186,7 +186,8 @@ namespace gpstk
          
          int ind = -1;
 
-         if( (type == TypeID::P1)        || 
+         if( (type == TypeID::C1) ||
+             (type == TypeID::P1) || 
              (type == TypeID::GRAPHIC1) )
          {
             ind = 0;
@@ -223,7 +224,7 @@ namespace gpstk
             dcb3 = factorC1X2[ind];
          }
 
-         if( !useC1 && (type!=TypeID::C1))
+         if( !useC1 && (type==TypeID::P1))
          {
             dcb2 = 0.0;
          }
