@@ -90,7 +90,7 @@ else
       IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp
       IonexStream.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp
       LinearClockModel.hpp Logger.hpp LoopedFramework.hpp
-      MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
+      MainAdapter.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
       MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp
       MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp
       MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp

@@ -46,6 +46,7 @@
 
 
 #include "CommandOptionParser.hpp"
+#include "MainAdapter.hpp"
 
 namespace gpstk
 {
