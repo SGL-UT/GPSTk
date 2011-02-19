@@ -66,7 +66,7 @@ namespace gpstk
       {
          ostringstream ss;
          
-         ss << "[ " << msg.level << " "<<LogLevelName[msg.level] << " ]";
+         ss << "[" << LogLevelName[msg.level] << "]";
          string slevel = ss.str();
 
          ss.str("");
@@ -75,7 +75,8 @@ namespace gpstk
             << msg.function;
          string slocation = ss.str();
 
-         (*pstrm) << msg.time << " " 
+         (*pstrm) << "@ "
+                  << msg.time.printf("%04Y/%02m/%02d %02H:%02M:%06.3f") << " " 
                   << slevel <<" "
                   << slocation <<" \n  "
                   << msg.text << endl;
@@ -86,7 +87,8 @@ namespace gpstk
 
    void Logger::log(const std::string& text, LogLevel level, ExceptionLocation location)
    {
-      LogMessage msg(text,level,DayTime(),
+      DayTime now; now.setLocalTime();
+      LogMessage msg(text,level,now,
          location.getFileName(),
          location.getFunctionName(),
          location.getLineNumber());
@@ -155,7 +157,7 @@ namespace gpstk
       {
          if (name == DEFAULT)
          {
-            pLogger = new Logger(name,Logger::INFORMATION);
+            pLogger = new Logger(name,Logger::ERROR,&std::clog);
          }
          
          add(pLogger);
@@ -166,15 +168,25 @@ namespace gpstk
 
    //////////////////////////////////////////////////////////////////////////
 
+   
    class AutoLoggerShutdown
    {
    public:
-      AutoLoggerShutdown() {Logger::create("");}
+      AutoLoggerShutdown()  {/*Logger::create("",Logger::TRACE);*/}
       ~AutoLoggerShutdown() { Logger::shutdown(); }
    };
 
    
    static AutoLoggerShutdown als;
+   
+   Logger& LoggerStream::clog = Logger::get("");
+   Logger& LoggerStream::log  = clog;
+   Logger& LoggerStream::log0 = clog;
+   Logger& LoggerStream::log1 = clog;
+   Logger& LoggerStream::log2 = clog;
+   Logger& LoggerStream::log3 = clog;
+   Logger& LoggerStream::log4 = clog;
+   Logger& LoggerStream::log5 = clog;
 
 }  // End of namespace 'gpstk'
 

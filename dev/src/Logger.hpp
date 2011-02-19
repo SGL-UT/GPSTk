@@ -223,7 +223,7 @@ namespace gpstk
       ostringstream ss;
       ss<<fixed;
       ss << "["<< vec.size() << "x1]:" << endl;
-      ss<<setw(18)<<setprecision(6)<<vec;
+      ss<<setw(width)<<setprecision(digit)<<vec;
       return ss.str();
    }
 
@@ -233,16 +233,13 @@ namespace gpstk
       ostringstream ss;
       ss<<fixed;
       ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]:" << endl;
-      ss<<setw(18)<<setprecision(6)<<mat;
+      ss<<setw(width)<<setprecision(digit)<<mat;
       return ss.str();
    }
  
    //
    // convenience macros
    //
-
-#define GPSTK_LOGGER(logname) \
-   Logger::get(logname)   
 
 #define GPSTK_LOGGING(logger,level,msg) \
    logger.log(msg,level,FILE_LOCATION) 
@@ -299,17 +296,22 @@ namespace gpstk
       void destroy(const std::string& logname)
       { Logger::destroy(logname); }
 
-      Logger& clog()
-      { return Logger::get(""); }
+      // Objects to easy access
+      static Logger& clog;           // std::clog
+      static Logger& log;
+      static Logger& log0;
+      static Logger& log1;
+      static Logger& log2;
+      static Logger& log3;
+      static Logger& log4;
+      static Logger& log5;
 
    }; // End of class 'LoggerStream'
-
+   
       /// Entry point of the logging framework
    static LoggerStream slog;
 
 }  // end of namespace 'gpstk'
-
-
 
 #endif   // GPSTK_LOGGER_HPP
 
