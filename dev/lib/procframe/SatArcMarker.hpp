@@ -160,6 +160,11 @@ namespace gpstk
       virtual SatArcMarker& setUnstablePeriod(const double unstableTime);
 
 
+         /** Method to get the arc changed epoch.
+          * @param sat              Interested SatID.
+          */
+      virtual DayTime getArcChangedEpoch(const SatID& sat);
+
          /** Returns a satTypeValueMap object, adding the new data generated
           *  when calling this object.
           *

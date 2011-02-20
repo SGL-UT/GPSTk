@@ -99,6 +99,24 @@ namespace gpstk
 
 
 
+      /* Method to get the arc changed epoch.
+       * @param sat              Interested SatID.
+       */
+   DayTime SatArcMarker::getArcChangedEpoch(const SatID& sat)
+   {
+      std::map<SatID, DayTime>::iterator it = satArcChangeMap.find(sat);
+      if(it!=satArcChangeMap.end())
+      {
+         return it->second;
+      }
+      else
+      {
+         return DayTime(DayTime::BEGINNING_OF_TIME);
+      }
+
+   }  // End of method 'SatArcMarker::getArcChangedEpoch()'
+
+
       /* Returns a satTypeValueMap object, adding the new data generated
        *  when calling this object.
        *
