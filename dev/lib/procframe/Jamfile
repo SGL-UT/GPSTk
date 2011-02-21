@@ -15,7 +15,7 @@ else
       ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp ComputeLinear.cpp
       ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp ComputePC.cpp
       ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp
-      ComputeTropModel.cpp ComputeWindUp.cpp CorrectCodeBiases.cpp 
+      ComputeTropModel.cpp ComputeWindUp.cpp ConvertC1ToP1.cpp CorrectCodeBiases.cpp 
       CorrectObservables.cpp DataHeaders.cpp DataStructures.cpp Decimate.cpp
       DeltaOp.cpp DoubleOp.cpp Dumper.cpp EclipsedSatFilter.cpp Equation.cpp
       EquationSystem.cpp GravitationalDelay.cpp IonexModel.cpp Keeper.cpp
@@ -35,7 +35,7 @@ else
       ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp  ComputeLinear.hpp
       ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp ComputePC.hpp
       ComputePdelta.hpp ComputePI.hpp  ComputeSatPCenter.hpp
-      ComputeTropModel.hpp ComputeWindUp.hpp CorrectCodeBiases.hpp
+      ComputeTropModel.hpp ComputeWindUp.hpp ConvertC1ToP1.hpp CorrectCodeBiases.hpp
       CorrectObservables.hpp DataHeaders.hpp DataStructures.hpp Decimate.hpp
       DeltaOp.hpp DoubleOp.hpp Dumper.hpp EclipsedSatFilter.hpp Equation.hpp
       EquationSystem.hpp GravitationalDelay.hpp IonexModel.hpp Keeper.hpp
