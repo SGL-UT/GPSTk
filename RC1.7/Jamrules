@@ -44,6 +44,8 @@ if $(UNIX)
       case MACOSX :
          LINKLIBS += -lstdc++ ;
          CCSHARE_FLAGS = -fPIC ;
+         LDSHARE_FLAGS = -dynamiclib ;
+         SUFLIBSHR = .dylib ; 
 
       case SOLARIS :
          LINKLIBS += -lgen ;
@@ -70,7 +72,10 @@ if $(UNIX)
       case AIX :
          LINKLIBS += -lstdc++ ;
    }
-   SUFLIBSHR      ?= .so ;
+   if $(OS) != MACOSX 
+   {
+      SUFLIBSHR = .so ;
+   }
 }
 else if $(NT)
 {
@@ -137,6 +142,7 @@ if $(PREFIX)
    BINDIR = [ FDirName $(PREFIX) bin ] ;
    LIBDIR = [ FDirName $(PREFIX) lib ] ;
    INCDIR = [ FDirName $(PREFIX) include gpstk ] ;
+#   Echo " BINDIR=" $(BINDIR) ; Echo " LIBDIR=" $(LIBDIR) ; Echo " INCDIR="$(INCDIR) ;
 }
 
 # debug - edit this as needed.
@@ -219,6 +225,11 @@ rule GPSBuildLibrary
    LibraryFromObjects $(arlib) : $(statobjs) ;
    InstallLib $(LIBDIR) : $(arlib) ;
 
+# get some visibility into library values
+
+   Echo " LIBDIR IS " $(LIBDIR) ;
+   Echo " ARLIB IS " $(arlib) ;
+
    # Windows/cygwin is limited to 1024 character command lines.  
    # This goes over that.
    # Until we can figure out how to properly split our library, we just can't
@@ -237,8 +248,18 @@ rule GPSBuildLibrary
      }
      else
      {
-       # the instal_name may not be right for a Xcode app
-       LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -install_name @rpath/$(soname) ;
+       # the install_name may not be right for a Xcode app
+
+        soname = $(LIBPREFIX)$(<:S=.$(GPSTK_SO_VERSION))$(SUFLIBSHR) ;
+
+# look at soname to see if should add gpstk to LINKLIBS
+
+        Echo " SONAME IS " $(soname) ;
+
+        if ( $(soname) != libgpstk.$(GPSTK_SO_VERSION).dylib ) { LINKLIBS += -lgpstk ; }
+
+        shlib = $(LIBPREFIX)$(<:S=.$(GPSTK_SO_VERSION)$(SUFLIBSHR).0) ;
+        LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM)  -install_name @rpath/$(soname) ;
      }
      Depends lib : $(shlib) ;
      LibObjects $(>) ;
