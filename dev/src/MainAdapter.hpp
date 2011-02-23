@@ -32,6 +32,7 @@
 
 
 #include <iostream>
+#include "Exception.hpp"
 
 namespace gpstk
 {
@@ -58,7 +59,7 @@ namespace gpstk
 
             return 0;
          }
-         catch(gpstk::Exception& e)
+         catch(Exception& e)
          {
             cerr << "Problem: "<< e << endl;
          }
