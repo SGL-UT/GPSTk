@@ -40,8 +40,8 @@ namespace gpstk
 
    const std::string Logger::LogLevelName[MAX_LEVEL]=
    {
-      "","fatal","critical","error","warning","notice","information",
-      "debug","trace"
+      "","Fatal","Critical","Error","Warning","Notice","Information",
+      "Debug","Trace"
    };
 
    Logger::Logger(const Logger& right)
@@ -64,22 +64,27 @@ namespace gpstk
    {
       if( (msg.level <= level) && (pstrm->good()) )
       {
-         ostringstream ss;
-         
-         ss << "[" << LogLevelName[msg.level] << "]";
-         string slevel = ss.str();
+         string slevel = LogLevelName[msg.level];
 
-         ss.str("");
+         ostringstream ss;
          ss << msg.file <<":"
             << msg.line <<":"
             << msg.function;
          string slocation = ss.str();
 
-         (*pstrm) << "@ "
-                  << msg.time.printf("%04Y/%02m/%02d %02H:%02M:%06.3f") << " " 
-                  << slevel <<" "
-                  << slocation <<" \n  "
-                  << msg.text << endl;
+         if(printInDetail)
+         {
+            (*pstrm) << "@ [" << StringUtils::lowerCase(slevel) << "] "
+               << msg.time.printf("%04Y/%02m/%02d %02H:%02M:%06.3f") << " " 
+               << slocation <<"\n  "
+               << msg.text << endl;
+         }
+         else
+         {
+            (*pstrm) << "[" << StringUtils::lowerCase(slevel) << "] "
+                     << msg.text << endl;
+         }
+         
                 
          (*pstrm).flush();
       }
@@ -181,12 +186,16 @@ namespace gpstk
    
    Logger& LoggerStream::clog = Logger::get("");
    Logger& LoggerStream::log  = clog;
-   Logger& LoggerStream::log0 = clog;
-   Logger& LoggerStream::log1 = clog;
-   Logger& LoggerStream::log2 = clog;
-   Logger& LoggerStream::log3 = clog;
-   Logger& LoggerStream::log4 = clog;
-   Logger& LoggerStream::log5 = clog;
+
+   Logger& LoggerStream::fatal = Logger::create("fatal",Logger::FATAL,&std::clog);
+   Logger& LoggerStream::critical = Logger::create("critical",Logger::CRITICAL,&std::clog);
+   Logger& LoggerStream::error = Logger::create("error",Logger::ERROR,&std::cerr);
+   Logger& LoggerStream::warning = Logger::create("warning",Logger::WARNING,&std::clog);
+   Logger& LoggerStream::notice = Logger::create("notice",Logger::NOTICE,&std::clog);
+   Logger& LoggerStream::information = Logger::create("information",Logger::INFORMATION,&std::clog);
+
+   Logger& LoggerStream::debug = Logger::create("debug",Logger::DEBUG,&std::clog);
+   Logger& LoggerStream::trace = Logger::create("trace",Logger::TRACE,&std::clog);
 
 }  // End of namespace 'gpstk'
 

@@ -32,6 +32,8 @@
 
 #include <iostream>
 #include <map>
+#include <string>
+#include <cstdarg>
 #include "DayTime.hpp"
 #include "Exception.hpp"
 #include "Matrix.hpp"
@@ -129,6 +131,9 @@ namespace gpstk
          /// Get logger's name
       std::string getName()
       {return this->name; }
+
+      Logger& setPrintInDetail(bool inDetail = true)
+      { this->printInDetail = inDetail; return (*this);}
       
          /// Write log message to logging stream
       void log(const std::string& text, LogLevel level, ExceptionLocation location);
@@ -192,6 +197,8 @@ namespace gpstk
       void log(const LogMessage& msg);
       static Logger* find(const std::string& name);
       static void add(Logger* pLogger);
+
+      bool printInDetail;
          
    protected:
          /// Default constructor
@@ -200,7 +207,8 @@ namespace gpstk
       Logger(std::string logname,
          LogLevel loglevel=INFORMATION, 
          std::ostream* logstrm = &std::clog) 
-         : name(logname), level(loglevel), pstrm(logstrm)
+         : name(logname),level(loglevel), pstrm(logstrm),
+           printInDetail(false)
       {};
 
       std::string   name;     /// log name
@@ -218,21 +226,27 @@ namespace gpstk
    }; // End of class 'Logger'
 
    template <class T>
-   inline std::string mat2str(const Vector<T>& vec, size_t width, size_t digit)
+   inline std::string mat2str(const Vector<T>& vec, size_t width, size_t digit,
+      std::string desc="")
    {
       ostringstream ss;
       ss<<fixed;
-      ss << "["<< vec.size() << "x1]:" << endl;
-      ss<<setw(width)<<setprecision(digit)<<vec;
+      ss << "["<< vec.size() << "x1]: " << desc << endl;
+      for(int i=0;i<vec.size();i++)
+      {
+         ss<<" "<<setw(width)<<setprecision(digit)<<vec[i];
+         if((i+1)!=vec.size()) ss<<endl;
+      }      
       return ss.str();
    }
 
    template <class T>
-   inline std::string mat2str(const Matrix<T>& mat, size_t width, size_t digit)
+   inline std::string mat2str(const Matrix<T>& mat, size_t width, size_t digit,
+      std::string desc="")
    {
       ostringstream ss;
       ss<<fixed;
-      ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]:" << endl;
+      ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]: "<< desc << endl;
       ss<<setw(width)<<setprecision(digit)<<mat;
       return ss.str();
    }
@@ -240,40 +254,90 @@ namespace gpstk
    //
    // convenience macros
    //
+#define GPSTK_MAX_BUFFER_SIZE 1024*100
 
 #define GPSTK_LOGGING(logger,level,msg) \
-   logger.log(msg,level,FILE_LOCATION) 
+   logger.log(msg,level,FILE_LOCATION); 
 
-#define GPSTK_FATAL(logger, msg) \
-   if (logger.fatal()) logger.log(msg,Logger::FATAL,FILE_LOCATION); else (void) 0
+#define GPSTK_FATAL( msg ) \
+   slog.fatal.log(msg,Logger::FATAL,FILE_LOCATION);
 
-#define GPSTK_CRITICAL(logger, msg) \
-   if (logger.critical()) logger.log(msg,Logger::CRITICAL,FILE_LOCATION); else (void) 0
+#define GPSTK_CRITICAL( msg ) \
+   slog.critical.log(msg,Logger::CRITICAL,FILE_LOCATION);
 
-#define GPSTK_ERROR(logger, msg) \
-   if (logger.error()) logger.log(msg,Logger::ERROR,FILE_LOCATION); else (void) 0
+#define GPSTK_ERROR( msg ) \
+   slog.error.log(msg,Logger::ERROR,FILE_LOCATION);
 
-#define GPSTK_WARNING(logger, msg) \
-   if (logger.warning()) logger.log(msg,Logger::WARNING,FILE_LOCATION); else (void) 0
+#define GPSTK_WARNING( msg ) \
+   slog.warning.log(msg,Logger::WARNING,FILE_LOCATION);
 
-#define GPSTK_NOTICE(logger, msg) \
-   if (logger.notice()) logger.log(msg,Logger::NOTICE,FILE_LOCATION); else (void) 0
+#define GPSTK_NOTICE( msg ) \
+   slog.notice.log(msg,Logger::NOTICE,FILE_LOCATION);
 
-#define GPSTK_INFORMATION(logger, msg) \
-   if (logger.information()) logger.log(msg,Logger::INFORMATION,FILE_LOCATION); else (void) 0
+#define GPSTK_INFORMATION( msg ) \
+   slog.information.log(msg,Logger::INFORMATION,FILE_LOCATION);
 
+   //
+#define GPSTK_FATAL2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_FATAL(ss);}
+
+#define GPSTK_CRITICAL2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_CRITICAL(ss);}
+
+#define GPSTK_ERROR2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_ERROR(ss);}
+   
+#define GPSTK_WARNING2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_WARNING(ss);}
+
+#define GPSTK_NOTICE2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_NOTICE(ss);}
+
+#define GPSTK_INFORMATION2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_INFORMATION(ss);}
 
 #if defined(_DEBUG)
 
-#define GPSTK_DEBUG(logger, msg) \
-   if (logger.debug()) logger.log(msg,Logger::DEBUG,FILE_LOCATION); else (void) 0
-#define GPSTK_TRACE(logger, msg) \
-   if (logger.trace()) logger.log(msg,Logger::TRACE,FILE_LOCATION); else (void) 0
+#define GPSTK_DEBUG( msg ) \
+   slog.debug.log(msg,Logger::DEBUG,FILE_LOCATION);
+
+#define GPSTK_DEBUG2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_DEBUG(ss);}
+
+#define GPSTK_DEBUG_MAT( mat, w, d, desc) \
+   {std::string ss = mat2str(mat,w,d,desc); GPSTK_DEBUG(ss);}
+
+#define GPSTK_TRACE( msg ) \
+   slog.trace.log(msg,Logger::TRACE,FILE_LOCATION);
+
+#define GPSTK_TRACE2(format,__VA_ARGS__) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_TRACE(ss);}
+
+#define GPSTK_TRACE_MAT( mat, w, d, desc) \
+   {std::string ss = mat2str(mat,w,d,desc); GPSTK_TRACE(ss);}
 
 #else
 
 #define GPSTK_DEBUG(logger, msg)
+#define GPSTK_DEBUG2(format,__VA_ARGS__)
 #define GPSTK_TRACE(logger, msg)
+#define GPSTK_TRACE2(format,__VA_ARGS__)
 
 #endif
       /**
@@ -299,12 +363,15 @@ namespace gpstk
       // Objects to easy access
       static Logger& clog;           // std::clog
       static Logger& log;
-      static Logger& log0;
-      static Logger& log1;
-      static Logger& log2;
-      static Logger& log3;
-      static Logger& log4;
-      static Logger& log5;
+
+      static Logger& fatal;
+      static Logger& critical;
+      static Logger& error;
+      static Logger& warning;
+      static Logger& notice;
+      static Logger& information;
+      static Logger& debug;
+      static Logger& trace;
 
    }; // End of class 'LoggerStream'
    
