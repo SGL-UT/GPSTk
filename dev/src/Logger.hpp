@@ -336,8 +336,11 @@ namespace gpstk
 
 #define GPSTK_DEBUG(logger, msg)
 #define GPSTK_DEBUG2(format,__VA_ARGS__)
+#define GPSTK_DEBUG_MAT( mat, w, d, desc)
+
 #define GPSTK_TRACE(logger, msg)
 #define GPSTK_TRACE2(format,__VA_ARGS__)
+#define GPSTK_TRACE_MAT( mat, w, d, desc)
 
 #endif
       /**
