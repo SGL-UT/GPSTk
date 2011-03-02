@@ -61,15 +61,15 @@ namespace gpstk
          }
          catch(Exception& e)
          {
-            cerr << "Problem: "<< e << endl;
+            std::cerr << "Problem: "<< e << std::endl;
          }
-         catch(exception& e)
+         catch(std::exception& e)
          {
-            cerr << "Problem: "<< e.what() << endl;
+            std::cerr << "Problem: "<< e.what() << std::endl;
          }
          catch(...)
          {
-            cerr << "Problem: " << "Unknown error." << endl;
+            std::cerr << "Problem: " << "Unknown error." << std::endl;
          }
 
          return -1;

@@ -229,13 +229,13 @@ namespace gpstk
    inline std::string mat2str(const Vector<T>& vec, size_t width, size_t digit,
       std::string desc="")
    {
-      ostringstream ss;
-      ss<<fixed;
-      ss << "["<< vec.size() << "x1]: " << desc << endl;
+      std::ostringstream ss;
+      ss << std::fixed;
+      ss << "["<< vec.size() << "x1]: " << desc << std::endl;
       for(int i=0;i<vec.size();i++)
       {
-         ss<<" "<<setw(width)<<setprecision(digit)<<vec[i];
-         if((i+1)!=vec.size()) ss<<endl;
+         ss << " " << std::setw(width) << std::setprecision(digit) << vec[i];
+         if((i+1)!=vec.size()) ss << std::endl;
       }      
       return ss.str();
    }
@@ -244,10 +244,10 @@ namespace gpstk
    inline std::string mat2str(const Matrix<T>& mat, size_t width, size_t digit,
       std::string desc="")
    {
-      ostringstream ss;
-      ss<<fixed;
-      ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]: "<< desc << endl;
-      ss<<setw(width)<<setprecision(digit)<<mat;
+      std::ostringstream ss;
+      ss << std::fixed;
+      ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]: "<< desc << std::endl;
+      ss << std::setw(width) << std::setprecision(digit) << mat;
       return ss.str();
    }
  
@@ -278,32 +278,32 @@ namespace gpstk
    slog.information.log(msg,Logger::INFORMATION,FILE_LOCATION);
 
    //
-#define GPSTK_FATAL2(format,__VA_ARGS__) \
+#define GPSTK_FATAL2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_FATAL(ss);}
 
-#define GPSTK_CRITICAL2(format,__VA_ARGS__) \
+#define GPSTK_CRITICAL2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_CRITICAL(ss);}
 
-#define GPSTK_ERROR2(format,__VA_ARGS__) \
+#define GPSTK_ERROR2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_ERROR(ss);}
    
-#define GPSTK_WARNING2(format,__VA_ARGS__) \
+#define GPSTK_WARNING2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_WARNING(ss);}
 
-#define GPSTK_NOTICE2(format,__VA_ARGS__) \
+#define GPSTK_NOTICE2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_NOTICE(ss);}
 
-#define GPSTK_INFORMATION2(format,__VA_ARGS__) \
+#define GPSTK_INFORMATION2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_INFORMATION(ss);}
@@ -313,7 +313,7 @@ namespace gpstk
 #define GPSTK_DEBUG( msg ) \
    slog.debug.log(msg,Logger::DEBUG,FILE_LOCATION);
 
-#define GPSTK_DEBUG2(format,__VA_ARGS__) \
+#define GPSTK_DEBUG2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_DEBUG(ss);}
@@ -324,7 +324,7 @@ namespace gpstk
 #define GPSTK_TRACE( msg ) \
    slog.trace.log(msg,Logger::TRACE,FILE_LOCATION);
 
-#define GPSTK_TRACE2(format,__VA_ARGS__) \
+#define GPSTK_TRACE2(format, ...) \
    {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
    sprintf(ss,format,__VA_ARGS__); \
    GPSTK_TRACE(ss);}
@@ -335,11 +335,11 @@ namespace gpstk
 #else
 
 #define GPSTK_DEBUG(logger, msg)
-#define GPSTK_DEBUG2(format,__VA_ARGS__)
+#define GPSTK_DEBUG2(format, ...)
 #define GPSTK_DEBUG_MAT( mat, w, d, desc)
 
 #define GPSTK_TRACE(logger, msg)
-#define GPSTK_TRACE2(format,__VA_ARGS__)
+#define GPSTK_TRACE2(format, ...)
 #define GPSTK_TRACE_MAT( mat, w, d, desc)
 
 #endif
