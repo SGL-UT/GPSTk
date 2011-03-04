@@ -252,6 +252,55 @@ namespace gpstk
          throw(InvalidSolver);
 
 
+         /** Predicts (or "time updates") the a priori estimate of the
+          *  system state, as well as the a priori estimate error
+          *  covariance matrix.
+          *  This version assumes that no control inputs act on the system.
+          *
+          * @param phiMatrix         State transition matrix.
+          * @param previousState     Previous system state vector. It is
+          *                          the last computed xhat.
+          * @param processNoiseCovariance    Process noise covariance matrix.
+          *
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int TimeUpdate( const Matrix<double>& phiMatrix,
+                              const Vector<double>& previousState,
+                              const Matrix<double>& processNoiseCovariance )
+         throw(InvalidSolver)
+      { return Predict(phiMatrix,previousState,processNoiseCovariance); }
+
+
+
+         /** Corrects (or "measurement updates") the a posteriori estimate
+          *  of the system state vector, as well as the a posteriori estimate
+          *  error covariance matrix, using as input the predicted a priori
+          *  state vector and error covariance matrix, plus measurements and
+          *  associated matrices.
+          *
+          * @param measurements      Measurements vector.
+          * @param measurementsMatrix    Measurements matrix. Called geometry
+          *                              matrix in GNSS.
+          * @param measurementsNoiseCovariance   Measurements noise covariance
+          *                                      matrix.
+          *
+          * @return
+          *  0 if OK
+          *  -1 if problems arose
+          */
+      virtual int MeasUpdate( const Vector<double>& measurements,
+                              const Matrix<double>& measurementsMatrix,
+                              const Matrix<double>& measurementsNoiseCovariance)
+         throw(InvalidSolver)
+      { 
+         return Correct(measurements,
+                        measurementsMatrix,
+                        measurementsNoiseCovariance); 
+      }
+
+
          /// Destructor.
       virtual ~SimpleKalmanFilter() {};
 
