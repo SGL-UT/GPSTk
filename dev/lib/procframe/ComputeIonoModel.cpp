@@ -30,7 +30,10 @@
 
 
 #include "ComputeIonoModel.hpp"
-
+#include "RinexUtilities.hpp"
+#include "RinexNavStream.hpp"
+#include "RinexNavHeader.hpp"
+#include "Logger.hpp"
 
 namespace gpstk
 {
@@ -48,7 +51,7 @@ namespace gpstk
 
       // Returns a string identifying this object.
    std::string ComputeIonoModel::getClassName() const
-   { return "ComputeTropModel"; }
+   { return "ComputeIonoModel"; }
 
 
 
@@ -111,13 +114,19 @@ namespace gpstk
 
             double ionL1 = 0.0;
             
-            if(ionoType == GridTec)
+            if(ionoType == Ionex)
             {
                try
                {
+                  const string mapType = "SLM";
+                  const double ionoHeight = 450000.0;
+
+                  //const string mapType = "MSLM";
+                  //const double ionoHeight = 506700.0;
+
                   Position IPP = rxPos.getIonosphericPiercePoint(elevation,
                      azimuth,
-                     506700.0);
+                     ionoHeight);
 
                   Position pos(IPP);
                   pos.transformTo(Position::Geocentric);
@@ -127,18 +136,15 @@ namespace gpstk
                   double tecval = val[0];
 
                   double ionMap = gridStore.iono_mapping_function(elevation,
-                     "MSLM");
+                                                                  mapType);
                   
-                  ionL1 = gridStore.getIonoL1(elevation,
-                     tecval,
-                     "MSLM");
+                  ionL1 = gridStore.getIonoL1(elevation, tecval, mapType);
                }
                catch(InvalidRequest& e)
                {
                   satRejectedSet.insert(stv->first);
                   continue;
                }
-
             }
 
             if(ionoType == Klobuchar)
@@ -149,8 +155,7 @@ namespace gpstk
             double ionL2 = ionL1 * (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
             double ionL5 = ionL1 * (L1_FREQ/L5_FREQ) * (L1_FREQ/L5_FREQ);
             
-            // TODO
-            // more frequency later
+               // TODO: more frequency later
 
                // Now we have to add the new values to the data structure
             (*stv).second[TypeID::ionoL1] = ionL1;
@@ -183,9 +188,48 @@ namespace gpstk
                                                          const double b[4])
    {
       IonoModel ionModel(a,b);
-      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME,ionModel);
-      
+      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME,ionModel);      
       ionoType = Klobuchar;
+
+      return (*this);
+   }
+
+   ComputeIonoModel& ComputeIonoModel::setKlobucharModel(const IonoModel& im)
+   {
+      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME, im);
+      ionoType = Klobuchar;
+
+      return (*this);
+   }
+
+   ComputeIonoModel& ComputeIonoModel::setklobucharModel(const std::string& brdcFile)
+   {
+      if( isRinexNavFile( brdcFile ) )
+      {
+         RinexNavStream nstrm(brdcFile.c_str());
+         nstrm.exceptions(fstream::failbit);
+
+         try
+         {
+            RinexNavHeader rnh;
+            nstrm >> rnh;
+            nstrm.close();
+
+            setKlobucharModel(rnh.ionAlpha,rnh.ionBeta);
+         }
+         catch (Exception& e)
+         {
+            nstrm.close();
+
+            GPSTK_RETHROW(e);
+         }
+      }
+      else
+      {
+         Exception e("The input is not a rinex nav file:" + brdcFile);
+         GPSTK_THROW(e);
+      }
+      
 
       return (*this);
    }
@@ -194,8 +238,7 @@ namespace gpstk
    {
       gridStore.clear();
       gridStore.loadFile(ionexFile);
-
-      ionoType = GridTec;
+      ionoType = Ionex;
 
       return (*this);
    }

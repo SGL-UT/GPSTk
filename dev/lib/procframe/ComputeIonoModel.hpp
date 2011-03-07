@@ -91,7 +91,7 @@ namespace gpstk
       {
          Zero = 0,     ///< Don't do ionospheric delay correction
          Klobuchar,    ///< Klobuchar
-         GridTec,      ///< Ionospheric maps
+         Ionex,      ///< Ionospheric maps
       };
 
    public:
@@ -142,9 +142,22 @@ namespace gpstk
       { Process(gData.header.epoch, gData.body); return gData; };
 
 
+      virtual ComputeIonoModel& setZeroModel()
+      { ionoType = Zero; return (*this); }
+
+         /// Correct ionospheric delay with klobuchar model
       virtual ComputeIonoModel& setKlobucharModel(const double a[4], 
                                                   const double b[4]);
 
+         /// Correct ionospheric delay with klobuchar model
+      virtual ComputeIonoModel& setKlobucharModel(const IonoModel& im);
+
+
+         /// Correct ionospheric delay with klobuchar model
+      virtual ComputeIonoModel& setklobucharModel(const std::string& brdcFile);
+
+
+         /// Correct ionospheric delay with ionex file
       virtual ComputeIonoModel& setIonosphereMap(const std::string& ionexFile);
 
 
