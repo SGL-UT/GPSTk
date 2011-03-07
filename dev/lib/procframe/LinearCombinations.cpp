@@ -55,7 +55,7 @@ namespace gpstk
       c1Prefit.body[TypeID::mpC1]         = -1.0;
 
          // Definition to compute prefit residual of P1
-      p1Prefit.header                     = TypeID::prefitC;
+      p1Prefit.header                     = TypeID::prefitP1;
       p1Prefit.body[TypeID::P1]           = +1.0;
       p1Prefit.body[TypeID::rho]          = -1.0;
       p1Prefit.body[TypeID::dtSat]        = +1.0;
@@ -69,7 +69,7 @@ namespace gpstk
       p1Prefit.body[TypeID::mpC1]         = -1.0;
 
          // Definition to compute prefit residual of L1
-      l1Prefit.header                     = TypeID::prefitL;
+      l1Prefit.header                     = TypeID::prefitL1;
       l1Prefit.body[TypeID::L1]           = +1.0;
       l1Prefit.body[TypeID::rho]          = -1.0;
       l1Prefit.body[TypeID::dtSat]        = +1.0;
@@ -213,19 +213,11 @@ namespace gpstk
       GRAPHIC8Combination.body[TypeID::C8] = +0.5;
       GRAPHIC8Combination.body[TypeID::L8] = +0.5;
 
+
          // Definition to compute WL combination
       wlCombination.header            = TypeID::WL;
-      wlCombination.body[TypeID::L1]  = +e;
-      wlCombination.body[TypeID::L2]  = -f;
-
-      const double WL_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH
-                                  /(+1.0*L2_WAVELENGTH - 1.0*L1_WAVELENGTH);
-
-      const double WL2_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH
-                                  /(-2.0*L2_WAVELENGTH + 3.0*L1_WAVELENGTH);
-
-      const double WL4_WAVELENGTH = L1_WAVELENGTH*L2_WAVELENGTH
-                                  /(+4.0*L2_WAVELENGTH - 5.0*L1_WAVELENGTH);
+      wlCombination.body[TypeID::L1]  = firstFactorOfLC(1,-1);
+      wlCombination.body[TypeID::L2]  = secondFactorOfLC(1,-1);
 
          // Definition to compute prefit residual of WL
       wlPrefit.header                     = TypeID::prefitWL;
@@ -236,31 +228,33 @@ namespace gpstk
       wlPrefit.body[TypeID::gravDelay]    = -1.0;
       wlPrefit.body[TypeID::satPCenter]   = -1.0;
       wlPrefit.body[TypeID::tropoSlant]   = -1.0;
-      // Coefficient for LC windUp is wavelenght/2*PI
-      wlPrefit.body[TypeID::windUp]       = -WL_WAVELENGTH/TWO_PI;
+      wlPrefit.body[TypeID::ionoL1]       = firstFactorOfLC(1,-1)
+                                           +secondFactorOfLC(1,-1)*GAMMA_GPS;
+      wlPrefit.body[TypeID::windUp]       = -wavelengthOfLC(1,-1)/TWO_PI;
 
+    
       // Definition to compute WL42combination
       wl2Combination.header            = TypeID::WL2;
-      wl2Combination.body[TypeID::L1]  = -2.0*L1_FREQ/(-2.0*L1_FREQ + 3.0*L2_FREQ);
-      wl2Combination.body[TypeID::L2]  = +3.0*L2_FREQ/(-2.0*L1_FREQ + 3.0*L2_FREQ);
+      wl2Combination.body[TypeID::L1]  = firstFactorOfLC(-2,3);
+      wl2Combination.body[TypeID::L2]  = secondFactorOfLC(-2,3);
 
       // Definition to compute prefit residual of WL2
       wl2Prefit.header                     = TypeID::prefitWL2;
-      wl2Prefit.body[TypeID::WL2]          = +1.0;
+      wl2Prefit.body[TypeID::WL2]           = +1.0;
       wl2Prefit.body[TypeID::rho]          = -1.0;
       wl2Prefit.body[TypeID::dtSat]        = +1.0;
       wl2Prefit.body[TypeID::rel]          = -1.0;
       wl2Prefit.body[TypeID::gravDelay]    = -1.0;
       wl2Prefit.body[TypeID::satPCenter]   = -1.0;
       wl2Prefit.body[TypeID::tropoSlant]   = -1.0;
-      // Coefficient for LC windUp is wavelenght/2*PI
-      wl2Prefit.body[TypeID::windUp]       = -WL2_WAVELENGTH/TWO_PI;
-
+      wl2Prefit.body[TypeID::ionoL1]       = firstFactorOfLC(-2,3)
+                                             +secondFactorOfLC(-2,3)*GAMMA_GPS;
+      wl2Prefit.body[TypeID::windUp]       = -wavelengthOfLC(-2,3)/TWO_PI;
 
          // Definition to compute WL4 combination
       wl4Combination.header            = TypeID::WL4;
-      wl4Combination.body[TypeID::L1]  = +4.0*L1_FREQ/(4.0*L1_FREQ - 5.0*L2_FREQ);
-      wl4Combination.body[TypeID::L2]  = -5.0*L2_FREQ/(4.0*L1_FREQ - 5.0*L2_FREQ);
+      wl4Combination.body[TypeID::L1]  = firstFactorOfLC(4,-5);
+      wl4Combination.body[TypeID::L2]  = secondFactorOfLC(4,-5);
 
       // Definition to compute prefit residual of WL4
       wl4Prefit.header                     = TypeID::prefitWL4;
@@ -271,9 +265,38 @@ namespace gpstk
       wl4Prefit.body[TypeID::gravDelay]    = -1.0;
       wl4Prefit.body[TypeID::satPCenter]   = -1.0;
       wl4Prefit.body[TypeID::tropoSlant]   = -1.0;
-      // Coefficient for LC windUp is wavelenght/2*PI
-      wl4Prefit.body[TypeID::windUp]       = -WL4_WAVELENGTH/TWO_PI;
+      wl4Prefit.body[TypeID::ionoL1]       = firstFactorOfLC(4,-5)
+                                            +secondFactorOfLC(4,-5)*GAMMA_GPS;
+      wl4Prefit.body[TypeID::windUp]       = -wavelengthOfLC(4,-5)/TWO_PI;
 
    }  // End of constructor 'LinearCombinations::LinearCombinations()'
 
+
+      // Return the frequency of the combination in cycles: i * L1 + j * L2 
+   double LinearCombinations::freqOfLC(int i, int j, double f1 , double f2 )
+   {
+      return ( double(i)*f1+double(j)*f2 );
+   }
+
+      // Return the wavelength of the combination in cycles: i * L1 + j * L2 
+   double LinearCombinations::wavelengthOfLC(int i,int j,double f1,double f2)
+   {
+      return C_GPS_M / freqOfLC(i,j,f1,f2);
+   }
+
+   /// Return the f1 factor of the combination in cycles: i * L1 + j * L2 
+   double LinearCombinations::firstFactorOfLC(int i,int j,double f1,double f2)
+   {
+      return double(i)*f1/freqOfLC(i,j,f1,f2);
+   }
+
+      /// Return the f2 factor of the combination in cycles: i * L1 + j * L2 
+   double LinearCombinations::secondFactorOfLC(int i,int j,double f1,double f2 )
+   {
+      return double(j)*f2/freqOfLC(i,j,f1,f2);
+   }
+
+
 } // End of namespace gpstk
+
+

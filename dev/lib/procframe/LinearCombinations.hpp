@@ -206,7 +206,21 @@ namespace gpstk
 
          /// Definition to compute prefit residual of WL4
       gnssLinearCombination wl4Prefit;
-         
+   
+   public:
+      
+         /// Return the frequency of the combination in cycles: i * L1 + j * L2 
+      static double freqOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      
+         /// Return the wavelength of the combination in cycles: i * L1 + j * L2 
+      static double wavelengthOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      
+         /// Return the f1 factor of the combination in cycles: i * L1 + j * L2 
+      static double firstFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      
+         /// Return the f2 factor of the combination in cycles: i * L1 + j * L2 
+      static double secondFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ); 
+
 
    }; // End of class 'LinearCombinations'
 
