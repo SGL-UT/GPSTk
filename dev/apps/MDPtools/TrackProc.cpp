@@ -144,15 +144,14 @@ void MDPTrackProcessor::printChanges()
       bool change=false;
       for (int i = 1; i < currCv.size() && change==false; i++)
          change = (currCv[i].obs != prevCv[i].obs ||
-                   currCv[i].prn != prevCv[i].prn) &&
-            (prevCv[i].prn != -1 || currCv[i].prn != -1);
+                   currCv[i].prn != prevCv[i].prn);
 
-      if (change)
+      if (change || currCv.size() == 0)
       {
          out << currTime.printf(timeFormat);
          for (int i = 1; i < currCv.size(); i++)
          {
-            if (currCv[i].prn >0)
+            if (currCv[i].prn > 0)
                out << setw(4) << currCv[i].prn << currCv[i].codes;
             else
                out << setw(4) << "  -" << "    ";
