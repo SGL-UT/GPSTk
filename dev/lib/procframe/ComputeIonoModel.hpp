@@ -91,7 +91,8 @@ namespace gpstk
       {
          Zero = 0,     ///< Don't do ionospheric delay correction
          Klobuchar,    ///< Klobuchar
-         Ionex,      ///< Ionospheric maps
+         Ionex,        ///< Ionospheric maps
+         DualFreq      ///< Compute from P1 and P2
       };
 
    public:
@@ -160,6 +161,9 @@ namespace gpstk
          /// Correct ionospheric delay with ionex file
       virtual ComputeIonoModel& setIonosphereMap(const std::string& ionexFile);
 
+         /// Correct ionospheric delay with dual frequency code 
+      virtual ComputeIonoModel& setDualFreqModel()
+      { ionoType=DualFreq; return (*this); }
 
          /// Returns nominal position of receiver station.
       virtual Position getNominalPosition(void) const

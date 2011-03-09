@@ -85,32 +85,19 @@ namespace gpstk
 
             Position svPos(0.0, 0.0, 0.0, Position::Cartesian);
             
-               // Check if satellite position is not already computed
-            if( ( (*stv).second.find(TypeID::satX) == (*stv).second.end() ) ||
-               ( (*stv).second.find(TypeID::satY) == (*stv).second.end() ) ||
-               ( (*stv).second.find(TypeID::satZ) == (*stv).second.end() ) )
+               // If elevation or azimuth is missing, then remove satellite
+            if( stv->second.find(TypeID::elevation) == stv->second.end() ||
+               stv->second.find(TypeID::azimuth)   == stv->second.end() )
             {
 
-               // If satellite position is missing, then schedule this 
-               // satellite for removal
-               satRejectedSet.insert( (*stv).first );
+               satRejectedSet.insert( stv->first );
 
                continue;
 
             }
-            else
-            {
-               // Get satellite position out of GDS
-               svPos[0] = (*stv).second[TypeID::satX];
-               svPos[1] = (*stv).second[TypeID::satY];
-               svPos[2] = (*stv).second[TypeID::satZ];
-
-            }  // End of 'if( ( (*it).second.find(TypeID::satX) == ...'
             
-            
-
-            double elevation = rxPos.elevation(svPos);
-            double azimuth = rxPos.azimuth(svPos);
+            const double elevation = (*stv).second[TypeID::elevation];
+            const double azimuth = (*stv).second[TypeID::azimuth]; 
 
             double ionL1 = 0.0;
             
@@ -118,11 +105,11 @@ namespace gpstk
             {
                try
                {
-                  const string mapType = "SLM";
-                  const double ionoHeight = 450000.0;
+                  //const string mapType = "SLM";
+                  //const double ionoHeight = 450000.0;
 
-                  //const string mapType = "MSLM";
-                  //const double ionoHeight = 506700.0;
+                  const string mapType = "MSLM";
+                  const double ionoHeight = 506700.0;
 
                   Position IPP = rxPos.getIonosphericPiercePoint(elevation,
                      azimuth,
@@ -146,10 +133,37 @@ namespace gpstk
                   continue;
                }
             }
-
-            if(ionoType == Klobuchar)
+            else if(ionoType == Klobuchar)
             {
                ionL1 = klbStore.getCorrection(time,rxGeo,elevation,azimuth);
+            }
+            else if(ionoType == DualFreq)
+            {
+               const double gamma = (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
+
+               double P1(0.0);
+               if(stv->second.find(TypeID::P1)==stv->second.end())
+               {
+                  if(stv->second.find(TypeID::C1)!=stv->second.end())
+                  {
+                     P1 = stv->second[TypeID::C1];
+                  }
+               }
+               else
+               {
+                  P1 = stv->second[TypeID::P1];
+               }
+
+               double P2(0.0);
+               if(stv->second.find(TypeID::P2)!=stv->second.end())
+               {
+                  P2 = stv->second[TypeID::P2];
+               }
+               
+               if( P1!=0 && P2!=0 )
+               {
+                  ionL1 = (P1-P2)/(1.0-gamma);
+               }
             }
 
             double ionL2 = ionL1 * (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
