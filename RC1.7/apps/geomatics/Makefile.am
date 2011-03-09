@@ -1,2 +1,2 @@
 # $Id$
-SUBDIRS = cycleslips kalman relposition  robust
+SUBDIRS = cycleslips JPLeph kalman relposition robust

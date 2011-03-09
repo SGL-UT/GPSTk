@@ -69,6 +69,7 @@ AC_CONFIG_FILES([Makefile
 		 apps/filetools/Makefile
 		 apps/geomatics/Makefile
 		 apps/geomatics/cycleslips/Makefile
+		 apps/geomatics/JPLeph/Makefile
 		 apps/geomatics/kalman/Makefile
 		 apps/geomatics/relposition/Makefile
 		 apps/geomatics/robust/Makefile
