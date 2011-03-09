@@ -445,6 +445,7 @@ std::string secAsHMS(double seconds, bool frac=false)
 //------------------------------------------------------------------------------
 // This is where we fill out additional data in the list, smash adjacent obs, 
 // and remove nuisance anomalies
+// Should consider sorting this list by PRN...
 //------------------------------------------------------------------------------
 DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
    const MissingList& ml,
@@ -502,7 +503,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
       {
          InView& prev = *j;
          double dt=std::abs(curr.time - prev.time - epochRate);
-         if (smashAdjacent && dt < 1e-3)
+         int d_ata = curr.numAboveTrackAngle - prev.numAboveTrackAngle;
+         if (smashAdjacent && dt < 1e-3 && d_ata == 0)
          {
             prev.smashCount++;
             prev.span = prev.smashCount * epochRate;
@@ -513,8 +515,6 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
             prev.epochCount = curr.epochCount;
             prev.numAboveMaskAngle = 
                max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
-            prev.numAboveTrackAngle = 
-               max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
             prev.receivedCount = curr.receivedCount;
             prev.expectedCount = curr.expectedCount;
          }
