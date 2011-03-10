@@ -22,7 +22,7 @@ else
       LICSDetector.cpp LICSDetector2.cpp LinearCombinations.cpp ModeledPR.cpp
       ModeledReferencePR.cpp ModelObs.cpp ModelObsFixedStation.cpp
       MWCSDetector.cpp NablaOp.cpp NetworkObsStreams.cpp OneFreqCSDetector.cpp
-      PhaseCodeAlignment.cpp PCSmoother.cpp ProcessingList.cpp
+      PhaseCodeAlignment.cpp PCSmoother.cpp ProblemSatFilter.cpp ProcessingList.cpp
       ProcessingVector.cpp Pruner.cpp RequireObservables.cpp SatArcMarker.cpp
       SimpleFilter.cpp SolverGeneral.cpp SolverLMS.cpp SolverPPP.cpp
       SolverPPPFB.cpp SolverWMS.cpp StochasticModel.cpp Synchronize.cpp
@@ -43,7 +43,7 @@ else
       ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp
       MWCSDetector.hpp NablaOp.hpp NetworkObsStreams.hpp OneFreqCSDetector.hpp
       PhaseCodeAlignment.hpp PCSmoother.hpp ProcessingClass.hpp
-      ProcessingList.hpp Pruner.hpp ProcessingVector.hpp RequireObservables.hpp
+      ProcessingList.hpp Pruner.hpp ProblemSatFilter.hpp ProcessingVector.hpp RequireObservables.hpp
       SatArcMarker.hpp SimpleFilter.hpp SolverGeneral.hpp SolverLMS.hpp
       SolverPPP.hpp SolverPPPFB.hpp SolverWMS.hpp StochasticModel.hpp
       Synchronize.hpp Variable.hpp XYZ2NED.hpp XYZ2NEU.hpp
