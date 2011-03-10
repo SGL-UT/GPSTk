@@ -236,7 +236,7 @@ namespace gpstk
 
          double dcb = dcb1 * (satP1P2 + receiverP1P2) + dcb2 * satP1C1;
          
-         return dcb * (C_GPS_M * 1.0e-9);    // ns -> meter
+         return -1.0 * dcb * (C_GPS_M * 1.0e-9);    // ns -> meter
 
       }  // End of method 'CorrectCodeBiases::getDCBCorrection()'
 
