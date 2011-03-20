@@ -654,13 +654,13 @@ covariance matrix.");
              it != stateMap.end() )
       {
          ++it;
-      }
 
          // If the same type is not found, throw an exception
-      if( it == stateMap.end() )
-      {
-         InvalidRequest e("Type not found in solution vector.");
-         GPSTK_THROW(e);
+         if( it == stateMap.end() )
+         {
+             InvalidRequest e("Type not found in solution vector.");
+             GPSTK_THROW(e);
+         }
       }
 
          // Else, return the corresponding value
@@ -692,13 +692,13 @@ covariance matrix.");
              it != stateMap.end() )
       {
          ++it;
-      }
 
          // If it is not found, throw an exception
-      if( it == stateMap.end() )
-      {
-         InvalidRequest e("Type and source not found in solution vector.");
-         GPSTK_THROW(e);
+         if( it == stateMap.end() )
+         {
+             InvalidRequest e("Type and source not found in solution vector.");
+             GPSTK_THROW(e);
+         }
       }
 
          // Else, return the corresponding value
@@ -734,13 +734,13 @@ covariance matrix.");
              it != stateMap.end() )
       {
          ++it;
-      }
 
          // If it is not found, throw an exception
-      if( it == stateMap.end() )
-      {
-         InvalidRequest e("Type, source and SV not found in solution vector.");
-         GPSTK_THROW(e);
+         if( it == stateMap.end() )
+         {
+             InvalidRequest e("Type, source and SV not found in solution vector.");
+             GPSTK_THROW(e);
+         }
       }
 
          // Else, return the corresponding value
@@ -793,13 +793,13 @@ covariance matrix.");
              it != covarianceMap.end() )
       {
          ++it;
-      }
 
          // If the same type is not found, throw an exception
-      if( it == covarianceMap.end() )
-      {
-         InvalidRequest e("Type not found in covariance matrix.");
-         GPSTK_THROW(e);
+         if( it == covarianceMap.end() )
+         {
+             InvalidRequest e("Type not found in covariance matrix.");
+             GPSTK_THROW(e);
+         }
       }
 
          // Else, return the corresponding value
