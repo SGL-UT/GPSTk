@@ -78,12 +78,27 @@ namespace gpstk
    {
 
       DayTime rtime( (*pgRov1).header.epoch );
+      
+         // Backup the position of the data stream
+      streampos spBackup = (*pRinexRef).tellg();
 
       if (firstTime)
       {
          (*pRinexRef) >> gData;      // Get data out of ref station RINEX file
          firstTime = false;          // Mark that first data batch was read
 
+      }
+
+      if( (gData.header.epoch> rtime) && 
+          (std::abs( gData.header.epoch - rtime ) > tolerance ))
+      {
+           // Restore the position of the data stream
+        (*pRinexRef).seekg(spBackup);
+
+        // If synchronization is not possible, we issue an exception
+        SynchronizeException e( "Unable to synchronize data at epoch "
+                               + gData.header.epoch.asString() );
+        GPSTK_THROW(e);
       }
 
          // Check that the reference data time stamp is not less than gData's,
@@ -96,7 +111,7 @@ namespace gpstk
       {
          (*pRinexRef) >> gData;   // Get data out of ref station RINEX file
       }
-
+    
 
          // If we couldn't synchronize data streams (i.e.: "tolerance"
          // is not met), skip this epoch.
