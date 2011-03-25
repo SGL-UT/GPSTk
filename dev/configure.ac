@@ -1,13 +1,13 @@
 #						-*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.59)
-AC_INIT([GPSTK], [1.6], [http://www.gpstk.org/], [gpstk])
-AM_INIT_AUTOMAKE([1.7.6 foreign])
+AC_PREREQ(2.61)
+AC_INIT([GPSTK], [1.7], [http://www.gpstk.org/], [gpstk])
+AM_INIT_AUTOMAKE([1.10 foreign])
 AC_CONFIG_SRCDIR([src/DayTime.hpp])
 
-#gpstk 1.6 -> libgpstk.so.16.0, etc...
-GPSTK_MAJOR_VERSION=16
+#gpstk 1.7 -> libgpstk.so.17.0, etc...
+GPSTK_MAJOR_VERSION=17
 GPSTK_MINOR_VERSION=0
 GPSTK_SO_VERSION=$GPSTK_MAJOR_VERSION:$GPSTK_MINOR_VERSION:0
 AC_SUBST(GPSTK_SO_VERSION)
@@ -53,6 +53,7 @@ AC_CONFIG_FILES([Makefile
 		 lib/vplot/Makefile
 		 lib/vdraw/Makefile
 		 lib/geomatics/Makefile
+		 lib/geodyn/Makefile
 		 lib/procframe/Makefile
 		 src/Makefile
 		 apps/Makefile
@@ -68,6 +69,7 @@ AC_CONFIG_FILES([Makefile
 		 apps/filetools/Makefile
 		 apps/geomatics/Makefile
 		 apps/geomatics/cycleslips/Makefile
+		 apps/geomatics/JPLeph/Makefile
 		 apps/geomatics/kalman/Makefile
 		 apps/geomatics/relposition/Makefile
 		 apps/geomatics/robust/Makefile

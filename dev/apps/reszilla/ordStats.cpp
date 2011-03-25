@@ -136,11 +136,11 @@ void OrdStats::process()
    }
    else
    {
-      elr.push_back( ElevationRange( 0, 10) );
-      elr.push_back( ElevationRange(10, 20) );
-      elr.push_back( ElevationRange(20, 60) );
-      elr.push_back( ElevationRange(60, 90) );
-      elr.push_back( ElevationRange(10, 90) );
+      elr.push_back( ElevationRange( 0.f, 10.f) );
+      elr.push_back( ElevationRange(10.f, 20.f) );
+      elr.push_back( ElevationRange(20.f, 60.f) );
+      elr.push_back( ElevationRange(60.f, 90.f) );
+      elr.push_back( ElevationRange(10.f, 90.f) );
    }
    if (sigmaOption.getCount())
       sigmaMult = asDouble(sigmaOption.getValue().front());

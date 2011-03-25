@@ -58,7 +58,7 @@ inline long Stem(double x, double& scale) { return (long(x/scale)); }
 void Robust::StemLeafPlot(ostream& os, double *xd, long nd, string msg)
    throw(Exception)
 {
-   long stem, l, nout=0, s, sM, sQ1, sQ3, sOH, sOL;
+   long stem, l, nout=0, s=0, sM, sQ1, sQ3, sOH, sOL;
    int i, sign, pos, k, leaf;
    unsigned len=0, kk;
    char c;

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-export AUTOCONF_VERSION=2.60
-export AUTOMAKE_VERSION=1.9
+export AUTOCONF_VERSION=2.61
+export AUTOMAKE_VERSION=1.10
 
 autoreconf
 

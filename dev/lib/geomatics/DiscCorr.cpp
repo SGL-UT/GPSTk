@@ -982,7 +982,7 @@ try {
    const double WLobviousNwlLimit=cfg(WLobviousLimit)*cfg(WLSigma);
    const double GFobviousNwlLimit=cfg(GFobviousLimit)*cfg(GFVariation)/wl21;
    bool outlier;
-   int i,j,iret,ibad,igood,nok;
+   int i,j,iret,ibad=0,igood,nok;
    double limit,wlbias;
    list<Segment>::iterator it;
 

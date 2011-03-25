@@ -68,13 +68,13 @@ namespace gpstk
          
          //... add more here
 
-         FMI_LIST   = 2000,      ///< For class 'ForceModelList'
+         FMI_LIST   = 2000      ///< For class 'ForceModelList'
       };
 
       enum ForceModelType
       {
          Cd,               // Coefficient of drag
-         Cr,               // Coefficient of Reflectivity
+         Cr               // Coefficient of Reflectivity
       };
 
          /// Default constructor
@@ -108,7 +108,7 @@ namespace gpstk
          
          /// return the force model name
       virtual std::string modelName() const
-      { return "ForceModel"; };
+      { return "ForceModel"; }
 
 
          /// return the force model index
@@ -121,7 +121,7 @@ namespace gpstk
           * @return  acceleration
           */
       virtual Vector<double> getAccel() const
-      { return a; };
+      { return a; }
 
          /**
           * Return the partial derivative of acceleration wrt position
@@ -161,7 +161,7 @@ namespace gpstk
          /** return number of np
           */
       int getNP() const
-      { return da_dp.cols(); };
+      { return da_dp.cols(); }
 
          /// get A Matrix
       Matrix<double> getAMatrix() const
@@ -287,6 +287,9 @@ namespace gpstk
 
       s<<"A = ["<<A.rows()<<","<<A.cols()<<"]\n{\n"
          <<A<<endl<<"}\n\n";
+
+      return s;
+
    }
 
       // @}

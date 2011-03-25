@@ -11,7 +11,7 @@ KEEPOBJS = true ;
 PREFIX ?= /usr/local/ ;
 INCDIR = $(PREFIX)/include/gpstk ;
 
-GPSTK_SO_VERSION = 16 ;
+GPSTK_SO_VERSION = 17 ;
 # override the built-in EXEMODE
 EXEMODE = 755 ;
 SHELLMODE = 755 ;
@@ -44,6 +44,8 @@ if $(UNIX)
       case MACOSX :
          LINKLIBS += -lstdc++ ;
          CCSHARE_FLAGS = -fPIC ;
+         LDSHARE_FLAGS = -dynamiclib ;
+         SUFLIBSHR = .dylib ; 
 
       case SOLARIS :
          LINKLIBS += -lgen ;
@@ -54,6 +56,7 @@ if $(UNIX)
             CCSHARE_FLAGS = -KPIC ;
             CCFLAGS += -Xc ;
             C++FLAGS += -compat=5 ;
+            C++FLAGS += -erroff=hidevf,wvarhidemem,badargtype2w ;
             AR = "CC -xar -o" ;
             NOARSCAN = true ;
             RM = "rm -rf" ;
@@ -69,7 +72,10 @@ if $(UNIX)
       case AIX :
          LINKLIBS += -lstdc++ ;
    }
-   SUFLIBSHR      ?= .so ;
+   if $(OS) != MACOSX 
+   {
+      SUFLIBSHR = .so ;
+   }
 }
 else if $(NT)
 {
@@ -81,8 +87,20 @@ else if $(NT)
    #SUFLIBSHR       = .dll ;
 
    # Microsoft compilers define macro _MSC_VER = MMmm.mm MM=Major ver mm.mm=minor ver.
+   #
+   # Added for MSVS 2010 (S. Cummins)
+   #
+   # ------ MS VC++ 2010 : _MSC_VER >= 1600
+   if $(MSCVER) >= 1600 {
+      MSVCVersion = "VC++2010(VC10)" ;
+      LINKLIBS = regex.lib ;
+      CCFLAGS  += -D_CRT_SECURE_NO_DEPRECATE -wd4274 -wd4503 ;
+      C++FLAGS += /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES /EHsc /GR -wd4274 -wd4503 ;
+   }
+   #
+   #
    # ------ MS VC++ 2005 : _MSC_VER >= 1400
-   if $(MSCVER) >= 1400 {
+   else if $(MSCVER) >= 1400 {
       MSVCVersion = "VC++2005(VC8)" ;
       LINKLIBS   =  regex.lib ;
       # -wd turns off warnings; warning 4274 says its ignoring #ident
@@ -124,6 +142,7 @@ if $(PREFIX)
    BINDIR = [ FDirName $(PREFIX) bin ] ;
    LIBDIR = [ FDirName $(PREFIX) lib ] ;
    INCDIR = [ FDirName $(PREFIX) include gpstk ] ;
+#   Echo " BINDIR=" $(BINDIR) ; Echo " LIBDIR=" $(LIBDIR) ; Echo " INCDIR="$(INCDIR) ;
 }
 
 # debug - edit this as needed.
@@ -170,7 +189,7 @@ rule LibObjects
 
 
 # Useage :
-# GPSSetupLibrary target : depenancies ;
+# GPSSetupLibrary target : dependencies ;
 rule GPSSetupLibrary
 {
    local lib = [ FGristFiles $(LIBPREFIX)$(<:S=$(SUFLIB)) ] ;
@@ -206,6 +225,11 @@ rule GPSBuildLibrary
    LibraryFromObjects $(arlib) : $(statobjs) ;
    InstallLib $(LIBDIR) : $(arlib) ;
 
+# get some visibility into library values
+
+   Echo " LIBDIR IS " $(LIBDIR) ;
+   Echo " ARLIB IS " $(arlib) ;
+
    # Windows/cygwin is limited to 1024 character command lines.  
    # This goes over that.
    # Until we can figure out how to properly split our library, we just can't
@@ -224,8 +248,18 @@ rule GPSBuildLibrary
      }
      else
      {
-       # the instal_name may not be right for a Xcode app
-       LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -install_name @rpath/$(soname) ;
+       # the install_name may not be right for a Xcode app
+
+        soname = $(LIBPREFIX)$(<:S=.$(GPSTK_SO_VERSION))$(SUFLIBSHR) ;
+
+# look at soname to see if should add gpstk to LINKLIBS
+
+        Echo " SONAME IS " $(soname) ;
+
+        if ( $(soname) != libgpstk.$(GPSTK_SO_VERSION).dylib ) { LINKLIBS += -lgpstk ; }
+
+        shlib = $(LIBPREFIX)$(<:S=.$(GPSTK_SO_VERSION)$(SUFLIBSHR).0) ;
+        LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM)  -install_name @rpath/$(soname) ;
      }
      Depends lib : $(shlib) ;
      LibObjects $(>) ;

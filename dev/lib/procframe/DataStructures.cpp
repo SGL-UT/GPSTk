@@ -1632,7 +1632,7 @@ in matrix and number of types do not match") );
       sdMap[ gds.header.source ] = gds.body;
 
          // Introduce data into this GDS
-      (*this).insert( pair<DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
+      (*this).insert( pair<const DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
 
          // Return curren GDS.
       return (*this);
@@ -1655,7 +1655,7 @@ in matrix and number of types do not match") );
       sdMap[ gds.header.source ] = gds.body;
 
          // Introduce data into this GDS
-      (*this).insert( pair<DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
+      (*this).insert( pair<const DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
 
          // Return current GDS.
       return (*this);

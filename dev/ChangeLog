@@ -7,8 +7,8 @@ Version 1.7   Friday, 8 October, 2010
      branching took place under revision 2476 from dev/ to branches/RC1.7/
    - A number of modifications were made to Jamfiles and Makefiles, and some
      tweaks to code for clean compilation, for compatibility with the latest
-     Cygwin, Windows 7 VS, Solaris and Mac Snow Leopard (OSX 6.6).  Release on
-     14 February 2011 (Valentine's Day -- sweet!).
+     Cygwin, Windows 7 VS, Solaris and Mac Snow Leopard (OSX 6.6).  Release 
+     during the week of 21 February 2011.
    - Major additions to dev/apps/bindings/octave for a SWIG-based interface to
      the MATLAB-like language Octave. SWIG-based Octave wrapper added for most
      library classes. Additions listed below, modifications not involving new

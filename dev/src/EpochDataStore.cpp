@@ -106,6 +106,7 @@ namespace gpstk
       // Add to the store directly
    void EpochDataStore::addData(const DayTime& time, 
                                 const std::vector<double>& data)
+        throw()
    {
       
       allData[time] = data;
@@ -217,7 +218,7 @@ namespace gpstk
       const int N = its->second.size();
 
       std::vector<double> times;
-      std::vector<std::vector<double>> datas(N);
+      std::vector<std::vector<double> > datas(N);
       
       ite++;
       for(EpochData::const_iterator itr=its; itr!=ite; itr++)

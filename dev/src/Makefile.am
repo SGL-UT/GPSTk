@@ -13,8 +13,8 @@ CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp \
 CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp \
 ConfDataWriter.cpp DOP.cpp DayTime.cpp DCBDataReader.cpp ECEF.cpp \
 EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp ENUUtil.cpp EphemerisRange.cpp \
-Epoch.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp FICData.cpp \
-FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp FICHeader.cpp \
+Epoch.cpp EpochDataStore.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
+FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp FICHeader.cpp \
 FileHunter.cpp FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp \
 GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp \
 GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp \
@@ -31,10 +31,10 @@ SEMData.cpp SEMHeader.cpp SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp \
 SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp SVNumXRef.cpp SVPCodeGen.cpp \
 SatDataReader.cpp SimpleIURAWeight.cpp SimpleKalmanFilter.cpp SolidTides.cpp \
 SourceID.cpp SpecialFunctions.cpp StudentDistribution.cpp SunPosition.cpp \
-SystemTime.cpp TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp \
-TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp VectorBase.cpp \
-WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp \
-YumaAlmanacStore.cpp YumaData.cpp
+SuperKalmanFilter.cpp SystemTime.cpp TabularEphemerisStore.cpp TimeConverters.cpp \
+TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp \
+VectorBase.cpp WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp \
+YumaAlmanacStore.cpp YumaData.cpp $(GETOPT_SOURCE)
 
 incldir = $(includedir)/gpstk
 incl_HEADERS = ANSITime.hpp AllanDeviation.hpp AlmOrbit.hpp \
@@ -47,8 +47,8 @@ CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp \
 CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp \
 ConfDataWriter.hpp DOP.hpp DayTime.hpp DCBDataReader.hpp ECEF.hpp \
 EllipsoidModel.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp ENUUtil.hpp \
-EphemerisRange.hpp EpochClockModel.hpp Exception.hpp Expression.hpp \
-ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
+EphemerisRange.hpp Epoch.hpp EpochClockModel.hpp EpochDataStore.hpp Exception.hpp \
+Expression.hpp ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
 ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp \
 ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp FFData.hpp FFStream.hpp \
 FFStreamError.hpp FFTextStream.hpp FICAStream.hpp FICBase.hpp FICData.hpp \
@@ -81,8 +81,8 @@ SMODFData.hpp SMODFStream.hpp SP3Base.hpp SP3Data.hpp SP3EphemerisStore.hpp \
 SP3Header.hpp SP3SatID.hpp SP3Stream.hpp SVExclusionList.hpp SVNumXRef.hpp \
 SVPCodeGen.hpp SatID.hpp SimpleIURAWeight.hpp SimpleKalmanFilter.hpp \
 SolidTides.hpp SolverBase.hpp SourceID.hpp SpecialFunctions.hpp Stats.hpp \
-StringUtils.hpp StudentDistribution.hpp SunPosition.hpp SystemTime.hpp \
-TabularEphemerisStore.hpp TimeConstants.hpp TimeConverters.hpp \
+StringUtils.hpp StudentDistribution.hpp SunPosition.hpp SuperKalmanFilter.hpp \
+SystemTime.hpp TabularEphemerisStore.hpp TimeConstants.hpp TimeConverters.hpp \
 TimeNamedFileStream.hpp TimeString.hpp TimeTag.hpp Triple.hpp TropModel.hpp \
 TypeID.hpp UnixTime.hpp ValidType.hpp Vector.hpp VectorBase.hpp \
 VectorBaseOperators.hpp VectorOperators.hpp WGS84Ellipsoid.hpp WGS84Geoid.hpp \
@@ -90,4 +90,4 @@ WeightBase.hpp WxObsMap.hpp \
 X1Sequence.hpp X2Sequence.hpp Xvt.hpp XvtStore.hpp YDSTime.hpp \
 YumaAlmanacStore.hpp YumaBase.hpp YumaData.hpp YumaHeader.hpp YumaStream.hpp \
 convhelp.hpp geometry.hpp gps_constants.hpp gpstkplatform.h \
-icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp
+icd_200_constants.hpp mergePCodeWords.h stl_helpers.hpp $(GETOPT_INC)

@@ -41,9 +41,9 @@ using namespace std;
 
 int main()
 {
-	double dataA[2];
+	double dataA[2] = {0.0};
 	double dataB[2];
-	unsigned long int i;
+	unsigned long int i = 0;
 	
 	double x0=0.0;
 	

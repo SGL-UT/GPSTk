@@ -80,7 +80,7 @@ namespace gpstk
       DayTime rtime( (*pgRov1).header.epoch );
       
          // Backup the position of the data stream
-      streampos spBackup = (*pRinexRef).tellg();
+      std::streampos spBackup = (*pRinexRef).tellg();
 
       if (firstTime)
       {

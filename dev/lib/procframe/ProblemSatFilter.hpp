@@ -118,7 +118,7 @@ namespace gpstk
 
          /// Load Satellite Problem File(*.CRX) download from
          /// 'ftp.unibe.ch/aiub/BSWUSER50/GEN'
-      int loadSatelliteProblemFile(const string& crxFile);
+      int loadSatelliteProblemFile(const std::string& crxFile);
 
 
          /// Clear all data
@@ -148,7 +148,7 @@ namespace gpstk
          {}
       };
 
-      typedef list<SatData> SatDataList;
+      typedef std::list<SatData> SatDataList;
       typedef std::map<SatID, SatDataList > SatDataMap;
          
          /// Object to holding all the data

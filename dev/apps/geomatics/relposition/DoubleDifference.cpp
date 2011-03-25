@@ -256,7 +256,7 @@ int ComputeDoubleDifferences(map<SDid,RawData>& SDmap) throw(Exception)
 {
 try {
    bool frst,ok;
-   int i,j,k,indx,count,ddsign;
+   int i,j,k,indx,count = 0,ddsign;
    long nn1,nn2;
    double ddL1,ddL2,ddER,ddP1,ddP2,dd,db1,db2;
    DayTime tt,ttnext;   // ttnext is the time of the next reference satellite switch

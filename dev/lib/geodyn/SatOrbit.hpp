@@ -60,7 +60,7 @@ namespace gpstk
       enum GravityModel
       {
          GM_JGM3,
-         GM_EGM96,
+         GM_EGM96
       };
 
          /// Valid atmospheric models
@@ -68,7 +68,7 @@ namespace gpstk
       {
          AM_HarrisPriester,
          AM_MSISE00,
-         AM_CIRA,
+         AM_CIRA
       };
 
          /// Struct to hold force model setting data
