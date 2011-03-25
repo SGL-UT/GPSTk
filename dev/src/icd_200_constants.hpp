@@ -61,11 +61,11 @@ namespace gpstk
        */
       //@{
       /// GPS value of PI
-   const double PI        = std::atan(1.0)*4.0; //3.1415926535898;
+   const double PI        = 3.1415926535898;
       /// GPS value of PI*2
-   const double TWO_PI    = PI + PI;            //6.2831853071796;
+   const double TWO_PI    = 6.2831853071796;
       /// GPS value of PI**0.5
-   const double SQRT_PI   = std::sqrt(PI);      //1.7724539;
+   const double SQRT_PI   = 1.7724539;
       /// relativity constant for GPS (sec/sqrt(m))
    const double REL_CONST = -4.442807633e-10;
       /// Hz
@@ -91,7 +91,7 @@ namespace gpstk
       /// L2 multiplier.
    const double L2_MULT   = 120.0;
       /// Gamma multiplier.
-   const double GAMMA_GPS = (L1_FREQ/L2_FREQ)*(L1_FREQ/L2_FREQ);  // 1.646944444;
+   const double GAMMA_GPS = 1.646944444;
 
    // Modernized GPS
       /// L5 carrier frequency in Hz.
