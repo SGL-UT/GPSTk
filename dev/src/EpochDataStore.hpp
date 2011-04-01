@@ -64,6 +64,12 @@ namespace gpstk
            interPoints(10)
       {}
 
+      EpochDataStore(int interpolationPoints)
+         : initialTime(DayTime::END_OF_TIME),
+         finalTime(DayTime::BEGINNING_OF_TIME),
+         interPoints(interpolationPoints)
+      {}
+
          /// Default deconstructor
       virtual ~EpochDataStore()
       { allData.clear(); }
@@ -107,6 +113,10 @@ namespace gpstk
           */
       virtual DayTime getFinalTime()
       { return finalTime; };
+
+
+      EpochDataStore& setInterpolationPoints(const int& n)
+      { interPoints = n; return (*this); }
 
 
    protected:
