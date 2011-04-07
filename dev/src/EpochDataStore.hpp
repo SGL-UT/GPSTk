@@ -90,8 +90,8 @@ namespace gpstk
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval
           */
-      virtual void edit(DayTime tmin, DayTime tmax = DayTime(DayTime::END_OF_TIME))
-         throw();
+      virtual void edit(DayTime tmin, 
+                        DayTime tmax = DayTime(DayTime::END_OF_TIME));
 
          /// return the number of entries in the store
       size_t size(void)
@@ -122,8 +122,7 @@ namespace gpstk
    protected:
 
          /// Add to the store directly
-      void addData(const DayTime& time,const std::vector<double>& data)
-         throw();
+      void addData(const DayTime& time,const std::vector<double>& data);
 
 
          /** Get the Data at the given epoch and return it.
@@ -135,8 +134,6 @@ namespace gpstk
       std::vector<double> getData(const DayTime& t) const
          throw(InvalidRequest);
 
-
-   
       
          /// Object holding all the data for the vehicle
       EpochData allData;
