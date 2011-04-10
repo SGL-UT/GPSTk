@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
 * @file GPSTK_CONVERTC1TOP1_HPP.hpp
@@ -111,7 +112,7 @@ namespace gpstk
                   Bp1c1 = 0.0;
                }
 
-               it->second[TypeID::P1] = it->second[TypeID::C1]; 
+               it->second[TypeID::P1] = it->second[TypeID::C1] 
                                        +Bp1c1*(C_GPS_M * 1.0e-9);
             }
 
