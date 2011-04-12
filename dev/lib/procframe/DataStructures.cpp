@@ -2731,16 +2731,31 @@ in matrix and number of types do not match") );
 
             std::string line;
 
-            strm.formattedGetLine(line, true);
-
-            if( line.size()>80 ||
-                line[0] != ' ' ||
-                line[3] != ' ' ||
-                line[6] != ' ' )
+            while(1)
             {
-               FFStreamError e("Bad epoch line");
-               GPSTK_THROW(e);
-            }
+               strm.formattedGetLine(line, true);
+               
+               bool isValidEpochLine(true);
+
+               try
+               {
+                  if( line.size()>80 ) isValidEpochLine = false;
+
+                  DayTime tempEpoch = parseTime(line, hdr);
+                  if(tempEpoch==DayTime::BEGINNING_OF_TIME)
+                  {
+                     isValidEpochLine = false;
+                  }
+                     // check is it a number, if not exception will be throwed
+                   short tempNumSat = asInt(line.substr(29,3));                   
+               }
+               catch(...)
+               {
+                  isValidEpochLine = false;
+               }
+
+               if(isValidEpochLine) break;
+            }            
 
                // process the epoch line, including SV list and clock bias
             short epochFlag = asInt(line.substr(28,1));
