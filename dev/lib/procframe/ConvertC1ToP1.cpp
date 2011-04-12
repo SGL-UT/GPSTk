@@ -64,10 +64,13 @@ namespace gpstk
                                                 satTypeValueMap& gData )
       throw(ProcessingException)
    {
+      
       try
       {
          static const double minLimit(15000000.0);
          static const double maxLimit(30000000.0);
+
+         SatIDSet satRejectedSet;
 
          // Loop through all the satellites
          satTypeValueMap::iterator it;
@@ -93,11 +96,10 @@ namespace gpstk
                    it->second[TypeID::P1]>maxLimit      ) { hasP1 = false;}
             }
 
+               // If no desirable data, then schedule this satellite for removal
             if( !hasC1 && !hasP1)
             {
-                  // there are no C1 and P1, and we throw an exception
-               Exception e("There are no desireable C1 and P1 observables.");
-               GPSTK_THROW(e);
+               satRejectedSet.insert(it->first);
             }
 
             if( hasC1 && !hasP1 )
@@ -117,6 +119,8 @@ namespace gpstk
             }
 
          }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
+
+         gData.removeSatID(satRejectedSet);
 
          return gData;
             
