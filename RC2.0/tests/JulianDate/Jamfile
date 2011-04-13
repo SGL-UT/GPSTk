@@ -1,0 +1,2 @@
+SubDir TOP JulianDate ;
+TestMain JulianDate/xJulianDate.tst : JulianDate/xJulianDateM.cpp JulianDate/xJulianDate.cpp JulianDate/JulianDate.cpp ;

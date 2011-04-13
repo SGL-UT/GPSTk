@@ -1,0 +1,21 @@
+# $Id$
+
+SubDir TOP apps visibility ;
+
+GPSLinkLibraries wheresat svvis findMoreThan12 compStaVis compSatVis DOPcalc CalcDOPs : rxio gpstk ;
+
+BonkForte ; 
+
+GPSMain wheresat : WhereSat.cpp ;
+
+GPSMain svvis : svvis.cpp ;
+
+GPSMain findMoreThan12 : findMoreThan12.cpp ;
+
+GPSMain compSatVis : compSatVis.cpp StaStats.cpp VisSupport.cpp DiscreteVisibleCounts.cpp ;
+
+GPSMain compStaVis : compStaVis.cpp StaStats.cpp VisSupport.cpp DiscreteVisibleCounts.cpp ;
+
+GPSMain DOPcalc : DOPcalc.cpp ;
+
+GPSMain CalcDOPs : CalcDOPs.cpp ;

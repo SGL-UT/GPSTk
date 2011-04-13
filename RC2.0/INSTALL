@@ -1,0 +1,474 @@
+Installation of the GPSTk library and applications
+--------------------------------------------------
+
+This INSTALL file has these sections
+
+Introduction
+Building and Installing in a UNIX-like Environment using Jam
+Building and Installing in a UNIX-like Environment using GNU make
+Building under Microsoft Visual Studio .NET 2003/Visual C++ Express edition
+ADDENDUM: Standard notes on using configure
+
+More background information and detailed instuctions can be 
+found at the GPSTk website, http://www.gpstk.org/.  The website
+contains the latest information, support forum, and email and IRC
+contacts to obtain help on the project.  Please utilize these
+resource for problems with or questions about the GPSTk.
+
+Introduction
+------------
+   This project uses Jam for all of its configuration, build & install tasks.
+   See http://perforce.com/jam/jam.html for more details on this tool.
+   There are two sections below, excepted from the GPSTk website at 
+   http://www.gpstk.org/, that describe how UNIX/OS X and Windows users
+   can build and install the GPSTk.  (Please refer to the GPSTk website
+   for the most detailed and up to date information.)
+
+   This project uses doxygen to dynamically generate API documentation.
+   See http://www.doxygen.org/ for more details.
+
+   As of ver. 1.1 we have introduced autoconf generated Makefiles into the 
+   GPSTk. Efforts are made to maintain both build environments for allowing
+   flexibility when building the project.  However, the jam method of building
+   is typically exercised more frequently and is the recommended choice.  If 
+   you don't know how to use these makefiles, the attached info at the bottom of 
+   this file from the Free Software Foundation will help.
+
+   For more information about building the GPSTk, see the website at
+   http://www.gpstk.org/
+
+
+Building and Installing in a UNIX-like Environment using Jam
+------------------------------------------------------------
+
+This section describes build and installation under the following environments.
+
+   - Linux, AIX and Windows/Cygwin using gcc versions 3.3, 3.4, 4.0, 4.1
+   - Solaris using Sun Workshop 6 or Sun ONE Studio 8
+   - OS X using Xtools
+
+The following procedure will build and install the GPSTk.
+
+   1. Ensure that prerequisites such as jam have been installed.
+
+   2. Download the GPSTk distribution.
+
+   3. Extract the GPSTk tarball. For example, using GNU tar
+
+         $ tar xvzf gpstk.tar.gz
+
+   4. Change into the gpstk directory and type
+
+         $ jam
+
+   5. To build the source documentation using doxygen:
+
+         $ doxygen 
+
+   6. To install GPSTk as a system library in /usr/local, assume root 
+      privileges then execute
+
+         $ jam install 
+
+
+Building and Installing in a UNIX-like Environment using GNU make
+-----------------------------------------------------------------
+
+The following procedure will build and install the GPSTk using recent, 
+standard GNU build tools. The build has been successfully tested using the 
+following tools and versions:
+
+   autoconf (GNU Autoconf) 2.59
+   GNU m4 1.4.2
+   automake (GNU automake) 1.8.5
+
+To check the version of the tool you are using, use the GNU standard version option. For example
+
+   autoconf --version
+
+If you successfully build the GPSTk using other versions of the tools, or 
+if you successfully build in a new environment, please let us know.
+
+The following procedure will build and install the GPSTk.
+
+   1. Ensure that prerequisites, except jam , have been installed.
+
+   2. Download the GPSTk distribution.
+
+   3. Extract the GPSTk tarball. For example, using GNU tar
+
+         tar xvzf gpstk.tar.gz
+
+   4. Change into the gpstk directory and type
+
+         ./autogen.sh
+         ./configure
+         make
+
+   5. To build the source documentation using doxygen:
+ 
+         doxygen 
+
+   6. To install GPSTk as a system library in /usr/local, assume root 
+      privileges then execute
+
+         make install
+
+
+Building under Microsoft Visual Studio .NET or Visual C++ Express edition
+-------------------------------------------------------------------------
+
+If you are building GPSTk under the Cygwin environment, then use the build
+instructions for UNIX-like environments (above).
+
+The GPSTk is not supported under Microsoft Visual C++ 6.0, or earlier, mainly 
+because templates in classes are not supported. Currently there are no 
+Makefiles for MSVS, so you must use jam to build the GPSTk on the command line.
+
+Here are the steps we have used to build under MSVS.NET 2003 and
+the Free Visual C++ Express edition 2005.
+
+   1. Ensure that prerequisites such as jam have been installed.
+
+   2. You may have to reinstall the compiler to build with GPSTk. In order f
+      or Jam to work under Windows, the MSVS command line tools 
+      (compiler and linker) must be installed in a directory without
+      whitespace in it. Thus the default installation directory 
+      (\Program Files\...), for example, will cause Jam to fail. Sorry, 
+      you'll have to re-install in another directory. 
+      Also, if the VSVARS32.BAT batch file was not installed, 
+      this option must be chosen during a reinstallation.
+
+   3. Open a command window and run the VSVARS32.BAT batch file before 
+      running Jam. You should be able to type the following into the
+      DOS Prompt:
+
+      cl
+
+      and get a response from the compiler.
+
+   4. Jam requires that two other environment variables be set: MSCVNT,
+      and MSCVER. The value you use depends on which version of the compiler
+      you will used. For the 2003 .NET compiler use:
+
+         set MSVCNT=C:\MSVS2003\VC7
+         set MSCVER=1300
+
+      For the 2005 Visual C++ Express edition use:
+
+         set MSVCNT=C:\MSVS2005\VC
+         set MSCVER=1400
+
+      The directory on the right of the '=' is the directory where the command
+      line tools are installed (it will have subdirectories bin,lib,include, 
+      etc.); this tells Jam where the compiler and linker are. 
+
+      Of course you may have other install directories; this example uses 
+      C:\MSVC2003 for the 2003 tools and C:\MSVC2005 for the 2005 tools. Note 
+      the different subdirectories '\VC7' and '\VC'; this is an MS thing, 
+      these are the directories where the \bin, \lib, and \include directories
+      are found. (The values 1300 and 1400 were chosen because all MS 
+      compilers define the macro _MSC_VER as a float number of the form 
+      'MMmm.mm' where MM is the major version, and mm.mm is the minor version 
+      number; in MS VC++ versions 6, 7 and 8 the major versions are 12, 13, 
+      and 14 respectively).
+
+   5. Ensure the Jam executable for Windows is in the path. Install the GPSTk 
+      tarball and change to the /dev directory of the GPSTk -- the file 
+      'Jamrules' should be here -- and type
+
+         jam
+
+      Jam will tell you which compiler you are using, and then get to work.
+
+Notes about the Windows build:
+
+Note 1. You could install BOTH MS compilers, in different directories, and then put all this setup into batch files that allow you to run either one independently. For example:
+
+      REM Batch file go2005.bat  Run from the command line
+      REM    before using jam and the MS 2005 build tools.
+      set MSVCNT=C:\MSVC2005\VC
+      set MSCVER=1400
+      REM This is a copy of VSVARS32.bat that came with MS VC++ 2005
+      call VSVARS32_2005
+      REM Move to my working directory
+      cd C:\WorkingDirectory
+
+and
+
+      REM Batch file go2003.bat  Run from the command line
+      REM    before using jam and the MS 2003 build tools.
+      set MSVCNT=C:\MSVC2003\VC7
+      set MSCVER=1300
+      REM This is a copy of VSVARS32.bat that came with MS VC++.NET 2003
+      call VSVARS32_2003
+      REM Move to my working directory
+      cd C:\WorkingDirectory
+
+With  these batch  files the  whole process  is a  simple as  (a) open
+command window, (b)  type go2005 (or go2003), (c)  type jam. Type 'jam
+clean' to delete all the object (.obj) and executable (.exe) files.
+
+Note 2. The Jamrules file is where the MSCVER variable is required
+(unlike the MSVCNT variable, which the jam executable requires). If
+you use only one compiler exclusively, you might edit the Jamrules
+file and remove this version dependency; then you would not need
+MSCVER at all.
+
+Note 3. In any  case you ought to look at the  Jamrules file; look for
+$(NT),  which  the  Windows  executable  jam.exe  defines,  for  items
+relevant to  Windows. C++FLAGS contains C++  compiler options, CCFLAGS
+contains  C compiler  options (but  note  that CCFLAGS  is changed  in
+\src\Jamfile for compiling regex.c), LINKFLAGS are linker options, and
+LINKLIBS are extra libraries included in  the link.  
+
+Note 4. We have
+found  that optimization  is a  practical necessity  in  building with
+these compilers. The option /O2 (that's capital 'oh' not 'zero') seems
+to be  best for speed. Jamrules  now includes /O2 in  both versions of
+the MS  compilers. Of course you  may change this, or  any compiler or
+linker options, by editing Jamrules.
+
+Note 5.  In the  past one  of the problems  in using  jam with  the MS
+compilers beyond version 6.0  has been that the libraries advapi32.lib
+and kernel32.lib seemed  to be missing. This, however,  comes from the
+jam  executable,  not  from  MS.  These libraries  are  required,  and
+provided,  in  MS VC++  6.0,  and  this is  the  default  for the  jam
+executable.  Jam.exe does  this by  defining the  default  LINKLIBS to
+include  these  libraries.  Since  they  are not  required  for  later
+versions, Jamrules now redefines LINKLIBS  to be empty. If you want to
+understand the defaults in jam.exe, go to the jam website and find the
+Jambase file - it is a 'Jamrules' file that contains all the defaults.
+
+
+ADDENDUM: Standard notes on using configure
+-------------------------------------------
+
+Copyright (C) 1994, 1995, 1996, 1999, 2000, 2001, 2002 Free Software
+Foundation, Inc.
+
+   This file is free documentation; the Free Software Foundation gives
+unlimited permission to copy, distribute and modify it.
+
+Basic Installation
+==================
+
+   These are generic installation instructions.
+
+   The `configure' shell script attempts to guess correct values for
+various system-dependent variables used during compilation.  It uses
+those values to create a `Makefile' in each directory of the package.
+It may also create one or more `.h' files containing system-dependent
+definitions.  Finally, it creates a shell script `config.status' that
+you can run in the future to recreate the current configuration, and a
+file `config.log' containing compiler output (useful mainly for
+debugging `configure').
+
+   It can also use an optional file (typically called `config.cache'
+and enabled with `--cache-file=config.cache' or simply `-C') that saves
+the results of its tests to speed up reconfiguring.  (Caching is
+disabled by default to prevent problems with accidental use of stale
+cache files.)
+
+   If you need to do unusual things to compile the package, please try
+to figure out how `configure' could check whether to do them, and mail
+diffs or instructions to the address given in the `README' so they can
+be considered for the next release.  If you are using the cache, and at
+some point `config.cache' contains results you don't want to keep, you
+may remove or edit it.
+
+   The file `configure.ac' (or `configure.in') is used to create
+`configure' by a program called `autoconf'.  You only need
+`configure.ac' if you want to change it or regenerate `configure' using
+a newer version of `autoconf'.
+
+The simplest way to compile this package is:
+
+  1. `cd' to the directory containing the package's source code and type
+     `./configure' to configure the package for your system.  If you're
+     using `csh' on an old version of System V, you might need to type
+     `sh ./configure' instead to prevent `csh' from trying to execute
+     `configure' itself.
+
+     Running `configure' takes awhile.  While running, it prints some
+     messages telling which features it is checking for.
+
+  2. Type `make' to compile the package.
+
+  3. Optionally, type `make check' to run any self-tests that come with
+     the package.
+
+  4. Type `make install' to install the programs and any data files and
+     documentation.
+
+  5. You can remove the program binaries and object files from the
+     source code directory by typing `make clean'.  To also remove the
+     files that `configure' created (so you can compile the package for
+     a different kind of computer), type `make distclean'.  There is
+     also a `make maintainer-clean' target, but that is intended mainly
+     for the package's developers.  If you use it, you may have to get
+     all sorts of other programs in order to regenerate files that came
+     with the distribution.
+
+Compilers and Options
+=====================
+
+   Some systems require unusual options for compilation or linking that
+the `configure' script does not know about.  Run `./configure --help'
+for details on some of the pertinent environment variables.
+
+   You can give `configure' initial values for configuration parameters
+by setting variables in the command line or in the environment.  Here
+is an example:
+
+     ./configure CC=c89 CFLAGS=-O2 LIBS=-lposix
+
+   *Note Defining Variables::, for more details.
+
+Compiling For Multiple Architectures
+====================================
+
+   You can compile the package for more than one kind of computer at the
+same time, by placing the object files for each architecture in their
+own directory.  To do this, you must use a version of `make' that
+supports the `VPATH' variable, such as GNU `make'.  `cd' to the
+directory where you want the object files and executables to go and run
+the `configure' script.  `configure' automatically checks for the
+source code in the directory that `configure' is in and in `..'.
+
+   If you have to use a `make' that does not support the `VPATH'
+variable, you have to compile the package for one architecture at a
+time in the source code directory.  After you have installed the
+package for one architecture, use `make distclean' before reconfiguring
+for another architecture.
+
+Installation Names
+==================
+
+   By default, `make install' will install the package's files in
+`/usr/local/bin', `/usr/local/man', etc.  You can specify an
+installation prefix other than `/usr/local' by giving `configure' the
+option `--prefix=PATH'.
+
+   You can specify separate installation prefixes for
+architecture-specific files and architecture-independent files.  If you
+give `configure' the option `--exec-prefix=PATH', the package will use
+PATH as the prefix for installing programs and libraries.
+Documentation and other data files will still use the regular prefix.
+
+   In addition, if you use an unusual directory layout you can give
+options like `--bindir=PATH' to specify different values for particular
+kinds of files.  Run `configure --help' for a list of the directories
+you can set and what kinds of files go in them.
+
+   If the package supports it, you can cause programs to be installed
+with an extra prefix or suffix on their names by giving `configure' the
+option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
+
+Optional Features
+=================
+
+   Some packages pay attention to `--enable-FEATURE' options to
+`configure', where FEATURE indicates an optional part of the package.
+They may also pay attention to `--with-PACKAGE' options, where PACKAGE
+is something like `gnu-as' or `x' (for the X Window System).  The
+`README' should mention any `--enable-' and `--with-' options that the
+package recognizes.
+
+   For packages that use the X Window System, `configure' can usually
+find the X include and library files automatically, but if it doesn't,
+you can use the `configure' options `--x-includes=DIR' and
+`--x-libraries=DIR' to specify their locations.
+
+Specifying the System Type
+==========================
+
+   There may be some features `configure' cannot figure out
+automatically, but needs to determine by the type of machine the package
+will run on.  Usually, assuming the package is built to be run on the
+_same_ architectures, `configure' can figure that out, but if it prints
+a message saying it cannot guess the machine type, give it the
+`--build=TYPE' option.  TYPE can either be a short name for the system
+type, such as `sun4', or a canonical name which has the form:
+
+     CPU-COMPANY-SYSTEM
+
+where SYSTEM can have one of these forms:
+
+     OS KERNEL-OS
+
+   See the file `config.sub' for the possible values of each field.  If
+`config.sub' isn't included in this package, then this package doesn't
+need to know the machine type.
+
+   If you are _building_ compiler tools for cross-compiling, you should
+use the `--target=TYPE' option to select the type of system they will
+produce code for.
+
+   If you want to _use_ a cross compiler, that generates code for a
+platform different from the build platform, you should specify the
+"host" platform (i.e., that on which the generated programs will
+eventually be run) with `--host=TYPE'.
+
+Sharing Defaults
+================
+
+   If you want to set default values for `configure' scripts to share,
+you can create a site shell script called `config.site' that gives
+default values for variables like `CC', `cache_file', and `prefix'.
+`configure' looks for `PREFIX/share/config.site' if it exists, then
+`PREFIX/etc/config.site' if it exists.  Or, you can set the
+`CONFIG_SITE' environment variable to the location of the site script.
+A warning: not all `configure' scripts look for a site script.
+
+Defining Variables
+==================
+
+   Variables not defined in a site shell script can be set in the
+environment passed to `configure'.  However, some packages may run
+configure again during the build, and the customized values of these
+variables may be lost.  In order to avoid this problem, you should set
+them in the `configure' command line, using `VAR=value'.  For example:
+
+     ./configure CC=/usr/local2/bin/gcc
+
+will cause the specified gcc to be used as the C compiler (unless it is
+overridden in the site shell script).
+
+`configure' Invocation
+======================
+
+   `configure' recognizes the following options to control how it
+operates.
+
+`--help'
+`-h'
+     Print a summary of the options to `configure', and exit.
+
+`--version'
+`-V'
+     Print the version of Autoconf used to generate the `configure'
+     script, and exit.
+
+`--cache-file=FILE'
+     Enable the cache: use and save the results of the tests in FILE,
+     traditionally `config.cache'.  FILE defaults to `/dev/null' to
+     disable caching.
+
+`--config-cache'
+`-C'
+     Alias for `--cache-file=config.cache'.
+
+`--quiet'
+`--silent'
+`-q'
+     Do not print messages saying which checks are being made.  To
+     suppress all normal output, redirect it to `/dev/null' (any error
+     messages will still be shown).
+
+`--srcdir=DIR'
+     Look for the package's source code in directory DIR.  Usually
+     `configure' can determine that directory automatically.
+
+`configure' also accepts some other, not widely useful, options.  Run
+`configure --help' for more details.

@@ -1,0 +1,2 @@
+SubDir TOP GPSWeekSecond ;
+TestMain GPSWeekSecond/xGPSWeekSecond.tst : GPSWeekSecond/xGPSWeekSecondM.cpp GPSWeekSecond/xGPSWeekSecond.cpp GPSWeekSecond/GPSWeekSecond.cpp ;

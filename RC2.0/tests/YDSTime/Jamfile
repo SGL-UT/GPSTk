@@ -1,0 +1,2 @@
+SubDir TOP YDSTime ;
+TestMain YDSTime/xYDSTime.tst : YDSTime/xYDSTimeM.cpp YDSTime/xYDSTime.cpp YDSTime/YDSTime.cpp ;

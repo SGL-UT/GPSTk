@@ -1,0 +1,22 @@
+# vplot Jamfile
+#
+# please add in alphabetic order
+SubDir TOP lib vplot ;
+
+if $(PREPROCESSING)
+{
+  GPSSetupLibrary vplot : vdraw ;
+}
+else
+{
+  GPSBuildLibrary vplot : 
+        Axis.cpp LinePlot.cpp Plot.cpp ScatterPlot.cpp
+        SeriesList.cpp Splitter.cpp SurfacePlot.cpp 
+  ;
+
+  InstallFile $(INCDIR) :
+        Axis.hpp AxisStyle.hpp LinePlot.hpp Plot.hpp 
+        plottypes.hpp ScatterPlot.hpp SeriesList.hpp
+        Splitter.hpp SurfacePlot.hpp 
+  ;
+}

@@ -1,0 +1,189 @@
+$Id$
+
+The following is excerpted from the GPSTk web/wiki site at 
+http://www.gpstk.org/.
+
+The website includes a variety of additional and the latest information 
+including:
+   * Source code and compiled binaries
+   * Coding examples
+   * Doxygen documentation
+   * System requirements and build instructions
+   * A users guide
+   * Publications
+   * Email lists
+   * Support question/answer
+   * Development process (including feature suggestions, bug tracking, 
+      schedule, testing, and developer documentation)
+   * Source code repository information
+   * GPSTk IRC channel
+   * Success stories
+
+What is GPSTk?
+--------------
+
+The goal of the GPSTk project is to provide an open source library and suite
+of applications to the satellite navigation community--to free researchers
+to focus on research, not lower level coding.
+
+GPS users employ practically every computational architecture and operating 
+system. Therefore the design of the GPSTk suite is as platform-independent as 
+possible. Platform independence is achieved through use of the ANSI-standard 
+C++ programming language. The principles of object-oriented programming are 
+used throughout the GPSTk code base in order to ensure that the code is 
+modular, extensible, and maintainable.
+
+The GPSTk suite consists of a core library, auxiliary libraries, and a set 
+of applications. The GPSTk provides a wide array of functions that solve 
+processing problems associated with GPS such as processing or using standard 
+formats such as RINEX. The libraries are the basis for the more advanced 
+applications distributed as part of the GPSTk suite.
+
+The GPSTk is sponsored by Space and Geophysics Laboratory, within the Applied 
+Research Laboratories at the University of Texas at Austin (ARL:UT). GPSTk is
+the by-product of GPS research conducted at ARL:UT since before the first 
+satellite launched in 1978; it is the combined effort of many software 
+engineers and scientists. In 2003 the research staff at ARL:UT decided to 
+open source much of their basic GPS processing software as the GPSTk.
+
+
+GPSTk Core Library
+------------------
+
+The GPSTk core library consist of the most robust, broadly useful,  and 
+platform independent code in the GPSTk.  It provides a number of models and 
+algorithms found in GPS textbooks and classic papers, such as solving for 
+the user position or estimating atmospheric refraction. Common formats 
+are supported as well, such as RINEX or SP3. There are several categories 
+of functions in the GPSTk library:
+
+   1. GPS time. Conversion among time representations such as MJD, GPS week 
+      and seconds of week, and many others.
+
+   2. Ephemeris calculations. Position and clock interpolation for both
+      broadcast and precise ephemerides.
+
+   3. Atmospheric delay models. Includes ionosphere and troposphere models.
+
+   4. Position solution. Includes an implementation of a Receiver Autonomous 
+      Integrity Monitoring algorithm.
+
+   5. Mathematics. Includes Matrix and Vector implementations, as well as
+      interpolation and numerical integration.
+
+   6. GNSS data structures. Data structures that contain observations mapped
+      according to epochs, satellites, sources and types of observations.
+      Appropriate processing classes are also provided, including a complete
+      'Precise Point Positioning' (PPP) processing chain.
+
+   7. Application framework. Includes processing command lines options,
+      providing interactive help and working with file systems.
+
+A more detailed description of the functionality provided by the GPSTk library 
+can be found in the Doxygen documentation on the GPSTk website.
+
+The GPSTk Core Library and its associated test programs can be built 
+independently of building the GPSTk Applications or Auxiliary Libraries.
+The GPSTk Core Library source code contains no dependencies outside of the
+GPSTk Core Library and Standard C++ and will build cleanly on all 
+supported platforms.
+
+
+GPSTk Auxiliary Libraries
+-------------------------
+The auxiliary libraries contains code that could be useful in GNSS processing 
+but do not fit the description and portability of the core library. This code
+could contain highly specialized algorithms or be related to the message 
+format of a specific receiver. The code could require libraries or system 
+functions that are broadly available but not part of the C++ standard.  
+Currently the auxiliary libraries are:
+
+   1. rxio - Receiver and input/output library
+   2. vplot, vdraw - Vector graphics libraries
+   3. geomatics - Precise positioning library
+   4. procframe - Framework for storage, filtering and processing of
+                  observations, including 'PPP' processing.
+   5. geodyn - a library to model the effects of natural forces on 
+	       space vehicle dynamics.
+
+GPSTk Applications
+------------------
+
+The libraries are the foundation for applications within the GPSTk suite.  
+The applications support greater depth of functionality to support research 
+and development. The applications are almost entirely console based (i.e., 
+without a graphical user interface). They can be grouped functionally into 
+a number of categories.
+
+   1. RINEX utilities - The RINEX utilities provide a set of applications 
+      that can be used to examine, manipulate, and plot RINEX observation 
+      files.
+
+   2. Positioning - The positioning applications include two different 
+      applications that perform standard pseudorange-based positioning and 
+      two that implement differential phase-based solutions. 
+
+   3. Residual analysis - A residual analysis application computes two types 
+      of measurement residuals using a single receiver or two receivers in 
+      a zero baseline configuration. 
+
+   4. Ionospheric modeling - The ionospheric modeling applications utilize 
+      the two frequency TEC estimate from the RINEX utilities and compute 
+      a model of the ionosphere. 
+
+   5. Signal Tracking Simulation - These utilities simulate the tracking 
+      of GPS C/A and P-code.
+
+   6. Basic transformations -  Conversions of time and coordinate systems.
+
+   7. Observation data collection and conversion -  Translating receiver 
+      specific data formats to RINEX.
+
+   8. File comparison and validation - Differing observations files against 
+     a truth source.
+
+   9. Data editing - Simple editing like systematic removal of observations 
+      by satellite, type or time and more advanced editing like cycle slip 
+      detection and correction.
+
+   10.Autonomous and relative positioning - Navigation and surveying 
+      applications.
+
+
+The GPSTk applications are dependent on the GPSTk libraries.  However, the 
+GPSTk Applications may also contain external dependencies.  Some applications 
+may not build or run successfully on all the supported platforms. 
+
+License
+-------
+
+The source code provided by the GPSTk is distributed under the GNU LGPL 
+(http://www.gnu.org/copyleft/lesser.html). This license gives all users the 
+right to use and redistribute the code. Users of the GPSTk are not required 
+to open their source, according to the LGPL. This makes the GPSTk a practical 
+choice for commercial projects.
+
+
+Credit
+------
+
+If you use the GPSTk to produce an article or thesis, please reference 
+the following article to credit the GPSTk project.
+
+Brian Tolman, R. Benjamin Harris, Tom Gaussiran, David Munton, Jon Little, 
+Richard Mach, Scot Nelsen, Brent Renfro, ARL:UT; David Schlossberg, 
+University of California Berkeley. "The GPS Toolkit -- Open Source GPS 
+Software." Proceedings of the 17th International Technical Meeting of 
+the Satellite Division of the Institute of Navigation (ION GNSS 2004). 
+Long Beach, California. September 2004
+
+For LaTeX users, here is a BibTeX entry for that citation.
+
+http://www.gpstk.org/pub/Documentation/GPSTkPublications/gpstk-ion-gnss-2004.bib
+
+
+Contact Info
+------------
+The GPSTk is a collaborative effort. However, you can email to 
+gpstk@arlut.utexas.edu or contact one of the CoreTeam members
+(http://www.gpstk.org/bin/view/Development/CoreTeam).
