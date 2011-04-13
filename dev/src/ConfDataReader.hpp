@@ -205,7 +205,7 @@ namespace gpstk
           */
       virtual string getValue( string variable,
                                string section = "DEFAULT",
-                               string default = "")
+                               string defaultVal = "")
          throw(ConfigurationException);
 
 
@@ -217,11 +217,11 @@ namespace gpstk
           */
       virtual double getValueAsDouble( string variable,
                                        string section = "DEFAULT",
-                                       double default = 0.0)
+                                       double defaultVal = 0.0)
          throw(ConfigurationException)
       { 
          return StringUtils::asDouble( 
-                  getValue(variable, section, StringUtils::asString(default)) ); 
+               getValue(variable, section, StringUtils::asString(defaultVal)) ); 
       };
 
 
@@ -233,11 +233,11 @@ namespace gpstk
           */
       virtual int getValueAsInt( string variable,
                                  string section = "DEFAULT",
-                                 int    default = 0 )
+                                 int    defaultVal = 0 )
          throw(ConfigurationException)
       { 
          return StringUtils::asInt( 
-                  getValue(variable, section, StringUtils::asString(default)) ); 
+                  getValue(variable, section, StringUtils::asString(defaultVal)) ); 
       };
 
 
@@ -249,7 +249,7 @@ namespace gpstk
           */
       virtual bool getValueAsBoolean( string variable,
                                       string section = "DEFAULT", 
-                                      bool   default = false )
+                                      bool   defaultVal = false )
          throw(ConfigurationException);
 
 
@@ -267,7 +267,7 @@ namespace gpstk
           */
       virtual string fetchListValue( string variableList,
                                      string section = "DEFAULT",
-                                     string default = "" )
+                                     string defaultVal = "" )
          throw(ConfigurationException);
 
 
@@ -285,11 +285,11 @@ namespace gpstk
           */
       virtual double fetchListValueAsDouble( string variableList,
                                              string section = "DEFAULT",
-                                             double default = 0.0 )
+                                             double defaultVal = 0.0 )
          throw(ConfigurationException)
       { 
          return StringUtils::asDouble( 
-           fetchListValue(variableList,section,StringUtils::asString(default))); 
+         fetchListValue(variableList,section,StringUtils::asString(defaultVal))); 
       };
 
 
@@ -307,11 +307,11 @@ namespace gpstk
           */
       virtual int fetchListValueAsInt( string variableList,
                                        string section = "DEFAULT",
-                                       int    default = 0 )
+                                       int    defaultVal = 0 )
          throw(ConfigurationException)
       { 
          return StringUtils::asInt( 
-            fetchListValue(variableList,section,StringUtils::asString(default))); 
+         fetchListValue(variableList,section,StringUtils::asString(defaultVal))); 
       };
 
 
@@ -331,7 +331,7 @@ namespace gpstk
           */
       virtual bool fetchListValueAsBoolean( string variableList,
                                             string section = "DEFAULT",
-                                            bool   default = false)
+                                            bool   defaultVal = false)
          throw(ConfigurationException);
 
 

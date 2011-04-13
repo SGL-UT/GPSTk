@@ -257,7 +257,7 @@ namespace gpstk
        */
    string ConfDataReader::getValue( string variable,
                                     string section,
-                                    string default )
+                                    string defaultVal )
       throw(ConfigurationException)
    {
 
@@ -313,7 +313,7 @@ namespace gpstk
                else
                {
 
-                  return default;
+                  return defaultVal;
 
                }
 
@@ -321,7 +321,7 @@ namespace gpstk
             else
             {
 
-               return default;
+               return defaultVal;
 
             }  // End of 'if ( getFallback2Default() )'
 
@@ -347,7 +347,7 @@ namespace gpstk
        */
    bool ConfDataReader::getValueAsBoolean( string variable,
                                            string section,
-                                           bool   default )
+                                           bool   defaultVal )
       throw(ConfigurationException)
    {
 
@@ -367,7 +367,7 @@ namespace gpstk
          {
                // Return false if variable is empty. Be aware that an empty
                // variable is NOT the same as an unexistent variable
-            return default;
+            return defaultVal;
 
          }
 
@@ -431,7 +431,7 @@ namespace gpstk
        */
    string ConfDataReader::fetchListValue( string variableList,
                                           string section, 
-                                          string default )
+                                          string defaultVal )
       throw(ConfigurationException)
    {
 
@@ -453,7 +453,7 @@ namespace gpstk
 
             // Return the first value
          string value = StringUtils::strip(firstValue);
-         return ( (value=="") ? string(default) : value );
+         return ( (value=="") ? string(defaultVal) : value );
 
       }
       catch (ConfigurationException& e)
@@ -479,7 +479,7 @@ namespace gpstk
        */
    bool ConfDataReader::fetchListValueAsBoolean( string variableList,
                                                  string section,
-                                                 bool   default )
+                                                 bool   defaultVal )
       throw(ConfigurationException)
    {
 
@@ -509,7 +509,7 @@ namespace gpstk
                 (result == "") )    // If list is empty returns false
             {
 
-               return default;
+               return defaultVal;
 
             }
             else
