@@ -476,6 +476,14 @@ namespace gpstk
          throw(DayTimeException);
 
          /**
+          * Add (int) days to this time.
+          * @param days Number of days to increase this time by.
+          * @throws DayTimeException on over/under-flow
+          */
+      DayTime& addDays(long days)
+         throw(DayTimeException);
+
+         /**
           * Add (double) seconds to this time.
           * @param seconds Number of seconds to increase this time by.
           * @throws DayTimeException on over/under-flow

@@ -41,7 +41,7 @@
 #include "Position.hpp"
 #include "SimpleIURAWeight.hpp"
 #include "TropModel.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "geometry.hpp"                   // DEG_TO_RAD
 #include <cmath>
 #include <vector>
@@ -96,7 +96,7 @@ namespace gpstk
           * a valid weight. Also, its PRN will be set to a negative value.
           *
           */
-      virtual int getWeights( DayTime& time,
+      virtual int getWeights( CommonTime& time,
                               Vector<SatID>& Satellites,
                               GPSEphemerisStore& bcEph,
                               Vector<double>& ionoCorrections,
@@ -128,9 +128,9 @@ namespace gpstk
           * a valid weight. Also, its PRN will be set to a negative value.
           *
           */
-      virtual int getWeights( DayTime& time,
+      virtual int getWeights( CommonTime& time,
                               Vector<SatID>& Satellites,
-                              TabularEphemerisStore& preciseEph,
+                              TabularEphemerisStore<Xvt>& preciseEph,
                               Vector<double>& ionoCorrections,
                               Vector<double>& elevationVector,
                               Vector<double>& azimuthVector,

@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 #ifndef GPSTK_TIMETAG_HPP
 #define GPSTK_TIMETAG_HPP
 
@@ -27,7 +25,22 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "CommonTime.hpp"
+#include "TimeSystem.hpp"
 #include "StringUtils.hpp"
 #include <map>
 
@@ -41,7 +54,17 @@ namespace gpstk
    class TimeTag
    {
    public:
-      
+
+     // Default constructor
+      TimeTag()
+         throw()
+      {}
+
+         /// Constructor
+      TimeTag( TimeSystem ts ) 
+         throw()
+      { timeSystem = ts; }
+
          /// Virtual Destructor.
       virtual ~TimeTag() 
          throw()
@@ -134,7 +157,7 @@ namespace gpstk
          /// Hey, it's an implicit casting operator!  Basically just a lazy
          /// way to get at convertToCommonTime().
       virtual operator CommonTime() const
-         throw(InvalidRequest)
+         throw( gpstk::InvalidRequest )
       { return convertToCommonTime(); }
 
          /// This returns the regular expression prefix that is used when 
@@ -151,6 +174,19 @@ namespace gpstk
       static inline std::string getError()
       { return "ErrorBadTime"; }
 
+         /// Set method for internal variable timeSystem (enum).
+      void setTimeSystem( const TimeSystem& timeSys )
+         throw()
+      { timeSystem = timeSys; }
+
+         /// Obtain time system info (enum).
+      TimeSystem getTimeSystem() const
+         throw()
+      { return timeSystem ; }
+
+   protected:
+
+      TimeSystem timeSystem; // time system (representation) of the data
    };
 
 } // namespace
@@ -158,4 +194,4 @@ namespace gpstk
 std::ostream& operator<<( std::ostream& s,
                           const gpstk::TimeTag& t );
 
-#endif // GPSTK_BASETIME_HPP
+#endif // GPSTK_TIMETAG_HPP

@@ -200,7 +200,7 @@ namespace gpstk
           */
       void terminate()
          throw()
-      { ::exit(1); };
+      { exit(1); };
 
          /// Returns the error ID of the exception. 
       unsigned long getErrorId() const 

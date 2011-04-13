@@ -1,10 +1,8 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file Xvt.hpp
- * Position, velocity, and clock representation as ECEF, Triple and double
+ * Position and velocity as Triples, clock bias and drift as doubles.
  */
 
 #ifndef GPSTK_XVT_HPP
@@ -47,48 +45,58 @@
 //=============================================================================
 
 
-
-
-
-
 #include <iostream>
-#include "Triple.hpp"
-#include "ECEF.hpp"
-#include "GeoidModel.hpp"
+#include "Xt.hpp"
+#include "EllipsoidModel.hpp"
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
-    //@{
+  /** @addtogroup geodeticgroup */
+  //@{
 
-      /// An Earth-Centered, Earth-Fixed position/velocity/clock representation
-   class Xvt
-   {
-   public:
-         /// Default constructor
-      Xvt() { }
+  /// An Earth-Centered, Earth-Fixed position/velocity/clock representation.
+  class Xvt : public Xt
+  {
+  public:
 
-      ECEF x;         ///< SV position (x,y,z). Earth-fixed. meters
-      Triple v;       ///< SV velocity. Earth-fixed, including rotation. meters/sec
-      double dtime;   ///< SV clock correction in seconds
-      double ddtime;  ///< SV clock drift in sec/sec
+    /// Default constructor
+    Xvt()
+      : v(0.,0.,0.), ddtime(0.)
+    {}
 
-         /**
-          * Given the position of a ground location, compute the range
-          * to the spacecraft position.
-          * @param rxPos ground position at broadcast time in ECEF.
-          * @param geoid geodetic parameters.
-          * @param correction offset in meters (include any factors other
-          * than the SV clock correction).
-          * @return Range in meters
-          */
-      double preciseRho(const ECEF& rxPos, 
-                        const GeoidModel& geoid,
-                        double correction = 0) const
-         throw();
-   }; 
+    /// Destructor.
+    virtual ~Xvt()
+    {};
 
-   //@}
+    /**
+     * Given the position of a ground location, compute the range
+     * to the spacecraft position.
+     * @param rxPos ground position at broadcast time in ECEF.
+     * @param ellipsoid geodetic parameters.
+     * @param correction offset in meters (include any factors other
+     * than the SV clock correction).
+     * @return Range in meters
+     */
+    double preciseRho(const Triple& rxPos, 
+                      const EllipsoidModel& ellipsoid,
+                      double correction = 0) const
+      throw();
+
+    Triple getVel()
+      throw()
+    { return v; }
+
+    double getDDtime()
+      throw()
+    { return ddtime; }
+
+//  protected:
+
+    Triple v;       ///< SV velocity, Earth-fixed, including rotation. [m/s]
+    double ddtime;  ///< SV clock drift. [sec/sec]
+  };
+
+  //@}
 
 }
 

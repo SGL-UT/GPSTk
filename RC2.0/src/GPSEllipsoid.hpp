@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: GPSEllipsoid.hpp 2293 2010-02-12 18:14:16Z btolman $"
 
 
 
@@ -33,7 +33,7 @@
 //============================================================================
 
 #include "WGS84Ellipsoid.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 namespace gpstk
 {

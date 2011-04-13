@@ -24,6 +24,20 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "GPSWeekZcount.hpp"
 #include "TimeConstants.hpp"
 #include "TimeConverters.hpp"
@@ -39,7 +53,7 @@ namespace gpstk
    }
    
    CommonTime GPSWeekZcount::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -48,7 +62,8 @@ namespace gpstk
          double sod = static_cast<double>( zcount % ZCOUNT_PER_DAY ) * 1.5;
          return CommonTime( jday,
                             static_cast<long>( sod ),
-                            sod - static_cast<long>( sod ) );
+                            sod - static_cast<long>( sod ),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -58,10 +73,10 @@ namespace gpstk
    }
    
    void GPSWeekZcount::convertFromCommonTime( const CommonTime& ct )
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime representable by GPSWeekZcount.
-      static const CommonTime MIN_CT = GPSWeekZcount();
+     static const CommonTime MIN_CT = GPSWeekZcount(0,0,TimeSystem::Any);
 
       if (ct < MIN_CT)
       {
@@ -71,7 +86,7 @@ namespace gpstk
 
       long day, sod;
       double fsod;
-      ct.get( day, sod, fsod );
+      ct.get( day, sod, fsod, timeSystem );
       
          // find the number of days since the beginning of the GPS Epoch
       day -= GPS_EPOCH_JDAY;
@@ -103,6 +118,8 @@ namespace gpstk
                               "cu", getZcount29() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cu", getZcount32() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", timeSystem.asString().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -130,6 +147,8 @@ namespace gpstk
                               "cs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "C",
                               "Cs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -163,6 +182,10 @@ namespace gpstk
 
             case 'C':
                setZcount32( asInt( i->second ) );
+               break;
+
+            case 'P':
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
 
             default:

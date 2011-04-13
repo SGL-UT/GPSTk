@@ -53,12 +53,12 @@
 
 #include "Triple.hpp"
 #include "Exception.hpp"
-#include "GeoidModel.hpp"
+#include "EllipsoidModel.hpp"
 #include "ECEF.hpp"
 
 namespace gpstk
 {
-      /** @addtogroup geodeticgroup */
+      /** @addtogroup ellipsoidgroup */
       //@{
 
       /// Thrown when the internal gpstk::GeoidModel isn't assigned.
@@ -84,10 +84,10 @@ namespace gpstk
           * @param lat latitude in degrees.
           * @param lon longitude in degrees.
           * @param alt altitude in m.
-          * @param geo geoid model for transformations.
+          * @param ell ellipsoid model for transformations.
           */
       Geodetic(const double& lat, const double& lon, const double& alt, 
-               GeoidModel* geo = NULL);
+               EllipsoidModel* ell = NULL);
 
          /** Construct from a Triple and a GeoidMode.  The triple is latitude
           * in degrees, longitude in degrees, and altitude in meters.  Be 
@@ -95,9 +95,9 @@ namespace gpstk
           * on the stack where these coordinates will be used outside that 
           * context).
           * @param t the Triple to copy from.
-          * @param geo geoid model for transformations.
+          * @param ell ellipsoid model for transformations.
           */
-      Geodetic(const Triple& t, GeoidModel* geo = NULL);
+      Geodetic(const Triple& t, EllipsoidModel* ell = NULL);
 
          /** Construct from an ECEF and a GeoidModel.  Converts Earth-centered, 
           * Earth-fixed XYZ coordinates (m) to Geodetic coordinates 
@@ -105,9 +105,9 @@ namespace gpstk
           * specify a geoid that will disappear (e.g. one on the stack
           * where these coordinates will be used outside that context).
           * @param right the ECEF to construct from.
-          * @param geo geoid model for transformations.
+          * @param ell ellipsoid model for transformations.
           */
-      Geodetic(const ECEF& right, GeoidModel* geo)
+      Geodetic(const ECEF& right, EllipsoidModel* ell)
          throw(NoGeoidException);
 
          /// destructor
@@ -124,7 +124,7 @@ namespace gpstk
       double getAltitude() const throw() { return operator[](2); }
 
    protected:
-      GeoidModel *geoid;
+      EllipsoidModel *ellip;
    }; // class Geodetic
 
    //@}

@@ -47,10 +47,9 @@
  * @file AlmOrbit.cpp
  * Encapsulate almanac data, and compute satellite orbit, etc.
  */
-
  
-#include "icd_200_constants.hpp"
-#include "GPSGeoid.hpp"
+#include "icd_gps_constants.hpp"
+#include "GPSEllipsoid.hpp"
 #include "AlmOrbit.hpp"
 #include <cmath>
 
@@ -80,7 +79,7 @@ namespace gpstk
       throw()
    {
       Xvt sv;
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
 
       double elapt;                 /* elapsed time since Toa */
       double A;                     /* semi-major axis */
@@ -99,7 +98,7 @@ namespace gpstk
       double anlon;                 /* corrected longitue of ascending node */
       double xip,yip,can,san,cinc,sinc,xef,yef,zef,dek,dlk,div,domk,duv,
          drv,dxp,dyp,vxef,vyef,vzef;
-      double sqrtgm = ::sqrt(geoid.gm());
+      double sqrtgm = ::sqrt(ell.gm());
       
 /*   Compute time since Almanac epoch (Toa) including week change */
       elapt = t - getToaTime();
@@ -147,8 +146,8 @@ namespace gpstk
       
          /* compute corrected longitude of ascending node */
       anlon = OMEGA0 +
-         (OMEGAdot - geoid.angVelocity()) * elapt -
-         geoid.angVelocity() * (double)Toa;
+         (OMEGAdot - ell.angVelocity()) * elapt -
+         ell.angVelocity() * (double)Toa;
       
          /* compute positions in orbital plane */
       cosu = ::cos(ualat);
@@ -174,7 +173,7 @@ namespace gpstk
       dek = n * A / r;
       dlk = sqrtgm * Ahalf * q / (r * r);
       div = 0.0e0;
-      domk = OMEGAdot - geoid.angVelocity();
+      domk = OMEGAdot - ell.angVelocity();
       duv = dlk;
       drv = A * ecc * dek * sinea;
       
@@ -225,7 +224,6 @@ namespace gpstk
    {
       using std::endl;
       using std::setw;
-      
       s << std::setprecision(4);
       s.setf(std::ios::scientific);
       switch (verbosity)

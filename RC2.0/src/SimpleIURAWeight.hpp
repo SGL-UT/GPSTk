@@ -1,4 +1,3 @@
-#pragma ident "$Id$"
 
 /**
  * @file SimpleIURAWeight.hpp
@@ -37,7 +36,7 @@
 #include "TabularEphemerisStore.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <vector>
 
 
@@ -71,7 +70,7 @@ namespace gpstk
          * valid weight. Also, its PRN will be set to a negative value.
          *
          */
-        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights);
+        virtual int getWeights(CommonTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights);
 
 
         /** Compute and return a vector with the weights for the given satellites
@@ -90,7 +89,7 @@ namespace gpstk
          * This method assigns an URA of 0.1 m to all satellites.
          *
          */
-        virtual int getWeights(DayTime& time, Vector<SatID>& Satellites, TabularEphemerisStore& preciseEph) throw(InvalidWeights);
+        virtual int getWeights(CommonTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights);
 
 
         /// Vector of weights for these satellites

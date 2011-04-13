@@ -22,6 +22,20 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "GPSWeek.hpp"
 #include "TimeConstants.hpp"
 
@@ -33,6 +47,7 @@ namespace gpstk
       throw()
    {
       week = right.week;
+      timeSystem = right.timeSystem;
       return *this;
    }
 
@@ -50,6 +65,8 @@ namespace gpstk
                               "Fu", week );
          rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                               "Gu", getWeek10() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", timeSystem.asString().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -72,6 +89,8 @@ namespace gpstk
                               "Fs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "G", 
                               "Gs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -104,6 +123,9 @@ namespace gpstk
                break;
             case 'G':
                setWeek10( asInt( i->second ) );
+               break;
+            case 'P':
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
             default:
                   // do nothing

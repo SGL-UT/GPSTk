@@ -49,21 +49,21 @@
 
 namespace gpstk
 {
-   Xvt GPSAlmanacStore::getXvt(const SatID sat, const DayTime& t)
+   Xvt GPSAlmanacStore::getXvt(const SatID sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.svXvt(t);
    }
 
-   Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const DayTime& t) 
+   Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const CommonTime& t) 
          const throw(InvalidRequest)
    {
       AlmOrbit a = findMostRecentAlmanac(sat, t);
       return a.svXvt(t);
    }
    
-   short GPSAlmanacStore::getSatHealth(const SatID sat, const DayTime& t)
+   short GPSAlmanacStore::getSatHealth(const SatID sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);
@@ -75,10 +75,10 @@ namespace gpstk
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN))
       {
          SatID sat(alm.getPRNID(),SatID::systemGPS);
-         DayTime toa = alm.getToaTime();
+         CommonTime toa = alm.getToaTime();
          uba[sat][toa] = alm;
-         DayTime tmin(toa - DayTime::HALFWEEK);
-         DayTime tmax(toa + DayTime::HALFWEEK);
+         CommonTime tmin(toa - gpstk::HALFWEEK);
+         CommonTime tmax(toa + gpstk::HALFWEEK);
          if (tmin < initialTime)
             initialTime = tmin;
          if (tmax > finalTime)
@@ -100,7 +100,7 @@ namespace gpstk
 
    /// gets the closest almanac for the given time and satellite,
    /// closest being in the past or future.
-   AlmOrbit GPSAlmanacStore::findAlmanac(const SatID sat, const DayTime& t) 
+   AlmOrbit GPSAlmanacStore::findAlmanac(const SatID sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       UBAMap::const_iterator satItr = uba.find(sat);
@@ -146,7 +146,7 @@ namespace gpstk
       return (*almItr).second;
    }
 
-   AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const DayTime& t) 
+   AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const CommonTime& t) 
          const throw(InvalidRequest)
    {
       UBAMap::const_iterator satItr = uba.find(sat);
@@ -184,7 +184,7 @@ namespace gpstk
       return (*almItr).second;     
    }
 
-   AlmOrbits GPSAlmanacStore::findAlmanacs(const DayTime& t) 
+   AlmOrbits GPSAlmanacStore::findAlmanacs(const CommonTime& t) 
       const throw(InvalidRequest)
    {
       AlmOrbits ao;
@@ -207,7 +207,7 @@ namespace gpstk
    }
 
 
-   void GPSAlmanacStore::edit(const DayTime& tmin, const DayTime& tmax)
+   void GPSAlmanacStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
       std::cout << "Not yet implimented" << std::endl;

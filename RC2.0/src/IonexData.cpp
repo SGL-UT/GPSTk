@@ -604,7 +604,7 @@ namespace gpstk
 
          // the object is required for AEarth to be consistent with 
          // Position::getIonosphericPiercePoint()
-      WGS84Geoid WGS84;
+      WGS84Ellipsoid WGS84;
 
          // let's fetch the data
       double beta    = p.theArray[0];

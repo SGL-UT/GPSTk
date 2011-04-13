@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,27 +36,27 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file EngEphemeris.cpp
  * Ephemeris data encapsulated in engineering terms
  */
 
-#include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
-#include "GPSGeoid.hpp"
-#include "EngEphemeris.hpp"
-
+#include <iomanip>
 #include <cmath>
+
+#include "StringUtils.hpp"
+#include "icd_gps_constants.hpp"
+#include "MathBase.hpp"
+#include "GPSEllipsoid.hpp"
+#include "EngEphemeris.hpp"
+#include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
    using namespace std;
-   using namespace gpstk;
 
    EngEphemeris::EngEphemeris()
       throw()
@@ -81,8 +79,8 @@ namespace gpstk
    }
 
    bool EngEphemeris::addSubframe(const long subframe[10], const int gpsWeek,
-                                  short PRN, short track)
-      throw(InvalidParameter)
+                                  const short PRN, const short track)
+      throw( InvalidParameter )
    {
       double ficked[60];
 
@@ -159,10 +157,10 @@ namespace gpstk
    }
 
    bool EngEphemeris::addSubframeNoParity(const long subframe[10],
-                               const long gpsWeek,
-                               const short PRN,
-                               const short track)
-      throw(InvalidParameter)
+                                          const int  gpsWeek,
+                                          const short PRN,
+                                          const short track)
+      throw( InvalidParameter )
    {
       long paddedSF[10];
       short PRNArg;
@@ -216,13 +214,13 @@ namespace gpstk
 
       tlm_message[0] = 0;
       HOWtime[0] = SF1HOWTime;
-      ASalert[0] = (short)ficked[3];
-      weeknum    = (short)ficked[5];
-      codeflags  = (short)ficked[6];
-      accFlag    = (short)ficked[7];
-      health     = (short)ficked[8];
-      IODC       = (short)ldexp(ficked[9],-11);
-      L2Pdata    = (short)ficked[10];
+      ASalert[0] = static_cast<short>(ficked[3]);
+      weeknum    = static_cast<short>(ficked[5]);
+      codeflags  = static_cast<short>(ficked[6]);
+      accFlag    = static_cast<short>(ficked[7]);
+      health     = static_cast<short>(ficked[8]);
+      IODC       = static_cast<short>(ldexp(ficked[9],-11));
+      L2Pdata    = static_cast<short>(ficked[10]);
       Tgd        = ficked[11];
       Toc        = ficked[12];
       af2        = ficked[13];
@@ -245,8 +243,8 @@ namespace gpstk
       
       tlm_message[1] = 0;
       HOWtime[1] = SF1HOWTime + 6;
-      ASalert[1] = (short)ficked[3];
-      IODE       = (short)ldexp(ficked[5],-11);
+      ASalert[1] = static_cast<short>(ficked[3]);
+      IODE       = static_cast<short>(ldexp(ficked[5],-11));
       Crs        = ficked[6];
       dn         = ficked[7];
       M0         = ficked[8];
@@ -255,7 +253,7 @@ namespace gpstk
       Cus        = ficked[11];
       Ahalf      = ficked[12];
       Toe        = ficked[13];
-      fitint     = (short)ficked[14];
+      fitint     = static_cast<short>(ficked[14]);
       haveSubframe[1] = true;
       
          // Convert subframe 3 parameters
@@ -268,7 +266,7 @@ namespace gpstk
       
       tlm_message[2] = 0;
       HOWtime[2] = SF1HOWTime + 12;
-      ASalert[2] = (short)ficked[3];
+      ASalert[2] = static_cast<short>(ficked[3]);
       Cic        = ficked[5];
       OMEGA0     = ficked[6];
       Cis        = ficked[7];
@@ -282,8 +280,8 @@ namespace gpstk
       return true;
    }
 
-   bool EngEphemeris :: isData(short subframe) const
-      throw(gpstk::InvalidRequest)
+   bool EngEphemeris::isData(short subframe) const
+      throw( InvalidRequest )
    {
       if ((subframe < 1) || (subframe > 3))
       {
@@ -295,8 +293,8 @@ namespace gpstk
       return haveSubframe[subframe-1];
    }
 
-   void EngEphemeris :: setAccuracy(const double& acc)
-      throw(gpstk::InvalidParameter)
+   void EngEphemeris::setAccuracy(const double& acc)
+      throw( InvalidParameter )
    {
       if( acc < 0 )
       {
@@ -308,219 +306,8 @@ namespace gpstk
       accFlag = gpstk::accuracy2ura(acc);
    }
 
-   Xvt EngEphemeris :: svXvt(const DayTime& t) const
-      throw(InvalidRequest)
-   {
-      Xvt sv;
-
-      double ea;              /* eccentric anomaly */
-      double delea;           /* delta eccentric anomaly during iteration */
-      double elapte;          /* elapsed time since Toe */
-      double elaptc;          /* elapsed time since Toc */
-      double dtc,dtr,q,sinea,cosea;
-      double GSTA,GCTA;
-      double A;               /* semi-major axis */
-      double amm;
-      double meana;           /* mean anomaly */
-      double F,G;             /* temporary real variables */
-      double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
-      double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
-      double xef,yef,zef,dek,dlk,div,domk,duv,drv;
-      double dxp,dyp,vxef,vyef,vzef;
-      GPSGeoid geoid;
-
-      double sqrtgm = sqrt(geoid.gm());
-
-         // Check for ground transmitter
-      double twoPI = 2.0e0 * PI;
-      bool igtran;              // ground transmitter flag
-      double lecc;               // eccentricity
-      double tdrinc;            // dt inclination
-      if (getAhalf() < 2550.0e0 )
-      {
-         igtran = true;
-         lecc = 0.0e0;
-         tdrinc = 0.0e0;
-      }
-      else
-      {
-         igtran = false;
-         lecc = getEcc();
-         tdrinc = getIDot();
-      }
-
-         // Compute time since ephemeris & clock epochs
-      elapte = t - getEphemerisEpoch();
-      elaptc = t - getEpochTime();
-   
-
-         // Compute mean motion
-      A = getA();
-      amm  = (sqrtgm / (A*getAhalf())) + getDn();
-
-
-         // In-plane angles
-         //     meana - Mean anomaly
-         //     ea    - Eccentric anomaly
-         //     truea - True anomaly
-      if (!igtran)
-         meana = getM0() + elapte * amm;
-      else
-         meana = getM0();
-      meana = fmod(meana, twoPI);
-   
-      ea = meana + lecc * sin(meana);
-
-      int loop_cnt = 1;
-      do  {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
-         delea = F/G;
-         ea = ea + delea;
-         loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
-
-         // Compute clock corrections
-      sv.ddtime = getAf1() + elaptc * getAf2();
-      dtc = getAf0() + elaptc * ( sv.ddtime );
-      dtr = REL_CONST * lecc * getAhalf() * sin(ea);
-      sv.dtime = dtc + dtr;
-   
-         // Compute true anomaly
-      q = sqrt ( 1.0e0 - lecc*lecc);
-      sinea = sin(ea);
-      cosea = cos(ea);
-      G = 1.0e0 - lecc * cosea;
-   
-         //  G*SIN(TA) AND G*COS(TA)
-      GSTA  = q * sinea;
-      GCTA  = cosea - lecc;
-
-         //  True anomaly
-      truea = atan2 ( GSTA, GCTA );
-
-         // Argument of lat and correction terms (2nd harmonic)
-      alat = truea + getW();
-      talat = 2.0e0 * alat;
-      c2al = cos( talat );
-      s2al = sin( talat );
-
-      du  = c2al * getCuc() +  s2al * getCus();
-      dr  = c2al * getCrc() +  s2al * getCrs();
-      di  = c2al * getCic() +  s2al * getCis();
-
-         // U = updated argument of lat, R = radius, AINC = inclination
-      U    = alat + du;
-      R    = getA()*G  + dr;
-      AINC = getI0() + tdrinc * elapte  +  di;
-
-         //  Longitude of ascending node (ANLON)
-      if (!igtran)
-         ANLON = getOmega0() + (getOmegaDot() - geoid.angVelocity()) *
-            elapte - geoid.angVelocity() * getToe();
-      else
-         ANLON = getOmega0() - getOmegaDot() * getToe();
-
-         // In plane location
-      cosu = cos( U );
-      sinu = sin( U );
-
-      xip  = R * cosu;
-      yip  = R * sinu;
-
-         //  Angles for rotation to earth fixed
-      can  = cos( ANLON );
-      san  = sin( ANLON );
-      cinc = cos( AINC  );
-      sinc = sin( AINC  );
- 
-         // Earth fixed - meters
-      xef  =  xip*can  -  yip*cinc*san;
-      yef  =  xip*san  +  yip*cinc*can;
-      zef  =              yip*sinc;
-
-      sv.x[0] = xef;
-      sv.x[1] = yef;
-      sv.x[2] = zef;
-
-         // Compute velocity of rotation coordinates
-      dek = amm * A / R;
-      dlk = getAhalf() * q * sqrtgm / (R*R);
-      div = tdrinc - 2.0e0 * dlk *
-         ( getCic()  * s2al - getCis() * c2al );
-      domk = getOmegaDot() - geoid.angVelocity();
-      duv = dlk*(1.e0+ 2.e0 * (getCus()*c2al - getCuc()*s2al) );
-      drv = A * lecc * dek * sinea - 2.e0 * dlk *
-         ( getCrc() * s2al - getCrs() * c2al );
-
-      dxp = drv*cosu - R*sinu*duv;
-      dyp = drv*sinu + R*cosu*duv;
-
-         // Calculate velocities
-      vxef = dxp*can - xip*san*domk - dyp*cinc*san
-         + yip*( sinc*san*div - cinc*can*domk);
-      vyef = dxp*san + xip*can*domk + dyp*cinc*can
-         - yip*( sinc*can*div + cinc*san*domk);
-      vzef = dyp*sinc + yip*cinc*div;
-
-         // Move results into output variables
-      sv.v[0] = vxef;
-      sv.v[1] = vyef;
-      sv.v[2] = vzef;
-
-      return sv;
-   }
-
-   double EngEphemeris::svRelativity(const DayTime& t) const
-      throw(gpstk::InvalidRequest)
-   {
-      GPSGeoid geoid;
-      double twoPI = 2.0e0 * PI;
-      double sqrtgm = sqrt(geoid.gm());
-      double elapte = t - getEphemerisEpoch();
-      double elaptc = t - getEpochTime();
-      double A = getA();
-      double amm  = (sqrtgm / (A*getAhalf())) + getDn();
-      double meana,lecc,F,G,delea;
-      
-      if (getAhalf() < 2550.0e0 ) { lecc = 0.0e0; meana = getM0(); }
-      else { lecc = getEcc(); meana = getM0() + elapte * amm; }
-      meana = fmod(meana, twoPI);
-      double ea = meana + lecc * sin(meana);
-
-      int loop_cnt = 1;
-      do  {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
-         delea = F/G;
-         ea = ea + delea;
-         loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
-      double dtr = REL_CONST * lecc * getAhalf() * sin(ea);
-      return dtr;
-   }
-
-   double EngEphemeris::svClockBias(const DayTime& t) const
-      throw(gpstk::InvalidRequest)
-   {
-      double dtc,elaptc;
-      elaptc = t - getEpochTime();
-      dtc = getAf0() + elaptc * ( getAf1() + elaptc * getAf2() );
-
-      return dtc;
-   }
-
-   double EngEphemeris::svClockDrift(const DayTime& t) const
-      throw(gpstk::InvalidRequest)
-   {
-      double drift,elaptc;
-      elaptc = t - getEpochTime();
-      drift = getAf1() + elaptc * getAf2();
-      return drift;
-   }
-
    short EngEphemeris :: getFitInterval() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       short iodc = getIODC();
       short fiti = getFitInt();
@@ -600,9 +387,361 @@ namespace gpstk
       
       return 0; // never reached
    }
+
+   Xt EngEphemeris::svXt(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      Xt sv;
+
+      double ea;              /* eccentric anomaly */
+      double delea;           /* delta eccentric anomaly during iteration */
+      double elapte;          /* elapsed time since Toe */
+      double elaptc;          /* elapsed time since Toc */
+      double dtc,dtr,q,sinea,cosea;
+      double GSTA,GCTA;
+      double A;               /* semi-major axis */
+      double amm;
+      double meana;           /* mean anomaly */
+      double F,G;             /* temporary real variables */
+      double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
+      double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
+      double xef,yef,zef;
+      double ddtime;
+      GPSEllipsoid ell;
+
+      double sqrtgm = SQRT(ell.gm());
+
+      // Check for ground transmitter
+      double twoPI = 2.0e0 * PI;
+      bool igtran;              // ground transmitter flag
+      double lecc;              // eccentricity
+      double tdrinc;            // dt inclination
+
+      if ( getAhalf() < 2550.0e0 )
+      {
+         igtran = true;
+         lecc = 0.0e0;
+         tdrinc = 0.0e0;
+      }
+      else
+      {
+         igtran = false;
+         lecc = getEcc();
+         tdrinc = getIDot();
+      }
+
+      // Compute time since ephemeris & clock epochs
+      elapte = t - getEphemerisEpoch();
+      elaptc = t - getEpochTime();
    
+
+      // Compute mean motion
+      A = getA();
+      amm  = (sqrtgm / (A*getAhalf())) + getDn();
+
+
+      // In-plane angles
+      //     meana - Mean anomaly
+      //     ea    - Eccentric anomaly
+      //     truea - True anomaly
+      if (!igtran)
+         meana = getM0() + elapte * amm;
+      else
+         meana = getM0();
+      meana = fmod(meana, twoPI);
+   
+      ea = meana + lecc * sin(meana);
+
+      int loop_cnt = 1;
+      do
+      {
+         F = meana - ( ea - lecc * sin(ea));
+         G = 1.0 - lecc * cos(ea);
+         delea = F/G;
+         ea = ea + delea;
+         loop_cnt++;
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+
+      // Compute clock corrections
+      ddtime = getAf1() + elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( ddtime );
+      dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      sv.dtime = dtc + dtr;
+   
+      // Compute true anomaly
+      q = SQRT(1.0e0 - lecc*lecc);
+      sinea = sin(ea);
+      cosea = cos(ea);
+      G = 1.0e0 - lecc * cosea;
+   
+      // G*SIN(TA) AND G*COS(TA)
+      GSTA  = q * sinea;
+      GCTA  = cosea - lecc;
+
+      // True anomaly
+      truea = atan2 ( GSTA, GCTA );
+
+      // Argument of lat and correction terms (2nd harmonic)
+      alat = truea + getW();
+      talat = 2.0e0 * alat;
+      c2al = cos( talat );
+      s2al = sin( talat );
+
+      du  = c2al * getCuc() +  s2al * getCus();
+      dr  = c2al * getCrc() +  s2al * getCrs();
+      di  = c2al * getCic() +  s2al * getCis();
+
+      // U = updated argument of lat, R = radius, AINC = inclination
+      U    = alat + du;
+      R    = getA()*G  + dr;
+      AINC = getI0() + tdrinc * elapte  +  di;
+
+      // Longitude of ascending node (ANLON)
+      if (!igtran)
+         ANLON = getOmega0() + (getOmegaDot() - ell.angVelocity()) *
+                 elapte - ell.angVelocity() * getToe();
+      else
+         ANLON = getOmega0() - getOmegaDot() * getToe();
+
+      // In plane location
+      cosu = cos( U );
+      sinu = sin( U );
+
+      xip  = R * cosu;
+      yip  = R * sinu;
+
+      // Angles for rotation to earth fixed
+      can  = cos( ANLON );
+      san  = sin( ANLON );
+      cinc = cos( AINC  );
+      sinc = sin( AINC  );
+ 
+      // Earth fixed - meters
+      xef  =  xip*can  -  yip*cinc*san;
+      yef  =  xip*san  +  yip*cinc*can;
+      zef  =              yip*sinc;
+
+      sv.x[0] = xef;
+      sv.x[1] = yef;
+      sv.x[2] = zef;
+
+      return sv;
+   }
+
+   Xvt EngEphemeris::svXvt(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      Xvt sv;
+
+      double ea;              /* eccentric anomaly */
+      double delea;           /* delta eccentric anomaly during iteration */
+      double elapte;          /* elapsed time since Toe */
+      double elaptc;          /* elapsed time since Toc */
+      double dtc,dtr,q,sinea,cosea;
+      double GSTA,GCTA;
+      double A;               /* semi-major axis */
+      double amm;
+      double meana;           /* mean anomaly */
+      double F,G;             /* temporary real variables */
+      double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
+      double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
+      double xef,yef,zef,dek,dlk,div,domk,duv,drv;
+      double dxp,dyp,vxef,vyef,vzef;
+      GPSEllipsoid ell;
+
+      double sqrtgm = SQRT(ell.gm());
+
+      // Check for ground transmitter
+      double twoPI = 2.0e0 * PI;
+      bool igtran;              // ground transmitter flag
+      double lecc;              // eccentricity
+      double tdrinc;            // dt inclination
+      if ( getAhalf() < 2550.0e0 )
+      {
+         igtran = true;
+         lecc = 0.0e0;
+         tdrinc = 0.0e0;
+      }
+      else
+      {
+         igtran = false;
+         lecc = getEcc();
+         tdrinc = getIDot();
+      }
+
+      // Compute time since ephemeris & clock epochs
+      elapte = t - getEphemerisEpoch();
+      elaptc = t - getEpochTime();
+   
+
+      // Compute mean motion
+      A = getA();
+      amm  = (sqrtgm / (A*getAhalf())) + getDn();
+
+
+      // In-plane angles
+      //     meana - Mean anomaly
+      //     ea    - Eccentric anomaly
+      //     truea - True anomaly
+      if (!igtran)
+         meana = getM0() + elapte * amm;
+      else
+         meana = getM0();
+      meana = fmod(meana, twoPI);
+   
+      ea = meana + lecc * sin(meana);
+
+      int loop_cnt = 1;
+      do
+      {
+         F = meana - ( ea - lecc * sin(ea));
+         G = 1.0 - lecc * cos(ea);
+         delea = F/G;
+         ea = ea + delea;
+         loop_cnt++;
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+
+      // Compute clock corrections
+      sv.ddtime = getAf1() + elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( sv.ddtime );
+      dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      sv.dtime = dtc + dtr;
+   
+      // Compute true anomaly
+      q = SQRT(1.0e0 - lecc*lecc);
+      sinea = sin(ea);
+      cosea = cos(ea);
+      G = 1.0e0 - lecc * cosea;
+   
+      // G*SIN(TA) AND G*COS(TA)
+      GSTA  = q * sinea;
+      GCTA  = cosea - lecc;
+
+      // True anomaly
+      truea = atan2 ( GSTA, GCTA );
+
+      // Argument of lat and correction terms (2nd harmonic)
+      alat = truea + getW();
+      talat = 2.0e0 * alat;
+      c2al = cos( talat );
+      s2al = sin( talat );
+
+      du  = c2al * getCuc() +  s2al * getCus();
+      dr  = c2al * getCrc() +  s2al * getCrs();
+      di  = c2al * getCic() +  s2al * getCis();
+
+      // U = updated argument of lat, R = radius, AINC = inclination
+      U    = alat + du;
+      R    = getA()*G  + dr;
+      AINC = getI0() + tdrinc * elapte  +  di;
+
+      // Longitude of ascending node (ANLON)
+      if (!igtran)
+         ANLON = getOmega0() + (getOmegaDot() - ell.angVelocity()) *
+                 elapte - ell.angVelocity() * getToe();
+      else
+         ANLON = getOmega0() - getOmegaDot() * getToe();
+
+      // In plane location
+      cosu = cos( U );
+      sinu = sin( U );
+
+      xip  = R * cosu;
+      yip  = R * sinu;
+
+      // Angles for rotation to earth fixed
+      can  = cos( ANLON );
+      san  = sin( ANLON );
+      cinc = cos( AINC  );
+      sinc = sin( AINC  );
+ 
+      // Earth fixed - meters
+      xef  =  xip*can  -  yip*cinc*san;
+      yef  =  xip*san  +  yip*cinc*can;
+      zef  =              yip*sinc;
+
+      sv.x[0] = xef;
+      sv.x[1] = yef;
+      sv.x[2] = zef;
+
+      // Compute velocity of rotation coordinates
+      dek = amm * A / R;
+      dlk = getAhalf() * q * sqrtgm / (R*R);
+      div = tdrinc - 2.0e0 * dlk *
+         ( getCic()  * s2al - getCis() * c2al );
+      domk = getOmegaDot() - ell.angVelocity();
+      duv = dlk*(1.e0+ 2.e0 * (getCus()*c2al - getCuc()*s2al) );
+      drv = A * lecc * dek * sinea - 2.e0 * dlk *
+         ( getCrc() * s2al - getCrs() * c2al );
+
+      dxp = drv*cosu - R*sinu*duv;
+      dyp = drv*sinu + R*cosu*duv;
+
+      // Calculate velocities
+      vxef = dxp*can - xip*san*domk - dyp*cinc*san
+         + yip*( sinc*san*div - cinc*can*domk);
+      vyef = dxp*san + xip*can*domk + dyp*cinc*can
+         - yip*( sinc*can*div + cinc*san*domk);
+      vzef = dyp*sinc + yip*cinc*div;
+
+      // Move results into output variables
+      sv.v[0] = vxef;
+      sv.v[1] = vyef;
+      sv.v[2] = vzef;
+
+      return sv;
+   }
+
+   double EngEphemeris::svRelativity(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      GPSEllipsoid ell;
+      double twoPI = 2.0e0 * PI;
+      double sqrtgm = SQRT(ell.gm());
+      double elapte = t - getEphemerisEpoch();
+      double elaptc = t - getEpochTime();
+      double A = getA();
+      double amm  = (sqrtgm / (A*getAhalf())) + getDn();
+      double meana,lecc,F,G,delea;
+      
+      if (getAhalf() < 2550.0e0 ) { lecc = 0.0e0; meana = getM0(); }
+      else { lecc = getEcc(); meana = getM0() + elapte * amm; }
+      meana = fmod(meana, twoPI);
+      double ea = meana + lecc * sin(meana);
+
+      int loop_cnt = 1;
+      do  {
+         F = meana - ( ea - lecc * sin(ea));
+         G = 1.0 - lecc * cos(ea);
+         delea = F/G;
+         ea = ea + delea;
+         loop_cnt++;
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      double dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      return dtr;
+   }
+
+   double EngEphemeris::svClockBias(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      double dtc,elaptc;
+      elaptc = t - getEpochTime();
+      dtc = getAf0() + elaptc * ( getAf1() + elaptc * getAf2() );
+
+      return dtc;
+   }
+
+   double EngEphemeris::svClockDrift(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      double drift,elaptc;
+      elaptc = t - getEpochTime();
+      drift = getAf1() + elaptc * getAf2();
+      return drift;
+   }
+
    unsigned EngEphemeris::getTLMMessage(short subframe) const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
@@ -613,456 +752,458 @@ namespace gpstk
       return tlm_message[subframe-1];
    }
       
-    DayTime EngEphemeris::getTransmitTime() const
-       throw(InvalidRequest)
-    {
-       DayTime toReturn(0.L);
-       toReturn.setGPSfullweek(getFullWeek(), (double)getTot());
-       return toReturn;
-    }
-
-   DayTime EngEphemeris::getEpochTime() const
-      throw(InvalidRequest)
+   CommonTime EngEphemeris::getTransmitTime() const
+      throw()
    {
-      DayTime toReturn(0.L);
-      if ( (getToc() - getHOWTime(1)) < -DayTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() + 1, getToc());
-      else if ( (getToc() - getHOWTime(1)) > DayTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() - 1, getToc());
-      else
-         toReturn.setGPSfullweek(getFullWeek(), getToc());
+      CommonTime toReturn;
+      toReturn = GPSWeekSecond(getFullWeek(), static_cast<double>(getTot()), TimeSystem::GPS);
       return toReturn;
    }
 
-   DayTime EngEphemeris::getEphemerisEpoch() const
-      throw(InvalidRequest)
+   CommonTime EngEphemeris::getEpochTime() const
+      throw( InvalidRequest )
    {
-      DayTime toReturn(0.L);
-      if ( (getToe() - getHOWTime(1)) < -DayTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() + 1, getToe());
-      else if ( (getToe() - getHOWTime(1)) > DayTime::HALFWEEK)
-         toReturn.setGPSfullweek(getFullWeek() - 1, getToe());
+      CommonTime toReturn;
+      if ( (getToc() - getHOWTime(1)) < -HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToc(), TimeSystem::GPS);
+      else if ( (getToc() - getHOWTime(1)) > HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToc(), TimeSystem::GPS);
       else
-         toReturn.setGPSfullweek(getFullWeek(), getToe());
+         toReturn = GPSWeekSecond(getFullWeek(), getToc(), TimeSystem::GPS);
+      return toReturn;
+   }
+
+   CommonTime EngEphemeris::getEphemerisEpoch() const
+      throw( InvalidRequest )
+   {
+      CommonTime toReturn;
+      if ( (getToe() - getHOWTime(1)) < -HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() + 1, getToe(), TimeSystem::GPS);
+      else if ( (getToe() - getHOWTime(1)) > HALFWEEK)
+         toReturn = GPSWeekSecond(getFullWeek() - 1, getToe(), TimeSystem::GPS);
+      else
+         toReturn = GPSWeekSecond(getFullWeek(), getToe(), TimeSystem::GPS);
       return toReturn;
    }
 
    short EngEphemeris::getPRNID() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if(!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getPRNID(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return PRNID;
    }
    
    short EngEphemeris::getTracker() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if(!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getTracker(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return tracker;
    }
    
    double EngEphemeris::getHOWTime(short subframe) const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
-                            " not stored.");
+         InvalidRequest exc("getHOWTime(): Subframe "
+                            +StringUtils::asString(subframe)+" not stored.");
          GPSTK_THROW(exc);
       }
-         // this return as a double is necessary for sets into DayTime 
-         // to not get confused.  Ints are Zcounts whereas doubles are seconds
-      return (double) HOWtime[subframe-1];
+         // This return as a double is necessary for sets into CommonTime 
+         // to not get confused.  Ints are Zcounts whereas doubles are seconds.
+         // This should still return a double after DayTime->CommonTime
+         // conversion, for backwards compatibility. [DR]
+      return static_cast<double>(HOWtime[subframe-1]);
    }
 
    short EngEphemeris::getASAlert(short subframe)  const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[subframe-1])
       {
-         InvalidRequest exc("Subframe "+StringUtils::asString(subframe)+
-                            " not stored.");
+         InvalidRequest exc("getASAlert(): Subframe "
+                            +StringUtils::asString(subframe)+" not stored.");
          GPSTK_THROW(exc);
       }
       return ASalert[subframe-1];
    }
    
    short EngEphemeris::getFullWeek()  const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getFullWeek(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return weeknum;
    }
    
    short EngEphemeris::getCodeFlags()  const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getCodeFlags(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return codeflags;
    }
    
    double EngEphemeris::getAccuracy()  const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAccuracy(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return accuracy;
    }
    
    short EngEphemeris::getAccFlag()  const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAccFlag(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return accFlag;
    }
    
    short EngEphemeris::getHealth() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getHealth(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return health;
    }
    
    short EngEphemeris::getL2Pdata() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getL2Pdata(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return L2Pdata;
    }
    
    short EngEphemeris::getIODC() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getIODC(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
-      return (short)IODC;
+      return static_cast<short>(IODC);
    }
    
    short EngEphemeris::getIODE() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getIODE(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
-      return (short)IODE;
+      return static_cast<short>(IODE);
    }
    
    long EngEphemeris::getAODO() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getAODO(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return AODO;
    }
    
    double EngEphemeris::getToc() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getToc(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return Toc;
    }
    
    double EngEphemeris::getAf0() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAf0(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return af0;
    }
    
    double EngEphemeris::getAf1() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAf1(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return af1;
    }
    
    double EngEphemeris::getAf2() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getAf1(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return af2;
    }
    
    double EngEphemeris::getTgd() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getTgd(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       return Tgd;
    }
    
    double EngEphemeris::getCus() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getCus(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Cus;
    }
    
    double EngEphemeris::getCrs() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getCrs(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Crs;
    }
    
    double EngEphemeris::getCis() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getCis(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return Cis;
    }
    
    double EngEphemeris::getCrc() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getCrc(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return Crc;
    }
    
    double EngEphemeris::getCuc() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getCuc(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Cuc;
    }
   
    double EngEphemeris::getCic() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getCic(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return Cic;
    }
    
    double EngEphemeris::getToe() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getToe(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Toe;
    }
    
    double EngEphemeris::getM0() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getM0(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return M0;
    }
    
    double EngEphemeris::getDn() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getDn(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return dn;
    }
    
    double EngEphemeris::getEcc() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getEcc(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return ecc;
    }
    
    double EngEphemeris::getAhalf() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getAhalf(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Ahalf;
    }
    
    double EngEphemeris::getA() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getA(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return Ahalf * Ahalf;
    }
    
    double EngEphemeris::getOmega0() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getOmega0(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return OMEGA0;
    }
    
    double EngEphemeris::getI0() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getI0(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return i0;
    }
    
    double EngEphemeris::getW() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getW(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return w;
    }
    
    double EngEphemeris::getOmegaDot() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getOmegaDot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return OMEGAdot;
    }
    
    double EngEphemeris::getIDot() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getIDot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       return idot;
    }
    
    short EngEphemeris::getFitInt() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if (!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getFitInt(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       return fitint;
    }
 
    long EngEphemeris::getTot() const 
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       if(!haveSubframe[0])
       {
-         InvalidRequest exc("Required subframe 1 not stored.");
+         InvalidRequest exc("getTot(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
       if(!haveSubframe[1])
       {
-         InvalidRequest exc("Required subframe 2 not stored.");
+         InvalidRequest exc("getTot(): Required subframe 2 not stored.");
          GPSTK_THROW(exc);
       }
       if(!haveSubframe[2])
       {
-         InvalidRequest exc("Required subframe 3 not stored.");
+         InvalidRequest exc("getTot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
       
@@ -1158,14 +1299,18 @@ namespace gpstk
       return *this;
    }
    
-   static void timeDisplay( ostream & os, const gpstk::DayTime& t)
+   static void timeDisplay( ostream & os, const CommonTime& t )
    {
-         // Convert to daytime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      os << setw(4) << t.GPSfullweek() << "(";
-      os << setw(4) << t.GPS10bitweek() << ")  ";
-      os << setw(6) << setfill(' ') << t.GPSsecond() << "   ";
+         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+      GPSWeekSecond dummyTime;
+      dummyTime = GPSWeekSecond(t);
+      os << setw(4) << dummyTime.week;
+      os << "(     )  ";
+//      os << setw(4) << dummyTime.week << "(";
+//      os << setw(4) << t.GPS10bitweek() << ")  ";
+      os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
 
-      switch (t.GPSday())
+      switch (dummyTime.getDayOfWeek())
       {
          case 0: os << "Sun-0"; break;
          case 1: os << "Mon-1"; break;
@@ -1176,7 +1321,8 @@ namespace gpstk
          case 6: os << "Sat-6"; break;
          default: break;
       }
-      os << "   " << t.printf("%3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
+      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
+         << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
 
@@ -1187,8 +1333,8 @@ namespace gpstk
       short SOH;
       
       SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / DayTime::SEC_DAY );
-      SOD = SOW - static_cast<long>( DOW * DayTime::SEC_DAY );
+      DOW = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
       hour = static_cast<short>( SOD/3600 );
 
       SOH = static_cast<short>( SOD - (hour*3600) );
@@ -1215,6 +1361,7 @@ namespace gpstk
    }
 
    void EngEphemeris :: dump(ostream& s) const
+      throw()
    {
       ios::fmtflags oldFlags = s.flags();
    

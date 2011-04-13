@@ -53,6 +53,7 @@
 
 #include "CommandOption.hpp"
 
+#include <cstring>
 #include <vector>
 #include <map>
 #include <ostream>

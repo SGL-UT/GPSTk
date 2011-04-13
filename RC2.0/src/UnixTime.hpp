@@ -27,6 +27,20 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "TimeTag.hpp"
 
 #ifdef _MSC_VER
@@ -59,19 +73,19 @@ namespace gpstk
           * All elements are initialized to zero.
           */
       UnixTime( int sec = 0, 
-                int usec = 0 )
+                int usec = 0,
+                TimeSystem ts = TimeSystem::Unknown )
          throw()
-      {
-         tv.tv_sec = sec;  tv.tv_usec = usec;                 
-      }
+      { tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts; }
 
          /** struct timeval Constructor.
           * Sets time according to the given struct timeval.
           */
-      UnixTime( struct timeval t )
+      UnixTime( struct timeval t,
+                TimeSystem ts = TimeSystem::Unknown )
          throw()
       {
-         tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;
+         tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;  timeSystem = ts;
       }
       
          /** 
@@ -81,7 +95,7 @@ namespace gpstk
       UnixTime( const UnixTime& right )
          throw()
             : tv( right.tv )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -104,7 +118,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       UnixTime( const CommonTime& right )
-         throw( InvalidRequest )
+         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -125,10 +139,10 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
@@ -154,14 +168,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Uu";
+         return "UuP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%U %u";
+         return "%U %u %P";
       }
 
       virtual bool isValid() const
@@ -183,13 +197,13 @@ namespace gpstk
       virtual bool operator!=( const UnixTime& right ) const
          throw();
       virtual bool operator<( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       virtual bool operator>( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       virtual bool operator<=( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       virtual bool operator>=( const UnixTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       struct timeval tv;

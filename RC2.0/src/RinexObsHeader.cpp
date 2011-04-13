@@ -44,6 +44,8 @@
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
+#include "CivilTime.hpp"
+#include "SystemTime.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -252,9 +254,9 @@ namespace gpstk
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
-         DayTime dt;
-         dt.setLocalTime();
-         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         CommonTime dt;
+         SystemTime sysTime;
+         string dat = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
          line += leftJustify(dat, 20);
          line += runByString;
          strm << line << endl;
@@ -527,6 +529,7 @@ namespace gpstk
       if (label == versionString)
       {
          version = asDouble(line.substr(0,20));
+         cout << "R2ObsHeader:ParseHeaderRecord:version = " << version << endl;
          fileType = strip(line.substr(20, 20));
          if ( (fileType[0] != 'O') &&
               (fileType[0] != 'o'))
@@ -856,7 +859,7 @@ namespace gpstk
    }
 
 
-   DayTime RinexObsHeader::parseTime(const string& line) const
+   CommonTime RinexObsHeader::parseTime(const string& line) const
    {
       int year, month, day, hour, min;
       double sec;
@@ -867,18 +870,19 @@ namespace gpstk
       hour  = asInt(   line.substr(18, 6 ));
       min   = asInt(   line.substr(24, 6 ));
       sec   = asDouble(line.substr(30, 13));
-      return DayTime(year, month, day, hour, min, sec);
+      return CivilTime(year, month, day, hour, min, sec).convertToCommonTime();
    }
 
-   string RinexObsHeader::writeTime(const DayTime& dt) const
+   string RinexObsHeader::writeTime(const CommonTime& dt) const
    {
       string line;
-      line  = rightJustify(asString<short>(dt.year()), 6);
-      line += rightJustify(asString<short>(dt.month()), 6);
-      line += rightJustify(asString<short>(dt.day()), 6);
-      line += rightJustify(asString<short>(dt.hour()), 6);
-      line += rightJustify(asString<short>(dt.minute()), 6);
-      line += rightJustify(asString(dt.second(), 7), 13);
+      CivilTime civTime(dt);
+      line  = rightJustify(asString<short>(civTime.year), 6);
+      line += rightJustify(asString<short>(civTime.month), 6);
+      line += rightJustify(asString<short>(civTime.day), 6);
+      line += rightJustify(asString<short>(civTime.hour), 6);
+      line += rightJustify(asString<short>(civTime.minute), 6);
+      line += rightJustify(asString(civTime.second, 7), 13);
       return line;
    }
 
@@ -919,7 +923,7 @@ namespace gpstk
             << gpstk::RinexObsHeader::convertObsType(obsTypeList[i])
             << " " << obsTypeList[i].description
             << " (" << obsTypeList[i].units << ")." << endl;
-      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+      s << "Time of first obs " << (static_cast<CivilTime>(firstObs)).printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (firstSystem.system==RinexSatID::systemGlonass ? "GLO" :
                    (firstSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       s << "(This header is ";
@@ -947,7 +951,7 @@ namespace gpstk
       if(valid & intervalValid) s << "Interval = "
          << fixed << setw(7) << setprecision(3) << interval << endl;
       if(valid & lastTimeValid) s << "Time of last obs "
-         << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << (static_cast<CivilTime>(lastObs)).printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (lastSystem.system==RinexSatID::systemGlonass ? "GLO":
                    (lastSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;

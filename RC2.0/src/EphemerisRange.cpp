@@ -43,8 +43,8 @@
 
 #include "EphemerisRange.hpp"
 #include "MiscMath.hpp"
-#include "GPSGeoid.hpp"
-#include "icd_200_constants.hpp"
+#include "GPSEllipsoid.hpp"
+#include "icd_gps_constants.hpp"
 #include "geometry.hpp"
 
 using namespace std;
@@ -58,15 +58,16 @@ namespace gpstk
    // routine does not intrinsicly account for the receiver clock error
    // like the ComputeAtTransmitTime routine does.
    double CorrectedEphemerisRange::ComputeAtReceiveTime(
-      const DayTime& tr_nom,
+      const CommonTime& tr_nom,
       const Position& Rx,
       const SatID sat,
       const XvtStore<SatID>& Eph)
+      throw(Exception,InvalidRequest)
    {
       try {
          int nit;
          double tof,tof_old,wt,sx,sy;
-         GPSGeoid geoid;
+         GPSEllipsoid ell;
 
          nit = 0;
          tof = 0.07;       // initial guess 70ms
@@ -88,7 +89,7 @@ namespace gpstk
             rawrange = RSS(svPosVel.x[0]-Rx.X(),
                            svPosVel.x[1]-Rx.Y(),
                            svPosVel.x[2]-Rx.Z());
-            tof = rawrange/geoid.c();
+            tof = rawrange/ell.c();
 
          } while(ABS(tof-tof_old)>1.e-13 && ++nit<5);
 
@@ -107,14 +108,15 @@ namespace gpstk
       // given the nominal receive time tr_nom and an EphemerisStore, as well as
       // the raw measured pseudorange.
    double CorrectedEphemerisRange::ComputeAtTransmitTime(
-      const DayTime& tr_nom,
+      const CommonTime& tr_nom,
       const double& pr,
       const Position& Rx,
       const SatID sat,
       const XvtStore<SatID>& Eph)
+      throw(Exception,InvalidRequest)
    {
       try {
-         DayTime tt;
+         CommonTime tt;
 
          // 0-th order estimate of transmit time = receiver - pseudorange/c
          transmit = tr_nom;
@@ -152,11 +154,12 @@ namespace gpstk
 
 
    double CorrectedEphemerisRange::ComputeAtTransmitSvTime(
-      const DayTime& tt_nom,
+      const CommonTime& tt_nom,
       const double& pr,
       const Position& rx,
       const SatID sat,
       const XvtStore<SatID>& eph)
+      throw(Exception,InvalidRequest)
    {
       try {
          svPosVel = eph.getXvt(sat, tt_nom);
@@ -164,8 +167,8 @@ namespace gpstk
          // compute rotation angle in the time of signal transit
          // While this is quite similiar to rotateEarth, its not the same and jcl doesn't
          // know which is really correct
-         GPSGeoid gm;
-         double rotation_angle = -gm.angVelocity() * (pr/gm.c() - svPosVel.dtime);         
+         GPSEllipsoid ell;
+         double rotation_angle = -ell.angVelocity() * (pr/ell.c() - svPosVel.dtime);         
          svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
          svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
          svPosVel.x[2] = svPosVel.x[2];
@@ -203,11 +206,11 @@ namespace gpstk
 
    void CorrectedEphemerisRange::rotateEarth(const Position& Rx)
    {
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       double tof = RSS(svPosVel.x[0]-Rx.X(),
                        svPosVel.x[1]-Rx.Y(),
-                       svPosVel.x[2]-Rx.Z())/geoid.c();
-      double wt = geoid.angVelocity()*tof;
+                       svPosVel.x[2]-Rx.Z())/ell.c();
+      double wt = ell.angVelocity()*tof;
       double sx =  cos(wt)*svPosVel.x[0] + sin(wt)*svPosVel.x[1];
       double sy = -sin(wt)*svPosVel.x[0] + cos(wt)*svPosVel.x[1];
       svPosVel.x[0] = sx;

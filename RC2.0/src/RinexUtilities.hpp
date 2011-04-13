@@ -68,19 +68,33 @@ int RegisterARLUTExtendedTypes(void);
     */
 bool isSP3File(const std::string& file);
 
-   /** Determine if the given file is a Rinex navigation file.
+   /** Determine if the given file is a RINEX navigation file.
     * Open the file, read the header, and test its validity.
     * @param file the filename
     * @return true if the file is a valid Rinex navigation file.
     */
 bool isRinexNavFile(const std::string& file);
 
-   /** Determine if the given file is a Rinex observation file.
+   /** Determine if the given file is a RINEX 3 navigation file.
+    * Open the file, read the header, and test its validity.
+    * @param file the filename
+    * @return true if the file is a valid Rinex navigation file.
+    */
+bool isRinex3NavFile(const std::string& file);
+
+   /** Determine if the given file is a RINEX observation file.
     * Open the file, read the header, and test its validity.
     * @param file the filename
     * @return true if the file is a valid Rinex observation file.
     */
 bool isRinexObsFile(const std::string& file);
+
+   /** Determine if the given file is a RINEX 3 observation file.
+    * Open the file, read the header, and test its validity.
+    * @param file the filename
+    * @return true if the file is a valid Rinex observation file.
+    */
+bool isRinex3ObsFile(const std::string& file);
 
    /** Sort a vector of RINEX obs file names on the time of the first observation
     * as found in the header. Return the sorted list in the calling argument.
@@ -89,6 +103,14 @@ bool isRinexObsFile(const std::string& file);
     * @param files  vector<string> containing filenames, with path
     */
 void sortRinexObsFiles(std::vector<std::string>& files);
+
+   /** Sort a vector of RINEX 3 obs file names on the time of the first observation
+    * as found in the header. Return the sorted list in the calling argument.
+    * Do not include files that are found not to be RINEX 3 obs files, or that have
+    * invalid headers.
+    * @param files  vector<string> containing filenames, with path
+    */
+void sortRinex3ObsFiles(std::vector<std::string>& files);
 
    /** Open the files and add to the appropriate EphemerisStore.
     * @param files vector of the filenames.

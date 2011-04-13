@@ -24,6 +24,21 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+#include <cmath>
 #include "JulianDate.hpp"
 #include "TimeConstants.hpp"
 
@@ -33,11 +48,12 @@ namespace gpstk
       throw()
    {
       jd = right.jd;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
    CommonTime JulianDate::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -48,7 +64,8 @@ namespace gpstk
          
          return CommonTime( jday, 
                             static_cast<long>( sod ),
-                            static_cast<double>( sod - static_cast<long>( sod ) ));
+                            static_cast<double>( sod - static_cast<long>( sod ) ),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -62,12 +79,12 @@ namespace gpstk
    {
       long jday, sod;
       double fsod;
-      ct.get( jday, sod, fsod );
+      ct.get( jday, sod, fsod, timeSystem );
      
-      jd = static_cast<long double>( jday ) +
-         ( static_cast<long double>( sod ) 
-           + static_cast<long double>( fsod ) ) * DAY_PER_SEC 
-         - 0.5;
+      jd =   static_cast<long double>( jday ) +
+           (   static_cast<long double>( sod ) 
+             + static_cast<long double>( fsod ) ) * DAY_PER_SEC 
+           - 0.5;
    }
    
    std::string JulianDate::printf( const std::string& fmt ) const
@@ -80,6 +97,8 @@ namespace gpstk
          
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "JLf", jd );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", timeSystem.asString().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -98,6 +117,8 @@ namespace gpstk
          
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "Js", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;         
       }
       catch( gpstk::StringUtils::StringException& se )
@@ -111,11 +132,23 @@ namespace gpstk
    {
       using namespace gpstk::StringUtils;
       
-      IdToValue::const_iterator itr = info.find('J');
-      if( itr != info.end() )
+      for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
-         jd = gpstk::StringUtils::asLongDouble( itr->second );
-      }
+         switch( i->first )
+         {
+            case 'J':
+               jd = asLongDouble( i->second );
+               break;
+
+            case 'P':
+	            timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               break;
+
+            default:
+                  // do nothing
+               break;
+         };
+      }     
       
       return true;
    }
@@ -136,12 +169,19 @@ namespace gpstk
       throw()
    {
       jd = 0.0;
+      timeSystem = TimeSystem::Unknown;
    }
 
    bool JulianDate::operator==( const JulianDate& right ) const
       throw()
    {
-      if( jd == right.jd )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
+          timeSystem != right.timeSystem)
+         return false;
+
+      if( fabs(jd - right.jd) < CommonTime::eps )
       {
          return true;
       }
@@ -155,8 +195,17 @@ namespace gpstk
    }
 
    bool JulianDate::operator<( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
+          timeSystem != right.timeSystem)
+      {
+         gpstk::InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW(ir);
+      }
+
       if( jd < right.jd )
       {
          return true;
@@ -165,20 +214,20 @@ namespace gpstk
    }
 
    bool JulianDate::operator>( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool JulianDate::operator<=( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool JulianDate::operator>=( const JulianDate& right ) const
-      throw()
+      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }

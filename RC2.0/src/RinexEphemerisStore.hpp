@@ -62,7 +62,9 @@ namespace gpstk
                                public FileStore<RinexNavHeader>
    {
    public:
-      RinexEphemerisStore() throw() {GPSEphemerisStore();}
+      RinexEphemerisStore()
+         throw()
+      { GPSEphemerisStore(); }
 
       /// destructor
       virtual ~RinexEphemerisStore() {}

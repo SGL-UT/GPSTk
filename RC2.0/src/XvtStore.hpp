@@ -41,18 +41,15 @@
  * Abstract base class for storing and/or computing position, velocity, 
  * and clock data.
  */
- 
+
 #ifndef GPSTK_XVTSTORE_HPP
 #define GPSTK_XVTSTORE_HPP
 
 #include <iostream>
-#include <string>
-#include <list>
-#include <map>
 
 #include "Exception.hpp"
-#include "SatID.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "Xt.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
@@ -60,9 +57,9 @@ namespace gpstk
    /** @addtogroup ephemstore */
    //@{
 
-   /// Abstract base class for storing and accessing an objects position, 
+   /// Abstract base class for storing and accessing an object's position, 
    /// velocity, and clock data. Also defines a simple interface to remove
-   /// data that has been added.
+   /// data that had been added.
    template <class IndexType>
    class XvtStore
    {
@@ -70,6 +67,18 @@ namespace gpstk
       virtual ~XvtStore()
       {}
       
+      /// Returns the position and clock offset of the indicated
+      /// object in ECEF coordinates (meters) at the indicated time.
+      /// @param[in] id the object's identifier
+      /// @param[in] t the time to look up
+      /// @return the Xt of the object at the indicated time
+      /// @throw InvalidRequest If the request can not be completed for any
+      ///    reason, this is thrown. The text may have additional
+      ///    information as to why the request failed.
+      virtual Xt getXt(const IndexType& id, const CommonTime& t)
+         const throw( InvalidRequest )
+         = 0;
+
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] id the object's identifier
@@ -78,10 +87,9 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const IndexType id, const DayTime& t)
-         const throw(InvalidRequest)
+      virtual Xvt getXvt(const IndexType& id, const CommonTime& t)
+         const throw( InvalidRequest )
          = 0;
-      
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
@@ -91,40 +99,34 @@ namespace gpstk
          const throw()
       {}
 
-
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
-      virtual void edit(const DayTime& tmin, 
-                        const DayTime& tmax = DayTime(DayTime::END_OF_TIME))
+      virtual void edit(const CommonTime& tmin, 
+                        const CommonTime& tmax = CommonTime::END_OF_TIME)
          throw()
          = 0;
-
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getInitialTime()
-         const throw(InvalidRequest)
+      virtual CommonTime getInitialTime() const
+         throw()
          = 0;
 
-      
       /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      virtual DayTime getFinalTime()
-         const throw(InvalidRequest)
+      virtual CommonTime getFinalTime() const
+         throw()
          = 0;
 
       virtual bool velocityIsPresent()
          const throw()
          = 0;
 
-      virtual bool clockIsPresent()
-         const throw()
-         = 0;
    }; // end class XvtStore
 
    //@}

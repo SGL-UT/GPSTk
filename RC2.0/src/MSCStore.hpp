@@ -21,7 +21,6 @@
 //  Copyright 2007, The University of Texas at Austin
 //
 //============================================================================
-
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
@@ -72,8 +71,8 @@ namespace gpstk
 
       MSCStore()
          throw()
-         : initialTime(DayTime::END_OF_TIME), 
-           finalTime(DayTime::END_OF_TIME)
+         : initialTime(CommonTime::END_OF_TIME), 
+           finalTime(CommonTime::END_OF_TIME)
       {}
 
       virtual ~MSCStore()
@@ -87,8 +86,8 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(const std::string stationID, const DayTime& t)
-         const throw(InvalidRequest);
+      Xvt getXvt(const std::string stationID, const CommonTime& t)
+         const throw( gpstk::InvalidRequest );
 
 
       /// Returns the position, velocity, and clock offset of the indicated
@@ -99,8 +98,8 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(unsigned long stationIDno, const DayTime& t)
-         const throw(InvalidRequest);
+      Xvt getXvt(unsigned long stationIDno, const CommonTime& t)
+         const throw( gpstk::InvalidRequest );
 
 
       /// A debugging function that outputs in human readable form,
@@ -114,16 +113,16 @@ namespace gpstk
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param tmin defines the beginning of the time interval
       /// @param tmax defines the end of the time interval
-      void edit(const DayTime& tmin = DayTime(DayTime::BEGINNING_OF_TIME), 
-                const DayTime& tmax = DayTime(DayTime::END_OF_TIME) )
+      void edit(const CommonTime& tmin = CommonTime::BEGINNING_OF_TIME, 
+                const CommonTime& tmax = CommonTime::END_OF_TIME )
          throw();
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any station.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      DayTime getInitialTime()
-         const throw(InvalidRequest)
+      CommonTime getInitialTime()
+         const throw()
       {return initialTime;}
 
       
@@ -131,24 +130,19 @@ namespace gpstk
       /// determine the Xvt for any station.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
-      DayTime getFinalTime()
-         const throw(InvalidRequest)
+      CommonTime getFinalTime()
+         const throw()
       {return finalTime;}
 
       bool velocityIsPresent()
          const throw()
       {return true;}
 
-
-      bool clockIsPresent()
-         const throw()
-      {return false;}
-
       //---------------------------------------------------------------
       // FileStore interfaces
       //---------------------------------------------------------------
       void loadFile(const std::string& filename) 
-         throw(FileMissingException);	 
+         throw( FileMissingException );	 
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not 
@@ -163,8 +157,8 @@ namespace gpstk
       /// Remove all data from this collection.   
       void clear()
          throw()
-      {edit(gpstk::DayTime(gpstk::DayTime::BEGINNING_OF_TIME), 
-            gpstk::DayTime(gpstk::DayTime::BEGINNING_OF_TIME));}
+      {edit(CommonTime::BEGINNING_OF_TIME, 
+            CommonTime::BEGINNING_OF_TIME);}
       
       /// Get the number of MSCData objects in this collection.
       /// @return the number of MSCData records in the map
@@ -178,10 +172,10 @@ namespace gpstk
       /// Note: There may be more than one MSCData object for a given
       /// station.  If so, findMSC( ) returns the MSCData object with the
       /// latest epoch time that is prior to t. 
-      const MSCData& findMSC(const std::string stationID, const DayTime& t)
-         const throw(InvalidRequest);
-      const MSCData& findMSC(const unsigned long stationID, const DayTime& t) 
-         const throw(InvalidRequest);
+      const MSCData& findMSC(const std::string stationID, const CommonTime& t)
+         const throw( gpstk::InvalidRequest );
+      const MSCData& findMSC(const unsigned long stationID, const CommonTime& t) 
+         const throw( gpstk::InvalidRequest );
 
       /// Add all MSCData to an existing list<MSCData>.
       /// @return the number of MSCData added.
@@ -195,7 +189,7 @@ namespace gpstk
    private:
       /// StaMSCMap is a list of MSCData objects for a particular station
       /// in order of their effective epoch
-      typedef std::map<gpstk::DayTime, MSCData> StaMSCMap;
+      typedef std::map<CommonTime, MSCData> StaMSCMap;
       typedef StaMSCMap::const_iterator SMMci;
       typedef StaMSCMap::iterator SMMi;
       
@@ -207,8 +201,8 @@ namespace gpstk
       /// The map where all MSCData objects are stored.
       MSCMap mscMap;
       
-      DayTime initialTime; //< Time of the first MSCData object
-      DayTime finalTime;   //< Time of the last MSCData object
+      CommonTime initialTime; //< Time of the first MSCData object
+      CommonTime finalTime;   //< Time of the last MSCData object
                            //< (N.B.: finalTime is irrelevant in the 
                            //<  current implementation as there is no
                            //<  "end of effectivity" for an MSCData object.

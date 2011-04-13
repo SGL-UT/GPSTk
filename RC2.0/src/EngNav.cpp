@@ -52,7 +52,7 @@
 #include <iostream>
 #include <cmath>
 #include "EngNav.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 #ifdef _MSC_VER
 #define LDEXP(x,y) ldexp(x,y)

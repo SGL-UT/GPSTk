@@ -75,28 +75,28 @@ namespace gpstk
 
    // Convert Earth-centered, Earth-fixed XYZ coordinates (m)
    // to Geodetic coordinates (lat,lon(E),ht) (deg,degE,m).
-   Geodetic ECEF::asGeodetic(GeoidModel* geoid)
+   Geodetic ECEF::asGeodetic(EllipsoidModel* ell)
    {
       double X = this->operator[](0); //ecef[0];     // m
       double Y = this->operator[](1); //ecef[1];     // m
       double Z = this->operator[](2); //ecef[2];     // m
       double p = RSS(X,Y);
-      double latd = atan2(Z,p*(1.0-geoid->eccSquared()));
+      double latd = atan2(Z,p*(1.0-ell->eccSquared()));
       double ht = 0.0, slatd, N, htold, latdold;
       for(int i=0; i<5; i++) {
          slatd = sin(latd);
-         N = geoid->a() / SQRT(1.0-geoid->eccSquared()*slatd*slatd);
+         N = ell->a() / SQRT(1.0-ell->eccSquared()*slatd*slatd);
          htold = ht;
          ht = p/cos(latd) - N;
          latdold = latd;
-         latd = atan2(Z,p*(1.0-geoid->eccSquared()*(N/(N+ht))));
+         latd = atan2(Z,p*(1.0-ell->eccSquared()*(N/(N+ht))));
          if(ABS(latd-latdold) < 1.0e-9 && 
-            ABS(ht-htold) < (1.0e-9*geoid->a())) break;
+            ABS(ht-htold) < (1.0e-9*ell->a())) break;
       }
       double lon = atan2(Y,X);
       if(lon < 0.0) lon += 6.2831853071796;
 
-      Geodetic g(latd*RAD_TO_DEG,lon*RAD_TO_DEG,ht,geoid);      // deg,deg E,m
+      Geodetic g(latd*RAD_TO_DEG,lon*RAD_TO_DEG,ht,ell);      // deg,deg E,m
       return g;
 
    }  // end asGeodetic(geoid)

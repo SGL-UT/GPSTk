@@ -27,8 +27,23 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "GPSWeek.hpp"
 #include "TimeConstants.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -52,10 +67,11 @@ namespace gpstk
           * All elements are initialized to zero.
           */
       GPSWeekZcount( int w = 0,
-                     int z = 0 )
+                     int z = 0,
+                     TimeSystem ts = TimeSystem::Unknown )
          throw()
             : GPSWeek( w ), zcount( z )
-      {}
+      { timeSystem = ts; }
       
          /** 
           * Copy Constructor.
@@ -64,7 +80,7 @@ namespace gpstk
       GPSWeekZcount( const GPSWeekZcount& right )
          throw()
             : GPSWeek( right.week ), zcount( right.zcount )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -87,7 +103,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       GPSWeekZcount( const CommonTime& right )
-         throw( InvalidRequest )
+         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -108,10 +124,10 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
@@ -144,7 +160,7 @@ namespace gpstk
       inline virtual std::string getDefaultFormat() const
          throw()
       {
-         return GPSWeek::getDefaultFormat() + " %06Z";
+         return GPSWeek::getDefaultFormat() + " %06Z %P";
       }
 
       virtual bool isValid() const
@@ -201,7 +217,7 @@ namespace gpstk
          throw()
        {
           return ( GPSWeek::operator==(right) &&
-                zcount == right.zcount );
+                   zcount == right.zcount );
        }
    
        inline bool operator!=( const GPSWeekZcount& right ) const

@@ -49,8 +49,8 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
-#include "DayTime.hpp"
+#include "icd_gps_constants.hpp"
+#include "GPSWeekSecond.hpp"
 #include "FICData9.hpp"
 
 #include <cmath>
@@ -68,7 +68,8 @@ namespace gpstk
       blockNum = 9;
 
       firstFiveItems( 1, rawsf, ee );      
-      f.push_back( (double) ee.getTransmitTime().GPSfullweek() );
+      GPSWeekSecond gpstime(ee.getTransmitTime());
+      f.push_back( (double) gpstime.week );
       f.push_back( (double) ee.getCodeFlags() );
       f.push_back( (double) ee.getAccFlag() );
       f.push_back( (double) ee.getHealth() );

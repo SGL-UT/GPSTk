@@ -46,10 +46,11 @@
 #include "EphemerisRange.hpp"             // for Elevation()
 #include "MathBase.hpp"                   // SQRT
 #include "geometry.hpp"                   // DEG_TO_RAD
-#include "GPSGeoid.hpp"                   // geoid.a() = R earth
-#include "icd_200_constants.hpp"          // TWO_PI
+#include "GPSEllipsoid.hpp"               // ell.a() = R earth
+#include "icd_gps_constants.hpp"          // TWO_PI
 #include "Geodetic.hpp"
 #include "ECEF.hpp"
+#include "YDSTime.hpp"
 
 namespace gpstk
 {
@@ -84,7 +85,7 @@ namespace gpstk
       // @param tt  Time tag of the signal 
    double TropModel::correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       if(!valid)
@@ -159,24 +160,24 @@ namespace gpstk
    }
       /// get weather data by a standard atmosphere model
       /// reference to white paper of Bernese 5.0, P243
-      /// @pararm ht    Height of the receiver in meters.
+      /// @param ht     Height of the receiver in meters.
       /// @param T      temperature in degrees Celsius
       /// @param P      atmospheric pressure in millibars
       /// @param H      relative humidity in percent
    void TropModel::weatherByStandardAtmosphereModel(const double& ht, double& T, double& P, double& H)
-   {  
+   {
 
-      // reference height and it's relate weather(T P H) 
-		const double h0  = 0.0;			   // meter
-		const double Tr  = +18.0;	      // Celsius
-		const double pr  = 1013.25;		// millibar
-		const double Hr  = 0.5;			   // humidity
-		
-		T = Tr-0.0065*(ht-h0);						       
-      P = pr * std::pow((1 - 0.0000226 * (ht - h0)), 5.225); 
-      H = Hr * std::exp(-0.0006396 * (ht - h0));	
+      // reference height and it's relate weather(T P H)
+               const double h0 = 0.0;        // meter
+               const double Tr = +18.0;      // Celsius
+               const double pr = 1013.25;    // millibar
+               const double Hr = 0.5;        // humidity
 
-   }
+      T = Tr-0.0065*(ht-h0);
+      P = pr * std::pow((1 - 0.0000226 * (ht - h0)), 5.225);
+      H = Hr * std::exp(-0.0006396 * (ht - h0));
+
+   } 
          
    // -----------------------------------------------------------------------
    // Simple Black model. This has been used as the 'default' for many years.
@@ -225,12 +226,12 @@ namespace gpstk
       throw(InvalidParameter)
    {
       TropModel::setWeather(T,P,H);
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       Cdrydelay = 2.343*(press/1013.25)*(temp-3.96)/temp;
       double tks = temp * temp;
       Cwetdelay = 8.952/tks*humid*std::exp(-37.2465+0.213166*temp-(0.256908e-3)*tks);
-      Cdrymap =1.0+(0.15)*148.98*(temp-3.96)/geoid.a();
-      Cwetmap =1.0+(0.15)*12000.0/geoid.a();
+      Cdrymap =1.0+(0.15)*148.98*(temp-3.96)/ell.a();
+      Cwetmap =1.0+(0.15)*12000.0/ell.a();
       valid = true;
    }  // end SimpleTropModel::setWeather(T,P,H)
 
@@ -368,12 +369,12 @@ namespace gpstk
 
       if(elevation < 0.0) return 0.0;
 
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       double ce=std::cos(elevation*DEG_TO_RAD), se=std::sin(elevation*DEG_TO_RAD);
       double ad = -se/Cdrymap;
-      double bd = -ce*ce/(2.0*geoid.a()*Cdrymap);
-      double Rd = SQRT((geoid.a()+Cdrymap)*(geoid.a()+Cdrymap)
-                - geoid.a()*geoid.a()*ce*ce) - geoid.a()*se;
+      double bd = -ce*ce/(2.0*ell.a()*Cdrymap);
+      double Rd = SQRT((ell.a()+Cdrymap)*(ell.a()+Cdrymap)
+                - ell.a()*ell.a()*ce*ce) - ell.a()*se;
 
       double Ad[9], ad2=ad*ad, bd2=bd*bd;
       Ad[0] = 1.0;
@@ -405,12 +406,12 @@ namespace gpstk
 
       if(elevation < 0.0) return 0.0;
 
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       double ce = std::cos(elevation*DEG_TO_RAD), se = std::sin(elevation*DEG_TO_RAD);
       double aw = -se/Cwetmap;
-      double bw = -ce*ce/(2.0*geoid.a()*Cwetmap);
-      double Rw = SQRT((geoid.a()+Cwetmap)*(geoid.a()+Cwetmap)
-                - geoid.a()*geoid.a()*ce*ce) - geoid.a()*se;
+      double bw = -ce*ce/(2.0*ell.a()*Cwetmap);
+      double Rw = SQRT((ell.a()+Cwetmap)*(ell.a()+Cwetmap)
+                - ell.a()*ell.a()*ce*ce) - ell.a()*se;
 
       double Aw[9], aw2=aw*aw, bw2=bw*bw;
       Aw[0] = 1.0;
@@ -549,7 +550,7 @@ namespace gpstk
       // @param tt  Time tag of the signal 
    double GGHeightTropModel::correction(const Position& RX,
                                         const Position& SV,
-                                        const DayTime& tt)
+                                        const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       if(!valid)
@@ -581,7 +582,7 @@ namespace gpstk
       // This function is deprecated; use the Position version
    double GGHeightTropModel::correction(const Xvt& RX,
                                         const Xvt& SV,
-                                        const DayTime& tt)
+                                        const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       Position R(RX),S(SV);
@@ -670,8 +671,8 @@ namespace gpstk
       double se=std::sin(elevation*DEG_TO_RAD);
       if(se < 0.0) se=0.0;
 
-      GPSGeoid geoid;
-      double rt,a,b,rn[8],al[8],er=geoid.a();
+      GPSEllipsoid ell;
+      double rt,a,b,rn[8],al[8],er=ell.a();
       rt = (er+ho)/(er+height);
       rt = rt*rt - (1.0-se*se);
       if(rt < 0) rt=0.0;
@@ -725,8 +726,8 @@ namespace gpstk
       double se=std::sin(elevation*DEG_TO_RAD);
       if(se < 0.0) se=0.0;
 
-      GPSGeoid geoid;
-      double rt,a,b,rn[8],al[8],er=geoid.a();
+      GPSEllipsoid ell;
+      double rt,a,b,rn[8],al[8],er=ell.a();
       rt = (er+ho)/(er+height);
       rt = rt*rt - (1.0-se*se);
       if(rt < 0) rt=0.0;
@@ -1038,7 +1039,7 @@ namespace gpstk
       // @param tt  Time tag of the signal 
    double NBTropModel::correction(const Position& RX,
                                   const Position& SV,
-                                  const DayTime& tt)
+                                  const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       if(!valid) {
@@ -1057,7 +1058,7 @@ namespace gpstk
       setReceiverLatitude(RX.getGeodeticLatitude());
 
          // compute day of year from tt
-      setDayOfYear(int(tt.DOYday()));
+      setDayOfYear(int((static_cast<YDSTime>(tt)).doy));
 
       return TropModel::correction(RX.elevation(SV));
 
@@ -1075,7 +1076,7 @@ namespace gpstk
       // This function is deprecated; use the Position version
    double NBTropModel::correction(const Xvt& RX,
                                   const Xvt& SV,
-                                  const DayTime& tt)
+                                  const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       Position R(RX),S(SV);
@@ -1456,12 +1457,12 @@ namespace gpstk
       // @param tt  Time tag of the signal 
    double SaasTropModel::correction(const Position& RX,
                                     const Position& SV,
-                                    const DayTime& tt)
+                                    const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       SaasTropModel::setReceiverHeight(RX.getHeight());
       SaasTropModel::setReceiverLatitude(RX.getGeodeticLatitude());
-      SaasTropModel::setDayOfYear(int(tt.DOYday()));
+      SaasTropModel::setDayOfYear(int((static_cast<YDSTime>(tt).doy)));
 
       if(!valid) {
          if(!validWeather) GPSTK_THROW(
@@ -1487,7 +1488,7 @@ namespace gpstk
 
    double SaasTropModel::correction(const Xvt& RX,
                                     const Xvt& SV,
-                                    const DayTime& tt)
+                                    const CommonTime& tt)
       throw(TropModel::InvalidTropModel)
    {
       Position R(RX),S(SV);
@@ -1847,7 +1848,7 @@ namespace gpstk
        */
    double GCATTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
-                                     const DayTime& tt )
+                                     const CommonTime& tt )
       throw(TropModel::InvalidTropModel)
    {
 
@@ -1978,7 +1979,7 @@ namespace gpstk
        * @param RX   Receiver position.
        * @param time Time.
        */
-   MOPSTropModel::MOPSTropModel(const Position& RX, const DayTime& time)
+   MOPSTropModel::MOPSTropModel(const Position& RX, const CommonTime& time)
    {
       setReceiverHeight(RX.getAltitude());
       setReceiverLatitude(RX.getGeodeticLatitude());
@@ -2064,10 +2065,10 @@ namespace gpstk
       // height  and latitude) and passes them to appropriate methods.
       // @param RX  Receiver position in ECEF cartesian coordinates (meters)
       // @param SV  Satellite position in ECEF cartesian coordinates (meters)
-      // @param tt  Time (DayTime object).
+      // @param tt  Time (CommonTime object).
    double MOPSTropModel::correction( const Position& RX, 
                                      const Position& SV,
-                                     const DayTime& tt )
+                                     const CommonTime& tt )
       throw(TropModel::InvalidTropModel)
    {
       setDayOfYear(tt);
@@ -2122,11 +2123,11 @@ namespace gpstk
       // height and latitude) and passes them to appropriate methods.
       // @param RX  Receiver position in ECEF cartesian coordinates (meters)
       // @param SV  Satellite position in ECEF cartesian coordinates (meters)
-      // @param tt  Time (DayTime object).
+      // @param tt  Time (CommonTime object).
       // This function is deprecated; use the Position version
    double MOPSTropModel::correction( const Xvt& RX,
                                      const Xvt& SV,
-                                     const DayTime& tt )
+                                     const CommonTime& tt )
       throw(TropModel::InvalidTropModel)
    {
       setDayOfYear(tt);
@@ -2322,9 +2323,9 @@ namespace gpstk
        *
        * @param time  Time object.
        */
-   void MOPSTropModel::setDayOfYear(const DayTime& time)
+   void MOPSTropModel::setDayOfYear(const CommonTime& time)
    {
-      MOPSTime = (int)time.DOY();
+      MOPSTime = (int)(static_cast<YDSTime>(time)).doy;
       validTime = true;
 
          // Change the value of field "valid" if everything is already set
@@ -2341,11 +2342,11 @@ namespace gpstk
        * @param time  Time object.
        * @param rxPos Receiver position object.
        */
-   void MOPSTropModel::setAllParameters( const DayTime& time,
+   void MOPSTropModel::setAllParameters( const CommonTime& time,
                                          const Position& rxPos )
    {
 
-      MOPSTime = (int)time.DOY();
+      MOPSTime = (int)(static_cast<YDSTime>(time)).doy;
       validTime = true;
       MOPSLat = rxPos.getGeodeticLatitude();
       validHeight = true;
@@ -2430,7 +2431,7 @@ namespace gpstk
          if ( (axfi > 30.0) && (axfi <= 45.0) ) index=2;
          if ( (axfi > 45.0) && (axfi <= 60.0) ) index=3;
          if ( (axfi > 60.0) && (axfi <  75.0) ) index=4;
-         if ( axfi >= 75.0 )                    index=5;
+         if ( axfi >= 75.0 )                     index=5;
 
          for (j=0; j<5; j++)
          {
@@ -2566,7 +2567,7 @@ namespace gpstk
       // @param RX   Receiver position.
       // @param time Time.
    NeillTropModel::NeillTropModel( const Position& RX,
-                                   const DayTime& time )
+                                   const CommonTime& time )
    {
       setReceiverHeight(RX.getAltitude());
       setReceiverLatitude(RX.getGeodeticLatitude( ));
@@ -2716,11 +2717,11 @@ namespace gpstk
        *
        * @param RX  Receiver position.
        * @param SV  Satellite position.
-       * @param tt  Time (DayTime object).
+       * @param tt  Time (CommonTime object).
        */
    double NeillTropModel::correction( const Position& RX,
                                       const Position& SV,
-                                      const DayTime& tt )
+                                      const CommonTime& tt )
       throw(TropModel::InvalidTropModel)
    {
 
@@ -2785,11 +2786,11 @@ namespace gpstk
       //
       // @param RX  Receiver position in ECEF cartesian coordinates (meters)
       // @param SV  Satellite position in ECEF cartesian coordinates (meters)
-      // @param tt  Time (DayTime object).
+      // @param tt  Time (CommonTime object).
       // This function is deprecated; use the Position version
    double NeillTropModel::correction( const Xvt& RX,
                                       const Xvt& SV,
-                                      const DayTime& tt )
+                                      const CommonTime& tt )
       throw(TropModel::InvalidTropModel)
    {
       setDayOfYear(tt);
@@ -3091,10 +3092,10 @@ namespace gpstk
       // in days of the year.
       //
       // @param time  Time object.
-   void NeillTropModel::setDayOfYear(const DayTime& time)
+   void NeillTropModel::setDayOfYear(const CommonTime& time)
    {
 
-      NeillDOY = static_cast<int>(time.DOY());
+      NeillDOY = static_cast<int>((static_cast<YDSTime>(time)).doy);
       validDOY = true;
 
          // Change the value of field "valid" if everything is already set
@@ -3111,10 +3112,11 @@ namespace gpstk
        * @param time  Time object.
        * @param rxPos Receiver position object.
        */
-   void NeillTropModel::setAllParameters( const DayTime& time,
+   void NeillTropModel::setAllParameters( const CommonTime& time,
                                           const Position& rxPos )
    {
-      NeillDOY = static_cast<int>(time.DOY());
+   	YDSTime ydst = static_cast<YDSTime>(time);
+      NeillDOY = static_cast<int>(ydst.doy);
       validDOY = true;
       NeillLat = rxPos.getGeodeticLatitude();
       validHeight = true;

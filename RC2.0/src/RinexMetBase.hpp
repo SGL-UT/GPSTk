@@ -1,10 +1,8 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file RinexMetBase.hpp
- * Base class for RINEX meteorological file data
+ * Base class for RINEX 2 & 3 Met file data.
  */
 
 #ifndef GPSTK_RINEXMETBASE_HPP
@@ -46,11 +44,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "FFData.hpp"
 
 namespace gpstk
@@ -64,7 +57,8 @@ namespace gpstk
    class RinexMetBase : public FFData
    {
    public:
-         /// Destructor per our coding standards
+
+      /// Destructor
       virtual ~RinexMetBase() {}
    };
 

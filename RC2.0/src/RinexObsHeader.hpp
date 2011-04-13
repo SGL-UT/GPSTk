@@ -50,7 +50,7 @@
 #include <iostream>
 #include <iomanip>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "Triple.hpp"
@@ -71,13 +71,14 @@ namespace gpstk
    public:
 
          /// A Simple Constructor.
-      RinexObsHeader() : version(2.1), valid()
+//      RinexObsHeader() : version(), valid()
+      RinexObsHeader()
          {}
 
          /// Clear (empty out) header
       inline void clear()
       {
-         version = 2.11;
+//         version = 2.11;
          valid = 0;
          commentList.clear();
          wavelengthFactor[0] = wavelengthFactor[1] = 1;
@@ -118,25 +119,25 @@ namespace gpstk
          /// Validity bits for the RINEX Observation Header
       enum validBits
       {
-         versionValid = 0x01,           ///< "RINEX VERSION / TYPE"
-         runByValid = 0x02,             ///< "PGM / RUN BY / DATE"
-         commentValid = 0x04,           ///< "COMMENT"
-         markerNameValid = 0x08,        ///< "MARKER NAME"
-         markerNumberValid = 0x010,     ///< "MARKER NUMBER"
-         observerValid = 0x020,         ///< "OBSERVER / AGENCY"
-         receiverValid = 0x040,         ///< "REC # / TYPE / VERS"
-         antennaTypeValid = 0x080,      ///< "ANT # / TYPE"
-         antennaPositionValid = 0x0100, ///< "APPROX POSITION XYZ"
-         antennaOffsetValid = 0x0200,   ///< "ANTENNA: DELTA H/E/N"
-         waveFactValid = 0x0400,        ///< "WAVELENGTH FACT L1/2"
-         obsTypeValid = 0x0800,         ///< "# / TYPES OF OBSERV"
-         intervalValid = 0x01000,       ///< "INTERVAL"
-         firstTimeValid = 0x02000,      ///< "TIME OF FIRST OBS"
-         lastTimeValid = 0x04000,       ///< "TIME OF LAST OBS"
-         receiverOffsetValid = 0x08000, ///< "RCV CLOCK OFFS APPL"
-         leapSecondsValid = 0x0100000,  ///< "LEAP SECONDS"
-         numSatsValid = 0x0200000,      ///< "# OF SATELLITES"
-         prnObsValid = 0x0400000,       ///< "PRN / # OF OBS"
+         versionValid         = 0x01,      ///< "RINEX VERSION / TYPE"
+         runByValid           = 0x02,      ///< "PGM / RUN BY / DATE"
+         commentValid         = 0x04,      ///< "COMMENT"               (optional)
+         markerNameValid      = 0x08,      ///< "MARKER NAME"
+         markerNumberValid    = 0x010,     ///< "MARKER NUMBER"         (optional)
+         observerValid        = 0x020,     ///< "OBSERVER / AGENCY"
+         receiverValid        = 0x040,     ///< "REC # / TYPE / VERS"
+         antennaTypeValid     = 0x080,     ///< "ANT # / TYPE"
+         antennaPositionValid = 0x0100,    ///< "APPROX POSITION XYZ"
+         antennaOffsetValid   = 0x0200,    ///< "ANTENNA: DELTA H/E/N"
+         waveFactValid        = 0x0400,    ///< "WAVELENGTH FACT L1/2"
+         obsTypeValid         = 0x0800,    ///< "# / TYPES OF OBSERV"
+         intervalValid        = 0x01000,   ///< "INTERVAL"              (optional)
+         firstTimeValid       = 0x02000,   ///< "TIME OF FIRST OBS"
+         lastTimeValid        = 0x04000,   ///< "TIME OF LAST OBS"      (optional)
+         receiverOffsetValid  = 0x08000,   ///< "RCV CLOCK OFFS APPL"   (optional)
+         leapSecondsValid     = 0x0100000, ///< "LEAP SECONDS"          (optional)
+         numSatsValid         = 0x0200000, ///< "# OF SATELLITES"       (optional)
+         prnObsValid          = 0x0400000, ///< "PRN / # OF OBS"        (optional)
 
          endValid = 0x080000000,        ///< "END OF HEADER"
 
@@ -242,9 +243,9 @@ namespace gpstk
       std::vector<ExtraWaveFact> extraWaveFactList; ///< extra (per PRN) WAVELENGTH FACTORS
       std::vector<RinexObsType> obsTypeList; ///< NUMBER & TYPES OF OBSERV
       double interval;                       ///< INTERVAL (optional)
-      DayTime firstObs ;                     ///< TIME OF FIRST OBS
+      CommonTime firstObs ;                     ///< TIME OF FIRST OBS
       RinexSatID firstSystem;                ///< RINEX satellite system of FIRST OBS timetag
-      DayTime lastObs ;                      ///< TIME OF LAST OBS (optional)
+      CommonTime lastObs ;                      ///< TIME OF LAST OBS (optional)
       RinexSatID lastSystem;                 ///< RINEX satellite system of LAST OBS timetag
       int receiverOffset;                    ///< RCV CLOCK OFFS APPL (optional)
       int leapSeconds;                       ///< LEAP SECONDS (optional)
@@ -325,15 +326,15 @@ namespace gpstk
       friend class RinexObsData;
 
    private:
-         /// Converts the daytime \a dt into a Rinex Obs time
+         /// Converts the CommonTime \a dt into a Rinex Obs time
          /// string for the header
-      std::string writeTime(const DayTime& dt) const;
+      std::string writeTime(const CommonTime& dt) const;
 
          /**
           * This function sets the time for this header.
           * It looks at \a line to obtain the needed information.
           */
-      DayTime parseTime(const std::string& line) const;
+      CommonTime parseTime(const std::string& line) const;
 
    }; // end class RinexObsHeader
 

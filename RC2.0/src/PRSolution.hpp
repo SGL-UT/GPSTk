@@ -5,8 +5,8 @@
  * Autonomous pseudorange navigation solution, including RAIM algorithm
  */
  
-#ifndef PRS_POSITION_SOLUTION_HPP
-#define PRS_POSITION_SOLUTION_HPP
+#ifndef PRS_POSITION_SOLUTION_NEW_HPP
+#define PRS_POSITION_SOLUTION_NEW_HPP
 
 //============================================================================
 //
@@ -32,8 +32,8 @@
 
 #include <vector>
 #include <ostream>
-#include "icd_200_constants.hpp"
-#include "DayTime.hpp"
+#include "icd_gps_constants.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Matrix.hpp"
 #include "RinexObsHeader.hpp"
@@ -56,10 +56,12 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(100.), 
-         Algebraic(false), ResidualCriterion(true), ReturnAtOnce(false),
-         NSatsReject(-1), Debug(false), pDebugStream(&std::cout),
-         MaxNIterations(10),  ConvergenceLimit(3.e-7), Valid(false) {};
+      PRSolution() throw() :
+         RMSLimit(6.5), SlopeLimit(1000.), Algebraic(false),
+         ResidualCriterion(true), ReturnAtOnce(false), NSatsReject(-1),
+         Debug(false), pDebugStream(&std::cout), MaxNIterations(10),
+         ConvergenceLimit(3.e-7), Valid(false)
+      {};
 
       /** Compute a position/time solution, given satellite PRNs and pseudoranges
        *  using a RAIM algorithm.
@@ -81,7 +83,7 @@ namespace gpstk
        *     (the 4 satellite solution might be returned - check isValid())
        * -4  ephemeris is not found for one or more satellites
        */
-      int RAIMCompute(const DayTime& Tr,
+      int RAIMCompute(const CommonTime& Tr,
                       std::vector<SatID>& Satellite,
                       const std::vector<double>& Pseudorange,
                       const XvtStore<SatID>& Eph,
@@ -194,7 +196,7 @@ namespace gpstk
        *  0  ok
        * -4  ephemeris not found for all the satellites
        */
-      static int PrepareAutonomousSolution(const DayTime& Tr,
+      static int PrepareAutonomousSolution(const CommonTime& Tr,
                                            std::vector<SatID>& Sats,
                                            const std::vector<double>& Pseudorange,
                                            const XvtStore<SatID>& Eph,
@@ -239,7 +241,7 @@ namespace gpstk
        * -3  not enough good data to form a solution (at least 4 satellites required)
        * -4  ephemeris not found for one or more satellites
        */
-      static int AutonomousPRSolution(const DayTime& Tr,
+      static int AutonomousPRSolution(const CommonTime& Tr,
                                       const std::vector<bool>& Use,
                                       const Matrix<double> SVP,
                                       TropModel *pTropModel,
@@ -250,7 +252,8 @@ namespace gpstk
                                       Matrix<double>& Cov,
                                       Vector<double>& Resid,
                                       Vector<double>& Slope,
-                                      std::ostream *pDebug=NULL)
+                                      std::ostream *pDebug=NULL,
+                                      Vector<int>* satSystems=NULL)
             throw(Exception);
 
    private:

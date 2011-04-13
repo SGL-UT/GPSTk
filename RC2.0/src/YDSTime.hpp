@@ -27,6 +27,20 @@
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "TimeTag.hpp"
 
 namespace gpstk
@@ -49,10 +63,11 @@ namespace gpstk
           */
       YDSTime( long y = 0, 
                long d = 0, 
-               double s = 0.)
+               double s = 0.,
+               TimeSystem ts = TimeSystem::Unknown )
          throw()
             : year(y), doy(d), sod(s) 
-      {}
+      { timeSystem = ts; }
       
          /** Copy Constructor.
           * @param right a const reference to the YDSTime object to copy
@@ -60,7 +75,7 @@ namespace gpstk
       YDSTime( const YDSTime& right )
          throw()
             : year( right.year ), doy( right.doy ), sod( right.sod )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /** 
           * Alternate Copy Constructor.
@@ -70,8 +85,8 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       YDSTime( const TimeTag& right )
-         throw( InvalidRequest )
-      { 
+         throw( gpstk::InvalidRequest )
+      {
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
       
@@ -104,7 +119,7 @@ namespace gpstk
       
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
       
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -133,14 +148,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Yyjs";
+         return "YyjsP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%04Y/%03j %s";
+         return "%04Y/%03j %s %P";
       }
 
       virtual bool isValid() const
@@ -162,13 +177,13 @@ namespace gpstk
       bool operator!=( const YDSTime& right ) const
          throw();
       bool operator<( const YDSTime& right ) const
-         throw();
+	throw( gpstk::InvalidRequest );
       bool operator>( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       int year;

@@ -47,7 +47,7 @@
 #include "EngEphemeris.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "MiscMath.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 #include "ObsRngDev.hpp"
 
@@ -66,12 +66,12 @@ namespace gpstk
       const DayTime& time,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       bool svTime)
       : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
-      Geodetic gx(rxpos, &gm);
+      computeOrd(prange, rxpos, eph, em, svTime);
+      Geodetic gx(rxpos, &em);
       NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
       computeTrop(nb);
    }
@@ -82,14 +82,14 @@ namespace gpstk
       const DayTime& time,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
-      Geodetic gx(rxpos, &gm);
+      computeOrd(prange, rxpos, eph, em, svTime);
+      Geodetic gx(rxpos, &em);
       NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
       computeTrop(nb);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
@@ -102,12 +102,12 @@ namespace gpstk
       const DayTime& time,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       const TropModel& tm,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
+      computeOrd(prange, rxpos, eph, em, svTime);
       computeTrop(tm);
    }
 
@@ -117,16 +117,16 @@ namespace gpstk
       const DayTime& time,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       const TropModel& tm,
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
+      computeOrd(prange, rxpos, eph, em, svTime);
       computeTrop(tm);
-      Geodetic gx(rxpos, &gm);
+      Geodetic gx(rxpos, &em);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
    }
@@ -139,7 +139,7 @@ namespace gpstk
       const DayTime& time,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
@@ -147,8 +147,8 @@ namespace gpstk
       double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
       iono = prange1 - icpr;
 
-      computeOrd(icpr, rxpos, eph, gm, svTime);
-      Geodetic gx(rxpos, &gm);
+      computeOrd(icpr, rxpos, eph, em, svTime);
+      Geodetic gx(rxpos, &em);
       NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
       computeTrop(nb);
    }
@@ -161,7 +161,7 @@ namespace gpstk
       const DayTime& time,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      const GeoidModel& gm,
+      const EllipsoidModel& em,
       const TropModel& tm,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
@@ -170,7 +170,7 @@ namespace gpstk
       double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
       iono = prange1 - icpr;
 
-      computeOrd(icpr, rxpos, eph, gm, svTime);
+      computeOrd(icpr, rxpos, eph, em, svTime);
       computeTrop(tm);
    }
 
@@ -179,7 +179,7 @@ namespace gpstk
       const double obs,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      const GeoidModel& gm)
+      const EllipsoidModel& em)
    {
       CorrectedEphemerisRange cer;
       rho = cer.ComputeAtTransmitTime(obstime, obs, rxpos, svid, eph);
@@ -219,7 +219,7 @@ namespace gpstk
       double obs,
       const ECEF& rxpos,
       const XvtStore<SatID>& eph,
-      const GeoidModel& gm)
+      const EllipsoidModel& em)
    {
       CorrectedEphemerisRange cer;
       rho = cer.ComputeAtTransmitSvTime(obstime, obs, rxpos, svid, eph);

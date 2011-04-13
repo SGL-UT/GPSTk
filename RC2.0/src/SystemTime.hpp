@@ -28,6 +28,8 @@
 //============================================================================
 
 #include "UnixTime.hpp"
+#include <sys/time.h>
+#include <ctime>
 
 namespace gpstk
 {
@@ -51,6 +53,7 @@ namespace gpstk
       SystemTime()
          throw()
       {
+         setTimeSystem(TimeSystem::UTC);
          update();
       }
       

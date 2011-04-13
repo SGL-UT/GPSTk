@@ -1,0 +1,113 @@
+#pragma ident "$Id: Xt.hpp 1709 2009-02-18 20:27:47Z rain $"
+
+/**
+ * @file Xt.hpp
+ * Geometric vector and clock data as Triple and double.
+ */
+
+#ifndef GPSTK_XT_HPP
+#define GPSTK_XT_HPP
+
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 2.1 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+
+#include <iostream>
+#include "Triple.hpp"
+#include "EllipsoidModel.hpp"
+#include "ReferenceFrame.hpp"
+
+namespace gpstk
+{
+  /** @addtogroup geodeticgroup */
+  //@{
+
+  /// An Earth-Centered, Earth-Fixed position/clock representation.
+  /// May also be used for velocity or acceleration in the vector.
+  class Xt
+  {
+  public:
+
+    /// Default constructor
+    Xt()
+      : x(0.,0.,0.), dtime(0.), frame(ReferenceFrame::Unknown)
+    {};
+
+    /// Destructor.
+    virtual ~Xt() {};
+
+    Triple getPos()
+      throw()
+    { return x; }
+
+    double getDtime()
+      throw()
+    { return dtime; }
+
+    /**
+     * Given the position of a ground location, compute the range
+     * to the spacecraft position.
+     * @param rxPos ground position at broadcast time in ECEF.
+     * @param ell geodetic parameters.
+     * @param correction offset in meters (include any factors other
+     * than the SV clock correction).
+     * @return Range in meters
+     */
+    double preciseRho( const Triple& rxPos, 
+                       const EllipsoidModel& ell,
+                       double correction = 0    ) const
+      throw();
+
+//  protected:
+
+    Triple x;      ///< SV position, velocity or acceleration (x,y,z), Earth-fixed. [meters]
+    double dtime;  ///< SV clock correction. [sec] or [sec/sec]
+    ReferenceFrame frame;
+  }; 
+
+  //@}
+
+}
+
+/**
+ * Output operator for Xt
+ * @param s output stream to which \c xt is sent
+ * @param xt Xt that is sent to \c s
+ */
+std::ostream& operator<<( std::ostream& s, 
+                          const gpstk::Xt& xt );
+
+#endif

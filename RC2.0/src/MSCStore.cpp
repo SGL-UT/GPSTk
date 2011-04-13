@@ -43,11 +43,11 @@ namespace gpstk
 {
       // The number o seconds in a year is 365 and a quetar days time
       // the number of seconds in a day.
-   const double MSCStore::SEC_YEAR = 365.25 * DayTime::SEC_DAY;
+   const double MSCStore::SEC_YEAR = 365.25 * gpstk::SEC_PER_DAY;
    
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt MSCStore::getXvt(const std::string stationID, const DayTime& t)
+   Xvt MSCStore::getXvt(const std::string stationID, const CommonTime& t)
       const throw(InvalidRequest)
    {
       try
@@ -63,7 +63,7 @@ namespace gpstk
       }
    } // end of MSCStore::getXvt()
 
-   Xvt MSCStore::getXvt(unsigned long stationIDno, const DayTime& t)
+   Xvt MSCStore::getXvt(unsigned long stationIDno, const CommonTime& t)
       const throw(InvalidRequest)
    {
       try
@@ -143,7 +143,7 @@ namespace gpstk
 //   Cases 1-5 are degenerate examples of case 6.
 //
 //-----------------------------------------------------------------------------
-   void MSCStore::edit(const DayTime& tmin, const DayTime& tmax)
+   void MSCStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
       
@@ -229,7 +229,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const MSCData&
-   MSCStore::findMSC(const unsigned long stationID, const DayTime& t) 
+   MSCStore::findMSC(const unsigned long stationID, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       try
@@ -245,7 +245,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const MSCData&
-   MSCStore::findMSC(const std::string stationID, const DayTime& t) 
+   MSCStore::findMSC(const std::string stationID, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       try
@@ -286,15 +286,14 @@ namespace gpstk
          StaMSCMap::const_reverse_iterator smmir;
          for (smmir = mm->second.rbegin(); smmir != mm->second.rend(); ++smmir)
          {
-            const DayTime& dtr = smmir->first;
+            const CommonTime& dtr = smmir->first;
             if (dtr<=t) return( smmir->second );
          }
 
             // If we reach this point, there's no time-approprate entry for 
             // this station
          InvalidRequest e("No station coordinates for station " + 
-                           stationID + " at time " +
-                           t.printf("%02m/%02d/%02y") );
+                           stationID + " at time " + t.asString() );
          GPSTK_THROW(e);
       }
       catch(InvalidRequest& ir)
