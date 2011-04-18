@@ -128,7 +128,7 @@ namespace gpstk
           * @throw FFStreamError if EOF is found and \a expectEOF is false
           * @throw gpstk::StringUtils::StringException when a string error occurs
           * or if any other error happens.
-          * @warning There is a maximum line length of 256 characters when
+          * @warning There is a maximum line length of 1500 characters when
           * using this function.
           */
       inline void formattedGetLine( std::string& line,
@@ -200,7 +200,14 @@ namespace gpstk
 
       try
       {
-         const int MAX_LINE_LENGTH = 256;
+            // The following constant used to be 256, but with the change to
+            // RINEX3 formats the possible length of a line increased
+            // considerably. A RINEX3 observation file line for Galileo may
+            // be 1277 characters long (taking into account all the possible
+            // types of observations available, plus the end of line
+            // characters), so this constant was conservatively set to
+            // 1500 characteres. Dagoberto Salazar.
+         const int MAX_LINE_LENGTH = 1500;
          char templine[MAX_LINE_LENGTH + 1];
          getline(templine, MAX_LINE_LENGTH);
          lineNumber++;
