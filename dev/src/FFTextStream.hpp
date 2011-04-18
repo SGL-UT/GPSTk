@@ -206,7 +206,7 @@ namespace gpstk
             // be 1277 characters long (taking into account all the possible
             // types of observations available, plus the end of line
             // characters), so this constant was conservatively set to
-            // 1500 characteres. Dagoberto Salazar.
+            // 1500 characters. Dagoberto Salazar.
          const int MAX_LINE_LENGTH = 1500;
          char templine[MAX_LINE_LENGTH + 1];
          getline(templine, MAX_LINE_LENGTH);
