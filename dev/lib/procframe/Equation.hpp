@@ -330,21 +330,22 @@ namespace gpstk
 
    }; // End of struct 'Equation'
 
+
    namespace StringUtils
    {
       inline std::string asString(const VariableSet& vset)
       {
          std::ostringstream oss;
-         for(VariableSet::const_iterator it=vset.begin();
-            it!=vset.end();
-            ++it)
+         for( VariableSet::const_iterator it = vset.begin();
+              it != vset.end();
+              ++it )
          {
             oss << it->getType() << "   "
-               << it->getSource() << "   "
-               << it->getSatellite() << "   "
-               << it->getTypeIndexed() << " "
-               << it->getSourceIndexed() << " "
-               << it->getSatIndexed()<< endl;
+                << it->getSource() << "   "
+                << it->getSatellite() << "   "
+                << it->getTypeIndexed() << " "
+                << it->getSourceIndexed() << " "
+                << it->getSatIndexed()<< std::endl;
          }
          
          return oss.str();
