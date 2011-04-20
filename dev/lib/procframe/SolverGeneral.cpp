@@ -775,7 +775,7 @@ covariance matrix.");
    double SolverGeneral::getCovariance( const Variable& var1, const Variable& var2)
       throw(InvalidRequest)
    {
-      map<Variable, VariableDataMap >::iterator it1 = covarianceMap.find(var1);
+      std::map<Variable, VariableDataMap >::iterator it1 = covarianceMap.find(var1);
       if(it1!=covarianceMap.end())
       {
          VariableDataMap::iterator it2 = it1->second.find(var2);
