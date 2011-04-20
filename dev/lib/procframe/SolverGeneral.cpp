@@ -29,7 +29,7 @@
 
 
 #include "SolverGeneral.hpp"
-
+#include "SolverConstraint.hpp"
 
 namespace gpstk
 {
@@ -55,7 +55,7 @@ namespace gpstk
        *                      to be solved.
        */
    SolverGeneral::SolverGeneral( const std::list<Equation>& equationList )
-      : firstTime(true)
+      : firstTime(true), pConstraint(0)
    {
 
          // Visit each "Equation" in 'equationList' and add them to 'equSystem'
@@ -177,6 +177,25 @@ namespace gpstk
 
             // Store data after computing
          postCompute(gdsMap);
+
+
+            // Check if any constraint exist?
+         if(pConstraint)
+         {
+            pConstraint->constraint(this, gdsMap);
+            
+            if(pConstraint->isValid())
+            {
+               Vector<double> meas;
+               Matrix<double> design;
+               Matrix<double> covariance;
+               pConstraint->constraintMatrix(meas,design,covariance);
+
+               kFilter.MeasUpdate(meas,design,covariance);
+
+               postCompute(gdsMap);
+            } 
+         }
 
       }
       catch(Exception& u)
@@ -748,6 +767,30 @@ covariance matrix.");
 
    }  // End of method 'SolverGeneral::getSolution()'
 
+      /* Returns the covariance associated to a given Variable.
+       *
+       * @param var1    first variable object
+       * @param var2    second variable object
+       */
+   double SolverGeneral::getCovariance( const Variable& var1, const Variable& var2)
+      throw(InvalidRequest)
+   {
+      map<Variable, VariableDataMap >::iterator it1 = covarianceMap.find(var1);
+      if(it1!=covarianceMap.end())
+      {
+         VariableDataMap::iterator it2 = it1->second.find(var2);
+         if(it2!=it1->second.end())
+         {
+            return covarianceMap[var1][var2];
+         }
+      }
+      
+         // One code go here, we failed to find the value, and throw exception.
+      InvalidRequest e("Failed to get the covariance value.");
+      GPSTK_THROW(e);
+
+      return 0.0;
+   }
 
 
       /* Returns the variance associated to a given Variable.

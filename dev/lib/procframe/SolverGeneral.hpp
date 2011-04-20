@@ -49,6 +49,7 @@ namespace gpstk
          /// Handy type definition
       typedef std::map<Variable, double> VariableDataMap;
 
+      class SolverConstraint;
 
       //@{
 
@@ -172,7 +173,7 @@ namespace gpstk
           *
           * @param equation      Object describing the equations to be solved.
           */
-      SolverGeneral( const Equation& equation ) : firstTime(true)
+      SolverGeneral( const Equation& equation ) : firstTime(true), pConstraint(0)
       { equSystem.addEquation(equation); };
 
 
@@ -189,7 +190,7 @@ namespace gpstk
           * @param equationSys         Object describing an equation system to
           *                            be solved.
           */
-      SolverGeneral( const EquationSystem& equationSys ) : firstTime(true)
+      SolverGeneral( const EquationSystem& equationSys ) : firstTime(true), pConstraint(0)
       { equSystem = equationSys; };
 
 
@@ -237,6 +238,14 @@ namespace gpstk
           */
       virtual SolverGeneral& clearEquations()
       { equSystem.clearEquations(); return (*this); };
+
+
+         /** Set the SolverConstraint object.
+          *
+          * @param pSolverConstraint       Object to do constraint
+          */
+      virtual SolverGeneral& setConstraint(SolverConstraint* pSolverConstraint=0 )
+      { pConstraint=pSolverConstraint; return (*this); };
 
 
          /// This method resets the filter, setting all variance values in
@@ -320,6 +329,15 @@ namespace gpstk
          throw(InvalidRequest);
 
 
+         /** Returns the covariance associated to a given Variable.
+          *
+          * @param var1    first variable object
+          * @param var2    second variable object
+          */
+      virtual double getCovariance( const Variable& var1, const Variable& var2)
+         throw(InvalidRequest);
+
+
          /** Returns the variance associated to a given Variable.
           *
           * @param variable    Variable object variance we are looking for.
@@ -366,6 +384,10 @@ namespace gpstk
 
          /// Equation system
       EquationSystem equSystem;
+
+
+         /// Constraint system
+      SolverConstraint* pConstraint;
 
 
          /** Code to be executed before 'Compute()' method.
