@@ -224,15 +224,6 @@ namespace gpstk
          satJ2kAZ,  ///< Satellite acceleration in J2000, Z component
          elevation, ///< Satellite elevation
          azimuth,   ///< Satellite azimuth
-         dtSatC1,   ///< Satellite clock offset of C1
-         dtSatP1,   ///< Satellite clock offset of P1
-         dtSatC2,   ///< Satellite clock offset of C2
-         dtSatP2,   ///< Satellite clock offset of P2
-         dtSatC5,   ///< Satellite clock offset of C5
-         dtSatP5,   ///< Satellite clock offset of P5
-         dtSatL1,   ///< Satellite clock offset of L1
-         dtSatL2,   ///< Satellite clock offset of L2
-         dtSatL5,   ///< Satellite clock offset of L5
             // Cycle slip flags
          CSL1,      ///< Cycle slip in L1
          CSL2,      ///< Cycle slip in L2
@@ -321,6 +312,24 @@ namespace gpstk
          dSatN,     ///< dSatN coefficient for satellite position in RTN
          weight,    ///< Weight assigned to a given observation
          codeBias,  ///< Code bias by both receiver and satellite
+         cdtC1,     ///< Receiver clock offset of C1
+         cdtP1,     ///< Receiver clock offset of P1
+         cdtC2,     ///< Receiver clock offset of C2
+         cdtP2,     ///< Receiver clock offset of P2
+         cdtC5,     ///< Receiver clock offset of C5
+         cdtP5,     ///< Receiver clock offset of P5
+         cdtL1,     ///< Receiver clock offset of L1
+         cdtL2,     ///< Receiver clock offset of L2
+         cdtL5,     ///< Receiver clock offset of L5
+         cdtSatC1,  ///< Satellite clock offset of C1
+         cdtSatP1,  ///< Satellite clock offset of P1
+         cdtSatC2,  ///< Satellite clock offset of C2
+         cdtSatP2,  ///< Satellite clock offset of P2
+         cdtSatC5,  ///< Satellite clock offset of C5
+         cdtSatP5,  ///< Satellite clock offset of P5
+         cdtSatL1,  ///< Satellite clock offset of L1
+         cdtSatL2,  ///< Satellite clock offset of L2
+         cdtSatL5,  ///< Satellite clock offset of L5
             // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component

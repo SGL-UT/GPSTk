@@ -180,16 +180,6 @@ namespace gpstk
       tStrings[elevation]  = "elevation";
       tStrings[azimuth]    = "azimuth";
 
-      tStrings[dtSatC1]    = "dtSatC1";
-      tStrings[dtSatP1]    = "dtSatP1";
-      tStrings[dtSatC2]    = "dtSatC2";
-      tStrings[dtSatP2]    = "dtSatP2";
-      tStrings[dtSatC5]    = "dtSatC5";
-      tStrings[dtSatP5]    = "dtSatP5";
-      tStrings[dtSatL1]    = "dtSatL1";
-      tStrings[dtSatL2]    = "dtSatL2";
-      tStrings[dtSatL5]    = "dtSatL5";
-
       tStrings[CSL1]       = "CSL1";
       tStrings[CSL2]       = "CSL2";
       tStrings[CSL5]       = "CSL5";
@@ -275,6 +265,27 @@ namespace gpstk
       tStrings[dSatN]      = "dSatN";
       tStrings[weight]     = "weight";
       tStrings[codeBias]   = "codeBias";
+
+      tStrings[cdtC1]    = "cdtC1";
+      tStrings[cdtP1]    = "cdtP1";
+      tStrings[cdtC2]    = "cdtC2";
+      tStrings[cdtP2]    = "cdtP2";
+      tStrings[cdtC5]    = "cdtC5";
+      tStrings[cdtP5]    = "cdtP5";
+      tStrings[cdtL1]    = "cdtL1";
+      tStrings[cdtL2]    = "cdtL2";
+      tStrings[cdtL5]    = "cdtL5";
+
+      tStrings[cdtSatC1]    = "cdtSatC1";
+      tStrings[cdtSatP1]    = "cdtSatP1";
+      tStrings[cdtSatC2]    = "cdtSatC2";
+      tStrings[cdtSatP2]    = "cdtSatP2";
+      tStrings[cdtSatC5]    = "cdtSatC5";
+      tStrings[cdtSatP5]    = "cdtSatP5";
+      tStrings[cdtSatL1]    = "cdtSatL1";
+      tStrings[cdtSatL2]    = "cdtSatL2";
+      tStrings[cdtSatL5]    = "cdtSatL5";
+
       tStrings[recX]       = "RxPositionX";
       tStrings[recY]       = "RxPositionY";
       tStrings[recZ]       = "RxPositionZ";
