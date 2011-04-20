@@ -32,13 +32,12 @@ else
       Epoch.cpp EpochDataStore.cpp Exception.cpp Expression.cpp FFData.cpp
       FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp
       FICData62.cpp FICData9.cpp FICHeader.cpp FileHunter.cpp
-      FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp
-      GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp
-      GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp 
+      FileSpec.cpp FIRDifferentiator5thOrder.cpp GPSAlmanacStore.cpp
+      GPSEphemerisStore.cpp GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp
+      GPSZcount.cpp GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp
       IonexData.cpp IonexHeader.cpp IonexStore.cpp
       IonoModel.cpp IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp
-      Logger.cpp
-      LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp
+      Logger.cpp LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp
       MSCStore.cpp MoonPosition.cpp NEDUtil.cpp ObsClockModel.cpp
       ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp OceanLoading.cpp PRSolution.cpp
       PoleTides.cpp Position.cpp PowerSum.cpp
@@ -83,13 +82,13 @@ else
       FICFilterOperators.hpp FICHeader.hpp FICStream.hpp
       FICStreamBase.hpp FileFilter.hpp FileFilterFrame.hpp
       FileFilterFrameWithHeader.hpp FileHunter.hpp FileSpec.hpp
-      FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp GPSEllipsoid.hpp
-      GPSEphemerisStore.hpp GPSGeoid.hpp GPSWeek.hpp GPSWeekSecond.hpp
-      GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp
-      GenXSequence.hpp Geodetic.hpp GeoidModel.hpp InOutFramework.hpp
-      IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp
-      IonexStream.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp
-      LinearClockModel.hpp Logger.hpp LoopedFramework.hpp
+      FileStore.hpp FileUtils.hpp FilterBase.hpp FIRDifferentiator5thOrder.hpp
+      GPSAlmanacStore.hpp GPSEllipsoid.hpp GPSEphemerisStore.hpp GPSGeoid.hpp
+      GPSWeek.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp
+      GaussianDistribution.hpp GenXSequence.hpp Geodetic.hpp GeoidModel.hpp
+      InOutFramework.hpp IonexBase.hpp IonexData.hpp IonexHeader.hpp
+      IonexStore.hpp IonexStream.hpp IonoModel.hpp IonoModelStore.hpp
+      JulianDate.hpp LinearClockModel.hpp Logger.hpp LoopedFramework.hpp
       MainAdapter.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
       MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp
       MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp

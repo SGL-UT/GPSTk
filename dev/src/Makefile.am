@@ -13,9 +13,10 @@ CommandOptionWithCommonTimeArg.cpp CommandOptionWithPositionArg.cpp \
 CommandOptionWithTimeArg.cpp CommonTime.cpp ConfDataReader.cpp \
 ConfDataWriter.cpp DOP.cpp DayTime.cpp DCBDataReader.cpp ECEF.cpp \
 EngAlmanac.cpp EngEphemeris.cpp EngNav.cpp ENUUtil.cpp EphemerisRange.cpp \
-Epoch.cpp EpochDataStore.cpp Exception.cpp Expression.cpp FFData.cpp FFStream.cpp \
-FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp FICData9.cpp FICHeader.cpp \
-FileHunter.cpp FileSpec.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp \
+Epoch.cpp EpochDataStore.cpp Exception.cpp Expression.cpp FFData.cpp \
+FFStream.cpp FICData.cpp FICData109.cpp FICData162.cpp FICData62.cpp \
+FICData9.cpp FICHeader.cpp FileHunter.cpp FileSpec.cpp \
+FIRDifferentiator5thOrder.cpp GPSAlmanacStore.cpp GPSEphemerisStore.cpp \
 GPSWeek.cpp GPSWeekSecond.cpp GPSWeekZcount.cpp GPSZcount.cpp \
 GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp \
 IonexData.cpp IonexHeader.cpp IonexStore.cpp IonoModel.cpp \
@@ -31,9 +32,10 @@ SEMData.cpp SEMHeader.cpp SMODFData.cpp SP3Data.cpp SP3EphemerisStore.cpp \
 SP3Header.cpp SP3SatID.cpp SVExclusionList.cpp SVNumXRef.cpp SVPCodeGen.cpp \
 SatDataReader.cpp SimpleIURAWeight.cpp SimpleKalmanFilter.cpp SolidTides.cpp \
 SourceID.cpp SpecialFunctions.cpp StudentDistribution.cpp SunPosition.cpp \
-SuperKalmanFilter.cpp SystemTime.cpp TabularEphemerisStore.cpp TimeConverters.cpp \
-TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp \
-VectorBase.cpp WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp Xvt.cpp YDSTime.cpp \
+SuperKalmanFilter.cpp SystemTime.cpp TabularEphemerisStore.cpp \
+TimeConverters.cpp TimeString.cpp TimeTag.cpp Triple.cpp TropModel.cpp \
+TypeID.cpp UnixTime.cpp VectorBase.cpp WxObsMap.cpp X1Sequence.cpp \
+X2Sequence.cpp Xvt.cpp YDSTime.cpp \
 YumaAlmanacStore.cpp YumaData.cpp $(GETOPT_SOURCE)
 
 incldir = $(includedir)/gpstk
@@ -47,21 +49,22 @@ CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp \
 CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp \
 ConfDataWriter.hpp DOP.hpp DayTime.hpp DCBDataReader.hpp ECEF.hpp \
 EllipsoidModel.hpp EngAlmanac.hpp EngEphemeris.hpp EngNav.hpp ENUUtil.hpp \
-EphemerisRange.hpp Epoch.hpp EpochClockModel.hpp EpochDataStore.hpp Exception.hpp \
-Expression.hpp ExtractC1.hpp ExtractCombinationData.hpp ExtractD1.hpp ExtractD2.hpp \
-ExtractData.hpp ExtractL1.hpp ExtractL2.hpp ExtractLC.hpp ExtractP1.hpp \
-ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp FFData.hpp FFStream.hpp \
-FFStreamError.hpp FFTextStream.hpp FICAStream.hpp FICBase.hpp FICData.hpp \
-FICData109.hpp FICData162.hpp FICData62.hpp FICData9.hpp \
-FICFilterOperators.hpp FICHeader.hpp FICStream.hpp FICStreamBase.hpp \
-FileFilter.hpp FileFilterFrame.hpp FileFilterFrameWithHeader.hpp \
-FileHunter.hpp FileSpec.hpp FileStore.hpp FileUtils.hpp GPSAlmanacStore.hpp \
-GPSEllipsoid.hpp GPSEphemerisStore.hpp GPSGeoid.hpp GPSWeek.hpp \
-GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp GaussianDistribution.hpp \
-GenXSequence.hpp Geodetic.hpp GeoidModel.hpp InOutFramework.hpp \
-IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp IonexStream.hpp \
-IonoModel.hpp IonoModelStore.hpp JulianDate.hpp LinearClockModel.hpp \
-LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp \
+EphemerisRange.hpp Epoch.hpp EpochClockModel.hpp EpochDataStore.hpp \
+Exception.hpp Expression.hpp ExtractC1.hpp ExtractCombinationData.hpp \
+ExtractD1.hpp ExtractD2.hpp ExtractData.hpp ExtractL1.hpp ExtractL2.hpp \
+ExtractLC.hpp ExtractP1.hpp ExtractP2.hpp ExtractPC.hpp FFBinaryStream.hpp \
+FFData.hpp FFStream.hpp FFStreamError.hpp FFTextStream.hpp FICAStream.hpp \
+FICBase.hpp FICData.hpp FICData109.hpp FICData162.hpp FICData62.hpp \
+FICData9.hpp FICFilterOperators.hpp FICHeader.hpp FICStream.hpp \
+FICStreamBase.hpp FileFilter.hpp FileFilterFrame.hpp \
+FileFilterFrameWithHeader.hpp FileHunter.hpp FileSpec.hpp FileStore.hpp \
+FileUtils.hpp FilterBase.hpp FIRDifferentiator5thOrder.hpp \
+GPSAlmanacStore.hpp GPSEllipsoid.hpp GPSEphemerisStore.hpp GPSGeoid.hpp \
+GPSWeek.hpp GPSWeekSecond.hpp GPSWeekZcount.hpp GPSZcount.hpp \
+GaussianDistribution.hpp GenXSequence.hpp Geodetic.hpp GeoidModel.hpp \
+InOutFramework.hpp IonexBase.hpp IonexData.hpp IonexHeader.hpp IonexStore.hpp \
+IonexStream.hpp IonoModel.hpp IonoModelStore.hpp JulianDate.hpp \
+LinearClockModel.hpp LoopedFramework.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp \
 MSCData.hpp MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp \
 MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp \
 MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp \
