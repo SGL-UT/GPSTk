@@ -607,6 +607,9 @@ matrix and a priori state estimation vector do not match.");
          return -1;
       }
 
+      xhatminus = xhat;
+      Pminus = P;
+
       return 0;
 
    }  // End of method 'SimpleKalmanFilter::Correct()'
