@@ -43,7 +43,7 @@ namespace gpstk
       double prefit;
       double variance;     // the smaller the tighter constraint
 
-      constraintHeader():prefit(0),variance(1.0e-8){}
+      constraintHeader():prefit(0),variance(100){}
    };
 
       /// Constraint structure declaration

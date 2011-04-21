@@ -93,8 +93,6 @@ namespace gpstk
          it != varSet.end();
          ++it)
       {
-         
-
          VariableDataMap dataMap;
          for(int k=0;k<size;k++)
          {

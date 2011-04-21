@@ -55,7 +55,7 @@ namespace gpstk
        *                      to be solved.
        */
    SolverGeneral::SolverGeneral( const std::list<Equation>& equationList )
-      : firstTime(true), pConstraint(0)
+      : firstTime(true)
    {
 
          // Visit each "Equation" in 'equationList' and add them to 'equSystem'
@@ -178,24 +178,6 @@ namespace gpstk
             // Store data after computing
          postCompute(gdsMap);
 
-
-            // Check if any constraint exist?
-         if(pConstraint)
-         {
-            pConstraint->constraint(this, gdsMap);
-            
-            if(pConstraint->isValid())
-            {
-               Vector<double> meas;
-               Matrix<double> design;
-               Matrix<double> covariance;
-               pConstraint->constraintMatrix(meas,design,covariance);
-
-               kFilter.MeasUpdate(meas,design,covariance);
-
-               postCompute(gdsMap);
-            } 
-         }
 
       }
       catch(Exception& u)
@@ -782,6 +764,15 @@ covariance matrix.");
          if(it2!=it1->second.end())
          {
             return covarianceMap[var1][var2];
+         }
+         else
+         {
+            it1 = covarianceMap.find(var2);
+            if(it1!=covarianceMap.end())
+            {
+               it2 = it1->second.find(var1);
+               if(it2!=it1->second.end()) return covarianceMap[var2][var1];
+            }
          }
       }
       
