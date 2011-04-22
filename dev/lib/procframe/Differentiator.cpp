@@ -297,7 +297,7 @@ namespace gpstk
                // If there was an arc change or cycle slip, or there was a
                // data gap (time difference bigger than sampling time), let's
                // reset the differentiator
-            if( ( csflag ) or
+            if( ( csflag ) ||
                 ( std::abs( tDiff - Ts ) > tolerance ) )
             {
 
