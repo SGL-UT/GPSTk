@@ -46,18 +46,21 @@ namespace gpstk
          // Be default, the filter is invalid
       valid = false;
 
-         // Compute the result. This implements the equation:
-         // y[k] = k1*x[k+5] - k2*x[k+4] + k3*x[k+3] - k4*x[k+2] + k5*x[k+1]
-         //      - k5*x[k-1] + k4*x[k-2] - k3*x[k-3] + k2*x[k-4] - k1*x[k-5]
-
-
-      double result( k1*(input - X[9]) + k2*(X[8] - X[0]) + k3*(X[1] - X[7])
-                                       + k4*(X[6] - X[2]) + k5*(X[3] - X[5]) );
+         // Default result
+      double result( 0.0 );
 
 
          // Check if there are enough stored data values
       if( X.size() == 10 )
       {
+
+            // Compute the result. This implements the equation:
+            // y[k] = k1*x[k+5] - k2*x[k+4] + k3*x[k+3] - k4*x[k+2] + k5*x[k+1]
+            //      - k5*x[k-1] + k4*x[k-2] - k3*x[k-3] + k2*x[k-4] - k1*x[k-5]
+
+         result = k1*(input - X[9]) + k2*(X[8] - X[0]) + k3*(X[1] - X[7])
+                                    + k4*(X[6] - X[2]) + k5*(X[3] - X[5]);
+
             // Filter result is valid
          valid = true;
       }
