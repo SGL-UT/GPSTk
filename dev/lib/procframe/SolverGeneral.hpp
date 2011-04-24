@@ -45,10 +45,6 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       /// @ingroup math
 
-
-         /// Handy type definition
-      typedef std::map<Variable, double> VariableDataMap;
-
       class SolverConstraint;
 
       //@{

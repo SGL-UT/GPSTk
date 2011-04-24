@@ -30,7 +30,7 @@
 //
 //============================================================================
 
-#include "SolverGeneral.hpp"     // for 'VariableDataMap'
+#include "Variable.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
 
@@ -43,7 +43,7 @@ namespace gpstk
       double prefit;
       double variance;     // the smaller the tighter constraint
 
-      constraintHeader():prefit(0),variance(100){}
+      constraintHeader():prefit(0),variance(1e-6){}
    };
 
       /// Constraint structure declaration
@@ -67,6 +67,10 @@ namespace gpstk
       /// Handy type definition
    typedef std::list<Constraint> ConstraintList;
 
+      /// Thrown when attempting to use an invalid ConstraintSystem
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(InvalidConstraintSystem, gpstk::Exception);
+
    class ConstraintSystem
    {
    public:
@@ -89,7 +93,26 @@ namespace gpstk
       virtual ConstraintSystem& constraintMatrix(const VariableSet& allVar,
                                                  Vector<double>& prefit,
                                                  Matrix<double>& design,
-                                                 Matrix<double>& covariance);
+                                                 Matrix<double>& covariance)
+         throw(InvalidConstraintSystem);
+
+      ConstraintList getCurrentConstraints()
+      { return constraintList; }
+
+      int numberOfConstraints()
+      { return constraintList.size(); }
+
+      bool hasConstraints()
+      { return (constraintList.size()>0)?true:false; }
+
+
+      virtual ConstraintList getConstraintList() const
+      { return constraintList; };
+
+
+      virtual ConstraintSystem& setConstraintList(
+                                         const ConstraintList& equationList )
+      { constraintList = equationList; return (*this); };
 
    protected:
          /// Object to hold all constraints

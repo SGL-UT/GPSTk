@@ -118,6 +118,7 @@ namespace gpstk
                                                         Vector<double>& prefit,
                                                         Matrix<double>& design,
                                                         Matrix<double>& covariance)
+      throw(InvalidConstraintSystem)
    {
       const int rowSize = constraintList.size();
       const int colSize = allVar.size();
@@ -146,7 +147,7 @@ namespace gpstk
             VariableSet::const_iterator itt = allVar.find(itv->first);
             if(itt==allVar.end())
             {
-               Exception e("The variable it not in the filter.");
+               InvalidConstraintSystem e("The variable it not in the VariableSet object.");
                GPSTK_THROW(e);
             }
 

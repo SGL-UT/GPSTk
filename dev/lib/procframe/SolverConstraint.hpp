@@ -30,13 +30,14 @@
 //
 //============================================================================
 
-#include "ConstraintSystem.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "ConstraintSystem.hpp"
+#include "SolverGeneral.hpp"
 
 namespace gpstk
 {
-   class SolverGeneral;
+
 
    class SolverConstraint
    {

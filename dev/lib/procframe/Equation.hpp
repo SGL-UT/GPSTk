@@ -44,12 +44,6 @@ namespace gpstk
       //@{
 
 
-      // Handy type definition
-
-      /// Set containing Variable objects.
-   typedef std::set<Variable> VariableSet;
-
-
       /// Defines a header containing basic equation data
    struct equationHeader
    {
