@@ -359,6 +359,14 @@ namespace gpstk
 
    }; // End of class 'Variable'
 
+
+   /// Handy type definition
+
+   typedef std::set<Variable> VariableSet;
+
+   typedef std::map<Variable, double> VariableDataMap;
+
+
    namespace StringUtils
    {
       inline std::string asString(const Variable& v)
