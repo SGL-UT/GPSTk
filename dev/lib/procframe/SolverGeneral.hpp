@@ -205,6 +205,21 @@ namespace gpstk
       { equSystem = equationSys; return (*this); };
 
 
+         /// Get a copy ConstraintSystem of the equation system being solved.
+      virtual ConstraintSystem getEquationSystemConstraints() const
+      { return equSystem.getConstraintSystem(); };
+
+
+         /** Set the ConstraintSystem of the equation system to be solved.
+          *
+          * @param constraintSys       Object  of ConstraintSystem for 
+          *                            EquationSystem object of the solver
+          */
+      virtual SolverGeneral& setEquationSystemConstraints(
+                                         const ConstraintSystem& constraintSys )
+      { equSystem.setConstraintSystem(constraintSys); return (*this); };
+
+
          /** Add a new equation to be managed.
           *
           * @param equation   Equation object to be added.
