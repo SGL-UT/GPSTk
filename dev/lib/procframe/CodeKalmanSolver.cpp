@@ -416,25 +416,24 @@ covariance matrix.");
          hMatrix = gData.body.getMatrixOfTypes((*this).defaultEqDef.body);
 
          SatID  dummySat;
-         TypeID dummyType;
 
             // Now, let's fill the Phi and Q matrices
             // First, the coordinates
-         pCoordXStoModel->Prepare(dummyType, dummySat, gData);
+         pCoordXStoModel->Prepare(dummySat, gData);
          phiMatrix(0,0) = pCoordXStoModel->getPhi();
          qMatrix(0,0)   = pCoordXStoModel->getQ();
 
-         pCoordYStoModel->Prepare(dummyType, dummySat, gData);
+         pCoordYStoModel->Prepare(dummySat, gData);
          phiMatrix(1,1) = pCoordYStoModel->getPhi();
          qMatrix(1,1)   = pCoordYStoModel->getQ();
 
-         pCoordZStoModel->Prepare(dummyType, dummySat, gData);
+         pCoordZStoModel->Prepare(dummySat, gData);
          phiMatrix(2,2) = pCoordZStoModel->getPhi();
          qMatrix(2,2)   = pCoordZStoModel->getQ();
 
 
             // Now, the receiver clock
-         pClockStoModel->Prepare(dummyType, dummySat, gData);
+         pClockStoModel->Prepare(dummySat, gData);
          phiMatrix(3,3) = pClockStoModel->getPhi();
          qMatrix(3,3)   = pClockStoModel->getQ();
 
