@@ -294,7 +294,6 @@ namespace gpstk
       fs >> header;
 
       SP3Data data;
-      data.version = header.version;
    
       while (fs >> data)
          pe->addEphemeris(data);

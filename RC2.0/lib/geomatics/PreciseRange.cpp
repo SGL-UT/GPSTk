@@ -43,8 +43,8 @@
 
 // GPSTk includes
 #include "MiscMath.hpp"
-#include "GPSGeoid.hpp"
-#include "icd_200_constants.hpp"
+#include "GPSEllipsoid.hpp"
+#include "icd_gps_constants.hpp"
 #include "geometry.hpp"
 #include "Xvt.hpp"
 // geomatics
@@ -69,12 +69,12 @@ namespace gpstk
    try {
       int i;
       Position Rx(Receiver);
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
       Xvt svPosVel;
 
       // nominal transmit time
       transmit = nomRecTime;     // receive time on receiver's clock
-      transmit -= pr/geoid.c();  // correct for measured time of flight and Rx clock
+      transmit -= pr/ell.c();  // correct for measured time of flight and Rx clock
    
       // get the satellite position at the nominal time, computing and
       // correcting for the satellite clock bias and other delays
@@ -92,8 +92,8 @@ namespace gpstk
       // ref. Ashby and Spilker, GPS: Theory and Application, 1996 Vol 1, pg 673.
       // this is w(Earth) * (SatR cross Rx).Z() / c*c in seconds
       // beware numerical error by differencing very large to get very small
-      Sagnac = ( (SatR.X()/geoid.c()) * (Rx.Y()/geoid.c())
-               - (SatR.Y()/geoid.c()) * (Rx.X()/geoid.c()) ) * geoid.angVelocity();
+      Sagnac = ( (SatR.X()/ell.c()) * (Rx.Y()/ell.c())
+               - (SatR.Y()/ell.c()) * (Rx.X()/ell.c()) ) * ell.angVelocity();
       transmit -= Sagnac;
 
       // compute other delays -- very small
@@ -102,7 +102,7 @@ namespace gpstk
       double rs = SatR.radius();
       double dr = range(SatR,Rx);
       relativity2 = -0.00887005608 * ::log((rx+rs+dr)/(rx+rs-dr));
-      transmit -= relativity2 / geoid.c();
+      transmit -= relativity2 / ell.c();
 
       // iterate satellite position
       try {
@@ -115,17 +115,17 @@ namespace gpstk
 
       // ----------------------------------------------------------
       // compute relativity separate from satellite clock
-      relativity = RelativityCorrection(SatR,SatV) * geoid.c();
+      relativity = RelativityCorrection(SatR,SatV) * ell.c();
 
       // relativity correction is added to dtime by XvtStore::getPrnXvt();
       // remove it here so clk bias and relativity can be used separately
-      satclkbias = svPosVel.dtime * geoid.c() - relativity;
-      satclkdrift = svPosVel.ddtime * geoid.c();
+      satclkbias = svPosVel.dtime * ell.c() - relativity;
+      satclkdrift = svPosVel.ddtime * ell.c();
    
       // correct for Earth rotation
       double sxyz[3], wt;
       rawrange = range(SatR,Rx);
-      wt = geoid.angVelocity() * rawrange/geoid.c();
+      wt = ell.angVelocity() * rawrange/ell.c();
       sxyz[0] =  ::cos(wt)*SatR.X() + ::sin(wt)*SatR.Y();
       sxyz[1] = -::sin(wt)*SatR.X() + ::cos(wt)*SatR.Y();
       sxyz[2] = SatR.Z();
@@ -173,6 +173,7 @@ namespace gpstk
          double nadir,az;
          SatelliteNadirAzimuthAngles(SatR, Rx, Rotation, nadir, az);
          satLOSPCV = antenna.getPhaseCenterVariation(1, az, nadir) / 1000.; // meters
+
       }
       else {
          satLOSPCO = satLOSPCV = 0.0;
@@ -182,9 +183,9 @@ namespace gpstk
       // ----------------------------------------------------------
       // other quanitites
       // direction cosines
-      //cosines[0] = (Rx.X()-SatR.X())/rawrange;
-      //cosines[1] = (Rx.Y()-SatR.Y())/rawrange;
-      //cosines[2] = (Rx.Z()-SatR.Z())/rawrange;
+      // cosines[0] = (Rx.X()-SatR.X())/rawrange;
+      // cosines[1] = (Rx.Y()-SatR.Y())/rawrange;
+      // cosines[2] = (Rx.Z()-SatR.Z())/rawrange;
       for(i=0; i<3; i++) cosines[i] = -S2R[i];            // receiver to satellite
    
       // elevation and azimuth
@@ -201,6 +202,7 @@ namespace gpstk
 
    }  // end PreciseRange::ComputeAtTransmitTime
    
+
    //------------------------------------------------------------------
    double RelativityCorrection(const Position& R, const Position& V)
    {

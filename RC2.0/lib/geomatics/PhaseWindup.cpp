@@ -46,7 +46,7 @@
 // GPSTk includes
 #include "Matrix.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // TWO_PI
+#include "icd_gps_constants.hpp"    // TWO_PI
 // geomatics
 #include "PhaseWindup.hpp"
 #include "SunEarthSatGeometry.hpp"
@@ -89,7 +89,8 @@ try {
    // NB. Block IIR has X (ie the effective dipole orientation) in the -XT direction.
    // Ref. Kouba(2009) GPS Solutions 13, pp1-12.
    // In fact it should be a rotation by pi about Z, producing a constant offset.
-   //if(isBlockR) {
+   //if(isBlockR)
+   //{
    //   XT = Position(-Att(0,0),-Att(0,1),-Att(0,2));
    //   YT = Position(-Att(1,0),-Att(1,1),-Att(1,2));
    //}
@@ -101,17 +102,19 @@ try {
    DT = XT - TR * TR.dot(XT) - Position(TR.cross(YT));
 
    // normalize
-   d = 1.0/DR.mag();
+   d  = 1.0/DR.mag();
    DR = d * DR;
-   d = 1.0/DT.mag();
+   d  = 1.0/DT.mag();
    DT = d * DT;
 
    windup = ::acos(DT.dot(DR)) / TWO_PI;             // cycles
-   if(TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
+   if (TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
 
    // adjust by 2pi if necessary
-   d = windup-prev;
-   windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
+//   d = windup-prev;
+//   windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
+   d = prev - windup;
+   windup += round(d);
 
    return windup;
 }
@@ -133,7 +136,7 @@ double PhaseWindup(double& prev,       // previous return value
                    Position& YR,       // west unit vector at receiver
                    Position& XR,       // north unit vector at receiver
                    double& shadow,     // fraction of sun not visible at satellite
-                   bool isBlockR)        // true for Block IIR satellites
+                   bool isBlockR)      // true for Block IIR satellites
    throw(Exception)
 {
 try {
@@ -159,17 +162,19 @@ try {
    DT = XT - TR * TR.dot(XT) - Position(TR.cross(YT));
 
    // normalize
-   d = 1.0/DR.mag();
+   d  = 1.0/DR.mag();
    DR = d * DR;
-   d = 1.0/DT.mag();
+   d  = 1.0/DT.mag();
    DT = d * DT;
 
    windup = ::acos(DT.dot(DR)) / TWO_PI;
-   if(TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
+   if (TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
 
    // adjust by 2pi if necessary
-   d = windup-prev;
-   windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
+//   d = windup-prev;
+//   windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
+   d = prev - windup;
+   windup += round(d);
 
    return windup;
 }
@@ -177,6 +182,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
+
 
 } // end namespace gpstk
 //------------------------------------------------------------------------------------

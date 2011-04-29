@@ -40,7 +40,7 @@
 #define MDPPVTSOLUTION_HPP
 
 #include "Xvt.hpp"
-
+#include "ECEF.hpp"
 #include "MDPHeader.hpp"
 
 namespace gpstk

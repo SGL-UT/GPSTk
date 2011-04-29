@@ -49,7 +49,7 @@
 
 namespace gpstk
 {
-   Xvt GPSAlmanacStore::getXvt(const SatID sat, const CommonTime& t)
+   Xvt GPSAlmanacStore::getXvt(const SatID& sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);

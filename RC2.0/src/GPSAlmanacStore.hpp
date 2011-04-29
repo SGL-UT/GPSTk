@@ -84,8 +84,12 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const SatID id, const CommonTime& t) 
+      virtual Xvt getXvt(const SatID& id, const CommonTime& t) 
          const throw( gpstk::InvalidRequest );
+
+      virtual Xt getXt(const SatID& id, const CommonTime& t)
+         const throw( gpstk::InvalidRequest )
+      {}
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
