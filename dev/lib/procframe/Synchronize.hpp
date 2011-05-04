@@ -30,7 +30,7 @@
 //
 //============================================================================
 
-
+#include <list>
 #include "Exception.hpp"
 #include "ProcessingClass.hpp"
 
@@ -150,7 +150,7 @@ namespace gpstk
 
          /// Default constructor
       Synchronize()
-         : pRinexRef(NULL), pgRov1(NULL), pgRov2(NULL), tolerance(1.0),
+         : pRinexRef(NULL), pgRov1(NULL), tolerance(1.0),
            firstTime(true)
       { setIndex(); };
 
@@ -165,7 +165,7 @@ namespace gpstk
                    gnssRinex& roverData,
                    const double tol = 1.0 )
          : tolerance(tol), firstTime(true)
-      { pRinexRef = &rinexObs; pgRov1 = &roverData; setIndex(); };
+      { setReferenceSource(rinexObs); setRoverData(roverData); setIndex(); };
 
 
          /** Common constructor.
@@ -178,7 +178,7 @@ namespace gpstk
                    gnssSatTypeValue& roverData,
                    const double tol = 1.0 )
          : tolerance(tol), firstTime(true)
-      { pRinexRef = &rinexObs; pgRov2 = &roverData; setIndex(); };
+      { setReferenceSource(rinexObs); setRoverData(roverData); setIndex(); };
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data
@@ -221,7 +221,7 @@ namespace gpstk
           * @param rinexObs      RinexObsStream object of reference data.
           */
       virtual Synchronize& setReferenceSource(RinexObsStream& rinexObs)
-      { pRinexRef = &rinexObs; return (*this); }
+      { pRinexRef = &rinexObs; firstTime=true; return (*this); }
 
 
          /** Sets the gnssRinex that holds ROVER receiver data.
@@ -229,7 +229,7 @@ namespace gpstk
           * @param roverData     gnssRinex that holds ROVER receiver data
           */
       virtual Synchronize& setRoverData(gnssRinex& roverData)
-      { pgRov1 = &roverData; return (*this); }
+      { pgRov1 = (gnssSatTypeValue*)(&roverData); return (*this); }
 
 
          /** Sets the gnssSatTypeValue that holds ROVER receiver data.
@@ -237,7 +237,7 @@ namespace gpstk
           * @param roverData     gnssSatTypeValue that holds ROVER receiver data
           */
       virtual Synchronize& setRoverData(gnssSatTypeValue& roverData)
-      { pgRov2 = &roverData; return (*this); }
+      { pgRov1 = &roverData; return (*this); }
 
 
          /// Returns an index identifying this object.
@@ -252,18 +252,23 @@ namespace gpstk
       virtual ~Synchronize() {};
 
 
-   private:
+   protected:
+
+      virtual gnssRinex& Process(DayTime time, gnssRinex& gData)
+         throw(SynchronizeException);
+
+
+         /// gnssRinex data buffer
+      std::list<gnssRinex> gnssRinexBuffer;
 
 
          /// Pointer to input observation file stream for reference station.
       RinexObsStream* pRinexRef;
 
-         /// Pointer to gnnsRinex data structure (GDS) that holds ROVER data.
-      gnssRinex* pgRov1;
 
-         /// Pointer to gnnsSatTypeValue data structure (GDS) that holds
-         /// ROVER data.
-      gnssSatTypeValue* pgRov2;
+         /// Pointer to gnnsRinex data structure (GDS) that holds ROVER data.
+      gnssSatTypeValue* pgRov1;
+
 
          /// Tolerance, in seconds.
       double tolerance;

@@ -2569,112 +2569,13 @@ in matrix and number of types do not match") );
 
                // Clear out this object
             RinexObsHeader& hdr = strm.header;
-
             hdr >> f;
 
-            std::string line;
-
-            strm.formattedGetLine(line, true);
-
-            if( line.size()>80 ||
-                line[0] != ' ' ||
-                line[3] != ' ' ||
-                line[6] != ' ' )
-            {
-               FFStreamError e("Bad epoch line");
-               GPSTK_THROW(e);
-            }
-
-               // process the epoch line, including SV list and clock bias
-            short epochFlag = asInt(line.substr(28,1));
-            if( (epochFlag < 0) ||
-                (epochFlag > 6) )
-            {
-               FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
-               GPSTK_THROW(e);
-            }
-
-            f.header.epoch = parseTime(line, hdr);
-
-            short numSvs = asInt(line.substr(29,3));
-
             RinexObsData rod;
+            strm >> rod;
 
-               // Now read the observations ...
-            if( epochFlag==0 ||
-                epochFlag==1 ||
-                epochFlag==6 )
-            {
-
-               int isv, ndx, line_ndx;
-               vector<SatID> satIndex(numSvs);
-               int col=30;
-
-               for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)
-               {
-
-                  if( !(isv % 13) )
-                  {
-                     strm.formattedGetLine(line);
-                     isv = 1;
-                     if(line.size() > 80)
-                     {
-                        FFStreamError err( "Invalid line size:" +
-                                           asString(line.size()) );
-                        GPSTK_THROW(err);
-                     }
-                  }
-                  try
-                  {
-                     satIndex[ndx] = RinexSatID( line.substr(col+isv*3-1,3) );
-                  }
-                  catch (Exception& e)
-                  {
-                     FFStreamError ffse(e);
-                     GPSTK_THROW(ffse);
-                  }
-
-               } // End of 'for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)'
-
-
-               for (isv=0; isv < numSvs; isv++)
-               {
-                  short numObs = hdr.obsTypeList.size();
-                  for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
-                  {
-
-                     SatID sat = satIndex[isv];
-                     RinexObsHeader::RinexObsType obs_type =
-                                                         hdr.obsTypeList[ndx];
-                     if( !(line_ndx % 5) )
-                     {
-                        strm.formattedGetLine(line);
-                        line_ndx = 0;
-                        if( line.size() > 80 )
-                        {
-                           FFStreamError err("Invalid line size:" +
-                                                      asString(line.size()));
-                           GPSTK_THROW(err);
-                        }
-                     }
-
-                     line.resize(80, ' ');
-
-                     rod.obs[sat][obs_type].data =
-                                 asDouble( line.substr(line_ndx*16,   14) );
-
-                     rod.obs[sat][obs_type].lli =
-                                    asInt( line.substr(line_ndx*16+14, 1) );
-
-                     rod.obs[sat][obs_type].ssi =
-                                    asInt( line.substr(line_ndx*16+15, 1) );
-
-                  }  // End of 'for(ndx=0, line_ndx=0; ndx < numObs; ...)'
-
-               }  // End of 'for (isv=0; isv < numSvs; isv++)'
-
-            }  // End of 'if( epochFlag==0 || ... )'
-
+            f.header.epoch = rod.time;
+            
             f.body = FillsatTypeValueMapwithRinexObsData(rod);
 
             return i;
@@ -2726,136 +2627,13 @@ in matrix and number of types do not match") );
 
                // Clear out this object
             RinexObsHeader& hdr = strm.header;
-
             hdr >> f;
-
-            std::string line;
-
-               // The following block handles Rinex2 observation files that have
-               // empty (but otherwise valid) epoch lines and comments in the middle
-               // of the observation section. This is frequent in Rinex2 files that
-               // are 'spliced' every hour.
-            bool isValidEpochLine(false);
-            while( !isValidEpochLine )
-            {
-                  // Get line
-               strm.formattedGetLine(line, true);
-
-               isValidEpochLine = true;
-
-               try
-               {
-                     // R2 observation lines have a 80 characters length limit
-                  if( line.size()>80 ) isValidEpochLine = false;
-
-                     // Try to read the epoch
-                  DayTime tempEpoch = parseTime(line, hdr);
-
-                     // We also have to check if the epoch is valid
-                  if( tempEpoch == DayTime::BEGINNING_OF_TIME )
-                  {
-                     isValidEpochLine = false;
-                  }
-
-                     // If it is not a number, an exception will be thrown
-                   short tempNumSat = asInt(line.substr(29,3));                   
-               }
-               catch(...)
-               {
-                     // Any problem will cause the loop to be repeated
-                  isValidEpochLine = false;
-               }
-
-            }  // End of 'while( !isValidEpochLine )'
-
-               // process the epoch line, including SV list and clock bias
-            short epochFlag = asInt(line.substr(28,1));
-            if( (epochFlag < 0) ||
-                (epochFlag > 6) )
-            {
-               FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
-               GPSTK_THROW(e);
-            }
-
-            f.header.epochFlag = epochFlag;
-
-            f.header.epoch = parseTime(line, hdr);
-
-            short numSvs = asInt(line.substr(29,3));
-
+            
             RinexObsData rod;
-
-               // Now read the observations ...
-            if( epochFlag==0 ||
-                epochFlag==1 ||
-                epochFlag==6 )
-            {
-               int isv, ndx, line_ndx;
-               vector<SatID> satIndex(numSvs);
-               int col=30;
-
-               for( isv=1, ndx=0; ndx<numSvs; isv++, ndx++ )
-               {
-                  if( !(isv % 13) )
-                  {
-                     strm.formattedGetLine(line);
-                     isv = 1;
-                     if( line.size() > 80 )
-                     {
-                        FFStreamError err("Invalid line size:" +
-                                                      asString( line.size()) );
-                        GPSTK_THROW(err);
-                     }
-                  }
-
-                  try
-                  {
-                     satIndex[ndx] = RinexSatID( line.substr(col+isv*3-1, 3) );
-                  }
-                  catch (Exception& e)
-                  {
-                     FFStreamError ffse(e);
-                     GPSTK_THROW(ffse);
-                  }
-               } // End of for( isv=1 ... )
-
-               for( isv=0; isv < numSvs; isv++ )
-               {
-                  short numObs = hdr.obsTypeList.size();
-                  for( ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++ )
-                  {
-                     SatID sat = satIndex[isv];
-                     RinexObsHeader::RinexObsType obs_type =
-                                                         hdr.obsTypeList[ndx];
-                     if( !(line_ndx % 5) )
-                     {
-                        strm.formattedGetLine(line);
-                        line_ndx = 0;
-
-                        if( line.size() > 80 )
-                        {
-                           FFStreamError err("Invalid line size:" +
-                                                      asString( line.size()) );
-                           GPSTK_THROW(err);
-                        }
-                     }
-
-                     line.resize(80, ' ');
-
-                     rod.obs[sat][obs_type].data =
-                                    asDouble( line.substr(line_ndx*16, 14) );
-
-                     rod.obs[sat][obs_type].lli =
-                                    asInt( line.substr(line_ndx*16+14, 1) );
-
-                     rod.obs[sat][obs_type].ssi =
-                                    asInt( line.substr(line_ndx*16+15, 1) );
-
-                  } // End of for( ndx=0 ...)
-
-               }  // End of for( isv=0 ...)
-
-            }  // End of if( epochFlag==0 || ... )
+            strm >> rod;
+            
+            f.header.epochFlag = rod.epochFlag;
+            f.header.epoch = rod.time;
 
             f.body = FillsatTypeValueMapwithRinexObsData(rod);
 
