@@ -364,6 +364,10 @@ namespace gpstk
                                          const ConstraintSystem& equationConst )
       { equationConstraints = equationConst; return (*this); };
 
+         
+         /// Remove all constraints from the equation system.
+      virtual EquationSystem& clearConstraintSystem()
+      { equationConstraints.clearConstraint(); return (*this); };
 
          /// Destructor
       virtual ~EquationSystem() {};

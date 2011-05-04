@@ -860,18 +860,18 @@ namespace gpstk
          {  
                // prefit
             if(i<oldSize) tempPrefit(i) = measVector(i);
-            else tempPrefit(i-oldSize) = meas(i);
+            else tempPrefit(i) = meas(i-oldSize);
 
                // geometry
             for(int j=0;j<colSize;j++)
             {
                if(i<oldSize) tempGeometry(i,j) = hMatrix(i,j);
-               else tempGeometry(i-oldSize,j) = design(i,j);
+               else tempGeometry(i,j) = design(i-oldSize,j);
             }
             
                // weight
             if(i<oldSize) tempWeight(i,i) = rMatrix(i,i);
-            else tempWeight(i-oldSize,i-oldSize) = 1.0/cov(i,i);
+            else tempWeight(i,i) = 1.0/cov(i-oldSize,i-oldSize);
             
          }
             // Update these matrix
