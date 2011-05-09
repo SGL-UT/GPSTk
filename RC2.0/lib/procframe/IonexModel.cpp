@@ -30,7 +30,7 @@
 
 
 #include "IonexModel.hpp"
-#include "icd_200_constants.hpp"          // C_GPS_M
+#include "icd_gps_constants.hpp"          // C_GPS_M
 
 
 namespace gpstk
