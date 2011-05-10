@@ -94,12 +94,12 @@ namespace gpstk
 		 ///Defined in table 3.2 of ICD-2002e
          /// @return geocentric gravitational constant in m**3 / s**2
       virtual double gm() const throw()
-      { return 398600.44e9; }
+      { return 398600.4418e9; }
 
 		 ///Defined in table 3.2 of ICD-2002e
          /// @return geocentric gravitational constant in km**3 / s**2
       virtual double gm_km() const throw()
-      { return 398600.44; }
+      { return 398600.4419; }
 
 		 ///Defined in table 3.2 of ICD-2002e
          /// @return Speed of light in m/s.
