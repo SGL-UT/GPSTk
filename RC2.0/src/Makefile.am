@@ -99,6 +99,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       Rinex3ObsHeader.cpp \
       RinexConverter.cpp \
       RinexEphemerisStore.cpp \
+      RinexGloNavData.cpp \
       RinexGloNavHeader.cpp \
       RinexMetData.cpp \
       RinexMetHeader.cpp \
@@ -310,6 +311,7 @@ incl_HEADERS = AllanDeviation.hpp \
       Rinex3ObsStream.hpp \
       RinexConverter.hpp \
       RinexEphemerisStore.hpp \
+      RinexGloNavData.hpp \
       RinexGloNavHeader.hpp \
       RinexGloNavStream.hpp \
       RinexMetBase.hpp \
