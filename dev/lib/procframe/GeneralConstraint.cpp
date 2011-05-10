@@ -1,8 +1,8 @@
 #pragma ident "$Id$"
 
 /**
- * @file SolverConstraint.hpp
- * Solver Constrain.
+ * @file GeneralConstraint.hpp
+ * GeneralConstraint
  */
 
 //============================================================================
@@ -28,7 +28,7 @@
 //============================================================================
 
 
-#include "SolverConstraint.hpp"
+#include "GeneralConstraint.hpp"
 #include "SolverGeneral.hpp"
 #include <iostream>
 #include <iomanip>
@@ -38,7 +38,8 @@ namespace gpstk
 {
    using namespace std;
 
-   int SolverConstraint::constraint(gnssDataMap& gdsMap)
+      // Feed the  constraint equations to the solver
+   int GeneralConstraint::constraint(gnssDataMap& gdsMap)
    {
       try
       {
@@ -50,9 +51,12 @@ namespace gpstk
       }
   
       return 0;
-   }
 
-   int SolverConstraint::constraint(gnssSatTypeValue& gData)
+   }  // End of method 'GeneralConstraint::constraint'
+         
+
+      // Feed the  constraint equations to the solver
+   int GeneralConstraint::constraint(gnssSatTypeValue& gData)
    {
       gnssRinex g1;
       g1.header = gData.header;
@@ -63,9 +67,12 @@ namespace gpstk
       gData.body = g1.body;
 
       return toReturn;
-   }
 
-   int SolverConstraint::constraint(gnssRinex& gRin)
+   }  // End of method 'GeneralConstraint::constraint('
+
+
+      // Feed the  constraint equations to the solver
+   int GeneralConstraint::constraint(gnssRinex& gRin)
    {
       gnssDataMap gdsMap;
       SourceID source( gRin.header.source );
@@ -74,10 +81,13 @@ namespace gpstk
       int toReturn = constraint(gdsMap);
 
       return toReturn;
-   }
 
-   int SolverConstraint::constraintToSolver( ConstraintSystem& system,
-                                             gnssDataMap& gdsMap)
+   }  // End of method 'GeneralConstraint::constraint('
+      
+
+      // Low level metod impose a ConstraintSystem object to the solver
+   int GeneralConstraint::constraintToSolver( ConstraintSystem& system,
+                                              gnssDataMap& gdsMap)
    {
       try
       {
@@ -107,18 +117,22 @@ namespace gpstk
       {
          return -1;
       }
-   }
 
+   }  // End of method 'GeneralConstraint::constraint('
 
-   VariableSet SolverConstraint::getVariables()
+      // Methods to parsing data from SolverGeneral
+
+   VariableSet GeneralConstraint::getVariables()
    {
       EquationSystem eqs = solver.getEquationSystem();
       VariableSet unkSet( eqs.getVarUnknowns() );
       
       return unkSet;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceID& source)
+   }  // End of method 'VariableSet GeneralConstraint::getVariables()'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceID& source)
    {
       VariableSet vset;
 
@@ -138,10 +152,12 @@ namespace gpstk
       }
       
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceID& source,
-                                              const TypeID& type)
+   }  // End of method 'GeneralConstraint::getVariables(const SourceID& source)'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceID& source,
+                                               const TypeID& type)
    {
       VariableSet vset;
 
@@ -157,10 +173,12 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceID& source,
-                                              const TypeIDSet& typeSet)
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceID& source,
+                                               const TypeIDSet& typeSet)
    {
       VariableSet vset;
 
@@ -177,9 +195,11 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceIDSet& sourceSet)
+   }  // End of method 'GeneralConstraint::getVariables'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceIDSet& sourceSet)
    {
       VariableSet vset;
 
@@ -195,10 +215,12 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceIDSet& sourceSet,
-                                              const TypeID& type)
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceIDSet& sourceSet,
+                                               const TypeID& type)
    {
       VariableSet vset;
       
@@ -214,10 +236,12 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceIDSet& sourceSet,
-                                              const TypeIDSet& typeSet)
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceIDSet& sourceSet,
+                                               const TypeIDSet& typeSet)
    {
       VariableSet vset;
 
@@ -234,9 +258,11 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SatID& sat)
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   VariableSet GeneralConstraint::getVariables(const SatID& sat)
    {
       VariableSet vset;
       
@@ -277,11 +303,13 @@ namespace gpstk
 
       }
       
-
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SatID& sat,const TypeID& type)
+   }  // End of method 'GeneralConstraint::getVariables(const SatID& sat)'
+
+
+   VariableSet GeneralConstraint::getVariables(const SatID& sat,
+                                               const TypeID& type)
    {
       VariableSet vset;
 
@@ -294,10 +322,12 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SatID& sat,
-                                              const TypeIDSet& typeSet)
+   }  // End of method 'GeneralConstraint::getVariables(const SatID& sat,...)'
+
+
+   VariableSet GeneralConstraint::getVariables(const SatID& sat,
+                                               const TypeIDSet& typeSet)
    {
       VariableSet vset;
 
@@ -311,9 +341,11 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   VariableSet SolverConstraint::getVariables(const SourceID& source, const SatID& sat, const TypeID& type)
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   VariableSet GeneralConstraint::getVariables(const SourceID& source, const SatID& sat, const TypeID& type)
    {
       VariableSet vset;
 
@@ -326,9 +358,11 @@ namespace gpstk
       }
 
       return vset;
-   }
 
-   Vector<double> SolverConstraint::getSolution(const VariableSet& varSet)
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   Vector<double> GeneralConstraint::getSolution(const VariableSet& varSet)
    {
       Vector<double> solution(varSet.size(),0.0);
       
@@ -343,9 +377,11 @@ namespace gpstk
       }
 
       return solution;
-   }
 
-   Matrix<double> SolverConstraint::getCovariance(const VariableSet& varSet)
+   }  // End of method 'GeneralConstraint::getSolution(...'
+
+
+   Matrix<double> GeneralConstraint::getCovariance(const VariableSet& varSet)
    {
       Matrix<double> covariance(varSet.size(),varSet.size(),0.0);
       
@@ -368,7 +404,8 @@ namespace gpstk
       }
 
       return covariance;
-   }
+
+   }  // End of method 'GeneralConstraint::getCovariance(...'
 
 
 }  // End of namespace 'gpstk'

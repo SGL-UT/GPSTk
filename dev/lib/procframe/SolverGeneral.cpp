@@ -29,7 +29,7 @@
 
 
 #include "SolverGeneral.hpp"
-#include "SolverConstraint.hpp"
+#include "GeneralConstraint.hpp"
 
 namespace gpstk
 {

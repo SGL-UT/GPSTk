@@ -45,7 +45,7 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       /// @ingroup math
 
-      class SolverConstraint;
+      class GeneralConstraint;
 
       //@{
 
@@ -479,7 +479,7 @@ namespace gpstk
          throw(InvalidSolver);
 
 
-      friend class SolverConstraint;
+      friend class GeneralConstraint;
 
    }; // End of class 'SolverGeneral'
 

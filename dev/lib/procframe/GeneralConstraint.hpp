@@ -1,12 +1,12 @@
 #pragma ident "$Id$"
 
 /**
- * @file SolverConstraint.hpp
- * Solver Constrain.
+ * @file GeneralConstraint.hpp
+ * GeneralConstraint.
  */
 
-#ifndef GPSTK_SOLVERCONSTRAINT_HPP
-#define GPSTK_SOLVERCONSTRAINT_HPP
+#ifndef GPSTK_GENERALCONSTRAINT_HPP
+#define GPSTK_GENERALCONSTRAINT_HPP
 
 //============================================================================
 //
@@ -38,28 +38,43 @@
 namespace gpstk
 {
 
-
-   class SolverConstraint
+      /** This class working with 'SolverGeneral'.
+       *
+       */
+   class GeneralConstraint
    {
    public:
 
          /// Common constructor
-      SolverConstraint(SolverGeneral& solverGeneral):solver(solverGeneral){}
+      GeneralConstraint(SolverGeneral& solverGeneral):solver(solverGeneral){}
+         
 
+         /// Feed the  constraint equations to the solver
       int constraint(gnssSatTypeValue& gData);
+      
 
+         /// Feed the  constraint equations to the solver
       int constraint(gnssRinex& gRin);
+      
 
+         /// Feed the  constraint equations to the solver
       int constraint(gnssDataMap& gdsMap);
 
+         /// The method is used to update the solver state when the reference 
+         /// satellite changed.
+      virtual void updateReferenceSatellite(const SatID& sat)
+      { /* Do nothing by d0efault */ }
+
          /// Default destructor
-      virtual ~SolverConstraint(){}
+      virtual ~GeneralConstraint(){}
     
    protected:
-
+      
+         /// Override this metod to design your own constraint equations
       virtual void realConstraint(gnssDataMap& gdsMap){}
 
-      int constraintToSolver(ConstraintSystem& system,gnssDataMap& gdsMap);
+         /// Low level metod impose a ConstraintSystem object to the solver
+      int constraintToSolver(ConstraintSystem& system, gnssDataMap& gdsMap);
       
          // Methods to parsing data from SolverGeneral
 
@@ -101,9 +116,10 @@ namespace gpstk
 
    protected:
 
+         /// The partner solver it work with
       SolverGeneral& solver;
 
-   };
+   }; // End of class 'GeneralConstraint'
 
 }  // End of namespace gpstk
 
