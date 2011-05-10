@@ -5,8 +5,8 @@
  * 
  */
 
-#ifndef GNSSTK_GENERALEQUATIONS_HPP
-#define GNSSTK_GENERALEQUATIONS_HPP
+#ifndef GPSTK_GENERALEQUATIONS_HPP
+#define GPSTK_GENERALEQUATIONS_HPP
 
 //============================================================================
 //
@@ -112,11 +112,11 @@ namespace gpstk
       { }
 
 
-      virtual void remarkCycleSlip(const gnssRinex& gRin)
+      virtual void remarkCycleSlip(gnssRinex& gRin)
       {  }
 
 
-      virtual void remarkCycleSlip(const gnssDataMap& gdsMap)
+      virtual void remarkCycleSlip(gnssDataMap& gdsMap)
       {  }
 
 
@@ -465,5 +465,5 @@ namespace gpstk
 }  // End of namespace gpstk
 
 
-#endif // GNSSTK_GENERALEQUATIONS_HPP
+#endif // GPSTK_GENERALEQUATIONS_HPP
 
