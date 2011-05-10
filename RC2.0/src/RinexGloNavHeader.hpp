@@ -79,8 +79,14 @@ namespace gpstk
          endValid = 0x080000000,           ///< Set if the end value is valid.
 
             /// This bitset checks that all required header items are available
+            /// for a Rinex 2.0 version file
+         allValid20 = 0x080000003,
+            /// This bitset checks that all required header items are available
             /// for a Rinex 2.1 version file
-         allValid21 = 0x080000003
+         allValid21 = 0x080000005,
+            /// This bitset checks that all required header items are available
+            /// for a Rinex 2.11 version file
+         allValid211 = 0x080000007
       };
 
          /** @name HeaderValues

@@ -29,7 +29,8 @@
 
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CivilTime.hpp"
+#include "SystemTime.hpp"
 #include "RinexGloNavHeader.hpp"
 #include "RinexGloNavStream.hpp"
 
@@ -40,6 +41,8 @@ using namespace std;
 
 namespace gpstk
 {
+
+      // Definition of header strings
    const string RinexGloNavHeader::endOfHeader = "END OF HEADER";
    const string RinexGloNavHeader::leapSecondsString = "LEAP SECONDS";
    const string RinexGloNavHeader::corrToSystemTime = "CORR TO SYSTEM TIME";
@@ -47,6 +50,8 @@ namespace gpstk
    const string RinexGloNavHeader::runByString = "PGM / RUN BY / DATE";
    const string RinexGloNavHeader::versionString = "RINEX VERSION / TYPE";
 
+
+      // Writes a correctly formatted record from this data to stream ffs.
    void RinexGloNavHeader::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
@@ -55,7 +60,9 @@ namespace gpstk
       strm.header = (*this);
       
       unsigned long allValid;
-      if (version == 2.1)        allValid = allValid21;
+      if (version == 2.01)       allValid = allValid20;
+      else if (version == 2.1)   allValid = allValid21;
+      else if (version == 2.11)  allValid = allValid211;
       else
       {
          FFStreamError err(  "Unknown RINEX GLONASS version: "
@@ -87,8 +94,8 @@ namespace gpstk
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
-         DayTime dt;
-         dt.setLocalTime();
+         SystemTime sysTime;
+         CivilTime dt(sysTime);
          string dat = dt.printf("%02d-%0b-%02y %02H:%02M");
          line += leftJustify(dat, 20);
          line += runByString;
@@ -135,8 +142,19 @@ namespace gpstk
          strm.lineNumber++;
       }
       
-   }
+   }  // End of method 'RinexGloNavHeader::reallyPutRecord(FFStream& ffs)
+   
 
+      /*
+       * This function reads the RINEX GLONASS NAV header from the given
+       * FFStream. If an error is encountered in reading from the stream,
+       * the stream is reset to its original position and fail-bit is set.
+       *
+       * @throws StringException when a StringUtils function fails
+       * @throws FFStreamError when exceptions(failbit) is set and
+       *  a read or formatting error occurs.  This also resets the
+       *  stream to its pre-read position.
+       */
    void RinexGloNavHeader::reallyGetRecord(FFStream& ffs)
       throw(std::exception, FFStreamError, StringException)
    {
@@ -215,7 +233,9 @@ namespace gpstk
       }
       
       unsigned long allValid;
-      if      (version == 2.1)      allValid = allValid21;
+      if      (version == 2.01)     allValid = allValid20;
+      else if (version == 2.1)      allValid = allValid21;
+      else if (version == 2.11)     allValid = allValid211;
       else
       {
          FFStreamError e( "Unknown or unsupported RINEX GLONASS sversion "
@@ -231,11 +251,15 @@ namespace gpstk
       
          // we got here, so something must be right...
       strm.header = *this;
-      strm.headerRead = true;      
-   }
+      strm.headerRead = true;
 
+   }  // End of method 'RinexGloNavHeader::reallyGetRecord(FFStream& ffs)'
+
+
+      // This function dumps the contents of the header.
    void RinexGloNavHeader::dump(ostream& s) const
    {
+
       int i;
        s << "---------------------------------- REQUIRED ----------------------------------\n";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
@@ -243,7 +267,9 @@ namespace gpstk
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
 
       s << "(This header is ";
-      if((valid & allValid21) == allValid21) s << "VALID 2.1";
+      if((valid & allValid211) == allValid211) s << "VALID 2.11";
+      else if((valid & allValid21) == allValid21) s << "VALID 2.1";
+      else if((valid & allValid20) == allValid20) s << "VALID 2.0";
       else s << "NOT VALID";
       s << " Rinex.)\n";
 
@@ -254,7 +280,7 @@ namespace gpstk
       s << "---------------------------------- OPTIONAL ----------------------------------\n";
       if(valid & corrToSystemTimeValid) s << "Correction to System Time: Year="
          << yearRefTime << ", Month=" << monthRefTime << ", Day=" << dayRefTime
-         << ", -TauC=" << scientific << setprecision(12) << minusTauC << ")\n";
+         << ", -TauC=" << scientific << setprecision(12) << minusTauC << "\n";
       else s << " Correction to System Time is NOT valid\n";
       if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
       else s << " Leap seconds is NOT valid\n";
@@ -264,6 +290,8 @@ namespace gpstk
             s << commentList[i] << endl;
       }
       s << "-------------------------------- END OF HEADER -------------------------------\n";
-   }
+
+   }  // End of method 'RinexGloNavHeader::dump(ostream& s)'
+
 
 }  // End of namespace gpstk
