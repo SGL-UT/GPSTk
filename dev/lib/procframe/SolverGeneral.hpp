@@ -405,6 +405,27 @@ namespace gpstk
          throw(ProcessingException);
 
 
+         /** Set the solution associated to a given Variable.
+          *
+          * @param variable    Variable object solution we are looking for.
+          * @param val         solution value for the Variable object
+          */
+      virtual SolverGeneral& setSolution( const Variable& variable,
+                                          const double& val )
+         throw(InvalidRequest);
+
+
+         /** Set the covariance associated to a given Variable.
+          *
+          * @param var1    first variable object
+          * @param var2    second variable object
+          * @param cov     covariance value for the variable objects
+          */
+      virtual SolverGeneral& setCovariance( const Variable& var1, 
+                                            const Variable& var2,
+                                            const double& cov)
+         throw(InvalidRequest);
+
    private:
 
 

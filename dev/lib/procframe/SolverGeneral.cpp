@@ -842,5 +842,71 @@ covariance matrix.");
    }  // End of method 'SolverGeneral::getVariance()'
 
 
+      /* Set the solution associated to a given Variable.
+       *
+       * @param variable    Variable object solution we are looking for.
+       * @param val         solution value for the Variable object
+       */
+   SolverGeneral& SolverGeneral::setSolution( const Variable& variable,
+                                              const double& val )
+      throw(InvalidRequest)
+   {
+      VariableDataMap::iterator it = stateMap.find(variable);
+      if(it!=stateMap.end())
+      {
+         stateMap[variable] = val;
+      }
+      else
+      {
+         InvalidRequest e("The variable not exist in the solver.");
+         GPSTK_THROW(e);
+      }
+
+      return (*this);
+   }
+
+
+      /** Set the covariance associated to a given Variable.
+       *
+       * @param var1    first variable object
+       * @param var2    second variable object
+       * @param cov     covariance value for the variable objects
+       */
+   SolverGeneral& SolverGeneral::setCovariance( const Variable& var1, 
+                                                const Variable& var2,
+                                                const double& cov)
+      throw(InvalidRequest)
+   {  
+      std::map<Variable, VariableDataMap >::iterator it1 = covarianceMap.find(var1);
+      if(it1!=covarianceMap.end())
+      {
+         VariableDataMap::iterator it2 = it1->second.find(var2);
+         if(it2!=it1->second.end())
+         {
+            covarianceMap[var1][var2] = cov;
+            return (*this);
+         }
+         else
+         {
+            it1 = covarianceMap.find(var2);
+            if(it1!=covarianceMap.end())
+            {
+               it2 = it1->second.find(var1);
+               if(it2!=it1->second.end())
+               {
+                  covarianceMap[var2][var1] = cov;
+                  return (*this);
+               }
+            }
+         }
+      }
+
+      // One code go here, we failed to find the value, and throw exception.
+      InvalidRequest e("The input variables are not exist in the solver.");
+      GPSTK_THROW(e);
+      
+      return (*this);
+   }
+
 
 }  // End of namespace gpstk
