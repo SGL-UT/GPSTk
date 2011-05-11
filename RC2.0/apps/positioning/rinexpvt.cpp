@@ -24,7 +24,8 @@
 
 #include "rinexpvt.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"
+#include "CivilTime.hpp"
+#include "icd_gps_constants.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -528,7 +529,8 @@ void RINEXPVTSolution::process()
                 //  epoch time #Obs : <list of PRN IDs> : #GoodSVs [V}NV]
              if (logfileOn)
              {
-                logStream << rod.time.printf(epochFormat) << " ";
+                CivilTime ct = rod.time;
+                logStream << ct.printf(epochFormat) << " ";
                 logStream << rod.obs.size() << " ! ";
                 RinexObsData::RinexSatMap::const_iterator it;
                 vector<SatID>::const_iterator itSol;
@@ -569,8 +571,9 @@ void RINEXPVTSolution::process()
             
 	       if (prSolver.isValid())
           { 
+             CivilTime ct = rod.time;
                 // Output epoch tag
-             cout << rod.time.printf(epochFormat) << " ";
+             cout << ct.printf(epochFormat) << " ";
                
              if (!transformENU)
              {

@@ -33,7 +33,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "RinexUtilities.hpp"
@@ -76,8 +76,8 @@ try {
    totaltime = clock();
 
    int iret;
-   DayTime last;
-   // NB. Do not instantiate editor outside main(), b/c DayTime::END_OF_TIME is a
+   CommonTime last;
+   // NB. Do not instantiate editor outside main(), b/c CommonTime::END_OF_TIME is a
    // static const that can produce static intialization order problems under some OS.
    RinexEditor REC;
 
@@ -89,9 +89,13 @@ try {
 
    timer = time(NULL);
    tblock = localtime(&timer);
-   last.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-               tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   Title += last.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   CivilTime tempCTime(1900+tblock->tm_year,1+tblock->tm_mon, tblock->tm_mday,
+                        tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
+   //last.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
+   //            tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
+   last = tempCTime;
+   Title += tempCTime.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   
    cout << Title;
 
       // define extended types
@@ -175,23 +179,11 @@ try {
    REC.oflog = &oflog;
    oflog << Title;
 
-   //if(Debug) {
-      //cout << "List passed to REditCommandLine:\n";
-      //for(i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
-      // strip out the REditCmds
-   //}
-
    // set up editor and pull out (delete) editing commands
    REC.REVerbose = Verbose;
    REC.REDebug = Debug;
    REC.AddCommandLine(Args);
 
-   //if(Debug) {
-      //deque<REditCmd>::iterator jt=REC.Cmds.begin();
-      //cout << "\nHere is the list of RE cmds\n";
-      //while(jt != REC.Cmds.end()) { jt->Dump(cout,string("")); ++jt; }
-      //cout << "End of list of RE cmds" << endl;
-   //}
 
       // preprocess the commands
    iret = REC.ParseCommands();
@@ -201,12 +193,6 @@ try {
       oflog << "EditRinex Error: no " << (iret==-1 ? "input" : "output")
          << " file specified\n";
    }
-   //if(Debug) {
-      //cout << "\nHere is the parsed list of RE cmds\n";
-      //it=REC.Cmds.begin();
-      //while(it != REC.Cmds.end()) { it->Dump(cout,string("")); ++it; }
-      //cout << "End of sorted list of RE cmds" << endl;
-   //}
 
       // pass the rest
    argc = Args.size()+1;

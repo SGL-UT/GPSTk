@@ -45,6 +45,9 @@
 #include "RinexObsStream.hpp"
 #include "RinexUtilities.hpp"
 
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
+
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
@@ -127,7 +130,7 @@ try {
    SV = RinexSatID(33,SatID::systemGPS);
    sign = 0;
    inOT = -1;
-   time = DayTime::BEGINNING_OF_TIME;
+   time = CommonTime::BEGINNING_OF_TIME;
 
       // bail if invalid
    if(type==INVALID) return;
@@ -214,13 +217,17 @@ try {
    }
 
       // get a time
-   if(subfield.size()==2 || subfield.size()==3) {
-      time.setGPSfullweek(asInt(subfield[0]), asDouble(subfield[1]));
+   if(subfield.size()==2 || subfield.size()==3)
+   {
+      GPSWeekSecond weeksec(asInt(subfield[0]), asDouble(subfield[1]));
+      time = weeksec;
    }
-   if(subfield.size()==6 || subfield.size()==7) {
-      time.setYMDHMS(asInt(subfield[0]), asInt(subfield[1]),
+   if(subfield.size()==6 || subfield.size()==7)
+   {
+      CivilTime ctime(asInt(subfield[0]), asInt(subfield[1]),
          asInt(subfield[2]), asInt(subfield[3]),
          asInt(subfield[4]), asDouble(subfield[5]));
+      time = ctime;
    }
    //if(REDebug) *oflog << "REC: time is "
    //<< time.printf("%4Y/%2m/%2d %2H:%2M:%.4f") << endl;
@@ -247,18 +254,32 @@ REditCmd::~REditCmd(void)
 //------------------------------------------------------------------------------------
 void REditCmd::Dump(ostream& os, string msg) throw(Exception)
 {
-try {
-   if(msg.size()) os << msg;
-   os << " type=" << typeLabel[type] << ", sign=" << sign << ", SV="
-      << SV.toString()
-      << ", inOT=" << inOT
-      << ", field=" << field
-      << ", bias=" << fixed << setprecision(3) << bias
-      << ", time = " << time.printf("%4Y/%2m/%2d %2H:%2M:%.4f") << endl;
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+   try
+   {
+      if(msg.size())
+         os << msg;
+      os << " type=" << typeLabel[type] << ", sign=" << sign << ", SV="
+         << SV.toString()
+         << ", inOT=" << inOT
+         << ", field=" << field
+         << ", bias=" << fixed << setprecision(3) << bias
+         << ", time = " << static_cast<CivilTime>(time).printf("%4Y/%2m/%2d %2H:%2M:%.4f")
+         << endl;
+   }
+   catch(Exception& e)
+   {
+      GPSTK_RETHROW(e);
+   }
+   catch(exception& e)
+   {
+      Exception E("std except: "+string(e.what()));
+      GPSTK_THROW(E);
+   }
+   catch(...)
+   {
+      Exception e("Unknown exception");
+      GPSTK_THROW(e);
+   }
 }
 
 //------------------------------------------------------------------------------------
@@ -268,8 +289,8 @@ RinexEditor::RinexEditor(void)
 {
    Decimate = 0.0;
    TimeTol = 0.001;
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
    REVerbose = REDebug = BiasZeroData = FillOptionalHeader = HDDeleteOldComments
       = false;
    Skip = false;
@@ -327,7 +348,7 @@ try {
             Cmds[i].type = REditCmd::INVALID;
             break;
          case REditCmd::OF:
-            if(Cmds[i].time == DayTime::BEGINNING_OF_TIME) {
+            if(Cmds[i].time == CommonTime::BEGINNING_OF_TIME) {
                OutputFile = Cmds[i].field;
                //if(REDebug) Cmds[i].Dump(*oflog,string("set OF with this cmd"));
                Cmds[i].type = REditCmd::INVALID;
@@ -408,7 +429,7 @@ try {
                OutputFile = it->field;
             //if(REDebug) it->Dump(*oflog,string("Let this command set begin time"));
                BegTime = it->time;
-               it->time = DayTime::BEGINNING_OF_TIME;
+               it->time = CommonTime::BEGINNING_OF_TIME;
             }
          }
          else { IVLast=true; break; }
@@ -597,7 +618,7 @@ try {
          it = Cmds.erase(it);
       }
       else if(it->type==REditCmd::DS
-            && it->time==DayTime::BEGINNING_OF_TIME) {
+            && it->time==CommonTime::BEGINNING_OF_TIME) {
          //if(REDebug) it->Dump(*oflog,string("Apply and Erase this DS command:"));
          if(index(DelSV,it->SV) == -1) DelSV.push_back(it->SV);
          it = Cmds.erase(it);
@@ -608,15 +629,17 @@ try {
    RHOutput.obsTypeList = ObsTypes;
 
       // fill records in output header
-   DayTime currtime;
+   CommonTime currtime;
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   currtime.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-      tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   RHOutput.date = currtime.printf("%04Y/%02m/%02d %02H:%02M:%02S");
-   { // figure out system -- anything else will be up to caller
+   CivilTime ctime(1900+tblock->tm_year, 1+tblock->tm_mon, tblock->tm_mday,
+                     tblock->tm_hour, tblock->tm_min, tblock->tm_sec);
+   currtime = ctime;
+   RHOutput.date = ctime.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+   {
+         // figure out system -- anything else will be up to caller
       bool gps=true,glo=true,tra=true,geo=true,gal=true;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGPS))
                   != DelSV.end()) gps=false;
@@ -626,8 +649,12 @@ try {
                   != DelSV.end()) tra=false;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGeosync))
                   != DelSV.end()) geo=false;
+      if(!glo && !tra && !geo) RHOutput.system.system = RinexSatID::systemGPS;
+      if(!gps && !tra && !geo) RHOutput.system.system = RinexSatID::systemGlonass;
+      if(!gps && !glo && !geo) RHOutput.system.system = RinexSatID::systemTransit;
+      if(!gps && !glo && !tra) RHOutput.system.system = RinexSatID::systemGeosync;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGalileo))
-                  != DelSV.end()) gal=false;
+                  != DelSV.end())) gal=false;
       if(!glo && !tra && !geo && !gal)
          RHOutput.system.system = RinexSatID::systemGPS;
       else if(!gps && !tra && !geo && !gal)
@@ -714,8 +741,11 @@ try {
       // decimate the data
    if(Decimate > 0.0) {
          // if BegTime is unset, make it the first of the week
-      if(BegTime == DayTime::BEGINNING_OF_TIME)
-         BegTime.setGPSfullweek(ROIn.time.GPSfullweek(),0.0);
+      if(BegTime == CommonTime::BEGINNING_OF_TIME)
+      {
+         
+         BegTime = GPSWeekSecond(static_cast<GPSWeekSecond>(ROIn.time).week, 0.0);
+      }
       double dt=fabs(ROIn.time - BegTime);
       dt -= Decimate*long(0.5+dt/Decimate);
       if(fabs(dt) > TimeTol) return 0;
@@ -729,7 +759,7 @@ try {
       dt = Cmds[0].time - ROIn.time;
       if(dt < -TimeTol || fabs(dt) < TimeTol) {  // commands in present and past
          if(REDebug) Cmds[0].Dump(*oflog,
-               Cmds[0].time.printf("%4Y/%2m/%2d %2H:%2M:%.4f")
+               static_cast<CivilTime>(Cmds[0].time).printf("%4Y/%2m/%2d %2H:%2M:%.4f")
                + string(": Process (now) : "));
          switch(Cmds[0].type) {
             case REditCmd::DA:
@@ -777,14 +807,14 @@ try {
                break;
             default:
                if(REDebug) Cmds[0].Dump(*oflog,
-                     Cmds[0].time.printf("%4Y/%2m/%2d %2H:%2M:%.4f")
+                     static_cast<CivilTime>(Cmds[0].time).printf("%4Y/%2m/%2d %2H:%2M:%.4f")
                      + string(": This command not implemented! : "));
                break;
          }   // end switch(type)
 
             // delete this command
          if(REDebug) Cmds[0].Dump(*oflog,
-               Cmds[0].time.printf("%4Y/%2m/%2d %2H:%2M:%.4f")
+               static_cast<CivilTime>(Cmds[0].time).printf("%4Y/%2m/%2d %2H:%2M:%.4f")
                + string(": Delete (old) : "));
          Cmds.pop_front();
       }
@@ -927,7 +957,7 @@ try {
 
       // update estimate of dt
    if(FillOptionalHeader) {
-      if(PrevEpoch.year() != 1) {
+      if(static_cast<CivilTime>(PrevEpoch).year != 1) {
          dt = CurrEpoch-PrevEpoch;
          for(int i=0; i<9; i++) {
             if(ndt[i] <= 0) { bestdt[i]=dt; ndt[i]=1; break; }
@@ -1379,7 +1409,7 @@ try {
             + comma + asString(jt->inOT)
             + comma + jt->field
             + comma + asString(jt->bias,3)
-            + comma + jt->time.printf("%4Y/%02m/%02d,%02H:%02M:%.4f")
+            + comma + static_cast<CivilTime>(jt->time).printf("%4Y/%02m/%02d,%02H:%02M:%.4f")
             ;
       strs.push_back(str);
    }

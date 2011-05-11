@@ -49,7 +49,7 @@
 #include "DayTime.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "EphReader.hpp"
 
 using namespace std;
@@ -222,8 +222,8 @@ int main(int argc, char *argv[])
                    << " " << setw(14) << xvt.x[2]
                    << " " << setprecision(6) << setw(10)  << (xvt.dtime*1000);
 
-              WGS84Geoid geoid;
-              double correction = (xvt.dtime) * (geoid.c());
+              WGS84Ellipsoid ellipsoid;
+              double correction = (xvt.dtime) * (ellipsoid.c());
 
               if ( abs(antXvt.x[0]) < 1 || antXvt.x.elvAngle(xvt.x) < 0 )
                 {
@@ -238,7 +238,7 @@ int main(int argc, char *argv[])
                        << " "  << setw(8) << antXvt.x.azAngle(xvt.x)
                        << " "  << setw(8) << antXvt.x.elvAngle(xvt.x)
                        << " "  << setw(15) 
-                       << xvt.preciseRho(antXvt.x, geoid, correction) << endl;
+                       << xvt.preciseRho(antXvt.x, ellipsoid, correction) << endl;
                 }
             }
           catch(...)
