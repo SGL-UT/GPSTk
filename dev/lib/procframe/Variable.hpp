@@ -364,6 +364,8 @@ namespace gpstk
 
    typedef std::set<Variable> VariableSet;
 
+   typedef std::list<Variable> VariableList;
+
    typedef std::map<Variable, double> VariableDataMap;
 
 
