@@ -122,22 +122,31 @@ namespace gpstk
 
       // Methods to parsing data from SolverGeneral
 
-   VariableSet GeneralConstraint::getVariables()
+   Variable GeneralConstraint::getVariable(const SourceID& source, const SatID& sat, const TypeID& type)
    {
-      EquationSystem eqs = solver.getEquationSystem();
-      VariableSet unkSet( eqs.getVarUnknowns() );
-      
-      return unkSet;
+      VariableSet vset;
 
-   }  // End of method 'VariableSet GeneralConstraint::getVariables()'
+      VariableSet varSet = getVariables(source,type);
+      for(VariableSet::iterator itv=varSet.begin();
+         itv!=varSet.end();
+         ++itv)
+      {
+         if( itv->getType()==type ) return (*itv);
+      }
+
+      Exception e("The desirable variable not exist int the solver.");
+      GPSTK_THROW(e);
+
+      return Variable();
+
+   }  // End of method 'GeneralConstraint::getVariables(...'
 
 
    VariableSet GeneralConstraint::getVariables(const SourceID& source)
    {
       VariableSet vset;
 
-      EquationSystem eqs = solver.getEquationSystem();
-      VariableSet unkSet( eqs.getVarUnknowns() );
+      VariableSet unkSet( getVariables() );
 
       if(source==Variable::allSources) unkSet; 
       
@@ -203,8 +212,7 @@ namespace gpstk
    {
       VariableSet vset;
 
-      EquationSystem eqs = solver.getEquationSystem();
-      VariableSet unkSet( eqs.getVarUnknowns() );
+      VariableSet unkSet( getVariables() );
 
       for( VariableSet::const_iterator itv = unkSet.begin();
          itv != unkSet.end();
@@ -266,8 +274,7 @@ namespace gpstk
    {
       VariableSet vset;
       
-      EquationSystem eqs = solver.getEquationSystem();
-      VariableSet unkSet( eqs.getVarUnknowns() );
+      VariableSet unkSet( getVariables() );
 
       if(sat==Variable::noSats) return vset;
 
@@ -406,6 +413,120 @@ namespace gpstk
       return covariance;
 
    }  // End of method 'GeneralConstraint::getCovariance(...'
+
+
+   GeneralConstraint& GeneralConstraint::changeState( const VariableList& varList,
+                                                      const Matrix<double>& convertMat)
+   {
+      VariableSet allVariable = getCurrentUnknowns();
+
+      // check input 
+      int varNum(0);
+      for(VariableList::const_iterator it = varList.begin();
+          it!=varList.end();
+          ++it)
+      {
+         if(allVariable.find(*it)==allVariable.end())
+         {
+            Exception e("The variable doesn't exist in the solver.");
+            GPSTK_THROW(e);
+         }
+
+         varNum++;
+      }
+      
+      if(varNum!=convertMat.rows() || varNum!=convertMat.cols())
+      {
+         Exception e("The size of input doesn't match.");
+         GPSTK_THROW(e);
+      }
+
+      const int numOfVar(varNum);
+
+      Vector<double> vectorOfSolution(numOfVar,0.0);
+      Matrix<double> matrixOfCovariance(numOfVar,numOfVar,0.0);
+
+      int i = 0;
+      for(VariableList::const_iterator iti = varList.begin();
+          iti != varList.end();
+          ++iti)
+      {
+         vectorOfSolution(i) = solver.getSolution(*iti);
+
+         VariableList tempList(varList);
+
+         int j(0);
+         for(VariableList::iterator itj = tempList.begin();
+            itj!=tempList.end();
+            ++itj)
+         {
+            matrixOfCovariance(i,j) = solver.getCovariance(*iti,*itj);
+
+            j++;
+         }
+
+         i++;
+      }
+
+      Vector<double> solution = convertMat*vectorOfSolution;
+      Matrix<double> covariance = convertMat*matrixOfCovariance*transpose(convertMat);
+
+      i = 0;
+      for(VariableList::const_iterator iti=varList.begin();
+         iti!=varList.end();
+         ++iti)
+      {
+         setSolution(*iti,solution(i));
+
+         std::list<Variable> tempList(varList);
+
+         int j(0);
+         for(std::list<Variable>::iterator itj = tempList.begin();
+            itj!=tempList.end();
+            ++itj)
+         {
+            setCovariance(*iti,*itj,covariance(i,j));
+
+            j++;
+         }
+
+         i++;
+      }
+      
+      return (*this);
+
+   }  // Ebd if method 'GeneralConstraint::changeState()'
+
+
+   int GeneralConstraint::findIndexOfSat(const SatIDSet& satSet,const SatID& sat)
+   {
+      int indexOfSat(-1);
+
+      int i(0);
+      for(SatIDSet::const_iterator it=satSet.begin();
+          it!=satSet.end();
+          ++it)
+      {
+         if((*it)==sat) indexOfSat = i;
+
+         i++;
+      }
+
+      return indexOfSat;
+
+   }  // End of method 'GeneralConstraint::findIndexOfSat()'
+
+
+   void GeneralConstraint::stackVariables(VariableList& varList,const VariableSet& varSet)
+   {
+      for(VariableSet::const_iterator it= varSet.begin();
+          it!=varSet.end();
+          ++it)
+      {
+         varList.push_back(*it);
+      }
+
+   }  // End of method 'GeneralConstraint::stackVariables()'
 
 
 }  // End of namespace 'gpstk'

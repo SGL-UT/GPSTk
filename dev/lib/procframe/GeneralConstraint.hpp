@@ -62,12 +62,12 @@ namespace gpstk
 
          /// The method is used to update the solver state when the reference 
          /// satellite changed.
-      virtual void updateReferenceSatellite(const SatID& sat)
+      virtual void updateRefSat(const SourceID& source, const SatID& sat)
       { /* Do nothing by d0efault */ }
 
          /// Default destructor
       virtual ~GeneralConstraint(){}
-    
+
    protected:
       
          /// Override this metod to design your own constraint equations
@@ -78,7 +78,10 @@ namespace gpstk
       
          // Methods to parsing data from SolverGeneral
 
-      VariableSet getVariables();
+      Variable getVariable(const SourceID& source, const SatID& sat, const TypeID& type);
+
+      VariableSet getVariables()
+      { return solver.getEquationSystem().getCurrentUnknowns(); }
 
       VariableSet getVariables(const SourceID& source);
 
@@ -112,7 +115,27 @@ namespace gpstk
 
       Vector<double> getSolution(const VariableSet& varSet);
 
+
       Matrix<double> getCovariance(const VariableSet& varSet);
+
+
+      GeneralConstraint& setSolution( const Variable& variable,
+                                              const double& val )
+      { solver.setSolution(variable,val); return (*this); }
+
+
+      GeneralConstraint& setCovariance( const Variable& var1, 
+                                                const Variable& var2,
+                                                const double& cov)
+      { solver.setCovariance(var1,var2,cov); return (*this); }
+
+      
+      GeneralConstraint& changeState( const VariableList& varList,
+                                              const Matrix<double>& convertMat);
+
+      int findIndexOfSat(const SatIDSet& satSet,const SatID& sat);
+
+      void stackVariables(VariableList& varList,const VariableSet& varSet);
 
    protected:
 
