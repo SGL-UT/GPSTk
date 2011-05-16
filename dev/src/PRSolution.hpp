@@ -56,7 +56,7 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(100.), 
+      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(1000.), 
          Algebraic(false), ResidualCriterion(true), ReturnAtOnce(false),
          NSatsReject(-1), Debug(false), pDebugStream(&std::cout),
          MaxNIterations(10),  ConvergenceLimit(3.e-7), Valid(false) {};

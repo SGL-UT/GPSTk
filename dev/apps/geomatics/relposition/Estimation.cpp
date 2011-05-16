@@ -78,7 +78,6 @@ void BuildStochasticModel(int count, Namelist& DNL, Matrix<double>& MCov)
 // prototypes -- this module only
    // called by ConfigureEstimation(), which is Configure(3)
 void DefineStateVector(void) throw(Exception);
-void DefineLSProblem(void) throw(Exception);
 string ComposeName(const string& site1, const string& site2,
                    const GSatID& sat1, const GSatID& sat2) throw(Exception);
 string ComposeName(const DDid& ddid) throw(Exception);
@@ -308,9 +307,6 @@ try {
       // define the initial State vector
    DefineStateVector();
 
-      // Configure the SRIF for the estimation
-   DefineLSProblem();
-
       // initial value
    Biasfix = false;
 
@@ -394,17 +390,6 @@ try {
    State = Vector<double>(NState,0.0);
    Mmax = DDDataMap.size();            // the largest M (Data.size()) could be
 
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
-}
-
-//------------------------------------------------------------------------------------
-// called by ConfigureEstimation()
-void DefineLSProblem(void) throw(Exception)
-{
-try {
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }

@@ -42,12 +42,6 @@
  */
 
 //------------------------------------------------------------------------------------
-// TD Timetable.cpp  handle week rollover in TimeTable() and ReadTimeTable()
-// TD Timetable.cpp  check logic
-// TD Timetable.cpp  check output messages
-// TD Timetable.cpp  add several limits as input parameters
-// TD Timetable.cpp  4. edit TTab, removing segments that do not create gaps
-
 //------------------------------------------------------------------------------------
 // includes
 // system
@@ -75,22 +69,17 @@ class TTSegment {
 public:
    std::string site1,site2;
    gpstk::GSatID sat;
-   int start,end;    // starting and ending counts
-   int first,last;   // counts to actually use in timetable
+   int start,stop;   // starting and ending counts
+   int usestart,usestop;   // counts to actually use in timetable
    int length;       // length (in data points)
    double minelev;   // minimum elevation in this segment
    double maxelev;   // maximum elevation in this segment
 
-   TTSegment(void) : start(-1),length(0),minelev(0.0),maxelev(0.0) {}
+   TTSegment(void) : start(-1),stop(-1),length(0),minelev(0.0),maxelev(0.0),
+                     usestart(-1),usestop(-1) {}
 
    double metric(void) const
    { return (double(length)/100.0 + 100.0*(minelev+maxelev)/90.0); }
-
-   //bool operator<(const TTSegment& right) const
-   //{ return (metric() < right.metric()); }
-
-   //bool operator>(const TTSegment& right) const
-   //{ return (metric() > right.metric()); }
 
    void findElev(void) throw(Exception);
 
@@ -126,16 +115,16 @@ bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
 int QueryTimeTable(SDid& sdid, DayTime& tt) throw(Exception)
 {
 try {
+   int ntt(0.5+(tt-FirstEpoch)/CI.DataInterval);
       // loop over the timetable, looking for a match : baseline and time
    list<TTSegment>::iterator ttit;
    for(ttit=TimeTable.begin(); ttit != TimeTable.end(); ttit++) {
       if(((ttit->site1 == sdid.site1 && ttit->site2 == sdid.site2) ||
           (ttit->site1 == sdid.site2 && ttit->site2 == sdid.site1)   ) &&
-         FirstEpoch+CI.DataInterval*ttit->first <= tt                  &&
-         FirstEpoch+CI.DataInterval*ttit->last  >= tt)
+          ttit->usestart <= ntt && ttit->usestop  >= ntt)
       {                                                  // success
          sdid.sat = ttit->sat;
-         tt = FirstEpoch+CI.DataInterval*ttit->last;
+         tt = FirstEpoch+CI.DataInterval*ttit->usestop;
          return 0;
       }
    }
@@ -161,8 +150,8 @@ try {
       if((ttit->site1 == site1 && ttit->site2 == site2) ||
          (ttit->site1 == site2 && ttit->site2 == site1)   )
       {                                                  // success
-         if(beg == -1 || ttit->first < beg) beg = ttit->first;
-         if(end == -1 || ttit->last  > end) end = ttit->last;
+         if(beg == -1 || ttit->usestart < beg) beg = ttit->usestart;
+         if(end == -1 || ttit->usestop  > end) end = ttit->usestop;
       }
    }
    return 0;
@@ -194,10 +183,10 @@ try {
          ts.site1 = word(Baselines[ib],0,'-');
          ts.site2 = word(Baselines[ib],1,'-');
          ts.sat = CI.RefSat;
-         ts.start = ts.first = 0;
-         ts.end = ts.last = maxCount;
+         ts.start = ts.usestart = 0;
+         ts.stop = ts.usestop = maxCount;
          ts.minelev = ts.maxelev = 0.0;
-         ts.length = ts.end - ts.start + 1;
+         ts.length = ts.stop - ts.start + 1;
          TimeTable.push_back(ts);
          iret = 0;
       }
@@ -212,25 +201,25 @@ try {
 
    if(iret == 0) {
       // write out timetable to log
-      // REF site site sat week use_first use_last data_start data_end
+      // REF site site sat week use_start use_stop data_start data_stop
       DayTime tt;
       GSatID sat;
       oflog << "Here is the time table (" << TimeTable.size() << ")" << endl;
       if(CI.Screen)
          cout << "Time table (" << TimeTable.size() << "):" << endl;
       oflog << "# " << Title << endl;
-      oflog << "# REF site site sat week use_first use_last data_start data_end\n";
+      oflog << "# REF site site sat week use_start use_stop data_start data_stop\n";
       if(CI.Screen)
-         cout << "# REF site site sat week use_first use_last data_start data_end\n";
+         cout << "# REF site site sat week use_start use_stop data_start data_stop\n";
       for(ttit=TimeTable.begin(); ttit != TimeTable.end(); ttit++) {
          oflog << "REF " << ttit->site1 << " " << ttit->site2 << " " << ttit->sat;
          if(CI.Screen)
             cout << "REF " << ttit->site1 << " " << ttit->site2 << " " << ttit->sat;
-         tt = FirstEpoch + CI.DataInterval * ttit->first;
+         tt = FirstEpoch + CI.DataInterval * ttit->usestart;
          oflog << tt.printf(" %4F %10.3g");        // TD week rollover!
          if(CI.Screen)
             cout << tt.printf(" %4F %10.3g");        // TD week rollover!
-         tt = FirstEpoch + CI.DataInterval * ttit->last;
+         tt = FirstEpoch + CI.DataInterval * ttit->usestop;
          oflog << tt.printf(" %10.3g");
          if(CI.Screen)
             cout << tt.printf(" %10.3g");
@@ -238,7 +227,7 @@ try {
          oflog << tt.printf(" %10.3g");
          if(CI.Screen)
             cout << tt.printf(" %10.3g");
-         tt = FirstEpoch + CI.DataInterval * ttit->end;
+         tt = FirstEpoch + CI.DataInterval * ttit->stop;
          oflog << tt.printf(" %10.3g");
          if(CI.Screen)
             cout << tt.printf(" %10.3g");
@@ -292,7 +281,7 @@ try {
       return -3;
    }
 
-   //REF site site sat week use_first use_last data_start data_end
+   //REF site site sat week use_start use_stop data_start data_stop
    do {
       getline(ttifs,line);
       stripTrailing(line,'\r');
@@ -310,11 +299,11 @@ try {
       week = asInt(words(line,4,1));
       sow = asInt(words(line,5,1));
       tt.setGPSfullweek(week,sow);           // TD handle week rollover
-      ts.first = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+      ts.usestart = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,6,1));
       tt.setGPSfullweek(week,sow);
-      ts.last = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+      ts.usestop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,7,1));
       tt.setGPSfullweek(week,sow);
@@ -322,10 +311,10 @@ try {
 
       sow = asInt(words(line,8,1));
       tt.setGPSfullweek(week,sow);
-      ts.end = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+      ts.stop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       //ts.minelev = ts.maxelev = 0.0;
-      ts.length = ts.end - ts.start + 1;
+      ts.length = ts.stop - ts.start + 1;
       ts.findElev();
       TimeTable.push_back(ts);
 
@@ -367,15 +356,15 @@ try {
          if(j > 1) {
             TTSegment tts;
             tts = ts;
-            tts.end = it->second.count.at(i);
-            tts.length = tts.end - tts.start + 1;
+            tts.stop = it->second.count.at(i);
+            tts.length = tts.stop - tts.start + 1;
             tts.findElev();
             SegList.push_back(tts);
             ts.start = it->second.count.at(i+1);
          }
       }
-      ts.end = it->second.count[it->second.count.size()-1];
-      ts.length = ts.end - ts.start + 1;
+      ts.stop = it->second.count[it->second.count.size()-1];
+      ts.length = ts.stop - ts.start + 1;
       ts.findElev();
       SegList.push_back(ts);
    }
@@ -562,25 +551,20 @@ try {
       else {
          if(begcount < 0 || ttit->start < begcount)
             begcount = ttit->start;
-         if(endcount < 0 || ttit->end > endcount)
-            endcount = ttit->end;
+         if(endcount < 0 || ttit->stop > endcount)
+            endcount = ttit->stop;
          ttit++;
       }
       oflog << endl;
    }
    oflog << "End the sorted list; limits : " << begcount << " - " << endcount << endl;
 
-   for(ttit=TTS.begin(); ttit != TTS.end(); ttit++) {
-      if(ttit->length < 10) {
-      }
-   }
-   
    // 1.find the begin point
    for(ttit=TTS.begin(); ttit != TTS.end(); ttit++) {
       if(ttit->start == begcount) {
          oflog << "Found the begin time: " << *ttit << endl;
          TTab.push_back(*ttit);
-         beg = ttit->end;
+         beg = ttit->stop;
          TTS.erase(ttit);
          break;
       }
@@ -594,7 +578,7 @@ try {
    else {
       // find the end point
       for(ttit=TTS.begin(); ttit != TTS.end(); ttit++) {
-         if(ttit->end == endcount) {
+         if(ttit->stop == endcount) {
             oflog << "Found the   end time: " << *ttit << endl;
             TTab.push_back(*ttit);
             end = ttit->start;
@@ -611,10 +595,10 @@ try {
 
    // start list of segs with the ones that contain endpoints
    ttit = TTab.begin();
-   Segs.push_back(make_pair(ttit->start,ttit->end));
+   Segs.push_back(make_pair(ttit->start,ttit->stop));
    ttit++;
    if(ttit != TTab.end())
-      Segs.push_back(make_pair(ttit->start,ttit->end));
+      Segs.push_back(make_pair(ttit->start,ttit->stop));
 
    if(beg >= end) { // two segments cover it all
       if(Segs.size() > 1) {            // TD unsure if the logic is wrong here...
@@ -698,7 +682,7 @@ try {
          if(ttit->metric() <= 100.0) break;        // TD input param
 
          beg = ttit->start;
-         end = ttit->end;
+         end = ttit->stop;
          if(CI.Debug) oflog << "consider new segment ("
             << beg << "-" << end << ")" << endl;
 
@@ -783,20 +767,22 @@ try {
 
    // decide on actual transition times
    for(ttit=TTab.begin(); ttit != TTab.end(); ttit++) {
-      if(CI.Verbose) oflog << " " << *ttit << endl;
+      //if(CI.Verbose) oflog << " " << *ttit << endl;
 
       // compute the count at which to switch
       if(ttit == TTab.begin()) {
-         ttit->first = ttit->start;       // first = start for first segment
+         ttit->usestart = ttit->start;    // usestart = start for first segment
          ttjt = ttit;                     // initialize ttjt
       }
-      else {
-         // switch at the mid-point of overlap
-         ttit->first = (ttjt->end + ttit->start)/2;
+      else if(ttjt->stop > ttit->start) { // if there is overlap, switch at midpoint
+         ttit->usestart = (ttjt->stop + ttit->start)/2;
       }
-      ttit->last = ttit->end;             // change later, except for last segment
+      else {
+         ttit->usestart = ttit->start;    // there is a gap
+      }
+      ttit->usestop = ttit->stop;         // change later, except for last segment
       if(ttit != TTab.begin()) {
-         ttjt->last = ttit->first;        // count at the switch point
+         ttjt->usestop = ttit->usestart;  // count at the switch point
          ttjt++;                          // ttjt lags behind ttit by 1
       }
    }
@@ -845,8 +831,7 @@ try {
       << " " << t.sat
       << " " << setw(5) << t.length
       << " " << setw(5) << t.start
-      << " - " << setw(5) << t.end
-      //<< " (" << t.first << "-" << t.last << ")"
+      << " - " << setw(5) << t.stop
       << " " << fixed << setw(4) << setprecision(1) << t.minelev
       << " - " << fixed << setw(4) << setprecision(1) << t.maxelev
       << " " << setw(7) << setprecision(2) << t.metric();

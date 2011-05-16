@@ -51,6 +51,7 @@
 // GPSTk
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
+#include "PRSolution.hpp"
 
 // DDBase
 #include "DDBase.hpp"
@@ -88,11 +89,14 @@ try {
       // stochastic model
    StochasticModel = string("cos2");      // cos, cos2, SNR
       // for pseudorange solution
-   PRSrmsLimit = 6.5;                     // this is the PRSolution() default
-   PRSalgebra = false;
-   PRSnIter = 10;
-   PRSconverge = 1.e-9;
-   PRSMinElevation = 10.0;
+   {
+      PRSolution dummy;
+      PRSrmsLimit = dummy.RMSLimit; // 6.5;
+      PRSalgebra = dummy.Algebraic; // false;
+      PRSnIter = dummy.MaxNIterations; // 10;
+      PRSconverge = dummy.ConvergenceLimit; // 1.e-9;
+      PRSMinElevation = 10.0;
+   }
       // for modeling residual zenith delay
    NRZDintervals = 0;
    RZDtimeconst = 2.0;                    // hours
@@ -388,6 +392,12 @@ try {
       " --PRSrmsLimit <rms>   PRS: RMS residual limit in m ("
       + asString(PRSrmsLimit,2) + ")");
    dashprsrms.setMaxCount(1);
+
+   CommandOption dashprsslope(CommandOption::hasArgument, CommandOption::stdType,
+      0,"PRSslopeLimit",
+      " --PRSslopeLimit <sl>  PRS: RAIM residual limit in m ("
+      + asString(PRSslopeLimit,2) + ")");
+   dashprsslope.setMaxCount(1);
 
    CommandOptionNoArg dashprsalg(0,"PRSalgebra",
       " --PRSalgebra          PRS: Use algebraic algorithm (don't)");
@@ -786,6 +796,12 @@ try {
       PRSrmsLimit = asDouble(values[0]);
       if(help) cout << " Input: set PRS RMS residual limit to  "
          << scientific << setprecision(2) << PRSrmsLimit << endl;
+   }
+   if(dashprsslope.getCount()) {
+      values = dashprsslope.getValue();
+      PRSslopeLimit = asDouble(values[0]);
+      if(help) cout << " Input: set PRS RAIM slope limit to  "
+         << scientific << setprecision(2) << PRSslopeLimit << endl;
    }
    if(dashprscon.getCount()) {
       values = dashprscon.getValue();
@@ -1424,7 +1440,8 @@ try {
       << ", convergence " << scientific << setprecision(2) << PRSconverge
       << ", " << (PRSalgebra ? "" : "do not ") << "use algebra," << endl
       << "  RMS residual limit " << fixed << PRSrmsLimit
-      << ", elevation mask " << fixed << PRSMinElevation
+      << "  RAIM Slope limit " << PRSslopeLimit
+      << ", elevation mask " << PRSMinElevation
       << endl;
    ofs << " Stochastic model: use " << StochasticModel << " model." << endl;
    if(DataInterval != -1) ofs << " Data interval is DT = "
