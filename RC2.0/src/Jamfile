@@ -72,6 +72,7 @@ else
       Geodetic.cpp
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
+      GlonassSatelliteModel.cpp
       GloRecord.cpp
       GPSAlmanacStore.cpp
       GPSEphemerisStore.cpp
@@ -256,6 +257,7 @@ else
       GeoidModel.hpp
       GloEphemerisStore.hpp
       GloFreqIndex.hpp
+      GlonassSatelliteModel.hpp
       GloRecord.hpp
       GPSAlmanacStore.hpp
       GPSEllipsoid.hpp

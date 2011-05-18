@@ -56,6 +56,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       Geodetic.cpp \
       GloEphemerisStore.cpp \
       GloFreqIndex.cpp \
+      GlonassSatelliteModel.cpp \
       GloRecord.cpp \
       GPSAlmanacStore.cpp \
       GPSEphemerisStore.cpp \
@@ -238,6 +239,7 @@ incl_HEADERS = AllanDeviation.hpp \
       GeoidModel.hpp \
       GloEphemerisStore.hpp \
       GloFreqIndex.hpp \
+      GlonassSatelliteModel.hpp \
       GloRecord.hpp \
       GPSAlmanacStore.hpp \
       GPSEllipsoid.hpp \
