@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
+//  Wei Yan - Chinese Academy of Sciences . 2011
 //
 //============================================================================
 
@@ -34,6 +34,7 @@
 #include "Matrix.hpp"
 #include "ConstraintSystem.hpp"
 #include "SolverGeneral.hpp"
+#include "GeneralEquations.hpp"
 
 namespace gpstk
 {
@@ -60,10 +61,21 @@ namespace gpstk
          /// Feed the  constraint equations to the solver
       int constraint(gnssDataMap& gdsMap);
 
+
          /// The method is used to update the solver state when the reference 
          /// satellite changed.
       virtual void updateRefSat(const SourceID& source, const SatID& sat)
       { /* Do nothing by d0efault */ }
+
+
+         /// The method is used to update the solver state when the reference 
+         /// satellite changed.
+      virtual void updateRefSat(const SatSourceMap& refsatSource,
+                                const SourceSatMap& sourceRefsat )
+      { /* Do nothing by d0efault */ }
+
+
+      Matrix<double> convertMatrix(size_t n, size_t oi, size_t ni);
 
          /// Default destructor
       virtual ~GeneralConstraint(){}
@@ -80,34 +92,48 @@ namespace gpstk
 
       Variable getVariable(const SourceID& source, const SatID& sat, const TypeID& type);
 
+
       VariableSet getVariables()
       { return solver.getEquationSystem().getCurrentUnknowns(); }
 
+
       VariableSet getVariables(const SourceID& source);
+
 
       VariableSet getVariables(const SourceID& source,const TypeID& type);
 
+
       VariableSet getVariables(const SourceID& source,const TypeIDSet& typeSet);
+
 
       VariableSet getVariables(const SourceIDSet& sourceSet);
 
+
       VariableSet getVariables(const SourceIDSet& sourceSet,const TypeID& type);
+
 
       VariableSet getVariables(const SourceIDSet& sourceSet,const TypeIDSet& typeSet);
 
+
       VariableSet getVariables(const SatID& sat);
+
 
       VariableSet getVariables(const SatID& sat,const TypeID& type);
 
+
       VariableSet getVariables(const SatID& sat,const TypeIDSet& typeSet);
 
+
       VariableSet getVariables(const SourceID& source, const SatID& sat, const TypeID& type);
+   
 
       SourceIDSet getCurrentSources()
       { return solver.getEquationSystem().getCurrentSources();}
 
+
       VariableSet getCurrentUnknowns()
       { return solver.getEquationSystem().getCurrentUnknowns();}
+
 
       SatIDSet getCurrentSats()
       { return solver.getEquationSystem().getCurrentSats();}
@@ -135,7 +161,17 @@ namespace gpstk
 
       int findIndexOfSat(const SatIDSet& satSet,const SatID& sat);
 
+
       void stackVariables(VariableList& varList,const VariableSet& varSet);
+
+
+      VariableSet unionVariables(const VariableSet& vs1,const VariableSet& vs2);
+
+
+      VariableSet differenceVariables(const VariableSet& vs1,const VariableSet& vs2);
+
+
+      VariableSet interectionVariables(const VariableSet& vs1,const VariableSet& vs2);
 
    protected:
 

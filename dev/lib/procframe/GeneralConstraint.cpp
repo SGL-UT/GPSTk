@@ -120,6 +120,37 @@ namespace gpstk
 
    }  // End of method 'GeneralConstraint::constraint('
 
+
+   Matrix<double> GeneralConstraint::convertMatrix(size_t n, size_t oi, size_t ni)
+   {
+      // Check input
+      if( n<1 || oi<0 || ni<0 || oi>=n || ni>=n )
+      {
+         Exception e("Invalid input, and check it.");
+         GPSTK_THROW(e);
+      }
+
+      if(oi==ni) return ident<double>(n);
+      
+      Matrix<double> T(n,n,0.0);
+      for( int i = 0; i < n; i++ )
+      {
+         if( i != ni )
+         {
+            T(i,ni)= -1.0;
+            T(i,i) = (i == oi) ? 0.0 : 1.0;
+         }
+         else
+         {  
+            if(i==ni) T(i,oi) = 1.0;
+         }
+      }
+
+      return T;
+   
+   }  // End of method 'GeneralConstraint::convertMatrix()'
+
+
       // Methods to parsing data from SolverGeneral
 
    Variable GeneralConstraint::getVariable(const SourceID& source, const SatID& sat, const TypeID& type)
@@ -527,6 +558,63 @@ namespace gpstk
       }
 
    }  // End of method 'GeneralConstraint::stackVariables()'
+
+
+   VariableSet GeneralConstraint::unionVariables(const VariableSet& vs1,
+                                                 const VariableSet& vs2)
+   {
+      VariableSet tempSet(vs1);
+      for(VariableSet::const_iterator it=vs2.begin();
+          it!=vs2.end();
+          ++it)
+      {
+         tempSet.insert(*it);
+      }
+
+      return tempSet;
+
+   }  // End of method 'GeneralConstraint::unionVariables()'
+
+
+   VariableSet GeneralConstraint::differenceVariables(const VariableSet& vs1,
+                                                      const VariableSet& vs2)
+   {
+      VariableSet tempSet;
+      for(VariableSet::const_iterator it=vs1.begin();
+         it!=vs1.end();
+         ++it)
+      {
+         VariableSet::const_iterator it2 = vs2.find(*it);
+         if(it2==vs2.end()) tempSet.insert(*it);
+      }
+      for(VariableSet::const_iterator it=vs2.begin();
+         it!=vs2.end();
+         ++it)
+      {
+         VariableSet::const_iterator it2 = vs1.find(*it);
+         if(it2==vs1.end()) tempSet.insert(*it);
+      }
+
+      return tempSet;
+
+   }  // End of method 'GeneralConstraint::differenceVariables()'
+
+
+   VariableSet GeneralConstraint::interectionVariables(const VariableSet& vs1,
+                                                       const VariableSet& vs2)
+   {
+      VariableSet tempSet;
+      for(VariableSet::const_iterator it=vs1.begin();
+         it!=vs1.end();
+         ++it)
+      {
+         VariableSet::const_iterator it2 = vs2.find(*it);
+         if(it2!=vs2.end()) tempSet.insert(*it);
+      }
+
+      return tempSet;
+
+   }  // End of method 'GeneralConstraint::interectionVariables()'
 
 
 }  // End of namespace 'gpstk'
