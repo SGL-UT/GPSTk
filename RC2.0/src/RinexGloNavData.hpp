@@ -89,7 +89,7 @@ namespace gpstk
       short health;        ///< SV health
       double  TauN;        ///< SV clock bias (sec)
       double  GammaN;      ///< SV relative frequency bias
-      short   MFtime;      ///< Message frame time (sec of UTC week) <short>
+      short   MFtime;      ///< Message frame time (sec of UTC day, tk)
       short   freqNum;     ///< Frequency number (R2.1=1..24; R2.11=-7..+13)
       double  ageOfInfo;   ///< Age of oper. information (days)
 
