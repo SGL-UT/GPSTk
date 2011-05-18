@@ -90,7 +90,9 @@ namespace gpstk
       
          // Methods to parsing data from SolverGeneral
 
-      Variable getVariable(const SourceID& source, const SatID& sat, const TypeID& type);
+      Variable getVariable( const SourceID& source,
+                            const SatID& sat,
+                            const TypeID& type );
 
 
       VariableSet getVariables()
@@ -112,7 +114,8 @@ namespace gpstk
       VariableSet getVariables(const SourceIDSet& sourceSet,const TypeID& type);
 
 
-      VariableSet getVariables(const SourceIDSet& sourceSet,const TypeIDSet& typeSet);
+      VariableSet getVariables( const SourceIDSet& sourceSet,
+                                const TypeIDSet& typeSet );
 
 
       VariableSet getVariables(const SatID& sat);
@@ -124,7 +127,9 @@ namespace gpstk
       VariableSet getVariables(const SatID& sat,const TypeIDSet& typeSet);
 
 
-      VariableSet getVariables(const SourceID& source, const SatID& sat, const TypeID& type);
+      VariableSet getVariables( const SourceID& source,
+                                const SatID& sat,
+                                const TypeID& type );
    
 
       SourceIDSet getCurrentSources()
@@ -168,10 +173,12 @@ namespace gpstk
       VariableSet unionVariables(const VariableSet& vs1,const VariableSet& vs2);
 
 
-      VariableSet differenceVariables(const VariableSet& vs1,const VariableSet& vs2);
+      VariableSet differenceVariables( const VariableSet& vs1,
+                                       const VariableSet& vs2 );
 
 
-      VariableSet interectionVariables(const VariableSet& vs1,const VariableSet& vs2);
+      VariableSet intersectionVariables( const VariableSet& vs1,
+                                         const VariableSet& vs2 );
 
    protected:
 

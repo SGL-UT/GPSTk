@@ -600,8 +600,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::differenceVariables()'
 
 
-   VariableSet GeneralConstraint::interectionVariables(const VariableSet& vs1,
-                                                       const VariableSet& vs2)
+   VariableSet GeneralConstraint::intersectionVariables(const VariableSet& vs1,
+                                                        const VariableSet& vs2 )
    {
       VariableSet tempSet;
       for(VariableSet::const_iterator it=vs1.begin();
@@ -614,7 +614,7 @@ namespace gpstk
 
       return tempSet;
 
-   }  // End of method 'GeneralConstraint::interectionVariables()'
+   }  // End of method 'GeneralConstraint::intersectionVariables()'
 
 
 }  // End of namespace 'gpstk'
