@@ -110,6 +110,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       RinexObsID.cpp \
       RinexSatID.cpp \
       RinexUtilities.cpp \
+      RK4VehicleModel.cpp \
       RungeKutta4.cpp \
       SatDataReader.cpp \
       SEMAlmanacStore.cpp \
@@ -332,6 +333,7 @@ incl_HEADERS = AllanDeviation.hpp \
       RinexObsStream.hpp \
       RinexSatID.hpp \
       RinexUtilities.hpp \
+      RK4VehicleModel.hpp \
       RTFileFrame.hpp \
       RungeKutta4.hpp \
       SatDataReader.hpp \
