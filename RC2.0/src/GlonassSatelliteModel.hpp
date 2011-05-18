@@ -31,7 +31,7 @@
 //============================================================================
 
 
-#include "KinematicVehicle.hpp"
+#include "RK4VehicleModel.hpp"
 #include "PZ90Ellipsoid.hpp"
 
 
@@ -42,7 +42,7 @@ namespace gpstk
       //@{
 
       /// This class implements a simple kinematic model of a vehicle.
-   class GlonassSatelliteModel : public KinematicVehicle
+   class GlonassSatelliteModel : public RK4VehicleModel
    {
    public:
 
@@ -56,11 +56,11 @@ namespace gpstk
       GlonassSatelliteModel( const Matrix<double>& initialState,
                              double initialTime = 0.0,
                              double timeEpsilon = 1e-18 )
-         : KinematicVehicle(initialState, initialTime, timeEpsilon)
+         : RK4VehicleModel(initialState, initialTime, timeEpsilon)
       { Init(); };
 
 
-   private:
+//   private:
 
 
          /** Implements "derivative()". It is based on accelerations.
