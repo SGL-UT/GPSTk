@@ -310,10 +310,10 @@ namespace gpstk
 
       try
       {
-         pz        = StringUtils::for2doub(currentLine.substr( 4,19));
-         vz        = StringUtils::for2doub(currentLine.substr(23,19));
-         az        = StringUtils::for2doub(currentLine.substr(42,19));
-         ageOfInfo = StringUtils::for2doub(currentLine.substr(61,19));
+         pz        = StringUtils::for2doub(currentLine.substr( 3,19));
+         vz        = StringUtils::for2doub(currentLine.substr(22,19));
+         az        = StringUtils::for2doub(currentLine.substr(41,19));
+         ageOfInfo = StringUtils::for2doub(currentLine.substr(60,19));
       }
       catch (std::exception &e)
       {
