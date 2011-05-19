@@ -30,6 +30,7 @@
 //
 //============================================================================
 
+#include <vector>
 #include "Vector.hpp"
 #include "Matrix.hpp"
 #include "ConstraintSystem.hpp"
@@ -47,51 +48,58 @@ namespace gpstk
    public:
 
          /// Common constructor
-      GeneralConstraint(SolverGeneral& solverGeneral):solver(solverGeneral){}
+      GeneralConstraint( SolverGeneral& solverGeneral )
+         :solver(solverGeneral) {}
          
 
          /// Feed the  constraint equations to the solver
-      int constraint(gnssSatTypeValue& gData);
+      int constraint( gnssSatTypeValue& gData );
       
 
          /// Feed the  constraint equations to the solver
-      int constraint(gnssRinex& gRin);
+      int constraint( gnssRinex& gRin );
       
 
          /// Feed the  constraint equations to the solver
-      int constraint(gnssDataMap& gdsMap);
+      int constraint( gnssDataMap& gdsMap );
 
 
          /// The method is used to update the solver state when the reference 
          /// satellite changed.
-      virtual void updateRefSat(const SourceID& source, const SatID& sat)
+      virtual void updateRefSat( const SourceID& source, const SatID& sat )
       { /* Do nothing by d0efault */ }
 
 
          /// The method is used to update the solver state when the reference 
          /// satellite changed.
-      virtual void updateRefSat(const SatSourceMap& refsatSource,
-                                const SourceSatMap& sourceRefsat )
+      virtual void updateRefSat( const SatSourceMap& refsatSource,
+                                 const SourceSatMap& sourceRefsat )
       { /* Do nothing by d0efault */ }
 
 
       Matrix<double> convertMatrix(size_t n, size_t oi, size_t ni);
+
+
+      Matrix<double> convertMatrix(size_t n, size_t oi, size_t ni,
+                                   std::vector<int> iv);
 
          /// Default destructor
       virtual ~GeneralConstraint(){}
 
    protected:
       
-         /// Override this metod to design your own constraint equations
+         /// Override this method to design your own constraint equations
       virtual void realConstraint(gnssDataMap& gdsMap){}
 
-         /// Low level metod impose a ConstraintSystem object to the solver
-      int constraintToSolver(ConstraintSystem& system, gnssDataMap& gdsMap);
+
+         /// Low level method impose a ConstraintSystem object to the solver
+      int constraintToSolver( ConstraintSystem& system, gnssDataMap& gdsMap );
       
+
          // Methods to parsing data from SolverGeneral
 
-      Variable getVariable( const SourceID& source,
-                            const SatID& sat,
+      Variable getVariable( const SourceID& source, 
+                            const SatID& sat, 
                             const TypeID& type );
 
 
@@ -105,13 +113,15 @@ namespace gpstk
       VariableSet getVariables(const SourceID& source,const TypeID& type);
 
 
-      VariableSet getVariables(const SourceID& source,const TypeIDSet& typeSet);
+      VariableSet getVariables( const SourceID& source,
+                                const TypeIDSet& typeSet );
 
 
       VariableSet getVariables(const SourceIDSet& sourceSet);
 
 
-      VariableSet getVariables(const SourceIDSet& sourceSet,const TypeID& type);
+      VariableSet getVariables( const SourceIDSet& sourceSet,
+                                const TypeID& type );
 
 
       VariableSet getVariables( const SourceIDSet& sourceSet,
@@ -127,8 +137,8 @@ namespace gpstk
       VariableSet getVariables(const SatID& sat,const TypeIDSet& typeSet);
 
 
-      VariableSet getVariables( const SourceID& source,
-                                const SatID& sat,
+      VariableSet getVariables( const SourceID& source, 
+                                const SatID& sat, 
                                 const TypeID& type );
    
 
@@ -151,18 +161,18 @@ namespace gpstk
 
 
       GeneralConstraint& setSolution( const Variable& variable,
-                                              const double& val )
+                                      const double& val )
       { solver.setSolution(variable,val); return (*this); }
 
 
       GeneralConstraint& setCovariance( const Variable& var1, 
-                                                const Variable& var2,
-                                                const double& cov)
+                                        const Variable& var2,
+                                        const double& cov )
       { solver.setCovariance(var1,var2,cov); return (*this); }
 
       
       GeneralConstraint& changeState( const VariableList& varList,
-                                              const Matrix<double>& convertMat);
+                                      const Matrix<double>& convertMat );
 
       int findIndexOfSat(const SatIDSet& satSet,const SatID& sat);
 
@@ -170,7 +180,8 @@ namespace gpstk
       void stackVariables(VariableList& varList,const VariableSet& varSet);
 
 
-      VariableSet unionVariables(const VariableSet& vs1,const VariableSet& vs2);
+      VariableSet unionVariables(const VariableSet& vs1,
+                                 const VariableSet& vs2);
 
 
       VariableSet differenceVariables( const VariableSet& vs1,

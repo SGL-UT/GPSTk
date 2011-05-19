@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
+//  Wei Yan - Chinese Academy of Sciences . 2011
 //
 //============================================================================
 
@@ -43,7 +43,10 @@ namespace gpstk
       double prefit;
       double variance;     // the smaller the tighter constraint
 
-      constraintHeader():prefit(0),variance(1e-6){}
+      constraintHeader():prefit(0),variance(1e-12){}
+
+      constraintHeader(double meas,double var=1e-12)
+         : prefit(meas),variance(var){}
    };
 
       /// Constraint structure declaration
@@ -77,24 +80,32 @@ namespace gpstk
          /// Default constructor
       ConstraintSystem(){}
 
+
          /// Default deconstructor
       ~ConstraintSystem(){}
 
+
       virtual ConstraintSystem& addConstraint(const Constraint& constraint);
 
-      virtual ConstraintSystem& removeConstraint( const Constraint& constraint );
 
+      virtual ConstraintSystem& removeConstraint(const Constraint& constraint);
+
+      
       virtual ConstraintSystem& clearConstraint();
 
+
+         /// Method to set multi-constraints
       virtual ConstraintSystem& setConstraint(const VariableSet& varSet,
                                               const Vector<double>& prefit,
                                               const Matrix<double>& design);
 
+         /// Method to get the matrixes of the ConstraintSystem
       virtual ConstraintSystem& constraintMatrix(const VariableSet& allVar,
                                                  Vector<double>& prefit,
                                                  Matrix<double>& design,
                                                  Matrix<double>& covariance)
          throw(InvalidConstraintSystem);
+
 
       ConstraintList getCurrentConstraints()
       { return constraintList; }

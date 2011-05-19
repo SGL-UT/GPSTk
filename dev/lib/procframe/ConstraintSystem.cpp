@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
+//  Wei Yan - Chinese Academy of Sciences . 2011
 //
 //============================================================================
 
@@ -32,13 +32,15 @@
 
 namespace gpstk
 {
-   ConstraintSystem& ConstraintSystem::addConstraint(const Constraint& constraint)
+   ConstraintSystem& ConstraintSystem::addConstraint(
+                                                   const Constraint& constraint)
    {
       constraintList.push_back(constraint);
       return (*this);
    }
 
-   ConstraintSystem& ConstraintSystem::removeConstraint( const Constraint& constraint )
+   ConstraintSystem& ConstraintSystem::removeConstraint(
+                                                  const Constraint& constraint )
    {
       ConstraintList backupList;
       
@@ -47,6 +49,7 @@ namespace gpstk
          ++it)
       {
          bool isEqual(true);
+
          if(it->header.prefit!=constraint.header.prefit) isEqual=false;
          if(it->header.variance!=constraint.header.variance) isEqual=false;
          if(it->body != constraint.body) isEqual = false;
@@ -73,8 +76,8 @@ namespace gpstk
    }
 
    ConstraintSystem& ConstraintSystem::setConstraint(const VariableSet& varSet,
-                                                     const Vector<double>& prefit,
-                                                     const Matrix<double>& design)
+                                                   const Vector<double>& prefit,
+                                                   const Matrix<double>& design)
    {
       // Fist, we check the size of inputs
       const int size = varSet.size();
@@ -114,10 +117,11 @@ namespace gpstk
    }
 
 
-   ConstraintSystem& ConstraintSystem::constraintMatrix(const VariableSet& allVar,
-                                                        Vector<double>& prefit,
-                                                        Matrix<double>& design,
-                                                        Matrix<double>& covariance)
+   ConstraintSystem& ConstraintSystem::constraintMatrix(
+                                                    const VariableSet& allVar,
+                                                    Vector<double>& prefit,
+                                                    Matrix<double>& design,
+                                                    Matrix<double>& covariance )
       throw(InvalidConstraintSystem)
    {
       const int rowSize = constraintList.size();
@@ -147,7 +151,7 @@ namespace gpstk
             VariableSet::const_iterator itt = allVar.find(itv->first);
             if(itt==allVar.end())
             {
-               InvalidConstraintSystem e("The variable it not in the VariableSet object.");
+               InvalidConstraintSystem e("The variable not exist in the input");
                GPSTK_THROW(e);
             }
 

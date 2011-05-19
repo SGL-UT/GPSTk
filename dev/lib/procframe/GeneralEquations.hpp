@@ -32,6 +32,8 @@
 
 #include <vector>
 #include <map>
+#include <iostream>
+#include <iomanip>
 #include "EquationSystem.hpp"
 #include "DataStructures.hpp"
 
@@ -57,7 +59,8 @@ namespace gpstk
          vector<bool>   csflag;
          vector<bool>   lockflag;
 
-         void addData(SatID sat,double eleva=0.0,double cflag=0.0, bool lflag=false)
+         void addData(SatID sat, double eleva=0.0, double cflag=0.0,
+                      bool lflag=false)
          {
             satellite.push_back(sat);
             elevation.push_back(eleva);
@@ -127,7 +130,9 @@ namespace gpstk
          return (*this); 
       };
 
-      GeneralEquations& setCoordinatesKinematic(double sigmaX,double sigmaY,double sigmaZ)
+      GeneralEquations& setCoordinatesKinematic(double sigmaX,
+                                                double sigmaY,
+                                                double sigmaZ)
       { 
          defaultXCoordinatesModel.setSigma(sigmaX);
          defaultYCoordinatesModel.setSigma(sigmaY);
@@ -228,6 +233,9 @@ namespace gpstk
       { return sourceSatDataMap; }
 
 
+      inline void dumpSourceSatData(ostream& s,SourceSatDataMap dataMap); 
+
+
       SatSourceMap getRefSatSourceMap()
       { return refsatSourceMap; }
 
@@ -290,7 +298,7 @@ namespace gpstk
       bool estimateTropsphere;
       bool estimateIonosphere;
 
-         /// Pointer to stochastic model for dx dy dz (or dLat dLon dH) coordinate
+         /// Pointer to stochastic model for dx dy dz (or dLat dLon dH)
       StochasticModel* pCoordXStoModel;
       StochasticModel* pCoordYStoModel;
       StochasticModel* pCoordZStoModel;
@@ -469,8 +477,9 @@ namespace gpstk
 
       // Synchronize the CS flag of input GDS object with the 
       // SourceSatDataMap object
-   inline void GeneralEquations::synchronizeCSFlag(const SourceSatDataMap& dataMap,
-                                                   gnssRinex& gRin)
+   inline void GeneralEquations::synchronizeCSFlag(
+                                               const SourceSatDataMap& dataMap,
+                                               gnssRinex& gRin )
    {
       SourceID source = gRin.header.source;
       
@@ -496,8 +505,9 @@ namespace gpstk
 
       /// Synchronize the CS flag of input GDS object with the 
       /// SourceSatDataMap object
-   inline void GeneralEquations::synchronizeCSFlag(const SourceSatDataMap& dataMap,
-                                                   gnssDataMap& gdsMap)
+   inline void GeneralEquations::synchronizeCSFlag(
+                                                const SourceSatDataMap& dataMap,
+                                                gnssDataMap& gdsMap)
    {
          // Iterate through the gnssDatamap
       for(gnssDataMap::iterator it = gdsMap.begin();
@@ -541,7 +551,8 @@ namespace gpstk
 
 
       // update the satellite data due to the input GDS object
-   inline void GeneralEquations::updateSourceSatDataMap(const gnssDataMap& gdsMap)
+   inline void GeneralEquations::updateSourceSatDataMap(
+                                                     const gnssDataMap& gdsMap)
    {
       SourceSatDataMap dataMap;
 
@@ -567,16 +578,21 @@ namespace gpstk
             {
                SatID sat(stvmIter->first);
 
-               typeValueMap::const_iterator itt1 = stvmIter->second.find(TypeID::elevation);
-               typeValueMap::const_iterator itt2 = stvmIter->second.find(TypeID::CSL1);
+               typeValueMap::const_iterator itt1 = 
+                                       stvmIter->second.find(TypeID::elevation);
+
+               typeValueMap::const_iterator itt2 = 
+                                            stvmIter->second.find(TypeID::CSL1);
+
                if( (itt1==stvmIter->second.end()) || 
                    (itt2==stvmIter->second.end())   )
                {
-                  Exception e("The elevation should be exist but not, check it!");
+                  Exception e("The elevation should be exist but not.");
                   GPSTK_THROW(e);
                }
                
-               data.addData(sat,itt1->second,(itt2->second!=0.0)?true:false,false);
+               data.addData(sat, itt1->second,
+                            (itt2->second!=0.0)?true:false, false);
  
             }  // End of 'for( satTypeValueMap::const_iterator ...'
 
@@ -662,7 +678,7 @@ namespace gpstk
 
          // If code come here, that meant we failed to pick up any satellite 
          // as reference, and we throw an exception
-      Exception e("Failed to pick up any satellite as reference, check it please.");
+      Exception e("Failed to pick up any satellite as reference.");
       GPSTK_THROW(e);
 
       return 0;
@@ -696,6 +712,28 @@ namespace gpstk
       return indexOfReferenceSat(90.0);
 
    }  // End of method 'GeneralEquations::SatData::indexOfReferenceSat()''
+
+
+   inline void GeneralEquations::dumpSourceSatData(ostream& s,
+                                                   SourceSatDataMap dataMap)
+   { 
+      for(SourceSatDataMap::iterator it=dataMap.begin();
+          it!=dataMap.end();
+          ++it)
+      {
+         s << StringUtils::asString(it->first) << endl;
+
+         for(int i=0;i<it->second.satellite.size();i++)
+         {
+            s << setw(5)<< i << " " 
+               << StringUtils::asString(it->second.satellite[i])<<"  "
+              << it->second.csflag[i] <<" " 
+              << it->second.lockflag[i]<<" "
+              << it->second.elevation[i]<<endl;
+         }
+      }
+      
+   }  // End of method 'GeneralEquations::dumpSourceSatData()'
 
 
 }  // End of namespace gpstk

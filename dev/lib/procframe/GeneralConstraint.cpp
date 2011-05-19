@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
+//  Wei Yan - Chinese Academy of Sciences . 2011
 //
 //============================================================================
 
@@ -33,13 +33,14 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <algorithm>
 
 namespace gpstk
 {
    using namespace std;
 
       // Feed the  constraint equations to the solver
-   int GeneralConstraint::constraint(gnssDataMap& gdsMap)
+   int GeneralConstraint::constraint( gnssDataMap& gdsMap )
    {
       try
       {
@@ -56,7 +57,7 @@ namespace gpstk
          
 
       // Feed the  constraint equations to the solver
-   int GeneralConstraint::constraint(gnssSatTypeValue& gData)
+   int GeneralConstraint::constraint( gnssSatTypeValue& gData )
    {
       gnssRinex g1;
       g1.header = gData.header;
@@ -72,7 +73,7 @@ namespace gpstk
 
 
       // Feed the  constraint equations to the solver
-   int GeneralConstraint::constraint(gnssRinex& gRin)
+   int GeneralConstraint::constraint( gnssRinex& gRin )
    {
       gnssDataMap gdsMap;
       SourceID source( gRin.header.source );
@@ -87,7 +88,7 @@ namespace gpstk
 
       // Low level metod impose a ConstraintSystem object to the solver
    int GeneralConstraint::constraintToSolver( ConstraintSystem& system,
-                                              gnssDataMap& gdsMap)
+                                              gnssDataMap& gdsMap )
    {
       try
       {
@@ -101,12 +102,16 @@ namespace gpstk
          {    
             solver.kFilter.MeasUpdate(meas,design,covariance);
 
-            Vector<double> measVector = solver.getEquationSystem().getPrefitsVector();
-            Matrix<double> designMatrix = solver.getEquationSystem().getGeometryMatrix();
+            Vector<double> measVector = solver.getEquationSystem()
+                                              .getPrefitsVector();
+
+            Matrix<double> designMatrix = solver.getEquationSystem()
+                                                .getGeometryMatrix();
 
             solver.solution = solver.kFilter.xhat;
             solver.covMatrix = solver.kFilter.P;
-            solver.postfitResiduals = measVector - (designMatrix * solver.solution);
+            solver.postfitResiduals = measVector 
+                                     -(designMatrix * solver.solution);
 
             solver.postCompute(gdsMap);
          }
@@ -121,7 +126,7 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::constraint('
 
 
-   Matrix<double> GeneralConstraint::convertMatrix(size_t n, size_t oi, size_t ni)
+   Matrix<double> GeneralConstraint::convertMatrix(size_t n,size_t oi,size_t ni)
    {
       // Check input
       if( n<1 || oi<0 || ni<0 || oi>=n || ni>=n )
@@ -142,7 +147,7 @@ namespace gpstk
          }
          else
          {  
-            if(i==ni) T(i,oi) = 1.0;
+            T(i,oi) = 1.0;
          }
       }
 
@@ -151,9 +156,62 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::convertMatrix()'
 
 
+   Matrix<double> GeneralConstraint::convertMatrix(size_t n,size_t oi,size_t ni,
+                                                   std::vector<int> iv)
+   {  
+      // Check input
+      bool validInput(true);
+      
+      if( n<1 || oi<0 || ni<0 || oi>=n || ni>=n ) validInput = false;
+      
+      for(int i=0;i<iv.size();i++)
+      {
+         if(iv[i]<0 || iv[i]>=n) 
+         {
+            validInput = false;
+            break;
+         }
+      }
+
+      if(validInput==false)
+      {
+         Exception e("Invalid input, and check it.");
+         GPSTK_THROW(e);
+      }
+
+      if(oi==ni) return ident<double>(n);
+
+      Matrix<double> T(n,n,0.0);
+      for( int i = 0; i < n; i++ )
+      {
+         std::vector<int>::iterator it = find(iv.begin(),iv.end(),i);
+         if(it==iv.end()) 
+         {
+            T(i,i) = 1.0;
+            continue;
+         }
+
+         if( i != ni )
+         {
+            T(i,ni)= -1.0;
+            T(i,i) = (i == oi) ? 0.0 : 1.0;
+         }
+         else
+         {  
+            T(i,oi) = 1.0;
+         }
+      }
+
+      return T;
+      
+   }  // End of method 'GeneralConstraint::convertMatrix()'
+
+
       // Methods to parsing data from SolverGeneral
 
-   Variable GeneralConstraint::getVariable(const SourceID& source, const SatID& sat, const TypeID& type)
+   Variable GeneralConstraint::getVariable( const SourceID& source, 
+                                            const SatID& sat, 
+                                            const TypeID& type )
    {
       VariableSet vset;
 
@@ -173,7 +231,7 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceID& source)
+   VariableSet GeneralConstraint::getVariables( const SourceID& source )
    {
       VariableSet vset;
 
@@ -196,8 +254,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(const SourceID& source)'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceID& source,
-                                               const TypeID& type)
+   VariableSet GeneralConstraint::getVariables( const SourceID& source,
+                                                const TypeID& type )
    {
       VariableSet vset;
 
@@ -217,8 +275,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceID& source,
-                                               const TypeIDSet& typeSet)
+   VariableSet GeneralConstraint::getVariables( const SourceID& source,
+                                                const TypeIDSet& typeSet )
    {
       VariableSet vset;
 
@@ -239,7 +297,7 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceIDSet& sourceSet)
+   VariableSet GeneralConstraint::getVariables( const SourceIDSet& sourceSet )
    {
       VariableSet vset;
 
@@ -258,8 +316,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceIDSet& sourceSet,
-                                               const TypeID& type)
+   VariableSet GeneralConstraint::getVariables( const SourceIDSet& sourceSet,
+                                                const TypeID& type )
    {
       VariableSet vset;
       
@@ -279,8 +337,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceIDSet& sourceSet,
-                                               const TypeIDSet& typeSet)
+   VariableSet GeneralConstraint::getVariables( const SourceIDSet& sourceSet,
+                                                const TypeIDSet& typeSet )
    {
       VariableSet vset;
 
@@ -301,7 +359,7 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   VariableSet GeneralConstraint::getVariables(const SatID& sat)
+   VariableSet GeneralConstraint::getVariables( const SatID& sat )
    {
       VariableSet vset;
       
@@ -324,15 +382,18 @@ namespace gpstk
          }
          else if(sat==Variable::allGPSSats)
          {
-            if(itv->getSatellite().system==SatID::systemGPS) vset.insert(*itv);
+            if(itv->getSatellite().system==SatID::systemGPS) 
+               vset.insert(*itv);
          }
          else if(sat==Variable::allGlonassSats)
          {  
-            if(itv->getSatellite().system==SatID::systemGlonass) vset.insert(*itv);
+            if(itv->getSatellite().system==SatID::systemGlonass) 
+               vset.insert(*itv);
          }
          else if(sat==Variable::allGalileoSats)
          {
-            if(itv->getSatellite().system==SatID::systemGalileo) vset.insert(*itv);
+            if(itv->getSatellite().system==SatID::systemGalileo) 
+               vset.insert(*itv);
          }
          else
          {
@@ -346,8 +407,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(const SatID& sat)'
 
 
-   VariableSet GeneralConstraint::getVariables(const SatID& sat,
-                                               const TypeID& type)
+   VariableSet GeneralConstraint::getVariables( const SatID& sat,
+                                                const TypeID& type )
    {
       VariableSet vset;
 
@@ -364,8 +425,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(const SatID& sat,...)'
 
 
-   VariableSet GeneralConstraint::getVariables(const SatID& sat,
-                                               const TypeIDSet& typeSet)
+   VariableSet GeneralConstraint::getVariables( const SatID& sat,
+                                                const TypeIDSet& typeSet )
    {
       VariableSet vset;
 
@@ -383,7 +444,9 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   VariableSet GeneralConstraint::getVariables(const SourceID& source, const SatID& sat, const TypeID& type)
+   VariableSet GeneralConstraint::getVariables( const SourceID& source, 
+                                                const SatID& sat, 
+                                                const TypeID& type )
    {
       VariableSet vset;
 
@@ -400,7 +463,7 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getVariables(...'
 
 
-   Vector<double> GeneralConstraint::getSolution(const VariableSet& varSet)
+   Vector<double> GeneralConstraint::getSolution( const VariableSet& varSet )
    {
       Vector<double> solution(varSet.size(),0.0);
       
@@ -419,7 +482,7 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getSolution(...'
 
 
-   Matrix<double> GeneralConstraint::getCovariance(const VariableSet& varSet)
+   Matrix<double> GeneralConstraint::getCovariance( const VariableSet& varSet )
    {
       Matrix<double> covariance(varSet.size(),varSet.size(),0.0);
       
@@ -446,8 +509,9 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getCovariance(...'
 
 
-   GeneralConstraint& GeneralConstraint::changeState( const VariableList& varList,
-                                                      const Matrix<double>& convertMat)
+   GeneralConstraint& GeneralConstraint::changeState(
+                                               const VariableList& varList,
+                                               const Matrix<double>& convertMat)
    {
       VariableSet allVariable = getCurrentUnknowns();
 
@@ -500,7 +564,8 @@ namespace gpstk
       }
 
       Vector<double> solution = convertMat*vectorOfSolution;
-      Matrix<double> covariance = convertMat*matrixOfCovariance*transpose(convertMat);
+      Matrix<double> covariance = convertMat*matrixOfCovariance
+                                 *transpose(convertMat);
 
       i = 0;
       for(VariableList::const_iterator iti=varList.begin();
@@ -529,7 +594,8 @@ namespace gpstk
    }  // Ebd if method 'GeneralConstraint::changeState()'
 
 
-   int GeneralConstraint::findIndexOfSat(const SatIDSet& satSet,const SatID& sat)
+   int GeneralConstraint::findIndexOfSat( const SatIDSet& satSet,
+                                          const SatID& sat )
    {
       int indexOfSat(-1);
 
@@ -548,7 +614,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::findIndexOfSat()'
 
 
-   void GeneralConstraint::stackVariables(VariableList& varList,const VariableSet& varSet)
+   void GeneralConstraint::stackVariables( VariableList& varList,
+                                           const VariableSet& varSet )
    {
       for(VariableSet::const_iterator it= varSet.begin();
           it!=varSet.end();
@@ -560,8 +627,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::stackVariables()'
 
 
-   VariableSet GeneralConstraint::unionVariables(const VariableSet& vs1,
-                                                 const VariableSet& vs2)
+   VariableSet GeneralConstraint::unionVariables( const VariableSet& vs1,
+                                                  const VariableSet& vs2 )
    {
       VariableSet tempSet(vs1);
       for(VariableSet::const_iterator it=vs2.begin();
@@ -576,8 +643,8 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::unionVariables()'
 
 
-   VariableSet GeneralConstraint::differenceVariables(const VariableSet& vs1,
-                                                      const VariableSet& vs2)
+   VariableSet GeneralConstraint::differenceVariables( const VariableSet& vs1,
+                                                       const VariableSet& vs2 )
    {
       VariableSet tempSet;
       for(VariableSet::const_iterator it=vs1.begin();
