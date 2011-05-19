@@ -60,7 +60,7 @@ namespace gpstk
       RungeKutta4(const Matrix<double>& initialState,
                   double initialTime=0,
                   double timeEpsilon=1e-18)
-            : currentState(initialState), currentTime(initialTime), 
+            : currentTime(initialTime), currentState(initialState),
               teps(timeEpsilon), M(initialState.rows()), N(initialState.cols()),
               k1(M,N), k2(M,N), k3(M,N), k4(M,N), yn(M,N), tempy(M,N)
          { }     

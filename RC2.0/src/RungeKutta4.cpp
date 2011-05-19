@@ -31,9 +31,10 @@
  * Implementation of a Runge Kutta integrator.
  */
 
-void gpstk::RungeKutta4::integrateTo (double nextTime, 
-                                      double stepSize) 
+void gpstk::RungeKutta4::integrateTo( double nextTime,
+                                      double stepSize ) 
 {
+
    if (stepSize == 0) 
       stepSize = nextTime - currentTime;
 
@@ -41,44 +42,57 @@ void gpstk::RungeKutta4::integrateTo (double nextTime,
    
    while (!done)
    {
-      // Time steps
+
+         // Time steps
       double ctPlusDeltaT = currentTime + stepSize;
       double ctPlusHalfDeltaT = currentTime + (stepSize * .5);
 
-      // k1
+         // k1
       k1 = stepSize * derivative(currentTime, currentState, k1);
       tempy = currentState + (.5 * k1);
    
-      // k2
+         // k2
       k2 = stepSize * derivative(ctPlusHalfDeltaT, tempy, k2);
       tempy = currentState + (.5 * k2);
    
-      // k3
+         // k3
       k3 = stepSize * derivative(ctPlusHalfDeltaT, tempy, k3);
 
-      // k4
+         // k4
       k4 = stepSize * derivative(ctPlusDeltaT, tempy, k4);
       currentState += (k1 + 2. * (k2 + k3) + k4) / 6. ;
 
-      // If we are within teps of the goal time, we are done.
+         // If we are within teps of the goal time, we are done.
       if (fabs(currentTime + stepSize - nextTime) < teps) 
          done = true;
  
-      // If we are about to overstep, change the stepsize appropriately
-      // to hit our target final time; 
-      if ((currentTime + stepSize) > nextTime) 
-         stepSize = (nextTime - currentTime);
+         // If we are about to overstep, change the stepsize appropriately
+         // to hit our target final time. The change depends if the step is
+         // positive or negative
+      if( stepSize > 0.0 )
+      {
+         if ((currentTime + stepSize) > nextTime)
+            stepSize = (nextTime - currentTime);
+      }
+      else
+      {
+         if ( (currentTime + stepSize) < nextTime)
+            stepSize = (currentTime - nextTime);
+      }
 
       currentTime += stepSize;
    }
 
    currentTime = nextTime;
-}
 
-void gpstk::RungeKutta4::integrateTo (double nextTime,
+}  // End of method 'gpstk::RungeKutta4::integrateTo( nextTime, stepSize )'
+
+
+void gpstk::RungeKutta4::integrateTo( double nextTime,
                                       Matrix<double>& error,
-                                      double stepSize) 
+                                      double stepSize ) 
 {
+
    double deltaT = nextTime - currentTime;
    
       // Save the current state and time for the second step.
@@ -104,17 +118,5 @@ void gpstk::RungeKutta4::integrateTo (double nextTime,
    
    currentState = twoStepState + (twoStepState - oneStepState) / 15.0;
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
+}  // End of method 'gpstk::RungeKutta4::integrateTo(nextTime, error, stepSize)'
 
