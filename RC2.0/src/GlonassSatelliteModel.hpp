@@ -60,7 +60,7 @@ namespace gpstk
       { Init(); };
 
 
-//   private:
+   private:
 
 
          /** Implements "derivative()". It is based on accelerations.
@@ -79,7 +79,7 @@ namespace gpstk
 
          // Some internal variables we will need
       PZ90Ellipsoid pz90;
-      double j20, mu, ae, we, we2, k;
+      double j20, mu, ae, we, we2;
 
 
    };  // End of class "GlonassSatelliteModel"
