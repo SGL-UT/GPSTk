@@ -9,7 +9,8 @@ CodeSmoother.cpp ComputeCombination.cpp ComputeDOP.cpp ComputeIonoModel.cpp \
 ComputeIURAWeights.cpp ComputeLC.cpp ComputeLdelta.cpp ComputeLI.cpp \
 ComputeLinear.cpp ComputeMelbourneWubbena.cpp ComputeMOPSWeights.cpp \
 ComputePC.cpp ComputePdelta.cpp ComputePI.cpp ComputeSatPCenter.cpp \
-ComputeTropModel.cpp ComputeWindUp.cpp ConstraintSystem.cpp ConvertC1ToP1.cpp \
+ComputeSimpleWeights.cpp ComputeTropModel.cpp ComputeWindUp.cpp \
+ConstraintSystem.cpp ConvertC1ToP1.cpp \
 CorrectCodeBiases.cpp CorrectObservables.cpp DataHeaders.cpp \
 DataStructures.cpp Decimate.cpp DeltaOp.cpp Differentiator.cpp DoubleOp.cpp \
 Dumper.cpp EclipsedSatFilter.cpp Equation.cpp EquationSystem.cpp \
@@ -29,7 +30,8 @@ ComputeCombination.hpp ComputeDOP.hpp ComputeIonoModel.hpp \
 ComputeIURAWeights.hpp ComputeLC.hpp ComputeLdelta.hpp ComputeLI.hpp \
 ComputeLinear.hpp ComputeMelbourneWubbena.hpp ComputeMOPSWeights.hpp \
 ComputePC.hpp ComputePdelta.hpp ComputePI.hpp ComputeSatPCenter.hpp \
-ComputeTropModel.hpp ComputeWindUp.hpp ConstraintSystem.hpp ConvertC1ToP1.hpp \
+ComputeSimpleWeights.hpp ComputeTropModel.hpp ComputeWindUp.hpp \
+ConstraintSystem.hpp ConvertC1ToP1.hpp \
 CorrectCodeBiases.hpp CorrectObservables.hpp DataHeaders.hpp \
 DataStructures.hpp Decimate.hpp DeltaOp.hpp Differentiator.hpp DoubleOp.hpp \
 Dumper.hpp EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp \
