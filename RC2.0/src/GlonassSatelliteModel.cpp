@@ -38,6 +38,7 @@ namespace gpstk
    void GlonassSatelliteModel::Init(void)
    {
          // Let's initialize some important values to save some time
+      PZ90Ellipsoid pz90;
       j20 = pz90.j20();
       mu = pz90.gm();
       ae = pz90.a();
@@ -70,17 +71,21 @@ namespace gpstk
       double vz( inState(5,0) );          // Z velocity
 
          // The distance from satellite to Earth center is an important value
-      double r2(x*x+y*y+z*z);
+      double r2( x*x + y*y + z*z );
       double r( std::sqrt(r2) );
-      double k1(mu/r2);
-      double k2(1.5*j20*(ae/r)*(ae/r));
-      double k3(5.0*(z/r)*(z/r));
+      double k1( mu/r2 );
+      double ar( ae/r );
+      double k2( 1.5 * j20 * ar * ar );
+      double xr( x/r );
+      double yr( y/r );
+      double zr( z/r );
+      double k3( 5.0 * zr * zr );
 
          // Compute the GLONASS accelerations. Please note that they are
          // expressed in an ECEF system (i.e. Coriolis forces are included)
-      double gloAx( (-1.0 + k2*(1.0-k3))*k1*(x/r) + ax + we2*x + 2.0*we*vy );
-      double gloAy( (-1.0 + k2*(1.0-k3))*k1*(y/r) + ay + we2*y - 2.0*we*vx );
-      double gloAz( (-1.0 + k2*(3.0-k3))*k1*(z/r) + az );
+      double gloAx( (-1.0 + k2*(1.0-k3))*k1*xr + ax + we2*x + 2.0*we*vy );
+      double gloAy( (-1.0 + k2*(1.0-k3))*k1*yr + ay + we2*y - 2.0*we*vx );
+      double gloAz( (-1.0 + k2*(3.0-k3))*k1*zr + az );
 
          // Let's insert data related to X coordinates
       inStateDot(0,0) = inState(1,0);     // Set X'  = Vx

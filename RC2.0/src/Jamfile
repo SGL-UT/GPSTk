@@ -70,6 +70,7 @@ else
       GaussianDistribution.cpp
       GenXSequence.cpp
       Geodetic.cpp
+      GloBrcEphemerisStore.cpp
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
       GlonassSatelliteModel.cpp
@@ -255,6 +256,7 @@ else
       GenXSequence.hpp
       Geodetic.hpp
       GeoidModel.hpp
+      GloBrcEphemerisStore.hpp
       GloEphemerisStore.hpp
       GloFreqIndex.hpp
       GlonassSatelliteModel.hpp
