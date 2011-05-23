@@ -37,6 +37,9 @@
 #include "EquationSystem.hpp"
 #include "DataStructures.hpp"
 
+
+using namespace std;
+
 namespace gpstk
 {
       /// Handy type definition
