@@ -135,6 +135,21 @@ namespace gpstk
 
                }  // End of 'for( itType = diffTypes.begin(); ...'
 
+                  // update CSFlag
+               if(updateCSFlag)
+               {
+                  double CSValue1 = gData[it->first][TypeID::CSL1] 
+                                   +refData[it->first][TypeID::CSL1];
+                  double CSValue2 = gData[it->first][TypeID::CSL2] 
+                                   +refData[it->first][TypeID::CSL2];
+
+
+                  gData[it->first][TypeID::CSL1] = (CSValue1 > 0.0) ? 1.0 : 0.0;
+                  
+                  gData[it->first][TypeID::CSL2] = (CSValue1 > 0.0) ? 1.0 : 0.0;
+
+               }  // End of 'if(updateCSFlag)'
+
             }
             else
             {
