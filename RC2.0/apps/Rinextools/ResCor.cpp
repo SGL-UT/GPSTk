@@ -461,7 +461,7 @@ try {
    CommandOptionRest Rest("");
 
    CommandOptionParser Par(
-   "Prgm ResCor will open and read a single Rinex observation file, apply editing:
+   "Prgm ResCor will open and read a single Rinex observation file, apply editing:"
    " commands\n using the RinexEditor package, compute any of several residuals and"
    " corrections and \n register extended Rinex observation types for them, and then"
    " write the edited data,\n along with the new extended observation types, to an"
@@ -2160,8 +2160,8 @@ try {
    else if(lowerCase(string(arg)) == string("--rxhelp"))
       Args.push_back(string("--Rxhelp"));
    // handle debias limit on -AO command
-   else if(string(arg)==srting("--AO"))
-      found_AO_along = true;
+   else if(string(arg)==string("--AO"))
+      found_AO_alone = true;
    else if(found_AO_alone) {
       found_AO_alone = false;
       word = string("-AO") + string(arg);

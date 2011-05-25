@@ -654,7 +654,7 @@ try {
       if(!gps && !glo && !geo) RHOutput.system.system = RinexSatID::systemTransit;
       if(!gps && !glo && !tra) RHOutput.system.system = RinexSatID::systemGeosync;
       if(find(DelSV.begin(),DelSV.end(),RinexSatID(-1,SatID::systemGalileo))
-                  != DelSV.end())) gal=false;
+                  != DelSV.end()) gal=false;
       if(!glo && !tra && !geo && !gal)
          RHOutput.system.system = RinexSatID::systemGPS;
       else if(!gps && !tra && !geo && !gal)
