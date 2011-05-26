@@ -74,14 +74,12 @@ namespace gpstk
 
      /// A Simple Constructor.
      Rinex3ObsHeader()
-     //       : valid(0), version(3.0)
        : valid(0)
      {}
 
      /// Clear (empty out) header
      inline void clear()
      {
-//       version = 3.0;
        commentList.clear();
        obsTypeList.clear();
        numObsForSat.clear();
@@ -121,50 +119,54 @@ namespace gpstk
      static const std::string stringSystemDCBSapplied; ///< "SYS / DCBS APPLIED"    (optional)
      static const std::string stringSystemPCVSapplied; ///< "SYS / PCVS APPLIED"    (optional)
      static const std::string stringSystemScaleFac;    ///< "SYS / SCALE FACTOR"    (optional)
+     static const std::string stringSystemPhaseShift;  ///< "SYS / PHASE SHIFTS"    R3.01
+     static const std::string stringGlonassSlotFreqNo; ///< "GLONASS SLOT / FRQ #"  (optional R3.01)
      static const std::string stringLeapSeconds;       ///< "LEAP SECONDS"          (optional)
      static const std::string stringNumSats;           ///< "# OF SATELLITES"       (optional)
      static const std::string stringPrnObs;            ///< "PRN / # OF OBS"        (optional)
      static const std::string stringEoH;               ///< "END OF HEADER"
      //@}
 
-     /// Validity bits for the RINEX Observation Header
+     /// Validity bits for the RINEX Observation Header - please keep ordered as strings above
      enum validBits
      {
-       validVersion           = 0x01,        ///< "RINEX VERSION / TYPE"
-       validRunBy             = 0x02,        ///< "PGM / RUN BY / DATE"
-       validComment           = 0x04,        ///< "COMMENT"               (optional)
-       validMarkerName        = 0x08,        ///< "MARKER NAME"
-       validMarkerNumber      = 0x010,       ///< "MARKER NUMBER"         (optional)
-       validMarkerType        = 0x020,       ///< "MARKER TYPE"           (optional)
-       validObserver          = 0x040,       ///< "OBSERVER / AGENCY"
-       validReceiver          = 0x080,       ///< "REC # / TYPE / VERS"
-       validAntennaType       = 0x0100,      ///< "ANT # / TYPE"
-       validAntennaPosition   = 0x0200,      ///< "APPROX POSITION XYZ"   (optional if moving)
-       validAntennaDeltaHEN   = 0x0400,      ///< "ANTENNA: DELTA H/E/N"
-       validAntennaDeltaXYZ   = 0x0800,      ///< "ANTENNA: DELTA X/Y/Z"  (optional)
-       validAntennaPhaseCtr   = 0x01000,     ///< "ANTENNA: PHASECENTER"  (optional)
-       validAntennaBsightXYZ  = 0x02000,     ///< "ANTENNA: B.SIGHT XYZ"  (optional)
-       validAntennaZeroDirAzi = 0x04000,     ///< "ANTENNA: ZERODIR AZI"  (optional)
-       validAntennaZeroDirXYZ = 0x08000,     ///< "ANTENNA: ZERODIR XYZ"  (optional)
-       validCenterOfMass      = 0x010000,    ///< "CENTER OF MASS: XYZ"   (optional)
-       validSystemObsType     = 0x020000,    ///< "SYS / # / OBS TYPES"
-       validSigStrengthUnit   = 0x040000,    ///< "SIGNAL STRENGTH UNIT"  (optional)
-       validInterval          = 0x080000,    ///< "INTERVAL"
-       validFirstTime         = 0x0100000,   ///< "TIME OF FIRST OBS"
-       validLastTime          = 0x0200000,   ///< "TIME OF LAST OBS"      (optional)
-       validReceiverOffset    = 0x0400000,   ///< "RCV CLOCK OFFS APPL"   (optional)
-       validSystemDCBSapplied = 0x0800000,   ///< "SYSTEM DCBS APPLIED"   (optional)
-       validSystemPCVSapplied = 0x01000000,  ///< "SYSTEM PCVS APPLIED"   (optional)
-       validSystemScaleFac    = 0x02000000,  ///< "SYSTEM SCALE FACTOR"   (optional)
-       validLeapSeconds       = 0x04000000,  ///< "LEAP SECONDS"          (optional)
-       validNumSats           = 0x08000000,  ///< "# OF SATELLITES"       (optional)
-       validPrnObs            = 0x010000000, ///< "PRN / # OF OBS"        (optional)
+       validVersion           =        0x01, ///< "RINEX VERSION / TYPE"
+       validRunBy             =        0x02, ///< "PGM / RUN BY / DATE"
+       validComment           =        0x04, ///< "COMMENT"               (optional)
+       validMarkerName        =        0x08, ///< "MARKER NAME"
+       validMarkerNumber      =       0x010, ///< "MARKER NUMBER"         (optional)
+       validMarkerType        =       0x020, ///< "MARKER TYPE"           (optional)
+       validObserver          =       0x040, ///< "OBSERVER / AGENCY"
+       validReceiver          =       0x080, ///< "REC # / TYPE / VERS"
+       validAntennaType       =      0x0100, ///< "ANT # / TYPE"
+       validAntennaPosition   =      0x0200, ///< "APPROX POSITION XYZ"   (optional if moving)
+       validAntennaDeltaHEN   =      0x0400, ///< "ANTENNA: DELTA H/E/N"
+       validAntennaDeltaXYZ   =      0x0800, ///< "ANTENNA: DELTA X/Y/Z"  (optional)
+       validAntennaPhaseCtr   =     0x01000, ///< "ANTENNA: PHASECENTER"  (optional)
+       validAntennaBsightXYZ  =     0x02000, ///< "ANTENNA: B.SIGHT XYZ"  (optional)
+       validAntennaZeroDirAzi =     0x04000, ///< "ANTENNA: ZERODIR AZI"  (optional)
+       validAntennaZeroDirXYZ =     0x08000, ///< "ANTENNA: ZERODIR XYZ"  (optional)
+       validCenterOfMass      =    0x010000, ///< "CENTER OF MASS: XYZ"   (optional)
+       validSystemObsType     =    0x020000, ///< "SYS / # / OBS TYPES"
+       validSigStrengthUnit   =    0x040000, ///< "SIGNAL STRENGTH UNIT"  (optional)
+       validInterval          =    0x080000, ///< "INTERVAL"              (optional)
+       validFirstTime         =   0x0100000, ///< "TIME OF FIRST OBS"
+       validLastTime          =   0x0200000, ///< "TIME OF LAST OBS"      (optional)
+       validReceiverOffset    =   0x0400000, ///< "RCV CLOCK OFFS APPL"   (optional)
+       validSystemDCBSapplied =   0x0800000, ///< "SYSTEM DCBS APPLIED"   (optional)
+       validSystemPCVSapplied =  0x01000000, ///< "SYSTEM PCVS APPLIED"   (optional)
+       validSystemScaleFac    =  0x02000000, ///< "SYSTEM SCALE FACTOR"   (optional)
+       validSystemPhaseShift  =  0x04000000, ///< "SYS / PHASE SHIFTS"               R3.01
+       validGlonassFreqNo     =  0x08000000, ///< "GLONASS SLOT / FRQ #"  (optional) R3.01
+       validLeapSeconds       = 0x010000000, ///< "LEAP SECONDS"          (optional)
+       validNumSats           = 0x020000000, ///< "# OF SATELLITES"       (optional)
+       validPrnObs            = 0x040000000, ///< "PRN / # OF OBS"        (optional)
        validEoH               = 0x080000000, ///< "END OF HEADER"
 
        /// This mask is for all required valid fields for RINEX 3.0 (3.00)
-//       allValid30 = 0x0801207CB,  // case for static receivers
-       allValid30 = 0x0801205CB,  // case for moving receivers -- make default
-                                  // if validAntennaPosition is present, we know it's static (??)
+       //allValid30 = 0x0801207CB,  // case for static receivers - AntennaPosition present
+       allValid30 = 0x0801205CB,    // case for moving receivers -- make default
+       allValid301 = 0x0841205CB,
      };
 
      /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corrections)
@@ -221,6 +223,9 @@ namespace gpstk
      std::vector<Rinex3CorrInfo> infoDCBS;           ///< DCBS INFO                      (optional)
      std::vector<Rinex3CorrInfo> infoPCVS;           ///< PCVS INFO                      (optional)
      int factor, factorPrev;                         ///< scale factor (temp holders)
+     ObsID sysPhaseShiftObsID;                       ///< save ObsID for continuation "SYS / PHASE SHIFT"    R3.01
+     std::map<ObsID, std::map<RinexSatID,double> > sysPhaseShift;    ///< store obs,sat,correction "SYS / PHASE SHIFT"    R3.01
+     std::map<RinexSatID,int> GlonassFreqNo;         ///< "GLONASS SLOT / FRQ #"         (optional) R3.01
      int leapSeconds;                                ///< LEAP SECONDS                   (optional)
      short numSVs;                                   ///< # OF SATELLITES                (optional)
      std::map<RinexSatID,vector<int> > numObsForSat; ///< PRN / # OF OBS                 (optional)

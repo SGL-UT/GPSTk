@@ -79,6 +79,7 @@ namespace gpstk
             case systemGlonass:
             case systemGeosync:
             case systemTransit:
+            case systemCompass:           // 3.01
                break;
             // Invalidate anything non-RINEX.
             default:
@@ -136,6 +137,7 @@ namespace gpstk
             case systemGlonass: return 'R';
             case systemGeosync: return 'S';
             case systemTransit: return 'T';
+            case systemCompass: return 'C';
             default:            return '?';
          }
       };
@@ -154,6 +156,7 @@ namespace gpstk
             case systemGlonass: return "GLONASS";
             case systemGeosync: return "Geosync";
             case systemTransit: return "Transit";
+            case systemCompass: return "Compass";
             default:            return "Unknown";
          }
       };
@@ -198,6 +201,9 @@ namespace gpstk
                break;
             case ' ': case 'G': case 'g':
                system = SatID::systemGPS;
+               break;
+            case 'C': case 'c':
+               system = SatID::systemCompass;
                break;
             default:                   // non-RINEX system character
                Exception e(std::string("Invalid system character \"")

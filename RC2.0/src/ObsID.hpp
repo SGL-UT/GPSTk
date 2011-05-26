@@ -151,6 +151,7 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
+
          tcUndefined,
          tcLast     ///< Used to verify that all items are described at compile time
       };

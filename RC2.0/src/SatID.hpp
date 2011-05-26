@@ -69,6 +69,7 @@ namespace gpstk
          systemGeosync,
          systemLEO,
          systemTransit,
+         systemCompass,
          systemMixed,
          systemUserDefined,
          systemUnknown
@@ -95,6 +96,7 @@ namespace gpstk
             case systemGeosync: return "Geostationary"; break;
             case systemLEO:     return "LEO";           break;
             case systemTransit: return "Transit";       break;
+            case systemCompass: return "Compass";       break;
             case systemMixed:   return "Mixed";         break;
             case systemUserDefined:   return "UserDefined";         break;
             case systemUnknown: return "Unknown";       break;
