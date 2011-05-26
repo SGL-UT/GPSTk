@@ -35,6 +35,7 @@ namespace gpstk
       // This method to get the convert matrix from SD ambiguity to DD 
       // ambiguity
    Matrix<double> ARBase::sd2ddMatrix(const size_t& n, const size_t& i)
+      throw(ARException)
    {
       if( i >= n)
       {
@@ -55,5 +56,44 @@ namespace gpstk
 
    }  // End of method 'ARBase::sd2ddMatrix()'
    
+      // Compute float ambiguity by selection of the parameter weight method
+   void ARBase::computeFloatAmbiguity(const Matrix<double>& A, 
+                                      const Matrix<double>& B, 
+                                      const Matrix<double>& W,
+                                      const Vector<double>& y, 
+                                      Vector<double>& ambFloat,
+                                      Matrix<double>& ambCov,
+                                      double smFactor)
+      throw(ARException)
+   {
+      try
+      {
+            // check the smooth factor
+         if( (smFactor< 0.001) || (smFactor>0.0001))
+         {
+            smFactor = 0.001;
+         }
+
+         Matrix<double> I = ident<double>(A.rows());
+         Matrix<double> AT = transpose(A);
+         Matrix<double> ATW = AT*W;
+
+         Matrix<double> Px = diag(ATW*A);
+
+         Matrix<double> Ja = I - A * inverseSVD(ATW * A + smFactor*Px) * ATW;
+
+         Matrix<double> BTWJ = transpose(B) * W * Ja;
+
+         ambFloat= inverseSVD(BTWJ * B) * BTWJ * y;
+         ambCov = inverseSVD(BTWJ * B);
+      }
+      catch (...)
+      {
+         ARException e("Failed to compute float ambiguity.");
+         GPSTK_THROW(e);
+      }
+   
+   }  // End of method 'ARLambda::computeFloatAmbiguity()'
+
 }   // End of namespace gpstk
 

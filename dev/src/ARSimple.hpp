@@ -1,12 +1,12 @@
 #pragma ident "$Id$"
 
 /**
- * @file ARMLambda.hpp
+ * @file ARSimple.hpp
  * 
  */
 
-#ifndef GPSTK_ARMLAMBDA_HPP
-#define GPSTK_ARMLAMBDA_HPP
+#ifndef GPSTK_ARSIMPLE_HPP
+#define GPSTK_ARSIMPLE_HPP
 
 //============================================================================
 //
@@ -30,44 +30,36 @@
 //
 //============================================================================
 
-#include "ARLambda.hpp"
+#include "ARBase.hpp"
 
 namespace gpstk
 {
-      /** This class resolve integer ambiguity by the Modified LAMBDA method.
-       *
-       * The algorithm was described by:
-       *
-       *   X.-W.Chang, X.Yang, T.Zhou, MLAMBDA: A modified LAMBDA method for
-       *   integer least-squares estimation, J.Geodesy, Vol.79, 552-565, 2005
-       *
+      /** This class resolve integer ambiguity by simply round  the float 
+       *  ambiguities to the nearest integers.
        */
-   class ARMLambda : public ARLambda  
+   class ARSimple   
    {
    public:
       
          /// Default constructor
-      ARMLambda(){}      
+      ARSimple(){}      
       
-
-         /// Destractor
-      virtual ~ARMLambda(){}
+         /// Integer Ambiguity Resolution method
+      virtual Vector<double> resolveIntegerAmbiguity( 
+                                               const Vector<double>& ambFloat, 
+                                               const Matrix<double>& ambCov )
+         throw(ARException);
+      
+         /// Destructor
+      virtual ~ARSimple(){}
       
    protected:
-
-         /// modified lambda (mlambda) search
-      virtual int search( const Matrix<double>& L, 
-                          const Vector<double>& D, 
-                          const Vector<double>& zs, 
-                          Matrix<double>& zn, 
-                          Vector<double>& s, 
-                          const int& m = 2 );
+      
          
-   };   // End of class 'ARMLambda'
+   };   // End of class 'ARSimple'
    
-
 }   // End of namespace gpstk
 
 
-#endif  //GPSTK_ARMLAMBDA_HPP
+#endif  //GPSTK_ARSIMPLE_HPP
 

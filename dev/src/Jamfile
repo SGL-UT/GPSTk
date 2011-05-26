@@ -21,7 +21,7 @@ else
 {
 # Please add in alphabetical order
    GPSBuildLibrary gpstk :
-      ANSITime.cpp AlmOrbit.cpp Antenna.cpp AntexReader.cpp
+      ANSITime.cpp AlmOrbit.cpp Antenna.cpp AntexReader.cpp ARBase.cpp ARMLambda.cpp ARLambda.cpp ARSimple.cpp
       AstronomicalFunctions.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp
       BinexData.cpp BLQDataReader.cpp Chi2Distribution.cpp CivilTime.cpp
       CodeBuffer.cpp CommandOption.cpp CommandOptionParser.cpp
@@ -62,6 +62,7 @@ else
    InstallFile $(INCDIR) :
 # please add in alphabetical order
       AllanDeviation.hpp ANSITime.hpp AlmOrbit.hpp Antenna.hpp AntexReader.hpp
+      ARBase.hpp ARMLambda.hpp ARLambda.hpp ARSimple.hpp
       AstronomicalFunctions.hpp BaseDistribution.hpp Bancroft.hpp
       BasicFramework.hpp BinUtils.hpp BinexData.hpp BinexFilterOperators.hpp
       BinexStream.hpp BivarStats.hpp BLQDataReader.hpp CheckPRData.hpp
