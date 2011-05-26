@@ -279,6 +279,7 @@ namespace gpstk
       tStrings[cdtPC]    = "cdtPC";
       tStrings[cdtLC]    = "cdtLC";
       tStrings[cdtWL]    = "cdtWL";
+      tStrings[cdtMW]    = "cdtMW";
 
       tStrings[cdtSatC1]    = "cdtSatC1";
       tStrings[cdtSatP1]    = "cdtSatP1";
@@ -292,6 +293,7 @@ namespace gpstk
       tStrings[cdtSatPC]    = "cdtSatPC";
       tStrings[cdtSatLC]    = "cdtSatLC";
       tStrings[cdtSatWL]    = "cdtSatWL";
+      tStrings[cdtSatMW]    = "cdtSatMW";
 
       tStrings[recX]       = "RxPositionX";
       tStrings[recY]       = "RxPositionY";
