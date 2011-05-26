@@ -75,7 +75,7 @@ namespace gpstk
          undefined,        ///< Unknown or undefined SP3 file format
          SP3a,             ///< SP3 version a
          SP3b,             ///< SP3 version b (very similar to SP3a)
-         SP3c,             ///< SP3 version c (contains a/b as a subset)
+         SP3c              ///< SP3 version c (contains a/b as a subset)
       };
 
          /// Supported time systems (version 'c' only)
@@ -85,7 +85,7 @@ namespace gpstk
          timeUTC,
          timeGLO,
          timeGAL,
-         timeTAI,
+         timeTAI
       };
 
          /// constructor

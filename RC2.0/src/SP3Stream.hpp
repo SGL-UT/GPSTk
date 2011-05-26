@@ -63,9 +63,9 @@ namespace gpstk
          /// Default constructor
       SP3Stream() 
          : headerRead(false),
-           lastLine(std::string()),
            wroteEOF(false),
-           writingMode(false)
+           writingMode(false),
+           lastLine(std::string())
          {}
       
          /// Common constructor: open (default: to read)
