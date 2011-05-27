@@ -49,7 +49,7 @@ namespace gpstk
       throw()
    {
      s << "vel:" << v << ", acc:" << a << endl
-       << "TauN:" << dtime << ", GammaN:" << ddtime << endl
+       << "TauN:" << clkbias << ", GammaN:" << clkdrift << endl
        << "MFTime:" << MFtime<< ", health:" << health << endl
        << "freqNum:" << freqNum << ", ageOfInfo:" << ageOfInfo;
    }
@@ -62,8 +62,8 @@ namespace gpstk
        x = pos;
        v = vel;
        a = acc;
-       dtime = tau;
-       ddtime = gamma;
+       clkbias = tau;
+       clkdrift = gamma;
        MFtime = mftime;
        health = h;
        freqNum = freqnum;

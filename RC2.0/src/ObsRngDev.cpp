@@ -64,15 +64,15 @@ namespace gpstk
       const double prange,
       const SatID& svid,
       const DayTime& time,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
       bool svTime)
       : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, em, svTime);
-      Geodetic gx(rxpos, &em);
-      NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
+      Position gx(rxpos, Position::Geodetic, &em);
+      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), time.DOYday());
       computeTrop(nb);
    }
 
@@ -80,7 +80,7 @@ namespace gpstk
       const double prange,
       const SatID& svid,
       const DayTime& time,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
       const IonoModelStore& ion,
@@ -89,8 +89,8 @@ namespace gpstk
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
       computeOrd(prange, rxpos, eph, em, svTime);
-      Geodetic gx(rxpos, &em);
-      NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
+      Position gx(rxpos, Position::Geodetic, &em);
+      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), time.DOYday());
       computeTrop(nb);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
@@ -100,7 +100,7 @@ namespace gpstk
       const double prange,
       const SatID& svid,
       const DayTime& time,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
       const TropModel& tm,
@@ -115,7 +115,7 @@ namespace gpstk
       const double prange,
       const SatID& svid,
       const DayTime& time,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
       const TropModel& tm,
@@ -126,7 +126,7 @@ namespace gpstk
    {
       computeOrd(prange, rxpos, eph, em, svTime);
       computeTrop(tm);
-      Geodetic gx(rxpos, &em);
+      Position gx(rxpos, Position::Geodetic, &em);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
    }
@@ -137,7 +137,7 @@ namespace gpstk
       const double prange2,
       const SatID& svid,
       const DayTime& time,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
       bool svTime)
@@ -148,8 +148,8 @@ namespace gpstk
       iono = prange1 - icpr;
 
       computeOrd(icpr, rxpos, eph, em, svTime);
-      Geodetic gx(rxpos, &em);
-      NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
+      Position gx(rxpos, Position::Geodetic, &em);
+      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), time.DOYday());
       computeTrop(nb);
    }
 
@@ -159,7 +159,7 @@ namespace gpstk
       const double prange2,
       const SatID& svid,
       const DayTime& time,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       const EllipsoidModel& em,
       const TropModel& tm,
@@ -177,7 +177,7 @@ namespace gpstk
    // This should be used for obs in GPS (i.e. receiver) time.
    void ObsRngDev::computeOrdRx(
       const double obs,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       const EllipsoidModel& em)
    {
@@ -217,7 +217,7 @@ namespace gpstk
 // This should be used for obs tagged in SV time
    void ObsRngDev::computeOrdTx(
       double obs,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
       const EllipsoidModel& em)
    {
@@ -241,8 +241,8 @@ namespace gpstk
                    << std::endl
                    << "  rx.x=" << rxpos
                    << std::setprecision(4) << std::scientific
-                   << ", sv bias=" << cer.svPosVel.dtime
-                   << ", sv drift=" << cer.svPosVel.ddtime
+                   << ", sv bias=" << cer.svPosVel.clkbias
+                   << ", sv drift=" << cer.svPosVel.clkdrift
                    << std::endl;
          std::cout.flags(oldFlags);
       }

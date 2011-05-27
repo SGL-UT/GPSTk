@@ -123,6 +123,10 @@ namespace gpstk
                         const CommonTime& tmax = CommonTime::END_OF_TIME)
          throw();
 
+      /// Clear the dataset, meaning remove all data
+      virtual void clear(void) throw()
+      { uba.clear(); }
+
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
@@ -144,6 +148,17 @@ namespace gpstk
       virtual bool velocityIsPresent()
          const throw()
       {return true;}
+
+      /// Return true if velocity data is present in the store
+      virtual bool hasVelocity() const throw()
+      { return true; }
+
+      /// Return true if the given SatID is present in the store
+      virtual bool isPresent(const SatID& sat) const throw()
+      {
+         if(uba.find(sat) == uba.end()) return false;
+         return true;
+      }
 
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not 

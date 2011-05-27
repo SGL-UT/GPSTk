@@ -88,7 +88,7 @@ namespace gpstk
 
 
    double IonoModel::getCorrection(const CommonTime& time,
-                                   const Geodetic& rxgeo,
+                                   const Position& rxgeo,
                                    double svel,
                                    double svaz,
                                    Frequency freq) const
@@ -108,7 +108,7 @@ namespace gpstk
       double azRad = svaz * DEG_TO_RAD;
       double svE = svel / 180.0;
 
-      double phi_u = rxgeo.getLatitude() / 180.0;
+      double phi_u = rxgeo.getGeodeticLatitude() / 180.0;
       double lambda_u = rxgeo.getLongitude() / 180.0;
       
       double psi = (0.0137 / (svE + 0.11)) - 0.022;

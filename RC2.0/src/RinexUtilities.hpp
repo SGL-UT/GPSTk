@@ -68,6 +68,12 @@ int RegisterARLUTExtendedTypes(void);
     */
 bool isSP3File(const std::string& file);
 
+   /** Determine if the given file is a RINEX clock format file.
+    * @param file the filename
+    * @return true if the file is RINEX clock format.
+    */
+bool isRinexClockFile(const std::string& file);
+
    /** Determine if the given file is a RINEX navigation file.
     * Open the file, read the header, and test its validity.
     * @param file the filename
@@ -102,7 +108,7 @@ bool isRinex3ObsFile(const std::string& file);
     * invalid headers.
     * @param files  vector<string> containing filenames, with path
     */
-void sortRinexObsFiles(std::vector<std::string>& files);
+std::string sortRinexObsFiles(std::vector<std::string>& files) throw(Exception);
 
    /** Sort a vector of RINEX 3 obs file names on the time of the first observation
     * as found in the header. Return the sorted list in the calling argument.

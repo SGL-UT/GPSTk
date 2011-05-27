@@ -52,8 +52,8 @@ namespace gpstk
          glorecord.v = ECEF(data.vx,data.vy,data.vz);
          glorecord.a = ECEF(data.ax,data.ay,data.az);
 
-         glorecord.dtime     = data.TauN;
-         glorecord.ddtime    = data.GammaN;
+         glorecord.clkbias   = data.TauN;
+         glorecord.clkdrift  = data.GammaN;
          glorecord.MFtime    = data.MFtime;
          glorecord.health    = data.health;
          glorecord.freqNum   = data.freqNum;
@@ -223,12 +223,8 @@ namespace gpstk
       sv.x[2] = gloSV.getState()(4,0);   // Z coordinate
       sv.v[2] = gloSV.getState()(5,0);   // Z velocity
 
-         // Please note that in order to keep consistency with the current
-         // standards of the GPSTk, the 'dtime' value holds the sum of
-         // satellite clock corrections AND relativity corrections (already
-         // included in GLONASS ephemeris). This may change in the near future.
-      sv.dtime = data.dtime - data.ddtime * (epoch - refEpoch);
-      sv.ddtime = data.ddtime;
+      sv.clkbias = data.clkbias - data.clkdrift * (epoch - refEpoch);
+      sv.clkdrift = data.clkdrift;
       sv.frame = ReferenceFrame::PZ90;
 
          // We are done, let's return

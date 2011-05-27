@@ -57,8 +57,8 @@ namespace gpstk
       glorecord.v = ECEF(data.vx,data.vy,data.vz);
       glorecord.a = ECEF(data.ax,data.ay,data.az);
 
-      glorecord.dtime     = data.TauN;
-      glorecord.ddtime    = data.GammaN;
+      glorecord.clkbias   = data.TauN;
+      glorecord.clkdrift  = data.GammaN;
       glorecord.MFtime    = data.MFtime;
       glorecord.health    = data.health;
       glorecord.freqNum   = data.freqNum;
@@ -101,12 +101,6 @@ namespace gpstk
      if (i != sem.end())      // exact match of t
      {
        sv = i->second;
-
-       // There is a major problem here b/c the relativity correction cannot
-       // be removed without the velocity.  This makes dtime inconsistent with
-       // dtime returned by getXvt().  This is another reason to remove it from
-       // the definition of dtime.
-
        return sv;
      }
 
@@ -188,7 +182,7 @@ namespace gpstk
        X.push_back(itr->second.x[0]);
        Y.push_back(itr->second.x[1]);
        Z.push_back(itr->second.x[2]);
-       T.push_back(itr->second.dtime);
+       T.push_back(itr->second.clkbias);
 
        if(itr == j) break;
      }
@@ -196,7 +190,7 @@ namespace gpstk
      LagrangeInterpolation(times,X,dt,sv.x[0]);
      LagrangeInterpolation(times,Y,dt,sv.x[1]);
      LagrangeInterpolation(times,Z,dt,sv.x[2]);
-     LagrangeInterpolation(times,T,dt,sv.dtime);
+     LagrangeInterpolation(times,T,dt,sv.clkbias);
 
      // Again, there is a problem here b/c the relativity correction
      // cannot be computed without the velocity.  See note above.
@@ -239,10 +233,9 @@ namespace gpstk
      {
        sv = i->second;
 
-       if (sat.system != SatID::systemGlonass)
-         sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-                     -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-                     -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+       sv.relcorr = -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
+                    -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+                    -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
        return sv;
      }
 
@@ -324,12 +317,12 @@ namespace gpstk
        X.push_back(itr->second.x[0]);
        Y.push_back(itr->second.x[1]);
        Z.push_back(itr->second.x[2]);
-       T.push_back(itr->second.dtime);
+       T.push_back(itr->second.clkbias);
 
        VX.push_back(itr->second.v[0]);
        VY.push_back(itr->second.v[1]);
        VZ.push_back(itr->second.v[2]);
-       F.push_back(itr->second.ddtime);
+       F.push_back(itr->second.clkdrift);
 
        if (itr == j) break;
      }
@@ -339,29 +332,27 @@ namespace gpstk
        sv.x[0]   = LagrangeInterpolation(times,X,dt,err);
        sv.x[1]   = LagrangeInterpolation(times,Y,dt,err);
        sv.x[2]   = LagrangeInterpolation(times,Z,dt,err);
-       sv.dtime  = LagrangeInterpolation(times,T,dt,err);
+       sv.clkbias  = LagrangeInterpolation(times,T,dt,err);
 
        sv.v[0]   = LagrangeInterpolation(times,VX,dt,err);
        sv.v[1]   = LagrangeInterpolation(times,VY,dt,err);
        sv.v[2]   = LagrangeInterpolation(times,VZ,dt,err);
-       sv.ddtime = LagrangeInterpolation(times,F,dt,err);
+       sv.clkdrift = LagrangeInterpolation(times,F,dt,err);
      }
      else
      {
        LagrangeInterpolation(times,X,dt,sv.x[0],sv.v[0]);
        LagrangeInterpolation(times,Y,dt,sv.x[1],sv.v[1]);
        LagrangeInterpolation(times,Z,dt,sv.x[2],sv.v[2]);
-       LagrangeInterpolation(times,T,dt,sv.dtime,sv.ddtime);
+       LagrangeInterpolation(times,T,dt,sv.clkbias,sv.clkdrift);
      }
 
-     // Add relativity correction to dtime.
-     // This is only for consistency with GPSEphemerisStore::getSatXvt ....
+     // Compute relativity correction
      // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10 * ecc * sqrt(A(m))*sinE
      // (do it this way for numerical reasons).
-     if (sat.system != SatID::systemGlonass)
-       sv.dtime += -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
-                   -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
-                   -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
+     sv.relcorr = -2*(sv.x[0]/C_GPS_M)*(sv.v[0]/C_GPS_M)
+                  -2*(sv.x[1]/C_GPS_M)*(sv.v[1]/C_GPS_M)
+                  -2*(sv.x[2]/C_GPS_M)*(sv.v[2]/C_GPS_M);
 
      return sv;
 

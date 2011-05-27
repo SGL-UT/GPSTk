@@ -94,8 +94,9 @@ gpstk::Triple NEDUtil::convertToNED( const gpstk::Triple& inVec ) const
 gpstk::Xvt NEDUtil::convertToNED( const gpstk::Xvt& in ) const
 {
    gpstk::Xvt out;
-   out.dtime = in.dtime;
-   out.ddtime = in.ddtime;
+   out.clkbias = in.clkbias;
+   out.relcorr = in.relcorr;
+   out.clkdrift = in.clkdrift;
    out.x = convertToNED( in.x );
    out.v = convertToNED( in.v );
    return(out);

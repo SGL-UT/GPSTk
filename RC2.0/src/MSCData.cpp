@@ -223,8 +223,9 @@ namespace gpstk
          Xvt xvt;
          xvt.x = coordinates;
          xvt.v = velocities;
-         xvt.dtime = 0.0;
-         xvt.ddtime = 0.0;
+         xvt.clkbias = 0.0;
+         xvt.relcorr = 0.0;
+         xvt.clkdrift = 0.0;
          const Triple& drift = velocities;
       
             // compute the position given the total drift vectors

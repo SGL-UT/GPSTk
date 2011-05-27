@@ -1224,9 +1224,11 @@ namespace gpstk
       {
          RinexSatID rsid;
          rsid.fromString(iter->first);
-         s << rsid.systemString() << " Observation types (" << iter->second.size() << "):" << endl;
+         s << rsid.systemString() << " Observation types ("
+            << iter->second.size() << "):" << endl;
          for (i = 0; i < iter->second.size(); i++) 
-            s << " Type #" << i+1 << " = "
+            s << " Type #" << setw(2) << setfill('0') << i+1 << setfill(' ')
+            << " (" << asRinex3ID(iter->second[i]) << ") "
               << asString(iter->second[i]) << endl;
       }
       s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P") << endl;

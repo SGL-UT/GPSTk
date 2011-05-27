@@ -40,7 +40,6 @@
 // Find all the Combinations of n things taken k at a time.
 
 #include "Exception.hpp"
-#include "ECEF.hpp"
 
 /// Class Combinations will compute C(n,k), all the Combinations of n things
 /// taken k at a time (where k <= n).
@@ -528,7 +527,7 @@ namespace gpstk
          }
          
             // update transmit time and get ephemeris range again
-         tx -= PVT.dtime;     // clk+rel
+         tx -= PVT.clkbias + PVT.relcorr;     // clk+rel
          try
          {
             PVT = Eph.getXvt(Satellite[i], tx);
@@ -545,7 +544,7 @@ namespace gpstk
          {
             SVP(i,j) = PVT.x[j];
          }
-         SVP(i,3) = Pseudorange[i] + C_GPS_M * PVT.dtime;
+         SVP(i,3) = Pseudorange[i] + C_GPS_M * (PVT.clkbias + PVT.relcorr);
          nsvs++;
       }
       
@@ -714,7 +713,7 @@ namespace gpstk
             // trop model gets evaluated
          do {
                // current estimate of position solution
-            RX.x = ECEF(Sol(0),Sol(1),Sol(2));
+            for(i=0; i<3; i++) RX.x[i]=Sol(i);
             
                // loop over satellites, computing partials matrix
             for (n=0,i=0; i<Use.size(); i++)
@@ -742,7 +741,9 @@ namespace gpstk
                   // correct for troposphere (but not on the first iteration)
                if (n_iterate > 0)
                {
-                  SV.x = ECEF(svxyz[0],svxyz[1],svxyz[2]);
+                  SV.x[0] = svxyz[0];
+                  SV.x[1] = svxyz[1];
+                  SV.x[2] = svxyz[2];
                   // must test RX for reasonableness to avoid corrupting TropModel
                   Position R(RX),S(SV);
                   double tc=R.getHeight(), elev = R.elevation(SV);

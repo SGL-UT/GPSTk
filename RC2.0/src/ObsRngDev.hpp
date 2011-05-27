@@ -48,7 +48,6 @@
 #include <ostream>
 
 #include "DayTime.hpp"
-#include "ECEF.hpp"
 #include "XvtStore.hpp"
 #include "Exception.hpp"
 #include "GPSEllipsoid.hpp"
@@ -93,7 +92,7 @@ namespace gpstk
       ObsRngDev(const double prange,
                 const SatID& svid,
                 const DayTime& time,
-                const ECEF& rxpos,
+                const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
                 bool svTime = false);
@@ -114,7 +113,7 @@ namespace gpstk
       ObsRngDev(const double prange,
                 const SatID& svid,
                 const DayTime& time,
-                const ECEF& rxpos,
+                const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
                 const IonoModelStore& ion,
@@ -138,7 +137,7 @@ namespace gpstk
       ObsRngDev(const double prange,
                 const SatID& svid,
                 const DayTime& time,
-                const ECEF& rxpos,
+                const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
                 const TropModel& tm,
@@ -162,7 +161,7 @@ namespace gpstk
       ObsRngDev(const double prange,
                 const SatID& svid,
                 const DayTime& time,
-                const ECEF& rxpos,
+                const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
                 const TropModel& tm,
@@ -186,7 +185,7 @@ namespace gpstk
                 const double prange2,
                 const SatID& svid,
                 const DayTime& time,
-                const ECEF& rxpos,
+                const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
                 bool svTime = false);
@@ -208,7 +207,7 @@ namespace gpstk
                 const double prange2,
                 const SatID& svid,
                 const DayTime& time,
-                const ECEF& rxpos,
+                const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 const EllipsoidModel& em,
                 const TropModel& tm,
@@ -282,7 +281,7 @@ namespace gpstk
 
    private:
       void computeOrd(double obs,
-                      const ECEF& rxpos,
+                      const Position& rxpos,
                       const XvtStore<SatID>& eph,
                       const EllipsoidModel& em,
                       bool svTime)
@@ -297,12 +296,12 @@ namespace gpstk
 
 
       void computeOrdTx(double obs,
-                        const ECEF& rxpos,
+                        const Position& rxpos,
                         const XvtStore<SatID>& eph,
                         const EllipsoidModel& em);
    
       void computeOrdRx(double obs,
-                        const ECEF& rxpos,
+                        const Position& rxpos,
                         const XvtStore<SatID>& eph,
                         const EllipsoidModel& em);
 

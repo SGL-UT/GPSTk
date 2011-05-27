@@ -40,8 +40,8 @@
  * Computation of range and associated quantities from XvtStore
  */
  
-#ifndef EPHEMERIS_RANGE_HPP
-#define EPHEMERIS_RANGE_HPP
+#ifndef NEW_EPHEMERIS_RANGE_HPP
+#define NEW_EPHEMERIS_RANGE_HPP
 
 #include "CommonTime.hpp"
 #include "SatID.hpp"
@@ -72,8 +72,7 @@ namespace gpstk
          const CommonTime& tr_nom,
          const Position& Rx,
          const SatID sat,
-         const XvtStore<SatID>& Eph)
-         throw(Exception,InvalidRequest);
+         const XvtStore<SatID>& Eph) throw(Exception);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
@@ -84,8 +83,7 @@ namespace gpstk
          const double& pr,
          const Position& Rx,
          const SatID sat,
-         const XvtStore<SatID>& Eph)
-         throw(Exception,InvalidRequest);
+         const XvtStore<SatID>& Eph) throw(Exception);
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
@@ -129,7 +127,7 @@ namespace gpstk
 
    }; // end class CorrectedEphemerisRange
 
-   /// Compute relativity correction (seconds) from the satellite position and velocity
+   /// Compute relativity correction (sec.s) from the satellite position and velocity
    double RelativityCorrection(const Xvt& svPosVel);
 
 

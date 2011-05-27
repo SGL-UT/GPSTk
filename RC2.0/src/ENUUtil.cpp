@@ -92,8 +92,9 @@ gpstk::Triple ENUUtil::convertToENU( const gpstk::Triple& inVec ) const
 gpstk::Xvt ENUUtil::convertToENU( const gpstk::Xvt& in ) const
 {
    gpstk::Xvt out;
-   out.dtime = in.dtime;
-   out.ddtime = in.ddtime;
+   out.clkbias = in.clkbias;
+   out.relcorr = in.relcorr;
+   out.clkdrift = in.clkdrift;
    out.x = convertToENU( in.x );
    out.v = convertToENU( in.v );
    return(out);

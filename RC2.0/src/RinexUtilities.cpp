@@ -57,6 +57,9 @@
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavStream.hpp"
 
+#include "SP3Stream.hpp"
+#include "SP3Header.hpp"
+
 #include "RinexUtilities.hpp"
 
 namespace gpstk {
@@ -67,144 +70,97 @@ using namespace gpstk;
 //------------------------------------------------------------------------------
 int RegisterARLUTExtendedTypes(void)
 {
-	try
-	{
-		unsigned int EPPS = //0x60
-			RinexObsHeader::RinexObsType::EPdepend | RinexObsHeader::RinexObsType::PSdepend;
-		unsigned int L1L2 = //0x06
-			RinexObsHeader::RinexObsType::L1depend | RinexObsHeader::RinexObsType::L2depend;
-		unsigned int P1P2 = //0x18
-			RinexObsHeader::RinexObsType::P1depend | RinexObsHeader::RinexObsType::P2depend;
-		unsigned int EPEP=RinexObsHeader::RinexObsType::EPdepend;//0x20
-		unsigned int PELL=EPPS | L1L2;//0x66
-		unsigned int PEPP=EPPS | P1P2;//0x78
-		unsigned int PsLs=L1L2 | P1P2;//0x1E
-		unsigned int L1P1 = //0x0A
-			RinexObsHeader::RinexObsType::L1depend | RinexObsHeader::RinexObsType::P1depend;
-		unsigned int L2P2 = //0x14
-			RinexObsHeader::RinexObsType::L2depend | RinexObsHeader::RinexObsType::P2depend;
-		int j;
-		j = RegisterExtendedRinexObsType("ER","Ephemeris range",     "meters", EPPS);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("RI","Iono Delay, Range",   "meters", P1P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("PI","Iono Delay, Phase",   "meters", L1L2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("TR","Tropospheric Delay",  "meters", EPPS);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("RL","Relativity Correct.", "meters", EPEP);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("SC","SV Clock Bias",       "meters", EPEP);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("EL","Elevation Angle",     "degrees",EPPS);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("AZ","Azimuth Angle",       "degrees",EPPS);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("SR","Slant TEC (PR)",      "TECU",   P1P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("SP","Slant TEC (Ph)",      "TECU",   L1L2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("VR","Vertical TEC (PR)",   "TECU",   PEPP);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("VP","Vertical TEC (Ph)",   "TECU",   PELL);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("LA","Lat Iono Intercept",  "degrees",EPPS);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("LO","Lon Iono Intercept",  "degrees",EPPS);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("P3","TFC(IF) Pseudorange", "meters", P1P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("L3","TFC(IF) Phase",       "meters", L1L2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("PF","GeoFree Pseudorange", "meters", P1P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("LF","GeoFree Phase",       "meters", L1L2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("PW","WideLane Pseudorange","meters", P1P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("LW","WideLane Phase",      "meters", L1L2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("MP","Multipath (=M3)",     "meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("R1","(P1 + L1)/2"         ,"meters", L1P1);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("R2","(P2 + L2)/2"         ,"meters", L2P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("M1","L1 Range minus Phase","meters", L1P1);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("M2","L2 Range minus Phase","meters", L2P2);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("M3","IF Range minus Phase","meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("M4","GF Range minus Phase","meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("M5","WL Range minus Phase","meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("XR","Non-dispersive Range","meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("XI","Ionospheric delay",   "meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("X1","Range Error L1",      "meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("X2","Range Error L2",      "meters", PsLs);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("SX","Satellite ECEF-X",    "meters", EPEP);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("SY","Satellite ECEF-Y",    "meters", EPEP);
-		if(j)
-			return j;
-		j = RegisterExtendedRinexObsType("SZ","Satellite ECEF-Z",    "meters", EPEP);
-		if(j)
-			return j;
-		return 0;
-	}
-	catch(Exception& e)
-	{
-		GPSTK_RETHROW(e);
-	}
-	catch(exception& e)
-	{
-		Exception E("std except: "+string(e.what()));
-		GPSTK_THROW(E);
-	}
-	catch(...)
-	{
-		Exception e("Unknown exception");
-		GPSTK_THROW(e);
-	}
+try {
+   unsigned int EPPS = //0x60
+      RinexObsHeader::RinexObsType::EPdepend | RinexObsHeader::RinexObsType::PSdepend;
+   unsigned int L1L2 = //0x06
+      RinexObsHeader::RinexObsType::L1depend | RinexObsHeader::RinexObsType::L2depend;
+   unsigned int P1P2 = //0x18
+      RinexObsHeader::RinexObsType::P1depend | RinexObsHeader::RinexObsType::P2depend;
+   unsigned int EPEP=RinexObsHeader::RinexObsType::EPdepend;//0x20
+   unsigned int PELL=EPPS | L1L2;//0x66
+   unsigned int PEPP=EPPS | P1P2;//0x78
+   unsigned int PsLs=L1L2 | P1P2;//0x1E
+   unsigned int L1P1 = //0x0A
+      RinexObsHeader::RinexObsType::L1depend | RinexObsHeader::RinexObsType::P1depend;
+   unsigned int L2P2 = //0x14
+      RinexObsHeader::RinexObsType::L2depend | RinexObsHeader::RinexObsType::P2depend;
+   int j;
+   j = RegisterExtendedRinexObsType("ER","Ephemeris range",     "meters", EPPS);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("RI","Iono Delay, Range",   "meters", P1P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("PI","Iono Delay, Phase",   "meters", L1L2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("TR","Tropospheric Delay",  "meters", EPPS);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("RL","Relativity Correct.", "meters", EPEP);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("SC","SV Clock Bias",       "meters", EPEP);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("EL","Elevation Angle",     "degrees",EPPS);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("AZ","Azimuth Angle",       "degrees",EPPS);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("SR","Slant TEC (PR)",      "TECU",   P1P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("SP","Slant TEC (Ph)",      "TECU",   L1L2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("VR","Vertical TEC (PR)",   "TECU",   PEPP);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("VP","Vertical TEC (Ph)",   "TECU",   PELL);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("LA","Lat Iono Intercept",  "degrees",EPPS);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("LO","Lon Iono Intercept",  "degrees",EPPS);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("P3","TFC(IF) Pseudorange", "meters", P1P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("L3","TFC(IF) Phase",       "meters", L1L2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("PF","GeoFree Pseudorange", "meters", P1P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("LF","GeoFree Phase",       "meters", L1L2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("PW","WideLane Pseudorange","meters", P1P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("LW","WideLane Phase",      "meters", L1L2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("MP","Multipath (=M3)",     "meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("R1","(P1 + L1)/2"         ,"meters", L1P1);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("R2","(P2 + L2)/2"         ,"meters", L2P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("M1","L1 Range minus Phase","meters", L1P1);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("M2","L2 Range minus Phase","meters", L2P2);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("M3","IF Range minus Phase","meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("M4","GF Range minus Phase","meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("M5","WL Range minus Phase","meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("XR","Non-dispersive Range","meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("XI","Ionospheric delay",   "meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("X1","Range Error L1",      "meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("X2","Range Error L2",      "meters", PsLs);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("SX","Satellite ECEF-X",    "meters", EPEP);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("SY","Satellite ECEF-Y",    "meters", EPEP);
+   if(j) return j;
+   j = RegisterExtendedRinexObsType("SZ","Satellite ECEF-Z",    "meters", EPEP);
+   if(j) return j;
+   return 0;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
@@ -458,51 +414,54 @@ bool isRinex3ObsFile(const string& file)
 }
 
 //------------------------------------------------------------------------------------
-void sortRinexObsFiles(vector<string>& files)
+string sortRinexObsFiles(vector<string>& files) throw(Exception)
 {
-	try
-	{
-           if(files.size() <= 1) return;
-	   // build a hash with key = start time, value = filename
-	   multimap<CommonTime,string> hash;
-	   for(int n = 0; n < files.size(); n++)
-	   {
-	      try
-              {
-                 RinexObsHeader header;
-                 RinexObsStream rostream(files[n].c_str());
-                 rostream.exceptions(fstream::failbit);
-                 rostream >> header;
- 		 rostream.close();
-		 if(!header.isValid()) continue;
-                 //hash[header.firstObs] = files[n];
-                 hash.insert(multimap<CommonTime,string>::value_type(header.firstObs,files[n]));
-              }
-		 catch(Exception& e) {continue; }
-	   }
-		// return the sorted file names
-		files.clear();
-		multimap<CommonTime,string>::const_iterator it = hash.begin();
-		while(it != hash.end())
-		{
-			files.push_back(it->second);
-			it++;
-		}
-	}
-	catch(Exception& e)
-	{
-		GPSTK_RETHROW(e);
-	}
-	catch(exception& e)
-	{
-		Exception E("std except: "+string(e.what()));
-		GPSTK_THROW(E);
-	}
-	catch(...)
-	{
-		Exception e("Unknown exception");
-		GPSTK_THROW(e);
-	}
+try {
+   string msg;
+   if(files.size() <= 1) return msg;
+
+   // build a hash with key = start time, value = filename
+   multimap<DayTime,string> hash;
+   for(int n=0; n<files.size(); n++) {
+      try {
+         RinexObsHeader header;
+         RinexObsStream rostream(files[n].c_str());
+         if(!rostream.is_open()) {
+            msg += "Error - Could not open file " + files[n] + "\n";
+            continue;
+         }
+         rostream.exceptions(fstream::failbit);
+         rostream >> header;
+         rostream.close();
+         if(!header.isValid()) {
+            msg += "Error - Invalid header in file " + files[n] + "\n";
+            continue;
+         }
+         //hash[header.firstObs] = files[n];
+         hash.insert(multimap<DayTime,string>::value_type(header.firstObs,files[n]));
+      }
+      catch(Exception& e) {
+         //msg += "Exception " + e.what() + " in file " + files[n] + "\n";
+         msg += "Error - File "+files[n]+" is not a valid RINEX observation file.\n";
+         continue;
+      }
+   }
+
+   // return the sorted file names
+   files.clear();
+   multimap<DayTime,string>::const_iterator it = hash.begin();
+   while(it != hash.end()) {
+      files.push_back(it->second);
+      it++;
+   }
+
+   string::size_type pos(msg.length());
+   if(pos > 0) msg.erase(pos-1);
+   return msg;
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
+catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------

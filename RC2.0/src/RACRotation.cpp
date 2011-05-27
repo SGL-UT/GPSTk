@@ -133,8 +133,9 @@ gpstk::Triple RACRotation::convertToRAC( const gpstk::Triple& inVec )
 gpstk::Xvt RACRotation::convertToRAC( const gpstk::Xvt& in )
 {
    gpstk::Xvt out;
-   out.dtime = in.dtime;
-   out.ddtime = in.ddtime;
+   out.clkbias = in.clkbias;
+   out.relcorr = in.relcorr;
+   out.clkdrift = in.clkdrift;
    out.x = convertToRAC( in.x );
    out.v = convertToRAC( in.v );
    return(out);

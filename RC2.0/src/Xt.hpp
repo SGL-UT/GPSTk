@@ -1,12 +1,12 @@
-#pragma ident "$Id: Xt.hpp 1709 2009-02-18 20:27:47Z rain $"
+#pragma ident "$Id: Xt.hpp 198 2011-05-18 20:49:11Z btolman $"
 
 /**
  * @file Xt.hpp
  * Geometric vector and clock data as Triple and double.
  */
 
-#ifndef GPSTK_XT_HPP
-#define GPSTK_XT_HPP
+#ifndef GPSTK_XT_INCLUDE
+#define GPSTK_XT_INCLUDE
 
 //============================================================================
 //
@@ -55,15 +55,15 @@ namespace gpstk
   /** @addtogroup geodeticgroup */
   //@{
 
-  /// An Earth-Centered, Earth-Fixed position/clock representation.
-  /// May also be used for velocity or acceleration in the vector.
+  /// An Earth-Centered, Earth-Fixed Cartesian position and clock representation.
+  /// May also be used for velocity or acceleration.
   class Xt
   {
   public:
 
     /// Default constructor
     Xt()
-      : x(0.,0.,0.), dtime(0.), frame(ReferenceFrame::Unknown)
+      : x(0.,0.,0.), clkbias(0.)       //, frame(ReferenceFrame::Unknown)
     {};
 
     /// Destructor.
@@ -73,28 +73,28 @@ namespace gpstk
       throw()
     { return x; }
 
-    double getDtime()
+    double getClockBias()
       throw()
-    { return dtime; }
+    { return clkbias; }
 
     /**
      * Given the position of a ground location, compute the range
-     * to the spacecraft position.
+     * to the satellite position.
      * @param rxPos ground position at broadcast time in ECEF.
      * @param ell geodetic parameters.
      * @param correction offset in meters (include any factors other
-     * than the SV clock correction).
+     *            than the satellite clock correction).
      * @return Range in meters
      */
-    double preciseRho( const Triple& rxPos, 
-                       const EllipsoidModel& ell,
-                       double correction = 0    ) const
+    double preciseRho(const Triple& rxPos, 
+                      const EllipsoidModel& ell,
+                      double correction = 0    ) const
       throw();
 
 //  protected:
 
-    Triple x;      ///< SV position, velocity or acceleration (x,y,z), Earth-fixed. [meters]
-    double dtime;  ///< SV clock correction. [sec] or [sec/sec]
+    Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
+    double clkbias;  ///< Sat clock correction in seconds
     ReferenceFrame frame;
   }; 
 
@@ -105,9 +105,8 @@ namespace gpstk
 /**
  * Output operator for Xt
  * @param s output stream to which \c xt is sent
- * @param xt Xt that is sent to \c s
+ * @param xt Xt that is sent to \c os
  */
-std::ostream& operator<<( std::ostream& s, 
-                          const gpstk::Xt& xt );
+std::ostream& operator<<(std::ostream& os, const gpstk::Xt& xt) throw();
 
-#endif
+#endif // GPSTK_XT_INCLUDE

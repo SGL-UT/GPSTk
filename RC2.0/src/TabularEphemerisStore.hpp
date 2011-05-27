@@ -175,12 +175,12 @@ namespace gpstk
                 << std::setw(13) << jt->second.x[0] << " "
                 << std::setw(13) << jt->second.x[1] << " "
                 << std::setw(13) << jt->second.x[2] << " "
-                << std::setw(13) << jt->second.dtime
+                << std::setw(13) << jt->second.clkbias
                 << " V "
                 << std::setw(13) << jt->second.v[0] << " "
                 << std::setw(13) << jt->second.v[1] << " "
                 << std::setw(13) << jt->second.v[2] << " "
-                << std::setw(13) << jt->second.ddtime
+                << std::setw(13) << jt->second.clkdrift
                 << std::endl;
             }
 

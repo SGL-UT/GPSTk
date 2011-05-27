@@ -48,7 +48,6 @@
 #include <string>
 #include "StringUtils.hpp"
 #include "Triple.hpp"
-#include "ECEF.hpp"
 #include "DayTime.hpp"
 #include "FFData.hpp"
 #include "Xvt.hpp"
@@ -84,7 +83,7 @@ namespace gpstk
       std::string mnemonic;  ///< Monitor Station identifier (e.g. ARLM)
       gpstk::DayTime refepoch;  ///< epoch of coordinates and velocities
       gpstk::DayTime effepoch;  ///< earliest epoch data is valid
-      gpstk::ECEF coordinates;  ///< ECEF XYZ coordinates
+      gpstk::Triple coordinates;  ///< ECEF XYZ coordinates
       gpstk::Triple velocities; ///< XYZ velocities
 
          /// MSCData \b is data, so this always return \c true

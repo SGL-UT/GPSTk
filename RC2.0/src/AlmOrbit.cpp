@@ -126,7 +126,7 @@ namespace gpstk
       
          /* compute clock corrections (no relativistic correction computed) */
       dtc = AF0 + elapt * AF1;
-      sv.dtime = dtc;
+      sv.clkbias = dtc;
       
          /* compute the true anomaly */
       q = sqrt (1.0e0 - ecc * ecc);

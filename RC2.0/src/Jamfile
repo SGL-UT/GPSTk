@@ -33,6 +33,7 @@ else
       BLQDataReader.cpp
       Chi2Distribution.cpp
       CivilTime.cpp
+      ClockSatStore.cpp
       CodeBuffer.cpp
       CommandOption.cpp
       CommandOptionParser.cpp
@@ -45,7 +46,6 @@ else
       DayTime.cpp
       DCBDataReader.cpp
       DOP.cpp
-      ECEF.cpp
       EngAlmanac.cpp
       EngEphemeris.cpp
       EngNav.cpp
@@ -69,7 +69,6 @@ else
       GalEphemerisStore.cpp
       GaussianDistribution.cpp
       GenXSequence.cpp
-      Geodetic.cpp
       GloBrcEphemerisStore.cpp
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
@@ -104,6 +103,7 @@ else
       OceanLoading.cpp
       PoleTides.cpp
       Position.cpp
+      PositionSatStore.cpp
       PowerSum.cpp
       PRSolution.cpp
       RACRotation.cpp
@@ -115,6 +115,8 @@ else
       Rinex3NavHeader.cpp
       Rinex3ObsData.cpp
       Rinex3ObsHeader.cpp
+      RinexClockData.cpp
+      RinexClockHeader.cpp
       RinexConverter.cpp
       RinexEphemerisStore.cpp
       RinexGloNavData.cpp
@@ -192,6 +194,7 @@ else
       Chi2Distribution.hpp
       CivilTime.hpp
       ClockModel.hpp
+      ClockSatStore.hpp
       CodeBuffer.hpp
       CommandOption.hpp
       CommandOptionParser.hpp
@@ -204,7 +207,6 @@ else
       DayTime.hpp
       DCBDataReader.hpp
       DOP.hpp
-      ECEF.hpp
       EllipsoidModel.hpp
       EngAlmanac.hpp
       EngEphemeris.hpp
@@ -254,7 +256,6 @@ else
       GalEphemerisStore.hpp
       GaussianDistribution.hpp
       GenXSequence.hpp
-      Geodetic.hpp
       GeoidModel.hpp
       GloBrcEphemerisStore.hpp
       GloEphemerisStore.hpp
@@ -312,6 +313,7 @@ else
       PoleTides.hpp
       PolyFit.hpp
       Position.hpp
+      PositionSatStore.hpp
       PowerSum.hpp
       PRSolution.hpp
       PZ90Ellipsoid.hpp
@@ -332,6 +334,11 @@ else
       Rinex3ObsFilterOperators.hpp
       Rinex3ObsHeader.hpp
       Rinex3ObsStream.hpp
+      RinexClockBase.hpp
+      RinexClockData.hpp
+      RinexClockHeader.hpp
+      RinexClockStore.hpp
+      RinexClockStream.hpp
       RinexConverter.hpp
       RinexEphemerisStore.hpp
       RinexGloNavData.hpp
@@ -389,6 +396,7 @@ else
       SVPCodeGen.hpp
       SystemTime.hpp
       TabularEphemerisStore.hpp
+      TabularSatStore.hpp
       TimeConstants.hpp
       TimeConverters.hpp
       TimeNamedFileStream.hpp

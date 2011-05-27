@@ -51,6 +51,8 @@
 
 
 
+#include "GPSWeekSecond.hpp"
+
 #include "FileFilter.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"

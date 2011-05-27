@@ -1165,6 +1165,19 @@ namespace gpstk
                                   const bool showSign = true,
                                   const bool checkSwitch = true);
       
+   /** Convert a double to scientific notation; this routine works better,
+    * on Windows particularly, than doub2sci.
+    * @param length = total string length, including 1 for overall sign if showPlus is true.
+    * @param precision = number of digits after the decimal and before the 'e'
+    * @param explen = length of exponent, this must = 1, 2 or 3
+    * NB. length is increased if precision, explen and showPlus require it.
+    */
+   inline std::string doubleToScientific(const double& d,
+                                         const std::string::size_type length,
+                                         const std::string::size_type precision,
+                                         const std::string::size_type explen,
+                                         bool showPlus=false);
+
          /**
           * Convert scientific notation to FORTRAN notation.
           * As an example, the string "1.5636E5" becomes " .15636D6".
@@ -2320,6 +2333,33 @@ namespace gpstk
 
          return toReturn;
       }
+
+   inline std::string doubleToScientific(const double& d,
+                                         const std::string::size_type length,
+                                         const std::string::size_type precision,
+                                         const std::string::size_type explen,
+                                         bool showPlus)
+   {
+      std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
+      std::string::size_type prec = (precision > 0 ? precision : 1);
+      std::string::size_type leng = (length > 0 ? length : 1);
+      int i = (int(leng) - int(elen) - 4);
+      if(showPlus) i--;
+      if(i > 0 && leng < i) leng = std::string::size_type(i);
+      std::stringstream ss;
+      ss << std::scientific << std::setprecision(prec);
+      if(showPlus) ss << std::showpos;
+      ss << d;
+      std::string str1,str2;
+      ss >> str1;
+      std::string::size_type pos = str1.find_first_of("EDed");
+      str2 = str1.substr(0,pos+2);
+      str1 = str1.substr(pos+2);
+      str2 += StringUtils::rightJustify(StringUtils::asString(
+                                             StringUtils::asInt(str1)),elen,'0');
+      if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
+      return str2;
+   }
 
       inline std::string& sci2for(std::string& aStr, 
                              const std::string::size_type startPos,

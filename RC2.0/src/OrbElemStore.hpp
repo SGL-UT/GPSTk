@@ -112,6 +112,10 @@ namespace gpstk
          throw()
          = 0;
 
+      /// Clear the dataset, meaning remove all data
+      virtual void clear(void) throw()
+         = 0;
+
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time
@@ -130,6 +134,14 @@ namespace gpstk
 
       virtual bool velocityIsPresent()
          const throw()
+         = 0;
+
+      /// Return true if velocity data is present in the store
+      virtual bool hasVelocity() const throw()
+         = 0;
+
+      /// Return true if the given SatID is present in the store
+      virtual bool isPresent(const SatID& id) const throw()
          = 0;
 
    }; // end class

@@ -406,7 +406,7 @@ namespace gpstk
       double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
       double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
       double xef,yef,zef;
-      double ddtime;
+      double drift;
       GPSEllipsoid ell;
 
       double sqrtgm = SQRT(ell.gm());
@@ -463,10 +463,10 @@ namespace gpstk
       } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
       // Compute clock corrections
-      ddtime = getAf1() + elaptc * getAf2();
-      dtc = getAf0() + elaptc * ( ddtime );
+      drift = getAf1() + elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( drift );
       dtr = REL_CONST * lecc * getAhalf() * sin(ea);
-      sv.dtime = dtc + dtr;
+      sv.clkbias = dtc;
    
       // Compute true anomaly
       q = SQRT(1.0e0 - lecc*lecc);
@@ -602,10 +602,11 @@ namespace gpstk
       } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
       // Compute clock corrections
-      sv.ddtime = getAf1() + elaptc * getAf2();
-      dtc = getAf0() + elaptc * ( sv.ddtime );
+      sv.clkdrift = getAf1() + elaptc * getAf2();
+      dtc = getAf0() + elaptc * ( sv.clkdrift );
       dtr = REL_CONST * lecc * getAhalf() * sin(ea);
-      sv.dtime = dtc + dtr;
+      sv.clkbias = dtc;
+      sv.relcorr = dtr;
    
       // Compute true anomaly
       q = SQRT(1.0e0 - lecc*lecc);

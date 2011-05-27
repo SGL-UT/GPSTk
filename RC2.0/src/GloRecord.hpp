@@ -75,11 +75,11 @@ namespace gpstk
 
     double getTauN()
       throw()
-    { return dtime; }
+    { return clkbias; }
 
     double getGammaN()
       throw()
-    { return ddtime; }
+    { return clkdrift; }
 
     short getMFtime()
       throw()
@@ -102,7 +102,7 @@ namespace gpstk
       throw();
     
     GloRecord& setRecord( Triple pos, Triple vel, Triple acc,
-                          double dtime, double ddtime,
+                          double clkbias, double clkdrift,
                           short mftime, short h, short freqnum,
                           double ageofinfo                          );
 
