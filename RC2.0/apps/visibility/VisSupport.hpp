@@ -56,7 +56,7 @@
 
 // monitor station coordinates
 #include "MSCStore.hpp"
-#include "ECEF.hpp"
+#include "Position.hpp"
 
 // SP3
 #include "SP3Stream.hpp"
@@ -66,7 +66,7 @@
 
 namespace gpstk
 {
-   typedef std::map<std::string,gpstk::ECEF> StaPosList; 
+   typedef std::map<std::string,gpstk::Position> StaPosList; 
 
    namespace VisSupport
    {

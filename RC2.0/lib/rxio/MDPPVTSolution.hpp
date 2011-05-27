@@ -40,7 +40,6 @@
 #define MDPPVTSOLUTION_HPP
 
 #include "Xvt.hpp"
-#include "ECEF.hpp"
 #include "MDPHeader.hpp"
 
 namespace gpstk
@@ -71,7 +70,7 @@ namespace gpstk
        */
       void dump(std::ostream& out) const throw();
 
-      gpstk::ECEF x;              ///< receiver position (x,y,z), earth fixed, in meters
+      gpstk::Triple x;            ///< receiver position (x,y,z), earth fixed, in meters
       gpstk::Triple v;            ///< receiver velocity, Earth-fixed, including rotation, in meters/sec
       double dtime;               ///< receiver clock offset from GPS in sec
       double ddtime;              ///< receiver clock drift rate in sec/sec

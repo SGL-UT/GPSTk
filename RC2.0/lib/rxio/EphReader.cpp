@@ -42,6 +42,8 @@
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 
+#include "SP3Stream.hpp"
+
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
 
@@ -287,16 +289,7 @@ namespace gpstk
       if (verboseLevel>2)
          cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
 
-      SP3Stream fs(fn.c_str(),ios::in);
-      fs.exceptions(ifstream::failbit);
-      
-      SP3Header header;
-      fs >> header;
-
-      SP3Data data;
-   
-      while (fs >> data)
-         pe->addEphemeris(data);
+      pe->loadSP3File(fn);
 
       if (verboseLevel>1)
          cout << "Read " << fn << " as SP3 ephemeris."<< endl;

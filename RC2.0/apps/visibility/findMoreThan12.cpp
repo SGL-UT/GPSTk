@@ -102,7 +102,6 @@ int main(int argc, char *argv[])
   double x,y,z;
   sscanf(antennaPosition.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
   antPVT.x[0] = x; antPVT.x[1] = y; antPVT.x[2] = z;
-  ECEF antPos = Triple(antPVT.x);
   
   // get initial and final times for analysis. extra code b/c sscanf reads in int's but setYMDHMS needs shorts
   short year, month, day, hour, minute;

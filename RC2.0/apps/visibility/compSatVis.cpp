@@ -37,6 +37,7 @@
 // gpstk
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "AlmOrbit.hpp"
 #include "GPSAlmanacStore.hpp"
@@ -316,9 +317,9 @@ void compSatVis::printNavFileReferenceTime(FILE* logfp)
       case RINEX_NAV:
          fprintf(logfp,"  Ephemeris effectivity\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                 BCEphList.getInitialTime().printf(tform2).c_str());
+                 printTime(BCEphList.getInitialTime(),tform2).c_str());
          fprintf(logfp,"     Latest               : %s\n",
-                 BCEphList.getFinalTime().printf(tform2).c_str());
+                 printTime(BCEphList.getFinalTime(),tform2).c_str());
          break;
             
       case FIC_ALM:
@@ -534,7 +535,7 @@ void compSatVis::generateHeader( gpstk::DayTime currT )
       for (si=stationPositions.begin();si!=stationPositions.end();++si)
       {
          string mnemonic = (string) si->first;
-         ECEF coordinates = (ECEF) si->second;
+         Position coordinates(si->second);
          fprintf(logfp," %4s  %10.3lf  %10.3lf  %10.3lf\n",
               mnemonic.c_str(),
               coordinates[0]/1000.0,
@@ -612,7 +613,7 @@ void compSatVis::generateTrailer( )
 
 void compSatVis::computeVisibility( gpstk::DayTime currT )
 {
-   gpstk::ECEF SVpos[gpstk::MAX_PRN+1];
+   gpstk::Position SVpos[gpstk::MAX_PRN+1];
    bool SVAvail[gpstk::MAX_PRN+1];
    Xvt SVxvt;
    
@@ -689,7 +690,7 @@ void compSatVis::computeVisibility( gpstk::DayTime currT )
            splCI!=stationPositions.end();
            ++splCI)
       {
-         ECEF staPos = splCI->second;
+         Position staPos = splCI->second;
          double elv = staPos.elvAngle( SVpos[PRNID] );
          if (elv>=minimumElevationAngle) numVis++;
       }

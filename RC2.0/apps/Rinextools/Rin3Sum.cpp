@@ -44,6 +44,7 @@
 #include "Rinex3NavStream.hpp"
 
 #include "CommonTime.hpp"
+#include "TimeString.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
 
@@ -69,7 +70,6 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-//string version("2.4 1/22/07");
 string version("3.0 13/8/09");
 
 // data input from command line
@@ -173,19 +173,16 @@ int main(int argc, char **argv)
 {
    try
    {
-      //Very C style here...
       int iret, i, j, k, n, ifile, nsats, nclkjumps, L1lli;
-      
-      ///Variable declaration...Do I need to add more?
       double C1, L1, P1, clkjumpave, clkjumpvar;
-      //lastObsTime == current observation time
-      //prev == previous observation time
-      //firstObsTime == time of first observation
       CommonTime lastObsTime, prevObsTime, firstObsTime;
       vector<CommonTime> clkjumpTimes;
       vector<double> clkjumpMillsecs, clkjumpUncertainty;
       vector<int> clkjumpAgree;
       map<char, SatSystem> systems;
+      const string calfmt("%04Y/%02m/%02d %02H:%02M:%02S");
+      const string gpsfmt("%4F %10.3g");
+      const string longfmt("%04Y/%02m/%02d %02H:%02M:%02S = %4F %10.3g");
 
       BegTime = CommonTime::BEGINNING_OF_TIME;
       EndTime = CommonTime::END_OF_TIME;
@@ -199,8 +196,9 @@ int main(int argc, char **argv)
       tblock = localtime(&timer);
       lastObsTime = CivilTime(1900+tblock->tm_year, 1+tblock->tm_mon, tblock->tm_mday,
                         tblock->tm_hour, tblock->tm_min, tblock->tm_sec);
-      Title += static_cast<CivilTime>(lastObsTime).printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
-      cout << Title;
+      //Title += static_cast<CivilTime>(lastObsTime).printf(longfmt);
+      Title += printTime(lastObsTime,calfmt);
+      cout << Title << endl;
 
       iret=GetCommandLine(argc, argv);
       if(iret)
@@ -251,15 +249,15 @@ int main(int argc, char **argv)
             continue;
          }
          InStream.exceptions(ios::failbit);
-         if(!isRinex3ObsFile(filename))
-         {
-            *pout << "File " << filename << " is not a Rinex observation file\n";
-            if(isRinex3NavFile(filename))
-            {
-               *pout << "This file is a Rinex navigation file - try NavMerge\n";
-            }
-            continue;
-         }
+         //if(!isRinex3ObsFile(filename))
+         //{
+         //   *pout << "File " << filename << " is not a Rinex observation file\n";
+         //   if(isRinex3NavFile(filename))
+         //   {
+         //      *pout << "This file is a Rinex navigation file - try NavMerge\n";
+         //   }
+         //   continue;
+         //}
 
          prevObsTime = CommonTime::BEGINNING_OF_TIME;
          firstObsTime = CommonTime::BEGINNING_OF_TIME;
@@ -518,7 +516,7 @@ int main(int argc, char **argv)
                         *pout << " LLI is set";
                      if(debug)
                         *pout << " " << RinexSatID(it->first)
-                              << " " << static_cast<GPSWeekSecond>(lastObsTime).printf("%4F %.3g") << endl;
+                              << " " << printTime(lastObsTime,gpsfmt) << endl;
                   }
                }
                // save C1,L1,P1 for this sat for next time
@@ -681,7 +679,9 @@ int main(int argc, char **argv)
             
             for(sysIter; sysIter != rheader.mapObsTypes.end(); ++sysIter)
             {
-               *pout << "System " << (sysIter->first) << ":" << endl;
+               RinexSatID sat(sysIter->first);
+               *pout << "System " << (sysIter->first)
+                  << " = " << sat.systemString() << ":" << endl;
                *pout << "Sat OT:";
                for(k = 0; k < (sysIter->second).size(); k++)
                {

@@ -36,6 +36,7 @@
 // gpstk
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "AlmOrbit.hpp"
 #include "GPSAlmanacStore.hpp"
@@ -320,9 +321,9 @@ void compStaVis::printNavFileReferenceTime(FILE* logfp)
       case RINEX_NAV:
          fprintf(logfp,"  Ephemeris effectivity\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                 BCEphList.getInitialTime().printf(tform2).c_str());
+                 printTime(BCEphList.getInitialTime(),tform2).c_str());
          fprintf(logfp,"     Latest               : %s\n",
-                 BCEphList.getFinalTime().printf(tform2).c_str());
+                 printTime(BCEphList.getFinalTime(),tform2).c_str());
          break;
             
       case FIC_ALM:

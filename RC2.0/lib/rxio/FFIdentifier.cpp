@@ -49,6 +49,8 @@
 #include "YumaAlmanacStore.hpp"
 #include "GPSEllipsoid.hpp"
 
+#include "SP3Stream.hpp"
+
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
 
