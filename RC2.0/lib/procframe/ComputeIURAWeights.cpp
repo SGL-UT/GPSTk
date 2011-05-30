@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ComputeIURAWeights::classIndex = 6000000;
-
-
-      // Returns an index identifying this object.
-   int ComputeIURAWeights::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ComputeIURAWeights::getClassName() const
@@ -55,7 +46,7 @@ namespace gpstk
        *
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeIURAWeights::Process( const DayTime& time,
+   satTypeValueMap& ComputeIURAWeights::Process( const CommonTime& time,
                                                  satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -118,7 +109,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -163,7 +153,7 @@ namespace gpstk
        * @param preciseEph    Precise ephemerisStore object to be used
        */
    double ComputeIURAWeights::getWeight( const SatID& sat,
-                                         const DayTime& time,
+                                         const CommonTime& time,
                                     const TabularEphemerisStore* preciseEph )
       throw(InvalidWeights)
    {
@@ -194,7 +184,7 @@ namespace gpstk
        * @param bcEph     Broadcast EphemerisStore object to be used
        */
    double ComputeIURAWeights::getWeight( const SatID& sat,
-                                         const DayTime& time,
+                                         const CommonTime& time,
                                          const GPSEphemerisStore* bcEph )
       throw(InvalidWeights)
    {

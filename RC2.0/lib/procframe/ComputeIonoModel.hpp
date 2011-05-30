@@ -100,7 +100,7 @@ namespace gpstk
          /// Default constructor.
       ComputeIonoModel()
          : ionoType(Zero), nominalPos(0.0,0.0,0.0)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -109,7 +109,7 @@ namespace gpstk
           */
       ComputeIonoModel(const Position& stapos) 
          : ionoType(Zero), nominalPos(stapos)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -176,10 +176,6 @@ namespace gpstk
       virtual ComputeIonoModel& setNominalPosition(const Position& stapos)
         { nominalPos = stapos; return (*this); };
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -200,19 +196,6 @@ namespace gpstk
 
          /// Receiver position
       Position nominalPos;
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'ComputeIonoModel'

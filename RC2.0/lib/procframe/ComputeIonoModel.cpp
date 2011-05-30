@@ -40,15 +40,6 @@ namespace gpstk
 
    using namespace std;
 
-      // Index initially assigned to this class
-   int ComputeIonoModel::classIndex = 5500000;
-
-
-      // Returns an index identifying this object.
-   int ComputeIonoModel::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string ComputeIonoModel::getClassName() const
    { return "ComputeIonoModel"; }
@@ -62,7 +53,7 @@ namespace gpstk
        * @param gData     Data object holding the data.
        */
    satTypeValueMap& ComputeIonoModel::Process( const DayTime& time,
-                                         satTypeValueMap& gData )
+                                               satTypeValueMap& gData )
       throw(ProcessingException)
    {
 
@@ -188,7 +179,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);

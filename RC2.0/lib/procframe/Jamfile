@@ -1,6 +1,6 @@
 #pragma ident "$Id$"
 
-# please add in alphabetic order
+# Please add in alphabetic order
 SubDir TOP lib procframe ;
 
 if $(PREPROCESSING)
