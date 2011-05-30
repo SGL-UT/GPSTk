@@ -11,7 +11,7 @@ else
 {
 # Please add in alphabetical order
   GPSBuildLibrary procframe :
-#      BasicModel.cpp
+      BasicModel.cpp
       CodeKalmanSolver.cpp
       CodeSmoother.cpp
       ComputeCombination.cpp
@@ -79,7 +79,7 @@ else
 
    InstallFile $(INCDIR) :
 # Please add in alphabetical order
-#      BasicModel.hpp
+      BasicModel.hpp
       CodeKalmanSolver.hpp
       CodeSmoother.hpp
       ComputeCombination.hpp

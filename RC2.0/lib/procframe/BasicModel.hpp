@@ -28,7 +28,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -108,7 +108,7 @@ namespace gpstk
       BasicModel()
          : minElev(10.0), pDefaultEphemeris(NULL),
            defaultObservable(TypeID::C1), useTGD(false)
-      { setInitialRxPosition(); setIndex(); };
+      { setInitialRxPosition(); };
 
 
          /** Explicit constructor taking as input reference
@@ -126,13 +126,15 @@ namespace gpstk
           *              radius, in meters ]
           * @param s     coordinate system (default is Cartesian, may be set
           *              to Geodetic).
-          * @param geoid pointer to GeoidModel (default is null, implies WGS84)
+          * @param ell   pointer to EllipsoidModel
+          * @param frame Reference frame associated with this position
           */
       BasicModel( const double& aRx,
                   const double& bRx,
                   const double& cRx,
                   Position::CoordinateSystem s = Position::Cartesian,
-                  GeoidModel *geoid = NULL );
+                  EllipsoidModel *ell = NULL,
+                  ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /// Explicit constructor, taking as input a Position object
@@ -163,7 +165,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -232,10 +234,6 @@ namespace gpstk
       Position rxPos;
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -274,7 +272,8 @@ namespace gpstk
                                         const double& bRx,
                                         const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                                        GeoidModel *geoid = NULL );
+                                        EllipsoidModel *ell = NULL,
+                           ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /// Method to set the initial (a priori) position of receiver.
@@ -286,26 +285,10 @@ namespace gpstk
 
 
          /// Method to get TGD corrections.
-      virtual double getTGDCorrections( DayTime Tr,
+      virtual double getTGDCorrections( CommonTime Tr,
                                         const XvtStore<SatID>& Eph,
                                         SatID sat )
          throw();
-
-
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'BasicModel'

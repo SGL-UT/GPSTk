@@ -25,7 +25,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -35,15 +35,6 @@
 
 namespace gpstk
 {
-
-
-      // Index initially assigned to this class
-   int BasicModel::classIndex = 4000000;
-
-
-      // Returns an index identifying this object.
-   int BasicModel::getIndex() const
-   { return index; }
 
 
       // Returns a string identifying this object.
@@ -67,21 +58,22 @@ namespace gpstk
        *              radius, in meters ]
        * @param s     coordinate system (default is Cartesian, may be set
        *              to Geodetic).
-       * @param geoid pointer to GeoidModel (default is null, implies WGS84)
+       * @param ell   pointer to EllipsoidModel
+       * @param frame Reference frame associated with this position
        */
    BasicModel::BasicModel( const double& aRx,
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s,
-                           GeoidModel *geoid )
+                           EllipsoidModel *ell,
+                           ReferenceFrame frame )
    {
 
       minElev = 10.0;
       pDefaultEphemeris = NULL;
       defaultObservable = TypeID::C1;
       useTGD = false;
-      setInitialRxPosition(aRx, bRx, cRx, s, geoid);
-      setIndex();
+      setInitialRxPosition( aRx, bRx, cRx, s, ell, frame );
 
    }  // End of 'BasicModel::BasicModel()'
 
@@ -96,7 +88,6 @@ namespace gpstk
       defaultObservable = TypeID::C1;
       useTGD = false;
       setInitialRxPosition(RxCoordinates);
-      setIndex();
 
    }  // End of 'BasicModel::BasicModel()'
 
@@ -124,7 +115,6 @@ namespace gpstk
       setDefaultEphemeris(dEphemeris);
       defaultObservable = dObservable;
       useTGD = applyTGD;
-      setIndex();
 
    }  // End of 'BasicModel::BasicModel()'
 
@@ -136,7 +126,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& BasicModel::Process( const DayTime& time,
+   satTypeValueMap& BasicModel::Process( const CommonTime& time,
                                          satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -255,7 +245,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -275,12 +264,13 @@ namespace gpstk
                                          const double& bRx,
                                          const double& cRx,
                                          Position::CoordinateSystem s,
-                                         GeoidModel *geoid )
+                                         EllipsoidModel *ell,
+                                         ReferenceFrame frame )
    {
 
       try
       {
-         Position rxpos(aRx, bRx, cRx, s, geoid);
+         Position rxpos( aRx, bRx, cRx, s, ell, frame );
          setInitialRxPosition(rxpos);
          return 0;
       }
@@ -330,7 +320,7 @@ namespace gpstk
 
 
       // Method to get TGD corrections.
-   double BasicModel::getTGDCorrections( DayTime Tr,
+   double BasicModel::getTGDCorrections( CommonTime Tr,
                                          const XvtStore<SatID>& Eph,
                                          SatID sat )
       throw()
