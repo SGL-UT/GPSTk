@@ -126,7 +126,7 @@ namespace gpstk
 
       // Explicit constructor
    sourceEpochRinexHeader::sourceEpochRinexHeader( const sourceHeader& sh,
-                                                   const DayTime& time,
+                                                   const CommonTime& time,
                                                    const std::string& antType,
                                                    const Triple& antPos,
                                                    const short& flag )

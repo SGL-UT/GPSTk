@@ -44,6 +44,8 @@
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "CivilTime.hpp"
+#include "YDSTime.hpp"
 #include "icd_gps_constants.hpp"
 
 
@@ -65,7 +67,7 @@ namespace gpstk
        * completely identify any GNSS value:
        *
        *  \li Receiver/Source (SourceID)
-       *  \li Epoch (DayTime)
+       *  \li Epoch (CommonTime)
        *  \li Satellite (SatID)
        *  \li Type of value (TypeID)
        *
@@ -134,9 +136,9 @@ namespace gpstk
 
 
       /// Thrown when attempting to access a value and the corresponding
-      /// epoch (DayTime) does not exist in the map.
+      /// epoch (CommonTime) does not exist in the map.
       /// @ingroup exceptiongroup
-   NEW_EXCEPTION_CLASS(DayTimeNotFound, gpstk::Exception);
+   NEW_EXCEPTION_CLASS(CommonTimeNotFound, gpstk::Exception);
 
 
       /// Thrown when attempting to access a value and any of the corresponding
@@ -529,13 +531,13 @@ namespace gpstk
 
 
       /// Map holding epoch with corresponding satTypeValueMap.
-   typedef std::map<DayTime, satTypeValueMap>  epochSatTypeValueMap;
+   typedef std::map<CommonTime, satTypeValueMap>  epochSatTypeValueMap;
 
       /// Map holding epoch with corresponding satValueMap.
-   typedef std::map<DayTime, satValueMap>      epochSatValueMap;
+   typedef std::map<CommonTime, satValueMap>      epochSatValueMap;
 
       /// Map holding epoch with corresponding typeValueMap.
-   typedef std::map<DayTime, typeValueMap>     epochTypeValueMap;
+   typedef std::map<CommonTime, typeValueMap>     epochTypeValueMap;
 
 
 
@@ -1141,9 +1143,9 @@ namespace gpstk
 
 
 
-      /// GNSS data structure consisting in a map with DayTime as keys, and
+      /// GNSS data structure consisting in a map with CommonTime as keys, and
       /// sourceDataMap as elements.
-   struct  gnssDataMap : std::multimap<DayTime, sourceDataMap>
+   struct  gnssDataMap : std::multimap<CommonTime, sourceDataMap>
    {
 
          /// Default constructor
@@ -1222,15 +1224,15 @@ namespace gpstk
 
 
          /** Returns a 'gnssDataMap' with the data corresponding to provided
-          *  DayTime, taking into account 'tolerance'.
+          *  CommonTime, taking into account 'tolerance'.
           *
           * @param epoch         Epoch to be looked for.
           */
-      gnssDataMap getDataFromEpoch( const DayTime& epoch ) const
-         throw( DayTimeNotFound );
+      gnssDataMap getDataFromEpoch( const CommonTime& epoch ) const
+         throw( CommonTimeNotFound );
 
 
-         /** Returns the data value (double) corresponding to provided DayTime,
+         /** Returns the data value (double) corresponding to provided CommonTime,
           *  SourceID, SatID and TypeID.
           *
           * @param epoch         Epoch to be looked for.
@@ -1241,11 +1243,11 @@ namespace gpstk
           * @warning If within (epoch +/- tolerance) more than one match exists,
           * then only the first one is returned.
           */
-      double getValue( const DayTime& epoch,
+      double getValue( const CommonTime& epoch,
                        const SourceID& source,
                        const SatID& satellite,
                        const TypeID& type ) const
-         throw( DayTimeNotFound, ValueNotFound );
+         throw( CommonTimeNotFound, ValueNotFound );
 
 
          /** Returns the data value (double) corresponding to the first epoch
@@ -1264,7 +1266,7 @@ namespace gpstk
          throw( ValueNotFound );
 
 
-         /** Inserts a data value (double) at the provided DayTime, SourceID,
+         /** Inserts a data value (double) at the provided CommonTime, SourceID,
           *  SatID and TypeID, taking into account 'tolerance'.
           *
           * @param epoch         Epoch to be looked for.
@@ -1273,12 +1275,12 @@ namespace gpstk
           * @param type          Type of the new data.
           * @param value         Value to be inserted.
           */
-      gnssDataMap& insertValue( const DayTime& epoch,
+      gnssDataMap& insertValue( const CommonTime& epoch,
                                 const SourceID& source,
                                 const SatID& satellite,
                                 const TypeID& type,
                                 double value )
-         throw( DayTimeNotFound, ValueNotFound );
+         throw( CommonTimeNotFound, ValueNotFound );
 
 
          /** Inserts a data value (double) in the first epoch of the data
@@ -1521,13 +1523,13 @@ namespace gpstk
       throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
-      /** This function constructs a DayTime object from the given parameters.
+      /** This function constructs a CommonTime object from the given parameters.
        * 
        * @param line    the encoded time string found in the RINEX record.
        * @param hdr     the RINEX Observation Header object for the current
        *                RINEX file.
        */
-   DayTime parseTime( const std::string& line,
+   CommonTime parseTime( const std::string& line,
                       const RinexObsHeader& hdr )
       throw(FFStreamError);
 

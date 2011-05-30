@@ -1632,7 +1632,7 @@ in matrix and number of types do not match") );
       sdMap[ gds.header.source ] = gds.body;
 
          // Introduce data into this GDS
-      (*this).insert( pair<const DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
+      (*this).insert( pair<const CommonTime, sourceDataMap>( gds.header.epoch, sdMap ) );
 
          // Return curren GDS.
       return (*this);
@@ -1655,7 +1655,7 @@ in matrix and number of types do not match") );
       sdMap[ gds.header.source ] = gds.body;
 
          // Introduce data into this GDS
-      (*this).insert( pair<const DayTime, sourceDataMap>( gds.header.epoch, sdMap ) );
+      (*this).insert( pair<const CommonTime, sourceDataMap>( gds.header.epoch, sdMap ) );
 
          // Return current GDS.
       return (*this);
@@ -1768,8 +1768,8 @@ in matrix and number of types do not match") );
       if( !( (*this).empty() ) )
       {
 
-            // Get the 'DayTime' of the first element
-         DayTime firstEpoch( (*(*this).begin()).first );
+            // Get the 'CommonTime' of the first element
+         CommonTime firstEpoch( (*(*this).begin()).first );
 
             // Find the position of the first element PAST
             // 'firstEpoch+tolerance'
@@ -1802,8 +1802,8 @@ in matrix and number of types do not match") );
       if( !( (*this).empty() ) )
       {
 
-            // Get the 'DayTime' of the first element
-         DayTime firstEpoch( (*(*this).begin()).first );
+            // Get the 'CommonTime' of the first element
+         CommonTime firstEpoch( (*(*this).begin()).first );
 
             // Find the position of the first element PAST
             // 'firstEpoch+tolerance'
@@ -1887,8 +1887,8 @@ in matrix and number of types do not match") );
       if( !( (*this).empty() ) )
       {
 
-            // Get the 'DayTime' of the last element
-         DayTime lastEpoch( (*(--(*this).end())).first );
+            // Get the 'CommonTime' of the last element
+         CommonTime lastEpoch( (*(--(*this).end())).first );
 
             // Find the position of the last element PAST
             // 'lastEpoch-tolerance'
@@ -1921,8 +1921,8 @@ in matrix and number of types do not match") );
       if( !( (*this).empty() ) )
       {
 
-            // Get the 'DayTime' of the last element
-         DayTime lastEpoch( (*(--(*this).end())).first );
+            // Get the 'CommonTime' of the last element
+         CommonTime lastEpoch( (*(--(*this).end())).first );
 
             // Find the position of the last element PAST
             // 'lastEpoch-tolerance'
@@ -1948,12 +1948,12 @@ in matrix and number of types do not match") );
 
 
       /* Returns a 'gnssDataMap' with the data corresponding to provided
-       * DayTime, taking into account 'tolerance'.
+       * CommonTime, taking into account 'tolerance'.
        *
        * @param epoch         Epoch to be looked for.
        */
-   gnssDataMap gnssDataMap::getDataFromEpoch( const DayTime& epoch ) const
-      throw( DayTimeNotFound )
+   gnssDataMap gnssDataMap::getDataFromEpoch( const CommonTime& epoch ) const
+      throw( CommonTimeNotFound )
    {
 
          // Declare structure to be returned
@@ -1984,13 +1984,13 @@ in matrix and number of types do not match") );
       }
       else
       {
-         GPSTK_THROW(DayTimeNotFound("Data map is empty"));
+         GPSTK_THROW(CommonTimeNotFound("Data map is empty"));
       }
 
          // Check if 'toReturn' is empty
       if( toReturn.empty() )
       {
-         GPSTK_THROW(DayTimeNotFound("Epoch not found"));
+         GPSTK_THROW(CommonTimeNotFound("Epoch not found"));
       }
 
       return toReturn;
@@ -1999,7 +1999,7 @@ in matrix and number of types do not match") );
 
 
 
-      /* Returns the data value (double) corresponding to provided DayTime,
+      /* Returns the data value (double) corresponding to provided CommonTime,
        * SourceID, SatID and TypeID.
        *
        * @param epoch         Epoch to be looked for.
@@ -2010,14 +2010,14 @@ in matrix and number of types do not match") );
        * @warning If within (epoch +/- tolerance) more than one match exists,
        * then only the first one is returned.
        */
-   double gnssDataMap::getValue( const DayTime& epoch,
+   double gnssDataMap::getValue( const CommonTime& epoch,
                                  const SourceID& source,
                                  const SatID& satellite,
                                  const TypeID& type ) const
-      throw( DayTimeNotFound, ValueNotFound )
+      throw( CommonTimeNotFound, ValueNotFound )
    {
 
-         // Look for the epoch (DayTime) data
+         // Look for the epoch (CommonTime) data
       gnssDataMap gdMap( getDataFromEpoch(epoch) );
 
          // Value to be returned
@@ -2072,7 +2072,7 @@ in matrix and number of types do not match") );
       throw( ValueNotFound )
    {
 
-         // Look for the epoch (DayTime) data
+         // Look for the epoch (CommonTime) data
       gnssDataMap gdMap( frontEpoch() );
 
          // Value to be returned
@@ -2111,7 +2111,7 @@ in matrix and number of types do not match") );
 
 
 
-      /* Inserts a data value (double) at the provided DayTime, SourceID,
+      /* Inserts a data value (double) at the provided CommonTime, SourceID,
        * SatID and TypeID, taking into account 'tolerance'.
        *
        * @param epoch         Epoch to be looked for.
@@ -2120,12 +2120,12 @@ in matrix and number of types do not match") );
        * @param type          Type of the new data.
        * @param value         Value to be inserted.
        */
-   gnssDataMap& gnssDataMap::insertValue( const DayTime& epoch,
+   gnssDataMap& gnssDataMap::insertValue( const CommonTime& epoch,
                                           const SourceID& source,
                                           const SatID& satellite,
                                           const TypeID& type,
                                           double value )
-      throw( DayTimeNotFound, ValueNotFound )
+      throw( CommonTimeNotFound, ValueNotFound )
    {
 
          // First check that structure isn't empty
@@ -2186,14 +2186,14 @@ in matrix and number of types do not match") );
          }
          else
          {
-               // No match found for DayTime with current tolerance
-            GPSTK_THROW(DayTimeNotFound("Epoch not found within tolerance"));
+               // No match found for CommonTime with current tolerance
+            GPSTK_THROW(CommonTimeNotFound("Epoch not found within tolerance"));
          }
 
       }
       else
       {
-         GPSTK_THROW(DayTimeNotFound("Data map is empty"));
+         GPSTK_THROW(CommonTimeNotFound("Data map is empty"));
       }
 
       return (*this);
@@ -2367,10 +2367,12 @@ in matrix and number of types do not match") );
                  stvmIter++ )
             {
 
+                  // Declare a 'YDSTime' object to ease printing
+               YDSTime time( (*it).first );
                   // First, print year, Day-Of-Year and Seconds of Day
-               s << (*it).first.year() << " "
-                 << (*it).first.DOY() << " "
-                 << (*it).first.DOYsecond() << " ";
+               s << time.year << " "
+                 << time.doy << " "
+                 << time.sod << " ";
 
                   // Second, print SourceID information
                s << (*sdmIter).first << " ";
@@ -3157,14 +3159,14 @@ in matrix and number of types do not match") );
 
 
 
-      /* This function constructs a DayTime object from the given parameters.
+      /* This function constructs a CommonTime object from the given parameters.
        *
        * @param line    the encoded time string found in the RINEX record.
        * @param hdr     the RINEX Observation Header object for the current
        *                RINEX file.
        */
-   DayTime parseTime( const std::string& line,
-                      const RinexObsHeader& hdr )
+   CommonTime parseTime( const std::string& line,
+                         const RinexObsHeader& hdr )
       throw(FFStreamError)
    {
 
@@ -3186,12 +3188,15 @@ in matrix and number of types do not match") );
             // if there's no time, just return a bad time
          if (line.substr(0,26) == std::string(26, ' '))
          {
-            return DayTime(DayTime::BEGINNING_OF_TIME);
+            return CommonTime(CommonTime::BEGINNING_OF_TIME);
          }
 
          int year, month, day, hour, min;
          double sec;
-         int yy = hdr.firstObs.year()/100;
+
+            // We need a 'YDSTime' object here to get the year
+         YDSTime time( hdr.firstObs );
+         int yy( time.year/100 );
          yy *= 100;
 
          year  = StringUtils::asInt(   line.substr(1,  2 ));
@@ -3205,7 +3210,9 @@ in matrix and number of types do not match") );
             // surprisingly often....
          double ds=0;
          if(sec >= 60.) { ds=sec; sec=0.0; }
-         DayTime rv(yy+year, month, day, hour, min, sec);
+         CivilTime cTime( yy+year, month, day, hour, min, sec,
+                          hdr.firstObs.getTimeSystem() );
+         CommonTime rv(cTime);
          if(ds != 0) rv += ds;
 
          return rv;

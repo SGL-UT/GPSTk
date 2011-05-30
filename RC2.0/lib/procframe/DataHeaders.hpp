@@ -35,7 +35,7 @@
 #include "SatID.hpp"
 #include "TypeID.hpp"
 #include "SourceID.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 
 
@@ -110,7 +110,7 @@ namespace gpstk
    {
 
          /// Field containing the epoch of data
-      DayTime epoch;
+      CommonTime epoch;
 
 
          /// Default constructor
@@ -120,21 +120,21 @@ namespace gpstk
          /// Explicit constructor
       sourceEpochHeader( const SourceID::SourceType& st,
                          const std::string& sourcename,
-                         const DayTime& time )
+                         const CommonTime& time )
          : epoch(time)
       { source.type = st; source.sourceName = sourcename; };
 
 
          /// Explicit constructor
       sourceEpochHeader( const SourceID& sI,
-                         const DayTime& time )
+                         const CommonTime& time )
          : epoch(time)
       { source = sI; };
 
 
          /// Explicit constructor from parent class
       sourceEpochHeader( const sourceHeader& sh,
-                         const DayTime& time )
+                         const CommonTime& time )
          : sourceHeader(sh), epoch(time)
       {};
 
@@ -201,7 +201,7 @@ namespace gpstk
          /// Explicit constructor
       sourceEpochRinexHeader( const SourceID::SourceType& st,
                               const std::string& sourcename,
-                              const DayTime& time,
+                              const CommonTime& time,
                               const std::string& antType,
                               const Triple& antPos,
                               const short& flag )
@@ -211,7 +211,7 @@ namespace gpstk
 
          /// Explicit constructor
       sourceEpochRinexHeader( const SourceID& sI,
-                              const DayTime& time,
+                              const CommonTime& time,
                               const std::string& antType,
                               const Triple& antPos,
                               const short& flag )
@@ -221,7 +221,7 @@ namespace gpstk
 
          /// Explicit constructor
       sourceEpochRinexHeader( const sourceHeader& sh,
-                              const DayTime& time,
+                              const CommonTime& time,
                               const std::string& antType,
                               const Triple& antPos,
                               const short& flag );
@@ -447,7 +447,7 @@ namespace gpstk
          /// Explicit constructor
       sourceEpochSatHeader( const SourceID::SourceType& st,
                             const std::string& sourcename,
-                            const DayTime& time,
+                            const CommonTime& time,
                             const SatID& sat )
          : satellite(sat)
       { source.type = st; source.sourceName = sourcename; epoch = time; };
@@ -455,7 +455,7 @@ namespace gpstk
 
          /// Explicit constructor
       sourceEpochSatHeader( const SourceID& sI,
-                            const DayTime& time,
+                            const CommonTime& time,
                             const SatID& sat )
          : satellite(sat)
       { source = sI; epoch = time; };
@@ -463,7 +463,7 @@ namespace gpstk
 
          /// Explicit constructor
       sourceEpochSatHeader( const sourceHeader& sh,
-                            const DayTime& time,
+                            const CommonTime& time,
                             const SatID& sat )
          : satellite(sat)
       { source = sh.source; epoch = time; };
@@ -535,7 +535,7 @@ namespace gpstk
          /// Explicit constructor
       sourceEpochTypeHeader( const SourceID::SourceType& st,
                              const std::string& sourcename,
-                             const DayTime& time,
+                             const CommonTime& time,
                              const TypeID& datatype )
          : type(datatype)
       { source.type = st; source.sourceName = sourcename; epoch = time; };
@@ -543,7 +543,7 @@ namespace gpstk
 
          /// Explicit constructor
       sourceEpochTypeHeader( const SourceID& sI,
-                             const DayTime& time,
+                             const CommonTime& time,
                              const TypeID& datatype )
          : type(datatype)
       { source = sI; epoch = time; };
@@ -551,7 +551,7 @@ namespace gpstk
 
          /// Explicit constructor
       sourceEpochTypeHeader( const sourceHeader& sh,
-                             const DayTime& time,
+                             const CommonTime& time,
                              const TypeID& datatype )
          : type(datatype)
       { source = sh.source; epoch = time; };
