@@ -343,5 +343,4 @@ namespace gpstk
    }  // End of method 'BasicModel::getTGDCorrections()'
 
 
-
 }  // End of namespace gpstk

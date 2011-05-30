@@ -6,8 +6,8 @@
  * phase observable.
  */
 
-#ifndef CODESMOOTHER_HPP
-#define CODESMOOTHER_HPP
+#ifndef GPSTK_CODESMOOTHER_HPP
+#define GPSTK_CODESMOOTHER_HPP
 
 //============================================================================
 //
@@ -115,7 +115,7 @@ namespace gpstk
          /// as observables.
       CodeSmoother() : codeType(TypeID::C1), phaseType(TypeID::L1),
          resultType(TypeID::C1), maxWindowSize(100), csFlag(TypeID::CSL1) 
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -220,10 +220,6 @@ namespace gpstk
       virtual CodeSmoother& setMaxWindowSize(const int& maxSize);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -284,20 +280,10 @@ namespace gpstk
                                    const double& flag );
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { (*this).index = classIndex++; };
-
-
    }; // End of class 'CodeSmoother'
 
       //@}
 
-}
-#endif   // CODESMOOTHER_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_CODESMOOTHER_HPP

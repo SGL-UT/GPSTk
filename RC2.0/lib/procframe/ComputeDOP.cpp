@@ -149,5 +149,4 @@ namespace gpstk
    }  // End of method 'ComputeDOP::Process()'
 
 
-
 }  // End of namespace gpstk

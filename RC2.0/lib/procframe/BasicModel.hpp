@@ -293,7 +293,6 @@ namespace gpstk
 
    }; // End of class 'BasicModel'
 
-
       //@}
 
 }  // End of namespace gpstk

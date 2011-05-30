@@ -5,8 +5,8 @@
  * This class computes the usual DOP values: GDOP, PDOP, TDOP, HDOP and VDOP.
  */
 
-#ifndef COMPUTEDOP_HPP
-#define COMPUTEDOP_HPP
+#ifndef GPSTK_COMPUTEDOP_HPP
+#define GPSTK_COMPUTEDOP_HPP
 
 //============================================================================
 //
@@ -189,4 +189,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif // COMPUTEDOP_HPP
+
+#endif   // GPSTK_COMPUTEDOP_HPP

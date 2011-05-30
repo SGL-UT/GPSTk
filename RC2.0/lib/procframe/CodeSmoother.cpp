@@ -35,15 +35,6 @@
 namespace gpstk
 {
 
-      // Index initially assigned to this class
-   int CodeSmoother::classIndex = 2400000;
-
-
-      // Returns an index identifying this object.
-   int CodeSmoother::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string CodeSmoother::getClassName() const
    { return "CodeSmoother"; }
@@ -128,8 +119,6 @@ namespace gpstk
 
       }  // End of 'switch ( codeT.type )'
 
-      setIndex();
-
    }  // End of 'CodeSmoother::CodeSmoother()'
 
 
@@ -194,7 +183,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
