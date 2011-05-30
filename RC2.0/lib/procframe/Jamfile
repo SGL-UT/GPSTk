@@ -21,7 +21,7 @@ else
       ComputeLC.cpp
       ComputeLdelta.cpp
       ComputeLI.cpp
-#      ComputeLinear.cpp
+      ComputeLinear.cpp
       ComputeMelbourneWubbena.cpp
 #      ComputeMOPSWeights.cpp
       ComputePC.cpp
@@ -89,7 +89,7 @@ else
       ComputeLC.hpp
       ComputeLdelta.hpp
       ComputeLI.hpp
-#      ComputeLinear.hpp
+      ComputeLinear.hpp
       ComputeMelbourneWubbena.hpp
 #      ComputeMOPSWeights.hpp
       ComputePC.hpp

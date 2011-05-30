@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ComputeMelbourneWubbena::classIndex = 2200000;
-
-
-      // Returns an index identifying this object.
-   int ComputeMelbourneWubbena::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ComputeMelbourneWubbena::getClassName() const
@@ -57,7 +48,6 @@ namespace gpstk
       type1 = TypeID::P1;
       type2 = TypeID::P2;
       resultType = TypeID::MWubbena;
-      setIndex();
    }
 
 
@@ -118,7 +108,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -142,5 +131,4 @@ namespace gpstk
    }  // End of method 'ComputeMelbourneWubbena::getCombination()'
 
 
-
-} // End of namespace gpstk
+}  // End of namespace gpstk
