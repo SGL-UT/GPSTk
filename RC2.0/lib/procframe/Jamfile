@@ -15,7 +15,7 @@ else
       CodeKalmanSolver.cpp
       CodeSmoother.cpp
       ComputeCombination.cpp
-#      ComputeDOP.cpp
+      ComputeDOP.cpp
 #      ComputeIonoModel.cpp
 #      ComputeIURAWeights.cpp
       ComputeLC.cpp
@@ -83,7 +83,7 @@ else
       CodeKalmanSolver.hpp
       CodeSmoother.hpp
       ComputeCombination.hpp
-#      ComputeDOP.hpp
+      ComputeDOP.hpp
 #      ComputeIonoModel.hpp
 #      ComputeIURAWeights.hpp
       ComputeLC.hpp
