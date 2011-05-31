@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
 //============================================================================
 
@@ -143,14 +143,14 @@ namespace gpstk
       Dumper()
          : outStr(&std::cout), printType(true), printTime(true),
            printStation(true)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
           *
           * @param out           Stream object used for output.
           * @param printtype     Flag to print TypeID's.
-          * @param printtime     Flag to print DayTime's.
+          * @param printtime     Flag to print CommonTime's.
           * @param printstation  Flag to print SourceID's.
           *
           */
@@ -160,7 +160,7 @@ namespace gpstk
               bool printstation = true )
          : outStr(&out), printType(printtype), printTime(printtime),
            printStation(printstation)
-      { setIndex(); };
+      { };
 
 
          /** Dumps data from a satTypeValueMap object.
@@ -214,14 +214,14 @@ namespace gpstk
       { printType = printtype; return (*this); };
 
 
-         /// Returns flag controlling DayTime printing.
+         /// Returns flag controlling CommonTime printing.
       virtual bool getPrintTime(void) const
       { return printTime; };
 
 
-         /** Sets flag controlling DayTime printing.
+         /** Sets flag controlling CommonTime printing.
           *
-          * @param printtime     Flag to print DayTime's.
+          * @param printtime     Flag to print CommonTime's.
           */
       virtual Dumper& setPrintTime( bool printtime )
       { printTime = printtime; return (*this); };
@@ -293,10 +293,6 @@ namespace gpstk
       { return printTypeSet; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -316,7 +312,7 @@ namespace gpstk
       bool printType;
 
 
-         /// Control flag for printing DayTime's.
+         /// Control flag for printing CommonTime's.
       bool printTime;
 
 
@@ -332,20 +328,7 @@ namespace gpstk
       void printTypeID( const typeValueMap& tvMap );
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'Dumper'
-
 
       //@}
 

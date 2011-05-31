@@ -22,7 +22,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010
+//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
 //============================================================================
 
@@ -31,14 +31,6 @@
 
 namespace gpstk
 {
-   // Index initially assigned to this class
-   int DoubleOp::classIndex = 8000000;
-
-
-   // Returns an index identifying this object.
-   int DoubleOp::getIndex() const
-   { return index; }
-
 
    // Returns a string identifying this object.
    std::string DoubleOp::getClassName() const
@@ -109,7 +101,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);

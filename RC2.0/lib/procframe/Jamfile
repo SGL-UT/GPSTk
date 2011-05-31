@@ -35,10 +35,10 @@ else
       CorrectObservables.cpp
       DataHeaders.cpp
       DataStructures.cpp
-#      Decimate.cpp
+      Decimate.cpp
       DeltaOp.cpp
       DoubleOp.cpp
-#      Dumper.cpp
+      Dumper.cpp
       EclipsedSatFilter.cpp
       Equation.cpp
       EquationSystem.cpp
@@ -103,10 +103,10 @@ else
       CorrectObservables.hpp
       DataHeaders.hpp
       DataStructures.hpp
-#      Decimate.hpp
+      Decimate.hpp
       DeltaOp.hpp
       DoubleOp.hpp
-#      Dumper.hpp
+      Dumper.hpp
       EclipsedSatFilter.hpp
       Equation.hpp
       EquationSystem.hpp

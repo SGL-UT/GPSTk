@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010
+//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
 //============================================================================
 
@@ -135,6 +135,7 @@ namespace gpstk
    class DoubleOp : public ProcessingClass
    {
    public:
+
          /// Constructor
       DoubleOp()
          : refSatMinElev(35.0)
@@ -149,7 +150,6 @@ namespace gpstk
          : refSatMinElev(35.0)
       {  
          sdStations.setDiffType(difftype); sdSatellites.setDiffType(difftype);
-         setIndex();
       };
          
          /** Method to set data type values to be differenced.
@@ -319,10 +319,6 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -347,22 +343,11 @@ namespace gpstk
          /// default is 35 degree
       double refSatMinElev;   
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
    }; // End of class 'DoubleOp'
 
-      // //@}
+      //@}
 
 }  // End of namespace gpstk
 
-
-#endif //
+#endif   // GPSTK_DOUBLEOP_HPP
 
