@@ -74,7 +74,7 @@ namespace gpstk
    }
       
    double IonoModelStore::getCorrection(const DayTime& time,
-                                        const Geodetic& rxgeo,
+                                        const Position& rxgeo,
                                         double svel,
                                         double svaz,
                                         IonoModel::Frequency freq) const

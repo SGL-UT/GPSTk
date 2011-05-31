@@ -90,7 +90,7 @@ namespace gpstk
           * \return the ionospheric correction (meters)
           */
       double getCorrection(const DayTime& time,
-                           const Geodetic& rxgeo,
+                           const Position& rxgeo,
                            double svel,
                            double svaz,
                            IonoModel::Frequency freq = IonoModel::L1) const
