@@ -52,7 +52,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeIonoModel::Process( const DayTime& time,
+   satTypeValueMap& ComputeIonoModel::Process( const CommonTime& time,
                                                satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -192,7 +192,7 @@ namespace gpstk
                                                          const double b[4])
    {
       IonoModel ionModel(a,b);
-      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME,ionModel);      
+      klbStore.addIonoModel(CommonTime::BEGINNING_OF_TIME,ionModel);
       ionoType = Klobuchar;
 
       return (*this);
@@ -200,7 +200,7 @@ namespace gpstk
 
    ComputeIonoModel& ComputeIonoModel::setKlobucharModel(const IonoModel& im)
    {
-      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME, im);
+      klbStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, im);
       ionoType = Klobuchar;
 
       return (*this);

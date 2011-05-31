@@ -5,8 +5,8 @@
  * This class eases computing PC combination for GNSS data structures.
  */
 
-#ifndef COMPUTEPC_HPP
-#define COMPUTEPC_HPP
+#ifndef GPSTK_COMPUTEPC_HPP
+#define GPSTK_COMPUTEPC_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -107,10 +107,6 @@ namespace gpstk
       { type1 = TypeID::C1; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -134,20 +130,10 @@ namespace gpstk
       const double DEN;     // DEN = GAMMA_GPS - 1
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputePC'
 
       //@}
 
-}
-#endif   // COMPUTEPC_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_COMPUTEPC_HPP

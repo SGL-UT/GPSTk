@@ -91,7 +91,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -116,27 +116,15 @@ namespace gpstk
       { Process(gData.header.epoch, gData.body); return gData; };
 
    
-         /// Returns an index identifying this object.
-      virtual int getIndex() const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName() const;
 
+
    protected:
+
          /// Object to access DCB data from CODE
       DCBDataReader dcbP1C1;
 
-   private:  
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
    }; // End of class 'ConvertC1ToP1'
    

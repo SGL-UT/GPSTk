@@ -31,13 +31,6 @@
 
 namespace gpstk
 {
-      // Index initially assigned to this class
-   int ConvertC1ToP1::classIndex = 4800000;
-
-      // Returns an index identifying this object.
-   int ConvertC1ToP1::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ConvertC1ToP1::getClassName() const
@@ -59,7 +52,7 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ConvertC1ToP1::Process( const DayTime& time,
+   satTypeValueMap& ConvertC1ToP1::Process( const CommonTime& time,
                                                 satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -100,7 +93,6 @@ namespace gpstk
 
          // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-            + StringUtils::asString( getIndex() ) + ":"
             + u.what() );
 
          GPSTK_THROW(e);

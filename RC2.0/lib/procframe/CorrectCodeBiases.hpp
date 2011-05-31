@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010
+//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
 //============================================================================
 
@@ -109,7 +109,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -134,12 +134,9 @@ namespace gpstk
       { Process(gData.header.epoch, gData.body); return gData; };
 
    
-         /// Returns an index identifying this object.
-      virtual int getIndex() const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName() const;
+
 
    protected:
 
@@ -161,31 +158,21 @@ namespace gpstk
          /// If it's a cross-correlation receiver, set it true
          // it's false by default
       bool crossCorrelationReceiver;
+
       
    private:
+
+
          /// Factors
       const static double factoP1P2[6];
       const static double factorP1C1[6];
       const static double factorC1X2[6];  // for cross-correlation receiver
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
 
    }; // End of class 'CorrectCodeBiases'
 
       //@}
 
 }  // End of namespace gpstk
-
-
 
 #endif   // GPSTK_CORRECT_CODE_BIASES_HPP
 

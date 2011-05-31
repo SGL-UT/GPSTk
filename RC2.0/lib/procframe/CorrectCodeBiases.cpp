@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010
+//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
 //============================================================================
 
@@ -33,8 +33,6 @@
 
 namespace gpstk
 {
-         // Index initially assigned to this class
-      int CorrectCodeBiases::classIndex = 4800000;
       
       const double CorrectCodeBiases::factoP1P2[6] = {
         +L2_FREQ*L2_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),  // L1
@@ -62,11 +60,6 @@ namespace gpstk
          +1.0,
          -1.0
       };
-
-         // Returns an index identifying this object.
-      int CorrectCodeBiases::getIndex() const
-      { return index; }
-
 
          // Returns a string identifying this object.
       std::string CorrectCodeBiases::getClassName() const
@@ -106,7 +99,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      satTypeValueMap& CorrectCodeBiases::Process( const DayTime& time,
+      satTypeValueMap& CorrectCodeBiases::Process( const CommonTime& time,
                                                    satTypeValueMap& gData )
          throw(ProcessingException)
       {
@@ -152,7 +145,6 @@ namespace gpstk
 
             // Throw an exception if something unexpected happens
             ProcessingException e( getClassName() + ":"
-               + StringUtils::asString( getIndex() ) + ":"
                + u.what() );
 
             GPSTK_THROW(e);
@@ -240,5 +232,6 @@ namespace gpstk
 
       }  // End of method 'CorrectCodeBiases::getDCBCorrection()'
 
-}
+
+}  // End of namespace gpstk
 

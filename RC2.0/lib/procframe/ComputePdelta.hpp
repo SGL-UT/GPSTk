@@ -5,8 +5,8 @@
  * This class eases computing Pdelta combination for GNSS data structures.
  */
 
-#ifndef COMPUTEPDELTA_HPP
-#define COMPUTEPDELTA_HPP
+#ifndef GPSTK_COMPUTEPDELTA_HPP
+#define GPSTK_COMPUTEPDELTA_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -105,10 +105,6 @@ namespace gpstk
       { type1 = TypeID::C1; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -132,20 +128,10 @@ namespace gpstk
       const double DEN;       // DEN = L1_FREQ + L2_FREQ
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputePdelta'
 
       //@}
 
-}
-#endif   // COMPUTEPDELTA_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_COMPUTEPDELTA_HPP

@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int CorrectObservables::classIndex = 4300000;
-
-
-      // Returns an index identifying this object.
-   int CorrectObservables::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string CorrectObservables::getClassName() const
@@ -56,7 +47,7 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& CorrectObservables::Process( const DayTime& time,
+   satTypeValueMap& CorrectObservables::Process( const CommonTime& time,
                                                  satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -195,7 +186,6 @@ namespace gpstk
                            // Throw an exception if something unexpected
                            // happens
                         ProcessingException e( getClassName() + ":"
-                           + StringUtils::asString( getIndex() ) + ":"
                            + "Unexpected problem found when trying to "
                            + "compute antenna offsets" );
 
@@ -249,7 +239,6 @@ namespace gpstk
                                  // Throw an exception if something unexpected
                                  // happens
                               ProcessingException e( getClassName() + ":"
-                                 + StringUtils::asString( getIndex() ) + ":"
                                  + "Unexpected problem found when trying to "
                                  + "compute antenna offsets" );
 
@@ -264,7 +253,6 @@ namespace gpstk
 
                            // Throw an exception if something unexpected happens
                         ProcessingException e( getClassName() + ":"
-                                 + StringUtils::asString( getIndex() ) + ":"
                                  + "Azimuth information could not be found, "
                                  + "so antenna PC offsets can not be computed");
 
@@ -280,7 +268,6 @@ namespace gpstk
 
                      // Throw an exception if there is no elevation data
                   ProcessingException e( getClassName() + ":"
-                              + StringUtils::asString( getIndex() ) + ":"
                               + "Elevation information could not be found, "
                               + "so antenna PC offsets can not be computed" );
 
@@ -418,7 +405,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);

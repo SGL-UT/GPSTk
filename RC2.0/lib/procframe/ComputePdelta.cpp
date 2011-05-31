@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -33,15 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ComputePdelta::classIndex = 2300000;
-
-
-      // Returns an index identifying this object.
-   int ComputePdelta::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ComputePdelta::getClassName() const
@@ -55,9 +46,7 @@ namespace gpstk
       type1 = TypeID::P1;
       type2 = TypeID::P2;
       resultType = TypeID::Pdelta;
-      setIndex();
    }
-
 
 
 } // End of namespace gpstk
