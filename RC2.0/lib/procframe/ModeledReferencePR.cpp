@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -190,7 +190,7 @@ namespace gpstk
        *
        * @return Number of satellites with valid data.
        */
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
@@ -224,7 +224,7 @@ namespace gpstk
          vector<double> vElevation;
          vector<double> vAzimuth;
          vector<Xvt> vXvt;
-         vector<DayTime> vTxTime;
+         vector<CommonTime> vTxTime;
          vector<SatID> vAvailableSV;
          vector<SatID> vRejectedSV;
          vector<Triple> vCosines;
@@ -428,7 +428,7 @@ ModeledReferencePR object." );
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph )
@@ -451,7 +451,7 @@ ModeledReferencePR object." );
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
@@ -476,7 +476,7 @@ ModeledReferencePR object." );
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
@@ -503,7 +503,7 @@ ModeledReferencePR object." );
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
@@ -530,7 +530,7 @@ ModeledReferencePR object." );
 
       // Compute the modeled pseudoranges, given satellite ID's,
       // pseudoranges and other data.
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     Vector<SatID>& Satellite,
                                     Vector<double>& Pseudorange,
                                     const XvtStore<SatID>& Eph,
@@ -571,7 +571,7 @@ ModeledReferencePR object." );
        * @return
        *  1 if satellite has valid data
        */
-   int ModeledReferencePR::Compute( const DayTime& Tr,
+   int ModeledReferencePR::Compute( const CommonTime& Tr,
                                     SatID& Satellite,
                                     double& Pseudorange,
                                     const XvtStore<SatID>& Eph,
@@ -605,7 +605,7 @@ ModeledReferencePR object." );
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ModeledReferencePR::processModel( const DayTime& time,
+   satTypeValueMap& ModeledReferencePR::processModel( const CommonTime& time,
                                                       satTypeValueMap& gData )
       throw(Exception)
    {
@@ -754,12 +754,13 @@ ModeledReferencePR object." );
                                                  const double& bRx,
                                                  const double& cRx,
                                                  Position::CoordinateSystem s,
-                                                 GeoidModel *geoid )
+                                                 EllipsoidModel *ell,
+                                                 ReferenceFrame frame )
    {
 
       try
       {
-         Position rxpos(aRx, bRx, cRx, s, geoid);
+         Position rxpos(aRx, bRx, cRx, s, ell, frame);
          setInitialRxPosition(rxpos);
          return 0;
       }
@@ -838,7 +839,7 @@ ModeledReferencePR object." );
 
       // Method to get the ionospheric corrections.
    double ModeledReferencePR::getIonoCorrections( IonoModelStore *pIonoModel,
-                                                  DayTime Tr,
+                                                  CommonTime Tr,
                                                   Geodetic rxGeo,
                                                   double elevation,
                                                   double azimuth )
@@ -862,7 +863,7 @@ ModeledReferencePR object." );
 
 
       // Method to get TGD corrections.
-   double ModeledReferencePR::getTGDCorrections( DayTime Tr,
+   double ModeledReferencePR::getTGDCorrections( CommonTime Tr,
                                                  const XvtStore<SatID>& Eph,
                                                  SatID sat )
    {

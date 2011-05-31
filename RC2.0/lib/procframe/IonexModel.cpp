@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -35,15 +35,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class.
-   int IonexModel::classIndex = 5100000;
-
-
-      // Returns an index identifying this object.
-   int IonexModel::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string IonexModel::getClassName() const
@@ -62,7 +53,6 @@ namespace gpstk
       useDCB = true;
       setIonoMapType("NONE");
       setInitialRxPosition(RxCoordinates);
-      setIndex();
 
    }  // End of constructor 'IonexModel::IonexModel()'
 
@@ -92,7 +82,6 @@ namespace gpstk
          defaultObservable = dObservable;
          useDCB = applyDCB;
          setIonoMapType(ionoMap);
-         setIndex();
 
       }  // End of constructor 'IonexModel::IonexModel()'
 
@@ -104,7 +93,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& IonexModel::Process( const DayTime& time,
+   satTypeValueMap& IonexModel::Process( const CommonTime& time,
                                          satTypeValueMap& gData )
       throw(Exception)
    {
@@ -366,7 +355,7 @@ namespace gpstk
           *
           * @ return          Differential Code Bias (nanoseconds)
           */
-   double IonexModel::getDCBCorrections( const DayTime& time,
+   double IonexModel::getDCBCorrections( const CommonTime& time,
                                          const IonexStore& Maps,
                                          SatID sat )
       throw()
@@ -388,7 +377,6 @@ namespace gpstk
       }
 
    }  // End of method 'IonexModel::getDCBCorrections()'
-
 
 
 }  // End of namespace gpstk

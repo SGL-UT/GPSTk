@@ -5,8 +5,8 @@
  * Class to compute modeled pseudoranges using a reference station
  */
 
-#ifndef MODELEDREFERENCEPR_HPP
-#define MODELEDREFERENCEPR_HPP
+#ifndef GPSTK_MODELEDREFERENCEPR_HPP
+#define GPSTK_MODELEDREFERENCEPR_HPP
 
 //============================================================================
 //
@@ -26,14 +26,14 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
 
 
 #include "ModeledPseudorangeBase.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngEphemeris.hpp"
 #include "XvtStore.hpp"
 #include "GPSEphemerisStore.hpp"
@@ -77,7 +77,7 @@ namespace gpstk
        *   IonoModel ioModel;
        *   rnavin >> rNavHeader;    // Read navigation RINEX header
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
-       *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+       *   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
        *
        *      // EBRE station nominal position
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
@@ -134,25 +134,24 @@ namespace gpstk
           * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
           * (Latitude, Longitude, Altitude), but defaults to Cartesian.
           *
-          * Also, a pointer to GeoidModel may be specified, but default is
-          * NULL (in which case WGS84 values will be used).
-          *
           * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
           * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
           * @param cRx   third coordinate [ Z, height above ellipsoid or
           *              radius, in m ]
           * @param s     coordinate system (default is Cartesian, may be set
           *              to Geodetic).
-          * @param geoid pointer to GeoidModel (default is null, implies WGS84)
+          * @param ell   pointer to EllipsoidModel.
+          * @param frame Reference frame associated with this position.
           */
       ModeledReferencePR( const double& aRx,
                           const double& bRx,
                           const double& cRx,
                           Position::CoordinateSystem s = Position::Cartesian,
-                          GeoidModel *geoid = NULL )
+                          EllipsoidModel *ell = NULL,
+                          ReferenceFrame frame = ReferenceFrame::Unknown )
          : useTGD(true), pDefaultIonoModel(NULL), pDefaultTropoModel(NULL),
            defaultObservable(TypeID::C1), pDefaultEphemeris(NULL)
-      { init(); setInitialRxPosition(aRx, bRx, cRx, s, geoid); };
+      { init(); setInitialRxPosition(aRx, bRx, cRx, s, ell, frame); };
 
 
          /// Explicit constructor, taking as input a Position object
@@ -280,7 +279,7 @@ namespace gpstk
           *
           * @sa TropModel.hpp, IonoModelStore.hpp.
           */
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -292,7 +291,7 @@ namespace gpstk
 
          /// Compute the modeled pseudoranges, given satellite ID's,
          /// pseudoranges and other data.
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph )
@@ -301,7 +300,7 @@ namespace gpstk
 
          /// Compute the modeled pseudoranges, given satellite ID's,
          /// pseudoranges and other data.
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -311,7 +310,7 @@ namespace gpstk
 
          /// Compute the modeled pseudoranges, given satellite ID's,
          /// pseudoranges and other data.
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -322,7 +321,7 @@ namespace gpstk
 
          /// Compute the modeled pseudoranges, given satellite ID's,
          /// pseudoranges and other data.
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -332,7 +331,7 @@ namespace gpstk
 
          /// Compute the modeled pseudoranges, given satellite ID's,
          /// pseudoranges and other data.
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -360,7 +359,7 @@ namespace gpstk
           *
           * @sa TropModel.hpp, IonoModelStore.hpp.
           */
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    SatID& Satellite,
                    double& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -376,7 +375,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& processModel( const DayTime& time,
+      virtual satTypeValueMap& processModel( const CommonTime& time,
                                              satTypeValueMap& gData )
          throw(Exception);
 
@@ -527,7 +526,8 @@ namespace gpstk
                                         const double& bRx,
                                         const double& cRx,
                            Position::CoordinateSystem s=Position::Cartesian,
-                                        GeoidModel *geoid = NULL );
+                                        EllipsoidModel *ell = NULL,
+                           ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /// Method to set the initial (a priori) position of receiver.
@@ -545,14 +545,14 @@ namespace gpstk
 
          /// Method to get the ionospheric corrections.
       virtual double getIonoCorrections( IonoModelStore *pIonoModel,
-                                         DayTime Tr,
+                                         CommonTime Tr,
                                          Geodetic rxGeo,
                                          double elevation,
                                          double azimuth );
 
 
          /// Method to get TGD corrections.
-      virtual double getTGDCorrections( DayTime Tr,
+      virtual double getTGDCorrections( CommonTime Tr,
                                         const XvtStore<SatID>& Eph,
                                         SatID sat );
 
@@ -573,8 +573,8 @@ namespace gpstk
       throw(Exception)
    { modRefPR.processModel(gData); return gData; }
 
-
       //@}
 
 }  // End of namespace gpstk
-#endif   // MODELEDREFERENCEPR_HPP
+
+#endif   // GPSTK_MODELEDREFERENCEPR_HPP

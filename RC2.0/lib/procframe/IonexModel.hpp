@@ -29,7 +29,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -110,7 +110,7 @@ namespace gpstk
 
          /// Default constructor.
       IonexModel() : pDefaultMaps(NULL), useDCB(true)
-      { setIndex(); };
+      { };
 
 
          /// Explicit constructor, taking as input a Position object
@@ -144,7 +144,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(Exception);
 
@@ -249,14 +249,10 @@ namespace gpstk
           *
           * @ return          Differential Code Bias (nano-seconds)
           */
-      virtual double getDCBCorrections( const DayTime& time,
+      virtual double getDCBCorrections( const CommonTime& time,
                                         const IonexStore& Maps,
                                         SatID sat )
          throw();
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -299,29 +295,12 @@ namespace gpstk
       double ionoHeight;
 
 
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'IonexModel'
-
 
       //@}
 
-
 }  // End of namespace gpstk
+
 #endif   // GPSTK_IONEXMODEL_HPP
 
 

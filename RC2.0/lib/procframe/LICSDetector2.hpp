@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -134,7 +134,7 @@ namespace gpstk
                         resultType2(TypeID::CSL2), deltaTMax(61.0),
                         satThreshold(0.08), timeConst(60.0), useLLI(true),
                         maxBufferSize(12)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -158,7 +158,7 @@ namespace gpstk
           * @param gData     Data object holding the data.
           * @param epochflag Epoch flag.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData,
                                         const short& epochflag = 0 )
          throw(ProcessingException);
@@ -261,10 +261,6 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -329,7 +325,7 @@ namespace gpstk
          filterData()
          {};
 
-         std::deque<DayTime> LIEpoch;  ///< Epochs of previous LI observables.
+         std::deque<CommonTime> LIEpoch; ///< Epochs of previous LI observables.
          std::deque<double> LIBuffer;  ///< Values of previous LI observables.
       };
 
@@ -348,7 +344,7 @@ namespace gpstk
           * @param lli1      LLI1 index.
           * @param lli2      LLI2 index.
           */
-      virtual double getDetection( const DayTime& epoch,
+      virtual double getDetection( const CommonTime& epoch,
                                    const SatID& sat,
                                    typeValueMap& tvMap,
                                    const short& epochflag,
@@ -357,21 +353,7 @@ namespace gpstk
                                    const double& lli2 );
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
-   }; // End of class 'LICSDetector2'
-
+  }; // End of class 'LICSDetector2'
 
       //@}
 

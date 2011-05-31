@@ -45,11 +45,11 @@ else
       GravitationalDelay.cpp
       IonexModel.cpp
       Keeper.cpp
-#      LICSDetector.cpp
-#      LICSDetector2.cpp
+      LICSDetector.cpp
+      LICSDetector2.cpp
       LinearCombinations.cpp
-#      ModeledPR.cpp
-#      ModeledReferencePR.cpp
+      ModeledPR.cpp
+      ModeledReferencePR.cpp
 #      ModelObs.cpp
 #      ModelObsFixedStation.cpp
 #      MWCSDetector.cpp
@@ -113,11 +113,11 @@ else
       GravitationalDelay.hpp
       IonexModel.hpp
       Keeper.hpp
-#      LICSDetector.hpp
-#      LICSDetector2.hpp
+      LICSDetector.hpp
+      LICSDetector2.hpp
       LinearCombinations.hpp
-#      ModeledPR.hpp
-#      ModeledReferencePR.hpp
+      ModeledPR.hpp
+      ModeledReferencePR.hpp
 #      ModelObs.hpp
 #      ModelObsFixedStation.hpp
 #      MWCSDetector.hpp

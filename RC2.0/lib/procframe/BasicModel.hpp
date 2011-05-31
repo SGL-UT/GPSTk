@@ -126,8 +126,8 @@ namespace gpstk
           *              radius, in meters ]
           * @param s     coordinate system (default is Cartesian, may be set
           *              to Geodetic).
-          * @param ell   pointer to EllipsoidModel
-          * @param frame Reference frame associated with this position
+          * @param ell   pointer to EllipsoidModel.
+          * @param frame Reference frame associated with this position.
           */
       BasicModel( const double& aRx,
                   const double& bRx,
