@@ -33,7 +33,6 @@
 
 #include <iostream>
 #include <string>
-#include "DayTime.hpp"
 #include "ProcessingClass.hpp"
 
 
@@ -76,7 +75,7 @@ namespace gpstk
 
          /// Default constructor.
       ProblemSatFilter() 
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -85,7 +84,7 @@ namespace gpstk
           * @param epoch     Time of observations.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -109,12 +108,9 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
+
 
          /// Load Satellite Problem File(*.CRX) download from
          /// 'ftp.unibe.ch/aiub/BSWUSER50/GEN'
@@ -130,7 +126,7 @@ namespace gpstk
       virtual ~ProblemSatFilter() {};
 
    protected:
-      bool isBadSat(const DayTime& time,const SatID& sat);
+      bool isBadSat(const CommonTime& time,const SatID& sat);
 
    protected:
 
@@ -139,12 +135,12 @@ namespace gpstk
          int spiltFlag;
          int problemFlag;
          int actionFlag;
-         DayTime startEpoch;
-         DayTime endEpoch;
+         CommonTime startEpoch;
+         CommonTime endEpoch;
 
          SatData():spiltFlag(0),problemFlag(0),actionFlag(0),
-            startEpoch(DayTime::BEGINNING_OF_TIME),
-            endEpoch(DayTime::BEGINNING_OF_TIME)
+            startEpoch(CommonTime::BEGINNING_OF_TIME),
+            endEpoch(CommonTime::BEGINNING_OF_TIME)
          {}
       };
 
@@ -154,23 +150,10 @@ namespace gpstk
          /// Object to holding all the data
       SatDataMap  satDataMap;
 
-   private:
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
 
    }; // End of class 'ProblemSatFilter'
 
-
       //@}
-
 }
+
 #endif   // GPSTK_PROBLEMSATFILTER_HPP

@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -33,15 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ProcessingList::classIndex = 10000000;
-
-
-      // Returns an index identifying this object.
-   int ProcessingList::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ProcessingList::getClassName() const
@@ -110,7 +101,6 @@ namespace gpstk
       }
 
    }  // End of method 'ProcessingList::Process()'
-
 
 
 }  // End of namespace gpstk

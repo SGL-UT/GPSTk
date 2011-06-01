@@ -5,8 +5,8 @@
  * This is a class to store ProcessingClass objects in a vector.
  */
 
-#ifndef PROCESSINGVECTOR_HPP
-#define PROCESSINGVECTOR_HPP
+#ifndef GPSTK_PROCESSINGVECTOR_HPP
+#define GPSTK_PROCESSINGVECTOR_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -84,7 +84,7 @@ namespace gpstk
 
          /// Default constructor.
       ProcessingVector()
-      { setIndex(); };
+      { };
 
 
          /** Processing method. It returns a gnnsSatTypeValue object.
@@ -141,10 +141,6 @@ namespace gpstk
       { return (procvector.clear()); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -159,20 +155,11 @@ namespace gpstk
          /// stl::vector holding pointers to ProcessingClass objects.
       std::vector<ProcessingClass*> procvector;
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
 
    }; // End of class 'ProcessingVector'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // PROCESSINGVECTOR_HPP
+
+#endif   // GPSTK_PROCESSINGVECTOR_HPP

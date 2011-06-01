@@ -6,8 +6,8 @@
  * phase observable.
  */
 
-#ifndef PCSMOOTHER_HPP
-#define PCSMOOTHER_HPP
+#ifndef GPSTK_PCSMOOTHER_HPP
+#define GPSTK_PCSMOOTHER_HPP
 
 //============================================================================
 //
@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http:// www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http:// www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -109,7 +109,7 @@ namespace gpstk
       PCSmoother() : codeType(TypeID::PC), phaseType(TypeID::LC),
          resultType(TypeID::PC), maxWindowSize(100), csFlag1(TypeID::CSL1),
          csFlag2(TypeID::CSL2)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -121,7 +121,7 @@ namespace gpstk
                   const TypeID& resultT = TypeID::PC )
          : codeType(TypeID::PC), phaseType(TypeID::LC), resultType(resultT),
            maxWindowSize(mwSize), csFlag1(TypeID::CSL1), csFlag2(TypeID::CSL2)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -182,10 +182,6 @@ namespace gpstk
           */
       virtual PCSmoother& setCSFlag2(const TypeID& csT)
       { csFlag2 = csT; return (*this); };
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -271,23 +267,10 @@ namespace gpstk
       { return TypeID::Unknown; };
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
-
    }; // End of class 'PCSmoother'
 
       //@}
 
-}
-#endif   // PCSMOOTHER_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_PCSMOOTHER_HPP

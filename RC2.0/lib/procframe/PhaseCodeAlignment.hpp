@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -140,7 +140,7 @@ namespace gpstk
          : phaseType(TypeID::LC), codeType(TypeID::PC),
            phaseWavelength(0.1069533781421467), useSatArcs(true),
            watchCSFlag(TypeID::CSL1)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -229,7 +229,7 @@ namespace gpstk
           * @param epoch     Time of observations.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -250,10 +250,6 @@ namespace gpstk
           */
       virtual gnssRinex& Process(gnssRinex& gData)
          throw(ProcessingException);
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -304,19 +300,7 @@ namespace gpstk
       std::map<SatID, alignData> svData;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'PhaseCodeAlignment'
-
 
       //@}
 

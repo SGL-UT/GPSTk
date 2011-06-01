@@ -5,8 +5,8 @@
  * This is a class to store ProcessingClass objects in a list.
  */
 
-#ifndef PROCESSINGLIST_HPP
-#define PROCESSINGLIST_HPP
+#ifndef GPSTK_PROCESSINGLIST_HPP
+#define GPSTK_PROCESSINGLIST_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -85,7 +85,7 @@ namespace gpstk
 
          /// Default constructor.
       ProcessingList()
-      { setIndex(); };
+      { };
 
 
          /** Processing method. It returns a gnnsSatTypeValue object.
@@ -153,10 +153,6 @@ namespace gpstk
       { return (proclist.clear()); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -171,20 +167,11 @@ namespace gpstk
          /// stl::vector holding pointers to ProcessingClass objects.
       std::list<ProcessingClass*> proclist;
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
 
    }; // End of class 'ProcessingList'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // PROCESSINGLIST_HPP
+
+#endif   // GPSTK_PROCESSINGLIST_HPP

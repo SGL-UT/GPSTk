@@ -56,8 +56,8 @@ else
       NablaOp.cpp
       NetworkObsStreams.cpp
       OneFreqCSDetector.cpp
-#      PhaseCodeAlignment.cpp
       PCSmoother.cpp
+      PhaseCodeAlignment.cpp
       ProblemSatFilter.cpp
       ProcessingList.cpp
       ProcessingVector.cpp
@@ -124,8 +124,8 @@ else
       NablaOp.hpp
       NetworkObsStreams.hpp
       OneFreqCSDetector.hpp
-#      PhaseCodeAlignment.hpp
       PCSmoother.hpp
+      PhaseCodeAlignment.hpp
       ProcessingClass.hpp
       ProcessingList.hpp
       ProblemSatFilter.hpp
