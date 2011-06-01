@@ -50,12 +50,12 @@ else
       LinearCombinations.cpp
       ModeledPR.cpp
       ModeledReferencePR.cpp
-#      ModelObs.cpp
-#      ModelObsFixedStation.cpp
-#      MWCSDetector.cpp
+      ModelObs.cpp
+      ModelObsFixedStation.cpp
+      MWCSDetector.cpp
       NablaOp.cpp
       NetworkObsStreams.cpp
-#      OneFreqCSDetector.cpp
+      OneFreqCSDetector.cpp
 #      PhaseCodeAlignment.cpp
       PCSmoother.cpp
       ProblemSatFilter.cpp
@@ -118,12 +118,12 @@ else
       LinearCombinations.hpp
       ModeledPR.hpp
       ModeledReferencePR.hpp
-#      ModelObs.hpp
-#      ModelObsFixedStation.hpp
-#      MWCSDetector.hpp
+      ModelObs.hpp
+      ModelObsFixedStation.hpp
+      MWCSDetector.hpp
       NablaOp.hpp
       NetworkObsStreams.hpp
-#      OneFreqCSDetector.hpp
+      OneFreqCSDetector.hpp
 #      PhaseCodeAlignment.hpp
       PCSmoother.hpp
       ProcessingClass.hpp

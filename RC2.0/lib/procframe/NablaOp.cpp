@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -34,16 +34,6 @@
 
 namespace gpstk
 {
-
-
-      // Index initially assigned to this class
-   int NablaOp::classIndex = 7100000;
-
-
-      // Returns an index identifying this object.
-   int NablaOp::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string NablaOp::getClassName() const
@@ -66,9 +56,6 @@ namespace gpstk
       diffTypes.insert(TypeID::dy);
       diffTypes.insert(TypeID::dz);
 
-         // Set index for this object
-      setIndex();
-
    }  // End of constructor 'NablaOp::NablaOp()'
 
 
@@ -87,9 +74,6 @@ namespace gpstk
       diffTypes.insert(TypeID::dx);
       diffTypes.insert(TypeID::dy);
       diffTypes.insert(TypeID::dz);
-
-         // Set index for this object
-      setIndex();
 
    }  // End of constructor 'NablaOp::NablaOp()'
 
@@ -218,7 +202,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);

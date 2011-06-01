@@ -6,8 +6,8 @@
  * one frequency.
  */
 
-#ifndef ONEFREQCSDETECTOR_HPP
-#define ONEFREQCSDETECTOR_HPP
+#ifndef GPSTK_ONEFREQCSDETECTOR_HPP
+#define GPSTK_ONEFREQCSDETECTOR_HPP
 
 //============================================================================
 //
@@ -27,7 +27,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -130,7 +130,7 @@ namespace gpstk
          : codeType(TypeID::C1), phaseType(TypeID::L1), lliType(TypeID::LLI1),
            resultType(TypeID::CSL1), deltaTMax(31.0), maxWindowSize(60),
            maxNumSigmas(4.5), defaultBiasSigma(4.0)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -158,7 +158,7 @@ namespace gpstk
           * @param gData     Data object holding the data.
           * @param epochflag Epoch flag.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData,
                                         const short& epochflag = 0 )
          throw(ProcessingException);
@@ -294,10 +294,6 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -346,11 +342,11 @@ namespace gpstk
       struct filterData
       {
             // Default constructor initializing the data in the structure
-         filterData() : previousEpoch(DayTime::BEGINNING_OF_TIME),
+         filterData() : previousEpoch(CommonTime::BEGINNING_OF_TIME),
                         windowSize(0), meanBias(0.0), variance(0.0)
          {};
 
-         DayTime previousEpoch;  ///< The previous epoch time stamp.
+         CommonTime previousEpoch;  ///< The previous epoch time stamp.
          int windowSize;         ///< The filter window size.
          double meanBias;        ///< Accumulated mean bias
          double variance;        ///< Accumulated variance of bias.
@@ -374,7 +370,7 @@ namespace gpstk
           * @param code      Current code observation value.
           * @param phase     Current phase observation value.
           */
-      virtual double getDetection( const DayTime& epoch,
+      virtual double getDetection( const CommonTime& epoch,
                                    const SatID& sat,
                                    typeValueMap& tvMap,
                                    const short& epochflag,
@@ -382,22 +378,10 @@ namespace gpstk
                                    const double& phase );
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'OneFreqCSDetector'
 
       //@}
 
-}
-#endif   // ONEFREQCSDETECTOR_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_ONEFREQCSDETECTOR_HPP

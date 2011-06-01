@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-
-      // Index initially assigned to this class
-   int ModelObsFixedStation::classIndex = 4100000;
-
-
-      // Returns an index identifying this object.
-   int ModelObsFixedStation::getIndex() const
-   { return index; }
 
 
       // Returns a string identifying this object.
@@ -57,22 +48,21 @@ namespace gpstk
        * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
        * (Latitude, Longitude, Altitude), but defaults to Cartesian.
        *
-       * Also, a pointer to GeoidModel may be specified, but default is
-       * NULL (in which case WGS84 values will be used).
-       *
        * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
        * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
        * @param cRx   third coordinate [ Z, height above ellipsoid or
        *              radius, in meters ]
        * @param s     coordinate system (default is Cartesian, may be set
        *              to Geodetic).
-       * @param geoid pointer to GeoidModel (default is null, implies WGS84)
+       * @param ell   pointer to EllipsoidModel.
+       * @param frame Reference frame associated with this position.
        */
    ModelObsFixedStation::ModelObsFixedStation( const double& aRx,
                                                const double& bRx,
                                                const double& cRx,
                                                Position::CoordinateSystem s,
-                                               GeoidModel *geoid )
+                                               EllipsoidModel *ell,
+                                               ReferenceFrame frame )
    {
 
       minElev = 10.0;
@@ -82,8 +72,7 @@ namespace gpstk
       defaultObservable = TypeID::C1;
       pDefaultEphemeris = NULL;
       InitializeValues();
-      setInitialRxPosition(aRx, bRx, cRx, s, geoid);
-      setIndex();
+      setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -102,7 +91,6 @@ namespace gpstk
       pDefaultEphemeris = NULL;
       InitializeValues();
       setInitialRxPosition(RxCoordinates);
-      setIndex();
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -137,7 +125,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -171,7 +158,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -205,7 +191,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -237,7 +222,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObsFixedStation::ModelObsFixedStation()'
 
@@ -249,7 +233,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ModelObsFixedStation::Process( const DayTime& time,
+   satTypeValueMap& ModelObsFixedStation::Process( const CommonTime& time,
                                                    satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -326,13 +310,14 @@ namespace gpstk
             {
 
                   // Convert Position rxPos to Geodetic rxGeo
-               Geodetic rxGeo( rxPos.getGeodeticLatitude(),
-                               rxPos.getLongitude(),
-                               rxPos.getAltitude() );
+//               Geodetic rxGeo( rxPos.getGeodeticLatitude(),
+//                               rxPos.getLongitude(),
+//                               rxPos.getAltitude() );
 
                tempIono = getIonoCorrections( pDefaultIonoModel,
                                               time,
-                                              rxGeo,
+                                              rxPos,
+//                                              rxGeo,
                                               cerange.elevationGeodetic,
                                               cerange.azimuthGeodetic );
 
@@ -445,7 +430,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -465,12 +449,13 @@ namespace gpstk
                                                    const double& bRx,
                                                    const double& cRx,
                                                 Position::CoordinateSystem s,
-                                                   GeoidModel *geoid )
+                                                   EllipsoidModel *ell,
+                                                   ReferenceFrame frame )
    {
 
       try
       {
-         Position rxpos(aRx, bRx, cRx, s, geoid);
+         Position rxpos(aRx, bRx, cRx, s, ell, frame);
          setInitialRxPosition(rxpos);
          return 0;
       }
@@ -550,8 +535,8 @@ namespace gpstk
 
       // Method to get the ionospheric corrections.
    double ModelObsFixedStation::getIonoCorrections( IonoModelStore *pIonoModel,
-                                                    DayTime Tr,
-                                                    Geodetic rxGeo,
+                                                    CommonTime Tr,
+                                                    Position rxGeo,
                                                     double elevation,
                                                     double azimuth )
    {
@@ -574,7 +559,7 @@ namespace gpstk
 
 
       // Method to get TGD corrections.
-   double ModelObsFixedStation::getTGDCorrections( DayTime Tr,
+   double ModelObsFixedStation::getTGDCorrections( CommonTime Tr,
                                                    const XvtStore<SatID>& Eph,
                                                    SatID sat )
    {
