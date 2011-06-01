@@ -101,14 +101,14 @@ namespace gpstk
          cbUnknown,
          cbAny,  ///< Used to match any carrier band
          cbZero, ///< Used with the channel observation type (see rinex3 section 5.13)
-         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1
-         cbL2,   ///< GPS L2
+         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1, Compass E1
+         cbL2,   ///< GPS L2, Compass E2
          cbL5,   ///< GPS L5, Galileo E5a, SBAS L5
          cbG1,   ///< Glonass G1
          cbG2,   ///< Glonass G2
-         cbE5b,  ///< Galileo E5b
+         cbE5b,  ///< Galileo E5b, Compass E5b
          cbE5ab, ///< Galileo E5a+b
-         cbE6,   ///< Galileo E6
+         cbE6,   ///< Galileo E6, Compass E6
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
          cbUndefined,
          cbLast  ///< Used to verify that all items are described at compile time
@@ -151,6 +151,22 @@ namespace gpstk
          tcIE5,     ///< Galileo L5 I code
          tcQE5,     ///< Galileo L5 Q code
          tcIQE5,    ///< Galileo L5 I+Q combined tracking
+
+         tcSCA,     ///< SBAS civil code
+         tcSI5,     ///< SBAS L5 I code
+         tcSQ5,     ///< SBAS L5 Q code
+         tcSIQ5,    ///< SBAS L5 I+Q code
+
+         //tcCCA      ///< Compass civil E1     ** TBD
+         tcCI2,     ///< Compass E2 I code
+         tcCQ2,     ///< Compass E2 Q code
+         tcCIQ2,    ///< Compass E2 I code
+         tcCI5,     ///< Compass E5 I+Q code
+         tcCQ5,     ///< Compass E5 Q code
+         tcCIQ5,    ///< Compass E5 I+Q code
+         tcCI6,     ///< Compass E6 I code
+         tcCQ6,     ///< Compass E6 Q code
+         tcCIQ6,    ///< Compass E2 I+Q code
 
          tcUndefined,
          tcLast     ///< Used to verify that all items are described at compile time

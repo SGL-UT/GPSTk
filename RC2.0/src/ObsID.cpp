@@ -63,58 +63,71 @@ namespace gpstk
 
    ObsID::Initializer::Initializer()
    {
-      otDesc[otUnknown]   = "UnknownType";
-      otDesc[otAny]       = "AnyType";
-      otDesc[otRange]     = "range";
-      otDesc[otPhase]     = "phase";
-      otDesc[otDoppler]   = "doppler";
-      otDesc[otSNR]       = "snr";
-      otDesc[otChannel]   = "channel";
-      otDesc[otIono]      = "iono";
-      otDesc[otSSI]       = "ssi";
-      otDesc[otLLI]       = "lli";
-      otDesc[otTrackLen]  = "tlen";
-      otDesc[otUndefined] = "undefined";
+      otDesc[otUnknown]   = "UnknownType";   //Rinex (sp)
+      otDesc[otAny]       = "AnyType";       //Rinex *
+      otDesc[otRange]     = "pseudorange";   //Rinex C
+      otDesc[otPhase]     = "phase";         //Rinex L
+      otDesc[otDoppler]   = "doppler";       //Rinex D
+      otDesc[otSNR]       = "snr";           //Rinex S
+      otDesc[otChannel]   = "channel";       //Rinex  
+      otDesc[otIono]      = "iono";          //Rinex  
+      otDesc[otSSI]       = "ssi";           //Rinex  
+      otDesc[otLLI]       = "lli";           //Rinex  
+      otDesc[otTrackLen]  = "tlen";          //Rinex  
+      otDesc[otUndefined] = "undefined";     //Rinex -
 
-      cbDesc[cbUnknown]   = "UnknownBand";
-      cbDesc[cbAny]       = "AnyBand";
-      cbDesc[cbZero]      = "";
-      cbDesc[cbL1]        = "L1";
-      cbDesc[cbL2]        = "L2";
-      cbDesc[cbL5]        = "L5";
-      cbDesc[cbL1L2]      = "L1+L2";
-      cbDesc[cbG1]        = "G1";
-      cbDesc[cbG2]        = "G2";
-      cbDesc[cbE5b]       = "E5b";
-      cbDesc[cbE5ab]      = "L5a+b";
-      cbDesc[cbE6]        = "E6";
-      cbDesc[cbUndefined] = "undefined";
+      cbDesc[cbUnknown]   = "UnknownBand";   //Rinex (sp)
+      cbDesc[cbAny]       = "AnyBand";       //Rinex *
+      cbDesc[cbZero]      = "";              //Rinex  
+      cbDesc[cbL1]        = "L1";            //Rinex 1
+      cbDesc[cbL2]        = "L2";            //Rinex 2
+      cbDesc[cbL5]        = "L5";            //Rinex 5
+      cbDesc[cbL1L2]      = "L1+L2";         //Rinex  
+      cbDesc[cbG1]        = "G1";            //Rinex  
+      cbDesc[cbG2]        = "G2";            //Rinex  
+      cbDesc[cbE5b]       = "E5b";           //Rinex 7
+      cbDesc[cbE5ab]      = "L5a+b";         //Rinex 8
+      cbDesc[cbE6]        = "E6";            //Rinex 6
+      cbDesc[cbUndefined] = "undefined";     //Rinex -
 
-      tcDesc[tcUnknown] = "UnknownCode";
-      tcDesc[tcAny]     = "AnyCode";
-      tcDesc[tcCA]      = "C/A";
-      tcDesc[tcP]       = "P";
-      tcDesc[tcY]       = "Y";
-      tcDesc[tcW]       = "W";
-      tcDesc[tcN]       = "N";
-      tcDesc[tcD]       = "D";
-      tcDesc[tcM]       = "M";
-      tcDesc[tcC2M]     = "C2M";
-      tcDesc[tcC2L]     = "C2L";
-      tcDesc[tcC2LM]    = "C2L+M";
-      tcDesc[tcI5]      = "I5";
-      tcDesc[tcQ5]      = "Q5";
-      tcDesc[tcIQ5]     = "I+Q5";
-      tcDesc[tcGCA]     = "C/A";
-      tcDesc[tcGP]      = "P";
-      tcDesc[tcA]       = "A";
-      tcDesc[tcB]       = "B";
-      tcDesc[tcC]       = "C";
-      tcDesc[tcBC]      = "B+C";
-      tcDesc[tcABC]     = "A+B+C";
-      tcDesc[tcIE5]     = "IE5";
-      tcDesc[tcQE5]     = "QE5";
-      tcDesc[tcIQE5]    = "I+QE5";
+      tcDesc[tcUnknown]   = "UnknownCode";   //Rinex (sp)
+      tcDesc[tcAny]       = "AnyCode";       //Rinex *
+      tcDesc[tcCA]        = "GPSC/A";        //Rinex C    // GPScivil
+      tcDesc[tcP]         = "GPSP";          //Rinex P    // GPSprecise
+      tcDesc[tcY]         = "GPSY";          //Rinex Y    // GPSprecise_encrypted
+      tcDesc[tcW]         = "GPScodelessZ";  //Rinex W    // GPSprecise_encrypted_codeless_Z
+      tcDesc[tcN]         = "GPSsquare";     //Rinex N    // GPSprecise_encrypted_codeless_squaring
+      tcDesc[tcD]         = "GPScodeless";   //Rinex D    // GPSprecise_encrypted_codeless_other
+      tcDesc[tcM]         = "GPSM";          //Rinex M    // GPSmilitary
+      tcDesc[tcC2M]       = "GPSC2M";        //Rinex S    // GPScivil_M
+      tcDesc[tcC2L]       = "GPSC2L";        //Rinex L    // GPScivil_L
+      tcDesc[tcC2LM]      = "GPSC2L+M";      //Rinex X    // GPScivil_L+M
+      tcDesc[tcI5]        = "GPSI5";         //Rinex I    // GPScivil_I
+      tcDesc[tcQ5]        = "GPSQ5";         //Rinex Q    // GPScivil_Q
+      tcDesc[tcIQ5]       = "GPSI+Q5";       //Rinex X    // GPScivil_I+Q
+      tcDesc[tcGCA]       = "GLOC/A";        //Rinex C    // GLOcivil
+      tcDesc[tcGP]        = "GLOP";          //Rinex P    // GLOprecise
+      tcDesc[tcA]         = "GALA";          //Rinex A    // GAL
+      tcDesc[tcB]         = "GALB";          //Rinex B    // GAL
+      tcDesc[tcC]         = "GALC";          //Rinex C    // GAL
+      tcDesc[tcBC]        = "GALB+C";        //Rinex X    // GAL
+      tcDesc[tcABC]       = "GALA+B+C";      //Rinex Z    // GAL
+      tcDesc[tcIE5]       = "GALIE5";        //Rinex I    // GAL
+      tcDesc[tcQE5]       = "GALQE5";        //Rinex Q    // GAL
+      tcDesc[tcIQE5]      = "GALI+QE5";      //Rinex X    // GAL
+      tcDesc[tcSCA]       = "SBASC/A";       //Rinex C    // SBAS civil code
+      tcDesc[tcSI5]       = "SBASI5";        //Rinex I    // SBAS L5 I code
+      tcDesc[tcSQ5]       = "SBASQ5";        //Rinex Q    // SBAS L5 Q code
+      tcDesc[tcSIQ5]      = "SBASI+Q5";      //Rinex X    // SBAS L5 I+Q code
+      tcDesc[tcCI2]       = "CompassIC2";    //Rinex I    // Compass E2 I code
+      tcDesc[tcCQ2]       = "CompassQC2";    //Rinex Q    // Compass E2 Q code
+      tcDesc[tcCIQ2]      = "CompassI+QC2";  //Rinex X    // Compass E2 I code
+      tcDesc[tcCI5]       = "CompassIC5";    //Rinex I    // Compass E5 I+Q code
+      tcDesc[tcCQ5]       = "CompassQC5";    //Rinex Q    // Compass E5 Q code
+      tcDesc[tcCIQ5]      = "CompassI+QC5";  //Rinex X    // Compass E5 I+Q code
+      tcDesc[tcCI6]       = "CompassIC6";    //Rinex I    // Compass E6 I code
+      tcDesc[tcCQ6]       = "CompassQC6";    //Rinex Q    // Compass E6 Q code
+      tcDesc[tcCIQ6]      = "CompassI+QC6";  //Rinex X    // Compass E6 I+Q code
       tcDesc[tcUndefined] = "undefined";
 
       if (otDesc.size() != (int)otLast)
@@ -185,12 +198,27 @@ namespace gpstk
          tc2Rinex[i->second] = i->first;
 
       // And add the couple 'special' cases
-      tc2Rinex[tcC] = 'C';
-      tc2Rinex[tcIE5] = 'I';
-      tc2Rinex[tcQE5] = 'Q';
+      tc2Rinex[tcC]    = 'C';
+      tc2Rinex[tcGCA]  = 'C';
+      tc2Rinex[tcGP]   = 'P';
+      tc2Rinex[tcIE5]  = 'I';
+      tc2Rinex[tcQE5]  = 'Q';
       tc2Rinex[tcIQE5] = 'X';
-      tc2Rinex[tcIQ5] = 'X';
-      tc2Rinex[tcBC] = 'X';
+      tc2Rinex[tcIQ5]  = 'X';
+      tc2Rinex[tcBC]   = 'X';
+      tc2Rinex[tcSCA]  = 'C';
+      tc2Rinex[tcSI5]  = 'I';
+      tc2Rinex[tcSQ5]  = 'Q';
+      tc2Rinex[tcSIQ5] = 'X';
+      tc2Rinex[tcCI2]  = 'I';
+      tc2Rinex[tcCQ2]  = 'Q';
+      tc2Rinex[tcCIQ2] = 'X';
+      tc2Rinex[tcCI5]  = 'I';
+      tc2Rinex[tcCQ5]  = 'Q';
+      tc2Rinex[tcCIQ5] = 'X';
+      tc2Rinex[tcCI6]  = 'I';
+      tc2Rinex[tcCQ6]  = 'Q';
+      tc2Rinex[tcCIQ6] = 'X';
    }
 
 
@@ -245,6 +273,38 @@ namespace gpstk
          {
             case tcCA: code = tcGCA; break;
             case tcP: code = tcGP; break;
+         }
+      }
+      else if (sys == 'S') // SBAS or Geosync
+      {
+         switch (code)
+         {
+            case tcCA: code = tcSCA; break;     // 'C'
+            case tcI5: code = tcSI5; break;     // 'I'
+            case tcQ5: code = tcSQ5; break;     // 'Q'
+            case tcC2LM: code = tcSIQ5; break;  // 'X'
+         }
+      }
+      else if (sys == 'C') // Compass
+      {
+         //if(band == cbL1 && code == tcCA) code = tcCCA;
+         if(band == cbL2) switch (code)
+         {
+            case tcI5: code = tcCI2; break;     // 'I'
+            case tcQ5: code = tcCQ2; break;     // 'Q'
+            case tcC2LM: code = tcCIQ2; break;  // 'X'
+         }
+         if(band == cbE5b) switch (code)
+         {
+            case tcI5: code = tcCI5; break;     // 'I'
+            case tcQ5: code = tcCQ5; break;     // 'Q'
+            case tcC2LM: code = tcCIQ5; break;  // 'X'
+         }
+         if(band == cbE6) switch (code)
+         {
+            case tcI5: code = tcCI6; break;     // 'I'
+            case tcQ5: code = tcCQ6; break;     // 'Q'
+            case tcC2LM: code = tcCIQ6; break;  // 'X'
          }
       } // end of checking which GNSS system this obs is for
    }

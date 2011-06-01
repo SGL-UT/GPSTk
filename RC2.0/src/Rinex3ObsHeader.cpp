@@ -45,6 +45,7 @@
 
 #include "StringUtils.hpp"
 #include "SystemTime.hpp"
+#include "TimeString.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsHeader.hpp"
 
@@ -109,9 +110,12 @@ namespace gpstk
          ostringstream msg;
          msg << endl;
          msg << "Version = " << version << endl;
-         msg << "allValid30 = " << hex << setfill('0') << setw(2) << nouppercase << allValid30 << endl;
-         msg << "allValid   = " << hex << setfill('0') << setw(2) << nouppercase << allValid << endl;
-         msg << "   valid   = " << hex << setfill('0') << setw(2) << nouppercase << valid << endl;
+         msg << "allValid30 = " << hex << setfill('0') << setw(2) << nouppercase
+               << allValid30 << endl;
+         msg << "allValid   = " << hex << setfill('0') << setw(2) << nouppercase
+               << allValid << endl;
+         msg << "   valid   = " << hex << setfill('0') << setw(2) << nouppercase
+               << valid << endl;
          msg << "      OOPS." << endl;
          msg << "Version     " << (valid & validVersion        ) << endl;
          msg << "Run By      " << (valid & validRunBy          ) << endl;
@@ -149,7 +153,8 @@ namespace gpstk
    }  // end reallyPutRecord
 
 
-   // This function computes the number of valid header records which WriteHeaderRecords will write.
+   // This function computes the number of valid header records
+   // which WriteHeaderRecords will write.
    int Rinex3ObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
    {
       int n = 0;
@@ -233,7 +238,7 @@ namespace gpstk
          line  = leftJustify(fileProgram, 20);
          line += leftJustify(fileAgency , 20);
          SystemTime sysTime;
-         string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+         string curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
          line += leftJustify(curDate, 20);
          line += stringRunBy;
          strm << line << endl;
@@ -550,8 +555,9 @@ namespace gpstk
 
                for (int j = 0; j < count; j++)
                {
-                  if (j > maxObsPerLine-1 && (j % maxObsPerLine) == 0 ) // need continuation; end current line
+                  if (j > maxObsPerLine-1 && (j % maxObsPerLine) == 0 )
                   {
+                  // need continuation; end current line
                      line += string(2, ' ');
                      line += stringSystemScaleFac;
                      strm << line << endl;
@@ -851,7 +857,7 @@ namespace gpstk
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                int position = 4*(i % maxObsPerLine) + 6 + 1;
-               ObsID rt(line.substr(position,3));
+               ObsID rt(satSysTemp+line.substr(position,3));
                newTypeList.push_back(rt);
             }
             mapObsTypes[satSysTemp] = newTypeList;
@@ -862,7 +868,7 @@ namespace gpstk
             for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
             {
                int position = 4*i + 6 + 1;
-               ObsID rt(line.substr(position,3));
+               ObsID rt(satSysTemp+line.substr(position,3));
                newTypeList.push_back(rt);
             }
             mapObsTypes[satSysTemp] = newTypeList;
@@ -944,7 +950,7 @@ namespace gpstk
          for (int i = startPosition; (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
             int position = 4*(i % maxObsPerLine) + 10 + 1;
-            ObsID tempType(strip(line.substr(position,3)));
+            ObsID tempType(satSysTemp+strip(line.substr(position,3)));
             tempSfacMap.insert(make_pair(tempType,factor));
          }
          sysSfacMap[satSysTemp] = tempSfacMap;
@@ -1208,17 +1214,22 @@ namespace gpstk
       str = system.systemChar();
       str += " (" + system.systemString() + ")";
 
-      s << "---------------------------------- REQUIRED ----------------------------------" << endl;
+      s << "---------------------------------- REQUIRED "
+        << "----------------------------------" << endl;
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
         << ",  File type " << fileType << ",  System " << str << "." << endl;
-      s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
+      s << "Prgm: " << fileProgram << ",  Run: " << date
+         << ",  By: " << fileAgency << endl;
       s << "Marker name: " << markerName << ", ";
       s << "Marker type: " << markerType << "." << endl;
       s << "Observer : " << observer << ",  Agency: " << agency << endl;
-      s << "Rec#: " << recNo << ",  Type: " << recType << ",  Vers: " << recVers << endl;
+      s << "Rec#: " << recNo << ",  Type: " << recType
+         << ",  Vers: " << recVers << endl;
       s << "Antenna # : " << antNo << ",  Type : " << antType << endl;
-      s << "Position      (XYZ,m) : " << setprecision(4) << antennaPosition << "." << endl;
-      s << "Antenna Delta (HEN,m) : " << setprecision(4) << antennaDeltaHEN << "." << endl;
+      s << "Position      (XYZ,m) : " << setprecision(4) << antennaPosition
+         << "." << endl;
+      s << "Antenna Delta (HEN,m) : " << setprecision(4) << antennaDeltaHEN
+         << "." << endl;
       map<string,vector<ObsID> >::const_iterator iter;
       for (iter = mapObsTypes.begin(); iter != mapObsTypes.end(); iter++)
       {
@@ -1231,7 +1242,8 @@ namespace gpstk
             << " (" << asRinex3ID(iter->second[i]) << ") "
               << asString(iter->second[i]) << endl;
       }
-      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P") << endl;
+      s << "Time of first obs "
+         << printTime(firstObs,"%04Y/%02m/%02d %02H:%02M:%06.3f %P") << endl;
 
       unsigned long allValid;
       if      (version == 3.0)   allValid = allValid30;
@@ -1239,7 +1251,7 @@ namespace gpstk
 
       s << "(This header is ";
       if ((valid & allValid) == allValid)
-         s << "VALID" << endl;
+         s << "VALID)" << endl;
       else {
          s << "NOT VALID";
          s << " RINEX " << setprecision(2) << version << ")" << endl;
@@ -1248,42 +1260,67 @@ namespace gpstk
          s << "v & aV   = " << hex << (valid & allValid30) << endl;
          s << dec;
 
-         if (!(valid & validVersion        )) s << " Version / Type      is NOT valid" << endl;
-         if (!(valid & validRunBy          )) s << " Pgm / Run By / Date is NOT valid" << endl;
-         if (!(valid & validMarkerName     )) s << " Marker Name         is NOT valid" << endl;
-         if (!(valid & validObserver       )) s << " Observer / Agency   is NOT valid" << endl;
-         if (!(valid & validReceiver       )) s << " Receiver # / Type   is NOT valid" << endl;
-         if (!(valid & validAntennaType    )) s << " Antenna Type        is NOT valid" << endl;
-         if (!(valid & validAntennaPosition)) s << " Antenna Position    is NOT valid" << endl;
-         if (!(valid & validAntennaDeltaHEN)) s << " Antenna Delta HEN   is NOT valid" << endl;
-         if (!(valid & validSystemObsType  )) s << " Sys / # / Obs Type  is NOT valid" << endl;
-         if (!(valid & validSystemPhaseShift)) s << " Sys / Phase Shifts is NOT valid" << endl;
-         if (!(valid & validFirstTime      )) s << " Time of First Obs   is NOT valid" << endl;
-         if (!(valid & validEoH            )) s << " End of Header       is NOT valid" << endl;
+         if (!(valid & validVersion        ))
+            s << " Version / Type      is NOT valid" << endl;
+         if (!(valid & validRunBy          ))
+            s << " Pgm / Run By / Date is NOT valid" << endl;
+         if (!(valid & validMarkerName     ))
+            s << " Marker Name         is NOT valid" << endl;
+         if (!(valid & validObserver       ))
+            s << " Observer / Agency   is NOT valid" << endl;
+         if (!(valid & validReceiver       ))
+            s << " Receiver # / Type   is NOT valid" << endl;
+         if (!(valid & validAntennaType    ))
+            s << " Antenna Type        is NOT valid" << endl;
+         if (!(valid & validAntennaPosition))
+            s << " Antenna Position    is NOT valid" << endl;
+         if (!(valid & validAntennaDeltaHEN))
+            s << " Antenna Delta HEN   is NOT valid" << endl;
+         if (!(valid & validSystemObsType  ))
+            s << " Sys / # / Obs Type  is NOT valid" << endl;
+         if (!(valid & validSystemPhaseShift))
+            s << " Sys / Phase Shifts is NOT valid" << endl;
+         if (!(valid & validFirstTime      ))
+            s << " Time of First Obs   is NOT valid" << endl;
+         if (!(valid & validEoH            ))
+            s << " End of Header       is NOT valid" << endl;
       }
 
-      s << "---------------------------------- OPTIONAL ----------------------------------" << endl;
-      if (valid & validMarkerNumber     ) s << "Marker number : " << markerNumber << endl;
-      if (valid & validMarkerType       ) s << "Marker Type : " << markerType << endl;
-      if (valid & validAntennaDeltaXYZ  ) s << "Antenna Delta    (XYZ,m) : "
-                                            << setprecision(4) << antennaDeltaXYZ   << endl;
-      if (valid & validAntennaPhaseCtr  ) s << "Antenna PhaseCtr (XYZ,m) : "
-                                            << setprecision(4) << antennaPhaseCtr   << endl;
-      if (valid & validAntennaBsightXYZ ) s << "Antenna B.sight  (XYZ,m) : "
-                                            << setprecision(4) << antennaBsightXYZ  << endl;
-      if (valid & validAntennaZeroDirAzi) s << "Antenna ZeroDir  (deg)   : "
-                                            << setprecision(4) << antennaZeroDirAzi << endl;
-      if (valid & validAntennaZeroDirXYZ) s << "Antenna ZeroDir  (XYZ,m) : "
-                                            << setprecision(4) << antennaZeroDirXYZ << endl;
-      if (valid & validCenterOfMass     ) s << "Center of Mass   (XYZ,m) : "
-                                            << setprecision(4) << antennaPhaseCtr   << endl;
-      if (valid & validSigStrengthUnit  ) s << "Signal Strenth Unit = " << sigStrengthUnit << endl;
-      if (valid & validInterval         ) s << "Interval = "
-                                            << fixed << setw(7) << setprecision(3) << interval << endl;
-      if (valid & validLastTime         ) s << "Time of Last Obs "
-                                            << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f %P") << endl;
-      if (valid & validReceiverOffset   ) s << "Clock offset record is present and offsets "
-                                            << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
+      s << "---------------------------------- OPTIONAL "
+        << "----------------------------------" << endl;
+      if (valid & validMarkerNumber     )
+         s << "Marker number : " << markerNumber << endl;
+      if (valid & validMarkerType       )
+         s << "Marker Type : " << markerType << endl;
+      if (valid & validAntennaDeltaXYZ  )
+         s << "Antenna Delta    (XYZ,m) : "
+           << setprecision(4) << antennaDeltaXYZ   << endl;
+      if (valid & validAntennaPhaseCtr  )
+         s << "Antenna PhaseCtr (XYZ,m) : "
+           << setprecision(4) << antennaPhaseCtr   << endl;
+      if (valid & validAntennaBsightXYZ )
+         s << "Antenna B.sight  (XYZ,m) : "
+           << setprecision(4) << antennaBsightXYZ  << endl;
+      if (valid & validAntennaZeroDirAzi)
+         s << "Antenna ZeroDir  (deg)   : "
+           << setprecision(4) << antennaZeroDirAzi << endl;
+      if (valid & validAntennaZeroDirXYZ)
+         s << "Antenna ZeroDir  (XYZ,m) : "
+           << setprecision(4) << antennaZeroDirXYZ << endl;
+      if (valid & validCenterOfMass     )
+         s << "Center of Mass   (XYZ,m) : "
+           << setprecision(4) << antennaPhaseCtr   << endl;
+      if (valid & validSigStrengthUnit  )
+         s << "Signal Strenth Unit = " << sigStrengthUnit << endl;
+      if (valid & validInterval         )
+         s << "Interval = "
+           << fixed << setw(7) << setprecision(3) << interval << endl;
+      if (valid & validLastTime         )
+         s << "Time of Last Obs "
+           << printTime(lastObs,"%04Y/%02m/%02d %02H:%02M:%06.3f %P") << endl;
+      if (valid & validReceiverOffset   )
+         s << "Clock offset record is present and offsets "
+           << (receiverOffset?"ARE":"are NOT") << " applied." << endl;
       if (valid & validSystemDCBSapplied)
       {
          for (i = 0; i < infoDCBS.size(); i++)
@@ -1309,13 +1346,15 @@ namespace gpstk
       if (valid & validSystemScaleFac   )
       {
          map<string, sfacMap>::const_iterator mapIter;
-         for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
+         // loop over GNSSes
+         for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++)
          {
             RinexSatID rsid;
             rsid.fromString(mapIter->first);
             s << rsid.systemString() << " scale factors applied:" << endl;
             map<ObsID,int>::const_iterator iter;
-            for (iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
+            // loop over scale factor map
+            for(iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++)
                s << "   " << iter->first.asRinex3ID() << " " << iter->second << endl;
          }
       }
@@ -1342,8 +1381,10 @@ namespace gpstk
          }
          if((n%8) != 0) s << endl;
       }
-      if (valid & validLeapSeconds      ) s << "Leap seconds: " << leapSeconds << endl;
-      if (valid & validNumSats          ) s << "Number of Satellites with data : " << numSVs << endl;
+      if (valid & validLeapSeconds      )
+         s << "Leap seconds: " << leapSeconds << endl;
+      if (valid & validNumSats          )
+         s << "Number of Satellites with data : " << numSVs << endl;
       if (valid & validPrnObs           )
       {
          s << " PRN and number of observations for each obs type:" << endl;
@@ -1358,12 +1399,14 @@ namespace gpstk
             sat_itr++;
          }
       }
-      if (commentList.size() && !(valid & validComment)) s << " Comment is NOT valid" << endl;
+      if (commentList.size() && !(valid & validComment))
+         s << " Comment is NOT valid" << endl;
       s << "Comments (" << commentList.size() << ") :" << endl;
       for (i = 0; i < commentList.size(); i++)
          s << commentList[i] << endl;
 
-      s << "-------------------------------- END OF HEADER -------------------------------" << endl;
+      s << "-------------------------------- END OF HEADER "
+        << "--------------------------------" << endl;
    } // end dump
 
 
