@@ -362,4 +362,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
+
 #endif   // GPSTK_VARIABLE_HPP

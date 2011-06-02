@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
 //============================================================================
 
@@ -33,15 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int SolverGeneral::classIndex = 9600000;
-
-
-      // Returns an index identifying this object.
-   int SolverGeneral::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string SolverGeneral::getClassName() const
@@ -99,7 +90,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -139,7 +129,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -183,7 +172,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -343,7 +331,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -596,7 +583,6 @@ covariance matrix.");
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -806,7 +792,6 @@ covariance matrix.");
       return covarianceMap[ (*it).first ][ (*it).first ];
 
    }  // End of method 'SolverGeneral::getVariance()'
-
 
 
 }  // End of namespace gpstk

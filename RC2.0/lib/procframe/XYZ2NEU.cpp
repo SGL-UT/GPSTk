@@ -24,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,16 +34,6 @@
 
 namespace gpstk
 {
-
-
-      // Index initially assigned to this class
-   int XYZ2NEU::classIndex = 7200000;
-
-
-      // Returns an index identifying this object.
-   int XYZ2NEU::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string XYZ2NEU::getClassName() const
@@ -60,8 +50,6 @@ namespace gpstk
 
       setLatLon( refPos.getGeodeticLatitude(),
                  refPos.getLongitude() );
-
-      setIndex();
 
    }  // End of 'XYZ2NEU::XYZ2NEU()'
 
@@ -176,7 +164,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -218,7 +205,6 @@ namespace gpstk
       outputSet.insert(TypeID::dH);
 
    }  // End of method 'XYZ2NEU::init()'
-
 
 
 }  // End of namespace gpstk

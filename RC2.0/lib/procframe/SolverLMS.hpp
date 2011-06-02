@@ -5,8 +5,8 @@
  * Class to compute the Least Mean Squares Solution
  */
 
-#ifndef SOLVERLMS_HPP
-#define SOLVERLMS_HPP
+#ifndef GPSTK_SOLVERLMS_HPP
+#define GPSTK_SOLVERLMS_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -130,7 +130,7 @@ namespace gpstk
           */
       SolverLMS(const gnssEquationDefinition& eqDef)
          : defaultEqDef(eqDef)
-      { setIndex(); };
+      { };
 
 
          /** Compute the Least Mean Squares Solution of the given
@@ -210,10 +210,6 @@ namespace gpstk
       { return defaultEqDef; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -231,26 +227,10 @@ namespace gpstk
       gnssEquationDefinition defaultEqDef;
 
 
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
-
    }; // End of class 'SolverLMS'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // SOLVERLMS_HPP
+
+#endif   // GPSTK_SOLVERLMS_HPP

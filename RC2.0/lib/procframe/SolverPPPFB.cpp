@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -33,15 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int SolverPPPFB::classIndex = 9400000;
-
-
-      // Returns an index identifying this object.
-   int SolverPPPFB::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string SolverPPPFB::getClassName() const
@@ -65,10 +56,6 @@ namespace gpstk
 
          // Set the equation system structure
       SolverPPP::setNEU(useNEU);
-
-         // Set the class index
-      setIndex();
-
 
          // Indicate the TypeID's that we want to keep
       keepTypeSet.insert(TypeID::wetMap);
@@ -128,7 +115,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -176,7 +162,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -247,7 +232,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -357,7 +341,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -403,7 +386,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -465,7 +447,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -561,7 +542,6 @@ namespace gpstk
       return (*this);
 
    }  // End of method 'SolverPPPFB::setNEU()'
-
 
 
 }  // End of namespace gpstk

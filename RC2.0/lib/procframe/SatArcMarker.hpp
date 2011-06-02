@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -102,7 +102,7 @@ namespace gpstk
       SatArcMarker()
          : watchCSFlag(TypeID::CSL1), deleteUnstableSats(false),
            unstablePeriod(31.0)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -163,7 +163,7 @@ namespace gpstk
          /** Method to get the arc changed epoch.
           * @param sat              Interested SatID.
           */
-      virtual DayTime getArcChangedEpoch(const SatID& sat);
+      virtual CommonTime getArcChangedEpoch(const SatID& sat);
 
          /** Returns a satTypeValueMap object, adding the new data generated
           *  when calling this object.
@@ -171,7 +171,7 @@ namespace gpstk
           * @param epoch     Time of observations.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -192,10 +192,6 @@ namespace gpstk
           */
       virtual gnssRinex& Process(gnssRinex& gData)
          throw(ProcessingException);
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -227,28 +223,14 @@ namespace gpstk
 
 
          /// Map holding information about epoch of last arc change
-      std::map<SatID, DayTime> satArcChangeMap;
+      std::map<SatID, CommonTime> satArcChangeMap;
 
 
          /// Map keeping track if this satellite is new or not
       std::map<SatID, bool> satIsNewMap;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'SatArcMarker'
-
 
    //@}
 

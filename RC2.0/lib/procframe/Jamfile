@@ -63,7 +63,7 @@ else
       ProcessingVector.cpp
       Pruner.cpp
       RequireObservables.cpp
-#      SatArcMarker.cpp
+      SatArcMarker.cpp
       SimpleFilter.cpp
       SolverGeneral.cpp
       SolverLMS.cpp
@@ -132,7 +132,7 @@ else
       ProcessingVector.hpp
       Pruner.hpp
       RequireObservables.hpp
-#      SatArcMarker.hpp
+      SatArcMarker.hpp
       SimpleFilter.hpp
       SolverGeneral.hpp
       SolverLMS.hpp

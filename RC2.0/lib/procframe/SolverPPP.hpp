@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -472,10 +472,6 @@ namespace gpstk
       { qMatrix = pMatrix; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -596,17 +592,6 @@ namespace gpstk
       PhaseAmbiguityModel biasModel;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
          // Some methods that we want to hide
       virtual int Compute( const Vector<double>& prefitResiduals,
                            const Matrix<double>& designMatrix )
@@ -625,4 +610,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
+
 #endif   // GPSTK_SOLVERPPP_HPP

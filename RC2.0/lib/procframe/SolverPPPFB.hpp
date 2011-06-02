@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -163,7 +163,7 @@ namespace gpstk
        *   {
        *
        *         // In this case, gRin is an output from 'LastProcess()'
-       *      DayTime time(gRin.header.epoch);
+       *      CommonTime time(gRin.header.epoch);
        *
        *         // Print results
        *      cout << time.DOYsecond() << "  ";     // Epoch - Output field #1
@@ -435,10 +435,6 @@ namespace gpstk
       virtual SolverPPPFB& setNEU( bool useNEU );
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -478,20 +474,8 @@ namespace gpstk
       std::list<double> limitsPhaseList;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
          /// This method checks the limits and modifies 'gData' accordingly.
       void checkLimits( gnssRinex& gData, double codeLimit, double phaseLimit );
-
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
          // Some methods that we want to hide
@@ -512,7 +496,6 @@ namespace gpstk
 
 
    }; // End of class 'SolverPPPFB'
-
 
       //@}
 
