@@ -12,6 +12,7 @@
 #define GPSTK_SP3_EPHEMERIS_STORE_INCLUDE
 
 #include <map>
+#include <algorithm>
 #include <iostream>
 
 #include "Exception.hpp"

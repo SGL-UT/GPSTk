@@ -250,7 +250,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
 {
    /// Transfer all items with a 1 to 1 correlation.
 
-   if (round(src.version) == 2)
+   if (int(src.version) == 2)
    {
       dest.version         = 3.0;
    }

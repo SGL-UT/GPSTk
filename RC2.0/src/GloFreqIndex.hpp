@@ -217,13 +217,13 @@ namespace gpstk
       std::map< RinexSatID, int > freqIndexTruth;
 
       /// Max. allowable point-to-point phase jump (meters).
-      static const double maxDist = 8000.0;
+      static const double maxDist;
 
       /// Max. allowable range-phase point-to-point shift (log, e.g. 1 is x10).
-      static const double maxRPshift = 1.0;
+      static const double maxRPshift;
 
       /// Number of GLONASS SVs possible.
-      static const int numSats = 24;
+      static const int numSats;
 
    }; // class GloFreqIndex
 

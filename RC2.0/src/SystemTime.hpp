@@ -28,7 +28,6 @@
 //============================================================================
 
 #include "UnixTime.hpp"
-#include <sys/time.h>
 #include <ctime>
 
 namespace gpstk

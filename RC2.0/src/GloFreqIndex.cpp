@@ -58,6 +58,9 @@ using namespace std;
 
 namespace gpstk
 {
+   const double GloFreqIndex::maxDist = 8000.0;
+   const int GloFreqIndex::numSats = 24;
+   const double GloFreqIndex::maxRPshift = 1.0;
 
    /// Fills map with known SV info as of January 2010.
    /// This method is for testing purposes only.
