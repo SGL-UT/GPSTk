@@ -84,6 +84,10 @@ namespace gpstk
          // Set default coordinates stochastic model (constant)
       setCoordinatesModel( &constantModel );
 
+      whitenoiseModelX.setSigma(100.0);
+      whitenoiseModelY.setSigma(100.0);
+      whitenoiseModelZ.setSigma(100.0);
+
          // Pointer to default receiver clock stochastic model (white noise)
       pClockStoModel = &whitenoiseModel;
 
@@ -779,6 +783,33 @@ covariance matrix.");
 
    }  // End of method 'SolverPPP::setCoordinatesModel()'
 
+
+   
+       /** Set the positioning mode, kinematic or static.
+        */
+   SolverPPP& SolverPPP::setKinematic( bool kinematicMode,
+                                       double sigmaX,
+                                       double sigmaY,
+                                       double sigmaZ )
+   {
+      if(kinematicMode)
+      {
+         whitenoiseModelX.setSigma(sigmaX);
+         whitenoiseModelY.setSigma(sigmaY);
+         whitenoiseModelZ.setSigma(sigmaZ);
+
+         setXCoordinatesModel(&whitenoiseModelX);
+         setYCoordinatesModel(&whitenoiseModelY);
+         setZCoordinatesModel(&whitenoiseModelZ);
+      }
+      else
+      {
+         setCoordinatesModel(&constantModel);
+      }
+
+      return (*this);
+
+   }  // End of method 'SolverPPP::setKinematic()'
 
 
 }  // End of namespace gpstk
