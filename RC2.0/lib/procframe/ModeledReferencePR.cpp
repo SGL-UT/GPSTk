@@ -309,14 +309,9 @@ namespace gpstk
                   // If given, computes ionospheric model
                if(pIonoModel)
                {
-                     // Convert Position rxPos to Geodetic rxGeo
-                  Geodetic rxGeo( rxPos.getGeodeticLatitude(),
-                                  rxPos.getLongitude(),
-                                  rxPos.getAltitude() );
-
                   tempIono = getIonoCorrections( pIonoModel,
                                                  Tr,
-                                                 rxGeo,
+                                                 rxPos,
                                                  cerange.elevationGeodetic,
                                                  cerange.azimuthGeodetic );
                };
@@ -840,16 +835,18 @@ ModeledReferencePR object." );
       // Method to get the ionospheric corrections.
    double ModeledReferencePR::getIonoCorrections( IonoModelStore *pIonoModel,
                                                   CommonTime Tr,
-                                                  Geodetic rxGeo,
+                                                  Position rxGeo,
                                                   double elevation,
-                                                  double azimuth )
+                                                  double azimuth,
+                                                  IonoModel::Frequency freq )
    {
 
       double ionoCorr(0.0);
 
       try
       {
-         ionoCorr = pIonoModel->getCorrection(Tr, rxGeo, elevation, azimuth);
+         ionoCorr = pIonoModel->getCorrection( Tr, rxGeo, elevation,
+                                               azimuth, freq );
       }
       catch(IonoModelStore::NoIonoModelFound& e)
       {

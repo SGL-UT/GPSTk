@@ -41,7 +41,6 @@
 #include "TropModel.hpp"
 #include "IonoModel.hpp"
 #include "IonoModelStore.hpp"
-#include "Geodetic.hpp"
 #include "Position.hpp"
 #include "icd_gps_constants.hpp"
 #include "TypeID.hpp"
@@ -546,9 +545,10 @@ namespace gpstk
          /// Method to get the ionospheric corrections.
       virtual double getIonoCorrections( IonoModelStore *pIonoModel,
                                          CommonTime Tr,
-                                         Geodetic rxGeo,
+                                         Position rxGeo,
                                          double elevation,
-                                         double azimuth );
+                                         double azimuth,
+                                   IonoModel::Frequency freq = IonoModel::L1 );
 
 
          /// Method to get TGD corrections.
