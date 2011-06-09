@@ -842,6 +842,81 @@ covariance matrix.");
    }  // End of method 'SolverGeneral::getVariance()'
 
 
+      /* Returns the variance associated to a given TypeID.
+       *
+       * @param type    TypeID of the variance we are looking for.
+       * @param source  SourceID of the solution we are looking for.
+       * 
+       * \warning In the case the solution contains more than one variable
+       * of this type, only the first one will be returned.
+       */
+   double SolverGeneral::getVariance( const TypeID& type,
+                                      const SourceID& source )
+      throw(InvalidRequest)
+   {
+         // Declare an iterator for 'stateMap' and go to the first element
+      VariableDataMap::const_iterator it = stateMap.begin();
+
+         // Look for a variable with the same type and source
+      while( !( (*it).first.getType()   == type &&
+         (*it).first.getSource() == source ) &&
+         it != stateMap.end() )
+      {
+         ++it;
+
+         // If it is not found, throw an exception
+         if( it == stateMap.end() )
+         {
+            InvalidRequest e("Type and source not found in solution vector.");
+            GPSTK_THROW(e);
+         }
+      }
+
+         // Else, return the corresponding value
+      return getCovariance(it->first,it->first);
+
+   }  // End of method 'SolverGeneral::getVariance()'
+
+
+      /* Returns the variance associated to a given TypeID.
+       *
+       * @param type    TypeID of the variance we are looking for.
+       * @param source  SourceID of the solution we are looking for.
+       * @param sat     SatID of the solution we are looking for.
+       *
+       * \warning In the case the solution contains more than one variable
+       * of this type, only the first one will be returned.
+       */
+   double SolverGeneral::getVariance( const TypeID& type,
+                                      const SourceID& source,
+                                      const SatID& sat )
+      throw(InvalidRequest)
+   {
+         // Declare an iterator for 'stateMap' and go to the first element
+      VariableDataMap::const_iterator it = stateMap.begin();
+
+         // Look for a variable with the same type, source and satellite
+      while( !( (*it).first.getType()      == type    &&
+         (*it).first.getSource()    == source  &&
+         (*it).first.getSatellite() == sat        ) &&
+         it != stateMap.end() )
+      {
+         ++it;
+
+         // If it is not found, throw an exception
+         if( it == stateMap.end() )
+         {
+            InvalidRequest e("Type, source and SV not found in solution vector.");
+            GPSTK_THROW(e);
+         }
+      }
+
+         // Else, return the corresponding value
+      return getCovariance(it->first,it->first);
+
+   }  // End of method 'SolverGeneral::getVariance()'
+
+
       /* Set the solution associated to a given Variable.
        *
        * @param variable    Variable object solution we are looking for.

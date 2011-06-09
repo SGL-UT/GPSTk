@@ -360,6 +360,35 @@ namespace gpstk
          throw(InvalidRequest);
 
 
+         /** Returns the variance associated to a given TypeID.
+          *
+          * @param type    TypeID of the variance we are looking for.
+          * @param source  SourceID of the solution we are looking for.
+          * 
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getVariance( const TypeID& type,
+                                  const SourceID& source )
+         throw(InvalidRequest);
+
+
+         /** Returns the variance associated to a given TypeID.
+          *
+          * @param type    TypeID of the variance we are looking for.
+          * @param source  SourceID of the solution we are looking for.
+          * @param sat     SatID of the solution we are looking for.
+          *
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getVariance( const TypeID& type,
+                                  const SourceID& source,
+                                  const SatID& sat )
+         throw(InvalidRequest);
+
+
+
          /// Get the State Transition Matrix (phiMatrix)
       virtual Matrix<double> getPhiMatrix(void) const
       { return phiMatrix; };
