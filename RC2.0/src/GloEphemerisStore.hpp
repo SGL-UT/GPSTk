@@ -1,12 +1,12 @@
 #pragma ident "$Id"
 
 /**
- * @file GloBrcEphemerisStore.hpp
+ * @file GloEphemerisStore.hpp
  * Get GLONASS broadcast ephemeris data information
  */
 
-#ifndef GPSTK_GLOBRCEPHEMERISSTORE_HPP
-#define GPSTK_GLOBRCEPHEMERISSTORE_HPP
+#ifndef GPSTK_GLOEPHEMERISSTORE_HPP
+#define GPSTK_GLOEPHEMERISSTORE_HPP
 
 //============================================================================
 //
@@ -48,12 +48,12 @@ namespace gpstk
       /**
        * This adds the interface to get GLONASS broadcast ephemeris information
        */
-   class GloBrcEphemerisStore : public TabularEphemerisStore<GloRecord>
+   class GloEphemerisStore : public TabularEphemerisStore<GloRecord>
    {
    public:
 
          /// Default constructor
-      GloBrcEphemerisStore()
+      GloEphemerisStore()
          throw()
          : step(1.0), checkHealthFlag(false)
       { TabularEphemerisStore<GloRecord>(); };
@@ -64,7 +64,7 @@ namespace gpstk
           * @param rkStep     Runge-Kutta integration step in seconds.
           * @param checkHealth   Enable or disable the use of the health bit.
           */
-      GloBrcEphemerisStore( double rkStep,
+      GloEphemerisStore( double rkStep,
                             double checkHealth )
          throw()
          : step(rkStep), checkHealthFlag(checkHealth)
@@ -72,7 +72,7 @@ namespace gpstk
 
 
          /// Destructor
-      virtual ~GloBrcEphemerisStore() {};
+      virtual ~GloEphemerisStore() {};
 
 
          /// Add ephemeris information from a RinexGloNavData object.
@@ -125,7 +125,7 @@ namespace gpstk
           *
           * @param rkStep  Runge-Kutta integration step in seconds.
           */
-      GloBrcEphemerisStore& setIntegrationStep( double rkStep )
+      GloEphemerisStore& setIntegrationStep( double rkStep )
       { step = rkStep; return (*this); };
 
 
@@ -138,7 +138,7 @@ namespace gpstk
           *
           * @param checkHealth   Enable or disable the use of the health bit.
           */
-      GloBrcEphemerisStore& setCheckHealthFlag( bool checkHealth )
+      GloEphemerisStore& setCheckHealthFlag( bool checkHealth )
       { checkHealthFlag = checkHealth; return (*this); };
 
 
@@ -154,8 +154,8 @@ namespace gpstk
       bool checkHealthFlag;
 
 
-   };  // End of class 'GloBrcEphemerisStore'
+   };  // End of class 'GloEphemerisStore'
 
 }  // End of namespace gpstk
 
-#endif   // GPSTK_GLOBRCEPHEMERISSTORE_HPP
+#endif   // GPSTK_GLOEPHEMERISSTORE_HPP

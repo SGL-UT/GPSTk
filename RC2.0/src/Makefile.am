@@ -54,8 +54,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       GaussianDistribution.cpp \
       GenXSequence.cpp \
       Geodetic.cpp \
-      GloBrcEphemerisStore.cpp \
-      GloEphemerisStore.cpp \
       GloFreqIndex.cpp \
       GlonassSatelliteModel.cpp \
       GloRecord.cpp \
@@ -238,8 +236,6 @@ incl_HEADERS = AllanDeviation.hpp \
       GenXSequence.hpp \
       Geodetic.hpp \
       GeoidModel.hpp \
-      GloBrcEphemerisStore.hpp \
-      GloEphemerisStore.hpp \
       GloFreqIndex.hpp \
       GlonassSatelliteModel.hpp \
       GloRecord.hpp \
