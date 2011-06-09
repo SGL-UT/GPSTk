@@ -23,7 +23,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
 //============================================================================
 
@@ -585,7 +585,7 @@ namespace gpstk
 
             // Return the first antenna found. Note that there several
             // different maps in cascade.
-         RadSerCalValAntMap::const_iterator it2( (*it1).second.begin() );
+         RSCalValAntMap::const_iterator it2( (*it1).second.begin() );
          SerCalValAntMap::const_iterator it3( (*it2).second.begin() );
          CalValAntMap::const_iterator it4( (*it3).second.begin() );
          ValAntMap::const_iterator it5( (*it4).second.begin() );
@@ -731,7 +731,7 @@ namespace gpstk
       if( it1 != antennaMap.end() )
       {
 
-         RadSerCalValAntMap::const_iterator it2( (*it1).second.find(uRadome) );
+         RSCalValAntMap::const_iterator it2( (*it1).second.find(uRadome) );
 
          if( it2 != (*it1).second.end() )
          {
@@ -888,7 +888,7 @@ namespace gpstk
       if( it1 != antennaMap.end() )
       {
 
-         RadSerCalValAntMap::const_iterator it2( (*it1).second.find(uRadome) );
+         RSCalValAntMap::const_iterator it2( (*it1).second.find(uRadome) );
 
          if( it2 != (*it1).second.end() )
          {
@@ -1060,7 +1060,7 @@ namespace gpstk
       if( it1 != antennaMap.end() )
       {
 
-         RadSerCalValAntMap::const_iterator it2( (*it1).second.find(uRadome) );
+         RSCalValAntMap::const_iterator it2( (*it1).second.find(uRadome) );
 
          if( it2 != (*it1).second.end() )
          {
@@ -1255,7 +1255,7 @@ namespace gpstk
              it1 != antennaMap.end() )
       {
 
-         RadSerCalValAntMap::const_iterator it2( (*it1).second.begin() );
+         RSCalValAntMap::const_iterator it2( (*it1).second.begin() );
 
          while( !antennaFound &&
                 it2 != (*it1).second.end() )
@@ -1547,7 +1547,4 @@ namespace gpstk
    }  // End of method 'AntexReader::dump()'
 
 
-
 }  // End of namespace gpstk
-
-

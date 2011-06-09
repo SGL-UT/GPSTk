@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
 //============================================================================
 
@@ -319,10 +319,10 @@ namespace gpstk
       typedef std::map< string, CalValAntMap > SerCalValAntMap;
 
          // Radome:Serial:Calibration:Validity:Antennas
-      typedef std::map< string, SerCalValAntMap > RadSerCalValAntMap;
+      typedef std::map< string, SerCalValAntMap > RSCalValAntMap;
 
          // Model:Radome:Serial:Calibration:Validity:Antennas
-      typedef std::map< string, RadSerCalValAntMap > AntennaDataMap;
+      typedef std::map< string, RSCalValAntMap > AntennaDataMap;
 
 
          /// Map holding antennas already serched for (Antenna buffer)
@@ -384,7 +384,6 @@ namespace gpstk
       return s;
 
    }  // End of operator '<<'
-
 
       //@}
 
