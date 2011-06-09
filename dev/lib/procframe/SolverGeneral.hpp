@@ -337,7 +337,8 @@ namespace gpstk
           * @param var1    first variable object
           * @param var2    second variable object
           */
-      virtual double getCovariance( const Variable& var1, const Variable& var2)
+      virtual double getCovariance( const Variable& var1, 
+                                    const Variable& var2 ) const 
          throw(InvalidRequest);
 
 
@@ -345,7 +346,7 @@ namespace gpstk
           *
           * @param variable    Variable object variance we are looking for.
           */
-      virtual double getVariance( const Variable& variable )
+      virtual double getVariance( const Variable& variable ) const
          throw(InvalidRequest);
 
 
@@ -356,7 +357,7 @@ namespace gpstk
           * \warning In the case the solution contains more than one variable
           * of this type, only the first one will be returned.
           */
-      virtual double getVariance( const TypeID& type )
+      virtual double getVariance( const TypeID& type ) const 
          throw(InvalidRequest);
 
 
@@ -369,7 +370,7 @@ namespace gpstk
           * of this type, only the first one will be returned.
           */
       virtual double getVariance( const TypeID& type,
-                                  const SourceID& source )
+                                  const SourceID& source ) const 
          throw(InvalidRequest);
 
 
@@ -384,7 +385,7 @@ namespace gpstk
           */
       virtual double getVariance( const TypeID& type,
                                   const SourceID& source,
-                                  const SatID& sat )
+                                  const SatID& sat ) const 
          throw(InvalidRequest);
 
 

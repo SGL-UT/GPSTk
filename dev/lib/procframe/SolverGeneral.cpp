@@ -754,16 +754,17 @@ covariance matrix.");
        * @param var1    first variable object
        * @param var2    second variable object
        */
-   double SolverGeneral::getCovariance( const Variable& var1, const Variable& var2)
+   double SolverGeneral::getCovariance( const Variable& var1, 
+                                        const Variable& var2 ) const
       throw(InvalidRequest)
    {
-      std::map<Variable, VariableDataMap >::iterator it1 = covarianceMap.find(var1);
+      std::map<Variable, VariableDataMap >::const_iterator it1 = covarianceMap.find(var1);
       if(it1!=covarianceMap.end())
       {
-         VariableDataMap::iterator it2 = it1->second.find(var2);
+         VariableDataMap::const_iterator it2 = it1->second.find(var2);
          if(it2!=it1->second.end())
          {
-            return covarianceMap[var1][var2];
+            return it2->second; // covarianceMap[var1][var2];
          }
          else
          {
@@ -771,12 +772,12 @@ covariance matrix.");
             if(it1!=covarianceMap.end())
             {
                it2 = it1->second.find(var1);
-               if(it2!=it1->second.end()) return covarianceMap[var2][var1];
+               if(it2!=it1->second.end()) it2->second; //return covarianceMap[var2][var1];
             }
          }
       }
       
-         // One code go here, we failed to find the value, and throw exception.
+         // Once code go here, we failed to find the value, and throw exception.
       InvalidRequest e("Failed to get the covariance value.");
       GPSTK_THROW(e);
 
@@ -788,7 +789,7 @@ covariance matrix.");
        *
        * @param variable    Variable object variance we are looking for.
        */
-   double SolverGeneral::getVariance(const Variable& variable)
+   double SolverGeneral::getVariance(const Variable& variable) const 
       throw(InvalidRequest)
    {
 
@@ -801,7 +802,7 @@ covariance matrix.");
       }
 
          // Return value
-      return covarianceMap[ variable ][ variable ];
+      return getCovariance(variable,variable);
 
    }  // End of method 'SolverGeneral::getVariance()'
 
@@ -814,7 +815,7 @@ covariance matrix.");
        * \warning In the case the solution contains more than one variable
        * of this type, only the first one will be returned.
        */
-   double SolverGeneral::getVariance(const TypeID& type)
+   double SolverGeneral::getVariance(const TypeID& type) const 
       throw(InvalidRequest)
    {
 
@@ -837,7 +838,7 @@ covariance matrix.");
       }
 
          // Else, return the corresponding value
-      return covarianceMap[ (*it).first ][ (*it).first ];
+      return getCovariance(it->first,it->first); 
 
    }  // End of method 'SolverGeneral::getVariance()'
 
@@ -851,7 +852,7 @@ covariance matrix.");
        * of this type, only the first one will be returned.
        */
    double SolverGeneral::getVariance( const TypeID& type,
-                                      const SourceID& source )
+                                      const SourceID& source ) const 
       throw(InvalidRequest)
    {
          // Declare an iterator for 'stateMap' and go to the first element
@@ -889,7 +890,7 @@ covariance matrix.");
        */
    double SolverGeneral::getVariance( const TypeID& type,
                                       const SourceID& source,
-                                      const SatID& sat )
+                                      const SatID& sat ) const 
       throw(InvalidRequest)
    {
          // Declare an iterator for 'stateMap' and go to the first element
