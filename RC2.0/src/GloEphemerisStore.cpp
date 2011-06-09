@@ -1,7 +1,7 @@
 #pragma ident "$Id"
 
 /**
- * @file GloBrcEphemerisStore.cpp
+ * @file GloEphemerisStore.cpp
  * Get GLONASS broadcast ephemeris data information
  */
 
@@ -28,15 +28,14 @@
 //============================================================================
 
 
-#include "GloBrcEphemerisStore.hpp"
-#include "ECEF.hpp"
+#include "GloEphemerisStore.hpp"
 
 namespace gpstk
 {
 
 
       // Add ephemeris information from a RinexGloNavData object.
-   void GloBrcEphemerisStore::addEphemeris(const RinexGloNavData& data)
+   void GloEphemerisStore::addEphemeris(const RinexGloNavData& data)
       throw()
    {
 
@@ -48,9 +47,9 @@ namespace gpstk
          SatID sat = data.sat;
          GloRecord& glorecord = pe[sat][t]; // find or add entry
 
-         glorecord.x = ECEF(data.px,data.py,data.pz);
-         glorecord.v = ECEF(data.vx,data.vy,data.vz);
-         glorecord.a = ECEF(data.ax,data.ay,data.az);
+         glorecord.x = Triple(data.px,data.py,data.pz);
+         glorecord.v = Triple(data.vx,data.vy,data.vz);
+         glorecord.a = Triple(data.ax,data.ay,data.az);
 
          glorecord.clkbias   = data.TauN;
          glorecord.clkdrift  = data.GammaN;
@@ -66,7 +65,7 @@ namespace gpstk
 
       }  // End of 'if( (data.health == 0) || (!checkHealthFlag) )'
 
-   }  // End of method 'GloBrcEphemerisStore::addEphemeris()'
+   }  // End of method 'GloEphemerisStore::addEphemeris()'
 
 
       /* Returns the position and clock offset of the indicated
@@ -82,7 +81,7 @@ namespace gpstk
        *  reason, this is thrown. The text may have additional information
        *  as to why the request failed.
        */
-   Xt GloBrcEphemerisStore::getXt( const SatID& sat,
+   Xt GloEphemerisStore::getXt( const SatID& sat,
                                    const CommonTime& epoch ) const
       throw( InvalidRequest )
    {
@@ -96,7 +95,7 @@ namespace gpstk
          // Return
       return res;
 
-   }; // End of method 'GloBrcEphemerisStore::getXt()'
+   }; // End of method 'GloEphemerisStore::getXt()'
 
 
       /* Returns the position, velocity and clock offset of the indicated
@@ -112,7 +111,7 @@ namespace gpstk
        *  reason, this is thrown. The text may have additional information
        *  as to why the request failed.
        */
-   Xvt GloBrcEphemerisStore::getXvt( const SatID& sat,
+   Xvt GloEphemerisStore::getXvt( const SatID& sat,
                                      const CommonTime& epoch ) const
       throw( InvalidRequest )
    {
@@ -230,7 +229,7 @@ namespace gpstk
          // We are done, let's return
       return sv;
 
-   }; // End of method 'GloBrcEphemerisStore::getXvt()'
+   }; // End of method 'GloEphemerisStore::getXvt()'
 
 
 }  // End of namespace gpstk
