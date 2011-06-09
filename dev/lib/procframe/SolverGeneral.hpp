@@ -315,6 +315,20 @@ namespace gpstk
                                   const SourceID& source ) const
          throw(InvalidRequest);
 
+   
+         /** Returns the solution associated to a given TypeID, SourceID and
+          *  SatID.
+          *
+          * @param type    TypeID of the solution we are looking for.
+          * @param sat     SatID of the solution we are looking for.
+          *
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getSolution( const TypeID& type,
+                                  const SatID& sat ) const
+         throw(InvalidRequest);
+
 
          /** Returns the solution associated to a given TypeID, SourceID and
           *  SatID.
@@ -371,6 +385,20 @@ namespace gpstk
           */
       virtual double getVariance( const TypeID& type,
                                   const SourceID& source ) const 
+         throw(InvalidRequest);
+
+
+         /** Returns the variance associated to a given TypeID.
+          *
+          * @param type    TypeID of the variance we are looking for.
+          * @param source  SourceID of the solution we are looking for.
+          * @param sat     SatID of the solution we are looking for.
+          *
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getVariance( const TypeID& type,
+                                  const SatID& sat ) const 
          throw(InvalidRequest);
 
 
