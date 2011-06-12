@@ -35,7 +35,7 @@
 
 #include "WeightBase.hpp"
 #include "EngEphemeris.hpp"
-#include "TabularEphemerisStore.hpp"
+#include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "ProcessingClass.hpp"
 
@@ -108,10 +108,10 @@ namespace gpstk
 
          /** Common constructor
           *
-          * @param tabephem  TabularEphemerisStore object holding the
+          * @param tabephem  SP3EphemerisStore object holding the
           *                  ephemeris.
           */
-      ComputeIURAWeights(TabularEphemerisStore& tabephem)
+      ComputeIURAWeights(SP3EphemerisStore& tabephem)
          : pBCEphemeris(NULL), pTabEphemeris(&tabephem)
       { };
 
@@ -174,10 +174,9 @@ namespace gpstk
          /** Method to set the default ephemeris to be used with GNSS
           *  data structures.
           *
-          * @param ephem     TabularEphemerisStore object to be used
+          * @param ephem     SP3EphemerisStore object to be used
           */
-      virtual ComputeIURAWeights& setDefaultEphemeris(
-                                             TabularEphemerisStore& ephem )
+      virtual ComputeIURAWeights& setDefaultEphemeris(SP3EphemerisStore& ephem)
       { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
 
 
@@ -197,7 +196,7 @@ namespace gpstk
 
 
          /// Pointer to default precise ephemeris to be used.
-      TabularEphemerisStore* pTabEphemeris;
+      SP3EphemerisStore* pTabEphemeris;
 
 
          /** Method to really get the weight of a given satellite.
@@ -208,7 +207,7 @@ namespace gpstk
           */
       virtual double getWeight( const SatID& sat,
                                 const CommonTime& time,
-                                const TabularEphemerisStore* preciseEph )
+                                const SP3EphemerisStore* preciseEph )
          throw(InvalidWeights);
 
 

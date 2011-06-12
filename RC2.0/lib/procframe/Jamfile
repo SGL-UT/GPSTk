@@ -16,14 +16,14 @@ else
       CodeSmoother.cpp
       ComputeCombination.cpp
       ComputeDOP.cpp
-#      ComputeIonoModel.cpp
-#      ComputeIURAWeights.cpp
+      ComputeIonoModel.cpp
+      ComputeIURAWeights.cpp
       ComputeLC.cpp
       ComputeLdelta.cpp
       ComputeLI.cpp
       ComputeLinear.cpp
       ComputeMelbourneWubbena.cpp
-#      ComputeMOPSWeights.cpp
+      ComputeMOPSWeights.cpp
       ComputePC.cpp
       ComputePdelta.cpp
       ComputePI.cpp
@@ -71,7 +71,7 @@ else
       SolverPPPFB.cpp
       SolverWMS.cpp
       StochasticModel.cpp
-#      Synchronize.cpp
+      Synchronize.cpp
       Variable.cpp
       XYZ2NED.cpp
       XYZ2NEU.cpp
@@ -84,14 +84,14 @@ else
       CodeSmoother.hpp
       ComputeCombination.hpp
       ComputeDOP.hpp
-#      ComputeIonoModel.hpp
-#      ComputeIURAWeights.hpp
+      ComputeIonoModel.hpp
+      ComputeIURAWeights.hpp
       ComputeLC.hpp
       ComputeLdelta.hpp
       ComputeLI.hpp
       ComputeLinear.hpp
       ComputeMelbourneWubbena.hpp
-#      ComputeMOPSWeights.hpp
+      ComputeMOPSWeights.hpp
       ComputePC.hpp
       ComputePdelta.hpp
       ComputePI.hpp
@@ -140,7 +140,7 @@ else
       SolverPPPFB.hpp
       SolverWMS.hpp
       StochasticModel.hpp
-#      Synchronize.hpp
+      Synchronize.hpp
       Variable.hpp
       XYZ2NED.hpp
       XYZ2NEU.hpp

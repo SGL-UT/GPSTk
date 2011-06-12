@@ -137,7 +137,7 @@ namespace gpstk
       else
       {
          pBCEphemeris = NULL;
-         pTabEphemeris = dynamic_cast<TabularEphemerisStore*>(&ephem);
+         pTabEphemeris = dynamic_cast<SP3EphemerisStore*>(&ephem);
       }
 
       return (*this);
@@ -154,7 +154,7 @@ namespace gpstk
        */
    double ComputeIURAWeights::getWeight( const SatID& sat,
                                          const CommonTime& time,
-                                    const TabularEphemerisStore* preciseEph )
+                                         const SP3EphemerisStore* preciseEph )
       throw(InvalidWeights)
    {
 

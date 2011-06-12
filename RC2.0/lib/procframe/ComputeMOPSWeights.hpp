@@ -33,12 +33,11 @@
 //============================================================================
 
 
-
 #include "CommonTime.hpp"
 #include "DataStructures.hpp"
 #include "WeightBase.hpp"
 #include "EngEphemeris.hpp"
-#include "TabularEphemerisStore.hpp"
+#include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "ComputeIURAWeights.hpp"
 #include "TropModel.hpp"
@@ -144,12 +143,12 @@ namespace gpstk
          /** Common constructor
           *
           * @param pos       Reference position.
-          * @param tabephem  TabularEphemerisStore object holding the
+          * @param tabephem  SP3EphemerisStore object holding the
           *                  ephemeris.
           * @param rxClass   Receiver class. By default, it is 2.
           */
       ComputeMOPSWeights( const Position& pos,
-                          TabularEphemerisStore& tabephem,
+                          SP3EphemerisStore& tabephem,
                           int rxClass = 2 )
          : receiverClass(rxClass), nominalPos(pos), defaultIono(TypeID::ionoL1)
       { setDefaultEphemeris(tabephem); };
@@ -187,7 +186,7 @@ namespace gpstk
          /** Method to set the default ephemeris to be used with
           *  GNSS data structures.
           *
-          * @param ephem     TabularEphemerisStore object to be used
+          * @param ephem     SP3EphemerisStore object to be used
           */
       virtual ComputeMOPSWeights& setPosition(const Position& pos)
       { nominalPos = pos; return (*this); };
@@ -213,10 +212,9 @@ namespace gpstk
          /** Method to set the default ephemeris to be used with GNSS
           *  data structures.
           *
-          * @param ephem     TabularEphemerisStore object to be used
+          * @param ephem     SP3EphemerisStore object to be used
           */
-      virtual ComputeMOPSWeights& setDefaultEphemeris(
-                                             TabularEphemerisStore& ephem )
+      virtual ComputeMOPSWeights& setDefaultEphemeris(SP3EphemerisStore& ephem)
       { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
 
 

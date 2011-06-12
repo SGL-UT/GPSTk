@@ -188,7 +188,7 @@ namespace gpstk
       else
       {
          pBCEphemeris = NULL;
-         pTabEphemeris = dynamic_cast<TabularEphemerisStore*>(&ephem);
+         pTabEphemeris = dynamic_cast<SP3EphemerisStore*>(&ephem);
       }
 
       return (*this);

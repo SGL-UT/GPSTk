@@ -65,10 +65,6 @@ namespace gpstk
          Position rxPos(nominalPos[0],nominalPos[1],nominalPos[2],
             Position::Cartesian);
 
-         Geodetic rxGeo(rxPos.getGeodeticLatitude(),
-            rxPos.getLongitude(),
-            rxPos.getAltitude());
-                
             // Loop through all the satellites
          satTypeValueMap::iterator stv;
          for(stv = gData.begin(); stv != gData.end(); ++stv) 
@@ -126,7 +122,7 @@ namespace gpstk
             }
             else if(ionoType == Klobuchar)
             {
-               ionL1 = klbStore.getCorrection(time,rxGeo,elevation,azimuth);
+               ionL1 = klbStore.getCorrection(time,rxPos,elevation,azimuth);
             }
             else if(ionoType == DualFreq)
             {

@@ -186,6 +186,7 @@ namespace gpstk
 
    private:
 
+
       IonoModelType  ionoType;
 
          /// Object to calculate ionospheric delay with klobuchar model
