@@ -28,6 +28,7 @@ else
       ComputePdelta.cpp
       ComputePI.cpp
       ComputeSatPCenter.cpp
+      ComputeSimpleWeights.cpp
       ComputeTropModel.cpp
       ComputeWindUp.cpp
       ConvertC1ToP1.cpp
@@ -96,6 +97,7 @@ else
       ComputePdelta.hpp
       ComputePI.hpp
       ComputeSatPCenter.hpp
+      ComputeSimpleWeights.hpp
       ComputeTropModel.hpp
       ComputeWindUp.hpp
       ConvertC1ToP1.hpp
