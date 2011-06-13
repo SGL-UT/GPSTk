@@ -39,6 +39,7 @@ else
       DataStructures.cpp
       Decimate.cpp
       DeltaOp.cpp
+      Differentiator.cpp
       DoubleOp.cpp
       Dumper.cpp
       EclipsedSatFilter.cpp
@@ -110,6 +111,7 @@ else
       DataStructures.hpp
       Decimate.hpp
       DeltaOp.hpp
+      Differentiator.hpp
       DoubleOp.hpp
       Dumper.hpp
       EclipsedSatFilter.hpp
@@ -132,9 +134,9 @@ else
       OneFreqCSDetector.hpp
       PCSmoother.hpp
       PhaseCodeAlignment.hpp
+      ProblemSatFilter.hpp
       ProcessingClass.hpp
       ProcessingList.hpp
-      ProblemSatFilter.hpp
       ProcessingVector.hpp
       Pruner.hpp
       RequireObservables.hpp

@@ -21,8 +21,10 @@ libprocframe_la_SOURCES = BasicModel.cpp \
       ComputePdelta.cpp \
       ComputePI.cpp \
       ComputeSatPCenter.cpp \
+      ComputeSimpleWeights.cpp \
       ComputeTropModel.cpp \
       ComputeWindUp.cpp \
+      ConstraintSystem.cpp \
       ConvertC1ToP1.cpp \
       CorrectCodeBiases.cpp \
       CorrectObservables.cpp \
@@ -30,11 +32,13 @@ libprocframe_la_SOURCES = BasicModel.cpp \
       DataStructures.cpp \
       Decimate.cpp \
       DeltaOp.cpp \
+      Differentiator.cpp \
       DoubleOp.cpp \
       Dumper.cpp \
       EclipsedSatFilter.cpp \
       Equation.cpp \
       EquationSystem.cpp \
+      GeneralEquations.cpp \
       GravitationalDelay.cpp \
       IonexModel.cpp \
       Keeper.cpp \
@@ -49,8 +53,8 @@ libprocframe_la_SOURCES = BasicModel.cpp \
       NablaOp.cpp \
       NetworkObsStreams.cpp \
       OneFreqCSDetector.cpp \
-      PhaseCodeAlignment.cpp \
       PCSmoother.cpp \
+      PhaseCodeAlignment.cpp \
       ProblemSatFilter.cpp \
       ProcessingList.cpp \
       ProcessingVector.cpp \
@@ -88,8 +92,10 @@ incl_HEADERS = BasicModel.hpp \
       ComputePdelta.hpp \
       ComputePI.hpp \
       ComputeSatPCenter.hpp \
+      ComputeSimpleWeights.hpp \
       ComputeTropModel.hpp \
       ComputeWindUp.hpp \
+      ConstraintSystem.hpp \
       ConvertC1ToP1.hpp\
       CorrectCodeBiases.hpp \
       CorrectObservables.hpp \
@@ -97,11 +103,13 @@ incl_HEADERS = BasicModel.hpp \
       DataStructures.hpp \
       Decimate.hpp \
       DeltaOp.hpp \
+      Differentiator.hpp \
       DoubleOp.hpp \
       Dumper.hpp \
       EclipsedSatFilter.hpp \
       Equation.hpp \
       EquationSystem.hpp \
+      GeneralEquations.hpp \
       GravitationalDelay.hpp \
       IonexModel.hpp \
       Keeper.hpp \
@@ -116,8 +124,8 @@ incl_HEADERS = BasicModel.hpp \
       NablaOp.hpp \
       NetworkObsStreams.hpp \
       OneFreqCSDetector.hpp \
-      PhaseCodeAlignment.hpp \
       PCSmoother.hpp \
+      PhaseCodeAlignment.hpp \
       ProblemSatFilter.hpp \
       ProcessingClass.hpp \
       ProcessingList.hpp \
