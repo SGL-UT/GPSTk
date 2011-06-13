@@ -13,6 +13,8 @@
 #include "Exception.hpp"
 #include "SatID.hpp"
 #include "CommonTime.hpp"
+#include "TimeString.hpp"
+#include "StringUtils.hpp"
 
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
@@ -32,6 +34,7 @@ using namespace std;
 
 namespace gpstk
 {
+   using namespace StringUtils;
 
    /** @addtogroup ephemstore */
    //@{
@@ -220,7 +223,8 @@ namespace gpstk
                      FileStore<SP3Header>& fileStore,
                      ClockSatStore& clkStore,
                      PositionSatStore& posStore,
-                     bool rejectPos, bool rejectClk,
+                     bool rejectBadPos, bool rejectBadClk,
+                     bool rejectPredPos, bool rejectPredClk,
                      bool fillClockStore)
       throw(Exception)
    {
@@ -254,15 +258,34 @@ namespace gpstk
          //posStore.haveVelocity = head.containsVelocity;
 
          // must define TabularSatStore::nominalTimeStep
-         // TD check consistency of multiple files?
          if(posStore.getTimeStep() == -1.0) {
             posStore.setTimeStep(head.epochInterval);
             if(fillClockStore) clkStore.setTimeStep(head.epochInterval);
          }
+         else {
+            // check consistency of multiple files.
+            // NB ESA GLO clks are 5 minute while IGS GPS clks are 30 sec
+            double DT(posStore.getTimeStep()),dt(head.epochInterval);
+            if(DT != dt) {
+               Exception e("Time step (" + asString(dt,2)+") of load file " + filename
+                  + " is inconsistent with existing position data("
+                  + asString(DT,2)+")");
+               GPSTK_THROW(e);
+            }
+            if(fillClockStore) {
+               DT = clkStore.getTimeStep();
+               if(DT != dt) {
+                  Exception e("Time step (" + asString(dt,2)+") of load file "
+                     + filename + " is inconsistent with existing clock data("
+                     + asString(DT,2)+")");
+                  GPSTK_THROW(e);
+               }
+            }
+         }
 
          // read data
          bool isC(head.version==SP3Header::SP3c);
-         bool haveRec,goNext,haveP,haveV,haveEP,haveEV;
+         bool haveRec,goNext,haveP,haveV,haveEP,haveEV,predP,predC;
          int i;
          CommonTime ttag;
          SatID sat;
@@ -270,17 +293,20 @@ namespace gpstk
          PositionRecord prec;
          ClockRecord crec;
 
-         prec.Pos=prec.sigPos=prec.Vel=prec.sigVel=prec.Acc=prec.sigAcc=Triple(0,0,0);
+         prec.Pos = prec.sigPos = prec.Vel = prec.sigVel = prec.Acc = prec.sigAcc
+            = Triple(0,0,0);
          if(fillClockStore) {
             crec.bias = crec.drift = crec.sig_bias = crec.sig_drift = 0.0;
             crec.accel = crec.sig_accel = 0.0;
          }
 
          try {
-            haveP = haveV = haveEP = haveEV = false;
+            haveP = haveV = haveEP = haveEV = predP = predC = false;
             goNext = true;
 
             while(strm >> data) {
+            //cout << "Read data " << data.RecType
+            //<< " at " << printTime(data.time,"%Y %m %d %H %M %S") << endl;
 
                // The SP3 doc says that records will be in order....
                // use while to loop twice, if necessary: as soon as a RecType is
@@ -297,7 +323,7 @@ namespace gpstk
                   else if(data.RecType == 'P' && !data.correlationFlag) {  // P
                      if(haveP) goNext = false;
                      else {
-               //cout << "P record: "; data.dump(cout); cout << endl;
+               //cout << "P record: "; data.dump(cout);
                         sat = data.sat;
                         for(i=0; i<3; i++) {
                            prec.Pos[i] = data.x[i];                        // km
@@ -313,13 +339,16 @@ namespace gpstk
                               crec.sig_bias = ::pow(head.baseClk,data.sig[3]) * 1.e-6;
                         }
 
+                        if(data.orbitPredFlag) predP = true;
+                        if(data.clockPredFlag) predC = true;
+
                         haveP = true;
                      }
                   }
                   else if(data.RecType == 'V' && !data.correlationFlag) {  // V
                      if(haveV) goNext = false;
                      else {
-               //cout << "V record: "; data.dump(cout); cout << endl;
+               //cout << "V record: "; data.dump(cout);
                         for(i=0; i<3; i++) {
                            prec.Vel[i] = data.x[i];                        // dm/s
                            if(isC && data.sig[i]>=0) prec.sigVel[i] =
@@ -334,27 +363,40 @@ namespace gpstk
                               crec.sig_drift = ::pow(head.baseClk,data.sig[3])*1.e-10;
                         }
 
+                        if(data.orbitPredFlag) predP = true;
+                        if(data.clockPredFlag) predC = true;
+
                         haveV = true;
                      }
                   }
                   else if(data.RecType == 'P' && data.correlationFlag) {   // EP
                      if(haveEP) goNext = false;
                      else {
-               //cout << "EP record: "; data.dump(cout); cout << endl;
+               //cout << "EP record: "; data.dump(cout);
                         for(i=0; i<3; i++)
+                           prec.sigPos[i] = data.sdev[i];
                         if(fillClockStore)
                            crec.sig_bias = data.sdev[3] * 1.e-6;// picosec -> microsec
+
+                        if(data.orbitPredFlag) predP = true;
+                        if(data.clockPredFlag) predC = true;
+
                         haveEP = true;
                      }
                   }
                   else if(data.RecType == 'V' && data.correlationFlag) {   // EV
                      if(haveEV) goNext = false;
                      else {
-               //cout << "EV record: "; data.dump(cout); cout << endl;
+               //cout << "EV record: "; data.dump(cout);
                         for(i=0; i<3; i++)
                            prec.sigVel[i] = data.sdev[i];                  // 10-4mm/s
+
                         if(fillClockStore)
                            crec.sig_drift = data.sdev[3]*1.0e-10;// 10-4ps/s->micros/s
+
+                        if(data.orbitPredFlag) predP = true;
+                        if(data.clockPredFlag) predC = true;
+
                         haveEV = true;
                      }
                   }
@@ -365,21 +407,28 @@ namespace gpstk
                      goNext = true;
                   }
 
+                  //cout << "goNext is " << (goNext ? "T":"F") << endl;
                   if(goNext) break;
 
-                  if(rejectPos && (prec.Pos[0]==0.0 ||
-                                   prec.Pos[1]==0.0 ||
-                                   prec.Pos[2]==0.))
-                     ;  // bad position record
-                  else if(rejectClk && crec.bias >= 999999.)
-                     ;  // bad clock record
+                  if(rejectBadPos && (prec.Pos[0]==0.0 ||
+                                      prec.Pos[1]==0.0 ||
+                                      prec.Pos[2]==0.)) {
+                     //cout << "Bad position" << endl;
+                     haveP = false; // bad position record
+                  }
+                  else if(rejectBadClk && crec.bias >= 999999.) {
+                     //cout << "Bad clock" << endl;
+                     haveP = false; // bad clock record
+                  }
                   else {
-               //cout << "Add rec: " << sat << " " << ttag << " " << prec << endl;
-                     posStore.addPositionRecord(sat,ttag,prec);
-                     if(fillClockStore) clkStore.addClockRecord(sat,ttag,crec);
+                     //cout << "Add rec: " << sat << " " << ttag << " " << prec<<endl;
+                     if(!rejectPredPos || !predP)
+                        posStore.addPositionRecord(sat,ttag,prec);
+                     if(fillClockStore && (!rejectPredClk || !predC))
+                        clkStore.addClockRecord(sat,ttag,crec);
 
                      // prepare for next
-                     haveP = haveV = haveEP = haveEV = false;
+                     haveP = haveV = haveEP = haveEV = predP = predC = false;
                      prec.Pos = prec.Vel = prec.sigPos = prec.sigVel = Triple(0,0,0);
                      crec.bias = crec.drift = crec.sig_bias = crec.sig_drift = 0.0;
                   }
@@ -390,17 +439,23 @@ namespace gpstk
             }  // end read loop
 
             if(haveP || haveV) {
-               if( rejectPos && (prec.Pos[0]==0.0 ||
-                                 prec.Pos[1]==0.0 ||
-                                 prec.Pos[2]==0.0) )
-                  ;  // bad position record
-               else if(rejectClk && crec.bias >= 999999.)
-                  ;  // bad clock record
+               if( rejectBadPos && (prec.Pos[0]==0.0 ||
+                                    prec.Pos[1]==0.0 ||
+                                    prec.Pos[2]==0.0) ) {
+                  //cout << "Bad last rec: position" << endl;
+                  haveP = false;  // bad position record
+               }
+               else if(rejectBadClk && crec.bias >= 999999.) {
+                  //cout << "Bad last rec: clock" << endl;
+                  haveP = false;  // bad clock record
+               }
                else {
                   //cout << "Add last rec: "<< sat <<" "<< ttag <<" "<< prec << endl;
-                  posStore.addPositionRecord(sat,ttag,prec);
-                  if(fillClockStore) clkStore.addClockRecord(sat,ttag,crec);
-                  haveP = haveV = false;
+                  if(!rejectPredPos || !predP)
+                     posStore.addPositionRecord(sat,ttag,prec);
+                  if(fillClockStore && (!rejectPredClk || !predC))
+                     clkStore.addClockRecord(sat,ttag,crec);
+                  haveP = haveV = predP = predC = false;
                }
             }
          }
@@ -427,7 +482,8 @@ namespace gpstk
          // if using only SP3, simply read the SP3
          if(useSP3clock) {
             loadSP3Store(filename, SP3Files, clkStore, posStore,
-                  rejectBadPosFlag, rejectBadClockFlag, true);
+                  rejectBadPosFlag, rejectBadClockFlag,
+                  rejectPredPosFlag, rejectPredClockFlag, true);
             return;
          }
 
@@ -468,7 +524,8 @@ namespace gpstk
    {
       try {
          loadSP3Store(filename, SP3Files, clkStore, posStore,
-               rejectBadPosFlag, rejectBadClockFlag, useSP3clock);
+               rejectBadPosFlag, rejectBadClockFlag,
+               rejectPredPosFlag, rejectPredClockFlag, useSP3clock);
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
@@ -543,14 +600,29 @@ namespace gpstk
             GPSTK_RETHROW(e);
          }
 
-         // compute and set the nominal timestep
+         // compute the nominal timestep
          double nomTimeStep(dt[0]);
          for(i=1; i<3; i++) if(ndt[i] > ndt[0]) {     // find the most frequent dt
             nomTimeStep = dt[i];
             ndt[0] = ndt[i];
          }
-         clkStore.setTimeStep(nomTimeStep);
-         //cout << "Set clock time step to " << nomTimeStep << endl;
+
+         // set the timestep, unless it has already been set
+         if(clkStore.getTimeStep() == -1.0) {
+            clkStore.setTimeStep(nomTimeStep);
+            //cout << "Set clock time step to " << nomTimeStep << endl;
+         }
+         else {
+            // check consistency of multiple files.
+            // NB ESA GLO clks are 5 minute while IGS GPS clks are 30 sec
+            double DT(clkStore.getTimeStep());
+            if(DT != nomTimeStep) {
+               Exception e("Time step (" + asString(nomTimeStep,2)+") of load file "
+                  + filename + " is inconsistent with existing clock data("
+                  + asString(DT,2)+")");
+               GPSTK_THROW(e);
+            }
+         }
 
          // close
          strm.close();

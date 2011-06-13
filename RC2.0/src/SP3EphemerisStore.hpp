@@ -12,6 +12,7 @@
 #define GPSTK_SP3_EPHEMERIS_STORE_INCLUDE
 
 #include <map>
+#include <vector>
 #include <algorithm>
 #include <iostream>
 
@@ -60,31 +61,33 @@ namespace gpstk
       bool useSP3clock;
 
       /// Flag to reject clock data when there are bad positions, default true.
-      /// NB this flag has no effect if the clock store comes from RINEX clock files.
       bool rejectBadPosFlag;
 
       /// Flag to reject position data when there are bad clocks, default true.
       /// NB this flag has no effect if the clock store comes from RINEX clock files.
       bool rejectBadClockFlag;
 
+      /// Flag to reject predicted position data, using orbitPredFlag in SP3Data.
+      bool rejectPredPosFlag;
+
+      /// Flag to reject predicted clock data, using clockPredFlag in SP3Data
+      /// NB this flag has no effect if the clock store comes from RINEX clock files.
+      bool rejectPredClockFlag;
+
    // member functions
    public:
 
       /// Default constructor
       SP3EphemerisStore() throw() : useSP3clock(true),
-                                       rejectBadPosFlag(true),
-                                       rejectBadClockFlag(true)
-      {
-         // set default gap and interval checking
-         setPosGapInterval(901.);
-         setPosMaxInterval(8101.);
-         setClockGapInterval(30.1);
-         setClockMaxInterval(60.1);
-      }
+                                    rejectBadPosFlag(true),
+                                    rejectBadClockFlag(true),
+                                    rejectPredPosFlag(false),
+                                    rejectPredClockFlag(false)
+      { }
 
       /// Destructor
       virtual ~SP3EphemerisStore()
-      {}
+      { }
 
    // XvtStore interface:
 
@@ -120,10 +123,23 @@ namespace gpstk
          const throw()
       {
          // may have to re-write this...
+         os << "Dump SP3EphemerisStore:" << std::endl;
+         // 'reject' flags
+         os << (rejectBadPosFlag ? " Reject":" Do not reject") << " bad positions."
+            << std::endl;
+         os << (rejectBadClockFlag ? " Reject":" Do not reject") << " bad clocks."
+            << std::endl;
+         os << (rejectPredPosFlag ? " Reject":" Do not reject")
+            << " predicted positions." << std::endl;
+         os << (rejectPredClockFlag ? " Reject":" Do not reject")
+            << " predicted clocks." << std::endl;
+
          SP3Files.dump(os, detail);
          posStore.dump(os, detail);
          if(!useSP3clock) clkFiles.dump(os, detail);
          clkStore.dump(os, detail);
+
+         os << "End dump SP3EphemerisStore." << std::endl;
       }
 
       /// Edit the dataset, removing data outside the indicated time interval
@@ -427,14 +443,20 @@ namespace gpstk
       /// this routine will also accept that file type and load the data into the
       /// clock store. This routine will may set the velocity, acceleration, bias
       /// or drift 'have' flags.
+      /// @param filename name of file (SP3 or RINEX clock format) to load 
+      /// @throw if time step is inconsistent with previous value
       void loadFile(const std::string& filename) throw(Exception);
 
       /// Load an SP3 ephemeris file; may set the velocity and acceleration flags.
       /// If the clock store uses RINEX clock data, this will ignore the clock data.
+      /// @param filename name of file (SP3 format) to load 
+      /// @throw if time step is inconsistent with previous value
       void loadSP3File(const std::string& filename) throw(Exception);
 
       /// Load a RINEX clock file; may set the 'have' bias and drift flags.
       /// If clock store is set to use SP3 data, this will call useRinexClockData()
+      /// @param filename name of file (RINEX clock format) to load 
+      /// @throw if time step is inconsistent with previous value
       void loadRinexClockFile(const std::string& filename) throw(Exception);
 
 
@@ -502,16 +524,34 @@ namespace gpstk
          {  return clkStore.hasClockDrift(); }
 
 
-      /// Set the flag; if true then bad position values are rejected when
-      /// adding data to the store.
+      /// Set the flag; if true then position values are rejected when a bad clock
+      /// value is found, while adding data to the store.
       void rejectBadPositions(const bool flag)
          { rejectBadPosFlag = flag; }
 
-      /// Set the flag; if true then bad position values are rejected when
-      /// adding data to the store.
+      /// Set the flag; if true then clock values are rejected when bad
+      /// position values are found, while adding data to the store.
       void rejectBadClocks(const bool flag)
          { rejectBadClockFlag = flag; }
 
+      /// Set the flag; if true then predicted position values are rejected when
+      /// adding data to the store.
+      void rejectPredPositions(const bool flag)
+         { rejectPredPosFlag = flag; }
+
+      /// Set the flag; if true then predicted clock values are rejected when
+      /// adding data to the store.
+      void rejectPredClocks(const bool flag)
+         { rejectPredClockFlag = flag; }
+
+
+      /// Is gap checking for position on?
+      bool isPosDataGapCheck(void) throw()
+         { return posStore.isDataGapCheck(); }
+
+      /// Is gap checking for clock on?
+      bool isClkDataGapCheck(void) throw()
+         { return clkStore.isDataGapCheck(); }
 
       /// Disable checking of data gaps in both position and clock.
       void disableDataGapCheck(void) throw()
@@ -534,13 +574,23 @@ namespace gpstk
          { return clkStore.getGapInterval(); }
 
       /// Set gap interval and turn on gap checking in the position store;
-      /// default is 901 sec.
+      /// There is no default.
       void setPosGapInterval(double interval) throw()
          { posStore.setGapInterval(interval); }
 
-      /// Set gap interval and turn on gap checking in the clock store; default is 30
+      /// Set gap interval and turn on gap checking in the clock store.
+      /// There is no default.
       void setClockGapInterval(double interval) throw()
          { clkStore.setGapInterval(interval); }
+
+
+      /// Is interval checking for position on?
+      bool isPosIntervalCheck(void) throw()
+         { return posStore.isIntervalCheck(); }
+
+      /// Is interval checking for clock on?
+      bool isClkIntervalCheck(void) throw()
+         { return clkStore.isIntervalCheck(); }
 
       /// Disable checking of maximum interval in both position and clock.
       void disableIntervalCheck(void) throw()
@@ -563,23 +613,23 @@ namespace gpstk
          { return clkStore.getMaxInterval(); }
 
       /// Set maximum interval and turn on interval checking in the position store
-      /// Default is 8101 sec.
+      /// There is no default.
       void setPosMaxInterval(double interval) throw()
          { posStore.setMaxInterval(interval); }
 
       /// Set maximum interval and turn on interval checking in the clock store
-      /// Default is 60 sec.
+      /// There is no default.
       void setClockMaxInterval(double interval) throw()
          { clkStore.setMaxInterval(interval); }
 
 
       /// \deprecated
       virtual bool velocityIsPresent() const throw()
-         {  return posStore.hasVelocity(); }
+         { return posStore.hasVelocity(); }
 
       /// \deprecated
       virtual bool clockIsPresent() const throw()
-         {  return true; }
+         { return true; }
 
       /// \deprecated
       /// Get current (position) interpolation order

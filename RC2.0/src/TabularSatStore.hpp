@@ -77,7 +77,7 @@ namespace gpstk
 
       /// Default constructor
       TabularSatStore() throw()
-         : nominalTimeStep(-1.0),
+         : nominalTimeStep(-1.0),         // this is tested in other routines
            havePosition(false),
            haveVelocity(false),
            haveClockBias(false),
@@ -329,7 +329,7 @@ namespace gpstk
 
       /// Remove all data and reset time limits
       inline void clear() throw()
-         { tables.clear(); }
+         { tables.clear(); nominalTimeStep = -1.0; }
 
       /// Return true if the given SatID is present in the store
       virtual bool isPresent(const SatID& sat) const throw()
@@ -497,8 +497,14 @@ namespace gpstk
       /// same as ndata()
       inline int size(void) const throw() { return ndata(); }
 
+      /// Is gap checking on?
+      bool isDataGapCheck(void) throw() { return checkDataGap; }
+
       /// Disable checking of data gaps.
       void disableDataGapCheck(void) throw() { checkDataGap = false; }
+
+      /// Is interval checking on?
+      bool isIntervalCheck(void) throw() { return checkInterval; }
 
       /// Get current gap interval.
       double getGapInterval(void) throw() { return gapInterval; }

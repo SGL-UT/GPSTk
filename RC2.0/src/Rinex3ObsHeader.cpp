@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3ObsHeader.cpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id: Rinex3ObsHeader.cpp 1 2011-06-06 19:45:41Z btolman $"
 
 //============================================================================
 //
@@ -526,8 +526,9 @@ namespace gpstk
          static const int factors[size] = {1,10,100,1000};
          vector<string> obsTypes;
 
+         // loop over GNSSes
          map<string, sfacMap>::const_iterator mapIter;
-         for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++) // loop over GNSSes
+         for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++)
          {
             map<ObsID, int>::const_iterator iter;
 
@@ -536,7 +537,8 @@ namespace gpstk
                int count = 0;
                obsTypes.clear(); // clear the list of Obs Types we're going to make
 
-               for (iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++) // loop over scale factor map
+               for (iter = mapIter->second.begin();      // loop over scale factor map
+                     iter != mapIter->second.end(); iter++)
                {
                   if ( iter->second == factors[i] )
                   {
@@ -934,8 +936,8 @@ namespace gpstk
 
          int startPosition = 0;
 
-         if ( satSysTemp == "" ) // it's a continuation line; use prev. info., end pt. to start
-         {
+         if ( satSysTemp == "" )
+         {           // it's a continuation line; use prev. info., end pt. to start
             satSysTemp = satSysPrev;
             factor     = factorPrev;
             numObs     = numObsPrev;
@@ -943,11 +945,13 @@ namespace gpstk
             startPosition = sysSfacMap[satSysTemp].size();
          }
 
-         // 0/blank numObs means factor applies to all obs types in appropriate obsTypeList
+         // 0/blank numObs means factor applies to all obs types
+         // in appropriate obsTypeList
          if (numObs == 0) numObs = mapObsTypes[satSysTemp].size();
 
          sfacMap tempSfacMap = sysSfacMap[satSysTemp];
-         for (int i = startPosition; (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
+         for (int i = startPosition;
+                        (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
             int position = 4*(i % maxObsPerLine) + 10 + 1;
             ObsID tempType(satSysTemp+strip(line.substr(position,3)));
@@ -971,28 +975,35 @@ namespace gpstk
          //map<ObsID, map<RinexSatID,double> > sysPhaseShift;
          RinexSatID sat;
          // system
-         string str(line.substr(0,1));
-         if(str.empty()) {                         // continuation line
-            if(sysPhaseShift.find(sysPhaseShiftObsID) == sysPhaseShift.end()) {
+         satSysTemp = strip(line.substr(0,1));
+
+         if(satSysTemp.empty()) {                  // continuation line
+            satSysTemp = satSysPrev;
+
+            if(sysPhaseShift.find(sysPhaseShiftObsID) == sysPhaseShift.end())
+            {
                FFStreamError e("SYS / PHASE SHIFT: unexpected continuation line");
                GPSTK_THROW(e);
             }
+
             map<RinexSatID,double>& satcorrmap(sysPhaseShift[sysPhaseShiftObsID]);
             double corr(sysPhaseShift[sysPhaseShiftObsID].begin()->second);
             for(int i=0; i<10; i++) {
-               str = strip(line.substr(19+4*i,3));
+               string str = strip(line.substr(19+4*i,3));
                if(str.empty()) break;
                sat = RinexSatID(str);
                satcorrmap.insert(make_pair(sat,corr));
             }
          }
          else {                                    // not a cont. line
-            sat.fromString(str);
+            sat.fromString(satSysTemp);
+
             // obs id
-            str = strip(line.substr(2,3));
+            string str = strip(line.substr(2,3));
+
             // obsid and correction may be blank <=> unknown: ignore this
             if(!str.empty()) {
-               ObsID obsid(str);
+               ObsID obsid(satSysTemp+str);
                double corr(asDouble(strip(line.substr(6,8))));
                int nsat(asInt(strip(line.substr(16,2))));
                if(nsat > 0) {          // list of sats
@@ -1012,6 +1023,10 @@ namespace gpstk
                }
 
             }
+
+            // save for continuation lines
+            satSysPrev = satSysTemp;
+
             valid |= validSystemPhaseShift;
          }
       }
