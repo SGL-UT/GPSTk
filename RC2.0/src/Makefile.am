@@ -49,6 +49,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       FICHeader.cpp \
       FileHunter.cpp \
       FileSpec.cpp \
+      FIRDifferentiator5thOrder.cpp \
       GalEphemeris.cpp \
       GalEphemerisStore.cpp \
       GaussianDistribution.cpp \
@@ -230,6 +231,8 @@ incl_HEADERS = AllanDeviation.hpp \
       FileSpec.hpp \
       FileStore.hpp \
       FileUtils.hpp \
+      FilterBase.hpp \
+      FIRDifferentiator5thOrder.hpp \
       GalEphemeris.hpp \
       GalEphemerisStore.hpp \
       GaussianDistribution.hpp \
