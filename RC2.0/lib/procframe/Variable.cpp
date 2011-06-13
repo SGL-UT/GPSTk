@@ -324,4 +324,5 @@ namespace gpstk
    }  // End of 'Variable::operator='
 
 
+
 }  // End of namespace gpstk

@@ -359,8 +359,32 @@ namespace gpstk
 
    }; // End of class 'Variable'
 
+
+   /// Handy type definition
+
+   typedef std::set<Variable> VariableSet;
+
+   typedef std::list<Variable> VariableList;
+
+   typedef std::map<Variable, double> VariableDataMap;
+
+
+   namespace StringUtils
+   {
+      inline std::string asString(const Variable& v)
+      {
+         std::ostringstream oss;
+         oss << v.getType() << "   "
+             << v.getSource() << "   "
+             << v.getSatellite() << "   "
+             << v.getTypeIndexed() << " "
+             << v.getSourceIndexed() << " "
+             << v.getSatIndexed();
+
+         return oss.str();
+      }
+   }
       //@}
 
 }  // End of namespace gpstk
-
 #endif   // GPSTK_VARIABLE_HPP

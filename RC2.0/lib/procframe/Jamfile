@@ -31,6 +31,7 @@ else
       ComputeSimpleWeights.cpp
       ComputeTropModel.cpp
       ComputeWindUp.cpp
+      ConstraintSystem.cpp
       ConvertC1ToP1.cpp
       CorrectCodeBiases.cpp 
       CorrectObservables.cpp
@@ -100,6 +101,7 @@ else
       ComputeSimpleWeights.hpp
       ComputeTropModel.hpp
       ComputeWindUp.hpp
+      ConstraintSystem.hpp
       ConvertC1ToP1.hpp
       CorrectCodeBiases.hpp
       CorrectObservables.hpp
