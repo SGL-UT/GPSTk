@@ -44,6 +44,7 @@ else
       EclipsedSatFilter.cpp
       Equation.cpp
       EquationSystem.cpp
+      GeneralEquations.cpp
       GravitationalDelay.cpp
       IonexModel.cpp
       Keeper.cpp
@@ -114,6 +115,7 @@ else
       EclipsedSatFilter.hpp
       Equation.hpp
       EquationSystem.hpp
+      GeneralEquations.hpp
       GravitationalDelay.hpp
       IonexModel.hpp
       Keeper.hpp
