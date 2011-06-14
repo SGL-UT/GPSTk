@@ -35,6 +35,8 @@ else
       BinexData.cpp
       BinUtils.cpp
       BLQDataReader.cpp
+      BrcClockCorrection.cpp
+      BrcKeplerOrbit.cpp
       Chi2Distribution.cpp
       CivilTime.cpp
       ClockSatStore.cpp
@@ -198,6 +200,8 @@ else
       BinUtils.hpp
       BivarStats.hpp
       BLQDataReader.hpp
+      BrcClockCorrection.hpp
+      BrcKeplerOrbit.hpp
       CheckPRData.hpp
       Chi2Distribution.hpp
       CivilTime.hpp
@@ -428,6 +432,7 @@ else
       X1Sequence.hpp
       X2Sequence.hpp
       Xt.hpp
+      Xv.hpp
       Xvt.hpp
       XvtStore.hpp
       YDSTime.hpp
