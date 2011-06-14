@@ -200,6 +200,9 @@ namespace gpstk
          // Get geometry and weights matrices
       getGeometryWeights(gdsMap);
 
+         // Handling the ConstraintSystem
+      imposeConstraints();
+
          // Set this object as "prepared"
       isPrepared = true;
 
@@ -517,6 +520,9 @@ namespace gpstk
                                           (*itVar).getSatellite(),
                                           gRin );
 
+//            (*itVar).getModel()->Prepare( (*itVar).getSatellite(),
+//                                          gRin );
+
                // Now, check if this is an 'old' variable
             if( oldUnknowns.find( (*itVar) ) != oldUnknowns.end() )
             {
@@ -763,6 +769,126 @@ namespace gpstk
 
    }  // End of method 'EquationSystem::getGeometryWeights()'
 
+
+      // Impose the constraints system to the equation system
+      // the prefit residuals vector, hMatrix and rMatrix will be appended.
+   void EquationSystem::imposeConstraints()
+   {
+      if(!equationConstraints.hasConstraints()) return;
+
+      ConstraintList destList;
+
+      ConstraintList tempList = equationConstraints.getConstraintList();
+      for(ConstraintList::iterator it = tempList.begin();
+         it != tempList.end();
+         ++it )
+      {
+         VariableDataMap dataMapOk;
+
+         bool validConstraint(true);
+
+         try
+         {
+            VariableDataMap dataMap = it->body;
+            for(VariableDataMap::iterator itv = dataMap.begin();
+               itv != dataMap.end();
+               ++itv )
+            {
+               bool isFound(false);
+
+               VariableSet::iterator itv2 = varUnknowns.find(itv->first);
+               if(itv2!=varUnknowns.end())
+               {
+                  isFound = true;
+                  dataMapOk[*itv2] = dataMap[itv->first];
+               }
+               else
+               {
+                  for(itv2 = varUnknowns.begin();
+                     itv2 != varUnknowns.end();
+                     ++itv2 )
+                  {
+                     if( (itv->first.getType() == itv2->getType()) &&
+                        (itv->first.getSource() == itv2->getSource()) &&
+                        (itv->first.getSatellite() == itv2->getSatellite()) )
+                     {
+                        isFound = true;
+                        dataMapOk[*itv2] = dataMap[itv->first];
+                        break;
+                     }
+                  }
+               }
+
+               if( !isFound ) validConstraint = false;
+            }
+         }
+         catch(...)
+         {
+            validConstraint = false;
+         }
+
+         if(validConstraint)
+         {
+            destList.push_back(Constraint(it->header,dataMapOk));
+         }
+         else
+         {
+            // we discard all constraints
+            return;
+         }
+
+      }
+         // Update the equation system
+      equationConstraints.setConstraintList(destList);
+
+
+         // Now, we can append the matrix(prefit design and weight)
+      try
+      {
+         Vector<double> meas;
+         Matrix<double> design;
+         Matrix<double> cov;
+
+         equationConstraints.constraintMatrix(varUnknowns,
+            meas, design, cov);
+
+         const int oldSize = measVector.size();
+         const int newSize = oldSize + meas.size();
+         const int colSize = hMatrix.cols();
+
+         Vector<double> tempPrefit(newSize,0.0);
+         Matrix<double> tempGeometry(newSize,colSize,0.0);
+         Matrix<double> tempWeight(newSize,newSize,0.0);
+
+         for(int i=0; i< newSize; i++)
+         {
+               // prefit
+            if(i<oldSize) tempPrefit(i) = measVector(i);
+            else tempPrefit(i) = meas(i-oldSize);
+
+               // geometry
+            for(int j=0;j<colSize;j++)
+            {
+               if(i<oldSize) tempGeometry(i,j) = hMatrix(i,j);
+               else tempGeometry(i,j) = design(i-oldSize,j);
+            }
+
+               // weight
+            if(i<oldSize) tempWeight(i,i) = rMatrix(i,i);
+            else tempWeight(i,i) = 1.0/cov(i-oldSize,i-oldSize);
+
+         }
+            // Update these matrix
+         measVector = tempPrefit;
+         hMatrix = tempGeometry;
+         rMatrix = tempWeight;
+      }
+      catch(...)
+      {
+         return;
+      }
+
+   }  // End of method 'EquationSystem::imposeConstraints()'
 
 
       /* Return the TOTAL number of variables being processed.

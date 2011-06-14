@@ -38,6 +38,7 @@ libprocframe_la_SOURCES = BasicModel.cpp \
       EclipsedSatFilter.cpp \
       Equation.cpp \
       EquationSystem.cpp \
+      GeneralConstraint.cpp \
       GeneralEquations.cpp \
       GravitationalDelay.cpp \
       IonexModel.cpp \
@@ -109,6 +110,7 @@ incl_HEADERS = BasicModel.hpp \
       EclipsedSatFilter.hpp \
       Equation.hpp \
       EquationSystem.hpp \
+      GeneralConstraint.hpp \
       GeneralEquations.hpp \
       GravitationalDelay.hpp \
       IonexModel.hpp \

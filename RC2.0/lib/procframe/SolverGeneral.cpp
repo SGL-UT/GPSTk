@@ -23,16 +23,25 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
 //
 //============================================================================
 
 
 #include "SolverGeneral.hpp"
-
+#include "GeneralConstraint.hpp"
 
 namespace gpstk
 {
+
+      // Index initially assigned to this class
+   int SolverGeneral::classIndex = 9600000;
+
+
+      // Returns an index identifying this object.
+   int SolverGeneral::getIndex() const
+   { return index; }
+
 
       // Returns a string identifying this object.
    std::string SolverGeneral::getClassName() const
@@ -90,6 +99,7 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -129,6 +139,7 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -167,11 +178,13 @@ namespace gpstk
             // Store data after computing
          postCompute(gdsMap);
 
+
       }
       catch(Exception& u)
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -331,6 +344,7 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -583,6 +597,7 @@ covariance matrix.");
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
+                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -693,6 +708,43 @@ covariance matrix.");
    }  // End of method 'SolverGeneral::getSolution()'
 
 
+      /* Returns the solution associated to a given TypeID, SourceID and
+       *  SatID.
+       *
+       * @param type    TypeID of the solution we are looking for.
+       * @param sat     SatID of the solution we are looking for.
+       *
+       * \warning In the case the solution contains more than one variable
+       * of this type, only the first one will be returned.
+       */
+   double SolverGeneral::getSolution( const TypeID& type,
+                                      const SatID& sat ) const
+      throw(InvalidRequest)
+   {
+
+      // Declare an iterator for 'stateMap' and go to the first element
+      VariableDataMap::const_iterator it = stateMap.begin();
+
+      // Look for a variable with the same type and source
+      while( !( (*it).first.getType()   == type &&
+             (*it).first.getSatellite() == sat ) &&
+             it != stateMap.end() )
+      {
+         ++it;
+
+         // If it is not found, throw an exception
+         if( it == stateMap.end() )
+         {
+            InvalidRequest e("Type and source not found in solution vector.");
+            GPSTK_THROW(e);
+         }
+      }
+
+      // Else, return the corresponding value
+      return (*it).second;
+
+   }  // End of method 'SolverGeneral::getSolution()'
+
 
       /* Returns the solution associated to a given TypeID, SourceID and
        * SatID.
@@ -734,13 +786,47 @@ covariance matrix.");
 
    }  // End of method 'SolverGeneral::getSolution()'
 
+      /* Returns the covariance associated to a given Variable.
+       *
+       * @param var1    first variable object
+       * @param var2    second variable object
+       */
+   double SolverGeneral::getCovariance( const Variable& var1, 
+                                        const Variable& var2 ) const
+      throw(InvalidRequest)
+   {
+      std::map<Variable, VariableDataMap >::const_iterator it1 = covarianceMap.find(var1);
+      if(it1!=covarianceMap.end())
+      {
+         VariableDataMap::const_iterator it2 = it1->second.find(var2);
+         if(it2!=it1->second.end())
+         {
+            return it2->second; // covarianceMap[var1][var2];
+         }
+         else
+         {
+            it1 = covarianceMap.find(var2);
+            if(it1!=covarianceMap.end())
+            {
+               it2 = it1->second.find(var1);
+               if(it2!=it1->second.end()) it2->second; //return covarianceMap[var2][var1];
+            }
+         }
+      }
+      
+         // Once code go here, we failed to find the value, and throw exception.
+      InvalidRequest e("Failed to get the covariance value.");
+      GPSTK_THROW(e);
+
+      return 0.0;
+   }
 
 
       /* Returns the variance associated to a given Variable.
        *
        * @param variable    Variable object variance we are looking for.
        */
-   double SolverGeneral::getVariance(const Variable& variable)
+   double SolverGeneral::getVariance(const Variable& variable) const 
       throw(InvalidRequest)
    {
 
@@ -753,7 +839,7 @@ covariance matrix.");
       }
 
          // Return value
-      return covarianceMap[ variable ][ variable ];
+      return getCovariance(variable,variable);
 
    }  // End of method 'SolverGeneral::getVariance()'
 
@@ -766,7 +852,7 @@ covariance matrix.");
        * \warning In the case the solution contains more than one variable
        * of this type, only the first one will be returned.
        */
-   double SolverGeneral::getVariance(const TypeID& type)
+   double SolverGeneral::getVariance(const TypeID& type) const 
       throw(InvalidRequest)
    {
 
@@ -789,9 +875,189 @@ covariance matrix.");
       }
 
          // Else, return the corresponding value
-      return covarianceMap[ (*it).first ][ (*it).first ];
+      return getCovariance(it->first,it->first); 
 
    }  // End of method 'SolverGeneral::getVariance()'
+
+
+      /* Returns the variance associated to a given TypeID.
+       *
+       * @param type    TypeID of the variance we are looking for.
+       * @param source  SourceID of the solution we are looking for.
+       * 
+       * \warning In the case the solution contains more than one variable
+       * of this type, only the first one will be returned.
+       */
+   double SolverGeneral::getVariance( const TypeID& type,
+                                      const SourceID& source ) const 
+      throw(InvalidRequest)
+   {
+         // Declare an iterator for 'stateMap' and go to the first element
+      VariableDataMap::const_iterator it = stateMap.begin();
+
+         // Look for a variable with the same type and source
+      while( !( (*it).first.getType()   == type &&
+         (*it).first.getSource() == source ) &&
+         it != stateMap.end() )
+      {
+         ++it;
+
+         // If it is not found, throw an exception
+         if( it == stateMap.end() )
+         {
+            InvalidRequest e("Type and source not found in solution vector.");
+            GPSTK_THROW(e);
+         }
+      }
+
+         // Else, return the corresponding value
+      return getCovariance(it->first,it->first);
+
+   }  // End of method 'SolverGeneral::getVariance()'
+
+
+      /* Returns the variance associated to a given TypeID.
+       *
+       * @param type    TypeID of the variance we are looking for.
+       * @param source  SourceID of the solution we are looking for.
+       * @param sat     SatID of the solution we are looking for.
+       *
+       * \warning In the case the solution contains more than one variable
+       * of this type, only the first one will be returned.
+       */
+   double SolverGeneral::getVariance( const TypeID& type,
+                                      const SatID& sat ) const 
+      throw(InvalidRequest)
+   {
+      // Declare an iterator for 'stateMap' and go to the first element
+      VariableDataMap::const_iterator it = stateMap.begin();
+
+      // Look for a variable with the same type and source
+      while( !( (*it).first.getType()   == type &&
+             (*it).first.getSatellite() == sat ) &&
+             it != stateMap.end() )
+      {
+         ++it;
+
+         // If it is not found, throw an exception
+         if( it == stateMap.end() )
+         {
+            InvalidRequest e("Type and source not found in solution vector.");
+            GPSTK_THROW(e);
+         }
+      }
+
+      // Else, return the corresponding value
+      return getCovariance(it->first,it->first);
+
+
+   }  // End of method 'SolverGeneral::getVariance()'
+
+
+      /* Returns the variance associated to a given TypeID.
+       *
+       * @param type    TypeID of the variance we are looking for.
+       * @param source  SourceID of the solution we are looking for.
+       * @param sat     SatID of the solution we are looking for.
+       *
+       * \warning In the case the solution contains more than one variable
+       * of this type, only the first one will be returned.
+       */
+   double SolverGeneral::getVariance( const TypeID& type,
+                                      const SourceID& source,
+                                      const SatID& sat ) const 
+      throw(InvalidRequest)
+   {
+         // Declare an iterator for 'stateMap' and go to the first element
+      VariableDataMap::const_iterator it = stateMap.begin();
+
+         // Look for a variable with the same type, source and satellite
+      while( !( (*it).first.getType()      == type    &&
+         (*it).first.getSource()    == source  &&
+         (*it).first.getSatellite() == sat        ) &&
+         it != stateMap.end() )
+      {
+         ++it;
+
+         // If it is not found, throw an exception
+         if( it == stateMap.end() )
+         {
+            InvalidRequest e("Type, source and SV not found in solution vector.");
+            GPSTK_THROW(e);
+         }
+      }
+
+         // Else, return the corresponding value
+      return getCovariance(it->first,it->first);
+
+   }  // End of method 'SolverGeneral::getVariance()'
+
+
+      /* Set the solution associated to a given Variable.
+       *
+       * @param variable    Variable object solution we are looking for.
+       * @param val         solution value for the Variable object
+       */
+   SolverGeneral& SolverGeneral::setSolution( const Variable& variable,
+                                              const double& val )
+      throw(InvalidRequest)
+   {
+      VariableDataMap::iterator it = stateMap.find(variable);
+      if(it!=stateMap.end())
+      {
+         stateMap[variable] = val;
+      }
+      else
+      {
+         InvalidRequest e("The variable not exist in the solver.");
+         GPSTK_THROW(e);
+      }
+
+      return (*this);
+   }
+
+
+      /** Set the covariance associated to a given Variable.
+       *
+       * @param var1    first variable object
+       * @param var2    second variable object
+       * @param cov     covariance value for the variable objects
+       */
+   SolverGeneral& SolverGeneral::setCovariance( const Variable& var1, 
+                                                const Variable& var2,
+                                                const double& cov)
+      throw(InvalidRequest)
+   {  
+      std::map<Variable, VariableDataMap >::iterator it1 = covarianceMap.find(var1);
+      if(it1!=covarianceMap.end())
+      {
+         VariableDataMap::iterator it2 = it1->second.find(var2);
+         if(it2!=it1->second.end())
+         {
+            covarianceMap[var1][var2] = cov;
+            return (*this);
+         }
+         else
+         {
+            it1 = covarianceMap.find(var2);
+            if(it1!=covarianceMap.end())
+            {
+               it2 = it1->second.find(var1);
+               if(it2!=it1->second.end())
+               {
+                  covarianceMap[var2][var1] = cov;
+                  return (*this);
+               }
+            }
+         }
+      }
+
+      // One code go here, we failed to find the value, and throw exception.
+      InvalidRequest e("The input variables are not exist in the solver.");
+      GPSTK_THROW(e);
+      
+      return (*this);
+   }
 
 
 }  // End of namespace gpstk

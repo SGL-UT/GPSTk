@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
 //
 //============================================================================
 
@@ -37,6 +37,7 @@
 #include "EquationSystem.hpp"
 #include "StochasticModel.hpp"
 #include "SimpleKalmanFilter.hpp"
+#include "ConstraintSystem.hpp"
 
 
 namespace gpstk
@@ -45,10 +46,7 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       /// @ingroup math
 
-
-         /// Handy type definition
-      typedef std::map<Variable, double> VariableDataMap;
-
+      class GeneralConstraint;
 
       //@{
 
@@ -208,6 +206,21 @@ namespace gpstk
       { equSystem = equationSys; return (*this); };
 
 
+         /// Get a copy ConstraintSystem of the equation system being solved.
+      virtual ConstraintSystem getEquationSystemConstraints() const
+      { return equSystem.getConstraintSystem(); };
+
+
+         /** Set the ConstraintSystem of the equation system to be solved.
+          *
+          * @param constraintSys       Object  of ConstraintSystem for 
+          *                            EquationSystem object of the solver
+          */
+      virtual SolverGeneral& setEquationSystemConstraints(
+                                         const ConstraintSystem& constraintSys )
+      { equSystem.setConstraintSystem(constraintSys); return (*this); };
+
+
          /** Add a new equation to be managed.
           *
           * @param equation   Equation object to be added.
@@ -303,6 +316,20 @@ namespace gpstk
                                   const SourceID& source ) const
          throw(InvalidRequest);
 
+   
+         /** Returns the solution associated to a given TypeID, SourceID and
+          *  SatID.
+          *
+          * @param type    TypeID of the solution we are looking for.
+          * @param sat     SatID of the solution we are looking for.
+          *
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getSolution( const TypeID& type,
+                                  const SatID& sat ) const
+         throw(InvalidRequest);
+
 
          /** Returns the solution associated to a given TypeID, SourceID and
           *  SatID.
@@ -320,11 +347,21 @@ namespace gpstk
          throw(InvalidRequest);
 
 
+         /** Returns the covariance associated to a given Variable.
+          *
+          * @param var1    first variable object
+          * @param var2    second variable object
+          */
+      virtual double getCovariance( const Variable& var1, 
+                                    const Variable& var2 ) const 
+         throw(InvalidRequest);
+
+
          /** Returns the variance associated to a given Variable.
           *
           * @param variable    Variable object variance we are looking for.
           */
-      virtual double getVariance( const Variable& variable )
+      virtual double getVariance( const Variable& variable ) const
          throw(InvalidRequest);
 
 
@@ -335,8 +372,51 @@ namespace gpstk
           * \warning In the case the solution contains more than one variable
           * of this type, only the first one will be returned.
           */
-      virtual double getVariance( const TypeID& type )
+      virtual double getVariance( const TypeID& type ) const 
          throw(InvalidRequest);
+
+
+         /** Returns the variance associated to a given TypeID.
+          *
+          * @param type    TypeID of the variance we are looking for.
+          * @param source  SourceID of the solution we are looking for.
+          * 
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getVariance( const TypeID& type,
+                                  const SourceID& source ) const 
+         throw(InvalidRequest);
+
+
+         /** Returns the variance associated to a given TypeID.
+          *
+          * @param type    TypeID of the variance we are looking for.
+          * @param source  SourceID of the solution we are looking for.
+          * @param sat     SatID of the solution we are looking for.
+          *
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getVariance( const TypeID& type,
+                                  const SatID& sat ) const 
+         throw(InvalidRequest);
+
+
+         /** Returns the variance associated to a given TypeID.
+          *
+          * @param type    TypeID of the variance we are looking for.
+          * @param source  SourceID of the solution we are looking for.
+          * @param sat     SatID of the solution we are looking for.
+          *
+          * \warning In the case the solution contains more than one variable
+          * of this type, only the first one will be returned.
+          */
+      virtual double getVariance( const TypeID& type,
+                                  const SourceID& source,
+                                  const SatID& sat ) const 
+         throw(InvalidRequest);
+
 
 
          /// Get the State Transition Matrix (phiMatrix)
@@ -347,6 +427,10 @@ namespace gpstk
          /// Get the Noise covariance matrix (QMatrix)
       virtual Matrix<double> getQMatrix(void) const
       { return qMatrix; };
+
+
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -379,6 +463,27 @@ namespace gpstk
       virtual gnssDataMap& postCompute( gnssDataMap& gdsMap )
          throw(ProcessingException);
 
+
+         /** Set the solution associated to a given Variable.
+          *
+          * @param variable    Variable object solution we are looking for.
+          * @param val         solution value for the Variable object
+          */
+      virtual SolverGeneral& setSolution( const Variable& variable,
+                                          const double& val )
+         throw(InvalidRequest);
+
+
+         /** Set the covariance associated to a given Variable.
+          *
+          * @param var1    first variable object
+          * @param var2    second variable object
+          * @param cov     covariance value for the variable objects
+          */
+      virtual SolverGeneral& setCovariance( const Variable& var1, 
+                                            const Variable& var2,
+                                            const double& cov)
+         throw(InvalidRequest);
 
    private:
 
@@ -419,6 +524,17 @@ namespace gpstk
       bool firstTime;
 
 
+         /// Initial index assigned to this class.
+      static int classIndex;
+
+         /// Index belonging to this object.
+      int index;
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; };
+
+
          // Do not allow the use of the default constructor.
       SolverGeneral();
 
@@ -443,10 +559,11 @@ namespace gpstk
          throw(InvalidSolver);
 
 
+      friend class GeneralConstraint;
+
    }; // End of class 'SolverGeneral'
 
       //@}
 
 }  // End of namespace gpstk
-
 #endif   // GPSTK_SOLVERGENERAL_HPP

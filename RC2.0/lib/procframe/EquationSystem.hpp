@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
 //============================================================================
 
@@ -36,7 +36,7 @@
 #include "DataStructures.hpp"
 #include "StochasticModel.hpp"
 #include "Equation.hpp"
-
+#include "ConstraintSystem.hpp"
 
 
 namespace gpstk
@@ -351,11 +351,34 @@ namespace gpstk
       { return currentEquationsList; };
 
 
+         /// Get a copy of the constraint system.
+      virtual ConstraintSystem getConstraintSystem() const
+      { return equationConstraints; };
+
+
+         /** Set the constraint system.
+          *
+          * @param equationConst       Object of ConstraintSystem
+          */
+      virtual EquationSystem& setConstraintSystem(
+                                         const ConstraintSystem& equationConst )
+      { equationConstraints = equationConst; return (*this); };
+
+
+         /// Remove all constraints from the equation system.
+      virtual EquationSystem& clearConstraintSystem()
+      { equationConstraints.clearConstraint(); return (*this); };
+
+
          /// Destructor
       virtual ~EquationSystem() {};
 
 
    private:
+
+
+         /// Object holding constraints equations
+      ConstraintSystem equationConstraints;
 
 
          /// List containing the DESCRIPTIONS of Equation objects.
@@ -373,7 +396,7 @@ namespace gpstk
          /// Old set of unknowns
       VariableSet oldUnknowns;
 
-      /// List of all unknowns(std::list is used to keep order)
+         /// List of all unknowns(std::list is used to keep order)
       std::list<Variable> allUnknowns;
 
          /// Set of reject unknowns
@@ -417,6 +440,10 @@ namespace gpstk
 
          /// Compute hMatrix and rMatrix
       void getGeometryWeights( gnssDataMap& gdsMap );
+
+         /// Impose the constraints system to the equation system
+         /// the prefit residuals vector, hMatrix and rMatrix will be appended.
+      void imposeConstraints();
 
          /// General white noise stochastic model
       static WhiteNoiseModel whiteNoiseModel;
