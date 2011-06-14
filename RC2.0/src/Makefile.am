@@ -9,6 +9,10 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ANSITime.cpp \
       Antenna.cpp \
       AntexReader.cpp \
+      ARBase.cpp \
+      ARLambda.cpp \
+      ARMLambda.cpp \
+      ARSimple.cpp \
       AstronomicalFunctions.cpp \
       Bancroft.cpp \
       BasicFramework.cpp \
@@ -159,6 +163,10 @@ incl_HEADERS = AllanDeviation.hpp \
       ANSITime.hpp \
       Antenna.hpp \
       AntexReader.hpp \
+      ARBase.hpp \
+      ARLambda.hpp \
+      ARMLambda.hpp \
+      ARSimple.hpp \
       AstronomicalFunctions.hpp \
       Bancroft.hpp \
       BaseDistribution.hpp \
