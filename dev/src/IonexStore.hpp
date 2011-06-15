@@ -39,7 +39,7 @@
 #include "IonexData.hpp"
 
 #include "geometry.hpp"                   // DEG_TO_RAD
-#include "icd_200_constants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
+#include "icd_gps_constants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
 #include "Triple.hpp"
 
 namespace gpstk
@@ -127,7 +127,7 @@ namespace gpstk
           *                   (4) take neareast rotated map.
           *
           * @return values    TEC, RMS and ionosphere height values
-          *                   (Triple object with: TEC and RMS in TECU and 
+          *                   (Triple object with: TEC and RMS in TECU and
           *                   the ionosphere height in meters)
           */
       Triple getIonexValue( const DayTime& t,

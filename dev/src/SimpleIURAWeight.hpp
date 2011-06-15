@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE. 2006
 //
 //============================================================================
@@ -37,7 +37,7 @@
 #include "TabularEphemerisStore.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <vector>
 
 
@@ -62,7 +62,7 @@ namespace gpstk
          * @param time           Epoch weights will be computed for
          * @param Satellites     Vector of satellites
          * @param bcEph          Satellite broadcast ephemeris
-         * 
+         *
          * @return
          *  Number of satellites with valid weights
          *
@@ -78,7 +78,7 @@ namespace gpstk
          * @param time           Epoch weights will be computed for
          * @param Satellites     Vector of satellites
          * @param preciseEph     Satellite precise ephemeris
-         * 
+         *
          * @return
          *  Number of satellites with valid weights
          *
@@ -108,10 +108,10 @@ namespace gpstk
 
 
    }; // end class SimpleIURAWeight
-   
+
 
    //@}
-   
+
 }
 
 #endif

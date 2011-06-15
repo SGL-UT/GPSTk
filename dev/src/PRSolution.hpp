@@ -4,7 +4,7 @@
  * @file PRSolution.hpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm
  */
- 
+
 #ifndef PRS_POSITION_SOLUTION_HPP
 #define PRS_POSITION_SOLUTION_HPP
 
@@ -25,14 +25,14 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 #include <vector>
 #include <ostream>
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "DayTime.hpp"
 #include "SatID.hpp"
 #include "Matrix.hpp"
@@ -44,7 +44,7 @@ namespace gpstk
 {
    /** @defgroup GPSsolutions GPS solution algorithms and Tropospheric models */
    //@{
- 
+
    /** This class defines an interface to routines which compute a position
     * and time solution from pseudorange data, with a data editing algorithm
     * based on Receiver Autonomous Integrity Monitoring (RAIM) concepts.
@@ -56,7 +56,7 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(1000.), 
+      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(1000.),
          Algebraic(false), ResidualCriterion(true), ReturnAtOnce(false),
          NSatsReject(-1), Debug(false), pDebugStream(&std::cout),
          MaxNIterations(10),  ConvergenceLimit(3.e-7), Valid(false) {};

@@ -17,20 +17,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -44,7 +44,7 @@
 #include "EphemerisRange.hpp"
 #include "MiscMath.hpp"
 #include "GPSGeoid.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "geometry.hpp"
 
 using namespace std;
@@ -165,14 +165,14 @@ namespace gpstk
          // While this is quite similiar to rotateEarth, its not the same and jcl doesn't
          // know which is really correct
          GPSGeoid gm;
-         double rotation_angle = -gm.angVelocity() * (pr/gm.c() - svPosVel.dtime);         
+         double rotation_angle = -gm.angVelocity() * (pr/gm.c() - svPosVel.dtime);
          svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
          svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
          svPosVel.x[2] = svPosVel.x[2];
 
          rawrange =rx.slantRange(svPosVel.x);
          updateCER(rx);
-         
+
          return rawrange - svclkbias - relativity;
       }
       catch (Exception& e) {
@@ -185,14 +185,14 @@ namespace gpstk
       relativity = RelativityCorrection(svPosVel) * C_GPS_M;
       // relativity correction is added to dtime by the
       // EphemerisStore::getSatXvt routines...
-      
+
       svclkbias = svPosVel.dtime*C_GPS_M - relativity;
       svclkdrift = svPosVel.ddtime * C_GPS_M;
-      
+
       cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
       cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
       cosines[2] = (Rx.Z()-svPosVel.x[2])/rawrange;
-      
+
       Position SV(svPosVel);
       elevation = Rx.elevation(SV);
       azimuth = Rx.azimuth(SV);

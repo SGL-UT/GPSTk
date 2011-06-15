@@ -28,14 +28,14 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 #include "Position.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"    // for TWO_PI, etc
+#include "icd_gps_constants.hpp"    // for TWO_PI, etc
 #include "geometry.hpp"             // for RAD_TO_DEG, etc
 #include "MiscMath.hpp"             // for RSS, SQRT
 
@@ -58,7 +58,7 @@ namespace gpstk
    string Position::getSystemName()
       throw()
    { return SystemNames[system]; }
-  
+
    // ----------- Part  2: tolerance -----------------------------------------
       // One millimeter tolerance.
    const double Position::ONE_MM_TOLERANCE = 0.001;
@@ -66,7 +66,7 @@ namespace gpstk
    const double Position::ONE_CM_TOLERANCE = 0.01;
       // One micron tolerance.
    const double Position::ONE_UM_TOLERANCE = 0.000001;
-   
+
       // Default tolerance for time equality in meters.
    double Position::POSITION_TOLERANCE = Position::ONE_MM_TOLERANCE;
 
@@ -329,9 +329,9 @@ namespace gpstk
       *this = target;
       return *this;
    }
-  
+
    // ----------- Part  7: member functions: get -----------------------------
-   // 
+   //
    // These routines retrieve coordinate values in all coordinate systems.
    // Note that calling these will transform the Position to another coordinate
    // system if that is required.
@@ -619,7 +619,7 @@ namespace gpstk
       // pos.setToString("123.4342,9328.1982,-128987.399", "%X,%Y,%Z");
       // @endcode
       //
-      // works but 
+      // works but
       //
       // @code
       // pos.setToString("123.4342,9328.1982", "%X,%Y");
@@ -646,10 +646,10 @@ namespace gpstk
             StringUtils::StringException)
    {
       try {
-            // make an object to return (so we don't fiddle with *this 
+            // make an object to return (so we don't fiddle with *this
             // until it's necessary)
          Position toReturn;
-         
+
             // flags indicated these defined
          bool hX=false, hY=false, hZ=false;
          bool hglat=false, hlon=false, hht=false;
@@ -662,7 +662,7 @@ namespace gpstk
          string s = str;
          stripLeading(s);
          stripTrailing(s);
-         
+
             // parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
          while ( (s.size() > 0) && (f.size() > 0) )
@@ -678,22 +678,22 @@ namespace gpstk
                stripLeading(s);
                stripLeading(f);
             }
-            
+
                // check just in case we hit the end of either string...
             if ( (s.length() == 0) || (f.length() == 0) )
                break;
-            
+
                // lose the '%' in f...
             f.erase(0,1);
-            
+
                // if the format string is like %03f, get '3' as the field
                // length.
             string::size_type fieldLength = string::npos;
-            
+
             if (!isalpha(f[0]))
             {
                fieldLength = asInt(f);
-               
+
                   // remove everything else up to the next character
                   // (in "%03f", that would be 'f')
                while ((!f.empty()) && (!isalpha(f[0])))
@@ -701,7 +701,7 @@ namespace gpstk
                if (f.empty())
                   break;
             }
-            
+
                // finally, get the character that should end this field, if any
             char delimiter = 0;
             if (f.size() > 1)
@@ -709,7 +709,7 @@ namespace gpstk
                if (f[1] != '%')
                {
                   delimiter = f[1];
-                  
+
                   if (fieldLength == string::npos)
                      fieldLength = s.find(delimiter,0);
                }
@@ -721,13 +721,13 @@ namespace gpstk
                   fieldLength = 1;
                }
             }
-            
+
                // figure out the next string to be removed.  if there is a field
                // length, use that first
             string toBeRemoved = s.substr(0, fieldLength);
-            
+
                // based on char at f[0], we know what to do...
-            switch (f[0]) 
+            switch (f[0])
             {
           //%x   X() (meters)
           //%y   Y() (meters)
@@ -876,24 +876,24 @@ namespace gpstk
             }
                // remove the part of s that we processed
             stripLeading(s,toBeRemoved,1);
-            
+
                // remove the character we processed from f
-            f.erase(0,1);    
-            
+            f.erase(0,1);
+
                // check for whitespace again...
             stripLeading(f);
             stripLeading(s);
-            
+
          }
-         
-         if ( s.length() != 0  ) 
+
+         if ( s.length() != 0  )
          {
                // throw an error - something didn't get processed in the strings
             DayTime::FormatException fe(
                "Processing error - parts of strings left unread - " + s);
             GPSTK_THROW(fe);
          }
-         
+
          if (f.length() != 0)
          {
                // throw an error - something didn't get processed in the strings
@@ -901,7 +901,7 @@ namespace gpstk
                "Processing error - parts of strings left unread - " + f);
             GPSTK_THROW(fe);
          }
-         
+
             // throw if the specification is incomplete
          if ( !(hX && hY && hZ) && !(hglat && hlon && hht) &&
               !(hclat && hlon && hrad) && !(htheta && hphi && hrad)) {
@@ -1024,7 +1024,7 @@ namespace gpstk
    }
 
    // ----------- Part 10: functions: fundamental conversions ---------------
-   // 
+   //
       // Fundamental conversion from spherical to cartesian coordinates.
       // @param trp (input): theta, phi, radius
       // @param xyz (output): X,Y,Z in units of radius
@@ -1071,7 +1071,7 @@ namespace gpstk
       //                             height above ellipsoid (meters)
       // @param A (input) Earth semi-major axis
       // @param eccSq (input) square of Earth eccentricity
-      // Algorithm references: 
+      // Algorithm references:
    void Position::convertCartesianToGeodetic(const Triple& xyz,
                                              Triple& llh,
                                              const double A,
@@ -1110,7 +1110,7 @@ namespace gpstk
       // @param xyz (output): X,Y,Z in meters
       // @param A (input) Earth semi-major axis
       // @param eccSq (input) square of Earth eccentricity
-      // Algorithm references: 
+      // Algorithm references:
    void Position::convertGeodeticToCartesian(const Triple& llh,
                                              Triple& xyz,
                                              const double A,
@@ -1303,7 +1303,7 @@ namespace gpstk
       // use Triple:: functions in cartesian coordinates (only)
       double elevation;
       try {
-         elevation = R.elvAngle(S);         
+         elevation = R.elvAngle(S);
       }
       catch(GeometryException& ge)
       {
@@ -1364,14 +1364,14 @@ namespace gpstk
       try
       {
          az = R.azAngle(S);
-         
+
       }
       catch(GeometryException& ge)
       {
          GPSTK_RETHROW(ge);
       }
-      
-      return az; 
+
+      return az;
    }
 
       // A member function that computes the azimuth of the input
@@ -1398,7 +1398,7 @@ namespace gpstk
          GeometryException ge("Positions are within .1 millimeter");
          GPSTK_THROW(ge);
       }
-      
+
       // Compute i vector in local North-East-Up (NEU) system
       Triple iVector(-sin(latGeodetic)*cos(longGeodetic), -sin(latGeodetic)*sin(longGeodetic), cos(latGeodetic));
       // Compute j vector in local North-East-Up (NEU) system
@@ -1419,7 +1419,7 @@ namespace gpstk
       {
          return alpha + 360.0;
       }
-      else 
+      else
       {
          return alpha;
       }

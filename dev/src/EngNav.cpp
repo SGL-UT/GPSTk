@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -52,7 +52,7 @@
 #include <iostream>
 #include <cmath>
 #include "EngNav.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 #ifdef _MSC_VER
 #define LDEXP(x,y) ldexp(x,y)
@@ -160,7 +160,7 @@ namespace gpstk
       {17, -38,  0, 1.0L, 1,{ {279,11},  { 0,  0}},  0}, /* AF1      */
       {18,   0,  0, 1.0L, 0,{ { 0,  0},  { 0,  0}},  0}, /* REF WEEK */
       {19,   0,  0, 1.0L, 0,{ { 63, 6},  { 0,  0}},  0}, /* PRN #    */
-      
+
          /* Pattern 5 */
       {0,   0,  0,  1.0L,  0,{ { 1,  8},   { 0,  0}},  0}, /* Preamble */
       {1,   0,  0,  1.0L,  0,{ { 9, 14},   { 0,  0}},  0}, /* Message  */
@@ -367,19 +367,19 @@ namespace gpstk
    }
 
       // Retained for backward compatibility
-   bool EngNav :: subframeConvert(const long input[10], 
+   bool EngNav :: subframeConvert(const long input[10],
                                   int gpsWeek,
                                   double output[60])
       throw()
    {
       uint32_t tinput[10];
-      for (int n=0;n<10;++n) 
+      for (int n=0;n<10;++n)
          tinput[n] = static_cast<uint32_t>( input[n] );
       short tgpsWeek = gpsWeek;
       return( subframeConvert( tinput, tgpsWeek, output ));
    }
-   
-   bool EngNav :: subframeConvert(const uint32_t input[10], 
+
+   bool EngNav :: subframeConvert(const uint32_t input[10],
                                   short gpsWeek,
                                   double output[60])
       throw()
@@ -426,7 +426,7 @@ namespace gpstk
       if (patId == 1)
       {
          short week10Bit = static_cast<uint32_t>( output[5] );
-         output[5] = 
+         output[5] =
              static_cast<double>( convertXBit(gpsWeek, week10Bit, BITS10) );
       }
       return true;
@@ -440,7 +440,7 @@ namespace gpstk
       short toutput = static_cast<short> ( *output );
       short retArg = convertXBit( tgpsWeek, toutput, BITS8 );
       *output = static_cast<double>(retArg);
-      
+
       return true;
    }
 
@@ -454,19 +454,19 @@ namespace gpstk
       *output = static_cast<double>(retArg);
       return true;
    }
-   
+
    static short LIMIT[] = { 127,  511 };
    static short RANGE[] = { 256, 1024 };
-   
-   short EngNav :: convertXBit(short fullGPSWeek, 
+
+   short EngNav :: convertXBit(short fullGPSWeek,
                                short incompleteGPSWeek,
                                BitConvertType type)
    {
       short extension = fullGPSWeek - (fullGPSWeek % RANGE[type]);
       short target = extension + incompleteGPSWeek;
-      
+
       short diff = target - fullGPSWeek;
-      if (diff>LIMIT[type]) 
+      if (diff>LIMIT[type])
          target -= RANGE[type];
       else if (diff< -LIMIT[type])
          target += RANGE[type];
@@ -479,11 +479,11 @@ namespace gpstk
       throw()
    {
       uint32_t tinput[10];
-      for (int n=0;n<10;++n) 
+      for (int n=0;n<10;++n)
          tinput[n] = static_cast<uint32_t>( input[n] );
-      return( getSubframePattern( tinput ));      
+      return( getSubframePattern( tinput ));
    }
-   
+
    short EngNav :: getSubframePattern(const uint32_t input[10])
       throw()
    {
@@ -495,7 +495,7 @@ namespace gpstk
          /*SVid   51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63 */
 
          //  Get subframe id.  If 1-3 return as patId.
-      
+
       itemp = input[1];         /* move HOW to temp storage         */
       itemp >>= 8;           /* shift so subframe id is in 3 lsb */
       itemp &= 0x00000007L;  /* and mask off msbs                */
@@ -532,7 +532,7 @@ namespace gpstk
            parity check bit.  The following bit maps define the bmask
            array.  They were drawn from table 20-XIV of ICD-GPS-200C
            (10 OCT 1993).
-        
+
            Bit in navigation message
                  bit1                             bit 30
            bit    12 3456 789. 1234 5678 9.12 3456 789.
@@ -546,7 +546,7 @@ namespace gpstk
          */
       uint32_t bmask[6] = { 0x3B1F3480L, 0x1D8F9A40L, 0x2EC7CD00L,
                             0x1763E680L, 0x2BB1F340L, 0x0B7A89C0L };
-   
+
       uint32_t D = 0;
       uint32_t d = sfword;
       uint32_t D29 = getd29(psfword);
@@ -626,7 +626,7 @@ namespace gpstk
       return checkParity(temp, knownUpright);
    }
 
-   void EngNav :: convertQuant(const uint32_t input[10], 
+   void EngNav :: convertQuant(const uint32_t input[10],
                                double output[60],
                                DecodeQuant *p)
       throw()

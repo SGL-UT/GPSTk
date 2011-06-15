@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,8 +48,8 @@
  * Encapsulate almanac data, and compute satellite orbit, etc.
  */
 
- 
-#include "icd_200_constants.hpp"
+
+#include "icd_gps_constants.hpp"
 #include "GPSGeoid.hpp"
 #include "AlmOrbit.hpp"
 #include <cmath>
@@ -100,23 +100,23 @@ namespace gpstk
       double xip,yip,can,san,cinc,sinc,xef,yef,zef,dek,dlk,div,domk,duv,
          drv,dxp,dyp,vxef,vyef,vzef;
       double sqrtgm = ::sqrt(geoid.gm());
-      
+
 /*   Compute time since Almanac epoch (Toa) including week change */
       elapt = t - getToaTime();
-      
+
          /* compute mean motion from semi-major axis */
       A = Ahalf * Ahalf;
       n = sqrtgm / (Ahalf * A);
-      
+
          /* compute the mean anomaly */
       meana = M0 + elapt * n;
       meana = fmod(meana, 2.0 * PI);
-      
+
          /* compute eccentric anomaly by iteration */
-      
+
       ea = meana + ecc * sin(meana);
       loop = 1;
-      
+
       do {
          f = meana - (ea - ecc * sin(ea));
          g = 1.0 - ecc * ::cos(ea);
@@ -124,11 +124,11 @@ namespace gpstk
          ea += delea;
          loop++;
       }  while ( fabs(delea) > 1.0e-11 && (loop <= 20));
-      
+
          /* compute clock corrections (no relativistic correction computed) */
       dtc = AF0 + elapt * AF1;
       sv.dtime = dtc;
-      
+
          /* compute the true anomaly */
       q = sqrt (1.0e0 - ecc * ecc);
       sinea = ::sin(ea);
@@ -136,40 +136,40 @@ namespace gpstk
       gsta = q * sinea;
       gcta = cosea  - ecc;
       ta = ::atan2(gsta,gcta);
-      
+
          /* compute argument of latitude for orbit */
       alat = ta + w;
-      
+
          /* compute correction terms ( no pertubation ) */
       ualat = alat;
       r = A * (1.0 - ecc * cosea);
       i = i_offset + 0.3e0 * PI;
-      
+
          /* compute corrected longitude of ascending node */
       anlon = OMEGA0 +
          (OMEGAdot - geoid.angVelocity()) * elapt -
          geoid.angVelocity() * (double)Toa;
-      
+
          /* compute positions in orbital plane */
       cosu = ::cos(ualat);
       sinu = ::sin(ualat);
       xip = r * cosu;
       yip = r * sinu;
-      
+
          /* compute earch fixed coordinates (in meters) */
       can = ::cos (anlon);
       san = ::sin (anlon);
       cinc = ::cos(i);
       sinc = ::sin(i);
-      
+
       xef = xip * can - yip * cinc * san;
       yef = xip * san + yip * cinc * can;
       zef =             yip * sinc;
-      
+
       sv.x[0] = xef;
       sv.x[1] = yef;
       sv.x[2] = zef;
-      
+
          /* compute velocity of rotation coordinates & velocity of sat. */
       dek = n * A / r;
       dlk = sqrtgm * Ahalf * q / (r * r);
@@ -177,16 +177,16 @@ namespace gpstk
       domk = OMEGAdot - geoid.angVelocity();
       duv = dlk;
       drv = A * ecc * dek * sinea;
-      
+
       dxp = drv * cosu - r * sinu * duv;
       dyp = drv * sinu + r * cosu * duv;
-      
+
       vxef = dxp * can - xip * san * domk - dyp * cinc * san
          + yip * (sinc * san * div - cinc * can * domk);
       vyef = dxp * san + xip * can * domk + dyp * cinc * can
          - yip * (sinc * can * div + cinc * san * domk);
       vzef = dyp * sinc + yip * cinc * div;
-      
+
       sv.v[0] = vxef;
       sv.v[1] = vyef;
       sv.v[2] = vzef;
@@ -198,7 +198,7 @@ namespace gpstk
    {
       DayTime transmitTime(0.L);
       transmitTime.setGPSfullweek(getFullWeek(), (double)xmit_time);
-      return transmitTime;      
+      return transmitTime;
    }
 
    short AlmOrbit::getFullWeek() const throw()
@@ -225,7 +225,7 @@ namespace gpstk
    {
       using std::endl;
       using std::setw;
-      
+
       s << std::setprecision(4);
       s.setf(std::ios::scientific);
       switch (verbosity)

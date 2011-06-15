@@ -32,7 +32,7 @@
 
 
 #include <cmath>
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "Exception.hpp"
 
 
@@ -91,8 +91,8 @@ namespace gpstk
        *  d < 360 has been tested
        */
    double factorial(const double d);
-   
-   
+
+
       /** Error function.
        *
        * This is a C++ implementation of the free Python code found in:

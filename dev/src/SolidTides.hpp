@@ -25,19 +25,19 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
- 
+
 #include <cmath>
 #include <string>
 
 #include "DayTime.hpp"
 #include "Triple.hpp"
 #include "Position.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "AstronomicalFunctions.hpp"
 #include "SunPosition.hpp"
 #include "MoonPosition.hpp"
@@ -48,15 +48,15 @@ namespace gpstk
 {
       /** @addtogroup GPSsolutions */
       //@{
-   
+
       /** This class computes the effect of solid Earth tides at a given
        * position and epoch.
        *
        * The model used is the simple quadrupole response model described
        * by J.G. Williams (1970).
        *
-       * Given the limitations of the algorithms used to compute the Sun 
-       * and Moon positions, this class is limited to the period between 
+       * Given the limitations of the algorithms used to compute the Sun
+       * and Moon positions, this class is limited to the period between
        * March 1st, 1900 and February 28th, 2100.
        *
        */
@@ -84,8 +84,8 @@ namespace gpstk
           * reason, this is thrown. The text may have additional information
           * as to why the request failed.
           */
-         Triple getSolidTide(const DayTime& t, 
-                            const Position& p) const 
+         Triple getSolidTide(const DayTime& t,
+                            const Position& p) const
             throw(InvalidRequest);
 
 
@@ -102,6 +102,6 @@ namespace gpstk
 
 
    //@}
-   
+
 } // namespace gpstk
 #endif  // SOLIDTIDES_HPP

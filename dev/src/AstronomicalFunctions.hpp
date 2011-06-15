@@ -25,18 +25,18 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
- 
+
 #include <cmath>
 #include <string>
 
 #include "DayTime.hpp"
 #include "Triple.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 
 namespace gpstk
@@ -95,6 +95,6 @@ namespace gpstk
    double UTC2SID(const DayTime& t);
 
       //@}
-   
+
 } // namespace gpstk
 #endif  // ASTRONOMICALFUNCTIONS_HPP

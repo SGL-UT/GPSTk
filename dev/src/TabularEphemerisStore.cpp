@@ -47,7 +47,7 @@
 #include "TabularEphemerisStore.hpp"
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 using namespace gpstk::StringUtils;
 
@@ -486,7 +486,7 @@ namespace gpstk
          xvt.ddtime = data.clk;
          haveVelocity=true;
       }
-      
+
       if (t<initialTime)
          initialTime = t;
       else if (t>finalTime)

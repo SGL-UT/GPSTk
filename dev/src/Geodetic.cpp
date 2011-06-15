@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -51,7 +51,7 @@
 #include "geometry.hpp"
 #include "Geodetic.hpp"
 #include "MiscMath.hpp"
-#include "icd_200_constants.hpp"  // for TWO_PI
+#include "icd_gps_constants.hpp"  // for TWO_PI
 
 namespace gpstk
 {
@@ -70,14 +70,14 @@ namespace gpstk
    Geodetic :: Geodetic(const double& lat, const double& lon, const double& alt,
                         GeoidModel* geo)
          : Triple(lat, lon, alt), geoid(geo)
-   { 
+   {
    }
 
    Geodetic :: Geodetic(const Triple& t, GeoidModel* geo)
          : Triple(t), geoid(geo)
    {
    }
-   
+
    Geodetic :: Geodetic(const ECEF& right, GeoidModel* geo)
       throw(NoGeoidException)
    {
@@ -87,7 +87,7 @@ namespace gpstk
       double p = RSS(X,Y);
       double latd = atan2(Z, p * (1.0 - geo->eccSquared()) );
       double ht = 0.0, slatd, N, htold, latdold;
-      
+
       for(int i=0; i<5; i++)
       {
          slatd = sin(latd);
@@ -96,13 +96,13 @@ namespace gpstk
          ht = p/cos(latd) - N;
          latdold = latd;
          latd = atan2(Z, p * (1.0 - geo->eccSquared() * (N/(N+ht)) ) );
-         if(ABS(latd-latdold) < 1.0e-9 && 
+         if(ABS(latd-latdold) < 1.0e-9 &&
             ABS(ht-htold) < (1.0e-9 * geo->a()))    break;
       }
 
       double lon = atan2(Y,X);
 
-      if(lon < 0.0) 
+      if(lon < 0.0)
          lon += TWO_PI;
 
       theArray[0] = latd * RAD_TO_DEG; // deg
@@ -123,7 +123,7 @@ namespace gpstk
       // about verifying it and finishing it.
       // As of July 31, 2002, David Munton, who implemented this
       // particular bit of code, recommends not using it.
-   void tidal_corrections ( double rad_gdlat, double rad_gdlon, 
+   void tidal_corrections ( double rad_gdlat, double rad_gdlon,
                             double& xval, double& yval, double& zval)
    {
       double radial_correction, transverse_correction;
@@ -144,11 +144,11 @@ namespace gpstk
 
       /* compute correction components then add to station locations*/
 
-      corr_array[0]=radial_correction*cos(rad_gdlat)*cos(rad_gdlon) - 
+      corr_array[0]=radial_correction*cos(rad_gdlat)*cos(rad_gdlon) -
          transverse_correction*sin(rad_gdlat)*cos(rad_gdlon);
-      corr_array[1]=radial_correction*cos(rad_gdlat)*sin(rad_gdlon) - 
+      corr_array[1]=radial_correction*cos(rad_gdlat)*sin(rad_gdlon) -
          transverse_correction*sin(rad_gdlat)*sin(rad_gdlon);
-      corr_array[2]=radial_correction*sin(rad_gdlat) + 
+      corr_array[2]=radial_correction*sin(rad_gdlat) +
          transverse_correction*cos(rad_gdlat);
 
       /* scale results to km units */

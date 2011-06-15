@@ -2,7 +2,7 @@
 
 /**
  * @file SunPosition.hpp
- * Returns the approximate position of the Sun at the given epoch in the 
+ * Returns the approximate position of the Sun at the given epoch in the
  * ECEF system.
  */
 
@@ -26,18 +26,18 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
- 
+
 #include <cmath>
 #include <string>
 
 #include "DayTime.hpp"
 #include "Triple.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "AstronomicalFunctions.hpp"
 
 
@@ -47,12 +47,12 @@ namespace gpstk
 
       /** @addtogroup ephemcalc */
       //@{
-   
-      /** This class computes the approximate position of the Sun at the 
-       * given epoch in the ECEF system. It yields best results between 
+
+      /** This class computes the approximate position of the Sun at the
+       * given epoch in the ECEF system. It yields best results between
        * March 1st 1900 and February 28th 2100.
        *
-       * This is a C++ implementation version based on the FORTRAN version 
+       * This is a C++ implementation version based on the FORTRAN version
        * originally written by P.T. Wallace, Starlink Project. The FORTRAN
        * version of Starlink project was available under the GPL license.
        *
@@ -85,24 +85,24 @@ namespace gpstk
           *    reason, this is thrown. The text may have additional
           *    information as to why the request failed.
           *
-          * @warning This method yields an approximate result, given that 
-          *    pole movement is not taken into account, neither precession 
+          * @warning This method yields an approximate result, given that
+          *    pole movement is not taken into account, neither precession
           *    nor nutation.
           */
-      Triple getPosition(const DayTime& t) const 
+      Triple getPosition(const DayTime& t) const
          throw(InvalidRequest);
-      
 
-         /** Function to compute Sun position in CIS system (coordinates 
+
+         /** Function to compute Sun position in CIS system (coordinates
           *  in meters)
           *
           * @param t Epoch
           */
-      Triple getPositionCIS(const DayTime& t) const 
+      Triple getPositionCIS(const DayTime& t) const
          throw(InvalidRequest);
 
 
-         /** Determine the earliest time for which this object can 
+         /** Determine the earliest time for which this object can
           *  successfully determine the position for the Sun.
           *
           * @return The initial time
@@ -113,7 +113,7 @@ namespace gpstk
       { return initialTime; }
 
 
-         /** Determine the latest time for which this object can 
+         /** Determine the latest time for which this object can
           *  successfully determine the position for the Sun.
           *
           * @return The final time
@@ -136,6 +136,6 @@ namespace gpstk
 
 
       //@}
-   
+
 } // namespace gpstk
 #endif  // SUNPOSITION_HPP

@@ -17,20 +17,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -41,7 +41,7 @@
  * subframes 1-3) and computes satellite Xvt based upon this data and the
  * algorithms defined for that data in the IS-GPS-200.
  */
- 
+
 #ifndef GPSTK_GPSEPHEMERISSTORE_HPP
 #define GPSTK_GPSEPHEMERISSTORE_HPP
 
@@ -53,13 +53,13 @@
 #include "XvtStore.hpp"
 #include "SatID.hpp"
 #include "EngEphemeris.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 namespace gpstk
 {
    /** @addtogroup ephemstore */
    //@{
-   
+
    /// Store GPS broadcast ephemeris information (i.e. like the data in
    /// subframes 1-3) and computes satellite Xvt based upon this data and the
    /// algorithms defined for that data in the IS-GPS-200.
@@ -69,7 +69,7 @@ namespace gpstk
 
       GPSEphemerisStore()
          throw()
-         : initialTime(DayTime::END_OF_TIME), 
+         : initialTime(DayTime::END_OF_TIME),
            finalTime(DayTime::BEGINNING_OF_TIME),
            method(0)
       {}
@@ -89,7 +89,7 @@ namespace gpstk
       ///    information as to why the request failed.
       Xvt getXvt(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
-      
+
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
@@ -102,12 +102,12 @@ namespace gpstk
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param tmin defines the beginning of the time interval
       /// @param tmax defines the end of the time interval
-      void edit(const DayTime& tmin, 
+      void edit(const DayTime& tmin,
                 const DayTime& tmax = DayTime(DayTime::END_OF_TIME) )
          throw();
 
 
-      /// Determine the earliest time for which this object can successfully 
+      /// Determine the earliest time for which this object can successfully
       /// determine the Xvt for any satellite.
       /// @return The initial time
       /// @throw InvalidRequest This is thrown if the object has no data.
@@ -115,8 +115,8 @@ namespace gpstk
          const throw(InvalidRequest)
       {return initialTime;}
 
-      
-      /// Determine the latest time for which this object can successfully 
+
+      /// Determine the latest time for which this object can successfully
       /// determine the Xvt for any satellite.
       /// @return The final time
       /// @throw InvalidRequest This is thrown if the object has no data.
@@ -136,7 +136,7 @@ namespace gpstk
 
 
       //---------------------------------------------------------------
-      // Below are interfaces that are unique to this class (i.e. not 
+      // Below are interfaces that are unique to this class (i.e. not
       // in the parent class)
       //---------------------------------------------------------------
 
@@ -155,18 +155,18 @@ namespace gpstk
       bool addEphemeris(const EngEphemeris& eph)
          throw();
 
-      
+
       /// Remove EngEphemeris objects older than t.
       /// @param t remove EngEphemeris objects older than this
       void wiper(const DayTime& t)
          throw()
       {edit(t);}
-      
-      /// Remove all data from this collection.   
+
+      /// Remove all data from this collection.
       void clear()
          throw()
       {edit(DayTime(DayTime::END_OF_TIME));}
-      
+
       /** This returns the pvt of the sv in ecef coordinates
        * (units m, s, m/s, s/s) at the indicated time.
        * @param sat the satellite's SatID
@@ -181,11 +181,11 @@ namespace gpstk
       /// @return the number of EngEphemeris records in the map
       unsigned ubeSize()
          const throw();
-      
+
       unsigned size()
          const throw()
       { return ubeSize(); };
-      
+
       /// Find an ephemeris based upon the search method configured
       /// by SearchNear/SearchPast
       /// @param sat SatID of satellite of interest
@@ -194,7 +194,7 @@ namespace gpstk
       /// @throw InvalidRequest object thrown when no ephemeris is found
       const EngEphemeris& findEphemeris(const SatID sat, const DayTime& t)
          const throw(InvalidRequest);
-      
+
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// is chosen to be the one that 1) is within the fit interval
       /// for the given time of interest, and 2) is the last ephemeris
@@ -234,9 +234,9 @@ namespace gpstk
       /// This is intended to just store sets of unique EngEphemerides
       /// for a single SV.  The key is the Toe - 1/2 the fit interval.
       typedef std::map<DayTime, EngEphemeris> EngEphMap;
-      
+
       /// Returns a map of the ephemerides available for the specified
-      /// satellite.  Note that the return is specifically chosen as a 
+      /// satellite.  Note that the return is specifically chosen as a
       /// const reference.  The intent is to provide "read only" access
       /// for analysis.  If the map needs to be modified, see other methods.
       const EngEphMap& getEphMap( const SatID sat )
@@ -245,7 +245,7 @@ namespace gpstk
    protected:
        void validSatSystem(const SatID sat)
            const throw(InvalidRequest)
-       { 
+       {
            InvalidRequest ire( std::string("Try to get NONE GPS sat position ")
                + std::string("from GPSEphemerisStore, and it's forbidden!") );
 
@@ -253,23 +253,23 @@ namespace gpstk
        }
 
    private:
-      
+
       /// This is intended to hold all unique EngEphemerides for each SV
       /// The key is the prn of the SV.
       typedef std::map<short, EngEphMap> UBEMap;
-      
+
       /// The map where all EngEphemerides are stored.
       UBEMap ube;
-      
+
       DayTime initialTime; //< Time of the first EngEphemeris
       DayTime finalTime;   //< Time of the last EngEphemeris
-      
-      /// flag indicating search method (find...Eph) to use in getSatXvt 
+
+      /// flag indicating search method (find...Eph) to use in getSatXvt
       ///  and getSatHealth
       int method;
-      
+
    }; // end class GPSEphemerisStore
    //@}
-   
+
 } // namespace gpstk
 #endif  // GPSTK_GPSEPHEMERISSTORE_HPP
