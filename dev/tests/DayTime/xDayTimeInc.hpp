@@ -18,7 +18,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
@@ -35,12 +35,12 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 using namespace std;
 using namespace gpstk;
-using gpstk::DayTime; 
- 
+using gpstk::DayTime;
+
 class xINCDayTime: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
@@ -53,16 +53,16 @@ class xINCDayTime: public CPPUNIT_NS :: TestFixture
 
 	public:
 		void setUp (void); //Sets up test enviornment
-		
+
 	protected:
-		
+
 		void StartUp (void);
-		void plusEqualsTest (void); 
+		void plusEqualsTest (void);
 		void addMilliSecTest (void);
-		void addMicroSecTest (void); 
+		void addMicroSecTest (void);
 		void addSecondsTest (void);
 		void FinishUp (void);
-	
+
 	private:
 		double tdiff;
 		long totalIncrements;
@@ -97,4 +97,4 @@ class xINCDayTime: public CPPUNIT_NS :: TestFixture
       cout << setw(21) << setprecision(8) << tdiff * C_GPS_M;      \
       cout << setw(23) << setprecision(5) << diffTolerance;        \
       cout << endl;                                                \
-      CPPUNIT_ASSERT(tdiff<diffTolerance);    			   
+      CPPUNIT_ASSERT(tdiff<diffTolerance);
