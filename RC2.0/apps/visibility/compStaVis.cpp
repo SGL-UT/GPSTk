@@ -319,11 +319,15 @@ void compStaVis::printNavFileReferenceTime(FILE* logfp)
          // For ephemeris, initial time is earliest beginning of effectivty.
       case FIC_EPH:
       case RINEX_NAV:
+	 t = BCEphList.getInitialTime();
+	 t += DayTime::HALFWEEK;
          fprintf(logfp,"  Ephemeris effectivity\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                 printTime(BCEphList.getInitialTime(),tform2).c_str());
+                 t.printf(tform2).c_str());
+	 t = BCEphList.getFinalTime();
+	 t -= DayTime::HALFWEEK;
          fprintf(logfp,"     Latest               : %s\n",
-                 printTime(BCEphList.getFinalTime(),tform2).c_str());
+                 t.printf(tform2).c_str());
          break;
             
       case FIC_ALM:
