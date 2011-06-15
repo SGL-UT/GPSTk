@@ -40,8 +40,9 @@ tries to estimate the pseudoranges from the correlation delays.
 #include <RinexNavData.hpp>
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
-#include <GPSGeoid.hpp>
+#include <GPSEllipsoid.hpp>
 #include <PRSolution.hpp>
+#include <Position.hpp>
 
 using namespace gpstk;
 using namespace std;
@@ -134,8 +135,8 @@ int main(int argc, char *argv[])
       cout << "Warning: Initial time does not appear to be within the provided ephemeris data." << endl;
 
 
-   GPSGeoid gm;
-   ECEF ecef(antennaPos);
+   GPSEllipsoid gm;
+   Position ecef(antennaPos);
    map<SatID, double> range;
    vector<SatID> svVec;
    vector<double> expVec, ionoVec;
