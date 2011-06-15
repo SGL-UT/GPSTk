@@ -232,6 +232,7 @@ namespace gpstk
          Vector<double> BestSol(3,0.0);
          vector<bool> BestUse;
          BestRMS = -1.0;      // this marks the 'Best' set as unused.
+	 Matrix<double> BestCovariance;
 
          // ----------------------------------------------------------------
          // initialize
@@ -268,13 +269,24 @@ namespace gpstk
          // NB this routine can set Satellite[.]=negative when no ephemeris
 
          i = PrepareAutonomousSolution(Tr, Satellite, Pseudorange, Eph, SVP,
-                                       pDebugStream);
-
+             Debug?pDebugStream:0);
+         if(Debug && pDebugStream) {
+            *pDebugStream << "In RAIMCompute after PAS(): Satellites:";
+            for(j=0; j<Satellite.size(); j++) {
+               RinexSatID rs(::abs(Satellite[j].id), Satellite[j].system);
+               *pDebugStream << " " << (Satellite[j].id < 0 ? "-":"") << rs;
+            }
+            *pDebugStream << endl;
+            *pDebugStream << " SVP matrix("
+               << SVP.rows() << "," << SVP.cols() << ")" << endl;
+            *pDebugStream << fixed << setw(16) << setprecision(3) << SVP << endl;
+         }
          if (i) return i;  // return is 0 (ok) or -4 (no ephemeris)
          
          // count how many good satellites we have
          // Initialize UseSat based on Satellite, and build GoodIndexes.
          // UseSat is used to mark good sats (true) and those to ignore (false).
+         // UseSave saves the original so it can be reused for each solution.
          // Let GoodIndexes be all the indexes of Satellites that are good:
          // UseSat[GoodIndexes[.]] == true by definition
 
@@ -377,7 +389,7 @@ namespace gpstk
                }
                // ----------------------------------------------------------------
                // print solution with diagnostic information
-               if (Debug)
+               if (Debug && pDebugStream)
                {
                   GPSWeekSecond weeksec(Tr);
                   *pDebugStream << "RPS " << setw(2) << stage
@@ -454,6 +466,7 @@ namespace gpstk
          RMSResidual = BestRMS;
          Solution = BestSol;
          MaxSlope = BestSL;
+	 Covariance =BestCovariance;
          for (Nsvs=0,i=0; i<BestUse.size(); i++)
          {
             if (!BestUse[i])
@@ -504,8 +517,18 @@ namespace gpstk
       for (nsvs=0,i=0; i<N; i++)
       {
             // skip marked satellites
-         if (Satellite[i].id <= 0)
-            continue;
+         if (Satellite[i].id <= 0) continue;
+
+            // test the system
+            if(Satellite[i].system == SatID::systemGPS)
+               ;
+            else {
+               Satellite[i].id = -::abs(Satellite[i].id);
+               if(pDebugStream) *pDebugStream
+                  << "Warning: Ignoring satellite (system) " << Satellite[i];
+               continue;
+            }
+
          
             // first estimate of transmit time
          tx = Tr;
@@ -523,6 +546,9 @@ namespace gpstk
                cout << e << endl << endl;
             #endif
             Satellite[i].id = -::abs(Satellite[i].id);
+               if(pDebugStream) *pDebugStream
+                  << "Warning: PRSolution ignores satellite (ephemeris) "
+                  << Satellite[i] << endl;
             continue;
          }
          
@@ -711,7 +737,10 @@ namespace gpstk
             // iteration loop
             // do at least twice (even for algebraic solution) so that
             // trop model gets evaluated
-         do {
+      	 bool applied_trop;
+         	do {
+            		applied_trop = true;
+
                // current estimate of position solution
             for(i=0; i<3; i++) RX.x[i]=Sol(i);
             
@@ -747,11 +776,15 @@ namespace gpstk
                   // must test RX for reasonableness to avoid corrupting TropModel
                   Position R(RX),S(SV);
                   double tc=R.getHeight(), elev = R.elevation(SV);
-                  if (elev < 0.0 || tc > 10000.0 || tc < -1000)
+                  if (elev < 0.0 || tc > 10000.0 || tc < -1000) {
                      tc=0.0;
-                  else
-                     tc = pTropModel->correction(R,S,T);
+                     applied_trop = false;
+                  }
+                  else tc = pTropModel->correction(R,S,T);
+                  //if(pDebugStream) *pDebugStream << "Trop " << i << " "
+                  //   << fixed << setprecision(3) << tc << endl;
                   CRange(n) -= tc;
+
                }
                
                   // geometric range
@@ -848,7 +881,14 @@ namespace gpstk
                }
             }
             
-         } while(1);    // end iteration loop
+         }
+	
+	while(1);    // end iteration loop
+
+         //if(!applied_trop && pDebugStream)
+            //*pDebugStream << "Warning - trop correction not applied at time "
+               //<< T.printf("%4F %10.3g\n");
+
          
             // compute slopes
          Slope = 0.0;
@@ -868,7 +908,7 @@ namespace gpstk
          }
          
          return iret;
-      }
+      } 
       catch(Exception& e)
       {
          GPSTK_RETHROW(e);
@@ -879,3 +919,4 @@ namespace gpstk
 ///-------------------------------------------------------------------------///
 
 } // namespace gpstk
+

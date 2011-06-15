@@ -32,6 +32,7 @@
 #include <iomanip>
 
 #include "StringUtils.hpp"
+#include "CommonTime.hpp"
 #include "MSCStore.hpp"
 #include "MathBase.hpp"
 

@@ -56,6 +56,7 @@
 #include "FileFilter.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
+#include "GPSWeekSecond.hpp"
 
 #include <set>
 
@@ -75,6 +76,7 @@ namespace gpstk
          {
             gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
             gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+
 
             if (lXmitTime < rXmitTime)
                return true;
@@ -158,6 +160,7 @@ namespace gpstk
          {
             gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
             gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+
             if (lXmitTime < rXmitTime)
                return true;
             return false;
