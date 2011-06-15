@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -42,7 +42,7 @@
 
 #include "WGS84Geoid.hpp"
 #include "Position.hpp"
-#include "icd_200_constants.hpp"     // for TWO_PI
+#include "icd_gps_constants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 #include "MiscMath.hpp"              // for RSS
 

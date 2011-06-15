@@ -28,7 +28,7 @@ FFT based acquisition for GPS L1 band.  (Parallel Code Phase Search).
 
 Example usage:
 
-...$ hilbert | acquire -q 2 -x 4.092 -r 8.184 -b 1 -c 21 -p 1 
+...$ hilbert | acquire -q 2 -x 4.092 -r 8.184 -b 1 -c 21 -p 1
 
       = 2 bit quantization, 4.092 MHz IF, 16.368 MHz sample rate (at origin, hilbert cuts it in half), one band, PRN 21, one period.
 
@@ -53,7 +53,7 @@ g++ -o acquireMT acquireMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/sr
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "CCReplica.hpp"
 #include "CACodeGenerator.hpp"
 #include "complex_math.h"
@@ -73,10 +73,10 @@ public:
    Acquire() throw();
 
    bool initialize(int argc, char*argv[]) throw();
-   
+
 private:
    virtual void process();
-   
+
    IQStream *input;
    float sampleRate;
    float interFreq;
@@ -90,7 +90,7 @@ private:
    int periods;
    int bins;
    int height;
-   
+
    CCReplica* cc;
 };
 
@@ -116,7 +116,7 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
    CommandOptionWithAnyArg
       bandsOpt('b',"bands",
                "The number of complex samples per epoch.  The default is 2. "),
-      
+
       periodsOpt('p',"CA-periods",
                  "The number of C/A periods to consider.  Default is one, "
                  "odd values recommended because of possible NAV change."),
@@ -132,12 +132,12 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
       quantizationOpt('q', "quantization",
                    "The quantization applied to the data. 1, 2 or f. "
                       "The default is f."),
-      
+
       prnOpt('c',"PRN",
              "The PRN of the code to acquire. Enter 0 to acquire "
              "all PRN codes (1 through 32). Default is 1."),
 
-      inputOpt('i', "input", 
+      inputOpt('i', "input",
                "Where to get the IQ samples from. The default is to use "
                "standard input."),
 
@@ -155,9 +155,9 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
                 "The cutoff correlation height for acquisition.  This only "
                 "affects our output.  A SNR measure should replace this "
                 "eventually.  Default is 40");
-   
 
-   if (!BasicFramework::initialize(argc,argv)) 
+
+   if (!BasicFramework::initialize(argc,argv))
       return false;
 
    if (bandsOpt.getCount())
@@ -168,7 +168,7 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
       periods = asInt(periodsOpt.getValue()[0]);
       numSamples = sampleRate*1e-3*periods;
    }
-   
+
    if (sampleRateOpt.getCount())
    {
       sampleRate = asDouble(sampleRateOpt.getValue().front()) * 1e6;
@@ -198,13 +198,13 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
    }
    else
    {
-      using std::basic_ios;      
+      using std::basic_ios;
       input->copyfmt(std::cin);
       input->clear(std::cin.rdstate());
       input->basic_ios<char>::rdbuf(std::cin.rdbuf());
       input->filename = "<stdin>";
    }
-   
+
    if(searchWidthOpt.getCount())
    {
       freqSearchWidth = asDouble(searchWidthOpt.getValue().front());
@@ -221,8 +221,8 @@ bool Acquire::initialize(int argc, char *argv[]) throw()
    {
       height = asInt(heightOpt.getValue().front());
    }
-                
-   
+
+
 
    return true;
 }
@@ -256,10 +256,10 @@ void Acquire::process()
 // Input data in frequency domain
    fftw_complex* IN;
    IN = (fftw_complex*) fftw_malloc(sizeof(fftw_complex) * numSamples);
-   
+
    fftw_complex* I;
    fftw_complex* O;
-   
+
 // Input * local replica in frequency domain.
    vector< fftw_complex* > MULT(bins);
    for(int i=0;i<bins;i++)
@@ -277,31 +277,31 @@ void Acquire::process()
       fin[i] = v4;
    }
 // -------------------------------------------------------------------
-   
+
    // Get input code
-   int sample = 0;  
+   int sample = 0;
    complex<float> s;
    while (*input >> s && sample < numSamples)
    {
-      in[sample][0] = real(s); 
+      in[sample][0] = real(s);
       in[sample][1] = imag(s);
       sample ++;
       for(int i = 1; i < bands; i++)
-      {*input >> s;} // gpsSim outputs 2 bands (L1 and L2), 
+      {*input >> s;} // gpsSim outputs 2 bands (L1 and L2),
          //one after the other.
          // This program currently supports L1 only, this loop throws away
          // the input from L2, or any other bands.
    }
 
-   int count; 
+   int count;
    if(prn == 0)  // Check if we are tracking all prns or just one.
    {
       count = 32;
       prn = 1;
    }
-   else 
+   else
       count = 1;
-   
+
    while(count > 0)
    {
       count--;
@@ -315,7 +315,7 @@ void Acquire::process()
 
       // Create local code replicas for each frequency bin.
       float f = -(freqSearchWidth/2); // initial doppler offset
-      for(int i = 0; i < bins; i++)  
+      for(int i = 0; i < bins; i++)
       {
          cc = new CCReplica(1/sampleRate, chipFreq, interFreq+f, codeGenPtr);
          cc->reset();
@@ -323,8 +323,8 @@ void Acquire::process()
          {
             complex<double> carrier = cc->getCarrier();
             complex<double> code = cc->getCode() ? 1 : -1;
-            l[i][k][0] = real((complex<double>)((code) * (carrier))); 
-            l[i][k][1] = imag((complex<double>)((code) * (carrier))); 
+            l[i][k][0] = real((complex<double>)((code) * (carrier)));
+            l[i][k][1] = imag((complex<double>)((code) * (carrier)));
             cc->tick();
          }
          f += freqBinWidth;
@@ -341,7 +341,7 @@ void Acquire::process()
             (numSamples, l[i], L[i], FFTW_FORWARD, FFTW_ESTIMATE);
          par[i].plan = plans[i];
       }
-      
+
       // Execute FFTs
       for(int i = 0; i < bins; i++)
       {
@@ -352,7 +352,7 @@ void Acquire::process()
             exit(-1);
          }
       }
-   
+
       for(int i = 0; i < bins; i++)
       {
          rc = pthread_join( thread_id[i], NULL) ;
@@ -368,15 +368,15 @@ void Acquire::process()
       {
          fftw_execute(plans[i]);
       } */
-   
-      // NOTE: may want to put following  multiplication into the pthread 
+
+      // NOTE: may want to put following  multiplication into the pthread
       // function.
       // Will need to pass #bins, #samples and pointers to vectors in a Par.
 
-      // Right now we're only using pthreads to compute FFT's of local codes 
+      // Right now we're only using pthreads to compute FFT's of local codes
       // in parallel, and there is hardly any performance increase.
 
-   // Multiply conjugate of input frequency samples by 
+   // Multiply conjugate of input frequency samples by
    // local frequency samples (point by point).
       complex<double> lo;
       complex<double> input;
@@ -389,7 +389,7 @@ void Acquire::process()
                /(double)sqrt(numSamples);
             input = conj(complex<double>(IN[k][0],IN[k][1]))
                /(double)sqrt(numSamples);
-            temp = lo * input;  
+            temp = lo * input;
             MULT[i][k][0] = real(temp);
             MULT[i][k][1] = imag(temp);
          }
@@ -405,11 +405,11 @@ void Acquire::process()
       for(int i = 0; i < bins; i++)
       {
          for(int k = 0; k < numSamples; k++)
-         { 
+         {
             fin[i][k][0] = abs(complex<double>
                                (fin[i][k][0],fin[i][k][1])
                                / (double)sqrt(numSamples));
-            if(real(complex<double>(fin[i][k][0],fin[i][k][1])) > max) 
+            if(real(complex<double>(fin[i][k][0],fin[i][k][1])) > max)
             {
                max = real(complex<double>(fin[i][k][0],fin[i][k][1]));
                shift = k;
@@ -418,30 +418,30 @@ void Acquire::process()
          }
       }
 
-         // Adjust code phase value for multiple periods in time domain. 
+         // Adjust code phase value for multiple periods in time domain.
       while(shift > (sampleRate*1e-3))
       {
          shift = shift - (sampleRate*1e-3);
       }
-   
+
       // Dump Information.
       if(max < height)
          cout << "PRN: " << prn << " - Unable to acquire." << endl;
       if(max >= height)
       {
-         cout << "PRN: " << prn << " - Doppler: " 
+         cout << "PRN: " << prn << " - Doppler: "
               << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2)
               << " Offset: " << shift*1000/(sampleRate*1e-3)
               << " Height: " << max << endl;
-         cout << "       - Tracker Input: -c c:1:" << prn << ":" 
-              <<  shift*1000/(sampleRate*1e-3)-5 << ":" 
-               // Subtracting 5 right now to make sure the tracker starts 
+         cout << "       - Tracker Input: -c c:1:" << prn << ":"
+              <<  shift*1000/(sampleRate*1e-3)-5 << ":"
+               // Subtracting 5 right now to make sure the tracker starts
                // on the "left side" of the peak.
               << (bin*1e3)/(1000/freqBinWidth) - (freqSearchWidth/2) << endl;
       }
-      // At some point need to add a more sophisticated check for successful 
+      // At some point need to add a more sophisticated check for successful
       // acquisition like a snr measure, although a simple cutoff works well.
-  
+
 
       // Output correlation curve for graphing purposes.
       /*for(int k = 0; k < numSamples; k++)
@@ -451,7 +451,7 @@ void Acquire::process()
       prn++;
       fftw_destroy_plan(p);
    } //while
-   fftw_free(IN); fftw_free(in); 
+   fftw_free(IN); fftw_free(in);
 }
 
 //-----------------------------------------------------------------------------

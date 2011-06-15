@@ -16,7 +16,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -24,20 +24,20 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <iostream>
 #include <list>
 #include <algorithm>
@@ -55,7 +55,7 @@ class OrdStats : public OrdApp
 {
 public:
    OrdStats() throw();
-   
+
    bool initialize(int argc, char *argv[]) throw();
 
 protected:
@@ -76,7 +76,7 @@ private:
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
 OrdStats::OrdStats() throw()
-   : OrdApp("ordStats", "Computes ords statistics. "), 
+   : OrdApp("ordStats", "Computes ords statistics. "),
      elevBinsOption('b', "elev-bin", "A range of elevations, used in "
                     " computing the statistical summaries. Repeat to specify"
                     " multiple bins. The default is \"-b 0-10 -b 10-20 -b"
@@ -121,7 +121,7 @@ bool OrdStats::initialize(int argc, char *argv[]) throw()
 
 //-----------------------------------------------------------------------------
 void OrdStats::process()
-{   
+{
    // get elevation ranges, if specified
    if (elevBinsOption.getCount())
    {
@@ -146,41 +146,41 @@ void OrdStats::process()
       sigmaMult = asDouble(sigmaOption.getValue().front());
    else
       sigmaMult = 6;
-   
+
    if (wonkyOption.getCount())
       useWonky = true;
-   else 
+   else
       useWonky = false;
 
    if (statsOnlyOption.getCount())
       statsOnly = true;
    else
       statsOnly = false;
-      
+
    // initialize some counters
    float totalEpochCount = 0; // cnt of total # of epochs from input
    float totalORDCount   = 0; // cnt of total # ord ORDs
    float wonkyEpochCount = 0; // cnt of entire epochs that are wonky
-   float wonkyORDCount   = 0; // cnt of individual ords that are wonky 
-   
+   float wonkyORDCount   = 0; // cnt of individual ords that are wonky
+
    // read in data from the ord file to map of ORDEpochs
    ORDEpochMap oem;
    while (input)
    {
       ORDEpoch ordEpoch = read(input);
-      
+
       // increment wonky counters accordingly
       if (ordEpoch.wonky)
         wonkyEpochCount++;
-      totalEpochCount++;    
+      totalEpochCount++;
       oem[ordEpoch.time] = ordEpoch;
-      if (!statsOnly) 
-         write(output, ordEpoch);   
-   }   
-   
+      if (!statsOnly)
+         write(output, ordEpoch);
+   }
+
    // output clock offsets greater than 1ms
    output << "# Time    Offsets > 1ms" << endl
-          << "# ------  -------------" << endl;  
+          << "# ------  -------------" << endl;
    bool foundBigOffset = false;
    // find offsets > 1ms and get one more wonky count
    ORDEpochMap::iterator iter;
@@ -195,54 +195,54 @@ void OrdStats::process()
         {
           foundBigOffset = true;
           output << ">b " << iter->second.time << " "
-                << setprecision(5) << setw(12) 
+                << setprecision(5) << setw(12)
                 << iter->second.clockOffset << endl;
-        }       
-        
+        }
+
         ORDEpoch::ORDMap::const_iterator pi;
-        for (pi = iter->second.ords.begin(); 
+        for (pi = iter->second.ords.begin();
             pi != iter->second.ords.end(); pi++)
         {
           totalORDCount++;
           const unsigned wonk = pi->second.wonky;
           if (wonk)
-            wonkyORDCount++;        
+            wonkyORDCount++;
         }
       }
       catch (gpstk::Exception &exc)
       {
          cerr << "Caught exception: " << exc << endl;
       }
-   }  
-   
+   }
+
    if (!foundBigOffset)
       output << "# No offsets greater than 1 millisecond found." << endl;
-   
+
    // output wonky stats
    output << "# wonky epochs   total   % wonky epochs   # wonky ords   total ords   % wonky ords\n"
-          << "# ------------   -----   --------------   ------------   ----------   ------------\n";   
+          << "# ------------   -----   --------------   ------------   ----------   ------------\n";
    char b1[200];
         // the high # after % symbol is just kinda lazy formatting...
    sprintf(b1, ">w %8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f",
-           wonkyEpochCount, totalEpochCount, 
+           wonkyEpochCount, totalEpochCount,
            (100*(wonkyEpochCount/totalEpochCount)),
            wonkyORDCount,totalORDCount,
            (100*(wonkyORDCount/totalORDCount)));
-   output << b1 << endl; 
-              
-   
-   // print some header info   
+   output << b1 << endl;
+
+
+   // print some header info
    output << "#  elev     mad        med       stddev      mean     # obs   # bad   max    strip" << endl
-          << "#  ----    -----      -----      ------      ----     -----   -----  -----   -----" << endl; 
-   
+          << "#  ----    -----      -----      ------      ----     -----   -----  -----   -----" << endl;
+
    // compute stats for each elevation range
-   for (ElevationRangeList::const_iterator i = elr.begin(); 
+   for (ElevationRangeList::const_iterator i = elr.begin();
         i != elr.end(); i++)
    {
       ElevationRange er = *i;
       float minElevation = er.first;
       float maxElevation = er.second;
-      
+
       Stats<double> fp;
       vector<double> v;
       v.reserve(totalORDCount);
@@ -251,7 +251,7 @@ void OrdStats::process()
       {
          const DayTime& t = iter->first;
          ORDEpoch::ORDMap::const_iterator pi;
-         for (pi = iter->second.ords.begin(); 
+         for (pi = iter->second.ords.begin();
               pi != iter->second.ords.end(); pi++)
          {
             const float el = pi->second.getElevation();
@@ -262,14 +262,14 @@ void OrdStats::process()
                v.push_back(ord);
             }
          }
-      } 
+      }
       double strip = sigmaMult * fp.StdDev();
       Stats<double> good, bad;
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
          const DayTime& t = iter->first;
          ORDEpoch::ORDMap::const_iterator pi;
-         for (pi = iter->second.ords.begin(); 
+         for (pi = iter->second.ords.begin();
              pi != iter->second.ords.end(); pi++)
          {
             const float el = pi->second.getElevation();
@@ -287,7 +287,7 @@ void OrdStats::process()
             }
          }
       }
-      
+
       char b1[200];
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
       double max = std::max(std::abs(good.Maximum()),
@@ -298,7 +298,7 @@ void OrdStats::process()
               good.StdDev()/sqrt((float)2), good.Average(),
               good.N(), bad.N(), max, strip);
       output << b1 << endl;
-   } 
+   }
 }
 
 //-----------------------------------------------------------------------------

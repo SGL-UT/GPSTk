@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -26,7 +26,7 @@
   The first cut at an object-oriented receiver simulator. This is intended
   to accept the output from gpsSim and produce neat stuff.
 
-  NOTE: trackerMT.cpp is the most up to date tracker including multithreading, 
+  NOTE: trackerMT.cpp is the most up to date tracker including multithreading,
   but this tracker is left as an example of the algorithm.  RX.cpp integrates
   position solutions into the tracker as well.
 */
@@ -39,7 +39,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 #include "EMLTracker.hpp"
 #include "CCReplica.hpp"
@@ -88,7 +88,7 @@ private:
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(NULL), band(1), timeStep(50e-9), interFreq(0.42e6), 
+   cc(NULL), tr(NULL), band(1), timeStep(50e-9), interFreq(0.42e6),
    fakeL2(false), gain(1), timeLimit(9e99),iadMax(20460)
 {}
 
@@ -143,14 +143,14 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       timeLimitOpt('t', "time-limit",
                   "Limit the amount of data to process. Specify time in ms. Defaults to all data."),
 
-      inputOpt('i', "input", 
+      inputOpt('i', "input",
                "Where to get the IQ samples from. The default is to use stdin.");
 
-   CommandOptionWithNumberArg 
+   CommandOptionWithNumberArg
       bandsOpt('b', "bands",
                "The number of complex samples per epoch. The default is 2.");
 
-   if (!BasicFramework::initialize(argc,argv)) 
+   if (!BasicFramework::initialize(argc,argv))
       return false;
 
    if (timeLimitOpt.getCount())
@@ -229,7 +229,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 
    tr->debugLevel = debugLevel;
 
-   char quantization='f';   
+   char quantization='f';
    if (quantizationOpt.getCount())
       quantization = quantizationOpt.getValue()[0][0];
 
@@ -304,18 +304,18 @@ void RxSim::process()
                *input >> s;
                }*/
 
-// Following two if statements are specific to tracker updating every 
-// 1 ms. 
+// Following two if statements are specific to tracker updating every
+// 1 ms.
             if(tr->navChange)
             {
-               nf.process(*tr, dataPoint, 
+               nf.process(*tr, dataPoint,
                           (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
                count = 0;
             }
             if(count == 20)
             {
                count = 0;
-               nf.process(*tr, dataPoint, 
+               nf.process(*tr, dataPoint,
                           (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
             }
             count++;

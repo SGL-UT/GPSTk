@@ -29,7 +29,7 @@
 #include <cstring>
 #include <vector>
 
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "RinexSatID.hpp"
 
 #include "RinexObsBase.hpp"
@@ -67,7 +67,7 @@ class RINEXPVTSolution : public BasicFramework
 {
 public:
 
-   // Linear relation between iono delay on L1 and L2. 
+   // Linear relation between iono delay on L1 and L2.
    static const double gamma;
 
    // Maximum sane value of the ionosphere delay
@@ -75,13 +75,13 @@ public:
 
 
    RINEXPVTSolution(char *arg0);
-  
+
    virtual bool initialize(int argc, char *argv[]) throw();
-   
-  
+
+
 protected:
    virtual void process();
-   
+
    XvtStore<SatID> *virtualEphStore;
    GPSEphemerisStore bcestore;
    SP3EphemerisStore sp3store;
@@ -100,13 +100,13 @@ protected:
    bool hasBCEstore;
 
    double elevationMask;
-  
+
    Geodetic aprioriPositionGeodetic, enuOrigin;
    Position aprioriPositionXYZ;
    Triple eastVector, upVector, northVector;
-   
+
    bool aprioriPositionDefined;
-   
+
    string obsFileName;
    string metFileName;
    string logFileName;

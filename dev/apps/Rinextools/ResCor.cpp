@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -61,7 +61,7 @@
 #include "WGS84Geoid.hpp"           // for obliquity
 #include "Stats.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_gps_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
 
 #include "RinexEditor.hpp"
 #include "RinexUtilities.hpp"
@@ -203,7 +203,7 @@ class RCRinexEditor : public RinexEditor
 
          /// destructor
       virtual ~RCRinexEditor() {}
-   
+
          /// after reading input header and before calling
          /// RinexEditor::EditHeader (pass input header)
       virtual int BeforeEditHeader(const RinexObsHeader& rhin) throw(Exception);
@@ -317,7 +317,7 @@ try {
    editRAIM = true;
    headRAIM = false;
    minElev = 0.0;
-   
+
    IonoHt = 400.0;      // km
 
    Callow = true;
@@ -1016,12 +1016,12 @@ try {
                if(line[0] == '#') break;              // skip comments
                if(!have) {
                   if(!havefmt) {
-                     format = line; 
+                     format = line;
                      havefmt = true;
                      if(Debug) logof << "Format is " << format << endl;
                   }
                   else if(!havepat) {
-                     pattern = line; 
+                     pattern = line;
                      havepat = true;
                      if(Debug) logof << "Pattern is " << pattern << endl;
                   }
@@ -1141,7 +1141,7 @@ try {
       logof << "Reference position will come from the input file\n";
       inPS = 1;
    }
- 
+
       // reset average RAIM solution
    if(headRAIM) {
       ARSX.Reset();
@@ -1390,7 +1390,7 @@ try {
       }
       return 0;
    }
-   
+
    // --------------------------------------------------------------------
    // Save the time tag (wait to define until after in-line header info)
    CurrentTime = roin.time;
@@ -1402,7 +1402,7 @@ try {
       (inP1>-1 && (otP1==-1 || (Cforce && otC1==-1))) || (inP2>-1 && otP2==-1)) {
          SaveData(roin, rhead, inL1, inL2, inP1, inP2);
    }
-   
+
    return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1733,7 +1733,7 @@ try {
       // loop over sats
    for(it=rod.obs.begin(); it != rod.obs.end(); ++it) {
       sat = it->first; //RinexSatID(it->first.id,SatID::systemGPS);
-      //otmap = it->second; 
+      //otmap = it->second;
 
          // delete this satellite if it is excluded, or if RAIM has marked it
       if( (SVonly.id > 0 && sat != SVonly) ||
@@ -1753,7 +1753,7 @@ try {
          HaveP = (kt->second.L1 != 0.0 && kt->second.L2 != 0.0);
       }
       if(doRAIM && !HaveRAIM) inPS=-1;
-      
+
          // --------------------------------------------------------
          // compute ephemeris range and ionospheric pierce point
       if(inEP > -1) HaveEphThisSat=true;

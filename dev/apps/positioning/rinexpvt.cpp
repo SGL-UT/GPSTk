@@ -24,7 +24,7 @@
 
 #include "rinexpvt.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -39,11 +39,11 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
     static map<SatID,DayTime> firstEpoch;
 
     bool debug = true;
-    const double teps = .1; // fudge factor for missed epochs 
+    const double teps = .1; // fudge factor for missed epochs
     const int k = 10;
-               
+
     // Should this smoother be (re)started?
-    bool initialize = false; 
+    bool initialize = false;
 
     // Record why the smoother is restarted, if necessary
     enum smootherState { NORMAL=0, NODATA, SKIPPEDEPOCH, AGE, SLIP};
@@ -54,9 +54,9 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
     i = smoothedRange.find(sat);
     j = lastPhase.find(sat);
 
-    initialize = ((i==smoothedRange.end())||(j==lastPhase.end())); 
+    initialize = ((i==smoothedRange.end())||(j==lastPhase.end()));
     if (initialize) thisState = NODATA;
-    
+
     // Yes, if we skipped an epoch
     if (!initialize)
     {
@@ -77,14 +77,14 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
         firstEpoch[sat]=t;
     }
     else
-	smoothedRange[sat] = 
+	smoothedRange[sat] =
 	    (range + (k-1)*(smoothedRange[sat] + phase - lastPhase[sat]))/k;
 
     if (fabs((smoothedRange[sat] - range)) > 20)
-    { 
+    {
        initialize = true;
        smoothedRange[sat]=range;
-       firstEpoch[sat]=t; 
+       firstEpoch[sat]=t;
        thisState = SLIP;
     }
 
@@ -96,7 +96,7 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
        static ofstream debugStream("smootherdebug.txt");
        debugStream << t.printf("%F %g ");
        //debugStream << t.printf("%Y %m %d %02H %02M %f ");
-       debugStream << sat.id << " "; 
+       debugStream << sat.id << " ";
        debugStream << setprecision(12) << smoothedRange[sat] << " ";
        debugStream << range << " " << phase << " ";
        debugStream << thisState << " ";
@@ -145,7 +145,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
     ionoOption.setMaxCount(1);
     smootherOption.setMaxCount(1);
     logfileOption.setMaxCount(1);
-    
+
     gotMet = false;
     spsSolution = false;
     ppsSolution = false;
@@ -158,7 +158,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
     logfileOn = false;
 
     elevationMask = 0;
-    
+
     logFileName = obsFileName = metFileName = "";
   }
 
@@ -168,7 +168,7 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
   {
     if(!BasicFramework::initialize(argc, argv))
       return false;
-    
+
     obsFileName = obsOption.getValue().front();
 
     if(metOption.getCount())
@@ -198,14 +198,14 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
        northVector = upVector.cross(eastVector);
 
        transformENU = true;
-       
+
     }
-    
+
     if (timeFormatOption.getCount()>0)
     {
        epochFormat = timeFormatOption.getValue().front();
-    } 
-    else 
+    }
+    else
        epochFormat = string("%Y %m %d %02H %02M %02S");
 
     if (elevationMaskOption.getCount()>0)
@@ -213,11 +213,11 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
           elevationMask =
              StringUtils::asFloat(elevationMaskOption.getValue().front());
     }
-    
+
     searchNear       = (searchNearOption.getCount()>0);
     removeIonosphere = (ionoOption.getCount()==0);
     useSmoother      = (smootherOption.getCount()==0);
-    
+
     if (logfileOption.getCount()>0)
     {
        logFileName = StringUtils::asString(logfileOption.getValue().front());
@@ -240,7 +240,7 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
               logStream.setf(ios_base::fixed, ios_base::floatfield);
               logStream.width(12);
               logStream.precision(3);
-              logStream << enuOrigin.theArray[0] << ", " 
+              logStream << enuOrigin.theArray[0] << ", "
                         << enuOrigin.theArray[1] << ", "
                         << enuOrigin.theArray[2] << endl;
               logStream.setf(ios_base::fmtflags(0), ios_base::floatfield);  // reset to default
@@ -254,22 +254,22 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
           logStream << "! Use smoother? ";
           if (useSmoother) logStream << "yes" << endl;
            else logStream << "no" << endl;
-           
+
           logStream << "! " << endl;
        }
     }
-    
-    return true;      
+
+    return true;
   }
 
 
 void RINEXPVTSolution::process()
 {
     IonoModel spsIonoCorr;
-    
+
     // Read nav file and store unique list of ephemerides
     if (navOption.getCount()>0)
-    {       
+    {
        RinexNavStream rnffs(navOption.getValue().front().c_str());
        RinexNavData rne;
        RinexNavHeader hdr;
@@ -321,7 +321,7 @@ void RINEXPVTSolution::process()
        }
        virtualEphStore = &sp3store;
     }
-    
+
 
     // If provided, open and store met file into a linked list.
     list<RinexMetData> rml;
@@ -330,19 +330,19 @@ void RINEXPVTSolution::process()
 	    RinexMetStream rms(metFileName.c_str());
 	    RinexMetHeader rmh;
 	    rms >> rmh;
-	
+
 	    RinexMetData rmd;
 	    while (rms >> rmd) rml.push_back(rmd);
     }
-    
+
     // Open and read the observation file one epoch at a time.
     // For each epoch, compute and print a position solution
     RinexObsStream roffs(obsFileName.c_str());
     roffs.exceptions(ios::failbit);
-    
+
     RinexObsHeader roh;
     RinexObsData rod;
-    
+
     roffs >> roh;
 
     if ((!aprioriPositionDefined) && (roh.valid & RinexObsHeader::antennaPositionValid) )
@@ -364,7 +364,7 @@ void RINEXPVTSolution::process()
 	    obsInterval = roh.interval;
 	    intervalDefined = true;
     }
-    
+
     if (rateOption.getCount()>0)
     {
        obsInterval =
@@ -403,27 +403,27 @@ void RINEXPVTSolution::process()
     //prSolver.Debug    = true;
 
        // Engage default weather model. Start weather data list at the beginning.
-    ggTropModel.setWeather(20., 1000., 50.);    
+    ggTropModel.setWeather(20., 1000., 50.);
     list<RinexMetData>::iterator mi=rml.begin();
-    
+
     while (roffs >> rod)
     {
 	    double T, P, H;
-	
+
 	       // Find a weather point.
 	    while ( (gotMet) &&
 		         (!rml.empty()) &&
                (mi != rml.end()) &&
 		         ((*mi).time < rod.time) )
-	    {               
+	    {
           ggTropModel.setWeather((*mi).data[RinexMetHeader::TD],
                                  (*mi).data[RinexMetHeader::PR],
                                  (*mi).data[RinexMetHeader::HR]);
           mi++;
 	    }
-	
-	
-	       // Apply editing criteria 
+
+
+	       // Apply editing criteria
 	    if  (rod.epochFlag == 0 || rod.epochFlag == 1) // Begin usable data
        {
 	       vector<SatID> satVec;
@@ -431,19 +431,19 @@ void RINEXPVTSolution::process()
           Xvt svpos;
           double ionocorr;
 
-	       try 
-          {	
+	       try
+          {
 	          RinexObsData::RinexSatMap::const_iterator it;
              for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
              {
-		          
-              
-              
+
+
+
 	      if(noGlonassSolution)
 	      {
 		//Checks to see if Obs. comes from Glonass Sat. If it does then
 		//The satellite is skipped.
-		if ((*it).first.system == SatID::systemGlonass) 
+		if ((*it).first.system == SatID::systemGlonass)
 		{continue; }
 	      }
 
@@ -451,30 +451,30 @@ void RINEXPVTSolution::process()
                   svpos = virtualEphStore->getXvt((*it).first,rod.time);
                 double elevation = aprioriPositionXYZ.elvAngle(svpos.x);
                 double azimuth =  aprioriPositionXYZ.azAngle(svpos.x);
-                
+
                 bool healthy=true;
                 if (hasBCEstore)
                 {
                    if (bcestore.getSatHealth((*it).first,rod.time)!=0)
                       healthy=false;
                 }
-                
+
                    // Editing criteria
                 if ( (elevation >= elevationMask)  &&
                      (healthy) )
                 {
-                
+
                    if ((spsSolution) && (!ppsSolution))
                    {
-                      RinexObsData::RinexObsTypeMap::const_iterator itCA = 
+                      RinexObsData::RinexObsTypeMap::const_iterator itCA =
                          otmap.find(RinexObsHeader::C1);
-                      RinexObsData::RinexObsTypeMap::const_iterator itL1 = 
+                      RinexObsData::RinexObsTypeMap::const_iterator itL1 =
                          otmap.find(RinexObsHeader::L1);
 
                       ionocorr = 0;
-                   
+
                       if ((aprioriPositionDefined) && (removeIonosphere))
-                         ionocorr = spsIonoCorr.getCorrection(rod.time, 
+                         ionocorr = spsIonoCorr.getCorrection(rod.time,
                                                            aprioriPositionGeodetic,
                                                            elevation, azimuth);
                       satVec.push_back((*it).first);
@@ -484,7 +484,7 @@ void RINEXPVTSolution::process()
 		                {
                          double phase = ((*itL1).second.data)*C_GPS_M / L1_FREQ
                                     + ionocorr;
-                         range = carrierPhaseSmooth( (*it).first, range, phase, 
+                         range = carrierPhaseSmooth( (*it).first, range, phase,
                                                  rod.time, 300.0, obsInterval);
 		                }
 
@@ -499,21 +499,21 @@ void RINEXPVTSolution::process()
 		                itP2 = otmap.find(RinexObsHeader::P2);
                       itL1 = otmap.find(RinexObsHeader::L1);
                       itL2 = otmap.find(RinexObsHeader::L2);
-		
+
                       if ((removeIonosphere) &&
                           (itP1!=otmap.end()) && (itP2!=otmap.end()))
-                         ionocorr = 1./(1.-gamma)*((*itP1).second.data-(*itP2).second.data);                
-                      
+                         ionocorr = 1./(1.-gamma)*((*itP1).second.data-(*itP2).second.data);
+
                       if (fabs(ionocorr) < maxIonoDelay)
                       {
                          satVec.push_back((*it).first);
                          double range = (*itP1).second.data-ionocorr;
-                       
+
                          if ( (useSmoother) && (itL1!=otmap.end()) && (itL2!=otmap.end()) )
                          {
                              double ionocorrPhase = -1./(1.-gamma)*((*itL1).second.data*C_GPS_M / L1_FREQ-(*itL2).second.data*C_GPS_M / L2_FREQ);
                              double phase = (*itL1).second.data * C_GPS_M / L1_FREQ - ionocorrPhase;
-			                    range = carrierPhaseSmooth( (*it).first, range, phase, 
+			                    range = carrierPhaseSmooth( (*it).first, range, phase,
                                                           rod.time, 86400.0, obsInterval);
 		                   }
                          rangeVec.push_back(range);
@@ -521,9 +521,9 @@ void RINEXPVTSolution::process()
 
                    }
                 } // If above elevation mask
-                
-             }   
-       
+
+             }
+
                 // Log file output
                 //  epoch time #Obs : <list of PRN IDs> : #GoodSVs [V}NV]
              if (logfileOn)
@@ -551,12 +551,12 @@ void RINEXPVTSolution::process()
                    }
                 }
                 logStream << "! ";
-                if (prSolver.isValid()) 
+                if (prSolver.isValid())
                    logStream << prSolver.Nsvs << " " << "V" << endl;
-                 else 
+                 else
                    logStream << "0 NV" << endl;
-             }         
- 
+             }
+
              prSolver.RAIMCompute(rod.time,satVec,rangeVec, *virtualEphStore, \
 	   		            &ggTropModel);
 	       }
@@ -566,16 +566,16 @@ void RINEXPVTSolution::process()
           catch (...) {
              cerr << "Unknown exception occured." << endl;
           }
-            
+
 	       if (prSolver.isValid())
-          { 
+          {
                 // Output epoch tag
              cout << rod.time.printf(epochFormat) << " ";
-               
+
              if (!transformENU)
              {
                 cout << setprecision(12) << prSolver.Solution[0] << " " ;
-                cout << prSolver.Solution[1] << " " ;  
+                cout << prSolver.Solution[1] << " " ;
 		          cout << prSolver.Solution[2] << " " ;
                 cout << prSolver.Solution[3];
 		          cout << endl ;
@@ -585,18 +585,18 @@ void RINEXPVTSolution::process()
                 Triple x(prSolver.Solution[0] - enuOrigin[0],
                          prSolver.Solution[1] - enuOrigin[1],
                          prSolver.Solution[2] - enuOrigin[2]);
-                  
+
                 cout << setprecision(12) << x.dot(eastVector) << " " ;
                 cout << x.dot(northVector) << " " ;
 		          cout << x.dot(upVector) << " ";
                 cout << prSolver.Solution[3];
-                  
+
 		          cout << endl;
              }
 
              if (!aprioriPositionDefined)
              {
-                aprioriPositionXYZ = Triple(prSolver.Solution[0], 
+                aprioriPositionXYZ = Triple(prSolver.Solution[0],
                                          prSolver.Solution[1],
                                          prSolver.Solution[2]);
                 WGS84Geoid WGS84;
@@ -609,27 +609,27 @@ void RINEXPVTSolution::process()
 
              }
           }
-	    
+
 	    } // End usable data
-	
+
     } // End loop through each epoch
 }
 
 const double RINEXPVTSolution::gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
-const double RINEXPVTSolution::maxIonoDelay = 1000;    
+const double RINEXPVTSolution::maxIonoDelay = 1000;
 
 int main(int argc, char *argv[])
 {
   try
     {
       RINEXPVTSolution rinexpvt(argv[0]);
-      
+
       if(!rinexpvt.initialize(argc, argv))
 	return 0;
-      
+
       if(!rinexpvt.run())
 	return 1;
-      
+
       return 0;
     }
   catch(Exception& exc)

@@ -41,7 +41,7 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
- 
+
 #include <string>
 #include <iostream>
 #include <iomanip>
@@ -52,7 +52,7 @@
 #include "DayTime.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "AshtechMessage.hpp"
 
 static bool debug=false;
@@ -64,19 +64,19 @@ namespace gpstk
    static const double wl1=CFF/L1_MULT;
    static const double wl2=CFF/L2_MULT;
 
-   AshtechMessage::AshtechMessage(const std::string& ibuff, ObsSource src, 
+   AshtechMessage::AshtechMessage(const std::string& ibuff, ObsSource src,
                                   ObsFormat fmt)
          : msgSource(src), msgFormat(fmt), buffer(ibuff)
    {
       using namespace std;
-      
+
       // Determine the type of observation
       string label=buffer.substr(0,3);
       if (label=="MCA") msgType = MCA;
       if (label=="MCL") msgType = MCL;
       if (label=="MP1") msgType = MP1;
       if (label=="MP2") msgType = MP2;
-      if (label=="MPC") msgType = MPC;      
+      if (label=="MPC") msgType = MPC;
       if (label=="PBN") msgType = PBEN;
       if (label=="SNV") msgType = SNAV;
       if (label=="EPB") msgType = EPB;
@@ -97,10 +97,10 @@ namespace gpstk
 
       if ((msgType == MPC) && (msgFormat == ASCII))
       {
-         result= 
+         result=
             StringUtils::asInt(StringUtils::word(buffer,1,','));
-      }  
- 
+      }
+
       return result;
    }
 
@@ -108,17 +108,17 @@ namespace gpstk
    {
       int result=-1;
 
-      if   ((msgType == MPC) && (msgFormat == ASCII)) 
+      if   ((msgType == MPC) && (msgFormat == ASCII))
       {
-         result= 
+         result=
             StringUtils::asInt(StringUtils::word(buffer,3,','));
-      }  
+      }
 
       if   (msgType==EPB)
       {
          result=StringUtils::asInt(buffer.substr(4,5));
-      }  
- 
+      }
+
       return result;
    }
 
@@ -128,10 +128,10 @@ namespace gpstk
 
       if ((msgType == MPC) && (msgFormat == ASCII))
       {
-         result= 
+         result=
             StringUtils::asInt(StringUtils::word(buffer,6,','));
-      }  
- 
+      }
+
       return result;
    }
 
@@ -139,7 +139,7 @@ namespace gpstk
    {
       short oldweek = prevTime.GPSfullweek();
       short newweek = oldweek;
-      
+
       double oldsow = prevTime.GPSsecond();
       double newsow;
 
@@ -147,7 +147,7 @@ namespace gpstk
 
       if ((msgType == PBEN)&&(msgFormat == ASCII))
       {
-         newsow = 
+         newsow =
             StringUtils::asDouble(StringUtils::word(buffer,1,','));
 
             // A test for week rollover
@@ -176,7 +176,7 @@ namespace gpstk
       const int   n = 20000; // number of samples in 1 ms
       const float m = 4.14;  // magnitude of the carrier estimate;
 
-      const float d = gpstk::PI/(n*n*m*m*4.0);      
+      const float d = gpstk::PI/(n*n*m*m*4.0);
       float snr;
 
       if (value)
@@ -190,12 +190,12 @@ namespace gpstk
 
       return snr;
    }
-   
 
-   RinexObsData 
+
+   RinexObsData
       AshtechMessage::convertToRinexObsData(
-            const std::list<AshtechMessage> obsMsgs, 
-            const DayTime& recentEpoch) 
+            const std::list<AshtechMessage> obsMsgs,
+            const DayTime& recentEpoch)
    throw(gpstk::Exception)
    {
       RinexObsData rod;
@@ -213,7 +213,7 @@ namespace gpstk
       {
          if ((i->msgType == MPC)&&(i->msgFormat == ASCII))
          {
-            
+
             int prn      = StringUtils::asInt(    StringUtils::word(i->buffer,3,','));
             double C1    = StringUtils::asDouble( StringUtils::word(i->buffer,13,',')) * C_GPS_M / 1000.0;
             double P1    = StringUtils::asDouble( StringUtils::word(i->buffer,23,',')) * C_GPS_M / 1000.0;
@@ -237,34 +237,34 @@ namespace gpstk
             SatID thisSat(prn, SatID::systemGPS);
             RinexObsData::RinexObsTypeMap datamap;
 
-            datamap[RinexObsHeader::C1].data = C1; 
-            datamap[RinexObsHeader::P1].data = P1; 
+            datamap[RinexObsHeader::C1].data = C1;
+            datamap[RinexObsHeader::P1].data = P1;
             datamap[RinexObsHeader::P2].data = P2;
             datamap[RinexObsHeader::L1].data = L1;
             datamap[RinexObsHeader::L2].data = L2;
             datamap[RinexObsHeader::D1].data = -D1; // Note sign convention for Doppler is opposite that of RINEX.
             datamap[RinexObsHeader::D2].data = -D2;
-            datamap[RinexObsHeader::S1].data = S1; 
+            datamap[RinexObsHeader::S1].data = S1;
             datamap[RinexObsHeader::S2].data = S2;
-           
+
             datamap[RinexObsHeader::L1].lli = 0;
             datamap[RinexObsHeader::L2].lli = 0;
-            if (warning & 128) 
+            if (warning & 128)
             {
-               datamap[RinexObsHeader::L1].lli = 1;   
-               datamap[RinexObsHeader::L2].lli = 1;   
+               datamap[RinexObsHeader::L1].lli = 1;
+               datamap[RinexObsHeader::L2].lli = 1;
             }
 
             datamap[RinexObsHeader::L1].ssi = mapSNRtoSSI(snrL1);
-            datamap[RinexObsHeader::L2].ssi = mapSNRtoSSI(snrL2);            
-            
+            datamap[RinexObsHeader::L2].ssi = mapSNRtoSSI(snrL2);
+
             rod.obs[thisSat]=datamap;
             rod.numSvs++;
          }
-         
+
       }
 
-      return rod;   
+      return rod;
    }
 
    int AshtechMessage::calculateSequenceNumber(const DayTime& t)
@@ -272,7 +272,7 @@ namespace gpstk
          // TODO: Throw if not a MBEN
       double secondsOfHour = t.minute()*60+t.second();
       double secondsOfSequence = secondsOfHour;
-      while (secondsOfSequence >= 1800.) 
+      while (secondsOfSequence >= 1800.)
          secondsOfSequence -= 1800.;
       double milliSecondsOfSequence = secondsOfSequence*1000.;
       // There is sequence tick every 50 milliseconds
@@ -302,7 +302,7 @@ namespace gpstk
       long subframe[30];
 
          //using namespace std;
-      
+
       for (int i=0;i<30;i++)
       {
          subframe[i]=*((long *)(dptr+7+i*4));
@@ -311,11 +311,11 @@ namespace gpstk
 #endif
             //    cout << "Word " << dec << i << ": 0x" << hex << subframe[i] << endl << flush << dec;
       }
-      
+
 // TODO: throw an exception if these calls fail
       eph.addSubframe(subframe, epoch.GPSfullweek(), PRN, 0);
          //    cout << "sf1" << endl << flush;
-      
+
       eph.addSubframe(subframe+10, epoch.GPSfullweek(), PRN, 0);
          //     cout << "sf2" << endl << flush;
 
@@ -325,13 +325,13 @@ namespace gpstk
          // eph.dump(std::cout);
 
          // exit(0);
-      
+
       return eph;
          //return RinexNavData();
    }
 
    void AshtechMessage::updateNavHeader(const AshtechMessage& ionMsg, RinexNavHeader& hdr)
-   {     
+   {
          // TODO: the ION message interpreter is broken. Make it work. Then have the main programm
          // regularly request an ION msg.
 
@@ -344,13 +344,13 @@ namespace gpstk
       // Ashtech document ZFamily.pdf -- ZFamily GPS Receivers, Technical Ref. Manual, dated 2002
       int offset=5;
       const char *dptr = ionMsg.buffer.data();
-      
+
       // Alpha parameters of Klobuchar model-------------------------------------------------
       float alpha0, alpha1, alpha2, alpha3;
-      
-      memmove(&alpha0, dptr+offset+0,  4); 
-      memmove(&alpha1, dptr+offset+4,  4); 
-      memmove(&alpha2, dptr+offset+8,  4); 
+
+      memmove(&alpha0, dptr+offset+0,  4);
+      memmove(&alpha1, dptr+offset+4,  4);
+      memmove(&alpha2, dptr+offset+8,  4);
       memmove(&alpha3, dptr+offset+12, 4);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
@@ -369,11 +369,11 @@ namespace gpstk
 
       // Beta parameters of Klobuchar model-------------------------------------------------
       float beta0, beta1, beta2, beta3;
-      
-      memmove(&beta0, dptr+offset+16, 4); 
-      memmove(&beta1, dptr+offset+20, 4); 
-      memmove(&beta2, dptr+offset+24, 4); 
-      memmove(&beta3, dptr+offset+28, 4); 
+
+      memmove(&beta0, dptr+offset+16, 4);
+      memmove(&beta1, dptr+offset+20, 4);
+      memmove(&beta2, dptr+offset+24, 4);
+      memmove(&beta3, dptr+offset+28, 4);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
       twiddle(beta0);
@@ -388,36 +388,36 @@ namespace gpstk
       hdr.ionBeta[3] = beta3;
 
       hdr.valid |= RinexNavHeader::ionBetaValid;
-      
+
       // Ref time parameters of Klobuchar model-------------------------------------------------
 
       double A0, A1;
       long UTCseconds;
       short UTCweek;
-      
+
       memmove(&A1,         dptr+offset+32, 8);
       memmove(&A0,         dptr+offset+40, 8);
       memmove(&UTCseconds, dptr+offset+48, 4);
       memmove(&UTCweek,    dptr+offset+52, 2);
-      
+
 #if BYTE_ORDER == LITTLE_ENDIAN
       twiddle(A1);
       twiddle(A0);
       twiddle(UTCseconds);
       twiddle(UTCweek);
 #endif
-      
+
       hdr.A0 = A0;
       hdr.A1 = A1;
       hdr.UTCRefWeek = UTCweek;
       hdr.UTCRefTime = UTCseconds;
-      
+
       hdr.valid |= RinexNavHeader::deltaUTCValid;
-      
+
       // Leap seconds --------------------------------------------------------------------------
-      
+
       short leapSeconds;
-      
+
       memmove(&leapSeconds, dptr+52, 2);
 
 #if BYTE_ORDER == LITTLE_ENDIAN
@@ -426,9 +426,9 @@ namespace gpstk
 
       hdr.leapSeconds = leapSeconds;
 
-      hdr.valid |= RinexNavHeader::leapSecondsValid;      
+      hdr.valid |= RinexNavHeader::leapSecondsValid;
 
-      return;   
+      return;
    }
-   
+
 } // End namespace

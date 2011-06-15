@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -41,7 +41,7 @@
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "RinexUtilities.hpp"
 
 #include <cstring>
@@ -89,7 +89,7 @@ public:
    inline bool operator==(const TableData& d) {return d.sat == sat;}
 };
    // for sort()
-class TableSATLessThan  {      
+class TableSATLessThan  {
 public:
    bool operator()(const TableData& d1, const TableData& d2)
       { return d1.sat < d2.sat; }
@@ -213,7 +213,7 @@ try {
          *pout << "\nFile name: " << filename << endl;
          if(screen) cout << "\nFile name: " << filename << endl;
       }
-      
+
          // input header
       try {
          InStream >> rheader;
@@ -466,7 +466,7 @@ try {
          // compute interval
       for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
       compDT = bestdt[j];
- 
+
       ostringstream oss;
 
          // summary info
@@ -708,7 +708,7 @@ try {
    CommandOption dasho(CommandOption::hasArgument, CommandOption::stdType,'o',
       "output"," [-o|--output] <file> Output the summary to a file named <file> ()");
    dasho.setMaxCount(1);
-   
+
    CommandOption dashp(CommandOption::hasArgument, CommandOption::stdType, 'p',
       "path"," [-p|--path] <path>   Find the input file(s) in this directory (.)");
    dashp.setMaxCount(1);
@@ -792,7 +792,7 @@ try {
       Par.displayUsage(cout,false);
       help = true; // return -1;
    }
-   
+
       // get values found on command line
    string msg;
    vector<string> values,field;

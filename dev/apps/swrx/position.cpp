@@ -1,10 +1,10 @@
 #pragma ident "$Id$"
 
-/* 
-Position solution.  Hardcode output data from tracker into arrays below. 
+/*
+Position solution.  Hardcode output data from tracker into arrays below.
 
-Program takes information from our tracker (subframe information like 
-zcount, starting data point of the sf, sf #, prn) and an ephemeris file.  
+Program takes information from our tracker (subframe information like
+zcount, starting data point of the sf, sf #, prn) and an ephemeris file.
 (We have the values to generate our own ephemeris, just not the formatting code)
 We then solve for position.
 */
@@ -33,7 +33,7 @@ We then solve for position.
 
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <iostream>
 #include <DayTime.hpp>
 #include <GPSEphemerisStore.hpp>
@@ -98,7 +98,7 @@ bool P::initialize(int argc, char *argv[]) throw()
       gpsWeekOpt('w',"gps-week",
                 "The GPSWeek", true);
 
-   if (!BasicFramework::initialize(argc,argv)) 
+   if (!BasicFramework::initialize(argc,argv))
       return false;
 
    if (sampleRateOpt.getCount())
@@ -114,11 +114,11 @@ bool P::initialize(int argc, char *argv[]) throw()
    {
          zCount = asDouble(zCountOpt.getValue().front());
          // zCount is the time of transmission of the next subframe.
-         zCount -= 6.0; 
+         zCount -= 6.0;
          DayTime t(gpsWeek,zCount);
          time = t;
    }
- 
+
    for (int i=0; i < ephFileOption.getCount(); i++)
    {
       string fn = ephFileOption.getValue()[i];
@@ -138,7 +138,7 @@ bool P::initialize(int argc, char *argv[]) throw()
    }
 
    if (verboseLevel>1)
-      cout << "Have ephemeris data from " << bce.getInitialTime() 
+      cout << "Have ephemeris data from " << bce.getInitialTime()
            << " through " << bce.getFinalTime() << endl;
 
    if (verboseLevel)
@@ -167,7 +167,7 @@ void P::process()
 // NOW CARDATA.bin
 /*
 // subframe three data points from gnssDavisHouseCar2.bin: (z=360198) CRUMMY
-   dataPoints[1]=29487862; 
+   dataPoints[1]=29487862;
    dataPoints[9]=29415434;
    dataPoints[14]=29393435;
    dataPoints[23]=29360589;
@@ -177,10 +177,10 @@ void P::process()
 */
 // position -e rin269.08n -z 360204 -w 1498
 /*
-// sf3 
+// sf3
 // position -e rin269.08n -z 360204 -r 8.184 -w 1498
 // GOOD results: rms 55 rmsknown 62
-   dataPoints[1]=14743933; 
+   dataPoints[1]=14743933;
    dataPoints[9]=14707720;
    dataPoints[14]=14696721;
    dataPoints[17]=14745155;
@@ -191,7 +191,7 @@ void P::process()
 */
 /*
 // sf4 GOOD ALSO
-   dataPoints[1]=63847008; 
+   dataPoints[1]=63847008;
    dataPoints[9]=63810816;
    dataPoints[14]=63799663;
    dataPoints[17]=63848083;
@@ -202,7 +202,7 @@ void P::process()
 */
 /*
 // sf 5   90 meters
-   dataPoints[1]=112950083; 
+   dataPoints[1]=112950083;
    dataPoints[9]=112913912;
    dataPoints[14]=112902598;
    dataPoints[17]=112951011;
@@ -213,7 +213,7 @@ void P::process()
 */
 /*
 // sf 1  140 m, 220 m (only 7 sats)
-   dataPoints[1]=162053158; 
+   dataPoints[1]=162053158;
    dataPoints[9]=162017008;
    dataPoints[14]=162005540;
    dataPoints[17]=162053932;
@@ -223,7 +223,7 @@ void P::process()
 */
 /*
 // sf 2   90m and 130m
-   dataPoints[1]=211156226; 
+   dataPoints[1]=211156226;
    dataPoints[9]=211120111;
    dataPoints[14]=211108482;
    dataPoints[17]=211156860;
@@ -251,19 +251,19 @@ void P::process()
          numberSVs++;
    }
    refDataPoint = total/numberSVs; // average data point to be reference.
-   
+
    vector<double> obsVec(32);
    for(int i=0; i<32; i++)
    {
       if(dataPoints[i] != 0)
       {
          // 0.073 is an arbitrary guessed time of flight
-         obsVec[i] = gpstk::C_GPS_M*(0.073 - (refDataPoint - 
+         obsVec[i] = gpstk::C_GPS_M*(0.073 - (refDataPoint -
                                 dataPoints[i])/(1000*sampleRate*1000));
-      }  
+      }
       else
       {
-         SatID temp(0, SatID::systemGPS); 
+         SatID temp(0, SatID::systemGPS);
          svVec[i] = temp; // set SatID equal to 0, the SV won't be considered
       }
    }
@@ -277,18 +277,18 @@ void P::process()
 //-----------------------------------------------------------------------------
 // Calculate initial position solution.
    GGTropModel gg;
-   gg.setWeather(30., 1000., 50.);    
+   gg.setWeather(30., 1000., 50.);
    PRSolution prSolver;
    prSolver.RMSLimit = 400;
    prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg);
    Vector<double> sol = prSolver.Solution;
 
-   cout << endl << "Position (ECEF): " << fixed << sol[0] << " " << sol[1] 
-        << " " << sol[2] << endl << "Clock Error (includes that caused by guess): " 
+   cout << endl << "Position (ECEF): " << fixed << sol[0] << " " << sol[1]
+        << " " << sol[2] << endl << "Clock Error (includes that caused by guess): "
         << sol[3]*1000/gpstk::C_GPS_M << " ms" << endl;
    cout << "# good SV's: " << prSolver.Nsvs << endl
         << "RMSResidual: " << prSolver.RMSResidual << " meters" << endl << endl;
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Calculate Ionosphere correction.
    antennaPos[0] = sol[0];
    antennaPos[1] = sol[1];
@@ -297,7 +297,7 @@ void P::process()
    for (int i=1; i<=32; i++)
    {
       SatID sv(i, SatID::systemGPS);
-      try 
+      try
       {
          Xvt svpos = bce.getXvt(sv, time);
          double el = antennaPos.elvAngle(svpos.x);
@@ -313,7 +313,7 @@ void P::process()
       for(int i = 0; i < 32; i++)
       {
          cout << svVec[i] << " "  << obsVec[i] << " " << ionoVec[i] << endl;
-         
+
       }
    }
    for(int i=0;i<32;i++)
@@ -322,19 +322,19 @@ void P::process()
       obsVec[i] += ionoVec[i]; // make iono correction to ranges.
    }
 
-//----------------------------------------------------------------------------- 
+//-----------------------------------------------------------------------------
 // Recalculate position using time corrected by clock error + ionosphere.
    time -= (sol[3] / gpstk::C_GPS_M);
    GGTropModel gg2;
-   gg2.setWeather(30.,1000., 20.); /*(Temp(C),Pressure(mbar),Humidity(%))*/    
+   gg2.setWeather(30.,1000., 20.); /*(Temp(C),Pressure(mbar),Humidity(%))*/
    PRSolution prSolver2;
    prSolver2.RMSLimit = 400;
    prSolver2.RAIMCompute(time, svVec, obsVec, bce, &gg2);
    Vector<double> sol2 = prSolver2.Solution;
-   cout << "Recomputing position with refined time and ionosphere correction:" 
+   cout << "Recomputing position with refined time and ionosphere correction:"
         << fixed << setprecision(6);
-   cout << endl << "Position (ECEF): " << fixed << sol2[0] << " " << sol2[1] 
-        << " " << sol2[2] << endl << "Clock Error: " 
+   cout << endl << "Position (ECEF): " << fixed << sol2[0] << " " << sol2[1]
+        << " " << sol2[2] << endl << "Clock Error: "
         << sol2[3]*1e6/gpstk::C_GPS_M << " us" << endl;
    cout << "# good SV's: " << prSolver2.Nsvs << endl
         << "RMSResidual: " << prSolver2.RMSResidual << " meters" << endl;
@@ -342,7 +342,7 @@ void P::process()
 //-----------------------------------------------------------------------------
 // Following block will make PRSolve compute residual from a known hardcoded
 // position
-   PRSolution prSolver3; 
+   PRSolution prSolver3;
    vector<double> S;
 /*
    S.push_back(-756736.1300); // my house

@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -48,7 +48,7 @@
 
 #include "Position.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"     // for TWO_PI
+#include "icd_gps_constants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 
 #include "RinexUtilities.hpp"
@@ -74,7 +74,7 @@ using namespace StringUtils;
 // I don't understand co-rotating longitude - perhaps I can see making the sun stand
 // still, but why rotate so middle of each pass is aligned?
 //------------------------------------------------------------------------------------
-// Max PRN 
+// Max PRN
 const int MAXPRN=32;
 // data input from command line
 bool verbose,debug;
@@ -112,7 +112,7 @@ double FoundMinLat,FoundMinLon,FoundMaxLat,FoundMaxLon;
 string TimeSector;
 double TermOffset;
 double IonoHt;
-   // 
+   //
 double sunrise,sunset;     // times in hours of day
 double begintime,endtime;  // "
    // normalizations
@@ -169,7 +169,7 @@ double obliquity(double elevation) throw(Exception);
 //------------------------------------------------------------------------------------
 // find the index of first occurance of item t (of type T) in vector<T> v;
 // i.e. v[index]=t  Return -1 if t is not found.
-template<class T> int index(const std::vector<T> v, const T& t) 
+template<class T> int index(const std::vector<T> v, const T& t)
 {
    for(int i=v.size()-1; i>=0; i--) {
       if(v[i] == t) return i;
@@ -319,7 +319,7 @@ try {
       0,"datafile",
       " Output:\n --datafile <file>    Data (AT) file name, for output and/or input");
    dashat.setMaxCount(1);
-   
+
    CommandOption dashl(CommandOption::hasArgument, CommandOption::stdType,
       0,"log"," --log <file>         Output log file name");
    dashl.setMaxCount(1);
@@ -408,7 +408,7 @@ try {
    CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
       '0', "XSat", " Other options:\n --XSat <sat>         Exclude this satellite "
       "(<sat> may be <system> only)");
-   
+
    // ... other options
    CommandOptionNoArg dashv('v', "verbose",
          " Help:\n [-v|--verbose]       print extended output info.");
@@ -467,13 +467,13 @@ try {
       Par.displayUsage(cout,false);
       cout << endl;
    }
-   
+
       // get values found on command line
    vector<string> values;
 
       // f never appears because we intercept it above
    //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
- 
+
       // open the log file first
    if(dashl.getCount()) {
       values = dashl.getValue();
@@ -956,7 +956,7 @@ try {
       }
       instream.exceptions(ios::failbit);
       if(verbose) oflog << "Opened input file #" << nfile+1 << ": " << fname << endl;
-      
+
       iret = ProcessHeader(instream,fname,header);
       if(iret != 0) return iret;
 
@@ -1228,7 +1228,7 @@ try {
             }
          }
          if(k != -1) continue;
-   
+
             // process this sat
          if( (jt=it->second.find(ELot)) != it->second.end()) {
             EL = jt->second.data;
@@ -1404,7 +1404,7 @@ try {
       for(j=0; j<line.size(); j++) BoolVec[j] = (line[j] == '1');
       EstimationFlag.push_back(BoolVec);
    }
-   
+
    //if(verbose) {
    //   oflog << "Read AT (" <<N<< "," <<n<< "," << EstimationFlag.size() << ")\n";
    //   for(i=0; i<EstimationFlag.size(); i++) {

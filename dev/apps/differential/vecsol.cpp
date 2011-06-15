@@ -58,19 +58,19 @@
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "EphemerisRange.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 
 /**
- * @file vecsol.cpp 
+ * @file vecsol.cpp
  * Vector solution using dual-frequency carrier phases. Double difference
  * algorithm with proper weights, iteration with attempted ambiguity
- * resolution, crude outlier rejection, elevation sine weighting. 
+ * resolution, crude outlier rejection, elevation sine weighting.
  * Alternatively also code processing provided.
  * The configuration file is 'vecsol.conf'; broadcast or precise ephemeris
  * are in files 'vecsol.nav' and 'vecsol.eph', respectively.
 
- * LGPL (see COPYING). No furry animals were harmed in the coding 
+ * LGPL (see COPYING). No furry animals were harmed in the coding
  * of this software.
 
  * (c) 2005-2006 Martin Vermeer
@@ -87,11 +87,11 @@ http://sopac.ucsd.edu/sites/getSiteInfo.html
  - Use of ssi and lli bits?
  - Remove limitation that unknowns must be same across iterations
  - Ionosphere models: use IONEX
- - Satellite center-of-mass correction 
+ - Satellite center-of-mass correction
  - Receiver antenna phase delay patterns
  - Earth tides
  - Output of vectors to be read by other software
- 
+
  */
 
 
@@ -101,7 +101,7 @@ using gpstk::StringUtils::asString;
 using gpstk::transpose;
 
     void
-stationData(RinexObsData const & rod, bool const phase, 
+stationData(RinexObsData const & rod, bool const phase,
 	vector < SatID > &prnVec,
 	vector < double >&rangeVecL1, vector < double >&rangeVecL2)
 {
@@ -145,13 +145,13 @@ enum FixType {
 
 
 FixType phaseCycles(vector <double> & DDobs,
-	double const lambda1, double const lambda2, double const wt1, 
+	double const lambda1, double const lambda2, double const wt1,
 	double const wt2)
 {
 #define WITHIN_HALF_CYCLE(Lx)  Lx = Lx - int(Lx); \
     (Lx < -0.5 ? Lx += 1.0 : (Lx > 0.5 ? Lx -= 1.0 : Lx = Lx))
 
-    double L1 = DDobs[1] / lambda1; 
+    double L1 = DDobs[1] / lambda1;
     double L2 = DDobs[2] / lambda2;
     double L5 = L1 - L2;
 
@@ -167,7 +167,7 @@ FixType phaseCycles(vector <double> & DDobs,
     double const L3 = wt1 * lambda1 * L1 + wt2 * lambda2 * L2;
     // Unit for L3: m
     bool const L3fixable = L3 < 0.02 && L3 > -0.02;
-    
+
     if (L1fixable && L2fixable && L5fixable) {
 	DDobs[1] -= L1 * lambda1;
 	DDobs[2] -= L2 * lambda2;
@@ -200,10 +200,10 @@ enum SolveType {
 };
 
 
-void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b, 
-	gpstk::Matrix <double> & N2, gpstk::Matrix <double> & b2, 
-	SolveType const solveType, 
-	gpstk::Vector <FixType> const fixed, 
+void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
+	gpstk::Matrix <double> & N2, gpstk::Matrix <double> & b2,
+	SolveType const solveType,
+	gpstk::Vector <FixType> const fixed,
 	int const MaxUnkn, int const unknowns, bool const tropo)
 {
     if (solveType == SOLVE_COORDS) {
@@ -214,7 +214,7 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
 	    // Note: we store separately the bias unknowns (ambiuguities) for L1 and
 	    // L2. However, in the normal matrix we have them jointly. This limits
 	    // what we can do here with weighting in case of a widelane fix.
-	    // Obviously it would be better to have them separately in the normal 
+	    // Obviously it would be better to have them separately in the normal
 	    // matrix also, but then the solution effort would be 8x as expensive
 	    // numerically.
 	    if (fixed[k] == FIX_WIDELANE)
@@ -249,10 +249,10 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
 
     N2 = gpstk::inverse(N1);
     double big, small;
-    cout << setprecision(10) << "Condition number(" << solveType << "):" 
+    cout << setprecision(10) << "Condition number(" << solveType << "):"
 	<< condNum(N1, big, small) << endl;
 
-    cout << "Largest, smallest eigenvalue:" << " [" << big << " > " 
+    cout << "Largest, smallest eigenvalue:" << " [" << big << " > "
 	<< small << ']' << endl;
     // Is it my imagination, or does SVD sometimes fail to order the
     // eigenvalues properly?  -- MV 01.03.2006
@@ -262,31 +262,31 @@ void Solve(gpstk::Matrix <double> N, gpstk::Matrix <double> const b,
     for (int k = 0; k < unknowns; k++)
 	if (svd.S(k) > big2)
 	   big2 = svd.S(k);
-    if (big != big2) { 
+    if (big != big2) {
 	// List all the eigenvalues; this shouldn't happen
 	for (int k = 0; k < unknowns; k++)
 	    cout << k << ':' << svd.S(k) << ' ';
 	cout << endl;
     }
-    
+
     for (int k = 0; k < unknowns; k++) {
 	if (N2(k,k) < 0.0)
-	    cout << "Negative diagonal element " 
+	    cout << "Negative diagonal element "
 		<< k << ": " << N2(k,k) << endl;
     }
     b2 = bb;
 }
 
 
-bool Reduce(gpstk::Matrix <double> & N, gpstk::Matrix <double> & sol, 
+bool Reduce(gpstk::Matrix <double> & N, gpstk::Matrix <double> & sol,
 	Matrix <double> x0,
-	int const k, int const j, int const l, 
-	int const dir1, int const dir2, int const dir3, 
+	int const k, int const j, int const l,
+	int const dir1, int const dir2, int const dir3,
 	int const MaxUnkn, int const unknowns)
 {
-    // Here, the relationships ("closures") that may exist between different 
-    // DD real-valued amvbiguities (biases) are used as condition equations 
-    // to least-squares adjust (improve) them. 
+    // Here, the relationships ("closures") that may exist between different
+    // DD real-valued amvbiguities (biases) are used as condition equations
+    // to least-squares adjust (improve) them.
     // The condition equation coefficient matrix is B, the condition
     // quantity ("zero variate") is y.
     gpstk::Matrix <double> B(1, unknowns);
@@ -294,7 +294,7 @@ bool Reduce(gpstk::Matrix <double> & N, gpstk::Matrix <double> & sol,
     gpstk::Matrix <double> y, BN, NBT, BNBT, InvBNBT;
     int m;
 
-    // dir1/2/3 contain the "directions" of Double Diffs used, 
+    // dir1/2/3 contain the "directions" of Double Diffs used,
     // i.e., +1 or -1.
     for (m = 0; m < unknowns; m++) {
 	if (m == k)
@@ -411,7 +411,7 @@ Triple permanentTide(double const phi)
 	int MaxUnkn;   // The number of std. unknowns. 3 for baseline est.,
 			    // 6 for two endpoint positions, 8 for tropo est. too.
 	// rejection criteria, m/s, m
-	double PTDrej, CTDrej, DDrej = 1.0; 
+	double PTDrej, CTDrej, DDrej = 1.0;
 	bool reduce;   // Reduce out dependencies between DD biases
 
 	char s[80];
@@ -428,7 +428,7 @@ Triple permanentTide(double const phi)
 	conf >> debug;		conf.getline(s, 80);
 	conf >> refsat_elev;	conf.getline(s, 80);
 	conf >> cutoff_elev;	conf.getline(s, 80);
-	conf >> PTDrej >> CTDrej; 
+	conf >> PTDrej >> CTDrej;
 	conf.getline(s, 80);
 	conf >> reduce;		conf.getline(s, 80);
 	conf.close();
@@ -498,7 +498,7 @@ Triple permanentTide(double const phi)
 
 			    rnffs >> hdr;
 			    if (iono)
-				ion.addIonoModel(DayTime::BEGINNING_OF_TIME, 
+				ion.addIonoModel(DayTime::BEGINNING_OF_TIME,
 					IonoModel(hdr.ionAlpha, hdr.ionBeta));
 			    while (rnffs >> rne)
 				bcestore.addEphemeris(rne);
@@ -534,11 +534,11 @@ Triple permanentTide(double const phi)
 		    exit(-1);
 		}
 	    }
-	    
+
 	    gpstk::Matrix <double> x0(MaxDim, 3, 0.0);
 	    gpstk::Vector <FixType> fixed(MaxDim, FIX_NONE);
 	    gpstk::Vector <SatID> FromSat(MaxDim), ToSat(MaxDim);
-	    
+
 	    // Get station positions from RINEX headers:
 	    RinexObsHeader roh1, roh2;
 
@@ -587,10 +587,10 @@ Triple permanentTide(double const phi)
 	    Triple AO1 = Rotate(roh1.antennaOffset, roh1.antennaPosition);
 	    Triple AO2 = Rotate(roh2.antennaOffset, roh2.antennaPosition);
 
-	    cout << "Geocentric      : " << AO1 << endl 
+	    cout << "Geocentric      : " << AO1 << endl
 		 << "antenna offsets : " << AO2 << endl << endl;
 
-	    // Receiver provided offset to be re-subtracted 
+	    // Receiver provided offset to be re-subtracted
 	    bool apply_clockOffset1(roh1.receiverOffsetValid &&
 				    roh1.receiverOffset);
 	    bool apply_clockOffset2(roh2.receiverOffsetValid &&
@@ -610,7 +610,7 @@ Triple permanentTide(double const phi)
 		permanentTide(Position(roh2.antennaPosition).geodeticLatitude());
 	    cout << "Tides:" << PT1 << " " << PT2 << endl;
 #else
-	    Triple PT1(0,0,0), PT2(0,0,0);	    
+	    Triple PT1(0,0,0), PT2(0,0,0);
 #endif
 	    // t1, t2 represent now antenna (ARP) positions.
 	    // (roh1/2.antennaPosition is named wrong, it is benchmark pos!)
@@ -619,7 +619,7 @@ Triple permanentTide(double const phi)
 
 	    cout << "Data interval: " << roh1.interval << "," <<
 		roh2.interval << endl;
-	    cout << "Generated by:  " << 
+	    cout << "Generated by:  " <<
 		roh1.fileProgram << ", " << roh2.fileProgram << endl;
 
 	    // How was this RINEX generated?
@@ -634,7 +634,7 @@ Triple permanentTide(double const phi)
 		cout << "RINEX file was not reduced for clock offset." << endl;
 		cout << "We do the reduction ourselves." << endl << endl;
 	    }
-	    
+
 	    Position const t10(t1);  // To keep unknowns invariant
 	    Position const t20(t2);
 	    Position Pos1, Pos2;
@@ -645,7 +645,7 @@ Triple permanentTide(double const phi)
 		// Iteration loop. Important! The unknowns are expected to
 		// remain _identical_ across iterations.
 		cout << "Iteration: " << l << endl;
-		
+
 		// Map pointing from PRN to obs. eq. element position
 		map <SatID, int> CommonSatsPrev;
 
@@ -653,7 +653,7 @@ Triple permanentTide(double const phi)
 
 		map <SatID, vector<double> > DDobsPrev;
 		map <SatID, double> SecsPrev;
-		
+
 		// Open and read the observation files one epoch at a time.
 		// Compute a contribution to normal matrix and right hand
 		// side
@@ -680,12 +680,12 @@ Triple permanentTide(double const phi)
 
 		// Output bench mark (not: antenna) positions: (Published
 		// GPS positions are always reduced for solid Earth tides)
-		cout << name1 << ": " << Position(Triple(t1) - AO1 - PT1) << endl 
+		cout << name1 << ": " << Position(Triple(t1) - AO1 - PT1) << endl
 		     << name2 << ": " << Position(Triple(t2) - AO2 - PT2) << endl << endl;
 		// Print also geographic coords:
 		Position t1g(Triple(t1) - AO1 - PT1);
 		Position t2g(Triple(t2) - AO2 - PT2);
-		cout << name1 << ": " << t1g.asGeodetic() << endl 
+		cout << name1 << ": " << t1g.asGeodetic() << endl
 		     << name2 << ": " << t2g.asGeodetic() << endl;
 
 		// Update these for output at program end:
@@ -698,14 +698,14 @@ Triple permanentTide(double const phi)
 		double TD_RMS(0), DD_RMS(0), Iono_RMS(0);
 		// points to _after_ the last unknown
 		int unknowns = MaxUnkn;
-		
+
 		while (roffs1 >> rod1 && roffs2 >> rod2) { // Epoch loop
 		    // Make sure we have a common epoch:
 		    while (rod1.time > rod2.time + 0.1 && roffs2 >> rod2) { }
 		    while (rod1.time + 0.1 < rod2.time && roffs1 >> rod1) { }
 		    double sync_err = rod2.time.secOfDay() - rod1.time.secOfDay();
 		    if (abs(sync_err) > 0.001) {
-			cout << "Synchronization Error: " << 
+			cout << "Synchronization Error: " <<
 			    std::setprecision(6) << sync_err << " sec" << endl;
 		    }
 		    double Secs = rod1.time.secOfDay();
@@ -743,7 +743,7 @@ Triple permanentTide(double const phi)
 			gpstk::Matrix <double> A(MaxDim, MaxSats, 0.0);
 			gpstk::Matrix <double> Obs(MaxSats, 3, 0.0);
 			// For var-cov modelling
-			vector <double> Q(MaxSats), 
+			vector <double> Q(MaxSats),
 			       Elev10(MaxSats), Elev20(MaxSats);
 			double Qref;
 			int nObs(0);
@@ -773,15 +773,15 @@ Triple permanentTide(double const phi)
 				bool const elev2OK = CER2.elevation > refsat_elev;
 
 				double const riseVel = 0.5 * (riseVel1 + riseVel2);
-				
-				if (elev1OK && elev2OK 
+
+				if (elev1OK && elev2OK
 					&& riseVel > best
 					&& !stickWithOld) {
 				    best = riseVel;
 				    bestIdx = i;
 				}
-				// Hang on to same ref sat if still high enough 
-				if (OldRefSat == prnVec_2[i] 
+				// Hang on to same ref sat if still high enough
+				if (OldRefSat == prnVec_2[i]
 				    && CER2.elevation > refsat_elev) {
 				    bestIdx = i;
 				    stickWithOld = true;
@@ -789,9 +789,9 @@ Triple permanentTide(double const phi)
 			    }
 
 			for (int ii = 0; ii != prnVec_2.size(); ii++) {
-			    // Reshuffle... 
+			    // Reshuffle...
 			    int i = (ii + bestIdx) % prnVec_2.size();
-			    if (prnVec_2[i].id > 0 
+			    if (prnVec_2[i].id > 0
 				    && Elev10[i] > cutoff_elev
 				    && Elev20[i] > cutoff_elev) {
 				double r2 = EPH_RANGE(CER2, rod2, t2,
@@ -799,7 +799,7 @@ Triple permanentTide(double const phi)
 				double trop2 =
 				    trop.correction(t2, CER2.svPosVel.x, rod2.time);
 				r2 += trop2;
-				
+
 				for (int j = 0; j != prnVec_1.size(); j++) {
 				    if (prnVec_1[j].id > 0
 					&& prnVec_1[j].id == prnVec_2[i].id)
@@ -811,7 +811,7 @@ Triple permanentTide(double const phi)
 					double trop1 = trop.correction(t1,
 						    CER1.svPosVel.x, rod1.time);
 					r1 += trop1;
-					
+
 					// Between-station diffs to each satellite
 					double diffL1 = rangeVecL1_1[j] - rangeVecL1_2[i];
 					double diffL2 = rangeVecL2_1[j] - rangeVecL2_2[i];
@@ -827,9 +827,9 @@ Triple permanentTide(double const phi)
 					// Javad / Pinnacle:
 					double rr1, rr2;
 					// Range rates:
-					if (javad1) 
+					if (javad1)
 					    rr1 = CER1.svPosVel.v.dot(CER1.cosines);
-					if (javad2) 
+					if (javad2)
 					    rr2 = CER2.svPosVel.v.dot(CER2.cosines);
 					// Clock corrections:
 					double cc1 = lambda1 * rangeVecL1_1[j] - r1;
@@ -839,7 +839,7 @@ Triple permanentTide(double const phi)
 
 					if (iono) {
 					    // Ionospheric corrections:
-					    double const 
+					    double const
 						ionoL1_1 = ion.getCorrection(
 						    rod1.time, g1, CER1.elevation,
 						    CER1.azimuth, IonoModel::L1);
@@ -881,7 +881,7 @@ Triple permanentTide(double const phi)
 					}
 
 					// Weight coefficient of this obs:
-					double const q_ = 1.0 / 
+					double const q_ = 1.0 /
 					    sin(DEG_TO_RAD * CER1.elevation) + 1.0 /
 					    sin(DEG_TO_RAD * CER2.elevation);
 					// Build obs. coefs for satellite
@@ -910,7 +910,7 @@ Triple permanentTide(double const phi)
 					    vector <double> DDobs(3);
 					    DDobs[1] = rdiffL1 - ref_rdiffL1;
 					    DDobs[2] = rdiffL2 - ref_rdiffL2;
-					    
+
 					    // iono free observable, unit metres
 					    DDobs[0] =
 						wt1 * DDobs[1] + wt2 * DDobs[2];
@@ -925,23 +925,23 @@ Triple permanentTide(double const phi)
 						if (phase) {
 						    FromSat[unknowns] = RefSat;
 						    ToSat [unknowns] = ThisSat;
-						    cout << endl << "New unknown " 
-							<< unknowns << " == " 
+						    cout << endl << "New unknown "
+							<< unknowns << " == "
 							<< asString(FromSat[unknowns])
 							<< " -> "
 							<< asString(ToSat[unknowns])
 							<< endl;
-						    
+
 						    // create new DD ambiguity unknown
 						    A_[unknowns] = 1.0;
 						    // Initial approx. ambiguities
 						    if (l == 0)
 							for (int k = 0; k < 3; k++)
-							    x0(unknowns,k) = 
+							    x0(unknowns,k) =
 								DDobs[k];
 
 						    for (int k = 0; k < 3; k++)
-							DDobs[k] -= 
+							DDobs[k] -=
 							    x0(unknowns,k);
 						    unknowns++;
 						} else {
@@ -962,18 +962,18 @@ Triple permanentTide(double const phi)
 						if (phase) {
 						    A_[CommonSats[ThisSat]] = 1.0;
 						    for (int k = 0; k < 3; k++)
-							DDobs[k] -= 
+							DDobs[k] -=
 							    x0(CommonSats[ThisSat],k);
 						}
 
 						// Triple difference testing
 
-						double timebase 
+						double timebase
 						    = Secs - SecsPrev[ThisSat];
-						timebase = 
+						timebase =
 						    (timebase > 10 * roh1.interval ?
 							0.000001 : roh1.interval);
-						double res 
+						double res
 						    = (DDobs[0] -
 							    DDobsPrev[ThisSat][0]) / timebase;
 						// Cycle slips will show up here
@@ -987,10 +987,10 @@ Triple permanentTide(double const phi)
 						// Include rough DD test
 						// too: this occurs esp.
 						// with newly appearing sats
-						if (!reject && 
+						if (!reject &&
 						    std::abs(DDobs[0]) > DDrej) {
 						    if (debug)
-							cout << "DD rej:" 
+							cout << "DD rej:"
 							     << DDobs[0];
 						    rej_DD++;
 						    reject = true;
@@ -1001,11 +1001,11 @@ Triple permanentTide(double const phi)
 						    TD_RMS += res * res;
 						    DD_RMS +=
 							DDobs[0] * DDobs[0];
-						    double Iono = 
-							(DDobs[2] - DDobs[1]) 
+						    double Iono =
+							(DDobs[2] - DDobs[1])
 							/ wt1;
 						    Iono_RMS += Iono * Iono;
-							
+
 						}
 						else {
 						    rejections++;
@@ -1016,7 +1016,7 @@ Triple permanentTide(double const phi)
 							cout << "REJ [" <<
 							    Elev10[i] << ":" <<
 							    Elev20[i] << "] ";
-						    cout << setprecision(4) << res << " "; 
+						    cout << setprecision(4) << res << " ";
 						}
 						observations++;
 					    }
@@ -1163,12 +1163,12 @@ Triple permanentTide(double const phi)
 		// Manhattan distance for iteration stop (is there a
 		// std method for this?):
 		if (ionoFree)
-		    crit = std::abs(PosCorr0[0]) + std::abs(PosCorr0[1]) 
+		    crit = std::abs(PosCorr0[0]) + std::abs(PosCorr0[1])
 			 + std::abs(PosCorr0[2]);
 		else
-		    crit = 0.5 * 
-			  (std::abs(PosCorr1[0]) + std::abs(PosCorr1[1]) 
-			 + std::abs(PosCorr1[2]) + std::abs(PosCorr2[0]) 
+		    crit = 0.5 *
+			  (std::abs(PosCorr1[0]) + std::abs(PosCorr1[1])
+			 + std::abs(PosCorr1[2]) + std::abs(PosCorr2[0])
 			 + std::abs(PosCorr2[1]) + std::abs(PosCorr2[2]));
 
 		cout << "Standard deviations (unscaled):" << endl;
@@ -1176,18 +1176,18 @@ Triple permanentTide(double const phi)
 		    cout << sqrt(NN(k, k)) << " ";
 		cout << endl;
 
-		// Again: published vectors must be conventionally 
+		// Again: published vectors must be conventionally
 		// reduced for tide.
 		// And published vector must be inter-benchmark:
-		Position vec = Position(Triple(t1) - AO1 - PT1) 
+		Position vec = Position(Triple(t1) - AO1 - PT1)
 		    	     - Position(Triple(t2) - AO2 - PT2);
 		cout << "A priori vector:" << endl << vec << endl;
-		cout << "A posteriori vector:" << endl 
+		cout << "A posteriori vector:" << endl
 		     << Position(Triple(vec) + PosCorr0)
 		     << " (Iono free)" << endl;
 		Triple PosCorrMean(PosCorr1 + PosCorr2);
 		PosCorrMean = 0.5 * PosCorrMean;
-		cout << Position(Triple(vec) + PosCorrMean) 
+		cout << Position(Triple(vec) + PosCorrMean)
 		     << " (L1 + L2)" << endl;
 		cout << endl;
 
@@ -1209,7 +1209,7 @@ Triple permanentTide(double const phi)
 			    unknowns, tropo);
 		    sol = NN * bb;
 
-		    // Here we use the relationships between DD ambiguities, 
+		    // Here we use the relationships between DD ambiguities,
 		    // e.g. (G18-G6) - (G26-G6) - (G26-G18) = 0
 		    // for a condition equation adjustment on NN, bb
 		    int k, j, l, dir1, dir2, dir3;
@@ -1219,25 +1219,25 @@ Triple permanentTide(double const phi)
 			for (j = k + 1; j < unknowns; j++) {
 			    dir1 = 0;
 			    if (FromSat[k] == FromSat[j]) {
-				dir1 = 1; 
+				dir1 = 1;
 				dir2 = -1;
 				Free1 = ToSat[k];
 				Free2 = ToSat[j];
 			    }
 			    if (ToSat[k] == ToSat[j]) {
-				dir1 = -1; 
+				dir1 = -1;
 				dir2 = 1;
 				Free1 = FromSat[k];
 				Free2 = FromSat[j];
 			    }
 			    if (FromSat[k] == ToSat[j]) {
-				dir1 = 1; 
+				dir1 = 1;
 				dir2 = 1;
 				Free1 = ToSat[k];
 				Free2 = FromSat[j];
 			    }
 			    if (ToSat[k] == FromSat[j]) {
-				dir1 = -1; 
+				dir1 = -1;
 				dir2 = -1;
 				Free1 = FromSat[k];
 				Free2 = ToSat[j];
@@ -1251,8 +1251,8 @@ Triple permanentTide(double const phi)
 				    if (Free1 == ToSat[l] && Free2 == FromSat[l])
 					dir3 = -1;
 				    if (reduce && dir3 != 0) {
-					if (Reduce(NN, sol, x0, k, j, l, 
-						dir1, dir2, dir3, 
+					if (Reduce(NN, sol, x0, k, j, l,
+						dir1, dir2, dir3,
 						MaxUnkn, unknowns))
 					    closures++;
 				    }
@@ -1266,7 +1266,7 @@ Triple permanentTide(double const phi)
 		    for (int k = MaxUnkn; k < unknowns; k++) {
 			cout << "[" << setprecision(8) << sqrt(NN(k,k)) << "] ";
 			cout << k << " (";
-			cout << asString(FromSat[k]) << " -> " 
+			cout << asString(FromSat[k]) << " -> "
 			     << asString(ToSat[k]) << "): ";
 			vector <double> x0vec(3);
 			x0vec[1] = x0(k, 1) + sol(k, 1);
@@ -1278,7 +1278,7 @@ Triple permanentTide(double const phi)
 			x0(k, 2) = x0vec[2];
 			if (f == FIX_BOTH)
 			    fixedunknowns++;
-			if (f == FIX_WIDELANE) 
+			if (f == FIX_WIDELANE)
 			    widelanes++;
 			fixed[k] = f;
 		    }
@@ -1297,13 +1297,13 @@ Triple permanentTide(double const phi)
 	    try {
 		coord1o.exceptions(ios::failbit);
 		coord1o.open((name1 + ".crd").c_str(), ios::out | ios::trunc);
-		coord1o << setprecision(12) << 
+		coord1o << setprecision(12) <<
 		    XYZ1[0] << ' ' << XYZ1[1] << ' ' << XYZ1[2] << endl;
 		coord1o.close();
 		if (!vecmode || !coords) {
 		    coord2o.exceptions(ios::failbit);
 		    coord2o.open((name2 + ".crd").c_str(), ios::out | ios::trunc);
-		    coord2o << setprecision(12) << 
+		    coord2o << setprecision(12) <<
 			XYZ2[0] << ' ' << XYZ2[1] << ' ' << XYZ2[2] << endl;
 		    coord2o.close();
 		}
@@ -1311,7 +1311,7 @@ Triple permanentTide(double const phi)
 	    catch(...) {
 		cerr << "Exception writing coordinate file(s)" << endl;
 	    }
-	        
+
 	    cout << "Finished." << endl;
     	}
         catch(Exception & e) {
@@ -1322,7 +1322,7 @@ Triple permanentTide(double const phi)
 	}
 
 	exit(0);
- 
+
     }
 
 
