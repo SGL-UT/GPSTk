@@ -43,7 +43,6 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "EphReader.hpp"
-#include "ECEF.hpp"
 
 using namespace std;
 using namespace gpstk;
