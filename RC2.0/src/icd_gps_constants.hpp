@@ -90,6 +90,8 @@ namespace gpstk
    const double L5_FREQ   = 1176.45e6;
       /// L5 carrier wavelength in meters.
    const double L5_WAVELENGTH  = 0.254828049;
+      /// L5 multiplier.
+   const double L5_MULT   = 115.0;
 
    // Galileo-related
       /// L6 carrier frequency in Hz.

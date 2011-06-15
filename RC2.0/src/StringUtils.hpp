@@ -49,6 +49,7 @@
 #include <iomanip>
 #include <iostream>
 #include <list>
+#include <vector>
 
 /// @todo Get rid of the stdio.h dependency if possible.
 #include <cstdio>
@@ -1155,9 +1156,9 @@ namespace gpstk
           * @param length length (in characters) of output, including exponent
           * @param expLen length (in characters) of the exponent, with sign
           * @param showSign if true, reserves 1 character for +/- sign
-	  * @param checkSwitch if true, keeps the exponential sanity check for
-	  * exponentials above three characters in length.  If false, it removes
-	  * that check.
+          * @param checkSwitch if true, keeps the exponential sanity check for
+          * exponentials above three characters in length.  If false, it removes
+          * that check.
           */
       inline std::string doub2sci(const double& d, 
                                   const std::string::size_type length, 
@@ -1165,18 +1166,18 @@ namespace gpstk
                                   const bool showSign = true,
                                   const bool checkSwitch = true);
       
-   /** Convert a double to scientific notation; this routine works better,
-    * on Windows particularly, than doub2sci.
-    * @param length = total string length, including 1 for overall sign if showPlus is true.
-    * @param precision = number of digits after the decimal and before the 'e'
-    * @param explen = length of exponent, this must = 1, 2 or 3
-    * NB. length is increased if precision, explen and showPlus require it.
-    */
-   inline std::string doubleToScientific(const double& d,
-                                         const std::string::size_type length,
-                                         const std::string::size_type precision,
-                                         const std::string::size_type explen,
-                                         bool showPlus=false);
+         /** Convert a double to scientific notation; this routine works better,
+          * on Windows particularly, than doub2sci.
+          * @param length = total string length, including 1 for overall sign if showPlus is true.
+          * @param precision = number of digits after the decimal and before the 'e'
+          * @param explen = length of exponent, this must = 1, 2 or 3
+          * NB. length is increased if precision, explen and showPlus require it.
+          */
+         inline std::string doubleToScientific(const double& d,
+                                               const std::string::size_type length,
+                                               const std::string::size_type precision,
+                                               const std::string::size_type explen,
+                                               bool showPlus=false);
 
          /**
           * Convert scientific notation to FORTRAN notation.
@@ -1187,10 +1188,10 @@ namespace gpstk
           * @param startPos start position of number in string
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, not including sign.
-	  * @param checkSwitch will keep the method running as orignially programed
-	  * when set to true.  If false, the method will always resize exponentials,
-	  * produce an exponential with an E instead of a D, and always have a leading
-	  * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
+          * @param checkSwitch will keep the method running as orignially programed
+          * when set to true.  If false, the method will always resize exponentials,
+          * produce an exponential with an E instead of a D, and always have a leading
+          * zero.  For example -> 0.87654E-0004 or -0.1234E00005. 
           * @throws Exception if the string is not a number in scientific notation
           */
       inline std::string& sci2for(std::string& aStr, 
@@ -1207,9 +1208,9 @@ namespace gpstk
           * @param d number to convert.
           * @param length length (in characters) of number, including exponent.
           * @param expLen length (in characters of exponent, including sign.
-	  * @param checkSwitch if true, keeps the exponential sanity check for
-	  * exponentials above three characters in length.  If false, it removes
-	  * that check.
+          * @param checkSwitch if true, keeps the exponential sanity check for
+          * exponentials above three characters in length.  If false, it removes
+          * that check.
           * @return a string containing \a d in FORTRAN notation.
           */
       inline std::string doub2for(const double& d, 
@@ -1541,7 +1542,7 @@ namespace gpstk
                             const std::string& outputString,
                             std::string::size_type startPos, unsigned numChanges)
       { 
-	 unsigned count = 0;
+         unsigned count = 0;
          std::string::size_type opos = startPos;
 
          while (count < numChanges)
@@ -2304,7 +2305,7 @@ namespace gpstk
                              const std::string::size_type length, 
                              const std::string::size_type expLen,
                              const bool showSign,
-			     const bool checkSwitch)
+              const bool checkSwitch)
       {
          std::string toReturn;
          short exponentLength = expLen;
@@ -2334,38 +2335,38 @@ namespace gpstk
          return toReturn;
       }
 
-   inline std::string doubleToScientific(const double& d,
-                                         const std::string::size_type length,
-                                         const std::string::size_type precision,
-                                         const std::string::size_type explen,
-                                         bool showPlus)
-   {
-      std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
-      std::string::size_type prec = (precision > 0 ? precision : 1);
-      std::string::size_type leng = (length > 0 ? length : 1);
-      int i = (int(leng) - int(elen) - 4);
-      if(showPlus) i--;
-      if(i > 0 && leng < i) leng = std::string::size_type(i);
-      std::stringstream ss;
-      ss << std::scientific << std::setprecision(prec);
-      if(showPlus) ss << std::showpos;
-      ss << d;
-      std::string str1,str2;
-      ss >> str1;
-      std::string::size_type pos = str1.find_first_of("EDed");
-      str2 = str1.substr(0,pos+2);
-      str1 = str1.substr(pos+2);
-      str2 += StringUtils::rightJustify(StringUtils::asString(
+      inline std::string doubleToScientific(const double& d,
+                                            const std::string::size_type length,
+                                            const std::string::size_type precision,
+                                            const std::string::size_type explen,
+                                            bool showPlus)
+      {
+         std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
+         std::string::size_type prec = (precision > 0 ? precision : 1);
+         std::string::size_type leng = (length > 0 ? length : 1);
+         int i = (int(leng) - int(elen) - 4);
+         if(showPlus) i--;
+         if(i > 0 && leng < i) leng = std::string::size_type(i);
+         std::stringstream ss;
+         ss << std::scientific << std::setprecision(prec);
+         if(showPlus) ss << std::showpos;
+         ss << d;
+         std::string str1,str2;
+         ss >> str1;
+         std::string::size_type pos = str1.find_first_of("EDed");
+         str2 = str1.substr(0,pos+2);
+         str1 = str1.substr(pos+2);
+         str2 += StringUtils::rightJustify(StringUtils::asString(
                                              StringUtils::asInt(str1)),elen,'0');
-      if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
-      return str2;
-   }
+         if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
+         return str2;
+      }
 
       inline std::string& sci2for(std::string& aStr, 
                              const std::string::size_type startPos,
                              const std::string::size_type length, 
                              const std::string::size_type expLen,
-			     const bool checkSwitch)
+              const bool checkSwitch)
          throw(StringException)
       {
          try
@@ -2374,9 +2375,9 @@ namespace gpstk
             int expAdd = 0;
             std::string exp;
             long iexp;
-	      //If checkSwitch is false, always redo the exponential. Otherwise,
-	      //set it to false. 
-	    bool redoexp=!checkSwitch;
+            //If checkSwitch is false, always redo the exponential. Otherwise,
+            //set it to false. 
+            bool redoexp=!checkSwitch;
             
                // Check for decimal place within specified boundaries
             if ((idx == 0) || (idx >= (startPos + length - expLen - 1)))
@@ -2412,12 +2413,12 @@ namespace gpstk
                }
             }
                // Change the exponent character to D normally, or E of checkSwitch is false.
-	    if (checkSwitch)
-               aStr[idx] = 'D';
-	    else 
-               aStr[idx] = 'E';
+             if (checkSwitch)
+                     aStr[idx] = 'D';
+             else 
+                     aStr[idx] = 'E';
                
-	       // Change the exponent itself
+          // Change the exponent itself
             if (redoexp)
             {
                exp = aStr.substr(idx + 1, std::string::npos);
@@ -2442,14 +2443,14 @@ namespace gpstk
             {
                aStr.insert((std::string::size_type)0, 1, ' ');
             }
-	    
-	       //If checkSwitch is false, add on one leading zero to the string
-	    if (!checkSwitch)
-	    {
-	       aStr.insert((std::string::size_type)1, 1, '0');
+       
+            //If checkSwitch is false, add on one leading zero to the string
+            if (!checkSwitch)
+            {
+               aStr.insert((std::string::size_type)1, 1, '0');
             }
-	    
-	    
+       
+       
             return aStr;
          }
          catch(StringException &e)
@@ -2467,7 +2468,7 @@ namespace gpstk
       inline std::string doub2for(const double& d, 
                              const std::string::size_type length, 
                              const std::string::size_type expLen,
-			     const bool checkSwitch)
+              const bool checkSwitch)
          throw(StringException)
       {
          try
