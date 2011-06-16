@@ -27,18 +27,18 @@
 //============================================================================
 
 #include "IERS.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <string>
 #include <fstream>
 
 namespace gpstk
 {
-      // Arcseconds to radius convention 
+      // Arcseconds to radius convention
    const double IERS::ARCSEC2RAD = PI / 3600.0 / 180.0;
-   
+
       // Object to hold EOP data
    EOPStore IERS::eopStore;
-   
+
 
       // UT1-UTC time difference [s]
    double IERS::UT1mUTC(double mjdUTC)
@@ -71,7 +71,7 @@ namespace gpstk
       {
       	return 0.0;
       }
-      
+
    }
 
 
@@ -92,7 +92,7 @@ namespace gpstk
    }
 
 
-      /* Add EOPs to the store via a flat IERS file. 
+      /* Add EOPs to the store via a flat IERS file.
        *  get finals.data from http://maia.usno.navy.mil/
        *
        *  @param iersFile  Name of file to read, including path.
@@ -103,10 +103,10 @@ namespace gpstk
       eopStore.clear();
       eopStore.addIERSFile(iersFile);
 
-   } 
-   
+   }
 
-      /* Add EOPs to the store via a flat STK file. 
+
+      /* Add EOPs to the store via a flat STK file.
        *  EOP-v1.1.txt
        *  http://celestrak.com/SpaceData/EOP-format.asp
        *
@@ -115,19 +115,19 @@ namespace gpstk
    void IERS::loadSTKFile(std::string stkFile)
       throw(FileMissingException)
    {
-      
+
       eopStore.clear();
 
       std::ifstream fstk(stkFile.c_str());
-      
-      
+
+
       int  numData = 0;
       bool bData = false;
 
       std::string buf;
       while(getline(fstk,buf))
-      {   
-        
+      {
+
          if(buf.substr(0,19) == "NUM_OBSERVED_POINTS")
          {
             numData = StringUtils::asInt(buf.substr(20));
@@ -152,7 +152,7 @@ namespace gpstk
          if(bData)
          {
             EarthOrientation eop;
-            
+
             // # FORMAT(I4,I3,I3,I6,2F10.6,2F11.7,4F10.6,I4)
             int year = StringUtils::asInt(buf.substr(0,4));
             int month = StringUtils::asInt(buf.substr(4,3));
@@ -162,12 +162,12 @@ namespace gpstk
             eop.xp = StringUtils::asDouble(buf.substr(16,10));
             eop.yp = StringUtils::asDouble(buf.substr(26,10));
             eop.UT1mUTC = StringUtils::asDouble(buf.substr(36,11));
-            
+
             eopStore.addEOP(mjd, eop);
          }
-         
+
       }  // End of 'while'
-      
+
       fstk.close();
 
    }  // End of method 'IERS::loadSTKFile'
@@ -176,7 +176,7 @@ namespace gpstk
    DayTime IERS::GPST2UTC(DayTime gpst)
    {
          // the input should be UTC
-      int leapSec = TAImUTC(gpst.MJD());   
+      int leapSec = TAImUTC(gpst.MJD());
       DayTime utc = gpst;
       utc += (19.0 - double(leapSec));
 
@@ -198,7 +198,7 @@ namespace gpstk
    int IERS::TAImUTC(const double& mjdUTC)
    {
       const double mjd(mjdUTC);
-      
+
       // ATTENTION:
       // the data should be updated when new leap seconds added.
       // check the sites:

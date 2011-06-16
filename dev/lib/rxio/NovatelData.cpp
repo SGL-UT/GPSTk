@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,7 +48,7 @@
 #include "DayTime.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "NovatelData.hpp"
 
 using namespace std;
@@ -209,7 +209,7 @@ namespace gpstk
    }
 
    // --------------------------------------------------------------------------------
-   void NovatelData::reallyPutRecord(FFStream& s) const 
+   void NovatelData::reallyPutRecord(FFStream& s) const
       throw(exception, StringUtils::StringException, FFStreamError)
    {
       FFStreamError e("Novatel::reallyPutRecord() is not implemented");
@@ -408,7 +408,7 @@ namespace gpstk
                //memmove(&reserved, &(buffer[24]), 2);     intelToHost(reserved);
                //short rxSWVersion;
                //memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
-               
+
                datasize = messageLength;
                headersize = int(headerLength);
                recnum = messageID;
@@ -498,7 +498,7 @@ namespace gpstk
                cout << " for recnum " << recnum
                   << " with headersize " << headersize
                   << " and message size " << datasize << endl;
-               
+
                strm.seekg(filepos);
                datasize = headersize = 0;               // marks an invalid object
 
@@ -580,13 +580,13 @@ namespace gpstk
          std::memmove(&reserved,     &(buffer[24]), 2); intelToHost(reserved);
          short rxSWVersion;
          std::memmove(&rxSWVersion,  &(buffer[26]), 2); intelToHost(rxSWVersion);
-               
+
             // parse data
             // Ref OEM4 Manual pg 206
          short prn,track=1;
          long gpsSOW;
 
-            // get PRN and timetag 
+            // get PRN and timetag
          std::memmove(&templ, &(buffer[28]), 4);
          intelToHost(templ);
          prn = short(templ);
@@ -594,7 +594,7 @@ namespace gpstk
          intelToHost(gpsWeek);
          std::memmove(&gpsSOW, &(buffer[36]), 4);
          intelToHost(gpsSOW);
-      
+
             // convert the 3 subframes and create EngEphemeris
          long subframe[10];
          for(j=0; j<3; j++) {
@@ -655,7 +655,7 @@ namespace gpstk
                      << ", prn " << prn << endl;
             }
          }
-         
+
       }  // end REPB record
 
       // convert it to Rinex
@@ -722,7 +722,7 @@ namespace gpstk
             // receiver status
          int32_t rxStatus;
          std::memmove(&rxStatus, &(buffer[20]), 4);
-         
+
             // put timetag into rod
          if (debug)
             cout << "gpsWeek:" << gpsWeek << " sow:" << gpsSOW/100.0 << endl;
@@ -752,7 +752,7 @@ namespace gpstk
             double Doppler  = double((data[2] & 0xFFFFFFF0L) >> 4);
             if(data[2] & 0x80000000L)     // 2s complement
                Doppler = -double((((data[2] & 0xFFFFFFF0L) ^ 0xFFFFFFF0L) >> 4)+1);
-   
+
             //                                               this is 0c++/4.3.2/tr1/exp_integral.tcc:xFFFFFFFF + 1
             double Pr       =  double(data[2] & 0x0000000FL) * 4294967296.
                              + double(data[3]);
@@ -882,7 +882,7 @@ namespace gpstk
          std::memmove(&reserved, &(buffer[24]), 2);     intelToHost(reserved);
          int16_t rxSWVersion;
          std::memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
-               
+
             // put timetag into rod
          rod.time = DayTime(week,double(msecOfWeek)/1000.);
          rod.epochFlag = 0;
@@ -1013,7 +1013,7 @@ namespace gpstk
                                +  double(data[5] & 0x0000001FL);
                double SNR     =  double((data[5] & 0x000003E0L) >>  5);
                // the rest are reserved
- 
+
                // swap bytes
                intelToHost(Doppler);
                intelToHost(Pr);

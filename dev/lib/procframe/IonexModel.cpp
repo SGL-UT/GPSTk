@@ -30,7 +30,7 @@
 
 
 #include "IonexModel.hpp"
-#include "icd_200_constants.hpp"          // C_GPS_M
+#include "icd_gps_constants.hpp"          // C_GPS_M
 
 
 namespace gpstk
@@ -143,7 +143,7 @@ namespace gpstk
             else
             {
 
-                  // Scalars to hold satellite elevation, azimuth, ionospheric 
+                  // Scalars to hold satellite elevation, azimuth, ionospheric
                   // map and ionospheric slant delays
                double elevation( stv->second(TypeID::elevation) );
                double azimuth(   stv->second(TypeID::azimuth)   );
@@ -151,7 +151,7 @@ namespace gpstk
                double ionexL1(0.0), ionexL2(0.0), ionexL5(0.0);   // GPS
                double ionexL6(0.0), ionexL7(0.0), ionexL8(0.0);   // Galileo
 
-                  //	calculate the position of the ionospheric pierce-point 
+                  //	calculate the position of the ionospheric pierce-point
                   // corresponding to the receiver-satellite ray
                Position IPP = rxPos.getIonosphericPiercePoint( elevation,
                                                                azimuth,
@@ -161,7 +161,7 @@ namespace gpstk
                   // Checking the collinearity of rxPos, IPP and SV
 
 
-                  // Let's get TEC, RMS and ionosphere height for IPP 
+                  // Let's get TEC, RMS and ionosphere height for IPP
                   // at current epoch
                Position pos(IPP);
                pos.transformTo(Position::Geocentric);
@@ -240,7 +240,7 @@ namespace gpstk
                                                   stv->first) );
 
 
-                  // add to the GDS the  corresponding correction, 
+                  // add to the GDS the  corresponding correction,
                   // if appropriate
                if(useDCB)
                {
@@ -311,7 +311,7 @@ namespace gpstk
 
       // Method to set the initial (a priori) position of receiver.
    int IonexModel::setInitialRxPosition(void)
-      throw(GeometryException) 
+      throw(GeometryException)
    {
 
       try
@@ -342,11 +342,11 @@ namespace gpstk
        * @warning No implementation for JPL's mapping function.
        */
    IonexModel& IonexModel::setIonoMapType(const std::string& ionoMap)
-   { 
+   {
 
          // here we set the type
-      ionoMapType = ( ionoMap != "NONE" && ionoMap != "SLM" && 
-                      ionoMap != "MSLM" && ionoMap != "ESM") ? "NONE" : 
+      ionoMapType = ( ionoMap != "NONE" && ionoMap != "SLM" &&
+                      ionoMap != "MSLM" && ionoMap != "ESM") ? "NONE" :
                                                                ionoMap;
 
          // and here the ionosphere height, in meters

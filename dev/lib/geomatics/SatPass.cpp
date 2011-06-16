@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -35,7 +35,7 @@
 #include <algorithm>
 // gpstk
 #include "SatPass.hpp"
-#include "icd_200_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_gps_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"
@@ -907,7 +907,7 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                indexForSat[sat] = SPList.size()-1;
                satit = indexForSat.find(sat);
             }
-            
+
             // add the data to the SatPass
             do {
                i = SPList[satit->second].addData(obsdata.time,obstypes,data,lli,ssi);

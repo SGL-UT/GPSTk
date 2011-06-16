@@ -44,14 +44,14 @@
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 
 
 namespace gpstk
 {
 
-      /** @defgroup DataStructures GPSTk data structures 
+      /** @defgroup DataStructures GPSTk data structures
        *
        * This is a set of several data structures to be used by other
        * GPSTk classes.
@@ -1079,7 +1079,7 @@ namespace gpstk
 
 
          /// Returns a gnssRinex with only these types of data.
-         /// @param satSys Satellite System value to be kept. 
+         /// @param satSys Satellite System value to be kept.
       gnssRinex& keepOnlySatSystem(const SatID::SatelliteSystem satSys);
 
 
@@ -1489,7 +1489,7 @@ namespace gpstk
        *
        * This handy operator allows to output a gnssRinex data structure
        * directly to an output stream such a RinexObsStream object.
-       * 
+       *
        * The RinexObsHeader object of output stream should be initialized
        * correctly before any output operation.
        *
@@ -1522,7 +1522,7 @@ namespace gpstk
 
 
       /** This function constructs a DayTime object from the given parameters.
-       * 
+       *
        * @param line    the encoded time string found in the RINEX record.
        * @param hdr     the RINEX Observation Header object for the current
        *                RINEX file.

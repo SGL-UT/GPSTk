@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -41,12 +41,12 @@
  * Implement computations of phase windup, solar ephemeris, satellite attitude
  * and eclipse at the satellite.
  */
- 
+
 // -----------------------------------------------------------------------------------
 // GPSTk includes
 #include "Matrix.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // TWO_PI
+#include "icd_gps_constants.hpp"    // TWO_PI
 // geomatics
 #include "PhaseWindup.hpp"
 #include "SunEarthSatGeometry.hpp"

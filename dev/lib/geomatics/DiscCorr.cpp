@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -43,7 +43,7 @@
 #include "StringUtils.hpp"
 #include "Stats.hpp"
 #include "PolyFit.hpp"
-#include "icd_200_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_gps_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
 #include "RobustStats.hpp"
 
 #include "DiscCorr.hpp"
@@ -124,7 +124,7 @@ try {
    map<string,double>::const_iterator it;
    for(it=CFG.begin(); it != CFG.end(); it++) {
       if(CFGdescription[it->first][0] == '*')      // advanced options
-         continue;  
+         continue;
       ostringstream stst;
       stst << it->first                            // label
          << "=" << it->second;                     // value
@@ -136,7 +136,7 @@ try {
       os << "   Advanced options:" << endl;
    for(it=CFG.begin(); it != CFG.end(); it++) {
       if(CFGdescription[it->first][0] != '*')      // ordinary options
-         continue;  
+         continue;
       ostringstream stst;
       stst << it->first                            // label
          << "=" << it->second;                     // value
@@ -533,7 +533,7 @@ const int ReturnOK=0;
 //                             tag    L1              L2              P1              P2              A1              A2
 // preprocess()                BEF    L1(c)           L2(c)           P1(m)           P2(m)           P-L1(m)         P-L2(m)
 // linearCombinations()        LCD    gfp+gfr         gfp             wlbias          -gfr
-// detectWLslips()                 
+// detectWLslips()
 //    detectObviousSlips(WL)
 //       firstDifferences(WL)  DWL                                                                     dP1=dWLb        0
 //    WLcomputeStats
@@ -1069,7 +1069,7 @@ try {
          outlier = false;
          igood = ibad;
       }
-      else 
+      else
          igood = i;
    }
    it->npts = nok;
@@ -1399,7 +1399,7 @@ try {
          }
          iminus++;
       }
-   
+
    }  // end loop over i=all points in segment
 
    return  ReturnOK;
@@ -1460,7 +1460,7 @@ try {
          if(nok < halfwidth || (it->npts - nok) < halfwidth ) {
             // failed test 3 - near ends of segment
             // consider chopping off this end of segment - large limit?
-            // TD must do something here ... 
+            // TD must do something here ...
             if(cfg(Debug) >= 6) log << "too near end " << GDCUnique
                << " " << i << " " << nok << " " << it->npts-nok
                << " " << time(i).printf(outFormat)
@@ -1509,7 +1509,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // A2 = limit = sqrt(futureStats.Variance()+pastStats.Variance()) ~ noise in WL
 // ALL CONDITIONs needed for a slip to be detected:
 // 1. test must be > ~0.67(WLSlipSize) * WLwl
-// 2. test-limit must be > (WLSlipExcess) ie test 
+// 2. test-limit must be > (WLSlipExcess) ie test
 // 3. slip must be far (>1/2 window) from either end
 // 4. test must be at a local maximum within ~ window width
 // 5. limit must be at a local minimum (")
@@ -1940,7 +1940,7 @@ try {
       << " tests " << n1+nadj-dnGFR << " " << Rstats.StdDev()+Lstats.StdDev()
       << endl;
    }
-   
+
    // full slip, including biases
    dn1 += right->bias2 - left->bias2;
    n1 = long(dn1 + (dn1 > 0 ? 0.5 : -0.5));
@@ -2045,7 +2045,7 @@ try {
       }  // end loop over fits
 
       // the value of this is questionable, b/c with active ionosphere the real
-      // GFP is NOT smooth 
+      // GFP is NOT smooth
       for(quit=false,k=0; k<3; k++) if(rmsrof[in[k]] > cfg(GFFixMaxRMS)) {
          log << "Warning - large RMS ROF in GF slip fix at in,k = "
              << in[k] << " " << k << " " << rmsrof[in[k]] << " abort." << endl;
@@ -2241,7 +2241,7 @@ try {
    // L1 = GFP+GFR in cycles, by prepareGFdata()
    // L2 = GFP in cycles, by prepareGFdata()
    // P1 = wlbias
-   // P2 = GFR in cycles, by prepareGFdata() 
+   // P2 = GFR in cycles, by prepareGFdata()
    // A1 = GFP-(local fit) OR its 1stD, by GFphaseResiduals()
    //      (was 1stD of GFP+GFR (in L1), by firstDifferences())
    // A2 = 1stD of GFP (in L2), by firstDifferences()
@@ -2297,7 +2297,7 @@ try {
    for(i=it->nbeg; i <= it->nend; i++) {
       // skip bad data
       if(!(spdvector[i].flag & OK)) continue;
-      
+
       // TD? Use whole pass for small segments?
       //fit = GFPassFit.Evaluate(spdvector[i].ndt);  // use fit to gfr for whole pass
       fit = it->PF.Evaluate(spdvector[i].ndt);
@@ -2325,7 +2325,7 @@ try {
          prev = tmp;          // store residual for next point
          nprev = spdvector[i].ndt;
       }
-      
+
       // store fit in A2
       //spdvector[i].data[A2] = fit;                   // fit to gfr (cycles of wl21)
       // store raw residual GFP-GFR (cycles of wl21) in A2
@@ -2471,7 +2471,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-bool GDCPass::foundGFoutlier(int i, int inew, 
+bool GDCPass::foundGFoutlier(int i, int inew,
    Stats<double>& pastSt, Stats<double>& futureSt)
    throw(Exception)
 {
@@ -2601,8 +2601,8 @@ try {
          << " " << time(i).printf(outFormat) << fixed << setprecision(3)
          << " mag=" << mag << " snr=" << snr;      // no endl
 
-      // 0. if WL slip here - ...? 
-   
+      // 0. if WL slip here - ...?
+
       // 1. slip must be non-trivial
       if(fabs(mag) <= minMag) isSlip=false;
       if(cfg(Debug) >= 6) oss << " (1)" << fabs(mag) << (isSlip?">":"<=") << minMag;
@@ -2643,7 +2643,7 @@ try {
          }
          magGFR = spdvector[i].data[L1] - (pGFRmPh.Average()+fGFRmPh.Average())/2.0;
          mtnGFR = fabs(magGFR)/::sqrt(pGFRmPh.Variance()+fGFRmPh.Variance());
-         
+
          if(cfg(Debug) >= 6)
             oss << "; GFR-GFP has mag: " << magGFR
                << ", |dmag|: " << fabs(mag-magGFR)
@@ -2685,7 +2685,7 @@ try {
                << ",snr=" << fabs(magFD)/fdStats.StdDev()
                << ",maxima=" << fdStats.Minimum() << "," << fdStats.Maximum();
       }
-   
+
       break;
    }  // end for(;;)
 
@@ -2755,7 +2755,7 @@ try {
             spdvector[k].data[P1] -= nwl;                                 // WLbias
             spdvector[k].data[L2] -= nwl * factor;                        // GFP
          }
-         
+
          // Add to slip list
          Slip newSlip(i);
          newSlip.NWL = nwl;
@@ -2827,7 +2827,7 @@ try {
       // is this point bad?
       if(!(spdvector[i].flag & OK)) {       // data is bad
          ok = false;
-         if(i == size() - 1) {    // but this is the last point 
+         if(i == size() - 1) {    // but this is the last point
             i++;
             ok = true;
          }
@@ -3108,7 +3108,7 @@ try {
          << " " << s.nbeg << " - " << s.nend
          << " biases " << fixed << setprecision(3) << s.bias1 << " " << s.bias2
          << endl;
- 
+
    learn["breaks found: " + msg]++;
 
    return SegList.insert(++sit,s); // insert puts s before ++sit

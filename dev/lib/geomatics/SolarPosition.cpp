@@ -10,7 +10,7 @@
 // within the U.S. Department of Defense. The U.S. Government retains all
 // rights to use, duplicate, distribute, disclose, or release this
 // software.
-// 
+//
 // Copyright 2008 The University of Texas at Austin
 // ======================================================================
 
@@ -20,7 +20,7 @@
 // GPSTk
 #include "DayTime.hpp"
 #include "Position.hpp"
-#include "icd_200_constants.hpp"       // TWO_PI
+#include "icd_gps_constants.hpp"       // TWO_PI
 #include "geometry.hpp"                // DEG_TO_RAD
 
 #include "SolarPosition.hpp"

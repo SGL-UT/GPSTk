@@ -23,20 +23,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -44,7 +44,7 @@
 // GPSTk includes
 #include "MiscMath.hpp"
 #include "GPSGeoid.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "geometry.hpp"
 #include "Xvt.hpp"
 // geomatics
@@ -75,7 +75,7 @@ namespace gpstk
       // nominal transmit time
       transmit = nomRecTime;     // receive time on receiver's clock
       transmit -= pr/geoid.c();  // correct for measured time of flight and Rx clock
-   
+
       // get the satellite position at the nominal time, computing and
       // correcting for the satellite clock bias and other delays
       try {
@@ -121,7 +121,7 @@ namespace gpstk
       // remove it here so clk bias and relativity can be used separately
       satclkbias = svPosVel.dtime * geoid.c() - relativity;
       satclkdrift = svPosVel.ddtime * geoid.c();
-   
+
       // correct for Earth rotation
       double sxyz[3], wt;
       rawrange = range(SatR,Rx);
@@ -134,7 +134,7 @@ namespace gpstk
       sxyz[1] = -::sin(wt)*SatV.X() + ::cos(wt)*SatV.Y();
       sxyz[2] = SatV.Z();
       SatV.setECEF(sxyz);
-   
+
       // geometric range, again
       rawrange = range(SatR,Rx);
 
@@ -178,7 +178,7 @@ namespace gpstk
          satLOSPCO = satLOSPCV = 0.0;
          SatPCOXYZ=Vector<double>(3,0.0);
       }
-   
+
       // ----------------------------------------------------------
       // other quanitites
       // direction cosines
@@ -186,13 +186,13 @@ namespace gpstk
       //cosines[1] = (Rx.Y()-SatR.Y())/rawrange;
       //cosines[2] = (Rx.Z()-SatR.Z())/rawrange;
       for(i=0; i<3; i++) cosines[i] = -S2R[i];            // receiver to satellite
-   
+
       // elevation and azimuth
       elevation = Rx.elevation(SatR);
       azimuth = Rx.azimuth(SatR);
       elevationGeodetic = Rx.elevationGeodetic(SatR);
       azimuthGeodetic = Rx.azimuthGeodetic(SatR);
-   
+
       // return corrected ephemeris range
       return (rawrange-satclkbias-relativity-relativity2-satLOSPCO+satLOSPCV);
 
@@ -200,7 +200,7 @@ namespace gpstk
    catch(gpstk::Exception& e) { GPSTK_RETHROW(e); }
 
    }  // end PreciseRange::ComputeAtTransmitTime
-   
+
    //------------------------------------------------------------------
    double RelativityCorrection(const Position& R, const Position& V)
    {
@@ -211,8 +211,8 @@ namespace gpstk
       double dtr = -2*(R.X()/C_GPS_M)*(V.X()/C_GPS_M)
                    -2*(R.Y()/C_GPS_M)*(V.Y()/C_GPS_M)
                    -2*(R.Z()/C_GPS_M)*(V.Z()/C_GPS_M);
-   
+
       return dtr;
    }
-   
+
 }  // namespace gpstk

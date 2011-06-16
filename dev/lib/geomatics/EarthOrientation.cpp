@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -49,7 +49,7 @@
 // system includes
 #include <fstream>
 // GPSTk
-#include "icd_200_constants.hpp"    // for TWO_PI
+#include "icd_gps_constants.hpp"    // for TWO_PI
 #include "EarthOrientation.hpp"
 
 //------------------------------------------------------------------------------------
@@ -201,11 +201,11 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    //                      2                           2
-   // xp(t)= A + B(t-ta) + SUM(Cj sin[2pi(t-ta)/Pj]) + SUM(Dj cos[2pi(t-ta)/Pj]) 
+   // xp(t)= A + B(t-ta) + SUM(Cj sin[2pi(t-ta)/Pj]) + SUM(Dj cos[2pi(t-ta)/Pj])
    //                     j=1                         j=1
    //
    //                      2                           2
-   // yp(t)= E + F(t-ta) + SUM(Gk sin[2pi(t-ta)/Qk]) + SUM(Hk cos[2pi(t-ta)/Qk]) 
+   // yp(t)= E + F(t-ta) + SUM(Gk sin[2pi(t-ta)/Qk]) + SUM(Hk cos[2pi(t-ta)/Qk])
    //                     k=1                         k=1
    //
    //                          4                           4
@@ -461,13 +461,13 @@ namespace gpstk
       it = mapMJD_EOP.begin();
       if(it == mapMJD_EOP.end())
          begMJD = -1;
-      else 
+      else
          begMJD = it->first;
 
       it = mapMJD_EOP.end();
       if(--it == mapMJD_EOP.end())
          endMJD = -1;
-      else 
+      else
          endMJD = it->first;
    }
 

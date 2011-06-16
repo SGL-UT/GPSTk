@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -40,7 +40,7 @@
 
 #include "StringUtils.hpp"
 #include "RinexObsID.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 #include "ObsUtils.hpp"
 
@@ -171,7 +171,7 @@ namespace gpstk
          wx.temperature = smod.temp;
          wx.temperatureSource = WxObservation::obsWx;
       }
-      else 
+      else
          wx.temperatureSource = WxObservation::noWx;;
 
       if (smod.pressSource)
@@ -179,7 +179,7 @@ namespace gpstk
          wx.pressure = smod.pressure;
          wx.pressureSource = WxObservation::obsWx;
       }
-      else 
+      else
          wx.pressureSource = WxObservation::noWx;;
 
       if (smod.humidSource)
@@ -187,9 +187,9 @@ namespace gpstk
          wx.humidity = smod.humidity;
          wx.humiditySource = WxObservation::obsWx;
       }
-      else 
+      else
          wx.humiditySource = WxObservation::noWx;
-         
+
       return wx;
    }
 
@@ -234,7 +234,7 @@ namespace gpstk
             obs.lockCount = obs_hint.lockCount+1;
       }
 
-      moe.obs[MDPObsEpoch::ObsKey(cc, rc)] = obs;   
+      moe.obs[MDPObsEpoch::ObsKey(cc, rc)] = obs;
    }
 
 
@@ -295,7 +295,7 @@ namespace gpstk
       pvt.v[1] = pben.navydot;
       pvt.v[2] = pben.navzdot;
       pvt.ddtime = pben.navtdot / C_GPS_M;
-      
+
       pvt.time.setGPS(week, pben.sow);
       pvt.timep = pvt.time + pvt.dtime;
 
@@ -303,7 +303,7 @@ namespace gpstk
       pvt.numSVs = (int)pben.numSV;
       pvt.pvtMode = 0;
       pvt.corrections = 0;
-      
+
       return pvt;
    }
 
@@ -345,7 +345,7 @@ namespace gpstk
 
          MDPObsEpoch moe_hint;
          MCIP mcip = hint.equal_range(cb.svid.id);
-         
+
          MDPEpoch::const_iterator k;
          for (k=mcip.first; k != mcip.second; k++)
             if (k->second.channel == moe.channel)
@@ -353,7 +353,7 @@ namespace gpstk
                moe_hint = k->second;
                break;
             }
-  
+
          for (int j=0; j<ats.numSubChan; j++)
          {
             const ATSData::SubChannelBlock& scb=cb.subChannels[j];
