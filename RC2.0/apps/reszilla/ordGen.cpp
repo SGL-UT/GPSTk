@@ -205,9 +205,9 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
       string mscfn = (mscFileOption.getValue())[0];
       MSCStream msc(mscfn.c_str(), ios::in);
       MSCData mscd;
-      // This is mostly brain dead in that it takes the last entry in the file and doesn't even
-      // consider times
-      while (msc >> mscd)
+      while (msc >> mscd && mscd.station != msid)
+         ;
+
          if (mscd.station == msid)
             antennaPos = mscd.coordinates;
    }

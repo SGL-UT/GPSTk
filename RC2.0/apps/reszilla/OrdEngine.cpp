@@ -65,10 +65,10 @@ OrdEngine::OrdEngine(
       exit(-1);
    }
 
-   ECEF ecef(antennaPos);
-   Geodetic geo(ecef, &gm);
-   tm.setReceiverHeight(geo.getAltitude());
-   tm.setReceiverLatitude(geo.getLatitude());
+   Position ecef(antennaPos);
+   Position geo(ecef, &gm); //FIND CORRECT SYNTAX FOR THIS CALL!
+   tm.setReceiverHeight(geo.getAltitude()); 
+   tm.setReceiverLatitude(geo.getGeodeticLatitude());		//Geodetic or Geocentric?
 }
 
 void OrdEngine::setMode(const ObsEpoch& obs)
