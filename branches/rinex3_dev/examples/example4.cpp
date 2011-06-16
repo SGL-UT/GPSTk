@@ -47,7 +47,7 @@
 #include "RinexMetStream.hpp"
 
 // Class for handling tropospheric models
-#include "TropModel.hpp" 
+#include "TropModel.hpp"
 
 // Class for storing "broadcast-type" ephemerides
 #include "GPSEphemerisStore.hpp"
@@ -56,7 +56,7 @@
 #include "PRSolution.hpp"
 
 // File defining GPS system constants
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -67,36 +67,36 @@ int main(int argc, char *argv[])
    GPSEphemerisStore bcestore;
    PRSolution raimSolver;
 
-   // Object for void-type tropospheric model (in case no meteorological RINEX 
+   // Object for void-type tropospheric model (in case no meteorological RINEX
    // is available)
    ZeroTropModel noTropModel;
 
    // Object for GG-type tropospheric model (Goad and Goodman, 1974)
    GGTropModel ggTropModel;   // Default constructor => default values for model
-   // Pointer to one of the two available tropospheric models. It points to 
+   // Pointer to one of the two available tropospheric models. It points to
    // the void model by default
    TropModel *tropModelPtr=&noTropModel;
 
 
-   // This verifies the ammount of command-line parameters given and prints a help 
+   // This verifies the ammount of command-line parameters given and prints a help
    // message, if necessary
    if ((argc < 3) || (argc>4))
    {
-      cerr <<  "Usage:" << endl; 
+      cerr <<  "Usage:" << endl;
       cerr << "   " << argv[0] << " <RINEX Obs file>  <RINEX Nav file>  [<RINEX Met file>]" << endl;
       exit (-1);
    }
 
    // Let's compute an useful constant (also found in "icd_200_constants.hpp")
    const double gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
-   
+
    try
-   {  
+   {
       // Read nav file and store unique list of ephemeredes
       RinexNavStream rnffs(argv[2]);    // Open ephemerides data file
       RinexNavData rne;
       RinexNavHeader hdr;
-      
+
       // Let's read the header (may be skipped)
       rnffs >> hdr;
 
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
       while (rnffs >> rne) bcestore.addEphemeris(rne);
       // Setting the criteria for looking up ephemeris
       bcestore.SearchNear();
-      
+
       // If provided, open and store met file into a linked list.
       list<RinexMetData> rml;
       if (argc==4)
@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
          RinexMetHeader rmh;
          // Let's read the header (may be skipped)
          rms >> rmh;
-         
+
          RinexMetData rmd;
-         // If meteorological data is provided, let's change pointer to 
+         // If meteorological data is provided, let's change pointer to
          // a GG-model object
          tropModelPtr=&ggTropModel;
          // All data is read into "rml", a meteorological data linked list
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
       // Let's read the header (may be skipped)
       roffs >> roh;
 
-      // Defining iterator "mi" for meteorological data linked list "rml", and 
+      // Defining iterator "mi" for meteorological data linked list "rml", and
       // set it to the beginning
       list<RinexMetData>::iterator mi=rml.begin();
 
@@ -142,9 +142,9 @@ int main(int argc, char *argv[])
       // Let's process all lines of observation data, one by one
       while (roffs >> rod)
       {
-         
-         // Find a weather point. Only if a meteorological RINEX file was 
-         // provided, the meteorological data linked list "rml" is neither empty 
+
+         // Find a weather point. Only if a meteorological RINEX file was
+         // provided, the meteorological data linked list "rml" is neither empty
          // or at its end, and the time of meteorological records are below
          // observation data epoch.
          while ( (argc==4) &&
@@ -161,23 +161,23 @@ int main(int argc, char *argv[])
                                    (*mi).data[RinexMetHeader::PR],
                                    (*mi).data[RinexMetHeader::HR]);
          }
-         
 
-         // Apply editing criteria 
+
+         // Apply editing criteria
          if  (rod.epochFlag == 0 || rod.epochFlag == 1)   // Begin usable data
 	     {
 	        vector<SatID> prnVec;
             vector<double> rangeVec;
 
             // Let's define the "it" iterator to visit the observations PRN map
-            // RinexSatMap is a map from SatID to RinexObsTypeMap: 
+            // RinexSatMap is a map from SatID to RinexObsTypeMap:
             //      std::map<SatID, RinexObsTypeMap>
             RinexObsData::RinexSatMap::const_iterator it;
 
-            // This part gets the PRN numbers and ionosphere-corrected 
-            // pseudoranges for the current epoch. They are correspondly fed 
+            // This part gets the PRN numbers and ionosphere-corrected
+            // pseudoranges for the current epoch. They are correspondly fed
             // into "prnVec" and "rangeVec"
-            // "obs" is a public attribute of RinexObsData to get the map 
+            // "obs" is a public attribute of RinexObsData to get the map
             // of observations
             for (it = rod.obs.begin(); it!= rod.obs.end(); it++)
             {
@@ -192,10 +192,10 @@ int main(int argc, char *argv[])
                //
                //    What did we do in the former code lines?:
                //
-               // For each observation data epoch (rod), if valid 
+               // For each observation data epoch (rod), if valid
                // (rod.epochFlag = 0 or 1):
-               // - use "it" iterator to visit the RinexObsTypeMap of each 
-               //   satellite, 
+               // - use "it" iterator to visit the RinexObsTypeMap of each
+               //   satellite,
                // - and then use "itP1" and "itP2" iterators to visit the
                //   observation data (RinexDatum) according to their type
                //  (RinexObsType)
@@ -203,41 +203,41 @@ int main(int argc, char *argv[])
                /////////////////////////////////////////////////
 
 
-               // The "second" field of a RinexPrnMap (it) is a 
+               // The "second" field of a RinexPrnMap (it) is a
                // RinexObsTypeMap (otmap)
                otmap = (*it).second;
 
-               // Let's find a P1 observation inside the RinexObsTypeMap that 
+               // Let's find a P1 observation inside the RinexObsTypeMap that
                // is "otmap"
                itP1 = otmap.find(RinexObsHeader::P1);
 
-               // If "itP1" is not the last type of observation, there may be 
-               // a P2 observation and the double-frequency ionospheric 
+               // If "itP1" is not the last type of observation, there may be
+               // a P2 observation and the double-frequency ionospheric
                // corrections may be applied
                if (itP1!=otmap.end())
 	           {
                   double ionocorr = 0;
 
-                  // Now, let's find a P2 observation inside the 
+                  // Now, let's find a P2 observation inside the
                   // RinexObsTypeMap that is "otmap"
                   itP2 = otmap.find(RinexObsHeader::P2);
                   // If we indeed found a P2 observation, let's apply the
                   // ionospheric corrections
-                  if (itP2!=otmap.end()) 
+                  if (itP2!=otmap.end())
                      // The "second" part of a RinexObsTypeMap is a RinexDatum,
-                     // whose public attribute "data" indeed holds the actual 
+                     // whose public attribute "data" indeed holds the actual
                      // data point
                      ionocorr = 1./(1.-gamma)*((*itP1).second.data-(*itP2).second.data);
-                  // Now, we include the current PRN number in the first part 
+                  // Now, we include the current PRN number in the first part
                   // of "it" (a RinexPrnMap) into the vector holding PRN numbers.
-                  // All satellites in view at this epoch that also have P1 and 
+                  // All satellites in view at this epoch that also have P1 and
                   // P2 observations will be included
                   prnVec.push_back((*it).first);
                   // The same is done for the vector of doubles holding the
                   // corrected ranges
                   rangeVec.push_back((*itP1).second.data-ionocorr);
 
-                  // WARNING: Please note that so far no further correction is 
+                  // WARNING: Please note that so far no further correction is
                   // done on data: Relativistic effects, tropospheric correction,
                   // instrumental delays, etc.
 	           }
@@ -245,28 +245,28 @@ int main(int argc, char *argv[])
             }
 
             // The default constructor for PRSolution objects (like "raimSolver")
-            // is to set a RMSLimit of 6.5. We change that here. With this value 
+            // is to set a RMSLimit of 6.5. We change that here. With this value
             // of 3e6 the solution will have a lot more dispersion
             raimSolver.RMSLimit = 3e6;
 
-            // In order to compute positions we need the current time, the 
+            // In order to compute positions we need the current time, the
             // vector of visible satellites, the vector of corresponding ranges,
             // the object containing satellite ephemerides and a pointer to the
             // tropospheric model to be applied
 	        raimSolver.RAIMCompute(rod.time,prnVec,rangeVec, bcestore,  tropModelPtr);
 
             // Note: Given that the default constructor sets public attribute
-            // "Algebraic" to FALSE, a linearized least squares algorithm will 
+            // "Algebraic" to FALSE, a linearized least squares algorithm will
             // be used to get the solutions.
-            // Also, the default constructor sets ResidualCriterion to true, so 
-            // the rejection criterion is based on RMS residual of fit, instead 
+            // Also, the default constructor sets ResidualCriterion to true, so
+            // the rejection criterion is based on RMS residual of fit, instead
             // of RMS distance from an a priori position.
 
             // If we got a valid solution, let's print it
 
             if (raimSolver.isValid())
             {
-               // Vector "Solution" holds the coordinates, expressed in meters 
+               // Vector "Solution" holds the coordinates, expressed in meters
                // in an Earth Centered, Earth Fixed (ECEF) reference frame. The
                // order is x, y, z  (as all ECEF objects)
                cout << setprecision(12) << raimSolver.Solution[0] << " " ;
@@ -274,15 +274,15 @@ int main(int argc, char *argv[])
                cout << raimSolver.Solution[2];
                cout << endl ;
             }
-            
- 
+
+
  	     } // End usable data
 
       } // End loop through each epoch
    }
    catch(Exception& e)
    {
-      cerr << e << endl;     
+      cerr << e << endl;
    }
    catch (...)
    {
@@ -291,7 +291,7 @@ int main(int argc, char *argv[])
 
 
       exit(0);
-      
+
 }
 
 

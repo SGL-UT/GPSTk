@@ -33,7 +33,7 @@
 
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -60,7 +60,7 @@ using namespace gpstk;
       cout << setw(23) << setprecision(5) << diffTolerance;        \
       cout << endl;                                                \
       cumulativeResult = cumulativeResult &&                       \
-                         ( fabs(tdiff)<diffTolerance );           
+                         ( fabs(tdiff)<diffTolerance );
 
 
 /// returns 0 if all tests pass
@@ -73,19 +73,19 @@ int main()
          // Set the DayTimes using Year, Month, Day, Hour, Minute, Second.
       gpstk::DayTime dtorig(2000,12,1,0,0,0.0), dtcopy;
 
-         // Used to time the test.      
+         // Used to time the test.
       DayTime startTime;
       bool cumulativeResult = true;
       double tdiff;
-      long totalIncrements=0; 
+      long totalIncrements=0;
       long incCountUse;
-      
+
       cout << setw(18) << "Increment operator";
       cout << setw(18) << "# of increments";
       cout << setw(22) << "Difference (seconds)";
       cout << setw(21) << "Difference (meters)";
       cout << setw(23) << "Acceptable Diff (sec)";
-      
+
 
       cout << endl;
 
@@ -105,25 +105,25 @@ int main()
 
       TEST_METHOD(addMilliSeconds, 1000,         1, 1e-15)
       TEST_METHOD(addMilliSeconds, 60*1000,      1, 1e-15)
-      TEST_METHOD(addMilliSeconds, 3600*1000,    1, 1e-15) 
+      TEST_METHOD(addMilliSeconds, 3600*1000,    1, 1e-15)
       TEST_METHOD(addMilliSeconds, 86400*1000,   1, 1e-15)
       TEST_METHOD(addMilliSeconds, 86400*2*1000, 1, 1e-15)
       TEST_METHOD(addMilliSeconds, 86400*7*1000, 1, 1e-15)
       cout << endl;
-      
+
       TEST_METHOD(addMicroSeconds, 1000*1000,      1, 1e-3)
       TEST_METHOD(addMicroSeconds, 60*1000*1000,   1, 1e-3)
       TEST_METHOD(addMicroSeconds, 5*60*1000*1000, 1, 1e-3)
       cout << endl;
-      
+
       DayTime endTime;
 
-      
+
       cout << endl << setprecision(4);
       cout << endTime.printf("Completed on %B %d, %Y %H:%02M:%02S") << endl;
       cout << "Processing time " << endTime-startTime << " seconds." << endl;
       cout << endl;
-      
+
       int ret = 0;
       if (cumulativeResult)
          cout << "All comparison tests PASSED." << endl;
@@ -134,7 +134,7 @@ int main()
       }
 
       cout << endl;
-      
+
       return ret;
    }
    catch(gpstk::Exception& e)
