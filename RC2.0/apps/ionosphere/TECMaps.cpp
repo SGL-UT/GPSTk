@@ -33,7 +33,7 @@
 #include <cstring>
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
@@ -90,10 +90,10 @@ RinexObsHeader::RinexObsType LAot,LOot;
    // geoid
 WGS84Geoid WGS84;
    // Start and stop times
-DayTime BegTime,EndTime;
+CommonTime BegTime,EndTime;
    // processing
 double IonoHt,overallBias;
-DayTime EarliestTime;
+CommonTime EarliestTime;
 VTECMap vtecmap;
 MUFMap mufmap;
 F0F2Map f0f2map;
@@ -112,7 +112,7 @@ int Initialize(void) throw(Exception);
 int ProcessStations(void) throw(Exception);
 void ProcessObsAndComputeMap(void) throw(Exception);
 void OutputGridToFile(VTECMap& vmap, string filename) throw(Exception);
-void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n)
+void OutputMapToFile(VTECMap& vtmap, string filename, CommonTime t, int n)
    throw(Exception);
 void AddStation(string& filename) throw(Exception);
 int ProcessHeader(Station& S) throw(Exception);
@@ -126,10 +126,10 @@ int main(int argc, char **argv)
 try {
    int iret;
    clock_t totaltime=clock(); // timer
-   DayTime CurrEpoch;
+   CommonTime CurrEpoch;
 
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
 
       // Title description and run time
    CurrEpoch.setLocalTime();
@@ -780,9 +780,9 @@ try {
          for(i=0; i<NavFiles.size(); i++)
             oflog << "   " << NavFiles[i] << endl;
       }
-      if(BegTime > DayTime::BEGINNING_OF_TIME) oflog << " Begin time is "
+      if(BegTime > CommonTime::BEGINNING_OF_TIME) oflog << " Begin time is "
          << BegTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
-      if(EndTime < DayTime::END_OF_TIME) oflog << " End   time is "
+      if(EndTime < CommonTime::END_OF_TIME) oflog << " End   time is "
          << EndTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
       oflog << " Processing:\n";
       oflog << "  Primary Title is " << Title1 << endl;
@@ -1087,7 +1087,7 @@ try {
       // loop over all epochs in all files
    do {
          // read the data for the next (earliest in future) observation epoch
-      EarliestTime = DayTime(DayTime::END_OF_TIME);
+      EarliestTime = CommonTime(CommonTime::END_OF_TIME);
       for(nfile=0; nfile<Stations.size(); nfile++) {
          iret = ReadNextObs(Stations[nfile]);
          if(iret < 0) {            // set file 'inactive'
@@ -1100,7 +1100,7 @@ try {
       }
 
          // if no more data available, EarliestTime will never get set
-      if(EarliestTime == DayTime(DayTime::END_OF_TIME)) break;
+      if(EarliestTime == CommonTime(CommonTime::END_OF_TIME)) break;
 
          // time limits
       if(EarliestTime < BegTime) {
@@ -1187,7 +1187,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // output map
-void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n) throw(Exception)
+void OutputMapToFile(VTECMap& vtmap, string filename, CommonTime t, int n) throw(Exception)
 {
 try {
       // make this a function, pass it the name MUF etc, map and time
@@ -1222,7 +1222,7 @@ try {
    s.filename = name;
    for(int i=1; i<33; i++) {
       RinexSatID p(i,SatID::systemGPS);
-      s.InitTime[p] = DayTime::BEGINNING_OF_TIME;
+      s.InitTime[p] = CommonTime::BEGINNING_OF_TIME;
    }
    Stations.push_back(s);
 }
@@ -1386,7 +1386,7 @@ try {
       }
    
          // save first time
-      if(S.InitTime[sat] == DayTime::BEGINNING_OF_TIME) {
+      if(S.InitTime[sat] == CommonTime::BEGINNING_OF_TIME) {
          S.InitTime[sat] = S.robs.time;
       }
       
