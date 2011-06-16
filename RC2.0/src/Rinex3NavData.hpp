@@ -122,8 +122,9 @@ namespace gpstk
      short PRNID;         ///< SV PRN ID
      SatID sat;           ///< SatID (from PRNID & satSys)
      long HOWtime;        ///< Time of subframe 1-3 (sec of week)
-     short weeknum;       ///< GPS full week number that corresponds to the HOWtime of SF1
+     short weeknum;       ///< GPS full week that corresponds to the HOWtime of SF1
                           ///< (N.B.: in RINEX files, week number corresponds to ToE.)
+                          ///< Not GLO
      double accuracy;     ///< SV accuracy (m)
      short health;        ///< SV health
      //@}
@@ -143,7 +144,7 @@ namespace gpstk
      double  TauN;        ///< SV clock bias (sec)
      double  GammaN;      ///< SV relative frequency bias
      double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
-     short   MFtime;      ///< Message frame time (sec of UTC week) <short>
+     int     MFtime;      ///< Message frame time (sec of UTC week) <short>
      short   freqNum;     ///< Frequency number (-7..+12)
      double  ageOfInfo;   ///< Age of oper. information (days)
      //@}

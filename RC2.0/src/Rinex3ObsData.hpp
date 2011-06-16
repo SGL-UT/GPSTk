@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3ObsData.hpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id: Rinex3ObsData.hpp 10 2011-06-15 21:38:12Z btolman $"
 
 //============================================================================
 //
@@ -86,7 +86,8 @@ namespace gpstk
       short ssi;    ///< See the RINEX Spec. for an explanation.
     };
 
-    /// map from RinexSatID to RinexDatum
+    /// map from RinexSatID to RinexDatum; order of the data matches the
+    /// order of ObsIDs in the header
     typedef std::map<RinexSatID, vector<RinexDatum> > DataMap;
 
     CommonTime time;  ///< the time corresponding to the observations
@@ -119,6 +120,9 @@ namespace gpstk
      * in the map.
      */
     virtual void dump(std::ostream& s) const;
+
+    /// Another dump, using information from the header
+    void dump(ostream& s, Rinex3ObsHeader& head) const;
 
   protected:
 

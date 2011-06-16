@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3ObsData.cpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id: Rinex3ObsData.cpp 7 2011-06-13 21:10:57Z btolman $"
 
 //============================================================================
 //
@@ -43,6 +43,7 @@
 
 #include "StringUtils.hpp"
 #include "CivilTime.hpp"
+#include "TimeString.hpp"
 #include "ObsID.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsData.hpp"
@@ -295,7 +296,7 @@ namespace gpstk
       double ds = 0;
       if (sec >= 60.) { ds = sec; sec = 0.0; }
 
-      CommonTime rv = CivilTime(year, month, day, hour, min, sec).convertToCommonTime();
+      CommonTime rv = CivilTime(year,month,day,hour,min,sec).convertToCommonTime();
       if (ds != 0) rv += ds;
 
       return rv;
@@ -353,8 +354,8 @@ namespace gpstk
 
     if (epochFlag == 0 || epochFlag == 1) 
     {
-      CivilTime civtime(time);
-      s << "Sat " << setw(2) << civtime.printf("%02m/%02d/%04Y %02H:%02M:%02S %P") << endl;;
+      //? s << "Sat " << setw(2) << printTime(time,"%02m/%02d/%04Y %02H:%02M:%02S %P")
+      //   << endl;
       DataMap::const_iterator jt;
       for (jt = obs.begin(); jt != obs.end(); jt++) 
       {
@@ -373,5 +374,36 @@ namespace gpstk
       auxHeader.dump(s);
     }
   }
+
+   void Rinex3ObsData::dump(ostream& os, Rinex3ObsHeader& head) const
+   {
+      os << "Dump of Rinex3ObsData: "
+         << printTime(time,"%4F/%w/%10.3g = %04Y/%02m/%02d %02H:%02M:%02S")
+         << " flag " << epochFlag << " NSVs " << numSVs
+         << fixed << setprecision(6) << " clk " << clockOffset;
+
+      if(obs.empty()) { os << " : EMPTY" << endl; return; }
+      else os << endl;
+
+      if(epochFlag >= 2) {
+         os << "Auxiliary header:\n";
+         auxHeader.dump(os);
+         return;
+      }
+
+      for(DataMap::const_iterator jt=obs.begin(); jt != obs.end(); jt++) {
+         RinexSatID sat(jt->first);
+         const vector<ObsID> types(head.mapObsTypes[sat.toString().substr(0,1)]);
+         os << " " << sat.toString() << fixed << setprecision(3);
+         for(int i=0; i<jt->second.size(); i++)
+            os << " " << setw(13) << jt->second[i].data
+               << "/" << jt->second[i].lli
+               << "/" << jt->second[i].ssi
+               << "/" << asRinex3ID(types[i])
+               ;
+         os << endl;
+      }
+
+   }
 
 } // namespace

@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3NavData.cpp 1812 2009-03-19 22:37:33Z raindave $"
+#pragma ident "$Id: Rinex3NavData.cpp 7 2011-06-13 21:10:57Z btolman $"
 
 
 //============================================================================
@@ -45,6 +45,7 @@
 
 #include "StringUtils.hpp"
 #include "CivilTime.hpp"
+#include "TimeString.hpp"
 #include "GPSWeekSecond.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavStream.hpp"
@@ -250,15 +251,30 @@ namespace gpstk
 
    void Rinex3NavData::dump(ostream& s) const
    {
-      s << "SatSys: " << satSys
-        << " PRN: " << setw(2) << PRNID
-        << " TOE: " << time
-        << " TOC: " << setw(4) << weeknum << " " 
-        << fixed << setw(10) << setprecision(3) << Toc
-        << " IODE: " << setw(4) << int(IODE)            // IODE should be int
-        << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
-        << endl;
-        //<< ios::hex << IODE << " HOWtime: " << HOWtime << endl; ?? IODE is double
+      if(satSys == "G")
+         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
+            << " TOE: " << printTime(time,"%4F %10.3g")
+            << " TOC: " << setw(4) << weeknum << " " 
+            << fixed << setw(10) << setprecision(3) << Toc
+            << " codeflags: " << setw(3) << codeflgs
+            << " L2Pflag: " << setw(3) << L2Pdata
+            << " IODC: " << setw(4) << int(IODC)
+            << " IODE: " << setw(4) << int(IODE)            // IODE should be int
+            << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
+            << endl;
+      else if(satSys == "R")
+         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
+            << " freq: " << setw(2) << freqNum
+            << " hlth: " << setw(2) << health
+            << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
+            << " MFtime: " << setw(6) << MFtime
+            << " TauN: " << scientific << setw(19) << setprecision(12) << TauN
+            << " GammaN: " << setw(19) << GammaN
+            << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo
+            << endl;
+      else
+         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
+            << " (unknown system: " << satSys << ")" << endl;
    }
 
    Rinex3NavData::operator EngEphemeris() const throw()
@@ -657,9 +673,9 @@ namespace gpstk
          }
          else if ( satSys == "R" )
          {
-           TauN   =        StringUtils::for2doub(currentLine.substr(23,19));
-           GammaN =        StringUtils::for2doub(currentLine.substr(42,19));
-           MFtime = (short)StringUtils::for2doub(currentLine.substr(61,19));
+           TauN   =      StringUtils::for2doub(currentLine.substr(23,19));
+           GammaN =      StringUtils::for2doub(currentLine.substr(42,19));
+           MFtime = (int)StringUtils::for2doub(currentLine.substr(61,19));
          }
       }
       catch (std::exception &e)

@@ -83,24 +83,25 @@ namespace gpstk
      /// This function dumps the contents of the header.
      virtual void dump(std::ostream& s) const;
 
-     /// Tell me, Am I valid?
+     /// All 'valid..' bits found in this header
      unsigned long valid;
 
      /// These are validity bits used in checking the RINEX NAV header.
      enum validBits
      {
-       validVersion     = 0x01,         ///< Set if the RINEX 3 version is valid.
-       validRunBy       = 0x02,         ///< Set if the Run-by value is valid.
-       validComment     = 0x04,         ///< Set if the Comments are valid -- very subjective.
+       validVersion     = 0x01,         ///< Set if RINEX 3 version is valid.
+       validRunBy       = 0x02,         ///< Set if Run-by value is valid.
+       validComment     = 0x04,         ///< Set if Comments are valid
        validIonoCorrGPS = 0x08,         ///< Set if GPS Iono Correction data is valid.
        validIonoCorrGal = 0x010,        ///< Set if Gal Iono Correction data is valid.
-       validTimeSysCorr = 0x020,        ///< Set if the Time System Correction is valid.
+       validTimeSysCorr = 0x020,        ///< Set if Time System Correction is valid.
        validLeapSeconds = 0x040,        ///< Set if the Leap Seconds value is valid.
        validEoH         = 0x080000000,  ///< Set if the End of Header is valid.
 
        /// This bitset checks that all required header items are available
-       /// for a Rinex 3.0 (3.00) version file.
-       allValid30 = 0x080000003
+       /// for a Rinex 3 (3.00 or 3.01) version file.
+       allValid30 = 0x080000003,
+       allValid301 = 0x080000003,
      };
 
      /// Enum of Time System Correction types.
@@ -153,6 +154,7 @@ namespace gpstk
      static const std::string stringComment;     // "COMMENT"
      static const std::string stringIonoCorr;    // "IONOSPHERIC CORR"
      static const std::string stringTimeSysCorr; // "TIME SYSTEM CORR"
+     static const std::string stringCorrSysTime; // "CORR TO SYSTEM TIME"  // R2.10
      static const std::string stringLeapSeconds; // "LEAP SECONDS"
      static const std::string stringEoH;         // "END OF HEADER"
      //@}

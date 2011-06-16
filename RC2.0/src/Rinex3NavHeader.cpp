@@ -46,6 +46,7 @@
 #include "StringUtils.hpp"
 #include "SystemTime.hpp"
 #include "CivilTime.hpp"
+#include "TimeString.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavStream.hpp"
 
@@ -61,6 +62,7 @@ namespace gpstk
   const string Rinex3NavHeader::stringComment     = "COMMENT";
   const string Rinex3NavHeader::stringIonoCorr    = "IONOSPHERIC CORR";
   const string Rinex3NavHeader::stringTimeSysCorr = "TIME SYSTEM CORR";
+  const string Rinex3NavHeader::stringCorrSysTime = "CORR TO SYSTEM TIME"; // R2.10
   const string Rinex3NavHeader::stringLeapSeconds = "LEAP SECONDS";
   const string Rinex3NavHeader::stringEoH         = "END OF HEADER";
 
@@ -109,17 +111,16 @@ namespace gpstk
 
     unsigned long allValid;
     if (version == 3.0) allValid = allValid30;
+    else if (version == 3.01) allValid = allValid301;
     else
     {
-      FFStreamError err("Unknown RINEX version: " + asString(version,3));
-      err.addText("Make sure to set the version correctly.");
+      FFStreamError err("Unknown RINEX version: " + asString(version,4));
       GPSTK_THROW(err);
     }
 
     if ((valid & allValid) != allValid)
     {
       FFStreamError err("Incomplete or invalid header.");
-      err.addText("Make sure you set all header valid bits for all of the available data.");
       GPSTK_THROW(err);
     }
 
@@ -141,7 +142,7 @@ namespace gpstk
       line  = leftJustify(fileProgram,20);
       line += leftJustify(fileAgency ,20);
       SystemTime sysTime;
-      string curDate = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
+      string curDate = printTime(sysTime,"%04Y%02m%02d %02H%02M%02S %P");
       line += leftJustify(curDate, 20);
       line += leftJustify(stringRunBy,20);
       strm << line << endl;
@@ -353,6 +354,21 @@ namespace gpstk
         setTimeSysCorrFromString(timeSysCorrType);
         addTimeSysCorr(info);
       }
+      else if(thisLabel == stringCorrSysTime)      // R2.11 but Javad uses it in 3.01
+      {
+        TimeSysCorrInfo info;
+        info.timeSysCorrType = "GLGP";
+        info.A0 = gpstk::StringUtils::for2doub(line.substr(21,19));
+        info.A1 = 0.0;
+        info.timeSysRefTime  = 0;
+        info.timeSysRefWeek  = 0;
+        info.timeSysCorrSBAS = "    ";
+        info.timeSysUTCid    = 0;
+        valid |= validTimeSysCorr;
+
+        setTimeSysCorrFromString("GLGP");
+        addTimeSysCorr(info);
+      }
       else if (thisLabel == stringLeapSeconds)
       {
         leapSeconds = asInt(line.substr(0,6));
@@ -364,16 +380,17 @@ namespace gpstk
       }
       else
       {
-        throw(FFStreamError("Unknown header label at line " + 
+        throw(FFStreamError("Unknown header label >" + thisLabel + "< at line " + 
                             asString<size_t>(strm.lineNumber)));
       }
     }
 
     unsigned long allValid;
     if (version == 3.0) allValid = allValid30;
+    else if (version == 3.01) allValid = allValid301;
     else
     {
-      FFStreamError e("Unknown or unsupported RINEX version " + asString(version));
+      FFStreamError e("Unknown or unsupported RINEX version " + asString(version,2));
       GPSTK_THROW(e);
     }
 
@@ -394,11 +411,13 @@ namespace gpstk
   {
     int i;
 
-    s << "---------------------------------- REQUIRED ----------------------------------\n";
+    s << "---------------------------------- REQUIRED "
+      << "----------------------------------\n";
 
     s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
-      << ",  File type " << fileType << ".\n";
-    s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
+      << ",  File type " << fileType << ", System " << satSys << ".\n";
+    s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency
+      << endl;
 
     s << "(This header is ";
     if ((valid & allValid30) == allValid30) s << "VALID 3.0";
@@ -409,7 +428,8 @@ namespace gpstk
     if (!(valid & validRunBy  )) s << " Run by is NOT valid\n";
     if (!(valid & validEoH    )) s << " End of Header is NOT valid\n";
 
-    s << "---------------------------------- OPTIONAL ----------------------------------\n";
+    s << "---------------------------------- OPTIONAL "
+      << "----------------------------------\n";
 
     if (valid & validIonoCorrGal)
     {
@@ -429,7 +449,7 @@ namespace gpstk
     }
 
     if ( !(valid & validIonoCorrGal) && !(valid & validIonoCorrGPS) )
-      s << "Iono Corr is NOT valid\n";
+      s << " Iono Corr is NOT valid\n";
 
     if(valid & validTimeSysCorr)
     {
