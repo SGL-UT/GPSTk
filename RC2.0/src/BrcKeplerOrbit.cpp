@@ -50,8 +50,15 @@
 
 #include "StringUtils.hpp"
 #include "icd_gps_constants.hpp"
-#include "GPSGeoid.hpp"
+#include "GPSEllipsoid.hpp"
 #include "BrcKeplerOrbit.hpp"
+
+//Additional Added classes
+#include "MathBase.hpp"
+#include "TimeSystem.hpp"
+#include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
 
 #include <cmath>
 
@@ -72,7 +79,7 @@ namespace gpstk
       healthy = false;     
      
       Cuc = Cus = Crc = Crs = Cic = Cis = Toe = M0 = dn = dndot = 
-	 ecc = A = Ahalf =Adot = OMEGA0 = i0 = w = OMEGAdot = idot = accuracy = 0.0;
+	   ecc = A = Ahalf =Adot = OMEGA0 = i0 = w = OMEGAdot = idot = accuracy = 0.0;
    }
 
    BrcKeplerOrbit::BrcKeplerOrbit(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
@@ -123,31 +130,31 @@ namespace gpstk
         const double wArg, const double OMEGAdotARg, const double idotArg )
    {
 	SatSystemID = SatSystemIDArg;
-	obsID = obsIDArg;
-	PRNID = PRNIDArg;
-	Toe = ToeArg;
-	weeknum = weeknumArg;
-	accuracy = accuracyArg;
-	healthy = healthyArg;
-	Cuc = CucArg;
-	Cus = CusArg;
-	Crc = CrcArg;
-	Crs = CrsArg;
-	Cic = CicArg;
-	Cis = CisArg;
-	M0 = M0Arg;
-	dn = dnArg;
-	dndot = dndotArg;
-	ecc = eccArg;
-	A = AArg;
-   Ahalf = AhalfArg;
-	Adot = AdotArg;
-	OMEGA0 = OMEGA0Arg;
-	i0 = i0Arg;
-	w = wArg;
-	OMEGAdot = OMEGAdotARg;
-	idot = idotArg;
-	dataLoaded = true;
+	obsID       = obsIDArg;
+	PRNID       = PRNIDArg;
+	Toe         = ToeArg;
+	weeknum     = weeknumArg;
+	accuracy    = accuracyArg;
+	healthy     = healthyArg;
+	Cuc         = CucArg;
+	Cus         = CusArg;
+	Crc         = CrcArg;
+	Crs         = CrsArg;
+	Cic         = CicArg;
+	Cis         = CisArg;
+	M0          = M0Arg;
+	dn          = dnArg;
+	dndot       = dndotArg;
+	ecc         = eccArg;
+	A           = AArg;
+   Ahalf       = AhalfArg;
+	Adot        = AdotArg;
+	OMEGA0      = OMEGA0Arg;
+	i0          = i0Arg;
+	w           = wArg;
+	OMEGAdot    = OMEGAdotARg;
+	idot        = idotArg;
+	dataLoaded  = true;
    }
 
    void BrcKeplerOrbit::loadData(const ObsID obsIDArg, const short PRNIDArg, const short fullweeknum,
@@ -225,7 +232,7 @@ namespace gpstk
       return(dataLoaded);
    }
 
-   Xv BrcKeplerOrbit :: svXv(const DayTime& t) const
+   Xv BrcKeplerOrbit :: svXv(const CommonTime& t) const
       throw(InvalidRequest)
    {
       Xv sv;
@@ -243,9 +250,9 @@ namespace gpstk
       double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
       double xef,yef,zef,dek,dlk,div,domk,duv,drv;
       double dxp,dyp,vxef,vyef,vzef;
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
 
-      double sqrtgm = sqrt(geoid.gm());
+      double sqrtgm = sqrt(ell.gm());
 
          // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
@@ -257,7 +264,8 @@ namespace gpstk
 
          // Compute time since ephemeris & clock epochs
       elapte = t - getOrbitEpoch();
- 
+      //CommonTime orbEp = getOrbitEpoch();
+      //elapte = t - orbEp;
 
          // Compute mean motion
        amm  = (sqrtgm / (A*Ahalf)) + dn;
@@ -311,8 +319,8 @@ namespace gpstk
       AINC = i0 + tdrinc * elapte  +  di;
 
          //  Longitude of ascending node (ANLON)
-         ANLON = OMEGA0 + (OMEGAdot - geoid.angVelocity()) *
-            elapte - geoid.angVelocity() * Toe;
+         ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
+            elapte - ell.angVelocity() * Toe;
 
          // In plane location
       cosu = cos( U );
@@ -341,7 +349,7 @@ namespace gpstk
       dlk = Ahalf * q * sqrtgm / (R*R);
       div = tdrinc - 2.0e0 * dlk *
          ( Cic  * s2al - Cis * c2al );
-      domk = OMEGAdot - geoid.angVelocity();
+      domk = OMEGAdot - ell.angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al) );
       drv = A * lecc * dek * sinea - 2.e0 * dlk *
          ( Crc * s2al - Crs * c2al );
@@ -364,11 +372,46 @@ namespace gpstk
       return sv;
    }
 
-   DayTime BrcKeplerOrbit::getOrbitEpoch() const
+   double BrcKeplerOrbit::svRelativity(const CommonTime& t) const
+      throw( InvalidRequest )
+   {
+      GPSEllipsoid ell;
+      double twoPI = 2.0e0 * PI;
+      double sqrtgm = SQRT(ell.gm());
+      double elapte = t - getOrbitEpoch();
+      double amm  = (sqrtgm / (A*Ahalf)) + dn;
+      double meana,F,G,delea;
+      
+
+      meana = M0 + elapte * amm; 
+      meana = fmod(meana, twoPI);
+      double ea = meana + ecc * sin(meana);
+
+      int loop_cnt = 1;
+      do  {
+         F = meana - ( ea - ecc * sin(ea));
+         G = 1.0 - ecc * cos(ea);
+         delea = F/G;
+         ea = ea + delea;
+         loop_cnt++;
+      } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      double dtr = REL_CONST * ecc * Ahalf * sin(ea);
+      return dtr;
+   }
+
+   CommonTime BrcKeplerOrbit::getOrbitEpoch() const
       throw(InvalidRequest)
    {
-      DayTime toReturn(0.L);
-         toReturn.setGPSfullweek(getFullWeek(), getToe());
+      CommonTime toReturn;
+      if (SatSystemID == 'G' )
+         toReturn = GPSWeekSecond(weeknum, Toe, TimeSystem::GPS);
+      else if (SatSystemID == 'E' )
+         toReturn = GPSWeekSecond(weeknum, Toe, TimeSystem::GAL);
+      else
+      {
+         InvalidRequest exc("Invalid Time System in BrcKeplerOrbit::getOrbitEpoch()");
+         GPSTK_THROW(exc);
+      }
       return toReturn;
    }
    
@@ -616,5 +659,147 @@ namespace gpstk
       }
       return idot;
    }
+
+   static void timeDisplay( ostream & os, const CommonTime& t )
+   {
+         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+      GPSWeekSecond dummyTime;
+      dummyTime = GPSWeekSecond(t);
+//      os << setw(4) << dummyTime.week;
+//      os << "(     )  ";
+      os << setw(4) << dummyTime.week << "(";
+      os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
+      os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
+
+      switch (dummyTime.getDayOfWeek())
+      {
+         case 0: os << "Sun-0"; break;
+         case 1: os << "Mon-1"; break;
+         case 2: os << "Tue-2"; break;
+         case 3: os << "Wed-3"; break;
+         case 4: os << "Thu-4"; break;
+         case 5: os << "Fri-5"; break;
+         case 6: os << "Sat-6"; break;
+         default: break;
+      }
+      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
+         << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
+   }
+
+   static void shortcut(ostream & os, const long HOW )
+   {
+      short DOW, hour, min, sec;
+      long SOD, SOW;
+      short SOH;
+      
+      SOW = static_cast<long>( HOW );
+      DOW = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
+      hour = static_cast<short>( SOD/3600 );
+
+      SOH = static_cast<short>( SOD - (hour*3600) );
+      min = SOH/60;
+
+      sec = SOH - min * 60;
+      switch (DOW)
+      {
+         case 0: os << "Sun-0"; break;
+         case 1: os << "Mon-1"; break;
+         case 2: os << "Tue-2"; break;
+         case 3: os << "Wed-3"; break;
+         case 4: os << "Thu-4"; break;
+         case 5: os << "Fri-5"; break;
+         case 6: os << "Sat-6"; break;
+         default: break;
+      }
+
+      os << ":" << setfill('0')
+         << setw(2) << hour
+         << ":" << setw(2) << min
+         << ":" << setw(2) << sec
+         << setfill(' ');
+   }
+
+   void BrcKeplerOrbit :: dump(ostream& s) const
+      throw()
+   {
+      ios::fmtflags oldFlags = s.flags();
+   
+      s.setf(ios::fixed, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.setf(ios::uppercase);
+      s.precision(0);
+      s.fill(' ');
+      
+      s << "****************************************************************"
+        << "************" << endl
+        << "Broadcast Ephemeris (Engineering Units)" << endl
+        << endl
+        << "PRN : " << setw(2) << PRNID << endl
+        << endl;
+  
+
+      s << "              Week(10bt)     SOW     DOW   UTD     SOD"
+        << "   MM/DD/YYYY   HH:MM:SS\n";
+      
+      s << endl;
+      s << "Eph Epoch:    ";
+      timeDisplay(s, getOrbitEpoch());
+      s << endl;
+  
+
+      
+      s.setf(ios::scientific, ios::floatfield);
+      s.precision(8);
+       
+      s << endl
+        << "           ORBIT PARAMETERS"
+        << endl
+        << endl
+        << "Semi-major axis:       " << setw(16) << Ahalf  << " m**.5" << endl
+        << "Motion correction:     " << setw(16) << dn     << " rad/sec"
+        << endl
+        << "Eccentricity:          " << setw(16) << ecc    << endl
+        << "Arg of perigee:        " << setw(16) << w      << " rad" << endl
+        << "Mean anomaly at epoch: " << setw(16) << M0     << " rad" << endl
+        << "Right ascension:       " << setw(16) << OMEGA0 << " rad    "
+        << setw(16) << OMEGAdot << " rad/sec" << endl
+        << "Inclination:           " << setw(16) << i0     << " rad    "
+        << setw(16) << idot     << " rad/sec" << endl;
+      
+      s << endl
+        << "           HARMONIC CORRECTIONS"
+        << endl
+        << endl
+        << "Radial        Sine: " << setw(16) << Crs << " m    Cosine: "
+        << setw(16) << Crc << " m" << endl
+        << "Inclination   Sine: " << setw(16) << Cis << " rad  Cosine: "
+        << setw(16) << Cic << " rad" << endl
+        << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
+        << setw(16) << Cuc << " rad" << endl;    
+      
+      s << endl;
+      
+   } // end of SF123::dump()
+   
+   ostream& operator<<(ostream& s, const BrcKeplerOrbit& eph)
+   {
+      eph.dump(s);
+      return s;
+
+/* this appears to be more like the dump_eph_table routine of gappc
+ * which dumped the bce table.
+
+      s.setf(ios::right);
+      s << "prn:" << setw(2) << eph.PRNID
+        << ", HOW[0]:" << hex  << setfill('0') << setw(5) << eph.getHOWTime(1)
+        << ", IODC:" << hex << setw(3) << eph.getIODC()
+        << dec << setfill(' ') << setw(0)
+        << ", Toe: [" << bcClock.getToc()-1800*eph.getFitInt()
+        << "..." << bcClock.getToc()+1800*eph.getFitInt()
+        << ")";
+*/
+
+   } // end of operator<<
      
 } // namespace
