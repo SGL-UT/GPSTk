@@ -16,7 +16,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -24,19 +24,19 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 /**
 *   @file ConstellationDefinition.cpp
-*  
+*
 *  July 2007
 *  Applied Research Laboratories, The University of Texas at Austin
 */
@@ -44,7 +44,7 @@
 #include <stdio.h>
 
    // Library Headers
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 
    // Project Headers
 #include "ConstellationDefinition.hpp"
@@ -94,12 +94,12 @@ int ConstellationDefinition::getTotalNumInBase24( ) const
    {
       const SlotDef& sd = ci->second;
       if (sd.slot>=1 && sd.slot<=4) count++;  // Slots 1-4 in each plane define
-                                              // the baseline 24 SV constellation 
+                                              // the baseline 24 SV constellation
    }
    return(count);
 }
 
-void ConstellationDefinition::setPlaneSlot( const SatID SV, 
+void ConstellationDefinition::setPlaneSlot( const SatID SV,
                                             const char plane,
                                             const int slot )
 {
@@ -107,7 +107,7 @@ void ConstellationDefinition::setPlaneSlot( const SatID SV,
    sprintf(temp,"%1c%1d",plane,slot);
    string ps(temp);
    SlotDef sd( ps, plane, slot );
-   setPlaneSlot( SV, sd );     
+   setPlaneSlot( SV, sd );
 }
 
 void ConstellationDefinition::setPlaneSlot( const SatID SV, const SlotDef sd )
@@ -133,7 +133,7 @@ void ConstellationDefinition::clearDefinition( )
    SlotsToSVs.clear();
    SVsToSlots.clear();
 }
-     
+
 void ConstellationDefinition::dump( FILE* fp ) const
 {
    char planes[] = { 'A', 'B', 'C', 'D', 'E', 'F' };
@@ -172,7 +172,7 @@ int ConstellationDefinition::getSVN( const SatID SV ) const
    std::map<SatID,int>::const_iterator ci;
    ci = PRNtoSVN.find(SV);
    if (ci!=PRNtoSVN.end()) return(ci->second);
-   return(0); 
+   return(0);
 }
 
 SlotDef ConstellationDefinition::findSlot( SatID SV ) const

@@ -26,7 +26,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include <iostream>
 
 using namespace std;
@@ -55,14 +55,14 @@ int main(int argc, char *argv[])
 //Declare RINEX observation file streams and data objects
 //-------------------------------------------------------
        RinexObsStream roffs(argv[1]);
-       // It is necessary to set the failbit in order to throw exceptions 
+       // It is necessary to set the failbit in order to throw exceptions
        roffs.exceptions(ios::failbit);
        RinexObsHeader roh;
        RinexObsData roe;
        RinexObsData::RinexDatum dataobj;
 
 //Read the RINEX header (this could be skipped).
-//--------------------------------------------       
+//--------------------------------------------
        roffs >> roh;
 
 //Print RINEX header to terminal screen
@@ -113,9 +113,9 @@ int main(int argc, char *argv[])
 //Compute multipath
 //-----------------
                 double mu = P1 -L1*(C_GPS_M/L1_FREQ) -2*(P1 -P2)/(1-gamma);
- 
+
                 // The following line makes sure that you get a proper output format
-                // The line above with "roh.dump" sets this, but just in case...               
+                // The line above with "roh.dump" sets this, but just in case...
                 cout << fixed << setw(7) << setprecision(3);
 
                 cout << " PRN " << myprn << " biased multipath " <<  mu << endl;

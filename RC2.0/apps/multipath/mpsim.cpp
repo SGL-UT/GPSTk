@@ -28,7 +28,7 @@
 // GPSTk main library includes
 #include "BasicFramework.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"
+#include "icd_gps_constants.hpp"
 #include "IonoModel.hpp"
 
 // From GPSTk's rxio
@@ -45,7 +45,7 @@ class MPSim : public BasicFramework
 {
 public:
 
-   // Linear relation between iono delay on L1 and L2. 
+   // Linear relation between iono delay on L1 and L2.
    static const double gamma;
 
    MPSim (char *arg0);
@@ -54,7 +54,7 @@ public:
    virtual bool initialize(int argc, char *argv[]) throw();
 
 protected:
-   virtual void process();  
+   virtual void process();
 
    string logFileName;
    string epochFormat;
@@ -79,7 +79,7 @@ MPSim::MPSim(char *arg0)
   {
     rateOption.setMaxCount(1);
     logfileOption.setMaxCount(1);
-    
+
     logFileName = "logfile";
     epochFormat="%02m/%02d/%04Y %02H:%02M:%03.1f";
 
@@ -90,7 +90,7 @@ MPSim::~MPSim()
 {
    DayTime endTime;
    logStream << "Execution end at: " << endTime.printf(epochFormat) << endl;
-   logStream << "Total execution time: " << endTime - startTime << " seconds" 
+   logStream << "Total execution time: " << endTime - startTime << " seconds"
 	     << endl;
 }
 
@@ -99,7 +99,7 @@ bool MPSim::initialize(int argc, char *argv[])
   {
     if(!BasicFramework::initialize(argc, argv))
       return false;
-    
+
     if (logfileOption.getCount()>0)
     {
        logFileName = StringUtils::asString(logfileOption.getValue().front());
@@ -109,18 +109,18 @@ bool MPSim::initialize(int argc, char *argv[])
 
     logStream << "mpsim log file" << endl;
     logStream << "Execution started at: " << startTime.printf(epochFormat) << endl;
-    
-    return true;      
+
+    return true;
   }
 
 
 void MPSim::process()
 {
     IonoModel spsIonoCorr;
-    
+
     // Read nav file and store unique list of ephemeredes
     if (navOption.getCount()>0)
-    {       
+    {
        EphReader ephs;
        for (size_t i=0; i<navOption.getCount(); i++)
        {
@@ -130,9 +130,9 @@ void MPSim::process()
        logStream << "Read these input files for ephemeris or almanac: " << endl;
        for (size_t i=0; i<ephs.filesRead.size(); i++)
 	 logStream << "  " << ephs.filesRead[i] << endl;
- 
+
     }
-    
+
 
     if (rateOption.getCount()>0)
     {
@@ -150,13 +150,13 @@ int main(int argc, char *argv[])
   try
     {
       MPSim mpsim(argv[0]);
-      
+
       if(!mpsim.initialize(argc, argv))
 	return 0;
-      
+
       if(!mpsim.run())
 	return 1;
-      
+
       return 0;
     }
   catch(Exception& exc)
