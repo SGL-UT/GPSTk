@@ -59,7 +59,7 @@ protected:
    string logFileName;
    string epochFormat;
 
-   DayTime startTime;
+   CommonTime startTime;
 
    CommandOptionWithAnyArg navOption;
    CommandOptionWithAnyArg logfileOption;
@@ -88,7 +88,7 @@ MPSim::MPSim(char *arg0)
 
 MPSim::~MPSim()
 {
-   DayTime endTime;
+   CommonTime endTime;
    logStream << "Execution end at: " << endTime.printf(epochFormat) << endl;
    logStream << "Total execution time: " << endTime - startTime << " seconds"
 	     << endl;
