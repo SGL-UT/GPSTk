@@ -57,6 +57,11 @@
 #include "SparseBinnedStats.hpp"
 #include "DenseBinnedStats.hpp"
 
+void dumpRaw(std::ostream& ostr, const gpstk::ObsArray& oa, bool numeric);
+void writeStats(std::ostream& ostr, 
+                const gpstk::SparseBinnedStats<double>& sbs, 
+                bool numeric, bool elevation=true);
+
 using namespace std;
 using namespace gpstk;
 using namespace ValarrayUtils;
@@ -189,6 +194,7 @@ int main(int argc, char *argv[])
       }
 
       oa.add(mp_formula);
+      oa.load(obsFileOption.getValue(),navFileOption.getValue());
 
       if (uzOption.getCount()>0)
       {
@@ -301,6 +307,8 @@ int main(int argc, char *argv[])
          }
 
          oa.edit(removePts);
+      allpasses = unique(oa.pass); // TODO: ObsArray should maintain its own pass list.
+
 
          // Now only long passes remain.
          // Next use robust stats to remove cycle slips\
@@ -393,6 +401,7 @@ int main(int argc, char *argv[])
          {
             if (verbose)
             {
+            cout <<"Using this combination for multipath: " <<mp_formula<<endl;
                cout << "Data collection interval is " << setprecision(3)
                   << oa.interval << " seconds";
                if (oa.intervalInferred)
