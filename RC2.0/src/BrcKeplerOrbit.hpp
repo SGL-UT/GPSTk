@@ -52,7 +52,7 @@
 #include "ObsID.hpp"
 #include "EngNav.hpp"
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Xv.hpp"
 
 namespace gpstk
@@ -120,7 +120,7 @@ namespace gpstk
 
          /// Extracts the epoch time from this orbit, correcting
          /// for half weeks and HOW time
-      DayTime getOrbitEpoch() const throw(InvalidRequest);
+      CommonTime getOrbitEpoch() const throw(InvalidRequest);
 
 	 /** Return true if orbit data has been loaded */
       bool hasData( ) const;
@@ -225,10 +225,15 @@ namespace gpstk
           * using this orbit data.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      Xv svXv(const DayTime& t) const throw(gpstk::InvalidRequest);
+      Xv svXv(const CommonTime& t) const throw(gpstk::InvalidRequest);
+
+         /** Compute satellite relativity correction (sec) at the given time
+          * @throw InvalidRequest if a required subframe has not been stored.
+          */
+      double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
       
          /// Output the contents of this orbit data to the given stream.
-      void dump(std::ostream& s = std::cout) const;
+      void dump(std::ostream& s = std::cout) const throw();
 
    protected:
          /// Overhead information
