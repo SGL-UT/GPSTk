@@ -40,7 +40,7 @@
 #define SVELEVATIONMAP_HPP
 
 // gpstk crud
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "XvtStore.hpp"
 #include "ObsEpochMap.hpp"
 

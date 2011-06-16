@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include "SvElevationMap.hpp"
+#include "Position.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -49,7 +50,7 @@ SvElevationMap elevation_map(const ObsEpochMap& oem,
 {
    SvElevationMap pem;
 
-   ECEF rxpos(ap);
+   Position rxpos(ap);
 
    ObsEpochMap::const_iterator oem_itr;
    for (oem_itr=oem.begin(); oem_itr!=oem.end(); oem_itr++)
