@@ -1135,6 +1135,16 @@ namespace gpstk
          throw(StringException);
      
          /**
+          * Split a string \a str into words as defined by \a delimiter.
+          * @param str string to be parsed.
+          * @param delimiter character that marks the start and end of a word.
+          * @return a vector of the words (strings)
+          */
+       inline std::vector<std::string> split(const std::string& str,
+                                             const char delimiter = ' ')
+          throw(StringException);
+
+         /**
           * Removes indicated words from the string \a s.
           * \a s is modified as a result.
           * @param s a string with the words you want removed.
@@ -1168,16 +1178,17 @@ namespace gpstk
       
          /** Convert a double to scientific notation; this routine works better,
           * on Windows particularly, than doub2sci.
-          * @param length = total string length, including 1 for overall sign if showPlus is true.
+          * @param length = total string length,
+          *                         including 1 for overall sign if showPlus is true.
           * @param precision = number of digits after the decimal and before the 'e'
           * @param explen = length of exponent, this must = 1, 2 or 3
           * NB. length is increased if precision, explen and showPlus require it.
           */
-         inline std::string doubleToScientific(const double& d,
-                                               const std::string::size_type length,
-                                               const std::string::size_type precision,
-                                               const std::string::size_type explen,
-                                               bool showPlus=false);
+      inline std::string doubleToScientific(const double& d,
+                                            const std::string::size_type length,
+                                            const std::string::size_type precision,
+                                            const std::string::size_type explen,
+                                            bool showPlus=false);
 
          /**
           * Convert scientific notation to FORTRAN notation.
@@ -1542,7 +1553,7 @@ namespace gpstk
                             const std::string& outputString,
                             std::string::size_type startPos, unsigned numChanges)
       { 
-         unsigned count = 0;
+    unsigned count = 0;
          std::string::size_type opos = startPos;
 
          while (count < numChanges)
@@ -2248,6 +2259,29 @@ namespace gpstk
          }
       }
      
+      inline std::vector<std::string> split(const std::string& str,
+                                            const char delimiter)
+         throw(StringException)
+      {
+         try {
+            std::vector<std::string> rvec;   // vector to return
+            std::string tempStr(str);        // copy the input string
+            stripLeading(tempStr,delimiter); // remove leading delimiters
+            while(tempStr.size() > 0)
+               rvec.push_back(stripFirstWord(tempStr,delimiter));
+            return rvec;
+         }
+         catch(StringException &e)
+         {
+            GPSTK_RETHROW(e);
+         }
+         catch(std::exception &e)
+         {
+            StringException strexc("Exception thrown: " + std::string(e.what()));
+            GPSTK_THROW(strexc);
+         }
+      }
+
       inline std::string& removeWords(std::string& s, 
                                  const std::string::size_type first, 
                                  const std::string::size_type wordsToReplace,
@@ -2357,7 +2391,7 @@ namespace gpstk
          str2 = str1.substr(0,pos+2);
          str1 = str1.substr(pos+2);
          str2 += StringUtils::rightJustify(StringUtils::asString(
-                                             StringUtils::asInt(str1)),elen,'0');
+                                                StringUtils::asInt(str1)),elen,'0');
          if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
          return str2;
       }
@@ -2375,9 +2409,9 @@ namespace gpstk
             int expAdd = 0;
             std::string exp;
             long iexp;
-            //If checkSwitch is false, always redo the exponential. Otherwise,
-            //set it to false. 
-            bool redoexp=!checkSwitch;
+         //If checkSwitch is false, always redo the exponential. Otherwise,
+         //set it to false. 
+       bool redoexp=!checkSwitch;
             
                // Check for decimal place within specified boundaries
             if ((idx == 0) || (idx >= (startPos + length - expLen - 1)))
@@ -2413,10 +2447,10 @@ namespace gpstk
                }
             }
                // Change the exponent character to D normally, or E of checkSwitch is false.
-             if (checkSwitch)
-                     aStr[idx] = 'D';
-             else 
-                     aStr[idx] = 'E';
+       if (checkSwitch)
+               aStr[idx] = 'D';
+       else 
+               aStr[idx] = 'E';
                
           // Change the exponent itself
             if (redoexp)
@@ -2444,10 +2478,10 @@ namespace gpstk
                aStr.insert((std::string::size_type)0, 1, ' ');
             }
        
-            //If checkSwitch is false, add on one leading zero to the string
-            if (!checkSwitch)
-            {
-               aStr.insert((std::string::size_type)1, 1, '0');
+          //If checkSwitch is false, add on one leading zero to the string
+       if (!checkSwitch)
+       {
+          aStr.insert((std::string::size_type)1, 1, '0');
             }
        
        
