@@ -9,6 +9,8 @@
 
 #include "BrcKeplerOrbit.hpp"
 #include "EngEphemeris.hpp"
+#include "CivilTime.hpp"
+#include "CommonTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -16,7 +18,8 @@ using namespace gpstk;
 int main( int argc, char * argv[] )
 {
       // Set time to Day 153, 2011 (6/2/2011) at noon
-   DayTime dt( 2011, 6, 2, 12, 14, 44.0 );
+   CivilTime g( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
+   CommonTime dt = g.convertToCommonTime();
 
       // Test data (copied from navdmp output for .....)
       // Generally, we'd load these data from the file
@@ -121,6 +124,8 @@ int main( int argc, char * argv[] )
    Xv  xv4 = ko4.svXv( dt ); 
    cout << "Position ko4: " << xv4.x << endl;
    cout << "Velocity ko4: " << xv4.v << endl;
+   double RelCorr = ko4.svRelativity( dt ); 
+   cout << "RelCorr ko4: " << RelCorr<< endl;
 
       // Fifth test case.  Create an KO object with data available from RINEX file.
    cout << "Test Case 5: Creating KO object with data from RINEX file." << endl;
@@ -142,9 +147,18 @@ int main( int argc, char * argv[] )
    EE.addSubframe(subframe2, weeknum, 3, 1);
    EE.addSubframe(subframe3, weeknum, 3, 1);
 
+   cout<<"dump above Xvt: "<<endl;
+   cout<<EE<<endl;
    Xvt xvt = EE.svXvt(dt);
    cout<< "Position EE: " << xvt.x <<endl;
    cout<< "Velocity EE: " << xvt.v <<endl;
+   cout<< "RelCorr EE:  " << EE.svRelativity(dt) <<endl;
    
+   cout<<"EE dump: "<<endl;
+   cout <<EE<<endl;
+
+   cout<< "ko4 dump: "<<endl;
+   cout<<ko4<<endl;
+ 
    return(0);
 }

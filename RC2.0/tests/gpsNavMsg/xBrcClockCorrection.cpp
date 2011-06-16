@@ -16,7 +16,8 @@ using namespace gpstk;
 int main( int argc, char * argv[] )
 {
       // Set time to Day 153, 2011 (6/2/2011) at noon
-   DayTime dt( 2011, 6, 2, 12, 14, 44.0 );
+   CivilTime g( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
+   CommonTime dt = g.convertToCommonTime( );
 
       // Test data (copied from navdmp output for .....)
       // Generally, we'd load these data from the file
@@ -90,6 +91,7 @@ int main( int argc, char * argv[] )
    double ClkCorr5 = co5.svClockBias( dt ); 
    cout << "Clock Correction co5: " << ClkCorr5 << endl;
 
+
       // Sixth test case.  Compare against "classic" EngEphemeris
    cout << "Test Case 6: Calculated clock correction using 'classic' EngEphemeris." << endl;
    EngEphemeris EE;
@@ -98,8 +100,15 @@ int main( int argc, char * argv[] )
    EE.addSubframe(subframe3, weeknum, 3, 1);
 
    Xvt xvt = EE.svXvt(dt);
-   cout<< "Clock Correction EE: " << xvt.dtime <<endl;
-   //cout<< " EE: " << xvt.ddtime <<endl;
-   
+   cout<< "Clock Correction EE: " << xvt.clkbias <<endl;
+   cout<< "Rel Corr EE:         " << xvt.relcorr <<endl;
+	cout<<xvt.clkdrift<<endl;
+
+   cout<<"dump EE:"<<endl;
+   cout<<EE<<endl;
+
+   cout<<"dump co4:"<<endl;
+   cout<<co4<<endl;
+
    return(0);
 }
