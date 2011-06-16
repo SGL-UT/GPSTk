@@ -43,9 +43,6 @@ namespace gpstk
       /// the data tables: std::map<SatID, std::map<DayTime, DataRecord> >
       SatTable tables;
 
-      /// nominal time spacing of data (sec) in the table (e.g. 900s for typical SP3)
-      double nominalTimeStep;
-
       /// Flags indicating that various data are present and may be accessed with
       /// getValue(t) or other routines, via interpolation of the data tables.
       /// Defaults are false, but deriving class should define in c'tor.
@@ -57,7 +54,6 @@ namespace gpstk
       bool checkDataGap;
 
       /// Smallest time interval (seconds) that constitutes a data gap.
-      /// If gapInterval >= nominalTimeStep then any missing records make a gap.
       double gapInterval;
 
       /// Flag to check the length of available interpolation interval (default false)
@@ -77,8 +73,7 @@ namespace gpstk
 
       /// Default constructor
       TabularSatStore() throw()
-         : nominalTimeStep(-1.0),         // this is tested in other routines
-           havePosition(false),
+         : havePosition(false),
            haveVelocity(false),
            haveClockBias(false),
            haveClockDrift(false),
@@ -132,7 +127,6 @@ namespace gpstk
       ///     true, then the matching time is at it1 (it2 is undefined);
       ///     if exactReturn was false, then the range (it1,it2) is valid and the
       ///     matching time is at either (it1+nhalf-1) or (it1+nhalf).
-      /// @throw nominal time step is not defined
       /// @throw the satellite is not found in the tables, or there is inadequate data
       /// @throw GapInterval is set and there is a data gap larger than the max
       /// @throw MaxInterval is set and the interval is too wide
@@ -144,11 +138,6 @@ namespace gpstk
                                     bool exactReturn=true)
          const throw(InvalidRequest)
       {
-         if(nominalTimeStep == -1.0) {
-            InvalidRequest e("Nominal time step is undefined.");
-            GPSTK_THROW(e);
-         }
-
          // find the DataTable for this sat
          typename std::map<SatID, DataTable>::const_iterator satit;
          satit = tables.find(sat);
@@ -261,8 +250,6 @@ namespace gpstk
             else
                os << " FROM " << initialTime.printf(fmt) << " TO "
                   << finalTime.printf(fmt) << std::endl;
-            os << "  Nominal time step is " << std::fixed << std::setprecision(2)
-               << nominalTimeStep << " sec." << std::endl;
 
             os << "  This store contains:"
                << (havePosition ? "":" not") << " position,"
@@ -329,7 +316,7 @@ namespace gpstk
 
       /// Remove all data and reset time limits
       inline void clear() throw()
-         { tables.clear(); nominalTimeStep = -1.0; }
+         { tables.clear(); }
 
       /// Return true if the given SatID is present in the store
       virtual bool isPresent(const SatID& sat) const throw()
@@ -445,14 +432,6 @@ namespace gpstk
          };
       }
 
-      /// Get the nominal time step in seconds
-      double getTimeStep(void) const throw()
-         { return nominalTimeStep; }
-
-      /// Set the nominal time step in seconds
-      void setTimeStep(double dt) throw()
-         { nominalTimeStep = dt; }
-
       /// Does this store contain position, etc data stored in the tables?
       bool hasPosition() const throw() { return havePosition; }
       bool hasVelocity() const throw() { return haveVelocity; }
@@ -472,7 +451,7 @@ namespace gpstk
          std::vector<SatID> satlist;
          typename SatTable::const_iterator it;
          for(it=tables.begin(); it != tables.end(); ++it)
-            satlist.push_back(it->first);
+            if(it->second.size() > 0) satlist.push_back(it->first);
          return satlist;
       }
 
@@ -497,14 +476,50 @@ namespace gpstk
       /// same as ndata()
       inline int size(void) const throw() { return ndata(); }
 
+      /// compute the nominal timestep of the data table for the given satellite
+      /// @return 0 if satellite is not found, else the nominal timestep in seconds.
+      double nomTimeStep(const SatID& sat) const throw()
+      {
+         // get the table for this sat
+         typename SatTable::const_iterator it(tables.find(sat));
+
+         // not found or empty
+         if(it == tables.end() || it->second.size() == 0) return 0.0;
+
+         // save the most frequent N step sizes
+         static const int N(3);
+         int i,ndt[N]={0,0,0};
+         double dt[N],del;
+
+         // loop over the table
+         typename DataTable::const_iterator jt(it->second.begin());
+         DayTime prevT(jt->first);
+         ++jt;
+         while(jt != it->second.end()) {
+            del = jt->first - prevT;
+            if(del > 1.0e-8) for(i=0; i<N; i++) {
+               if(ndt[i] == 0) { dt[i] = del; ndt[i] = 1; break; }
+               if(::fabs(del-dt[i]) < 1.0e-8) { ndt[i]++; break; }
+            }
+            prevT = jt->first;
+            ++jt;
+         }
+
+         // find the most frequent interval
+         del = dt[0];
+         for(i=1; i<N; i++) if(ndt[i] > ndt[0]) {
+            del = dt[i];
+            ndt[0] = ndt[i];
+         }
+
+         return del;
+      }
+
       /// Is gap checking on?
       bool isDataGapCheck(void) throw() { return checkDataGap; }
 
       /// Disable checking of data gaps.
       void disableDataGapCheck(void) throw() { checkDataGap = false; }
-
-      /// Is interval checking on?
-      bool isIntervalCheck(void) throw() { return checkInterval; }
 
       /// Get current gap interval.
       double getGapInterval(void) throw() { return gapInterval; }
@@ -512,6 +527,9 @@ namespace gpstk
       /// Set gap interval and turn on gap checking
       void setGapInterval(double interval) throw()
          { checkDataGap = true; gapInterval = interval; }
+
+      /// Is interval checking on?
+      bool isIntervalCheck(void) throw() { return checkInterval; }
 
       /// Disable checking of maximum interval.
       void disableIntervalCheck(void) throw() { checkInterval = false; }

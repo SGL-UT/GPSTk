@@ -337,36 +337,13 @@ namespace gpstk
       CommonTime getFinalTime(const SatID& sat) const throw(InvalidRequest);
 
 
-      /// Get the nominal time step in seconds for the (position) data.
-      /// NB. if the clock store uses RINEX clock data, use getPositionTimeStep()
-      /// and getClockTimeStep() instead.
-      double getTimeStep(void) const throw()
-         { return posStore.getTimeStep(); }
+      /// Get the nominal time step in seconds for the position data and the given sat
+      double getPositionTimeStep(const SatID& sat) const throw()
+         { return posStore.nomTimeStep(sat); }
 
-      /// Set the nominal time step in seconds. NB. if the clock store uses RINEX
-      /// clock data, use setPositionTimeStep() and setClockTimeStep() instead.
-      void setTimeStep(double dt) throw()
-         { posStore.setTimeStep(dt); clkStore.setTimeStep(dt); }
-
-      /// Get the nominal time step in seconds for the position data.
-      double getPositionTimeStep(void) const throw()
-         { return posStore.getTimeStep(); }
-
-      /// Set the nominal time step in seconds for the position data.
-      /// NB. if the clock store uses SP3 data, setTimeStep() may be used to set the
-      /// time step for both position and clock.
-      void setPositionTimeStep(double dt) throw()
-         { posStore.setTimeStep(dt); }
-
-      /// Get the nominal time step in seconds for the clock data.
-      double getClockTimeStep(void) const throw()
-         { return clkStore.getTimeStep(); }
-
-      /// Set the nominal time step in seconds for the clock data.
-      /// NB. if the clock store uses SP3 data, setTimeStep() may be used to set the
-      /// time step for both position and clock.
-      void setClockTimeStep(double dt) throw()
-         { clkStore.setTimeStep(dt); }
+      /// Get the nominal time step in seconds for the clock data and the given sat
+      double getClockTimeStep(const SatID& sat) const throw()
+         { return clkStore.nomTimeStep(sat); }
 
 
       /// Get current interpolation order for the position table
@@ -398,7 +375,7 @@ namespace gpstk
          { clkStore.setLinearInterp(); }
 
 
-      /// Get a list (std::vector) of SatIDs present in the store
+      /// Get a list (std::vector) of SatIDs present in both clock and position stores
       std::vector<SatID> getSatList(void) const throw()
       {
          std::vector<SatID> posList(posStore.getSatList());
@@ -409,6 +386,14 @@ namespace gpstk
                retList.push_back(posList[i]);
          return retList;
       }
+
+      /// Get a list (std::vector) of SatIDs present in the position store
+      std::vector<SatID> getPositionSatList(void) const throw()
+         { return posStore.getSatList(); }
+
+      /// Get a list (std::vector) of SatIDs present in the clock store
+      std::vector<SatID> getClockSatList(void) const throw()
+         { return clkStore.getSatList(); }
 
 
       /// Get the total number of (position) data records in the store

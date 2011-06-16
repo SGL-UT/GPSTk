@@ -6,14 +6,14 @@
 /// values at any timetag, within the limits of the data, from this table via
 /// interpolation.
 /// An option allows assigning the clock store to RINEX clock files, with separate
-/// timestep and interpolation algorithm.
+/// interpolation algorithm.
 
 #include <iostream>
 
 #include "Exception.hpp"
 #include "SatID.hpp"
 #include "CommonTime.hpp"
-#include "TimeString.hpp"
+//#include "TimeString.hpp"
 #include "StringUtils.hpp"
 
 #include "SP3Stream.hpp"
@@ -43,10 +43,10 @@ namespace gpstk
 
    // Returns the position and clock offset of the indicated
    // object in ECEF coordinates (meters) at the indicated time.
-   // @param[in] sat the satellite of interest
-   // @param[in] ttag the time to look up
-   // @return the Xt of the object at the indicated time
-   // @throw InvalidRequest If the request can not be completed for any
+   // param[in] sat the satellite of interest
+   // param[in] ttag the time to look up
+   // return the Xt of the object at the indicated time
+   // throw InvalidRequest If the request can not be completed for any
    //    reason, this is thrown. The text may have additional
    //    information as to why the request failed.
    Xt SP3EphemerisStore::getXt(const SatID& sat, const CommonTime& ttag)
@@ -72,10 +72,10 @@ namespace gpstk
 
    // Returns the position, velocity, and clock offset of the indicated
    // object in ECEF coordinates (meters) at the indicated time.
-   // @param[in] sat the satellite of interest
-   // @param[in] ttag the time to look up
-   // @return the Xvt of the object at the indicated time
-   // @throw InvalidRequest If the request can not be completed for any
+   // param[in] sat the satellite of interest
+   // param[in] ttag the time to look up
+   // return the Xvt of the object at the indicated time
+   // throw InvalidRequest If the request can not be completed for any
    //    reason, this is thrown. The text may have additional
    //    information as to why the request failed.
    Xvt SP3EphemerisStore::getXvt(const SatID& sat, const CommonTime& ttag)
@@ -113,14 +113,18 @@ namespace gpstk
 
    // Determine the earliest time for which this object can successfully 
    // determine the Xvt for any object.
-   // @return the earliest time in the table
-   // @throw InvalidRequest if the object has no data.
+   // return the earliest time in the table
+   // throw InvalidRequest if there is no data.
    CommonTime SP3EphemerisStore::getInitialTime() const throw(InvalidRequest)
    {
       try {
          if(useSP3clock) return posStore.getInitialTime();
 
-         CommonTime tc(clkStore.getInitialTime()), tp(posStore.getInitialTime());
+         CommonTime tc,tp;
+         try { tc = clkStore.getInitialTime(); }
+         catch(InvalidRequest& e) { tc = CommonTime::BEGINNING_OF_TIME; }
+         try { tp = posStore.getInitialTime(); }
+         catch(InvalidRequest& e) { tp = CommonTime::BEGINNING_OF_TIME; }
          return (tc > tp ? tc : tp);
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
@@ -128,14 +132,19 @@ namespace gpstk
 
    // Determine the latest time for which this object can successfully 
    // determine the Xvt for any object.
-   // @return the latest time in the table
-   // @throw InvalidRequest if the object has no data.
+   // return the latest time in the table
+   // throw InvalidRequest if there is no data.
    CommonTime SP3EphemerisStore::getFinalTime() const throw(InvalidRequest)
    {
       try {
          if(useSP3clock) return posStore.getFinalTime();
 
-         CommonTime tc(clkStore.getFinalTime()), tp(posStore.getFinalTime());
+         CommonTime tc,tp;
+         try { tc = clkStore.getFinalTime(); }
+         catch(InvalidRequest& e) { tc = CommonTime::END_OF_TIME; }
+         try { tp = posStore.getFinalTime(); }
+         catch(InvalidRequest& e) { tp = CommonTime::END_OF_TIME; }
+
          return (tc > tp ? tp : tc);
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
@@ -144,10 +153,10 @@ namespace gpstk
 // end of XvtStore interface
 
    // Return the position for the given satellite at the given time
-   // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (CommonTime) of interest
-   // @return Triple containing the position ECEF XYZ meters
-   // @throw InvalidRequest if result cannot be computed, for example because
+   // param[in] sat the SatID of the satellite of interest
+   // param[in] ttag the time (CommonTime) of interest
+   // return Triple containing the position ECEF XYZ meters
+   // throw InvalidRequest if result cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
@@ -165,10 +174,10 @@ namespace gpstk
    }
 
    // Return the velocity for the given satellite at the given time
-   // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (CommonTime) of interest
-   // @return Triple containing the velocity ECEF XYZ meters/second
-   // @throw InvalidRequest if result cannot be computed, for example because
+   // param[in] sat the SatID of the satellite of interest
+   // param[in] ttag the time (CommonTime) of interest
+   // return Triple containing the velocity ECEF XYZ meters/second
+   // throw InvalidRequest if result cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
@@ -194,7 +203,11 @@ namespace gpstk
       try {
          if(useSP3clock) return posStore.getInitialTime(sat);
 
-         CommonTime tc(clkStore.getInitialTime(sat)),tp(posStore.getInitialTime(sat));
+         CommonTime tc,tp;
+         try { tc = clkStore.getInitialTime(sat); }
+         catch(InvalidRequest& e) { tc = CommonTime::BEGINNING_OF_TIME; }
+         try { tp = posStore.getInitialTime(sat); }
+         catch(InvalidRequest& e) { tp = CommonTime::BEGINNING_OF_TIME; }
          return (tc > tp ? tc : tp);
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
@@ -209,7 +222,11 @@ namespace gpstk
       try {
          if(useSP3clock) return posStore.getFinalTime(sat);
 
-         CommonTime tc(clkStore.getFinalTime(sat)), tp(posStore.getFinalTime(sat));
+         CommonTime tc,tp;
+         try { tc = clkStore.getFinalTime(sat); }
+         catch(InvalidRequest& e) { tc = CommonTime::END_OF_TIME; }
+         try { tp = posStore.getFinalTime(sat); }
+         catch(InvalidRequest& e) { tp = CommonTime::END_OF_TIME; }
          return (tc > tp ? tp : tc);
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
@@ -256,32 +273,6 @@ namespace gpstk
 
          // posStore.addPositionRecord will set haveVelocity
          //posStore.haveVelocity = head.containsVelocity;
-
-         // must define TabularSatStore::nominalTimeStep
-         if(posStore.getTimeStep() == -1.0) {
-            posStore.setTimeStep(head.epochInterval);
-            if(fillClockStore) clkStore.setTimeStep(head.epochInterval);
-         }
-         else {
-            // check consistency of multiple files.
-            // NB ESA GLO clks are 5 minute while IGS GPS clks are 30 sec
-            double DT(posStore.getTimeStep()),dt(head.epochInterval);
-            if(DT != dt) {
-               Exception e("Time step (" + asString(dt,2)+") of load file " + filename
-                  + " is inconsistent with existing position data("
-                  + asString(DT,2)+")");
-               GPSTK_THROW(e);
-            }
-            if(fillClockStore) {
-               DT = clkStore.getTimeStep();
-               if(DT != dt) {
-                  Exception e("Time step (" + asString(dt,2)+") of load file "
-                     + filename + " is inconsistent with existing clock data("
-                     + asString(DT,2)+")");
-                  GPSTK_THROW(e);
-               }
-            }
-         }
 
          // read data
          bool isC(head.version==SP3Header::SP3c);
@@ -563,11 +554,6 @@ namespace gpstk
          // save in FileStore
          clkFiles.addFile(filename, head);
 
-         // must define time step
-         int i, ndt[3]={-1,-1,-1};
-         double dt[3], del;
-         CommonTime prevTime(CommonTime::BEGINNING_OF_TIME);
-
          // read data
          try {
             while(strm >> data) {
@@ -580,18 +566,6 @@ namespace gpstk
                   rec.drift = data.drift; rec.sig_drift = data.sig_drift,
                   rec.accel = data.accel; rec.sig_accel = data.sig_accel;
                   clkStore.addClockRecord(data.sat, data.time, rec);
-
-                  // count the timestep
-                  if(prevTime == CommonTime::BEGINNING_OF_TIME)
-                     prevTime = data.time;
-                  del = data.time - prevTime;
-                  if(del > 1.0e-6) {
-                     for(i=0; i<3; ++i) {
-                        if(ndt[i] < 0) { dt[i] = del; ndt[i]=1; break; }
-                        if(fabs(del-dt[i]) < 1.e-6) { ndt[i]++; break; }
-                     }
-                  }
-                  prevTime = data.time;
                }
             }
          }
@@ -600,31 +574,6 @@ namespace gpstk
             GPSTK_RETHROW(e);
          }
 
-         // compute the nominal timestep
-         double nomTimeStep(dt[0]);
-         for(i=1; i<3; i++) if(ndt[i] > ndt[0]) {     // find the most frequent dt
-            nomTimeStep = dt[i];
-            ndt[0] = ndt[i];
-         }
-
-         // set the timestep, unless it has already been set
-         if(clkStore.getTimeStep() == -1.0) {
-            clkStore.setTimeStep(nomTimeStep);
-            //cout << "Set clock time step to " << nomTimeStep << endl;
-         }
-         else {
-            // check consistency of multiple files.
-            // NB ESA GLO clks are 5 minute while IGS GPS clks are 30 sec
-            double DT(clkStore.getTimeStep());
-            if(DT != nomTimeStep) {
-               Exception e("Time step (" + asString(nomTimeStep,2)+") of load file "
-                  + filename + " is inconsistent with existing clock data("
-                  + asString(DT,2)+")");
-               GPSTK_THROW(e);
-            }
-         }
-
-         // close
          strm.close();
 
       }

@@ -56,10 +56,6 @@ namespace gpstk
       /// flag indicating whether acceleration data is present
       bool haveClockAccel;
 
-      /// Nominal time step of the data tables; computed in loadFile() in the
-      /// derived class, or set by user using TabularSatStore::setTimeStep()
-      double nominalTimestep;
-
       /// Type of interpolation: 1=linear, 2=Lagrange, 3=numerical derivative?
       int interpType;
       
