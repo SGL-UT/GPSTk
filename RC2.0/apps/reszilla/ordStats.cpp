@@ -38,6 +38,7 @@
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
 #include "icd_gps_constants.hpp"
+
 #include <iostream>
 #include <list>
 #include <algorithm>
@@ -62,7 +63,7 @@ protected:
    virtual void process();
 
 private:
-   CommandOptionWithAnyArg elevBinsOption;
+   CommandOptionWithAnyArg elevBinsOption, statsFileOption;
    CommandOptionWithNumberArg sigmaOption;
    CommandOptionNoArg wonkyOption, statsOnlyOption;
    ElevationRangeList elr;
@@ -83,6 +84,8 @@ OrdStats::OrdStats() throw()
                     " 20-60 -b 10-90\"."),
      sigmaOption('s',"sigma","Multiplier for sigma stripping used in "
                     "statistical computations. The default value is 6."),
+     statsFileOption('o',"statsFile","Filename for output of stats only. Stats"
+                    " will still be included at the end of the ord file."),
      wonkyOption('w',"wonky","Use wonky data in stats computation. The"
                  " default is to not use such data."),
      statsOnlyOption('\0',"stats-only","Only output stats to stdout.")
@@ -146,6 +149,12 @@ void OrdStats::process()
       sigmaMult = asDouble(sigmaOption.getValue().front());
    else
       sigmaMult = 6;
+   std::ofstream extraOutput;   
+   if (statsFileOption.getCount())
+   {
+      const string fn = statsFileOption.getValue()[0];
+      extraOutput.open(fn.c_str(), ios::out);
+   }  
    
    if (wonkyOption.getCount())
       useWonky = true;
@@ -181,6 +190,9 @@ void OrdStats::process()
    // output clock offsets greater than 1ms
    output << "# Time    Offsets > 1ms" << endl
           << "# ------  -------------" << endl;  
+   if (statsFileOption.getCount())
+      extraOutput << "Time \t\t\tOffsets > 1ms\n"
+          << "-------- -------------\n"; 
    bool foundBigOffset = false;
    // find offsets > 1ms and get one more wonky count
    ORDEpochMap::iterator iter;
@@ -197,6 +209,8 @@ void OrdStats::process()
           output << ">b " << iter->second.time << " "
                 << setprecision(5) << setw(12) 
                 << iter->second.clockOffset << endl;
+          if (statsFileOption.getCount())
+            extraOutput << iter->second.time << "\t";
         }       
         
         ORDEpoch::ORDMap::const_iterator pi;
@@ -217,6 +231,8 @@ void OrdStats::process()
    
    if (!foundBigOffset)
       output << "# No offsets greater than 1 millisecond found." << endl;
+   if ((!foundBigOffset) && statsFileOption.getCount())
+      extraOutput << "     No offsets greater than 1 millisecond found.\n";
    
    // output wonky stats
    output << "# wonky epochs   total   % wonky epochs   # wonky ords   total ords   % wonky ords\n"
@@ -230,10 +246,30 @@ void OrdStats::process()
            (100*(wonkyORDCount/totalORDCount)));
    output << b1 << endl; 
               
-   
+   if (statsFileOption.getCount())
+   {
+      extraOutput << "wonky epochs   total   % wonky epochs   # wonky ords"
+             << "   total ords   % wonky ords\n"
+             << "------------   -----   --------------   ------------  "
+             << " ----------   ------------\n";
+      sprintf(b1, "%8.0f  %9.0f  %12.2f  %12.0f  %12.0f  %12.2f", 
+              wonkyEpochCount,
+              totalEpochCount, (100*(wonkyEpochCount/totalEpochCount)),
+              wonkyORDCount,totalORDCount, 
+              (100*(wonkyORDCount/totalORDCount)));
+      extraOutput << b1 << endl;    
+   }
+              
    // print some header info   
    output << "#  elev     mad        med       stddev      mean     # obs   # bad   max    strip" << endl
           << "#  ----    -----      -----      ------      ----     -----   -----  -----   -----" << endl; 
+   if (statsFileOption.getCount())
+   {
+      extraOutput << "elev\t  stddev    mean      # obs   # bad"
+                  << "   max    strip\n"
+                  << "----\t  ------    ----      -----   -----"
+                  << "  -----   -----\n";
+   }
    
    // compute stats for each elevation range
    for (ElevationRangeList::const_iterator i = elr.begin(); 
@@ -298,6 +334,15 @@ void OrdStats::process()
               good.StdDev()/sqrt((float)2), good.Average(),
               good.N(), bad.N(), max, strip);
       output << b1 << endl;
+
+      if (statsFileOption.getCount())
+      {
+        sprintf(b1, "%2d-%2d  %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",
+               (int)minElevation, (int)maxElevation,
+               good.StdDev()/sqrt((float)2), good.Average(),
+               good.N(), bad.N(), max, strip);
+        extraOutput << b1 << endl;   
+      }
    } 
 }
 
