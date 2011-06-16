@@ -70,9 +70,6 @@ namespace gpstk
                os << initialTime.printf(fmt) << " TO "
                   << finalTime.printf(fmt) << std::endl;
 
-            os << " Nominal time step is " << std::fixed << std::setprecision(2)
-               << nominalTimeStep << " sec." << std::endl;
-
             os << " This store contains:"
                << (haveClockBias ? "":" not") << " bias,"
                << (haveClockDrift ? "":" not") << " drift, and"
@@ -156,11 +153,6 @@ namespace gpstk
          // save in FileStore
          clkFiles.addFile(filename, head);
 
-         // must define TabularSatStore::nominalTimeStep
-         int i, ndt[3]={-1,-1,-1};
-         double dt[3], del;
-         DayTime prevTime(DayTime::BEGINNING_OF_TIME);
-
          // read data
          try {
             while(strm >> data) {
@@ -173,28 +165,12 @@ namespace gpstk
                   rec.drift = data.drift; rec.sig_drift = data.sig_drift,
                   rec.accel = data.accel; rec.sig_accel = data.sig_accel;
                   addClockRecord(data.sat, data.time, rec);
-
-                  // count the timestep
-                  if(prevTime == DayTime::BEGINNING_OF_TIME)
-                     prevTime = data.time;
-                  del = data.time - prevTime;
-                  if(del > 1.0e-6) for(i=0; i<3; ++i) {
-                        if(ndt[i] < 0) { dt[i] = del; ndt[i]=1; break; }
-                     if(fabs(del-dt[i]) < 1.e-6) { ndt[i]++; break; }
-                  }
-                  prevTime = data.time;
                }
             }
          }
          catch(Exception& e) {
             e.addText("Error reading data of file " + filename);
             GPSTK_RETHROW(e);
-         }
-
-         nominalTimeStep = dt[0];
-         for(i=1; i<3; i++) if(ndt[i] > ndt[0]) {
-            nominalTimeStep = dt[i];
-            ndt[0] = ndt[i];
          }
 
          // close
