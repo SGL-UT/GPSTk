@@ -27,7 +27,7 @@
 //
 //============================================================================
 
-//#include "Geodetic.hpp"
+#include "Position.hpp"
 #include "NavProc.hpp"
 
 #include "RinexConverters.hpp"
@@ -299,7 +299,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
          return;
       }
       
-      DayTime howTime(week, umsg.getHOWTime());
+      CommonTime howTime(week, umsg.getHOWTime());
       if (howTime == umsg.time)
       {
          if (verboseLevel && ! (bugMask & 0x4))
