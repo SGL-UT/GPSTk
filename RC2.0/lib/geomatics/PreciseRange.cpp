@@ -86,7 +86,7 @@ namespace gpstk
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
 
       // update the transmit time for sat clk bias + relativity
-      transmit -= svPosVel.dtime;   // NB. getXvt has dtime = relativity + clock bias
+      transmit -= svPosVel.clkbias + svPosVel.relcorr;
 
       // Sagnac effect
       // ref. Ashby and Spilker, GPS: Theory and Application, 1996 Vol 1, pg 673.
@@ -114,13 +114,13 @@ namespace gpstk
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
 
       // ----------------------------------------------------------
-      // compute relativity separate from satellite clock
-      relativity = RelativityCorrection(SatR,SatV) * ell.c();
+      //// compute relativity separate from satellite clock
+      //relativity = RelativityCorrection(SatR,SatV) * ell.c();
 
-      // relativity correction is added to dtime by XvtStore::getPrnXvt();
-      // remove it here so clk bias and relativity can be used separately
-      satclkbias = svPosVel.dtime * ell.c() - relativity;
-      satclkdrift = svPosVel.ddtime * ell.c();
+      // save relativity (m), clock bias (m) and drift (m/s)
+      relativity = svPosVel.relcorr * ell.c();
+      satclkbias = svPosVel.clkbias * ell.c();
+      satclkdrift = svPosVel.clkdrift * ell.c();
    
       // correct for Earth rotation
       double sxyz[3], wt;
@@ -204,17 +204,18 @@ namespace gpstk
    
 
    //------------------------------------------------------------------
-   double RelativityCorrection(const Position& R, const Position& V)
-   {
-      // relativity correction is added to dtime by the
-      // XvtStore::getPrnXvt routines...
-      // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
-      // compute it separately here, in units seconds.
-      double dtr = -2*(R.X()/C_GPS_M)*(V.X()/C_GPS_M)
-                   -2*(R.Y()/C_GPS_M)*(V.Y()/C_GPS_M)
-                   -2*(R.Z()/C_GPS_M)*(V.Z()/C_GPS_M);
+   //// should be unnecessary now
+   //double RelativityCorrection(const Position& R, const Position& V)
+   //{
+   //   // relativity correction is added to dtime by the
+   //   // XvtStore::getPrnXvt routines...
+   //   // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
+   //   // compute it separately here, in units seconds.
+   //   double dtr = -2*(R.X()/C_GPS_M)*(V.X()/C_GPS_M)
+   //                -2*(R.Y()/C_GPS_M)*(V.Y()/C_GPS_M)
+   //                -2*(R.Z()/C_GPS_M)*(V.Z()/C_GPS_M);
    
-      return dtr;
-   }
+   //   return dtr;
+   //}
    
 }  // namespace gpstk

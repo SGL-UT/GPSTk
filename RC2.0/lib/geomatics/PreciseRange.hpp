@@ -180,8 +180,8 @@ namespace gpstk
 
    }; // end class PreciseRange
 
-   /// Compute relativity correction (meters) from the satellite position and velocity
-   double RelativityCorrection(const Position& R, const Position& V);
+   // Compute relativity correction (meters) from the satellite position and velocity
+   //double RelativityCorrection(const Position& R, const Position& V);
 
    //@}
 
