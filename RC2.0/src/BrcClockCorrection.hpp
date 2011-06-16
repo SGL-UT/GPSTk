@@ -49,8 +49,11 @@
 
 #include "EngNav.hpp"
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "ObsID.hpp"
+
+//Additional Class Added
+#include "CivilTime.hpp"
 
 namespace gpstk
 {
@@ -98,7 +101,7 @@ namespace gpstk
 
          /// Returns the epoch time (time of clock) from this ephemeris, correcting
          /// for half weeks and HOW time
-      DayTime getEpochTime() const throw(gpstk::InvalidRequest);
+      CommonTime getEpochTime() const throw(gpstk::InvalidRequest);
 
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const throw(gpstk::InvalidRequest);
@@ -132,14 +135,14 @@ namespace gpstk
          /** Compute the satellite clock bias (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockBias(const DayTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
-      double svClockBiasM(const DayTime& t) const throw(gpstk::InvalidRequest);
+      double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      double svClockDrift(const DayTime& t) const throw(gpstk::InvalidRequest);
+      double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /// General purpose means to load data into object
       void loadData( const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
@@ -153,7 +156,7 @@ namespace gpstk
             throw(InvalidParameter);
 
          /// Output the contents of this ephemeris to the given stream.
-      void dump(std::ostream& s = std::cout) const;
+      void dump(std::ostream& s = std::cout) const throw();
 
    protected:
          /// Overhead information

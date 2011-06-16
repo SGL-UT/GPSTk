@@ -50,8 +50,13 @@
 
 #include "StringUtils.hpp"
 #include "icd_gps_constants.hpp"
-#include "GPSGeoid.hpp"
 #include "BrcClockCorrection.hpp"
+
+//Additional Added classes
+#include "TimeSystem.hpp"
+#include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
+#include "YDSTime.hpp"
 
 #include <cmath>
 
@@ -89,10 +94,9 @@ namespace gpstk
 
 		/// Legacy GPS Subframe 1-3  
    BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
-		      const long subframe1[10] )
+		  const long subframe1[10] )
    {
-     loadData(obsIDArg, PRNID,fullweeknum,
-		      subframe1 );
+     loadData(obsIDArg, PRNID,fullweeknum,subframe1 );
    }
 
    void BrcClockCorrection::loadData(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
@@ -154,25 +158,33 @@ namespace gpstk
       return(dataLoaded);
    }
 
-   DayTime BrcClockCorrection::getEpochTime() const
+   CommonTime BrcClockCorrection::getEpochTime() const
       throw(InvalidRequest)
    {
-      DayTime toReturn(0.L);
-         toReturn.setGPSfullweek(getFullWeek(), getToc());
+      CommonTime toReturn;
+      if (SatSystemID == 'G' )
+         toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GPS);
+      else if (SatSystemID == 'E' )
+         toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GAL);
+      else
+      {
+         InvalidRequest exc("Invalid Time System in BrcKeplerOrbit::getOrbitEpoch()");
+         GPSTK_THROW(exc);
+      }
       return toReturn;
    }
 
-   double BrcClockCorrection::svClockBias(const DayTime& t) const
+   double BrcClockCorrection::svClockBias(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       double dtc,elaptc;
       elaptc = t - getEpochTime();
-      dtc = getAf0() + elaptc * ( getAf1() + elaptc * getAf2() );
+      dtc = af0 + elaptc * ( af1 + elaptc * af2 );
 
       return dtc;
    }
 
-   double BrcClockCorrection::svClockBiasM(const DayTime& t) const
+   double BrcClockCorrection::svClockBiasM(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       double ret = svClockBias(t);
@@ -180,12 +192,12 @@ namespace gpstk
       return (ret);
    }
 
-   double BrcClockCorrection::svClockDrift(const DayTime& t) const
+   double BrcClockCorrection::svClockDrift(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
       double drift,elaptc;
       elaptc = t - getEpochTime();
-      drift = getAf1() + elaptc * getAf2();
+      drift = af1 + elaptc * af2;
       return drift;
    }
 
@@ -264,6 +276,128 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       return af2;
-   }             
+   }
+
+   static void timeDisplay( ostream & os, const CommonTime& t )
+   {
+         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+      GPSWeekSecond dummyTime;
+      dummyTime = GPSWeekSecond(t);
+//      os << setw(4) << dummyTime.week;
+//      os << "(     )  ";
+      os << setw(4) << dummyTime.week << "(";
+      os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
+      os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
+
+      switch (dummyTime.getDayOfWeek())
+      {
+         case 0: os << "Sun-0"; break;
+         case 1: os << "Mon-1"; break;
+         case 2: os << "Tue-2"; break;
+         case 3: os << "Wed-3"; break;
+         case 4: os << "Thu-4"; break;
+         case 5: os << "Fri-5"; break;
+         case 6: os << "Sat-6"; break;
+         default: break;
+      }
+      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
+         << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
+   }
+
+
+   static void shortcut(ostream & os, const long HOW )
+   {
+      short DOW, hour, min, sec;
+      long SOD, SOW;
+      short SOH;
+      
+      SOW = static_cast<long>( HOW );
+      DOW = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
+      hour = static_cast<short>( SOD/3600 );
+
+      SOH = static_cast<short>( SOD - (hour*3600) );
+      min = SOH/60;
+
+      sec = SOH - min * 60;
+      switch (DOW)
+      {
+         case 0: os << "Sun-0"; break;
+         case 1: os << "Mon-1"; break;
+         case 2: os << "Tue-2"; break;
+         case 3: os << "Wed-3"; break;
+         case 4: os << "Thu-4"; break;
+         case 5: os << "Fri-5"; break;
+         case 6: os << "Sat-6"; break;
+         default: break;
+      }
+
+      os << ":" << setfill('0')
+         << setw(2) << hour
+         << ":" << setw(2) << min
+         << ":" << setw(2) << sec
+         << setfill(' ');
+   }
+
+   void BrcClockCorrection :: dump(ostream& s) const
+      throw()
+   {
+      ios::fmtflags oldFlags = s.flags();
+   
+      s.setf(ios::fixed, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.setf(ios::uppercase);
+      s.precision(0);
+      s.fill(' ');
+      
+      s << "****************************************************************"
+        << "************" << endl
+        << "Broadcast Ephemeris (Engineering Units)" << endl
+        << endl
+        << "PRN : " << setw(2) << PRNID << endl
+        << endl;
+  
+
+      s << "              Week(10bt)     SOW     DOW   UTD     SOD"
+        << "   MM/DD/YYYY   HH:MM:SS\n";
+      s << "Clock Epoch:  ";
+
+      timeDisplay(s, getEpochTime());
+      s << endl;
+  
+      
+      s.setf(ios::scientific, ios::floatfield);
+      s.precision(8);
+      
+      s << endl
+        << "           CLOCK"
+        << endl
+        << endl
+        << "Bias T0:     " << setw(16) << af0 << " sec" << endl
+        << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
+        << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl;
+        /*<< "Group delay: " << setw(16) << Tgd << " sec" << endl;*/
+    
+                              
+   } // end of SF123::dump()
+   
+   ostream& operator<<(ostream& s, const BrcClockCorrection& eph)
+   {
+      eph.dump(s);
+      return s;
+
+/* this appears to be more like the dump_eph_table routine of gappc
+ * which dumped the bce table.
+
+      s.setf(ios::right);
+      s << "prn:" << setw(2) << eph.PRNID
+        << ", HOW[0]:" << hex  << setfill('0') << setw(5) << eph.getHOWTime(1)
+        << ", IODC:" << hex << setw(3) << eph.getIODC()
+        << dec << setfill(' ') << setw(0)
+        << ", Toe: [" << bcClock.getToc()-1800*eph.getFitInt()
+        << "..." << bcClock.getToc()+1800*eph.getFitInt()
+        << ")";
+*/
+   } // end of operator<<             
        
 } // namespace
