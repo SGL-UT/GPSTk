@@ -29,7 +29,7 @@
 #include <list>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
@@ -55,7 +55,7 @@ TimeNamedFileStream<ofstream> matlabObs;
 
 void log(const string& message)
 {
-   DayTime currentEpoch;
+   CommonTime currentEpoch;
    string entry = currentEpoch.printf(" %02m/%02d/%04Y %02H:%02M:%04.1f - ") +
       message;
    logList.push_back(entry);
@@ -196,7 +196,7 @@ int main(int argc, char *argv[])
       string matlabObsFileSpec("obs%03j%02y.txt");
       string defaultPort("/dev/ttyS0");
  
-      DayTime currentEpoch;
+      CommonTime currentEpoch;
       bool gotGPSEpoch = false;
 
       // Process user options********************************************************   
@@ -273,7 +273,7 @@ int main(int argc, char *argv[])
       const size_t buff2size=400;
       char buff2[buff2size];
       string msgBuffer;
-      DayTime pollEphTime;
+      CommonTime pollEphTime;
       bool firstPollDone=false;
 
       bool readStream=true;
