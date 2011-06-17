@@ -38,7 +38,7 @@ void xUnixTime :: setFromInfoTest (void)
 {
 	gpstk::UnixTime setFromInfo1;
 	gpstk::UnixTime setFromInfo2;
-	
+
 	gpstk::TimeTag::IdToValue Id;
 	Id.insert(make_pair('U',"1350000"));
 	Id.insert(make_pair('u',"0"));
@@ -46,20 +46,20 @@ void xUnixTime :: setFromInfoTest (void)
 	Id.erase('U');
 	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
-	
+
 	out << setFromInfo1 << endl;
 	out << setFromInfo2 << endl;
 }
 
 void xUnixTime :: operatorTest (void)
 {
-	
+
 	gpstk::UnixTime Compare(1350000, 100);
 	gpstk::UnixTime LessThanSec(1340000, 100);
 	gpstk::UnixTime LessThanMicroSec(1350000,0);
-	
+
 	gpstk::UnixTime CompareCopy(Compare);
-	
+
 	gpstk::UnixTime CompareCopy2;
 	CompareCopy2 = CompareCopy;
 	//Equality Assertion
@@ -78,8 +78,8 @@ void xUnixTime :: operatorTest (void)
 	//Greater than equals assertion
 	CPPUNIT_ASSERT(Compare >= LessThanSec);
 	CPPUNIT_ASSERT(Compare >= CompareCopy);
-	
-	gpstk::CommonTime Rollover(2451871,1,.9999999999999);
+
+	gpstk::CommonTime Rollover(1,1,.9999999999999);
 	gpstk::UnixTime Temp;
   	Temp.convertFromCommonTime(Rollover);
 

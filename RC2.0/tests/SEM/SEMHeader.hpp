@@ -63,6 +63,12 @@ namespace gpstk
          /// Destructor
       virtual ~SEMHeader() {}
 
+         /// This is is the nearest full GPS week to the 10-bit week
+         /// available in the SEM file.  If this value is 0 it is ignored.
+         /// Otherwise, the 10-bit week is moved into the GPS Epoch
+         /// centered on the given full week.
+      static short nearFullWeek;
+
       short numRecords;
       std::string Title;
       short week;
