@@ -33,8 +33,8 @@ template <class FileData>
 struct NullTimeFilter : public std::unary_function<FileData, bool>
 {
 public:
-   NullTimeFilter(const gpstk::DayTime& startTime,
-                  const gpstk::DayTime& endTime)
+   NullTimeFilter(const gpstk::CommonTime& startTime,
+                  const gpstk::CommonTime& endTime)
    {}
 
    bool operator() (const FileData& l) const
@@ -63,8 +63,8 @@ public:
                      " = \"end of time\")"),
          inputFileOption("Each input file is checked for errors.", true),
          quitOnFirstError(false),
-         startTime(gpstk::DayTime::BEGINNING_OF_TIME),
-         endTime(gpstk::DayTime::END_OF_TIME)
+         startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+         endTime(gpstk::CommonTime::END_OF_TIME)
    {
       timeOption.setMaxCount(1);
       eTimeOption.setMaxCount(1);
@@ -162,7 +162,7 @@ protected:
    gpstk::CommandOptionRest inputFileOption;
    
    bool quitOnFirstError;
-   gpstk::DayTime startTime, endTime;
+   gpstk::CommonTime startTime, endTime;
    
 };
 
