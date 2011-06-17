@@ -72,7 +72,7 @@ protected:
 
 private:
    void printCurrentFilter();
-   void getNewTime(DayTime& dt);
+   void getNewTime(CommonTime& dt);
    void getFICBlocks();
    void getSVs();
 
@@ -93,7 +93,7 @@ private:
       /// command option for using a RINEX navigation message file (vice FIC)
    CommandOptionNoArg rinexOption;
 
-   DayTime startTime, endTime;
+   CommonTime startTime, endTime;
    list<long> prnFilterList;
    list<long> blockFilterList;
    
@@ -121,7 +121,7 @@ NavDump::NavDump(char* arg0)
         rinexOption('r',"RINEX", "Assume input file is a RINEX navigation"
                          " message file"),
         startTime(0,0.0),
-        endTime(DayTime::END_OF_TIME)
+        endTime(CommonTime::END_OF_TIME)
 {
    seTimeOptions.addOption(&timeOption);
    seTimeOptions.addOption(&eTimeOption);   
@@ -312,7 +312,7 @@ void NavDump::getSVs()
       }
 }
 
-void NavDump::getNewTime(DayTime& dt)
+void NavDump::getNewTime(CommonTime& dt)
 {
    short week = -1;
    double SOW;
@@ -369,9 +369,9 @@ void NavDump::process()
          data.filter(FICDataFilterBlock(blockFilterList));
       if (!prnFilterList.empty()) // prn filter
          data.filter(FICDataFilterPRN(prnFilterList));
-      if (startTime > DayTime(0,0.0)) // start time filter
+      if (startTime > CommonTime(0,0.0)) // start time filter
          data.filter(FICDataFilterStartTime(startTime));
-      if (endTime < DayTime::END_OF_TIME) // end time filter
+      if (endTime < CommonTime::END_OF_TIME) // end time filter
          data.filter(FICDataFilterEndTime(endTime));
       
       list<FICData>& ficlist = data.getData();

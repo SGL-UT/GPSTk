@@ -75,7 +75,7 @@ int main(int argc, char* argv[])
    for (i=0;(i < fileOption.getCount());i++)
    {
       RinexObsStream ros(fileOption.getValue()[i].c_str());
-      DayTime nextTime;
+      CommonTime nextTime;
       bool firstRecord=true;
 
       RinexObsData data;

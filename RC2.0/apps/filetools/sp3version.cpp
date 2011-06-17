@@ -38,7 +38,7 @@
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 
 using namespace std;
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
       char version_out='a',version_in;
       int i,n;
       string filein,fileout("sp3.out");
-      DayTime currentTime=DayTime::BEGINNING_OF_TIME;
+      CommonTime currentTime=CommonTime::BEGINNING_OF_TIME;
       SP3Header sp3header;
       SP3Data sp3data;
       vector<string> comments;

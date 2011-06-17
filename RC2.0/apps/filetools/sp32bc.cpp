@@ -40,7 +40,7 @@
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "StringUtils.hpp"
 #include "CommandOptionParser.hpp"

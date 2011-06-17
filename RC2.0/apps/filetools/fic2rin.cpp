@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
       rnh.fileProgram = "fic2rin";
       rnh.fileAgency = "";
       ostringstream ostr;
-      ostr << DayTime();
+      ostr << CommonTime();
       rnh.date = ostr.str();
       rnh.version = 2.1;
       rnh.valid |= RinexNavHeader::versionValid;
@@ -134,7 +134,7 @@ int main(int argc, char* argv[])
       while (itr != ficList.end())
       {
             // use TOE and transmit week number to determine time
-         DayTime time;
+         CommonTime time;
          if( (*itr).blockNum == 9 ) // block 9
             time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
          else // block 109
