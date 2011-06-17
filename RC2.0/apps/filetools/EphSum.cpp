@@ -297,7 +297,7 @@ void EphSum::process()
          for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
          {
             EngEphemeris ee = ci ->second;
-            DayTime xmit = ee.getTransmitTime();
+            CommonTime xmit = ee.getTransmitTime();
             eemapXmit.insert(make_pair(xmit,ee));
          } 
          
@@ -330,8 +330,8 @@ void EphSum::process()
 	     * to the most recent even two hour epoch and considered the beginning time
 	     * of effectivity for end of effectivity. 
 	    */
-         DayTime begEff = ee.getTransmitTime();
-	 DayTime epochTime = ee.getEphemerisEpoch();
+         CommonTime begEff = ee.getTransmitTime();
+	 CommonTime epochTime = ee.getEphemerisEpoch();
 	 long TWO_HOURS = 7200;
          long epochRemainder = (long) epochTime.GPSsow() % TWO_HOURS;
 	 long  xmitRemainder = (long) begEff.GPSsow() % TWO_HOURS;
@@ -342,7 +342,7 @@ void EphSum::process()
 
 	 short fitIntervalHours = ee.getFitInterval();
 	 short ONE_HOUR = 3600;
-	 DayTime endEff = begEff + ONE_HOUR * fitIntervalHours;
+	 CommonTime endEff = begEff + ONE_HOUR * fitIntervalHours;
 
          fprintf(logfp,"  %02d ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
                i,
