@@ -42,7 +42,7 @@
 #include <list>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
@@ -77,7 +77,8 @@ public:
       : week(-1),
         InOutFramework<AshtechStream,MDPStream>(
            applName, "Converts Ashtech Z(Y)-12 serial streaming format to "
-           "MDP format.")
+           "MDP format. This makes for a good input to mdp2rinex for generating "
+           "RINEX data from ashtech data.")
    {}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -86,18 +87,41 @@ public:
           'w', "week",
           "The full GPS week in which this data starts");
 
+       CommandOptionWithAnyArg clipOption(
+          'c', "clip",
+          "A string that specifies a section of the file to remove. Example: "
+          "-c 123-456 will remove bytes starting with 123 through 456.");
+
        if (!InOutFramework<AshtechStream, MDPStream>::initialize(argc,argv))
          return false;
 
       if (weekOption.getCount())
          week = StringUtils::asInt(weekOption.getValue()[0]);
 
-      AshtechData::debugLevel = debugLevel;
+      AshtechData::debugLevel = debugLevel>1?debugLevel-1:0;
       if (debugLevel>2)
          AshtechData::hexDump = true;
 
       if (debugLevel>4)
          MDPHeader::hexDump = true;
+
+      for (int i=0; i<clipOption.getCount(); i++)
+      {
+         string s=clipOption.getValue()[i];
+         int sep = s.find_first_not_of("0123456789kKMG");
+         unsigned long start = StringUtils::asUnsigned(s.substr(0,sep));
+         unsigned long end = StringUtils::asUnsigned(
+            s.substr(sep+1,std::string::npos));
+         cutList.push_back( pair< unsigned long, unsigned long>(start, end) );
+      }
+
+      if (debugLevel)
+      {
+         cout << "Removing bytes:";
+         for (CutList::const_iterator i=cutList.begin(); i != cutList.end(); i++)
+            cout << " " << i->first << "..." << i->second;
+         cout << endl;
+      }
 
       return true;
    }
@@ -124,15 +148,32 @@ protected:
       unsigned short fc=0;
       vector<MDPObsEpoch> hint(33);
       short svCount = 0;
+      double dt = 0;
+      long pben_count = 0;
 
       while (input >> hdr)
       {
          if (debugLevel>2)
             cout << "---" << endl;
+
+         bool skip=false;
+         CutList::const_iterator i;
+         for (i = cutList.begin(); i != cutList.end() && !skip; i++)
+         {
+            size_t cb=input.tellg();
+            skip = cb >= i->first && cb <= i->second;
+            if (skip && debugLevel)
+               cout << "x:" << cb << ",";
+         }
+         if (skip)
+            continue;
+
          if (pben.checkId(hdr.id) && (input >> pben) && pben)
          {
             if (debugLevel>2)
                pben.dump(cout);
+
+            pben_count++;
 
             svCount = 0;
 
@@ -140,33 +181,42 @@ protected:
             if (!knowWeek)
                continue;
 
-            if (!knowSOW)
+            if (pben_count==1)
             {
-               knowSOW=true;
                time.sow = pben.sow;
-               if (debugLevel)
-                  cout << "sow is: " << time.sow << endl;
-            }
-            else
-            {
-               double dt = pben.sow - time.sow;
-               time.sow = pben.sow;
-               if (std::abs(dt) > HALFWEEK)
-               {
-                  time.week++;
-                  if (debugLevel)
-                     cout << "Bumped week. Time is now " << time << " (dt:" << dt << ")" << endl;
-               }
+               continue;
             }
 
-            if (knowSOW && knowWeek)
+            knowSOW = true;
+            
+            double this_dt = pben.sow - time.sow;
+            time.sow = pben.sow;
+
+            if (dt==0 && this_dt>0)
+               dt = this_dt;
+            else if (this_dt <= 0)
             {
-               MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
-               pvt.freshnessCount = fc++;
-               output << pvt << flush;
-               if (debugLevel>3)
-                  pvt.dump(cout);
+               dt = 0;
+               knowSOW = false;
+               continue;
             }
+            else if (dt>0 && std::abs(this_dt) > HALFWEEK)
+            {
+               time.week++;
+               if (debugLevel)
+                  cout << "Bumped week." << this_dt << endl;
+            }
+
+            if (debugLevel)
+               cout << "PVT time: "
+                    << CommonTime(time.week, time.sow).printf("%03j %02H:%02M:%04.1f")
+                    << endl;
+
+            MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
+            pvt.freshnessCount = fc++;
+            output << pvt << flush;
+            if (debugLevel>3)
+               pvt.dump(cout);
          }
          else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          {
@@ -177,7 +227,7 @@ protected:
 
             if (knowSOW && knowWeek)
             {
-               hint[mben.svprn].time = DayTime(time.week, time.sow);
+               hint[mben.svprn].time = CommonTime(time.week, time.sow);
                hint[mben.svprn].numSVs = svCount;
                MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
                moe.freshnessCount = fc++;
@@ -205,7 +255,7 @@ protected:
                if (makeEngEphemeris(engEph, ephPageStore))
                {
                   int week10 = 0x3ff & engEph.getFullWeek();
-                  DayTime now;
+                  CommonTime now;
                   time.week = (now.GPSfullweek() & ~0x3ff) | week10;
                   if (debugLevel)
                      cout << "week is " << time.week << endl;
@@ -226,7 +276,7 @@ protected:
                long sow = sf.getHOWTime();
                if (sow>FULLWEEK || sow<0)
                   continue;
-               DayTime t = DayTime(time.week, sf.getHOWTime()) - 6;
+               CommonTime t = CommonTime(time.week, sf.getHOWTime()) - 6;
                sf.freshnessCount = fc++;
                sf.time = t;
                output << sf << flush;
@@ -250,6 +300,8 @@ protected:
 
    GPSWeekSecond time;
    int week;
+   typedef  list< pair<unsigned long,unsigned long> >CutList;
+   CutList cutList;
 };
 
 
