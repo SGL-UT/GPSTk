@@ -107,7 +107,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                 EphReader::formatsUnderstood() + ".", true),
      
      rxPosOpt('p', "position",
-              "Receiver antenna position in ECEF (x,y,z) coordinates.  Format "
+              "Receiver antenna position in Position (x,y,z) coordinates.  Format "
               "as a string: \"X Y Z\"."),
      
      ignorePrnOpt('\0', "ignore-prn",
@@ -119,7 +119,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      msidOpt('m', "msid", "Station to process data for. Used to select "
                 "a station position from the msc file."),
      
-     timeFmtOpt('t', "time-format", "Daytime format specifier used for "
+     timeFmtOpt('t', "time-format", "CommonTime format specifier used for "
                    "times in the output. The default is \"" 
                    + timeFormat + "\"."),
      
@@ -217,12 +217,12 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    if (startTimeOpt.getCount())
       startTime = startTimeOpt.getTime()[0];
    else
-      startTime = DayTime::BEGINNING_OF_TIME;
+      startTime = CommonTime::BEGINNING_OF_TIME;
 
    if (stopTimeOpt.getCount())
       stopTime = stopTimeOpt.getTime()[0];
    else
-      stopTime = DayTime::END_OF_TIME;
+      stopTime = CommonTime::END_OF_TIME;
 
    if (timeSpanOpt.getCount())
       timeSpan = StringUtils::asDouble(timeSpanOpt.getValue()[0]);
@@ -673,9 +673,9 @@ void DataAvailabilityAnalyzer::processEpoch(
    const ObsEpoch& oe,
    const ObsEpoch& prev_oe)
 {
-   ECEF rxpos(ap);
+   Position rxpos(ap);
    
-   for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
+   for (CommonTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
       // Update the SV positions and compute how many are above the tracking
       // elevation, above the mask elevation, and are expected to to be
@@ -813,7 +813,7 @@ void DataAvailabilityAnalyzer::processEpoch(
             } // else
          }    // else      
       }       // for (int prn=1; prn<=MAX_PRN; prn++)
-   }          // for (DayTime t=prev_oe.time+epochRate;t<=oe.time;t+= epochRate)
+   }          // for (CommonTime t=prev_oe.time+epochRate;t<=oe.time;t+= epochRate)
 }             // void DataAvailabilityAnalyzer::processEpoch()
 
 
@@ -837,10 +837,10 @@ void DataAvailabilityAnalyzer::shutDown()
 //------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::InView::update(
    short prn,
-   const DayTime& time,
-   const ECEF& rxpos,
+   const CommonTime& time,
+   const Position& rxpos,
    const EphemerisStore& eph,
-   GeoidModel& gm,
+   EllipsoidModel& gm,
    float maskAngle,
    float trackAngle)
 {
@@ -909,7 +909,7 @@ void DataAvailabilityAnalyzer::InView::update(
 void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
    const
 {
-   DayTime t0 = time - span;
+   CommonTime t0 = time - span;
    double timeUp     = t0 - firstEpoch;
    double timeUpMask = t0 - firstEpochAboveMask;
    char dir;
@@ -988,11 +988,11 @@ void DataAvailabilityAnalyzer::outputSummary()
           << endl
           << "Analysis span: ";
 
-   if (startTime !=  DayTime::BEGINNING_OF_TIME)
+   if (startTime !=  CommonTime::BEGINNING_OF_TIME)
       output << startTime << " through ";
    else
       output << firstEpochTime << " through ";
-   if (stopTime != DayTime::END_OF_TIME)
+   if (stopTime != CommonTime::END_OF_TIME)
       output << stopTime << endl;
    else
       output << lastEpochTime << endl;
@@ -1033,8 +1033,8 @@ void DataAvailabilityAnalyzer::outputSummary()
    }
 }
 
-void DataAvailabilityAnalyzer::fillMissingList(const DayTime& from,
-                                               const DayTime& to)
+void DataAvailabilityAnalyzer::fillMissingList(const CommonTime& from,
+                                               const CommonTime& to)
 {
    if (verboseLevel > 1)
       cout << "Filling missing epochs: "<< from
@@ -1042,7 +1042,7 @@ void DataAvailabilityAnalyzer::fillMissingList(const DayTime& from,
       /// @todo The math controlling this for loop bugs me in a 
       ///  floating-point-error kind of way.  It's the same math that's
       ///  used in processEpoch(), so I'm going to ignore it for now.
-   for (DayTime t = from; t < to; t += epochRate)
+   for (CommonTime t = from; t < to; t += epochRate)
    {
       InView iv;
       iv.prn = 0;

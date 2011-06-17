@@ -49,7 +49,7 @@
 
 #include "BasicFramework.hpp"
 #include "CommandOptionWithTimeArg.hpp"
-#include "GPSGeoid.hpp"
+#include "GPSEllipsoid.hpp"
 #include "MiscMath.hpp"
 #include "ObsRngDev.hpp"
 #include "SatID.hpp"
@@ -91,11 +91,11 @@ private:
 
    gpstk::CommandOptionWithTimeArg startTimeOpt, stopTimeOpt;
 
-   gpstk::DayTime startTime, stopTime;
+   gpstk::CommonTime startTime, stopTime;
    double timeSpan, timeMask;
    double epochRate;
    double snrThreshold;
-   gpstk::DayTime firstEpochTime, lastEpochTime;
+   gpstk::CommonTime firstEpochTime, lastEpochTime;
    
    // these are counters used in the summary
    unsigned long epochCounter;
@@ -117,7 +117,7 @@ private:
 
    typedef std::map<ObsItemEnum, std::string> ObsItemName;
    typedef std::map<std::string, ObsItemEnum> ObsItemId;
-   typedef std::map<gpstk::DayTime, int> SVsInView;
+   typedef std::map<gpstk::CommonTime, int> SVsInView;
 
    ObsItemName obsItemName;
    ObsItemId obsItemId;
@@ -126,7 +126,7 @@ private:
    bool badHealthMask, smashAdjacent, ignoreEdges;
 
    EphemerisStore* eph;
-   gpstk::GPSGeoid gm;
+   gpstk::GPSEllipsoid gm;
    gpstk::Triple antennaPos;
    bool haveAntennaPos;
    long msid;
@@ -145,15 +145,15 @@ public:
 
       void update(
          short prn,
-         const gpstk::DayTime& time,
-         const gpstk::ECEF& rxpos,
+         const gpstk::CommonTime& time,
+         const gpstk::Position& rxpos,
          const EphemerisStore& eph,
-         gpstk::GeoidModel& gm,
+         gpstk::EllipsoidModel& gm,
          float maskAngle, 
          float trackAngle);
 
       short prn;
-      gpstk::DayTime time;
+      gpstk::CommonTime time;
 
       // This is a list of all obs that are changed in the current epoch. Lost
       // is defined as present in the previous epoch but not present in the 
@@ -171,7 +171,7 @@ public:
       bool rising;
 
       // First epoch when this SV had an elevation greater than 0 
-      gpstk::DayTime firstEpoch;
+      gpstk::CommonTime firstEpoch;
 
       // Set true when this SV has risen above the 'mask angle'
       // It is not cleared when the SV goes back below the mask angle.
@@ -179,7 +179,7 @@ public:
 
       // First epoch when this SV had an elevation greater than the
       // 'mask angle'. Not valid unles aboveMask is true.
-      gpstk::DayTime firstEpochAboveMask;
+      gpstk::CommonTime firstEpochAboveMask;
 
       // Number of epochs received from this SV during this pass
       unsigned long epochCount;
@@ -245,8 +245,8 @@ public:
    
       // Fill the MissingList with "all prns" epochs from "from" time to 
       // "to" time.
-   void fillMissingList(const gpstk::DayTime& from, 
-                        const gpstk::DayTime& to);
+   void fillMissingList(const gpstk::CommonTime& from, 
+                        const gpstk::CommonTime& to);
 
    std::map<int, InView> inView;                         
 
