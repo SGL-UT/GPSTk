@@ -27,7 +27,7 @@
 // GPSTk
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SolarSystem.hpp"
 #include "logstream.hpp"
 
@@ -61,7 +61,7 @@ try {
 
    // locals
    int i,iret=0;
-   DayTime CurrEpoch;         // defaults to current local time
+   CommonTime CurrEpoch;         // defaults to current local time
    SolarSystem eph;
 
    // program name, title and version
