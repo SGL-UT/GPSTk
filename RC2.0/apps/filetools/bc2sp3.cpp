@@ -41,7 +41,7 @@
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "StringUtils.hpp"
 
@@ -74,9 +74,9 @@ int main(int argc, char *argv[])
       vector<string> inputFiles;
       vector<string> comments;
       map<SatID,long> IODEmap;
-      DayTime begTime=DayTime::BEGINNING_OF_TIME;
-      DayTime endTime=DayTime::END_OF_TIME;
-      DayTime tt;
+      CommonTime begTime=CommonTime::BEGINNING_OF_TIME;
+      CommonTime endTime=CommonTime::END_OF_TIME;
+      CommonTime tt;
       GPSEphemerisStore BCEph;
       SP3Header sp3header;
       SP3Data sp3data;
@@ -170,9 +170,9 @@ int main(int argc, char *argv[])
       }
 
       // time limits, if not given by user
-      if(begTime == DayTime::BEGINNING_OF_TIME)
+      if(begTime == CommonTime::BEGINNING_OF_TIME)
          begTime = BCEph.getInitialTime();
-      if(endTime == DayTime::END_OF_TIME)
+      if(endTime == CommonTime::END_OF_TIME)
          endTime = BCEph.getFinalTime();
 
       // define the data version and the header info
@@ -191,7 +191,7 @@ int main(int argc, char *argv[])
 
       // fill the header
       sp3header.pvFlag = 'V';
-      sp3header.time = DayTime::END_OF_TIME;
+      sp3header.time = CommonTime::END_OF_TIME;
       sp3header.epochInterval = 900.0;          // hardcoded here only
       sp3header.dataUsed = "BCE";
       sp3header.coordSystem = "WGS84";
