@@ -63,7 +63,7 @@
 
 // Library
 #include "BasicFramework.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "icd_gps_constants.hpp"
 
 // Project
@@ -181,7 +181,7 @@ void ConstellationList::process()
 
    int DOY = StringUtils::asInt( DOYOption.getValue().front() );
 
-   DayTime dt = DayTime( (short) year, (short) DOY, (DayTime::SEC_DAY / 2));
+   CommonTime dt = CommonTime( (short) year, (short) DOY, (CommonTime::SEC_DAY / 2));
 
       // Try some samples
    ConstellationDefinition cd = cs.findCD( dt );

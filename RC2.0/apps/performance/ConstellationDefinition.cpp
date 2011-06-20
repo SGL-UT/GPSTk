@@ -53,7 +53,7 @@ using namespace std;
 using namespace gpstk;
 
 ConstellationDefinition::ConstellationDefinition( ):
-   effectiveDate( DayTime::BEGINNING_OF_TIME )
+   effectiveDate( CommonTime::BEGINNING_OF_TIME )
    { }
 
 bool ConstellationDefinition::inBase24( const SatID SV ) const
@@ -116,10 +116,10 @@ void ConstellationDefinition::setPlaneSlot( const SatID SV, const SlotDef sd )
    SVsToSlots.insert( make_pair( SV, sd ) );
 }
 
-void ConstellationDefinition::setEffectiveTime( const gpstk::DayTime dt )
+void ConstellationDefinition::setEffectiveTime( const gpstk::CommonTime dt )
 {
    effectiveDate = dt;
-   effectiveDate.setSecOfDay( (DayTime::SEC_DAY/2) );
+   effectiveDate.setSecOfDay( (CommonTime::SEC_DAY/2) );
 }
 
 void ConstellationDefinition::setSVNforPRN( const SatID SV, const int SVN )
@@ -129,7 +129,7 @@ void ConstellationDefinition::setSVNforPRN( const SatID SV, const int SVN )
 
 void ConstellationDefinition::clearDefinition( )
 {
-   effectiveDate = DayTime::BEGINNING_OF_TIME;
+   effectiveDate = CommonTime::BEGINNING_OF_TIME;
    SlotsToSVs.clear();
    SVsToSlots.clear();
 }

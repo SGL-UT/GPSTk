@@ -58,24 +58,24 @@ ConstellationSet::ConstellationSet( const std::string filename, FileType ftype )
 }
 
 
-gpstk::DayTime ConstellationSet::getEarliestDate() const
+gpstk::CommonTime ConstellationSet::getEarliestDate() const
          throw(NoConstellationFound)
 {
    CI ci = cdMap.begin();
    if (ci!=cdMap.end())
    {
       const ConstellationDefinition& cd = ci->second;
-      DayTime dt = cd.getDate();
+      CommonTime dt = cd.getDate();
       return( dt );
    }
    ConstellationSet::NoConstellationFound exc("No Constellation Definitions Loaded");
    GPSTK_THROW(exc);   
 }
 
-gpstk::DayTime ConstellationSet::getLatestDate() const
+gpstk::CommonTime ConstellationSet::getLatestDate() const
          throw(NoConstellationFound)
 {
-   std::map<gpstk::DayTime,ConstellationDefinition>::const_reverse_iterator cri
+   std::map<gpstk::CommonTime,ConstellationDefinition>::const_reverse_iterator cri
                                                               = cdMap.rbegin();
    if (cri!=cdMap.rend()) return( cri->second.getDate() ); 
 
@@ -107,11 +107,11 @@ void ConstellationSet::dump( FILE * logfp) const
    }
 }
 
-ConstellationDefinition ConstellationSet::findCD( const gpstk::DayTime dt ) const
+ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) const
          throw(NoConstellationFound)
 {
-   DayTime localDT = dt;
-   localDT.setSecOfDay(  (DayTime::SEC_DAY/2) );   // Set to noon to match CDs
+   CommonTime localDT = dt;
+   localDT.setSecOfDay(  (CommonTime::SEC_DAY/2) );   // Set to noon to match CDs
    
       // Best case (hopefully nominal) is that there is a definition
       // available for the date in question.
@@ -130,12 +130,12 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::DayTime dt ) cons
          // If not, start at the day of interest and back up until we
          // find a definition or hit the earliest definition
       bool done = false;
-      localDT -= DayTime::SEC_DAY;
+      localDT -= CommonTime::SEC_DAY;
       while (!done && localDT > getEarliestDate() )
       {
          ci = cdMap.find(localDT);
          if (ci!=cdMap.end()) done = true;
-         localDT -= DayTime::SEC_DAY;
+         localDT -= CommonTime::SEC_DAY;
       }
          // Did not find one before reaching the "head" of the list
       if (!done)
@@ -156,7 +156,7 @@ int ConstellationSet::loadFileOpAdvisory( const std::string filename )
    if (inf==NULL) return (1);
    int numDefFound = 0;
    char fileLine[101];
-   gpstk::DayTime date;
+   gpstk::CommonTime date;
    list<string> PRNs;
    list<string> SLOTs;
    ConstellationDefinition cd;
@@ -166,7 +166,7 @@ int ConstellationSet::loadFileOpAdvisory( const std::string filename )
       string currentLine = fileLine;
       if (currentLine.find("SUBJ: GPS STATUS") != string::npos)
       {
-         if(cd.getDate() != DayTime::BEGINNING_OF_TIME)
+         if(cd.getDate() != CommonTime::BEGINNING_OF_TIME)
          {
             //cout << date.asString() << endl;
             cdMap.insert( make_pair( date, cd ) );
@@ -204,7 +204,7 @@ int ConstellationSet::loadFileOpAdvisory( const std::string filename )
          }
       }
    }
-   if(cd.getDate() != DayTime::BEGINNING_OF_TIME)
+   if(cd.getDate() != CommonTime::BEGINNING_OF_TIME)
    {
       //cout << date.asString() << endl;
       cdMap.insert( make_pair( date, cd ) );
@@ -214,7 +214,7 @@ int ConstellationSet::loadFileOpAdvisory( const std::string filename )
    return(numDefFound);
 }
 
-gpstk::DayTime ConstellationSet::parseDate(string date)
+gpstk::CommonTime ConstellationSet::parseDate(string date)
   throw(InvalidDateString)
 {
    string whitespace = " \t\r\n";
@@ -222,15 +222,15 @@ gpstk::DayTime ConstellationSet::parseDate(string date)
    string::size_type front = date.find("STATUS");
    front = date.find_first_not_of(whitespace, front+6);
    string dateString = date.substr(front, end-front+1);
-   DayTime dt;
+   CommonTime dt;
    try
    {
       //cout << dateString << endl;
       dt.setToString(dateString, "%d %b %Y");
-      dt.setSecOfDay(  (DayTime::SEC_DAY/2) );
+      dt.setSecOfDay(  (CommonTime::SEC_DAY/2) );
       return dt;
    }
-   catch(DayTime::DayTimeException exc)
+   catch(CommonTime::CommonTimeException exc)
    {
       string s = "Invalid date: '" + dateString + "'";
       //cout << s << endl;
@@ -262,7 +262,7 @@ int ConstellationSet::loadFileARL( const std::string filename )
    if (inf==0) return(0);
    
    std::string temp;
-   DayTime tempDT;
+   CommonTime tempDT;
    string whiteSpace = " \t\n\r";
    char comma = ',';
    
@@ -308,7 +308,7 @@ int ConstellationSet::loadFileARL( const std::string filename )
                cd.setEffectiveTime( tempDT );
                inDefinition = true;
             }
-            catch(DayTime::DayTimeException e)
+            catch(CommonTime::CommonTimeException e)
             {
                // do nothing - ACTUALLY the fact that we did NOT
                // set inDefinition is the action.
@@ -374,8 +374,8 @@ int ConstellationSet::loadFileCSV( const std::string filename )
    if (inf==0) return(0);
    
    std::string temp;
-   DayTime tempDT;
-   DayTime testDT = DayTime(2008,1,1,12,0,0.0);
+   CommonTime tempDT;
+   CommonTime testDT = CommonTime(2008,1,1,12,0,0.0);
    string whiteSpace = " \t\n\r";
    char comma = ',';
    
@@ -411,7 +411,7 @@ int ConstellationSet::loadFileCSV( const std::string filename )
             tempDT.setYMDHMS( (short) y, (short)m, (short)d, 12,0,0.0);
             cd.setEffectiveTime( tempDT );
          }
-         catch(DayTime::DayTimeException e)
+         catch(CommonTime::CommonTimeException e)
          {
             // Did not successful parse a date, so 
             // reject the line.
