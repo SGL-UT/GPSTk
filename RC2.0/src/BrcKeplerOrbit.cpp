@@ -291,10 +291,10 @@ namespace gpstk
       } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
    
          // Compute true anomaly
-      q = sqrt ( 1.0e0 - lecc*lecc);
+      q     = sqrt ( 1.0e0 - lecc*lecc);
       sinea = sin(ea);
       cosea = cos(ea);
-      G = 1.0e0 - lecc * cosea;
+      G     = 1.0e0 - lecc * cosea;
    
          //  G*SIN(TA) AND G*COS(TA)
       GSTA  = q * sinea;
@@ -304,10 +304,10 @@ namespace gpstk
       truea = atan2 ( GSTA, GCTA );
 
          // Argument of lat and correction terms (2nd harmonic)
-      alat = truea + w;
+      alat  = truea + w;
       talat = 2.0e0 * alat;
-      c2al = cos( talat );
-      s2al = sin( talat );
+      c2al  = cos( talat );
+      s2al  = sin( talat );
 
       du  = c2al * Cuc +  s2al * Cus;
       dr  = c2al * Crc +  s2al * Crs;
@@ -320,7 +320,7 @@ namespace gpstk
 
          //  Longitude of ascending node (ANLON)
          ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
-            elapte - ell.angVelocity() * Toe;
+                 elapte - ell.angVelocity() * Toe;
 
          // In plane location
       cosu = cos( U );
@@ -376,10 +376,10 @@ namespace gpstk
       throw( InvalidRequest )
    {
       GPSEllipsoid ell;
-      double twoPI = 2.0e0 * PI;
+      double twoPI  = 2.0e0 * PI;
       double sqrtgm = SQRT(ell.gm());
       double elapte = t - getOrbitEpoch();
-      double amm  = (sqrtgm / (A*Ahalf)) + dn;
+      double amm    = (sqrtgm / (A*Ahalf)) + dn;
       double meana,F,G,delea;
       
 
@@ -389,10 +389,10 @@ namespace gpstk
 
       int loop_cnt = 1;
       do  {
-         F = meana - ( ea - ecc * sin(ea));
-         G = 1.0 - ecc * cos(ea);
+         F     = meana - ( ea - ecc * sin(ea));
+         G     = 1.0 - ecc * cos(ea);
          delea = F/G;
-         ea = ea + delea;
+         ea    = ea + delea;
          loop_cnt++;
       } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
       double dtr = REL_CONST * ecc * Ahalf * sin(ea);
@@ -692,9 +692,9 @@ namespace gpstk
       long SOD, SOW;
       short SOH;
       
-      SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / SEC_PER_DAY );
-      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
+      SOW  = static_cast<long>( HOW );
+      DOW  = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD  = SOW - static_cast<long>( DOW * SEC_PER_DAY );
       hour = static_cast<short>( SOD/3600 );
 
       SOH = static_cast<short>( SOD - (hour*3600) );
