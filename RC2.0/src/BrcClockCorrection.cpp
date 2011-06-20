@@ -51,8 +51,6 @@
 #include "StringUtils.hpp"
 #include "icd_gps_constants.hpp"
 #include "BrcClockCorrection.hpp"
-
-//Additional Added classes
 #include "TimeSystem.hpp"
 #include "GPSWeekSecond.hpp"
 #include "CivilTime.hpp"
@@ -80,30 +78,30 @@ namespace gpstk
    }
 
    BrcClockCorrection::BrcClockCorrection(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double TocArg, const short weeknumArg,
-	     const double accuracyArg, const bool healthyArg,
-		  const double af0Arg, const double af1Arg,
-		  const double af2Arg )
+		                                    const double TocArg, const short weeknumArg,
+	                                       const double accuracyArg, const bool healthyArg,
+		                                    const double af0Arg, const double af1Arg,
+		                                    const double af2Arg )
    {
       loadData(SatSystemIDArg, obsIDArg, PRNIDArg,
-		  TocArg, weeknumArg,
-	     accuracyArg, healthyArg,
-		  af0Arg, af1Arg, af2Arg );
+		         TocArg, weeknumArg,
+	            accuracyArg, healthyArg,
+		         af0Arg, af1Arg, af2Arg );
 
    }
 
 		/// Legacy GPS Subframe 1-3  
    BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
-		  const long subframe1[10] )
+		                                    const long subframe1[10] )
    {
      loadData(obsIDArg, PRNID,fullweeknum,subframe1 );
    }
 
    void BrcClockCorrection::loadData(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double TocArg, const short weeknumArg,
-	     const double accuracyArg, const bool healthyArg,
-		  const double af0Arg, const double af1Arg,
-		  const double af2Arg )
+		                               const double TocArg, const short weeknumArg,
+	                                  const double accuracyArg, const bool healthyArg,
+		                               const double af0Arg, const double af1Arg,
+		                               const double af2Arg )
    {
 	SatSystemID = SatSystemIDArg;
 	obsID       = obsIDArg;
@@ -119,7 +117,7 @@ namespace gpstk
    }
 
    void BrcClockCorrection::loadData(const ObsID obsIDArg, const short PRNIDArg, const short fullweeknum,
-		const long subframe1[10] )
+		                               const long subframe1[10] )
 		throw(InvalidParameter)
     {
          double ficked[60];
@@ -283,8 +281,6 @@ namespace gpstk
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       GPSWeekSecond dummyTime;
       dummyTime = GPSWeekSecond(t);
-//      os << setw(4) << dummyTime.week;
-//      os << "(     )  ";
       os << setw(4) << dummyTime.week << "(";
       os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
       os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
@@ -376,7 +372,6 @@ namespace gpstk
         << "Bias T0:     " << setw(16) << af0 << " sec" << endl
         << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
         << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl;
-        /*<< "Group delay: " << setw(16) << Tgd << " sec" << endl;*/
     
                               
    } // end of SF123::dump()
@@ -386,18 +381,6 @@ namespace gpstk
       eph.dump(s);
       return s;
 
-/* this appears to be more like the dump_eph_table routine of gappc
- * which dumped the bce table.
-
-      s.setf(ios::right);
-      s << "prn:" << setw(2) << eph.PRNID
-        << ", HOW[0]:" << hex  << setfill('0') << setw(5) << eph.getHOWTime(1)
-        << ", IODC:" << hex << setw(3) << eph.getIODC()
-        << dec << setfill(' ') << setw(0)
-        << ", Toe: [" << bcClock.getToc()-1800*eph.getFitInt()
-        << "..." << bcClock.getToc()+1800*eph.getFitInt()
-        << ")";
-*/
    } // end of operator<<             
        
 } // namespace

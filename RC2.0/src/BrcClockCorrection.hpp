@@ -51,8 +51,6 @@
 #include "Exception.hpp"
 #include "CommonTime.hpp"
 #include "ObsID.hpp"
-
-//Additional Class Added
 #include "CivilTime.hpp"
 
 namespace gpstk
@@ -78,15 +76,15 @@ namespace gpstk
 
 	 /// General purpose constructor
       BrcClockCorrection(const char SatSystemIDArg, const ObsID obsIDArg, 
-        const short PRNIDArg,
-		  const double TocArg, const short weeknumArg,
-	     const double accuracyArg, const bool healthyArg,
-		  const double af0Arg, const double af1Arg,
-		  const double af2Arg );
+                         const short PRNIDArg,
+		                   const double TocArg, const short weeknumArg,
+	                      const double accuracyArg, const bool healthyArg,
+		                   const double af0Arg, const double af1Arg,
+		                   const double af2Arg );
 
          /// Legacy GPS Subframe 1
       BrcClockCorrection(const ObsID obsIDArg, const short PRNID,const short fullweeknum,
-		      const long subframe1[10] );
+		                   const long subframe1[10] );
 
       	 /// Add other constructors for other navigation message formats here....
 
@@ -146,9 +144,9 @@ namespace gpstk
 
          /// General purpose means to load data into object
       void loadData( const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double TocArg, const short weeknumArg,
-	          const double accuracyArg, const bool healthyArg,
-                  const double af0Arg, const double af1Arg, const double af2Arg );
+		               const double TocArg, const short weeknumArg,
+	                  const double accuracyArg, const bool healthyArg,
+                     const double af0Arg, const double af1Arg, const double af2Arg );
 
 	 /// Load data based on the GPS Legacy message
       void loadData(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
