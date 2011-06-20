@@ -23,7 +23,7 @@ int main( int argc, char * argv[] )
       // Generally, we'd load these data from the file
    char SysID = 'G';
    ObsID obsID( ObsID::otUndefined, ObsID::cbL1, ObsID::tcCA );
-   short PRNID = 3;
+   short PRNID =                    3;
    double Toc =              388800.0;
    short weeknum =               1638;     // By rules of Kepler Orbit, this must be week of Toc
    double accuracy =            10.61;
@@ -94,15 +94,48 @@ int main( int argc, char * argv[] )
 
       // Sixth test case.  Compare against "classic" EngEphemeris
    cout << "Test Case 6: Calculated clock correction using 'classic' EngEphemeris." << endl;
+   cout<< "Time= "<< g << endl;
    EngEphemeris EE;
    EE.addSubframe(subframe1, weeknum, 3, 1);
    EE.addSubframe(subframe2, weeknum, 3, 1);
    EE.addSubframe(subframe3, weeknum, 3, 1);
 
    Xvt xvt = EE.svXvt(dt);
-   cout<< "Clock Correction EE: " << xvt.clkbias <<endl;
-   cout<< "Rel Corr EE:         " << xvt.relcorr <<endl;
-	cout<<xvt.clkdrift<<endl;
+   cout<< "Clock Bias EE:  " << xvt.clkbias <<endl;
+	cout<< "Clock Drift EE: " << xvt.clkdrift<<endl;
+ 
+      // Test data (copied from navdmp output for PRN 6 Day 155, 2011)
+   long subframeA1[10] = { 0x22C2663D, 0x30A2291C, 0x2664002B, 0x0DB9B68A, 0x12746316,
+                           0x0BAC1EAA, 0x0DA73D35, 0x1A80002C, 0x00000574, 0x02C3A0F4 };
+   long subframeA2[10] = { 0x22C2663D, 0x30A24A8C, 0x1A80864C, 0x0C15B3B1, 0x0AD1AB66,
+                           0x00B00201, 0x3A1D9937, 0x00F6A87A, 0x0353C6C1, 0x00001F0C };
+   long subframeA3[10] = { 0x22C2663D, 0x30A26B04, 0x3FDF944D, 0x2E5CB356, 0x002FCA3A,
+                           0x040A9DDC, 0x0B45D00B, 0x03922318, 0x3FE905EF, 0x1A817FAC };
+
+   CivilTime ct2(2011, 6, 4, 11, 30, 0.0, TimeSystem::GPS );
+   dt = ct2.convertToCommonTime( );
+   cout << endl << "Test Case 7: Calculated clock corrections using 'classic' EngEphemeris." << endl;
+   cout << "Time = " << ct2 << endl;
+   EngEphemeris EEA;
+   EEA.addSubframe(subframeA1, weeknum, 9, 1);
+   EEA.addSubframe(subframeA2, weeknum, 9, 1);
+   EEA.addSubframe(subframeA3, weeknum, 9, 1);
+
+   xvt = EEA.svXvt(dt);
+   cout<< "Clock Bias EE: " << xvt.clkbias <<endl;
+   cout<< "Clock Drift EE: " << xvt.clkdrift <<endl;
+
+
+   CivilTime ct3(2011, 6, 5, 1, 0, 0.0, TimeSystem::GPS );
+   dt = ct3.convertToCommonTime( );
+   cout << endl << "Test Case 8: Calculated clock corrections using 'classic' EngEphemeris." << endl;
+   cout << "Time = " << ct3 << endl;
+
+   xvt = EEA.svXvt(dt);
+   cout<< "Clock Bias EE:  " << xvt.clkbias <<endl;
+   cout<< "Clock Drift EE: " << xvt.clkdrift <<endl; 
+
+   cout << "Dump Output for Test Cases 4 and 6." <<endl;
 
    cout<<"dump EE:"<<endl;
    cout<<EE<<endl;
