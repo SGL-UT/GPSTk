@@ -50,7 +50,10 @@
 #include "EngNav.hpp"
 #include "Exception.hpp"
 #include "CommonTime.hpp"
+#include "Xv.hpp"
 #include "Xvt.hpp"
+#include "BrcKeplerOrbit.hpp"
+#include "BrcClockCorrection.hpp"
 
 namespace gpstk
 {
@@ -185,6 +188,7 @@ namespace gpstk
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
+
       Xt svXt(const CommonTime& t) const
          throw( gpstk::InvalidRequest );
 
@@ -192,8 +196,10 @@ namespace gpstk
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
+
       Xvt svXvt(const CommonTime& t) const
          throw( gpstk::InvalidRequest );
+
 
          /// Return 0x8b, the upper 5 bits of the 22-bit TLM word.
          // kinda pointless, huh?
@@ -223,11 +229,6 @@ namespace gpstk
       CommonTime getTimestamp() const
          throw()
       { return getEpochTime(); }
-
-         /** This functions returns the GNSS type (satellite system code) */
-      std::string getSatSys() const
-         throw()
-      { return satSys; }
 
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const
@@ -430,7 +431,13 @@ namespace gpstk
       long getTot() const
          throw( gpstk::InvalidRequest );
 
-         /** Set the values contained in SubFrame 1.
+      BrcKeplerOrbit getOrbit() const throw(gpstk::InvalidRequest);
+
+      BrcClockCorrection getClock() const throw(gpstk::InvalidRequest);
+
+         /** Set the values contained in SubFrame 1,2 and 3.
+          *
+          * Values contained in SubFrame 1.
           * @param tlm the new value for the TLM word
           * @param how the new value for the HOW
           * @param asalert the new falue for the A-S alert flag
@@ -448,15 +455,8 @@ namespace gpstk
           * @param Tracker the new value of the tracker number 
           * @param prn the new value of the PRN ID
           * @return a reference to the modified EngEphemeris object
-          */
-      EngEphemeris& setSF1( unsigned tlm, double how, short asalert, short fullweek,
-                            short cflags, short acc, short svhealth, short iodc,
-                            short l2pdata, double tgd, double toc, double Af2,
-                            double Af1, double Af0, short Tracker, short prn )
-         throw();
-
-
-         /** Set the values contained in SubFrame 2.
+          *
+          * Values contained in SubFrame 2.
           * @param tlm the new value for the TLM word
           * @param how the new value for the HOW
           * @param asalert the new falue for the A-S alert flag
@@ -471,13 +471,8 @@ namespace gpstk
           * @param toe the new value for the Toe
           * @param fitInt the new value for the fit interval flag
           * @return a reference to the modified EngEphemeris object
-          */
-      EngEphemeris& setSF2( unsigned tlm, double how, short asalert, short iode,
-                            double crs, double Dn, double m0, double cuc, double Ecc,
-                            double cus, double ahalf, double toe, short fitInt )
-         throw();
-
-         /** Set the values contained in SubFrame 2.
+          *
+          * Values contained in SubFrame 3.
           * @param tlm the new value for the TLM word
           * @param how the new value for the HOW
           * @param asalert the new falue for the A-S alert flag
@@ -491,10 +486,20 @@ namespace gpstk
           * @param IDot the new value for IDot
           * @return a reference to the modified EngEphemeris object
           */
-      EngEphemeris& setSF3( unsigned tlm, double how, short asalert, double cic,
-                            double Omega0, double cis, double I0, double crc,
-                            double W, double OmegaDot, double IDot )
-         throw();
+
+   EngEphemeris& loadData( unsigned short tlm[3], const long how[3], const short asalert[3],
+                           const short Tracker, const short prn, 
+                           const short fullweek, const short cflags, const short acc, 
+                           const short svhealth, const short iodc, const short l2pdata,
+                           const long Aodo, const double tgd, const double toc,
+                           const double Af2, const double Af1, const double Af0,
+                           const short iode, const double crs, const double Dn,
+                           const double m0, const double cuc, const double Ecc,
+                           const double cus, const double ahalf, const double toe,
+                           const short fitInt, const double cic, const double Omega0,
+                           const double cis, const double I0, const double crc,
+                           const double W, const double OmegaDot, const double IDot )
+      throw();
 
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
@@ -505,10 +510,14 @@ namespace gpstk
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */
 
+      bool unifiedConvert( const int gpsWeek, 
+                           const short PRN, 
+                           const short track);
+      long subframeStore[3][10];
+
          /// Ephemeris overhead information
          //@{
       unsigned short tlm_message[3];
-      std::string satSys;  /**< GNSS (satellite system) */
       short PRNID;         /**< SV PRN ID */
       short tracker;       /**< Tracker number */
       long HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
@@ -522,40 +531,18 @@ namespace gpstk
       short IODC;         /**< Index of data-clock  */
       short IODE;         /**< Index of data-eph    */
       long  AODO;         /**< Age of Data Offset for NMCT */
+      short  fitint;       /**< Fit interval flag */
+      double  Tgd;          /**< L1 and L2 correction term */
          //@}
 
          /// Clock information
          //@{
-      double   Toc;           /**< Clock epoch (sec of week) */
-      double   af0;           /**< SV clock error (sec) */
-      double   af1;           /**< SV clock drift (sec/sec) */
-      double   af2;           /**< SV clock drift rate (sec/sec**2) */
-      double   Tgd;           /**< Group delay differential (sec) */
+      BrcClockCorrection bcClock;
          //@}
 
-         /// Harmonic perturbations
+         /// Orbit parameters
          //@{
-      double   Cuc;           /**< Cosine latitude (rad) */
-      double   Cus;           /**< Sine latitude (rad) */
-      double   Crc;           /**< Cosine radius (m) */
-      double   Crs;           /**< Sine radius (m) */
-      double   Cic;           /**< Cosine inclination (rad) */
-      double   Cis;           /**< Sine inclination (rad) */
-         //@}
-
-         /// Major ephemeris parameters
-         //@{
-      double   Toe;           /**< Ephemeris epoch (sec of week) */
-      double   M0;            /**< Mean anomaly (rad) */
-      double   dn;            /**< Correction to mean motion (rad/sec) */
-      double   ecc;           /**< Eccentricity */
-      double   Ahalf;         /**< SQRT of semi-major axis (m**1/2) */
-      double   OMEGA0;        /**< Rt ascension of ascending node (rad) */
-      double   i0;            /**< Inclination (rad) */
-      double   w;             /**< Argument of perigee (rad) */
-      double   OMEGAdot;      /**< Rate of Rt ascension (rad/sec) */
-      double   idot;          /**< Rate of inclination angle (rad/sec) */
-      short fitint;           /**< Fit interval flag */
+      BrcKeplerOrbit orbit;
          //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
