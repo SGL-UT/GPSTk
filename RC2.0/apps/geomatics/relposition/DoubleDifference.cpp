@@ -259,7 +259,7 @@ try {
    int i,j,k,indx,count = 0,ddsign;
    long nn1,nn2;
    double ddL1,ddL2,ddER,ddP1,ddP2,dd,db1,db2;
-   DayTime tt,ttnext;   // ttnext is the time of the next reference satellite switch
+   CommonTime tt,ttnext;   // ttnext is the time of the next reference satellite switch
    //SDid sid,ref;        // SDid of the current satellite and reference satellite
    map<SDid,int> Inext; // index in count (all) buffers which is to be processed next
    map<SDid,RawData>::const_iterator it;
@@ -282,7 +282,7 @@ try {
    SDid ref = SDmap.begin()->first;        // ref.sat is TBD by timetable
 
       // loop over epochs in the SDs
-   ttnext = DayTime::BEGINNING_OF_TIME;
+   ttnext = CommonTime::BEGINNING_OF_TIME;
    while(1) {
          // time at this count
       tt = FirstEpoch + count * CI.DataInterval;

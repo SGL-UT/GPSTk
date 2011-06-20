@@ -230,8 +230,8 @@ try {
    CI.pTropModel->setWeather(CI.DefaultTemp,CI.DefaultPress,CI.DefaultRHumid);
 
       // Define first and last epochs
-   FirstEpoch = DayTime::BEGINNING_OF_TIME;
-   LastEpoch = DayTime::END_OF_TIME;
+   FirstEpoch = CommonTime::BEGINNING_OF_TIME;
+   LastEpoch = CommonTime::END_OF_TIME;
 
    return 0;
 }

@@ -117,9 +117,9 @@ CommandInput CI;              // all command line input .. see CommandInput.hpp
 
 std::vector<std::string> Baselines;  // *computed* Baselines, (those to output in CI)
 
-DayTime SolutionEpoch;        // current solution epoch
-DayTime FirstEpoch,LastEpoch; // first and last solution epoch seen
-DayTime MedianEpoch;          // median of first and last, computed in Configure(3)
+CommonTime SolutionEpoch;        // current solution epoch
+CommonTime FirstEpoch,LastEpoch; // first and last solution epoch seen
+CommonTime MedianEpoch;          // median of first and last, computed in Configure(3)
 int Count;                    // current number of data intervals since first epoch
 int minCount,maxCount;        // minimum and maximum timetag count seen
 int begcount,endcount;        // first and last counts of *good* data in buffers
@@ -149,7 +149,7 @@ try {
       // START
    totaltime = clock();
    int iret;
-   DayTime CurrEpoch;
+   CommonTime CurrEpoch;
 
       // Title title and version
    Title = PrgmName + ", ARL:UT DD phase estimation processor, Ver " + Version;
@@ -171,6 +171,7 @@ try {
    " description, and the default value, if there is one, in ().\n";
 
       // get current time
+   CurrEpoch.setLocalTime();
    time_t timer;
    struct tm *tblock;
    timer = time(NULL);

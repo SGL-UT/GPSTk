@@ -58,7 +58,7 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // called by ProcessRawData
-int ComputeRAIMSolution(ObsFile& of, DayTime& tt, vector<SatID>& Sats, ofstream *pofs)
+int ComputeRAIMSolution(ObsFile& of, CommonTime& tt, vector<SatID>& Sats, ofstream *pofs)
    throw(Exception)
 {
 try {
@@ -123,6 +123,21 @@ try {
       return iret;
    }
 
+   if(iret > 0) {
+      //oflog << "RAIM solution is suspect (" << iret << ")" << endl;
+      return iret;
+   }
+   if(!st.PRS.isValid()) return -5;
+   for(nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].id > 0) nsvs++;
+
+   if(iret < 0 || nsvs <= 4) {                // did not compute a solution
+      if(CI.Verbose) oflog << "At " << SolutionEpoch
+         << " RAIM returned " << iret << endl;
+      st.PRS.Valid = false;
+      if(iret >= 0) return -3;
+      return iret;
+   }
+
    // output to OutputPRSFile, opened in ReadAndProcessRawData()
    if(pofs) {
       *pofs << "PRS " << of.label << " " << setw(2) << nsvs
@@ -149,21 +164,6 @@ try {
       for(i=0; i<Sats.size(); i++) *pofs << " " << setw(3) << Sats[i].id;
       *pofs << " (" << iret << ")" << (st.PRS.isValid() ? " V" : " NV");
       *pofs << endl;
-   }
-
-   if(iret > 0) {
-      //oflog << "RAIM solution is suspect (" << iret << ")" << endl;
-      return iret;
-   }
-   if(!st.PRS.isValid()) return -5;
-   for(nsvs=0,i=0; i<Sats.size(); i++) if(Sats[i].id > 0) nsvs++;
-
-   if(iret < 0 || nsvs <= 4) {                // did not compute a solution
-      if(CI.Verbose) oflog << "At " << SolutionEpoch
-         << " RAIM returned " << iret << endl;
-      st.PRS.Valid = false;
-      if(iret >= 0) return -3;
-      return iret;
    }
 
    return 0;

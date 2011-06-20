@@ -191,7 +191,7 @@ try {
    if(CI.Screen)
       cout << "Raw buffered data summary : n SITE sat npts span (count,gap size) (..)"
       << endl;
-   //DayTime tt;
+   //CommonTime tt;
    for(kt=Stations.begin(); kt != Stations.end(); kt++) {
       Station& st = kt->second;
       for(k=1,it=st.RawDataBuffers.begin(); it != st.RawDataBuffers.end(); it++,k++) {

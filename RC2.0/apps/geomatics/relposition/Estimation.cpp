@@ -850,7 +850,7 @@ try {
          // sat 1 -----------------------------------------------------
          // should you use CER.rawrange here?
       ER = CER.ComputeAtReceiveTime(SolutionEpoch,st1.pos,sat1,*pEph);
-      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      SatR.setPosition(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
       trop = st1.pTropModel->correction(st1.pos,SatR,SolutionEpoch);
       f(m) += ER+trop;
       if(!st1.fixed) {
@@ -873,7 +873,7 @@ try {
 
          // sat 2 -----------------------------------------------------
       ER = CER.ComputeAtReceiveTime(SolutionEpoch,st1.pos,sat2,*pEph);
-      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      SatR.setPosition(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
       trop = st1.pTropModel->correction(st1.pos,SatR,SolutionEpoch);
       f(m) -= ER+trop;
       if(!st1.fixed) {
@@ -901,7 +901,7 @@ try {
       }
          // sat 1 -----------------------------------------------------
       ER = CER.ComputeAtReceiveTime(SolutionEpoch,st2.pos,sat1,*pEph);
-      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      SatR.setPosition(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
       trop = st2.pTropModel->correction(st2.pos,SatR,SolutionEpoch);
       f(m) -= ER+trop;
       if(!st2.fixed) {
@@ -924,7 +924,7 @@ try {
 
          // sat 2 -----------------------------------------------------
       ER = CER.ComputeAtReceiveTime(SolutionEpoch,st2.pos,sat2,*pEph);
-      SatR.setECEF(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
+      SatR.setPosition(CER.svPosVel.x[0],CER.svPosVel.x[1],CER.svPosVel.x[2]);
       trop = st2.pTropModel->correction(st2.pos,SatR,SolutionEpoch);
       f(m) += ER+trop;
       if(!st2.fixed) {
@@ -1044,7 +1044,7 @@ try {
       }
 
       // update the nominal position in Stations[]
-      Stations[it->first].pos.setECEF(
+      Stations[it->first].pos.setPosition(
          Stations[it->first].pos.X()+dX(i),
          Stations[it->first].pos.Y()+dX(j),
          Stations[it->first].pos.Z()+dX(k));

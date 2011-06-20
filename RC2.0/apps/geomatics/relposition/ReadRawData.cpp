@@ -61,7 +61,7 @@ using namespace gpstk;
 
 //------------------------------------------------------------------------------------
 // local data
-static DayTime EarliestTime;// earliest timetag among newly-input observation epochs
+static CommonTime EarliestTime;// earliest timetag among newly-input observation epochs
 static int ngood;           // number of good data points, this epoch
 static double sow;          // GPS seconds of week of current epoch
 ofstream ofprs;             // output file for PRS solution
@@ -71,7 +71,7 @@ ofstream *pofs=NULL;        // pointer to output file stream (&ofprs)
 // prototypes -- others
 int OutputClockData(void) throw(Exception);              // DataOutput.cpp
 int ReadNextObs(ObsFile& of) throw(Exception);           // ReadObsFiles.cpp
-int ProcessRawData(ObsFile& obsfile, DayTime& timetag, ofstream *pofs)
+int ProcessRawData(ObsFile& obsfile, CommonTime& timetag, ofstream *pofs)
    throw(Exception);                                     // ProcessRawData.cpp
 // prototypes -- this module only
 int FindEarliestTime(void) throw(Exception);
@@ -200,7 +200,7 @@ try {
          }
 
          Position PRsol;
-         PRsol.setECEF(it->second.PRSXstats.Average(),
+         PRsol.setPosition(it->second.PRSXstats.Average(),
                        it->second.PRSYstats.Average(),
                        it->second.PRSZstats.Average());
          if(CI.Verbose) {
@@ -237,12 +237,12 @@ try {
             pos = PRsol;
             oflog << "Adopting average pseudorange solution for "
                << it->first << " position"
-               //<< pos.printf(" : %.4x %.4y %.4z meters ECEF")
+               //<< pos.printf(" : %.4x %.4y %.4z meters Position")
                << endl;
             if(CI.Screen)
                cout << "Adopting average pseudorange solution for "
                << it->first << " position"
-               //<< pos.printf(" : %.4x %.4y %.4z meters ECEF")
+               //<< pos.printf(" : %.4x %.4y %.4z meters Position")
                << endl;
          }
          //else if(pos.getRadius() < 1.) {
@@ -286,7 +286,7 @@ int FindEarliestTime(void) throw(Exception)
 try {
    int iret,nfile;
 
-   EarliestTime = DayTime(DayTime::END_OF_TIME);
+   EarliestTime = CommonTime(CommonTime::END_OF_TIME);
 
       // loop over all (open) obs files
    for(nfile=0; nfile<ObsFileList.size(); nfile++) {
@@ -306,7 +306,7 @@ try {
    }  // end loop over all obs files
 
       // if no more data is available, EarliestTime will never get set
-   if(EarliestTime == DayTime(DayTime::END_OF_TIME)) return 1;
+   if(EarliestTime == CommonTime(CommonTime::END_OF_TIME)) return 1;
 
       // if past end time, quit
    if(EarliestTime > CI.EndTime) return 2;
@@ -347,7 +347,7 @@ try {
       << SolutionEpoch.printf("%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
 
       // save first and last epochs
-   if(fabs(FirstEpoch-DayTime::BEGINNING_OF_TIME) < 0.1) {
+   if(fabs(FirstEpoch-CommonTime::BEGINNING_OF_TIME) < 0.1) {
       FirstEpoch = SolutionEpoch;
       if(CI.Screen)
          cout << "First epoch is "

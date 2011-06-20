@@ -76,7 +76,7 @@ Station::Station(void) throw()
 {
    fixed = usePRS = false;
    temp = press = rhumid = 0.0;
-   time = DayTime::BEGINNING_OF_TIME;
+   time = CommonTime::BEGINNING_OF_TIME;
    pTropModel = NULL;
    TropType = "Saas";
    ant_azimuth = 0.0;

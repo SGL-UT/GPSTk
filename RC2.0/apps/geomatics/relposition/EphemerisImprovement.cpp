@@ -102,7 +102,7 @@ try {
       //}
 
       // test change of ephemeris during the time span of the data
-      DayTime tt=FirstEpoch;
+      CommonTime tt=FirstEpoch;
       do {
          
          for(Imapit=IODEmap.begin(); Imapit != IODEmap.end(); Imapit++) {

@@ -74,7 +74,7 @@ try {
       ObsFileList[i].ins.clear();
       ObsFileList[i].nread = -1;
       ObsFileList[i].dt = -1.0;
-      ObsFileList[i].firstTime = DayTime::BEGINNING_OF_TIME;
+      ObsFileList[i].firstTime = CommonTime::BEGINNING_OF_TIME;
       ObsFileList[i].valid = false;
 
          // filename
@@ -122,31 +122,35 @@ try {
          // if this is the second reading, quit
       if(k==1) break;
 
-         // check that file contains C1/P1,P2,L1,L2,S1,S2
       ObsFileList[i].inC1 = ObsFileList[i].inP1 = ObsFileList[i].inP2 = -1;
       ObsFileList[i].inL1 = ObsFileList[i].inL2 = -1;
       ObsFileList[i].inD1 = ObsFileList[i].inD2 = -1;
       ObsFileList[i].inS1 = ObsFileList[i].inS2 = -1;
+
+
+
+
+      RinexObsHeader::RinexObsType otC1(RinexObsHeader::convertObsType("C1"));
+      RinexObsHeader::RinexObsType otL1(RinexObsHeader::convertObsType("L1"));
+      RinexObsHeader::RinexObsType otL2(RinexObsHeader::convertObsType("L2"));
+      RinexObsHeader::RinexObsType otP1(RinexObsHeader::convertObsType("P1"));
+      RinexObsHeader::RinexObsType otP2(RinexObsHeader::convertObsType("P2"));
+      RinexObsHeader::RinexObsType otD1(RinexObsHeader::convertObsType("D1"));
+      RinexObsHeader::RinexObsType otD2(RinexObsHeader::convertObsType("D2"));
+      RinexObsHeader::RinexObsType otS1(RinexObsHeader::convertObsType("S1"));
+      RinexObsHeader::RinexObsType otS2(RinexObsHeader::convertObsType("S2"));
       for(j=0; j<ObsFileList[i].Rhead.obsTypeList.size(); j++) {
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("C1"))
-            ObsFileList[i].inC1 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("L1"))
-            ObsFileList[i].inL1 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("L2"))
-            ObsFileList[i].inL2 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("P1"))
-            ObsFileList[i].inP1 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("P2"))
-            ObsFileList[i].inP2 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("D1"))
-            ObsFileList[i].inD1 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("D2"))
-            ObsFileList[i].inD2 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("S1"))
-            ObsFileList[i].inS1 = j;
-         if(ObsFileList[i].Rhead.obsTypeList[j]==RinexObsHeader::convertObsType("S2"))
-            ObsFileList[i].inS2 = j;
-      }
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otC1) ObsFileList[i].inC1 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otL1) ObsFileList[i].inL1 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otL2) ObsFileList[i].inL2 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otP1) ObsFileList[i].inP1 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otP2) ObsFileList[i].inP2 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otD1) ObsFileList[i].inD1 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otD2) ObsFileList[i].inD2 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otS1) ObsFileList[i].inS1 = j;
+         if(ObsFileList[i].Rhead.obsTypeList[j]==otS2) ObsFileList[i].inS2 = j;
+	}
+
 
       ObsFileList[i].nread = 0;
       ObsFileList[i].valid = true;
@@ -176,7 +180,7 @@ try {
       {
          int jj,kk,nleast,nepochs=0,ndt[9]={-1,-1,-1, -1,-1,-1, -1,-1,-1};
          double dt,bestdt[9];
-         DayTime prev=DayTime::END_OF_TIME;
+         CommonTime prev=CommonTime::END_OF_TIME;
          while(1) {
             try { ObsFileList[i].ins >> ObsFileList[i].Robs; }
             catch(Exception& e) { break; }   // simply quit if meet failure

@@ -53,7 +53,7 @@
 #include <map>
 
 // GPSTk
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "StringUtils.hpp"
 
 //------------------------------------------------------------------------------------
@@ -126,7 +126,7 @@ try {
    string line,line2,id,rawfile,ddrfile,outfile,site1,site2,sat1,sat2;
    ifstream instr;
    ofstream outstr;
-   DayTime CurrEpoch;
+   CommonTime CurrEpoch;
 
    clock_t totaltime = clock();
       // print title and current time to screen

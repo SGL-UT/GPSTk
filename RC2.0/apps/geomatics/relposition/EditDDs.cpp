@@ -400,7 +400,7 @@ try {
    double slip,fslip,tol;
    vector<int> slipindex;
    vector<double> td,slipsize;
-   DayTime tt;
+   CommonTime tt;
    TwoSampleStats<double> tsstats;
 
       // -------------------------------------- define td tolerance for slips

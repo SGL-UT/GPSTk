@@ -318,7 +318,7 @@ try {
    int nc;
    double angle,pwu,prevpwu,shadow;
    double prevwindup = 0.0;
-   DayTime tt;
+   CommonTime tt;
    GSatID sat;
    Position SV;
    Position West,North,Rx2Tx;

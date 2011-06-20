@@ -70,17 +70,17 @@ static vector<SatID> Sats;     // used by RAIM, bad ones come back marked (id < 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
    // ComputeRAIMSolution.cpp :
-int ComputeRAIMSolution(ObsFile& of,DayTime& tt,vector<SatID>& Sats,ofstream *pofs)
+int ComputeRAIMSolution(ObsFile& of,CommonTime& tt,vector<SatID>& Sats,ofstream *pofs)
    throw(Exception);
 void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception);
    // those defined here
 void FillRawData(ObsFile& of) throw(Exception);
-void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag) throw(Exception);
+void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag) throw(Exception);
 void EditRawData(ObsFile& of) throw(Exception);
 int BufferRawData(ObsFile& of) throw(Exception);
 
 //------------------------------------------------------------------------------------
-int ProcessRawData(ObsFile& obsfile, DayTime& timetag, ofstream *pofs)
+int ProcessRawData(ObsFile& obsfile, CommonTime& timetag, ofstream *pofs)
    throw(Exception)
 {
 try {
@@ -135,7 +135,7 @@ try {
       // it does not seem to affect the final estimation processing at all...
    if(st.usePRS && st.PRSXstats.N() >= 10) {
       Position prs;
-      prs.setECEF(st.PRSXstats.Average(),
+      prs.setPosition(st.PRSXstats.Average(),
                   st.PRSYstats.Average(),
                   st.PRSZstats.Average());
       st.pos = prs;
@@ -248,7 +248,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end FillRawData()
 
 //------------------------------------------------------------------------------------
-void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag) throw(Exception)
+void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag) throw(Exception)
 {
 try {
    CorrectedEphemerisRange CER;        // temp
