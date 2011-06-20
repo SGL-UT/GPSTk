@@ -75,23 +75,29 @@ namespace gpstk
 	 /// Default constuctor
       BrcKeplerOrbit( ) throw();
 
+      /**
+       * All constructors and loadData methods assume weeknumArg
+       * is the full GPS week number associated with the epoch
+       *time.
+       */
+
 	 /// General purpose constructor
       BrcKeplerOrbit(const char SystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double ToeArg, const short weeknumArg,
-	          const double accuracyArg, const bool healthyArg,
-		  const double CucArg, const double CusArg,
-		  const double CrcArg, const double CrsArg,
-		  const double CicArg, const double CisArg,
-		  const double M0Arg, const double dnArg, const double dndotArg,
-		  const double eccArg, const double AArg, const double AhalfArg, const double AdotArg,
-		  const double OMEGA0Arg, const double i0Arg, const double wArg, 
-		  const double OMEGAdotARg, const double idotArg );
+		               const double ToeArg, const short weeknumArg,
+	                  const double accuracyArg, const bool healthyArg,
+		               const double CucArg, const double CusArg,
+		               const double CrcArg, const double CrsArg,
+		               const double CicArg, const double CisArg,
+		               const double M0Arg, const double dnArg, const double dndotArg,
+		               const double eccArg, const double AArg, const double AhalfArg, const double AdotArg,
+		               const double OMEGA0Arg, const double i0Arg, const double wArg, 
+		               const double OMEGAdotARg, const double idotArg );
 
          /// Legacy GPS Subframe 1-3  
       BrcKeplerOrbit(const ObsID obsIDArg, const short PRNID,const short fullweeknum,
-		      const long subframe1[10],
-		      const long subframe2[10],
-		      const long subframe3[10] );
+		               const long subframe1[10],
+		               const long subframe2[10],
+		               const long subframe3[10] );
 
       	 /// Add other constructors for other navigation message formats here....
 
@@ -100,26 +106,24 @@ namespace gpstk
 
 	 /// General purpose means to load data into object
       void loadData( const char SystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double ToeArg, const short weeknumArg,
-	          const double accuracyArg, const bool healthyArg,
-		  const double CucArg, const double CusArg,
-		  const double CrcArg, const double CrsArg,
-		  const double CicArg, const double CisArg,
-		  const double M0Arg, const double dnArg, const double dndotArg,
-		  const double eccArg, const double AArg, const double AhalfArg, const double AdotArg,
-		  const double OMEGA0Arg, const double i0Arg, const double wArg, 
-		  const double OMEGAdotARg, const double idotArg );
+		               const double ToeArg, const short weeknumArg,
+	                  const double accuracyArg, const bool healthyArg,
+		               const double CucArg, const double CusArg,
+		               const double CrcArg, const double CrsArg,
+		               const double CicArg, const double CisArg,
+		               const double M0Arg, const double dnArg, const double dndotArg,
+		               const double eccArg, const double AArg, const double AhalfArg, const double AdotArg,
+		               const double OMEGA0Arg, const double i0Arg, const double wArg, 
+		               const double OMEGAdotARg, const double idotArg );
 
 	 /// Load data based on the GPS Legacy message
       void loadData(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
-		      const long subframe1[10],
-		      const long subframe2[10],
-		      const long subframe3[10] )
-		      throw(InvalidParameter);
+		              const long subframe1[10],
+		              const long subframe2[10],
+		              const long subframe3[10] )
+		              throw(InvalidParameter);
 
 
-         /// Extracts the epoch time from this orbit, correcting
-         /// for half weeks and HOW time
       CommonTime getOrbitEpoch() const throw(InvalidRequest);
 
 	 /** Return true if orbit data has been loaded */

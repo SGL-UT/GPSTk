@@ -52,8 +52,6 @@
 #include "icd_gps_constants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "BrcKeplerOrbit.hpp"
-
-//Additional Added classes
 #include "MathBase.hpp"
 #include "TimeSystem.hpp"
 #include "GPSWeekSecond.hpp"
@@ -665,8 +663,6 @@ namespace gpstk
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       GPSWeekSecond dummyTime;
       dummyTime = GPSWeekSecond(t);
-//      os << setw(4) << dummyTime.week;
-//      os << "(     )  ";
       os << setw(4) << dummyTime.week << "(";
       os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
       os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
@@ -746,9 +742,7 @@ namespace gpstk
       s << "Eph Epoch:    ";
       timeDisplay(s, getOrbitEpoch());
       s << endl;
-  
-
-      
+        
       s.setf(ios::scientific, ios::floatfield);
       s.precision(8);
        
@@ -786,19 +780,6 @@ namespace gpstk
    {
       eph.dump(s);
       return s;
-
-/* this appears to be more like the dump_eph_table routine of gappc
- * which dumped the bce table.
-
-      s.setf(ios::right);
-      s << "prn:" << setw(2) << eph.PRNID
-        << ", HOW[0]:" << hex  << setfill('0') << setw(5) << eph.getHOWTime(1)
-        << ", IODC:" << hex << setw(3) << eph.getIODC()
-        << dec << setfill(' ') << setw(0)
-        << ", Toe: [" << bcClock.getToc()-1800*eph.getFitInt()
-        << "..." << bcClock.getToc()+1800*eph.getFitInt()
-        << ")";
-*/
 
    } // end of operator<<
      
