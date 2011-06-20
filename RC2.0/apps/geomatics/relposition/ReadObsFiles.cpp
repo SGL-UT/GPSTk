@@ -43,7 +43,7 @@
 
 //------------------------------------------------------------------------------------
 // system includes
-
+#include "TimeString.hpp"
 // GPSTk
 
 // DDBase
@@ -275,7 +275,7 @@ try {
       double frac = sow - CI.DataInterval*double(int(sow/CI.DataInterval + 0.5));
       if(fabs(frac) < 0.5) break;
       else if(CI.Debug) oflog << "skip epoch "
-         << of.Robs.time.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+         << printTime((of.Robs.time),"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
    }
 
    of.nread++;                               // success

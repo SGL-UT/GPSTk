@@ -46,6 +46,7 @@
 // includes
 // system
 #include <fstream>
+#include "TimeString.hpp"
 
 // GPSTk
 
@@ -105,7 +106,7 @@ try {
    if(nsvs <= 4) {
       if(CI.Verbose) oflog << "Not enough data to compute RAIM solution for file "
          << of.name << " at time "
-         << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+         << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
       return -2;
    }
 
@@ -119,7 +120,7 @@ try {
       if(iret == -2)
          oflog << "Singular RAIM problem";
       oflog << " for file " << of.name << " at time "
-         << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+         << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
       return iret;
    }
 
@@ -141,7 +142,7 @@ try {
    // output to OutputPRSFile, opened in ReadAndProcessRawData()
    if(pofs) {
       *pofs << "PRS " << of.label << " " << setw(2) << nsvs
-         << tt.printf(" %4F %10.3g");
+         << printTime(tt," %4F %10.3g");
 
       // if a Position is defined for this Station, output residuals
       if(st.pos.getSystemName() != string("Unknown"))

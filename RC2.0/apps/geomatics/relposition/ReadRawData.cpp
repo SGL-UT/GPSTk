@@ -49,6 +49,7 @@
 // includes
 // system
 #include <fstream>
+#include "TimeString.hpp"
 
 // GPSTk
 
@@ -119,19 +120,19 @@ try {
       }
       if(iret == 2) {
          if(CI.Verbose) oflog << "After end time (quit) : "
-            << EarliestTime.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+            << printTime(EarliestTime,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
          iret = 0;
          break;
       }
       if(iret == 3) {
          if(CI.Debug) oflog << "Before begin time : "
-            << EarliestTime.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+            << printTime(EarliestTime,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
          iret = 0;
          continue;
       }
 
       if(CI.Debug) oflog << "Found " << ngood << " stations with data at epoch "
-         << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
 
          // round receiver epoch to even multiple of data interval, else even second
       ComputeSolutionEpoch();
@@ -156,9 +157,9 @@ try {
    if(iret) return iret;
 
    if(CI.Screen) cout << "Last  epoch is "
-      << SolutionEpoch.printf("%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
+      << printTime(SolutionEpoch,"%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
    if(CI.Verbose) oflog << "Last  epoch is "
-      << SolutionEpoch.printf("%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
+      << printTime(SolutionEpoch,"%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
 
       // was there any data?
    for(ntotal=0,nfile=0; nfile<ObsFileList.size(); nfile++) {
@@ -200,7 +201,7 @@ try {
          }
 
          Position PRsol;
-         PRsol.setPosition(it->second.PRSXstats.Average(),
+         PRsol.setECEF(it->second.PRSXstats.Average(),
                        it->second.PRSYstats.Average(),
                        it->second.PRSZstats.Average());
          if(CI.Verbose) {
@@ -344,17 +345,17 @@ try {
    sow = CI.DataInterval * double(int(sow/CI.DataInterval + 0.5));
    SolutionEpoch += (sow - SolutionEpoch.GPSsecond());
    if(CI.Debug) oflog << "Solution epoch is "
-      << SolutionEpoch.printf("%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
+      << printTime(SolutionEpoch,"%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
 
       // save first and last epochs
    if(fabs(FirstEpoch-CommonTime::BEGINNING_OF_TIME) < 0.1) {
       FirstEpoch = SolutionEpoch;
       if(CI.Screen)
          cout << "First epoch is "
-            << FirstEpoch.printf("%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
+            << printTime(FirstEpoch,"%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
       if(CI.Verbose)
          oflog << "First epoch is "
-            << FirstEpoch.printf("%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
+            << printTime(FirstEpoch,"%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
 
          // compute rotation matrix that corrects for earth orientation
       //PNS = ident<double>(3);

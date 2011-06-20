@@ -99,7 +99,7 @@ try {
    bool jump;
    int i,n,iprev;
    double curr,prev = 0,prevprev,fdiff,sdiff,prevsdiff,frac,offset;
-   DayTime tt;
+   CommonTime tt;
    map<int,double> jumps;
    map<string,Station>::iterator it;
 

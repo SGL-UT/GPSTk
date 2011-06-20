@@ -47,6 +47,7 @@
 
 //------------------------------------------------------------------------------------
 // includes
+#include "TimeString.hpp"
 // system
 #include <vector>
 
@@ -448,7 +449,7 @@ try {
          if(fabs(slip) > tol) {  // || fslip > 0.2) 
             oflog << " Warning - DD " << ddid << " L" << frequency << fixed
                << " slip " << setprecision(3) << setw(8) << slip << " cycles, at "
-               << tt.printf(" %4F %10.3g = %Y/%02m/%02d %2H:%02M:%6.3f")
+               << printTime(tt," %4F %10.3g = %Y/%02m/%02d %2H:%02M:%6.3f")
                << " = count " << dddata.count[i] << " on iteration " << iter
                << endl;
 
@@ -478,7 +479,7 @@ try {
             tddofs << "TDS " << ddid << " L" << frequency << fixed
                << " " << iter
                << " " << setw(4) << dddata.count[i]
-               << " " << tt.printf("%4F %10.3g")
+               << " " << printTime(tt,"%4F %10.3g")
                << " " << setw(3) << tddt << setprecision(6)
                << " " << setw(11) << td[k]
                << " " << setw(11) << slip << setprecision(3)
@@ -539,7 +540,7 @@ try {
             k += int(slipsize[ii] + (slipsize[ii]>0 ? 0.5 : -0.5));
             if(CI.Verbose) oflog << " Fix L" << frequency << " slip at count "
                << dddata.count[i]
-               << " " << tt.printf("%4F %10.3g")
+               << " " << printTime(tt,"%4F %10.3g")
                << " total mag " << k << " iteration " << iter
                << endl;
             ii++;
@@ -555,7 +556,7 @@ try {
                << " L" << frequency
                << " " << iter
                << " " << setw(4) << dddata.count[i]
-               << " " << tt.printf("%4F %10.3g")
+               << " " << printTime(tt,"%4F %10.3g")
                << " " << setw(11) << setprecision(6)           // DD in m
                << (frequency == 1 ?  dddata.DDL1[i] : dddata.DDL2[i])
                      - dddata.DDER[i]

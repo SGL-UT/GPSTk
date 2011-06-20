@@ -45,6 +45,7 @@
 //------------------------------------------------------------------------------------
 // includes
 // system
+#include "TimeString.hpp"
 
 // GPSTk
 // Geomatics
@@ -216,21 +217,21 @@ try {
          if(CI.Screen)
             cout << "REF " << ttit->site1 << " " << ttit->site2 << " " << ttit->sat;
          tt = FirstEpoch + CI.DataInterval * ttit->usestart;
-         oflog << tt.printf(" %4F %10.3g");        // TD week rollover!
+         oflog << printTime(tt," %4F %10.3g");        // TD week rollover!
          if(CI.Screen)
-            cout << tt.printf(" %4F %10.3g");        // TD week rollover!
+            cout << printTime(tt," %4F %10.3g");        // TD week rollover!
          tt = FirstEpoch + CI.DataInterval * ttit->usestop;
-         oflog << tt.printf(" %10.3g");
+         oflog << printTime(tt," %10.3g");
          if(CI.Screen)
-            cout << tt.printf(" %10.3g");
+            cout << printTime(tt," %10.3g");
          tt = FirstEpoch + CI.DataInterval * ttit->start;
-         oflog << tt.printf(" %10.3g");
+         oflog << printTime(tt," %10.3g");
          if(CI.Screen)
-            cout << tt.printf(" %10.3g");
+            cout << printTime(tt," %10.3g");
          tt = FirstEpoch + CI.DataInterval * ttit->stop;
-         oflog << tt.printf(" %10.3g");
+         oflog << printTime(tt," %10.3g");
          if(CI.Screen)
-            cout << tt.printf(" %10.3g");
+            cout << printTime(tt," %10.3g");
          // TD? ttit->minelev, ttit->maxelev, ttit->length, ttit->metric()
          oflog << " " << fixed << setw(4) << setprecision(1) << ttit->minelev;
          if(CI.Screen)

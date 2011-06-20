@@ -51,6 +51,7 @@
 
 // GPSTk
 #include "EphemerisRange.hpp"
+#include "TimeString.hpp"
 
 // DDBase
 //#include "PreciseRange.hpp"
@@ -103,7 +104,7 @@ try {
       if(CI.Verbose) oflog
          << " Warning - ProcessRawData for station " << obsfile.label
          << ", at time "
-         << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g,")
+         << printTime(timetag,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g,")
          << " failed with code " << iret
          << (iret ==  2 ? " (large RMS residual)" :
             (iret ==  1 ? " (large slope)" :
@@ -135,13 +136,13 @@ try {
       // it does not seem to affect the final estimation processing at all...
    if(st.usePRS && st.PRSXstats.N() >= 10) {
       Position prs;
-      prs.setPosition(st.PRSXstats.Average(),
+      prs.setECEF(st.PRSXstats.Average(),
                   st.PRSYstats.Average(),
                   st.PRSZstats.Average());
       st.pos = prs;
 
       if(CI.Debug) oflog << "Update apriori=PR solution for " << obsfile.label
-         << " at " << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+         << " at " << printTime(timetag,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
          << fixed << setprecision(5)
          << " " << setw(15) << st.PRSXstats.Average()
          << " " << setw(15) << st.PRSYstats.Average()
@@ -283,7 +284,7 @@ try {
       catch(InvalidRequest& e) {
          if(CI.Verbose)
             oflog << "No ephemeris found for sat " << it->first << " at time "
-                  << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+                  << printTime(timetag,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
          //it->second.ER = 0.0;
          it->second.elev = -90.0;         // do not include it in the PRS
          it->second.az = 0.0;

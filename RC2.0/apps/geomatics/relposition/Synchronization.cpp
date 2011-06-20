@@ -52,6 +52,7 @@
 // includes
 // system
 #include <deque>
+#include "TimeString.hpp"
 // GPSTk
 #include "geometry.hpp"             // DEG_TO_RAD
 #include "PolyFit.hpp"
@@ -209,7 +210,7 @@ try {
                + sat.toString()
                + string(" at count ") + StringUtils::asString(rawdat.count[nc])
                + string(" = time ")
-               + (FirstEpoch + rawdat.count[nc]*CI.DataInterval).printf(
+               + printTime((FirstEpoch + rawdat.count[nc]*CI.DataInterval),
                   "%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g"));
             GPSTK_THROW(e);
          }
@@ -395,7 +396,7 @@ try {
                // these should have been caught and removed before...
                oflog << "Warning - No ephemeris found for sat " << sat
                      << " at time "
-                     << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+                     << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
                      << " in RecomputeFromEphemeris()" << endl;
                rawdat.ER[nc] = 0.0;
                rawdat.elev[nc] = -90.0;

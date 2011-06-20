@@ -47,7 +47,7 @@
 
 //------------------------------------------------------------------------------------
 // system includes
-
+#include "TimeString.hpp"
 // GPSTk
 
 // DDBase
@@ -292,19 +292,19 @@ try {
          ttnext = tt;
          if(QueryTimeTable(ref, ttnext)) {         // error - timetable failed
             oflog << "DD: Error - failed to find reference from timetable at "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << " count "
+               << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << " count "
                << count << " for baseline " << ref.site1 << "-" << ref.site2 << endl;
             return 1;
          }
          if(CI.Verbose) oflog << "DD: reference is set to " << ref << " at "
-            << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+            << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
             << " count " << count << endl;
       }
 
          // does reference satellite have data at this count?
       if(SDmap[ref].count[Inext[ref]] != count) {
          oflog << "Error - failed to find reference data " << ref << " at "
-            << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+            << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
             // TD return here, or just skip the epoch?
             // question is do we allow 'holes' in ref sat's data?
          return 1;
@@ -347,7 +347,7 @@ try {
             tddb.L2bias = wl2 * nn2;
             oflog << " Phase bias (initial) on " << ddid
                << " at " << setw(4) << count << " "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
+               << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
             if(CI.Frequency != 2) oflog << " L1: " << setw(10) << nn1;
             if(CI.Frequency != 1) oflog << " L2: " << setw(10) << nn2;
             oflog << endl;
@@ -373,7 +373,7 @@ try {
             long ndb2 = long(db2 + (db2 > 0 ? 0.5 : -0.5));
             oflog << " Phase bias (reset  ) on " << ddid
                << " at " << setw(4) << count << " "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
+               << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
             if(CI.Frequency != 2) oflog << " L1: " << setw(10) << ndb1;
             if(CI.Frequency != 1) oflog << " L2: " << setw(10) << ndb2;
             oflog << endl;
