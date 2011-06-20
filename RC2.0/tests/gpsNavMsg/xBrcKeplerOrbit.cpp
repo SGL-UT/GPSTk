@@ -25,7 +25,7 @@ int main( int argc, char * argv[] )
       // Generally, we'd load these data from the file
    char SysID = 'G';
    ObsID obsID( ObsID::otUndefined, ObsID::cbL1, ObsID::tcCA );
-   short PRNID = 3;
+   short PRNID =                    3;
    double Toe =              388800.0;
    short weeknum =               1638;     // By rules of Kepler Orbit, this must be week of Toe
    double accuracy =            10.61;
@@ -53,7 +53,17 @@ int main( int argc, char * argv[] )
    double rToe =              388800.0;
    short rweeknum =               1638;     // By rules of Kepler Orbit, this must be week of Toe
    double raccuracy =            10.61;
+   short raccflag =                  0;
    bool rhealthy =                true;
+   short rhealth =                   0;
+   short riodc =                    22;
+   short rfitInt =                   0;
+   short rl2pdata =                  0;
+   short rcflags =                   1;
+   short riode =                    22;
+   long raodo =                     10;
+   double rToc =              388800.0;
+   short rTracker =                  1;
    double rCuc =        9.57399606705E-07;
    double rCus =        8.35768878460E-06;
    double rCrc =        2.03562500000E+02;
@@ -72,7 +82,11 @@ int main( int argc, char * argv[] )
    double rw =          1.09154604931E+00;
    double rOMEGAdot =  -8.56285667735E-09;
    double ridot =       5.52880172536E-10;
-
+   double raf0 =        7.23189674318E-04;
+   double raf1 =        5.11590769747E-12;
+   double raf2 =        0.0;
+   double rTgd =       -4.65661287308E-09;
+  
    long subframe1[10] = { 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
                           0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C };
    long subframe2[10] = { 0x22C2663D, 0x1F0E4A28, 0x05809675, 0x0EBD8AF1, 0x00089344,
@@ -142,23 +156,86 @@ int main( int argc, char * argv[] )
 
       // Sixth test case.  Compare against "classic" EngEphemeris
    cout << "Test Case 6: Calculated position using 'classic' EngEphemeris." << endl;
+   cout<< "Time= "<< g << endl;
    EngEphemeris EE;
    EE.addSubframe(subframe1, weeknum, 3, 1);
    EE.addSubframe(subframe2, weeknum, 3, 1);
    EE.addSubframe(subframe3, weeknum, 3, 1);
 
-   cout<<"dump above Xvt: "<<endl;
-   cout<<EE<<endl;
+  // cout<<"dump above Xvt: "<<endl;
+  // cout<<EE<<endl;
    Xvt xvt = EE.svXvt(dt);
    cout<< "Position EE: " << xvt.x <<endl;
    cout<< "Velocity EE: " << xvt.v <<endl;
    cout<< "RelCorr EE:  " << EE.svRelativity(dt) <<endl;
-   
-   cout<<"EE dump: "<<endl;
-   cout <<EE<<endl;
 
-   cout<< "ko4 dump: "<<endl;
-   cout<<ko4<<endl;
- 
+      // Test data (copied from navdmp output for PRN 6 Day 155, 2011)
+   long subframeA1[10] = { 0x22C2663D, 0x30A2291C, 0x2664002B, 0x0DB9B68A, 0x12746316,
+                           0x0BAC1EAA, 0x0DA73D35, 0x1A80002C, 0x00000574, 0x02C3A0F4 };
+   long subframeA2[10] = { 0x22C2663D, 0x30A24A8C, 0x1A80864C, 0x0C15B3B1, 0x0AD1AB66,
+                           0x00B00201, 0x3A1D9937, 0x00F6A87A, 0x0353C6C1, 0x00001F0C };
+   long subframeA3[10] = { 0x22C2663D, 0x30A26B04, 0x3FDF944D, 0x2E5CB356, 0x002FCA3A,
+                           0x040A9DDC, 0x0B45D00B, 0x03922318, 0x3FE905EF, 0x1A817FAC };
+
+   CivilTime ct2(2011, 6, 4, 11, 30, 0.0, TimeSystem::GPS );
+   dt = ct2.convertToCommonTime( );
+   cout << endl << "Test Case 7: Calculated position using 'classic' EngEphemeris." << endl;
+   cout << "Time = " << ct2 << endl;
+   EngEphemeris EEA;
+   EEA.addSubframe(subframeA1, weeknum, 9, 1);
+   EEA.addSubframe(subframeA2, weeknum, 9, 1);
+   EEA.addSubframe(subframeA3, weeknum, 9, 1);
+
+   xvt = EEA.svXvt(dt);
+   cout<< "Position EE: " << xvt.x <<endl;
+   cout<< "Velocity EE: " << xvt.v <<endl;
+   cout<< "Relativity : " << EE.svRelativity( dt ) << endl; 
+
+
+   CivilTime ct3(2011, 6, 5, 1, 0, 0.0, TimeSystem::GPS );
+   dt = ct3.convertToCommonTime( );
+   cout << endl << "Test Case 8: Calculated position using 'classic' EngEphemeris." << endl;
+   cout << "Time = " << ct3 << endl;
+
+   xvt = EEA.svXvt(dt);
+   cout<< "Position EE: " << xvt.x <<endl;
+   cout<< "Velocity EE: " << xvt.v <<endl;
+   cout<< "Relativity : " << EE.svRelativity( dt ) << endl; 
+
+   //Seventh test case. load setSubframe() methods from EngEphemeris
+   cout << "Test Case 9: loading setSubframe methods from EngEphemeris." << endl;
+   EngEphemeris EEload;
+
+   unsigned short tlm[3] = { 0x008B,
+                             0x008B,
+                             0x008B};
+   long how[3] = { 381606,
+                   381612,
+                   381618};
+   short asalert[3] = {1,1,1};
+   EEload.loadData( tlm, how, asalert,
+                    rTracker, PRNID, 
+                    rweeknum, rcflags, raccflag, 
+                    rhealth, riodc, rl2pdata,
+                    raodo,  rTgd, rToc,
+                    raf2,  raf1, raf0,
+                    riode, rCrs, rdn,
+                    rM0,  rCuc, recc,
+                    rCus, rAhalf, rToe,
+                    rfitInt, rCic, rOMEGA0,
+                    rCis, ri0, rCrc,
+                    rw,  rOMEGAdot, ridot); 
+
+   cout << "dump output for Test Cases 4,6, and 9." << endl;
+   
+   cout << "EE dump: " << endl;
+   cout << EE << endl;
+
+   cout << "ko4 dump: "<< endl;
+   cout << ko4 << endl;
+
+   cout << "setSubframe methods: " << endl;
+   cout << EEload << endl;
+
    return(0);
 }
