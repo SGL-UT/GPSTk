@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,16 +48,17 @@
 #include <string>
 #include "StringUtils.hpp"
 #include "Triple.hpp"
+// #include "ECEF.hpp" add in when ECEF is added to RC2.0
 #include "DayTime.hpp"
 #include "FFData.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
 {
-      /** @addtogroup MSC */
+      /** @addtogroup MSC */ /** @addtogroup icd211group ICD-GPS-211 Classes */
       //@{
 
-      /** 
+      /**
        * Model for a Monitor Station Coordinates File Data Record
        */
    class MSCData : public gpstk::FFData
@@ -65,7 +66,7 @@ namespace gpstk
    public:
          /// constructor
       MSCData() throw() : time(gpstk::DayTime(0.L)) {}
-      
+
          /// destructor
       virtual ~MSCData() throw() {}
 
@@ -83,7 +84,7 @@ namespace gpstk
       std::string mnemonic;  ///< Monitor Station identifier (e.g. ARLM)
       gpstk::DayTime refepoch;  ///< epoch of coordinates and velocities
       gpstk::DayTime effepoch;  ///< earliest epoch data is valid
-      gpstk::Triple coordinates;  ///< ECEF XYZ coordinates
+      gpstk::Triple coordinates; ///< ECEF XYZ coordinates /// gpstk::ECEF coordinates; add in when ECEF is added to RC2.0
       gpstk::Triple velocities; ///< XYZ velocities
 
          /// MSCData \b is data, so this always return \c true
@@ -94,7 +95,7 @@ namespace gpstk
       virtual void reallyPutRecord(gpstk::FFStream& ffs) const
          throw(std::exception, gpstk::FFStreamError,
                gpstk::StringUtils::StringException);
-      
+
          /**
           * Retrieve an MSCData record from the given gpstk::FFStream.
           * If there is a problem reading from the stream, it
@@ -106,12 +107,12 @@ namespace gpstk
           */
       virtual void reallyGetRecord(gpstk::FFStream& ffs)
          throw(std::exception, gpstk::FFStreamError,
-               gpstk::StringUtils::StringException);  
+               gpstk::StringUtils::StringException);
    }; // class MSCData
 
       //@}
 
 } // namespace gpstk
 
-#endif   
-      
+#endif
+
