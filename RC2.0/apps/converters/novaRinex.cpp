@@ -49,6 +49,7 @@
 #include <map>
 
 // GPSTk
+#include "TimeString.hpp"
 #include "StringUtils.hpp"
 #include "DayTime.hpp"
 #include "CommandOption.hpp"
@@ -390,7 +391,7 @@ try {
    if(fabs(FirstEpoch - DayTime::BEGINNING_OF_TIME) < 1)  {
       PrevEpoch = FirstEpoch = rod.time;
       if(verbose) cout << "Set First Epoch to "
-         << rod.time.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
+         << printTime(rod.time,"%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
    }
    else
       PrevEpoch = CurrEpoch;

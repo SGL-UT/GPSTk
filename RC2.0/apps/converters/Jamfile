@@ -18,9 +18,9 @@ GPSMain ats2mdp : ats2mdp.cpp ;
 
 GPSMain ash2xyz : ash2xyz.cpp ;
 
-GPSMain RinexConvert: RinexConvert.cpp ;
+#GPSMain RinexConvert: RinexConvert.cpp ;
 
-ObjectHdrs RinexConvert RinexConvert.cpp : ../../src ;
+#ObjectHdrs RinexConvert RinexConvert.cpp : ../../src ;
 
-LinkLibraries RinexConvert : ../../src/libgpstk.a ;
+#LinkLibraries RinexConvert : ../../src/libgpstk.a ;
 

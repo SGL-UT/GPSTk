@@ -42,7 +42,10 @@
 #include <list>
 #include <map>
 
+#include "TimeString.hpp"
+
 #include "CommonTime.hpp"
+#include "DayTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
@@ -209,7 +212,7 @@ protected:
 
             if (debugLevel)
                cout << "PVT time: "
-                    << CommonTime(time.week, time.sow).printf("%03j %02H:%02M:%04.1f")
+                    << printTime(CommonTime(time.week, time.sow),"%03j %02H:%02M:%04.1f")
                     << endl;
 
             MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
@@ -255,7 +258,7 @@ protected:
                if (makeEngEphemeris(engEph, ephPageStore))
                {
                   int week10 = 0x3ff & engEph.getFullWeek();
-                  CommonTime now;
+                  DayTime now;
                   time.week = (now.GPSfullweek() & ~0x3ff) | week10;
                   if (debugLevel)
                      cout << "week is " << time.week << endl;
