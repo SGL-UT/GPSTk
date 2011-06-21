@@ -45,10 +45,12 @@
 //------------------------------------------------------------------------------------
 // system includes
 #include "TimeString.hpp"
+#include <CivilTime.hpp>
 #include <time.h>
 
 // GPSTk
 //#define RANGECHECK // throw on invalid ranges in Vector and Matrix
+#include "Epoch.hpp"
 
 // DDBase
 #include "DDBase.hpp"
@@ -150,7 +152,7 @@ try {
       // START
    totaltime = clock();
    int iret;
-   CommonTime CurrEpoch;
+   Epoch CurrEpoch;
 
       // Title title and version
    Title = PrgmName + ", ARL:UT DD phase estimation processor, Ver " + Version;
@@ -177,7 +179,7 @@ try {
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   CurrEpoch.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
+   CurrEpoch.CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
                tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
       // print title and current time to screen
    Title += printTime(CurrEpoch,", Run %04Y/%02m/%02d %02H:%02M:%02S");

@@ -50,6 +50,7 @@
 // system
 #include <fstream>
 #include "TimeString.hpp"
+#include "Epoch.hpp"
 
 // GPSTk
 
@@ -340,10 +341,10 @@ try {
    double dt;
 
       // round receiver epoch to even multiple of data interval, else even second
-   SolutionEpoch = EarliestTime;
-   sow = SolutionEpoch.GPSsecond();
+   Epoch SolutionEpoch = EarliestTime;
+   sow = SolutionEpoch.GPSsow();
    sow = CI.DataInterval * double(int(sow/CI.DataInterval + 0.5));
-   SolutionEpoch += (sow - SolutionEpoch.GPSsecond());
+   SolutionEpoch += (sow - SolutionEpoch.GPSsow());
    if(CI.Debug) oflog << "Solution epoch is "
       << printTime(SolutionEpoch,"%Y/%02m/%02d %2H:%02M:%6.3f = %F/%10.3g") << endl;
 

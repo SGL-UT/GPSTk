@@ -45,7 +45,8 @@
 // system includes
 
 // GPSTk
-
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
 // DDBase
 #include "DDBase.hpp"
 #include "RinexUtilities.hpp"
@@ -230,8 +231,8 @@ try {
    CI.pTropModel->setWeather(CI.DefaultTemp,CI.DefaultPress,CI.DefaultRHumid);
 
       // Define first and last epochs
-   FirstEpoch = CommonTime::BEGINNING_OF_TIME;
-   LastEpoch = CommonTime::END_OF_TIME;
+   FirstEpoch = Epoch::BEGINNING_OF_TIME;
+   LastEpoch = Epoch::END_OF_TIME;
 
    return 0;
 }
@@ -272,7 +273,7 @@ try {
          st.pTropModel->setWeather(st.temp,st.press,st.rhumid);
       st.pTropModel->setReceiverHeight(st.pos.getHeight());
       st.pTropModel->setReceiverLatitude(st.pos.getGeodeticLatitude());
-      st.pTropModel->setDayOfYear(int(FirstEpoch.DOYday()));
+      st.pTropModel->setDayOfYear(Epoch(FirstEpoch.doy()).convertToCommonTime);
 
       oflog << "    Trop (model: " << st.TropType << fixed << ") zenith delays:"
          << " dry " << setprecision(6) << st.pTropModel->dry_zenith_delay();

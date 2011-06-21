@@ -46,6 +46,7 @@
 // includes
 // system
 #include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 // GPSTk
 // Geomatics
@@ -299,19 +300,19 @@ try {
 
       week = asInt(words(line,4,1));
       sow = asInt(words(line,5,1));
-      tt.setGPSfullweek(week,sow);           // TD handle week rollover
+      tt=GPSWeekSecond(week,sow);           // TD handle week rollover
       ts.usestart = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,6,1));
-      tt.setGPSfullweek(week,sow);
+      tt=GPSWeekSecond(week,sow);
       ts.usestop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,7,1));
-      tt.setGPSfullweek(week,sow);
+      tt=GPSWeekSecond(week,sow);
       ts.start = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,8,1));
-      tt.setGPSfullweek(week,sow);
+      tt=GPSWeekSecond(week,sow);
       ts.stop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       //ts.minelev = ts.maxelev = 0.0;

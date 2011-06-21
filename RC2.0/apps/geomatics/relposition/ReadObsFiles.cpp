@@ -45,6 +45,7 @@
 // system includes
 #include "TimeString.hpp"
 // GPSTk
+#include "Epoch.hpp"
 
 // DDBase
 #include "DDBase.hpp"
@@ -271,7 +272,7 @@ try {
       //}
 
       // is the timetag an even multiple of DataInterval?
-      double sow = of.Robs.time.GPSsecond();
+      double sow = of.Robs.time.GPSsow();
       double frac = sow - CI.DataInterval*double(int(sow/CI.DataInterval + 0.5));
       if(fabs(frac) < 0.5) break;
       else if(CI.Debug) oflog << "skip epoch "

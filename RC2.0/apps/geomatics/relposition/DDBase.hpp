@@ -70,6 +70,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
+#include "Epoch.hpp"
 
 // DDBase
 #include "GSatID.hpp"             // this one first
