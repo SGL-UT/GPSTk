@@ -153,7 +153,7 @@ protected:
    virtual void process()
    {
       const int sendSize=sendString.size();
-      vector<DayTime> lastSendTime(sendSize);
+      vector<CommonTime> lastSendTime(sendSize);
 
       bool use_stdout = output.getFilespec() == "<stdout>";
       const size_t max_len=512;
@@ -173,7 +173,7 @@ protected:
             output.flush();
          }
 
-         DayTime now;
+         CommonTime now;
          for (int i=0; i<sendSize; i++)
          {
             if (now - lastSendTime[i] > sendPeriod[i])
