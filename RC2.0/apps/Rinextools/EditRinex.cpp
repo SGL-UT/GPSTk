@@ -35,6 +35,7 @@
 #include "RinexObsStream.hpp"
 #include "CommonTime.hpp"
 #include "Epoch.hpp"
+#include "CivilTime.cpp"
 #include "TimeString.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
@@ -86,11 +87,19 @@ try {
       // Title and description
    Title = string("EditRinex, part of the GPS ToolKit, Ver ")
             + REC.getRinexEditVersion() + string(", Run ");
+   time_t timer;
+   struct tm *tblock;
 
-   Epoch now;
-   now.setLocalTime();
-   Title += printTime(now,"%04Y/%02m/%02d %02H:%02M:%02S\n");
+   timer = time(NULL);
+   tblock = localtime(&timer);
+   CivilTime tempCTime(1900+tblock->tm_year,1+tblock->tm_mon, tblock->tm_mday,
+                        tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
+   //last.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
+   //            tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
+   last = tempCTime;
+   Title += tempCTime.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
    
+
    cout << Title;
 
       // define extended types

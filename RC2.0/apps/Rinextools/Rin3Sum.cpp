@@ -42,7 +42,7 @@
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavStream.hpp"
-
+#include "TimeString.hpp"
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
 #include "CivilTime.hpp"
@@ -516,7 +516,8 @@ int main(int argc, char **argv)
                         *pout << " LLI is set";
                      if(debug)
                         *pout << " " << RinexSatID(it->first)
-                              << " " << printTime(lastObsTime,gpsfmt) << endl;
+                              << " " << static_cast<GPSWeekSecond>(lastObsTime).printf("%4F %.3g") << endl;
+
                   }
                }
                // save C1,L1,P1 for this sat for next time

@@ -36,13 +36,16 @@
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
 #include "icd_gps_constants.hpp"
 #include "RinexUtilities.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "TimeString.hpp"
 
 #include <cstring>
 #include <string>
@@ -51,6 +54,7 @@
 #include <fstream>
 #include <algorithm>
 #include <ctime>
+#include <time.h>
 
 using namespace std;
 using namespace gpstk;
@@ -64,7 +68,7 @@ vector<string> InputFiles;
 string InputDirectory;
 string OutputFile;
 ostream* pout;
-DayTime BegTime, EndTime;
+CommonTime BegTime, EndTime;
 bool ReplaceHeader=false;     // replace the file header in-place
 bool TimeSortTable=false;     // sort the PRN/Obs table on time (else PRN)
 bool GPSTimeOutput=false;     // output GPS times (week, sec-of-week)
@@ -75,13 +79,20 @@ bool progress=false;          // output progress info to screen (for GUI)
 bool screen=false;            // print to screen even if OutputFile is given
 
 //------------------------------------------------------------------------------------
+// data used for computation
+const int ndtmax=15;
+double dt,bestdt[ndtmax];
+int ndt[ndtmax]={-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+int nepochs,ncommentblocks;
+
+//------------------------------------------------------------------------------------
 // class used to store SAT/Obs table
 class TableData {
 public:
    RinexSatID sat;
    vector<int> nobs;
    double prevC1,prevP1,prevL1;
-   DayTime begin,end;
+   CommonTime begin,end;
    vector<int> gapcounts;
    TableData(const SatID& p, const int& n)
       { sat=RinexSatID(p); nobs=vector<int>(n); prevC1=prevP1=prevL1=0; };
@@ -111,8 +122,8 @@ int main(int argc, char **argv)
 try {
    int iret,i,j,k,n,ifile,nsats,nclkjumps,L1lli;
    double C1,L1,P1,clkjumpave,clkjumpvar;
-   DayTime last,prev,ftime;
-   vector<DayTime> clkjumpTimes;
+   CommonTime last,prev,ftime;
+   vector<CommonTime> clkjumpTimes;
    vector<double> clkjumpMillsecs,clkjumpUncertainty;
    vector<int> clkjumpAgree;
    // data used for computation
@@ -121,8 +132,8 @@ try {
    int ncompDT,ndt[ndtmax],ncount;
    int nepochs,ncommentblocks;
 
-   BegTime = DayTime::BEGINNING_OF_TIME;  // init. here to avoid static init.problem
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;  // init. here to avoid static init.problem
+   EndTime = CommonTime::END_OF_TIME;
 
       // Title and description
    string Title;
@@ -131,10 +142,12 @@ try {
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   last.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-               tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   Title += last.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   CivilTime ctime(1900+tblock->tm_year, 1+tblock->tm_mon, tblock->tm_mday,
+                     tblock->tm_hour, tblock->tm_min, tblock->tm_sec);
+   last = ctime;
+   Title += printTime(ctime,"%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
+
 
    iret=GetCommandLine(argc, argv);
    if(iret) return iret;
@@ -180,8 +193,11 @@ try {
    for(ifile=0; ifile<InputFiles.size(); ifile++) {
       int nprogress;
       if(progress) cout << "PROGRESS " << (nprogress=5) << endl << flush;
+      string filename;
+      if(!InputDirectory.empty()) filename = InputDirectory + "/";
+      filename += InputFiles[ifile];
 
-      string filename = InputFiles[ifile];
+      filename = InputFiles[ifile];
       RinexObsStream InStream(filename.c_str());
       if(!InStream.is_open()) {
          *pout << "File " << filename << " could not be opened.\n";
@@ -190,6 +206,13 @@ try {
       }
       //else *pout << "File " << filename << " has been successfully opened.\n";
       InStream.exceptions(ios::failbit);
+      if(!isRinexObsFile(filename)) {
+         *pout << "File " << filename << " is not a Rinex observation file\n";
+         if(isRinexNavFile(filename))
+            *pout << "This file is a Rinex navigation file - try NavMerge\n";
+         continue;
+      }
+
 
       // get file size
       long begin,end,filesize,bytesperepoch=1300,totN;
@@ -200,8 +223,8 @@ try {
       filesize = end-begin;
       totN = filesize/bytesperepoch;
 
-      prev = DayTime::BEGINNING_OF_TIME;
-      ftime = DayTime::BEGINNING_OF_TIME;
+      prev = CommonTime::BEGINNING_OF_TIME;
+      ftime = CommonTime::BEGINNING_OF_TIME;
 
       if(!brief) {
          *pout << "+++++++++++++ RinSum summary of Rinex obs file "
@@ -283,7 +306,7 @@ try {
          last = robs.time;
          if(last < BegTime) continue;
          if(last > EndTime) break;
-         if(ftime == DayTime::BEGINNING_OF_TIME) ftime=last;
+         if(ftime == CommonTime::BEGINNING_OF_TIME) ftime=last;
          nepochs++;
          nsats = nclkjumps = 0;  // count sats and signs clock jumps have occurred
          clkjumpave = clkjumpvar = 0.0;
@@ -356,7 +379,7 @@ try {
 
             // test for millisecond clock adjusts -
             // sometimes they are applied to range but not phase or vice-versa
-            if(prev != DayTime::BEGINNING_OF_TIME && L1 != 0 && ptab->prevL1 != 0) {
+            if(prev != CommonTime::BEGINNING_OF_TIME && L1 != 0 && ptab->prevL1 != 0) {
                int nms;
                double test;
                nsats++;
@@ -389,8 +412,9 @@ try {
                   else if(debug) *pout << " - failed.";
                   if(debug && L1lli != 0) { *pout << " LLI is set"; }
                   if(debug) *pout << " " << RinexSatID(it->first)
-                     << " " << last.printf("%4F %.3g") << endl;
+                     << " " << printTime(static_cast<GPSWeekSecond>(last),"%4F %.3g") << endl;
                }
+
             }
             // save C1,L1,P1 for this sat for next time
             ptab->prevC1 = C1;
@@ -414,7 +438,7 @@ try {
             clkjumpUncertainty.push_back(sqrt(clkjumpvar));
          }
 
-         if(prev != DayTime::BEGINNING_OF_TIME) {
+         if(prev != CommonTime::BEGINNING_OF_TIME) {
             dt = last-prev;
             if(dt > 0.0) {
                for(i=0; i<ndtmax; i++) {
@@ -439,10 +463,13 @@ try {
             else {
                cerr << " WARNING time tags out of order: "
                   //<< " prev >= curr : "
-                  << prev.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
-                  << " >= "
-                  << last.printf("%F/%.0g = %04Y/%02m/%02d %02H:%02M:%02S")
+                  << printTime(static_cast<GPSWeekSecond>(prev),"%F/%.0g = ")
+                  << printTime(static_cast<CivilTime>(prev),"%04Y/%02m/%02d %02H:%02M:%02S")
+                  << " > "
+                  << printTime(static_cast<GPSWeekSecond>(last),"%F/%.0g = ")
+                  << printTime(static_cast<CivilTime>(last),"%04Y/%02m/%02d %02H:%02M:%02S")
                   << endl;
+
             }
          }
          prev = last;
@@ -470,27 +497,33 @@ try {
       ostringstream oss;
 
          // summary info
-      oss << "Computed interval "
-         << fixed << setw(5) << setprecision(2) << compDT << " seconds." << endl;
-      oss << "Computed first epoch: " << ftime.printf("%4F %14.7g") << " = "
-            << ftime.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
-      oss << "Computed last  epoch: " << last.printf("%4F %14.7g") << " = "
-            << last.printf("%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
+      *pout << "Computed interval "
+         << fixed << setw(5) << setprecision(2) << dt << " seconds." << endl;
+      *pout << "Computed first epoch: " << printTime(static_cast<GPSWeekSecond>(ftime),"%4F %14.7g") << " = "
+            << printTime(static_cast<CivilTime>(ftime),"%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
+      *pout << "Computed last  epoch: " << printTime(static_cast<GPSWeekSecond>(last),"%4F %14.7g") << " = "
+            << printTime(static_cast<CivilTime>(last),"%04Y/%02m/%02d %02H:%02M:%010.7f") << endl;
 
-      oss << "Computed time span:";
-      double secs=last-ftime;
-      int iday = int(secs/86400.0);
-      if(iday > 0) oss << " " << iday << "d";
-      DayTime delta;
-      delta.setSecOfDay(secs - iday*86400);
-      oss << " " << delta.hour() << "h "
-         << delta.minute() << "m "
-         << delta.second() << "s = "
-         << secs << " seconds\nComputed file size: "
-         << filesize << " bytes." << endl;
+      *pout << "Computed time span:";
+      double secs = last - ftime;
+      int remaining = int(secs);
+      int iday = remaining/86400;
+      int hours = remaining / 3600;
+      remaining %= 3600;
+      int minutes = remaining /60;
+      remaining %= 60;
 
-      i = 1+int(0.5+(last-ftime)/compDT);
-      if(!brief) oss << "There were " << nepochs << " epochs ("
+      if(iday > 0)
+      	*pout << " " << iday << "d";
+      
+      *pout << " " << hours << "h "
+         << minutes << "m "
+         << remaining << "s = "
+         << secs << " seconds." << endl;
+
+      i = 1+int(0.5+(last-ftime)/dt);
+      if(!brief) *pout << "There were " << nepochs << " epochs ("
+
          << setprecision(2) << double(nepochs*100)/i
          << "% of " << i << " possible epochs in this timespan) and "
          << ncommentblocks << " inline header blocks.\n";
@@ -504,42 +537,44 @@ try {
       vector<TableData>::iterator tit;
       if(table.size() > 0) table.begin()->sat.setfill('0');
       if(!brief) {
-         oss << "\n          Summary of data available in this file: "
+         *pout << "\n          Summary of data available in this file: "
             << "(Totals are based on times and interval)\n";
-         oss << "Sat  OT:";
+         *pout << "Sat  OT:";
          for(k=0; k<n; k++)
-            oss << setw(7) << rheader.obsTypeList[k].type;
-         oss << "  Total             Begin time - End time\n";
+            *pout << setw(7) << rheader.obsTypeList[k].type;
+         *pout << "  Total             Begin time - End time\n";
             // loop
          for(tit=table.begin(); tit!=table.end(); ++tit) {
-            oss << "Sat " << tit->sat << " ";
-            for(k=0; k<n; k++) oss << setw(7) << tit->nobs[k];
+            *pout << "Sat " << tit->sat << " ";
+            for(k=0; k<n; k++) *pout << setw(7) << tit->nobs[k];
             // compute total based on times
-            oss << setw(7) << 1+int(0.5+(tit->end-tit->begin)/compDT);
+            *pout << setw(7) << 1+int(0.5+(tit->end-tit->begin)/dt);
             if(GPSTimeOutput) {
-               oss << "  " << tit->begin.printf("%4F %10.3g")
-                  << " - " << tit->end.printf("%4F %10.3g") << endl;
+               *pout << "  " << printTime(static_cast<GPSWeekSecond>(tit->begin),"%4F %10.3g")
+                  << " - " << printTime(static_cast<GPSWeekSecond>(tit->end),"%4F %10.3g") << endl;
             }
             else {
-               oss
-                  << "  " << tit->begin.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
-                  << " - " << tit->end.printf("%04Y/%02m/%02d %02H:%02M:%04.1f")
+               *pout
+                  << "  " << printTime(static_cast<CivilTime>(tit->begin),"%04Y/%02m/%02d %02H:%02M:%04.1f")
+                  << " - " << printTime(static_cast<CivilTime>(tit->end),"%04Y/%02m/%02d %02H:%02M:%04.1f")
                   << endl;
+
             }
          }
-         oss << "TOTAL   "; for(k=0; k<n; k++) oss << setw(7) << totals[k];
-         oss << endl;
+ *pout << "TOTAL   "; for(k=0; k<n; k++) *pout << setw(7) << totals[k];
+         *pout << endl;
       }
       else {
-         oss << "SATs(" << table.size() << "):";
+         *pout << "SATs(" << table.size() << "):";
          for(tit=table.begin(); tit!=table.end(); ++tit)
-            oss << " " << tit->sat;
-         oss << endl;
+            *pout << " " << tit->sat;
+         *pout << endl;
 
-         oss << "Obs types(" << rheader.obsTypeList.size() << "): ";
+         *pout << "Obs types(" << rheader.obsTypeList.size() << "): ";
          for(i=0; i<rheader.obsTypeList.size(); i++)
-            oss << " " << rheader.obsTypeList[i].type;
-         oss << endl;
+            *pout << " " << rheader.obsTypeList[i].type;
+         *pout << endl;
+
       }
 
       // output gaps
@@ -568,31 +603,33 @@ try {
 
          // warnings
       if((rheader.valid & RinexObsHeader::intervalValid)
-            && fabs(compDT-rheader.interval) > 1.e-3)
-         oss << " WARNING: Computed interval is " << setprecision(2)
-            << compDT << " sec, while input header has " << setprecision(2)
+            && fabs(dt-rheader.interval) > 1.e-3)
+         *pout << " WARNING: Computed interval is " << setprecision(2)
+            << dt << " sec, while input header has " << setprecision(2)
             << rheader.interval << " sec.\n";
       if(fabs(ftime-rheader.firstObs) > 1.e-8)
-         oss << " WARNING: Computed first time does not agree with header\n";
+         *pout << " WARNING: Computed first time does not agree with header\n";
       if((rheader.valid & RinexObsHeader::lastTimeValid)
             && fabs(last-rheader.lastObs) > 1.e-8)
-         oss << " WARNING: Computed last time does not agree with header\n";
+         *pout << " WARNING: Computed last time does not agree with header\n";
 
       if(clkjumpTimes.size() > 0) {
-         oss << " WARNING: millisecond clock adjusts at these times:\n";
+         *pout << " WARNING: millisecond clock adjusts at these times:\n";
          for(i=0; i<clkjumpTimes.size(); i++) {
-            oss << "   "
-             << clkjumpTimes[i].printf("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%06.3f")
+            *pout << "   "
+             << printTime(static_cast<GPSWeekSecond>(clkjumpTimes[i]),"%4F %10.3g = ")
+             << printTime(static_cast<CivilTime>(clkjumpTimes[i]),"%04Y/%02m/%02d %02H:%02M:%06.3f")
              << " " << setw(5) << setprecision(2) << clkjumpMillsecs[i]
              << " ms_clock_adjust";
              if(clkjumpAgree[i] > 0 || clkjumpUncertainty[i] > 0.01)
-               oss << " (low quality determination; data may be irredeemable)";
-            oss << endl;
+               *pout << " (low quality determination; data may be irredeemable)";
+            *pout << endl;
+
          }
       }
          // look for 'empty' obs types
       for(k=0; k<n; k++) {
-         if(totals[k] <= 0) oss << " WARNING: ObsType "
+         if(totals[k] <= 0) *pout << " WARNING: ObsType "
             << rheader.obsTypeList[k].type
             << " should be deleted from header.\n";
       }
@@ -649,17 +686,18 @@ try {
          InAgain.close();
          ROutStr.close();
             // delete original file and rename the temporary
-         ostringstream oss2;
-         iret = remove(filename.c_str());
-         if(iret) oss2 << "RinSum: Error: Could not remove existing file: "
+         ostringstream oss2;         
+	 iret = remove(filename.c_str());
+         if(iret) *pout << "RinSum: Error: Could not remove existing file: "
             << filename << endl;
          else {
             iret = rename(newname,filename.c_str());
-            if(iret) oss2 << "RinSum: Error: Could not rename new file " << newname
+            if(iret) *pout << "RinSum: Error: Could not rename new file " << newname
                << " using old name " << filename << endl;
-            else oss2 << "\nRinSum: Replaced original header with complete one,"
+            else *pout << "\nRinSum: Replaced original header with complete one,"
                << " using temporary file name "
                << newname << endl;
+
          }
          *pout << oss2.str();
          if(screen) cout << oss2.str();
@@ -846,16 +884,24 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         BegTime.setToString(field[0]+","+field[1], "%F,%g");
+      {
+         GPSWeekSecond weeksec(asInt(field[0]), asDouble(field[1]));
+         BegTime = weeksec;
+      }
       else if(field.size() == 6)
-         BegTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+      {
+      	CivilTime ctime(asInt(field[0]), asInt(field[1]), asInt(field[2]),
+      	                  asInt(field[3]), asInt(field[4]), asDouble(field[5]));
+         BegTime = ctime;
+      }
       else {
          cerr << "Error: invalid --start input: " << values[0] << endl;
       }
       if(help) cout << " Input: begin time " << values[0] << " = "
-         << BegTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(static_cast<CivilTime>(BegTime),"%Y/%02m/%02d %2H:%02M:%06.3f = ")
+         << printTime(static_cast<GPSWeekSecond>(BegTime),"%F/%10.3g") << endl;
    }
+
    if(dashet.getCount()) {
       values = dashet.getValue();
       msg = values[0];
@@ -863,15 +909,25 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         EndTime.setToString(field[0]+","+field[1], "%F,%g");
+      {
+         GPSWeekSecond weeksec(asInt(field[0]), asDouble(field[1]));
+         EndTime = weeksec;
+      }
       else if(field.size() == 6)
-         EndTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
-      else {
+      {
+         CivilTime ctime(asInt(field[0]), asInt(field[1]), asInt(field[2]),
+      	                  asInt(field[3]), asInt(field[4]), asDouble(field[5]));
+         EndTime = ctime;
+      }
+      else
+      {
          cerr << "Error: invalid --stop input: " << values[0] << endl;
       }
-      if(help) cout << " Input: end time " << values[0] << " = "
-         << EndTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+      if(help)
+         cout << " Input: end time " << values[0] << " = "
+              << printTime(static_cast<CivilTime>(EndTime),"%Y/%02m/%02d %2H:%02M:%06.3f = ")
+              << printTime(static_cast<GPSWeekSecond>(EndTime),"%F/%10.3g")  << endl;
+
    }
 
    if(dashb.getCount()) {

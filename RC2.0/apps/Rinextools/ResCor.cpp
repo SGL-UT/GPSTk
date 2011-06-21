@@ -42,13 +42,13 @@
 //
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp" //To support the dynamic loading from strings.
-#include "CommonTime.hpp"
+#include "CommonTime.hpp" //To support the dynamic loading from strings.
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
+#include "CommandOptionWithTimeArg.hpp"
 #include "RinexObsBase.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -1047,7 +1047,7 @@ try {
                   }
                }
                try {
-                  timetag = DayTime().setToString(lineT,fmtT);
+                  timetag = Position().setToString(lineT,fmtT);
                }
                catch(Exception& dte) {
                   logof << "ERROR: reading the receiver position flat file threw"
