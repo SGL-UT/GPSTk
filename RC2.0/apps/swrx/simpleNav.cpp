@@ -30,7 +30,7 @@ tries to estimate the pseudoranges from the correlation delays.
 
 #include <iostream>
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <CommandOption.hpp>
 #include <CommandOptionWithTimeArg.hpp>
 #include <CommandOptionParser.hpp>
@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
       cout << "Have ephemeris data from " << bce.getInitialTime() 
            << " through " << bce.getFinalTime() << endl;
 
-   DayTime time = timeOption.getTime()[0];
+   CommonTime time = timeOption.getTime()[0];
    if (verbosity)
       cout << "Initial time estimate: " << time << endl;
 

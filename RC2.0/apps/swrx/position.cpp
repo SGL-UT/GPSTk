@@ -34,14 +34,15 @@ We then solve for position.
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "icd_gps_constants.hpp"
+#include "Position.hpp"
 #include <iostream>
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <GPSEphemerisStore.hpp>
 #include <RinexNavStream.hpp>
 #include <RinexNavData.hpp>
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
-#include <GPSGeoid.hpp>
+#include <GPSEllipsoid.hpp>
 #include <PRSolution.hpp>
 
 using namespace gpstk;
@@ -60,13 +61,13 @@ protected:
 private:
    GPSEphemerisStore bce;
    IonoModel iono;
-   DayTime time;
+   CommonTime time;
 
    double zCount;
    int gpsWeek;
    double sampleRate;
 
-   GPSGeoid gm;
+   GPSEllipsoid gm;
    vector<SatID> svVec;
    vector<double> ionoVec;
    Triple antennaPos;
@@ -115,7 +116,7 @@ bool P::initialize(int argc, char *argv[]) throw()
          zCount = asDouble(zCountOpt.getValue().front());
          // zCount is the time of transmission of the next subframe.
          zCount -= 6.0; 
-         DayTime t(gpsWeek,zCount);
+         CommonTime t(gpsWeek,zCount);
          time = t;
    }
  
@@ -293,7 +294,7 @@ void P::process()
    antennaPos[0] = sol[0];
    antennaPos[1] = sol[1];
    antennaPos[2] = sol[2];
-   ECEF ecef(antennaPos);
+   Position ecef(antennaPos);
    for (int i=1; i<=32; i++)
    {
       SatID sv(i, SatID::systemGPS);

@@ -58,13 +58,13 @@ hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c
 #include "complex_math.h"
 #include "IQStream.hpp"
 #include "NavFramer.hpp"
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <GPSEphemerisStore.hpp>
 #include <RinexNavStream.hpp>
 #include <RinexNavData.hpp>
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
-#include <GPSGeoid.hpp>
+#include <GPSEllipsoid.hpp>
 #include <PRSolution.hpp>
 using namespace gpstk;
 using namespace std;
@@ -444,15 +444,15 @@ void RxSim::process()
          {
             GPSEphemerisStore bce;
             IonoModel iono;
-            DayTime time;
+            CommonTime time;
             double zCount = (double)ZCount - 6.0;
             double sampleRate = 1/timeStep;
-            GPSGeoid gm;
+            GPSEllipsoid gm;
             vector<SatID> svVec;
             vector<double> ionoVec;
             Triple antennaPos;
 
-            DayTime t(gpsWeek,zCount);
+            CommonTime t(gpsWeek,zCount);
             time = t; 
 
             RinexNavStream rns(ephFile.c_str(), ios::in);
