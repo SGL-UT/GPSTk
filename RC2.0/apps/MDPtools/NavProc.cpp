@@ -26,6 +26,7 @@
 //  Copyright 2008, The University of Texas at Austin
 //
 //============================================================================
+#include "TimeString.hpp"
 
 #include "Position.hpp"
 #include "NavProc.hpp"
@@ -309,7 +310,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
       {
          if (verboseLevel>1)
             out << msgPrefix << " HOW time != hdr time+6, HOW:"
-                << howTime.printf(timeFormat)
+                << printTime(howTime,timeFormat)
                 << endl;
          if (verboseLevel>3)
             umsg.dump(out);
