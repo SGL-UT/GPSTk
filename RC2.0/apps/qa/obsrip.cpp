@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include "LinearCombination.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -56,7 +57,7 @@ int main(int argc, char* argv[])
       {
           RinexObsData::RinexObsTypeMap otmap;
 
-          cout << rod.time.printf("%F %g ");
+          cout << printTime(rod.time,"%F %g ");
           cout << it->first << " ";
           cout << setprecision(5) << c[it->first];
           cout << endl;  
