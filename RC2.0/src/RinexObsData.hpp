@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -63,7 +63,7 @@ namespace gpstk
        *
        * @sa gpstk::RinexObsStream and gpstk::RinexObsHeader.
        * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
-       */   
+       */
    class RinexObsData : public RinexObsBase
    {
    public:
@@ -76,7 +76,7 @@ namespace gpstk
          short lli;    ///< See the RINEX Spec. for an explanation.
          short ssi;    ///< See the RINEX Spec. for an explanation.
       };
-      
+
          /// map from RinexObsType to RinexDatum.
       typedef std::map<RinexObsHeader::RinexObsType, RinexDatum> RinexObsTypeMap;
          /// map from SatID to RinexObsTypeMap.
@@ -129,12 +129,12 @@ namespace gpstk
           * Also make sure to correctly set the epochFlag to the correct
           * number for the type of header data you want to write.
           */
-      virtual void reallyPutRecord(FFStream& s) const 
+      virtual void reallyPutRecord(FFStream& s) const
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
-  
+
          /**
-          * This functions obtains a RINEX Observation record from the given 
+          * This functions obtains a RINEX Observation record from the given
           * FFStream.
           * If there is an error in reading from the stream, it is reset
           * to its original position and its fail-bit is set.
@@ -146,7 +146,7 @@ namespace gpstk
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
+      virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
 

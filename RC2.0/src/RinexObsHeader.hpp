@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -218,12 +218,12 @@ namespace gpstk
       };
 
          /** @name RinexObsHeaderValues
-          */ 
+          */
          //@{
       double version;                        ///< RINEX VERSION & TYPE
       std::string fileType;                  ///< RINEX FILETYPE (Observation Navigation etc)
-      //std::string system_str;              ///< The string (for file i/o) giving the RINEX system 
-      SatID system;                          ///< system; one of {RinexSatID.system, Mixed}
+      //std::string system_str;              ///< The string (for file i/o) giving the RINEX system
+      RinexSatID system;                     ///< The RINEX satellite system
       std::string fileProgram,               ///< The program used to generate this file
          fileAgency,                         ///< Who ran the program.
          date;                               ///< When the program was run.
@@ -255,14 +255,14 @@ namespace gpstk
       int numObs; ///< used to save the number of obs on # / TYPES continuation lines.
       RinexSatID lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
          //@}
-     
+
          /// Destructor
       virtual ~RinexObsHeader() {}
 
          // The next four lines is our common interface
          /// RinexObsHeader is a "header" so this function always returns true.
       virtual bool isHeader() const {return true;}
-     
+
          /**
           * This is a simple Debug output function.
           * It simply outputs the version, name and antenna number of this
@@ -279,7 +279,7 @@ namespace gpstk
          /**
           * This function converts the RinexObsType in \a oneObs to a string.
           */
-      static std::string convertObsType(const RinexObsType& oneObs) 
+      static std::string convertObsType(const RinexObsType& oneObs)
          throw(FFStreamError);
 
          /**
@@ -301,7 +301,7 @@ namespace gpstk
 
          /// Return boolean : is this a valid Rinex header?
       bool isValid() const { return ((valid & allValid20) == allValid20); }
-         
+
    protected:
          /**
           * outputs this record to the stream correctly formatted.
@@ -319,7 +319,7 @@ namespace gpstk
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
+      virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,
                gpstk::StringUtils::StringException);
 
