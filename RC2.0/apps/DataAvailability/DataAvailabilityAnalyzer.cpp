@@ -69,7 +69,7 @@
 #include "ObsID.hpp"
 
 #include "DataAvailabilityAnalyzer.hpp"
-
+#include "TimeString.hpp"
 #include "EphReader.hpp"
 #include "ObsReader.hpp"
 #include "GPSEphemerisStore.hpp"
@@ -320,8 +320,8 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
       if (haveAntennaPos)
          output << "Antenna position: " << antennaPos << " m ecef" << endl;
       output << "Ignoring data with SNR < " << snrThreshold << " dB-Hz" << endl
-             << "Start time is " << startTime.printf(timeFormat) << endl
-             << "Stop time is " << stopTime.printf(timeFormat) << endl
+             << "Start time is " << printTime(startTime,timeFormat) << endl
+             << "Stop time is " << printTime(stopTime,timeFormat) << endl
              << "Time span is " << timeSpan << " seconds" << endl;
       
       if (smashAdjacent)
@@ -581,7 +581,7 @@ void DataAvailabilityAnalyzer::process()
          firstEpochTime = oe.time;
          if (verboseLevel)
             output << "First observation is at " 
-                   << firstEpochTime.printf(timeFormat) << endl;
+                   << printTime(firstEpochTime,timeFormat) << endl;
          
             // Record as missing any epochs from startTime to firstEpochTime.
          if (startTimeOpt.getCount() && startTime < firstEpochTime)
@@ -602,7 +602,7 @@ void DataAvailabilityAnalyzer::process()
    if (epochCounter > 0)
    {
       if (verboseLevel)
-         output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
+         output << "Last observation is at " << printTime(lastEpochTime,timeFormat) 
                 << endl;
          
          // record as missing any epochs from lastEpochTime to stopTime
@@ -695,7 +695,7 @@ void DataAvailabilityAnalyzer::processEpoch(
       n_exp = std::min(n_exp, 12);
 
       if (verboseLevel>3)
-         output << t.printf(timeFormat) << "  SVs in view: ";
+         output << printTime(t,timeFormat) << "  SVs in view: ";
 
       for (int prn=1; prn<=MAX_PRN; prn++)
       {
@@ -805,7 +805,7 @@ void DataAvailabilityAnalyzer::processEpoch(
                if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
                   if (verboseLevel>2)
-                     output << t.printf(timeFormat) << " prn:" << svid.id
+                     output << printTime(t,timeFormat) << " prn:" << svid.id
                             << " gained:" << iv.obsGained
                             << " lost:" << iv.obsLost << endl;
                   missingList.push_back(iv);
@@ -918,9 +918,9 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
    else
       dir = ' ';
 
-   s << left << t0.printf(fmt);
+   s << left << printTime(t0,fmt);
    if (smashCount)
-      s << " - " << time.printf("%02H:%02M:%04.1f");
+      s << " - " << printTime(time,"%02H:%02M:%04.1f");
    else
       s << "   " << "          ";
    s << " " << setw(5) << smashCount+1
