@@ -27,6 +27,7 @@
 #include <time.h>
 
 // GPSTk
+#include "TimeString.hpp"
 #include "Exception.hpp"
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
@@ -69,7 +70,7 @@ try {
    // program name, title and version
    PrgmName = string("testSSEph");
    Title = PrgmName + ", test program for JPL ephemeris, version "
-      + Version + ", " + CurrEpoch.printf("Run %04Y/%02m/%02d at %02H:%02M:%02S");
+      + Version + ", " + printTime(CurrEpoch,"Run %04Y/%02m/%02d at %02H:%02M:%02S");
 
    // default command line input
    bool verbose=false,debug=false;
