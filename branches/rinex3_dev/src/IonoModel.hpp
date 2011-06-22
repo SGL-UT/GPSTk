@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -30,13 +30,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -53,7 +53,7 @@
 
 #include "DayTime.hpp"
 #include "EngAlmanac.hpp"
-#include "Geodetic.hpp"
+#include "Position.hpp"
 
 namespace gpstk
 {
@@ -78,25 +78,25 @@ namespace gpstk
    class IonoModel
    {
    public:
-        
+
          /// Thrown when attempting to use a model for which all necessary
          /// parameters have not been specified.
          /// @ingroup exceptiongroup
       NEW_EXCEPTION_CLASS(InvalidIonoModel, gpstk::Exception);
- 
+
 
       enum Frequency
       {
          L1,  ///< L1 frequency (1575.42 MHz)
          L2   ///< L2 frequency (1227.60 MHz)
       };
-      
+
          /// default constructor, creates an invalid model
       IonoModel() throw() : valid(false) {}
-      
+
          /// destructor
       virtual ~IonoModel() throw() {}
-      
+
          /**
           * constructor.
           * Creates a valid model with satellite transmitted alpha
@@ -105,27 +105,27 @@ namespace gpstk
           * \param b an array containing the four beta terms
           */
       IonoModel(const double a[4], const double b[4]) throw();
-      
+
          /**
           * EngAlmanac constructor.
           * Creates a valid model from and EngAlmanac object
           * \param engalm an EngAlmanac object
           */
       IonoModel(const EngAlmanac& engalm) throw();
-      
+
          /** Method to feed the model with satellite transmitted alpha
           * and beta parameters provided from almanac.
           * \param a an array containing the four alpha terms
           * \param b an array containing the four beta terms
           */
       void setModel(const double a[4], const double b[4]) throw();
-      
+
          /**
           * returns the validity of the model.
           * \return model validity
           */
       bool isValid() const throw() { return valid; }
-      
+
          /**
           * get the ionospheric correction value.
           * \param time the time of the observation
@@ -136,7 +136,7 @@ namespace gpstk
           * \return the ionospheric correction (meters)
           */
       double getCorrection(const CommonTime& time,
-                           const Geodetic& rxgeo,
+                           const Position& rxgeo,
                            double svel,
                            double svaz,
                            Frequency freq = L1) const
@@ -146,7 +146,7 @@ namespace gpstk
       bool operator==(const IonoModel& right) const throw();
 
          /// inequality operator
-      bool operator!=(const IonoModel& right) const throw();     
+      bool operator!=(const IonoModel& right) const throw();
 
  private:
 
