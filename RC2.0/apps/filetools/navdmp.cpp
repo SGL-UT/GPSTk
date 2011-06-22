@@ -53,7 +53,7 @@
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavFilterOperators.hpp"
-
+#include "GPSWeekSecond.hpp"
 #include "gps_constants.hpp"
 
 using namespace std;
@@ -344,7 +344,7 @@ void NavDump::getNewTime(CommonTime& dt)
       else 
          cout << " Error entering SOW.  Please try again." << endl;
    }
-   dt.setGPSfullweek(week, SOW);
+   dt=GPSWeekSecond(week,SOW);
 }
 
 void NavDump::process()

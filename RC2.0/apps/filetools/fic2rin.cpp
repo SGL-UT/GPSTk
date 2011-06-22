@@ -48,6 +48,7 @@
 #include "FICFilterOperators.hpp"
 #include "RinexNavFilterOperators.hpp"
 #include "FileFilterFrame.hpp"
+#include "GPSWeekSecond.hpp"
 #include <string>
 
 using namespace std;
@@ -136,9 +137,9 @@ int main(int argc, char* argv[])
             // use TOE and transmit week number to determine time
          CommonTime time;
          if( (*itr).blockNum == 9 ) // block 9
-            time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
+            time=GPSWeekSecond(short((*itr).f[5]), (double)(*itr).f[33]);
          else // block 109
-            time.setGPSfullweek(short((*itr).i[0]), (double)(((*itr).i[21] & 0x3FFFFFFFL)>>14)*16);
+            time=GPSWeekSecond(short((*itr).i[0]), (double)(((*itr).i[21] & 0x3FFFFFFFL)>>14)*16);
             // this station number is bogus, but it's unused so it should be ok
          EngEphemeris ee(*itr);
          rndList.push_back(RinexNavData(ee));

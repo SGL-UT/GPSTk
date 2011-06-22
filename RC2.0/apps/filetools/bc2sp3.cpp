@@ -44,6 +44,8 @@
 #include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -101,18 +103,18 @@ int main(int argc, char *argv[])
                arg = string(argv[++i]);
                int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
                double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
-               begTime.setGPSfullweek(wk,sow);
+               begTime=GPSWeekSecond(wk,sow);
                if(verbose) cout << " Begin time "
-                  << begTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
+                  << printTime(begTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                   << endl;
             }
             else if(arg == string("--te")) {
                arg = string(argv[++i]);
                int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
                double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
-               endTime.setGPSfullweek(wk,sow);
+               endTime=GPSWeekSecond(wk,sow);
                if(verbose) cout << " End time   "
-                  << endTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
+                  << printTime(endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                   << endl;
             }
             else if(arg == string("--msg")) {
@@ -273,9 +275,9 @@ int main(int argc, char *argv[])
             // Position
             sp3data.flag = 'P';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.x[j]/1000.0;       // km
-            // must remove the relativity correction from Xvt::dtime
+            // must remove the relativity correction from Xvt::clkbias
             // see EngEphemeris::svXvt() - also convert to microsec
-            sp3data.clk = (xvt.dtime - ee.svRelativity(tt)) * 1000000.0;
+            sp3data.clk = (xvt.clkdrift - ee.svRelativity(tt)) * 1000000.0;
 
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
             iode = ee.getIODE();
@@ -292,7 +294,7 @@ int main(int argc, char *argv[])
             // Velocity
             sp3data.flag = 'V';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.v[j]/10.0;         // dm/s
-            sp3data.clk = xvt.ddtime;                                // s/s
+            sp3data.clk = xvt.clkdrift;                                // s/s
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
 
             outstrm << sp3data;

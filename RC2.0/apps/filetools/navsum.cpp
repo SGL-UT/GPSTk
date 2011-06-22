@@ -49,8 +49,9 @@
 #include "FICStream.hpp"
 #include "FICFilterOperators.hpp"
 #include "CommonTime.hpp"
-
+#include "TimeString.hpp"
 #include "gps_constants.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -364,7 +365,7 @@ void NavSum::getNewTime(CommonTime& dt)
       else 
          cout << " Error entering SOW.  Please try again." << endl;
    }
-   dt.setGPSfullweek(week, SOW);
+   dt=GPSWeekSecond(week, SOW);
 }
 
 void NavSum::process()
@@ -429,14 +430,14 @@ void NavSum::process()
 				fit = (int) r.f[34];
 				EpochWeek = xMitWeek;
 				diff = Toe - HOW;
-				if (diff < -1.0 * (double) CommonTime::HALFWEEK) EpochWeek++;
-				if (diff > (double) CommonTime::HALFWEEK) xMitWeek--;
+				if (diff < -1.0 * (double) HALFWEEK) EpochWeek++;
+				if (diff > (double) HALFWEEK) xMitWeek--;
 				XMitT = CommonTime( xMitWeek, HOW-6.0 );
 				EpochT = CommonTime( EpochWeek, Toe );
 				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03lX %1d",
 					count,blockType,PRNID,
-					XMitT.printf(xmitFmt).c_str(),
-					EpochT.printf(epochFmt).c_str(),
+					printTime(XMitT,xmitFmt).c_str(),
+					printTime(EpochT,epochFmt).c_str(),
 					IODC,
 					fit);
 				linestr = string(line);
@@ -452,7 +453,7 @@ void NavSum::process()
 				XMitT = buildXMitTime( temp, xMitWeek );
 				sprintf(line," %5d  %3d    %02d    %s !",
 					count,blockType,PRNID,
-					XMitT.printf(xmitFmt).c_str() );
+					printTime(XMitT,xmitFmt).c_str() );
 				linestr = string(line);
 				out << linestr << endl;
 				totalsByBlock[BLK109]++;
@@ -466,7 +467,7 @@ void NavSum::process()
 				iMitSOW = r.i[1];
 				if (iMitSOW<0)
 				{
-					iMitSOW += gpstk::CommonTime::FULLWEEK;
+					iMitSOW += FULLWEEK;
 					xMitWeek--;
 				}
 				xMitSOW = (double) iMitSOW;
@@ -476,14 +477,14 @@ void NavSum::process()
 					EpochT = CommonTime( EpochWeek, r.f[8] );
 					sprintf(line," %5d  %3d    %02d    %s ! %s",
 						count,blockType,PRNID,
-						XMitT.printf(xmitFmt).c_str(),
-						EpochT.printf(epochFmt).c_str() );
+						printTime(XMitT,xmitFmt).c_str(),
+						printTime(EpochT,epochFmt).c_str() );
 				}
 				else
 				{
 					sprintf(line," %5d  %3d    %02d    %s !",
 						count,blockType,PRNID,
-						XMitT.printf(xmitFmt).c_str() );
+						printTime(EpochT,xmitFmt).c_str() );
 				}
 				linestr = string(line);
 				out << linestr << endl;
@@ -500,7 +501,7 @@ void NavSum::process()
 				XMitT = buildXMitTime( temp, xMitWeek );
 				sprintf(line," %5d  %3d    %02d    %s !                        %02d",
 					count,blockType,PRNID,
-					XMitT.printf(xmitFmt).c_str(),
+					printTime(XMitT,xmitFmt).c_str(),
 					xmitPRN);
 				linestr = string(line);
 				out << linestr << endl;
@@ -708,7 +709,7 @@ gpstk::CommonTime NavSum::buildXMitTime(const uint32_t word2, const int week )
    long SOW = (long) (temp * 6) - 6;
    if (SOW<0) 
    {
-      SOW += gpstk::CommonTime::FULLWEEK;
+      SOW += FULLWEEK;
       useweek--;
    }
    double XmitSOW = (double) SOW;

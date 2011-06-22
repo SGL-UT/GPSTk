@@ -47,6 +47,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "StringUtils.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -94,7 +95,7 @@ int main(int argc, char* argv[])
       {
          rcount++;
 
-	 if ( fmod(data.time.secOfDay(),drate) <= ttolerance )
+	 if ( fmod(static_cast<YDSTime>(data.time).sod,drate) <= ttolerance )
          {
  
           // First obs? Then update and output the header.

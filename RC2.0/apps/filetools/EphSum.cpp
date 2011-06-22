@@ -50,6 +50,9 @@
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
 #include "GPSEphemerisStore.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 // fic
 #include "FICStream.hpp"
@@ -330,11 +333,11 @@ void EphSum::process()
 	     * to the most recent even two hour epoch and considered the beginning time
 	     * of effectivity for end of effectivity. 
 	    */
-         CommonTime begEff = ee.getTransmitTime();
-	 CommonTime epochTime = ee.getEphemerisEpoch();
+         Epoch begEff = ee.getTransmitTime();
+	 Epoch epochTime = ee.getEphemerisEpoch();
 	 long TWO_HOURS = 7200;
-         long epochRemainder = (long) epochTime.GPSsow() % TWO_HOURS;
-	 long  xmitRemainder = (long) begEff.GPSsow() % TWO_HOURS;
+         long epochRemainder = (long) static_cast<GPSWeekSecond>(epochTime).sow % TWO_HOURS;
+	 long  xmitRemainder = (long) static_cast<GPSWeekSecond>(begEff).sow % TWO_HOURS;
 	 if (epochRemainder != 0 && xmitRemainder != 0)
 	 {
 	    begEff = begEff - xmitRemainder;
@@ -346,9 +349,9 @@ void EphSum::process()
 
          fprintf(logfp,"  %02d ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
                i,
-               ee.getTransmitTime().printf(tform).c_str(),
-               ee.getEphemerisEpoch().printf(tform).c_str(),
-               endEff.printf(tform).c_str(),
+               printTime(ee.getTransmitTime(),tform).c_str(),
+               printTime(ee.getEphemerisEpoch(),tform).c_str(),
+               printTime(endEff,tform).c_str(),
                ee.getIODC(),
                ee.getHealth(),
                ee.getHealth());
