@@ -456,7 +456,7 @@ try {
       << " (N,P-,G-Dop,RMS)";
 
    if(PIC.Debug)
-      PIC.oflog << static_cast<GPSWeekSecond>(psdata.time).printf("%02M:%04.1f ") << stst1.str() //DM 10/25
+      PIC.oflog << printTime(static_cast<GPSWeekSecond>(psdata.time),"%02M:%04.1f ") << stst1.str() //DM 10/25
          << " " << stst2.str() << endl;
 
    psdata.auxHeader.commentList.push_back(stst2.str());
@@ -500,7 +500,8 @@ try {
 
       // create the aux header
       // use data from the begin time
-      RinexPositionComments(psdata,static_cast<CommonTime>(CurrEpoch),
+      CommonTime CurrEpoch(static_cast<CivilTime>(CurrEpoch));
+      RinexPositionComments(psdata,CurrEpoch,
          itb->second.N,
          itb->second.X,
          itb->second.Y,

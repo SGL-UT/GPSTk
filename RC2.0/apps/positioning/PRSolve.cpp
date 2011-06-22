@@ -51,6 +51,7 @@
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "TropModel.hpp"
+#include "Epoch.hpp"
 
 #include "Position.hpp"
 #include "geometry.hpp" // for DEG_TO_RAD
@@ -1440,7 +1441,7 @@ catch(...)
    Exception e("Unknown exception");
    GPSTK_THROW(e);
 }
-
+}
 
 //------------------------------------------------------------------------------------
 void setWeather(CommonTime& time, TropModel *pTropModel)
@@ -2000,7 +2001,7 @@ try
       {
          try
          {
-            C.Tend.setToString(field[0]+","+field[1], "%F,%g");
+            (static_cast<Epoch>(C.Tend)).scanf(field[0]+","+field[1], "%F,%g");
          }
          catch(Exception& e) { ok=false; }
       }
@@ -2380,7 +2381,7 @@ try
    if (C.knownpos.getCoordinateSystem() != Position::Unknown)
    {
       os << " Output residuals: known position is\n   "
-         << printTime(C.knownpos,"ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+         << printTime(C.knownpos),"ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
    }
    if (!C.ordFile.empty())
       os << " Output ORDs to file " << C.ordFile << endl;
