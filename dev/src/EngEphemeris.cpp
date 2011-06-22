@@ -49,7 +49,7 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "GPSGeoid.hpp"
 #include "EngEphemeris.hpp"
 

@@ -40,7 +40,7 @@
 
 #include "StringUtils.hpp"
 #include "RinexObsID.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 #include "ObsUtils.hpp"
 

@@ -41,7 +41,7 @@
 #include "Position.hpp"
 #include "SimpleIURAWeight.hpp"
 #include "TropModel.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "geometry.hpp"                   // DEG_TO_RAD
 #include <cmath>
 #include <vector>

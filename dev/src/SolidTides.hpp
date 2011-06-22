@@ -37,7 +37,7 @@
 #include "DayTime.hpp"
 #include "Triple.hpp"
 #include "Position.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "AstronomicalFunctions.hpp"
 #include "SunPosition.hpp"
 #include "MoonPosition.hpp"

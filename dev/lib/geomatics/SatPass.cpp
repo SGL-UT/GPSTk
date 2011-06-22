@@ -35,7 +35,7 @@
 #include <algorithm>
 // gpstk
 #include "SatPass.hpp"
-#include "icd_gps_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_200_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"

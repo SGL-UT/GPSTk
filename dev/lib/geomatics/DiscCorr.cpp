@@ -43,7 +43,7 @@
 #include "StringUtils.hpp"
 #include "Stats.hpp"
 #include "PolyFit.hpp"
-#include "icd_gps_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_200_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
 #include "RobustStats.hpp"
 
 #include "DiscCorr.hpp"

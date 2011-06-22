@@ -35,7 +35,7 @@
 
 #include "Position.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_gps_constants.hpp"    // for TWO_PI, etc
+#include "icd_200_constants.hpp"    // for TWO_PI, etc
 #include "geometry.hpp"             // for RAD_TO_DEG, etc
 #include "MiscMath.hpp"             // for RSS, SQRT
 

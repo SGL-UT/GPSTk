@@ -49,7 +49,7 @@
 // system includes
 #include <fstream>
 // GPSTk
-#include "icd_gps_constants.hpp"    // for TWO_PI
+#include "icd_200_constants.hpp"    // for TWO_PI
 #include "EarthOrientation.hpp"
 
 //------------------------------------------------------------------------------------

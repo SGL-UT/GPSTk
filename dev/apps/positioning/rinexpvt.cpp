@@ -24,7 +24,7 @@
 
 #include "rinexpvt.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 using namespace std;
 using namespace gpstk;

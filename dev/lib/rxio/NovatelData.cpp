@@ -48,7 +48,7 @@
 #include "DayTime.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "NovatelData.hpp"
 
 using namespace std;

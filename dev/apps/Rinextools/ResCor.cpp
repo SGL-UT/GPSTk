@@ -61,7 +61,7 @@
 #include "WGS84Geoid.hpp"           // for obliquity
 #include "Stats.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_gps_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
+#include "icd_200_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
 
 #include "RinexEditor.hpp"
 #include "RinexUtilities.hpp"

@@ -58,7 +58,7 @@
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "EphemerisRange.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 
 /**

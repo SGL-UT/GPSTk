@@ -26,7 +26,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include <iostream>
 
 using namespace std;

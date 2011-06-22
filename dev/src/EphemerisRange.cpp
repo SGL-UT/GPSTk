@@ -44,7 +44,7 @@
 #include "EphemerisRange.hpp"
 #include "MiscMath.hpp"
 #include "GPSGeoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "geometry.hpp"
 
 using namespace std;

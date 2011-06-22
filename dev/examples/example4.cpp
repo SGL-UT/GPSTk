@@ -56,7 +56,7 @@
 #include "PRSolution.hpp"
 
 // File defining GPS system constants
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 using namespace std;
 using namespace gpstk;

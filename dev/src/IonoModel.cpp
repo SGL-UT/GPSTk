@@ -49,7 +49,7 @@
  */
 
 #include <math.h>
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "IonoModel.hpp"
 #include "geometry.hpp"
 

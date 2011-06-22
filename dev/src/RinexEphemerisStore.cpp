@@ -44,7 +44,7 @@
 #include "RinexEphemerisStore.hpp"
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include <iostream>
 #include <fstream>
 

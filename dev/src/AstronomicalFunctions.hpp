@@ -36,7 +36,7 @@
 
 #include "DayTime.hpp"
 #include "Triple.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 
 namespace gpstk

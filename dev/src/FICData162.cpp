@@ -48,7 +48,7 @@
  * Ephemeris data encapsulated in engineering terms
  */
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "DayTime.hpp"
 #include "FICData162.hpp"
 

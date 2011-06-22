@@ -64,7 +64,7 @@
 // Library
 #include "BasicFramework.hpp"
 #include "DayTime.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 // Project
 #include "ConstellationSet.hpp"

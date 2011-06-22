@@ -47,7 +47,7 @@
 #include "TabularEphemerisStore.hpp"
 #include "MiscMath.hpp"
 #include "ECEF.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
 using namespace gpstk::StringUtils;
 

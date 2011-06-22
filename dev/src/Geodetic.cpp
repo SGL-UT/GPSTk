@@ -51,7 +51,7 @@
 #include "geometry.hpp"
 #include "Geodetic.hpp"
 #include "MiscMath.hpp"
-#include "icd_gps_constants.hpp"  // for TWO_PI
+#include "icd_200_constants.hpp"  // for TWO_PI
 
 namespace gpstk
 {

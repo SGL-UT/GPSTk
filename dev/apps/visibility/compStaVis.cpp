@@ -42,7 +42,7 @@
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 #include "gps_constants.hpp"
 
 // Project

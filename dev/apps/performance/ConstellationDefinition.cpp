@@ -44,7 +44,7 @@
 #include <stdio.h>
 
    // Library Headers
-#include "icd_gps_constants.hpp"
+#include "icd_200_constants.hpp"
 
    // Project Headers
 #include "ConstellationDefinition.hpp"
