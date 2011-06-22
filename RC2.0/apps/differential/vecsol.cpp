@@ -59,6 +59,9 @@
 #include "SP3EphemerisStore.hpp"
 #include "EphemerisRange.hpp"
 #include "icd_gps_constants.hpp"
+#include "Position.hpp"
+
+#include "YDSTime.hpp"
 
 
 /**
@@ -498,7 +501,7 @@ Triple permanentTide(double const phi)
 
 			    rnffs >> hdr;
 			    if (iono)
-				ion.addIonoModel(DayTime::BEGINNING_OF_TIME, 
+				ion.addIonoModel(CommonTime::BEGINNING_OF_TIME, 
 					IonoModel(hdr.ionAlpha, hdr.ionBeta));
 			    while (rnffs >> rne)
 				bcestore.addEphemeris(rne);
@@ -675,8 +678,8 @@ Triple permanentTide(double const phi)
 		    if (!vecmode)
 			t2 = t2 + 0.5 * Pos2;
 		}
-		Geodetic g1(t1, &geoid);
-		Geodetic g2(t2, &geoid);
+		Position g1(t1);
+		Position g2(t2);
 
 		// Output bench mark (not: antenna) positions: (Published
 		// GPS positions are always reduced for solid Earth tides)
@@ -703,12 +706,14 @@ Triple permanentTide(double const phi)
 		    // Make sure we have a common epoch:
 		    while (rod1.time > rod2.time + 0.1 && roffs2 >> rod2) { }
 		    while (rod1.time + 0.1 < rod2.time && roffs1 >> rod1) { }
-		    double sync_err = rod2.time.secOfDay() - rod1.time.secOfDay();
+		    rod2.time=YDSTime(rod2.time);
+		    rod1.time=YDSTime(rod1.time);
+		    double sync_err = rod2.time-rod1.time;
 		    if (abs(sync_err) > 0.001) {
 			cout << "Synchronization Error: " << 
 			    std::setprecision(6) << sync_err << " sec" << endl;
 		    }
-		    double Secs = rod1.time.secOfDay();
+		    double Secs = static_cast<YDSTime>(rod1.time).sod;
 
 		    // Experimental for WinPrism's RINEX
 		    if (apply_clockOffset1)
