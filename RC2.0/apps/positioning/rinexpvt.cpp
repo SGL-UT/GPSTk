@@ -26,6 +26,7 @@
 #include "WGS84Geoid.hpp"
 #include "CivilTime.hpp"
 #include "icd_gps_constants.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -95,8 +96,8 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
     if (debug)
     {
        static ofstream debugStream("smootherdebug.txt");
-       debugStream << t.printf("%F %g ");
-       //debugStream << t.printf("%Y %m %d %02H %02M %f ");
+       debugStream << printTime(t,"%F %g ");
+       //debugStream << prinTime(t,"%Y %m %d %02H %02M %f ");
        debugStream << sat.id << " "; 
        debugStream << setprecision(12) << smoothedRange[sat] << " ";
        debugStream << range << " " << phase << " ";
@@ -228,7 +229,7 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
           logfileOn = true;
           logStream << "! rinexpvt log file" << endl;
           DayTime nowTime;
-          logStream << "! Executed at: " << nowTime.printf(epochFormat) << endl;
+          logStream << "! Executed at: " << printTime(nowTime,epochFormat) << endl;
           logStream << "! Obs file name: " << obsFileName << endl;
           logStream << "! Met file name: ";
           if (gotMet) logStream << metFileName << endl;
@@ -530,7 +531,7 @@ void RINEXPVTSolution::process()
              if (logfileOn)
              {
                 CivilTime ct = rod.time;
-                logStream << ct.printf(epochFormat) << " ";
+                logStream << printTime(ct,epochFormat) << " ";
                 logStream << rod.obs.size() << " ! ";
                 RinexObsData::RinexSatMap::const_iterator it;
                 vector<SatID>::const_iterator itSol;
@@ -573,7 +574,7 @@ void RINEXPVTSolution::process()
           { 
              CivilTime ct = rod.time;
                 // Output epoch tag
-             cout << ct.printf(epochFormat) << " ";
+             cout << printTime(ct,epochFormat) << " ";
                
              if (!transformENU)
              {

@@ -60,6 +60,8 @@
 
 #include "BasicFramework.hpp"
 
+#include "Position.hpp"
+
 using namespace std;
 using namespace gpstk;
 
@@ -101,7 +103,7 @@ protected:
 
    double elevationMask;
   
-   Geodetic aprioriPositionGeodetic, enuOrigin;
+   Position aprioriPositionGeodetic, enuOrigin;
    Position aprioriPositionXYZ;
    Triple eastVector, upVector, northVector;
    

@@ -30,11 +30,15 @@
 #define RANGECHECK 1        // make Matrix and Vector check limits
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-
+#include "CommandOptionWithCommonTimeArg.hpp"
+#include "TimeString.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
@@ -47,6 +51,7 @@
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "TropModel.hpp"
+
 #include "Position.hpp"
 #include "geometry.hpp" // for DEG_TO_RAD
 
@@ -55,6 +60,8 @@
 #include "Stats.hpp"
 #include "EphemerisRange.hpp"
 
+#include <time.h>
+#include <cstring>
 #include <ctime>
 #include <cstring>
 #include <string>
@@ -70,6 +77,8 @@ using namespace StringUtils;
    // prgm data
 string PrgmName("PRSolve");
 string PrgmVers("2.3 11/09");
+
+
 
 // data input from command line
 typedef struct Configuration
@@ -102,12 +111,12 @@ typedef struct Configuration
    string HDMarker;
    string HDNumber;
    int NrecOut;
-   DayTime FirstEpoch,LastEpoch;
+   CommonTime FirstEpoch,LastEpoch;
    string timeFormat;
    bool Debug,Verbose;
       // data flow
    double ith;
-   DayTime Tbeg, Tend;
+   CommonTime Tbeg, Tend;
       // output files
    string LogFile;
    ofstream oflog,oford;
@@ -140,7 +149,7 @@ const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
 const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;
 string Title,filename;
-DayTime CurrEpoch, PrgmEpoch, PrevEpoch;
+CommonTime CurrEpoch, PrgmEpoch, PrevEpoch;
 
 // data
 int Nsvs;
@@ -185,7 +194,7 @@ void PrintStats(Stats<double> S[3],
                 long n,
                 string m,
                 char c0='X', char c1='Y', char c2='Z') throw(Exception);
-void setWeather(DayTime& time, TropModel *pTropModel);
+void setWeather(CommonTime& time, TropModel *pTropModel);
 int GetCommandLine(int argc, char **argv) throw(Exception);
 void DumpConfiguration(ostream& os) throw(Exception);
 void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
@@ -201,7 +210,7 @@ try
    int iret;
 
       // initialization
-   CurrEpoch = PrevEpoch = DayTime::BEGINNING_OF_TIME;
+   CurrEpoch = PrevEpoch = CommonTime::BEGINNING_OF_TIME;
    SP3EphemerisStore SP3EphList;
    GPSEphemerisStore BCEphList;
 
@@ -211,10 +220,12 @@ try
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   PrgmEpoch.setYMDHMS(1900+tblock->tm_year,1+tblock->tm_mon,
-                       tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-   Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
-   cout << Title;
+   PrgmEpoch = CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
+                         tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec,
+                         TimeSystem::GPS);
+   Title += printTime((static_cast<CivilTime>(PrgmEpoch)),"%02m/%02d/%04Y %02H:%02M:%02S %P");
+   cout << Title << endl;
+
 
       // get command line
    iret=GetCommandLine(argc, argv);
@@ -245,7 +256,7 @@ try
    C.oflog << "Added " << nread << " ephemeris files to store.\n";
    SP3EphList.dump(C.oflog,0);
    BCEphList.dump(C.oflog,0);
-   if (SP3EphList.neph() > 0)
+   if (SP3EphList.size() > 0)
       pEph=&SP3EphList;
    else if (BCEphList.size() > 0)
    {
@@ -288,7 +299,9 @@ try
          for ( ; it != C.MetStore.end(); it++)
          {
             //it->dump(C.oflog);
-            C.oflog << it->time.printf("%04Y/%02m/%02d//%02H:%02M:%.3f = %04F %10.3g")
+            CivilTime civtime(it->time);
+            C.oflog << printTime(civtime,"%02m/%02d/%04Y %02H:%02M:%02S %P")
+
                     << fixed << setprecision(1);
             RinexMetData::RinexMetMap::const_iterator jt=it->data.begin();
             for ( ; jt != it->data.end(); jt++)
@@ -322,12 +335,13 @@ try
          C.oflog << "Warning - Saastamoinen and New B tropospheric models require "
                  << "latitude, height and day of year - guessing." << endl;
       }
-      if (C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME))
-         C.pTropModel->setDayOfYear(C.Tbeg.DOY());
-      else if (C.Tend < DayTime(DayTime::END_OF_TIME))
-         C.pTropModel->setDayOfYear(C.Tend.DOY());
+      if (C.Tbeg > CommonTime::BEGINNING_OF_TIME)
+         C.pTropModel->setDayOfYear((static_cast<YDSTime>(C.Tbeg)).doy);
+      else if (C.Tend < CommonTime::END_OF_TIME)
+         C.pTropModel->setDayOfYear((static_cast<YDSTime>(C.Tend)).doy);
       else
          C.pTropModel->setDayOfYear(100);
+
    }
    if (C.TropType == string("NL")) C.pTropModel = &TMneill;
    if (C.TropType == string("GG")) C.pTropModel = &TMgg;
@@ -643,9 +657,9 @@ try
             // if Tbeg is still undefined, set it to begin of week
          if (C.ith > 0.0)
          {
-            if (fabs(C.Tbeg-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+            if (fabs(C.Tbeg-CommonTime::BEGINNING_OF_TIME) < 1.e-8)
             {
-               C.Tbeg = C.Tbeg.setGPSfullweek(robsd.time.GPSfullweek(),0.0);
+               C.Tbeg = robsd.time;
             }
             double dt=fabs(robsd.time - C.Tbeg);
             dt -= C.ith*long(0.5+dt/C.ith);
@@ -654,7 +668,7 @@ try
 
             // save current time
          CurrEpoch = robsd.time;
-         if (fabs(C.FirstEpoch-DayTime(DayTime::BEGINNING_OF_TIME)) < 1.e-8)
+         if (fabs(C.FirstEpoch-CommonTime::BEGINNING_OF_TIME) < 1.e-8)
             C.FirstEpoch=CurrEpoch;
 
             // loop over satellites
@@ -737,7 +751,7 @@ try
             // dump the data
             if (C.Debug)
             {
-               C.oflog << "RNX " << CurrEpoch.printf(C.timeFormat)
+               C.oflog << "RNX " << printTime(CurrEpoch,C.timeFormat)
                   << " " << RinexSatID(sat) << fixed << setprecision(4)
                   << " P1 " << setw(13) << P1
                   << " P2 " << setw(13) << P2 << endl;
@@ -771,18 +785,37 @@ try
          if (iret) break;
 
             // update LastEpoch and estimate of DT
-         if (C.LastEpoch > DayTime(DayTime::BEGINNING_OF_TIME))
+         if (C.LastEpoch > CommonTime::BEGINNING_OF_TIME)
+
          {
-            dt = CurrEpoch-C.LastEpoch;
+            dt = CurrEpoch - C.LastEpoch;
             for (i=0; i<9; i++)
             {
-               if (C.ndt[i]<=0) { C.estdt[i]=dt; C.ndt[i]=1; break; }
-               if (fabs(dt-C.estdt[i]) < 0.0001) { C.ndt[i]++; break; }
+               if (C.ndt[i]<=0)
+               {
+                  C.estdt[i] = dt;
+                  C.ndt[i] = 1;
+                  break;
+               }
+               if (fabs(dt-C.estdt[i]) < 0.0001)
+               {
+                  C.ndt[i]++;
+                  break;
+               }
                if (i == 8)
                {
-                  int k=0,nl=C.ndt[k];
-                  for (j=1; j<9; j++) if (C.ndt[j] <= nl) { k=j; nl=C.ndt[j]; }
-                  C.ndt[k]=1; C.estdt[k]=dt;
+                  int k = 0, nl = C.ndt[k];
+                  for (j=1; j<9; j++)
+                  {
+                     if (C.ndt[j] <= nl)
+                     {
+                        k=j;
+                        nl=C.ndt[j];
+                     }
+                  }
+                  C.ndt[k] = 1;
+                  C.estdt[k] = dt;
+
                }
             }
          }
@@ -822,7 +855,7 @@ try
             // output
             C.oford << "ORD"
                     << " G" << setw(2) << setfill('0') << sat.id << setfill(' ')
-                    << " " << CurrEpoch.printf(C.timeFormat)
+                    << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
                     << " " << 1 << fixed << setprecision(3)
                     << " " << setw(6) << CER.elevation
                     << " " << setw(13) << vC1[i] - R - RI
@@ -837,7 +870,8 @@ try
          {
             clk /= double(n);
             C.oford << "CLK"
-                    << " " << CurrEpoch.printf(C.timeFormat)
+                    << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
+
                     << " " << setw(2) << n
                     << " " << fixed << setprecision(3)
                     << " " << setw(13) << clk
@@ -882,7 +916,7 @@ try
       if (first)                                 // edit the output RINEX header
       {
          rheadout = rhead;
-         rheadout.date = PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+         rheadout.date = printTime((static_cast<CivilTime>(PrgmEpoch)),"%02m/%02d/%04Y %02H:%02M:%02S %P");
          rheadout.fileProgram = PrgmName;
          if (!C.HDRunby.empty()) rheadout.fileAgency = C.HDRunby;
          if (!C.HDObs.empty()) rheadout.observer = C.HDObs;
@@ -1057,7 +1091,9 @@ try
       if (iret == -4)
       {
          C.oflog << "PrepareAutonomousSolution failed to find ANY ephemeris at epoch "
-                 << CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f") << endl;
+                 << printTime((static_cast<CivilTime>(CurrEpoch)),"%02m/%02d/%04Y %02H:%02M:%02S %P")
+                 << endl;
+
          return iret;
       }
 
@@ -1078,7 +1114,7 @@ try
                                               (C.Debug ? &C.oflog : NULL));
 
       C.oflog << "APS " << setw(2) << iret
-              << " " << CurrEpoch.printf(C.timeFormat)
+              << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
               << " " << setw(2) << Nsvs;
       if (iret == 0)
       {
@@ -1109,7 +1145,7 @@ try
          V(0) = res.X(); V(1) = res.Y(); V(2) = res.Z();
 
          C.oflog << "APR " << setw(2) << iret
-                 << " " << CurrEpoch.printf(C.timeFormat)
+                 << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
                  << " " << setw(2) << Nsvs << fixed
                  << " " << setw(16) << setprecision(6) << V(0)
                  << " " << setw(16) << setprecision(6) << V(1)
@@ -1137,7 +1173,7 @@ try
          Cov = C.Rot * Cov * transpose(C.Rot);
 
          C.oflog << "ANE " << setw(2) << iret
-                 << " " << CurrEpoch.printf(C.timeFormat)
+                    << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
                  << " " << setw(2) << Nsvs << fixed
                  << " " << setw(16) << setprecision(6) << V(0)
                  << " " << setw(16) << setprecision(6) << V(1)
@@ -1174,7 +1210,8 @@ try
 
    // output
    C.oflog << "RPF " << setw(2) << Sats.size()-Nsvs
-           << " " << CurrEpoch.printf(C.timeFormat)
+           << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
+
            << " " << setw(2) << Nsvs << fixed << setprecision(6)
            << " " << setw(16) << prsol.Solution(0)
            << " " << setw(16) << prsol.Solution(1)
@@ -1220,7 +1257,7 @@ try
       V(0) = res.X(); V(1) = res.Y(); V(2) = res.Z();
 
       C.oflog << "RPR " << setw(2) << Sats.size()-Nsvs
-              << " " << CurrEpoch.printf(C.timeFormat)
+              << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
               << " " << setw(2) << Nsvs << fixed
               << " " << setw(16) << setprecision(6) << V(0)
               << " " << setw(16) << setprecision(6) << V(1)
@@ -1248,7 +1285,7 @@ try
       Cov = C.Rot * Cov * transpose(C.Rot);
 
       C.oflog << "RNE " << setw(2) << Sats.size()-Nsvs
-              << " " << CurrEpoch.printf(C.timeFormat)
+              << " " << printTime((static_cast<CivilTime>(CurrEpoch)),C.timeFormat)
               << " " << setw(2) << Nsvs << fixed
               << " " << setw(16) << setprecision(6) << V(0)
               << " " << setw(16) << setprecision(6) << V(1)
@@ -1341,17 +1378,29 @@ try
    C.oflog << endl;
    C.oflog << "Estimated data interval is " << C.estdt[j] << " seconds.\n";
    C.oflog << "First epoch is "
-           << C.FirstEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
+           << printTime((static_cast<CivilTime>(C.FirstEpoch)),"%02m/%02d/%04Y %02H:%02M:%02S %P") << endl;
    C.oflog << "Last  epoch is "
-           << C.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%.3f = %04F %10.3g") << endl;
+           << printTime((static_cast<CivilTime>(C.LastEpoch)),"%02m/%02d/%04Y %02H:%02M:%02S %P") << endl;
 
    return 0;
 }
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+catch(Exception& e)
+{
+   GPSTK_RETHROW(e);
+}
+catch(exception& e)
+{
+   Exception E("std except: "+string(e.what()));
+   GPSTK_THROW(E);
+}
+catch(...)
+{
+   Exception e("Unknown exception");
+   GPSTK_THROW(e);
+}
 return -1;
 }
+
 
 //------------------------------------------------------------------------------------
 void PrintStats(Stats<double> S[3], Matrix<double> &P, Vector<double> &z, long ng,
@@ -1377,17 +1426,28 @@ try
    }
    else C.oflog << " No data!" << endl;
 }
-catch(Exception& e) { GPSTK_RETHROW(e); }
-catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
-catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
+catch(Exception& e) 
+{
+   GPSTK_RETHROW(e);
+}
+catch(exception& e)
+{
+   Exception E("std except: "+string(e.what()));
+   GPSTK_THROW(E);
+}
+catch(...)
+{
+   Exception e("Unknown exception");
+   GPSTK_THROW(e);
 }
 
+
 //------------------------------------------------------------------------------------
-void setWeather(DayTime& time, TropModel *pTropModel)
+void setWeather(CommonTime& time, TropModel *pTropModel)
 {
    static list<RinexMetData>::iterator it=C.MetStore.begin();
    static list<RinexMetData>::iterator nextit;
-   static DayTime currentTime = DayTime::BEGINNING_OF_TIME;
+   static CommonTime currentTime = CommonTime::BEGINNING_OF_TIME;
    double dt;
 
    while(it != C.MetStore.end())
@@ -1450,8 +1510,8 @@ try
       // defaults
    C.Debug = C.Verbose = false;
    C.ith = 0.0;
-   C.Tbeg = C.FirstEpoch = DayTime(DayTime::BEGINNING_OF_TIME);
-   C.Tend = DayTime(DayTime::END_OF_TIME);
+   C.Tbeg = C.FirstEpoch = CommonTime::BEGINNING_OF_TIME;
+   C.Tend = CommonTime::END_OF_TIME;
 
       // configuration of PRSolution
    C.rmsLimit = prsol.RMSLimit;
@@ -1635,7 +1695,7 @@ try
 
    CommandOption dashForm(CommandOption::hasArgument, CommandOption::stdType,
       0,"TimeFormat", " --TimeFormat <fmt>   "
-      "Format for time tags in output (cf gpstk::DayTime) (" + C.timeFormat + ")");
+      "Format for time tags in output (cf gpstk::CommonTime) (" + C.timeFormat + ")");
    dashForm.setMaxCount(1);
 
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
@@ -1711,9 +1771,9 @@ try
    for (j=1; j<argc; j++)
       PreProcessArgs(argv[j],Args);
 
-   if (Args.size()==0)
+      if (Args.size()==0)
       Args.push_back(string("-h"));
-   //cout << "List after PreProcessArgs\n";
+   //cout << "List after PreProcessArgs" << endl;
    //for (i=0; i<Args.size(); i++) cout << i << " " << Args[i] << endl;
 
       // pass the rest
@@ -1721,20 +1781,25 @@ try
    char **CArgs=new char*[argc];
    if (!CArgs)
    {
-      cout << "Failed to allocate CArgs\n";
+      cout << "Failed to allocate CArgs" << endl;
       return -1;
    }
    CArgs[0] = argv[0];
    for (j=1; j<argc; j++)
    {
       CArgs[j] = new char[Args[j-1].size()+1];
-      if (!CArgs[j]) { cout << "Failed to allocate CArgs[j]\n"; return -1; }
+      if (!CArgs[j])
+      {
+         cout << "Failed to allocate CArgs[j]" << endl;
+         return -1;
+      }
       strcpy(CArgs[j],Args[j-1].c_str());
    }
-   //cout << "List passed to parser\n";
+   //cout << "List passed to parser" << endl;
    //for (i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
 
    Par.parseOptions(argc, CArgs);
+
 
       // -------------------------------------------------
 
@@ -1891,9 +1956,10 @@ try
          field.push_back(stripFirstWord(stemp,','));
       if (field.size() == 2)
       {
-         try
+                  try
          {
-            C.Tbeg.setToString(field[0]+","+field[1], "%F,%g");
+            GPSWeekSecond wksec(asInt(field[0]),asDouble(field[1]),TimeSystem::GPS); // *****
+            C.Tbeg = wksec.convertToCommonTime();
          }
          catch(Exception& e) { ok=false; }
       }
@@ -1901,9 +1967,12 @@ try
       {
          try
          {
-            C.Tbeg.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+            CivilTime civtime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
+                              asInt(field[3]),asInt(field[4]),asDouble(field[5]),
+                              TimeSystem::GPS); // *****
+            C.Tbeg = civtime.convertToCommonTime();
          }
+
          catch(Exception& e) { ok=false; }
       }
       else { ok = false; }
@@ -1914,7 +1983,9 @@ try
       else if (help)
       {
          cout << " Input: begin time " << values[0] << " = "
-              << C.Tbeg.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+              << printTime((static_cast<CivilTime>(C.Tbeg)),"%02m/%02d/%04Y %02H:%02M:%02S %P")
+              << endl;
+
       }
    }
    if (dashet.getCount())
@@ -1933,12 +2004,14 @@ try
          }
          catch(Exception& e) { ok=false; }
       }
-      else if (field.size() == 6)
+      else if (field.size() == 6) 
       {
-         try
+         try 
          {
-            C.Tend.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
-            +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+            CivilTime civtime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
+                              asInt(field[3]),asInt(field[4]),asDouble(field[5]),
+                              TimeSystem::GPS); // *****
+            C.Tend = civtime.convertToCommonTime();
          }
          catch(Exception& e) { ok=false; }
       }
@@ -1950,9 +2023,10 @@ try
       else if (help)
       {
          cout << " Input: end time " << values[0] << " = "
-              << C.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+              << printTime((static_cast<CivilTime>(C.Tend)),"%02m/%02d/%04Y %02H:%02M:%02S %P") << endl;
       }
    }
+
    if (dashCA.getCount())
    {
       C.UseCA = true;
@@ -2243,20 +2317,21 @@ try
       }
    }
    else
-      os << " No input meteorological data\n";
+      os << " No input meteorological data" << endl;
    os << " Ithing time interval is " << C.ith << endl;
-   if (C.Tbeg > DayTime(DayTime::BEGINNING_OF_TIME))
+   if (C.Tbeg > CommonTime::BEGINNING_OF_TIME)
    {
       os << " Begin time is "
-         << C.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-         << " = " << C.Tbeg.printf("%04F/%10.3g") << endl;
+         << printTime((static_cast<CivilTime>(C.Tbeg)),"%02m/%02d/%04Y %02H:%02M:%02S %P")
+         << " = " << C.Tbeg << endl;
    }
-   if (C.Tend < DayTime(DayTime::END_OF_TIME))
+   if (C.Tend < CommonTime::END_OF_TIME)
    {
       os << " End time is "
-         << C.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-         << " = " << C.Tend.printf("%04F/%10.3g") << endl;
+         << printTime((static_cast<CivilTime>(C.Tend)),"%02m/%02d/%04Y %02H:%02M:%02S %P")
+         << " = " << C.Tend << endl;
    }
+
    if (C.UseCA)
       os << " 'Use C/A' flag is set\n";
    if (C.ForceCA)
@@ -2305,7 +2380,7 @@ try
    if (C.knownpos.getCoordinateSystem() != Position::Unknown)
    {
       os << " Output residuals: known position is\n   "
-         << C.knownpos.printf("ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
+         << printTime(C.knownpos,"ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
    }
    if (!C.ordFile.empty())
       os << " Output ORDs to file " << C.ordFile << endl;
@@ -2317,7 +2392,7 @@ try
    if (C.APSout && C.knownpos.getCoordinateSystem() != Position::Unknown)
       os << " APR ANE";
    os << endl;
-   os << " Output format for time tags (cf. class DayTime) is "
+   os << " Output format for time tags (cf. class CommonTime) is "
       << C.timeFormat << endl;
 
    os << " # RINEX output:" << endl;
@@ -2505,6 +2580,5 @@ catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 return -1;
 }
-
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------

@@ -31,9 +31,12 @@
  * to an output RINEX observation file.
  */
 
-#include "DayTime.hpp"
+#include <cstring>
+#include "CivilTime.hpp"
+#include "CommonTime.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
+#include "CommandOptionWithTimeArg.hpp"
 #include "GPSWeekSecond.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
@@ -41,6 +44,10 @@
 #include "MiscMath.hpp"             // LagrangeIterpolation()
 #include "icd_gps_constants.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
+#include "Epoch.hpp"
+
+#include <time.h>
 
 #include <ctime>
 #include <cstring>
@@ -72,12 +79,12 @@ typedef struct posInterpConfiguration {
    string HDMarker;
    string HDNumber;
    int NrecOut;
-   DayTime FirstEpoch,LastEpoch;
+   CommonTime FirstEpoch,LastEpoch;
    double DT;
    bool Debug,Verbose,DumpMap;
       // data flow
    double ith;
-   DayTime Tbeg, Tend;
+   CommonTime Tbeg, Tend;
       // output files
    string LogFile,OutRinexObs;
    ofstream oflog;
@@ -103,7 +110,7 @@ string Title;
 RinexObsStream ofstr;      // output Rinex files
 RinexObsHeader rhead, rheadout;   
 int inC1,inP1,inP2,inL1,inL2,inD1,inD2,inS1,inS2;      // indexes in rhead
-DayTime CurrEpoch,PrgmEpoch,PrevEpoch;
+Epoch CurrEpoch,PrgmEpoch,PrevEpoch;
 
 // map of <epoch,position>
 typedef struct pos_info_struct {
@@ -111,8 +118,8 @@ typedef struct pos_info_struct {
    double PDOP,GDOP,rms;
    int N;
 } PosInfo;
-map<DayTime,PosInfo> TimePositionMap;
-DayTime LastInterpolated;
+map<CommonTime,PosInfo> TimePositionMap;
+CommonTime LastInterpolated;
 int Ninterps;
 
 //------------------------------------------------------------------------------------
@@ -136,7 +143,7 @@ try {
       // Title and description
    Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
    PrgmEpoch.setLocalTime();
-   Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+   Title += printTime(PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
    Title += "\n";
    cout << Title;
 
@@ -144,7 +151,7 @@ try {
    iret=GetCommandLine(argc, argv);
    if(iret) return iret;
 
-   PrevEpoch = DayTime::BEGINNING_OF_TIME;
+   PrevEpoch = CommonTime::BEGINNING_OF_TIME;
 
    // loop over input files - reading them twice
    Ninterps = 0;
@@ -163,7 +170,7 @@ try {
          if(iret < 0) break;
       }
 
-      CurrEpoch = DayTime::BEGINNING_OF_TIME;
+      CurrEpoch = CommonTime::BEGINNING_OF_TIME;
    }
 
    PIC.oflog << PrgmName << " did " << Ninterps << " interpolations" << endl;
@@ -210,7 +217,7 @@ try {
 
       // loop over epochs in the file
    if(reading == 2)
-      LastInterpolated = DayTime::BEGINNING_OF_TIME;
+      LastInterpolated = CommonTime::BEGINNING_OF_TIME;
 
    while(1) {
       try {
@@ -337,8 +344,8 @@ try {
       // decimate data and positions (aux header info)
    if(PIC.ith > 0.0) {
       // if Tbeg is still undefined, set it to begin of week
-      if(PIC.Tbeg == DayTime::BEGINNING_OF_TIME)
-         PIC.Tbeg = PIC.Tbeg.setGPSfullweek((static_cast<GPSWeekSecond>(roe.time)).week,0.0);
+      if(PIC.Tbeg == CommonTime::BEGINNING_OF_TIME)
+         PIC.Tbeg = GPSWeekSecond((static_cast<GPSWeekSecond>(roe.time)).week,0.0);
 
       dt = fabs(roe.time - PIC.Tbeg);
       dt -= PIC.ith*long(0.5+dt/PIC.ith);
@@ -349,10 +356,10 @@ try {
       // save current time
    PrevEpoch = CurrEpoch;
    CurrEpoch = roe.time;
-   if(PIC.FirstEpoch == DayTime::BEGINNING_OF_TIME) { // used in output header
+   if(PIC.FirstEpoch == CommonTime::BEGINNING_OF_TIME) { // used in output header
       PIC.FirstEpoch = CurrEpoch;
       PIC.oflog << "First data epoch is "
-         << PIC.FirstEpoch.printf("%04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g")
+         << printTime(PIC.FirstEpoch,"%04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g")
          << endl;
    }
 
@@ -385,11 +392,11 @@ try {
          }
       }
 
-      // add to map<DayTime,PosInfo> TimePositionMap;
+      // add to map<CommonTime,PosInfo> TimePositionMap;
       TimePositionMap[CurrEpoch] = PI;
 
       // update LastEpoch and estimate of PIC.DT
-      if(PIC.LastEpoch > DayTime::BEGINNING_OF_TIME) {
+      if(PIC.LastEpoch > CommonTime::BEGINNING_OF_TIME) {
          double dt = CurrEpoch-PIC.LastEpoch;
          for(i=0; i<9; i++) {
             if(PIC.ndt[i]<=0) { PIC.estdt[i]=dt; PIC.ndt[i]=1; break; }
@@ -423,7 +430,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void RinexPositionComments(RinexObsData& psdata, DayTime& tt, int N,
+void RinexPositionComments(RinexObsData& psdata, CommonTime& tt, int N,
    double& X, double& Y, double& Z, double& T,
    double& PDOP, double& GDOP, double& RMS) throw(Exception)
 {
@@ -467,13 +474,13 @@ try {
    bool Lagrange;
    int i,ipts;
    double PDOP,GDOP,rms,err,dt,Dt,delt,xx,yy,zz,tt;
-   DayTime t0,ttag;
+   CommonTime t0,ttag;
    RinexObsData psdata;
    vector<double> times,X,Y,Z,T;
-   map<DayTime,PosInfo>::iterator itb,ite,itB,itE,itr;
+   map<CommonTime,PosInfo>::iterator itb,ite,itB,itE,itr;
 
       // if no previous epoch, nothing to do
-   if(PrevEpoch==DayTime::BEGINNING_OF_TIME)
+   if(PrevEpoch==CommonTime::BEGINNING_OF_TIME)
       return 0;
 
       // find 4 positions on each side of CurrEpoch-1/2dt
@@ -488,12 +495,12 @@ try {
       //PIC.oflog << "Warning: cannot interpolate at " << CurrEpoch
          //<< ": before beginning of data" << endl;
       PIC.oflog << "Echo position at first epoch "
-         << CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g")
+         << printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g")
          << endl;
 
       // create the aux header
       // use data from the begin time
-      RinexPositionComments(psdata,CurrEpoch,
+      RinexPositionComments(psdata,static_cast<CommonTime>(CurrEpoch),
          itb->second.N,
          itb->second.X,
          itb->second.Y,
@@ -512,8 +519,8 @@ try {
 
       // itb and ite are now on either side of the times at which to interpolate
    if(PIC.Debug) PIC.oflog << "Interpolate : "
-      << itb->first.printf("%02H:%02M:%04.1f") << " to "
-      << ite->first.printf("%02H:%02M:%04.1f")
+      << printTime((itb->first),"%02H:%02M:%04.1f") << " to "
+      << printTime((ite->first),"%02H:%02M:%04.1f")
       << " : (" << (ite->first - itb->first) << " sec)" << endl;
 
       // now expand them out, up to 3 more epochs, watching for gaps TD: 3*DT input
@@ -543,7 +550,7 @@ try {
 
    while(1) {
       if(PIC.Debug) PIC.oflog << " " << ipts
-         << " " << itr->first.printf("%02M:%04.1f")
+         << " " << printTime((itr->first),"%02M:%04.1f")
          << fixed << setprecision(3)
          << " " << setw(6) << (itr->first-t0)
          << " " << setw(13) << itr->second.X
@@ -584,7 +591,7 @@ try {
    // number of interpolations needed to cover Dt, plus 1 endpt
    ipts = int(0.5+Dt/dt);
    PIC.oflog << "Dt dt and ipts are " << Dt << " " << dt << " " << ipts
-      << CurrEpoch.printf(" at %04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g") << endl;
+      << printTime(CurrEpoch," at %04Y/%02m/%02d %02H:%02M:%6.3f = %4F %.3g") << endl;
 
       // loop over the interpolation times you want
    delt = itb->first - t0;          // time since first data point
@@ -655,7 +662,7 @@ try {
       PIC.oflog << "Estimated data interval is " << PIC.DT << " seconds.\n";
       PIC.oflog << "Interpolate to " << PIC.irate << " times the input data rate\n";
       PIC.oflog << "Last data epoch is "
-         << PIC.LastEpoch.printf("%04Y/%02m/%02d %02H:%02M:%06.3f = %4F %.3g") << endl;
+         << printTime(PIC.LastEpoch,"%04Y/%02m/%02d %02H:%02M:%06.3f = %4F %.3g") << endl;
 
       if(TimePositionMap.size() == 0) {
          cout << "No position information was found in the input file! Abort.\n";
@@ -667,12 +674,12 @@ try {
          // dump the map of positions
       if(PIC.DumpMap) {
          PIC.oflog << "Here is all the Time/Position information:\n";
-         map<DayTime,PosInfo>::const_iterator itr;
+         map<CommonTime,PosInfo>::const_iterator itr;
          itr = TimePositionMap.begin();
          i = 0;
          while(itr != TimePositionMap.end()) {
             PIC.oflog << setw(4) << i << " "
-               << itr->first.printf("%04Y/%02m/%02d %02H:%02M:%6.3f %4F %10.3g")
+               << printTime((itr->first),"%04Y/%02m/%02d %02H:%02M:%6.3f %4F %10.3g")
                << fixed << setprecision(3)
                << " " << setw(2) << itr->second.N
                << " " << setw(13) << itr->second.X
@@ -721,8 +728,8 @@ try {
    PIC.Debug = false;
    PIC.DumpMap = false;
    PIC.ith = 0.0;
-   PIC.Tbeg = PIC.FirstEpoch = DayTime::BEGINNING_OF_TIME;
-   PIC.Tend = DayTime::END_OF_TIME;
+   PIC.Tbeg = PIC.FirstEpoch = CommonTime::BEGINNING_OF_TIME;
+   PIC.Tend = CommonTime::END_OF_TIME;
    PIC.DT = 0;
 
    PIC.LogFile = string("pi.log");
@@ -919,15 +926,15 @@ try {
       while(values[0].size() > 0)
          field.push_back(StringUtils::stripFirstWord(values[0],','));
       if(field.size() == 2)
-         PIC.Tbeg.setToString(field[0]+","+field[1], "%F,%g");
+         (static_cast<Epoch>(PIC.Tbeg)).scanf(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         PIC.Tbeg.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         (static_cast<Epoch>(PIC.Tbeg)).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cout << "Error: invalid --BeginTime input: " << values[0] << endl;
       }
       if(help) cout << "Begin time is " << values[0] << " = "
-         << PIC.Tbeg.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(PIC.Tbeg,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
    if(dashet.getCount()) {
       values = dashet.getValue();
@@ -935,15 +942,15 @@ try {
       while(values[0].size() > 0)
          field.push_back(StringUtils::stripFirstWord(values[0],','));
       if(field.size() == 2)
-         PIC.Tend.setToString(field[0]+","+field[1], "%F,%g");
+         (static_cast<Epoch>(PIC.Tend)).scanf(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         PIC.Tend.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         (static_cast<Epoch>(PIC.Tend)).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cout << "Error: invalid --EndTime input: " << values[0] << endl;
       }
       if(help) cout << "End time is " << values[0] << " = "
-         << PIC.Tend.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(PIC.Tend,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
    //if(dashDT.getCount()) {
       //values = dashDT.getValue();
@@ -1013,14 +1020,14 @@ try {
       PIC.oflog << " Interpolate to " << PIC.irate << " times the input data rate"
          << endl;
       if(PIC.ith > 0) PIC.oflog << " Ithing time interval is " << PIC.ith << endl;
-      if(PIC.Tbeg > DayTime::BEGINNING_OF_TIME)
+      if(PIC.Tbeg > CommonTime::BEGINNING_OF_TIME)
          PIC.oflog << " Begin time is "
-            << PIC.Tbeg.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-            << " = " << PIC.Tbeg.printf("%04F/%10.3g") << endl;
-      if(PIC.Tend < DayTime::END_OF_TIME)
+            << printTime(PIC.Tbeg,"%04Y/%02m/%02d %02H:%02M:%.3f")
+            << " = " << printTime(PIC.Tbeg,"%04F/%10.3g") << endl;
+      if(PIC.Tend < CommonTime::END_OF_TIME)
          PIC.oflog << " End time is "
-            << PIC.Tend.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-            << " = " << PIC.Tend.printf("%04F/%10.3g") << endl;
+            << printTime(PIC.Tend,"%04Y/%02m/%02d %02H:%02M:%.3f")
+            << " = " << printTime(PIC.Tend,"%04F/%10.3g") << endl;
       //PIC.oflog << "DT is set to " << PIC.DT << endl;
       PIC.oflog << " Log file is " << PIC.LogFile << endl;
       if(!PIC.OutRinexObs.empty())
