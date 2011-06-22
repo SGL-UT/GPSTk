@@ -50,6 +50,8 @@
 
 #include "DiffFrame.hpp"
 
+#include "YDSTime.hpp"
+
 using namespace std;
 using namespace gpstk;
 
@@ -161,9 +163,9 @@ void ROWDiff::process()
             for (fpoi = firstitr->obs.begin(); fpoi != firstitr->obs.end();
                  fpoi++)
             {
-               cout << setw(3) << firstitr->time.DOYday() << ' ' 
+               cout << setw(3) << (static_cast<YDSTime>(firstitr->time)) << ' ' 
                     << setw(10) << setprecision(0)
-                    << firstitr->time.DOYsecond() << ' ' 
+                    << static_cast<YDSTime>(firstitr->time) << ' ' 
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' '
                     << setw(2) << fpoi->first << ' ';

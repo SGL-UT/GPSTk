@@ -49,6 +49,7 @@
 #include "RinexNavFilterOperators.hpp"
 
 #include "DiffFrame.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -96,9 +97,9 @@ void RNWDiff::process()
                 (firstitr->PRNID == seconditr->PRNID) &&
                 (firstitr->HOWtime == seconditr->HOWtime) )
             {
-               cout << fixed << setw(3) << firstitr->time.DOYday() << ' ' 
+               cout << fixed << setw(3) << static_cast<YDSTime>(firstitr->time) << ' ' 
                     << setw(10) << setprecision(0)
-                    << firstitr->time.DOYsecond() << ' ' 
+                    << static_cast<YDSTime>(firstitr->time) << ' ' 
                     << setw(19) << setprecision(12) << scientific
                     << (firstitr->af0      - seconditr->af0) << ' '
                     << (firstitr->af1      - seconditr->af1) << ' '
