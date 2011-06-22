@@ -179,7 +179,7 @@ try {
    struct tm *tblock;
    timer = time(NULL);
    tblock = localtime(&timer);
-   CurrEpoch.CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
+   CurrEpoch=CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
                tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
       // print title and current time to screen
    Title += printTime(CurrEpoch,", Run %04Y/%02m/%02d %02H:%02M:%02S");

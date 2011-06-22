@@ -297,7 +297,7 @@ try {
       // find the mean time, get Earth orientation parameters
    MedianEpoch = FirstEpoch;
    MedianEpoch += (LastEpoch-FirstEpoch)/2.;
-   eorient = EOPList.getEOP(MedianEpoch);
+   eorient = EOPList.getEOP(static_cast<CommonTime>(MedianEpoch));
    if(CI.Verbose) {
       oflog << "Earth orientation parameters at median time " << MedianEpoch << " :"
             << endl << "  xp, yp, UT1mUTC*Wearth (all radians) =" << fixed
