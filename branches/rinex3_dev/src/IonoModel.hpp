@@ -53,7 +53,7 @@
 
 #include "DayTime.hpp"
 #include "EngAlmanac.hpp"
-#include "Position.hpp"
+#include "Geodetic.hpp"
 
 namespace gpstk
 {
@@ -136,7 +136,7 @@ namespace gpstk
           * \return the ionospheric correction (meters)
           */
       double getCorrection(const CommonTime& time,
-                           const Position& rxgeo,
+                           const Geodetic& rxgeo,
                            double svel,
                            double svaz,
                            Frequency freq = L1) const
