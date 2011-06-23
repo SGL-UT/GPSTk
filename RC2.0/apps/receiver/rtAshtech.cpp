@@ -29,7 +29,9 @@
 #include <list>
 #include <map>
 
+#include "TimeString.hpp"
 #include "CommonTime.hpp"
+#include "YDSTime.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
@@ -56,7 +58,7 @@ TimeNamedFileStream<ofstream> matlabObs;
 void log(const string& message)
 {
    CommonTime currentEpoch;
-   string entry = currentEpoch.printf(" %02m/%02d/%04Y %02H:%02M:%04.1f - ") +
+   string entry = printTime(currentEpoch," %02m/%02d/%04Y %02H:%02M:%04.1f - ") +
       message;
    logList.push_back(entry);
    if (saveLogMessages)
@@ -106,7 +108,7 @@ void matlabify(const RinexObsData& rod)
       double S2 = i_obs->second.data;
 
       using gpstk::StringUtils::asString;
-      matlabObs << rod.time.printf("%F %9.2g ") << " "
+      matlabObs << printTime(rod.time,"%F %9.2g ") << " "
                 << asString(PRNID) << " "
                 << asString(C1,3) << " "
                 << asString(P1,3) << " "
@@ -279,7 +281,7 @@ int main(int argc, char *argv[])
       bool readStream=true;
       ssize_t count=0;
       int mnum = 0;
-      short currentDoy = currentEpoch.DOY(), lastDoy = -1;
+      short currentDoy = static_cast<YDSTime>(currentEpoch).doy, lastDoy = -1;
       
       // Queues 
       list<AshtechMessage> obsQ, emptyObsQ; // Observations
@@ -502,7 +504,7 @@ int main(int argc, char *argv[])
          } // Remove each whole message from the buffer
 
          // Has the day of year rolled over?
-         currentDoy = currentEpoch.DOY();
+         currentDoy = static_cast<YDSTime>(currentEpoch).doy;
          
          if (lastDoy!=currentDoy)
          {
