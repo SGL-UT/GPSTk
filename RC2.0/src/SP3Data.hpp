@@ -96,8 +96,7 @@ namespace gpstk
    public:
          /// Constructor.
       SP3Data() : RecType(' '), time(CommonTime::BEGINNING_OF_TIME),
-                  clockEventFlag(false),clockPredFlag(false),orbitManeuverFlag(false),
-                  orbitPredFlag(false),correlationFlag(false)
+                  clockEventFlag(false), clockPredFlag(false), orbitManeuverFlag(false), orbitPredFlag(false), correlationFlag(false)
          {}
      
          /// Destructor

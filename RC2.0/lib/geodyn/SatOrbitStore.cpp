@@ -59,13 +59,13 @@ namespace gpstk
          SP3Header header;
          strm >> header;
 
-         // If any file doesn't have the velocity data, clear the
-         // the flag indicating that there is any velocity data
-         if (tolower(header.pvFlag) != 'v')
+            // If any file doesn't have the velocity data, clear the
+            // the flag indicating that there is any velocity data
+         if( !header.containsVelocity )
          {
-            // There are no velocity data in the file
-            // It's not supported
-            Exception e("There are no velocity data in the file : "+filename);
+               // There are no velocity data in the file
+               // It's not supported
+            Exception e("There are no velocity data in the file : " + filename);
             GPSTK_THROW(e);
          }
 
@@ -93,9 +93,6 @@ namespace gpstk
                continue;
             }
 
-            // Ephemeris and clock are valid, then add them
-            rec.version = header.version;
-            
             if( pe.find(rec.sat) == pe.end())
             {
                ostringstream ss;
@@ -113,7 +110,7 @@ namespace gpstk
                eph = svEph.getPvt(rec.time);
             }
             
-            if(tolower(rec.flag)=='p')
+            if(tolower(rec.RecType)=='p')
             {
                eph.position[0] = rec.x[0] * 1000.0;
                eph.position[1] = rec.x[1] * 1000.0;
@@ -121,7 +118,7 @@ namespace gpstk
                eph.dtime = rec.clk * 1e-6;
 
             }
-            else if(tolower(rec.flag)=='v')
+            else if(tolower(rec.RecType)=='v')
             {
                eph.velocity[0] = rec.x[0] / 10.0;
                eph.velocity[1] = rec.x[1] / 10.0;
@@ -161,11 +158,11 @@ namespace gpstk
          }
          
         
-         // write header
+            // write header
          SP3Header header;
          
-         header.version =  sp3c ? 'c' : 'a';
-         header.pvFlag = 'V';
+         if( sp3c ) header.version = SP3Header::SP3c; else SP3Header::SP3a;
+         header.containsVelocity = true;
 
          header.timeSystem = SP3Header::timeGPS;
          header.coordSystem = "ITRF";
@@ -228,9 +225,9 @@ namespace gpstk
 
             strm<<ss.str();
 
-            for(std::map<SatID,short>::iterator its = header.satList.begin();
-               its != header.satList.end();
-               ++its)
+            for(std::map<SP3SatID,short>::iterator its = header.satList.begin();
+                its != header.satList.end();
+                ++its)
             {
                PvtStore& svEph = pe[its->first];
                PvtStore::Pvt eph = svEph.getPvt(*it);
@@ -238,18 +235,17 @@ namespace gpstk
                SP3Data rec;
                rec.sat = its->first;
                rec.time = *it;
-               rec.version = header.version;
                rec.sig[0]=0; rec.sig[1]=0; rec.sig[2]=0; rec.sig[3]=0;
 
                SP3Data p(rec); 
-               p.flag =  'P'; 
+               p.RecType =  'P';
                p.x[0] = eph.position[0]/1000.0;
                p.x[1] = eph.position[1]/1000.0;
                p.x[2] = eph.position[2]/1000.0;
                p.clk = eph.dtime * 1e6;
 
                SP3Data v(rec);
-               v.flag =  'V';
+               v.RecType =  'V';
                v.x[0] = eph.velocity[0]*10.0;
                v.x[1] = eph.velocity[1]*10.0;
                v.x[2] = eph.velocity[2]*10.0;
