@@ -45,6 +45,7 @@
 #include "XvtStore.hpp"
 #include "SatID.hpp"
 #include "TropModel.hpp"
+#include "EllipsoidModel.hpp"
 
 class OrdEngine
 {

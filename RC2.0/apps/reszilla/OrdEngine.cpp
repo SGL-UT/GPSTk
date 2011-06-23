@@ -65,8 +65,8 @@ OrdEngine::OrdEngine(
       exit(-1);
    }
 
-   Position ecef(antennaPos);
-   Position geo(ecef, &gm); //FIND CORRECT SYNTAX FOR THIS CALL!
+   Position geo(antennaPos);
+   geo.setEllipsoidModel(&gm);
    tm.setReceiverHeight(geo.getAltitude()); 
    tm.setReceiverLatitude(geo.getGeodeticLatitude());		//Geodetic or Geocentric?
 }
