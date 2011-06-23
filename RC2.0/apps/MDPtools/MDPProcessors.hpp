@@ -33,7 +33,7 @@
 
 #include <StringUtils.hpp>
 #include <Stats.hpp>
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
@@ -64,7 +64,7 @@ public:
    std::ofstream& out;
    gpstk::MDPStream& in;
 
-   gpstk::DayTime startTime, stopTime;
+   gpstk::CommonTime startTime, stopTime;
    double timeSpan;
 
    unsigned long msgCount, fcErrorCount;

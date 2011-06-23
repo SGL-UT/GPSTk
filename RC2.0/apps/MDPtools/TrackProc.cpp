@@ -28,7 +28,7 @@
 //
 //============================================================================
 
-#include "Geodetic.hpp"
+#include "Position.hpp"
 #include "TrackProc.hpp"
 
 using namespace std;
@@ -144,7 +144,9 @@ void MDPTrackProcessor::printChanges()
       bool change=false;
       for (int i = 1; i < currCv.size() && change==false; i++)
          change = (currCv[i].obs != prevCv[i].obs ||
-                   currCv[i].prn != prevCv[i].prn);
+                   currCv[i].prn != prevCv[i].prn) &&
+            (prevCv[i].prn != -1 || currCv[i].prn != -1);
+
 
       if (change || currCv.size() == 0)
       {

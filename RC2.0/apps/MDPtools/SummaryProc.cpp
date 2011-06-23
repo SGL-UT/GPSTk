@@ -39,7 +39,7 @@
 //
 //============================================================================
 
-#include "Geodetic.hpp"
+#include "Position.hpp"
 #include "EngEphemeris.hpp"
 #include "SummaryProc.hpp"
 
@@ -53,11 +53,11 @@ MDPSummaryProcessor::MDPSummaryProcessor(gpstk::MDPStream& in, std::ofstream& ou
    : MDPProcessor(in, out),
      numEpochs(0), numObsEpochMsg(0),
      firstObs(true), firstPvt(true), firstNav(true), firstSelftest(true),
-     firstObsTime(gpstk::DayTime::END_OF_TIME),
-     lastObsTime(gpstk::DayTime::BEGINNING_OF_TIME),
-     firstNavTime(gpstk::DayTime::END_OF_TIME),
-     lastNavTime(gpstk::DayTime::BEGINNING_OF_TIME),
-     prevEpochTime(gpstk::DayTime::BEGINNING_OF_TIME),
+     firstObsTime(gpstk::CommonTime::END_OF_TIME),
+     lastObsTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+     firstNavTime(gpstk::CommonTime::END_OF_TIME),
+     lastNavTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+     prevEpochTime(gpstk::CommonTime::BEGINNING_OF_TIME),
      obsRateEst(0), pvtRateEst(0),
      prevObs(maxChannel+1),
      chanGapList(maxChannel+1),
@@ -231,8 +231,8 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       {
          if (obsRateEst > 0)
          {
-            gpstk::DayTime first =  prevEpochTime + dt;
-            gpstk::DayTime second = msg.time - dt;
+            gpstk::CommonTime first =  prevEpochTime + dt;
+            gpstk::CommonTime second = msg.time - dt;
             epochGapList.push_back(DayTimePair(first, second));
             if (verboseLevel)
             {
@@ -295,8 +295,8 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       else if ( (std::abs(dt - obsRateEst) > 1e-3) &&
                 (prevObs[chan].prn == msg.prn) )
       {
-         gpstk::DayTime first =  prevObs[chan].time + dt;
-         gpstk::DayTime second = msg.time - dt;
+         gpstk::CommonTime first =  prevObs[chan].time + dt;
+         gpstk::CommonTime second = msg.time - dt;
          chanGapList[chan].push_back(DayTimePair(first, second));
          if (verboseLevel)
             out << msg.time.printf(timeFormat)
@@ -427,8 +427,8 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
          }
          else if ( std::abs(dt - pvtRateEst) > 1e-3 )
          {
-            gpstk::DayTime first =  prevPvt.time + dt;
-            gpstk::DayTime second = msg.time - dt;
+            gpstk::CommonTime first =  prevPvt.time + dt;
+            gpstk::CommonTime second = msg.time - dt;
             if (verboseLevel)
                out << msg.time.printf(timeFormat)
                    << "  Gap in PVT messages: "  << secondsAsHMS(dt)

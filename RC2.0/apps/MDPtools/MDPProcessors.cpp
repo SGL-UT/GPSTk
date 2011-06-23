@@ -49,8 +49,8 @@ std::ofstream d2;
 
 MDPProcessor::MDPProcessor() :
       timeFormat("%4Y/%03j/%02H:%02M:%04.1f"),
-      stopTime(gpstk::DayTime::END_OF_TIME),
-      startTime(gpstk::DayTime::BEGINNING_OF_TIME),
+      stopTime(gpstk::CommonTime::END_OF_TIME),
+      startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
       timeSpan(-1), processBad(false), bugMask(0),
       debugLevel(0), verboseLevel(0), in(d1), out(d2), die(false),
       pvtOut(false), obsOut(false), navOut(false), tstOut(false),
@@ -59,8 +59,8 @@ MDPProcessor::MDPProcessor() :
 
 MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
       timeFormat("%4Y/%03j/%02H:%02M:%04.1f"),
-      stopTime(gpstk::DayTime::END_OF_TIME),
-      startTime(gpstk::DayTime::BEGINNING_OF_TIME),
+      stopTime(gpstk::CommonTime::END_OF_TIME),
+      startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
       timeSpan(-1), processBad(false), bugMask(0),
       debugLevel(0), verboseLevel(0), in(in), out(out), die(false),
       pvtOut(false), obsOut(false), navOut(false), tstOut(false),
@@ -99,14 +99,14 @@ void MDPProcessor::process()
          continue;
       }
       
-      if (startTime == DayTime(DayTime::BEGINNING_OF_TIME) && timeSpan>0)
+      if (startTime == CommonTime(CommonTime::BEGINNING_OF_TIME) && timeSpan>0)
       {
          startTime = header.time;
          if (debugLevel)
             out << "startTime: " << startTime << endl;
       }
       
-      if (stopTime == DayTime(DayTime::END_OF_TIME) && timeSpan>0)
+      if (stopTime == CommonTime(CommonTime::END_OF_TIME) && timeSpan>0)
       {
          stopTime = startTime + timeSpan;
          if (debugLevel)

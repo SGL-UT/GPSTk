@@ -111,6 +111,19 @@ public:
             prnSetToToss.erase(prn);
          else
             prnSetToToss.insert(-prn);
+	 if ((prn < 1)||(prn > gpstk::MAX_PRN))
+         {
+            cout << "\n You entered an invalid PRN."
+                 << "\n Exiting.\n\n";
+            return false;
+         }
+         else 
+         {
+            prnSetToToss.insert(prn);
+            if (debugLevel || verboseLevel)
+               cout << "Throwing out data from PRN " << prn << endl;
+         }
+
       }
       if (prnSetToToss.size() && debugLevel)
       {
