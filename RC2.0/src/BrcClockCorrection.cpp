@@ -70,20 +70,20 @@ namespace gpstk
 
       PRNID = weeknum = 0;
 
-      SatSystemID = ' ';
+      satSys = "";
 
       healthy = false;     
  
       Toc = af0 = af1 = af2 = accuracy = 0.0;
    }
 
-   BrcClockCorrection::BrcClockCorrection(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		                                    const double TocArg, const short weeknumArg,
-	                                       const double accuracyArg, const bool healthyArg,
-		                                    const double af0Arg, const double af1Arg,
-		                                    const double af2Arg )
+   BrcClockCorrection::BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg,
+                                          const short PRNIDArg, const double TocArg,
+                                          const short weeknumArg, const double accuracyArg,
+                                          const bool healthyArg,  const double af0Arg,
+                                          const double af1Arg, const double af2Arg )
    {
-      loadData(SatSystemIDArg, obsIDArg, PRNIDArg,
+      loadData(satSysArg, obsIDArg, PRNIDArg,
 		         TocArg, weeknumArg,
 	            accuracyArg, healthyArg,
 		         af0Arg, af1Arg, af2Arg );
@@ -91,19 +91,19 @@ namespace gpstk
    }
 
 		/// Legacy GPS Subframe 1-3  
-   BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
-		                                    const long subframe1[10] )
+   BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg, const short PRNID,
+                                          const short fullweeknum, const long subframe1[10] )
    {
      loadData(obsIDArg, PRNID,fullweeknum,subframe1 );
    }
 
-   void BrcClockCorrection::loadData(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		                               const double TocArg, const short weeknumArg,
-	                                  const double accuracyArg, const bool healthyArg,
-		                               const double af0Arg, const double af1Arg,
-		                               const double af2Arg )
+   void BrcClockCorrection::loadData(const std::string satSysArg, const ObsID obsIDArg,
+                                     const short PRNIDArg, const double TocArg,
+                                     const short weeknumArg, const double accuracyArg,
+                                     const bool healthyArg, const double af0Arg,
+                                     const double af1Arg, const double af2Arg )
    {
-	SatSystemID = SatSystemIDArg;
+	satSys      = satSysArg;
 	obsID       = obsIDArg;
 	PRNID       = PRNIDArg;
 	Toc         = TocArg;
@@ -116,14 +116,14 @@ namespace gpstk
 	dataLoaded  = true;
    }
 
-   void BrcClockCorrection::loadData(const ObsID obsIDArg, const short PRNIDArg, const short fullweeknum,
-		                               const long subframe1[10] )
+   void BrcClockCorrection::loadData(const ObsID obsIDArg, const short PRNIDArg,
+                                     const short fullweeknum, const long subframe1[10] )
 		throw(InvalidParameter)
     {
          double ficked[60];
 
  	    //Load overhead members
-  	 SatSystemID = 'G';
+  	 satSys = "G";
 	 obsID = obsIDArg;
 	 PRNID = PRNIDArg;
 
@@ -160,9 +160,9 @@ namespace gpstk
       throw(InvalidRequest)
    {
       CommonTime toReturn;
-      if (SatSystemID == 'G' )
+      if (satSys == "G" )
          toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GPS);
-      else if (SatSystemID == 'E' )
+      else if (satSys == "E" )
          toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GAL);
       else
       {

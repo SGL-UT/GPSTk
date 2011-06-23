@@ -90,6 +90,7 @@ namespace gpstk
          otSSI,       ///< Signal Strength Indicator (kinda a rinex thing)
          otLLI,       ///< Loss of Lock Indicator (another rinex thing)
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
+         otNavMsg,    ///< Navigation Message data
          otUndefined,
          otLast       ///< Used to verify that all items are described at compile time
       };

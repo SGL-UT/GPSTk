@@ -75,7 +75,7 @@ namespace gpstk
       BrcClockCorrection() throw();
 
 	 /// General purpose constructor
-      BrcClockCorrection(const char SatSystemIDArg, const ObsID obsIDArg, 
+      BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg, 
                          const short PRNIDArg,
 		                   const double TocArg, const short weeknumArg,
 	                      const double accuracyArg, const bool healthyArg,
@@ -143,7 +143,7 @@ namespace gpstk
       double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /// General purpose means to load data into object
-      void loadData( const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
+      void loadData( const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
 		               const double TocArg, const short weeknumArg,
 	                  const double accuracyArg, const bool healthyArg,
                      const double af0Arg, const double af1Arg, const double af2Arg );
@@ -160,7 +160,7 @@ namespace gpstk
          /// Overhead information
          //@{
       bool  dataLoaded;	     /**< True if data is present, false otherwise */ 
-      char  SatSystemID;     /**< Rinex satellite system ID */
+      std::string  satSys;     /**< Rinex satellite system ID */
       ObsID obsID;           /**< Defines carrier and tracking code */      
       short PRNID;           /**< SV PRN ID */
       double   Toc;          /**< Clock epoch (sec of week) */

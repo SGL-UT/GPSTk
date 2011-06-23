@@ -82,7 +82,7 @@ namespace gpstk
        */
 
 	 /// General purpose constructor
-      BrcKeplerOrbit(const char SystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
+      BrcKeplerOrbit(const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
 		               const double ToeArg, const short weeknumArg,
 	                  const double accuracyArg, const bool healthyArg,
 		               const double CucArg, const double CusArg,
@@ -105,7 +105,7 @@ namespace gpstk
       virtual ~BrcKeplerOrbit() {}
 
 	 /// General purpose means to load data into object
-      void loadData( const char SystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
+      void loadData( const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
 		               const double ToeArg, const short weeknumArg,
 	                  const double accuracyArg, const bool healthyArg,
 		               const double CucArg, const double CusArg,
@@ -243,7 +243,7 @@ namespace gpstk
          /// Overhead information
          //@{
       bool    dataLoaded;      /**< True if data is present, False otherwise */
-      char    SatSystemID;     /**< Satellite system ID (as per Rinex) */
+      std::string    satSys;     /**< Satellite system ID (as per Rinex) */
       ObsID   obsID;           /**< Defines carrier and tracking code */
       short   PRNID;           /**< SV PRN ID */
       double  Toe;             /**< Orbit epoch (sec of week) */

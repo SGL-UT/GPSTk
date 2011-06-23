@@ -72,7 +72,7 @@ namespace gpstk
 
       PRNID = weeknum = 0;
 
-      SatSystemID = ' ';
+      satSys = "";
 
       healthy = false;     
      
@@ -80,54 +80,61 @@ namespace gpstk
 	   ecc = A = Ahalf =Adot = OMEGA0 = i0 = w = OMEGAdot = idot = accuracy = 0.0;
    }
 
-   BrcKeplerOrbit::BrcKeplerOrbit(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double ToeArg, const short weeknumArg,
-	     const double accuracyArg, const bool healthyArg,
-		  const double CucArg, const double CusArg,
-		  const double CrcArg, const double CrsArg,
-		  const double CicArg, const double CisArg,
-		  const double M0Arg, const double dnArg, const double dndotArg,
-		  const double eccArg, const double AArg, const double AhalfArg,
-        const double AdotArg, const double OMEGA0Arg, const double i0Arg,
-        const double wArg, const double OMEGAdotARg, const double idotArg )
+   BrcKeplerOrbit::BrcKeplerOrbit(const std::string satSysArg, const ObsID obsIDArg,
+                                  const short PRNIDArg, const double ToeArg,
+                                  const short weeknumArg, const double accuracyArg,
+                                  const bool healthyArg, const double CucArg,
+                                  const double CusArg, const double CrcArg,
+                                  const double CrsArg, const double CicArg,
+                                  const double CisArg, const double M0Arg,
+                                  const double dnArg, const double dndotArg,
+		                            const double eccArg, const double AArg,
+                                  const double AhalfArg, const double AdotArg,
+                                  const double OMEGA0Arg, const double i0Arg,
+                                  const double wArg, const double OMEGAdotARg,
+                                  const double idotArg )
    {
-      loadData(SatSystemIDArg, obsIDArg, PRNIDArg,
-		  ToeArg, weeknumArg,
-	     accuracyArg, healthyArg,
-		  CucArg, CusArg,
-		  CrcArg, CrsArg,
-		  CicArg, CisArg,
-		  M0Arg, dnArg, dndotArg,
-		  eccArg, AArg, AhalfArg, AdotArg,
-		  OMEGA0Arg, i0Arg, wArg, 
-		  OMEGAdotARg, idotArg );
+      loadData(satSysArg, obsIDArg, PRNIDArg,
+		         ToeArg, weeknumArg,
+	            accuracyArg, healthyArg,
+		         CucArg, CusArg,
+		         CrcArg, CrsArg,
+		         CicArg, CisArg,
+		         M0Arg, dnArg, dndotArg,
+		         eccArg, AArg, AhalfArg, AdotArg,
+		         OMEGA0Arg, i0Arg, wArg, 
+		         OMEGAdotARg, idotArg );
 
    }
 
 		/// Legacy GPS Subframe 1-3  
-   BrcKeplerOrbit::BrcKeplerOrbit(const ObsID obsIDArg, const short PRNID,const short fullweeknum,
-		      const long subframe1[10],
-		      const long subframe2[10],
-		      const long subframe3[10] )
+   BrcKeplerOrbit::BrcKeplerOrbit(const ObsID obsIDArg, const short PRNID,
+                                  const short fullweeknum,
+		                            const long subframe1[10],
+		                            const long subframe2[10],
+		                            const long subframe3[10] )
    {
      loadData(obsIDArg, PRNID,fullweeknum,
-		      subframe1,
-		      subframe2,
-		      subframe3 );
+		        subframe1,
+		        subframe2,
+		        subframe3 );
    }
 
-   void BrcKeplerOrbit::loadData(const char SatSystemIDArg, const ObsID obsIDArg, const short PRNIDArg,
-		  const double ToeArg, const short weeknumArg,
-	     const double accuracyArg, const bool healthyArg,
-		  const double CucArg, const double CusArg,
-		  const double CrcArg, const double CrsArg,
-		  const double CicArg, const double CisArg,
-		  const double M0Arg, const double dnArg, const double dndotArg,
-		  const double eccArg, const double AArg, const double AhalfArg, 
-        const double AdotArg, const double OMEGA0Arg, const double i0Arg,
-        const double wArg, const double OMEGAdotARg, const double idotArg )
+   void BrcKeplerOrbit::loadData(const std::string satSysArg, const ObsID obsIDArg,
+                                 const short PRNIDArg, const double ToeArg,
+                                 const short weeknumArg, const double accuracyArg,
+                                 const bool healthyArg, const double CucArg,
+                                 const double CusArg, const double CrcArg,
+                                 const double CrsArg, const double CicArg,
+                                 const double CisArg, const double M0Arg,
+                                 const double dnArg, const double dndotArg,
+		                           const double eccArg, const double AArg,
+                                 const double AhalfArg, const double AdotArg,
+                                 const double OMEGA0Arg, const double i0Arg,
+                                 const double wArg, const double OMEGAdotARg,
+                                 const double idotArg )
    {
-	SatSystemID = SatSystemIDArg;
+	satSys      = satSysArg;
 	obsID       = obsIDArg;
 	PRNID       = PRNIDArg;
 	Toe         = ToeArg;
@@ -155,16 +162,17 @@ namespace gpstk
 	dataLoaded  = true;
    }
 
-   void BrcKeplerOrbit::loadData(const ObsID obsIDArg, const short PRNIDArg, const short fullweeknum,
-		const long subframe1[10],
-		const long subframe2[10],
-		const long subframe3[10])
+   void BrcKeplerOrbit::loadData(const ObsID obsIDArg, const short PRNIDArg,
+                                 const short fullweeknum,
+		                           const long subframe1[10],
+		                           const long subframe2[10],
+		                           const long subframe3[10])
 		throw(InvalidParameter)
     {
          double ficked[60];
 
  	    //Load overhead members
-  	 SatSystemID = 'G';
+  	 satSys = "G";
 	 obsID = obsIDArg;
 	 PRNID = PRNIDArg;
 
@@ -177,7 +185,7 @@ namespace gpstk
 
 	     weeknum       = static_cast<short>( ficked[5] );
 	     short accFlag = static_cast<short>( ficked[7] );
-	     short health        = static_cast<short>( ficked[8] );
+	     short health  = static_cast<short>( ficked[8] );
 	     //Convert the accuracy flag to a value...
 	     accuracy = gpstk::ura2accuracy(accFlag);
 	     healthy = false;
@@ -401,9 +409,9 @@ namespace gpstk
       throw(InvalidRequest)
    {
       CommonTime toReturn;
-      if (SatSystemID == 'G' )
+      if (satSys == "G" )
          toReturn = GPSWeekSecond(weeknum, Toe, TimeSystem::GPS);
-      else if (SatSystemID == 'E' )
+      else if (satSys == "E" )
          toReturn = GPSWeekSecond(weeknum, Toe, TimeSystem::GAL);
       else
       {
