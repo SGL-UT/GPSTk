@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -38,11 +36,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file RinexNavData.cpp
  * Encapsulates RINEX Navigation data
@@ -53,7 +46,6 @@
 #include "CommonTime.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
-#include "TimeConstants.hpp"
 
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"

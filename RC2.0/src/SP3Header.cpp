@@ -385,6 +385,9 @@ namespace gpstk
          strm << line << endl;
          strm.lineNumber++;
       }
+
+      // save header for use with SP3Data::reallyPut
+      strm.header = *this;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
    catch(std::exception& e) { Exception g(e.what()); GPSTK_THROW(g); }

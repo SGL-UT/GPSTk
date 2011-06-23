@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
    try
    {
       bool verbose=false;
-      char version_out='a',version_in;
+      SP3Header::Version version_in, version_out;
       int i,n;
       string filein,fileout("sp3.out");
       CommonTime currentTime=CommonTime::BEGINNING_OF_TIME;
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
          if(argv[i][0] == '-') {
             string arg(argv[i]);
             if(arg == string("--outputC"))
-               version_out = 'c';
+               version_out = SP3Header::SP3c;   //'c';
             else if(arg == string("--in"))
                filein = string(argv[++i]);
             else if(arg == string("--out"))
@@ -128,8 +128,8 @@ int main(int argc, char *argv[])
       }
 
       // prepare to write the header
-      if(version_out == 'c') {
-         sp3header.version = 'c';
+      if(version_out == SP3Header::SP3c) {
+         sp3header.version = SP3Header::SP3c; //'c';
          sp3header.system = SP3SatID();
          sp3header.timeSystem = SP3Header::timeGPS;
          sp3header.basePV = 1.25;     // make these up ... a real app would
@@ -146,7 +146,7 @@ int main(int argc, char *argv[])
 
       // for reading and writing, sp3data MUST have the version of the header;
       // this is crucial for version 'c'
-      sp3data.version = version_in;          // for input
+      //sp3data.version = version_in;          // for input
 
       n = 0;     // count records
       while(instrm >> sp3data) {
@@ -164,23 +164,21 @@ int main(int argc, char *argv[])
          }
 
          // output
-         sp3data.version = version_out;      // for output
-         
          // write the epoch record
          if(sp3data.time > currentTime) {
-            char saveFlag = sp3data.flag;
-            sp3data.flag = '*';
-            outstrm << sp3data;
-            sp3data.flag = saveFlag;
+            char saveRecType = sp3data.RecType;
+            sp3data.RecType = '*';
+            //outstrm << sp3data;
+            sp3data.RecType = saveRecType;
             currentTime = sp3data.time;
          }
 
             // make up some data...a real app would have this data
-         if(version_in == 'a' && version_out == 'c') {
+         if(version_in == SP3Header::SP3a && version_out == SP3Header::SP3c) {
             // sigmas on the P|V rec
             for(i=0; i<4; i++) sp3data.sig[i] = int(99*unitrand());
-            // flags on the P line
-            if(sp3data.flag == 'P') {
+            // RecType on the P line
+            if(sp3data.RecType == 'P') {
                sp3data.clockEventFlag = (unitrand() > 0.5);
                sp3data.clockPredFlag = (unitrand() > 0.5);
                sp3data.orbitManeuverFlag = (unitrand() > 0.5);
@@ -188,7 +186,7 @@ int main(int argc, char *argv[])
             }
             // write out the correlation records ... maybe
             if(unitrand() > 0.5) {
-               // set the flag for output
+               // set the RecType for output
                sp3data.correlationFlag = true;
                for(i=0; i<4; i++) sp3data.sdev[i] = int(9999*unitrand());
                for(i=0; i<6; i++) sp3data.correlation[i] = int(99999999*unitrand());
@@ -210,13 +208,13 @@ int main(int argc, char *argv[])
          n++;
 
          // prepare for the next read
-         sp3data.version = version_in;
+         //sp3data.version = version_in;
          // must reset before input, since same sp3data is for input and output
          sp3data.correlationFlag = false;
       }
 
       // don't forget this
-      outstrm << "EOF" << endl;
+      //outstrm << "EOF" << endl;
 
       instrm.close();
       outstrm.close();

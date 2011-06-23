@@ -70,7 +70,8 @@ int main(int argc, char *argv[])
    try
    {
       bool verbose=false;
-      char version_out='a';
+      //char version_out='a';
+      SP3Header::Version version_out(SP3Header::SP3a);
       int i,j,nrec,nfile;
       string fileout("sp3.out");
       vector<string> inputFiles;
@@ -87,7 +88,7 @@ int main(int argc, char *argv[])
          if(argv[i][0] == '-') {
             string arg(argv[i]);
             if(arg == string("--outputC")) {
-               version_out = 'c';
+               version_out = SP3Header::SP3c;   //'c';
                if(verbose) cout << " Output version c\n";
             }
             else if(arg == string("--in")) {
@@ -178,9 +179,10 @@ int main(int argc, char *argv[])
          endTime = BCEph.getFinalTime();
 
       // define the data version and the header info
-      if(version_out == 'c') {
+      if(version_out == SP3Header::SP3c) {
          // data and header must have the correct version
-         sp3data.version = sp3header.version = 'c';
+         //sp3data.version =
+         sp3header.version = SP3Header::SP3c;
 
          sp3header.system = SP3SatID();
          sp3header.timeSystem = SP3Header::timeGPS;
@@ -188,11 +190,13 @@ int main(int argc, char *argv[])
          sp3header.baseClk = 0.0;
       }
       else {
-         sp3data.version = sp3header.version = 'a';
+         //sp3data.version =
+         sp3header.version = SP3Header::SP3a; //'a';
       }
 
       // fill the header
-      sp3header.pvFlag = 'V';
+      //sp3header.pvFlag = 'V';
+      sp3header.containsVelocity = true;
       sp3header.time = CommonTime::END_OF_TIME;
       sp3header.epochInterval = 900.0;          // hardcoded here only
       sp3header.dataUsed = "BCE";
@@ -266,14 +270,14 @@ int main(int argc, char *argv[])
             // epoch
             if(!epochOut) {
                sp3data.time = tt;
-               sp3data.flag = '*';
+               sp3data.RecType = '*';
                outstrm << sp3data;
                if(verbose) sp3data.dump(cout);
                epochOut = true;
             }
 
             // Position
-            sp3data.flag = 'P';
+            sp3data.RecType = 'P';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.x[j]/1000.0;       // km
             // must remove the relativity correction from Xvt::clkbias
             // see EngEphemeris::svXvt() - also convert to microsec
@@ -292,7 +296,7 @@ int main(int argc, char *argv[])
             if(verbose) sp3data.dump(cout);
 
             // Velocity
-            sp3data.flag = 'V';
+            sp3data.RecType = 'V';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.v[j]/10.0;         // dm/s
             sp3data.clk = xvt.clkdrift;                                // s/s
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...

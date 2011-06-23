@@ -96,7 +96,9 @@ namespace gpstk
    public:
          /// Constructor.
       SP3Data() : RecType(' '), time(CommonTime::BEGINNING_OF_TIME),
-                  clockEventFlag(false), clockPredFlag(false), orbitManeuverFlag(false), orbitPredFlag(false), correlationFlag(false)
+                  clockEventFlag(false), clockPredFlag(false),
+                  orbitManeuverFlag(false), orbitPredFlag(false),
+                  correlationFlag(false)
          {}
      
          /// Destructor
@@ -120,7 +122,7 @@ namespace gpstk
       /// the rest of the member are for version c only
       int sig[4];      ///< Four-vector of integer exponents for estimated sigma 
                        ///< of position,clock or velocity,clock rate; sigma = base**n
-                       ///< units are mm,psec or 10^-4 mm/sec,psec/sec); base in header.
+                       ///< units are mm,psec or 10^-4 mm/sec,psec/sec); base in head.
                        ///< n is >= 0, and n = -1 means unknown (blank in file)
       bool clockEventFlag;    ///< clock event flag, 'E' in file
       bool clockPredFlag;     ///< clock prediction flag, 'P' in file

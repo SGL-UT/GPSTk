@@ -62,8 +62,7 @@ namespace gpstk
    public:
          /// Default constructor
       SP3Stream() 
-         : headerRead(false),
-           wroteEOF(false),
+         : wroteEOF(false),
            writingMode(false),
            lastLine(std::string())
          {}
@@ -105,7 +104,6 @@ namespace gpstk
       virtual void open(const char* filename, std::ios::openmode mode)
       {
          FFTextStream::open(filename, mode);
-         headerRead = false;
          header = SP3Header();
          warnings.clear();
 
@@ -122,7 +120,6 @@ namespace gpstk
          ///@name data members
          //@{
       SP3Header header;     ///< SP3Header for this file
-      bool headerRead;      ///< True if the header has been read.
       bool wroteEOF;        ///< True if the final 'EOF' has been read.
       bool writingMode;     ///< True if the stream is open in 'out', not 'in', mode
       CommonTime currentEpoch;   ///< Time from last epoch record read
