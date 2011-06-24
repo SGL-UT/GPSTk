@@ -27,7 +27,7 @@
 //
 //============================================================================
 #include "TimeString.hpp"
-
+#include "GPSWeekSecond.hpp"
 #include "Position.hpp"
 #include "NavProc.hpp"
 
@@ -208,7 +208,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    {
       firstNav = false;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << printTime( msg.time,timeFormat)
              << "  Received first Navigation Subframe message"
              << endl;
    }
@@ -223,7 +223,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    MDPNavSubframe umsg = msg;
 
    ostringstream oss;
-   oss << umsg.time.printf(timeFormat)
+   oss << printTime(umsg.time,timeFormat)
        << "  PRN:" << setw(2) << umsg.prn
        << " " << asString(umsg.carrier)
        << ":" << setw(4) << left << asString(umsg.range)
@@ -292,7 +292,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
       }
 
       // Sanity check on the header time versus the HOW time
-      short week = umsg.time.GPSfullweek();
+      short week = static_cast<GPSWeekSecond>(umsg.time).week;
       if (sow <0 || sow>=604800)
       {
          if (verboseLevel>1)

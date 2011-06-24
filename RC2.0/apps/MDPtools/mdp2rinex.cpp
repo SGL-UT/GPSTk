@@ -40,7 +40,7 @@
 
 #include "StringUtils.hpp"
 #include "InOutFramework.hpp"
-
+#include "GPSWeekSecond.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
 #include "RinexNavStream.hpp"
@@ -219,7 +219,7 @@ protected:
       if (sfid > 3)
          return;
 
-      short week = nav.time.GPSfullweek();
+      short week = static_cast<GPSWeekSecond>(nav.time).week;
       long sow = nav.getHOWTime();
       if (sow > DayTime::FULLWEEK)
       {

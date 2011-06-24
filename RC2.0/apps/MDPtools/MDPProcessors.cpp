@@ -39,6 +39,8 @@
 /** @file Various presentations/analysis on MDP streams */
 
 #include "MDPProcessors.hpp"
+#include "TimeString.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -197,7 +199,7 @@ void MDPProcessor::processFC(const MDPHeader& header)
       {
          fcErrorCount++;
          if (verboseLevel)
-            out << header.time.printf(timeFormat)
+            out << printTime(header.time,timeFormat)
                 <<"  Freshness count error.  Previous was " << lastFC
                 << " current is " << in.header.freshnessCount << endl;
          if (debugLevel)
@@ -241,7 +243,7 @@ void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
    for (i = oe.obs.begin(); i != oe.obs.end(); i++)
    {
       const MDPObsEpoch::Observation& obs=i->second;
-      out << oe.time.printf(timeFormat)
+      out << printTime(oe.time,timeFormat)
           << fixed
           << ", " << setw(3) << oe.id
           << ", " << setw(2) << (int) oe.prn
@@ -270,7 +272,7 @@ void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
 void MDPTableProcessor::process(const gpstk::MDPPVTSolution& pvt)
 {
    outputHeader();
-   out << pvt.time.printf(timeFormat)
+   out << printTime(pvt.time,timeFormat)
        << fixed
        << ", " << setw(3) << pvt.id
        << ", " << setw(2) << (int)pvt.numSVs
@@ -295,7 +297,7 @@ void MDPTableProcessor::process(const gpstk::MDPPVTSolution& pvt)
 void MDPTableProcessor::process(const gpstk::MDPNavSubframe& sf)
 {
    outputHeader();
-   out << sf.time.printf(timeFormat)
+   out << printTime(sf.time,timeFormat)
        << fixed
        << ", " << setw(3) << sf.id
        << ", " << setw(2) << sf.prn
@@ -318,11 +320,11 @@ void MDPTableProcessor::process(const gpstk::MDPNavSubframe& sf)
 void MDPTableProcessor::process(const gpstk::MDPSelftestStatus& sts)
 {
    outputHeader();
-   out << sts.time.printf(timeFormat)
+   out << printTime(sts.time,timeFormat)
        << fixed
        << ", " << setw(3) << sts.id
-       << ", " << sts.selfTestTime.printf(timeFormat)
-       << ", " << sts.firstPVTTime.printf(timeFormat) //"%4F/%9.2g")
+       << ", " << printTime(sts.selfTestTime,timeFormat)
+       << ", " << printTime(sts.firstPVTTime,timeFormat) //"%4F/%9.2g")
        << ", " << setprecision(1) << sts.antennaTemp
        << ", " << setprecision(1) << sts.receiverTemp
        << ", " << hex << sts.status << dec
@@ -345,7 +347,7 @@ void MDPVerboseProcessor::process(const gpstk::MDPObsEpoch& oe)
    else
    {
       out << oe.getName() << "-:"
-          << " T:" << oe.time.printf(timeFormat)
+          << " T:" << printTime(oe.timetimeFormat)
           << left
           << " #SV:" << setw(2) << (int)oe.numSVs
           << " Ch:" << setw(2) << (int)oe.channel
@@ -377,7 +379,7 @@ void MDPVerboseProcessor::process(const gpstk::MDPPVTSolution& pvt)
    else
    {
       out << pvt.getName() << "-:"
-          << " T:" << pvt.time.printf(timeFormat)
+          << " T:" << printTime(pvt.time,timeFormat)
           << left
           << " #SV:" << setw(2) << (int)pvt.numSVs
           << " X:" << StringUtils::asString(pvt.x[0], 3)
@@ -399,7 +401,7 @@ void MDPVerboseProcessor::process(const gpstk::MDPNavSubframe& sf)
    else
    {
       out << sf.getName() << "-:"
-          << " T:" << sf.time.printf(timeFormat)
+          << " T:" << printTime(sf.time,timeFormat)
           << " PRN:" << sf.prn
           << " " << StringUtils::asString(sf.carrier)
           << "-" << StringUtils::asString(sf.range)
@@ -449,7 +451,7 @@ void MDPCSVProcessor::process(const gpstk::MDPObsEpoch& oe)
    outputHeader();
 
    sprintf(buff0, "%f, %3d, %2d, %2d, %2d, %2d, %2.0f, %3.0f, ",
-           oe.time.MJDdate(), oe.id, oe.prn, oe.channel, oe.status, oe.numSVs,
+           static_cast<Epoch>(oe.time).MJD, oe.id, oe.prn, oe.channel, oe.status, oe.numSVs,
            oe.elevation, oe.azimuth);
 
    MDPObsEpoch::ObsMap::const_iterator i;
@@ -470,7 +472,7 @@ void MDPCSVProcessor::process(const gpstk::MDPPVTSolution& pvt)
 {
    outputHeader();
 
-   out << pvt.time.MJDdate()
+   out << static_cast<Epoch>(pvt.time).MJD
        << fixed
        << ", " << setw(3) << pvt.id
        << ", " << setw(2) << (int)pvt.numSVs
@@ -494,7 +496,7 @@ void MDPCSVProcessor::process(const gpstk::MDPPVTSolution& pvt)
 void MDPCSVProcessor::process(const gpstk::MDPNavSubframe& sf)
 {
    outputHeader();
-   out << sf.time.MJDdate()
+   out << static_cast<Epoch>(sf.time).MJD
        << fixed
        << ", " << setw(3) << sf.id
        << ", " << setw(2) << sf.prn
@@ -517,11 +519,11 @@ void MDPCSVProcessor::process(const gpstk::MDPNavSubframe& sf)
 void MDPCSVProcessor::process(const gpstk::MDPSelftestStatus& sts)
 {
    outputHeader();
-   out << sts.time.printf(timeFormat)
+   out << printTime(sts.time,timeFormat)
        << fixed
        << ", " << setw(3) << sts.id
-       << ", " << sts.selfTestTime.MJDdate()
-       << ", " << sts.firstPVTTime.MJDdate()
+       << ", " << static_cast<Epoch>(sts.selfTestTime).MJD
+       << ", " << static_cast<Epoch>(sts.firstPVTTime).MJD
        << ", " << setprecision(1) << sts.antennaTemp
        << ", " << setprecision(1) << sts.receiverTemp
        << ", " << hex << sts.status << dec

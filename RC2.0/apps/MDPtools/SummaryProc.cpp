@@ -42,6 +42,8 @@
 #include "Position.hpp"
 #include "EngEphemeris.hpp"
 #include "SummaryProc.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -103,8 +105,8 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
           << " observation epoch messages spanning "
           << numEpochs << " epochs."
           << endl
-          << "  Obs data spans " << firstObsTime.printf(timeFormat) 
-          << " to " << lastObsTime.printf(timeFormat)
+          << "  Obs data spans " << printTime(firstObsTime,timeFormat) 
+          << " to " << printTime(lastObsTime,timeFormat)
           << " (" << secondsAsHMS(dt) << ")"
           << endl
           << "  Obs output rate is " << setprecision(2) << obsRateEst
@@ -113,11 +115,11 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
 
       out << "  Receiver data gaps:" << endl;
       int rxGapCount=0;
-      for (DayTimePairList::const_iterator i=epochGapList.begin(); i!=epochGapList.end(); i++)
+      for (CommonTimePairList::const_iterator i=epochGapList.begin(); i!=epochGapList.end(); i++)
          if (std::abs(i->first - i->second - obsRateEst) > 1e-3)
             out << "    " << rxGapCount++ << ": "
-                << i->second.printf(timeFormat)
-                << " to " << i->first.printf(timeFormat)
+                << printTime(i->second,timeFormat)
+                << " to " << printTime(i->first,timeFormat)
                 << " ( " << secondsAsHMS(i->first - i->second) << " )."
                 << endl;
       if (rxGapCount==0)
@@ -161,8 +163,8 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
    else
    {
       double dt = lastPvtTime - firstPvtTime;
-      out << "  Pvt data spans " << firstPvtTime.printf(timeFormat) 
-          << " to " << lastPvtTime.printf(timeFormat)
+      out << "  Pvt data spans " << printTime(firstPvtTime,timeFormat) 
+          << " to " << printTime(lastPvtTime,timeFormat)
           << " (" << secondsAsHMS(dt) << ")"
           << endl
           << "  PVT output rate is " << setprecision(2) << pvtRateEst << " sec."
@@ -178,8 +180,8 @@ MDPSummaryProcessor::~MDPSummaryProcessor()
       double dt = lastNavTime - firstNavTime;
       double parityErrorPct = 100.0 * navParityErrors / navSubframes;
       double sowErrorPct = 100.0 * navSowErrors / navSubframes;
-      out << "  Nav data spans " << firstNavTime.printf(timeFormat) 
-          << " to " << lastNavTime.printf(timeFormat)
+      out << "  Nav data spans " << printTime(firstNavTime,timeFormat) 
+          << " to " << printTime(lastNavTime,timeFormat)
           << " (" << secondsAsHMS(dt) << ")" << endl
           << setw(10) << navSubframes      << "   Subframes received" << endl
           << setw(10) << navParityErrors   << "   Parity errors ("
@@ -220,7 +222,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       firstObsTime = msg.time;
       firstObs = false;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  Received first Observation Epoch message"
              << endl;
    }
@@ -233,10 +235,10 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
          {
             gpstk::CommonTime first =  prevEpochTime + dt;
             gpstk::CommonTime second = msg.time - dt;
-            epochGapList.push_back(DayTimePair(first, second));
+            epochGapList.push_back(CommonTimePair(first, second));
             if (verboseLevel)
             {
-               out << msg.time.printf(timeFormat)
+               out << printTime(msg.time,timeFormat)
                    << "  Obs output rate " << dt << " sec";
                if (obsRateEst != 0)
                   out << " (was " << obsRateEst << " sec).";
@@ -273,7 +275,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
    if (prevObs[chan].prn == 0 || prevObs[chan].prn != prn)
    {
       if (verboseLevel>1)
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  PRN " << prn << " now on channel " << chan << endl;
    }
    else
@@ -282,7 +284,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       double dt = msg.time - prevObs[chan].time;
       if (std::abs(dt) < 1e-3)
       {
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  Got two consecutive obs on channel "
              << chan << " with the same time." << endl;
          if (verboseLevel)
@@ -297,9 +299,9 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       {
          gpstk::CommonTime first =  prevObs[chan].time + dt;
          gpstk::CommonTime second = msg.time - dt;
-         chanGapList[chan].push_back(DayTimePair(first, second));
+         chanGapList[chan].push_back(CommonTimePair(first, second));
          if (verboseLevel)
-            out << msg.time.printf(timeFormat)
+            out << printTime(msg.time,timeFormat)
                 << "  Data gap on channel " << chan
                 << ", prn " << msg.prn << ", " << secondsAsHMS(dt)
                 << endl;
@@ -332,7 +334,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
                      lol[*j][rcPair]++;
 
                if (verboseLevel)
-                  out << msg.time.printf(timeFormat)
+                  out << printTime(msg.time,timeFormat)
                       << "  Lock count discontinuity on prn " << prn
                       << ", chan " << chan
                       << ", " << asString(i->first.first)
@@ -367,7 +369,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
       {
          svCountErrorCount++;
          if (! (bugMask & 0x01))
-            out << prevEpochTime.printf(timeFormat)
+            out << printTime(prevEpochTime,timeFormat)
                 << "  Epoch claimed " << prevReported
                 << " SVs but only received " << prevActual << endl;
       }
@@ -393,7 +395,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
       firstPvt = false;
       firstPvtTime = msg.time;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  Received first PVT Solution message"
              << endl;
    }
@@ -404,7 +406,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
       {
          if (verboseLevel)
          {
-            out << msg.time.printf(timeFormat)
+            out << printTime(msg.time,timeFormat)
                 << "  PVT output rate " << dt << " sec";
             if (pvtRateEst != 0)
                out << "(was " << pvtRateEst << " sec).";
@@ -416,7 +418,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
          double dt = msg.time - prevPvt.time;
          if (std::abs(dt) < 1e-3)
          {
-            out << msg.time.printf(timeFormat)
+            out << printTime(msg.time,timeFormat)
                 << "  Got two consecutive PVT messages with the same time." << endl;
             if (verboseLevel)
                msg.dump(out), prevPvt.dump(out);
@@ -430,7 +432,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
             gpstk::CommonTime first =  prevPvt.time + dt;
             gpstk::CommonTime second = msg.time - dt;
             if (verboseLevel)
-               out << msg.time.printf(timeFormat)
+               out << printTime(msg.time,timeFormat)
                    << "  Gap in PVT messages: "  << secondsAsHMS(dt)
                    << endl;
             if (verboseLevel>2)
@@ -447,13 +449,13 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
          double dtdt = ddt/(msg.time - prevPvt.time);
          double dtdtErr = std::abs(dtdt - msg.ddtime);
          if (dtdt > 1e-6)
-            out << msg.time.printf(timeFormat)
+            out << printTime(msg.time,timeFormat)
                 << "  Clock jump: " << setprecision(3) << scientific << ddt
                 << " sec, (" << dtdt << " vs " << msg.ddtime
                 << " sec/sec)"
                 << fixed << endl;
          else if (dtdtErr > 1e-8 && verboseLevel)
-            out << msg.time.printf(timeFormat)
+            out << printTime(msg.time,timeFormat)
                 << "  Clock error: " << setprecision(3) << scientific << ddt
                 << " sec, (" << dtdt << " vs " << msg.ddtime
                 << " sec/sec)"
@@ -476,7 +478,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
 
    gpstk::MDPNavSubframe umsg = msg;
    navSubframes++;
-   string desc = msg.time.printf(timeFormat) + 
+   string desc = printTime(msg.time,timeFormat) + 
       "  Subframe from " + leftJustify(asString(umsg.prn), 2) +
       " " + leftJustify(asString(umsg.carrier), 2) +
       " " + leftJustify(asString(umsg.range), 2);
@@ -499,7 +501,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPNavSubframe& msg)
       desc += ", upright";
 
    long how_sow = umsg.getHOWTime();
-   long hdr_sow = static_cast<long>(umsg.time.GPSsow());
+   long hdr_sow = static_cast<long>(static_cast<GPSWeekSecond>(umsg.time).sow);
    if (how_sow < 0 || how_sow >= 604800)
    {
       navSowErrors++;
@@ -547,7 +549,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPSelftestStatus& msg)
    {
       firstSelftest = false;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  Received first Selftest Status message"
              << endl;
    } 
@@ -555,13 +557,13 @@ void MDPSummaryProcessor::process(const gpstk::MDPSelftestStatus& msg)
    if (verboseLevel)
    {
       if (msg.extFreqStatus != prevSelftestStatus.extFreqStatus)
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  External Frequency Status: "
              << msg.extFreqStatus
              << endl;
       
       if (msg.saasmStatusWord != prevSelftestStatus.saasmStatusWord)
-         out << msg.time.printf(timeFormat)
+         out << printTime(msg.time,timeFormat)
              << "  SAASM Status Word: 0x"
              << hex << msg.saasmStatusWord << dec
              << endl;
