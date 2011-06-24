@@ -75,8 +75,8 @@ namespace gpstk
       float receiverTemp;
       long status;
       float cpuLoad;
-      gpstk::DayTime selfTestTime; ///< SelfTest SOW & week
-      gpstk::DayTime firstPVTTime; ///< First PVT SOW & week
+      gpstk::CommonTime selfTestTime; ///< SelfTest SOW & week
+      gpstk::CommonTime firstPVTTime; ///< First PVT SOW & week
       short extFreqStatus;
       short saasmStatusWord;
 

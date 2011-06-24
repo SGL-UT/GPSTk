@@ -241,8 +241,8 @@ namespace gpstk
             }
             else
             {
-               short week = static_cast<short>(cb.absTime / DayTime::FULLWEEK);
-               double sow = cb.absTime - week * DayTime::FULLWEEK;
+               short week = static_cast<short>(cb.absTime / FULLWEEK);
+               double sow = cb.absTime - week * FULLWEEK;
                oss << left << setw(4) << week << right << setprecision(9)
                    << " " << setw(7) << sow
                    << "    " << setw(5) << cb.svid.id

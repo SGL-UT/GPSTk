@@ -234,7 +234,7 @@ namespace gpstk
    {
       MDPStream& mdps = dynamic_cast<MDPStream&>(s);
       MDPObsEpoch moe;
-      DayTime t;
+      CommonTime t;
 
       while (mdps >> moe)
       {

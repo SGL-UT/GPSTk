@@ -236,9 +236,9 @@ namespace gpstk
                if (sfid > 3)
                   return;
 
-               short week = nav.time.GPSfullweek();
+               short week = static_cast<GPSWeekSecond>(nav.time).week;
                long sow = nav.getHOWTime();
-               if (sow > DayTime::FULLWEEK)
+               if (sow > FULLWEEK)
                {
                   if (verboseLevel>2)
                      cout << "Bad week" << endl;
@@ -248,7 +248,7 @@ namespace gpstk
                if (verboseLevel>3)
                   nav.dump(cout);
 
-               DayTime howTime(week, sow);
+               CommonTime howTime(week, sow);
 
                if (nav.range != rcCA || nav.carrier != ccL1)
                   return;
@@ -290,6 +290,19 @@ namespace gpstk
          cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
 
       pe->loadSP3File(fn);
+
+      SP3Stream fs(fn.c_str(),ios::in);
+      fs.exceptions(ifstream::failbit);
+      
+      SP3Header header;
+      fs >> header;
+
+      SP3Data data;
+      data.version = header.version;
+   
+      while (fs >> data)
+         pe->addEphemeris(data);
+
 
       if (verboseLevel>1)
          cout << "Read " << fn << " as SP3 ephemeris."<< endl;

@@ -201,7 +201,7 @@ namespace gpstk
       obsIntervalConfidence = 0;
       obsInterval = 0;
       ObsEpoch oe = getObsEpoch();
-      DayTime t0 = oe.time;
+      CommonTime t0 = oe.time;
       double dt;
    
          // We need 10 consecutive epochs with the same interval to get an

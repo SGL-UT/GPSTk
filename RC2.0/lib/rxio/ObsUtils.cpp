@@ -43,6 +43,7 @@
 #include "icd_gps_constants.hpp"
 
 #include "ObsUtils.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 
@@ -247,12 +248,12 @@ namespace gpstk
 
       // Get the full time from the hint and make the sow match the MBEN
       moe.time = hint.time;
-      double sow1 = moe.time.GPSsecond();
+      double sow1 = static_cast<GPSWeekSecond>(moe.time).sow;
       int sow2 = static_cast<int>(sow1/1800);
       double sow3 = static_cast<double>(sow2 * 1800);
       double sow_mben = 0.05 * mben.seq;
       double sow4 = sow3 + sow_mben;
-      long week = moe.time.GPSfullweek();
+      long week = static_cast<GPSWeekSecond>(moe.time).week;
       if (sow4 < sow1) // Assume that time only moves forward
          sow4 += 1800;
       while (sow4 >= DayTime::FULLWEEK)
@@ -260,7 +261,7 @@ namespace gpstk
          sow4 -= DayTime::FULLWEEK;
          week += 1;
       }
-      moe.time.setGPS(week, sow4);
+      moe.time=GPSWeekSecond(week, sow4);
 
       moe.numSVs = hint.numSVs;
       moe.channel = mben.chid;
@@ -296,7 +297,7 @@ namespace gpstk
       pvt.v[2] = pben.navzdot;
       pvt.ddtime = pben.navtdot / C_GPS_M;
       
-      pvt.time.setGPS(week, pben.sow);
+      pvt.time=GPSWeekSecond(week, pben.sow);
       pvt.timep = pvt.time + pvt.dtime;
 
       pvt.fom = pben.pdop;

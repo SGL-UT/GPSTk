@@ -40,7 +40,9 @@
 
 #include "StringUtils.hpp"
 #include "BinUtils.hpp"
-
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
+#include "Epoch.hpp"
 #include "MDPHeader.hpp"
 #include "MDPStream.hpp"
 
@@ -75,9 +77,9 @@ namespace gpstk
    string MDPHeader::encode() const 
       throw()
    {
-      short week=time.GPSfullweek();
+      short week=static_cast<GPSWeekSecond>(time).week;
       unsigned long sow100=static_cast<unsigned long>(
-         0.5 + time.GPSsecond() * 100);
+         0.5 + static_cast<GPSWeekSecond>(time).sow * 100);
       if (sow100==60480000)
       {
          sow100=0;
@@ -137,7 +139,7 @@ namespace gpstk
          sow100 = 0;
       }
 
-      time.setGPSfullweek(week, double(sow100)/100);
+      time=GPSWeekSecond(week, double(sow100)/100);
 
       clearstate(fmtbit);
 
@@ -433,7 +435,7 @@ namespace gpstk
       oss << getName() << " :"
           << " ID:" << id
           << " Len:" << length
-          << " Time:" << time.printf("%4Y/%03j/%02H:%02M:%05.2f")
+          << " Time:" << printTime(time,"%4Y/%03j/%02H:%02M:%05.2f")
           << " FC:" << hex << setfill('0') << setw(4) << freshnessCount
           << " crc:" << setw(4) << crc
           << " rdstate:" << rdstate();

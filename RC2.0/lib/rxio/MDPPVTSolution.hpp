@@ -74,7 +74,7 @@ namespace gpstk
       gpstk::Triple v;            ///< receiver velocity, Earth-fixed, including rotation, in meters/sec
       double dtime;               ///< receiver clock offset from GPS in sec
       double ddtime;              ///< receiver clock drift rate in sec/sec
-      gpstk::DayTime timep;       ///< PVT time: dtime = timep - time.
+      gpstk::CommonTime timep;       ///< PVT time: dtime = timep - time.
       unsigned char numSVs;       ///< Number of SVs in track.
       unsigned char fom;          ///< Figure of Merit (receiver dependent).
       unsigned char pvtMode;      ///< Type of PVT solution (receiver dependent).

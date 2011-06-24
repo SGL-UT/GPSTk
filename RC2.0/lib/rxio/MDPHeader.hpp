@@ -48,7 +48,7 @@
 #include <iostream>
 
 #include <Exception.hpp>
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
 
@@ -109,7 +109,7 @@ namespace gpstk
       void checkCRC(std::string str) throw();
 
       unsigned short id;              ///< Identifies this data's type.
-      gpstk::DayTime time;            ///< The time associated with this message
+      gpstk::CommonTime time;            ///< The time associated with this message
       unsigned short freshnessCount;  ///< A message counter
 
       // These items need to be mutable so they can be set when an object
