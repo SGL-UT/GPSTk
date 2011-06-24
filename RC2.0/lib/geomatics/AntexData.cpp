@@ -48,6 +48,9 @@
 #include "AntexStream.hpp"
 #include "StringUtils.hpp"
 #include "geometry.hpp"
+#include "TimeString.hpp"
+#include "CivilTime.hpp"
+#include "Epoch.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -93,11 +96,11 @@ namespace gpstk
    const vector<string> AntexData::SatelliteTypes(sattype,sattype+Nsattype);
 
    // ----------------------------------------------------------------------------
-   bool AntexData::isValid(DayTime& time) const throw()
+   bool AntexData::isValid(CommonTime& time) const throw()
    {
       if(!isValid())
          return false;
-      if(time == DayTime::BEGINNING_OF_TIME ||
+      if(time == CommonTime::BEGINNING_OF_TIME ||
             (!(valid & validFromValid) && !(valid & validUntilValid))) {
          return true;
       }
@@ -324,11 +327,11 @@ namespace gpstk
       }
       s << endl;
       s << "Valid FROM "
-         << (validFrom == DayTime::BEGINNING_OF_TIME ? " (all time) "
-              : validFrom.printf("%02m/%02d/%04Y %02H:%02M:%.7s"))
+         << (validFrom == CommonTime::BEGINNING_OF_TIME ? " (all time) "
+              : printTime(validFrom,"%02m/%02d/%04Y %02H:%02M:%.7s"))
          << " TO "
-         << (validUntil == DayTime::END_OF_TIME ? " (all time) "
-              : validUntil.printf("%02m/%02d/%04Y %02H:%02M:%.7s"))
+         << (validUntil == CommonTime::END_OF_TIME ? " (all time) "
+              : printTime(validUntil,"%02m/%02d/%04Y %02H:%02M:%.7s"))
          << endl;
       if(!sinexCode.empty())
          s << "SINEX code: " << sinexCode << endl;
@@ -746,8 +749,8 @@ namespace gpstk
          throwRecordOutOfOrder(sinexCodeValid|dataCommentValid|startFreqValid,label);
          stringValidUntil = line.substr(0,43);
          validUntil = parseTime(line);
-         if(validUntil == DayTime::BEGINNING_OF_TIME)
-            validUntil = DayTime::END_OF_TIME;
+         if(validUntil == CommonTime::BEGINNING_OF_TIME)
+            validUntil = CommonTime::END_OF_TIME;
          valid |= validUntilValid;
       }
       else if(label == sinexCodeString) {      // "SINEX CODE"
@@ -849,13 +852,13 @@ namespace gpstk
    catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
    }  // end AntexData::ParseDataRecord
 
-   DayTime AntexData::parseTime(const string& line) const
+   CommonTime AntexData::parseTime(const string& line) const
       throw(FFStreamError)
    {
       try
       {
          // default value
-         DayTime time = DayTime::BEGINNING_OF_TIME;
+         CommonTime time = CommonTime::BEGINNING_OF_TIME;
 
          if (line.substr(0,42) == string(42,' '))
             return time;
@@ -886,7 +889,7 @@ namespace gpstk
          min   = asInt(   line.substr(28, 4));
          sec   = asDouble(line.substr(30,13));
 
-         time.setYMDHMS(year, month, day, hour, min, sec);
+         time=CivilTime(year, month, day, hour, min, sec);
 
          return time;
       }
@@ -905,26 +908,26 @@ namespace gpstk
       }
    }
 
-   string AntexData::writeTime(const DayTime& dt) const
+   string AntexData::writeTime(const CommonTime& dt) const
       throw(StringException)
    {
-      if(dt == DayTime::BEGINNING_OF_TIME || dt == DayTime::END_OF_TIME)
+      if(dt == CommonTime::BEGINNING_OF_TIME || dt == CommonTime::END_OF_TIME)
          return string(43,' ');
 
       // --YYYY----MM----DD----HH----MMsssss.sssssss-----------------
       // 012345678901234567890123456789012345678901234567890123456789
       string line;
       line  = string(2,' ');
-      line += rightJustify(asString<short>(dt.year()),4);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).year),4);
       line += string(4,' ');
-      line += rightJustify(asString<short>(dt.month()),2);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).month),2);
       line += string(4,' ');
-      line += rightJustify(asString<short>(dt.day()),2);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).day),2);
       line += string(4,' ');
-      line += rightJustify(asString<short>(dt.hour()),2);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).hour),2);
       line += string(4,' ');
-      line += rightJustify(asString<short>(dt.minute()),2);
-      line += rightJustify(asString(dt.second(),7),13);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).minute),2);
+      line += rightJustify(asString(static_cast<CivilTime>(dt).second,7),13);
 
       return line;
    }

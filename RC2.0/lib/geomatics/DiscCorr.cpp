@@ -725,7 +725,7 @@ try {
    list<Segment>::iterator it;
 
    if(cfg(Debug) >= 2) {
-      DayTime CurrentTime;
+      CommonTime CurrentTime;
       //CurrentTime.setLocalTime();
       log << "======== Beg GPSTK Discontinuity Corrector " << GDCUnique
           << " ================================================" << endl;
@@ -809,7 +809,7 @@ try {
          dbias = fabs(spdvector[i].data[P1]-wl1*spdvector[i].data[L1]-biasL1);
          if(dbias > cfg(RawBiasLimit)) {
             if(cfg(Debug) >= 2) log << "BEFresetL1 " << GDCUnique
-               << " " << sat << " " << time(i).printf(outFormat)
+               << " " << sat << " " << printTime(time(i),outFormat)
                << " " << fixed << setprecision(3) << biasL1
                << " " << spdvector[i].data[P1] - wl1 * spdvector[i].data[L1] << endl;
             biasL1 = spdvector[i].data[P1] - wl1 * spdvector[i].data[L1];
@@ -818,7 +818,7 @@ try {
          dbias = fabs(spdvector[i].data[P2]-wl2*spdvector[i].data[L2]-biasL2);
          if(dbias > cfg(RawBiasLimit)) {
             if(cfg(Debug) >= 2) log << "BEFresetL2 " << GDCUnique
-               << " " << sat << " " << time(i).printf(outFormat)
+               << " " << sat << " " << printTime(time(i),outFormat)
                << " " << fixed << setprecision(3) << biasL2
                << " " << spdvector[i].data[P2] - wl2 * spdvector[i].data[L2] << endl;
             biasL2 = spdvector[i].data[P2] - wl2 * spdvector[i].data[L2];
@@ -925,7 +925,7 @@ try {
       if(cfg(Debug) >= 1 && it->npts >= int(cfg(MinPts)))
          log << "WLSIG " << GDCUnique << " " << sat
             << " " << it->nseg
-            << " " << time(it->nbeg).printf(outFormat)
+            << " " << printTime(time(it->nbeg),outFormat)
             << fixed << setprecision(3)
             << " " << it->WLStats.StdDev()
             << " " << it->WLStats.Average()
@@ -1043,7 +1043,7 @@ try {
                log << "Warning - found an obvious slip, "
                   << "but marking BAD a point already marked with slip "
                   << GDCUnique << " " << sat
-                  << " " << time(j).printf(outFormat) << " " << j << endl;
+                  << " " << printTime(time(j),outFormat) << " " << j << endl;
             spdvector[j].flag = BAD;             // mark all points between as bad
             learn[string("points deleted: ") + which + string(" slip outlier")]++;
          }
@@ -1240,7 +1240,7 @@ try {
          if(cfg(Debug) >= 6) {
             log << "DSCWLR " << GDCUnique << " " << sat
             << " " << it->nseg
-            << " " << time(i).printf(outFormat)
+            << " " << printTime(time(i),outFormat)
             << fixed << setprecision(3)
             << " " << setw(3) << spdvector[i].flag
             << " " << setw(13) << spdvector[j].data[A1] // wlbias
@@ -1367,7 +1367,7 @@ try {
       // dump the stats
       if(cfg(Debug) >= 6) log << "WLS " << GDCUnique
          << " " << sat << " " << it->nseg
-         << " " << time(i).printf(outFormat)
+         << " " << printTime(time(i),outFormat)
          << fixed << setprecision(3)
          << " " << setw(3) << pastStats.N()
          << " " << setw(7) << pastStats.Average()
@@ -1463,7 +1463,7 @@ try {
             // TD must do something here ... 
             if(cfg(Debug) >= 6) log << "too near end " << GDCUnique
                << " " << i << " " << nok << " " << it->npts-nok
-               << " " << time(i).printf(outFormat)
+               << " " << printTime(time(i),outFormat)
                << " " << spdvector[i].data[A1] << " " << spdvector[i].data[A2]
                << endl;
          }
@@ -1537,7 +1537,7 @@ try {
       if(cfg(Debug) >= 6) oss << "WLslip " << GDCUnique
          << " " << sat << " " << setw(2) << it->nseg
          << " " << setw(3) << i
-         << " " << time(i).printf(outFormat)
+         << " " << printTime(time(i),outFormat)
          //<< " " << it->npts << "pt"
          << fixed << setprecision(2)
          << " test=" << test << " lim=" << lim
@@ -1788,7 +1788,7 @@ try {
    //if(fabs(dwl-nwl) > cfg(WLFixFrac)) break;
 
    if(cfg(Debug) >= 6) log << "Fix " << GDCUnique << " " << sat << " " << GDCUniqueFix
-      << " WL " << time(right->nbeg).printf(outFormat)
+      << " WL " << printTime(time(right->nbeg),outFormat)
       << " " << nwl           // put integer fix after time, all 'Fix'
       << " " << left->nseg << "-" << right->nseg
       << fixed << setprecision(2)
@@ -1912,7 +1912,7 @@ try {
    if(fabs(n1+nadj-dnGFR) > 10.*(Rstats.StdDev()+Lstats.StdDev())) {
       if(cfg(Debug) >= 6)
          log << "GFRadjust " << GDCUnique << " " << sat << " " << GDCUniqueFix
-         << " GF " << time(right->nbeg).printf(outFormat)
+         << " GF " << printTime(time(right->nbeg),outFormat)
          << fixed << setprecision(2)
          << " dbias(GFR): " << dnGFR
          << " n1+nadj: " << n1+nadj;
@@ -1926,7 +1926,7 @@ try {
    // output result
    if(cfg(Debug) >= 6) {
       log << "Fix " << GDCUnique << " " << sat << " " << GDCUniqueFix
-      << " GF " << time(right->nbeg).printf(outFormat)
+      << " GF " << printTime(time(right->nbeg),outFormat)
       << " " << nadj           // put integer fix after time, all 'Fix'
       << fixed << setprecision(2)
       << " dbias: " << right->bias2 - left->bias2
@@ -2104,7 +2104,7 @@ try {
       if(!(spdvector[i].flag & OK)) continue;
       log << "GFE " << GDCUnique << " " << sat
          << " " << GDCUniqueFix
-         << " " << time(i).printf(outFormat)
+         << " " << printTime(time(i),outFormat)
          << " " << setw(2) << spdvector[i].flag << fixed << setprecision(3);
       for(k=0; k<3; k++) log << " " << spdvector[i].data[L2]
             - (i < right->nbeg ? left->bias2-n1-(nadj+k-1) : right->bias2)
@@ -2485,7 +2485,7 @@ try {
    ostringstream oss;
    if(cfg(Debug) >= 6) oss << "GFoutlier " << GDCUnique
       << " " << sat << " " << setw(3) << inew
-      << " " << time(inew).printf(outFormat)
+      << " " << printTime(time(inew),outFormat)
       << fixed << setprecision(3)
       << " p,fave=" << fabs(pmag) << "," << fabs(fmag)
       << " snr=" << fabs(pmag)/var <<","<< fabs(fmag)/var;
@@ -2547,7 +2547,7 @@ try {
 
    if(cfg(Debug) >= 6) log << "GFS " << GDCUnique
       << " " << sat << " " << nseg
-      << " " << time(i).printf(outFormat)
+      << " " << printTime(time(i),outFormat)
       //<< " P( " << setw(3) << pastIn[0]            // don't print this...
       //<< " " << setw(3) << pastIn[1]
       //<< " " << setw(3) << pastIn[2]
@@ -2598,7 +2598,7 @@ try {
       if(cfg(Debug) >= 6) oss << "GFslip " << GDCUnique
          << " " << sat << " " << nseg
          << " " << setw(3) << i
-         << " " << time(i).printf(outFormat) << fixed << setprecision(3)
+         << " " << printTime(time(i),outFormat) << fixed << setprecision(3)
          << " mag=" << mag << " snr=" << snr;      // no endl
 
       // 0. if WL slip here - ...? 
@@ -2767,7 +2767,7 @@ try {
 
          if(cfg(Debug) >= 7) log << "CHECK " << GDCUnique << " " << sat
             << " " << i
-            << " " << time(i).printf(outFormat)
+            << " " << printTime(time(i),outFormat)
             << fixed << setprecision(3)
             << "  " << pastStats.N()
             //<< " " << pastStats.Average()
@@ -2846,9 +2846,9 @@ try {
             if(i-ilast > 3) stst1 << "+";
             stst1 << sat << ",";
             if(cfg(OutputGPSTime))
-               stst1 << time(ilast+1).printf("%F,%.3g");
+               stst1 << printTime(time(ilast+1),"%F,%.3g");
             else
-               stst1 << time(ilast+1).printf("%Y,%m,%d,%H,%M,%f");
+               stst1 << printTime(time(ilast+1),"%Y,%m,%d,%H,%M,%f");
             if(i-ilast > 3) stst1 << " # begin delete of "
                   << asString(i+1-ilast) << " points";
             editCmds.push_back(stst1.str());
@@ -2859,9 +2859,9 @@ try {
             if(i-ilast > 3) stst2 << "-";
             stst2 << sat << ",";
             if(cfg(OutputGPSTime))
-               stst2 << time(i-1).printf("%F,%.3g");
+               stst2 << printTime(time(i-1),"%F,%.3g");
             else
-               stst2 << time(i-1).printf("%Y,%m,%d,%H,%M,%f");
+               stst2 << printTime(time(i-1),"%Y,%m,%d,%H,%M,%f");
             if(i-ilast > 3) stst2 << " # end delete of "
                << asString(i+1-ilast) << " points";
             editCmds.push_back(stst2.str());
@@ -2871,9 +2871,9 @@ try {
             ostringstream stst;
             stst << "-DS" << sat << ",";
             if(cfg(OutputGPSTime))
-               stst << time(i-1).printf("%F,%.3g");
+               stst << printTime(time(i-1),"%F,%.3g");
             else
-               stst << time(i-1).printf("%Y,%m,%d,%H,%M,%f");
+               stst << printTime(time(i-1),"%Y,%m,%d,%H,%M,%f");
             editCmds.push_back(stst.str());
          }
 
@@ -2894,9 +2894,9 @@ try {
             ostringstream stst;
             stst << "-BD+" << sat << ",L1,";
             if(cfg(OutputGPSTime))
-               stst << time(jt->index).printf("%F,%.3g");
+               stst << printTime(time(jt->index),"%F,%.3g");
             else
-               stst << time(jt->index).printf("%Y,%m,%d,%H,%M,%f");
+               stst << printTime(time(jt->index),"%Y,%m,%d,%H,%M,%f");
             stst << "," << N1-prevN1;
             if(!jt->msg.empty()) stst << " # " << jt->msg;
             //stst << " # WL: " << jt->NWL << " N1: " << jt->N1; //temp
@@ -2906,9 +2906,9 @@ try {
             ostringstream stst;
             stst << "-BD+" << sat << ",L2,";
             if(cfg(OutputGPSTime))
-               stst << time(jt->index).printf("%F,%.3g");
+               stst << printTime(time(jt->index),"%F,%.3g");
             else
-               stst << time(jt->index).printf("%Y,%m,%d,%H,%M,%f");
+               stst << printTime(time(jt->index),"%Y,%m,%d,%H,%M,%f");
             stst << "," << N2-prevN2;
             if(!jt->msg.empty()) stst << " # " << jt->msg;
             editCmds.push_back(stst.str());
@@ -3047,13 +3047,13 @@ try {
       if(cfg(Debug) > 0) oss << "GDC# " << setw(2) << GDCUnique << ", SAT " << sat
          << ", Pts: " << setw(4) << n << " total " << setw(4) << ngood
          << " good " << fixed << setprecision(1) << setw(5) << percent << "%"
-         << ", start " << firstTime.printf(outFormat)
+         << ", start " << printTime(firstTime,outFormat)
          << endl;
    }
 
    if(iret) {
       oss << "GDC " << setw(3) << GDCUnique << " " << sat
-         << " " << firstTime.printf(outFormat)
+         << " " << printTime(firstTime,outFormat)
          << " is returning with error code: "
          << (iret == NoData ? "insufficient data" :
             (iret == Singular ? "singularity" :
@@ -3104,7 +3104,7 @@ try {
    if(cfg(Debug) >= 6)
       log << "SEG " << GDCUnique << " " << sat
          << " " << msg
-         << " " << time(ibeg).printf(outFormat)
+         << " " << printTime(time(ibeg),outFormat)
          << " " << s.nbeg << " - " << s.nend
          << " biases " << fixed << setprecision(3) << s.bias1 << " " << s.bias2
          << endl;
@@ -3154,8 +3154,8 @@ try {
          << " #" << setw(2) << it->nseg << ": "
          << setw(4) << it->npts << "/" << setw(4) << i << " pts, # "
          << setw(4) << it->nbeg << "-" << setw(4) << it->nend
-         << " (" << time(it->nbeg).printf(outFormat)
-         << " - " << time(it->nend).printf(outFormat)
+         << " (" << printTime(time(it->nbeg),outFormat)
+         << " - " << printTime(time(it->nend),outFormat)
          << ")";
 
       if(it->npts > 0) {
@@ -3186,7 +3186,7 @@ try {
          //if(!(spdvector[i].flag & OK)) continue;  //dfplot ignores bad data
 
          log << "DSC" << label << " " << GDCUnique << " " << sat << " " << it->nseg
-            << " " << time(i).printf(outFormat)
+            << " " << printTime(time(i),outFormat)
             << " " << setw(3) << spdvector[i].flag
             << fixed << setprecision(3)
             << " " << setw(13) << spdvector[i].data[L1] - it->bias2 //biasgf  //temp
@@ -3220,7 +3220,7 @@ try {
       << GDCUnique << " " << sat << " " << it->nseg
       << " pts " << it->npts
       << " indexes " << it->nbeg << " - " << it->nend
-      << " start " << firstTime.printf(outFormat)
+      << " start " << printTime(firstTime,outFormat)
       << " : " << msg
       << endl;
 
