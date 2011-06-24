@@ -38,7 +38,7 @@
 #include "ValarrayUtils.hpp"
 #include "PRSolution.hpp"
 #include "IonoModel.hpp"
-
+#include "Epoch.hpp"
 #include "ExtractPC.hpp"
 
 #include "RinexObsStream.hpp"
@@ -191,8 +191,8 @@ namespace gpstk
       validAzEl = true;
       long satEpochIdx = 0; // size_t satEpochIdx=0;
          
-      std::map<SatID, DayTime> lastObsTime;
-      std::map<SatID, DayTime>::const_iterator it2;
+      std::map<SatID, CommonTime> lastObsTime;
+      std::map<SatID, CommonTime>::const_iterator it2;
       std::map<SatID, long> currPass;
      
       long highestPass = 0;
@@ -332,7 +332,7 @@ namespace gpstk
 
       valarray<bool> keepList = !strikeList;
 
-      valarray<DayTime> newEpoch = epoch[keepList];
+      valarray<CommonTime> newEpoch = epoch[keepList];
       size_t newObsEpochCount = newEpoch.size();
       
       epoch.resize(newObsEpochCount);
@@ -387,7 +387,7 @@ namespace gpstk
       using namespace std;
       
       valarray<bool> ptest = (pass==passNo);
-      valarray<DayTime> pepochs = epoch[ptest];
+      valarray<CommonTime> pepochs = epoch[ptest];
       double length =  pepochs[pepochs.size()-1] - pepochs[0];
       return length;
    }
