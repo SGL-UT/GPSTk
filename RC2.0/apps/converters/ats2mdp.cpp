@@ -42,7 +42,7 @@
 #include <list>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
