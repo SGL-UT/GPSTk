@@ -40,8 +40,8 @@
 #include <list>
 #include <map>
 #include <vector>
-
-#include "DayTime.hpp"
+#include "TimeString.hpp"
+#include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
@@ -138,9 +138,9 @@ public:
       }      
       
       // week option (otherwise assume data is from this week)
-      DayTime now;
-      time.week = now.GPSfullweek();
-      time.sow = now.GPSsecond();
+      CommonTime now;
+      time.week = static_cast<GPSWeekSecond>(now).week;
+      time.sow = static_cast<GPSWeekSecond>(now).sow;
       if (weekOpt.getCount())
       {
          time.week = StringUtils::asInt(weekOpt.getValue()[0]);
@@ -148,7 +148,7 @@ public:
       } 
       if (debugLevel || verboseLevel)
       	cout << "First guess for time is [" 
-      	     << time.printf("%F, %.1g") 
+      	     << printTime(time,"%F, %.1g") 
       	     << "] (week, sow)\n";
 
 		// time offset option
@@ -258,9 +258,9 @@ protected:
             	continue;
             	
             // use the time set in the PBEN as a hint, resolve time exactly
-            DayTime hintTime = DayTime(time.week, time.sow);
-            DayTime tempTime = hintTime;
-   	   	double  sow1     = tempTime.GPSsecond();
+            CommonTime hintTime = CommonTime(time.week, time.sow);
+            CommonTime tempTime = hintTime;
+   	   	double  sow1     = static_cast<GPSWeekSecond>(tempTime).sow;
             int     sow2     = static_cast<int>(sow1/1800);
             double  sow3     = static_cast<double>(sow2 * 1800);
       		double  sow_mben = 0.05 * mben.seq;
@@ -270,7 +270,7 @@ protected:
  		        sow4 += 1800;
  		     	
  		     	// this is the time for this epoch
- 		     	tempTime.setGPS(tempTime.GPSfullweek(), sow4);
+ 		     	tempTime=GPSWeekSecond(static_cast<GPSWeekSecond>(tempTime).week, sow4);
 
 				// this is the satellite ID for this PRN
 				SatID satID(mben.svprn,SatID::systemGPS);
@@ -331,10 +331,10 @@ protected:
 				{
 					// initial filter result will be the initial iono rate value
 					TimePhaseVec tpVec = (*iter1).second;
-					DayTime t0 = tpVec[0].first;
-					DayTime t1 = tpVec[1].first;
+					CommonTime t0 = tpVec[0].first;
+					CommonTime t1 = tpVec[1].first;
 					// FIX should diff the MJDs, then convert to seconds
-					double deltaT = t1.GPSsow() - t0.GPSsow();
+					double deltaT = static_cast<GPSWeekSecond>(t1).sow - static_cast<GPSWeekSecond>(t0).sow;
 					double yPrevL1 = (tpVec[1].second.first-tpVec[0].second.first)/
 											deltaT;  // cycles/sec
 					double yPrevL2 = (tpVec[1].second.second-tpVec[0].second.second)/
@@ -348,8 +348,8 @@ protected:
 						double xCurrL2 = tpVec[index].second.second;   // L2, cycles
 						double xPrevL1 = tpVec[index-1].second.first;  // L1, cycles
 						double xPrevL2 = tpVec[index-1].second.second; // L2, cycles					
-						double deltaT  = tpVec[index].first.GPSsow() - 
-						                 tpVec[index-1].first.GPSsow(); // seconds
+						double deltaT  = static_cast<GPSWeekSecond>(tpVec[index].first).sow - 
+						                 static_cast<GPSWeekSecond>(tpVec[index-1].first).sow; // seconds
 						yCurrL1 = a*((xCurrL1-xPrevL1)/deltaT)+(1-a)*yPrevL1;
 						yCurrL2 = a*((xCurrL2-xPrevL2)/deltaT)+(1-a)*yPrevL2; //cycl/s
 					
@@ -395,11 +395,11 @@ protected:
 					// use the previous phase values to computer iono error rate
 					int lastIndex = (*iter).second.size() - 1;				
 					TimePhasePair lastTPPair = (*iter).second[lastIndex];
-					DayTime lastTime = lastTPPair.first;
+					CommonTime lastTime = lastTPPair.first;
 					PhasePair lastPPair = lastTPPair.second;
 					double dL1 = phaseL1 - lastPPair.first;             // cycles
 					double dL2 = phaseL2 - lastPPair.second;            // cycles
-					double dt  = tempTime.GPSsow() - lastTime.GPSsow(); // sec
+					double dt  = static_cast<GPSWeekSecond>(tempTime).sow - static_cast<GPSWeekSecond>(lastTime).sow; // sec
 					
 					double x1 = (dL1/dt) * gpstk::L1_WAVELENGTH;        // m/s
             	double x2 = (dL2/dt) * gpstk::L2_WAVELENGTH;        // m/s
@@ -488,15 +488,15 @@ protected:
 
 				// if we have gotten eph data for this SV and time, we can 
 				// find the position. If so, then output results for this epoch
-				DayTime xvtTime = tempTime + offsetSec;
+				CommonTime xvtTime = tempTime + offsetSec;
 				try
 				{	
 					// get poisition of SV, possibly at offset time
-            	DayTime xvtTime = tempTime + offsetSec;
+            	CommonTime xvtTime = tempTime + offsetSec;
                Xvt xvt = gpsEphStore.getXvt(satID,xvtTime);
  					
 					// ouput data
-					output << xvtTime.printf("%4Y/%03j/%02H:%02M:%04.1f")
+					output << printTime( xvtTime,"%4Y/%03j/%02H:%02M:%04.1f")
                		<< fixed << right
                   	<< ", " << setw(8) << offsetSec
                  		<< ", " << setw(2) << (int)mben.svprn
@@ -542,7 +542,7 @@ protected:
                if (sow>FULLWEEK || sow<0)
                   continue;
                
-               DayTime t = DayTime(time.week, nav.getHOWTime()) - 6;
+               CommonTime t = CommonTime(time.week, nav.getHOWTime()) - 6;
                nav.freshnessCount = fc++;
                nav.time = t;
                 				
@@ -580,20 +580,20 @@ protected:
 						cout << "Bad SF ID, sfid > 3\n";
          			return;
 					}
-      			short week = nav.time.GPSfullweek();
+      			short week = static_cast<GPSWeekSecond>(nav.time).week;
 
 	      		sow = nav.getHOWTime();
-   	   		if (sow > DayTime::FULLWEEK)
+   	   		if (sow > FULLWEEK)
       			{
         		 		if (debugLevel)
-            			cout << "Bad week, sow > DayTime::FULLWEEK\n";
+            			cout << "Bad week, sow > CommonTime::FULLWEEK\n";
          			return;
       			}
 
       			if (debugLevel>2)
          			nav.dump(cout);
          		
-      			DayTime howTime(week, sow);
+      			CommonTime howTime(week, sow);
       			NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       			ephData[ni] = nav;
 	      		ephPageStore[ni][sfid] = nav;
@@ -624,7 +624,7 @@ private:
    GPSEphemerisStore gpsEphStore;
    bool firstEph;
    RangeCode rangeCode;
-   DayTime lastTime;
+   CommonTime lastTime;
    int numPoints;
    
    typedef pair<RangeCode, CarrierCode> RangeCarrierPair;
@@ -634,7 +634,7 @@ private:
    map<NavIndex, EphemerisPages> ephPageStore;
    
    typedef pair<double, double> PhasePair;
-   typedef pair<DayTime, PhasePair> TimePhasePair;
+   typedef pair<CommonTime, PhasePair> TimePhasePair;
    typedef pair<double, double> RangePair;
    typedef vector<TimePhasePair> TimePhaseVec;
    typedef vector<RangePair> RangePairVec;

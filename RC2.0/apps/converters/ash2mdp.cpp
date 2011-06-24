@@ -43,9 +43,8 @@
 #include <map>
 
 #include "TimeString.hpp"
-
+#include "Epoch.hpp"
 #include "CommonTime.hpp"
-#include "DayTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
@@ -257,16 +256,23 @@ protected:
                EngEphemeris engEph;
                if (makeEngEphemeris(engEph, ephPageStore))
                {
+                  
                   int week10 = 0x3ff & engEph.getFullWeek();
-                  DayTime now;
-                  time.week = (now.GPSfullweek() & ~0x3ff) | week10;
+                  //DayTime now;
+                  Epoch now;
+                  now.setLocalTime();
+                  GPSWeekSecond gs(now);
+                  //time.week = (now.GPSfullweek() & ~0x3ff) | week10;
+                  time.week = (gs.week & ~0x3ff) | week10;
                   if (debugLevel)
                      cout << "week is " << time.week << endl;
-                  knowWeek=true;
+                  knowWeek=true; 
                }
                else
                   continue;
             }
+
+
 
             sf.carrier = ccL1;
             sf.range = rcCA;
