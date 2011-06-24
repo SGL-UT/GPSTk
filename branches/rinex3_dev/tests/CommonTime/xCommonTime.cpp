@@ -97,30 +97,30 @@ void xCommonTime :: setTest (void)
 
 void xCommonTime :: arithmiticTest (void)
 {
-	CommonTime Arith1(700000,0,0.); /// CommonTime Arith1(700000,1,0.); /// original statements
-	CommonTime Arith2(Arith1);      /// CommonTime Arith2(700000,0,0.); /// not sure which one is best?
+    CommonTime Arith1(700000,1,0.);
+    CommonTime Arith2(700000,0,0.);
 	double day;
 	long day2;
 	double sod;
 	double fsod;
 	//- between two CommonTimes
-	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(1.,Arith1-Arith2);
 
 	//Add Seconds with +
 	Arith2 = Arith2 + 1;
-	CPPUNIT_ASSERT_EQUAL(-1.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
 
 	//Subtract seconds with -
 	Arith2 = Arith2 - 1;
-	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(1.,Arith1-Arith2);
 
 	//Add seconds with +=
 	Arith2 += 1;
-	CPPUNIT_ASSERT_EQUAL(-1.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
 
 	//Subtract seconds with -=
 	Arith2 -= 1;
-	CPPUNIT_ASSERT_EQUAL(0.,Arith1-Arith2);
+	CPPUNIT_ASSERT_EQUAL(1.,Arith1-Arith2);
 
 	//Add days with addDays
 	Arith2.addDays((long)1);
@@ -146,5 +146,7 @@ void xCommonTime :: arithmiticTest (void)
 	Arith2.addMilliseconds((long)1);
 	Arith2.addMilliseconds((long)-1);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(sod,Arith2.getSecondOfDay(),1e-6);
+
+
 }
 
