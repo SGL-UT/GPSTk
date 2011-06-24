@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
@@ -36,6 +36,9 @@ class xANSITime: public CPPUNIT_NS :: TestFixture
 	CPPUNIT_TEST_SUITE (xANSITime);
 	CPPUNIT_TEST (setFromInfoTest);
 	CPPUNIT_TEST (operatorTest);
+	CPPUNIT_TEST (resetTest);
+	CPPUNIT_TEST (timeSystemTest);
+	CPPUNIT_TEST (printfTest);
 	CPPUNIT_TEST_SUITE_END ();
 
 	public:
@@ -44,7 +47,9 @@ class xANSITime: public CPPUNIT_NS :: TestFixture
 	protected:
 		void operatorTest (void);
 		void setFromInfoTest (void);
-
+        void resetTest (void);
+		void timeSystemTest (void);
+		void printfTest (void);
 	private:
 
 };

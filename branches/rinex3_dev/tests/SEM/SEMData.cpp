@@ -120,7 +120,7 @@ namespace gpstk
       URAnum = (short) asInt(line);
 
 
-      // Fifth line - Eccentricity, Inclinatin Offset, and Rate of Right Ascension
+      // Fifth line - Eccentricity, Inclination Offset, and Rate of Right Ascension
       strm.formattedGetLine(line, true);
       ecc = asDouble(line.substr(0,23));
       i_offset = asDouble(line.substr(24,47));
@@ -166,23 +166,23 @@ namespace gpstk
 
    void SEMData::dump(ostream& s) const
    {
-      std::cout << "PRN =" << PRN << std::endl;
-      std::cout << "SVNnum =" << SVNnum << std::endl;
-      std::cout << "URAnum =" << URAnum << std::endl;
-      std::cout << "ecc =" << ecc << std::endl;
-      std::cout << "i_offset =" << i_offset << std::endl;
-      std::cout << "OMEGAdot =" << OMEGAdot << std::endl;
-      std::cout << "Ahalf =" << Ahalf << std::endl;
-      std::cout << "OMEGA0 =" << OMEGA0 << std::endl;
-      std::cout << "w =" << w << std::endl;
-      std::cout << "M0 =" << M0 << std::endl;
-      std::cout << "AF0 =" << AF0 << std::endl;
-      std::cout << "AF1 =" << AF1 << std::endl;
-      std::cout << "SV_health =" << SV_health << std::endl;
-      std::cout << "satConfig =" << satConfig << std::endl;
-      std::cout << "xmit_time =" << xmit_time << std::endl;
-      std::cout << "week" << week << std::endl;
-      std::cout << "toa" << Toa << std::endl;
+      std::cout << "PRN = " << PRN << std::endl;
+      std::cout << "SVNnum = " << SVNnum << std::endl;
+      std::cout << "URAnum = " << URAnum << std::endl;
+      std::cout << "ecc = " << ecc << std::endl;
+      std::cout << "i_offset = " << i_offset << std::endl;
+      std::cout << "OMEGAdot = " << OMEGAdot << std::endl;
+      std::cout << "Ahalf = " << Ahalf << std::endl;
+      std::cout << "OMEGA0 = " << OMEGA0 << std::endl;
+      std::cout << "w = " << w << std::endl;
+      std::cout << "M0 = " << M0 << std::endl;
+      std::cout << "AF0 = " << AF0 << std::endl;
+      std::cout << "AF1 = " << AF1 << std::endl;
+      std::cout << "SV_health = " << SV_health << std::endl;
+      std::cout << "satConfig = " << satConfig << std::endl;
+      std::cout << "xmit_time = " << xmit_time << std::endl;
+      std::cout << "week = " << week << std::endl;
+      std::cout << "toa = " << Toa << std::endl;
    }
 
    SEMData::operator AlmOrbit() const
