@@ -38,7 +38,7 @@
 #include<iostream>
 
 #include "ValarrayUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "RinexEphemerisStore.hpp"
 #include "Exception.hpp" 
 #include "Expression.hpp"
@@ -132,7 +132,7 @@ namespace gpstk
       double& operator() (size_t r, size_t c)
       {  return observation[r*numObsTypes + c]; }
 
-      std::valarray<DayTime>  epoch;
+      std::valarray<CommonTime>  epoch;
       std::valarray<SatID>    satellite;
       std::valarray<double>   observation;
       std::valarray<bool>     lli;

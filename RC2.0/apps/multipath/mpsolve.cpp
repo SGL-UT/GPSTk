@@ -33,7 +33,7 @@
 #include "ValarrayUtils.hpp"
 #include "ObsArray.hpp"
 #include "YDSTime.hpp"
-
+#include "GPSWeekSecond.hpp"
 #include "Matrix.hpp"
 #include "MatrixFunctors.hpp"
 #include "MatrixOperators.hpp"
@@ -562,8 +562,8 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
       {
          if (oa.validAzEl[i])
          {
-            ostr << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
-            ostr << setprecision(9) << oa.epoch[i].GPSsow() << " ";
+            ostr << setprecision(4) << static_cast<GPSWeekSecond>(oa.epoch[i]).week << " ";
+            ostr << setprecision(9) << static_cast<GPSWeekSecond>(oa.epoch[i]).sow << " ";
             ostr << oa.satellite[i].id << " ";
             ostr << (int) oa.satellite[i].system << " ";
             ostr << oa.pass[i] << " ";
