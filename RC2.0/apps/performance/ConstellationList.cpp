@@ -181,7 +181,7 @@ void ConstellationList::process()
 
    int DOY = StringUtils::asInt( DOYOption.getValue().front() );
 
-   CommonTime dt = CommonTime( (short) year, (short) DOY, (CommonTime::SEC_DAY / 2));
+   CommonTime dt = CommonTime( (short) year, (short) DOY, (SEC_PER_DAY / 2));
 
       // Try some samples
    ConstellationDefinition cd = cs.findCD( dt );

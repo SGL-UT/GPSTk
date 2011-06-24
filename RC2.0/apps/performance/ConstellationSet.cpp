@@ -47,6 +47,10 @@
 
    // Project Headers
 #include "ConstellationSet.hpp"
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
+#include "Exception.hpp"
+#include "CivilTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -111,7 +115,7 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) c
          throw(NoConstellationFound)
 {
    CommonTime localDT = dt;
-   localDT.setSecOfDay(  (CommonTime::SEC_DAY/2) );   // Set to noon to match CDs
+   localDT=static_cast<YDSTime>((SEC_PER_DAY/2));   // Set to noon to match CDs
    
       // Best case (hopefully nominal) is that there is a definition
       // available for the date in question.
@@ -130,12 +134,12 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) c
          // If not, start at the day of interest and back up until we
          // find a definition or hit the earliest definition
       bool done = false;
-      localDT -= CommonTime::SEC_DAY;
+      localDT -= SEC_PER_DAY;
       while (!done && localDT > getEarliestDate() )
       {
          ci = cdMap.find(localDT);
          if (ci!=cdMap.end()) done = true;
-         localDT -= CommonTime::SEC_DAY;
+         localDT -= SEC_PER_DAY;
       }
          // Did not find one before reaching the "head" of the list
       if (!done)
@@ -226,11 +230,11 @@ gpstk::CommonTime ConstellationSet::parseDate(string date)
    try
    {
       //cout << dateString << endl;
-      dt.setToString(dateString, "%d %b %Y");
-      dt.setSecOfDay(  (CommonTime::SEC_DAY/2) );
+      static_cast<Epoch>(dt).scanf(dateString, "%d %b %Y");
+      dt=static_cast<YDSTime>(  (SEC_PER_DAY/2) );
       return dt;
    }
-   catch(CommonTime::CommonTimeException exc)
+   catch(Exception exc)
    {
       string s = "Invalid date: '" + dateString + "'";
       //cout << s << endl;
@@ -304,11 +308,11 @@ int ConstellationSet::loadFileARL( const std::string filename )
          {
             try
             {
-               tempDT.setYMDHMS( (short) y, (short)m, (short)d, 12,0,0.0);
+               tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
                cd.setEffectiveTime( tempDT );
                inDefinition = true;
             }
-            catch(CommonTime::CommonTimeException e)
+            catch(Exception e)
             {
                // do nothing - ACTUALLY the fact that we did NOT
                // set inDefinition is the action.
@@ -375,7 +379,7 @@ int ConstellationSet::loadFileCSV( const std::string filename )
    
    std::string temp;
    CommonTime tempDT;
-   CommonTime testDT = CommonTime(2008,1,1,12,0,0.0);
+   CommonTime testDT = CivilTime(2008,1,1,12,0,0.0);
    string whiteSpace = " \t\n\r";
    char comma = ',';
    
@@ -408,10 +412,10 @@ int ConstellationSet::loadFileCSV( const std::string filename )
       {
          try
          {
-            tempDT.setYMDHMS( (short) y, (short)m, (short)d, 12,0,0.0);
+            tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
             cd.setEffectiveTime( tempDT );
          }
-         catch(CommonTime::CommonTimeException e)
+         catch(Exception e)
          {
             // Did not successful parse a date, so 
             // reject the line.

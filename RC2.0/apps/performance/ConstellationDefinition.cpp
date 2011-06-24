@@ -45,6 +45,8 @@
 
    // Library Headers
 #include "icd_gps_constants.hpp"
+#include "TimeString.hpp"
+#include "YDSTime.cpp"
 
    // Project Headers
 #include "ConstellationDefinition.hpp"
@@ -119,7 +121,7 @@ void ConstellationDefinition::setPlaneSlot( const SatID SV, const SlotDef sd )
 void ConstellationDefinition::setEffectiveTime( const gpstk::CommonTime dt )
 {
    effectiveDate = dt;
-   effectiveDate.setSecOfDay( (CommonTime::SEC_DAY/2) );
+   effectiveDate=YDSTime(static_cast<YDSTime>(SEC_PER_DAY/2).sod);
 }
 
 void ConstellationDefinition::setSVNforPRN( const SatID SV, const int SVN )
@@ -138,7 +140,7 @@ void ConstellationDefinition::dump( FILE* fp ) const
 {
    char planes[] = { 'A', 'B', 'C', 'D', 'E', 'F' };
    fprintf(fp, "Constellation Definition for %s\n",
-               effectiveDate.printf("%02m/%02d/%02y, DOY %03j, GPS Wk %F, DOW %w").c_str());
+               printTime(effectiveDate,"%02m/%02d/%02y, DOY %03j, GPS Wk %F, DOW %w").c_str());
    fprintf(fp, "Plane   1   2   3   4   Extra\n");
    for (int i=0;i<6;++i)
    {
