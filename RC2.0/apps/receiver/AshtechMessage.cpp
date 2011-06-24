@@ -46,14 +46,16 @@
 #include <iostream>
 #include <iomanip>
 #include <string.h>
-
+#include "Epoch.hpp"
 #include "BinUtils.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
 #include "icd_gps_constants.hpp"
 #include "AshtechMessage.hpp"
+#include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
 
 static bool debug=false;
 
@@ -135,15 +137,15 @@ namespace gpstk
       return result;
    }
 
-   DayTime AshtechMessage::getEpoch(const DayTime& prevTime) const
+   CommonTime AshtechMessage::getEpoch(const CommonTime& prevTime) const
    {
-      short oldweek = prevTime.GPSfullweek();
+      short oldweek = static_cast<GPSWeekSecond>(prevTime).week;
       short newweek = oldweek;
       
-      double oldsow = prevTime.GPSsecond();
+      double oldsow = static_cast<GPSWeekSecond>(prevTime).sow;
       double newsow;
 
-      DayTime thisTime(prevTime);
+      CommonTime thisTime(prevTime);
 
       if ((msgType == PBEN)&&(msgFormat == ASCII))
       {
@@ -151,10 +153,10 @@ namespace gpstk
             StringUtils::asDouble(StringUtils::word(buffer,1,','));
 
             // A test for week rollover
-         if ((newsow+6*DayTime::SEC_DAY)<oldsow)
+         if ((newsow+6*SEC_PER_DAY)<oldsow)
             newweek++;
 
-         thisTime = DayTime(newweek, newsow);
+         thisTime = CommonTime(newweek, newsow);
       }
 
       if ((msgType == MPC)&&(msgFormat == ASCII))
@@ -165,7 +167,7 @@ namespace gpstk
          while (seqDiff > (1800*50/2))
 		seqDiff -= 1800*50;
 
-         thisTime.addMilliSeconds(50 * seqDiff);
+         static_cast<Epoch>(thisTime).addMilliSeconds(50 * seqDiff);
       }
 
       return thisTime;
@@ -195,12 +197,12 @@ namespace gpstk
    RinexObsData 
       AshtechMessage::convertToRinexObsData(
             const std::list<AshtechMessage> obsMsgs, 
-            const DayTime& recentEpoch) 
+            const CommonTime& recentEpoch) 
    throw(gpstk::Exception)
    {
       RinexObsData rod;
          // TODO: Should check to make sure this is really a PBEN
-      DayTime epoch;
+      CommonTime epoch;
       std::list<AshtechMessage>::const_iterator first = obsMsgs.begin();
       epoch = (*first).getEpoch(recentEpoch);
 
@@ -267,10 +269,10 @@ namespace gpstk
       return rod;   
    }
 
-   int AshtechMessage::calculateSequenceNumber(const DayTime& t)
+   int AshtechMessage::calculateSequenceNumber(const CommonTime& t)
    {
          // TODO: Throw if not a MBEN
-      double secondsOfHour = t.minute()*60+t.second();
+      double secondsOfHour = static_cast<CivilTime>(t).minute*60+static_cast<CivilTime>(t).second;
       double secondsOfSequence = secondsOfHour;
       while (secondsOfSequence >= 1800.) 
          secondsOfSequence -= 1800.;
@@ -288,7 +290,7 @@ namespace gpstk
       return 0;
    }
 
-   RinexNavData AshtechMessage::convertToRinexNavData(const AshtechMessage& msg, const DayTime& epoch)
+   RinexNavData AshtechMessage::convertToRinexNavData(const AshtechMessage& msg, const CommonTime& epoch)
    {
          // TODO: throw if not an EPB type
       using namespace BinUtils;
@@ -313,13 +315,13 @@ namespace gpstk
       }
       
 // TODO: throw an exception if these calls fail
-      eph.addSubframe(subframe, epoch.GPSfullweek(), PRN, 0);
+      eph.addSubframe(subframe, static_cast<GPSWeekSecond>(epoch).week, PRN, 0);
          //    cout << "sf1" << endl << flush;
       
-      eph.addSubframe(subframe+10, epoch.GPSfullweek(), PRN, 0);
+      eph.addSubframe(subframe+10, static_cast<GPSWeekSecond>(epoch).week, PRN, 0);
          //     cout << "sf2" << endl << flush;
 
-      eph.addSubframe(subframe+20, epoch.GPSfullweek(), PRN, 0);
+      eph.addSubframe(subframe+20, static_cast<GPSWeekSecond>(epoch).week, PRN, 0);
          // cout << "sf3" << endl << flush;
 
          // eph.dump(std::cout);
