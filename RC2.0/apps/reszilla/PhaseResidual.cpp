@@ -41,6 +41,7 @@
 #include "Stats.hpp"
 
 #include "PhaseResidual.hpp"
+#include "TimeString.hpp"
 
 namespace PhaseResidual
 {
@@ -70,12 +71,12 @@ namespace PhaseResidual
       while (i != end())
       {
          Obs& prev = i->second;
-         const gpstk::DayTime& t0 = i->first;
+         const gpstk::CommonTime& t0 = i->first;
          i++;
          if (i == end())
             break;
          Obs& curr = i->second;
-         const gpstk::DayTime t1 = i->first;
+         const gpstk::CommonTime t1 = i->first;
          curr.td = (curr.dd - prev.dd)/(t1 - t0);
       }
    }
@@ -115,12 +116,12 @@ namespace PhaseResidual
       }
          
       gpstk::Stats<double> stats = statsDD();
-      const gpstk::DayTime& t0=begin()->first;
-      const gpstk::DayTime& t1=rbegin()->first;
+      const gpstk::CommonTime& t0=begin()->first;
+      const gpstk::CommonTime& t1=rbegin()->first;
 
       s << left
-        << "# Arc: " << t0.printf("%02H:%02M:%04.1f")
-        << " - "   << t1.printf("%02H:%02M:%04.1f")
+        << "# Arc: " << printTime(t0,"%02H:%02M:%04.1f")
+        << " - "   << printTime(t1,"%02H:%02M:%04.1f")
         << " SVs:" << sv1.id << "-" <<sv2.id
         << " " << obsID 
         << " N:" <<  setw(5) << stats.N() 
@@ -138,7 +139,7 @@ namespace PhaseResidual
 
       if ((!zero || stats.StdDev()>0.5) && detail)
          for (const_iterator i=begin(); i != end(); i++)
-            s << "# " << i->first.printf("%02H:%02M:%04.1f")
+            s << "# " << printTime(i->first,"%02H:%02M:%04.1f")
               << " " << i->second << endl;
    }
 
@@ -268,7 +269,7 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
 // Find the specified obs
 //------------------------------------------------------------------------------
-   bool ArcList::findObs(const gpstk::DayTime& t, Arc::const_iterator& obs)
+   bool ArcList::findObs(const gpstk::CommonTime& t, Arc::const_iterator& obs)
    {
       for (iterator i = begin(); i != end(); i++)
       {
@@ -306,8 +307,8 @@ namespace PhaseResidual
             continue;
 
          // And the arcs must be close enough together in time...
-         const gpstk::DayTime prev_end = prev.rbegin()->first;
-         const gpstk::DayTime curr_begin = curr.begin()->first;
+         const gpstk::CommonTime prev_end = prev.rbegin()->first;
+         const gpstk::CommonTime curr_begin = curr.begin()->first;
          double dt = curr_begin - prev_end;
          if (dt >= gapTime)
             continue;

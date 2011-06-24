@@ -39,7 +39,7 @@
 #include <limits>
 #include <set>
 #include <list>
-
+#include "TimeString.hpp"
 #include <StringUtils.hpp>
 #include <Stats.hpp>
 #include <PowerSum.hpp>
@@ -304,7 +304,7 @@ void DDEpochMap::compute(
    for (ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
       // first make sure we have data from the other receiver for this epoch...
-      DayTime t = ei1->first;
+      CommonTime t = ei1->first;
       ObsEpochMap::const_iterator ei2 = rx2.find(t);
       if (ei2 == rx2.end())
       {
@@ -382,10 +382,10 @@ void DDEpochMap::dump(std::ostream& s) const
    DDEpochMap::const_iterator ei;
    for (ei = ddem.begin(); ei != ddem.end(); ei++)
    {
-      const DayTime& t = ei->first;
+      const CommonTime& t = ei->first;
       const DDEpoch& dde = ei->second;
 
-      string time=t.printf("%4Y %3j %02H:%02M:%04.1f");
+      string time=printTime(t,"%4Y %3j %02H:%02M:%04.1f");
       
       if (useMasterSV)
       {
@@ -668,15 +668,15 @@ void DDEpochMap::outputAverages(ostream& s) const
    gpstk::Stats<double> l1CArange,l1Prange,l1Phase,l1Doppler;
    gpstk::Stats<double> l2Prange,l2Phase,l2Doppler;
 
-   gpstk::DayTime windowTempDT;
+   gpstk::CommonTime windowTempDT;
    
    const_iterator ei = begin();
-   const gpstk::DayTime& dataStartDT = ei->first;
-   gpstk::DayTime windowEndDT = dataStartDT + windowLength;
+   const gpstk::CommonTime& dataStartDT = ei->first;
+   gpstk::CommonTime windowEndDT = dataStartDT + windowLength;
    
    for (const_iterator ei = begin(); ei != end(); ei++)
    {
-      const gpstk::DayTime& t = ei->first;
+      const gpstk::CommonTime& t = ei->first;
       const DDEpoch& dde = ei->second;
 
       // the time for this DDEpoch
@@ -725,7 +725,7 @@ void DDEpochMap::outputAverages(ostream& s) const
          windowEndDT = windowTempDT + windowLength;
          
          // compute and output stats for previous window
-         string time = windowTempDT.printf("%4Y %3j %02H:%02M:%04.1f");
+         string time = printTime(windowTempDT,"%4Y %3j %02H:%02M:%04.1f");
          
          s << ">a " << left << setw(20) << time 
            << setfill(' ') << setprecision(2) << " " << setw(16) 

@@ -285,7 +285,7 @@ void OrdStats::process()
       ORDEpochMap::iterator iter;
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
-         const DayTime& t = iter->first;
+         const CommonTime& t = iter->first;
          ORDEpoch::ORDMap::const_iterator pi;
          for (pi = iter->second.ords.begin(); 
               pi != iter->second.ords.end(); pi++)
@@ -303,7 +303,7 @@ void OrdStats::process()
       Stats<double> good, bad;
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
-         const DayTime& t = iter->first;
+         const CommonTime& t = iter->first;
          ORDEpoch::ORDMap::const_iterator pi;
          for (pi = iter->second.ords.begin(); 
              pi != iter->second.ords.end(); pi++)

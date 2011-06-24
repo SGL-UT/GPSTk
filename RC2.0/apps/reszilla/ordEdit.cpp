@@ -46,6 +46,7 @@
 #include "OrdApp.cpp"
 #include "EphReader.hpp"
 #include "GPSEphemerisStore.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -69,7 +70,7 @@ private:
    double elMask, clkResidLimit, ordLimit;
    set<int> prnSet, wartSet; // prns to exclude from analysis
    vector<string> ephFilesVector;
-   DayTime tStart, tEnd;
+   CommonTime tStart, tEnd;
 };
 
 
@@ -219,10 +220,10 @@ void OrdEdit::process()
    
    //-- if a time span was specified, get it
    if (startOpt.getCount())
-      tStart.setToString(startOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+      static_cast<Epoch>(tStart).scanf(startOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
 
    if (endOpt.getCount())
-      tEnd.setToString(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+      static_cast<Epoch>(tEnd).scanf(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
    
    //-- too lazy?
    if (verboseLevel || debugLevel)

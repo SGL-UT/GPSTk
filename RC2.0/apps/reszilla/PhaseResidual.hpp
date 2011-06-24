@@ -42,7 +42,7 @@
 #include <map>
 #include <iostream>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Stats.hpp"
 #include "CycleSlipList.hpp"
 
@@ -71,7 +71,7 @@ namespace PhaseResidual
 
    // This is a set of observations over time plus a bias that has been
    // removed from the double difference
-   class Arc : public std::map<gpstk::DayTime, Obs>
+   class Arc : public std::map<gpstk::CommonTime, Obs>
    {
      public:
       Arc():ddBias(0){};
@@ -112,7 +112,7 @@ namespace PhaseResidual
       void splitOnTD(double threshold=0.45);
 
       // Search all arcs and find the first obs that matches the specified time.
-      bool findObs(const gpstk::DayTime& t, Arc::const_iterator& obs);
+      bool findObs(const gpstk::CommonTime& t, Arc::const_iterator& obs);
 
       // Recombine adjcent arcs (that are seperated by less than maxGapTime
       // seconds) that have the same bias and master or are both shorter

@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include "OrdEngine.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -212,7 +213,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    if (!oidSet)
       setMode(obs);
 
-   const DayTime& t = obs.time;
+   const CommonTime& t = obs.time;
    const ObsEpoch& obsEpoch = obs;
 
    ORDEpoch ordEpoch;
@@ -225,7 +226,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    {
       // Now set up our trop model for this epoch
       const WxObservation wx = wod.getMostRecent(t);
-      tm.setDayOfYear(t.DOYday());
+      tm.setDayOfYear(static_cast<YDSTime>(t).doy);
       if (wx.isAllValid())
       {
          if (debugLevel > 2)

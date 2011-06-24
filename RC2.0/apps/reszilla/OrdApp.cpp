@@ -40,6 +40,7 @@
 
 #include "OrdApp.hpp"
 #include "CommandOption.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -69,7 +70,7 @@ bool OrdApp::initialize(int argc, char *argv[]) throw()
                "Where to read the ord data. The default is stdin."),
       outputOpt('r', "output",
                "Where to write the output. The default is stdout."),
-      timeFormatOpt('t', "time-format", "Daytime format specifier used for "
+      timeFormatOpt('t', "time-format", "CommonTime format specifier used for "
                     "times in the output. "
                     "The default is \""+timeFormat + "\".");
 
@@ -195,7 +196,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 ORDEpoch OrdApp::read(std::ifstream& s) throw()
 {
    ORDEpoch ordEpoch;
-   ordEpoch.time = DayTime(DayTime::BEGINNING_OF_TIME);
+   ordEpoch.time = CommonTime(CommonTime::BEGINNING_OF_TIME);
    using namespace StringUtils;
    while (s)
    {      
@@ -220,8 +221,8 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             continue;
          }         
 
-         DayTime time;
-         time.setToString(readBuffer.substr(0,19), timeFormat);
+         CommonTime time;
+         static_cast<Epoch>(time).scanf(readBuffer.substr(0,19), timeFormat);
 
          // This means that we have a complete epoch. Note that the most
          // recently read line is left in readBuffer

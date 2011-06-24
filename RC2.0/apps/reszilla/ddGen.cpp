@@ -532,7 +532,7 @@ void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
 
    for (oemIter=oem.begin(); oemIter!=oem.end(); oemIter++)
    {
-      const DayTime& t = oemIter->first;
+      const CommonTime& t = oemIter->first;
       ObsEpoch& obsEpoch = oemIter->second;
       if (removeUnhealthy)
          try

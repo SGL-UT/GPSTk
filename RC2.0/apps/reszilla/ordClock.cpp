@@ -100,7 +100,7 @@ void OrdClock::process()
    if (estimateOnlyOption.getCount())
       debias = false;
 
-   map<DayTime, double> clocks;
+   map<CommonTime, double> clocks;
    if (clockSource.getCount())
    {
       string fn = clockSource.getValue()[0];
@@ -128,7 +128,7 @@ void OrdClock::process()
       }
       else
       {
-         map<DayTime, double>::const_iterator o=clocks.find(ordEpoch.time);
+         map<CommonTime, double>::const_iterator o=clocks.find(ordEpoch.time);
          if (o != clocks.end())
             ordEpoch.clockOffset = o->second;
       }
