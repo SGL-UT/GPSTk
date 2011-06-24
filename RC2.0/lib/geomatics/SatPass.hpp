@@ -33,11 +33,12 @@
 #include <vector>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "GSatID.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsData.hpp"
 #include "Exception.hpp"
+#include "TimeString.hpp"
 
 namespace gpstk {
 
@@ -89,7 +90,7 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const DayTime tt, std::vector<std::string>& obstypes,
+   int addData(const CommonTime tt, std::vector<std::string>& obstypes,
                                   std::vector<double>& data) throw(Exception);
 
    /// Add vector of data, identified by obstypes (same as used in c'tor) at tt,
@@ -104,7 +105,7 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const DayTime tt, std::vector<std::string>& obstypes,
+   int addData(const CommonTime tt, std::vector<std::string>& obstypes,
                                   std::vector<double>& data,
                                   std::vector<unsigned short>& lli,
                                   std::vector<unsigned short>& ssi,
@@ -183,7 +184,7 @@ public:
 
    /// set timetag output format
    /// @param fmt  The format of time tags in the output
-   ///             (cf. gpstk DayTime::printf() for syntax)
+   ///             (cf. gpstk CommonTime::printf() for syntax)
    void setOutputFormat(std::string fmt) { outFormat = fmt; };
 
    /// set the flag at one index to flag - use the SatPass constants OK, etc.
@@ -211,33 +212,33 @@ public:
    unsigned short getFlag(unsigned int i) throw(Exception);
 
    /// @return the earliest time in this SatPass data
-   DayTime getFirstTime(void) const throw() { return firstTime; }
+   CommonTime getFirstTime(void) const throw() { return firstTime; }
    
    /// Reset the first and last times for the pass. This should be necessary only
    /// when the timeoffset's have been altered...use with caution.
    /// @param  tt   new first time
-   //void resetFirstTime(DayTime& tt) throw()
+   //void resetFirstTime(CommonTime& tt) throw()
    //   { firstTime = tt; }
-   //void resetLastTime(DayTime& tt) throw()
+   //void resetLastTime(CommonTime& tt) throw()
    //   { lastTime = tt; }
 
    /// @return the latest time in this SatPass data
-   DayTime getLastTime(void) const throw() { return lastTime; }
+   CommonTime getLastTime(void) const throw() { return lastTime; }
 
    /// @return the earliest time of good data in this SatPass data
-   DayTime getFirstGoodTime(void) const throw() {
+   CommonTime getFirstGoodTime(void) const throw() {
       for(int j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
          return time(j);
       }
-      return DayTime::END_OF_TIME;
+      return CommonTime::END_OF_TIME;
    }
 
    /// @return the latest time of good data in this SatPass data
-   DayTime getLastGoodTime(void) const throw() {
+   CommonTime getLastGoodTime(void) const throw() {
       for(int j=spdvector.size()-1; j>=0; j--) if(spdvector[j].flag & OK) {
          return time(j);
       }
-      return DayTime::BEGINNING_OF_TIME;
+      return CommonTime::BEGINNING_OF_TIME;
    }
 
    /// get the satellite of this SatPass
@@ -270,13 +271,13 @@ public:
    /// compute the timetag associated with index i in the data array
    /// @param  i   index of the data of interest
    /// @return the time tag at the given index.
-   DayTime time(unsigned int i) const throw(Exception);
+   CommonTime time(unsigned int i) const throw(Exception);
 
    /// return true if the given timetag is or could be part of this pass
    /// @param tt        the time tag of interest
    /// @return true if the given time tag lies within the time interval covered
    /// by this object.
-   bool includesTime(const DayTime& tt) const throw();
+   bool includesTime(const CommonTime& tt) const throw();
 
    /// create a new SatPass from the given one, starting at count N.
    /// modify this SatPass to end just before N.
@@ -289,9 +290,9 @@ public:
    /// This routine decimates the data, reduces the arrays, and may change the
    /// start and stop times and ngood; time offsets are not changed.
    /// @param N       New time spacing is N(>1) times the current time spacing
-   /// @param refTime Reference DayTime for the decimation, default is to use first
+   /// @param refTime Reference CommonTime for the decimation, default is to use first
    ///                  in pass
-   void decimate(const int N, DayTime refTime=DayTime::BEGINNING_OF_TIME)
+   void decimate(const int N, CommonTime refTime=CommonTime::BEGINNING_OF_TIME)
       throw(Exception);
 
    /// Dump all the data in the pass, one line per timetag.
@@ -339,7 +340,7 @@ public:
    /// size of maximum time gap, in seconds, allowed within SatPass data.
    static double maxGap;
 
-   /// format string, as defined in class DayTime, for output of times
+   /// format string, as defined in class CommonTime, for output of times
    /// used by smooth (debug), dump and operator<<
    static std::string outFormat;
 
@@ -347,7 +348,7 @@ protected:
    /// compute the count associated with the time tt; return -1 if not within
    /// the time limits of the SatPass
    /// @param tt the time tag of interest
-   int countForTime(const DayTime& tt) const throw(Exception)
+   int countForTime(const CommonTime& tt) const throw(Exception)
       { return int((tt-firstTime)/dt + 0.5); }
 
    // --------------- SatPassData data structure for internal use only ----------
@@ -421,7 +422,7 @@ protected:
       // above determined at construction; the rest determined by input data
 
    /// timetags of the first and last data points.
-   DayTime firstTime,lastTime;
+   CommonTime firstTime,lastTime;
 
    /// number of timetags with good data in the data arrays.
    unsigned int ngood;
@@ -438,7 +439,7 @@ protected:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///            -1 if a gap is found (no data is added),
    ///            -2 if time tag is out of order (no data is added)
-   int push_back(const DayTime tt, SatPassData& spd) throw();
+   int push_back(const CommonTime tt, SatPassData& spd) throw();
 
    /// get a complete SatPassData at count i
    struct SatPassData getData(unsigned int i) const throw(Exception);
@@ -474,8 +475,8 @@ protected:
                                     std::vector<std::string>& obstypes,
                                     double dt,
                                     std::vector<SatPass>& SPList,
-               gpstk::DayTime beginTime=gpstk::DayTime::BEGINNING_OF_TIME,
-               gpstk::DayTime endTime=gpstk::DayTime::END_OF_TIME)
+               gpstk::CommonTime beginTime=gpstk::CommonTime::BEGINNING_OF_TIME,
+               gpstk::CommonTime endTime=gpstk::CommonTime::END_OF_TIME)
       throw(Exception);
 
    /// Iterate over the input vector of SatPass objects (sorted to be in time
@@ -535,14 +536,14 @@ public:
    void reset(void) throw();
 
    /// Get the first (earliest) time found in the SatPass list.
-   DayTime getFirstTime(void) throw() { return FirstTime; }
+   CommonTime getFirstTime(void) throw() { return FirstTime; }
 
    /// Get the last (latest) time found in the SatPass list.
-   DayTime getLastTime(void) throw() { return LastTime; }
+   CommonTime getLastTime(void) throw() { return LastTime; }
 
    /// @return the earliest time of good data in this SatPass list
-   DayTime getFirstGoodTime(void) const throw() {
-      DayTime ttag = LastTime;
+   CommonTime getFirstGoodTime(void) const throw() {
+      CommonTime ttag = LastTime;
       for(int i=0; i<SPList.size(); i++)
          if(SPList[i].getFirstGoodTime() < ttag)
             ttag = SPList[i].getFirstGoodTime();
@@ -550,8 +551,8 @@ public:
    }
 
    /// @return the latest time of good data in this SatPass list
-   DayTime getLastGoodTime(void) const throw() {
-      DayTime ttag = FirstTime;
+   CommonTime getLastGoodTime(void) const throw() {
+      CommonTime ttag = FirstTime;
       for(int i=0; i<SPList.size(); i++)
          if(SPList[i].getLastGoodTime() > ttag)
             ttag = SPList[i].getLastGoodTime();
@@ -580,7 +581,7 @@ private:
 
    /// first (earliest) start time of the passes in the list, and
    /// last (latest) end time of the passes in the list.
-   DayTime FirstTime,LastTime;
+   CommonTime FirstTime,LastTime;
 
    /// index of the current object in the list for this satellite
    std::map<GSatID,int> listIndex;

@@ -51,11 +51,13 @@
 #define SOLID_EARTH_TIDES_INCLUDE
 
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Position.hpp"
 #include "Triple.hpp"
 
 #include "SolarSystem.hpp"
+
+#include "TimeString.cpp"
 
 //------------------------------------------------------------------------------------
 /// Compute the site displacement due to solid Earth tides for the given Position
@@ -65,7 +67,7 @@
 /// NB. Currently only the largest terms are implemented, yielding a result accurate
 /// to the millimeter level. Specifically, IERS pg 61 eq 8 and IERS pg 65 eq 17.
 /// @param  Position site    Nominal position of the site of interest.
-/// @param  DayTime time     Time of interest.
+/// @param  CommonTime time     Time of interest.
 /// @param  SolarSystem sse  Reference to solar system ephemeris (class SolarSystem);
 ///                           must be initialized appropriately for time
 ///                           (by calling SolarSystem::initializeWithBinaryFile() ).
@@ -73,7 +75,7 @@
 /// @return Triple disp      Displacement vector, WGS84 ECEF XYZ meters.
 /// @throw if solar system ephemeris is not valid.
 gpstk::Triple computeSolidEarthTides(gpstk::Position site,
-                                     gpstk::DayTime time,
+                                     gpstk::CommonTime time,
                                      gpstk::SolarSystem& sse,
                                      gpstk::EarthOrientation& eo)
    throw(gpstk::Exception);
@@ -84,11 +86,11 @@ gpstk::Triple computeSolidEarthTides(gpstk::Position site,
 /// with units meters. Reference IERS Conventions (1996) found in IERS Technical
 /// Note 21 (IERS), ch. 7 page 67.
 /// @param  Position site        Nominal position of the site of interest.
-/// @param  DayTime time         Time of interest.
+/// @param  CommonTime time         Time of interest.
 /// @param  EarthOrientation eo  Earth orientation parameters appropriate for time.
 /// @return Triple disp          Displacement vector, WGS84 ECEF XYZ meters.
 gpstk::Triple computePolarTides(gpstk::Position site,
-                                gpstk::DayTime time,
+                                gpstk::CommonTime time,
                                 gpstk::EarthOrientation& eo)
    throw(gpstk::Exception);
 

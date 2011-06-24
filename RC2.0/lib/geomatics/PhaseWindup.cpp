@@ -63,7 +63,7 @@ namespace gpstk
 // shadow is the fraction of the sun's area not visible at the satellite.
 // Previous value is needed to ensure continuity and prevent 1-cycle ambiguities.
 double PhaseWindup(double& prev,         // previous return value
-                   DayTime& tt,          // epoch of interest
+                   CommonTime& tt,          // epoch of interest
                    Position& SV,         // satellite position
                    Position& Rx2Tx,      // unit vector from receiver to satellite
                    Position& YR,         // west unit vector at receiver
@@ -130,7 +130,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // YR is the West unit vector, XR is the North unit vector, at the receiver.
 // shadow is the fraction of the sun's area not visible at the satellite.
 double PhaseWindup(double& prev,       // previous return value
-                   DayTime& tt,        // epoch of interest
+                   CommonTime& tt,        // epoch of interest
                    Position& SV,       // satellite position
                    Position& Rx2Tx,    // unit vector from receiver to satellite
                    Position& YR,       // west unit vector at receiver

@@ -22,11 +22,12 @@
 // ======================================================================
 
 //------------------------------------------------------------------------------------
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SolarSystem.hpp"
 #include "Matrix.hpp"            // only for WGS84Position()
 #include "GeodeticFrames.hpp"    // only for WGS84Position()
 #include "logstream.hpp"
+#include "Position.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -201,15 +202,15 @@ try {
 
    // Mod the header labels to reflect the new time limits
    ostringstream oss;
-   DayTime tt;
-   tt.setMJD(startJD - DayTime::JD_TO_MJD);
+   CommonTime tt;
+   tt=static_cast<Epoch>(startJD + gpstk::MJD_TO_JD).MJD();
    oss << "Start Epoch: JED= " << fixed << setw(10) << setprecision(1) << startJD
-      << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
+      << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[1] = leftJustify(oss.str(),81);
    oss.seekp(ios_base::beg);
-   tt.setMJD(endJD - DayTime::JD_TO_MJD);
+   tt=static_cast<Epoch>(endJD + gpstk::MJD_TO_JD).MJD();
    oss << "Final Epoch: JED= " << fixed << setw(10) << setprecision(1) << endJD
-      << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
+      << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[2] = leftJustify(oss.str(),81);
 
    return 0;
@@ -682,26 +683,26 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // Return the geocentric (relative to Earth's center) position of the Sun at the
 // input time, in WGS84 coordinates.
-Position SolarSystem::WGS84Position(Planet body, const DayTime time,
+Position SolarSystem::WGS84Position(Planet body, const CommonTime time,
    const EarthOrientation& eo) throw(Exception)
 {
 try {
    int iret;
    double PV[6];
 
-   double JD = DayTime::JD_TO_MJD + time.MJD();
+   double JD = -gpstk::MJD_TO_JD + static_cast<Epoch>(time).MJD;
    iret = computeState(JD, body, Earth, PV);          // result in km, km/day
 
    Matrix<double> Rot;
    Rot = GeodeticFrames::ECEFtoInertial(time, eo.xp, eo.yp, eo.UT1mUTC);
                                                           //, bool reduced = false);
-   Vector<double> Inertial(3),Geodetic(3);
+   Vector<double> Inertial(3),Position(3);
    for(int i=0; i<3; i++) Inertial(i) = PV[i];
-   Geodetic = transpose(Rot) * Inertial;
-   Geodetic *= 1000.0;           // convert km to meters
+   Position = transpose(Rot) * Inertial;
+   Position *= 1000.0;           // convert km to meters
 
    Position result;
-   result.setECEF(Geodetic(0),Geodetic(1),Geodetic(2));
+   result.setECEF(Position(0),Position(1),Position(2));
    return result;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }

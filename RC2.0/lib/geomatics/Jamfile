@@ -9,13 +9,27 @@ if $(PREPROCESSING)
 else
 {
    GPSBuildLibrary geomatics : 
-      AntexData.cpp AntexHeader.cpp
-      DDid.cpp DiscCorr.cpp EarthOrientation.cpp format.cpp
-      GeodeticFrames.cpp GSatID.cpp Namelist.cpp
-      PhaseWindup.cpp PreciseRange.cpp random.cpp
-      RobustStats.cpp SatPass.cpp SolarPosition.cpp SolarSystem.cpp
-      SRI.cpp SRIFilter.cpp SRIleastSquares.cpp
-      SunEarthSatGeometry.cpp
+#	AntexData.cpp
+#	AntexHeader.cpp
+#	DDid.cpp 
+#	DiscCorr.cpp 
+#	EarthOrientation.cpp 
+#	format.cpp
+#	GeodeticFrames.cpp 
+#	GSatID.cpp 
+#	Namelist.cpp
+#	PhaseWindup.cpp 
+#	PreciseRange.cpp 
+#	random.cpp
+#	RobustStats.cpp 
+#	SatPass.cpp 
+#	SolarPosition.cpp 
+	SolarSystem.cpp
+#	SolidEarthTides.cpp
+#	SRI.cpp 
+#	SRIFilter.cpp 
+#	SRIleastSquares.cpp
+#	SunEarthSatGeometry.cpp
       ;
 
    InstallFile $(INCDIR) :

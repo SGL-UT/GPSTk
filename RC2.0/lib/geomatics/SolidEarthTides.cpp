@@ -70,14 +70,14 @@ void computeArgs(const double t, const double fhr, double& s, double& tau, doubl
 // result accurate to the millimeter level. Specifically, IERS pg 61 eq 8 and IERS pg
 // 65 eq 17 are implemented.
 // @param  Position site    Nominal position of the site of interest.
-// @param  DayTime time     Time of interest.
+// @param  CommonTime time     Time of interest.
 // @param  SolarSystem sse  Reference to solar system ephemeris (class SolarSystem),
 //                          must be initialized appropriately for time (by calling
 //                          SolarSystem::initializeWithBinaryFile() ).
 // @param  EarthOrientation eo Earth orientation parameters appropriate for time.
 // @return Triple disp      Displacement vector, WGS84 ECEF XYZ meters.
 // @throw if solar system ephemeris is not valid.
-Triple computeSolidEarthTides(Position site, DayTime time,
+Triple computeSolidEarthTides(Position site, CommonTime time,
                               SolarSystem& sse, EarthOrientation& eo)
    throw(Exception)
 {
@@ -101,10 +101,10 @@ try {
    // get positions (WGS84 m)
    Sun = sse.WGS84Position(SolarSystem::Sun, time, eo);
    Moon = sse.WGS84Position(SolarSystem::Moon, time, eo);
-   LOG(DEBUG7) << "Sun position " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Sun position " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(3)
       << setw(23) << Sun.X() << setw(23) << Sun.Y() << setw(23) << Sun.Z();
-   LOG(DEBUG7) << "Moon position" << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Moon position" << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(3)
       << setw(23) << Moon.X() << setw(23) << Moon.Y() << setw(23) << Moon.Z();
 
@@ -147,18 +147,18 @@ try {
    REoRM = REarth/RMoon;
    moonFactor = REarth*REoRM*REoRM*REoRM/EMRAT; // (GMM/GME)*RE^4/RM^3
 
-   LOG(DEBUG7) << "Moon/Earth mass ratio " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Moon/Earth mass ratio " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(9) << 1.0/EMRAT;
-   LOG(DEBUG7) << "Earth/Sun radius ratio " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Earth/Sun radius ratio " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(9) << REoRS;
-   LOG(DEBUG7) << "Sun/Earth mass ratio " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Sun/Earth mass ratio " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(3)
       << sse.getConstant("GMS")*((1.0+EMRAT)/EMRAT)/sse.getConstant("GMB");
-   LOG(DEBUG7) << "Earth/Moon radius ratio " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Earth/Moon radius ratio " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(9) << REoRM;
-   LOG(DEBUG7) << "Sunfactor " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Sunfactor " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(9) << sunFactor;
-   LOG(DEBUG7) << "Moonfactor " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << "Moonfactor " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(9) << moonFactor;
 
    // dot products
@@ -186,7 +186,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " 2sunTerm(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " 2sunTerm(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -198,7 +198,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " 2moonTerm(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " 2moonTerm(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -215,7 +215,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " 3sunTerm(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " 3sunTerm(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -228,7 +228,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " 3moonTerm(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " 3moonTerm(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -239,7 +239,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " eqn8+9(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " eqn8+9(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -264,7 +264,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " diurnal-band(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " diurnal-band(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -289,7 +289,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " semi-diurnal-band(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " semi-diurnal-band(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -309,7 +309,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " lat-dep-diurnal-band(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " lat-dep-diurnal-band(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -329,7 +329,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " lat-dep-semi-diurnal-band(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " lat-dep-semi-diurnal-band(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -370,7 +370,7 @@ try {
       3., 0., 0., 1., 0., 0.0,  0.01,  0.0,  0.0 };
 
    double fhr,t,s,tau,pr,h,p,zns,ps;
-   double fmjd = time.MJD()+51.184/86400.0;
+   double fmjd = static_cast<Epoch>(time).MJD()+51.184/86400.0;
    t = (fmjd-51545.0)/36525.0;
    fhr = (fmjd-int(fmjd))*24.0;
    computeArgs(t, fhr, s, tau, pr, h, p, zns, ps);
@@ -403,7 +403,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " step2diu(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " step2diu(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
    }
@@ -451,7 +451,7 @@ try {
    for(i=0; i<3; i++) tmp[i] /= 1000.0;   // mm -> m
    for(i=0; i<3; i++) disp[i] += tmp[i];
 
-   LOG(DEBUG7) << " step2lon(NEU) " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << " step2lon(NEU) " << printTime(time,"%4F %10.3g ")
             << fixed << setprecision(9)
               << dn/1000.0 << " " << de/1000.0 << " " << dr/1000.0;
 
@@ -472,7 +472,7 @@ try {
       tmpNEU[0] = north[0]*tmp[0] + north[1]*tmp[1] + north[2]*tmp[2];
       tmpNEU[1] =  east[0]*tmp[0] +  east[1]*tmp[1] +  east[2]*tmp[2];
       tmpNEU[2] =    up[0]*tmp[0] +    up[1]*tmp[1] +    up[2]*tmp[2];
-      LOG(DEBUG7) << " totalSET(NEU) " << time.printf("%4F %10.3g ")
+      LOG(DEBUG7) << " totalSET(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << tmpNEU[0] << " " << tmpNEU[1] << " " << tmpNEU[2];
 
@@ -520,11 +520,11 @@ void computeArgs(const double t, const double fhr, double& s, double& tau, doubl
 /// with units meters. Reference IERS Conventions (1996) found in IERS Technical
 /// Note 21 (IERS), ch. 7 page 67.
 /// @param  Position site        Nominal position of the site of interest.
-/// @param  DayTime time         Time of interest.
+/// @param  CommonTime time         Time of interest.
 /// @param  EarthOrientation eo  Earth orientation parameters appropriate for time.
 /// @return Triple disp          Displacement vector, WGS84 ECEF XYZ meters.
 gpstk::Triple computePolarTides(gpstk::Position site,
-                                gpstk::DayTime time,
+                                gpstk::CommonTime time,
                                 gpstk::EarthOrientation& eo)
    throw(gpstk::Exception)
 {
@@ -545,7 +545,7 @@ try {
    disp[1] = -0.009 * ::cos(theta) * (eo.xp * sinlon + eo.yp * coslon);    // E
    disp[2] =  0.032 * ::sin(2*theta) * (eo.xp * coslon - eo.yp * sinlon);  // U
 
-   LOG(DEBUG7) << " poletide(NEU) " << time.printf("%4F %10.3g ")
+   LOG(DEBUG7) << " poletide(NEU) " << printTime(time,"%4F %10.3g ")
                << fixed << setprecision(9)
                << disp[0] << " " << disp[1] << " " << disp[2];
 

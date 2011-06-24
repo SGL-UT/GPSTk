@@ -18,10 +18,13 @@
 // includes
 // system
 // GPSTk
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Position.hpp"
 #include "icd_gps_constants.hpp"       // TWO_PI
 #include "geometry.hpp"                // DEG_TO_RAD
+#include "YDSTime.hpp"
+#include "Epoch.hpp"
+
 
 #include "SolarPosition.hpp"
 
@@ -29,11 +32,11 @@ using namespace std;
 
 //------------------------------------------------------------------------------------
 // Compute Greenwich Mean Sidereal Time in degrees
-static double GMST(gpstk::DayTime t)
+static double GMST(gpstk::CommonTime t)
 {
    static const long JulianEpoch=2451545;
    // days since epoch
-   double days = t.JD() - JulianEpoch;                         // days
+   double days = static_cast<Epoch>(t).JD() - JulianEpoch;                         // days
    if(days <= 0.0) days -= 1.0;
    double Tp = days/36525.0;                                   // dim-less
 
@@ -44,7 +47,7 @@ static double GMST(gpstk::DayTime t)
    //G /= 86400.0; // instead, divide the numbers above manually
    G = 0.279057273264 + 100.0021390378009*Tp        // seconds/86400 = days
                       + (0.093104 - 6.2e-6*Tp)*Tp*Tp/86400.0;
-   G += t.secOfDay()/86400.0;                      // days
+   G += static_cast<YDSTime>(t).sod()/86400.0;                      // days
 
    // put answer between 0 and 360 deg
    G = fmod(G,1.0);
@@ -64,7 +67,7 @@ namespace gpstk {
 // output
 //    lat,lon,R     latitude, longitude and distance (deg,deg,m in ECEF) of sun at t.
 //    AR            apparent angular radius of sun as seen at Earth (deg) at t.
-Position SolarPosition(DayTime t, double& AR) throw()
+Position SolarPosition(CommonTime t, double& AR) throw()
 {
    //const double mPerAU = 149598.0e6;
    double D;     // days since J2000
@@ -77,7 +80,7 @@ Position SolarPosition(DayTime t, double& AR) throw()
    double DEC;   // sun's declination (deg)
    //double AR;  // sun's apparent angular radius as seen at Earth (deg)
 
-   D = t.JD() - 2451545.0;
+   D = static_cast<Epoch>(t).JD() - 2451545.0;
    g = (357.529 + 0.98560028 * D) * DEG_TO_RAD;
    // AA 1990 has g = (357.528 + 0.9856003 * D) * DEG_TO_RAD;
    q = 280.459 + 0.98564736 * D;
@@ -120,10 +123,10 @@ Position SolarPosition(DayTime t, double& AR) throw()
 // Compute the position (latitude and longitude, in degrees) of the sun
 // given the day of year and the hour of the day.
 // Adapted from sunpos by D. Coco 12/15/94
-void CrudeSolarPosition(DayTime t, double& lat, double& lon) throw()
+void CrudeSolarPosition(CommonTime t, double& lat, double& lon) throw()
 {
-   int doy = t.DOY();
-   int hod = int(t.secOfDay()/3600.0 + 0.5);
+   int doy = static_cast<YDSTime>(t).doy;
+   int hod = int(static_cast<YDSTime>(t).sod/3600.0 + 0.5);
    lat = sin(23.5*DEG_TO_RAD)*sin(TWO_PI*double(doy-83)/365.25);
    lat = lat / sqrt(1.0-lat*lat);
    lat = RAD_TO_DEG*atan(lat);
@@ -196,10 +199,10 @@ double shadowFactor(double Rearth, double Rsun, double dES) throw()
 
 //------------------------------------------------------------------------------------
 // From AA 1990 D46
-Position LunarPosition(DayTime t, double& AR) throw()
+Position LunarPosition(CommonTime t, double& AR) throw()
 {
    // days since J2000
-   double N = t.JD()-2451545.0;
+   double N = static_cast<Epoch>(t).JD()-2451545.0;
    // centuries since J2000
    double T = N/36525.0;
    // ecliptic longitude

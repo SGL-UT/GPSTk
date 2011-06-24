@@ -53,8 +53,9 @@
 
 #include "AntexBase.hpp"
 #include "FFStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
+#include "CivilTime.hpp"
 
 namespace gpstk
 {
@@ -231,8 +232,8 @@ namespace gpstk
       /// from "VALID FROM" and "VALID UNTIL" records
       /// keep the string version for file I/O b/c sometimes the time is of the form
       /// 1994     4    17    23    59   59.9999999                 VALID UNTIL
-      /// and converting this to DayTime replaces it with ... 24 0 0.000
-      DayTime validFrom,validUntil;
+      /// and converting this to CommonTime replaces it with ... 24 0 0.000
+      CommonTime validFrom,validUntil;
       std::string stringValidFrom, stringValidUntil;
 
       /// map from frequency (1,2,...nFreq) to antennaPCOandPCVData
@@ -255,8 +256,8 @@ namespace gpstk
       // member functions
 
       /// Constructor.
-      AntexData() : validFrom(DayTime::BEGINNING_OF_TIME),
-                    validUntil(DayTime::END_OF_TIME),
+      AntexData() : validFrom(CommonTime::BEGINNING_OF_TIME),
+                    validUntil(CommonTime::END_OF_TIME),
                     valid(0), PRN(0), SVN(0), nFreq(0), absolute(true) {}
 
       /// Destructor
@@ -274,7 +275,7 @@ namespace gpstk
       /// @return true if the 'valid' time limits are not given.
       /// NB. useful when adding satellite antennas for processing with a dataset;
       /// pass any time tag from the dataset.
-      bool isValid(DayTime& time) const throw();
+      bool isValid(CommonTime& time) const throw();
 
       /// Generate a name from type and serial number
       inline std::string name(void) const throw()
@@ -369,15 +370,15 @@ namespace gpstk
       void ParseDataRecord(std::string& line)
          throw(FFStreamError);
 
-      /// Writes the daytime object into Antex ('VALID FROM') format.
+      /// Writes the CommonTime object into Antex ('VALID FROM') format.
       /// If it's a bad time, it will return blanks.
-      std::string writeTime(const DayTime& dt) const
+      std::string writeTime(const CommonTime& dt) const
          throw(StringUtils::StringException);
 
-      /// This function constructs a DayTime object from the line for VALID FROM
+      /// This function constructs a CommonTime object from the line for VALID FROM
       /// and VALID UNTIL records; default is to return BEGINNING_OF_TIME
       /// @param line the encoded time string found in the Antex record.
-      DayTime parseTime(const std::string& line) const
+      CommonTime parseTime(const std::string& line) const
          throw(FFStreamError);
 
    }; // class AntexData

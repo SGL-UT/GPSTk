@@ -238,7 +238,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Thus this rotation matrix R * (ECEF XYZ vector) = components in body frame, and
 // R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
 // Also return the shadow factor = fraction of sun's area not visible to satellite.
-Matrix<double> doSatAtt(const DayTime& tt, const Position& SV,
+Matrix<double> doSatAtt(const CommonTime& tt, const Position& SV,
                         const SolarSystem& SSEph, const EarthOrientation& EO,
                         double& sf)
    throw(Exception)
@@ -317,7 +317,7 @@ Matrix<double> doSatAtt(const DayTime& tt, const Position& SV,
 
 // -----------------------------------------------------------------------------------
 // Version without JPL SolarSystem ephemeris - uses SolarPosition
-Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& sf)
+Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV, double& sf)
    throw(Exception)
 {
    SolarSystem ssdummy;
@@ -327,7 +327,7 @@ Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& 
 
 // -----------------------------------------------------------------------------------
 // Version with JPL SolarSystem ephemeris. Throw if the SolarSystem is not valid
-Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
+Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV,
                                  const SolarSystem& SSEph, const EarthOrientation& EO,
                                  double& sf)
    throw(Exception)
