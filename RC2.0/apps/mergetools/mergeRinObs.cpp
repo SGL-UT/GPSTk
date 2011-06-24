@@ -92,7 +92,7 @@ void MergeRinObs::process()
       // set the pgm/runby/date field
    merged.theHeader.fileProgram = std::string("mergeRinObs");
    merged.theHeader.fileAgency = std::string("gpstk");
-   merged.theHeader.date = DayTime().asString();
+   merged.theHeader.date = CommonTime().asString();
 
       // write the file
    std::string outputFile = outputFileOption.getValue().front();

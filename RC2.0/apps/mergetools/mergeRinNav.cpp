@@ -87,7 +87,7 @@ void MergeRinNav::process()
    merged.theHeader.fileType = string("NAVIGATION");
    merged.theHeader.fileProgram = std::string("mergeRinNav");
    merged.theHeader.fileAgency = std::string("gpstk");
-   merged.theHeader.date = DayTime().asString();
+   merged.theHeader.date = CommonTime().asString();
    merged.theHeader.version = 2.1;
    merged.theHeader.valid |= gpstk::RinexNavHeader::versionValid;
    merged.theHeader.valid |= gpstk::RinexNavHeader::runByValid;
