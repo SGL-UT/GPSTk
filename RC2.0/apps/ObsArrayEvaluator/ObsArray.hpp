@@ -36,7 +36,7 @@
 #include<string>
 #include<valarray>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "ObsReader.hpp"
 #include "EphReader.hpp"
 #include "Exception.hpp" 
@@ -122,7 +122,7 @@ namespace gpstk
 
       // This is the data storage for the class. All arrays *must* be kept 
       // at the same length because they are all indexed together
-      std::valarray<DayTime>  epoch;
+      std::valarray<CommonTime>  epoch;
       std::valarray<SatID>    satellite;
       std::valarray<double>   observation;
       std::valarray<bool>     lli;
@@ -155,7 +155,7 @@ namespace gpstk
 
       // These are used to help detect passes when loading data
       long highestPass;
-      std::map<SatID, DayTime> lastObsTime;
+      std::map<SatID, CommonTime> lastObsTime;
       std::map<SatID, long> currPass;
    }; // End class ObsArray
    

@@ -29,12 +29,13 @@
 #include <iostream>
 
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "ObsEphReaderFramework.hpp"
 #include "StringUtils.hpp"
 #include "ValarrayUtils.hpp"
 #include "ObsArray.hpp"
 #include "SparseBinnedStats.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -116,7 +117,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
       
    initialize(argc, argv);
 
-   DayTime now;
+   CommonTime now;
 
    bool numeric = numericOption.getCount()>0;
          
@@ -173,6 +174,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
       {
          valarray<bool> passMask = (oa.pass==*iPass);
          valarray<double> mpVals = oa.observation[passMask];
+	 valarray<double> binVals(mpVals.size());
          double mean = mpVals.sum() / mpVals.size();
          mpVals -= mean;
          oa.observation[passMask]=mpVals;
@@ -251,7 +253,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
    }
       
 
-   DayTime then;
+   CommonTime then;
 
    if ( (verboseLevel) && (!numeric))
       output << "Processing complete in " << then - now << " seconds." << endl;
@@ -289,8 +291,8 @@ void ObsArrayEvaluator::dumpRaw(
       {
          if (oa.validAzEl[i])
          {  
-            output << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
-            output << setprecision(9) << oa.epoch[i].GPSsow() << " ";
+            output << setprecision(4) << static_cast<GPSWeekSecond>(oa.epoch[i]).week << " ";
+            output << setprecision(9) << static_cast<GPSWeekSecond>(oa.epoch[i]).sow << " ";
             output << oa.satellite[i].id << " ";
             output << (int) oa.satellite[i].system << " ";
             output << oa.pass[i] << " ";
