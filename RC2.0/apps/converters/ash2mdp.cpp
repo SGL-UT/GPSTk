@@ -186,6 +186,8 @@ protected:
             if (pben_count==1)
             {
                time.sow = pben.sow;
+               if (debugLevel)
+                  cout << "sow is: " << time.sow << endl;
                continue;
             }
 
@@ -258,7 +260,7 @@ protected:
                {
                   
                   int week10 = 0x3ff & engEph.getFullWeek();
-                  //DayTime now;
+                  //CommonTime now;
                   Epoch now;
                   now.setLocalTime();
                   GPSWeekSecond gs(now);
