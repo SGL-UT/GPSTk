@@ -341,6 +341,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
               ostream_iterator<int>(output, " "));
          output << endl;
       }
+      MDPHeader::debugLevel = debugLevel;
    }
 
    return true;
@@ -515,6 +516,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
             prev.epochCount = curr.epochCount;
             prev.numAboveMaskAngle = 
                max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
+            prev.numAboveTrackAngle = 
+               max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
             prev.receivedCount = curr.receivedCount;
             prev.expectedCount = curr.expectedCount;
          }
