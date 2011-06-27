@@ -72,13 +72,13 @@ using namespace gpstk::StringUtils;
 
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
       { return 0.0; }
 
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
       { return 0.0; }
 
