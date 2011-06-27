@@ -35,10 +35,11 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "RinexSatID.hpp"
 #include "StringUtils.hpp"
 #include "RinexUtilities.hpp"
+#include "TimeString.hpp"
 
 #include <vector>
 #include <string>
@@ -149,7 +150,7 @@ try {
 " Options are:\n"
 "    pos           output only positions from aux headers; sat and obs are ignored.\n"
 "    --num or -n   make output purely numeric (no header, no system char on sats)\n"
-"    --format <f>  output times in (DayTime) format (default " << outputFormat << ")\n"
+"    --format <f>  output times in (CommonTime) format (default " << outputFormat << ")\n"
 "    --file <file> file is a RINEX observation file; this option may be repreated.\n"
 "    --obs <obs>   obs is a RINEX observation type (e.g. P1) found in the file header.\n"
 "    --sat <sat>   sat is a RINEX satellite id (e.g. G31 for GPS PRN 31)\n"
@@ -252,10 +253,10 @@ try {
       // dump the column headers
       if(!AllNumeric) {
          // figure out widths
-         DayTime Now;
+         CommonTime Now;
          string ts;
          ts = "# Time (" + outputFormat + ")";
-         int n = ts.size() - Now.printf(outputFormat).size();
+         int n = ts.size() - printTime(Now,outputFormat).size();
          if(n < 0)
          	rightpad = leftJustify(string(""),-n-1);
          else
@@ -308,7 +309,7 @@ try {
             }
    
             // print it
-            if(j==2) cout << leftpad << static_cast<DayTime>(obsdata.time).printf(outputFormat) << rightpad
+            if(j==2) cout << leftpad << printTime(static_cast<CommonTime>(obsdata.time),outputFormat) << rightpad
                << setw(4) << N
                << setprecision(3)
                << " " << setw(13) << X
@@ -334,7 +335,7 @@ try {
             for(j=0; j<otlist.size(); j++) {
                if(!ok) {       // output a line
                   // time tag
-                  cout << leftpad << static_cast<DayTime>(obsdata.time).printf(outputFormat) << rightpad;
+                  cout << leftpad << printTime(static_cast<CommonTime>(obsdata.time),outputFormat) << rightpad;
                   // satellite
                   cout << " ";
                   if(AllNumeric)

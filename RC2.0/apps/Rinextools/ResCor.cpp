@@ -63,6 +63,7 @@
 #include "PRSolution.hpp"
 #include "WGS84Geoid.hpp"           // for obliquity
 #include "Stats.hpp"
+#include "Epoch.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
 #include "icd_gps_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
 
@@ -1047,7 +1048,7 @@ try {
                   }
                }
                try {
-                  timetag = Position().setToString(lineT,fmtT);
+                 static_cast<Epoch>(timetag).scanf(lineT,fmtT);
                }
                catch(Exception& dte) {
                   logof << "ERROR: reading the receiver position flat file threw"
