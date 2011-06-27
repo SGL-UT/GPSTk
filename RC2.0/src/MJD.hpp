@@ -82,7 +82,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       MJD( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
+         throw( InvalidRequest )
       { 
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
@@ -116,7 +116,7 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -124,12 +124,12 @@ namespace gpstk
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+         throw( StringUtils::StringException );
 
          /// This function works similarly to printf.  Instead of filling
          /// the format with data, it fills with error messages.
       virtual std::string printError( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+         throw( StringUtils::StringException );
 
          /**
           * Set this object using the information provided in \a info.
@@ -174,13 +174,13 @@ namespace gpstk
       bool operator!=( const MJD& right ) const
          throw();
       bool operator<( const MJD& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
       bool operator>( const MJD& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
       bool operator<=( const MJD& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
       bool operator>=( const MJD& right ) const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
          //@}
 
       long double mjd;

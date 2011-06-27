@@ -1,7 +1,5 @@
 #pragma ident "$Id: Epoch.hpp 1163 2008-03-28 13:01:33Z snelsen $"
 
-
-
 /**
  * @file Epoch.hpp
  * gpstk::Epoch - encapsulates a point in time
@@ -54,7 +52,13 @@
 #include "CommonTime.hpp"
 #include "TimeTag.hpp"
 #include "SystemTime.hpp"
+
+#include "JulianDate.hpp"
+#include "MJD.hpp"
 #include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekZcount.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -674,6 +678,161 @@ namespace gpstk
       //@}
       //@}
 
+
+   template <class TimeTagType>
+   TimeTagType Epoch::get() const throw(EpochException)
+   {
+      try { return TimeTagType(core); }
+      catch( Exception& e)
+      {
+         EpochException ee(e);
+         GPSTK_THROW(ee);
+      }
+   }
+
+      /// Get Julian Date JD
+      /// @warning For some compilers, this result may have diminished 
+      /// accuracy.
+   long double Epoch::JD() const
+      throw(Epoch::EpochException)
+   {
+      return get<JulianDate>().jd;
+   }
+   
+      /// Get Modified Julian Date MJD
+      /// @warning For some compilers, this result may have diminished 
+      /// accuracy.
+   long double Epoch::MJD() const
+      throw(Epoch::EpochException)
+   {
+      return get<gpstk::MJD>().mjd;
+   }
+   
+      /// Get year.
+   short Epoch::year() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<CivilTime>().year);
+   }
+   
+      /// Get month of year.
+   short Epoch::month() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<CivilTime>().month);
+   }
+   
+      /// Get day of month.
+   short Epoch::day() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<CivilTime>().day);
+   }
+   
+      /// Get day of week
+   short Epoch::dow() const
+      throw(Epoch::EpochException)
+   {
+      return (((static_cast<long>(JD()) % 7) + 1) % 7) ;
+   }
+   
+      /// Get hour of day.
+   short Epoch::hour() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<CivilTime>().hour);
+   }
+   
+      /// Get minutes of hour.
+   short Epoch::minute() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<CivilTime>().minute);
+   }
+   
+      /// Get seconds of minute.
+   double Epoch::second() const
+      throw(Epoch::EpochException)
+   {
+      return get<CivilTime>().second;
+   }
+   
+      /// Get seconds of day.
+   double Epoch::sod() const
+      throw(Epoch::EpochException)
+   {
+      return get<YDSTime>().sod;
+   }
+   
+      /// Get 10-bit GPS week.
+   short Epoch::GPSweek10() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<GPSWeekSecond>().getWeek10());
+   }
+   
+      /// Get normal (19 bit) zcount.
+   long Epoch::GPSzcount() const
+      throw(Epoch::EpochException)
+   {
+      return get<GPSWeekZcount>().zcount;
+   }
+   
+      /// Same as GPSzcount() but without rounding to nearest zcount.
+   long Epoch::GPSzcountFloor() const
+      throw(Epoch::EpochException)
+   {
+      Epoch e = *this + .75; // add half a zcount
+      return e.get<GPSWeekZcount>().zcount;
+   }
+   
+      /**
+       * Get time as 32 bit Z count.
+       * The 13 MSBs are week modulo 1024, 19 LSBs are seconds of
+       * week in Zcounts.
+       */
+   unsigned long Epoch::GPSzcount32() const
+      throw(Epoch::EpochException)
+   {
+      return get<GPSWeekZcount>().getZcount32();
+   }
+   
+      /// Same as fullZcount() but without rounding to nearest zcount.
+   unsigned long Epoch::GPSzcount32Floor() const
+      throw(Epoch::EpochException)
+   {
+      Epoch e = *this + .75; // add half a zcount
+      return e.get<GPSWeekZcount>().getZcount32();
+   }
+   
+      /// Get GPS second of week.
+   double Epoch::GPSsow() const
+      throw(Epoch::EpochException)
+   {
+      return get<GPSWeekSecond>().sow;
+   }
+   
+      /// Get full (>10 bits) week 
+   short Epoch::GPSweek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<GPSWeekSecond>().week);
+   }
+   
+      /// Get day of year.
+   short Epoch::doy() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<YDSTime>().doy);
+   }
+   
+      /// Get object time in UNIX timeval structure.
+   struct timeval Epoch::unixTime() const
+      throw(Epoch::EpochException)
+   {
+      return get<UnixTime>().tv;
+   }
+   
 }  // namespace gpstk
 
 #endif   // GPSTK_EPOCH_HPP
