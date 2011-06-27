@@ -50,7 +50,7 @@
 *              5-n are extra
 *
 *   MEMBER METHODS
-*     DayTime getDate() - Return date associated with this method.
+*     CommonTime getDate() - Return date associated with this method.
 *                              (Time of day will be set to 1200Z to avoid
 *                               ambiguity.)
 *     bool inBase24( SatID SV ) -
@@ -77,7 +77,7 @@
 
    // Library Headers
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 
    // Project Headers
@@ -126,7 +126,7 @@ class ConstellationDefinition
       
       ConstellationDefinition( );
       ~ConstellationDefinition() {}
-      gpstk::DayTime getDate() const;
+      gpstk::CommonTime getDate() const;
       bool inBase24( const SatID SV ) const;
       SlotDef getSlotDef( const SatID SV ) const;
       std::string getSlotString( const SatID SV ) const;
@@ -139,14 +139,14 @@ class ConstellationDefinition
       void setPlaneSlot( const SatID SV, const char plane, const int slot ); 
       void setPlaneSlot( const SatID SV, const SlotDef sd );
       void setSVNforPRN( const SatID SV, const int SVN );
-      void setEffectiveTime( const gpstk::DayTime dt );
+      void setEffectiveTime( const gpstk::CommonTime dt );
       void clearDefinition( );
       
       void dump( FILE * ) const;
       //void dump( stream.????) const;
 
    protected:
-      gpstk::DayTime effectiveDate;
+      gpstk::CommonTime effectiveDate;
       std::map<SlotDef,SatID> SlotsToSVs;
       std::map<SatID,SlotDef> SVsToSlots;
       std::map<SatID,int> PRNtoSVN;       // Only used it input type is CSV
@@ -160,7 +160,7 @@ class ConstellationDefinition
 inline int ConstellationDefinition::getTotalNumSVs( ) const 
            { return(SlotsToSVs.size()); }
            
-inline gpstk::DayTime ConstellationDefinition::getDate( ) const
+inline gpstk::CommonTime ConstellationDefinition::getDate( ) const
            { return( effectiveDate ); }
 }
 #endif

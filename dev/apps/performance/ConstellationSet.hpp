@@ -77,12 +77,12 @@ class ConstellationSet
       ConstellationSet( );
       ConstellationSet( const std::string filename, FileType ftype );
       ~ConstellationSet() {}
-      gpstk::DayTime getEarliestDate() const
+      gpstk::CommonTime getEarliestDate() const
          throw(NoConstellationFound);
-      gpstk::DayTime getLatestDate() const
+      gpstk::CommonTime getLatestDate() const
          throw(NoConstellationFound);
       int getTotalNum( ) const;
-      ConstellationDefinition findCD( const gpstk::DayTime dt ) const 
+      ConstellationDefinition findCD( const gpstk::CommonTime dt ) const 
          throw(NoConstellationFound);
       
       int loadFile( const std::string filename, FileType ftype ); 
@@ -91,10 +91,10 @@ class ConstellationSet
       void dump( FILE * logfp) const;
       
    protected:
-      typedef std::map<gpstk::DayTime,ConstellationDefinition>::const_iterator CI;
-      std::map<gpstk::DayTime,ConstellationDefinition> cdMap;
+      typedef std::map<gpstk::CommonTime,ConstellationDefinition>::const_iterator CI;
+      std::map<gpstk::CommonTime,ConstellationDefinition> cdMap;
 
-      gpstk::DayTime parseDate(std::string date)
+      gpstk::CommonTime parseDate(std::string date)
         throw(InvalidDateString);
       std::list<std::string> parseNums(std::string data, std::string searching);
       int loadFileARL( const std::string filename );
