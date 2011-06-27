@@ -212,7 +212,7 @@ namespace gpstk
             sf4p1sow = sf4p1->second.getHOWTime();
       }
 
-      int week=sf4p18->static_cast<GPSWeekSecond>(second.time).week;
+int week=(static_cast<GPSWeekSecond>(sf4p18->second.time).week); 
       
       for (int p=1; p<=25; p++)
       {
@@ -271,7 +271,7 @@ namespace gpstk
          return false;
 
       int prn = sf[1]->second.prn;
-      int week = sf[1]->(static_cast<GPSWeekSecond>(second.time).week);
+      int week = (static_cast<GPSWeekSecond>(sf[1]->second.time).week);
       long sfa[10];
       long long_sfa[10];
 
