@@ -38,14 +38,16 @@
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
-
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "WGS84Geoid.hpp"
 #include "Position.hpp"
-
+#include "Epoch.hpp"
 #include "VTECMap.hpp"
 #include "RinexUtilities.hpp"
+#include "Position.hpp"
 
 #include <time.h>
 #include <iostream>
@@ -132,9 +134,9 @@ try {
    EndTime = CommonTime::END_OF_TIME;
 
       // Title description and run time
-   CurrEpoch.setLocalTime();
+   static_cast<Epoch>(CurrEpoch).setLocalTime();
    Title = "TECMaps, built on the GPSTK ToolKit, Ver 1.2 9/21/07, Run ";
-   Title += CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   Title += printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
       // define extended types
@@ -547,7 +549,7 @@ try {
    }
 
    if(KnownPos != string("")) {
-      ECEF e;
+      Position e;
       string::size_type pos;
       values.clear();
       while(KnownPos.size() > 0) {
@@ -602,22 +604,22 @@ try {
 
    if(dasheb.getCount()) {
       values = dasheb.getValue();
-      BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input BeginTime " << BegTime << endl;
    }
    if(dashee.getCount()) {
       values = dashee.getValue();
-      EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input EndTime " << EndTime << endl;
    }
    if(dashgb.getCount()) {
       values = dashgb.getValue();
-      BegTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%F,%g");
       if(help) cout << "Input BeginGPSTime " << BegTime << endl;
    }
    if(dashge.getCount()) {
       values = dashge.getValue();
-      EndTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%F,%g");
       if(help) cout << "Input EndGPSTime " << EndTime << endl;
    }
       // processing
@@ -781,9 +783,9 @@ try {
             oflog << "   " << NavFiles[i] << endl;
       }
       if(BegTime > CommonTime::BEGINNING_OF_TIME) oflog << " Begin time is "
-         << BegTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(BegTime,"%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
       if(EndTime < CommonTime::END_OF_TIME) oflog << " End   time is "
-         << EndTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(EndTime,"%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
       oflog << " Processing:\n";
       oflog << "  Primary Title is " << Title1 << endl;
       oflog << "  Secondary Title is " << Title2 << endl;
@@ -1105,18 +1107,18 @@ try {
          // time limits
       if(EarliestTime < BegTime) {
          oflog << "Before begin time : "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
          continue;
       }
       if(EarliestTime > EndTime) {
          oflog << "After end time (quit) : "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
          break;
       }
 
          // process at EarliestTime
       oflog << "Process at time = "
-         << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
+         << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
       AllObs.clear();
       for(ngood=0,nfile=0; nfile<Stations.size(); nfile++) {
             // if this data time == EarliestTime, process and set flag to read again
@@ -1132,7 +1134,7 @@ try {
       nepochs++;
       if(ngood > 0) {
          oflog << ngood << " data at epoch "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
             << ", epoch #" << nepochs << "." << endl;
             // compute the map(s)
          if(doVTECmap) {
@@ -1149,7 +1151,7 @@ try {
          }
       }
       else oflog << "0 data at epoch "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
             << ", file #" << nepochs << "." << endl;
 
    } while(1);
@@ -1197,13 +1199,13 @@ try {
    ofstream ofs(fn.c_str());
    if(!ofs) {
       cerr << "Failed to open map output file " << fn << " at epoch "
-         << t.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(t,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
       oflog << "Failed to open map output file " << fn << " at epoch "
-         << t.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(t,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
    }
    else {
       oflog << "Output map at epoch "
-         << t.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
+         << printTime(t,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
          << " to file " << fn << endl;
       vtmap.OutputMap(ofs,GnuplotFormat);
       ofs.close();
@@ -1281,12 +1283,12 @@ try {
          oflog << " " << RinexObsHeader::convertObsType(S.header.obsTypeList[i]);
       oflog << endl;
       oflog << "Time of first obs "
-         << S.header.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << printTime(S.header.firstObs,"%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (S.header.firstSystem.system==RinexSatID::systemGlonass?"GLO":
                    (S.header.firstSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
       oflog << "Time of  last obs "
-         << S.header.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << printTime(S.header.lastObs,"%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (S.header.lastSystem.system==RinexSatID::systemGlonass?"GLO":
                    (S.header.lastSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
@@ -1494,8 +1496,8 @@ try {
       obsvec.push_back(od);
 
          // write out
-      oflog <<        setw(4) << S.robs.time.GPSfullweek();
-      oflog << " " << setw(8) << setprecision(1) << S.robs.time.GPSsow();
+      oflog <<        setw(4) << static_cast<GPSWeekSecond>(S.robs.time).week;
+      oflog << " " << setw(8) << setprecision(1) << static_cast<GPSWeekSecond>(S.robs.time).sow;
       oflog << " " << setw(2) << n;
       oflog << " " << setw(9) << setprecision(5) << LA; // latitude
       oflog << " " << setw(10) << setprecision(5)<< LO; // longitude

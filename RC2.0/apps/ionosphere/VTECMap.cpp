@@ -34,9 +34,10 @@
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 #include "icd_gps_constants.hpp"     // for TWO_PI
 #include "MiscMath.hpp"
-
+#include "Epoch.hpp"
 #include "VTECMap.hpp"
 #include "RinexUtilities.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk;
 using namespace std;
@@ -181,7 +182,7 @@ void VTECMap::OutputGrid(ostream& os)
 }
 
 //------------------------------------------------------------------------------------
-void VTECMap::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
+void VTECMap::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 {
    int i,j,k,n;
       // first compute the average value
@@ -335,7 +336,7 @@ void VTECMap::OutputMap(ostream& os, bool format)
 }
 
 //------------------------------------------------------------------------------------
-void MUFMap::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
+void MUFMap::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 {
    int i,k;
    double lvect1,lvect2,tmp,cosin;;
@@ -379,7 +380,7 @@ void MUFMap::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
 //------------------------------------------------------------------------------------
 // First cut at foF2 assuming constant slab thickness of 280 km and 
 // TEC = 1.24e10 (foF2)^2 tau / 10^16
-void F0F2Map::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
+void F0F2Map::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 {
    int i,j,k;
    for(i=0; i<NumLon; i++) {
@@ -392,11 +393,11 @@ void F0F2Map::ComputeMap(DayTime& epoch, vector<ObsData>& data, double bias)
 }
 
 //------------------------------------------------------------------------------------
-double VTECMap::VTECtoF0F2(int method, double vtec, DayTime& epoch, double lon)
+double VTECMap::VTECtoF0F2(int method, double vtec, CommonTime& epoch, double lon)
 {
 try {
    double fof2,tau,dt;
-   static DayTime computeTime=DayTime::BEGINNING_OF_TIME;
+   static CommonTime computeTime=CommonTime::BEGINNING_OF_TIME;
    const double con[4]={0.019600827088077529, -1.549245071973630372,
       29.890989537102175433, 237.467144625490760745};
 
@@ -406,7 +407,7 @@ try {
    else if(method == 1) {
       if(epoch != computeTime) {
          computeTime = epoch;
-         dt = epoch.hour()+epoch.minute()/60.;
+         dt = static_cast<CivilTime>(epoch).hour+static_cast<CivilTime>(epoch).minute/60.;
          dt += (lon - 262.2743352)/15;
          if(dt > 24) dt -= 24;
          if(dt <  0) dt += 24;
