@@ -22,10 +22,7 @@
 #include "Position.hpp"
 #include "icd_gps_constants.hpp"       // TWO_PI
 #include "geometry.hpp"                // DEG_TO_RAD
-#include "YDSTime.hpp"
 #include "Epoch.hpp"
-
-
 #include "SolarPosition.hpp"
 
 using namespace std;
@@ -34,9 +31,10 @@ using namespace std;
 // Compute Greenwich Mean Sidereal Time in degrees
 static double GMST(gpstk::CommonTime t)
 {
+#include <Epoch.hpp>
    static const long JulianEpoch=2451545;
    // days since epoch
-   double days = static_cast<Epoch>(t).JD() - JulianEpoch;                         // days
+   double days =( static_cast<Epoch>(t).JD - JulianEpoch);                         // days
    if(days <= 0.0) days -= 1.0;
    double Tp = days/36525.0;                                   // dim-less
 
@@ -47,7 +45,7 @@ static double GMST(gpstk::CommonTime t)
    //G /= 86400.0; // instead, divide the numbers above manually
    G = 0.279057273264 + 100.0021390378009*Tp        // seconds/86400 = days
                       + (0.093104 - 6.2e-6*Tp)*Tp*Tp/86400.0;
-   G += static_cast<YDSTime>(t).sod()/86400.0;                      // days
+   G += static_cast<YDSTime::YDSTime>(t).sod/86400.0;                      // days
 
    // put answer between 0 and 360 deg
    G = fmod(G,1.0);

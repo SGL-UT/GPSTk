@@ -36,9 +36,10 @@
 
 // GPSTk
 #include "Exception.hpp"
-#include "DayTime.hpp"             // only for WGS84SolarSystemPosition()
+#include "CommonTime.hpp"             // only for WGS84SolarSystemPosition()
 #include "Position.hpp"            // only for WGS84SolarSystemPosition()
 #include "EarthOrientation.hpp"    // only for WGS84SolarSystemPosition()
+#include "MJD.hpp"
 
 namespace gpstk {
 //------------------------------------------------------------------------------------
@@ -228,12 +229,12 @@ public:
    }
 
    /// Return the start time of the data
-   gpstk::DayTime startTime(void) const throw(gpstk::Exception)
-      { gpstk::DayTime t; t.setMJD(startJD - gpstk::DayTime::JD_TO_MJD); return t; }
+   gpstk::CommonTime startTime(void) const throw(gpstk::Exception)
+      { gpstk::CommonTime t; t=MJD(startJD + gpstk::MJD_TO_JD); return t; }
 
    /// Return the end time of the data
-   gpstk::DayTime endTime(void) const throw(gpstk::Exception)
-      { gpstk::DayTime t; t.setMJD(endJD - gpstk::DayTime::JD_TO_MJD); return t; }
+   gpstk::CommonTime endTime(void) const throw(gpstk::Exception)
+      { gpstk::CommonTime t; t=MJD(endJD + gpstk::MJD_TO_JD); return t; }
 
    /// Return the geocentric (relative to Earth's center) position of a Solar System
    /// body at the input time, in WGS84 coordinates with units meters.
@@ -242,7 +243,7 @@ public:
    /// @param time  Time of interest (input)
    /// @param eo    Earth orientation at time (cf class EarthOrientation) (input)
    gpstk::Position WGS84Position(Planet body,
-                                 const gpstk::DayTime time,
+                                 const gpstk::CommonTime time,
                                  const gpstk::EarthOrientation& eo)
       throw(gpstk::Exception);
 

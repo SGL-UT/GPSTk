@@ -55,8 +55,8 @@
 #include <string>
 #include <map>
 // GPSTk
-#include "Exception.hpp"
-#include "DayTime.hpp"
+#include "MJD.hpp"
+#include "Epoch.hpp"
 
 //------------------------------------------------------------------------------------
 namespace gpstk {
@@ -130,17 +130,17 @@ namespace gpstk {
    
       /** Generate serial number (NGA files are named EOPP<SN>.txt) from epoch.
        *  SN (3 digit) = YWW : year (1 digit), week of year (2 digit)
-       *  @param DayTime t Time at which to compute the serial number
+       *  @param CommonTime t Time at which to compute the serial number
        *  @return the serial number.
        */
-      static int getSerialNumber(DayTime& t)
-         throw(DayTime::DayTimeException);
+      static int getSerialNumber(CommonTime& t)
+         throw(Exception);
    
       static int getSerialNumber(int mjd)
-         throw(DayTime::DayTimeException)
+         throw(Exception)
          {
-            DayTime t;
-            t.setMJD(double(mjd));
+            CommonTime t;
+            t=MJD(double(mjd));
             return getSerialNumber(t);
          }
 
@@ -151,15 +151,15 @@ namespace gpstk {
        *  @return the EarthOrientation.
        */
       EarthOrientation computeEOP(int& mjd) const
-         throw(DayTime::DayTimeException);
+         throw(Exception);
 
 	   /** Compute and return the Earth orientation parameters at the given epoch.
        *  TD how to warn if input is outside limits of validity?
-       *  @param DayTime t Time at which to compute the earth orientation
+       *  @param CommonTime t Time at which to compute the earth orientation
        *                 parameters.
        *  @return the EarthOrientation.
        */
-      EarthOrientation computeEOP(DayTime& t) const
+      EarthOrientation computeEOP(CommonTime& t) const
          throw();
    
       /** Stream output for the EOPPrediction, in format of EOPP###.txt files.
@@ -172,7 +172,7 @@ namespace gpstk {
    //---------------------------------------------------------------------------------
    /** Earth orientation parameter store. Store EarthOrientation objects in a map
     *  with key = integer MJD at which the EOPs are computed. Access the store
-    *  with any DayTime, linearly interpolating the stored EOPs to the given epoch.
+    *  with any CommonTime, linearly interpolating the stored EOPs to the given epoch.
     */ 
    class EOPStore
    {
@@ -199,7 +199,7 @@ namespace gpstk {
        */
       int addEOP(int MJD,
                  EOPPrediction& eopp)
-         throw(DayTime::DayTimeException);
+         throw(Exception);
 
       /** Add EOPs to the store via an input file: either an EOPP file
        *  or a flat file produced by the IERS and available at USNO
@@ -240,10 +240,10 @@ namespace gpstk {
        *  @param tmin DayTime desired earliest store time.
        *  @param tmax DayTime desired latest store time.
        */
-      void edit(const DayTime& tmin,
-                const DayTime& tmax)
+      void edit(const CommonTime& tmin,
+                const CommonTime& tmax)
          throw()
-         { edit(int(tmin.MJD()+0.5),int(tmax.MJD()+1.5)); }
+         { edit(int(static_cast<Epoch>(tmin).MJD()+0.5),int(static_cast<Epoch>(tmax).MJD()+1.5)); }
 
       /// return the number of entries in the store
       int size(void)
@@ -271,12 +271,12 @@ namespace gpstk {
       { return endMJD; }
 
       /** Get the EOP at the given epoch and return it.
-       *  @param t DayTime at which to compute the EOPs.
+       *  @param t CommonTime at which to compute the EOPs.
        *  @return EarthOrientation EOPs at time t.
        *  @throw InvalidRequest if the integer MJDs on either side of t
        *     cannot be found in the map.
        */
-      EarthOrientation getEOP(DayTime& t) const
+      EarthOrientation getEOP(CommonTime& t) const
          throw(InvalidRequest);
 
    };

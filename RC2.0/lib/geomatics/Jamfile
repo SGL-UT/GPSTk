@@ -13,7 +13,7 @@ else
 #	AntexHeader.cpp
 #	DDid.cpp 
 #	DiscCorr.cpp 
-#	EarthOrientation.cpp 
+	EarthOrientation.cpp 
 #	format.cpp
 #	GeodeticFrames.cpp 
 #	GSatID.cpp 
@@ -24,7 +24,7 @@ else
 #	RobustStats.cpp 
 #	SatPass.cpp 
 #	SolarPosition.cpp 
-	SolarSystem.cpp
+#	SolarSystem.cpp
 #	SolidEarthTides.cpp
 #	SRI.cpp 
 #	SRIFilter.cpp 

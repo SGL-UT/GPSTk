@@ -48,10 +48,13 @@
 //------------------------------------------------------------------------------------
 // system includes
 #include <fstream>
-#include <StringUtils.hpp>
 // GPSTk
 #include "icd_gps_constants.hpp"    // for TWO_PI
 #include "EarthOrientation.hpp"
+#include "GPSWeekSecond.cpp"
+#include "CivilTime.cpp"
+#include "YDSTime.cpp"
+#include "TimeString.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -164,7 +167,7 @@ namespace gpstk
    int EOPPrediction::getSerialNumber(CommonTime& t)
       throw(Exception)
    {
-      int w2 = static_cast<GPSWeekSecond>(t)-1;            // the previous week
+      int w2 = static_cast<GPSWeekSecond>(t).week-1;            // the previous week
       if(w2 < 0) {
          using namespace StringUtils;
 	 Exception dte("Invalid week in EOPP file: "
@@ -175,11 +178,11 @@ namespace gpstk
       int yr,w1;
       try {
          CommonTime ht;
-         ht = GPSWeekSecond(w2,475200.0);     // Friday (noon) of previous week
-         yr = static_cast<CivilTime>(ht).year;                     // save the year for later
-         ht = CivilTime(yr,1,1,0,0,0.0);       // first day of that year
-         w1 = static_cast<GPSWeekSecond>(ht);
-         if(static_cast<GPSWeek>(ht).week() == 6) w1++;       // GPS week of first Friday in the year
+         ht=GPSWeekSecond(w2,475200.0);     // Friday (noon) of previous week
+         yr = static_cast<YDSTime>(ht).year;                     // save the year for later
+         ht=CivilTime(yr,1,1,0,0,0.0);       // first day of that year
+         w1 = static_cast<GPSWeekSecond>(ht).week;
+         if(static_cast<GPSWeekSecond>(ht).week == 6) w1++;       // GPS week of first Friday in the year
          yr = yr % 10;                       // last digit of the year
       }
       catch(Exception& dte) {
@@ -195,7 +198,7 @@ namespace gpstk
       throw(Exception)
    {
       CommonTime t;
-      try { t=static_cast<Epoch>(double(mjd)).MJD; }
+      try { t=MJD(double(mjd)); }
       catch(Exception& dte) { GPSTK_RETHROW(dte); }
       return computeEOP(t);
    }
@@ -219,7 +222,7 @@ namespace gpstk
       double t,dt,arg;
       EarthOrientation eo;
 
-      t = static_cast<Epoch>(ep).MJD + static_cast<Epoch>(ep).sod()/86400.0;
+      t = static_cast<Epoch>(ep).MJD() + static_cast<YDSTime>(ep).sod/86400.0;
       //if(t < tv || t > tv+7) // TD warn - outside valid range
       //
       dt = t - ta;
@@ -483,9 +486,9 @@ namespace gpstk
       CommonTime tt;
       os << "EOPStore dump (" << mapMJD_EOP.size() << " entries):\n";
       os << " Time limits: [MJD " << begMJD << " - " << endMJD << "]";
-      tt=static_cast<Epoch>(double(begMJD)).MJD;
+      tt=MJD(double(begMJD));
       os << " = [m/d/y " << printTime(tt,"%m/%d/%Y");
-      tt=static_cast<Epoch>(double(endMJD)).MJD;
+      tt=MJD(double(endMJD));
       os << " - " << printTime(tt,"%m/%d/%Y") << "]" << endl;
       if(detail > 0) {
          int lastmjd=-1;
@@ -512,7 +515,7 @@ namespace gpstk
       throw(InvalidRequest)
    {
          // find the EOs before and after epoch
-      int loMJD = int(static_cast<Epoch>(t).MJD);
+      int loMJD = int(static_cast<Epoch>(t).MJD());
       int hiMJD = loMJD + 1;
          // find these EOPs
       map<int,EarthOrientation>::const_iterator hit,lit;
@@ -527,7 +530,7 @@ namespace gpstk
       }
          // linearly interpolate to get EOP at the desired time
       EarthOrientation eo;
-      double dt=static_cast<Epoch>(t).MJD-double(loMJD);
+      double dt=static_cast<Epoch>(t).MJD()-double(loMJD);
       eo.xp = (1.0-dt) * lit->second.xp + dt * hit->second.xp;
       eo.yp = (1.0-dt) * lit->second.yp + dt * hit->second.yp;
       eo.UT1mUTC = (1.0-dt) * lit->second.UT1mUTC + dt * hit->second.UT1mUTC;
