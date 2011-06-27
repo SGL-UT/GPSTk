@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <cstdio>
 
 /// levels that the user may give the log stream output in the output statement,
 /// e.g. LOG(ERROR) << "This is an error message"; DEBUGn levels appear indented

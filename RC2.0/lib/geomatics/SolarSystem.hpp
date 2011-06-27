@@ -231,11 +231,11 @@ public:
 
    /// Return the start time of the data
    gpstk::CommonTime startTime(void) const throw(gpstk::Exception)
-      { gpstk::CommonTime t; t=MJD(startJD + gpstk::MJD_TO_JD); return t; }
+      { gpstk::CommonTime t; t=MJD(startJD - gpstk::MJD_TO_JD); return t; }
 
    /// Return the end time of the data
    gpstk::CommonTime endTime(void) const throw(gpstk::Exception)
-      { gpstk::CommonTime t; t=MJD(endJD + gpstk::MJD_TO_JD); return t; }
+      { gpstk::CommonTime t; t=MJD(endJD - gpstk::MJD_TO_JD); return t; }
 
    /// Return the geocentric (relative to Earth's center) position of a Solar System
    /// body at the input time, in WGS84 coordinates with units meters.

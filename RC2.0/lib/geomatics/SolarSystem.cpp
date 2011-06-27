@@ -28,6 +28,7 @@
 #include "GeodeticFrames.hpp"    // only for WGS84Position()
 #include "logstream.hpp"
 #include "TimeString.hpp"
+#include "MJD.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -203,12 +204,12 @@ try {
    // Mod the header labels to reflect the new time limits
    ostringstream oss;
    CommonTime tt;
-   tt=MJD(startJD + MJD_TO_JD);
+   tt = MJD(startJD - MJD_TO_JD);
    oss << "Start Epoch: JED= " << fixed << setw(10) << setprecision(1) << startJD
       << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[1] = leftJustify(oss.str(),81);
    oss.seekp(ios_base::beg);
-   tt=MJD(endJD + MJD_TO_JD);
+   tt = MJD(endJD - MJD_TO_JD);
    oss << "Final Epoch: JED= " << fixed << setw(10) << setprecision(1) << endJD
       << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[2] = leftJustify(oss.str(),81);
