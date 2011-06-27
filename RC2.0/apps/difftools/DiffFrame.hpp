@@ -47,8 +47,8 @@ public:
            eTimeOption('e', "end-time", "End of time range to compare"
                        " (default = \"end of time\")"),
            inputFileOption("An input " + type + " file.", true),
-           startTime(gpstk::DayTime::BEGINNING_OF_TIME),
-           endTime(gpstk::DayTime::END_OF_TIME)
+           startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+           endTime(gpstk::CommonTime::END_OF_TIME)
    {
       inputFileOption.setMaxCount(2);
       timeOption.setMaxCount(1);
@@ -99,7 +99,7 @@ protected:
    gpstk::CommandOptionGroupOr timeOptions;
    gpstk::CommandOptionRest inputFileOption;
 
-   gpstk::DayTime startTime, endTime;
+   gpstk::CommonTime startTime, endTime;
 };
 
 
