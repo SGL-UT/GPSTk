@@ -291,6 +291,7 @@ namespace gpstk
 
       pe->loadSP3File(fn);
 
+   /*
       SP3Stream fs(fn.c_str(),ios::in);
       fs.exceptions(ifstream::failbit);
       
@@ -302,7 +303,7 @@ namespace gpstk
    
       while (fs >> data)
          pe->addEphemeris(data);
-
+   */
 
       if (verboseLevel>1)
          cout << "Read " << fn << " as SP3 ephemeris."<< endl;
