@@ -36,10 +36,11 @@
 
 // GPSTk
 #include "Exception.hpp"
+#include "MJD.hpp"
+#include "Epoch.hpp"
 #include "CommonTime.hpp"             // only for WGS84SolarSystemPosition()
 #include "Position.hpp"            // only for WGS84SolarSystemPosition()
 #include "EarthOrientation.hpp"    // only for WGS84SolarSystemPosition()
-#include "MJD.hpp"
 
 namespace gpstk {
 //------------------------------------------------------------------------------------

@@ -27,9 +27,7 @@
 #include "Matrix.hpp"            // only for WGS84Position()
 #include "GeodeticFrames.hpp"    // only for WGS84Position()
 #include "logstream.hpp"
-#include "Position.hpp"
 #include "TimeString.hpp"
-#include "MJD.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -205,12 +203,12 @@ try {
    // Mod the header labels to reflect the new time limits
    ostringstream oss;
    CommonTime tt;
-   tt=MJD(startJD + gpstk::MJD_TO_JD);
+   tt=MJD(startJD + MJD_TO_JD);
    oss << "Start Epoch: JED= " << fixed << setw(10) << setprecision(1) << startJD
       << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[1] = leftJustify(oss.str(),81);
    oss.seekp(ios_base::beg);
-   tt=MJD(endJD + gpstk::MJD_TO_JD);
+   tt=MJD(endJD + MJD_TO_JD);
    oss << "Final Epoch: JED= " << fixed << setw(10) << setprecision(1) << endJD
       << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[2] = leftJustify(oss.str(),81);
@@ -692,19 +690,19 @@ try {
    int iret;
    double PV[6];
 
-   double JD = -gpstk::MJD_TO_JD + MJD(time);
+   double JD = -MJD_TO_JD + static_cast<Epoch>(time).MJD();
    iret = computeState(JD, body, Earth, PV);          // result in km, km/day
 
    Matrix<double> Rot;
    Rot = GeodeticFrames::ECEFtoInertial(time, eo.xp, eo.yp, eo.UT1mUTC);
                                                           //, bool reduced = false);
-   Vector<double> Inertial(3),Position(3);
+   Vector<double> Inertial(3),Geodetic(3);
    for(int i=0; i<3; i++) Inertial(i) = PV[i];
-   Position = transpose(Rot) * Inertial;
-   Position *= 1000.0;           // convert km to meters
+   Geodetic = transpose(Rot) * Inertial;
+   Geodetic *= 1000.0;           // convert km to meters
 
    Position result;
-   result.setECEF(Position(0),Position(1),Position(2));
+   result.setECEF(Geodetic(0),Geodetic(1),Geodetic(2));
    return result;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
