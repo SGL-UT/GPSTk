@@ -58,18 +58,20 @@ namespace gpstk {
       /// explicit constructor, no defaults
       GSatID(int p, SatelliteSystem s) throw()
       {
-         id = p; system = s;
+         system = s;
          switch(system) {
             case systemGPS:
             case systemGalileo:
             case systemGlonass:
             case systemGeosync:
             case systemLEO:
-            case systemTransit: break;
+            case systemTransit:
+            case systemCompass: break;
             default:
                system = systemGPS;
                id = -1;
          }
+         id = p;
       }
 
       /// constructor from string
@@ -96,13 +98,14 @@ namespace gpstk {
       char systemChar() const throw()
       {
          switch(system) {
-            case systemGPS: return 'G';
+            case systemGPS:     return 'G';
             case systemGalileo: return 'E';
             case systemGlonass: return 'R';
             case systemGeosync: return 'S';
             case systemTransit: return 'T';
-            case systemLEO: return 'L';
-            default: return '?';
+            case systemLEO:     return 'L';
+            case systemCompass: return 'C';
+            default:            return '?';
          }
       };
 
@@ -115,7 +118,8 @@ namespace gpstk {
             case systemGlonass: return "Glonass";
             case systemGeosync: return "Geosync";
             case systemTransit: return "Transit";
-            case systemLEO: return "LEO";
+            case systemLEO:     return "LEO";
+            case systemCompass: return "Compass";
             default:            return "Unknown";
          }
       };
@@ -157,6 +161,9 @@ namespace gpstk {
                break;
             case ' ': case 'G': case 'g':
                system = SatID::systemGPS;
+               break;
+            case 'C': case 'c':
+               system = SatID::systemCompass;
                break;
             default:                   // invalid system character
                Exception e(std::string("Invalid system character \"")
