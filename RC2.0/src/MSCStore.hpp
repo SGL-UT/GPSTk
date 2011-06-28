@@ -89,6 +89,10 @@ namespace gpstk
       Xvt getXvt(const std::string stationID, const CommonTime& t)
          const throw( gpstk::InvalidRequest );
 
+    Xt getXt(const std::string stationID, const CommonTime& t)
+        const throw( gpstk::InvalidRequest )
+{ Xt dummy; return dummy; }
+
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// station in ECEF coordinates (meters) at the indicated time.
