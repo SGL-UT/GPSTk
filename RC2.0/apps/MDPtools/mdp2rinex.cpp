@@ -45,7 +45,7 @@
 #include "RinexObsData.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
-
+#include "YDSTime.hpp"
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"
@@ -221,7 +221,7 @@ protected:
 
       short week = static_cast<GPSWeekSecond>(nav.time).week;
       long sow = nav.getHOWTime();
-      if (sow > DayTime::FULLWEEK)
+      if (sow > FULLWEEK)
       {
          if (debugLevel)
             cout << "Bad week" << endl;
@@ -230,7 +230,7 @@ protected:
 
       if (debugLevel>1)
          nav.dump(cout);
-      DayTime howTime(week, sow);
+      CommonTime howTime(week, sow);
 
       if (!anyNav && (nav.range != rcCA || nav.carrier != ccL1))
          return;
@@ -252,7 +252,7 @@ protected:
    virtual void process(MDPObsEpoch& obs)
    {
 
-      const DayTime& t=epoch.begin()->second.time;
+      const CommonTime& t=epoch.begin()->second.time;
 
       if (!firstObs && t<prevTime)
       {
@@ -263,7 +263,7 @@ protected:
 
       if (epoch.size() > 0 && t != obs.time)
       {
-         if (!thin || (static_cast<int>(t.DOYsecond()) % thinning) == 0)
+         if (!thin || (static_cast<int>(static_cast<YDSTime>(t).sod) % thinning) == 0)
          {
             if (firstObs)
             {
@@ -343,7 +343,7 @@ private:
    bool anyNav;
    int thinning;
    bool firstObs, firstEph;
-   DayTime prevTime;
+   CommonTime prevTime;
    Triple antPos;
 };
 

@@ -52,7 +52,7 @@
 #define GPSTK_UNIQUEALMSTORE_HPP
 
 #include "FICStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngAlmanac.hpp"
 
    // Project
@@ -102,7 +102,7 @@ namespace gpstk
       
       long startingSOW;
       long candidateToa;
-      gpstk::DayTime ToaTime;    // Not valid until state==COMPLETE | WRITTEN
+      gpstk::CommonTime ToaTime;    // Not valid until state==COMPLETE | WRITTEN
       PageMap pageMap; 
       
          // Possible values for member state

@@ -60,14 +60,14 @@ namespace gpstk
       virtual ~BELogEntry() {}
 
       std::string getStr() const;
-      gpstk::DayTime getHOW() const;
+      gpstk::CommonTime getHOW() const;
       void increment();
       unsigned long getKey() const;
       static const std::string header;
       
       protected:
-         DayTime HOWSF1;
-         DayTime Toe;
+         CommonTime HOWSF1;
+         CommonTime Toe;
          int PRN_ID;
          int IODC;
          int count;

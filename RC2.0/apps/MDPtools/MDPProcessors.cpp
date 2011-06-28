@@ -347,7 +347,7 @@ void MDPVerboseProcessor::process(const gpstk::MDPObsEpoch& oe)
    else
    {
       out << oe.getName() << "-:"
-          << " T:" << printTime(oe.timetimeFormat)
+          << " T:" << printTime(oe.time,timeFormat)
           << left
           << " #SV:" << setw(2) << (int)oe.numSVs
           << " Ch:" << setw(2) << (int)oe.channel
@@ -451,7 +451,7 @@ void MDPCSVProcessor::process(const gpstk::MDPObsEpoch& oe)
    outputHeader();
 
    sprintf(buff0, "%f, %3d, %2d, %2d, %2d, %2d, %2.0f, %3.0f, ",
-           static_cast<Epoch>(oe.time).MJD, oe.id, oe.prn, oe.channel, oe.status, oe.numSVs,
+           double(static_cast<Epoch>(oe.time).MJD()), oe.id, oe.prn, oe.channel, oe.status, oe.numSVs,
            oe.elevation, oe.azimuth);
 
    MDPObsEpoch::ObsMap::const_iterator i;
@@ -472,7 +472,7 @@ void MDPCSVProcessor::process(const gpstk::MDPPVTSolution& pvt)
 {
    outputHeader();
 
-   out << static_cast<Epoch>(pvt.time).MJD
+   out << static_cast<Epoch>(pvt.time).MJD()
        << fixed
        << ", " << setw(3) << pvt.id
        << ", " << setw(2) << (int)pvt.numSVs
@@ -496,7 +496,7 @@ void MDPCSVProcessor::process(const gpstk::MDPPVTSolution& pvt)
 void MDPCSVProcessor::process(const gpstk::MDPNavSubframe& sf)
 {
    outputHeader();
-   out << static_cast<Epoch>(sf.time).MJD
+   out << static_cast<Epoch>(sf.time).MJD()
        << fixed
        << ", " << setw(3) << sf.id
        << ", " << setw(2) << sf.prn
@@ -522,8 +522,8 @@ void MDPCSVProcessor::process(const gpstk::MDPSelftestStatus& sts)
    out << printTime(sts.time,timeFormat)
        << fixed
        << ", " << setw(3) << sts.id
-       << ", " << static_cast<Epoch>(sts.selfTestTime).MJD
-       << ", " << static_cast<Epoch>(sts.firstPVTTime).MJD
+       << ", " << static_cast<Epoch>(sts.selfTestTime).MJD()
+       << ", " << static_cast<Epoch>(sts.firstPVTTime).MJD()
        << ", " << setprecision(1) << sts.antennaTemp
        << ", " << setprecision(1) << sts.receiverTemp
        << ", " << hex << sts.status << dec

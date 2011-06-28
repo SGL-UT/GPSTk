@@ -41,7 +41,7 @@
  */
 #include <iostream>   
 #include "UniqueAlmStore.hpp"
-
+#include "GPSWeekSecond.hpp"
 #include "FICData162.hpp"
 #include "FICData62.hpp"
 #include "gps_constants.hpp"
@@ -89,7 +89,7 @@ namespace gpstk
       candidateToa = -10;
       written = false;
       numPagesExamined = 0;
-      ToaTime = gpstk::DayTime::BEGINNING_OF_TIME;
+      ToaTime = CommonTime::BEGINNING_OF_TIME;
    }
 
    pmCI UniqueAlmStore::begin() const { return(pageMap.begin()); }
@@ -109,12 +109,12 @@ namespace gpstk
          
          // Pull the SVID and time from the subframe
       short SVID = nav.getSVID();
-      short week = nav.time.GPSfullweek();
+      short week = static_cast<GPSWeekSecond>(nav.time).week;
       long sow = nav.getHOWTime();
       if ( sow >604800)
          return;
 
-      DayTime howTime(week, sow);
+      CommonTime howTime(week, sow);
 
       //if (nav.prn==1) cout << "state, SFID, SVID: " << state << ", " << nav.getSFID() << ", " << SVID;
          // Definitions that appear to need to be outside the switch
@@ -133,7 +133,7 @@ namespace gpstk
             if (nav.prn==1) cout << "State Change:START_ON_NEXT_FRAME" << endl;
                // Clear the subframe map so it's ready to fill
             pageMap.clear();
-            ToaTime = DayTime::BEGINNING_OF_TIME;
+            ToaTime = CommonTime::BEGINNING_OF_TIME;
             startingSOW = -10;
             written = false;
             break;
@@ -238,12 +238,12 @@ namespace gpstk
                }
                   
                   // Set ToA time
-               short currentWeek = nav.time.GPSfullweek();
+               short currentWeek = static_cast<GPSWeekSecond>(nav.time).week;
                uint32_t word = nav.subframe[3];
                word &= 0x00003FC0;
                word >>= 6;
                short toaWeek = fullWeekFrom8Bit( currentWeek, (short) word );
-               ToaTime = DayTime( toaWeek, candidateToa );
+               ToaTime = CommonTime( toaWeek, candidateToa );
                
                newState = COMPLETE;
                if (nav.prn==1) cout << "State Change:COMPLETE !!!" << endl;
@@ -418,8 +418,8 @@ namespace gpstk
          const MDPNavSubframe& nav = p1->second;
          FICData162 new162( nav.prn,
                             nav.getSVID(),
-                            nav.time.GPSfullweek(),                            
-                            ToaTime.GPSfullweek(),
+                            static_cast<GPSWeekSecond>(nav.time).week,                            
+                            static_cast<GPSWeekSecond>(ToaTime).week,
                             nav.subframe);
          FICData62 new62( new162);
          out << new162;

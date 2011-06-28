@@ -43,13 +43,13 @@
 #include <map>
 #include <set>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-
+#include "Epoch.hpp"
 #include "StringUtils.hpp"
 #include "InOutFramework.hpp"
 #include "ObsUtils.hpp"
@@ -136,27 +136,27 @@ public:
       // get any time limits
       if (startOpt.getCount())
       {
-         tStart.setToString(startOpt.getValue().front().c_str(),
+         static_cast<Epoch>(tStart).scanf(startOpt.getValue().front().c_str(),
                             "%Y %j %H:%M:%S");
          if (debugLevel)
             cout << "Throwing out data before " << tStart << endl;
       }
       else
       {
-         tStart = DayTime::BEGINNING_OF_TIME;
+         tStart = CommonTime::BEGINNING_OF_TIME;
          if (debugLevel || verboseLevel)
             cout << "No start time given.\n";
       }
 
       if (endOpt.getCount())
       {
-         tEnd.setToString(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+         static_cast<Epoch>(tEnd).scanf(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
          if (debugLevel || verboseLevel)
             cout << "Throwing out data after  " << tEnd << endl;
       }
       else
       {
-         tEnd = DayTime::END_OF_TIME;
+         tEnd = CommonTime::END_OF_TIME;
          if (debugLevel || verboseLevel)
             cout << "No end time given.\n";
       }
@@ -225,7 +225,7 @@ protected:
 
       die = false;
 
-      DayTime currEpoch;
+      CommonTime currEpoch;
       MDPEpoch oe;
       uint16_t fc=0; 
       
@@ -443,7 +443,7 @@ protected:
      
 private:
    bool noObs, noNav, noPvt, noSts, die; 
-   DayTime tStart, tEnd;
+   CommonTime tStart, tEnd;
    set<int> prnSetToToss;
    unsigned int recordStart, recordEnd;
    unsigned long msgCount, fcErrorCount;
