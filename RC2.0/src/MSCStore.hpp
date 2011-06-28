@@ -86,13 +86,12 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(const std::string stationID, const CommonTime& t)
+      Xvt getXvt(const std::string& stationID, const CommonTime& t)
          const throw( gpstk::InvalidRequest );
 
-    Xt getXt(const std::string stationID, const CommonTime& t)
+      Xt getXt(const std::string& stationID, const CommonTime& t)
         const throw( gpstk::InvalidRequest )
-{ Xt dummy; return dummy; }
-
+         { Xt dummy; return dummy; }
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// station in ECEF coordinates (meters) at the indicated time.
@@ -102,7 +101,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      Xvt getXvt(unsigned long stationIDno, const CommonTime& t)
+      Xvt getXvt(unsigned long& stationIDno, const CommonTime& t)
          const throw( gpstk::InvalidRequest );
 
 
@@ -186,10 +185,18 @@ namespace gpstk
       int addToList(std::list<MSCData>& v)
          const throw();
 
-      // Return a list of the station IDs for all MSCData objects
-      // currently stored. 
+      /// Return a list of the station IDs for all MSCData objects
+      /// currently stored. 
       std::list<std::string> getIDList();
          
+      /// XvtStore interface
+      bool hasVelocity() const throw() { return false; }
+
+      /// XvtStore interface
+      /// Return true if the given IndexType is present in the store
+      bool isPresent(const std::string& id) const throw()
+         { return (mscMap.find(id) != mscMap.end()); }
+
    private:
       /// StaMSCMap is a list of MSCData objects for a particular station
       /// in order of their effective epoch
