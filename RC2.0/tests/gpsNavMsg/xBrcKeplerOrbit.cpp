@@ -23,7 +23,7 @@ int main( int argc, char * argv[] )
 
       // Test data (copied from navdmp output for .....)
       // Generally, we'd load these data from the file
-   char SysID = 'G';
+   std::string SysID = "G";
    ObsID obsID( ObsID::otUndefined, ObsID::cbL1, ObsID::tcCA );
    short PRNID =                    3;
    double Toe =              388800.0;
@@ -110,7 +110,7 @@ int main( int argc, char * argv[] )
    cout << "Position ko1: " << xv1.x[0] << ", " << xv1.x[1] << ", " << xv1.x[2] << ", " << endl;
 
       // Second test case.  Create an KO object with data available at time of construction.
-   cout << "Test Case 2: Creating KO object with data." << endl;
+   cout << endl << "Test Case 2: Creating KO object with data." << endl;
    BrcKeplerOrbit ko2( SysID, obsID, PRNID, Toe, weeknum, accuracy, healthy, 
 		 Cuc, Cus, Crc, Crs, Cic, Cis, 
 		 M0, dn, dnDot, 
@@ -123,7 +123,7 @@ int main( int argc, char * argv[] )
    cout << "Velocity ko2: " << xv2.v << endl;
 
       // Third test case.  Create a KO object using raw legacy navigation message data
-   cout << "Test Case 3: Creating KO object with raw legacy nav message data." << endl;
+   cout << endl << "Test Case 3: Creating KO object with raw legacy nav message data." << endl;
    BrcKeplerOrbit ko3(obsID, PRNID, weeknum, subframe1, subframe2, subframe3 );
 
    Xv  xv3 = ko3.svXv( dt ); 
@@ -131,7 +131,7 @@ int main( int argc, char * argv[] )
    cout << "Velocity ko3: " << xv3.v << endl;
 
       // Fourth test case.  Create a KO object using raw legacy navigation message data
-   cout << "Test Case 4: Creating KO object with raw legacy nav message data." << endl;
+   cout << endl << "Test Case 4: Creating KO object with raw legacy nav message data." << endl;
    BrcKeplerOrbit ko4;
    ko4.loadData(obsID, PRNID, weeknum, subframe1, subframe2, subframe3 );
 
@@ -142,7 +142,7 @@ int main( int argc, char * argv[] )
    cout << "RelCorr ko4: " << RelCorr<< endl;
 
       // Fifth test case.  Create an KO object with data available from RINEX file.
-   cout << "Test Case 5: Creating KO object with data from RINEX file." << endl;
+   cout << endl << "Test Case 5: Creating KO object with data from RINEX file." << endl;
    BrcKeplerOrbit ko5( SysID, obsID, PRNID, rToe, rweeknum, raccuracy, rhealthy, 
 		 rCuc, rCus, rCrc, rCrs, rCic, rCis, 
 		 rM0, rdn, rdnDot, 
@@ -155,7 +155,7 @@ int main( int argc, char * argv[] )
    cout << "Velocity ko5: " << xv5.v << endl;
 
       // Sixth test case.  Compare against "classic" EngEphemeris
-   cout << "Test Case 6: Calculated position using 'classic' EngEphemeris." << endl;
+   cout << endl << "Test Case 6: Calculated position using 'classic' EngEphemeris." << endl;
    cout<< "Time= "<< g << endl;
    EngEphemeris EE;
    EE.addSubframe(subframe1, weeknum, 3, 1);
@@ -202,8 +202,8 @@ int main( int argc, char * argv[] )
    cout<< "Velocity EE: " << xvt.v <<endl;
    cout<< "Relativity : " << EE.svRelativity( dt ) << endl; 
 
-   //Seventh test case. load setSubframe() methods from EngEphemeris
-   cout << "Test Case 9: loading setSubframe methods from EngEphemeris." << endl;
+   //Ninth test case. load setSubframe() methods from EngEphemeris
+   cout << endl << "Test Case 9: loading setSubframe methods from EngEphemeris." << endl;
    EngEphemeris EEload;
 
    unsigned short tlm[3] = { 0x008B,
@@ -213,7 +213,7 @@ int main( int argc, char * argv[] )
                    381612,
                    381618};
    short asalert[3] = {1,1,1};
-   EEload.loadData( tlm, how, asalert,
+   EEload.loadData( SysID, tlm, how, asalert,
                     rTracker, PRNID, 
                     rweeknum, rcflags, raccflag, 
                     rhealth, riodc, rl2pdata,
@@ -226,7 +226,38 @@ int main( int argc, char * argv[] )
                     rCis, ri0, rCrc,
                     rw,  rOMEGAdot, ridot); 
 
-   cout << "dump output for Test Cases 4,6, and 9." << endl;
+   //Tenth test case. load seSF methods from EngEphemeris
+   cout << endl << "Test Case 10: loading setSF methods from EngEphemeris." << endl;
+   EngEphemeris ESFload;
+
+   unsigned tlm1 = 0x008B;
+   double how1 = 381606;
+   double how2 = 381612;
+   double how3 = 381618;
+   short asalert1 = 1;
+   cout<< "Before ESF1load.setSF1" << endl;
+
+   ESFload.setSF1( tlm1,  how1, asalert1, 
+                                       rweeknum, rcflags, raccflag, 
+                                       rhealth, riodc, rl2pdata,
+                                       rTgd, rToc, raf2,
+                                       raf1, raf0, rTracker, 
+                                       PRNID );
+   cout << "Before ESF2load.setSF2" << endl;
+
+
+   ESFload.setSF2( tlm1, how2, asalert1,
+                                       riode, rCrs, rdn, 
+                                       rM0, rCuc, recc, 
+                                       rCus, rAhalf, rToe, 
+                                       rfitInt );
+   cout << "Before ESF3load.setSF3 " << endl;
+   ESFload.setSF3( tlm1, how3, asalert1,
+                                       rCic, rOMEGA0, rCis, 
+                                       ri0, rCrc, rw, 
+                                       rOMEGAdot, ridot );
+
+   cout << endl << "dump output for Test Cases 4,6, and 9." << endl;
    
    cout << "EE dump: " << endl;
    cout << EE << endl;
@@ -236,6 +267,11 @@ int main( int argc, char * argv[] )
 
    cout << "setSubframe methods: " << endl;
    cout << EEload << endl;
+
+   cout << "SF1,2, and 3 methods: " << endl;
+   cout << ESFload << endl;
+
+   cout << EEA<< endl;
 
    return(0);
 }
