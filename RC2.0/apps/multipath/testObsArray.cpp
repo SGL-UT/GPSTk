@@ -26,7 +26,7 @@
 #include <set>
 
 #include "SatID.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "ObsArray.hpp"
 #include "ValarrayUtils.hpp"
 
@@ -76,7 +76,7 @@ int main(int argc, char* argv[])
       SatID thisPrn(9,SatID::systemGPS);
       valarray<bool> prnIdx = (oa.satellite==thisPrn);
       valarray<double> prnObs = oa.observation[prnIdx];
-      valarray<DayTime> prnTime = oa.epoch[prnIdx];
+      valarray<CommonTime> prnTime = oa.epoch[prnIdx];
       cout << "Data for PRN 9:" << endl;
       for (int i=0; i<12; i++)
       {
@@ -85,7 +85,7 @@ int main(int argc, char* argv[])
          cout << prnObs[i] << endl;
       }
       
-      set<DayTime> allepochs = unique(oa.epoch);  
+      set<CommonTime> allepochs = unique(oa.epoch);  
       cout << "Unique epochs:" << endl << allepochs << endl;
       
       set<SatID> allprns = unique(oa.satellite);
