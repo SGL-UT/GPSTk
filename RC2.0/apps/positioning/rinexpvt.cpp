@@ -32,13 +32,13 @@ using namespace std;
 using namespace gpstk;
 
 double carrierPhaseSmooth(SatID sat, double range, double phase,
-			  DayTime t, double maxAge=86400,
+			  CommonTime t, double maxAge=86400,
 			  double datarate=30)
 {
     static map<SatID,double> smoothedRange;
-    static map<SatID,DayTime> lastEpoch;
+    static map<SatID,CommonTime> lastEpoch;
     static map<SatID,double> lastPhase;
-    static map<SatID,DayTime> firstEpoch;
+    static map<SatID,CommonTime> firstEpoch;
 
     bool debug = true;
     const double teps = .1; // fudge factor for missed epochs 
@@ -228,7 +228,7 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
        {
           logfileOn = true;
           logStream << "! rinexpvt log file" << endl;
-          DayTime nowTime;
+          CommonTime nowTime;
           logStream << "! Executed at: " << printTime(nowTime,epochFormat) << endl;
           logStream << "! Obs file name: " << obsFileName << endl;
           logStream << "! Met file name: ";

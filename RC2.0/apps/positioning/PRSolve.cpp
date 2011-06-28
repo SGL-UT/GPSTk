@@ -2380,6 +2380,7 @@ try
    os << " Log file is " << C.LogFile << endl;
    if (C.knownpos.getCoordinateSystem() != Position::Unknown)
    {
+	C.knownpos=static_cast<CommonTime>(C.knownpos);
       os << " Output residuals: known position is\n   "
          << printTime(C.knownpos),"ECEF(m) %.4x %.4y %.4z\n     = %A deg N %L deg E %h m\n");
    }
