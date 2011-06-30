@@ -124,7 +124,7 @@ public:
 
    std::map<gpstk::GSatID,DataStruct> RawDataMap;
                                     // cleaned, raw data at current epoch
-   gpstk::DayTime time;             // timetag (SolutionEpoch) of RawDataMap
+   gpstk::CommonTime time;             // timetag (SolutionEpoch) of RawDataMap
 
       // these buffers must remain parallel
    std::map<gpstk::GSatID,RawData> RawDataBuffers;
@@ -160,7 +160,7 @@ public:
    gpstk::RinexObsData Robs;   // RINEX observation record (for reading)
 
    double dt;                  // nominal time step <= reading past header
-   gpstk::DayTime firstTime;   // first good epoch
+   gpstk::CommonTime firstTime;   // first good epoch
 
    int nread;                  // number of records read (-1=unopened, 0=header read)
    bool valid;                 // set false if unopened or at EOF

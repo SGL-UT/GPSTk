@@ -75,8 +75,8 @@ public:
    std::vector<std::string> NavFileNames;
    std::vector<std::string> EOPFileNames;
    std::string TimeTableFile;
-   gpstk::DayTime BegTime;
-   gpstk::DayTime EndTime;
+   gpstk::CommonTime BegTime;
+   gpstk::CommonTime EndTime;
    int Frequency;
       // stochastic models
    std::string StochasticModel;

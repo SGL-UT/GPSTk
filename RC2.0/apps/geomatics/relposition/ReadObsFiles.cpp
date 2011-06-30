@@ -212,7 +212,7 @@ try {
          ObsFileList[i].dt = bestdt[kk];
          if(CI.Verbose) oflog
          << "Found interval " << ObsFileList[i].dt << ", and first epoch " 
-         << ObsFileList[i].firstTime.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+         << printTime(ObsFileList[i].firstTime,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
          << endl;
       }
 
