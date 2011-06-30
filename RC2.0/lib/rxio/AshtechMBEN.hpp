@@ -46,7 +46,7 @@
 
 #include <map>
 #include <iostream>
-
+#include <cmath>
 #include "AshtechData.hpp"
 
 namespace gpstk

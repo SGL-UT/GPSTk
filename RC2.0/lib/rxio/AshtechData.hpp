@@ -48,7 +48,7 @@
 #include <iostream>
 
 #include <Exception.hpp>
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
 

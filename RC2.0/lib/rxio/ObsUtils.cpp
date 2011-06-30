@@ -256,9 +256,9 @@ namespace gpstk
       long week = static_cast<GPSWeekSecond>(moe.time).week;
       if (sow4 < sow1) // Assume that time only moves forward
          sow4 += 1800;
-      while (sow4 >= DayTime::FULLWEEK)
+      while (sow4 >= FULLWEEK)
       {
-         sow4 -= DayTime::FULLWEEK;
+         sow4 -= FULLWEEK;
          week += 1;
       }
       moe.time=GPSWeekSecond(week, sow4);
@@ -312,20 +312,20 @@ namespace gpstk
    MDPEpoch makeMDPEpoch(const ATSData& ats, const MDPEpoch& hint) throw()
    {
       MDPEpoch me;
-      DayTime t0(DayTime::BEGINNING_OF_TIME);
+      CommonTime t0(CommonTime::BEGINNING_OF_TIME);
 
       for (int i=0; i < ats.channels.size(); i++)
       {
          const ATSData::ChannelBlock& cb = ats.channels[i];
-         short week = static_cast<short>(cb.absTime / DayTime::FULLWEEK);
+         short week = static_cast<short>(cb.absTime / FULLWEEK);
          // It appears that week 0 is output before a channel really starts
          // tracking.
          if (week==0)
             continue;
 
-         double sow = cb.absTime - week * DayTime::FULLWEEK;
-         DayTime t(week, sow);
-         if (i==0 || t0 == DayTime(DayTime::BEGINNING_OF_TIME))
+         double sow = cb.absTime - week * FULLWEEK;
+         CommonTime t(week, sow);
+         if (i==0 || t0 == CommonTime(CommonTime::BEGINNING_OF_TIME))
             t0 = t;
          else if (std::abs(t - t0) > 0.1)
          {
