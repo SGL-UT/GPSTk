@@ -49,8 +49,8 @@ public:
 
    // First time is of the first missed epoch, second time is the last missed epoch
    // (i.e. first = previous + obsRateEst, second=current-ObsRateEst
-   typedef std::pair<gpstk::DayTime, gpstk::DayTime> DayTimePair;
-   typedef std::list<DayTimePair> DayTimePairList;
+   typedef std::pair<gpstk::CommonTime, gpstk::CommonTime> CommonTimePair;
+   typedef std::list<CommonTimePair> CommonTimePairList;
 
    // Used to control whether we process the engineering eph/alms.
    bool ephOut;

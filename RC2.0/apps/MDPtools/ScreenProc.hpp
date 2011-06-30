@@ -87,7 +87,7 @@ public:
    gpstk::MDPObsEpoch currentObs[13];
    gpstk::MDPPVTSolution currentPvt;
    gpstk::MDPSelftestStatus currentSts;
-   gpstk::DayTime lastUpdateTime;
+   gpstk::CommonTime lastUpdateTime;
 
    // This is really a triple: prn, RangeCode, CarrierCode
    typedef std::pair<gpstk::RangeCode, gpstk::CarrierCode> RangeCarrierPair;

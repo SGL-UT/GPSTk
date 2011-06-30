@@ -30,6 +30,7 @@
 
 #include "Position.hpp"
 #include "TrackProc.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -119,7 +120,7 @@ void MDPTrackProcessor::printChanges()
          {
             if (prevCv[i].prn == -1 && currCv[i].prn == -1)
                continue;
-            out << currTime.printf(timeFormat) << "  Ch:" << setw(2) <<  i;
+            out << printTime(currTime,timeFormat) << "  Ch:" << setw(2) <<  i;
             if (currCv[i].prn >0)
             {
                out << "  Prn: " << setw(2) << currCv[i].prn
@@ -150,7 +151,7 @@ void MDPTrackProcessor::printChanges()
 
       if (change || currCv.size() == 0)
       {
-         out << currTime.printf(timeFormat);
+         out << printTime(currTime,timeFormat);
          for (int i = 1; i < currCv.size(); i++)
          {
             if (currCv[i].prn > 0)
