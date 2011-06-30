@@ -74,6 +74,7 @@ namespace gpstk
       otDesc[otSSI]       = "ssi";           //Rinex  
       otDesc[otLLI]       = "lli";           //Rinex  
       otDesc[otTrackLen]  = "tlen";          //Rinex  
+      otDesc[otNavMsg]    = "navmsg";        //Rinex
       otDesc[otUndefined] = "undefined";     //Rinex -
 
       cbDesc[cbUnknown]   = "UnknownBand";   //Rinex (sp)
