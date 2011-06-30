@@ -55,7 +55,7 @@ using namespace std;
 
 namespace gpstk
 {
-   double PreciseRange::ComputeAtTransmitTime(const DayTime& nomRecTime,
+   double PreciseRange::ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                               const double pr,
                                               const Position& Receiver,
                                               const SatID sat,
