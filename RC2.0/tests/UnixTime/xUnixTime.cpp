@@ -46,7 +46,7 @@ void xUnixTime :: setFromInfoTest (void)
 	Id.insert(make_pair('u',"0"));
 	Id.insert(make_pair('P',"02"));
 	CPPUNIT_ASSERT(setFromInfo1.setFromInfo(Id));
-	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare)
+	CPPUNIT_ASSERT_EQUAL(setFromInfo1,Compare);
 	Id.erase('U');
 	CPPUNIT_ASSERT(setFromInfo2.setFromInfo(Id));
 	ofstream out("Logs/printfOutput");
