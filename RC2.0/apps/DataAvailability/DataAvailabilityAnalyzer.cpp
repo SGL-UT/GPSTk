@@ -67,7 +67,7 @@
 
 #include "StringUtils.hpp"
 #include "ObsID.hpp"
-
+#include "TimeString.hpp"
 #include "DataAvailabilityAnalyzer.hpp"
 #include "TimeString.hpp"
 #include "EphReader.hpp"
@@ -654,7 +654,7 @@ ObsEpoch DataAvailabilityAnalyzer::removeBadObs(const ObsEpoch& oe)
             if (snr_itr != soe.end() && snr_itr->second < snrThreshold)
             {
                if (verboseLevel>2)
-                  output << oe.time.printf(timeFormat)
+                  output << printTime(oe.time,timeFormat)
                          << " Ignoring " << soe.svid
                          << " " << oid
                          << " SNR:" << snr_itr->second << endl;
