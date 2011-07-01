@@ -43,7 +43,7 @@
 #include <vector>
 #include <iostream>
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 
 typedef std::pair<double, double> DoubleDouble;
 typedef std::vector< DoubleDouble > DoubleDoubleVec;
