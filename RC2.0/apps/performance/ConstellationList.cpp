@@ -60,6 +60,7 @@
 //=============================================================================
 // System
 #include <stdio.h>
+#include <iostream>
 
 // Library
 #include "BasicFramework.hpp"

@@ -54,8 +54,11 @@
 
    // Library Headers
 #include "ConstellationDefinition.hpp"
+#include "StringUtils.hpp"
 
    // Project Headers
+
+using namespace std;
 
 namespace gpstk
 {
@@ -96,7 +99,8 @@ class ConstellationSet
 
       gpstk::CommonTime parseDate(std::string date)
         throw(InvalidDateString);
-      std::list<std::string> parseNums(std::string data, std::string searching);
+      //std::list<std::basic_string<char>> 
+      list<std::basic_string<char> > parseNums(std::string data, std::string searching);
       int loadFileARL( const std::string filename );
       int loadFileOpAdvisory( const std::string filename )
          throw(InvalidDateString, MismatchSize);

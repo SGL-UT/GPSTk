@@ -49,8 +49,6 @@
 #include "ConstellationSet.hpp"
 #include "Epoch.hpp"
 #include "YDSTime.hpp"
-#include "Exception.hpp"
-#include "CivilTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -115,7 +113,7 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) c
          throw(NoConstellationFound)
 {
    CommonTime localDT = dt;
-   localDT=static_cast<YDSTime>((SEC_PER_DAY/2));   // Set to noon to match CDs
+   localDT=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;   // Set to noon to match CDs
    
       // Best case (hopefully nominal) is that there is a definition
       // available for the date in question.
@@ -231,7 +229,7 @@ gpstk::CommonTime ConstellationSet::parseDate(string date)
    {
       //cout << dateString << endl;
       static_cast<Epoch>(dt).scanf(dateString, "%d %b %Y");
-      dt=static_cast<YDSTime>(  (SEC_PER_DAY/2) );
+      dt=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;
       return dt;
    }
    catch(Exception exc)
@@ -308,7 +306,7 @@ int ConstellationSet::loadFileARL( const std::string filename )
          {
             try
             {
-               tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+               tempDT = CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
                cd.setEffectiveTime( tempDT );
                inDefinition = true;
             }
@@ -412,7 +410,7 @@ int ConstellationSet::loadFileCSV( const std::string filename )
       {
          try
          {
-            tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+            tempDT = CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
             cd.setEffectiveTime( tempDT );
          }
          catch(Exception e)
