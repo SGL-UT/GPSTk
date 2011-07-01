@@ -50,7 +50,7 @@ void xCivilTime :: setFromInfoTest (void)
 	gpstk::TimeTag::IdToValue Id;
 	Id.insert(make_pair('b',"Dec"));
 	Id.insert(make_pair('d',"31"));
-	Id.insert(make_pair('Y',"2006"));
+	Id.insert(make_pair('Y',"2008"));
 	Id.insert(make_pair('H',"12"));
 	Id.insert(make_pair('M',"00"));
 	Id.insert(make_pair('S',"00"));
