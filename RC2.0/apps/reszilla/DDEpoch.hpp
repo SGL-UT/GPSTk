@@ -39,7 +39,7 @@
 #ifndef DDEPOCH_HPP
 #define DDEPOCH_HPP
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <stl_helpers.hpp>
 #include <icd_gps_constants.hpp>
 
@@ -93,7 +93,7 @@ struct DDEpoch
 };
 
 
-struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
+struct DDEpochMap : public std::map<gpstk::CommonTime, DDEpoch>
 {
 
    // compute the double difference of all common epochs

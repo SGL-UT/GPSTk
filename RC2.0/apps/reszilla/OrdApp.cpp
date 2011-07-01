@@ -41,6 +41,7 @@
 #include "OrdApp.hpp"
 #include "CommandOption.hpp"
 #include "Epoch.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -147,7 +148,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
    s.setf(ios::fixed, ios::floatfield);
    s << setfill(' ') << right;
    
-   string time = ordEpoch.time.printf(timeFormat);
+   string time = printTime(ordEpoch.time,timeFormat);
    ORDEpoch::ORDMap::const_iterator pi;
    for (pi = ordEpoch.ords.begin(); pi != ordEpoch.ords.end(); pi++)
    {

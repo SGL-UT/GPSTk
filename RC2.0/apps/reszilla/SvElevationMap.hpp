@@ -49,7 +49,7 @@
 //  pem[time][prn] = elevation;
 
 typedef std::map<gpstk::SatID, double> SvDoubleMap;
-typedef std::map<gpstk::DayTime, SvDoubleMap > SvElevationMap;
+typedef std::map<gpstk::CommonTime, SvDoubleMap > SvElevationMap;
 
 SvElevationMap elevation_map(const gpstk::ObsEpochMap& obs,
                              const gpstk::Triple& ap,

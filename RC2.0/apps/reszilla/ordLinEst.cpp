@@ -172,7 +172,7 @@ void OrdLinEst::process()
    ORDEpochMap::const_iterator ei;
    for (ei = oem.begin(); ei != oem.end(); ei++)
    {
-      double mjd = ei->first.MJD();
+      double mjd = static_cast<Epoch>(ei->first).MJD();
       vdouble clk = ei->second.clockOffset;
       if (!clk.is_valid() || std::abs(clk) < 1e-6)
          continue;
