@@ -36,6 +36,7 @@
 #include "StringUtils.hpp"
 #include "CommandOption.hpp"
 #include "FileFilterFrame.hpp"
+#include "Position.hpp"
 
 // rinex
 #include "RinexNavStream.hpp"
@@ -72,7 +73,7 @@ namespace gpstk
    {
       StaPosList  getStationCoordinates( 
                        const gpstk::CommandOptionWithAnyArg& mscFileName,
-                       const gpstk::DayTime&                 dt, 
+                       const gpstk::CommonTime&                 dt, 
                        const gpstk::CommandOptionWithAnyArg& includeStation,
                        const gpstk::CommandOptionWithAnyArg& excludeStation);
                        

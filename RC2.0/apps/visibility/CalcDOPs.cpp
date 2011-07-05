@@ -75,9 +75,9 @@
 *   WorstN   value of nsvs at IworstN
 *   WorstH   value of HDOP at IworstH
 *   WorstP   value of PDOP at IworstP
-*   TworstN  time tag (DayTime class) of WorstN
-*   TworstH  time tag (DayTime class) of WorstH
-*   TworstP  time tag (DayTime class) of WorstP
+*   TworstN  time tag (CommonTime class) of WorstN
+*   TworstH  time tag (CommonTime class) of WorstH
+*   TworstP  time tag (CommonTime class) of WorstP
 *
 * Notes:
 *
@@ -116,7 +116,7 @@
 #include "FICFilterOperators.hpp"
 #include "RinexNavFilterOperators.hpp"
 #include "FileFilterFrame.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "StringUtils.hpp"
 #include "Matrix.hpp"
 #include "Position.hpp"
@@ -126,6 +126,8 @@
 #include "geometry.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -213,7 +215,7 @@ double *BadPDOP;
 int IworstN, IworstG, IworstP, IworstH, IworstV, IworstT; // index in Grid[] of cell/time with worst #SVs,DOPs
 int NtrofN , NpeakG , NpeakP , NpeakH , NpeakV , NpeakT ; // number of cells/times with < 5 SVs vis; DOP > 10
 double  WorstN , WorstG , WorstP , WorstH , WorstV , WorstT ; // value of nsvs, DOPs at Grid[Iworst..]
-DayTime TworstN, TworstG, TworstP, TworstH, TworstV, TworstT; // timetags of IworstN, etc.
+CommonTime TworstN, TworstG, TworstP, TworstH, TworstV, TworstT; // timetags of IworstN, etc.
 double  StepWorstN, StepWorstG, StepWorstP, StepWorstH, StepWorstV, StepWorstT ; // worst values @ each timept.
 
 // logfile and timesfile output streams
@@ -233,9 +235,9 @@ int ReadRinexFile(string filename);
 int ReadStatsFile(string filename);
 int WriteStatsFile(string filename);
 int OutputGrid(string filename);
-int DumpGrid(DayTime& tt, string filename);
+int DumpGrid(CommonTime& tt, string filename);
 void BuildGrid(void);
-void ComputeDOPs(DayTime& tt, GridData& gd, vector<Position>& SVs, M4& R);
+void ComputeDOPs(CommonTime& tt, GridData& gd, vector<Position>& SVs, M4& R);
 
 //------------------------------------------------------------------------------------
 
@@ -344,19 +346,19 @@ try
 
    // get a list of the available satellite PRNs and the initial timetag
    bool ok;
-   DayTime tt, starttime;
+   CommonTime tt, starttime;
    bool initialTimeSet = false;
    if ( ephmode ) // ephemeris mode
    {
      try
      {
-       DayTime earliest = ges.getInitialTime();
-       DayTime latest = ges.getFinalTime();
-//       DayTime start = latest - gpstk::DayTime::SEC_DAY/2; /* make sure you're in the right day */
-       DayTime start = latest - 6*3600.0; /* go back 6 h: covers any 4 h ephemeris going into the next day */
-       tt = DayTime( start.year(), start.month(), start.day(), 0, 0, 0.0 );
+       CommonTime earliest = ges.getInitialTime();
+       CommonTime latest = ges.getFinalTime();
+//       CommonTime start = latest - gpstk::CommonTime::SEC_DAY/2; /* make sure you're in the right day */
+       CommonTime start = latest - 6*3600.0; /* go back 6 h: covers any 4 h ephemeris going into the next day */
+       tt = CivilTime( static_cast<CivilTime>(start).year, static_cast<CivilTime>(start).month, static_cast<CivilTime>(start).day, 0, 0, 0.0 );
        starttime = tt;
-       lofs << " Initial time tag is " << tt.printf("%4F %8.1g") << endl;
+       lofs << " Initial time tag is " << printTime(tt,"%4F %8.1g") << endl;
        initialTimeSet = true;
      }
      catch(InvalidRequest)
@@ -377,7 +379,7 @@ try
    }
    else           // almanac mode (original version)
    {
-     DayTime start(DayTime::BEGINNING_OF_TIME); // Declare and initialize to something guaranteed to be early.
+     CommonTime start(CommonTime::BEGINNING_OF_TIME); // Declare and initialize to something guaranteed to be early.
      for (i=1; i<33; i++) // # of SVs hard-wired to 32
      {
        if (aomap.find(i) == aomap.end()) continue; // satellite not found in almanac
@@ -393,9 +395,9 @@ try
        if (aomap[i].getTransmitTime()>start) start = aomap[i].getTransmitTime();
      }
      // Set starting time to beginning of day in which majority of almanac was collected.
-     tt = DayTime( start.year(), start.month(), start.day(), 0, 0, 0.0 );
+       tt = CivilTime( static_cast<CivilTime>(start).year, static_cast<CivilTime>(start).month, static_cast<CivilTime>(start).day, 0, 0, 0.0 );
      starttime = tt;
-     lofs << " Initial time tag is " << tt.printf("%4F %8.1g") << endl;
+     lofs << " Initial time tag is " << printTime(tt,"%4F %8.1g") << endl;
      initialTimeSet = true;
    }
    if (Sats.size() < 4)
@@ -607,7 +609,7 @@ try
       // write timestep results to timesfile
 
       tofs << " "
-           << tt.printf("%4F %8.1g") << "  "
+           << printTime(tt,"%4F %8.1g") << "  "
            << " " << setw(7) << StepWorstG
            << " " << setw(7) << StepWorstP
            << " " << setw(7) << StepWorstH
@@ -986,7 +988,7 @@ try
          else if (fields[0] == string("WORSTN"))
          {
             IworstN = StringUtils::asInt(fields[1]);
-            TworstN.setGPSfullweek(StringUtils::asInt(fields[2]),
+            TworstN = GPSWeekSecond(StringUtils::asInt(fields[2]),
         			   StringUtils::asDouble(fields[3]));
             WorstN = StringUtils::asDouble(fields[6]);
             NtrofN = StringUtils::asInt(fields[7]);
@@ -994,7 +996,7 @@ try
          else if (fields[0] == string("WORSTH"))
          {
             IworstH = StringUtils::asInt(fields[1]);
-            TworstH.setGPSfullweek(StringUtils::asInt(fields[2]),
+            TworstH = GPSWeekSecond(StringUtils::asInt(fields[2]),
         			   StringUtils::asDouble(fields[3]));
             WorstH = StringUtils::asDouble(fields[6]);
             NpeakH = StringUtils::asInt(fields[7]);
@@ -1002,7 +1004,7 @@ try
          else if (fields[0] == string("WORSTP"))
          {
             IworstP = StringUtils::asInt(fields[1]);
-            TworstP.setGPSfullweek(StringUtils::asInt(fields[2]),
+            TworstP = GPSWeekSecond(StringUtils::asInt(fields[2]),
         			   StringUtils::asDouble(fields[3]));
             WorstP = StringUtils::asDouble(fields[6]);
             NpeakP = StringUtils::asInt(fields[7]);
@@ -1096,7 +1098,7 @@ try
 
       sofs << "Abs WORSTN"
            << " " << setw(5) << IworstN
-           << TworstN.printf(" %4F %8.1g")
+           << printTime(TworstN," %4F %8.1g")
            << fixed << setprecision(2)
            << " " << setw(7) << Grid[IworstN].lon
            << " " << setw(7) << Grid[IworstN].lat
@@ -1105,7 +1107,7 @@ try
            << endl;
       sofs << "Abs WORSTG"
            << " " << setw(5) << IworstG
-           << TworstG.printf(" %4F %8.1g")
+           << printTime(TworstG," %4F %8.1g")
            << fixed << setprecision(2)
            << " " << setw(7) << Grid[IworstG].lon
            << " " << setw(7) << Grid[IworstG].lat
@@ -1114,7 +1116,7 @@ try
            << endl;
       sofs << "Abs WORSTP"
            << " " << setw(5) << IworstP
-           << TworstP.printf(" %4F %8.1g")
+           << printTime(TworstP," %4F %8.1g")
            << fixed << setprecision(2)
            << " " << setw(7) << Grid[IworstP].lon
            << " " << setw(7) << Grid[IworstP].lat
@@ -1123,7 +1125,7 @@ try
            << endl;
       sofs << "Abs WORSTH"
            << " " << setw(5) << IworstH
-           << TworstH.printf(" %4F %8.1g")
+           << printTime(TworstH," %4F %8.1g")
            << fixed << setprecision(2)
            << " " << setw(7) << Grid[IworstH].lon
            << " " << setw(7) << Grid[IworstH].lat
@@ -1132,7 +1134,7 @@ try
            << endl;
       sofs << "Abs WORSTV"
            << " " << setw(5) << IworstV
-           << TworstV.printf(" %4F %8.1g")
+           << printTime(TworstV," %4F %8.1g")
            << fixed << setprecision(2)
            << " " << setw(7) << Grid[IworstV].lon
            << " " << setw(7) << Grid[IworstV].lat
@@ -1141,7 +1143,7 @@ try
            << endl;
       sofs << "Abs WORSTT"
            << " " << setw(5) << IworstT
-           << TworstT.printf(" %4F %8.1g")
+           << printTime(TworstT," %4F %8.1g")
            << fixed << setprecision(2)
            << " " << setw(7) << Grid[IworstT].lon
            << " " << setw(7) << Grid[IworstT].lat
@@ -1242,7 +1244,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 //------------------------------------------------------------------------------------
 // output grid results to file
 
-int DumpGrid(DayTime& time, string dumpfile)
+int DumpGrid(CommonTime& time, string dumpfile)
 {
 try
 {
@@ -1260,7 +1262,7 @@ try
    for (i=0; i<Grid.size(); i++)
    {
       ofs << " "
-          << time.printf("%4F %8.1g")
+          << printTime(time,"%4F %8.1g")
           << fixed << setprecision(3)
           << " " << setw(7) << Grid[i].lon
           << " " << setw(6) << Grid[i].lat
@@ -1340,7 +1342,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 
-void ComputeDOPs(DayTime& tt, GridData& gd, vector<Position>& SVs, M4& R)
+void ComputeDOPs(CommonTime& tt, GridData& gd, vector<Position>& SVs, M4& R)
 {
 try
 {

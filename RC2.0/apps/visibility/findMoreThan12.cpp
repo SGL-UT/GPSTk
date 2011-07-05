@@ -39,10 +39,11 @@
 #include <iostream>
 #include <iomanip>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "EphReader.hpp"
+#include "CivilTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -107,27 +108,27 @@ int main(int argc, char *argv[])
   short year, month, day, hour, minute;
   double seconds;
 
-  DayTime tStartDT = ephStore.getInitialTime();
-  year = tStartDT.year();
-  month = tStartDT.month();
-  day = tStartDT.day();
-  hour = tStartDT.hour();
-  minute = tStartDT.minute();
-  seconds = tStartDT.second();
-  DayTime tstart;
-  tstart.setYMDHMS(year,month,day,hour,minute,seconds);
+  CommonTime tStartDT = ephStore.getInitialTime();
+  year = static_cast<CivilTime>(tStartDT).year;
+  month = static_cast<CivilTime>(tStartDT).month;
+  day = static_cast<CivilTime>(tStartDT).day;
+  hour = static_cast<CivilTime>(tStartDT).hour;
+  minute = static_cast<CivilTime>(tStartDT).minute;
+  seconds = static_cast<CivilTime>(tStartDT).second;
+  CommonTime tstart;
+  tstart = CivilTime(year,month,day,hour,minute,seconds);
   
-  DayTime tEndDT = ephStore.getFinalTime();
-  year = tEndDT.year();
-  month = tEndDT.month();
-  day = tEndDT.day();
-  hour = tEndDT.hour();
-  minute = tEndDT.minute();
-  seconds = tEndDT.second();
-  DayTime tend;
-  tend.setYMDHMS(year,month,day,hour,minute,seconds);
+  CommonTime tEndDT = ephStore.getFinalTime();
+  year = static_cast<CivilTime>(tEndDT).year;
+  month = static_cast<CivilTime>(tEndDT).month;
+  day = static_cast<CivilTime>(tEndDT).day;
+  hour = static_cast<CivilTime>(tEndDT).hour;
+  minute = static_cast<CivilTime>(tEndDT).minute;
+  seconds = static_cast<CivilTime>(tEndDT).second;
+  CommonTime tend;
+  tend = CivilTime(year,month,day,hour,minute,seconds);
   
-  DayTime t = tstart;
+  CommonTime t = tstart;
 
   cout << "Start Time: " << tstart << " End Time: " << tend << endl;
   

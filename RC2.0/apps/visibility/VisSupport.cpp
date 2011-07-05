@@ -34,7 +34,7 @@ using namespace gpstk;
 
 StaPosList  VisSupport::getStationCoordinates(
                  const CommandOptionWithAnyArg& mscFileName,
-                 const DayTime& dt, 
+                 const CommonTime& dt, 
                  const CommandOptionWithAnyArg& includeStation,
                  const CommandOptionWithAnyArg& excludeStation)
 {
@@ -102,7 +102,7 @@ StaPosList  VisSupport::getStationCoordinates(
       
          // Since the nominal SPS constellation has an epoch of 1993, coerce
          // the station coordinate search time to a later time if necessary.
-      DayTime xdt = mscStore.getInitialTime();
+      CommonTime xdt = mscStore.getInitialTime();
       if (dt>xdt) xdt = dt; 
 
          // We're not going to worry about propagating drift, especically
@@ -111,7 +111,7 @@ StaPosList  VisSupport::getStationCoordinates(
       for (vci=IDList.begin();vci!=IDList.end();++vci)
       {
          const MSCData& mscd = mscStore.findMSC( (string) *vci, xdt );
-         pair<string,ECEF> node( *vci, mscd.coordinates );
+         pair<string,Position> node( *vci, mscd.coordinates );
          staPosList.insert( node );
       }
    }

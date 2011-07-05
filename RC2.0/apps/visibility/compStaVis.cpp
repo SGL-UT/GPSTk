@@ -45,6 +45,8 @@
 #include "GPSEphemerisStore.hpp"
 #include "icd_gps_constants.hpp"
 #include "gps_constants.hpp"
+#include "TimeString.hpp"
+#include "Position.hpp"
 
 // Project
 #include "VisSupport.hpp"
@@ -94,9 +96,9 @@ protected:
    
    bool detailPrint;
    bool evalStartTimeSet;
-   DayTime evalStartTime;
+   CommonTime evalStartTime;
    bool evalEndTimeSet;
-   DayTime evalEndTime;
+   CommonTime evalEndTime;
    
    double intervalInSeconds;
    double minimumElevationAngle;
@@ -123,16 +125,16 @@ protected:
      // full range of stations.
    map <string,DiscreteVisibleCounts> dvcList;
    
-   DayTime startT;
-   DayTime endT;
+   CommonTime startT;
+   CommonTime endT;
    bool siderealDay; 
 
    int healthyOnly;
    
-   void generateHeader( gpstk::DayTime currT );
+   void generateHeader( gpstk::CommonTime currT );
    void generateTrailer( );
-   gpstk::DayTime setStartTime();
-   void computeVisibility( gpstk::DayTime currT );
+   gpstk::CommonTime setStartTime();
+   void computeVisibility( gpstk::CommonTime currT );
    void printNavFileReferenceTime(FILE* logfp);
 };
 
@@ -276,11 +278,11 @@ bool compStaVis::initialize(int argc, char *argv[])
       // If the user SPECIFIED a start time for the evaluation, store that
       // time and set the flag.
    evalStartTimeSet = false;
-   evalStartTime=DayTime::BEGINNING_OF_TIME;
+   evalStartTime=CommonTime::BEGINNING_OF_TIME;
    if (evalStartTimeOpt.getCount()!=0) 
    {
       if (debugLevel) cout << "Reading start time from command line." << endl;
-      std::vector<DayTime> tvalues = evalStartTimeOpt.getTime();
+      std::vector<CommonTime> tvalues = evalStartTimeOpt.getTime();
       evalStartTime = tvalues[0];
       evalStartTimeSet = true;
       
@@ -292,11 +294,11 @@ bool compStaVis::initialize(int argc, char *argv[])
       // If the user SPECIFIED an end time for the evaluation, store that
       // time and set the flag.
    evalEndTimeSet = false;
-   evalEndTime=DayTime::END_OF_TIME;
+   evalEndTime=CommonTime::END_OF_TIME;
    if (evalEndTimeOpt.getCount()!=0)  
    {
       if (debugLevel) cout << "Reading end time from command line." << endl;
-      std::vector<DayTime> tvalues = evalEndTimeOpt.getTime();
+      std::vector<CommonTime> tvalues = evalEndTimeOpt.getTime();
       evalEndTime = tvalues[0];
       evalEndTimeSet = true;
    }
@@ -307,7 +309,7 @@ bool compStaVis::initialize(int argc, char *argv[])
 void compStaVis::printNavFileReferenceTime(FILE* logfp)
 {
    string tform2 = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M:%02S";
-   DayTime t;
+   CommonTime t;
    
       // If the user did not specify a start time for the evaulation, find the
       // epoch time of the navigation data set and work from that.
@@ -320,72 +322,72 @@ void compStaVis::printNavFileReferenceTime(FILE* logfp)
       case FIC_EPH:
       case RINEX_NAV:
 	 t = BCEphList.getInitialTime();
-	 t += DayTime::HALFWEEK;
+	 t += HALFWEEK;
          fprintf(logfp,"  Ephemeris effectivity\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                 t.printf(tform2).c_str());
+                 printTime(t,tform2).c_str());
 	 t = BCEphList.getFinalTime();
-	 t -= DayTime::HALFWEEK;
+	 t -= HALFWEEK;
          fprintf(logfp,"     Latest               : %s\n",
-                 t.printf(tform2).c_str());
+                 printTime(t,tform2).c_str());
          break;
             
       case FIC_ALM:
          t = BCAlmList.getInitialTime();
-         t += DayTime::HALFWEEK;
+         t += HALFWEEK;
          fprintf(logfp,"  Almanac reference time\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                       t.printf(tform2).c_str());
+                       printTime(t,tform2).c_str());
          t = BCAlmList.getFinalTime();
-         t -= DayTime::HALFWEEK;
+         t -= HALFWEEK;
          fprintf(logfp,"     Latest               : %s\n",
-                       t.printf(tform2).c_str());
+                       printTime(t,tform2).c_str());
          break;
 
       case Yuma_ALM:
          t = YumaAlmStore.getInitialTime();
-         t += DayTime::HALFWEEK;
+         t += HALFWEEK;
          fprintf(logfp,"  Almanac reference time\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                       t.printf(tform2).c_str());
+                       printTime(t,tform2).c_str());
          t = YumaAlmStore.getFinalTime();
-         t -= DayTime::HALFWEEK;
+         t -= HALFWEEK;
          fprintf(logfp,"     Latest               : %s\n",
-                       t.printf(tform2).c_str());
+                       printTime(t,tform2).c_str());
          break;
 
       case SEM_ALM:
          t = SEMAlmStore.getInitialTime();
-         t += DayTime::HALFWEEK;
+         t += HALFWEEK;
          fprintf(logfp,"  Almanac reference time\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                       t.printf(tform2).c_str());
+                       printTime(t,tform2).c_str());
          t = SEMAlmStore.getFinalTime();
-         t -= DayTime::HALFWEEK;
+         t -= HALFWEEK;
          fprintf(logfp,"     Latest               : %s\n",
-                       t.printf(tform2).c_str());
+                       printTime(t,tform2).c_str());
          break;
          
       case SP3:
       {
-         DayTime begin = SP3EphList.getInitialTime();
-         DayTime end = SP3EphList.getFinalTime();
+         CommonTime begin = SP3EphList.getInitialTime();
+         CommonTime end = SP3EphList.getFinalTime();
          fprintf(logfp,"  Ephemeris effectivity\n");
          fprintf(logfp,"     Earliest             : %s\n",
-                 begin.printf(tform2).c_str());
+                 printTime(begin,tform2).c_str());
          fprintf(logfp,"     Latest               : %s\n",
-                 end.printf(tform2).c_str());
+                 printTime(end,tform2).c_str());
          break;
       }   
    }
    return;
 }
 
-gpstk::DayTime compStaVis::setStartTime()
+gpstk::CommonTime compStaVis::setStartTime()
 {
-   DayTime retDT = DayTime( 621, 0.0 );     // 12/1/1991
-   DayTime initialTime;
-   DayTime finalTime;
+   CommonTime retDT = CommonTime( 621, 0.0 );     // 12/1/1991
+   CommonTime initialTime;
+   CommonTime finalTime;
    
    switch(navFileType)
    {
@@ -424,7 +426,7 @@ gpstk::DayTime compStaVis::setStartTime()
    double diff = finalTime - initialTime;
    retDT = initialTime;
    retDT += diff/2.0;
-   retDT = DayTime( retDT.year(), retDT.DOY(), 0.0 );
+   retDT = CommonTime( static_cast<YDSTime>(retDT).year, static_cast<YDSTime>(retDT).doy, 0.0 );
    return(retDT);
 }        
 
@@ -460,20 +462,20 @@ void compStaVis::process()
    if (debugLevel) cout << "Setting evaluation start time: ";
    startT = evalStartTime;
    if (!evalStartTimeSet) startT = setStartTime();
-   if (debugLevel) cout << startT.printf("%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
+   if (debugLevel) cout << printTime(startT,"%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
    
       // If no end time commanded, compute for 23h 56m (GPS ground track repeat)
    if (debugLevel) cout << "Setting evaluation end time: ";
    siderealDay = true;
-   endT = startT + ( (double) DayTime::SEC_DAY - 240.0);
+   endT = startT + ( (double) SEC_PER_DAY - 240.0);
    if (evalEndTimeSet) endT = evalEndTime;
-   if ((int)(endT-startT)!=(int)(DayTime::SEC_DAY-240)) siderealDay = false;
+   if ((int)(endT-startT)!=(int)(SEC_PER_DAY-240)) siderealDay = false;
    if (debugLevel) 
    {
-      cout << endT.printf("%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
+      cout << printTime(endT,"%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
       cout << "Sidereal Day flag : " << siderealDay << endl;
    }
-   DayTime currT = startT;   
+   CommonTime currT = startT;   
    
       // Get coordinates for the stations
    if (debugLevel) cout << "Reading station coordinate file." << endl;
@@ -511,12 +513,12 @@ void compStaVis::process()
    {
       if (debugLevel)
       {
-         long sec = (long) currT.GPSsecond();
+         long sec = (long) static_cast<CivilTime>(currT).second;
          long newValue = sec / 3600;
          if (newValue!=lastValue)
          {
-            if (currT.hour()==0) cout << endl << currT.printf("%02m/%02d/%04Y ");
-            cout << currT.printf("%02H:, ");
+            if (static_cast<CivilTime>(currT).hour==0) cout << endl << printTime(currT,"%02m/%02d/%04Y ");
+            cout << printTime(currT,"%02H:, ");
             lastValue = newValue;
          }
       }
@@ -532,19 +534,19 @@ void compStaVis::process()
    
 }
 
-void compStaVis::generateHeader( gpstk::DayTime currT )
+void compStaVis::generateHeader( gpstk::CommonTime currT )
 {
-   DayTime now;
+   CommonTime now;
    string tform = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w";
    fprintf(logfp,"compStaVis output file.  Generated at %s\n",
-           now.printf("%02H:%02M on %02m/%02d/%02y").c_str() );
+           printTime(now,"%02H:%02M on %02m/%02d/%02y").c_str() );
    fprintf(logfp,"Program arguments\n");
    fprintf(logfp,"  Navigation file         : ",nFileNameOpt.getValue().front().c_str());
    vector<std::string> values = nFileNameOpt.getValue();
    for (int i=0; i<nFileNameOpt.getCount(); ++i) 
       fprintf(logfp,"%s  ",values[i].c_str());
    fprintf(logfp,"\n");
-   fprintf(logfp,"  Day of interest         : %s\n",currT.printf(tform).c_str());
+   fprintf(logfp,"  Day of interest         : %s\n",printTime(currT,tform).c_str());
    fprintf(logfp,"  Minimum elv ang         : %5.0f degrees\n",minimumElevationAngle);
    fprintf(logfp,"  Evaluation interval     : %5.0f sec\n",intervalInSeconds);
    fprintf(logfp,"  Only consider healthy SV: ");
@@ -552,8 +554,8 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
     else           fprintf(logfp,"no\n");
    fprintf(logfp,"  Station coordinates file: %s\n",mscFileName.getValue().front().c_str());
    printNavFileReferenceTime(logfp);
-   fprintf(logfp,"  Start time of evaluation: %s\n",startT.printf(tform+", %02H:%02M:%02S").c_str());
-   fprintf(logfp,"  End time of evaluation  : %s\n",endT.printf(tform+", %02H:%02M:%02S").c_str());
+   fprintf(logfp,"  Start time of evaluation: %s\n",printTime(startT,tform+", %02H:%02M:%02S").c_str());
+   fprintf(logfp,"  End time of evaluation  : %s\n",printTime(endT,tform+", %02H:%02M:%02S").c_str());
    if (siderealDay)
       fprintf(logfp,"  Evaluation covers one sidereal day.\n");
    
@@ -566,7 +568,7 @@ void compStaVis::generateHeader( gpstk::DayTime currT )
       for (si=stationPositions.begin();si!=stationPositions.end();++si)
       {
          string mnemonic = (string) si->first;
-         ECEF coordinates = (ECEF) si->second;
+         Position coordinates = (Position) si->second;
          fprintf(logfp," %4s  %10.3lf  %10.3lf  %10.3lf\n",
               mnemonic.c_str(),
               coordinates[0]/1000.0,
@@ -682,9 +684,9 @@ void compStaVis::generateTrailer( )
    fprintf(logfp,"\n");
 }
 
-void compStaVis::computeVisibility( gpstk::DayTime currT )
+void compStaVis::computeVisibility( gpstk::CommonTime currT )
 {
-   gpstk::ECEF SVpos[gpstk::MAX_PRN+1];
+   gpstk::Position SVpos[gpstk::MAX_PRN+1];
    bool SVAvail[gpstk::MAX_PRN+1];
    int SVHealth[gpstk::MAX_PRN+1];
    Xvt SVxvt;
@@ -736,7 +738,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
       }
    }
    
-   if (detailPrint) fprintf(logfp,"%s ",currT.printf("T%04Y:%03j:%02H:%02M:%02S").c_str());
+   if (detailPrint) fprintf(logfp,"%s ",printTime(currT,"T%04Y:%03j:%02H:%02M:%02S").c_str());
 
    string SVList;       // We'll build a list of SVs in view in this string
                         // We'll only use it if there's only one station selected.
@@ -775,7 +777,7 @@ void compStaVis::computeVisibility( gpstk::DayTime currT )
 
       SVList = "";
       char SVform[10];
-      ECEF staPos = splCI->second;
+      Position staPos = splCI->second;
       for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
       {
          if (SVAvail[PRNID])

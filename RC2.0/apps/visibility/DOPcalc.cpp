@@ -54,6 +54,7 @@
 #include "TropModel.hpp"
 #include "PRSolution.hpp"
 #include "DOP.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -115,7 +116,7 @@ private:
                            mscFileOpt, msidOpt;
    EphReader ephReader;
    double minElev;
-   DayTime startTime, stopTime;
+   CommonTime startTime, stopTime;
    Triple rxPos;
    Xvt rxXvt;
    unsigned msid;
@@ -239,7 +240,7 @@ void DOPCalc::process()
         oemIter!=obsEpochMap.end(); 
         oemIter++)
    {
-      DayTime tempTime  = oemIter->first;
+      CommonTime tempTime  = oemIter->first;
       ObsEpoch obsEpoch = oemIter->second;
       
          // for each epoch, we need a vector of the visible satellites
@@ -353,7 +354,7 @@ void DOPCalc::process()
       dop.Compute(prSolution.Covariance);
         
          // output data
-      cout << tempTime.printf("%4Y/%03j/%02H:%02M:%04.1f") 
+      cout << printTime(tempTime,"%4Y/%03j/%02H:%02M:%04.1f") 
            << fixed << right << setprecision(2)
            << " " << setw(3) << satIDVec.size()
            << " " << setw(8) << dop.GDOP
