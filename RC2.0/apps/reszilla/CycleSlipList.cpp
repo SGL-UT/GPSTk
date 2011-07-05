@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include "CycleSlipList.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -149,7 +150,7 @@ void CycleSlipList::dump(std::ostream& s) const
    for (const_iterator i=begin(); i!=end(); i++)
    {
       const CycleSlipRecord& cs=*i;
-      string time=cs.t.printf("%4Y %3j %02H:%02M:%04.1f");
+      string time=printTime(cs.t,"%4Y %3j %02H:%02M:%04.1f");
       
       s << ">c " << left << setw(20) << time
         << "  " << right << setw(2) << cs.sv1.id

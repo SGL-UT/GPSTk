@@ -38,13 +38,16 @@
 #ifndef CYCLESLIPLIST_HPP
 #define CYCLESLIPLIST_HPP
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <ObsID.hpp>
 #include <SatID.hpp>
+#include <StringUtils.hpp>
+
+using namespace std; 
 
 struct CycleSlipRecord
 {
-   gpstk::DayTime t;
+   gpstk::CommonTime t;
    double cycles;
    gpstk::SatID sv1,sv2;
    gpstk::ObsID oid;
