@@ -29,6 +29,8 @@
 
 #include "Logger.hpp"
 #include "StringUtils.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
 
 namespace gpstk
 {
@@ -75,7 +77,7 @@ namespace gpstk
          if(printInDetail)
          {
             (*pstrm) << "@ [" << StringUtils::lowerCase(slevel) << "] "
-               << msg.time.printf("%04Y/%02m/%02d %02H:%02M:%06.3f") << " " 
+               << printTime(msg.time,"%04Y/%02m/%02d %02H:%02M:%06.3f") << " " 
                << slocation <<"\n  "
                << msg.text << endl;
          }
@@ -92,7 +94,7 @@ namespace gpstk
 
    void Logger::log(const std::string& text, LogLevel level, ExceptionLocation location)
    {
-      DayTime now; now.setLocalTime();
+      CommonTime now; static_cast<Epoch>(now).setLocalTime();
       LogMessage msg(text,level,now,
          location.getFileName(),
          location.getFunctionName(),

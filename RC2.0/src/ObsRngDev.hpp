@@ -47,7 +47,7 @@
 
 #include <ostream>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "XvtStore.hpp"
 #include "Exception.hpp"
 #include "GPSEllipsoid.hpp"
@@ -73,7 +73,7 @@ namespace gpstk
        * Creates an empty, useless object to facilitate STL containers of this
        * object.
        */
-      ObsRngDev() throw() : wonky(false), obstime(DayTime::END_OF_TIME) {};
+      ObsRngDev() throw() : wonky(false), obstime(CommonTime::END_OF_TIME) {};
 
       /**
        * constructor.
@@ -91,7 +91,7 @@ namespace gpstk
        */ 
       ObsRngDev(const double prange,
                 const SatID& svid,
-                const DayTime& time,
+                const CommonTime& time,
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
@@ -112,7 +112,7 @@ namespace gpstk
        */ 
       ObsRngDev(const double prange,
                 const SatID& svid,
-                const DayTime& time,
+                const CommonTime& time,
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
@@ -136,7 +136,7 @@ namespace gpstk
        */ 
       ObsRngDev(const double prange,
                 const SatID& svid,
-                const DayTime& time,
+                const CommonTime& time,
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
@@ -160,7 +160,7 @@ namespace gpstk
        */ 
       ObsRngDev(const double prange,
                 const SatID& svid,
-                const DayTime& time,
+                const CommonTime& time,
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
@@ -184,7 +184,7 @@ namespace gpstk
       ObsRngDev(const double prange1,
                 const double prange2,
                 const SatID& svid,
-                const DayTime& time,
+                const CommonTime& time,
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
@@ -206,7 +206,7 @@ namespace gpstk
       ObsRngDev(const double prange1,
                 const double prange2,
                 const SatID& svid,
-                const DayTime& time,
+                const CommonTime& time,
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 const EllipsoidModel& em,
@@ -221,7 +221,7 @@ namespace gpstk
        * returns the time of the SV observation
        * \return time of SV observation
        */
-      const DayTime& getTime() const throw() { return obstime; }
+      const CommonTime& getTime() const throw() { return obstime; }
 
       /**
        * returns the observed SV's identifier
@@ -308,7 +308,7 @@ namespace gpstk
       void computeTrop(const TropModel& tm);
 
    public:
-      DayTime obstime;           ///< time of SV observation
+      CommonTime obstime;           ///< time of SV observation
       SatID svid;                ///< PRN number of observed SV
       double ord;                ///< difference between expected and observed range
       unsigned wonky;            ///< A bitmask defined by the application to flag questionable data

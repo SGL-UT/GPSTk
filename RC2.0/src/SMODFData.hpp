@@ -48,7 +48,7 @@
 
 #include "StringUtils.hpp"
 #include "FFData.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -62,13 +62,13 @@ namespace gpstk
    {
    public:
       /// constructor
-      SMODFData() : PRNID(0), time(gpstk::DayTime::BEGINNING_OF_TIME) 
+      SMODFData() : PRNID(0), time(gpstk::CommonTime::BEGINNING_OF_TIME) 
       {}
 
       /// destructor
       virtual ~SMODFData() {}
 
-      gpstk::DayTime time;  ///< the date of this data (from year DOY, SOD)
+      gpstk::CommonTime time;  ///< the date of this data (from year DOY, SOD)
       short PRNID;        ///< PRN number
       long  station;      ///< NIMA Monitor Station number (85408, etc.)
       short channel;      ///< receiver channel

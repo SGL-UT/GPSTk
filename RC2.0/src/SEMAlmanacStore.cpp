@@ -41,6 +41,7 @@
  */
 
 #include "SEMAlmanacStore.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -72,10 +73,10 @@ namespace gpstk
             // organizations have used the full GPS week number.  
             // This is an attempt to "do the right thing" in the 
             // broadest number of cases.
-         if (timeOfInterest>gpstk::DayTime::BEGINNING_OF_TIME &&
+         if (timeOfInterest>gpstk::CommonTime::BEGINNING_OF_TIME &&
              header.week < 1024)
          {
-            short diff = timeOfInterest.GPSfullweek() - header.week;
+            short diff = static_cast<GPSWeekSecond>(timeOfInterest).week - header.week;
             short nEpochs = (diff+512) / 1024;
             header.week += nEpochs * 1024;
          }

@@ -51,7 +51,8 @@
 #include <algorithm>
 
 #include "FileSpec.hpp"
-
+#include "Epoch.hpp"
+#include "TimeString.hpp"
 #include "StringUtils.hpp"
 
 using namespace std;
@@ -252,39 +253,39 @@ namespace gpstk
    }
 
 
-   DayTime FileSpec::extractDayTime(const string& filename) const
+   CommonTime FileSpec::extractCommonTime(const string& filename) const
       throw(FileSpecException)
    {
-         // this uses DayTime::setToString to get the time out
+         // this uses CommonTime::setToString to get the time out
       try
       {
-         DayTime dt(0.L);
-         dt.setToString(filename, fileSpecString);
+         CommonTime dt(0.L);
+         static_cast<Epoch>(dt).scanf(filename, fileSpecString);
          return dt;
       }
       catch(Exception& exc)
       {
             // too ambiguous - throw an exception
          FileSpecException fse(exc);
-         fse.addText("Can't generate a DayTime for this FileSpec");
+         fse.addText("Can't generate a CommonTime for this FileSpec");
          GPSTK_THROW(fse);
       }
       catch(std::exception& exc)
       {
          FileSpecException fse("std::exception: " + string(exc.what()));
-         fse.addText("Can't generate a DayTime for this FileSpec");
+         fse.addText("Can't generate a CommonTime for this FileSpec");
          GPSTK_THROW(fse);
       }
       catch(...)
       {
          FileSpecException fse("unknown exception");
-         fse.addText("Can't generate a DayTime for this FileSpec");
+         fse.addText("Can't generate a CommonTime for this FileSpec");
          GPSTK_THROW(fse);
       }
       
    }
 
-   std::string FileSpec::toString(const gpstk::DayTime& dt,
+   std::string FileSpec::toString(const gpstk::CommonTime& dt,
                                   const FSTStringMap& fstsMap) const
    {
       string toReturn;
@@ -292,7 +293,7 @@ namespace gpstk
          // Go through the list and insert all the non-date elements
          // into the string.  In other words, fill in the string with data
          // from the FSTSMap first.. For date elements, put the FileSpec string
-         // directly into the file name (i.e. '%3j').  Then use Daytime::printf
+         // directly into the file name (i.e. '%3j').  Then use CommonTime::printf
          // to fill in all the date elements at the end.
       vector<FileSpecElement>::const_iterator fslItr = fileSpecList.begin();
       while (fslItr != fileSpecList.end())
@@ -321,7 +322,7 @@ namespace gpstk
          fslItr++;
       }
 
-      toReturn = dt.printf(toReturn);
+      toReturn = printTime(dt,toReturn);
 
       return toReturn;
    }

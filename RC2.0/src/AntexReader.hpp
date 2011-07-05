@@ -37,7 +37,7 @@
 #include "Exception.hpp"
 #include "FFTextStream.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Antenna.hpp"
 
@@ -93,7 +93,7 @@ namespace gpstk
        *
        *      // Get antenna data and eccentricity for L1 for satellite GPS-07
        *      // at a specific epoch
-       *   DayTime epoch(2008, 6, 15, 10, 21, 12654.0);
+       *   CommonTime epoch(2008, 6, 15, 10, 21, 12654.0);
        *   satGPS07 = antexread.getAntenna( "G07", epoch );
        *   cout << satGPS07.getAntennaPCOffset( Antenna::G01 ) << endl;
        *
@@ -260,7 +260,7 @@ namespace gpstk
           */
       virtual Antenna getAntenna( const string& model,
                                   const string& serial,
-                                  const DayTime& epoch )
+                                  const CommonTime& epoch )
          throw(ObjectNotFound);
 
 
@@ -278,7 +278,7 @@ namespace gpstk
           * file that matches the conditions.
           */
       virtual Antenna getAntenna( const string& serial,
-                                  const DayTime& epoch )
+                                  const CommonTime& epoch )
          throw(ObjectNotFound);
 
 
@@ -310,7 +310,7 @@ namespace gpstk
          // Handy antenna data types
 
          // Validity:Antennas
-      typedef std::map< DayTime, Antenna > ValAntMap;
+      typedef std::map< CommonTime, Antenna > ValAntMap;
 
          // Calibration:Validity:Antennas
       typedef std::map< string, ValAntMap > CalValAntMap;

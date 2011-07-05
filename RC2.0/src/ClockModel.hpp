@@ -55,7 +55,7 @@
 
 #include <map>
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 /**
  * This is a abstract base class for a clock model
@@ -68,9 +68,9 @@ namespace gpstk
    public:
       ClockModel() throw() {};
 
-      virtual double getOffset(const gpstk::DayTime& t) const = 0;
+      virtual double getOffset(const gpstk::CommonTime& t) const = 0;
 
-      virtual bool isOffsetValid(const gpstk::DayTime& t) const = 0;
+      virtual bool isOffsetValid(const gpstk::CommonTime& t) const = 0;
 
    };
 }

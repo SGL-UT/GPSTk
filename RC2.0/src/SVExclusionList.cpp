@@ -33,6 +33,9 @@
 #include <stdio.h>
 // gpstk
 #include "SVExclusionList.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
+
 
 namespace gpstk
 {
@@ -41,8 +44,8 @@ namespace gpstk
 
 //--------------- Methods for SVExclusionList ---------------
    SVExclusionList::SVExclusionList( ) 
-     :earliestTime(gpstk::DayTime::END_OF_TIME),
-      latestTime(gpstk::DayTime::BEGINNING_OF_TIME)
+     :earliestTime(gpstk::CommonTime::END_OF_TIME),
+      latestTime(gpstk::CommonTime::BEGINNING_OF_TIME)
    {
       readFailCount = 0;
       timeSpecString = "%F %g";
@@ -50,8 +53,8 @@ namespace gpstk
    
    SVExclusionList::SVExclusionList( const std::string filename ) 
              throw(SVExclusionList::SVExclusionFileNotFound)
-     :earliestTime(gpstk::DayTime::END_OF_TIME),
-      latestTime(gpstk::DayTime::BEGINNING_OF_TIME)
+     :earliestTime(gpstk::CommonTime::END_OF_TIME),
+      latestTime(gpstk::CommonTime::BEGINNING_OF_TIME)
    {
       readFailCount = 0;
       timeSpecString = "%F %g";
@@ -74,9 +77,9 @@ namespace gpstk
       }
       
       std::string temps;
-      DayTime tempDTs;
+      CommonTime tempDTs;
       std::string tempe;
-      DayTime tempDTe;
+      CommonTime tempDTe;
       int lineCount =0;
       char fileLine[200];
       while (fgets(fileLine, 200, inf))
@@ -159,12 +162,14 @@ namespace gpstk
                try
                {
                   //cout << "Input start string: '" << temps << "'." << endl;
-                  tempDTs.setToString( temps, timeSpecString );
+                  static_cast<Epoch>(tempDTs).scanf( temps, timeSpecString );
                   //cout << "Input   end string: '" << tempe << "'." << endl;
-                  tempDTe.setToString( tempe, timeSpecString );
+                  static_cast<Epoch>(tempDTe).scanf( tempe, timeSpecString );
                   if (tempDTs<=tempDTe)
                   {
                      SVExclusion svEx( tempDTs, tempDTe, PRNID, comment );
+
+
        
                         // Add exclusion to the multimap
                      addExclusion( svEx );
@@ -179,7 +184,7 @@ namespace gpstk
                      readFailList.push_back( failString );
                   }
                }
-               catch (DayTime::DayTimeException& dte)
+               catch (Epoch::EpochException& dte)
                {
                   readFailCount++;
                   string failString = buildFailString(
@@ -188,7 +193,7 @@ namespace gpstk
                      filename);
                   readFailList.push_back( failString );
                }
-               catch (DayTime::FormatException& fe) 
+               catch (Epoch::FormatException& fe)
                {
                   readFailCount++;
                   string failString = buildFailString(
@@ -197,7 +202,7 @@ namespace gpstk
                      filename);
                   readFailList.push_back( failString );
                }
-               catch (gpstk::StringUtils::StringException& se)
+               catch (StringUtils::StringException& se)
                {
                   readFailCount++;
                   string failString = buildFailString(
@@ -237,7 +242,7 @@ namespace gpstk
 
    bool SVExclusionList::isExcluded( 
                    const int PRN, 
-                   const gpstk::DayTime dt ) const
+                   const gpstk::CommonTime dt ) const
    {
       SVXListPair p = exclusionMap.equal_range( PRN );
       for (SVXListCI ci=p.first; ci != p.second; ++ci)
@@ -248,7 +253,7 @@ namespace gpstk
    }
    
    const SVExclusion& SVExclusionList::getApplicableExclusion(
-                     const int PRN, const gpstk::DayTime dt) 
+                     const int PRN, const gpstk::CommonTime dt) 
                      const throw(SVExclusionList::NoSVExclusionFound)
    {
       SVXListPair p = exclusionMap.equal_range( PRN );
@@ -260,7 +265,7 @@ namespace gpstk
          // Failed to find an exclusion corresponding to the request
       char textOut[80];
       sprintf(textOut,"No SVExclusion found for PRN %02d at %s.",
-         PRN, dt.printf("week %F SOW %g, %02m/%02d/%02y %02H:%02M:%02S").c_str());
+         PRN, printTime(dt,"week %F SOW %g, %02m/%02d/%02y %02H:%02M:%02S").c_str());
       std::string sout = textOut;
       NoSVExclusionFound noSVX( sout );
       GPSTK_THROW(noSVX);
@@ -278,8 +283,8 @@ namespace gpstk
          for (SVXListCI ci=p.first; ci != p.second; ++ci)
          {
             fprintf(fp,"  %s to %s\n",
-               ci->second.getBeginTime().printf(timeString).c_str(),
-               ci->second.getEndTime().printf(timeString).c_str());
+               printTime(ci->second.getBeginTime(),timeString).c_str(),
+               printTime(ci->second.getEndTime(),timeString).c_str());
          }
       }
    }
@@ -326,8 +331,8 @@ namespace gpstk
    }                     
    
 //--------------- Methods for SVExclusion ---------------
-   SVExclusion::SVExclusion( const gpstk::DayTime begin, 
-                             const gpstk::DayTime end,
+   SVExclusion::SVExclusion( const gpstk::CommonTime begin, 
+                             const gpstk::CommonTime end,
                              const int PRNID, 
                              const std::string commentArg )
    {
@@ -337,7 +342,7 @@ namespace gpstk
       comment = commentArg;
    }
 
-   bool SVExclusion::isApplicable( const int PRNID, const gpstk::DayTime dt ) const
+   bool SVExclusion::isApplicable( const int PRNID, const gpstk::CommonTime dt ) const
    {
       if (dt>=begExclude && dt<=endExclude && PRN_IDENTIFIER==PRNID) return(true);
       return(false);

@@ -9,6 +9,8 @@
 #include "RinexClockHeader.hpp"
 #include "RinexClockData.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -42,7 +44,7 @@ namespace gpstk
       }
       line += string(1,' ');
 
-      line += time.printf("%4Y %02m %02d %02H %02M %9.6f");
+      line += printTime(time,"%4Y %02m %02d %02H %02M %9.6f");
       //line += rightJustify(asString(time.year()),4);
       //line += rightJustify(asString(time.month()),3);
       //line += rightJustify(asString(time.day()),3);
@@ -119,7 +121,7 @@ namespace gpstk
          site = string();
       }
 
-      time.setYMDHMS(asInt(line.substr( 8,4)),
+      time = CivilTime(asInt(line.substr( 8,4)),
                      asInt(line.substr(12,3)),
                      asInt(line.substr(15,3)),
                      asInt(line.substr(18,3)),
@@ -151,7 +153,7 @@ namespace gpstk
       s << " " << datatype;
       if(datatype == string("AR")) s << " " << site;
       else s << " " << sat.toString();
-      s << " " << time.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g");
+      s << " " << printTime(time,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g");
       s << scientific << setprecision(12)
          << " " << setw(19) << bias
          << " " << setw(19) << sig_bias;

@@ -38,11 +38,12 @@
 
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"  // for FormatException
+#include "CommonTime.hpp"  // for FormatException
 #include "Triple.hpp"
 #include "EllipsoidModel.hpp"
 #include "ReferenceFrame.hpp"
 #include "Xvt.hpp"
+#include "Epoch.hpp"
 
 namespace gpstk
 {
@@ -111,7 +112,7 @@ namespace gpstk
        * near either the pole or the origin.
        *
        * Position includes setToString() and printf() functions similar to those
-       * in gpstk::DayTime; this allows flexible and powerful I/O of Position to
+       * in gpstk::CommonTime; this allows flexible and powerful I/O of Position to
        * strings and streams.
        *
        * @sa positiontest.cpp for examples.
@@ -628,7 +629,7 @@ namespace gpstk
       Position& setToString(const std::string& str,
                             const std::string& fmt)
          throw(GeometryException,
-               DayTime::FormatException,
+               Epoch::FormatException,
                StringUtils::StringException);
 
 

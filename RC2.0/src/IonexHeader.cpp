@@ -34,6 +34,7 @@
 #include "MathBase.hpp"
 #include "IonexHeader.hpp"
 #include "IonexStream.hpp"
+#include "CivilTime.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -838,7 +839,7 @@ namespace gpstk
        *
        * It looks at \a line to obtain the needed information.
        */
-   DayTime IonexHeader::parseTime(const string& line) const
+   CommonTime IonexHeader::parseTime(const string& line) const
    {
 
       int year, month, day, hour, min, sec;
@@ -850,25 +851,25 @@ namespace gpstk
       min   = asInt(line.substr(24,6));
       sec   = asInt(line.substr(30,6));
 
-      return DayTime(year, month, day, hour, min, (double)sec);
+      return CivilTime(year, month, day, hour, min, (double)sec);
 
    }  // End of method 'IonexHeader::parseTime()'
 
 
-         /** Converts the daytime \a dt into a Ionex Obs time
+         /** Converts the CommonTime \a dt into a Ionex Obs time
           * string for the header
           */
-   string IonexHeader::writeTime(const DayTime& dt) const
+   string IonexHeader::writeTime(const CommonTime& dt) const
    {
 
       string line;
 
-      line  = rightJustify(asString<short>(dt.year()), 6);
-      line += rightJustify(asString<short>(dt.month()), 6);
-      line += rightJustify(asString<short>(dt.day()), 6);
-      line += rightJustify(asString<short>(dt.hour()), 6);
-      line += rightJustify(asString<short>(dt.minute()), 6);
-      line += rightJustify(asString (static_cast<int>(dt.second())), 6);
+      line  = rightJustify(asString<short>(static_cast<CivilTime>(dt).year), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).month), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).day), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).hour), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).minute), 6);
+      line += rightJustify(asString (static_cast<int>(static_cast<CivilTime>(dt).second)), 6);
 
       return line;
 

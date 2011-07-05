@@ -51,6 +51,7 @@
 #include "icd_gps_constants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "AlmOrbit.hpp"
+#include "GPSWeekSecond.hpp"
 #include <cmath>
 
 namespace gpstk
@@ -75,7 +76,7 @@ namespace gpstk
    {
    }
 
-   Xvt AlmOrbit :: svXvt(const DayTime& t) const
+   Xvt AlmOrbit :: svXvt(const CommonTime& t) const
       throw()
    {
       Xvt sv;
@@ -193,10 +194,10 @@ namespace gpstk
       return sv;
    }
 
-   DayTime AlmOrbit::getTransmitTime() const throw()
+   CommonTime AlmOrbit::getTransmitTime() const throw()
    {
-      DayTime transmitTime(0.L);
-      transmitTime.setGPSfullweek(getFullWeek(), (double)xmit_time);
+      CommonTime transmitTime(0.L);
+      transmitTime=GPSWeekSecond(getFullWeek(), (double)xmit_time);
       return transmitTime;      
    }
 
@@ -205,18 +206,18 @@ namespace gpstk
          // return value of the transmit week for the given PRN
       short xmit_week = week;
       double sow_diff = (double)(Toa - xmit_time);
-      if (sow_diff < -DayTime::HALFWEEK)
+      if (sow_diff < -HALFWEEK)
          xmit_week--;
-      else if (sow_diff > DayTime::HALFWEEK)
+      else if (sow_diff > HALFWEEK)
          xmit_week++;
 
       return xmit_week;
    }
 
-   DayTime AlmOrbit::getToaTime() const throw()
+   CommonTime AlmOrbit::getToaTime() const throw()
    {
-      DayTime toaTime(0.L);
-      toaTime.setGPSfullweek(week, (double)Toa);
+      CommonTime toaTime(0.L);
+      toaTime=GPSWeekSecond(week, (double)Toa);
       return toaTime;
    }
 

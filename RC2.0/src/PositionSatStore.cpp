@@ -50,13 +50,13 @@ namespace gpstk
    // Return value for the given satellite at the given time (usually via
    // interpolation of the data table). This interface from TabularSatStore.
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return object of type PositionRecord containing the data value(s).
    // @throw InvalidRequest if data value cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
-   PositionRecord PositionSatStore::getValue(const SatID& sat, const DayTime& ttag)
+   PositionRecord PositionSatStore::getValue(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       try {
@@ -73,7 +73,7 @@ namespace gpstk
 
          // pull data out of the data table
          int n,Nlow(Nhalf-1),Nhi(Nhalf),Nmatch(Nhalf);
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          vector<double> times,P[3],V[3],A[3],sigP[3],sigV[3],sigA[3];
 
          kt = it1; n=0;
@@ -154,13 +154,13 @@ namespace gpstk
 
    // Return the position for the given satellite at the given time
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return Triple containing the position ECEF XYZ meters
    // @throw InvalidRequest if result cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
-   Triple PositionSatStore::getPosition(const SatID& sat, const DayTime& ttag)
+   Triple PositionSatStore::getPosition(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       try {
@@ -176,7 +176,7 @@ namespace gpstk
 
          // pull data out of the data table
          vector<double> times,P[3];
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          kt = it1;
          while(1) {
             times.push_back(kt->first - ttag0);    // sec
@@ -199,13 +199,13 @@ namespace gpstk
 
    // Return the velocity for the given satellite at the given time
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return Triple containing the velocity ECEF XYZ meters/second
    // @throw InvalidRequest if result cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
-   Triple PositionSatStore::getVelocity(const SatID& sat, const DayTime& ttag)
+   Triple PositionSatStore::getVelocity(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       try {
@@ -220,7 +220,7 @@ namespace gpstk
          }
 
          // pull data out of the data table
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          vector<double> times,D[3];       // D will be either Pos or Vel
 
          kt = it1;
@@ -252,14 +252,14 @@ namespace gpstk
 
    // Return the acceleration for the given satellite at the given time
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return Triple containing the acceleration ECEF XYZ meters/second/second
    // @throw InvalidRequest if result cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    //  d) neither velocity nor acceleration data are present
-   Triple PositionSatStore::getAcceleration(const SatID& sat, const DayTime& ttag)
+   Triple PositionSatStore::getAcceleration(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       if(!haveVelocity && !haveAcceleration) {
@@ -281,7 +281,7 @@ namespace gpstk
 
          // pull data out of the data table
          vector<double> times,D[3];                // D will be either Vel or Acc
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          kt = it1;
          while(1) {
             times.push_back(kt->first - ttag0);    // sec
@@ -310,7 +310,7 @@ namespace gpstk
    }
 
    // Add a PositionRecord to the store.
-   void PositionSatStore::addPositionRecord(const SatID& sat, const DayTime& ttag,
+   void PositionSatStore::addPositionRecord(const SatID& sat, const CommonTime& ttag,
                                             const PositionRecord& rec) throw()
    {
       int i;
@@ -336,7 +336,7 @@ namespace gpstk
    }
 
    // Add position data (only) to the store
-   void PositionSatStore::addPositionData(const SatID& sat, const DayTime& ttag,
+   void PositionSatStore::addPositionData(const SatID& sat, const CommonTime& ttag,
                      const Triple& Pos, const Triple& Sig) throw()
    {
       if(tables.find(sat) != tables.end() &&
@@ -357,7 +357,7 @@ namespace gpstk
    }
 
    // Add velocity data (only) to the store
-   void PositionSatStore::addVelocityData(const SatID& sat, const DayTime& ttag,
+   void PositionSatStore::addVelocityData(const SatID& sat, const CommonTime& ttag,
                         const Triple& Vel, const Triple& Sig) throw()
    {
       haveVelocity = true;
@@ -380,7 +380,7 @@ namespace gpstk
    }
 
    // Add acceleration data (only) to the store
-   void PositionSatStore::addAccelerationData(const SatID& sat, const DayTime& ttag,
+   void PositionSatStore::addAccelerationData(const SatID& sat, const CommonTime& ttag,
                             const Triple& Acc, const Triple& Sig) throw()
    {
       haveAcceleration = true;

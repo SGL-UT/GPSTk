@@ -29,7 +29,7 @@
 
 #include <cstring>
  
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "BinexData.hpp"
 #include "BinexStream.hpp"
 

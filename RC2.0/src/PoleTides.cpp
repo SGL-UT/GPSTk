@@ -29,6 +29,8 @@
 
 
 #include "PoleTides.hpp"
+#include "CivilTime.hpp"
+#include "Epoch.hpp"
 
 
 namespace gpstk
@@ -51,7 +53,7 @@ namespace gpstk
        *    set the current pole displacement parameters
        *
        */
-   Triple PoleTides::getPoleTide( const DayTime& t,
+   Triple PoleTides::getPoleTide( const CommonTime& t,
                                   const Position& p )
       throw(InvalidRequest)
    {
@@ -60,7 +62,7 @@ namespace gpstk
       Triple res(0.0, 0.0, 0.0);
 
          // Declare J2000 reference time: January 1st, 2000, at noon
-      const DayTime j2000(2000, 1, 1, 12, 0, 0.0);
+      const CivilTime j2000(2000, 1, 1, 12, 0, 0.0);
 
 
       try
@@ -73,7 +75,7 @@ namespace gpstk
             // Compute appropriate running averages
             // Get time difference between current epoch and
             // J2000.0, in years
-         double timedif((t.MJD() - j2000.MJD())/365.25);
+         double timedif((static_cast<Epoch>(t).MJD() - static_cast<Epoch>(j2000).MJD())/365.25);
 
          double xpbar(0.054 + timedif*0.00083);
          double ypbar(0.357 + timedif*0.00395);

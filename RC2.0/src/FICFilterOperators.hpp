@@ -129,14 +129,14 @@ namespace gpstk
       public std::unary_function<gpstk::FICData, bool>
    {
    public:
-      FICDataFilterStartTime(const gpstk::DayTime start)
+      FICDataFilterStartTime(const gpstk::CommonTime start)
          : stime(start)
          {}
 
       /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
-            DayTime dt(0,0.0);
+            CommonTime dt(0,0.0);
             if(l.getTransmitTime(dt)) //if valid trasmit time
               return dt <= stime;
             else
@@ -144,21 +144,21 @@ namespace gpstk
          }
 
    private:
-      gpstk::DayTime stime;
+      gpstk::CommonTime stime;
    };
 
    struct FICDataFilterEndTime :
       public std::unary_function<gpstk::FICData, bool>
    {
    public:
-      FICDataFilterEndTime(const gpstk::DayTime end)
+      FICDataFilterEndTime(const gpstk::CommonTime end)
          : etime(end)
          {}
 
       /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
-            DayTime dt(0,0.0);
+            CommonTime dt(0,0.0);
             if(l.getTransmitTime(dt)) //if valid trasmit time
               return dt >= etime;
             else
@@ -166,7 +166,7 @@ namespace gpstk
          }
 
    private:
-      gpstk::DayTime etime;
+      gpstk::CommonTime etime;
    };
 
       /// Finds all data that matches the given block numbers

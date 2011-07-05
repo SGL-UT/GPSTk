@@ -111,7 +111,7 @@ namespace gpstk
          //@{
       int mapID;     ///< denote the internal number of the current map
       int dim[3];    ///< How many values are along latitude, longitude, height
-      DayTime time;  ///< the time corresponding to the current data records
+      CommonTime time;  ///< the time corresponding to the current data records
 
       IonexValType type;      ///< Type of data either TEC or RMS
       Vector<double> data;    ///< TEC or RMS data
@@ -129,7 +129,7 @@ namespace gpstk
 
          /// Default constructor.
       IonexData()
-         : time(DayTime::BEGINNING_OF_TIME), valid(false) {};
+         : time(CommonTime::BEGINNING_OF_TIME), valid(false) {};
 
 
          /// Destructor
@@ -221,21 +221,21 @@ namespace gpstk
    private:
 
 
-         /** Writes the DayTime object into IONEX format. If it's a bad time,
+         /** Writes the CommonTime object into IONEX format. If it's a bad time,
           * it will return blanks.
           *
           * @param dt    time to be written into a IONEX data record.
           */
-      std::string writeTime(const DayTime& dt) const
+      std::string writeTime(const CommonTime& dt) const
          throw(gpstk::StringUtils::StringException);
 
 
-         /** This function constructs a DayTime object from the given
+         /** This function constructs a CommonTime object from the given
           *  parameters.
           *
           * @param line    Encoded time string found in the IONEX record.
           */
-      DayTime parseTime(const std::string& line) const;
+      CommonTime parseTime(const std::string& line) const;
 
 
    }; // End of class 'IonexData'

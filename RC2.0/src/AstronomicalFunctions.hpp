@@ -34,7 +34,7 @@
 #include <cmath>
 #include <string>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "icd_gps_constants.hpp"
 
@@ -84,7 +84,7 @@ namespace gpstk
        * @return Triple in CTS(ECEF) coordinate system.
        */
    Triple CIS2CTS(const Triple posCIS,
-                  const DayTime& t);
+                  const CommonTime& t);
 
 
       /** Function to convert from UTC to sidereal time
@@ -92,7 +92,7 @@ namespace gpstk
        *
        * @return sidereal time in hours.
        */
-   double UTC2SID(const DayTime& t);
+   double UTC2SID(const CommonTime& t);
 
       //@}
    

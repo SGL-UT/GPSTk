@@ -61,10 +61,10 @@ namespace gpstk
             os << " Data stored for " << nsats()
                << " satellites\n";
 
-            DayTime initialTime(getInitialTime()), finalTime(getFinalTime());
+            CommonTime initialTime(getInitialTime()), finalTime(getFinalTime());
             os << " Time span of data: ";
-            if(initialTime == DayTime::END_OF_TIME ||
-               finalTime == DayTime::BEGINNING_OF_TIME)
+            if(initialTime == CommonTime::END_OF_TIME ||
+               finalTime == CommonTime::BEGINNING_OF_TIME)
                   os << "(there are no time limits)" << std::endl;
             else
                os << initialTime.printf(fmt) << " TO "

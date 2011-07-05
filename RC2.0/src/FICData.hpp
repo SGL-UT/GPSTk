@@ -58,7 +58,7 @@
 #include "FICBase.hpp"
 #include "EngEphemeris.hpp"
 #include "AlmOrbit.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -119,10 +119,10 @@ namespace gpstk
 
          /**
           * Sets the transmit time of the current block of data.
-          * @param dt (output) a daytime object containing the transmit time
+          * @param dt (output) a CommonTime object containing the transmit time
           * @return if the process was sucessful, return true, else false
           */
-      bool getTransmitTime(DayTime& dt) const;
+      bool getTransmitTime(CommonTime& dt) const;
 
          /**  
           * Cast *this to an Engineering Ephemeiris Object.

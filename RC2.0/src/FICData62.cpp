@@ -50,7 +50,7 @@
 
 #include "StringUtils.hpp"
 #include "icd_gps_constants.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FICData62.hpp"
 
 #include <cmath>

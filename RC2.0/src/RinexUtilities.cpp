@@ -421,7 +421,7 @@ try {
    if(files.size() <= 1) return msg;
 
    // build a hash with key = start time, value = filename
-   multimap<DayTime,string> hash;
+   multimap<CommonTime,string> hash;
    for(int n=0; n<files.size(); n++) {
       try {
          RinexObsHeader header;
@@ -438,7 +438,7 @@ try {
             continue;
          }
          //hash[header.firstObs] = files[n];
-         hash.insert(multimap<DayTime,string>::value_type(header.firstObs,files[n]));
+         hash.insert(multimap<CommonTime,string>::value_type(header.firstObs,files[n]));
       }
       catch(Exception& e) {
          //msg += "Exception " + e.what() + " in file " + files[n] + "\n";
@@ -449,7 +449,7 @@ try {
 
    // return the sorted file names
    files.clear();
-   multimap<DayTime,string>::const_iterator it = hash.begin();
+   multimap<CommonTime,string>::const_iterator it = hash.begin();
    while(it != hash.end()) {
       files.push_back(it->second);
       it++;

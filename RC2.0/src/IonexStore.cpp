@@ -106,7 +106,7 @@ namespace gpstk
       throw()
    {
 
-      DayTime t(iod.time);
+      CommonTime t(iod.time);
       IonexData::IonexValType type(iod.type);
 
       if (type != IonexData::UN)
@@ -232,8 +232,8 @@ namespace gpstk
 
       inxMaps.clear();
 
-      initialTime = DayTime::END_OF_TIME;
-      finalTime = DayTime::BEGINNING_OF_TIME;
+      initialTime = CommonTime::END_OF_TIME;
+      finalTime = CommonTime::BEGINNING_OF_TIME;
 
       return;
 
@@ -250,7 +250,7 @@ namespace gpstk
        * A simple 4-point formula is applied to interpolate between the grid
        * points. See more at IonexData::getValue()
        *
-       * @param t          Time tag of signal (DayTime object)
+       * @param t          Time tag of signal (CommonTime object)
        * @param RX         Receiver position in GEOCENTRIC coordinates
        * @param strategy   Interpolation strategy
        *                   (1) take neareast map,
@@ -263,7 +263,7 @@ namespace gpstk
        *                   (Triple object with: TEC and RMS in
        *                   TECU and the ionosphere height in meters)
        */
-   Triple IonexStore::getIonexValue( const DayTime& t,
+   Triple IonexStore::getIonexValue( const CommonTime& t,
                                      const Position& RX,
                                      int strategy ) const
       throw(InvalidRequest)
@@ -310,7 +310,7 @@ namespace gpstk
       }
 
          // let's look for valid Ionex maps
-      DayTime T[2];
+      CommonTime T[2];
          // iterator
       IonexMap::const_iterator itm = inxMaps.find(t);
       try
@@ -432,7 +432,7 @@ namespace gpstk
 
       /** Get slant total electron content (STEC) in TECU
        *
-       * @param elevation     Time tag of signal (DayTime object)
+       * @param elevation     Time tag of signal (CommonTime object)
        * @param tecval        TEC value as derived from IONEX file (TECU)
        * @param ionoMapType   Type of ionosphere mapping function (string)
        *                      (0) NONE no mapping function is applied
@@ -480,7 +480,7 @@ namespace gpstk
 
       /** Get ionospheric slant delay for a given frequency
        *
-       * @param elevation     Time tag of signal (DayTime object)
+       * @param elevation     Time tag of signal (CommonTime object)
        * @param tecval        TEC value as derived from IONEX file (TECU)
        * @param freq          Frequency value, in Hz
        * @param ionoMapType   Type of ionosphere mapping function (string)
@@ -611,7 +611,7 @@ namespace gpstk
        * @throw InvalidRequest object thrown when no DCB value is found
        */
    double IonexStore::findDCB( const SatID sat,
-                               const DayTime& time ) const
+                               const CommonTime& time ) const
       throw(InvalidRequest)
    {
 

@@ -661,9 +661,7 @@ namespace gpstk
       // @return a reference to this object.
    Position& Position::setToString(const std::string& str,
                                    const std::string& fmt)
-      throw(GeometryException,
-            DayTime::FormatException,
-            StringUtils::StringException)
+      throw(GeometryException,Epoch::FormatException,StringUtils::StringException)
    {
       try {
             // make an object to return (so we don't fiddle with *this 
@@ -784,7 +782,7 @@ namespace gpstk
                case 'A':
                   glat = asDouble(toBeRemoved);
                   if(glat > 90. || glat < -90.) {
-                     DayTime::FormatException f(
+                     Epoch::FormatException f(
                            "Invalid geodetic latitude for setTostring: "
                            + toBeRemoved);
                      GPSTK_THROW(f);
@@ -794,7 +792,7 @@ namespace gpstk
                case 'a':
                   clat = asDouble(toBeRemoved);
                   if(clat > 90. || clat < -90.) {
-                     DayTime::FormatException f(
+                     Epoch::FormatException f(
                            "Invalid geocentric latitude for setTostring: "
                            + toBeRemoved);
                      GPSTK_THROW(f);
@@ -828,7 +826,7 @@ namespace gpstk
                case 't':
                   theta = asDouble(toBeRemoved);
                   if(theta > 180. || theta < 0.) {
-                     DayTime::FormatException f("Invalid theta for setTostring: "
+                     Epoch::FormatException f("Invalid theta for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -837,7 +835,7 @@ namespace gpstk
                case 'T':
                   theta = asDouble(toBeRemoved) * RAD_TO_DEG;
                   if(theta > 90. || theta < -90.) {
-                     DayTime::FormatException f("Invalid theta for setTostring: "
+                     Epoch::FormatException f("Invalid theta for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -868,7 +866,7 @@ namespace gpstk
                case 'r':
                   rad = asDouble(toBeRemoved);
                   if(rad < 0.0) {
-                     DayTime::FormatException f("Invalid radius for setTostring: "
+                     Epoch::FormatException f("Invalid radius for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -877,7 +875,7 @@ namespace gpstk
                case 'R':
                   rad = asDouble(toBeRemoved) * 1000;
                   if(rad < 0.0) {
-                     DayTime::FormatException f("Invalid radius for setTostring: "
+                     Epoch::FormatException f("Invalid radius for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -909,7 +907,7 @@ namespace gpstk
          if ( s.length() != 0  ) 
          {
                // throw an error - something didn't get processed in the strings
-            DayTime::FormatException fe(
+            Epoch::FormatException fe(
                "Processing error - parts of strings left unread - " + s);
             GPSTK_THROW(fe);
          }
@@ -917,7 +915,7 @@ namespace gpstk
          if (f.length() != 0)
          {
                // throw an error - something didn't get processed in the strings
-            DayTime::FormatException fe(
+            Epoch::FormatException fe(
                "Processing error - parts of strings left unread - " + f);
             GPSTK_THROW(fe);
          }
@@ -925,7 +923,7 @@ namespace gpstk
             // throw if the specification is incomplete
          if ( !(hX && hY && hZ) && !(hglat && hlon && hht) &&
               !(hclat && hlon && hrad) && !(htheta && hphi && hrad)) {
-            DayTime::FormatException fe("Incomplete specification for setToString");
+            Epoch::FormatException fe("Incomplete specification for setToString");
             GPSTK_THROW(fe);
          }
 

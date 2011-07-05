@@ -27,13 +27,13 @@ namespace gpstk
    // Return value for the given satellite at the given time (usually via
    // interpolation of the data table). This interface from TabularSatStore.
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return object of type ClockRecord containing the data value(s).
    // @throw InvalidRequest if data value cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
-   ClockRecord ClockSatStore::getValue(const SatID& sat, const DayTime& ttag)
+   ClockRecord ClockSatStore::getValue(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       try {
@@ -49,7 +49,7 @@ namespace gpstk
 
          // pull data out of the data table
          int n,Nlow(Nhalf-1),Nhi(Nhalf),Nmatch(Nhalf);
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          vector<double> times,biases,drifts,accels,sig_biases,sig_drifts,sig_accels;
 
          kt=it1; n=0;
@@ -156,13 +156,13 @@ namespace gpstk
 
    // Return the clock bias for the given satellite at the given time
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return double the clock bias
    // @throw InvalidRequest if bias cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
-   double ClockSatStore::getClockBias(const SatID& sat, const DayTime& ttag)
+   double ClockSatStore::getClockBias(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       try {
@@ -177,7 +177,7 @@ namespace gpstk
 
          // pull data out of the data table
          vector<double> times,biases;
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          kt = it1;
          while(1) {
             times.push_back(kt->first - ttag0);    // sec
@@ -203,14 +203,14 @@ namespace gpstk
 
    // Return the clock drift for the given satellite at the given time
    // @param[in] sat the SatID of the satellite of interest
-   // @param[in] ttag the time (DayTime) of interest
+   // @param[in] ttag the time (CommonTime) of interest
    // @return double the clock drift
    // @throw InvalidRequest if drift cannot be computed, for example because
    //  a) the time t does not lie within the time limits of the data table
    //  b) checkDataGap is true and there is a data gap
    //  c) checkInterval is true and the interval is larger than maxInterval
    //  d) there is no drift data in the store
-   double ClockSatStore::getClockDrift(const SatID& sat, const DayTime& ttag)
+   double ClockSatStore::getClockDrift(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
    {
       try {
@@ -225,7 +225,7 @@ namespace gpstk
 
          // pull data out of the data table
          int n,Nhi(Nhalf);
-         DayTime ttag0(it1->first);
+         CommonTime ttag0(it1->first);
          vector<double> times,biases,drifts;
 
          n = 0;
@@ -274,7 +274,7 @@ namespace gpstk
    }
 
    // Add a ClockRecord to the store.
-   void ClockSatStore::addClockRecord(const SatID& sat, const DayTime& ttag,
+   void ClockSatStore::addClockRecord(const SatID& sat, const CommonTime& ttag,
                                       const ClockRecord& rec) throw()
    {
       if(rec.drift != 0.0) haveClockDrift = true;
@@ -300,7 +300,7 @@ namespace gpstk
    }
 
    // Add clock bias (only) data to the store
-   void ClockSatStore::addClockBias(const SatID& sat, const DayTime& ttag,
+   void ClockSatStore::addClockBias(const SatID& sat, const CommonTime& ttag,
                                     const double& bias, const double& sig) throw()
    {
       if(tables.find(sat) != tables.end() &&
@@ -322,7 +322,7 @@ namespace gpstk
    }
 
    // Add clock drift (only) data to the store
-   void ClockSatStore::addClockDrift(const SatID& sat, const DayTime& ttag,
+   void ClockSatStore::addClockDrift(const SatID& sat, const CommonTime& ttag,
                                     const double& drift, const double& sig) throw()
    {
       haveClockDrift = true;
@@ -346,7 +346,7 @@ namespace gpstk
    }
 
    // Add clock acceleration (only) data to the store
-   void ClockSatStore::addClockAcceleration(const SatID& sat, const DayTime& ttag,
+   void ClockSatStore::addClockAcceleration(const SatID& sat, const CommonTime& ttag,
                                     const double& accel, const double& sig) throw()
    {
       haveClockAccel = true;

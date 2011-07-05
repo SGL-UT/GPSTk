@@ -45,7 +45,7 @@
  */
 
 #include <map>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Xvt.hpp"
 
@@ -68,16 +68,16 @@ namespace gpstk
                double aAF0, double aAF1, long aToa, long axmit_time,
                short aweek, short aSV_health);
 
-      Xvt svXvt(const DayTime& t) const throw();
+      Xvt svXvt(const CommonTime& t) const throw();
 
       short getPRNID() const throw()
       { return PRN; }
 
          /// returns full week of TRANSMIT TIME
       short getFullWeek() const throw();
-      DayTime getTransmitTime() const throw();
-      DayTime getToaTime() const throw();
-      DayTime getTimestamp() const throw() { return getToaTime(); }
+      CommonTime getTransmitTime() const throw();
+      CommonTime getToaTime() const throw();
+      CommonTime getTimestamp() const throw() { return getToaTime(); }
       short getSVHealth() const throw() { return SV_health; }
 
       void dump(std::ostream& s = std::cout, int verbosity=1) const;

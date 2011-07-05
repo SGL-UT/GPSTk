@@ -10,7 +10,7 @@
 
 #include "RinexSatID.hpp"
 #include "RinexClockBase.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include <iomanip>
 
 namespace gpstk
@@ -66,7 +66,7 @@ namespace gpstk
       std::string datatype;   ///< Data type : AR, AS, etc
       RinexSatID sat;         ///< Satellite ID        (if AS)
       std::string site;       ///< Site label (4-char) (if AR)
-      DayTime time;           ///< Time of epoch for this record
+      CommonTime time;           ///< Time of epoch for this record
       double bias;            ///< Clock bias in seconds
       double sig_bias;        ///< Clock bias sigma in seconds
       double drift;           ///< Clock drift in sec/sec
@@ -81,7 +81,7 @@ namespace gpstk
       {
          datatype = std::string();
          sat = RinexSatID(-1,RinexSatID::systemGPS);
-         time = DayTime::BEGINNING_OF_TIME;
+         time = CommonTime::BEGINNING_OF_TIME;
          bias = sig_bias = drift = sig_drift = accel = sig_accel = 0.0;
       }
 

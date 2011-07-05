@@ -30,6 +30,7 @@
 
 
 #include "OceanLoading.hpp"
+#include "YDSTime.hpp"
 
 
 namespace gpstk
@@ -50,7 +51,7 @@ namespace gpstk
        * about the reason the request failed.
        */
    Triple OceanLoading::getOceanLoading( const string& name,
-                                         const DayTime& t )
+                                         const CommonTime& t )
       throw(InvalidRequest)
    {
 
@@ -121,7 +122,7 @@ namespace gpstk
        * @return A Vector<double> of 11 elements with the corresponding
        * astronomical arguments to be used in ocean loading model.
        */
-   Vector<double> OceanLoading::getArg(const DayTime& time)
+   Vector<double> OceanLoading::getArg(const CommonTime& time)
    {
 
       const int NUM_HARMONICS = 11;
@@ -168,13 +169,13 @@ namespace gpstk
       Vector<double> arguments(NUM_HARMONICS,0.0);
 
          // Get day of year
-      short year(time.year());
+      short year(static_cast<YDSTime>(time).year);
 
          // Fractional part of day, in seconds
-      double fday(time.DOYsecond());
+      double fday(static_cast<YDSTime>(time).sod);
 
          // Compute time
-      double d(time.DOY()+365.0*(year-1975.0)+floor((year-1973.0)/4.0));
+      double d(static_cast<YDSTime>(time).doy+365.0*(year-1975.0)+floor((year-1973.0)/4.0));
       double t((27392.500528+1.000000035*d)/36525.0);
 
          // Mean longitude of Sun at beginning of day

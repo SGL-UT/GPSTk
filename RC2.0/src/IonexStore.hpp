@@ -71,8 +71,8 @@ namespace gpstk
          /// Default constructor.
       IonexStore()
          throw()
-         : initialTime(DayTime::END_OF_TIME),
-           finalTime(DayTime::BEGINNING_OF_TIME)
+         : initialTime(CommonTime::END_OF_TIME),
+           finalTime(CommonTime::BEGINNING_OF_TIME)
       {};
 
 
@@ -116,7 +116,7 @@ namespace gpstk
           * A simple 4-point formula is applied to interpolate between the grid
           * points. See more at IonexData::getValue()
           *
-          * @param t          Time tag of signal (DayTime object)
+          * @param t          Time tag of signal (CommonTime object)
           * @param RX         Receiver position in ECEF cartesian coordinates
           *                   (meters).
           * @param strategy   Interpolation strategy
@@ -130,7 +130,7 @@ namespace gpstk
           *                   (Triple object with: TEC and RMS in TECU and 
           *                   the ionosphere height in meters)
           */
-      Triple getIonexValue( const DayTime& t,
+      Triple getIonexValue( const CommonTime& t,
                             const Position& RX,
                             int strategy = 3 ) const
          throw(InvalidRequest);
@@ -139,7 +139,7 @@ namespace gpstk
 
       /** Get slant total electron content (STEC) in TECU
        *
-       * @param elevation     Time tag of signal (DayTime object)
+       * @param elevation     Time tag of signal (CommonTime object)
        * @param tecval        TEC value as derived from IONEX file (TECU)
        * @param ionoMapType   Type of ionosphere mapping function (string)
        *                      @sa IonexStore::iono_mapping_function
@@ -155,7 +155,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for a given frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param freq          Frequency value, in Hz
           * @param ionoMapType   Type of ionosphere mapping function (string)
@@ -175,7 +175,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for L1 frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param ionoMapType   Type of ionosphere mapping function (string)
           *                      @sa IonexStore::iono_mapping_function
@@ -191,7 +191,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for L2 frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param ionoMapType   Type of ionosphere mapping function (string)
           *                      @sa IonexStore::iono_mapping_function
@@ -207,7 +207,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for L5 frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param ionoMapType   Type of ionosphere mapping function (string)
           *                      @sa IonexStore::iono_mapping_function
@@ -223,7 +223,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for L6 frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param ionoMapType   Type of ionosphere mapping function (string)
           *                      @sa IonexStore::iono_mapping_function
@@ -239,7 +239,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for L7 frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param ionoMapType   Type of ionosphere mapping function (string)
           *                      @sa IonexStore::iono_mapping_function
@@ -255,7 +255,7 @@ namespace gpstk
 
          /** Get ionospheric slant delay for L8 frequency
           *
-          * @param elevation     Time tag of signal (DayTime object)
+          * @param elevation     Time tag of signal (CommonTime object)
           * @param tecval        TEC value as derived from IONEX file (TECU)
           * @param ionoMapType   Type of ionosphere mapping function (string)
           *                      @sa IonexStore::iono_mapping_function
@@ -295,7 +295,7 @@ namespace gpstk
           *
           * @throw      InvalidRequest This is thrown if the object has no data.
           */
-      DayTime getInitialTime() const
+      CommonTime getInitialTime() const
          throw(InvalidRequest)
       { return initialTime; }
 
@@ -308,7 +308,7 @@ namespace gpstk
           *
           * @throw      InvalidRequest This is thrown if the object has no data.
           */
-      DayTime getFinalTime() const
+      CommonTime getFinalTime() const
          throw(InvalidRequest)
       { return finalTime; }
 
@@ -323,7 +323,7 @@ namespace gpstk
           * @throw InvalidRequest object thrown when no DCB value is found
           */
       double findDCB( const SatID sat,
-                      const DayTime& time ) const
+                      const CommonTime& time ) const
          throw(InvalidRequest);
 
 
@@ -336,7 +336,7 @@ namespace gpstk
           * @warning There may be gaps in the data, i.e. the data may not be
           *          continuous.
           */
-      DayTime initialTime, finalTime;
+      CommonTime initialTime, finalTime;
 
 
          /// The key to this map is IonexValType
@@ -344,7 +344,7 @@ namespace gpstk
 
 
          /// The key to this map is the time
-      typedef std::map<DayTime, IonexValTypeMap> IonexMap;
+      typedef std::map<CommonTime, IonexValTypeMap> IonexMap;
 
 
          /// Map of IONEX maps
@@ -352,7 +352,7 @@ namespace gpstk
 
 
          /// The key of this map is the time (first epoch as in IonexHeader)
-      typedef std::map<DayTime, IonexHeader::SatDCBMap> IonexDCBMap;
+      typedef std::map<CommonTime, IonexHeader::SatDCBMap> IonexDCBMap;
 
 
          /// Map of DCB values (IonexHeader.firstEpoch, IonexHeader.svsmap)

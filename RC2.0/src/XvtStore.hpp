@@ -49,7 +49,6 @@
 
 #include "Exception.hpp"
 #include "CommonTime.hpp"
-#include "Xt.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
@@ -75,9 +74,7 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xt getXt(const IndexType& id, const CommonTime& t)
-         const throw( InvalidRequest )
-         = 0;
+
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.

@@ -52,7 +52,9 @@
 #include "FICData.hpp"
 #include "FICStream.hpp"
 #include "FICAStream.hpp"
-
+#include "YDSTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
 #include <cmath>
 
 #include "gpstkplatform.h"
@@ -207,7 +209,7 @@ namespace gpstk
       }
    }
 
-   bool FICData::getTransmitTime(DayTime& dt) const
+   bool FICData::getTransmitTime(CommonTime& dt) const
    {
       short week;
       double SOW;
@@ -233,7 +235,7 @@ namespace gpstk
             return false;
             break;
       }
-      dt.setGPSfullweek(week, SOW);
+      dt=GPSWeekSecond(week, SOW);
       return true;
    }
 
@@ -262,14 +264,14 @@ namespace gpstk
       epochTime = f[12];
       xmitTime = f[2];
       diff = -1 * (epochTime - xmitTime);
-      if (diff > DayTime::HALFWEEK) epochWeek = (short) f[5] + 1;
+      if (diff > HALFWEEK) epochWeek = (short) f[5] + 1;
       else epochWeek = (short) f[5];
       timeDisplay( os, "Clock Epoch:", epochWeek, f[12], 1 );
 
       epochTime = f[33];
       xmitTime = f[22];
       diff = -1 * (epochTime - xmitTime);
-      if (diff > DayTime::HALFWEEK) epochWeek = (short) f[5] + 1;
+      if (diff > HALFWEEK) epochWeek = (short) f[5] + 1;
       else epochWeek = (short) f[5];
       timeDisplay( os, "Eph Epoch:",   epochWeek, f[33], 0 );
 
@@ -841,8 +843,8 @@ namespace gpstk
       short SOH;
 
       SOW = (long) HOW;
-      DOW = (short) (SOW / DayTime::SEC_DAY);
-      SOD = SOW - DOW * long(DayTime::SEC_DAY);
+      DOW = (short) (SOW / SEC_PER_DAY);
+      SOD = SOW - DOW * long(SEC_PER_DAY);
       hour = (short) (SOD/3600);
 
       SOH = (short) (SOD - (hour*3600));
@@ -880,7 +882,7 @@ namespace gpstk
                               const short week, const double SOW, 
                               const short headerFlag ) const
    {
-      DayTime dt;
+      CommonTime dt;
       short slen;
       short j;
 
@@ -890,17 +892,17 @@ namespace gpstk
       slen = std::strlen(legend);
       for (j=1;j<(15-slen);j++) os << " ";
 
-         // Convert to daytime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      dt.setGPSfullweek(week, SOW);
-
+         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+      dt=GPSWeekSecond(week, SOW);
+      int weekbit10= week& 0x3FF;
       os.width(4);
-      os << dt.GPSfullweek() << "(";
+      os << static_cast<GPSWeekSecond>(dt).week << "(";
       os.width(4);
-      os << dt.GPS10bitweek() << ")  ";
+      os << weekbit10 << ")  ";
       os.width(6);
-      os << dt.GPSsecond() << "   ";
+      os << static_cast<YDSTime>(dt).sod << "   ";
 
-      switch (dt.GPSday())
+      switch (static_cast<YDSTime>(dt).doy)
       {
          case 0: os << "Sun-0"; break;
          case 1: os << "Mon-1"; break;
@@ -914,21 +916,21 @@ namespace gpstk
       os << "   ";
       os.fill('0');
       os.width(3);
-      os << dt.DOYday() << "   ";
+      os << static_cast<YDSTime>(dt).doy << "   ";
       os.width(5);
-      os << dt.DOYsecond() << "   ";
+      os << static_cast<YDSTime>(dt).sod << "   ";
       os.width(2);
-      os << dt.month() << "/";
+      os << static_cast<CivilTime>(dt).month << "/";
       os.width(2);
-      os << dt.day() << "/";
+      os << static_cast<CivilTime>(dt).day << "/";
       os.width(4);
-      os << dt.year() << "   ";
+      os << static_cast<CivilTime>(dt).year << "   ";
       os.width(2);
-      os << dt.hour() << ":";
+      os << static_cast<CivilTime>(dt).hour << ":";
       os.width(2);
-      os << dt.minute() << ":";
+      os << static_cast<CivilTime>(dt).minute << ":";
       os.width(2);
-      os << static_cast<short>(dt.second()) << "\n";
+      os << static_cast<short>(static_cast<CivilTime>(dt).second) << "\n";
       os.fill(' ');
    }
 
@@ -1134,7 +1136,7 @@ namespace gpstk
       throw(WrongBlockNumber, WrongBlockFormat)
    {
       std::ostringstream out;
-      DayTime transmitTime(0.L), howTime(0.L);
+      CommonTime transmitTime(0.L), howTime(0.L);
       WrongBlockNumber wbn( "Block number should be 9, 109, or 62, was "+
                             asString(blockNum) );
 
@@ -1166,8 +1168,8 @@ namespace gpstk
             break;
 
          case 62:
-            transmitTime.setGPSfullweek(i[5], (double)i[1]);
-            howTime.setGPSfullweek(i[5], f[2]);
+            transmitTime=GPSWeekSecond(i[5], (double)i[1]);
+            howTime=GPSWeekSecond(i[5], f[2]);
 
                // we only have toa in this format message.. yay.
                // FIX magic number.. I'm a bit apprehensive about
@@ -1177,11 +1179,11 @@ namespace gpstk
             {
                out << "A" << ' '
                    << ((short)f[6]) << ' '               // page id
-                   << transmitTime.GPSday() << ' '
-                   << transmitTime.GPSfullweek() << ' '
+                   << static_cast<YDSTime>(transmitTime).doy << ' '
+                   << static_cast<GPSWeekSecond>(transmitTime).week << ' '
                    << ((long)f[8]) << ' '                // toa
-                   << howTime.DOYday() << ' '
-                   << howTime.DOYyear();
+                   << static_cast<YDSTime>(howTime).doy << ' '
+                   << static_cast<YDSTime>(howTime).year;
             }
             else
             {
@@ -1412,4 +1414,5 @@ namespace gpstk
       return label;
    }
 } // namespace gpstk
+
 

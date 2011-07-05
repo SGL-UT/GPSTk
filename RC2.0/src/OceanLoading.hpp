@@ -37,7 +37,7 @@
 #include "Triple.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "BLQDataReader.hpp"
 #include "icd_gps_constants.hpp"
 #include "geometry.hpp"
@@ -57,7 +57,7 @@ namespace gpstk
        *
        * @code
        *      // Create a time object
-       *   DayTime time(2004, 25, 0.0);
+       *   CommonTime time(2004, 25, 0.0);
        *
        *      // Object to store results
        *   Triple tides;
@@ -107,7 +107,7 @@ namespace gpstk
           * about the reason the request failed.
           */
       Triple getOceanLoading( const string& name,
-                              const DayTime& t )
+                              const CommonTime& t )
          throw(InvalidRequest);
 
 
@@ -146,7 +146,7 @@ namespace gpstk
           * @return A Vector<double> of 11 elements with the corresponding
           * astronomical arguments to be used in ocean loading model.
           */
-      virtual Vector<double> getArg(const DayTime& time);
+      virtual Vector<double> getArg(const CommonTime& time);
 
 
    }; // End of class 'OceanLoading'

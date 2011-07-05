@@ -36,7 +36,7 @@
 
 #include "Triple.hpp"
 #include "Position.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "icd_gps_constants.hpp"
 #include "geometry.hpp"
 
@@ -110,7 +110,7 @@ namespace gpstk
           *    set the current pole displacement parameters.
           *
           */
-      Triple getPoleTide( const DayTime& t,
+      Triple getPoleTide( const CommonTime& t,
                           const Position& p )
          throw(InvalidRequest);
 
@@ -129,7 +129,7 @@ namespace gpstk
           *    any reason, this is thrown. The text may have additional
           *    information about the reason the request failed.
           */
-      Triple getPoleTide( const DayTime& t,
+      Triple getPoleTide( const CommonTime& t,
                           const Position& p,
                           const double& x,
                           const double& y )

@@ -44,7 +44,7 @@ namespace gpstk
    {
       PRNID = SVPRNID;
       POrYCode = P_CODE;
-      currentTime = gpstk::DayTime();
+      currentTime = gpstk::CommonTime();
       buffer = new unsigned long[NUM_6SEC_WORDS];
    }
 
@@ -61,7 +61,7 @@ namespace gpstk
       return( *this );
    }
 
-   void CodeBuffer::updateBufferStatus( const gpstk::DayTime& dt, const codeType PYFlag )
+   void CodeBuffer::updateBufferStatus( const gpstk::CommonTime& dt, const codeType PYFlag )
    {
       currentTime = dt;
       POrYCode = PYFlag;

@@ -548,7 +548,7 @@ namespace gpstk
       }
          // This return as a double is necessary for sets into CommonTime 
          // to not get confused.  Ints are Zcounts whereas doubles are seconds.
-         // This should still return a double after DayTime->CommonTime
+         // This should still return a double after CommonTime->CommonTime
          // conversion, for backwards compatibility. [DR]
       return static_cast<double>(HOWtime[subframe-1]);
    }

@@ -62,7 +62,7 @@ namespace gpstk
                       SvMode mode = ALWAYS)
          : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
 
-      virtual double getOffset(const gpstk::DayTime& t) const
+      virtual double getOffset(const gpstk::CommonTime& t) const
          throw(gpstk::InvalidArgumentException) 
       {
          if (t!=time)
@@ -73,7 +73,7 @@ namespace gpstk
          return clkc;
       };
 
-      virtual bool isOffsetValid(const gpstk::DayTime& t) const 
+      virtual bool isOffsetValid(const gpstk::CommonTime& t) const 
          throw(gpstk::InvalidArgumentException)
       {
          if (t!=time) 
@@ -102,7 +102,7 @@ namespace gpstk
       }
 
    private:
-      gpstk::DayTime time;   ///< The time of this offset
+      gpstk::CommonTime time;   ///< The time of this offset
       double clkc;           ///< clock bias value (same units as residuals)
       bool valid;            ///< flag indicating clock bias statistical validity
    };

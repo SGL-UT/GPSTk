@@ -51,7 +51,7 @@
  * Implementation of the ICD-GPS-200 Ionosphere model.
  */
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngAlmanac.hpp"
 #include "Position.hpp"
 

@@ -47,6 +47,7 @@
 #include "EngNav.hpp"
 #include "AlmOrbit.hpp"
 #include "Xvt.hpp"
+#include "StringUtils.hpp"
 
 namespace gpstk
 {
@@ -261,11 +262,11 @@ namespace gpstk
           * @param t time at which to compute SV position.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      Xvt svXvt(SatID sat, const DayTime& t) const
+      Xvt svXvt(SatID sat, const CommonTime& t) const
          throw(SVNotPresentException);
 
          /// \deprecated use the SatID version
-      Xvt svXvt(short prn, const DayTime& t) const
+      Xvt svXvt(short prn, const CommonTime& t) const
          throw(SVNotPresentException)
          { SatID sat(prn,SatID::systemGPS); return svXvt(sat,t); }
 

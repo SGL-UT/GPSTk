@@ -57,8 +57,8 @@ namespace gpstk
                            public GPSAlmanacStore
    {
    public:
-      SEMAlmanacStore(const gpstk::DayTime& dtInterest=
-                             gpstk::DayTime::BEGINNING_OF_TIME)
+      SEMAlmanacStore(const gpstk::CommonTime& dtInterest=
+                             gpstk::CommonTime::BEGINNING_OF_TIME)
       {
          timeOfInterest = dtInterest;
       }
@@ -66,7 +66,7 @@ namespace gpstk
       void loadFile(const std::string& filename) 
          throw(FileMissingException);
          
-      gpstk::DayTime timeOfInterest;
+      gpstk::CommonTime timeOfInterest;
    };
    //@}
 }

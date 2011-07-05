@@ -55,7 +55,7 @@
 
 
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 #ifdef _WIN32
 const char slash = '\\';
@@ -77,10 +77,10 @@ namespace gpstk
        * A FileSpec is how file names are defined.  For instance,
        * ASM%4Y.%3j is the file spec for a SMODF file.  The format is similar
        * to what you would use in sprintf(), and specifically it uses the same
-       * fields as DayTime::printf().  For the most predictable results,
+       * fields as CommonTime::printf().  For the most predictable results,
        * fully specify the field length (as in %4Y vs. %Y).  Check the
        * FileSpecType enum values for how characters map to fields. Any new
-       * fields added should conform to DayTime or already existing fields,
+       * fields added should conform to CommonTime or already existing fields,
        * if there are any.
        */
    class FileSpec
@@ -90,11 +90,11 @@ namespace gpstk
           * have in a FileSpec.
           *
           * @note 
-          * Whenever a format is added or removed from the DayTime
+          * Whenever a format is added or removed from the CommonTime
           * class, it more than likely should also be added or removed
           * from the FileSpec class.  Additionally, the format
           * character must not conflict with any of the existing
-          * format characters in DayTime or FileSpec.
+          * format characters in CommonTime or FileSpec.
           */
       enum FileSpecType
       {
@@ -111,7 +111,7 @@ namespace gpstk
          text,          ///< 'x' A field for arbitrary text
 
 
-            // see DayTime for more information on the following elements
+            // see CommonTime for more information on the following elements
          year,          ///< 'y' or 'Y' A field for a year
          month,         ///< 'm' A field for month (numeric)
          dayofmonth,    ///< 'd' A field for day-of-month  
@@ -198,12 +198,12 @@ namespace gpstk
          throw(FileSpecException);
 
          /** 
-          * If possible, returns a DayTime object with the time the file
+          * If possible, returns a CommonTime object with the time the file
           * represents.  Since the time resolution only goes to days for
           * most file types, all times are set to midnight of that day.
           * @throw FileSpecException when a time can't be formed
           */
-      virtual gpstk::DayTime extractDayTime(const std::string& filename) const
+      virtual gpstk::CommonTime extractCommonTime(const std::string& filename) const
          throw(FileSpecException);
 
          /**
@@ -214,11 +214,11 @@ namespace gpstk
           * field will be filled with 0's.  The one side affect of this
           * is that you can only specify one of each field in the map,
           * but you're likely not going to need two different station
-          * numbers in the file name.  If you want, you can put the daytime
+          * numbers in the file name.  If you want, you can put the CommonTime
           * information into the FSTSMap, but it's not necessary.
           * @return the new filename.
           */
-      virtual std::string toString(const gpstk::DayTime& dt,
+      virtual std::string toString(const gpstk::CommonTime& dt,
                                    const FSTStringMap& fstsMap = FSTStringMap()) 
          const;
 

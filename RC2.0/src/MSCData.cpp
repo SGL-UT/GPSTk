@@ -51,6 +51,7 @@
 #include <math.h>
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
+#include "YDSTime.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -58,7 +59,7 @@ using namespace std;
 namespace gpstk
 {
 
-   static const unsigned long SEC_YEAR = (unsigned long)(365.25 * gpstk::DayTime::SEC_DAY);
+   static const unsigned long SEC_YEAR = (unsigned long)(365.25 * gpstk::SEC_PER_DAY);
 
    void MSCData::reallyPutRecord(gpstk::FFStream & ffs) const
       throw(std::exception, gpstk::FFStreamError, StringException)
@@ -67,17 +68,17 @@ namespace gpstk
 
       string line;
 
-      line += rightJustify(asString<short>(time.DOYyear()), 4);
-      line += rightJustify(asString<short>(time.DOYday()), 3 , '0');
+      line += rightJustify(asString<short>(static_cast<YDSTime>(time).year), 4);
+      line += rightJustify(asString<short>(static_cast<YDSTime>(time).doy), 3 , '0');
       line += rightJustify(asString<long>(station), 5);
       line += leftJustify(mnemonic, 7);
-      double repoch = refepoch.DOYyear()
-         + (refepoch.DOYday() * gpstk::DayTime::SEC_DAY
-            + refepoch.DOYsecond()) / SEC_YEAR;
+      double repoch = static_cast<YDSTime>(refepoch).year
+         + (static_cast<YDSTime>(refepoch).doy * gpstk::SEC_PER_DAY
+            + static_cast<YDSTime>(refepoch).doy) / SEC_YEAR;
       line += rightJustify(asString(repoch, 2), 7);
-      double eepoch = effepoch.DOYyear()
-         + (effepoch.DOYday() * gpstk::DayTime::SEC_DAY
-            + effepoch.DOYsecond()) / SEC_YEAR;
+      double eepoch = static_cast<YDSTime>(effepoch).doy
+         + (static_cast<YDSTime>(effepoch).doy * gpstk::SEC_PER_DAY
+            + static_cast<YDSTime>(effepoch).sod) / SEC_YEAR;
       line += rightJustify(asString(eepoch, 2), 7);
       line += rightJustify(asString(coordinates[0], 3), 12);
       line += rightJustify(asString(coordinates[1], 3), 12);
@@ -112,7 +113,7 @@ namespace gpstk
 
       short year = asInt(currentLine.substr(0, 4));
       short day =  asInt(currentLine.substr(4, 3));
-      time.setYDoySod(year, day, 0.0);
+      time=YDSTime(year, day, 0.0);
 
       station = asInt(currentLine.substr(7, 5));
       mnemonic = currentLine.substr(12, 7);
@@ -123,15 +124,15 @@ namespace gpstk
          // can't have DOY 0, so use doy + 1 when generating times
       epoch = asDouble(currentLine.substr(19, 7));
       frac = modf(epoch, &intg);
-      doy = (short)(frac * SEC_YEAR / gpstk::DayTime::SEC_DAY);
-      sod = (short)((frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY));
-      refepoch = gpstk::DayTime((short)intg, doy+1, sod);
+      doy = (short)(frac * SEC_YEAR / gpstk::SEC_PER_DAY);
+      sod = (short)((frac * SEC_YEAR) - (doy * gpstk::SEC_PER_DAY));
+      refepoch = gpstk::CommonTime((short)intg, doy+1, sod);
 
       epoch = asDouble(currentLine.substr(26, 7));
       frac = modf(epoch, &intg);
-      doy = (short)(frac * SEC_YEAR / gpstk::DayTime::SEC_DAY);
-      sod = (frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY);
-      effepoch = gpstk::DayTime((short)intg, doy+1, sod);
+      doy = (short)(frac * SEC_YEAR / gpstk::SEC_PER_DAY);
+      sod = (frac * SEC_YEAR) - (doy * gpstk::SEC_PER_DAY);
+      effepoch = gpstk::CommonTime((short)intg, doy+1, sod);
 
       coordinates[0] = asDouble(currentLine.substr(33, 12));
       coordinates[1] = asDouble(currentLine.substr(45, 12));
@@ -142,7 +143,7 @@ namespace gpstk
       velocities[2] = asDouble(currentLine.substr(83, 7));
    }
 
-   Xvt MSCData::getXvt(const DayTime& t)
+   Xvt MSCData::getXvt(const CommonTime& t)
       const throw(InvalidRequest)
    {
       try

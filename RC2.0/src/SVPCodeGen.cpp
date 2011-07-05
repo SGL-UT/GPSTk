@@ -37,12 +37,13 @@
 //=============================================================================
 
 #include "SVPCodeGen.hpp"
+#include "Epoch.hpp"
 
 namespace gpstk
 {
    const long LAST_6SEC_ZCOUNT_OF_WEEK = 403200 - 4;
 
-   SVPCodeGen::SVPCodeGen( const int SVPRNID, const gpstk::DayTime& dt )
+   SVPCodeGen::SVPCodeGen( const int SVPRNID, const gpstk::CommonTime& dt )
    {
       currentZTime = dt;
       PRNID = SVPRNID;
@@ -52,7 +53,7 @@ namespace gpstk
    {
          // Compute appropriate X2A offset
       long X2count;
-      long X1count = currentZTime.GPSzcount();
+      long X1count = static_cast<Epoch>(currentZTime).GPSzcount();
    
          /*
             Trivial, but special, case for beginning of week.  This
@@ -107,6 +108,6 @@ namespace gpstk
    void SVPCodeGen::setCurrentZCount(const gpstk::GPSZcount& z)
    {
       GPSZcount z2 = z - z%4;
-      currentZTime = z2;
+      static_cast<Epoch>(currentZTime) = z2;
    }
 }     // end of namespace

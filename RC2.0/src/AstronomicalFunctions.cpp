@@ -29,6 +29,8 @@
 
 
 #include "AstronomicalFunctions.hpp"
+#include "YDSTime.hpp"
+#include "Epoch.hpp"
 
 
 namespace gpstk
@@ -42,7 +44,7 @@ namespace gpstk
        * @return Triple in CTS(ECEF) coordinate system.
        */
    Triple CIS2CTS(const Triple posCIS,
-                  const DayTime& t)
+                  const CommonTime& t)
    {
 
          // Angle of Earth rotation, in radians
@@ -67,21 +69,21 @@ namespace gpstk
        *
        * @return sidereal time in hours.
        */
-   double UTC2SID(const DayTime& t)
+   double UTC2SID(const CommonTime& t)
    {
 
-      double y(t.year()-1.0);
+      double y(static_cast<YDSTime>(t).year-1.0);
       double m(13.0);
-      double d(t.DOY());
+      double d(static_cast<YDSTime>(t).doy);
 
          // Hours of day (decimal)
-      double h(t.secOfDay()/3600.0);
+      double h(static_cast<YDSTime>(t).sod/3600.0);
 
          // Fraction of day
-      double frofday (t.secOfDay()/86400.0);
+      double frofday (static_cast<YDSTime>(t).sod/86400.0);
 
          // Compute Julian Day, including decimals
-      double jd(t.JD());
+      double jd(static_cast<Epoch>(t).JD());
 
          // Temporal value, in centuries
       double tt( (jd - 2451545.0)/36525.0 );

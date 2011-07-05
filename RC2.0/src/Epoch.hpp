@@ -77,7 +77,7 @@ namespace gpstk
        * object. @see CommonTime
        *
        * In addition, the representation includes a tolerance value which is
-       * used in DayTime comparisons. It defaults to the value of the static 
+       * used in CommonTime comparisons. It defaults to the value of the static 
        * gpstk::Epoch::EPOCH_TOLERANCE, but this can be modified with the 
        * static method setEpochTolerance().  Several different default 
        * tolerances have been defined and are in the Epoch-Specific 

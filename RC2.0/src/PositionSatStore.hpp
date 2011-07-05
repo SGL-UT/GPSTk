@@ -14,7 +14,7 @@
 #include "TabularSatStore.hpp"
 #include "Exception.hpp"
 #include "SatID.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "SP3Data.hpp"
 
@@ -91,47 +91,47 @@ namespace gpstk
       /// Return value for the given satellite at the given time (usually via
       /// interpolation of the data table). This interface from TabularSatStore.
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return object of type PositionRecord containing the data value(s).
       /// @throw InvalidRequest if data value cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
-      PositionRecord getValue(const SatID& sat, const DayTime& ttag)
+      PositionRecord getValue(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Return the position for the given satellite at the given time
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return Triple containing the position ECEF XYZ meters
       /// @throw InvalidRequest if result cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
-      Triple getPosition(const SatID& sat, const DayTime& ttag)
+      Triple getPosition(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Return the velocity for the given satellite at the given time
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return Triple containing the velocity ECEF XYZ meters/second
       /// @throw InvalidRequest if result cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
-      Triple getVelocity(const SatID& sat, const DayTime& ttag)
+      Triple getVelocity(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Return the acceleration for the given satellite at the given time
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return Triple containing the acceleration ECEF XYZ meters/second/second
       /// @throw InvalidRequest if result cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
       ///  d) neither velocity nor acceleration data are present
-      Triple getAcceleration(const SatID& sat, const DayTime& ttag)
+      Triple getAcceleration(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Dump information about the object to an ostream.
@@ -158,19 +158,19 @@ namespace gpstk
       /// (sat,ttag), be aware that since ttag is used as they key in a std::map,
       /// the value used must be EXACTLY the same in all calls; (numerical noise could
       /// cause the std::map to consider two "equal" ttags as different).
-      void addPositionRecord(const SatID& sat, const DayTime& ttag,
+      void addPositionRecord(const SatID& sat, const CommonTime& ttag,
                              const PositionRecord& rec) throw();
 
       /// Add position data to the store; nothing else is changed
-      void addPositionData(const SatID& sat, const DayTime& ttag,
+      void addPositionData(const SatID& sat, const CommonTime& ttag,
                            const Triple& Pos, const Triple& Sig=Triple()) throw();
 
       /// Add velocity data to the store; nothing else is changed
-      void addVelocityData(const SatID& sat, const DayTime& ttag,
+      void addVelocityData(const SatID& sat, const CommonTime& ttag,
                            const Triple& Vel, const Triple& Sig=Triple()) throw();
 
       /// Add acceleration data to the store; nothing else is changed
-      void addAccelerationData(const SatID& sat, const DayTime& ttag,
+      void addAccelerationData(const SatID& sat, const CommonTime& ttag,
                                const Triple& Acc, const Triple& Sig=Triple()) throw();
 
       /// Get current interpolation order.

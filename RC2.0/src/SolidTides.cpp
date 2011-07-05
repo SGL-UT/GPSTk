@@ -56,7 +56,7 @@ namespace gpstk
        * reason, this is thrown. The text may have additional information
        * as to why the request failed.
        */
-   Triple SolidTides::getSolidTide(const DayTime& t,
+   Triple SolidTides::getSolidTide(const CommonTime& t,
                                    const Position& p) const
       throw(InvalidRequest)
    {

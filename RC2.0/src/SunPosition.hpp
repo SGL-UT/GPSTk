@@ -35,7 +35,7 @@
 #include <cmath>
 #include <string>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "icd_gps_constants.hpp"
 #include "AstronomicalFunctions.hpp"
@@ -89,7 +89,7 @@ namespace gpstk
           *    pole movement is not taken into account, neither precession 
           *    nor nutation.
           */
-      Triple getPosition(const DayTime& t) const 
+      Triple getPosition(const CommonTime& t) const 
          throw(InvalidRequest);
       
 
@@ -98,7 +98,7 @@ namespace gpstk
           *
           * @param t Epoch
           */
-      Triple getPositionCIS(const DayTime& t) const 
+      Triple getPositionCIS(const CommonTime& t) const 
          throw(InvalidRequest);
 
 
@@ -109,7 +109,7 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      DayTime getInitialTime() const throw(InvalidRequest)
+      CommonTime getInitialTime() const throw(InvalidRequest)
       { return initialTime; }
 
 
@@ -120,17 +120,17 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      DayTime getFinalTime() const throw(InvalidRequest)
+      CommonTime getFinalTime() const throw(InvalidRequest)
       { return finalTime; }
 
 
    private:
 
          /// Time of the first valid time
-      static const DayTime initialTime;
+      static const CommonTime initialTime;
 
          /// Time of the last valid time
-      static const DayTime finalTime;
+      static const CommonTime finalTime;
 
    }; // end class SunPosition
 

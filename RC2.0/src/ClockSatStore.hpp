@@ -14,7 +14,7 @@
 
 #include "Exception.hpp"
 #include "SatID.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "TabularSatStore.hpp"
 #include "FileStore.hpp"
 
@@ -93,36 +93,36 @@ namespace gpstk
       /// Return value for the given satellite at the given time (usually via
       /// interpolation of the data table). This interface from TabularSatStore.
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return object of type ClockRecord containing the data value(s).
       /// @throw InvalidRequest if data value cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
-      virtual ClockRecord getValue(const SatID& sat, const DayTime& ttag)
+      virtual ClockRecord getValue(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Return the clock bias for the given satellite at the given time
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return double the clock bias
       /// @throw InvalidRequest if bias cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
-      double getClockBias(const SatID& sat, const DayTime& ttag)
+      double getClockBias(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Return the clock drift for the given satellite at the given time
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return double the clock drift
       /// @throw InvalidRequest if drift cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
       ///  b) checkDataGap is true and there is a data gap
       ///  c) checkInterval is true and the interval is larger than maxInterval
       ///  d) there is no drift data in the store
-      double getClockDrift(const SatID& sat, const DayTime& ttag)
+      double getClockDrift(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
 
       /// Dump information about the object to an ostream.
@@ -151,19 +151,19 @@ namespace gpstk
       /// (sat,ttag), be aware that since ttag is used as they key in a std::map,
       /// the value used must be EXACTLY the same in all calls; (numerical noise could
       /// cause the std::map to consider two "equal" ttags as different).
-      void addClockRecord(const SatID& sat, const DayTime& ttag,
+      void addClockRecord(const SatID& sat, const CommonTime& ttag,
                           const ClockRecord& rec) throw();
 
       /// Add clock bias data (only) to the store
-      void addClockBias(const SatID& sat, const DayTime& ttag,
+      void addClockBias(const SatID& sat, const CommonTime& ttag,
                         const double& bias, const double& sig=0.0) throw();
 
       /// Add clock drift data (only) to the store
-      void addClockDrift(const SatID& sat, const DayTime& ttag,
+      void addClockDrift(const SatID& sat, const CommonTime& ttag,
                         const double& drift, const double& sig=0.0) throw();
 
       /// Add clock acceleration data (only) to the store
-      void addClockAcceleration(const SatID& sat, const DayTime& ttag,
+      void addClockAcceleration(const SatID& sat, const CommonTime& ttag,
                         const double& accel, const double& sig=0.0) throw();
 
       /// Get current interpolation order.

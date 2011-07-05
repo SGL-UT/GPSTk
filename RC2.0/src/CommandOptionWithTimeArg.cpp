@@ -45,11 +45,12 @@
 
 /**
  * @file CommandOptionWithTimeArg.cpp
- * Command line options with time (class DayTime) arguments
+ * Command line options with time (class CommonTime) arguments
  */
 
 #include "StringUtils.hpp"
 #include "CommandOptionWithTimeArg.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 
@@ -69,8 +70,8 @@ namespace gpstk
          if (thisTimeSpec != string())
          {
             try {
-               DayTime dt;
-               dt.setToString(value[vecindex], thisTimeSpec);
+               CommonTime dt;
+               static_cast<Epoch>(dt).scanf(value[vecindex], thisTimeSpec);
                times.push_back(dt);
             }
             catch (...)

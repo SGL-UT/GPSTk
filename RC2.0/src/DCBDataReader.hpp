@@ -37,7 +37,7 @@
 #include "Exception.hpp"
 #include "FFTextStream.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 
 using namespace std;

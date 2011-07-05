@@ -49,7 +49,7 @@
  */
 
 #include "gps_constants.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngAlmanac.hpp"
 
 using namespace std;
@@ -422,7 +422,7 @@ namespace gpstk
       return (*i).second;
    }
 
-   Xvt EngAlmanac::svXvt(SatID sat, const DayTime& t) const
+   Xvt EngAlmanac::svXvt(SatID sat, const CommonTime& t) const
       throw(EngAlmanac::SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);

@@ -9,10 +9,12 @@
 
 #include <map>
 #include <iostream>
+#include <cmath>
 
 #include "Exception.hpp"
 #include "SatID.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "TimeString.hpp"
 
 namespace gpstk
 {
@@ -34,13 +36,13 @@ namespace gpstk
    protected:
 
       // the data tables
-      /// std::map with key=DayTime, value=DataRecord
-      typedef std::map<DayTime, DataRecord> DataTable;
+      /// std::map with key=CommonTime, value=DataRecord
+      typedef std::map<CommonTime, DataRecord> DataTable;
 
       /// std::map with key=SatID, value=DataTable
       typedef std::map<SatID, DataTable> SatTable;
 
-      /// the data tables: std::map<SatID, std::map<DayTime, DataRecord> >
+      /// the data tables: std::map<SatID, std::map<CommonTime, DataRecord> >
       SatTable tables;
 
       /// Flags indicating that various data are present and may be accessed with
@@ -87,7 +89,7 @@ namespace gpstk
       /// Return data value for the given satellite at the given time (usually via
       /// interpolation of the data table).
       /// @param[in] sat the SatID of the satellite of interest
-      /// @param[in] ttag the time (DayTime) of interest
+      /// @param[in] ttag the time (CommonTime) of interest
       /// @return object of type DataRecord containing the data value(s).
       /// @throw InvalidRequest if data value cannot be computed, for example because
       ///  a) the time t does not lie within the time limits of the data table
@@ -96,15 +98,15 @@ namespace gpstk
       /// NB this function is pure virtual, making the class abstract.
       ///
       /// Derived objects can implement similar routines, for example:
-      /// Triple getPosition(const SatID& sat,const DayTime& t) throw(InvalidRequest);
-      /// Triple getVelocity(const SatID& sat,const DayTime& t) throw(InvalidRequest);
-      /// Triple getAccel(const SatID& sat,const DayTime& t) throw(InvalidRequest);
-      /// double getClockBias(const SatID& s,const DayTime& t) throw(InvalidRequest);
-      /// double[2] getClock(const SatID& sat,const DayTime& t) throw(InvalidRequest);
-      /// NB Xvt getXvt(const SatID& sat,const DayTime& t) throw(InvalidRequest);
+      /// Triple getPosition(const SatID& sat,const CommonTime& t) throw(InvalidRequest);
+      /// Triple getVelocity(const SatID& sat,const CommonTime& t) throw(InvalidRequest);
+      /// Triple getAccel(const SatID& sat,const CommonTime& t) throw(InvalidRequest);
+      /// double getClockBias(const SatID& s,const CommonTime& t) throw(InvalidRequest);
+      /// double[2] getClock(const SatID& sat,const CommonTime& t) throw(InvalidRequest);
+      /// NB Xvt getXvt(const SatID& sat,const CommonTime& t) throw(InvalidRequest);
       ///   will be provided by another class which inherits this one.
       ///
-      virtual DataRecord getValue(const SatID& sat, const DayTime& ttag)
+      virtual DataRecord getValue(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest) = 0;
 
       /// Locate the given time in the DataTable for the given satellite.
@@ -115,7 +117,7 @@ namespace gpstk
       /// will be at either it1->first (if input parameter exactReturn is true) or
       /// (it1+nhalf-1) or (it1+nhalf) (if exactReturn is false).
       /// This routine is used to select data from the table for interpolation;
-      /// note that DataTable is a map<DayTime, DataRecord>.
+      /// note that DataTable is a map<CommonTime, DataRecord>.
       /// @param[in] sat satellite of interest
       /// @param[in] ttag time of interest, e.g. where interpolation will be conducted
       /// @param[in] nhalf number of table points desired on each side of ttag
@@ -131,7 +133,7 @@ namespace gpstk
       /// @throw GapInterval is set and there is a data gap larger than the max
       /// @throw MaxInterval is set and the interval is too wide
       virtual bool getTableInterval(const SatID& sat,
-                                    const DayTime& ttag,
+                                    const CommonTime& ttag,
                                     const int& nhalf,
                                     typename DataTable::const_iterator& it1,
                                     typename DataTable::const_iterator& it2,
@@ -169,14 +171,14 @@ namespace gpstk
          }
          else if(it1 == dtable.begin() || --it1 == dtable.begin()) {
             InvalidRequest e("Inadequate data before requested time for satellite "
-               + gpstk::StringUtils::asString(sat) + ttag.printf(fmt));
+               + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
             GPSTK_THROW(e);
          }
 
          it2 = it1;
          if(it2 == dtable.end() || ++it2 == dtable.end()) {
             InvalidRequest e("Inadequate data after requested time for satellite "
-               + gpstk::StringUtils::asString(sat) + ttag.printf(fmt));
+               + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
             GPSTK_THROW(e);
          }
 
@@ -185,7 +187,7 @@ namespace gpstk
          // check for gap between these two table entries surrounding ttag
          if(checkDataGap && (it2->first-it1->first) > gapInterval) {
             InvalidRequest e("Gap at interpolation time for satellite "
-               + gpstk::StringUtils::asString(sat) + ttag.printf(fmt));
+               + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
             GPSTK_THROW(e);
          }
 
@@ -196,7 +198,7 @@ namespace gpstk
             it1--;
             if(it1 == dtable.begin() && k < nhalf-2) { // k==nhalf-2 on last iter.
                InvalidRequest e("Inadequate data before requested time for satellite "
-                  + gpstk::StringUtils::asString(sat) + ttag.printf(fmt));
+                  + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
                GPSTK_THROW(e);
             }
 
@@ -210,7 +212,7 @@ namespace gpstk
                else {
                   InvalidRequest e(
                      "Inadequate data after requested time for satellite "
-                     + gpstk::StringUtils::asString(sat) + ttag.printf(fmt));
+                     + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
                   GPSTK_THROW(e);
                }
             }
@@ -219,7 +221,7 @@ namespace gpstk
          // check that the interval is not too large
          if(checkInterval && (it2->first - it1->first) > maxInterval) {
             InvalidRequest e("Interpolation interval too large for satellite "
-               + gpstk::StringUtils::asString(sat) + ttag.printf(fmt));
+               + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
             GPSTK_THROW(e);
          }
 
@@ -243,13 +245,13 @@ namespace gpstk
 
             os << "  Data stored for " << nsats() << " satellites\n";
             os << "  Time span of data: ";
-            DayTime initialTime(getInitialTime()), finalTime(getFinalTime());
-            if(initialTime == DayTime::END_OF_TIME ||
-               finalTime == DayTime::BEGINNING_OF_TIME)
+            CommonTime initialTime(getInitialTime()), finalTime(getFinalTime());
+            if(initialTime == CommonTime::END_OF_TIME ||
+               finalTime == CommonTime::BEGINNING_OF_TIME)
                   os << "(there are no time limits)" << std::endl;
             else
-               os << " FROM " << initialTime.printf(fmt) << " TO "
-                  << finalTime.printf(fmt) << std::endl;
+               os << " FROM " << printTime(initialTime,fmt) << " TO "
+                  << printTime(finalTime,fmt) << std::endl;
 
             os << "  This store contains:"
                << (havePosition ? "":" not") << " position,"
@@ -277,7 +279,7 @@ namespace gpstk
                   os << "   Data:" << std::endl;
                   typename DataTable::const_iterator jt;
                   for(jt=it->second.begin(); jt!=it->second.end(); jt++)
-                     os << " " << jt->first.printf(fmt)
+                     os << " " << printTime(jt->first,fmt)
                         << " " << it->first
                         << " " << jt->second // NB requires operator<<(DataRecord)
                         << std::endl;
@@ -290,8 +292,8 @@ namespace gpstk
       /// Edit the data tables, removing data outside the indicated time interval.
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
-      void edit(const DayTime& tmin,
-                const DayTime& tmax = DayTime::END_OF_TIME) throw()
+      void edit(const CommonTime& tmin,
+                const CommonTime& tmax = CommonTime::END_OF_TIME) throw()
       {
          // loop over satellites
          typename SatTable::iterator it;
@@ -325,14 +327,14 @@ namespace gpstk
       /// Get the earliest time of data in the data tables.
       /// @return the earliest time
       /// @throw InvalidRequest if the store is empty.
-      DayTime getInitialTime() const throw(InvalidRequest)
+      CommonTime getInitialTime() const throw(InvalidRequest)
       {
          if(tables.size() == 0) {
             InvalidRequest e("Store is empty");
             GPSTK_THROW(e);
          }
 
-         DayTime initialTime(DayTime::END_OF_TIME);
+         CommonTime initialTime(CommonTime::END_OF_TIME);
 
          // loop over satellites
          typename SatTable::const_iterator it;
@@ -352,14 +354,14 @@ namespace gpstk
       /// Get the latest time of data in the data tables.
       /// @return the latest time
       /// @throw InvalidRequest if the store is empty.
-      DayTime getFinalTime() const throw(InvalidRequest)
+      CommonTime getFinalTime() const throw(InvalidRequest)
       {
          if(tables.size() == 0) {
             InvalidRequest e("Store is empty");
             GPSTK_THROW(e);
          }
 
-         DayTime finalTime(DayTime::BEGINNING_OF_TIME);
+         CommonTime finalTime(CommonTime::BEGINNING_OF_TIME);
 
          // loop over satellites
          typename SatTable::const_iterator it;
@@ -381,7 +383,7 @@ namespace gpstk
       /// Get the earliest time of data in the store for the given satellite.
       /// @return the first time.
       /// @throw InvalidRequest if there is no data in the store for this satellite.
-      DayTime getInitialTime(const SatID& sat) const throw(InvalidRequest)
+      CommonTime getInitialTime(const SatID& sat) const throw(InvalidRequest)
       {
          if(tables.size() == 0) {
             InvalidRequest e("Store is empty");
@@ -399,7 +401,7 @@ namespace gpstk
       /// Get the latest time of data in the store for the given satellite.
       /// @return the last time.
       /// @throw InvalidRequest if there is no data in the store for this satellite.
-      DayTime getFinalTime(const SatID& sat) const throw(InvalidRequest)
+      CommonTime getFinalTime(const SatID& sat) const throw(InvalidRequest)
       {
          if(tables.size() == 0) {
             InvalidRequest e("Store is empty");
@@ -425,7 +427,7 @@ namespace gpstk
          const char *fmt="%4Y/%02m/%02d %2H:%02M:%02S";
          typename DataTable::const_iterator it(it1);
          while(1) {
-            os << " " << it->first.printf(fmt)
+            os << " " << printTime(it->first,fmt)
                << " " << it->second << std::endl;
             if(it == it2) break;
             ++it;
@@ -493,13 +495,13 @@ namespace gpstk
 
          // loop over the table
          typename DataTable::const_iterator jt(it->second.begin());
-         DayTime prevT(jt->first);
+         CommonTime prevT(jt->first);
          ++jt;
          while(jt != it->second.end()) {
             del = jt->first - prevT;
             if(del > 1.0e-8) for(i=0; i<N; i++) {
                if(ndt[i] == 0) { dt[i] = del; ndt[i] = 1; break; }
-               if(::fabs(del-dt[i]) < 1.0e-8) { ndt[i]++; break; }
+               if(fabs(del-dt[i]) < 1.0e-8) { ndt[i]++; break; }
             }
             prevT = jt->first;
             ++jt;

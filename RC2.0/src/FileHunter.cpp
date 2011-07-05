@@ -49,6 +49,9 @@
  */
 
 #include "FileHunter.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -133,8 +136,8 @@ namespace gpstk
       }
    }
 
-   vector<string> FileHunter::find(const DayTime& start,
-                                   const DayTime& end,
+   vector<string> FileHunter::find(const CommonTime& start,
+                                   const CommonTime& end,
                                    const FileSpec::FileSpecSortType fsst,
                                    enum FileChunking chunk) const
       throw(FileHunterException)
@@ -149,24 +152,24 @@ namespace gpstk
 
          // move the start time back to a boundary defined by the file
          // chunking
-      DayTime exStart;
+      CommonTime exStart;
       switch(chunk)
       {
          case WEEK:
-            exStart = DayTime(start.GPSfullweek(), 0.0, start.GPSyear());
+            exStart = CivilTime(static_cast<GPSWeekSecond>(start).week, 0.0, static_cast<CivilTime>(start).year);
             break;
          case DAY:
-            exStart = DayTime(start.DOYyear(), start.DOYday(), 0.0);
+            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
             break;
          case HOUR:
-            exStart = DayTime(start.year(), start.month(),
-                              start.day(), start.hour(),
+            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
+                              static_cast<CivilTime>(start).day, static_cast<CivilTime>(start).hour,
                               0, 0.0);
             break;
          case MINUTE:
-            exStart = DayTime(start.year(), start.month(),
-                              start.day(), start.hour(),
-                              start.minute(), 0.0);
+            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
+                              static_cast<CivilTime>(start).day, static_cast<CivilTime>(start).hour,
+                              static_cast<CivilTime>(start).minute, 0.0);
             break;
       }
       
@@ -200,10 +203,9 @@ namespace gpstk
          {
             vector<string> toReturnTemp;
             
-               // counting variables
-            vector<string>::size_type i,j;
+               // counting variables            vector<string>::size_type i,j;
 
-            for(i = 0; i < toReturn.size(); i++)
+            for(int i = 0; i < toReturn.size(); i++)
             {
                   // search for the next entries
                   
@@ -249,11 +251,11 @@ namespace gpstk
                   // then add it if it's in the correct time range.
                   // this is why we need to enter an empty string to 
                   // seed toReturn
-               for(j = 0; j < newEntries.size(); j++)
+               for(int j = 0; j < newEntries.size(); j++)
                {
                   try
                   {
-                     DayTime fileDT = (*itr).extractDayTime(newEntries[j]);
+                     CommonTime fileDT = (*itr).extractCommonTime(newEntries[j]);
                      if ( (fileDT >= exStart) && (fileDT <= end) )
                      {
 #ifdef _WIN32
@@ -273,9 +275,9 @@ namespace gpstk
 #endif
                      }
                   }
-                     // if you can't make a DayTime, just add it - 
+                     // if you can't make a CommonTime, just add it - 
                      // most likely, this is a field that you can't
-                     // make a DayTime out of
+                     // make a CommonTime out of
                   catch (FileSpecException &e)
                   {
 #ifdef _WIN32
@@ -695,4 +697,5 @@ namespace gpstk
    }
 
 } // namespace
+
 

@@ -49,7 +49,7 @@
 #include "StringUtils.hpp"
 #include "Triple.hpp"
 // #include "ECEF.hpp" add in when ECEF is added to RC2.0
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FFData.hpp"
 #include "Xvt.hpp"
 
@@ -65,7 +65,7 @@ namespace gpstk
    {
    public:
          /// constructor
-      MSCData() throw() : time(gpstk::DayTime(0.L)) {}
+      MSCData() throw() : time(gpstk::CommonTime(0.L)) {}
 
          /// destructor
       virtual ~MSCData() throw() {}
@@ -75,15 +75,15 @@ namespace gpstk
          /// @throw InvalidRequest If the request can not be completed for any
          ///    reason, this is thrown. The text may have additional
          ///    information as to why the request failed.
-      Xvt getXvt(const DayTime& t)
+      Xvt getXvt(const CommonTime& t)
          const throw(InvalidRequest);
 
-      gpstk::DayTime time;  ///< date coordinates released
+      gpstk::CommonTime time;  ///< date coordinates released
                             ///<   (Bookkeeping convenience not used)
       unsigned long station; ///< Monitor Station number (e.g. 10234)
       std::string mnemonic;  ///< Monitor Station identifier (e.g. ARLM)
-      gpstk::DayTime refepoch;  ///< epoch of coordinates and velocities
-      gpstk::DayTime effepoch;  ///< earliest epoch data is valid
+      gpstk::CommonTime refepoch;  ///< epoch of coordinates and velocities
+      gpstk::CommonTime effepoch;  ///< earliest epoch data is valid
       gpstk::Triple coordinates; ///< ECEF XYZ coordinates /// gpstk::ECEF coordinates; add in when ECEF is added to RC2.0
       gpstk::Triple velocities; ///< XYZ velocities
 

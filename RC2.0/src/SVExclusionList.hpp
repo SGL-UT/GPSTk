@@ -37,8 +37,8 @@
 *    TS are assumed to contains a double quote delimited string that defines
 *    the time format that will be used in following EX lines.  The default
 *    time string is "%F %g" (GPS full week, GPS Second of Week).  See 
-*    DayTime.hpp for more information on time specificaction strings 
-*    (in particular the method DayTime.setToString()).
+*    CommonTime.hpp for more information on time specificaction strings 
+*    (in particular the method CommonTime.setToString()).
 *
 *    Each "EX" line must follow the format:
 *
@@ -66,29 +66,31 @@
 #include <map>
 
 // gpstk
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Exception.hpp"
 #include "gps_constants.hpp"
+#include "StringUtils.hpp"
+
 
 namespace gpstk
 {
    class SVExclusion
    {
       public:
-         SVExclusion( const gpstk::DayTime begin,
-                      const gpstk::DayTime end, 
+         SVExclusion( const gpstk::CommonTime begin,
+                      const gpstk::CommonTime end, 
                       const int PRNID, 
                       const std::string commentArg );
-         bool isApplicable( const int PRNID, const gpstk::DayTime dt ) const;
+         bool isApplicable( const int PRNID, const gpstk::CommonTime dt ) const;
          std::string getComment() const;
          int getPRNID() const;
-         gpstk::DayTime getBeginTime() const;
-         gpstk::DayTime getEndTime() const;
+         gpstk::CommonTime getBeginTime() const;
+         gpstk::CommonTime getEndTime() const;
          
       protected:
          int PRN_IDENTIFIER;
-         gpstk::DayTime begExclude;
-         gpstk::DayTime endExclude;
+         gpstk::CommonTime begExclude;
+         gpstk::CommonTime endExclude;
          std::string comment;
    };
 
@@ -109,13 +111,13 @@ namespace gpstk
            throw(SVExclusionFileNotFound);
          void addFile( const std::string filename )
             throw(SVExclusionFileNotFound);
-         bool isExcluded( const int PRN, const gpstk::DayTime dt ) const;
+         bool isExcluded( const int PRN, const gpstk::CommonTime dt ) const;
          void addExclusion( const SVExclusion );
-         gpstk::DayTime getEarliestTime() const;
-         gpstk::DayTime getLatestTime() const;
+         gpstk::CommonTime getEarliestTime() const;
+         gpstk::CommonTime getLatestTime() const;
          int getNumberOfExclusions() const;
          const SVExclusion& getApplicableExclusion(
-                            const int PRN, const gpstk::DayTime dt) 
+                            const int PRN, const gpstk::CommonTime dt) 
                             const throw(NoSVExclusionFound);
          int numberOfReadFailures() const;
          void listOfReadFailures() const;       // List goes to cerr
@@ -124,8 +126,8 @@ namespace gpstk
          void dumpList( FILE* fp ) const;
          
       protected:
-         gpstk::DayTime earliestTime;
-         gpstk::DayTime latestTime;
+         gpstk::CommonTime earliestTime;
+         gpstk::CommonTime latestTime;
          std::multimap< int, SVExclusion > exclusionMap;
          
          std::string timeSpecString;
@@ -136,9 +138,9 @@ namespace gpstk
                      const int lineCount, const std::string filename );
    };
    
-   inline gpstk::DayTime SVExclusionList::getEarliestTime() const
+   inline gpstk::CommonTime SVExclusionList::getEarliestTime() const
       { return(earliestTime); }
-   inline gpstk::DayTime SVExclusionList::getLatestTime() const 
+   inline gpstk::CommonTime SVExclusionList::getLatestTime() const 
       { return(latestTime); }
    inline int SVExclusionList::getNumberOfExclusions() const
       { return(exclusionMap.size()); } 
@@ -147,8 +149,8 @@ namespace gpstk
       
    inline std::string SVExclusion::getComment() const {return(comment); }
    inline int SVExclusion::getPRNID() const { return(PRN_IDENTIFIER); }
-   inline gpstk::DayTime SVExclusion::getBeginTime() const { return(begExclude); }
-   inline gpstk::DayTime SVExclusion::getEndTime() const { return(endExclude); }
+   inline gpstk::CommonTime SVExclusion::getBeginTime() const { return(begExclude); }
+   inline gpstk::CommonTime SVExclusion::getEndTime() const { return(endExclude); }
    
 }   
 #endif      

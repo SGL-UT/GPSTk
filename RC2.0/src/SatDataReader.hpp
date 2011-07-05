@@ -37,7 +37,7 @@
 #include <map>
 #include "FFTextStream.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 
 
@@ -70,7 +70,7 @@ namespace gpstk
        *   SatDataReader satread;
        *
        *   SatID prn28(28, SatID::systemGPS);
-       *   DayTime time(1995, 331, 43200);
+       *   CommonTime time(1995, 331, 43200);
        *
        *   satread.open("PRN_GPS");
        *
@@ -133,7 +133,7 @@ namespace gpstk
           * this method will return an empty string.
           */
       virtual string getBlock(const SatID& sat,
-                              const DayTime& epoch) const;
+                              const CommonTime& epoch) const;
 
 
          /** Method to get the GPS number of a given SV at a given epoch.
@@ -146,7 +146,7 @@ namespace gpstk
           * this method will return -1.
           */
       virtual int getGPSNumber(const SatID& sat,
-                               const DayTime& epoch) const;
+                               const CommonTime& epoch) const;
 
 
          /** Method to get the launch date of a given SV.
@@ -154,13 +154,13 @@ namespace gpstk
           * @param sat   Satellite ID.
           * @param epoch Epoch of interest.
           *
-          * @return DayTime object containing satellite's launch date. If
+          * @return CommonTime object containing satellite's launch date. If
           * satellite is not found or epoch is out of proper
           * launch/deactivation bounds, this method will return
-          * DayTime::END_OF_TIME.
+          * CommonTime::END_OF_TIME.
           */
-      virtual DayTime getLaunchDate(const SatID& sat,
-                                    const DayTime& epoch) const;
+      virtual CommonTime getLaunchDate(const SatID& sat,
+                                    const CommonTime& epoch) const;
 
 
          /** Method to get the deactivation date of a given SV.
@@ -168,13 +168,13 @@ namespace gpstk
           * @param sat   Satellite ID.
           * @param epoch Epoch of interest.
           *
-          * @return DayTime object containing satellite's deactivation date.
+          * @return CommonTime object containing satellite's deactivation date.
           * If satellite is not found, epoch is out of proper
           * launch/deactivation bounds or satellite is still active, this
-          * method will return DayTime::BEGINNING_OF_TIME.
+          * method will return CommonTime::BEGINNING_OF_TIME.
           */
-      virtual DayTime getDeactivationDate(const SatID& sat,
-                                          const DayTime& epoch) const;
+      virtual CommonTime getDeactivationDate(const SatID& sat,
+                                          const CommonTime& epoch) const;
 
 
          /// Destructor
@@ -188,13 +188,13 @@ namespace gpstk
       struct svData
       {
             // Default constructor initializing the data in the structure
-         svData() : launchDate(DayTime::BEGINNING_OF_TIME),
-                    deactivationDate(DayTime::END_OF_TIME),
+         svData() : launchDate(CommonTime::BEGINNING_OF_TIME),
+                    deactivationDate(CommonTime::END_OF_TIME),
                     gpsNumber(0),
                     block("") {};
 
-         DayTime launchDate;         ///< SV launch date.
-         DayTime deactivationDate;   ///< SV deactivation date.
+         CommonTime launchDate;         ///< SV launch date.
+         CommonTime deactivationDate;   ///< SV deactivation date.
          int gpsNumber;              ///< GPS number.
          string block;               ///< Block the SV belongs to
       };

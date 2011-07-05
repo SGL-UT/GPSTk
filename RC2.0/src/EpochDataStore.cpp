@@ -55,12 +55,12 @@ namespace gpstk
        * @param[in] tmin defines the beginning of the time interval
        * @param[in] tmax defines the end of the time interval
        */
-   void EpochDataStore::edit( DayTime tmin, DayTime tmax  )
+   void EpochDataStore::edit( CommonTime tmin, CommonTime tmax  )
       throw()
    {
       if(tmin > tmax) 
       {
-         DayTime m= tmin;
+         CommonTime m= tmin;
          tmin = tmax;
          tmax = m;
       }
@@ -83,7 +83,7 @@ namespace gpstk
       it = allData.begin();
       if(it == allData.end())
       {
-         initialTime = DayTime::END_OF_TIME;
+         initialTime = CommonTime::END_OF_TIME;
       }
       else
       {
@@ -93,7 +93,7 @@ namespace gpstk
       it = allData.end();
       if(--it == allData.end())
       {
-         finalTime = DayTime::BEGINNING_OF_TIME;
+         finalTime = CommonTime::BEGINNING_OF_TIME;
       }
       else 
       {
@@ -104,15 +104,15 @@ namespace gpstk
    
    
       // Add to the store directly
-   void EpochDataStore::addData(const DayTime& time, 
+   void EpochDataStore::addData(const CommonTime& time, 
                                 const std::vector<double>& data)
         throw()
    {
       
       allData[time] = data;
 
-      if((initialTime == DayTime::END_OF_TIME)    ||
-         (finalTime == DayTime::BEGINNING_OF_TIME) )
+      if((initialTime == CommonTime::END_OF_TIME)    ||
+         (finalTime == CommonTime::BEGINNING_OF_TIME) )
       {
          initialTime = finalTime = time;
       }
@@ -129,12 +129,12 @@ namespace gpstk
    
    
       /* Get the VehiclePVData at the given epoch and return it.
-       *  @param t DayTime at which to compute the EOPs.
+       *  @param t CommonTime at which to compute the EOPs.
        *  @return EarthOrientation EOPs at time t.
        *  @throw InvalidRequest if the epoch on either side of t
        *     cannot be found in the map.
        */
-   std::vector<double> EpochDataStore::getData(const DayTime& t) const
+   std::vector<double> EpochDataStore::getData(const CommonTime& t) const
          throw(InvalidRequest)
    {
       // check the time
@@ -223,7 +223,7 @@ namespace gpstk
       ite++;
       for(EpochData::const_iterator itr=its; itr!=ite; itr++)
       {
-         DayTime time = itr->first;
+         CommonTime time = itr->first;
          std::vector<double> vd = itr->second;
 
          times.push_back(itr->first - its->first);

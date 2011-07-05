@@ -34,7 +34,7 @@
 #include <cmath>
 #include <string>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "Position.hpp"
 #include "icd_gps_constants.hpp"
@@ -84,7 +84,7 @@ namespace gpstk
           * reason, this is thrown. The text may have additional information
           * as to why the request failed.
           */
-         Triple getSolidTide(const DayTime& t, 
+         Triple getSolidTide(const CommonTime& t, 
                             const Position& p) const 
             throw(InvalidRequest);
 

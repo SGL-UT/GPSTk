@@ -48,7 +48,7 @@
 #include <map>
 #include <iostream>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -57,7 +57,7 @@ namespace gpstk
    {
       /// Default Constructor
       WxObservation() throw()
-         : t(DayTime::END_OF_TIME), temperatureSource(noWx),
+         : t(CommonTime::END_OF_TIME), temperatureSource(noWx),
            pressureSource(noWx), humiditySource(noWx)
       {}
 
@@ -67,7 +67,7 @@ namespace gpstk
        * @param pres the recorded pressure (millibars)
        * @param humid the recorded relative humidity (%)
        */
-      WxObservation(const DayTime& t, 
+      WxObservation(const CommonTime& t, 
                     float temp, 
                     float pres, 
                     float humid)
@@ -79,7 +79,7 @@ namespace gpstk
       {}
 
 
-      DayTime t;  ///< Time that this data was collected, in Rx GPS time.
+      CommonTime t;  ///< Time that this data was collected, in Rx GPS time.
       float  temperature;  ///< degrees Centigrade
       float  pressure;     ///< millibars
       float  humidity;     ///< percent
@@ -113,19 +113,19 @@ namespace gpstk
 
    /// This is a map of weather observations over time.  The key 
    /// should be the same time as the time of the epoch.
-   typedef std::map<DayTime, WxObservation> WxObsMap;
+   typedef std::map<CommonTime, WxObservation> WxObsMap;
 
    /// This is a time history weather data from a single site
    struct WxObsData
    {
       /// Constructor
       WxObsData() throw()
-         :firstTime(DayTime::END_OF_TIME), 
-          lastTime(DayTime::BEGINNING_OF_TIME) {}
+         :firstTime(CommonTime::END_OF_TIME), 
+          lastTime(CommonTime::BEGINNING_OF_TIME) {}
      
       // First and last time of any data in this object
-      DayTime firstTime; ///< Time of the oldest data in this object.
-      DayTime lastTime;  ///< Time of the youngest data in this object.
+      CommonTime firstTime; ///< Time of the oldest data in this object.
+      CommonTime lastTime;  ///< Time of the youngest data in this object.
    
       /// This is the identifier of the site.
       unsigned rxId;
@@ -136,7 +136,7 @@ namespace gpstk
       /** Get the last WxObservation made before time t.
        * @return the WxObservation coming before time t
        */
-      WxObservation getMostRecent(const DayTime& t) const throw();
+      WxObservation getMostRecent(const CommonTime& t) const throw();
       
       /** Insert a WxObservation.
        * @param obs the WxObservation to insert.
@@ -147,7 +147,7 @@ namespace gpstk
        * Removes all stored #WxObservation objects older than time \a t.
        * \param t remove #WxObservation objects older than this
        */
-      void flush(const DayTime& t) throw();
+      void flush(const CommonTime& t) throw();
 
       /**
        * Find a #WxObservation object for time \a t.
@@ -165,7 +165,7 @@ namespace gpstk
        * \return a #WxObservation object
        * \exception ObjectNotFound a #WxObservation object not available
        */
-      WxObservation getWxObservation(const DayTime& t,
+      WxObservation getWxObservation(const CommonTime& t,
                                      unsigned iv = 3600,
                                      bool interpolate = true) const
          throw(ObjectNotFound);

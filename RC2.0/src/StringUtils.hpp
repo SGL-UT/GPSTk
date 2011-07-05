@@ -990,7 +990,7 @@ namespace gpstk
          /**
           * Work-horse method for printf.  Substitutes patterns
           * matching \a pat with \a rep.  Use only one pattern/token
-          * at a time!  This used to be DayTime::iprint().
+          * at a time!  This used to be CommonTime::iprint().
           * @param fmt format to use for this time.
           * @param pat regular expression pattern to match.
           * @param rep sprintf token replacement.  First character is

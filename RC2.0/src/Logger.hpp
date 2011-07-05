@@ -31,10 +31,11 @@
 //============================================================================
 
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <string>
 #include <cstdarg>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Exception.hpp"
 #include "Matrix.hpp"
 
@@ -77,7 +78,7 @@ namespace gpstk
       {
          std::string text;
          LogLevel    level;
-         DayTime     time;
+         CommonTime     time;
          std::string file;
          std::string function;
          int         line;
@@ -89,7 +90,7 @@ namespace gpstk
 
          LogMessage(std::string text,
             LogLevel level,
-            DayTime time = DayTime(),
+            CommonTime time = CommonTime(),
             std::string file = "",
             std::string function = "",
             int line = 0)
@@ -229,7 +230,8 @@ namespace gpstk
    inline std::string mat2str(const Vector<T>& vec, size_t width, size_t digit,
       std::string desc="")
    {
-      std::ostringstream ss;
+      //std::ostringstream ss;
+      std::stringstream ss;
       ss << std::fixed;
       ss << "["<< vec.size() << "x1]: " << desc << std::endl;
       for(int i=0;i<vec.size();i++)
@@ -244,8 +246,9 @@ namespace gpstk
    inline std::string mat2str(const Matrix<T>& mat, size_t width, size_t digit,
       std::string desc="")
    {
-      std::ostringstream ss;
-      ss << std::fixed;
+      //std::ostringstream ss;
+      std::stringstream ss;
+      ss << (std::fixed);
       ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]: "<< desc << std::endl;
       ss << std::setw(width) << std::setprecision(digit) << mat;
       return ss.str();
