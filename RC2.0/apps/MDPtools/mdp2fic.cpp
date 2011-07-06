@@ -44,7 +44,7 @@
 #include "FICStream.hpp"
 #include "FICHeader.hpp"
 #include "FICData.hpp"
-
+#include "RinexConverters.hpp"
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"

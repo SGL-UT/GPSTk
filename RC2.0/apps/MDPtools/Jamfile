@@ -12,8 +12,8 @@ Library mdplib : BELogEntry.cpp MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp 
 # the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
 # for things to build properly
 
-LinkLibraries mdptool mdp2rinex mdpEdit : mdplib ;
-GPSLinkLibraries mdptool mdp2rinex mdpEdit : rxio gpstk ;
+LinkLibraries mdptool mdp2rinex mdpEdit mdp2fic UniqueAlmStore : mdplib ;
+GPSLinkLibraries mdptool mdp2rinex mdpEdit mdp2fic UniqueAlmStore : rxio gpstk ;
 
 BonkForte ;
 
