@@ -72,25 +72,13 @@ namespace gpstk
       virtual ~OrbElemStore()
       {}
 
-      /// Returns the position and clock offset of the indicated
-      /// object in ECEF coordinates (meters) at the indicated time.
-      /// @param[in] id the object's identifier
-      /// @param[in] t the time to look up
-      /// @return the Xt of the object at the indicated time
-      /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
-      virtual Xt getXt(const SatID& id, const CommonTime& t)
-         const throw( InvalidRequest )
-         = 0;
-
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] id the object's identifier
       /// @param[in] t the time to look up
       /// @return the Xvt of the object at the indicated time
       /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
+      ///    reason, this is thrown. The teXvt may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const SatID& id, const CommonTime& t)
          const throw( InvalidRequest )

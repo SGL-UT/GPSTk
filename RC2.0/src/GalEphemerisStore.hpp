@@ -81,36 +81,13 @@ namespace gpstk
       virtual ~GalEphemerisStore()
       {}
 
-      /// Returns the position and clock offset of the indicated
-      /// satellite in ECEF coordinates (meters) at the indicated time.
-      /// @param[in] sat the SV's SatID
-      /// @param[in] t the time to look up
-      /// @return the Xt of the SV at time
-      /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
-      virtual Xt getXt( const SatID& sat, const CommonTime& t ) const
-         throw( InvalidRequest );
-
-
-      /** This returns the pt of the sv in ecef coordinates
-       * (units m, s) at the indicated time.
-       * @param sat the satellite's SatID
-       * @param t the time to look up
-       * @param ref a place to return the IODC for future reference.
-       * @return the Xt of the SV at time t
-       */
-      virtual Xt getXt( const SatID& sat, const CommonTime& t, short& ref ) const
-         throw( InvalidRequest );
-
-
       /// Returns the position, velocity, and clock offset of the indicated
       /// satellite in ECEF coordinates (meters) at the indicated time.
       /// @param[in] sat the SV's SatID
       /// @param[in] t the time to look up
       /// @return the Xvt of the SV at time
       /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
+      ///    reason, this is thrown. The teXvt may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );

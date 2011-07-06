@@ -56,35 +56,6 @@ using gpstk::StringUtils::asString;
 
 namespace gpstk
 {
-   Xt GalEphemerisStore::getXt(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      short ref;
-      return getXt(sat, t, ref);
-   }
-
-//--------------------------------------------------------------------------
-
-   Xt GalEphemerisStore::getXt(const SatID& sat, const CommonTime& t, short& ref) const
-      throw( InvalidRequest )
-   {
-      try
-      {
-         // test for Galileo satellite system in sat?
-         const GalEphemeris& eph = findEphemeris(sat,t);
-
-         // N.B. Because GalEphemeris does not have an IODC, what should we use here?
-         //      What is a ref?
-         //ref = eph.getIODC();
-         
-         Xt sv = eph.svXt(t);
-         return sv;
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
-   }
 
 //--------------------------------------------------------------------------
 

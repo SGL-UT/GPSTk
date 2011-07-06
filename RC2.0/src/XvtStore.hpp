@@ -65,16 +65,6 @@ namespace gpstk
    public:
       virtual ~XvtStore()
       {}
-      
-      /// Returns the position and clock offset of the indicated
-      /// object in ECEF coordinates (meters) at the indicated time.
-      /// @param[in] id the object's identifier
-      /// @param[in] t the time to look up
-      /// @return the Xt of the object at the indicated time
-      /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
-
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.

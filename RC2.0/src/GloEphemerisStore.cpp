@@ -75,19 +75,19 @@ namespace gpstk
        *  @param[in] sat   Satellite's identifier
        *  @param[in] epoch Time to look up
        *
-       *  @return the Xt of the object at the indicated time
+       *  @return the Xvt of the object at the indicated time
        *
        *  @throw InvalidRequest If the request can not be completed for any
        *  reason, this is thrown. The text may have additional information
        *  as to why the request failed.
        */
-   Xt GloEphemerisStore::getXt( const SatID& sat,
+   Xvt GloEphemerisStore::getXvt( const SatID& sat,
                                    const CommonTime& epoch ) const
       throw( InvalidRequest )
    {
 
          // Results will be stored here.
-      Xt res;
+      Xvt res;
 
          // We will take advantage of 'getXvt()' method.
       res = getXvt( sat, epoch );
@@ -95,7 +95,7 @@ namespace gpstk
          // Return
       return res;
 
-   }; // End of method 'GloEphemerisStore::getXt()'
+   }; // End of method 'GloEphemerisStore::getXvt()'
 
 
       /* Returns the position, velocity and clock offset of the indicated

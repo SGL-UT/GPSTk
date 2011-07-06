@@ -36,39 +36,6 @@ namespace gpstk
 {
    using namespace StringUtils;
 
-   /** @addtogroup ephemstore */
-   //@{
-
-   // XvtStore interface:
-
-   // Returns the position and clock offset of the indicated
-   // object in ECEF coordinates (meters) at the indicated time.
-   // param[in] sat the satellite of interest
-   // param[in] ttag the time to look up
-   // return the Xt of the object at the indicated time
-   // throw InvalidRequest If the request can not be completed for any
-   //    reason, this is thrown. The text may have additional
-   //    information as to why the request failed.
-   Xt SP3EphemerisStore::getXt(const SatID& sat, const CommonTime& ttag)
-      const throw(InvalidRequest)
-   {
-      try {
-         PositionRecord prec(posStore.getValue(sat,ttag));
-         ClockRecord crec(clkStore.getValue(sat,ttag));
-
-         Xt retXt;
-         for(int i=0; i<3; i++)
-            retXt.x[i] = prec.Pos[i] * 1000.0;    // km -> m
-
-         if(useSP3clock)                          // SP3
-            retXt.clkbias = crec.bias * 1.e-6;    // microsec -> sec
-         else                                     // RINEX clock
-            retXt.clkbias = crec.bias;            // sec
-
-         return retXt;
-      }
-      catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
-   }
 
    // Returns the position, velocity, and clock offset of the indicated
    // object in ECEF coordinates (meters) at the indicated time.
@@ -76,7 +43,7 @@ namespace gpstk
    // param[in] ttag the time to look up
    // return the Xvt of the object at the indicated time
    // throw InvalidRequest If the request can not be completed for any
-   //    reason, this is thrown. The text may have additional
+   //    reason, this is thrown. The Text may have additional
    //    information as to why the request failed.
    Xvt SP3EphemerisStore::getXvt(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
@@ -276,7 +243,7 @@ namespace gpstk
 
          // read data
          bool isC(head.version==SP3Header::SP3c);
-         bool haveRec,goNext,haveP,haveV,haveEP,haveEV,predP,predC;
+         bool haveRec,goNeXvt,haveP,haveV,haveEP,haveEV,predP,predC;
          int i;
          CommonTime ttag;
          SatID sat;
@@ -293,7 +260,7 @@ namespace gpstk
 
          try {
             haveP = haveV = haveEP = haveEV = predP = predC = false;
-            goNext = true;
+            goNeXvt = true;
 
             while(strm >> data) {
             //cout << "Read data " << data.RecType
@@ -305,14 +272,14 @@ namespace gpstk
                // returns to start filling the records again.
                while(1) {
                   if(data.RecType == '*') {                                // epoch
-                     if(haveP || haveV) goNext = false;
+                     if(haveP || haveV) goNeXvt = false;
                      else {
                         ttag = data.time;
-                        goNext = true;
+                        goNeXvt = true;
                      }
                   }
                   else if(data.RecType == 'P' && !data.correlationFlag) {  // P
-                     if(haveP) goNext = false;
+                     if(haveP) goNeXvt = false;
                      else {
                //cout << "P record: "; data.dump(cout);
                         sat = data.sat;
@@ -337,7 +304,7 @@ namespace gpstk
                      }
                   }
                   else if(data.RecType == 'V' && !data.correlationFlag) {  // V
-                     if(haveV) goNext = false;
+                     if(haveV) goNeXvt = false;
                      else {
                //cout << "V record: "; data.dump(cout);
                         for(i=0; i<3; i++) {
@@ -361,7 +328,7 @@ namespace gpstk
                      }
                   }
                   else if(data.RecType == 'P' && data.correlationFlag) {   // EP
-                     if(haveEP) goNext = false;
+                     if(haveEP) goNeXvt = false;
                      else {
                //cout << "EP record: "; data.dump(cout);
                         for(i=0; i<3; i++)
@@ -376,7 +343,7 @@ namespace gpstk
                      }
                   }
                   else if(data.RecType == 'V' && data.correlationFlag) {   // EV
-                     if(haveEV) goNext = false;
+                     if(haveEV) goNeXvt = false;
                      else {
                //cout << "EV record: "; data.dump(cout);
                         for(i=0; i<3; i++)
@@ -395,11 +362,11 @@ namespace gpstk
                //cout << "other record (" << data.RecType << "):\n";
                      //data.dump(cout);
                      //throw?
-                     goNext = true;
+                     goNeXvt = true;
                   }
 
-                  //cout << "goNext is " << (goNext ? "T":"F") << endl;
-                  if(goNext) break;
+                  //cout << "goNeXvt is " << (goNeXvt ? "T":"F") << endl;
+                  if(goNeXvt) break;
 
                   if(rejectBadPos && (prec.Pos[0]==0.0 ||
                                       prec.Pos[1]==0.0 ||
@@ -418,13 +385,13 @@ namespace gpstk
                      if(fillClockStore && (!rejectPredClk || !predC))
                         clkStore.addClockRecord(sat,ttag,crec);
 
-                     // prepare for next
+                     // prepare for neXvt
                      haveP = haveV = haveEP = haveEV = predP = predC = false;
                      prec.Pos = prec.Vel = prec.sigPos = prec.sigVel = Triple(0,0,0);
                      crec.bias = crec.drift = crec.sig_bias = crec.sig_drift = 0.0;
                   }
 
-                  goNext = true;
+                  goNeXvt = true;
 
                }  // end while loop (loop twice)
             }  // end read loop

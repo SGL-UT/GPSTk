@@ -114,34 +114,34 @@ namespace gpstk
       const EngAlmMap& eam = satItr->second;
 
       // find the closest almanac BEFORE t, if any.
-      EngAlmMap::const_iterator nextItr = eam.begin(), almItr = eam.end();
+      EngAlmMap::const_iterator neXvtItr = eam.begin(), almItr = eam.end();
          
-      while ( (nextItr != eam.end()) &&
-              (nextItr->first < t) )
+      while ( (neXvtItr != eam.end()) &&
+              (neXvtItr->first < t) )
       {
-         almItr = nextItr;
-         nextItr++;
+         almItr = neXvtItr;
+         neXvtItr++;
       }
 
       if (almItr == eam.end())
       {
-         if (nextItr == eam.end()) 
+         if (neXvtItr == eam.end()) 
          {
             InvalidRequest e("No almanacs for time " + t.asString());
             GPSTK_THROW(e);
          }
          else
          {
-            almItr = nextItr;
+            almItr = neXvtItr;
          }
       }
 
-      // check the next almanac (the first one after t's time)
+      // check the neXvt almanac (the first one after t's time)
       // to see if it's closer than the one before t
-      if (nextItr != eam.end())
+      if (neXvtItr != eam.end())
       {
-         if ( (nextItr->first - t) < (t - almItr->first))
-            almItr = nextItr;
+         if ( (neXvtItr->first - t) < (t - almItr->first))
+            almItr = neXvtItr;
       }
       return (*almItr).second;
    }
@@ -160,25 +160,25 @@ namespace gpstk
       const EngAlmMap& eam = satItr->second;
 
       // find the closest almanac BEFORE t, if any.
-      EngAlmMap::const_iterator nextItr = eam.begin(), almItr = eam.end();
+      EngAlmMap::const_iterator neXvtItr = eam.begin(), almItr = eam.end();
          
-      while ( (nextItr != eam.end()) &&
-              (nextItr->second.getTransmitTime() < t) )
+      while ( (neXvtItr != eam.end()) &&
+              (neXvtItr->second.getTransmitTime() < t) )
       {
-         almItr = nextItr;
-         nextItr++;
+         almItr = neXvtItr;
+         neXvtItr++;
       }
 
       if (almItr == eam.end())
       {
-         if (nextItr == eam.end()) 
+         if (neXvtItr == eam.end()) 
          {
             InvalidRequest e("No almanacs for time " + t.asString());
             GPSTK_THROW(e);
          }
          else
          {
-            almItr = nextItr;
+            almItr = neXvtItr;
          }
       }
       return (*almItr).second;     

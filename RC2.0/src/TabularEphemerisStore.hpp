@@ -57,7 +57,7 @@
 #include "SatID.hpp"
 #include "SP3SatID.hpp"
 #include "XvtStore.hpp"
-#include "Xt.hpp"
+#include "Xvt.hpp"
 #include "Xvt.hpp"
 #include "icd_gps_constants.hpp"
 #include "MiscMath.hpp"
@@ -90,26 +90,6 @@ namespace gpstk
       virtual ~TabularEphemerisStore()
       {};
 
-
-      /// Returns the position and clock offset of the indicated
-      /// object in ECEF coordinates (meters) at the indicated time.
-      /// Uses Lagrange interpolation; call setInterpolationOrder() to change
-      /// the order.
-      /// 
-      /// @param[in] id the object's identifier
-      /// @param[in] t the time to look up
-      /// 
-      /// @return the Xt of the object at the indicated time
-      /// 
-      /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
-      virtual Xt getXt( const SatID& sat,
-                        const CommonTime& t ) const
-         throw( InvalidRequest )
-      { Xt res; return res; }
-
-
       /// Returns the position, velocity, and clock offset of the indicated
       ///  object in ECEF coordinates (meters) at the indicated time.
       /// Uses Lagrange interpolation; call setInterpolationOrder() to change
@@ -121,7 +101,7 @@ namespace gpstk
       /// @return the Xvt of the object at the indicated time
       /// 
       /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
+      ///    reason, this is thrown. The teXvt may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt( const SatID& sat,
                           const CommonTime& t ) const
@@ -420,7 +400,7 @@ namespace gpstk
       /// "enableIntervalCheck()" for this.
       double maxInterval;
 
-      /// Order of Lagrange interpolation used in getXvt() and getXt(),
+      /// Order of Lagrange interpolation used in getXvt() and getXvt(),
       /// should be even. Usually for 15 minute data, this is the default, 10. 
       unsigned int interpOrder;
 

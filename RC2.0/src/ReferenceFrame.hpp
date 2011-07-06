@@ -38,7 +38,7 @@ namespace gpstk{
     * 
     * The ReferenceFrame class defines what is essentially a smart enum which
     * can be expanded at runtime that labels classes such as position and
-    * Xt with what coordinate reference frame is used to derive their
+    * Xvt with what coordinate reference frame is used to derive their
     * location on the earth.
     */
    
@@ -142,7 +142,7 @@ namespace gpstk{
       /**
        * Creates a new entry in the names map.
        * 
-       * This effectively extends the ReferenceFrame enum at runtime for the duration of
+       * This effectively eXvtends the ReferenceFrame enum at runtime for the duration of
        * the program. If the given name already exists, this method does not add a new
        * entry and simply returns the existing value.
        * 
@@ -155,7 +155,7 @@ namespace gpstk{
       /**
        * Creates a new entry in the names map.
        * 
-       * This effectively extends the ReferenceFrame enum at runtime for the duration of
+       * This effectively eXvtends the ReferenceFrame enum at runtime for the duration of
        * the program. If the given name already exists, this method does not add a new
        * entry and simply returns the existing value.
        * 

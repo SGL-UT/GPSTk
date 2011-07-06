@@ -31,9 +31,9 @@ using namespace std;
 
 // Exception messages
 
-static const string unknownExceptionText =
+static const string unknownExceptionTeXvt =
    "Unknown ReferenceFrame - Cannot perform Helmert Transformation.";
-static const string unknownDefinitionText =
+static const string unknownDefinitionTeXvt =
    "Unknown ReferenceFrame - Cannot define an Unknown transform.";
 static const string backwardsDefinition =
    "Cannot define transformation backwards. A transformation is already"
@@ -78,7 +78,7 @@ void HelmertTransform::defineTransform(const HelmertTransform::TransformParamete
    // Sanity check; no Unknown frames allowed.
    if (from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
    {
-      throw InvalidParameter(unknownDefinitionText);
+      throw InvalidParameter(unknownDefinitionTeXvt);
    }
    
    // Start searching.
@@ -157,7 +157,7 @@ Position HelmertTransform::transform(const ReferenceFrame& to,
 {
    // Throw an error if either Reference Frame is unknown.
    if (pos.getFrame() == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
+      throw InvalidParameter(unknownExceptionTeXvt);
 
    Position cartPos = pos;
    cartPos.transformTo(Position::Cartesian);
@@ -170,23 +170,6 @@ Position HelmertTransform::transform(const ReferenceFrame& to,
 }
 
 
-// Xt transform, calls the triple method posTransform.
-
-Xt HelmertTransform::transform(const ReferenceFrame& to,
-                                 const Xt& pos          )
-                  throw(InvalidParameter)
-{
-   if (pos.frame == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
-
-   Xt newXt = pos;
-   newXt.x = posTransform(newXt.frame, to, newXt.x);
-
-   newXt.frame = to;
-   return newXt;
-}
-
-
 // Xvt transform, calls the triple methods posTransform and velTransform.
 
 Xvt HelmertTransform::transform(const ReferenceFrame& to,
@@ -194,7 +177,7 @@ Xvt HelmertTransform::transform(const ReferenceFrame& to,
    throw(InvalidParameter)
 {
    if (pos.frame == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
+      throw InvalidParameter(unknownExceptionTeXvt);
 
    Xvt newXvt = pos;
 
@@ -214,7 +197,7 @@ Triple HelmertTransform::posTransform(const ReferenceFrame& from,
    throw(InvalidParameter)
 {
    if (from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
+      throw InvalidParameter(unknownExceptionTeXvt);
    
    Vector<double> newPos(3,0.0);
    newPos(0) = pos[0];
@@ -235,7 +218,7 @@ Triple HelmertTransform::velTransform(const ReferenceFrame& from,
    throw(InvalidParameter)
 {
    if (from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
+      throw InvalidParameter(unknownExceptionTeXvt);
 
    Vector<double> newVel(3,0.0);
    newVel(0) = vel[0];
@@ -256,7 +239,7 @@ Vector<double> HelmertTransform::posTransform(const ReferenceFrame& from,
    throw(InvalidParameter)
 {
    if (from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
+      throw InvalidParameter(unknownExceptionTeXvt);
 
    return helperTransform(from, to, pos, true);
 }
@@ -270,7 +253,7 @@ Vector<double> HelmertTransform::velTransform(const ReferenceFrame& from,
    throw(InvalidParameter)
 {
    if (from == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
-      throw InvalidParameter(unknownExceptionText);
+      throw InvalidParameter(unknownExceptionTeXvt);
 
    return helperTransform(from, to, vel, false);
 }

@@ -78,20 +78,9 @@ namespace gpstk
       virtual ~MSCStore()
       {}
 
-      /// Returns the position, velocity, and clock offset of the indicated
-      /// station in ECEF coordinates (meters) at the indicated time.
-      /// @param[in] stationID id
-      /// @param[in] t the time to look up
-      /// @return the Xvt of the station at time
-      /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
       Xvt getXvt(const std::string& stationID, const CommonTime& t)
-         const throw( gpstk::InvalidRequest );
-
-      Xt getXt(const std::string& stationID, const CommonTime& t)
         const throw( gpstk::InvalidRequest )
-         { Xt dummy; return dummy; }
+         { Xvt dummy; return dummy; }
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// station in ECEF coordinates (meters) at the indicated time.
@@ -99,7 +88,7 @@ namespace gpstk
       /// @param[in] t the time to look up
       /// @return the Xvt of the station at time
       /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The text may have additional
+      ///    reason, this is thrown. The teXvt may have additional
       ///    information as to why the request failed.
       Xvt getXvt(unsigned long& stationIDno, const CommonTime& t)
          const throw( gpstk::InvalidRequest );
@@ -193,7 +182,7 @@ namespace gpstk
       bool hasVelocity() const throw() { return false; }
 
       /// XvtStore interface
-      /// Return true if the given IndexType is present in the store
+      /// Return true if the given IndeXvtype is present in the store
       bool isPresent(const std::string& id) const throw()
          { return (mscMap.find(id) != mscMap.end()); }
 

@@ -87,9 +87,6 @@ namespace gpstk
       virtual Xvt getXvt(const SatID& id, const CommonTime& t) 
          const throw( gpstk::InvalidRequest );
 
-      virtual Xt getXt(const SatID& id, const CommonTime& t)
-         const throw( gpstk::InvalidRequest )
-      {}
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.

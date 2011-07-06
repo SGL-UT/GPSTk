@@ -46,7 +46,8 @@
 
 
 #include <iostream>
-#include "Xt.hpp"
+#include "Triple.hpp"
+#include "ReferenceFrame.hpp"
 #include "EllipsoidModel.hpp"
 #include "icd_gps_constants.hpp"
 
@@ -56,7 +57,7 @@ namespace gpstk
   //@{
 
   /// Earth-Centered, Earth-Fixed Cartesian position, velocity, clock bias and drift
-  class Xvt : public Xt
+  class Xvt
   {
   public:
 
@@ -68,6 +69,15 @@ namespace gpstk
    /// Destructor.
    virtual ~Xvt()
    {}
+
+    Triple getPos()
+      throw()
+    { return x; }
+
+    double getClockBias()
+      throw()
+    { return clkbias; }
+
 
    /**
     * Given the position of a ground location, compute the range
@@ -82,6 +92,10 @@ namespace gpstk
                      const EllipsoidModel& ellipsoid,
                      double correction = 0) const
      throw();
+
+    Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
+    double clkbias;  ///< Sat clock correction in seconds
+    ReferenceFrame frame;
 
    Triple getVel() throw()
    { return v; }

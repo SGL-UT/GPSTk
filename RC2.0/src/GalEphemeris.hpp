@@ -168,13 +168,6 @@ namespace gpstk
       void setAccuracy(const double& acc)
          throw( gpstk::InvalidParameter );
 
-         /** Compute satellite position at the given time
-          * using this ephemeris.
-          * @throw InvalidRequest if a required subframe has not been stored.
-          */
-      Xt svXt(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
-
          /** Compute satellite position & velocity at the given time
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
@@ -192,17 +185,17 @@ namespace gpstk
       unsigned getTLMMessage(short subframe) const 
          throw( gpstk::InvalidRequest );
 
-         /// Extracts the epoch time from this ephemeris, correcting
+         /// EXvtracts the epoch time from this ephemeris, correcting
          /// for half weeks and HOW time
       CommonTime getEphemerisEpoch() const
          throw( gpstk::InvalidRequest );
 
-         /// Extracts the epoch time (time of clock) from this ephemeris, correcting
+         /// EXvtracts the epoch time (time of clock) from this ephemeris, correcting
          /// for half weeks and HOW time
       CommonTime getEpochTime() const
          throw( gpstk::InvalidRequest );
 
-         /// Extracts the transmit time from the ephemeris using the Tot
+         /// EXvtracts the transmit time from the ephemeris using the Tot
       CommonTime getTransmitTime() const
          throw();
 
@@ -482,7 +475,7 @@ namespace gpstk
    protected:
 
       // Copied directly from EngEphemeris.
-      // GPS only data fields have been commented out and extended with
+      // GPS only data fields have been commented out and eXvtended with
       // the necessary Galileo data fields.
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */

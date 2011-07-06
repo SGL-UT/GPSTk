@@ -34,7 +34,6 @@
 #include "Position.hpp"
 #include "ReferenceFrame.hpp"
 #include "Vector.hpp"
-#include "Xt.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
@@ -134,13 +133,6 @@ namespace gpstk
        */
       Position transform(const ReferenceFrame& to,
                          const Position& pos      )
-         throw(InvalidParameter);
-
-      /**
-       * @brief Transforms a Xt object to the specified ReferenceFrame.
-       */
-      Xt transform(const ReferenceFrame& to,
-                   const Xt& pos            )
          throw(InvalidParameter);
 
       /**

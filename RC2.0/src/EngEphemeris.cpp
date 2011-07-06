@@ -166,7 +166,7 @@ namespace gpstk
       const long sf3Lead[2] = { 0x00000000, 0x00000B00 };
       
          // Handover word times represent the time of the leading edge of the
-         // NEXT subframe.  Therefore, HOW should always correspond to
+         // NEXvt subframe.  Therefore, HOW should always correspond to
          //   :06/:36 for SF 1
          //   :12/:42 for SF 2
          //   :18/:48 for SF 3
@@ -410,20 +410,6 @@ namespace gpstk
       return 0; // never reached
    }
 
-
-   Xt EngEphemeris::svXt(const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      Xt sv;
-   
-      Xv xv = orbit.svXv(t);
-
-      sv.x = xv.x;
-
-      sv.clkbias = bcClock.svClockBias(t);
-
-      return sv;
-   }
 
    Xvt EngEphemeris::svXvt(const CommonTime& t) const
       throw( InvalidRequest )

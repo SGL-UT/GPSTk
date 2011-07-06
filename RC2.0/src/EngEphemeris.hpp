@@ -50,7 +50,6 @@
 #include "EngNav.hpp"
 #include "Exception.hpp"
 #include "CommonTime.hpp"
-#include "Xv.hpp"
 #include "Xvt.hpp"
 #include "BrcKeplerOrbit.hpp"
 #include "BrcClockCorrection.hpp"
@@ -184,14 +183,6 @@ namespace gpstk
       short getFitInterval() const
          throw( gpstk::InvalidRequest );
 
-         /** Compute satellite position at the given time
-          * using this ephemeris.
-          * @throw InvalidRequest if a required subframe has not been stored.
-          */
-
-      Xt svXt(const CommonTime& t) const
-         throw( gpstk::InvalidRequest );
-
          /** Compute satellite position & velocity at the given time
           * using this ephemeris.
           * @throw InvalidRequest if a required subframe has not been stored.
@@ -211,17 +202,17 @@ namespace gpstk
       unsigned getTLMMessage(short subframe) const 
          throw( gpstk::InvalidRequest );
 
-         /// Extracts the epoch time from this ephemeris, correcting
+         /// EXvtracts the epoch time from this ephemeris, correcting
          /// for half weeks and HOW time
       CommonTime getEphemerisEpoch() const
          throw( gpstk::InvalidRequest );
 
-         /// Extracts the epoch time (time of clock) from this ephemeris, correcting
+         /// EXvtracts the epoch time (time of clock) from this ephemeris, correcting
          /// for half weeks and HOW time
       CommonTime getEpochTime() const
          throw( gpstk::InvalidRequest );
 
-         /// Extracts the transmit time from the ephemeris using the Tot
+         /// EXvtracts the transmit time from the ephemeris using the Tot
       CommonTime getTransmitTime() const
          throw();
 
