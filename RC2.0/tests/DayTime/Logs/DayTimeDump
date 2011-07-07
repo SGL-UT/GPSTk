@@ -1,3 +1,7 @@
+  internal: jday 2453969
+  internal: mSod 48600000
+  internal: mSec 0.000000000000000
+  internal: tolerance 0.000000001000000
   double JD(): 2453969.062500
   double MJD(): 53968.562500
   short year(): 2006
@@ -26,6 +30,10 @@
   struct timeval unixTime(): 1156167000 0
   unsigned long fullZcount(): 191455120
   unsigned long fullZcountFloor(): 191455120
+  internal: jday 2453969
+  internal: mSod 48600000
+  internal: mSec 0.000000000000000
+  internal: tolerance 0.000000001000000
   double JD(): 2453969.062500
   double MJD(): 53968.562500
   short year(): 2006

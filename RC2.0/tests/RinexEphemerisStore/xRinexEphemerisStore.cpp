@@ -26,6 +26,8 @@
 #include "xRinexEphemerisStore.hpp"
 #include "SatID.hpp"
 #include "Exception.hpp"
+#include "CivilTime.hpp"
+#include "CommonTime.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexEphemerisStore);
 
@@ -72,7 +74,7 @@ void xRinexEphemerisStore :: RESTest (void)
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
 **** for the given PRN and also that an exception is thrown if there is no data for
 **** the PRN at the given time. Furthermore, this test finds an Ephemeris for a given
-**** DayTime Time and PRN.
+**** CivilTime Time and PRN.
 
 **** To see the ephemeris information for the selected Time and PRN please see
 **** findEph.txt
@@ -101,13 +103,13 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
    gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
    gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 
-	gpstk::DayTime Time(2006,1,31,11,45,0);
-	gpstk::DayTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+	gpstk::CivilTime Time(2006,1,31,11,45,0);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
 
 
 	try
 	{
-		gpstk::DayTime crazy(200000,1,31,2,0,0);
+		gpstk::CivilTime crazy(200000,1,31,2,0,0);
 		CPPUNIT_ASSERT_NO_THROW(Store.findEphemeris(sid1,Time));
 
 		fPRN1 << Store.findEphemeris(sid1,Time);
@@ -123,9 +125,9 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/findEph1.txt","Checks/findEph1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/findEph15.txt","Checks/findEph15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/findEph32.txt","Checks/findEph32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/findEph1.txt",(char*)"Checks/findEph1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/findEph15.txt",(char*)"Checks/findEph15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/findEph32.txt",(char*)"Checks/findEph32.chk"));
 
 }
 
@@ -136,7 +138,7 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
 **** for the given PRN and also that an exception is thrown if there is no data for
 **** the PRN at the given time. Furthermore, this test finds an Xvt for a given
-**** DayTime Time and PRN.
+**** CivilTime Time and PRN.
 
 **** To see the Xvt information for the selected Time and PRN please see
 **** getXvt.txt
@@ -165,8 +167,8 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
    gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
    gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 
-	gpstk::DayTime Time(2006,1,31,11,45,0);
-	gpstk::DayTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+	gpstk::CivilTime Time(2006,1,31,11,45,0);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
 
 	try
 	{
@@ -184,9 +186,9 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt1.txt","Checks/getPrnXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt15.txt","Checks/getPrnXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt32.txt","Checks/getPrnXvt32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/getXvt1.txt",(char*)"Checks/getPrnXvt1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/getXvt15.txt",(char*)"Checks/getPrnXvt15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/getXvt32.txt",(char*)"Checks/getPrnXvt32.chk"));
 }
 
 
@@ -198,7 +200,7 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
 **** This test makes sure that exceptions are thrown if there is no ephemeris data
 **** for the given PRN and also that an exception is thrown if there is no data for
 **** the PRN at the given time. Furthermore, this test finds an Xvt for a given
-**** DayTime Time and PRN and IODC.
+**** CivilTime Time and PRN and IODC.
 
 **** To see the Xvt information for the selected Time and PRN please see
 **** getXvt2.txt
@@ -234,8 +236,8 @@ void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 	short IODC32 = 441;
 	short IODC33 = 392;
 
-	gpstk::DayTime Time(2006,1,31,11,45,0);
-	gpstk::DayTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+	gpstk::CivilTime Time(2006,1,31,11,45,0);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
 
 	try
 	{
@@ -251,9 +253,9 @@ void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 		//cout << e;
 	}
 
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_1.txt","Checks/getPrnXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_15.txt","Checks/getPrnXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/getXvt2_32.txt","Checks/getPrnXvt32.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/getXvt2_1.txt",(char*)"Checks/getPrnXvt1.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/getXvt2_15.txt",(char*)"Checks/getPrnXvt15.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/getXvt2_32.txt",(char*)"Checks/getPrnXvt32.chk"));
 }
 
 /*
@@ -281,8 +283,8 @@ void xRinexEphemerisStore :: BCESgetSatHealthTest (void)
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-	gpstk::DayTime Time(2006,1,31,11,45,0);
-	gpstk::DayTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+	gpstk::CivilTime Time(2006,1,31,11,45,0);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
 
 	try
 	{
@@ -341,9 +343,9 @@ void xRinexEphemerisStore :: BCESdumpTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/DumpData0.txt","Checks/DumpData0.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/DumpData1.txt","Checks/DumpData1.chk"));
-	//CPPUNIT_ASSERT(fileEqualTest("Logs/DumpData2.txt","Checks/DumpData2.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/DumpData0.txt",(char*)"Checks/DumpData0.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/DumpData1.txt",(char*)"Checks/DumpData1.chk"));
+	//CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/DumpData2.txt",(char*)"Checks/DumpData2.chk"));
 }
 
 /*
@@ -368,8 +370,8 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 	short PRN = 1;
    gpstk::SatID sid(PRN,gpstk::SatID::systemGPS);
 
-	gpstk::DayTime Time(2006,1,31,11,45,0);
-	gpstk::DayTime TimeB(2006,1,31,9,59,44);
+	gpstk::CivilTime Time(2006,1,31,11,45,0);
+	gpstk::CivilTime TimeB(2006,1,31,9,59,44);
 	const gpstk::EngEphemeris& eph = Store.findEphemeris(sid,Time);
 
 	try
@@ -377,8 +379,8 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 		CPPUNIT_ASSERT_NO_THROW(Blank.addEphemeris(eph));
 		Blank.addEphemeris(eph);
 
-		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(TimeB,Blank.getFinalTime());
+		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeB,Blank.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeB,Blank.getFinalTime());
 
 		Blank.dump(DumpData,1);
 	}
@@ -386,7 +388,7 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/addEphemerisTest.txt","Checks/addEphemerisTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/addEphemerisTest.txt",(char*)"Checks/addEphemerisTest.chk"));
 }
 
 /*
@@ -407,15 +409,15 @@ void xRinexEphemerisStore :: BCESeditTest (void)
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-	gpstk::DayTime TimeMax(2006,1,31,15,45,0);
-	gpstk::DayTime TimeMin(2006,1,31,3,0,0);
+	gpstk::CivilTime TimeMax(2006,1,31,15,45,0);
+	gpstk::CivilTime TimeMin(2006,1,31,3,0,0);
 
 	try
 	{
 		CPPUNIT_ASSERT_NO_THROW(Store.edit(TimeMin, TimeMax));
 		Store.edit(TimeMin, TimeMax);
-		CPPUNIT_ASSERT_EQUAL(TimeMin,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(TimeMax,Store.getFinalTime());
+		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeMin,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeMax,Store.getFinalTime());
 		Store.dump(DumpData,1);
 
 	}
@@ -423,7 +425,7 @@ void xRinexEphemerisStore :: BCESeditTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/editTest.txt","Checks/editTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/editTest.txt",(char*)"Checks/editTest.chk"));
 }
 
 /*
@@ -449,27 +451,27 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-	gpstk::DayTime Time(2006,1,31,11,45,0);
+	gpstk::CivilTime Time(2006,1,31,11,45,0);
 
 	try
 	{
 		//Make sure it doesn't fail but dont wipe anything
-		CPPUNIT_ASSERT_NO_THROW(Store.wiper(gpstk::DayTime::BEGINNING_OF_TIME));
+		CPPUNIT_ASSERT_NO_THROW(Store.wiper(gpstk::CommonTime::BEGINNING_OF_TIME));
 		//Wipe everything outside interval and make sure that we did wipe all the data
 		Store.wiper(Time);
 		Store.dump(DumpData1,1);
 
-		CPPUNIT_ASSERT_EQUAL(Time,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)Time,Store.getInitialTime());
 
 		//Wipe everything, return size (should be zero)
-		Store.wiper(gpstk::DayTime::END_OF_TIME);
+		Store.wiper(gpstk::CommonTime::END_OF_TIME);
 		unsigned int Num = Store.ubeSize();
 
 		CPPUNIT_ASSERT_EQUAL((unsigned) 0,Num);
 
 		Store.dump(DumpData2,1);
 
-		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL(gpstk::CommonTime::END_OF_TIME,Store.getInitialTime());
 
 
 	}
@@ -477,8 +479,8 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/wiperTest.txt","Checks/wiperTest.chk"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/wiperTest.txt","Checks/wiperTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/wiperTest.txt",(char*)"Checks/wiperTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/wiperTest.txt",(char*)"Checks/wiperTest.chk"));
 }
 
 /*
@@ -503,8 +505,8 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 	{
 		CPPUNIT_ASSERT_NO_THROW(Store.clear());
 
-		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(gpstk::DayTime::END_OF_TIME,Store.getFinalTime());
+		CPPUNIT_ASSERT_EQUAL(gpstk::CommonTime::END_OF_TIME,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL(gpstk::CommonTime::END_OF_TIME,Store.getFinalTime());
 		Store.dump(DumpData,1);
 
 	}
@@ -512,7 +514,7 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/clearTest.txt","Checks/clearTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/clearTest.txt",(char*)"Checks/clearTest.chk"));
 }
 
 /*
@@ -538,7 +540,7 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-	gpstk::DayTime Time(2006,1,31,13,0,1);
+	gpstk::CivilTime Time(2006,1,31,13,0,1);
 
 	short PRN0 = 0;
 	short PRN1 = 1;
@@ -555,7 +557,7 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 	{
 		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid0,Time),gpstk::InvalidRequest);
 		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid33,Time),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid1,gpstk::DayTime::END_OF_TIME),
+		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid1,gpstk::CommonTime::END_OF_TIME),
 					gpstk::InvalidRequest);
 
 		CPPUNIT_ASSERT_NO_THROW(Store.findUserEphemeris(sid1, Time));
@@ -577,7 +579,7 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/findUserTest.txt","Checks/findUserTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/findUserTest.txt",(char*)"Checks/findUserTest.chk"));
 }
 
 /*
@@ -601,7 +603,7 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-	gpstk::DayTime Time(2006,1,31,13,0,1);
+	gpstk::CivilTime Time(2006,1,31,13,0,1);
 
 	short PRN0 = 0;
 	short PRN1 = 1;
@@ -618,7 +620,7 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 	{
 		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid0,Time),gpstk::InvalidRequest);
 		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid33,Time),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid1,gpstk::DayTime::END_OF_TIME),
+		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid1,gpstk::CommonTime::END_OF_TIME),
 					gpstk::InvalidRequest);
 
 		CPPUNIT_ASSERT_NO_THROW(Store.findNearEphemeris(sid1, Time));
@@ -640,7 +642,7 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/findNearTest.txt","Checks/findNearTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/findNearTest.txt",(char*)"Checks/findNearTest.chk"));
 }
 
 
@@ -684,7 +686,7 @@ void xRinexEphemerisStore :: BCESaddToListTest (void)
 	{
 		//cout << e;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/addToListTest.txt","Checks/addToListTest.chk"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/addToListTest.txt",(char*)"Checks/addToListTest.chk"));
 }
 
 

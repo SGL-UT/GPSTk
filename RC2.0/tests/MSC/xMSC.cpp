@@ -39,7 +39,7 @@ void xMSC :: firstTest (void)
 	MSCData Data;
 	
 	Input >> Data;
-	gpstk::DayTime Time(2001,360,0.0);
+	gpstk::CommonTime Time(2001,360,0.0);
 	CPPUNIT_ASSERT_EQUAL(Time,Data.time);
 	CPPUNIT_ASSERT_EQUAL((long unsigned) 11111,Data.station);
 	CPPUNIT_ASSERT_EQUAL((string)"AAA    " ,Data.mnemonic);
@@ -57,8 +57,8 @@ void xMSC :: firstTest (void)
 	{
 		Out2 << Data2;
 	}
-	CPPUNIT_ASSERT(fileEqualTest("Logs/CoordFile","Logs/Output"));
-	CPPUNIT_ASSERT(fileEqualTest("Logs/CoordFile","Logs/Output2"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/CoordFile",(char*)"Logs/Output"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/CoordFile",(char*)"Logs/Output2"));
 }
 
 bool xMSC :: fileEqualTest (char* handle1, char* handle2)

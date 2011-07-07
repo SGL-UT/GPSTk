@@ -134,7 +134,7 @@ void xRinexObs :: hardCodeTest (void)
 	}
 	RinexObsFiled.dump(dump);
 	RinexObsFileh.dump(dump);
-	CPPUNIT_ASSERT(fileEqualTest("Logs/RinexObsFile.06o","Logs/TestOutput2.06o"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/RinexObsFile.06o",(char*)"Logs/TestOutput2.06o"));
 	}
 	catch (gpstk::Exception& e)
 	{

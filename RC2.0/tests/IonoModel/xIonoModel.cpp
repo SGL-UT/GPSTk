@@ -18,7 +18,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//
 //  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
@@ -26,7 +26,7 @@
 #include "xIonoModel.hpp"
 #include "EngAlmanac.hpp"
 #include "DayTime.hpp"
-#include "Geodetic.hpp"
+#include "Position.hpp"
 
 
 
@@ -40,7 +40,7 @@ void xIonoModel :: setUp (void)
 ****Test to assert the quality of the == operator of the IonoModel class
 */
 void xIonoModel :: equalityTest (void)
-{ 
+{
 	//Create many alpha and beta arrays which deine the Ionospheric model
 	double a[4] = {1.,2.,3.,4.};
 	double b[4] = {4.,3.,2.,1.};
@@ -52,7 +52,7 @@ void xIonoModel :: equalityTest (void)
 	gpstk::IonoModel Model3(a,e);
 	CPPUNIT_ASSERT(Model1 == Model2);
 	CPPUNIT_ASSERT(!(Model1 == Model3));
-	
+
 }
 
 /*
@@ -81,11 +81,11 @@ void xIonoModel :: validTest (void)
 {
 	//Instantiate a blank almanac
 	gpstk::EngAlmanac blankAlmanac;
-	
+
 	//Create an alpha and a beta array which define the Ionospheric model
 	double a[4] = {1.,2.,3.,4.};
 	double b[4] = {4.,3.,2.,1.};
-	
+
 	//Test to see if various IonoModel instantiations are valid
 	gpstk::IonoModel noParam;
 	gpstk::IonoModel withArray(a,b);
@@ -110,7 +110,7 @@ void xIonoModel :: exceptionTest (void)
 	//Set DayTime to the current system time
 	gpstk::DayTime dayTime;
 	//Use the default Geodetic constructer
-	gpstk::Geodetic rxgeo;
+	gpstk::Position rxgeo;
 	//Set el and az to 0 for ease of testing
 	double svel = 0;
 	double svaz = 0;
@@ -119,7 +119,7 @@ void xIonoModel :: exceptionTest (void)
 	double b[4] = {4.,3.,2.,1.};
 	gpstk::IonoModel Model(blankAlmanac);
 	gpstk::IonoModel goodModel(a,b);
-	
+
 	try
 	{
 	CPPUNIT_ASSERT_THROW(blankAlmanac.getIon(a,b),gpstk::InvalidRequest);

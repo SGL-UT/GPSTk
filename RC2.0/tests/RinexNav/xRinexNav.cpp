@@ -67,7 +67,7 @@ void xRinexNav :: hardCodeTest (void)
 		vector<string>::const_iterator itr1 = RinexNavHeader.commentList.begin();
 		CPPUNIT_ASSERT_EQUAL((string)"THIS IS ONE COMMENT",(*itr1));
 	
-		CPPUNIT_ASSERT(fileEqualTest("Logs/RinexNavExample.99n","Logs/TestOutput.99n"));
+		CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/RinexNavExample.99n",(char*)"Logs/TestOutput.99n"));
 		
 		gpstk::RinexNavStream RinexNavStream2("Logs/TestOutput.99n");
 		gpstk::RinexNavStream out2("Logs/TestOutput2.99n",ios::out);
@@ -94,7 +94,7 @@ void xRinexNav :: hardCodeTest (void)
 		}
 		RinexNavHeader.dump(dmp);
 		RinexNavData.dump(dmp);
-		CPPUNIT_ASSERT(fileEqualTest("Logs/RinexNavExample.99n","Logs/TestOutput3.99n"));
+		CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/RinexNavExample.99n",(char*)"Logs/TestOutput3.99n"));
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -159,7 +159,7 @@ void xRinexNav :: dataTest (void)
 	try
 	{
 		gpstk::RinexEphemerisStore Store;
-		gpstk::DayTime Time(1999,9,2,17,51,44);
+		gpstk::CivilTime Time(1999,9,2,17,51,44);
 		Store.loadFile("Logs/RinexNavExample.99n");
 		const gpstk::EngEphemeris& Eph6 = Store.findUserEphemeris(sid6, Time);
 		gpstk::RinexNavData Data(Eph6);
