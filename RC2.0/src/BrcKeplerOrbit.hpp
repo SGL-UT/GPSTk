@@ -83,6 +83,7 @@ namespace gpstk
 
 	 /// General purpose constructor
       BrcKeplerOrbit(const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
+                     const CommonTime beginFitArg, const CommonTime endFitArg,
 		               const double ToeArg, const short weeknumArg,
 	                  const double accuracyArg, const bool healthyArg,
 		               const double CucArg, const double CusArg,
@@ -106,6 +107,7 @@ namespace gpstk
 
 	 /// General purpose means to load data into object
       void loadData( const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
+                     const CommonTime beginFitArg, const CommonTime endFitArg,
 		               const double ToeArg, const short weeknumArg,
 	                  const double accuracyArg, const bool healthyArg,
 		               const double CucArg, const double CusArg,
@@ -126,7 +128,13 @@ namespace gpstk
 
       CommonTime getOrbitEpoch() const throw(InvalidRequest);
 
-	 /** Return true if orbit data has been loaded */
+         /** Returns the time at the beginning of the fit interval. */
+      CommonTime getBeginningOfFitInterval() const throw(InvalidRequest);
+
+         /** Returns the time at the end of the fit interval. */
+      CommonTime getEndOfFitInterval() const throw(InvalidRequest);
+
+	      /** Return true if orbit data has been loaded */
       bool hasData( ) const;
 
          /** Return satellite system ID */
@@ -141,13 +149,16 @@ namespace gpstk
          /** This function returns the health status of the SV. */
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
+         /** Return true if fit interval is valid . */
+      bool withinFitInt() const throw(gpstk::InvalidRequest);
+
          /** This function return the GPS week number for the
          * orbit.  this is the full GPS week (ie > 10 bits). */
       short getFullWeek() const throw(gpstk::InvalidRequest);
       
          /** This function returns the value of the SV accuracy (m)
           * computed from the accuracy information contained in the
-	  * nav message */
+	       * nav message */
       double getAccuracy() const throw(gpstk::InvalidRequest);
 
          /** This function returns the value of the sine latitude
@@ -250,7 +261,7 @@ namespace gpstk
       short   weeknum;         /**< GPS full week number of Toe */
       double  accuracy;        /**< SV accuracy (m) */
       bool    healthy;         /**< SV health (healthy=true, other=false */
-         //@}
+              //@}
 
 	 /// Harmonic perturbations
          //@{
@@ -276,6 +287,12 @@ namespace gpstk
       double   w;             /**< Argument of perigee (rad) */
       double   OMEGAdot;      /**< Rate of Rt ascension (rad/sec) */
       double   idot;          /**< Rate of inclination angle (rad/sec) */
+         //@}
+
+         /// Fit Interval Definition
+         //@{
+      CommonTime beginFit;    /**< Time at beginning of fit interval */
+      CommonTime endFit;      /**< Time at end of fit interval */
          //@}
 
       friend std::ostream& operator<<(std::ostream& s, 

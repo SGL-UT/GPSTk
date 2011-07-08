@@ -81,7 +81,8 @@ namespace gpstk
    }
 
    BrcKeplerOrbit::BrcKeplerOrbit(const std::string satSysArg, const ObsID obsIDArg,
-                                  const short PRNIDArg, const double ToeArg,
+                                  const short PRNIDArg, const CommonTime beginFitArg,
+                                  const CommonTime endFitArg, const double ToeArg,
                                   const short weeknumArg, const double accuracyArg,
                                   const bool healthyArg, const double CucArg,
                                   const double CusArg, const double CrcArg,
@@ -95,6 +96,7 @@ namespace gpstk
                                   const double idotArg )
    {
       loadData(satSysArg, obsIDArg, PRNIDArg,
+               beginFitArg, endFitArg,
 		         ToeArg, weeknumArg,
 	            accuracyArg, healthyArg,
 		         CucArg, CusArg,
@@ -121,7 +123,8 @@ namespace gpstk
    }
 
    void BrcKeplerOrbit::loadData(const std::string satSysArg, const ObsID obsIDArg,
-                                 const short PRNIDArg, const double ToeArg,
+                                 const short PRNIDArg, const CommonTime beginFitArg,
+                                 const CommonTime endFitArg, const double ToeArg,
                                  const short weeknumArg, const double accuracyArg,
                                  const bool healthyArg, const double CucArg,
                                  const double CusArg, const double CrcArg,
@@ -137,6 +140,8 @@ namespace gpstk
 	satSys      = satSysArg;
 	obsID       = obsIDArg;
 	PRNID       = PRNIDArg;
+   beginFit    = beginFitArg;
+   endFit      = endFitArg;
 	Toe         = ToeArg;
 	weeknum     = weeknumArg;
 	accuracy    = accuracyArg;
@@ -175,6 +180,7 @@ namespace gpstk
   	 satSys = "G";
 	 obsID = obsIDArg;
 	 PRNID = PRNIDArg;
+    short iodc = 0;
 
 	    //Convert Subframe 1
 	if (!subframeConvert(subframe1, fullweeknum, ficked))
@@ -191,6 +197,7 @@ namespace gpstk
 	     healthy = false;
 	     if (health == 0)
 	     healthy = true;
+        iodc = static_cast<short>( ldexp( ficked[9], -11 ) );
 	  
 	    //Convert Subframe 2
 	if (!subframeConvert(subframe2, fullweeknum, ficked))
@@ -199,15 +206,34 @@ namespace gpstk
 	   GPSTK_THROW(exc);
 	}
 
-	     Crs    = ficked[6];
-	     dn     = ficked[7];
-	     M0     = ficked[8];
-	     Cuc    = ficked[9];
-	     ecc    = ficked[10];
-	     Cus    = ficked[11];
-	     Ahalf  = ficked[12];
-	     A      = Ahalf*Ahalf;
-	     Toe    = ficked[13];
+         Crs    = ficked[6];
+	      dn     = ficked[7];
+	      M0     = ficked[8];
+	      Cuc    = ficked[9];
+	      ecc    = ficked[10];
+	      Cus    = ficked[11];
+	      Ahalf  = ficked[12];
+	      A      = Ahalf*Ahalf;
+	      Toe    = ficked[13];
+         short fiti = static_cast<short>(ficked[14]);
+         short fitHours = getLegacyFitInterval(iodc, fiti);
+         long beginFitSOW = Toe - (fitHours/2)*3600.0;
+         long endFitSOW = Toe + (fitHours/2)*3600.0;
+         short beginFitWk = weeknum;
+         short endFitWk = weeknum;
+         if (beginFitSOW < 0)
+         {
+            beginFitSOW += FULLWEEK;
+            beginFitWk--;
+         }
+         beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+
+         if (endFitSOW >= FULLWEEK)
+         {
+            endFitSOW += FULLWEEK;
+            endFitWk++;
+         }
+         endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);       
 
 	    //Convert Subframe 3
 	if (!subframeConvert(subframe3, fullweeknum, ficked))
@@ -421,6 +447,28 @@ namespace gpstk
       return toReturn;
    }
    
+   CommonTime BrcKeplerOrbit::getBeginningOfFitInterval() const
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      return beginFit;
+   }
+
+   CommonTime BrcKeplerOrbit::getEndOfFitInterval() const
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      return endFit;
+   }
+
    short BrcKeplerOrbit::getPRNID() const
       throw(InvalidRequest)
    {

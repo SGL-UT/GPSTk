@@ -43,6 +43,7 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+#include "Exception.hpp"
 
 namespace gpstk
 {
@@ -84,6 +85,8 @@ namespace gpstk
    const double L2_MULT   = 120.0;
       /// Gamma multiplier.
    const double GAMMA_GPS = 1.646944444;
+     ///Reference Semi-major axis. From IS-GPS-800 Table 3.5-2 in meters.
+   const double A_REF = 26559710.0;
 
    // Modernized GPS
       /// L5 carrier frequency in Hz.
@@ -109,8 +112,9 @@ namespace gpstk
 
       /// constant for the max array index in sv accuracy table
    const int SV_ACCURACY_MAX_INDEX_VALUE = 15;
+
       /// map from SV accuracy/URA flag to minimum accuracy values in m
-   const double SV_ACCURACY_MIN_INDEX[] = {0.0, 2.4, 3.4, 4.85, 6.85, 9.65,
+   const double SV_ACCURACY_MIN_INDEX[] = {0, 2.4, 3.4, 4.85, 6.85, 9.65,
                                            13.65, 24.0, 48.0, 96.0, 192.0,
                                            384.0, 768.0, 1536.0, 3072.0,
                                            6144.0};
@@ -125,6 +129,30 @@ namespace gpstk
                                            13.65, 24.0, 48.0, 96.0, 192.0,
                                            384.0, 768.0, 1536.0, 3072.0,
                                            6144.0, 9.999999999999e99};
+
+      /// Accuracy for CNAV and CNAV2
+
+      /// constant for the max array index in sv accuracy table
+   const int SV_CNAV_ACCURACY_MAX_INDEX_VALUE = 15;
+
+      /// map from SV accuracy/URA flag to minimum accuracy values in m
+   const double SV_CNAV_ACCURACY_MIN_INDEX[] = {0.0, 0.01, 0.02, 0.03, 0.04, 0.06, 
+                                           0.08, 0.11, 0.15, 0.21, 0.30,
+                                           0.43, 0.60, 0.85, 1.2, 1.7,
+                                           2.4, 3.4, 4.85, 6.85, 9.65,
+                                           13.65, 24.0, 48.0, 96.0, 192.0,
+                                           384.0, 768.0, 1536.0, 3072.0,
+                                           6144.0};
+
+      /// map from SV accuracy/URA flag to maximum accuracy values in m
+   const double SV_CNAV_ACCURACY_MAX_INDEX[] = {0.01, 0.02, 0.03, 0.04, 0.06,
+                                           0.08, 0.11, 0.15, 0.21, 0.30,
+                                           0.43, 0.60, 0.85, 1.20, 1.7,
+                                           2.4, 3.4, 4.85, 6.85, 9.65,
+                                           13.65, 24.0, 48.0, 96.0, 192.0,
+                                           384.0, 768.0, 1536.0, 3072.0,
+                                           6144.0, 9.999999999999e99};
+
 
    inline
    short accuracy2ura(const double& acc) throw()
@@ -165,9 +193,98 @@ namespace gpstk
    {
       if(ura < 0)
          return SV_ACCURACY_NOMINAL_INDEX[0];
-      if(ura > SV_ACCURACY_MAX_INDEX_VALUE)
+      if(ura > SV_CNAV_ACCURACY_MAX_INDEX_VALUE)
          return SV_ACCURACY_NOMINAL_INDEX[SV_ACCURACY_MAX_INDEX_VALUE];
       return SV_ACCURACY_NOMINAL_INDEX[ura];
+   }
+
+   inline
+   short accuracy2CNAVura(const double& acc) throw()
+   {
+      short ura = -15;
+      while ( (ura <= SV_CNAV_ACCURACY_MAX_INDEX_VALUE) &&
+              (acc > SV_CNAV_ACCURACY_MAX_INDEX[ura+15]))
+         ura++;
+      if (ura > SV_CNAV_ACCURACY_MAX_INDEX_VALUE)
+         ura = SV_CNAV_ACCURACY_MAX_INDEX_VALUE;
+      return ura;
+   }
+   
+   inline
+   double ura2CNAVaccuracy(const short& ura) throw()
+   {
+      if(ura > SV_CNAV_ACCURACY_MAX_INDEX_VALUE)
+         return SV_CNAV_ACCURACY_MAX_INDEX[SV_CNAV_ACCURACY_MAX_INDEX_VALUE+15];
+      return SV_CNAV_ACCURACY_MAX_INDEX[ura+15];
+   }
+
+   inline
+   short getLegacyFitInterval(const short iodc, const short fiti)
+      throw( InvalidRequest )
+   {
+         /* check the IODC */
+      if (iodc < 0 || iodc > 1023)
+      {
+            /* error in iodc, return minimum fit */
+         return 4;
+      }
+      
+      if (((fiti == 0) &&
+           (iodc & 0xFF) < 240 || (iodc & 0xFF) > 255 ))
+      {
+            /* fit interval of 4 hours */
+         return 4;
+      }
+      else if (fiti == 1)
+      {
+         if( ((iodc & 0xFF) < 240 || (iodc & 0xFF) > 255))
+         {
+               /* fit interval of 6 hours */
+            return 6;
+         }
+         else if(iodc >=240 && iodc <=247)
+         {
+               /* fit interval of 8 hours */
+            return 8;
+         }
+         else if(iodc >= 248 && iodc <= 255 || iodc == 496)
+         {
+               /* fit interval of 14 hours */
+            return 14;
+         }
+         else if((iodc >= 497 && iodc <=503) || (iodc >= 1021 && iodc <= 1023))
+         {
+               /* fit interval of 26 hours */
+            return 26;
+         }
+         else if(iodc >= 504 && iodc <=510)
+         {
+               /* fit interval of 50 hours */
+            return 50;
+         }
+         else if(iodc == 511 || iodc >= 752 && iodc <= 756)
+         {
+               /* fit interval of 74 hours */
+            return 74;
+         }
+         else if(iodc == 757)
+         {
+               /* fit interval of 98 hours */
+            return 98;
+         }
+         else
+         {
+            InvalidRequest exc("Invalid IODC Value For sv Block");
+            GPSTK_THROW(exc);
+         }
+      }
+      else
+      {
+            /* error in ephemeris/iodc, return minimum fit */
+         return 4;
+      }
+      
+      return 0; // never reached
    }
 
       //@}
