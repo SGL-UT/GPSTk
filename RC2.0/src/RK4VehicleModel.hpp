@@ -54,8 +54,8 @@ namespace gpstk
           * @param timeEpsilon      Time epsilon for Runge-Kutta algorithm.
           */
       RK4VehicleModel( const Matrix<double>& initialState,
-                        double initialTime = 0.0,
-                        double timeEpsilon = 1e-18 )
+                       double initialTime = 0.0,
+                       double timeEpsilon = 1e-18 )
          : RungeKutta4(initialState, initialTime, timeEpsilon)
       {};
 
