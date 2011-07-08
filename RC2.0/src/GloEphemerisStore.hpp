@@ -32,10 +32,12 @@
 
 
 #include <iostream>
-#include "TabularEphemerisStore.hpp"
+#include "XvtStore.hpp"
 #include "GloRecord.hpp"
 #include "RinexGloNavData.hpp"
-#include "GlonassSatelliteModel.hpp"
+#include "PZ90Ellipsoid.hpp"
+#include "Vector.hpp"
+#include "YDSTime.hpp"
 
 
 namespace gpstk
@@ -45,18 +47,26 @@ namespace gpstk
 
       //@{
 
+      // First, let's declare some useful type definitions
+
+   typedef std::map<CommonTime, GloRecord> TimeGloMap;
+
+   typedef std::map<SatID, TimeGloMap> GloEphMap;
+
       /**
        * This adds the interface to get GLONASS broadcast ephemeris information
        */
-   class GloEphemerisStore : public TabularEphemerisStore<GloRecord>
+   class GloEphemerisStore : public XvtStore<SatID>
    {
    public:
 
          /// Default constructor
       GloEphemerisStore()
          throw()
-         : step(1.0), checkHealthFlag(false)
-      { TabularEphemerisStore<GloRecord>(); };
+         : initialTime(CommonTime::END_OF_TIME),
+           finalTime(CommonTime::BEGINNING_OF_TIME),
+           step(1.0), checkHealthFlag(false)
+      { };
 
 
          /** Common constructor
@@ -65,10 +75,12 @@ namespace gpstk
           * @param checkHealth   Enable or disable the use of the health bit.
           */
       GloEphemerisStore( double rkStep,
-                            double checkHealth )
+                         double checkHealth )
          throw()
-         : step(rkStep), checkHealthFlag(checkHealth)
-      { TabularEphemerisStore<GloRecord>(); };
+         : initialTime(CommonTime::END_OF_TIME),
+           finalTime(CommonTime::BEGINNING_OF_TIME),
+           step(rkStep), checkHealthFlag(checkHealth)
+      { };
 
 
          /// Destructor
@@ -78,6 +90,7 @@ namespace gpstk
          /// Add ephemeris information from a RinexGloNavData object.
       void addEphemeris(const RinexGloNavData& data)
          throw();
+
 
          /** Returns the position, velocity and clock offset of the indicated
           *  satellite in ECEF coordinates (meters) at the indicated time,
@@ -123,16 +136,91 @@ namespace gpstk
       { checkHealthFlag = checkHealth; return (*this); };
 
 
+         /** A debugging function that outputs in human readable form,
+          *  all data stored in this object.
+          * 
+          * @param[in] s      The stream to receive the output; defaults to cout
+          * @param[in] detail The level of detail to provide
+          *
+          * @warning GLONASS position, velocity and acceleration information are
+          * given in km, km/s and km/(s*s), respectively.
+          */
+      virtual void dump(std::ostream& s = std::cout, short detail = 0) const
+         throw();
+
+
+         /** Edit the dataset, removing data outside the indicated time interval
+          * 
+          * @param[in] tmin   Defines the beginning of the time interval
+          * @param[in] tmax   Defines the end of the time interval
+          */
+      virtual void edit( const CommonTime& tmin,
+                         const CommonTime& tmax = CommonTime::END_OF_TIME )
+         throw();
+
+
+         /// Clear the dataset, meaning remove all data
+      virtual void clear(void) throw()
+      { pe.clear(); return; };
+
+
+         /// Determine the earliest time for which this object can successfully
+         /// determine the Xvt for any object.
+         /// @return The initial time
+         /// @throw InvalidRequest This is thrown if the object has no data.
+      virtual CommonTime getInitialTime() const
+         throw(InvalidRequest);
+
+
+         /// Determine the latest time for which this object can successfully
+         /// determine the Xvt for any object.
+         /// @return The final time
+         /// @throw InvalidRequest This is thrown if the object has no data.
+      virtual CommonTime getFinalTime() const
+         throw(InvalidRequest);
+
+
+         /// Return true if velocity data is present in the store. GLONASS
+         /// ephemeris data always include velocity.
+      virtual bool hasVelocity() const throw()
+      { return true; };
+
+
+         /// Return true if the given SatID is present in the store
+      virtual bool isPresent(const SatID& id) const throw();
+
+
    private:
 
 
-         /// Integration step for Runge-Kutta algorithm (10 seconds by default)
+         /// The map of SVs and Xvt's
+      GloEphMap pe;
+
+
+         /// Earliest epoch of data available
+      CommonTime initialTime;
+
+
+         /// Latest epoch of data available
+      CommonTime finalTime;
+
+
+         /// Integration step for Runge-Kutta algorithm (1 second by default)
       double step;
 
 
          /// Flag signaling if satellites will be screened out according to
          /// their health bit (by default it is false)
       bool checkHealthFlag;
+
+
+         /// Compute true sidereal time (in hours) at Greenwich at 0 hours UT.
+      double getSidTime( const CommonTime& time ) const;
+
+
+         /// Function implementing the derivative of GLONASS orbital model.
+      Vector<double> derivative( const Vector<double>& inState,
+                                 const Vector<double>& accel ) const;
 
 
    };  // End of class 'GloEphemerisStore'
