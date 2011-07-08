@@ -285,9 +285,27 @@ namespace gpstk
       short epochWeek = weeknum;
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
-            
+      short fiti = static_cast<short>(ficked[14]);
+      short fitHours = getLegacyFitInterval(IODC, fitint);
+      long beginFitSOW = Toe - (fitHours/2)*3600.0;
+      long endFitSOW = Toe + (fitHours/2)*3600.0;
+      short beginFitWk = epochWeek;
+      short endFitWk = epochWeek;
+      if (beginFitSOW < 0)
+      {
+         beginFitSOW += FULLWEEK;
+         beginFitWk--;
+      }
+      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW += FULLWEEK;
+         endFitWk++;
+      }
+      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);   
       
-      orbit.loadData(satSys, obsID, PRN, Toe, epochWeek, accuracy, healthy, 
+      orbit.loadData(satSys, obsID, PRN, beginFit, endFit, Toe, epochWeek, accuracy, healthy, 
 		               Cuc, Cus, Crc, Crs, Cic, Cis, 
   		               M0, dn, dnDot, 
 		               ecc, A, Ahalf, Adot, 
@@ -982,8 +1000,25 @@ namespace gpstk
       double A = ahalf*ahalf;
       double dndot = 0.0;
       double Adot = 0.0;
+      short fitHours = getLegacyFitInterval(IODC, fitint);
+      long beginFitSOW = toe - (fitHours/2)*3600.0;
+      long endFitSOW = toe + (fitHours/2)*3600.0;
+      short beginFitWk = weeknum;
+      short endFitWk = weeknum;
+      if (beginFitSOW < 0)
+      {
+         beginFitSOW += FULLWEEK;
+         beginFitWk--;
+      }
+      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW += FULLWEEK;
+         endFitWk++;
+      }
+      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
-      orbit.loadData(satSys, obsID, PRNID, toe, weeknum, accuracy, health, 
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toe, weeknum, accuracy, health, 
 		   cuc, cus, crc, crs, cic, cis, 
   		   m0, Dn, dndot, 
 		   Ecc, A, ahalf, Adot, 
@@ -1099,13 +1134,31 @@ namespace gpstk
          W = orbit.getW();
          OmegaDot = orbit.getOmegaDot();
          IDot = orbit.getIDot();
+
       }
       catch(InvalidRequest)
       {
          haveSubframe[2] = false;
       }
+      short fitHours = getLegacyFitInterval(IODC, fitint);
+      long beginFitSOW = toe - (fitHours/2)*3600.0;
+      long endFitSOW = toe + (fitHours/2)*3600.0;
+      short beginFitWk = weeknum;
+      short endFitWk = weeknum;
+      if (beginFitSOW < 0)
+      {
+         beginFitSOW += FULLWEEK;
+         beginFitWk--;
+      }
+      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW += FULLWEEK;
+         endFitWk++;
+      }
+      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
-      orbit.loadData(satSys, obsID, PRNID, toe, epochWeek, accuracy, healthy, 
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toe, epochWeek, accuracy, healthy, 
 		   cuc, cus, crc, crs, cic, cis, 
   		   m0, Dn, dndot, 
 		   Ecc, A, ahalf, Adot, 
@@ -1155,6 +1208,8 @@ namespace gpstk
       double A = 0.0;
       double ahalf = 0.0;
       double Adot = 0.0;
+      CommonTime beginFit;
+      CommonTime endFit;;
       try
       {
          toe = orbit.getToe();
@@ -1168,13 +1223,16 @@ namespace gpstk
          Dn = orbit.getDn();
          Ecc = orbit.getEcc();
          ahalf = orbit.getAhalf();
+         beginFit = orbit.getBeginningOfFitInterval();
+         endFit = orbit.getEndOfFitInterval();
+
       }
       catch(InvalidRequest)
       {
          haveSubframe[1] = false;
       }
 
-      orbit.loadData(satSys, obsID, PRNID, toe, epochWeek, accuracy, healthy, 
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toe, epochWeek, accuracy, healthy, 
 		   cuc, cus, crc, crs, cic, cis, 
   		   m0, Dn, dndot, 
 		   Ecc, A, ahalf, Adot, 
