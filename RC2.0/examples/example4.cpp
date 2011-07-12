@@ -138,7 +138,6 @@ int main(int argc, char *argv[])
       // set it to the beginning
       list<RinexMetData>::iterator mi=rml.begin();
 
-
       // Let's process all lines of observation data, one by one
       while (roffs >> rod)
       {
@@ -165,8 +164,8 @@ int main(int argc, char *argv[])
 
          // Apply editing criteria
          if  (rod.epochFlag == 0 || rod.epochFlag == 1)   // Begin usable data
-	     {
-	        vector<SatID> prnVec;
+         {
+	         vector<SatID> prnVec;
             vector<double> rangeVec;
 
             // Let's define the "it" iterator to visit the observations PRN map
@@ -215,7 +214,7 @@ int main(int argc, char *argv[])
                // a P2 observation and the double-frequency ionospheric
                // corrections may be applied
                if (itP1!=otmap.end())
-	           {
+               {
                   double ionocorr = 0;
 
                   // Now, let's find a P2 observation inside the

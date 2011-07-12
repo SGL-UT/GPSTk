@@ -16,7 +16,7 @@ GPSLinkLibraries example15 : gpstk geomatics ;
 # command
 Main example1 : example1.cpp ;
 Main example2 : example2.cpp ;
-#Main example3 : example3.cpp ;
+Main example3 : example3.cpp ;
 #Main example4 : example4.cpp ;
 #Main example5 : example5.cpp ;
 #Main example6 : example6.cpp ;
