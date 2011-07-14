@@ -108,7 +108,7 @@ void xIonoModel :: exceptionTest (void)
 	//Default constructer for Almanac will give a blank almanac
 	gpstk::EngAlmanac blankAlmanac;
 	//Set DayTime to the current system time
-	gpstk::DayTime dayTime;
+	gpstk::CommonTime commonTime;
 	//Use the default Geodetic constructer
 	gpstk::Position rxgeo;
 	//Set el and az to 0 for ease of testing
@@ -125,10 +125,10 @@ void xIonoModel :: exceptionTest (void)
 	CPPUNIT_ASSERT_THROW(blankAlmanac.getIon(a,b),gpstk::InvalidRequest);
 	//Questioning why this isnt failing auto fail for now
 	CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT_THROW(gpstk::IonoModel Model(blankAlmanac),gpstk::Exception));
-	CPPUNIT_ASSERT_THROW(Model.getCorrection(dayTime,rxgeo,svel,svaz,Model.L1),gpstk::IonoModel::InvalidIonoModel);
-	CPPUNIT_ASSERT_NO_THROW(goodModel.getCorrection(dayTime,rxgeo,svel,svaz,Model.L1));
-	CPPUNIT_ASSERT_NO_THROW(goodModel.getCorrection(dayTime,rxgeo,svel,svaz,Model.L2));
-	CPPUNIT_ASSERT_NO_THROW(goodModel.getCorrection(dayTime,rxgeo,72.,45.,Model.L1));
+	CPPUNIT_ASSERT_THROW(Model.getCorrection(commonTime,rxgeo,svel,svaz,Model.L1),gpstk::IonoModel::InvalidIonoModel);
+	CPPUNIT_ASSERT_NO_THROW(goodModel.getCorrection(commonTime,rxgeo,svel,svaz,Model.L1));
+	CPPUNIT_ASSERT_NO_THROW(goodModel.getCorrection(commonTime,rxgeo,svel,svaz,Model.L2));
+	CPPUNIT_ASSERT_NO_THROW(goodModel.getCorrection(commonTime,rxgeo,72.,45.,Model.L1));
 	}
 	catch(gpstk::Exception& e)
 	{
