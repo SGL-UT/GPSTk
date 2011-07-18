@@ -28,6 +28,7 @@
 
 #include "IERS.hpp"
 #include "icd_gps_constants.hpp"
+#include "Epoch.hpp"
 #include <string>
 #include <fstream>
 
@@ -46,7 +47,7 @@ namespace gpstk
    {
       try
       {
-         DayTime utc(mjdUTC);
+         CommonTime utc(mjdUTC);
          EarthOrientation eop = eopStore.getEOP(utc);
          return eop.UT1mUTC;
       }
@@ -63,7 +64,7 @@ namespace gpstk
    {
       try
       {
-         DayTime utc(mjdUTC);
+         CommonTime utc(mjdUTC);
          EarthOrientation eop = eopStore.getEOP(utc);
          return eop.xp;
       }
@@ -81,7 +82,7 @@ namespace gpstk
    {
       try
       {
-         DayTime utc(mjdUTC);
+         CommonTime utc(mjdUTC);
          EarthOrientation eop = eopStore.getEOP(utc);
          return eop.yp;
       }
@@ -173,11 +174,11 @@ namespace gpstk
    }  // End of method 'IERS::loadSTKFile'
 
 
-   DayTime IERS::GPST2UTC(DayTime gpst)
+   CommonTime IERS::GPST2UTC(CommonTime gpst)
    {
          // the input should be UTC
-      int leapSec = TAImUTC(gpst.MJD());   
-      DayTime utc = gpst;
+      int leapSec = TAImUTC(static_cast<Epoch>(gpst).MJD());   
+      Epoch utc = gpst;
       utc += (19.0 - double(leapSec));
 
       leapSec = TAImUTC(utc.MJD());

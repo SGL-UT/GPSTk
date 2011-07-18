@@ -94,7 +94,7 @@ namespace gpstk
       static int TAImUTC(const double& mjdUTC);
 
          /// Transform GPS Time to UTC Time
-      static DayTime GPST2UTC(DayTime gpst);
+      static CommonTime GPST2UTC(CommonTime gpst);
 
       void test();
 

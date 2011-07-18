@@ -70,7 +70,7 @@ namespace gpstk
           * @param entity     The planet to be computed
           * @return           The position of the planet in km
           */
-      static Vector<double> getJ2kPosition( const DayTime&      TT,
+      static Vector<double> getJ2kPosition( const CommonTime&      TT,
                                             SolarSystem::Planet entity = SolarSystem::Earth)
          throw(Exception);
 
@@ -80,7 +80,7 @@ namespace gpstk
           * @param entity     The planet to be computed
           * @return           The velocity of the planet in km/s
           */
-      static Vector<double> getJ2kVelocity( const DayTime&      TT, 
+      static Vector<double> getJ2kVelocity( const CommonTime&      TT, 
                                             SolarSystem::Planet entity = SolarSystem::Earth)
          throw(Exception);
 
@@ -93,7 +93,7 @@ namespace gpstk
           * @param center     relative to whick the result apply
           * @return           The position and velocity of the planet in km and km/s
           */
-      static Vector<double> getJ2kPosVel( const DayTime&      TT, 
+      static Vector<double> getJ2kPosVel( const CommonTime&      TT, 
                                           SolarSystem::Planet entity,
                                           SolarSystem::Planet center = SolarSystem::Earth)
          throw(Exception);
@@ -191,11 +191,11 @@ namespace gpstk
           * @param  BETA   DOODSON ARGUMENTS                         
           * @param  FNUT   FUNDAMENTAL ARGUMENTS FOR NUTATION        
           */
-      static void doodsonArguments(DayTime UT1,DayTime TT,double BETA[6],double FNUT[5]); 
+      static void doodsonArguments(CommonTime UT1,CommonTime TT,double BETA[6],double FNUT[5]); 
 
 
       /// Greenwich mean sidereal time by IAU 2000 model
-      static double iauGmst00(DayTime UT1,DayTime TT);
+      static double iauGmst00(CommonTime UT1,CommonTime TT);
 
 
       static Matrix<double> enuMatrix(double longitude,double latitude);
@@ -230,19 +230,19 @@ namespace gpstk
 
          
          /// Precession matrix by IAU 1976 model
-      static Matrix<double> iauPmat76(DayTime TT);
+      static Matrix<double> iauPmat76(CommonTime TT);
          
          /// Nutation angles by IAU 1980 model
-      static void nutationAngles(DayTime TT, double& dpsi, double& deps);
+      static void nutationAngles(CommonTime TT, double& dpsi, double& deps);
          
          /// Mean obliquity of the ecliptic by IAU 1980 model
-      static double meanObliquity(DayTime TT);
+      static double meanObliquity(CommonTime TT);
          
          /// Equation of the equinoxes by IAU 1994 model
-      static double iauEqeq94(DayTime TT);
+      static double iauEqeq94(CommonTime TT);
          
          /// Greenwich mean sidereal time by IAU 1982 model
-      static double iauGmst82(DayTime UT1);
+      static double iauGmst82(CommonTime UT1);
 
            
          /// Nutation matrix from nutation angles
@@ -251,7 +251,7 @@ namespace gpstk
                                     const double& deps);
 
          /// earth rotation angle
-      static double earthRotationAngle(DayTime UT1);
+      static double earthRotationAngle(CommonTime UT1);
 
 
          /**Earth rotation angle first order rate.

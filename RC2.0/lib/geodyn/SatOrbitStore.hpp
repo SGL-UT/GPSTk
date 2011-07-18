@@ -80,7 +80,7 @@ namespace gpstk
          /// if J2000 was wanted, you should have load earth orientation
          /// data globally.
       PvtStore::Pvt getPvt(const SatID sat,
-                           const DayTime& t, 
+                           const CommonTime& t, 
                            bool j2k = false )
          throw(InvalidRequest) ;
       

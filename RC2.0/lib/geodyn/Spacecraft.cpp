@@ -449,8 +449,8 @@ namespace gpstk
    }   // End of method 'Spacecraft::test()'
 
 
-      // Stream output for DayTime objects.  Typically used for debugging.
-      // @param s stream to append formatted DayTime to.
+      // Stream output for CommonTime objects.  Typically used for debugging.
+      // @param s stream to append formatted CommonTime to.
       // @param t Spacecraft to append to stream \c s.
       // @return reference to \c s.
    ostream& operator<<( ostream& s, 

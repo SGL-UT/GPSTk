@@ -72,7 +72,7 @@ namespace gpstk
        * @param entity     The planet to be computed
        * @return           The position of the planet in km
        */
-   Vector<double> ReferenceFrames::getJ2kPosition( const DayTime&      TT,
+   Vector<double> ReferenceFrames::getJ2kPosition( const CommonTime&      TT,
                                                    SolarSystem::Planet entity)
       throw(Exception)
    {
@@ -93,7 +93,7 @@ namespace gpstk
        * @param entity     The planet to be computed
        * @return           The velocity of the planet in km
        */
-   Vector<double> ReferenceFrames::getJ2kVelocity( const DayTime&      TT, 
+   Vector<double> ReferenceFrames::getJ2kVelocity( const CommonTime&      TT, 
                                                    SolarSystem::Planet entity)
       throw(Exception)
    {
@@ -115,7 +115,7 @@ namespace gpstk
        * @param center     relative to whick the result apply
        * @return           The position and velocity of the planet in km and km/s
        */
-   Vector<double> ReferenceFrames::getJ2kPosVel( const DayTime&      TT, 
+   Vector<double> ReferenceFrames::getJ2kPosVel( const CommonTime&      TT, 
                                                  SolarSystem::Planet entity,
                                                  SolarSystem::Planet center)
       throw(Exception)
@@ -125,7 +125,7 @@ namespace gpstk
       try
       {
          double rvState[6] = {0.0};
-         int ret = solarPlanets.computeState(JD_TO_MJD + TT.MJD(),
+         int ret = solarPlanets.computeState(JD_TO_MJD + static_cast<Epoch>(TT).MJD(),
             entity,
             center,
             rvState);
@@ -247,8 +247,8 @@ namespace gpstk
       double xp = UTC.xPole() * DAS2R;
       double yp = UTC.yPole() * DAS2R;
      
-      DayTime TT = UTC.asTT();
-      DayTime UT1 = UTC.asUT1();
+      CommonTime TT = UTC.asTT();
+      CommonTime UT1 = UTC.asUT1();
       
 
       // IAU 1976 precession matrix       
@@ -562,11 +562,11 @@ namespace gpstk
 
 
       // Get earth rotation angle
-   double ReferenceFrames::earthRotationAngle(DayTime UT1)
+   double ReferenceFrames::earthRotationAngle(CommonTime UT1)
    {
       // IAU 2000 model
-      double t = UT1.MJD() + (JD_TO_MJD - DJ00);
-      double f = fmod(UT1.MJD(),1.0) + fmod(JD_TO_MJD, 1.0);
+      double t = static_cast<Epoch>(UT1).MJD() + (JD_TO_MJD - DJ00);
+      double f = fmod(double(static_cast<Epoch>(UT1).MJD()),1.0) + fmod(JD_TO_MJD, 1.0);
       
       double era = normalizeAngle(D2PI*(f+0.7790572732640+0.00273781191135448*t));
       
@@ -636,8 +636,8 @@ namespace gpstk
           * @param  BETA   DOODSON ARGUMENTS                         
           * @param  FNUT   FUNDAMENTAL ARGUMENTS FOR NUTATION        
           */
-   void ReferenceFrames::doodsonArguments(DayTime UT1, 
-                                          DayTime TT, 
+   void ReferenceFrames::doodsonArguments(CommonTime UT1, 
+                                          CommonTime TT, 
                                           double BETA[6],
                                           double FNUT[5])
    {
@@ -647,7 +647,7 @@ namespace gpstk
       // Fundamental Arguments (from IERS Conventions 2003) 
       //-----------------------------------------------------
       //Julian centuries since J2000 
-      double  t = (TT.MJD() + 2400000.5 - 2451545.0) / 36525.0; 
+      double  t = (static_cast<Epoch>(TT).MJD() + 2400000.5 - 2451545.0) / 36525.0; 
 
       // Mean anomaly of the Moon.
       double temp = fmod(           485868.249036  +
@@ -765,7 +765,7 @@ namespace gpstk
       /*
       solarPlanets.initializeWithBinaryFile("jplde405");
       double rv[6] = {0.0};
-      DayTime t(2010,1,1,0,0,0.0);
+      CommonTime t(2010,1,1,0,0,0.0);
       int ret = solarPlanets.computeState(t.JD(),SolarSystem::Moon,SolarSystem::Earth,rv);
       rv[3]/=86400.0;
       rv[4]/=86400.0;
@@ -831,14 +831,14 @@ namespace gpstk
       return r;
    }
 
-   Matrix<double> ReferenceFrames::iauPmat76(DayTime TT)
+   Matrix<double> ReferenceFrames::iauPmat76(CommonTime TT)
    {
       
       // Interval between fundamental epoch J2000.0 and start epoch (JC). 
       const double t0 = 0.0;
 
       // Interval over which precession required (JC). 
-      const double t = (JD_TO_MJD - DJ00 + TT.MJD()) / DJC;
+      const double t = (JD_TO_MJD - DJ00 + static_cast<Epoch>(TT).MJD()) / DJC;
 
       // Euler angles. 
       const double tas2r = t * DAS2R;
@@ -856,7 +856,7 @@ namespace gpstk
    }  // End of method 'ReferenceFrames::iauPmat76()'
    
 
-   void ReferenceFrames::nutationAngles(DayTime TT, double& dpsi, double& deps)
+   void ReferenceFrames::nutationAngles(CommonTime TT, double& dpsi, double& deps)
    {
       // Units of 0.1 milliarcsecond to radians 
       const double U2R = DAS2R / 1e4;
@@ -1009,7 +1009,7 @@ namespace gpstk
 
      
       // Interval between fundamental epoch J2000.0 and given date (JC). 
-      const double t = ((JD_TO_MJD - DJ00) + TT.MJD()) / DJC;
+      const double t = ((JD_TO_MJD - DJ00) + static_cast<Epoch>(TT).MJD()) / DJC;
 
       // Fundamental arguments 
       // --------------------- 
@@ -1073,11 +1073,11 @@ namespace gpstk
    }  // End of 'ReferenceFrames::nutationAngles()'
 
 
-   double ReferenceFrames::meanObliquity(DayTime TT)
+   double ReferenceFrames::meanObliquity(CommonTime TT)
    {
      
       // Interval between fundamental epoch J2000.0 and given date (JC)
-      double t = ((JD_TO_MJD - DJ00) + TT.MJD()) / DJC;
+      double t = ((JD_TO_MJD - DJ00) + static_cast<Epoch>(TT).MJD()) / DJC;
 
       // Mean obliquity of date. 
       double eps0 = DAS2R * (84381.448  +
@@ -1088,10 +1088,10 @@ namespace gpstk
       return eps0;
    }
 
-   double ReferenceFrames::iauEqeq94(DayTime TT)
+   double ReferenceFrames::iauEqeq94(CommonTime TT)
    {
       // Interval between fundamental epoch J2000.0 and given date (JC). 
-      double t = ((JD_TO_MJD - DJ00) + TT.MJD()) / DJC;
+      double t = ((JD_TO_MJD - DJ00) + static_cast<Epoch>(TT).MJD()) / DJC;
 
       // Longitude of the mean ascending node of the lunar orbit on the 
       // ecliptic, measured from the mean equinox of date. 
@@ -1112,7 +1112,7 @@ namespace gpstk
       return ee;
    }
 
-   double ReferenceFrames::iauGmst82(DayTime UT1)
+   double ReferenceFrames::iauGmst82(CommonTime UT1)
    {
       // Coefficients of IAU 1982 GMST-UT1 model 
       const double A = 24110.54841  -  86400.0 / 2.0;
@@ -1126,7 +1126,7 @@ namespace gpstk
 
       // Julian centuries since fundamental epoch. 
       double d2 = JD_TO_MJD;
-      double d1 = UT1.MJD();
+      double d1 = static_cast<Epoch>(UT1).MJD();
       double t = (d1 + (d2 - DJ00)) / DJC;
 
       // Fractional part of JD(UT1), in seconds. 
@@ -1141,12 +1141,11 @@ namespace gpstk
    }  // End of method 'ReferenceFrames::iauGmst82()'
 
       // Greenwich mean sidereal time by IAU 2000 model
-   double ReferenceFrames::iauGmst00(DayTime UT1,DayTime TT)
+   double ReferenceFrames::iauGmst00(CommonTime UT1,CommonTime TT)
    {
 
       // TT Julian centuries since J2000.0. 
-      double t = ((JD_TO_MJD - DJ00) + TT.MJD()) / DJC;
-
+      double t = ((JD_TO_MJD - DJ00) + static_cast<Epoch>(TT).MJD()) / DJC;
       /* Greenwich Mean Sidereal Time, IAU 2000. */
       double gmst = normalizeAngle(earthRotationAngle(UT1) +
          (     0.014506   +

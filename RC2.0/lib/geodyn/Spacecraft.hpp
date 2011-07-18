@@ -183,9 +183,9 @@ namespace gpstk
 
 
       /**
-       * Stream output for DayTime objects.  Typically used for debugging.
-       * @param s stream to append formatted DayTime to.
-       * @param t DayTime to append to stream \c s.
+       * Stream output for CommonTime objects.  Typically used for debugging.
+       * @param s stream to append formatted CommonTime to.
+       * @param t CommonTime to append to stream \c s.
        * @return reference to \c s.
        */
    std::ostream& operator<<( std::ostream& s,

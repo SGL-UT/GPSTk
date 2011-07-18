@@ -36,7 +36,7 @@ namespace gpstk
    using namespace std;
   
       // Add to the store directly
-   void PvtStore::addPvt(const DayTime& time,const Pvt& d)
+   void PvtStore::addPvt(const CommonTime& time,const Pvt& d)
     throw()
    {
       std::vector<double> data(8,0.0);
@@ -59,12 +59,12 @@ namespace gpstk
    
 
       /* Get the Pvt at the given epoch and return it.
-       *  @param t DayTime at which to compute the Pvt.
+       *  @param t CommonTime at which to compute the Pvt.
        *  @return Pvt data at time t.
        *  @throw InvalidRequest if the epoch on either side of t
        *     cannot be found in the map.
        */
-   PvtStore::Pvt PvtStore::getPvt(const DayTime& t) const
+   PvtStore::Pvt PvtStore::getPvt(const CommonTime& t) const
          throw(InvalidRequest)
    {
       std::vector<double> data = getData(t);

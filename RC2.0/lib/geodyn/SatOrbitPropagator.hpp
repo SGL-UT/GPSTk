@@ -255,8 +255,8 @@ namespace gpstk
 
       /**
        * Stream output for OrbitPropagator objects.  Typically used for debugging.
-       * @param s stream to append formatted DayTime to.
-       * @param t DayTime to append to stream  s.
+       * @param s stream to append formatted CommonTime to.
+       * @param t CommonTime to append to stream  s.
        * @return reference to  s.
        */
    ostream& operator<<(ostream& s, SatOrbitPropagator& op);

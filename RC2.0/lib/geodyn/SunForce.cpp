@@ -28,10 +28,10 @@
 //
 //============================================================================
 
-
+#include "Epoch.hpp"
 #include "SunForce.hpp"
 #include "ASConstant.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "IERS.hpp"
 #include "ReferenceFrames.hpp"
 
@@ -109,8 +109,8 @@ namespace gpstk
       //IERS::loadSTKFile("InputData\\EOP-v1.1.txt");
       ReferenceFrames::setJPLEphFile("InputData\\DE405\\jplde405");
 
-      DayTime time(2000,1,1,0,0,0.0);
-      double mjd = time.MJD();
+      CivilTime time(2000,1,1,0,0,0.0);
+      double mjd = static_cast<Epoch>(time).MJD();
 
       Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::Sun);
 
