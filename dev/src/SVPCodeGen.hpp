@@ -36,10 +36,11 @@
 //
 //=============================================================================
 
+
 #ifndef SVPCODEGEN_HPP
 #define SVPCODEGEN_HPP
 
-
+#include <stdint.h>
 #include "DayTime.hpp"
 #include "PCodeConst.hpp"
 #include "CodeBuffer.hpp"

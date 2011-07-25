@@ -39,6 +39,7 @@
 //  PCodeConst.hpp - Constants for GPS X-register manipulation
 
 
+
 #ifndef PCodeConst_HPP
 #define PCodeConst_HPP
 
@@ -57,8 +58,11 @@ namespace gpstk
    const int MAX_BIT = 32;
    
       /// Maximum PRN Code number (1-n) 
-   const int MAX_PRN_CODE = 37;
+   const int MAX_PRN_CODE = 210;
  
+      /// Number of X1 epochs in one day
+   const int X1_PER_DAY = 57600;
+
       /// Number of 4 byte unsigned ints necessary to hold 6 sec of P-code
    const long NUM_6SEC_WORDS = 1918125;
    

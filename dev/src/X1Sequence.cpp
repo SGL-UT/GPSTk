@@ -48,7 +48,6 @@
 
 
 
-
    // Project headers
 #include "Exception.hpp"
 #include "X1Sequence.hpp"
@@ -58,7 +57,7 @@ namespace gpstk
 {
       //   Static Variable Definition
    bool X1Sequence::isInit = false;
-   unsigned long* X1Sequence::X1Bits = 0;
+   uint32_t* X1Sequence::X1Bits = 0;
 
    X1Sequence::X1Sequence(  )
    {
@@ -86,7 +85,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
       
-      X1Bits = new unsigned long[NUM_6SEC_WORDS];
+      X1Bits = new uint32_t[NUM_6SEC_WORDS];
       if (X1Bits==0) 
       {
          gpstk::Exception e ("X1Sequence::allocateMemory() - allocation failed.");
@@ -100,8 +99,8 @@ namespace gpstk
          // Combination will be performed for four X1 epochs.
          // This will generate six seconds of X1 bits sequence
          // that will end on an even 32-bit boundary.
-      unsigned long X1Abits;
-      unsigned long X1Bbits;
+      uint32_t X1Abits;
+      uint32_t X1Bbits;
       X1Aepoch = 1;
       X1Acount = 0;
       X1Bepoch = 1;
