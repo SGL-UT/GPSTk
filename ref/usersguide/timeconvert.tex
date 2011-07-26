@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -18,39 +18,47 @@ and seconds of week, Z counts, and Modified Julian Date (MJD).
 \subsection{Usage}
 \begin{\outputsize}
 \begin{longtable}{lll}
+\multicolumn{3}{c}{\application{timeconvert}}\\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
-\entry{-c}{--calendar=TIME}{``Month(numeric) DayOfMonth Year"}{1}
-\entry{-r}{--rinex=TIME}{"Month(numeric) DayOfMonth Year Hour:Minute:Second"}{2}
-\entry{-R}{--rinex-file=TIME}{"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second"}{2}
-\entry{-y}{--doy=TIME}{"Year DayOfYear SecondsOfDay"}{1}
-\entry{-m}{--mjd=TIME}{"ModifiedJulianDate"}{1}
-\entry{-o}{--shortweekandsow=TIME}{"10bitGPSweek SecondsOfWeek Year"}{1}
-\entry{-z}{--shortweekandzcounts=TIME}{"10bitGPSweek ZCounts Year"}{1}
-\entry{-f}{--fullweekandsow=TIME}{"FullGPSweek SecondsOfWeek"}{1}
-\entry{-w}{--fullweekandzcounts=TIMEo}{"FullGPSweek ZCounts"}{1}
-\entry{-u}{--unixtime=TIME}{"UnixSeconds UnixMicroseconds"}{1}
-\entry{-Z}{--fullZcounts=TIME}{"fullZcounts"}{1}
-\entry{-F}{--format=ARG}{Time format to use on output}{1}
-\entry{-a}{--add-offset=NUM}{add NUM seconds to specified time}{1}
-\entry{-s}{--sub-offset=NUM}{subtract NUM seconds from specified time}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-A}{--ansi=TIME}{``ANSI-Second".}{1}
+\entry{-c}{--civil=TIME}{``Month(numeric) DayOfMonth Year Hour:Minute:Second}{2}
+\entry{-R}{--rinex-file=TIME}{``Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second".}{2}
+\entry{-o}{--ews=TIME}{``GPSEpoch 10bitGPSweek SecondOfWeek".}{2}
+\entry{-f}{--ws=TIME}{``FullGPSWeek SecondOfWeek".}{1}
+\entry{-w}{--wz=TIME}{``FullGPSWeek Zcount".}{1}
+\entry{}{--z29=TIME}{``29bitZcount".}{1}
+\entry{-Z}{--z32=TIME}{``32bitZcount".}{1}
+\entry{-j}{--julian=TIME}{``JulianDate".}{1}
+\entry{-m}{--mjd=TIME}{``ModifiedJulianDate".}{1}
+\entry{-u}{--unixtime=TIME}{``UnixSeconds UnixMicroseconds".}{1}
+\entry{-y}{--doy=TIME}{``Year DayOfYear SecondsOfDay".}{1}
+\entry{}{--input-format=ARG}{Time format to use on input.}{1}
+\entry{}{--input-time=ARG}{Time to be parsed by "input-format" option.}{2}
+\entry{-F}{--format=ARG}{Time format to use on output.}{1}
+\entry{-a}{--add-offset=NUM}{Add NUM seconds to specified time.}{1}
+\entry{-s}{--sub-offset=NUM}{Subtract NUM seconds from specified time.}{2}
 \end{longtable}
 \end{\outputsize}
 
 \subsection{Examples}
-\getuse{timeconvert -r "05 06 1985 13:50:02"}
+\begin{\outputsize}
+\begin{verbatim}
+> timeconvert -R "05 06 1985 13:50:02"
 
-\getuse{timeconvert -o "1379 500 2006"}
-
-\getuse{timeconvert -o "1379 500 2006 -a 86400"}
-
-\getuse{timeconvert -w "1381 500" -s 200}
-
+        Month/Day/Year H:M:S            11/06/2010 13:00:00
+        Modified Julian Date            55506.541666667
+        GPSweek DayOfWeek SecOfWeek     584 6  565200.000000
+        FullGPSweek Zcount              1608 376800
+        Year DayOfYear SecondOfDay      2010 310  46800.000000
+        Unix: Second Microsecond        1289048400      0
+        Zcount: 29-bit (32-bit)         306560992 (843431904)
+\end{verbatim}
+\end{\outputsize}
 \subsection{Notes}
-If no arguments are given it will convert the current time to all formats.
+If no arguments are given it will convert the current time to all formats. When inputting time values, include quotation marks.
 
 %\end{document}
-

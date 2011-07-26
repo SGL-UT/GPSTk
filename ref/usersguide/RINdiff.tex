@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -14,7 +14,7 @@
 
 \section{\emph{rmwdiff rnwdiff rowdiff}}
 \subsection{Overview}
-The applications difference RINEX observation, navigation, and meteorological data files.
+These applications difference RINEX observation, navigation, and meteorological data files.
 
 \subsection{Usage}
 \begin{\outputsize}
@@ -22,11 +22,12 @@ The applications difference RINEX observation, navigation, and meteorological da
 \begin{longtable}{lll}
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
-\entry{-t}{--time=TIME}{Start of time range to compare (default = "beginning of time")}{2}
-\entry{-e}{--end-time=TIME}{End of time range to compare (default = "end of time")}{2}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-l}{--quit-on-first-error}{Quit on the first error encountered.}{1}
+\entry{-t}{--time=TIME}{Start of time range to compare (Default = BOT)}{2}
+\entry{-e}{--end-time=TIME}{End of time range to compare (Default = EOT)}{2}
 & & \\
 \multicolumn{3}{l}{rmwdiff usage: rmwdiff [options] $<$RINEX Met file$>$ $<$RINEX Met file$>$} \\
 \multicolumn{3}{l}{rnwdiff usage: rnwdiff [options] $<$RINEX Nav file$>$ $<$RINEX Nav file$>$} \\
@@ -36,9 +37,7 @@ The applications difference RINEX observation, navigation, and meteorological da
 
 \end{\outputsize}
 
-\subsection{Examples}
-
 \subsection{Notes}
-
+Only the first error in each file is reported.  The entire file is always checked regardless of time options.
 %\end{document}
 

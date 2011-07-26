@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -13,7 +13,7 @@
 \index{mergeRinMet!application writeup}
 \section{\emph{mergeRinObs mergeRinNav mergeRinMet}}
 \subsection{Overview}
-The applications merge multiple RINEX observation, navigation, or meteroligical data files into a single coherent RINEX obs/nav/met file. 
+These applications merge multiple RINEX observation, navigation, or meteroligical data files into a single coherent RINEX obs/nav/met file. 
 
 \subsection{Usage}
 \begin{\outputsize}
@@ -27,22 +27,22 @@ The applications merge multiple RINEX observation, navigation, or meteroligical 
 
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
 \end{longtable}
 \end{\outputsize}
 \application{mergeRinNav} and \application{mergeRinNav} have the same usage.
 
 \subsection{Examples}
+\begin{\outputsize}
+\begin{verbatim}
+> mergeRinObs -i arl280.06o -i arl2810.06o -o arl280-10.06o
 
-\getuse{mergeRinObs -i arl280.06o -i arl2810.06o -o arl280-10.06o}
+> mergeRinNav -i arl280.06n -i arl2810.06n -o arl280-10.06n
 
-\getuse{mergeRinNav -i arl280.06n -i arl2810.06n -o arl280-10.06n}
-
-\getuse{mergeRinMet -i arl280.06m -i arl2810.06m -o arl280-10.06m}
-
-\subsection{Notes}
-
+> mergeRinMet -i arl280.06m -i arl2810.06m -o arl280-10.06m
+\end{verbatim}
+\end{\outputsize}
 %\end{document}
 

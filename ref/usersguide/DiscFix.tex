@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\ussepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -12,10 +12,11 @@
 
 \section{\emph{DiscFix}}
 \subsection{Overview}
-The application reads a data file containing dual-frequency pseudorange and phase
-   measurements and finds and fixes discontinuities in the phase; output is
-   a list of editing commands (for use with PRGM RinexEdit); the program will
-   also (optional) write out the raw (uncorrected) data to a RINEX file.
+This application reads a RINEX observation data file containing GPS dual-frequency pseudorange and carrier phase measurements, divides the data into `satellite passes', and finds and fixes discontinuities in the phases for each pass.
+
+ Output is a list of editing commands for use with program RinexEdit. DiscFix will (optionally) write the corrected pseudorange and phase data to a new RINEX observation file. Other options will also smooth the pseudorange and/or debias the corrected phase. 
+
+DiscFix calls the GPSTk Discontinuity Corrector (GDC vers 5.3 7/14/2008).
 
 \subsection{Usage}
 \begin{\outputsize}
@@ -23,45 +24,49 @@ The application reads a data file containing dual-frequency pseudorange and phas
 \multicolumn{3}{c}{\application{DiscFix}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-i}{--inputfile}{Input (Rinex obs) file(s)}{1}
+\entry{}{--inputdir}{File containing more options.}{1}
+\entry{}{--dt}{Time space in seconds of the data.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
-\entry{-f}{}{file containing more options}{1}
-\entry{-d}{--directory}{Directory of input file(s)}{1}
-\entry{}{--decimate}{Decimate data to time interval dt}{1}
-\entry{}{--EpochBeg}{Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
-\entry{}{--GPSBeg}{Start time, arg is of the form GPSweek,GPSsow}{1}
-\entry{}{--EpochEnd}{End time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
-\entry{}{--GPSEnd}{End time, arg is of the form GPSweek,GPSsow}{1}
-\entry{}{--CA}{Use C/A code pseudorange if P1 is not available}{1}
-\entry{}{--DT}{Time interval (s) of data points (needed for -Ps only)}{2}
-\entry{}{--Gap}{Time (s) of largest allowed gap within pass}{1}
-\entry{}{--Points}{Minimum number of points needed to process a pass}{2}
-\entry{}{--XPRN}{Exclude this satellite (prn may be only $<$system$>$)}{2}
-\entry{}{--SVonly}{Process this satellite ONLY}{1}
-\entry{}{--Log}{Output log file name (df.log)}{1}
-\entry{}{--Err}{Output error file name (df.err)}{1}
-\entry{}{--Out}{Output (editing commands) file name (df.out)}{1}
-\entry{}{--RinexFile}{Output Rinex obs file name}{1}
-\entry{}{--RunBy}{Output Rinex header 'RUN BY' string}{1}
-\entry{}{--Observer}{Output Rinex header 'OBSERVER' string}{1}
-\entry{}{--Agency}{Output Rinex header 'AGENCY' string}{1}
-\entry{}{--Marker}{Output Rinex header 'MARKER' string}{1}
-\entry{}{--Number}{Output Rinex header 'NUMBER' string}{1}
-\entry{}{--Smooth}{Smooth pseudorange and debias phase and output both in place of raw}{2}
-\entry{}{--SmoothPR}{Smooth pseudorange and debias phase but replace only raw pseudorange}{2}
-\entry{}{--SmoothPH}{Smooth pseudorange and debias phase but replace only raw phase}{2}
-\entry{}{--CAOut}{Output C/A code in Rinex}{1}
-\entry{}{--DOut}{Output Doppler in Rinex}{1}
-\entry{}{--verbose}{print extended output (NB --DCDebug,7 => all debugging output)}{2}
-\entry{-h}{--help}{print syntax and quit.}{1}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-f}{--file}{File containing more options.}{1}
+\entry{}{--beginTime}{Start time of processing (BOF).}{1}
+\entry{}{--endTime}{End time of processing (EOF).}{1}
+\entry{}{--decimate}{Decimate data to specified time interval, in seconds.}{2}
+\entry{}{--forceCA}{Use C/A code range, NOT P code. Default only if P absent.}{2}
+\entry{}{--gap}{Minimum data gap in seconds separating satellite passes (600).}{2}
+\entry{}{--onlySat}{Process only satellite (GPS SatID, e.g. G21).}{1}
+\entry{}{--exSat}{Exclude satellite(s) (GPSSatID).}{1}
+\entry{}{--smoothPR}{Smooth pseudorange and output in place of raw pseudorange.}{2}
+\entry{}{--smoothPH}{Debias phase and output in place of raw phase.}{1}
+\entry{}{--smooth}{Same as --smoothPR AND --smoothPH.}{1}
+\entry{}{--{DClabel}}{Set Discontinuity Corrector parameter 'label' to 'value'.}{2}
+\entry{}{--DChelp}{Print a list of GDC parameters and their defaults, then quit.}{2}
+\entry{}{--logOut}{Output log file name (df.log).}{1}
+\entry{}{--cmdOut}{Output file name, for editing commands (df.out).}{2}
+\entry{}{--format}{Output time format (gpstk::CommonTime) (\%4F \%10.3g).}{2}
+\entry{}{--RinexFile}{RINEX (obs) file name for output of corrected data.}{2}
+\entry{}{--RunBy}{RINEX header 'RUN BY' string for output.}{1}
+\entry{}{--Observer}{RINEX header 'OBSERVER' string for output.}{1}
+\entry{}{--Agency}{RINEX header 'AGENCY' string for output.}{1}
+\entry{}{--Marker}{RINEX header 'MARKER' string for output.}{1}
+\entry{}{--Number}{RINEX header 'NUMBER' string for output.}{1}
+\entry{-h}{--help}{Print this syntax page and quit.}{1}
+\entry{}{--verbose}{Print extended output to the log file.}{1}
+
 \end{longtable}
 \end{\outputsize}
 
 \subsection{Examples}
-\getuse{DiscFix --dt 1.5 --inputfile arl2800.06o}
+\begin{\outputsize}
+\begin{verbatim}
+> DiscFix --dt 1.5 --inputfile ar12800.06o
 
-%\subsection{Notes}
+DiscFix, part of the GPS ToolKit, Ver 5.0 8/20/07, Run 2011/07/22 11:17:25
+DiscFix is writing to log file df.log
+DiscFix is writing to output file df.out
+DiscFix timing: 0.960 seconds.
 
-
-
+\end{verbatim}
+\end{\outputsize}
+%\end{document}

@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -14,7 +14,7 @@
 
 \section{\emph{rmwcheck rnwcheck rowcheck}}
 \subsection{Overview}
-The applications read a RINEX observation (\application{rowcheck}), navigation(\application{rnwcheck}), or meteorological (\application{rmwcheck}) data file and check it for errors.
+These applications read a RINEX observation (\application{rowcheck}), navigation(\application{rnwcheck}), or meteorological (\application{rmwcheck}) data file and check it for errors.
 
 \subsection{Usage}
 \begin{\outputsize}
@@ -22,11 +22,12 @@ The applications read a RINEX observation (\application{rowcheck}), navigation(\
 \begin{longtable}{lll}
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
-\entry{-t}{--time=TIME}{Time of first record to count (default = "beginning of time")}{2}
-\entry{-e}{--end-time=TIME}{End of time range to compare (default = "end of time")}{2}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-l}{--quit-on-first-error}{Quit on the first error encountered.}{1}
+\entry{-t}{--time=TIME}{Time of first record to count (Default = BOT).}{1}
+\entry{-e}{--end-time=TIME}{End of time range to compare (Default = EOT).}{1}
 & & \\
 \multicolumn{3}{l}{rmwcheck usage: rmwcheck [options] $<$RINEX Met file$>$} \\
 \multicolumn{3}{l}{rnwcheck usage: rnwcheck [options] $<$RINEX Nav file$>$} \\
@@ -35,8 +36,14 @@ The applications read a RINEX observation (\application{rowcheck}), navigation(\
 \end{\outputsize}
 
 \subsection{Examples}
-\getuse{rnwcheck -t "08/01/2006 12:00:00" -e "08/01/2006 15:00:00" s081213a.99n}
+\begin{\outputsize}
+\begin{verbatim}
+> rnwcheck -t "08/01/2006 12:00:00" -e "08/01/2006 15:00:00" s081214a.99n
 
+Checking s081213a.99n
+Read 200 records.
+\end{verbatim}
+\end{\outputsize}
 \subsection{Notes}
 Only the first error in each file is reported. The entire file is always checked regardless of time options.
 

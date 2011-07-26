@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -28,10 +28,10 @@ derived by ARL:UT that can be used to serve observations over networks.
 
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
-\entry{-l}{--log=ARG}{Filename for (optional) output log file}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-l}{--log=ARG}{Filename for (optional) output log file.}{1}
 \end{longtable}
 \end{\outputsize}
 
@@ -46,12 +46,14 @@ derived by ARL:UT that can be used to serve observations over networks.
 
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
-\entry{-n}{--nav=ARG}{Filename to write RINEX nav data to.}{1}
-\entry{-t}{--thinning=ARG}{A thinning factor for the data, specified in seconds between points. Default: none.}{2}
-\entry{-c}{--12c=ARG}{Enable output of L2C data in C2.}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-n}{--nav=ARG}{Filename to write RINEX nav data.}{1}
+\entry{-p}{--pos=ARG}{Antenna position to write into obs file header.  Format as string: "X Y Z"}{2}
+\entry{-t}{--thinning=ARG}{A thinning factor for the data, specified in seconds between points.}{2}
+\entry{-c}{--12c}{Enable output of L2C data in C2.}{1}
+\entry{-a}{--any-nav-source}{Accept subframes from any code/carrier.}{1}
 \end{longtable}
 \end{\outputsize}
 
@@ -68,7 +70,6 @@ derived by ARL:UT that can be used to serve observations over networks.
 \end{lstlisting}
 \end{\outputsize}
 
-\subsection{Notes}
 
 %\end{document}
 

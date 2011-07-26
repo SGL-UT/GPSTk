@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{multirow}
 %\usepackage{longtable}
@@ -17,129 +17,56 @@ The application will open and read a single RINEX observation file, apply editin
    along with the new extended observation types, to an output RINEX observation file.
 
 \subsection{Usage}
-%Required arguments:
-% -IF and -OF (RinexEditor commands, see below) are required argument
 \begin{\outputsize}
 
 \begin{longtable}{lll}
 \multicolumn{3}{c}{\application{ResCor}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-IF}{}{Input RINEX observation file.}{1}
+\entry{-OF}{}{Name of ouput RINEX observation file.}{1}
+& & \\
 \multicolumn{3}{l}{\textbf{Configuration Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-f$<$file$>$}{}{File containing more options}{1}
-\entry{}{--nav $<$file$>$}{Navigation (Rinex Nav OR SP3) file(s)}{1}
-\entry{}{--navdir $<$dir$>$}{Directory of navigation file(s)}{1}
+\entry{-f$<$file$>$}{}{File containing more options.}{1}
+\entry{}{--nav $<$file$>$}{Navigation (RINEX Nav OR SP3) file(s).}{1}
+\entry{}{--navdir $<$dir$>$}{Directory of navigation file(s).}{1}
 & & \\
-\multicolumn{3}{l}{\textbf{Reference position input}} \\
-\entry{}{--RxLLH $<$l,l,h$>$}{1.Receiver position (static) in geodetic lat, lon(E), ht (deg,deg,m)}{2}
-\entry{}{--RxXYZ $<$x,y,z$>$}{2.Receiver position (static) in ECEF coordinates (m)}{2}
-\entry{}{--Rxhere}{3.Reference site positions(time) from this file (i.e. -IF$<$RinexFile$>$)}{2}
-\entry{}{--RxRinex $<$fn$>$}{4.Reference site positions(time) from another Rinex file named $<$fn$>$}{2}
-\entry{}{--RxFlat $<$fn$>$}{5.Reference site positions and times given in a flat file named $<$fn$>$}{2}
-\entry{}{--Rxhelp}{(Enter --Rxhelp for a description of the -RxFlat file format)}{2}
-\entry{}{--RAIM}{6.Reference site positions computed via RAIM (requires P1,P2,EP)}{2}
-\entry{}{}{NB the following two options apply only if --RAIM is found)}{2}
-\entry{}{--noRAIMedit}{Do not edit data based on RAIM solution}{1}
-\entry{}{--RAIMhead}{Output average RAIM solution to Rinex header (if -HDf also appears)}{2}
-\entry{}{--noRefout}{Do not output reference solution to Rinex}{1}
+\multicolumn{3}{l}{\textbf{Reference Position Input}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--RxLLH $<$l,l,h$>$}{1.Receiver position (static) in geodetic lat, lon(E), ht (deg,deg,m).}{2}
+\entry{}{--RxXYZ $<$x,y,z$>$}{2.Receiver position (static) in ECEF coordinates (m).}{2}
+\entry{}{--Rxhere}{3.Reference site positions(time) from this file (i.e. -IF$<$RINEXFile$>$).}{2}
+\entry{}{--RxRinex $<$fn$>$}{4.Reference site positions(time) from another RINEX file named $<$fn$>$.}{2}
+\entry{}{--RxFlat $<$fn$>$}{5.Reference site positions and times given in a flat file named $<$fn$>$.}{2}
+\entry{}{--Rxhelp}{(Enter --Rxhelp for a description of the -RxFlat file format).}{2}
+\entry{}{--RAIM}{6.Reference site positions computed via RAIM (requires P1,P2,EP).}{2}
+\entry{}{}{NB the following two options apply only if --RAIM is found.}{2}
+\entry{}{--noRAIMedit}{Do not edit data based on RAIM solution.}{1}
+\entry{}{--RAIMhead}{Output average RAIM solution to RINEX header (if -HDf also appears).}{2}
+\entry{}{--noRefout}{Do not output reference solution to RINEX.}{1}
+\entry{}{--MinElev}{Minimum satellite elevation in degrees for output.}{2}
 & & \\
-\multicolumn{3}{l}{\textbf{Residual/Correction computation}} \\
-\entry{}{--debias $<$OT,l$>$}{Debias new output type $<$OT$>$; trigger a bias reset with limit $<$l$>$}{2}
-\entry{}{--Callow}{Allow C1 to replace P1 when P1 is not available}{1}
-\entry{}{--Cforce}{Force C/A code pseudorange C1 to replace P1}{1}
-\entry{}{--IonoHt $<$ht$>$}{Height of ionosphere in km (default 400) (needed for LA,LO,VR,VP)}{2}
-\entry{}{--SVonly $<$prn$>$}{Process this satellite ONLY}{1}
+\multicolumn{3}{l}{\textbf{Residual/Correction Computation}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--debias $<$OT,l$>$}{Debias new output type $<$OT$>$; trigger a bias reset with limit $<$l$>$.}{2}
+\entry{}{--Callow}{Allow C1 to replace P1 when P1 is not available.}{1}
+\entry{}{--Cforce}{Force C/A code pseudorange C1 to replace P1.}{1}
+\entry{}{--IonoHt $<$ht$>$}{Height of ionosphere in km (default 400) (needed for LA,LO,VR,VP).}{2}
+\entry{}{--Tgd}{Apply the Tgd from BC ephemeris to SR,SP,VR, and VP.}{2}
+\entry{}{--SVonly $<$prn$>$}{Process this satellite ONLY.}{1}
 & & \\
-\multicolumn{3}{l}{\textbf{Output files}} \\
+\multicolumn{3}{l}{\textbf{Output Files}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{}{--Log $<$file$>$}{Output log file name (rc.log)}{1}
-\entry{}{--Err $<$file$>$}{Output error file name (rc.err)}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Help}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{}{--verbose}{Print extended output}{1}
 \entry{}{--debug}{Print debugging information.}{1}
 \entry{-h}{--help}{Print syntax and quit.}{1}
-\end{longtable}
-
-\begin{verbatim}
-Rinex Editor commands:
- ==============================================================================
- Commands begin with a '-' or '/', followed by an identifier, then data fields.
- Fields beyond the initial 2- or 3-character identifier are comma delimited.
- <SV> gives a satellite; SV=<PRN><System(optional)> eg. 19G or 19 = PRN 19 GPS.
- <System> is a single character (G=GPS, R=GLONASS, T=Transit, S=Geosynchronous).
- <OT> gives a Rinex observation type, e.g. L1 or P2 (case sensitive).
- <time> gives a time; time=<week,sow> OR time=<year,mon,day,hour,min,second>.
-\end{verbatim}
-
-\begin{longtable}{lll}
-\multicolumn{3}{l}{\textbf{File I/O}} \\
-\entry{-IF$<$file$>$}{}{Input Rinex observation file name (required)}{1}
-\entry{-ID$<$dir$>$}{}{Directory in which to find input file}{1}
-\entry{-OF$<$file$>$}{}{Output Rinex file name (required, or -OF$<$file$>$,$<$time$>$)}{2}
-\entry{-OF$<$f$>$,$<$time$>$}{}{At time=$<$time$>$, close output file and open another named $<$f$>$}{2}
-\entry{-OD$<$dir$>$}{}{Directory in which to put output file(s)}{1}
-& & \\
-\multicolumn{3}{l}{\textbf{Output Rinex header fields}} \\
-\entry{-HDf}{}{If present, fill optional records in the output Rinex header (NB EditObs() and EditFile() will do this, but NOT EditHeader().)}{3}
-\entry{-HDp$<$program$>$}{}{Set output Rinex header 'program' field}{1}
-%\entry{-HDr<run_by>}{}{Set output Rinex header 'run by' field}{2}
-\entry{-HDo$<$observer$>$}{}{Set output Rinex header 'observer' field}{1}
-\entry{-HDa$<$agency$>$}{}{Set output Rinex header 'agency' field}{1}
-\entry{-HDm$<$marker$>$}{}{Set output Rinex header 'marker' field}{1}
-\entry{-HDn$<$number$>$}{}{Set output Rinex header 'number' field}{1}
-\entry{-HDc$<$comment$>$}{}{Add comment to output Rinex header (more than one allowed).}{2}
-\entry{-HDdc}{}{Delete all comments in output Rinex header}{1}
-\entry{}{}{(NB -HDdc cannot delete comments created by *subsequent* -HDc commands)}{2}
-\entry{-AO$<$OT$>$}{}{Add observation type OT to header and observation data}{2}
-& & \\
-\multicolumn{3}{l}{\textbf{General edit commands}} \\
-\entry{-TB$<$time$>$}{}{Begin time: reject data before this time (also used for decimation)}{2}
-\entry{-TE$<$time$>$}{}{End   time: reject data after this time}{1}
-\entry{-TT$<$dt$>$}{}{Tolerance in comparing times, in seconds (default=1ms)}{2}
-\entry{-TN$<$dt$>$}{}{Decimate data to epochs = Begin + integer*dt (within tolerance)}{2}
-\end{longtable}
-\begin{verbatim}
- Specific edit commands:
- =======================
- (Generally each '+' command (e.g DA+,<time>) has a corresponding '-' command,
-  and vice-versa; if not, End-of-file or Begin-of-file is assumed.
-  Note commands at one time are applied AFTER other commands of the same type.)
-\end{verbatim}
-
-\begin{longtable}{lll}
-\multicolumn{3}{l}{\textbf{Delete Command}} \\
-\entry{-DA+$<$time$>$}{}{Delete all data beginning at this time}{1}
-\entry{-DA-$<$time$>$}{}{Stop deleting data at this time}{1}
-\entry{-DO$<$OT$>$}{}{Delete observation type OT entirely (including in header)}{3}
-\entry{-DS$<$SV$>$}{}{Delete all data for satellite SV entirely (SV may be system only)}{2}
-\entry{-DS$<$SV$>$,$<$time$>$}{}{Delete all data for satellite SV at this single time (only)}{2}
-\entry{-DA-$<$time$>$}{}{Stop deleting data at this time}{1}
-\entry{-DO$<$OT$>$}{}{Delete observation type OT entirely (including in header)}{1}
-\entry{-DS$<$SV$>$}{}{Delete all data for satellite SV entirely (SV may be system only)}{2}
-\entry{-DS$<$SV$>$,$<$time$>$}{}{Delete all data for satellite SV at this single time (only)}{2}
-\entry{-DS+$<$SV$>$,$<$time$>$}{}{Delete all data for satellite SV beginning at this time}{2}
-\entry{-DS-$<$SV$>$,$<$time$>$}{}{Stop deleting all data for satellite SV at this time}{2}
-\entry{}{}{(NB DS commands with SV=system (only) delete all satellites of that system.)}{2}
-\entry{-DD$<$SV,OT,t$>$}{}{Delete a single Rinex data(SV,OT,t) at time $<$t$>$}{2}
-\entry{-DD+$<$SV,OT,t$>$}{}{Delete all (SV,OT) data, beginning at time $<$t$>$}{1}
-\entry{-DD-$<$SV,OT,t$>$}{}{Stop deleting all (SV,OT) data at time $<$t$>$}{1}
-\entry{}{}{(NB deleting data for one OT means setting it to zero - here and in Rinex)}{2}
-& & \\
-\multicolumn{3}{l}{\textbf{Set Commands}} \\
-\entry{-SD$<$SV,OT,t,d$>$}{}{Set data(SV,OT,t) to $<$d$>$ at time $<$t$>$}{1}
-\entry{-SS$<$SV,OT,t,s$>$}{}{Set ssi(SV,OT,t) to $<$s$>$ at time $<$t$>$}{1}
-\entry{-SL+$<$SV,OT,t,l$>$}{}{Set all lli(SV,OT,t) to $<$l$>$ at time $<$t$>$}{1}
-\entry{-SL-$<$SV,OT,t,l$>$}{}{Stop setting lli(SV,OT,t) to $<$l$>$ at time $<$t$>$ (',$<$l$>$' is optional)}{2}
-\entry{-SL$<$SV,OT,t,l$>$}{}{Set lli(SV,OT,t) to $<$l$>$ at the single time $<$t$>$ (only)}{2}
-\entry{}{}{(NB SL commands with SV=system (only) modify all satellites of that system.)}{2}
-& & \\
-\multicolumn{3}{l}{\textbf{Bias Commands}} \\
-\entry{}{}{(NB. BD commands apply only when data is non-zero, unless -BZ appears)}{2}
-\entry{-BZ}{}{Apply bias data commands (BD) even when data is zero}{2}
-\entry{-BD$<$SV,OT,t,d$>$}{}{Add the value of $<$d$>$ to data(SV,OT,t) at time $<$t$>$}{2}
-\entry{-BD+$<$SV,OT,t,d$>$}{}{Add value of $<$d$>$ to data(SV,OT) beginning at time $<$t$>$}{2}
-\entry{-BD-$<$SV,OT,t,d$>$}{}{Stop adding $<$d$>$ to data(SV,OT) at time $<$t$>$ (',$<$d$>$' optional)}{2}
-\entry{-BS$<$SV,OT,t,s$>$}{}{Add the value of $<$s$>$ to ssi(SV,OT,t) at time $<$t$>$}{2}
-\entry{-BL$<$SV,OT,t,l$>$}{}{Add the value of $<$l$>$ to lli(SV,OT,t) at time $<$t$>$}{2}
+\entry{}{--REChelp}{Print syntax of RINEXEditor commands and quit.}{2}
+\entry{}{--ROThelp}{Print list of extended RINEX observation types and quit.}{2}
 \end{longtable}
 
 \begin{verbatim}
@@ -181,9 +108,5 @@ The list of available extended Rinex obs types:
 \end{verbatim}
 
 \end{\outputsize}
-
-\subsection{Examples}
-
-\subsection{Notes}
 
 %\end{document}

@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -17,16 +17,18 @@ The application compares the contents of two FIC files containing ephemeris data
 \begin{\outputsize}
 
 \begin{longtable}{lll}
+\multicolumn{3}{c}{\application{ficdiff}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
-\entry{-t}{--time=TIME}{Start of time range to compare (default = "beginning of time")}{2}
-\entry{-e}{--end-time=TIME}{End of time range to compare (default = "end of time")}{2}
-& & \\
-\multicolumn{3}{c}{ephdiff usage: ficdiff [options] fic1 fic2} \\
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-t}{--time=TIME}{Start of time range to compare (default BOT).}{1}
+\entry{-e}{--end-time=TIME}{End of time range to compare (default EOT).}{1}
 \end{longtable}
+\begin{verbatim}
+ephdiff usage: ficdiff [options] fic1 fic2
+\end{verbatim}
 \end{\outputsize}
 
 \subsection{Examples}
@@ -47,6 +49,5 @@ The application compares the contents of two FIC files containing ephemeris data
 \end{lstlisting}
 \end{\outputsize}
 
-\subsection{Notes}
 
 %\end{document}

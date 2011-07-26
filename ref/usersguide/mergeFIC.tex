@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -11,7 +11,7 @@
 \index{mergeRinFic!application writeup}
 \section{\emph{mergeFic}}
 \subsection{Overview}
-The applications merge multiple FIC files into a single FIC file.
+This application merges multiple FIC files into a single FIC file.
 
 \subsection{Usage}
 \begin{\outputsize}
@@ -25,17 +25,16 @@ The applications merge multiple FIC files into a single FIC file.
 
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-h}{--help}{Print help usage}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
 \end{longtable}
 \end{\outputsize}
 
 \subsection{Examples}
-
-\getuse{mergeFIC -i fic1 -i fic2 -o ficm}
-
-\subsection{Notes}
-
+\begin{\outputsize}
+\begin{verbatim}
+> mergeFIC -i fic1 -i fic2 -o ficm
+\end{verbatim}
+\end{\outputsize}
 %\end{document}
-

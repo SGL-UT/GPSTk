@@ -1,8 +1,9 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
+%\usepackage{longtable}
 %\usepackage{multirow}
 %\input{src/cmd}
 %\begin{document}
@@ -19,31 +20,22 @@ imported into numerical packages.
 
 \subsection{Usage}
 \begin{\outputsize}
-\begin{tabular}{lll}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{WhereSat}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
-Short Arg. & Long Arg. & Description \\
--b & --broadcast=ARG & \multirow{2}{2.5in}{Specify a RINEX navigation file. The user may enter multiple files.} \\
-& & \\
--p & --prn=NUM & Specify which SV to analuze. \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-e}{--eph-files=ARG}{Ephemeris source file(s).  Can be RINEX nav, SP3, or FIC.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
-Short Arg. & Long Arg. & Description \\
--h & --help & Generates help and usage. \\
--u & --position=ARG & \multirow{4}{2.5in}{Specify antenna position in ECEF (x,y,z) coordinates as "X Y Z". Used to give user-centered data (SV range, azimuth \& elevation).} \\
-& & \\
-& & \\
-& & \\
--s & --start=ARG & \multirow{3}{2.5in}{Specify time to begin analysis as "MO/DD/YYYY HH:MM:SS". The default is the end of the file.} \\
-& & \\
-& & \\
--e & --end=ARG & \multirow{3}{2.5in}{Specify time to end analysis as "MO/DD/YYYY HH:MM:SS". The default is the beggning of the file.} \\
-& & \\
-& & \\
--o & --output-filename=ARG & Outputs results to a MATLAB readable file. \\
--t & --time=NUM & \multirow{3}{2.5in}{Specify time increment for ephemeris calculation in seconds. Default is 900 (15 min.)} \\
-& & \\
-& & \\
-\end{tabular}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-u}{--position=ARG}{Antenna position in ECEF (x,y,z) coordinates.  Format as string: "X Y Z".  used to give user-centered data (SV range, azimuth, and elevation) when SV is in view.}{4}
+\entry{}{--start=ARG}{Ignore data before this time.  Format as string: "MO/DD/YYYY HH:MM:SS".}{2}
+\entry{}{--end=ARG}{Ignore data after this time.  Format as string: "MO/DD/YYYY HH:MM:SS".}{2}
+\entry{-f}{--time-format=ARG}{CommonTime format specifier used for times in the output.  The default is "\%4Y \%3j \%02H:\%02M:\%4.1f".}{3}
+\entry{-p}{--prn=NUM}{Which SVs to analyze.  Repeat option for multiple satellites.  If this option is not specified, all ephemeris data will be processed.}{3}
+\entry{-t}{--time=NUM}{Time increment in seconds for ephemeris calculation.  Default is 900 seconds (15 minutes).}{2}
+\end{longtable}
 \end{\outputsize}
 
 \subsection{Examples}
@@ -93,7 +85,6 @@ Short Arg. & Long Arg. & Description \\
 \end{lstlisting}
 \end{\outputsize}
 
-\subsection{Notes}
 
 %\end{document}
 

@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -21,69 +21,78 @@
 \begin{longtable}{lll}
 \multicolumn{3}{c}{\application{TECMaps}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
-\entry{}{--input}{Input Rinex obs file name(s)}{1}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--input}{Input Rinex obs file name(s).}{1}
 
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
-\entry{}{-f}{file containing more options}{1}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{-f}{File containing more options.}{1}
 & & \\
-\multicolumn{3}{l}{\textbf{Reference station position (one required)}} \\
-\entry{}{--RxLLH $<$l,l,h$>$}{Reference site position in geodetic lat, lon (E), ht (deg,deg,m)}{2}
-\entry{}{--RxXYZ $<$x,y,z$>$}{Reference site position in ECEF coordinates (m)}{1}
-\entry{}{--inputdir}{Path for input file(s)}{1}
+\multicolumn{3}{l}{\textbf{Reference Station Position (One Required)}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--RxLLH $<$l,l,h$>$}{Reference site position in geodetic lat, lon (E), ht (deg,deg,m).}{2}
+\entry{}{--RxXYZ $<$x,y,z$>$}{Reference site position in ECEF coordinates (m).}{2}
+\entry{}{--inputdir}{Path for input file(s).}{1}
 & & \\
-\multicolumn{3}{l}{\textbf{Ephemeris input}} \\
-\entry{}{--navdir}{Path of navigation file(s)}{1}
-\entry{}{--nav}{Navigation (Rinex Nav OR SP3) file(s)}{1}
+\multicolumn{3}{l}{\textbf{Ephemeris Input}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--navdir}{Path of navigation file(s).}{1}
+\entry{}{--nav}{Navigation (Rinex Nav OR SP3) file(s).}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Output}} \\
-\entry{}{--log}{Output log file name}{1}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--log}{Output log file name.}{1}
 & & \\
-\multicolumn{3}{l}{\textbf{Time limits}} \\
-\entry{}{--BeginTime}{Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
-\entry{}{--BeginGPSTime}{Start time, arg is of the form GPSweek,GPSsow}{1}
-\entry{}{--EndTime}{End time, arg is of the form YYYY,MM,DD,HH,Min,Sec}{2}
-\entry{}{--EndGPSTime}{End time, arg is of the form GPSweek,GPSsow}{1}
+\multicolumn{3}{l}{\textbf{Time Limits}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--BeginTime}{Start time, arg is of the form YYYY,MM,DD,HH,Min,Sec.}{2}
+\entry{}{--BeginGPSTime}{Start time, arg is of the form GPSweek,GPSsow.}{1}
+\entry{}{--EndTime}{End time, arg is of the form YYYY,MM,DD,HH,Min,Sec.}{2}
+\entry{}{--EndGPSTime}{End time, arg is of the form GPSweek,GPSsow.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Processing}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{}{--noVTECmap}{Do NOT create the VTEC map.}{1}
 \entry{}{--MUFmap}{Create MUF map as well as VTEC map.}{1}
-\entry{}{--F0F2map}{Create F0F2 map as well as VTEC map}{1}
-\entry{}{--Title1}{Title information}{1}
-\entry{}{--Title2}{Second title information}{1}
-\entry{}{--BaseName}{Base name for output files (a)}{1}
-\entry{}{--DecorrError}{Decorrelation error rate in TECU/1000km (3)}{1}
-\entry{}{--Biases}{File containing estimated sat+rx biases (Prgm IonoBias)}{2}
-\entry{}{--ElevThresh}{Minimum elevation (6 deg)}{1}
-\entry{}{--MinAcqTime}{Minimum acquisition time (0 sec)}{1}
-\entry{}{--FlatFit}{Flat fit type (default)}{1}
-\entry{}{--LinearFit}{Linear fit type}{1}
-\entry{}{--IonoHeight}{Ionosphere height (km)}{1}
+\entry{}{--F0F2map}{Create F0F2 map as well as VTEC map.}{1}
+\entry{}{--Title1 $<$title$>$}{Title information.}{1}
+\entry{}{--Title2 $<$title$>$}{Second title information.}{1}
+\entry{}{--BaseName $<$name$>$}{Base name for output files.}{1}
+\entry{}{--DecorrError $<$de$>$}{Decorrelation error rate in TECU/1000km (3).}{1}
+\entry{}{--Biases $<$file$>$}{File containing estimated sat+rx biases (Prgm IonoBias).}{2}
+\entry{}{--ElevThresh $<$ele$>$}{Minimum elevation (6 degrees).}{1}
+\entry{}{--MinAcqTime$<$t$>$}{Minimum acquisition time (0 seconds).}{1}
+\entry{}{--FlatFit}{Flat fit type (default).}{1}
+\entry{}{--LinearFit}{Linear fit type.}{1}
+\entry{}{--IonoHeight $<$n$>$}{Ionosphere height (km).}{1}
+\entry{}{--Offset $<$tec$>$}{Overall bias to add to data (TECU).}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Grid}} \\
-\entry{}{--UniformSpacing}{Grid uniform in space (XYZ) (default)}{1}
-\entry{}{--UniformGrid}{Grid uniform in Lat and Lon}{1}
-\entry{}{--OutputGrid}{Output the grid to file $<$basename.LL$>$}{1}
-\entry{}{--GnuplotOutput}{Write the grid file for gnuplot (default: for Matlab)}{2}
-\entry{}{--NumLat}{Number of latitude grid points (40)}{1}
-\entry{}{--NumLon}{Number of longitude grid points (40)}{1}
-\entry{}{--BeginLat}{Beginning latitude (21 deg)}{1}
-\entry{}{--BeginLon}{Beginning longitude (230 deg E)}{1}
-\entry{}{--DeltaLat}{Grid spacing in latitude (0.25 deg)}{1}
-\entry{}{--DeltaLon}{Grid spacing in longitude (1.0 deg)}{1}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--UniformSpacing}{Grid uniform in space (XYZ) (default).}{1}
+\entry{}{--UniformGrid}{Grid uniform in Lat and Lon.}{1}
+\entry{}{--OutputGrid}{Output the grid to file $<$basename.LL$>$.}{1}
+\entry{}{--GnuplotOutput}{Write the grid file for gnuplot (default: for Matlab).}{2}
+\entry{}{--NumLat $<$n$>$}{Number of latitude grid points (40).}{1}
+\entry{}{--NumLon $<$n$>$}{Number of longitude grid points (40)}{1}
+\entry{}{--BeginLat $<$lat$>$}{Beginning latitude (21 degrees).}{1}
+\entry{}{--BeginLon $<$lon$>$}{Beginning longitude (230 degrees E).}{1}
+\entry{}{--DeltaLat $<$del$>$}{Grid spacing in latitude (0.25 degrees).}{1}
+\entry{}{--DeltaLon $<$del$>$}{Grid spacing in longitude (1.0 degrees).}{1}
 & & \\
-\multicolumn{3}{l}{\textbf{Other options}} \\
-\entry{}{--XSat}{Exclude this satellite (<sat> may be <system> only)}{2}
+\multicolumn{3}{l}{\textbf{Other Options}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--XSat}{Exclude this satellite ($<$sat$>$ may be $<$system$>$ only).}{2}
 & & \\
 \multicolumn{3}{l}{\textbf{Help}} \\
-\entry{-v}{--verbose}{print extended output info.}{1}
-\entry{-d}{--debug}{print extended output info.}{1}
-\entry{-h}{--help}{print syntax and summary of input, then quit.}{1}
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-v}{--verbose}{Print extended output info.}{1}
+\entry{-d}{--debug}{Print extended output info.}{1}
+\entry{-h}{--help}{Print syntax and summary of input, then quit.}{1}
 
 \end{longtable}
 \end{\outputsize}
-
-\subsection{Examples}
 
 \subsection{Notes}
 Input is on the command line, or of the same format in a file (-f$<$file$>$).

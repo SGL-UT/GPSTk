@@ -1,7 +1,7 @@
 %\documentclass{article}
 %\usepackage{fancyvrb}
-%\usepackage{src/perltex}
-%\usepackage{src/xcolor}
+%\usepackage{perltex}
+%\usepackage{xcolor}
 %\usepackage{listings}
 %\usepackage{longtable}
 %\usepackage{multirow}
@@ -15,7 +15,7 @@ This application decimates an input RINEX observation file to a specified data r
 \subsection{Usage}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{navdmp}} \\
+\multicolumn{3}{c}{\application{rinexthin}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-f}{--filename=ARG}{RINEX obs file to be thinned.}{1}
@@ -26,8 +26,6 @@ This application decimates an input RINEX observation file to a specified data r
 
 \subsection{Examples}
 \getuse{rinexthin -f arl2800.06o -s 60 -o arl2800thin.06o}
-
-\subsection{Notes}
 
 %\end{document}
 
