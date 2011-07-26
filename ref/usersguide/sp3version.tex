@@ -1,0 +1,29 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{sp3version!application writeup}
+\section{\emph{sp3version}}
+\subsection{Overview}
+This application reads an SP3 file (either a or c format) and writes it to another file (also either in a or c format).
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{sp3version}} \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--in}{A file from which to take the input. The default is stdin.}{2}
+\entry{}{--out}{A file into which to write the output.  The default is sp3.out.}{2}
+\entry{}{--outputC}{Output version c (otherwise a).}{1}
+\entry{}{--msg}{Add message as a comment to the output header.}{2}
+\entry{}{--verbose}{Output to screen: dump headers, data, etc.}{1}
+\end{longtable}
+\end{\outputsize}
+
+%\end{document}

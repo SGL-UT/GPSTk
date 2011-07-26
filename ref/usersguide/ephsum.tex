@@ -1,0 +1,25 @@
+index{ephdiff!application writeup}
+
+\section{\emph{ephdiff}}
+\subsection{Overview}
+This application summarizes contents of a navigation message file. EphSum works on either RINEX navigation message files or FIC files. The summary is in a text output file. The summary contains the transmit time, time of effectivity, end of effectivity,IODC, and health as a one-line-per ephemeris summary. The number of ephemerides found per SV is also provided. The number of ephemerides per SV is also summarized at the end. The default is to summarize all SVs found. If a specific PRN ID is provided, only data for that PRN ID will be sumarized.
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{ephdiff}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i}{--input-file=ARG}{Input file name(s)}{1}
+\entry{-f}{}{file containing more options}{1}
+\entry{-o}{--output-file=ARG}{Output file name}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level.}
+\entry{-v}{--verbose}{Increase verbosity.}
+\entry{-h}{--help}{Print help usage.}
+\entry{-p}{--PRNID=ARG}{The PRN ID of the SV to process (default is all SVs).}
+\entry{-x}{--xmit}{List in order of transmission (default is TOE).}
+\end{longtable}
+\end{\outputsize}
+

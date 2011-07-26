@@ -1,0 +1,22 @@
+\index{bc2sp3!application writeup}
+\section{\emph{bc2sp3}}
+\subsection{Overview}
+This application reads RINEX navigation file(s) and writes to SP3 (a or c) file(s).
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{bc2sp3}} \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--in}{Read the input file (repeatable).}{1}
+\entry{}{--out}{Name the output file. Default is sp3.out.}{1}
+\entry{}{--tb}{Output beginning epoch; $<$time$>$ = week, sec-of-week (earliest in input).}{2}
+\entry{}{--te}{Output ending epoch; $<$time$>$ = week, sec-of-week (latest in input).}{2}
+\entry{}{--outputC}{Output version c (no correlation) (otherwise a).}{1}
+\entry{}{-msg}{Add message  as a comment to the output header (repeatable).}{2}
+\entry{}{--verbose}{Output to screen: dump headers, data, etc.}{1}
+\entry{}{--help}{Print this message and quit.}{1}
+\end{longtable}
+\end{\outputsize}
+

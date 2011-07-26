@@ -1,0 +1,40 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+\index{compStaVis!application writeup}
+\section{\emph{compStaVis}}
+\subsection{Overview}
+This application computes station visibility.
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{compStaVis}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-o}{--output-file=ARG}{Name of the output file to write.}{1}
+\entry{-n}{--nav=ARG}{Name of navigation file.}{1}
+\entry{-c}{--mscfile=ARG}{Name of MS coordinates file.}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-p}{--int=ARG}{Interval in seconds.}{1}
+\entry{-e}{--minelv=ARG}{Minimum elevation angle.}{1}
+\entry{-t}{--navFileType=ARG}{FALM, FEPH, RNAV, YUMA, SEM, or SP3.}{1}
+\entry{-m}{--max-SV=ARG}{Maximum number of SVs tracked simultaneously.}{2}
+\entry{-D}{--detail}{Pritn SV count for each interval.}{1}
+\entry{-x}{--exclude=ARG}{Exclude station.}{1}
+\entry{-i}{--include=ARG}{Include station.}{1}
+\entry{-s}{--start-time=TIME}{Start time of evaluation ("m/d/y H:M").}{1}
+\entry{-z}{--end-time=TIME}{End time of evaluation ("m/d/y H:M").}{1}
+\end{longtable}
+\end{\outputsize}
+%%\end{document}
