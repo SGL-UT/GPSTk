@@ -32,6 +32,7 @@
 #include "IERS.hpp"
 #include "ReferenceFrames.hpp"
 #include "StringUtils.hpp"
+#include "Epoch.hpp"
 #include <map>
 
 namespace gpstk
@@ -753,7 +754,7 @@ namespace gpstk
       
       EarthBody body;
       UTCTime t;
-      t.setMJD(53157.5);
+      t=static_cast<Epoch>(CommonTime(53157.5)).MJD();      
 
       Spacecraft sc;
       sc.setDragArea(20.0);

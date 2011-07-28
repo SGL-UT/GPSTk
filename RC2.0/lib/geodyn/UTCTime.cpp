@@ -29,7 +29,7 @@
 
 #include "UTCTime.hpp"
 #include "IERS.hpp"
-
+#include "YDSTime.hpp"
 
 namespace gpstk
 {
@@ -46,30 +46,34 @@ namespace gpstk
    const double UTCTime::TAI_GPS = 19.0;
 
 
-   DayTime UTCTime::asUT1()
+   Epoch UTCTime::asUT1()
    {
-      DayTime T(this->DOYyear(),this->DOYday(),this->DOYsecond()); // UTC
-      T += IERS::UT1mUTC(this->mjdUTC());
+      //UTCTime T(this->year,this->doy,this->sod); // UTC
+      Epoch ep(*this);
+	UTCTime T(static_cast<YDSTime>(ep).year, static_cast<YDSTime>(ep).doy, static_cast<YDSTime>(ep).sod);
+	T += IERS::UT1mUTC(this->mjdUTC());
       return T;
    }
 
-   DayTime UTCTime::asUTC()
+   Epoch UTCTime::asUTC()
    {
-      DayTime T(this->DOYyear(),this->DOYday(),this->DOYsecond());
-      return T;
+      //UTCTime T(this->DOYyear(),this->DOYday(),this->DOYsecond());
+      Epoch ep(*this);
+      UTCTime T(static_cast<YDSTime>(ep).year, static_cast<YDSTime>(ep).doy, static_cast<YDSTime>(ep).sod);
+	return T;
    }
 
-   DayTime UTCTime::asTT()
+   Epoch UTCTime::asTT()
    {
-      DayTime T = (*this).asTAI();
+	UTCTime T((*this).mjdTAI());
       T += TT_TAI;
       return T;
    }
 
-   DayTime UTCTime::asTDB()
+   Epoch UTCTime::asTDB()
    {
        
-      DayTime TT = this->asTT();
+      Epoch TT = this->asTT();
 
       struct MJDTime mjdTT;
       mjdTT.MJDint = (long)floor(TT.MJD());
@@ -102,31 +106,35 @@ namespace gpstk
 
       double TDB_minus_TT = ( tdbtdt + (mjdTT.MJDfr - 0.5) * tdbtdtdot );
 
-      DayTime T = TT;
+      Epoch T = TT;
       T += TDB_minus_TT;
 
       return T;
    }
 
-   DayTime UTCTime::asTAI()
+   Epoch UTCTime::asTAI()
    {
-      DayTime T(this->DOYyear(),this->DOYday(),this->DOYsecond()); // UTC
-      T += IERS::TAImUTC(this->mjdUTC());      // TAI
+      //UTCTime T(this->DOYyear(),this->DOYday(),this->DOYsecond()); // UTC
+      Epoch ep(*this);
+	UTCTime T(static_cast<YDSTime>(ep).year, static_cast<YDSTime>(ep).doy, static_cast<YDSTime>(ep).sod);
+	T += IERS::TAImUTC(this->mjdUTC());      // TAI
       return T;
    }
 
-   DayTime UTCTime::asGPST()
+   Epoch UTCTime::asGPST()
    {
-      DayTime T(this->DOYyear(),this->DOYday(),this->DOYsecond()); // UTC
-      T += IERS::TAImUTC(this->mjdUTC());   // TAI
+      //UTCTime T(this->DOYyear(),this->DOYday(),this->DOYsecond()); // UTC
+      Epoch ep(*this);
+	UTCTime T(static_cast<YDSTime>(ep).year, static_cast<YDSTime>(ep).doy, static_cast<YDSTime>(ep).sod);
+	T += IERS::TAImUTC(this->mjdUTC());   // TAI
       T += -UTCTime::TAI_GPS;         // GPST
       return T;
    }
 
       /// Return BD(Compass) Time
-   DayTime UTCTime::asBDT()
+   Epoch UTCTime::asBDT()
    {
-      DayTime bdt = this->asGPST();
+      CommonTime bdt = this->asGPST();
       bdt -= 14.0;
 
       return bdt;
@@ -341,8 +349,8 @@ namespace gpstk
 
       cout << "It's seems to be ok !" <<endl;
       
-      DayTime utc2;
-      DayTime gpst1;
+      UTCTime utc2;
+      CommonTime gpst1;
       UTC2TT(utc,gpst1);
       TT2UTC(gpst1,utc2);
       
@@ -356,11 +364,11 @@ namespace gpstk
       // GPS time to UTC time
       // @param gpst    GPST as input 
       // @param utc     UTC as output
-   void GPST2UTC(const DayTime& gpst, DayTime& utc)
+   void GPST2UTC(const UTCTime& gpst, UTCTime& utc)
    {
       UTCTime T;
 
-      double mjdGPST = gpst.MJD();
+      double mjdGPST = static_cast<Epoch>(gpst).MJD();
       double mjdTAI = mjdGPST+ UTCTime::TAI_GPS/UTCTime::DAY_TO_SECOND;
 
          // input should be utc
@@ -378,9 +386,9 @@ namespace gpstk
       // UTC time to GPS time 
       // @param utc    UTC as input 
       // @param gpst   GPST as output 
-   void UTC2GPST(const DayTime& utc, DayTime& gpst)
+   void UTC2GPST(const UTCTime& utc, CommonTime& gpst)
    {
-      UTCTime T(utc.DOYyear(), utc.DOYday(), utc.DOYsecond());
+      UTCTime T(static_cast<YDSTime>(utc).year, static_cast<YDSTime>(utc).doy, static_cast<YDSTime>(utc).sod);
       gpst = T.asGPST();
       
    }
@@ -388,48 +396,48 @@ namespace gpstk
       // UT1 time to UTC time
       // @param ut1     UT1 as input 
       // @param utc     UTC as output 
-   void UT12UTC(const DayTime& ut1, DayTime& utc)
+   void UT12UTC(const UTCTime& ut1, UTCTime& utc)
    {
-      UTCTime T(ut1.DOYyear(), ut1.DOYday(), ut1.DOYsecond());
       
-      T -= IERS::UT1mUTC(ut1.MJD());   // input should be utc
-      double mjdUTC = T.MJD();
+      UTCTime T(static_cast<YDSTime>(ut1).year, static_cast<YDSTime>(ut1).doy, static_cast<YDSTime>(ut1).sod);
+      
+      T -= IERS::UT1mUTC(static_cast<Epoch>(ut1).MJD());   // input should be utc
+      double mjdUTC = static_cast<Epoch>(T).MJD();
 
-      T.setYDoySod(ut1.DOYyear(), ut1.DOYday(), ut1.DOYsecond());
       T -= IERS::UT1mUTC(mjdUTC);
       
       utc = ut1;
-      utc -= IERS::UT1mUTC(T.MJD());
+      utc -= IERS::UT1mUTC(static_cast<Epoch>(T).MJD());
    }
 
       // UTC time to UT1 time
       // @param utc     UTC as input 
       // @param ut1     UT1 as output
-   void UTC2UT1(const DayTime& utc, DayTime& ut1)
+   void UTC2UT1(const UTCTime& utc, UTCTime& ut1)
    {
-      UTCTime T(utc.DOYyear(), utc.DOYday(), utc.DOYsecond());
-      ut1 = T.asUT1();
+      UTCTime T(static_cast<YDSTime>(utc).year, static_cast<YDSTime>(utc).doy, static_cast<YDSTime>(utc).sod);
+      ut1 = T.mjdUT1();
    }
 
       // TT time to UTC time
-      // @param tt      TT as input 
+      // @param tt      TT as input
       // @param utc     UTC as output 
-   void TT2UTC(const DayTime& tt, DayTime& utc)
+   void TT2UTC(const CommonTime& tt, CommonTime& utc)
    {
-      UTCTime T(tt.DOYyear(),tt.DOYday(),tt.DOYsecond());
+      UTCTime T(static_cast<YDSTime>(tt).year,static_cast<YDSTime>(tt).doy,static_cast<YDSTime>(tt).sod);
       
-      DayTime TAI  = tt;          // TT
+      CommonTime TAI  = tt;          // TT
       TAI -= UTCTime::TT_TAI;       // TAI
 
       utc = TAI;
-      utc -= IERS::TAImUTC(TAI.MJD()); // input should be UTC     
+      utc -= IERS::TAImUTC(static_cast<Epoch>(TAI).MJD()); // input should be UTC     
       
-      double mjdUTC = utc.MJD();
+      double mjdUTC = static_cast<Epoch>(utc).MJD();
 
       utc = TAI;
       utc -= IERS::TAImUTC(mjdUTC);
 
-      mjdUTC = utc.MJD();
+      mjdUTC = static_cast<Epoch>(utc).MJD();
 
       utc = TAI;
       utc -= IERS::TAImUTC(mjdUTC);
@@ -438,28 +446,28 @@ namespace gpstk
       // UTC time to TT time
       // @param UTC     UTC as input 
       // @param tt      TT as output 
-   void UTC2TT(const DayTime& utc, DayTime& tt)
+   void UTC2TT(const UTCTime& utc, CommonTime& tt)
    {
-      UTCTime T(utc.DOYyear(),utc.DOYday(),utc.DOYsecond());
+      UTCTime T(static_cast<YDSTime>(utc).year,static_cast<YDSTime>(utc).doy,static_cast<YDSTime>(utc).sod);
       tt = T.asTT();
    }
 
       // TAI time to UTC time
       // @param tai     TAI as input 
       // @param utc     UTC as output 
-   void TAI2UTC(const DayTime& tai, DayTime& utc)
+   void TAI2UTC(const UTCTime& tai, UTCTime& utc)
    {
-      UTCTime T(tai.DOYyear(),tai.DOYday(),tai.DOYsecond());
+      UTCTime T(static_cast<YDSTime>(tai).year,static_cast<YDSTime>(tai).doy,static_cast<YDSTime>(tai).sod);
       
       utc = tai;
-      utc -= IERS::TAImUTC(tai.MJD()); // input should be UTC     
+      utc -= IERS::TAImUTC(static_cast<Epoch>(tai).MJD()); // input should be UTC     
 
-      double mjdUTC = utc.MJD();
+      double mjdUTC = static_cast<Epoch>(utc).MJD();
 
       utc = tai;
       utc -= IERS::TAImUTC(mjdUTC);
 
-      mjdUTC = utc.MJD();
+      mjdUTC = static_cast<Epoch>(utc).MJD();
 
       utc = tai;
       utc -= IERS::TAImUTC(mjdUTC);
@@ -468,9 +476,9 @@ namespace gpstk
       // TAI time to UTC time
       // @param utc     UTC as input 
       // @param tai     TAI as output 
-   void UTC2TAI(const DayTime& utc, DayTime& tai)
+   void UTC2TAI(const CommonTime& utc, CommonTime& tai)
    {
-      UTCTime T(utc.DOYyear(),utc.DOYday(),utc.DOYsecond());
+      UTCTime T(static_cast<YDSTime>(utc).year,static_cast<YDSTime>(utc).doy,static_cast<YDSTime>(utc).sod);
       tai = T.asTAI();
    }
 
@@ -478,9 +486,9 @@ namespace gpstk
       // BDT time to UTC time
       // @param bdt     BDT as input 
       // @param utc     UTC as output 
-   void BDT2UTC(const DayTime& bdt, DayTime& utc)
+   void BDT2UTC(const CommonTime& bdt, UTCTime& utc)
    {
-      DayTime gpst(bdt);
+      CommonTime gpst(bdt);
       gpst += 14.0;
 
       GPST2UTC(gpst, utc);
@@ -489,7 +497,7 @@ namespace gpstk
       // UTC time to BDT time
       // @param utc     UTC as input 
       // @param bdt     BDT as output 
-   void UTC2BDT(const DayTime& utc, DayTime& bdt)
+   void UTC2BDT(const UTCTime& utc, CommonTime& bdt)
    {
       UTC2GPST(utc,bdt);  
       bdt -= 14.0;

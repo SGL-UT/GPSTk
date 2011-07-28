@@ -37,6 +37,7 @@
 #include "ReferenceFrames.hpp"
 #include "IERS.hpp"
 #include "ASConstant.hpp"
+#include "YDSTime.hpp"
 
 namespace gpstk
 {
@@ -342,9 +343,9 @@ namespace gpstk
          flags.switches[i] = 1;
       }
 
-      input.doy = utc.DOYday();
+      input.doy = static_cast<YDSTime>(utc).doy;
       input.year = 2004;         // without effect 
-      input.sec = utc.DOYsecond();
+      input.sec = static_cast<YDSTime>(utc).sod;
       input.alt= alt;
       input.g_lat = geoidPos.getGeodeticLatitude();
       input.g_long = geoidPos.getLongitude();

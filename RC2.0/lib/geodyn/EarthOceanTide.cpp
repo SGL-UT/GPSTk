@@ -185,7 +185,7 @@ namespace gpstk
       }
       
       UTCTime utc;
-      utc.setMJD(mjdUtc);
+      utc=mjdUtc;
 
       //   CC PURPOSE    :  COMPUTE DOODSON'S FUNDAMENTAL ARGUMENTS (BETA)
       //  CC               AND FUNDAMENTAL ARGUMENTS FOR NUTATION (FNUT)

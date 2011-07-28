@@ -453,7 +453,8 @@ namespace gpstk
       
       if(j2k)     // if J2000 was wanted
       {
-         CommonTime gpst(t),utc;
+         CommonTime gpst(t);
+	UTCTime utc;
 	 GPST2UTC(t,utc);
 
          Vector<double> ecefPosVel(6,0.0), j2kPosVel(6,0.0);

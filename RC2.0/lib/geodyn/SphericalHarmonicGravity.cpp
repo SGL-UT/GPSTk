@@ -34,6 +34,7 @@
 #include "IERS.hpp"
 #include "ReferenceFrames.hpp"
 #include "SpecialFunctions.hpp"
+#include "Epoch.hpp"
 
 namespace gpstk
 {
@@ -359,7 +360,7 @@ namespace gpstk
       Vector<double> Sn0(CS.rows(),0.0);
 
       // 
-      double mjd = t.MJD();
+      double mjd = static_cast<Epoch>(t).MJD();
       double leapYears = (mjd-gmData.refMJD)/365.25;
 
       double detC20 = normFactor(2,0)*leapYears*gmData.dotC20;
