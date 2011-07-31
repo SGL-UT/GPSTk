@@ -93,7 +93,7 @@ else
       MainAdapter.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
       MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp
       MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp
-      MatrixImplementation.hpp MatrixOperators.hpp MiscMath.hpp
+      MatrixImplementation.hpp MatrixOperators.hpp MemoryUtils.hpp MiscMath.hpp
       ModeledPseudorangeBase.hpp MoonPosition.hpp NEDUtil.hpp ORDEpoch.hpp
       ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp
       OceanLoading.hpp PCodeConst.hpp PRSolution.hpp PoleTides.hpp
