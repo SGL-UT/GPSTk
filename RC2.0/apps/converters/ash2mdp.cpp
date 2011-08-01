@@ -213,7 +213,7 @@ protected:
 
             if (debugLevel)
                cout << "PVT time: "
-                    << printTime(CommonTime(time.week, time.sow),"%03j %02H:%02M:%04.1f")
+                    << printTime(GPSWeekSecond(time.week, time.sow),"%03j %02H:%02M:%04.1f")
                     << endl;
 
             MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
@@ -231,7 +231,7 @@ protected:
 
             if (knowSOW && knowWeek)
             {
-               hint[mben.svprn].time = CommonTime(time.week, time.sow);
+               hint[mben.svprn].time = GPSWeekSecond(time.week, time.sow);
                hint[mben.svprn].numSVs = svCount;
                MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
                moe.freshnessCount = fc++;
@@ -287,7 +287,7 @@ protected:
                long sow = sf.getHOWTime();
                if (sow>FULLWEEK || sow<0)
                   continue;
-               CommonTime t = CommonTime(time.week, sf.getHOWTime()) - 6;
+		CommonTime t = CommonTime(time.week, sf.getHOWTime()) - 6;
                sf.freshnessCount = fc++;
                sf.time = t;
                output << sf << flush;
