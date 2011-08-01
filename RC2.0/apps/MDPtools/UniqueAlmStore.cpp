@@ -89,7 +89,7 @@ namespace gpstk
       candidateToa = -10;
       written = false;
       numPagesExamined = 0;
-      ToaTime = CommonTime::BEGINNING_OF_TIME;
+      ToaTime = gpstk::CommonTime::BEGINNING_OF_TIME;
    }
 
    pmCI UniqueAlmStore::begin() const { return(pageMap.begin()); }
@@ -110,11 +110,11 @@ namespace gpstk
          // Pull the SVID and time from the subframe
       short SVID = nav.getSVID();
       short week = static_cast<GPSWeekSecond>(nav.time).week;
-      long sow = nav.getHOWTime();
+      long sow = static_cast<GPSWeekSecond>(nav.getHOWTime()).sow;
       if ( sow >604800)
          return;
 
-      CommonTime howTime(week, sow);
+      GPSWeekSecond howTime(week, sow);
 
       //if (nav.prn==1) cout << "state, SFID, SVID: " << state << ", " << nav.getSFID() << ", " << SVID;
          // Definitions that appear to need to be outside the switch
@@ -243,7 +243,7 @@ namespace gpstk
                word &= 0x00003FC0;
                word >>= 6;
                short toaWeek = fullWeekFrom8Bit( currentWeek, (short) word );
-               ToaTime = CommonTime( toaWeek, candidateToa );
+               GPSWeekSecond ToaTime( toaWeek, candidateToa );
                
                newState = COMPLETE;
                if (nav.prn==1) cout << "State Change:COMPLETE !!!" << endl;

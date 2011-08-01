@@ -2,18 +2,18 @@
 
 SubDir TOP apps MDPtools ;
 
-# Note that the local library needs to be declaired and built prior to anything
+# Note that the local library needs to be declared and built prior to anything
 # else is done.
 
 GPSLinkLibraries mdplib : rxio gpstk ;
-Library mdplib : BELogEntry.cpp MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp SubframeProc.cpp ;
+Library mdplib : BELogEntry.cpp MDPProcessors.cpp SummaryProc.cpp TrackProc.cpp NavProc.cpp SubframeProc.cpp UniqueAlmStore.cpp ;
 
 # Now we can set up the things that depend upon the local library. Note that
 # the LinkLibraries rule for mdplib must preceede the GPSLinkLibraries rule
 # for things to build properly
 
-LinkLibraries mdptool mdp2rinex mdpEdit mdp2fic UniqueAlmStore : mdplib ;
-GPSLinkLibraries mdptool mdp2rinex mdpEdit mdp2fic UniqueAlmStore : rxio gpstk ;
+LinkLibraries mdptool mdp2rinex mdpEdit mdp2fic : mdplib ;
+GPSLinkLibraries mdptool mdp2rinex mdpEdit mdp2fic : rxio gpstk ;
 
 BonkForte ;
 
@@ -22,8 +22,8 @@ GPSMain mdptool : mdptool.cpp ;
 GPSMain mdp2rinex : mdp2rinex.cpp ;
 
 GPSMain mdpEdit : mdpEdit.cpp ;
+
 GPSMain mdp2fic : mdp2fic.cpp ;
-GPSMain UniqueAlmStore : UniqueAlmStore.cpp ;
 
 
 # mdpscreen requires the curses/ncurses dev library to be installed.

@@ -40,7 +40,7 @@
 
 #include "StringUtils.hpp"
 #include "LoopedFramework.hpp"
-
+#include "EngNav.hpp"
 #include "FICStream.hpp"
 #include "FICHeader.hpp"
 #include "FICData.hpp"
@@ -159,7 +159,7 @@ protected:
       
          // Pull the time from the subframe
       short week = static_cast<GPSWeekSecond>(nav.time).week;
-      long sow = nav.getHOWTime();
+      long sow = static_cast<GPSWeekSecond>(nav.getHOWTime()).sow;
       if ( sow >604800)
          return;
 
@@ -182,7 +182,7 @@ protected:
          }
          cout << "Inserted a new almanac map for PRN " << nav.prn << endl;
       }
-      UniqueAlmStore& uas = a->second;
+      UniqueAlmStore uas = a->second;
       uas.newSubframe(nav);
       if (uas.readyToWrite()) uas.write( FICOutput );
    }
