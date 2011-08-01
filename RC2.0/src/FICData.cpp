@@ -900,7 +900,7 @@ namespace gpstk
       os.width(4);
       os << weekbit10 << ")  ";
       os.width(6);
-      os << static_cast<YDSTime>(dt).sod << "   ";
+      os << static_cast<GPSWeekSecond>(dt).sow<< "   ";
 
       switch (static_cast<YDSTime>(dt).doy)
       {
