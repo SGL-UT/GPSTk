@@ -43,6 +43,7 @@ tries to estimate the pseudoranges from the correlation delays.
 #include <GPSEllipsoid.hpp>
 #include <PRSolution.hpp>
 #include <Position.hpp>
+#include "Xvt.hpp"
 
 using namespace gpstk;
 using namespace std;
