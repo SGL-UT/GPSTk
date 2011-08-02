@@ -35,8 +35,35 @@
 
 namespace gpstk
 {
-   ///
+
+      //
+      // ReleasePolicy classes
+      //
+      // Here are two classes for simple type or class and it's array.
+      // For the complicate one, you should define you customize 'ReleasePolicy' 
+      // in the similar way.
+      //
+
+      /// Default release policy for simple type or class
    template <class C>
+   class ReleasePolicy
+   {
+   public:
+      static void release(C* pObj) { delete pObj; }
+   };
+
+      /// The release policy for array of simple or class
+   template <class C>
+   class ReleaseArrayPolicy
+   {
+   public:
+      static void release(C* pObj) { delete [] pObj; }
+   };
+
+   // End of ReleasePolicy classes
+
+   ///
+   template < class C, class RP = ReleasePolicy<C> >
    class AutoReleasePool
    {
    public:
@@ -53,7 +80,7 @@ namespace gpstk
       {
          while (!_list.empty())
          {
-            _list.front()->release();
+            RP::release(_list.front());
             _list.pop_front();
          }
       }
@@ -86,23 +113,6 @@ namespace gpstk
       long counter;
    };
 
-
-   template <class C>
-   class ReleasePolicy
-   {
-   public:
-      static void release(C* pObj) { delete pObj; }
-   };
-
-
-   template <class C>
-   class ReleaseArrayPolicy
-   {
-   public:
-      static void release(C* pObj) { delete [] pObj; }
-   };
-
-
       /** AutoPtr is a "smart" pointer for classes implementing
        * reference counting based garbage collection.
        *
@@ -113,16 +123,16 @@ namespace gpstk
        * it takes ownership of the object and the object's reference 
        * count is initialized to one.
        *
-       * If the AutoPtr is assigned another SharedPtr, the
+       * If the AutoPtr is assigned another AutoPtr, the
        * object's reference count is incremented by one.
-       * The destructor of SharedPtr decrements the object's
+       * The destructor of AutoPtr decrements the object's
        * reference count by one and deletes the object if the
        * reference count reaches zero.
        *
        * AutoPtr supports dereferencing with both the ->
        * and the * operator. An attempt to dereference a null
-       * SharedPtr results in a NullPointerException being thrown.
-       * SharedPtr also implements all relational operators and
+       * AutoPtr results in a NullPointerException being thrown.
+       * AutoPtr also implements all relational operators and
        * a cast operator in case dynamic casting of the encapsulated data types
        * is required.
        *
@@ -199,11 +209,11 @@ namespace gpstk
          std::swap(_pCounter, ptr._pCounter);
       }
 
-         /// Casts the SharedPtr via a dynamic cast to the given type.
-         /// Returns an SharedPtr containing NULL if the cast fails.
+         /// Casts the AutoPtr via a dynamic cast to the given type.
+         /// Returns an AutoPtr containing NULL if the cast fails.
          /// Example: (assume class Sub: public Super)
-         ///    SharedPtr<Super> super(new Sub());
-         ///    SharedPtr<Sub> sub = super.cast<Sub>();
+         ///    AutoPtr<Super> super(new Sub());
+         ///    AutoPtr<Sub> sub = super.cast<Sub>();
          ///    poco_assert (sub.get());
       template <class Other> 
       AutoPtr<Other, RC, RP> cast() const
@@ -214,10 +224,10 @@ namespace gpstk
          return AutoPtr<Other, RC, RP>();
       }
 
-         /// Casts the SharedPtr via a static cast to the given type.
+         /// Casts the AutoPtr via a static cast to the given type.
          /// Example: (assume class Sub: public Super)
-         ///    SharedPtr<Super> super(new Sub());
-         ///    SharedPtr<Sub> sub = super.unsafeCast<Sub>();
+         ///    AutoPtr<Super> super(new Sub());
+         ///    AutoPtr<Sub> sub = super.unsafeCast<Sub>();
          ///    poco_assert (sub.get());
       template <class Other> 
       AutoPtr<Other, RC, RP> unsafeCast() const
@@ -316,7 +326,7 @@ namespace gpstk
    private:
       C* deref() const
       {
-         if (!_ptr) throw exception("null pointer");
+         if (!_ptr) GPSTK_THROW(NullPointerException("Try access a pointer.")); 
 
          return _ptr;
       }
