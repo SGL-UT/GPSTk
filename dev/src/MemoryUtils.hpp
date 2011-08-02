@@ -60,6 +60,14 @@ namespace gpstk
       static void release(C* pObj) { delete [] pObj; }
    };
 
+      /// The release policy for customize
+   template <class C>
+   class ReleaseCustomizePolicy
+   {
+   public:
+      static void release(C* pObj) { pObj->release(); }
+   };
+
    // End of ReleasePolicy classes
 
    ///
@@ -90,8 +98,6 @@ namespace gpstk
       std::list<C*> _list;
 
    };
-
-   // Assist classes for the class 'AutoPtr'
 
 
    class ReferenceCounter
