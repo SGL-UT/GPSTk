@@ -25,7 +25,7 @@ Dilution of precision values from that data are calculated using standard method
 \multicolumn{3}{c}{\application{CalcDOPs}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-i}{$<$inputfile$>$}{Input file for day to be calculated.}{1}
+\entry{-i$<$inputfile$>$}{}{Input file for day to be calculated.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{-p $<$inputfile$>$}{}{Input file for previous day (ephemeris mode only).}{2}
@@ -88,7 +88,7 @@ $ \\
 \begin{enumerate}
 \item GPS only, using PRNs hard-wired to SV numbers 1-32.
 \item Elevation limit is hard-wired to 5 degrees above horizion.
-\item "North America" means the northern half-hemisphere: -180 to 0 deg long.,
+\item ``North America" means the northern half-hemisphere: -180 to 0 deg long.,
       0 to 90N latitude.
 \item Ephemeris mode is default, almanac mode is optional.  Ephemeris mode is
       preferred, because it excludes unhealthy satellites for any time when they
