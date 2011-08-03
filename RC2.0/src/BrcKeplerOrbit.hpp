@@ -8,8 +8,8 @@
  * formats that are based on pseudo-Keplerian elements. 
  */
 
-#ifndef GPSTK_KPORBIT_HPP
-#define GPSTK_KPORBIT_HPP
+#ifndef GPSTK_BRCKEPLERORBIT_HPP
+#define GPSTK_BRCKEPLERORBIT_HPP
 
 //============================================================================
 //
@@ -72,60 +72,72 @@ namespace gpstk
    {
    public:
          /// Constructors
-	 /// Default constuctor
+	      /// Default constuctor
       BrcKeplerOrbit( ) throw();
 
       /**
        * All constructors and loadData methods assume weeknumArg
        * is the full GPS week number associated with the epoch
-       *time.
+       * time.
        */
 
-	 /// General purpose constructor
-      BrcKeplerOrbit(const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
-                     const CommonTime beginFitArg, const CommonTime endFitArg,
-		               const double ToeArg, const short weeknumArg,
-	                  const double accuracyArg, const bool healthyArg,
-		               const double CucArg, const double CusArg,
-		               const double CrcArg, const double CrsArg,
-		               const double CicArg, const double CisArg,
-		               const double M0Arg, const double dnArg, const double dndotArg,
-		               const double eccArg, const double AArg, const double AhalfArg, const double AdotArg,
-		               const double OMEGA0Arg, const double i0Arg, const double wArg, 
-		               const double OMEGAdotARg, const double idotArg );
+	      /// General purpose constructor
+      BrcKeplerOrbit( const std::string satSysArg, const ObsID obsIDArg, 
+                      const short PRNIDArg, const CommonTime beginFitArg, 
+                      const CommonTime endFitArg, const double ToeArg, 
+                      const short weeknumArg, const double accuracyArg, 
+                      const bool healthyArg, const double CucArg, 
+                      const double CusArg, const double CrcArg, 
+                      const double CrsArg, const double CicArg, 
+                      const double CisArg, const double M0Arg, 
+                      const double dnArg, const double dndotArg,
+		                const double eccArg, const double AArg, 
+                      const double AhalfArg, const double AdotArg,
+		                const double OMEGA0Arg, const double i0Arg, 
+                      const double wArg, const double OMEGAdotARg, 
+                      const double idotArg );
 
          /// Legacy GPS Subframe 1-3  
-      BrcKeplerOrbit(const ObsID obsIDArg, const short PRNID,const short fullweeknum,
-		               const long subframe1[10],
-		               const long subframe2[10],
-		               const long subframe3[10] );
+      BrcKeplerOrbit( const ObsID obsIDArg,  
+                      const short PRNID,
+                      const short fullweeknum,
+		                const long subframe1[10],
+		                const long subframe2[10],
+		                const long subframe3[10] );
 
-      	 /// Add other constructors for other navigation message formats here....
+         /// Add other constructors for other navigation message formats here....
 
          /// Destructor
       virtual ~BrcKeplerOrbit() {}
 
-	 /// General purpose means to load data into object
-      void loadData( const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
-                     const CommonTime beginFitArg, const CommonTime endFitArg,
-		               const double ToeArg, const short weeknumArg,
-	                  const double accuracyArg, const bool healthyArg,
-		               const double CucArg, const double CusArg,
-		               const double CrcArg, const double CrsArg,
-		               const double CicArg, const double CisArg,
-		               const double M0Arg, const double dnArg, const double dndotArg,
-		               const double eccArg, const double AArg, const double AhalfArg, const double AdotArg,
-		               const double OMEGA0Arg, const double i0Arg, const double wArg, 
-		               const double OMEGAdotARg, const double idotArg );
+         /// General purpose means to load data into object
+      void loadData( const std::string satSysArg, const ObsID obsIDArg, 
+                     const short PRNIDArg, const CommonTime beginFitArg, 
+                     const CommonTime endFitArg, const double ToeArg, 
+                     const short weeknumArg, const double accuracyArg, 
+                     const bool healthyArg, const double CucArg, 
+                     const double CusArg, const double CrcArg, 
+                     const double CrsArg, const double CicArg, 
+                     const double CisArg, const double M0Arg, 
+                     const double dnArg, const double dndotArg,
+		               const double eccArg, const double AArg, 
+                     const double AhalfArg, const double AdotArg,
+		               const double OMEGA0Arg, const double i0Arg, 
+                     const double wArg, const double OMEGAdotARg, 
+                     const double idotArg );
 
-	 /// Load data based on the GPS Legacy message
-      void loadData(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
-		              const long subframe1[10],
-		              const long subframe2[10],
-		              const long subframe3[10] )
-		              throw(InvalidParameter);
+         /// Load data based on the GPS Legacy message
+      void loadData( const ObsID obsIDArg, 
+                     const short PRNID, 
+                     const short fullweeknum,
+		               const long subframe1[10],
+		               const long subframe2[10],
+		               const long subframe3[10] )
+		   throw( InvalidParameter );
 
-
+         /** 
+          * Returns the epoch time (time of ephemeris) from this ephemeris, correcting
+          * for half weeks and HOW time. */
       CommonTime getOrbitEpoch() const throw(InvalidRequest);
 
          /** Returns the time at the beginning of the fit interval. */
@@ -150,10 +162,10 @@ namespace gpstk
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
          /** Return true if fit interval is valid . */
-      bool withinFitInt() const throw(gpstk::InvalidRequest);
+      bool withinFitInterval(const CommonTime) const throw(gpstk::InvalidRequest);
 
          /** This function return the GPS week number for the
-         * orbit.  this is the full GPS week (ie > 10 bits). */
+          * orbit.  this is the full GPS week (ie > 10 bits). */
       short getFullWeek() const throw(gpstk::InvalidRequest);
       
          /** This function returns the value of the SV accuracy (m)
@@ -198,7 +210,7 @@ namespace gpstk
       double getDn() const throw(gpstk::InvalidRequest);
 
           /** This function returns the value of the rate correction to the
-          * mean motion in radians/second**2. */
+           * mean motion in radians/second**2. */
       double getDnDot() const throw(gpstk::InvalidRequest);
       
          /** This function returns the value of the eccentricity. */
@@ -213,7 +225,7 @@ namespace gpstk
       double getAhalf() const throw(gpstk::InvalidRequest);
 
           /** This function returns the value of the rate of the
-          * semi-major axis in meters/sec. */
+           * semi-major axis in meters/sec. */
       double getAdot() const throw(gpstk::InvalidRequest);
    
          /** This function returns the value of the right ascension of
@@ -247,20 +259,20 @@ namespace gpstk
           */
       double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
       
-         /// Output the contents of this orbit data to the given stream.
+         /** Output the contents of this orbit data to the given stream. */
       void dump(std::ostream& s = std::cout) const throw();
 
    protected:
          /// Overhead information
          //@{
-      bool    dataLoaded;      /**< True if data is present, False otherwise */
-      std::string    satSys;     /**< Satellite system ID (as per Rinex) */
-      ObsID   obsID;           /**< Defines carrier and tracking code */
-      short   PRNID;           /**< SV PRN ID */
-      double  Toe;             /**< Orbit epoch (sec of week) */
-      short   weeknum;         /**< GPS full week number of Toe */
-      double  accuracy;        /**< SV accuracy (m) */
-      bool    healthy;         /**< SV health (healthy=true, other=false */
+      bool    dataLoaded;     /**< True if data is present, False otherwise */
+      std::string satSys;     /**< Satellite system ID (as per Rinex) */
+      ObsID   obsID;          /**< Defines carrier and tracking code */
+      short   PRNID;          /**< SV PRN ID */
+      double  Toe;            /**< Orbit epoch (sec of week) */
+      short   weeknum;        /**< GPS full week number of Toe */
+      double  accuracy;       /**< SV accuracy (m) */
+      bool    healthy;        /**< SV health (healthy=true, other=false */
               //@}
 
 	 /// Harmonic perturbations

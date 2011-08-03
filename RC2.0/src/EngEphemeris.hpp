@@ -483,19 +483,19 @@ namespace gpstk
           * @return a reference to the modified EngEphemeris object
           */
 
-   EngEphemeris& loadData( const std::string satSysArg, unsigned short tlm[3], const long how[3], const short asalert[3],
-                           const short Tracker, const short prn, 
-                           const short fullweek, const short cflags, const short acc, 
-                           const short svhealth, const short iodc, const short l2pdata,
-                           const long Aodo, const double tgd, const double toc,
-                           const double Af2, const double Af1, const double Af0,
-                           const short iode, const double crs, const double Dn,
-                           const double m0, const double cuc, const double Ecc,
-                           const double cus, const double ahalf, const double toe,
-                           const short fitInt, const double cic, const double Omega0,
-                           const double cis, const double I0, const double crc,
-                           const double W, const double OmegaDot, const double IDot )
-      throw();
+      EngEphemeris& loadData( const std::string satSysArg, unsigned short tlm[3], const long how[3], const short asalert[3],
+                              const short Tracker, const short prn, 
+                              const short fullweek, const short cflags, const short acc, 
+                              const short svhealth, const short iodc, const short l2pdata,
+                              const long Aodo, const double tgd, const double toc,
+                              const double Af2, const double Af1, const double Af0,
+                              const short iode, const double crs, const double Dn,
+                              const double m0, const double cuc, const double Ecc,
+                              const double cus, const double ahalf, const double toe,
+                              const short fitInt, const double cic, const double Omega0,
+                              const double cis, const double I0, const double crc,
+                              const double W, const double OmegaDot, const double IDot )
+         throw();
 
       EngEphemeris& setSF1( unsigned tlm, double how, short asalert, short fullweek,
                             short cflags, short acc, short svhealth, short iodc,

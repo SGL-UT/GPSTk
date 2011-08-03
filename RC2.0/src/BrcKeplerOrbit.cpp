@@ -1,7 +1,5 @@
 #pragma ident "$Id:$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,11 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 /**
  * @file BrcKeplerOrbit.cpp
@@ -95,18 +88,10 @@ namespace gpstk
                                   const double wArg, const double OMEGAdotARg,
                                   const double idotArg )
    {
-      loadData(satSysArg, obsIDArg, PRNIDArg,
-               beginFitArg, endFitArg,
-		         ToeArg, weeknumArg,
-	            accuracyArg, healthyArg,
-		         CucArg, CusArg,
-		         CrcArg, CrsArg,
-		         CicArg, CisArg,
-		         M0Arg, dnArg, dndotArg,
-		         eccArg, AArg, AhalfArg, AdotArg,
-		         OMEGA0Arg, i0Arg, wArg, 
-		         OMEGAdotARg, idotArg );
-
+      loadData(satSysArg, obsIDArg, PRNIDArg, beginFitArg, endFitArg, ToeArg,
+               weeknumArg, accuracyArg, healthyArg, CucArg, CusArg, CrcArg,
+               CrsArg, CicArg, CisArg, M0Arg, dnArg, dndotArg, eccArg, AArg,
+               AhalfArg, AdotArg, OMEGA0Arg, i0Arg, wArg, OMEGAdotARg, idotArg );
    }
 
 		/// Legacy GPS Subframe 1-3  
@@ -116,10 +101,7 @@ namespace gpstk
 		                            const long subframe2[10],
 		                            const long subframe3[10] )
    {
-     loadData(obsIDArg, PRNID,fullweeknum,
-		        subframe1,
-		        subframe2,
-		        subframe3 );
+      loadData(obsIDArg, PRNID,fullweeknum, subframe1, subframe2, subframe3 );
    }
 
    void BrcKeplerOrbit::loadData(const std::string satSysArg, const ObsID obsIDArg,
@@ -137,34 +119,34 @@ namespace gpstk
                                  const double wArg, const double OMEGAdotARg,
                                  const double idotArg )
    {
-	satSys      = satSysArg;
-	obsID       = obsIDArg;
-	PRNID       = PRNIDArg;
-   beginFit    = beginFitArg;
-   endFit      = endFitArg;
-	Toe         = ToeArg;
-	weeknum     = weeknumArg;
-	accuracy    = accuracyArg;
-	healthy     = healthyArg;
-	Cuc         = CucArg;
-	Cus         = CusArg;
-	Crc         = CrcArg;
-	Crs         = CrsArg;
-	Cic         = CicArg;
-	Cis         = CisArg;
-	M0          = M0Arg;
-	dn          = dnArg;
-	dndot       = dndotArg;
-	ecc         = eccArg;
-	A           = AArg;
-   Ahalf       = AhalfArg;
-	Adot        = AdotArg;
-	OMEGA0      = OMEGA0Arg;
-	i0          = i0Arg;
-	w           = wArg;
-	OMEGAdot    = OMEGAdotARg;
-	idot        = idotArg;
-	dataLoaded  = true;
+	   satSys      = satSysArg;
+	   obsID       = obsIDArg;
+	   PRNID       = PRNIDArg;
+      beginFit    = beginFitArg;
+      endFit      = endFitArg;
+	   Toe         = ToeArg;
+	   weeknum     = weeknumArg;
+	   accuracy    = accuracyArg;
+	   healthy     = healthyArg;
+	   Cuc         = CucArg;
+	   Cus         = CusArg;
+	   Crc         = CrcArg;
+	   Crs         = CrsArg;
+	   Cic         = CicArg;
+	   Cis         = CisArg;
+	   M0          = M0Arg;
+	   dn          = dnArg;
+	   dndot       = dndotArg;
+	   ecc         = eccArg;
+	   A           = AArg;
+      Ahalf       = AhalfArg;
+	   Adot        = AdotArg;
+	   OMEGA0      = OMEGA0Arg;
+	   i0          = i0Arg;
+	   w           = wArg;
+	   OMEGAdot    = OMEGAdotARg;
+	   idot        = idotArg;
+	   dataLoaded  = true;
    }
 
    void BrcKeplerOrbit::loadData(const ObsID obsIDArg, const short PRNIDArg,
@@ -172,99 +154,121 @@ namespace gpstk
 		                           const long subframe1[10],
 		                           const long subframe2[10],
 		                           const long subframe3[10])
-		throw(InvalidParameter)
-    {
-         double ficked[60];
+	   throw(InvalidParameter)
+   {
+      double ficked[60];
 
  	    //Load overhead members
-  	 satSys = "G";
-	 obsID = obsIDArg;
-	 PRNID = PRNIDArg;
-    short iodc = 0;
+  	   satSys = "G";
+	   obsID = obsIDArg;
+	   PRNID = PRNIDArg;
+      short iodc = 0;
 
 	    //Convert Subframe 1
-	if (!subframeConvert(subframe1, fullweeknum, ficked))
-	{
-	   InvalidParameter exc("Subframe 1 not valid.");
-	   GPSTK_THROW(exc);
-	}
+	   if (!subframeConvert(subframe1, fullweeknum, ficked))
+	   {
+	      InvalidParameter exc("Subframe 1 not valid.");
+	      GPSTK_THROW(exc);
+	   }
 
-	     weeknum       = static_cast<short>( ficked[5] );
-	     short accFlag = static_cast<short>( ficked[7] );
-	     short health  = static_cast<short>( ficked[8] );
-	     //Convert the accuracy flag to a value...
-	     accuracy = gpstk::ura2accuracy(accFlag);
-	     healthy = false;
-	     if (health == 0)
-	     healthy = true;
-        iodc = static_cast<short>( ldexp( ficked[9], -11 ) );
+	   weeknum       = static_cast<short>( ficked[5] );
+	   short accFlag = static_cast<short>( ficked[7] );
+	   short health  = static_cast<short>( ficked[8] );
+	   //Convert the accuracy flag to a value...
+	   accuracy = gpstk::ura2accuracy(accFlag);
+	   healthy = false;
+	   if (health == 0)
+	   healthy = true;
+      iodc = static_cast<short>( ldexp( ficked[9], -11 ) );
 	  
 	    //Convert Subframe 2
-	if (!subframeConvert(subframe2, fullweeknum, ficked))
-	{
-	   InvalidParameter exc("Subframe 2 not valid.");
-	   GPSTK_THROW(exc);
-	}
+	   if (!subframeConvert(subframe2, fullweeknum, ficked))
+	   {
+	      InvalidParameter exc("Subframe 2 not valid.");
+	      GPSTK_THROW(exc);
+	   }
 
-         Crs    = ficked[6];
-	      dn     = ficked[7];
-	      M0     = ficked[8];
-	      Cuc    = ficked[9];
-	      ecc    = ficked[10];
-	      Cus    = ficked[11];
-	      Ahalf  = ficked[12];
-	      A      = Ahalf*Ahalf;
-	      Toe    = ficked[13];
-         short fiti = static_cast<short>(ficked[14]);
-         short fitHours = getLegacyFitInterval(iodc, fiti);
-         long beginFitSOW = Toe - (fitHours/2)*3600.0;
-         long endFitSOW = Toe + (fitHours/2)*3600.0;
-         short beginFitWk = weeknum;
-         short endFitWk = weeknum;
-         if (beginFitSOW < 0)
-         {
-            beginFitSOW += FULLWEEK;
-            beginFitWk--;
-         }
-         beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+      Crs    = ficked[6];
+	   dn     = ficked[7];
+	   M0     = ficked[8];
+	   Cuc    = ficked[9];
+	   ecc    = ficked[10];
+	   Cus    = ficked[11];
+	   Ahalf  = ficked[12];
+	   A      = Ahalf*Ahalf;
+	   Toe    = ficked[13];
+      short fiti = static_cast<short>(ficked[14]);
+      short fitHours = getLegacyFitInterval(iodc, fiti);
+      long beginFitSOW = Toe - (fitHours/2)*3600;
+      long endFitSOW = Toe + (fitHours/2)*3600;
+      short beginFitWk = weeknum;
+      short endFitWk = weeknum;
+      if (beginFitSOW < 0)
+      {
+         beginFitSOW += FULLWEEK;
+         beginFitWk--;
+      }
+      beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
 
-         if (endFitSOW >= FULLWEEK)
-         {
-            endFitSOW += FULLWEEK;
-            endFitWk++;
-         }
-         endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);       
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW -= FULLWEEK;
+         endFitWk++;
+      }
+      endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);       
 
-	    //Convert Subframe 3
-	if (!subframeConvert(subframe3, fullweeknum, ficked))
-	{
-	   InvalidParameter exc("Subframe3 not valid.");
-	   GPSTK_THROW(exc);
-	}
+	       //Convert Subframe 3
+	   if (!subframeConvert(subframe3, fullweeknum, ficked))
+	   {
+	      InvalidParameter exc("Subframe3 not valid.");
+	      GPSTK_THROW(exc);
+	   }
 
-	     Cic      = ficked[5];
-	     OMEGA0   = ficked[6];
-	     Cis      = ficked[7];
-	     i0       = ficked[8];
-	     Crc      = ficked[9];
-	     w        = ficked[10];
-	     OMEGAdot = ficked[11];
-	     idot     = ficked[13];
+	   Cic      = ficked[5];
+	   OMEGA0   = ficked[6];
+	   Cis      = ficked[7];
+	   i0       = ficked[8];
+	   Crc      = ficked[9];
+	   w        = ficked[10];
+	   OMEGAdot = ficked[11];
+	   idot     = ficked[13];
 
-	     dndot      = 0.0;
-	     Adot       = 0.0;
-	     dataLoaded = true;
+	   dndot      = 0.0;
+	   Adot       = 0.0;
+	   dataLoaded = true;
 	 
-	return;
-    }
+	   return;
+   }
 	     
-
-   bool BrcKeplerOrbit :: hasData() const
+   bool BrcKeplerOrbit::hasData() const
    {
       return(dataLoaded);
    }
 
-   Xv BrcKeplerOrbit :: svXv(const CommonTime& t) const
+   bool BrcKeplerOrbit::isHealthy() const
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      return(healthy);
+   }
+
+   bool BrcKeplerOrbit::withinFitInterval(const CommonTime ct) const
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      if (ct >= beginFit && ct <= endFit) return(true);    
+      return(false);
+   }
+
+   Xv BrcKeplerOrbit::svXv(const CommonTime& t) const
       throw(InvalidRequest)
    {
       Xv sv;
@@ -291,8 +295,8 @@ namespace gpstk
       double lecc;               // eccentricity
       double tdrinc;            // dt inclination
 
-         lecc = ecc;
-         tdrinc = idot;
+      lecc = ecc;
+      tdrinc = idot;
 
          // Compute time since ephemeris & clock epochs
       elapte = t - getOrbitEpoch();
@@ -300,7 +304,7 @@ namespace gpstk
       //elapte = t - orbEp;
 
          // Compute mean motion
-       amm  = (sqrtgm / (A*Ahalf)) + dn;
+      amm  = (sqrtgm / (A*Ahalf)) + dn;
 
 
          // In-plane angles
@@ -351,8 +355,8 @@ namespace gpstk
       AINC = i0 + tdrinc * elapte  +  di;
 
          //  Longitude of ascending node (ANLON)
-         ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
-                 elapte - ell.angVelocity() * Toe;
+      ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
+              elapte - ell.angVelocity() * Toe;
 
          // In plane location
       cosu = cos( U );
@@ -414,13 +418,12 @@ namespace gpstk
       double amm    = (sqrtgm / (A*Ahalf)) + dn;
       double meana,F,G,delea;
       
-
       meana = M0 + elapte * amm; 
       meana = fmod(meana, twoPI);
       double ea = meana + ecc * sin(meana);
 
       int loop_cnt = 1;
-      do  {
+      do {
          F     = meana - ( ea - ecc * sin(ea));
          G     = 1.0 - ecc * cos(ea);
          delea = F/G;
@@ -478,8 +481,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       return PRNID;
-   }
-   
+   }   
   
    short BrcKeplerOrbit::getFullWeek()  const
       throw(InvalidRequest)
@@ -490,8 +492,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       return weeknum;
-   }
-   
+   }   
   
    double BrcKeplerOrbit::getAccuracy()  const
       throw(InvalidRequest)
@@ -613,8 +614,7 @@ namespace gpstk
       }
       return ecc;
    }
-   
-   
+      
    double BrcKeplerOrbit::getA() const
       throw(InvalidRequest)
    {
@@ -772,7 +772,7 @@ namespace gpstk
          << setfill(' ');
    }
 
-   void BrcKeplerOrbit :: dump(ostream& s) const
+   void BrcKeplerOrbit::dump(ostream& s) const
       throw()
    {
       ios::fmtflags oldFlags = s.flags();
@@ -790,7 +790,6 @@ namespace gpstk
         << "PRN : " << setw(2) << PRNID << endl
         << endl;
   
-
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
         << "   MM/DD/YYYY   HH:MM:SS\n";
       
@@ -798,7 +797,7 @@ namespace gpstk
       s << "Eph Epoch:    ";
       timeDisplay(s, getOrbitEpoch());
       s << endl;
-        
+
       s.setf(ios::scientific, ios::floatfield);
       s.precision(8);
        
@@ -830,7 +829,7 @@ namespace gpstk
       
       s << endl;
       
-   } // end of SF123::dump()
+   } // end of BrcKeplerOrbit::dump()
    
    ostream& operator<<(ostream& s, const BrcKeplerOrbit& eph)
    {

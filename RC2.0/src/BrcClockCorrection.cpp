@@ -1,7 +1,5 @@
 #pragma ident "$Id:$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,11 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 /**
  * @file BrcClockCorrection.cpp
@@ -80,21 +73,18 @@ namespace gpstk
    BrcClockCorrection::BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg,
                                           const short PRNIDArg, const double TocArg,
                                           const short weeknumArg, const double accuracyArg,
-                                          const bool healthyArg,  const double af0Arg,
+                                          const bool healthyArg, const double af0Arg,
                                           const double af1Arg, const double af2Arg )
    {
-      loadData(satSysArg, obsIDArg, PRNIDArg,
-		         TocArg, weeknumArg,
-	            accuracyArg, healthyArg,
+      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, weeknumArg, accuracyArg, healthyArg,
 		         af0Arg, af1Arg, af2Arg );
-
    }
 
 		/// Legacy GPS Subframe 1-3  
    BrcClockCorrection::BrcClockCorrection(const ObsID obsIDArg, const short PRNID,
                                           const short fullweeknum, const long subframe1[10] )
    {
-     loadData(obsIDArg, PRNID,fullweeknum,subframe1 );
+      loadData(obsIDArg, PRNID,fullweeknum,subframe1 );
    }
 
    void BrcClockCorrection::loadData(const std::string satSysArg, const ObsID obsIDArg,
@@ -103,55 +93,53 @@ namespace gpstk
                                      const bool healthyArg, const double af0Arg,
                                      const double af1Arg, const double af2Arg )
    {
-	satSys      = satSysArg;
-	obsID       = obsIDArg;
-	PRNID       = PRNIDArg;
-	Toc         = TocArg;
-	weeknum     = weeknumArg;
-	accuracy    = accuracyArg;
-	healthy     = healthyArg;
-	af0         = af0Arg;
-	af1         = af1Arg;
-	af2         = af2Arg;
-	dataLoaded  = true;
+	   satSys      = satSysArg;
+	   obsID       = obsIDArg;
+	   PRNID       = PRNIDArg;
+	   Toc         = TocArg;
+	   weeknum     = weeknumArg;
+	   accuracy    = accuracyArg;
+	   healthy     = healthyArg;
+	   af0         = af0Arg;
+	   af1         = af1Arg;
+	   af2         = af2Arg;
+	   dataLoaded  = true;
    }
 
    void BrcClockCorrection::loadData(const ObsID obsIDArg, const short PRNIDArg,
                                      const short fullweeknum, const long subframe1[10] )
-		throw(InvalidParameter)
-    {
-         double ficked[60];
+	   throw(InvalidParameter)
+   {
+      double ficked[60];
 
- 	    //Load overhead members
-  	 satSys = "G";
-	 obsID = obsIDArg;
-	 PRNID = PRNIDArg;
+ 	      //Load overhead members
+  	   satSys = "G";
+	   obsID = obsIDArg;
+      PRNID = PRNIDArg;
 
-	    //Convert Subframe 1
-	if (!subframeConvert(subframe1, fullweeknum, ficked))
-	{
-	   InvalidParameter exc("Subframe 1 not valid.");
-	   GPSTK_THROW(exc);
-	}
-
-	     weeknum       = static_cast<short>( ficked[5] );
-	     short accFlag = static_cast<short>( ficked[7] );
-	     short health  = static_cast<short>( ficked[8] );
-        Toc           = ficked[12];
-        af2           = ficked[13];
-        af1           = ficked[14];
-        af0           = ficked[15];
-	     //Convert the accuracy flag to a value...
-	     accuracy = gpstk::ura2accuracy(accFlag);
-	     healthy = false;
-	     if (health == 0)
-	     healthy = true;
-	     dataLoaded = true;
-	 
-	return;
-    }
+         //Convert Subframe 1
+      if (!subframeConvert(subframe1, fullweeknum, ficked))
+      {
+         InvalidParameter exc("Subframe 1 not valid.");
+	      GPSTK_THROW(exc);
+      }
+      weeknum       = static_cast<short>( ficked[5] );
+      short accFlag = static_cast<short>( ficked[7] );
+      short health  = static_cast<short>( ficked[8] );
+      Toc           = ficked[12];
+      af2           = ficked[13];
+      af1           = ficked[14];
+      af0           = ficked[15];
+         //Convert the accuracy flag to a value...
+      accuracy = gpstk::ura2accuracy(accFlag);
+      healthy = false;
+      if (health == 0)
+      healthy = true;
+      dataLoaded = true;	 
+      return;
+   }
 	     
-   bool BrcClockCorrection :: hasData() const
+   bool BrcClockCorrection::hasData() const
    {
       return(dataLoaded);
    }
@@ -166,7 +154,7 @@ namespace gpstk
          toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GAL);
       else
       {
-         InvalidRequest exc("Invalid Time System in BrcKeplerOrbit::getOrbitEpoch()");
+         InvalidRequest exc("Invalid Time System in BrcClockCorrection::getEpochTime()");
          GPSTK_THROW(exc);
       }
       return toReturn;
@@ -178,7 +166,6 @@ namespace gpstk
       double dtc,elaptc;
       elaptc = t - getEpochTime();
       dtc = af0 + elaptc * ( af1 + elaptc * af2 );
-
       return dtc;
    }
 
@@ -300,7 +287,6 @@ namespace gpstk
          << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
-
    static void shortcut(ostream & os, const long HOW )
    {
       short DOW, hour, min, sec;
@@ -335,7 +321,7 @@ namespace gpstk
          << setfill(' ');
    }
 
-   void BrcClockCorrection :: dump(ostream& s) const
+   void BrcClockCorrection::dump(ostream& s) const
       throw()
    {
       ios::fmtflags oldFlags = s.flags();
@@ -353,34 +339,32 @@ namespace gpstk
         << "PRN : " << setw(2) << PRNID << endl
         << endl;
   
-
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
-        << "   MM/DD/YYYY   HH:MM:SS\n";
+        << "  MM/DD/YYYY   HH:MM:SS\n";
       s << "Clock Epoch:  ";
 
       timeDisplay(s, getEpochTime());
       s << endl;
-  
-      
+        
       s.setf(ios::scientific, ios::floatfield);
-      s.precision(8);
+      s.precision(11);
       
       s << endl
         << "           CLOCK"
         << endl
         << endl
-        << "Bias T0:     " << setw(16) << af0 << " sec" << endl
-        << "Drift:       " << setw(16) << af1 << " sec/sec" << endl
-        << "Drift rate:  " << setw(16) << af2 << " sec/(sec**2)" << endl;
-    
-                              
-   } // end of SF123::dump()
+        << "Bias T0:     " << setw(18) << af0 << " sec" << endl
+        << "Drift:       " << setw(18) << af1 << " sec/sec" << endl
+        << "Drift rate:  " << setw(18) << af2 << " sec/(sec**2)" << endl;
+
+      s << "****************************************************************"
+        << "************" << endl;                         
+   }
    
    ostream& operator<<(ostream& s, const BrcClockCorrection& eph)
    {
       eph.dump(s);
       return s;
-
    } // end of operator<<             
        
 } // namespace

@@ -85,8 +85,10 @@ namespace gpstk
    const double L2_MULT   = 120.0;
       /// Gamma multiplier.
    const double GAMMA_GPS = 1.646944444;
-     ///Reference Semi-major axis. From IS-GPS-800 Table 3.5-2 in meters.
+      /// Reference Semi-major axis in meters. From IS-GPS-200 Table 30-I.
    const double A_REF = 26559710.0;
+      /// Reference rate of right ascension angle in semi-circles/second. From IS-GPS-200 Table 30-II
+   const double OMEGADOT_REF = -2.6e-9;
 
    // Modernized GPS
       /// L5 carrier frequency in Hz.

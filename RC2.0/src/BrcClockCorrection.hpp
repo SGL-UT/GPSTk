@@ -7,8 +7,8 @@
  * formats that are based on a second-order clock model. 
  */
 
-#ifndef GPSTK_BCCLOCKCORRECTION_HPP
-#define GPSTK_BCCLOCKCORRECTION_HPP
+#ifndef GPSTK_BRCLOCKCORRECTION_HPP
+#define GPSTK_BRCLOCKCORRECTION_HPP
 
 //============================================================================
 //
@@ -46,7 +46,6 @@
 //
 //=============================================================================
 
-
 #include "EngNav.hpp"
 #include "Exception.hpp"
 #include "CommonTime.hpp"
@@ -75,16 +74,15 @@ namespace gpstk
       BrcClockCorrection() throw();
 
 	 /// General purpose constructor
-      BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg, 
-                         const short PRNIDArg,
-		                   const double TocArg, const short weeknumArg,
-	                      const double accuracyArg, const bool healthyArg,
-		                   const double af0Arg, const double af1Arg,
-		                   const double af2Arg );
+      BrcClockCorrection( const std::string satSysArg, const ObsID obsIDArg, 
+                          const short PRNIDArg, const double TocArg,
+                          const short weeknumArg, const double accuracyArg, 
+                          const bool healthyArg, const double af0Arg,
+                          const double af1Arg, const double af2Arg );
 
          /// Legacy GPS Subframe 1
-      BrcClockCorrection(const ObsID obsIDArg, const short PRNID,const short fullweeknum,
-		                   const long subframe1[10] );
+      BrcClockCorrection( const ObsID obsIDArg, const short PRNID,
+                          const short fullweeknum, const long subframe1[10] );
 
       	 /// Add other constructors for other navigation message formats here....
 
@@ -97,36 +95,42 @@ namespace gpstk
           */
       bool hasData() const;
 
-         /// Returns the epoch time (time of clock) from this ephemeris, correcting
-         /// for half weeks and HOW time
+         /** 
+          * Returns the epoch time (time of clock) from this ephemeris, correcting
+          * for half weeks and HOW time. */
       CommonTime getEpochTime() const throw(gpstk::InvalidRequest);
 
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const throw(gpstk::InvalidRequest);
       
-         /** This function returns the value of the SV accuracy (m)
+         /**
+          * This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message. */
       double getAccuracy() const throw(gpstk::InvalidRequest);
 
          /** Returns SV health status. */
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
-         /** This function return the GPS week number for the
-         * orbit.  this is the full GPS week (ie > 10 bits). */
+         /** 
+          * This function return the GPS week number for the
+          * orbit. This is the full GPS week (ie > 10 bits). */
       short getFullWeek() const throw(gpstk::InvalidRequest);
       
-         /** This function returns the clock epoch in GPS seconds of
+         /** 
+          * This function returns the clock epoch in GPS seconds of
           * week. */
       double getToc() const throw(gpstk::InvalidRequest);
       
          /** This function returns the SV clock error in seconds. */
       double getAf0() const throw(gpstk::InvalidRequest);
       
-         /** This function returns the SV clock drift in
+         /** 
+          * This function returns the SV clock drift in
           * seconds/seconds. */
       double getAf1() const throw(gpstk::InvalidRequest);
       
-         /** This function returns the SV clock rate of change of the
+         /**
+          * This function returns the SV clock rate of change of the
           * drift in seconds/(seconds*seconds). */
       double getAf2() const throw(gpstk::InvalidRequest);
       
@@ -135,6 +139,9 @@ namespace gpstk
           */
       double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
+         /** Compute the satellite clock bias (meters) at the given time
+          * @throw InvalidRequest if a required subframe has not been stored.
+          */
       double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
@@ -142,39 +149,40 @@ namespace gpstk
           */
       double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
-         /// General purpose means to load data into object
-      void loadData( const std::string satSysArg, const ObsID obsIDArg, const short PRNIDArg,
-		               const double TocArg, const short weeknumArg,
-	                  const double accuracyArg, const bool healthyArg,
-                     const double af0Arg, const double af1Arg, const double af2Arg );
+         /** General purpose means to load data into object. */
+      void loadData( const std::string satSysArg, const ObsID obsIDArg,
+                     const short PRNIDArg, const double TocArg,
+                     const short weeknumArg, const double accuracyArg,
+                     const bool healthyArg, const double af0Arg, 
+                     const double af1Arg, const double af2Arg );
 
-	 /// Load data based on the GPS Legacy message
-      void loadData(const ObsID obsIDArg, const short PRNID, const short fullweeknum,
-		      const long subframe1[10] )
-            throw(InvalidParameter);
+	      /** Load data based on the GPS Legacy message. */
+      void loadData( const ObsID obsIDArg, const short PRNID, 
+                     const short fullweeknum, const long subframe1[10] )
+         throw(InvalidParameter);
 
-         /// Output the contents of this ephemeris to the given stream.
+         /** Output the contents of this ephemeris to the given stream. */
       void dump(std::ostream& s = std::cout) const throw();
 
    protected:
          /// Overhead information
          //@{
-      bool  dataLoaded;	     /**< True if data is present, false otherwise */ 
-      std::string  satSys;     /**< Rinex satellite system ID */
+      bool dataLoaded;	     /**< True if data is present, false otherwise */ 
+      std::string  satSys;   /**< Rinex satellite system ID */
       ObsID obsID;           /**< Defines carrier and tracking code */      
       short PRNID;           /**< SV PRN ID */
-      double   Toc;          /**< Clock epoch (sec of week) */
+      double Toc;            /**< Clock epoch (sec of week) */
       short weeknum;         /**< GPS full week number of Toc */ 
-      double  accuracy;      /**< SV accuracy */
-      bool    healthy;       /**< SV health */
+      double accuracy;       /**< SV accuracy */
+      bool healthy;          /**< SV health */
 
          //@}
       
          /// Clock information
          //@{
-      double   af0;           /**< SV clock error (sec) */
-      double   af1;           /**< SV clock drift (sec/sec) */
-      double   af2;           /**< SV clock drift rate (sec/sec**2) */
+      double af0;           /**< SV clock error (sec) */
+      double af1;           /**< SV clock drift (sec/sec) */
+      double af2;           /**< SV clock drift rate (sec/sec**2) */
          //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
