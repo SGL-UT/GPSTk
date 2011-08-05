@@ -112,4 +112,15 @@ Rinex Editor commands:
  -BL<SV,OT,t,l>  Add the value of <l> to lli(SV,OT,t) at time <t>
 \end{verbatim}
 \end{\outputsize}
+
+\subsection{Examples}
+\subsubsection{Changing the APPROX position in the file acor1480.08o to the center of the Earth. Writes a new file called acor1480.08o.mod}
+\begin{verbatim}
+user@host:~$ EditRinex -IFacor1480.08o -OFacor1480.08o.mod -HDx0,0,0 
+\end{verbatim}
+
+\subsubsection{Removing a satelite, PRN 29, from an observation file, onsa2240.05o. Creates a new file, temp.o}
+\begin{verbatim}
+EditRinex -IFonsa2240.05o -OFtemp.o 
+\end{verbatim}
 %\end{document}

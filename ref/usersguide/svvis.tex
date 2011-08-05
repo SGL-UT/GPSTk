@@ -23,16 +23,16 @@ This application computes when satellites are visible at a given point on the ea
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-d}{--debug}{Increase debug level}{1}
-\entry{-v}{--verbose}{Increase verbosity}{1}
-\entry{-v}{--help}{Print help usage}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
 \entry{}{--elevation-mask=ARG}{The elevation above which an SV is visible.  The default is 0 degrees.}{2}
 \entry{-p}{--position=ARG}{Receiver antenna position in ECEF (x,y,z) coordinates.  Format as string: "X Y Z".}{2}
 \entry{-c}{--msc=ARG}{Station coordinate file.}{1}
-\entry{-m}{--msid=ARG}{Station number to use from the msc file.}{2}
+\entry{-m}{--msid=ARG}{Station number to use from the msc file.}{1}
 \entry{}{--graph-elev=ARG}{Output data at the specified interval.  Interval is in seconds.}{2}
 \entry{-l}{--time-span=ARG}{How much data to process, in seconds.  Default is 86400.}{2}
-\entry{}{--start-time=TIME}{When to start computing positions.  The default is the start of the ephemers data.}{3}
+\entry{}{--start-time=TIME}{When to start computing positions.  The default is the start of the ephemeris data.}{3}
 \entry{}{--stop-time=TIME}{When to stop computing positions.  The default is one day after the start time.}{2}
 \entry{}{--print-elev}{Print the elevation of the sv at each change in tracking.  The default is just to ouput the PRN of the sv.}{3}
 \entry{}{--rise-set}{Print the visibility data by PRN in rise-set pairs.}{1}

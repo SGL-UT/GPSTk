@@ -46,6 +46,7 @@ and seconds of week, Z counts, and Modified Julian Date (MJD).
 
 \subsection{Examples}
 \begin{\outputsize}
+\subsubsection{Convert RINEX file time.}
 \begin{verbatim}
 > timeconvert -R "05 06 1985 13:50:02"
 
@@ -56,6 +57,20 @@ and seconds of week, Z counts, and Modified Julian Date (MJD).
         Year DayOfYear SecondOfDay      2010 310  46800.000000
         Unix: Second Microsecond        1289048400      0
         Zcount: 29-bit (32-bit)         306560992 (843431904)
+\end{verbatim}
+
+\subsubsection{Convert ews time.}
+\begin{verbatim}
+timeconvert -o "01 1379 500"
+
+Month/Day/Year                    1/25/2026
+Hour:Min:Sec                      00:08:20
+Modified Julian Date              61065.005787037
+GPSweek DayOfWeek SecOfWeek       355 0 500.000000
+FullGPSweek Zcount                2403 333
+Year DayOfYear SecondOfDay        2026 25 500.000000
+Unix_sec Unix_usec                1769299700 0
+Zcount: 29-bit (32-bit)           186122573 (1259864397)
 \end{verbatim}
 \end{\outputsize}
 \subsection{Notes}

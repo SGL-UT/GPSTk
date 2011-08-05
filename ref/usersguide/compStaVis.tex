@@ -37,4 +37,13 @@ This application computes station visibility.
 \entry{-z}{--end-time=TIME}{End time of evaluation ("m/d/y H:M").}{1}
 \end{longtable}
 \end{\outputsize}
-%%\end{document}
+
+\subsection{Examples}
+
+\subsubsection{Generating station visibility statistics using the SEM almanac from the USCG Navigation Center.}
+Same as the previous example, however, the values calculated and the statistics will reflect the number of stations visible to each satellite.
+\begin{verbatim}
+user@host:~$ compSatVis -ovisout.txt -ncurrent.alm -tYUMA -cstations.msc -e10 -p60 -s"01/13/2008 00:00" -z"01/16/2008 23:59"
+\end{verbatim}
+
+%\end{document}

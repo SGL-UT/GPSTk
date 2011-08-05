@@ -12,22 +12,19 @@
 
 \section{\emph{TECMaps}}
 \subsection{Overview}
- The application will open and read several preprocessed RINEX obs files
- (containing obs types EL,AZ,VR|SR) and use the data to create maps of
- the Total Electron Content (TEC).
-
+Program TECMaps reads RINEX data files containing extended RINEX observation types EL, AZ and SR or VR from several sites and at each epoch fits the vertical TEC data to a model of the ionosphere on a two-dimensional grid surface. Hardware TEC measurement biases are corrected, using input from the program IonoBias. The user can specify the type of grid, the type of TEC data and the model to be used. Output is in the form of files, one per epoch, which can be used to plot the 2D ionospheric TEC surface.
 \subsection{Usage}
 \begin{\outputsize}
 \begin{longtable}{lll}
 \multicolumn{3}{c}{\application{TECMaps}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{}{--input}{Input Rinex obs file name(s).}{1}
+\entry{}{--input}{Input RINEX obs file name(s).}{1}
 
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{}{-f}{File containing more options.}{1}
+\entry{-f}{}{File containing more options.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Reference Station Position (One Required)}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
@@ -38,7 +35,7 @@
 \multicolumn{3}{l}{\textbf{Ephemeris Input}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{}{--navdir}{Path of navigation file(s).}{1}
-\entry{}{--nav}{Navigation (Rinex Nav OR SP3) file(s).}{1}
+\entry{}{--nav}{Navigation (RINEX navigation OR SP3) file(s).}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Output}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
@@ -88,7 +85,7 @@
 \multicolumn{3}{l}{\textbf{Help}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-v}{--verbose}{Print extended output info.}{1}
-\entry{-d}{--debug}{Print extended output info.}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
 \entry{-h}{--help}{Print syntax and summary of input, then quit.}{1}
 
 \end{longtable}

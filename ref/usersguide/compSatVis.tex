@@ -37,4 +37,14 @@ This application computes satellite visibility.
 \entry{-z}{--end-time=TIME}{End time of evluation ("m/d/y H:M").}{1}
 \end{longtable}
 \end{\outputsize}
+
+\subsection{Examples}
+\subsubsection{Generating satellite visibility statistics using the SEM almanac from the USCG Navigation Center.} 
+This example loads SEM almanac data from the file current.al3 and a list of station locations from the file stations.msc. It then calculates the number of satellites visible to each station found at each 60 sec interval from 0000Z to 2356Z of Jan 13, 2008. using a 10 degree minimum elevation angle. The results are written to the file visout.txt. Note the use of a specific start time. The SEM and Yuma almanac formats contain an almanac reference week, which is generally in the range 0-1023 (the existing format definitions are ambiguous and SEM and Yuma almanacs with full week numbers have been reported, at least anecdotally). If the -s command is not specified, compSatVis will use whatever reference time is given in the almanac file, which may result in unexpected results.
+\begin{verbatim}
+user@host:~$ compSatVis -ovisout.txt -ncurrent.al3 -tSEM 
+	-cstations.msc -e10 -p60 -s"01/16/2008 00:00"
+\end{verbatim}
+
+
 %\end{document}
