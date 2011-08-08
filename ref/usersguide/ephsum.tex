@@ -1,12 +1,12 @@
-\documentclass{article}
-\usepackage{fancyvrb}
-\usepackage{perltex}
-\usepackage{xcolor}
-\usepackage{listings}
-\usepackage{longtable}
-\usepackage{multirow}
-\input{src/cmd}
-\begin{document}
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
 
 
 \index{ephsum!application writeup}
@@ -21,8 +21,8 @@
 \multicolumn{3}{c}{\application{ephsum}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-i}{--input-file=ARG}{Input file name(s)}{1}
-\entry{-o}{--output-file=ARG}{Output file name}{1}
+\entry{-i}{--input-file=ARG}{Input file name(s).}{1}
+\entry{-o}{--output-file=ARG}{Output file name.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
@@ -35,6 +35,7 @@
 \end{\outputsize}
 
 \subsection{Examples}
+\begin{\outputsize}
 \begin{verbatim}
 # Output file from EphSum
 # Processing input specification: anavfic06.120 - Success(FIC)
@@ -89,5 +90,5 @@
 #  31        0
 #  32        0
 \end{verbatim}
-
-\end{document}
+\end{\outputsize}
+%\end{document}
