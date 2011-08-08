@@ -27,17 +27,17 @@ This application computes when satellites are visible at a given point on the ea
 \entry{-v}{--verbose}{Increase verbosity.}{1}
 \entry{-h}{--help}{Print help usage.}{1}
 \entry{}{--elevation-mask=ARG}{The elevation above which an SV is visible.  The default is 0 degrees.}{2}
-\entry{-p}{--position=ARG}{Receiver antenna position in ECEF (x,y,z) coordinates.  Format as string: "X Y Z".}{2}
+\entry{-p}{--position=ARG}{Receiver antenna position in ECEF (x,y,z) coordinates.  Format as string: ``X Y Z".}{2}
 \entry{-c}{--msc=ARG}{Station coordinate file.}{1}
 \entry{-m}{--msid=ARG}{Station number to use from the msc file.}{1}
 \entry{}{--graph-elev=ARG}{Output data at the specified interval.  Interval is in seconds.}{2}
 \entry{-l}{--time-span=ARG}{How much data to process, in seconds.  Default is 86400.}{2}
-\entry{}{--start-time=TIME}{When to start computing positions.  The default is the start of the ephemeris data.}{3}
+\entry{}{--start-time=TIME}{When to start computing positions.  The default is the start of the ephemeris data.}{2}
 \entry{}{--stop-time=TIME}{When to stop computing positions.  The default is one day after the start time.}{2}
-\entry{}{--print-elev}{Print the elevation of the sv at each change in tracking.  The default is just to ouput the PRN of the sv.}{3}
+\entry{}{--print-elev}{Print the elevation of the sv at each change in tracking.  The default is just to ouput the PRN of the SV.}{3}
 \entry{}{--rise-set}{Print the visibility data by PRN in rise-set pairs.}{1}
 \entry{}{--tabular}{Print the visibility data in a tabular format.}{1}
-\entry{}{--recent-eph}{Use this if the ephemeris data provided uses 10-bit GPS weeks and it should be converted to the current epoch or to the epoch current to the "start-time", if specified.}{4}
+\entry{}{--recent-eph}{Use this if the ephemeris data provided uses 10-bit GPS weeks and it should be converted to the current epoch or to the epoch current to the ``start-time", if specified.}{4}
 \end{longtable}
 \end{\outputsize}
 
