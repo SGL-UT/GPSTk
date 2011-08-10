@@ -4,6 +4,7 @@ SubInclude TOP BinUtils ;
 SubInclude TOP CivilTime ;
 SubInclude TOP CommonTime ;
 SubInclude TOP DayTime ;
+SubInclude TOP gpsNavMsg ;
 SubInclude TOP GPSWeekSecond ;
 SubInclude TOP GPSWeekZcount ;
 SubInclude TOP HelmertTransform ;
