@@ -1,0 +1,159 @@
+
+Test Case 1: Creating CE object with data from RINEX file.
+Time = 06/02/2011 12:14:44 GPS
+Position ce1: (-20600504.542, -5085526.6291, 15744265.515)
+Velocity ce1: (-1216.0801725, -1697.173575, -2052.5094957)
+RelCorr ce1:  -3.0398069803e-08
+Time of Prediction ce1: 1638, 378000.000000
+CNAV Accuracy Test:  3.4
+legacy Accuracy Test: 3.4
+
+Test Case 2: Creating CE object with data from navdump.
+Time = 06/05/2011 01:00:00 GPS
+Position ce2: (5628456.5199, -25829887.287, -532887.23642)
+Velocity ce2: (238.41081435, 118.06716962, -3218.5984851)
+RelCorr ce2:  -1.606883181e-10
+Time of Prediction ce2: 1638, 601200.000000
+
+Test Case 3: Creating CE object with data from navdump.
+Time = 06/05/2011 00:00:00 GPS
+Position ce3: (-13729938.842, 15136805.761, 16410562.156)
+Velocity ce3: (221.85270698, -2179.3866575, 2124.6194667)
+RelCorr ce3:  2.5945153042e-08
+Time of Prediction ce3: 1638, 594000.000000
+
+Test Case 4: Calculated position using 'classic' EngEphemeris.
+Time= 06/02/2011 12:14:44 GPS
+Position EE: (-20600504.542, -5085526.629, 15744265.515)
+Velocity EE: (-1216.0801725, -1697.173575, -2052.5094957)
+RelCorr EE:  -3.0398069803e-08
+
+CE Object Dump:
+****************************************************************************
+CNAV Message Types 10 and 11
+
+PRN :  3      System : G      Carrier: L2      Code: GPSC2L+M
+
+                  Week        SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
+Transmit Time:  1638( 614)  382500   Thu-4   153   36900  06/02/2011   10:15:00
+Time of Predict:1638( 614)  378000   Thu-4   153   32400  06/02/2011   09:00:00
+
+          ACCURACY PARAMETERS
+
+URAoe index:     1
+
+           SIGNAL PARAMETERS
+
+L1 Health bit:   0
+L2 Health bit:   0
+L5 Health bit:   1
+
+
+           ORBIT PARAMETERS
+
+Semi-major axis:        5.15365527534E+03 m**.5
+Motion correction:      5.39093883996E-09 rad/sec
+Eccentricity:           1.42575260252E-02
+Arg of perigee:         1.09154604931E+00 rad
+Mean anomaly at epoch:  1.05539162795E+00 rad
+Right ascension:       -2.16947563164E+00 rad    -8.56285667735E-09 rad/sec
+Inclination:            9.28692497530E-01 rad     5.52880172536E-10 rad/sec
+
+           HARMONIC CORRECTIONS
+
+Radial        Sine:  1.87812500000E+01 m    Cosine:  2.03562500000E+02 m
+Inclination   Sine:  5.02914190292E-08 rad  Cosine: -2.30967998505E-07 rad
+In-track      Sine:  8.35768878460E-06 rad  Cosine:  9.57399606705E-07 rad
+****************************************************************************
+
+CE.orbit is healthy.
+
+CE2 Object Dump:
+****************************************************************************
+CNAV Message Types 10 and 11
+
+PRN :  7      System : G      Carrier: L5      Code: GPSI+Q5
+
+                  Week        SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
+Transmit Time:  1639( 615)       0   Sun-0   156       0  06/05/2011   00:00:00
+Time of Predict:1638( 614)  601200   Sat-6   155   82800  06/04/2011   23:00:00
+
+          ACCURACY PARAMETERS
+
+URAoe index:     1
+
+           SIGNAL PARAMETERS
+
+L1 Health bit:   0
+L2 Health bit:   0
+L5 Health bit:   1
+
+
+           ORBIT PARAMETERS
+
+Semi-major axis:        5.15365555000E+03 m**.5
+Motion correction:      4.46804325000E-09 rad/sec
+Eccentricity:           4.48677479000E-03
+Arg of perigee:        -3.13294415000E+00 rad
+Mean anomaly at epoch:  5.40667729000E-01 rad
+Right ascension:        2.03414883000E+00 rad    -8.35713382000E-09 rad/sec
+Inclination:            9.74404003000E-01 rad     1.21433630000E-10 rad/sec
+
+           HARMONIC CORRECTIONS
+
+Radial        Sine:  3.75000000000E+01 m    Cosine:  3.67843750000E+02 m
+Inclination   Sine:  2.79396772000E-08 rad  Cosine:  1.13621354000E-07 rad
+In-track      Sine:  9.79751348000E-07 rad  Cosine:  6.33299351000E-08 rad
+****************************************************************************
+
+CE2.orbit is NOT healthy.
+
+CE3 Object Dump:
+****************************************************************************
+CNAV Message Types 10 and 11
+
+PRN :  9      System : G      Carrier: L2      Code: GPSC2L+M
+
+                  Week        SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
+Transmit Time:  1638( 614)  597600   Sat-6   155   79200  06/04/2011   22:00:00
+Time of Predict:1638( 614)  594000   Sat-6   155   75600  06/04/2011   21:00:00
+
+          ACCURACY PARAMETERS
+
+URAoe index:     1
+
+           SIGNAL PARAMETERS
+
+L1 Health bit:   0
+L2 Health bit:   0
+L5 Health bit:   1
+
+
+           ORBIT PARAMETERS
+
+Semi-major axis:        5.15366363000E+03 m**.5
+Motion correction:      4.41946980000E-09 rad/sec
+Eccentricity:           1.73985478000E-02
+Arg of perigee:         1.57216573000E+00 rad
+Mean anomaly at epoch: -1.22303559000E+00 rad
+Right ascension:        2.00581875000E+00 rad    -8.40356433000E-09 rad/sec
+Inclination:            9.83297588000E-01 rad     1.36791412000E-10 rad/sec
+
+           HARMONIC CORRECTIONS
+
+Radial        Sine:  1.67812500000E+01 m    Cosine:  3.60718750000E+02 m
+Inclination   Sine:  3.55765224000E-07 rad  Cosine: -2.42143869000E-07 rad
+In-track      Sine:  1.83656812000E-06 rad  Cosine:  1.31130219000E-06 rad
+****************************************************************************
+
+CE3.orbit is healthy.
+
+Fit Interval Tests
+BeginFit ce1:  1638, 381600.000000
+BeginFit EE:   1638, 381600.000000
+
+EndFit ce1:   1638, 392400.000000
+EndFit EE  :  1638, 396000.000000
+
+Within Fit Interval: 1
+Within Fit Interval: 1
