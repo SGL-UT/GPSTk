@@ -81,7 +81,7 @@ else
       GenXSequence.cpp
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
-      GlonassSatelliteModel.cpp
+#      GlonassSatelliteModel.cpp
       GloRecord.cpp
       GPSAlmanacStore.cpp
       GPSEphemerisStore.cpp

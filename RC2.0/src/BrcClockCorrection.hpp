@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id: $"
 
 /**
  * @file BrcClockCorrection.hpp
@@ -51,6 +51,10 @@
 #include "CommonTime.hpp"
 #include "ObsID.hpp"
 #include "CivilTime.hpp"
+#include "icd_gps_constants.hpp"
+#include "TimeSystem.hpp"
+#include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
 
 namespace gpstk
 {

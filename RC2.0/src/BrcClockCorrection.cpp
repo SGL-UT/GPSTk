@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id: $"
 
 //============================================================================
 //
@@ -42,13 +42,7 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
 #include "BrcClockCorrection.hpp"
-#include "TimeSystem.hpp"
-#include "GPSWeekSecond.hpp"
-#include "CivilTime.hpp"
-#include "YDSTime.hpp"
-
 #include <cmath>
 
 namespace gpstk

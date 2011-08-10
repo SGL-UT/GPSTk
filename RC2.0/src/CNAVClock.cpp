@@ -42,16 +42,8 @@
  */
 #include <iomanip>
 #include <cmath>
-
-#include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
 #include "MathBase.hpp"
-#include "GPSEllipsoid.hpp"
 #include "CNAVClock.hpp"
-#include "GPSWeekSecond.hpp"
-#include "YDSTime.hpp"
-#include "CivilTime.hpp"
-#include "TimeSystem.hpp"
 
 namespace gpstk
 {

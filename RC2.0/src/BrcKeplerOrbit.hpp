@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id: $"
 
 /**
  * @file BrcKeplerOrbit.hpp
@@ -54,6 +54,15 @@
 #include "Exception.hpp"
 #include "CommonTime.hpp"
 #include "Xv.hpp"
+#include "StringUtils.hpp"
+#include "icd_gps_constants.hpp"
+#include "GPSEllipsoid.hpp"
+#include "MathBase.hpp"
+#include "TimeSystem.hpp"
+#include "GPSWeekSecond.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+
 
 namespace gpstk
 {

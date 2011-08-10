@@ -5,6 +5,14 @@
  * GPS CNAV (L2C or L5) clock data encapsulated in engineering terms
  */
 
+/**
+*   This is one of four classes designed to contain GPS navigation message data.  The classes are
+*      EngEphemeris -  Legacy GPS navigation message data from subframces 1,2,3 ( L1 C/A, L1 P(Y), L2 P(Y) )
+*      CNAVEphemeris - GPS Civil navigation message data from Message Type 10/11 (L2C and L5)
+*      CNAVClock - GPS Civil navigation message data from the "clock" portion of Message Types 30-37 (L2C and L5)
+*      CNAV2EphClock - GPS Civil navigation message from subframe 2 of the L1C message
+*/
+
 #ifndef GPSTK_CNAVCLOCK_HPP
 #define GPSTK_CNAVCLOCK_HPP
 
@@ -44,9 +52,7 @@
 //
 //=============================================================================
 
-#include "EngNav.hpp"
 #include "Exception.hpp"
-#include "CommonTime.hpp"
 #include "BrcClockCorrection.hpp"
 #include "PackedNavBits.hpp"
 

@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id: $"
 
 //============================================================================
 //
@@ -41,16 +41,7 @@
  * Ephemeris data encapsulated in engineering terms
  */
 
-#include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
-#include "GPSEllipsoid.hpp"
 #include "BrcKeplerOrbit.hpp"
-#include "MathBase.hpp"
-#include "TimeSystem.hpp"
-#include "GPSWeekSecond.hpp"
-#include "YDSTime.hpp"
-#include "CivilTime.hpp"
-
 #include <cmath>
 
 namespace gpstk
