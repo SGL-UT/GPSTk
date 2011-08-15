@@ -29,7 +29,7 @@
 #include <cstring>
 #include <vector>
 
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "RinexSatID.hpp"
 
 #include "RinexObsBase.hpp"

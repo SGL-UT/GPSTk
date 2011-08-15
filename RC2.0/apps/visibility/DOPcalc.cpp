@@ -321,7 +321,7 @@ void DOPCalc::process()
          if (rangeL1 && rangeL2)
          {
             double ionoCorrection = 0;
-            const double gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
+            const double gamma = (L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS);
             ionoCorrection = 1./(1.-gamma)*(rangeL1-rangeL2);
 
                // store the SatID and corresponding range for the valid SV

@@ -266,7 +266,7 @@ try {
       j = index(statn.CountBuffer,rawdat.count[nc]);
          // time difference due to receiver clock, in units of count
       dx =  statn.RxTimeOffset[j]/CI.DataInterval
-         + (statn.ClockBuffer[j]/C_GPS_M)/CI.DataInterval;
+         + (statn.ClockBuffer[j]/C_GPS_MPS)/CI.DataInterval;
          // change in phase between nominal and true time
       dph = PF.Evaluate(x-x0) - PF.Evaluate(x-dx-x0);
       if(freq == 1) {
@@ -283,7 +283,7 @@ try {
       //   << fixed << setprecision(6)
       //   << " " << x-x0 << " " << dx
       //   << " " << statn.RxTimeOffset[nc]
-      //   << " " << statn.ClockBuffer[nc]/C_GPS_M
+      //   << " " << statn.ClockBuffer[nc]/C_GPS_MPS
       //   << " " << dph << " eval" << endl;
 
          // -------------------------------------------------------------

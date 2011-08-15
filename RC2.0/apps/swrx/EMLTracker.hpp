@@ -30,7 +30,7 @@
 #include <iostream>
 #include <list>
 
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "CCReplica.hpp"
 #include "SimpleCorrelator.hpp"

@@ -48,7 +48,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "InOutFramework.hpp"
 #include "RinexConverters.hpp"
 #include "ObsUtils.hpp"
@@ -301,13 +301,13 @@ protected:
 
 				// note that raw_range is in seconds
 				if (mben.p1.raw_range)
-					prL1 = mben.p1.raw_range * C_GPS_M;
+					prL1 = mben.p1.raw_range * C_GPS_MPS;
 				else if (debugLevel > 3)
 					cout << "No L1 range value for PRN " << mben.svprn
 					     << " at time " << tempTime << endl;
 				
 				if (mben.p2.raw_range)
-					prL2 = mben.p2.raw_range * C_GPS_M;
+					prL2 = mben.p2.raw_range * C_GPS_MPS;
 				else if (debugLevel > 3)
 					cout << "No L2 range value for PRN " << mben.svprn
 					     << " at time " << tempTime << endl;
@@ -358,12 +358,12 @@ protected:
 					}
 					
 					// compute iono error with filter results
-            	double x1 = yCurrL1 * gpstk::L1_WAVELENGTH; // m/s
-            	double x2 = yCurrL2 * gpstk::L2_WAVELENGTH; // m/s
+            	double x1 = yCurrL1 * gpstk::L1_WAVELENGTH_GPS; // m/s
+            	double x2 = yCurrL2 * gpstk::L2_WAVELENGTH_GPS; // m/s
                         
             	double ionoErrorRate = (x1 - x2)/
-                                      ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-                                       (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1);
+                                      ((gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS)*
+                                       (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS) - 1);
 					ionoErrorRate *= 1000;	// mm/sec					
 					
 					// store value
@@ -401,12 +401,12 @@ protected:
 					double dL2 = phaseL2 - lastPPair.second;            // cycles
 					double dt  = static_cast<GPSWeekSecond>(tempTime).sow - static_cast<GPSWeekSecond>(lastTime).sow; // sec
 					
-					double x1 = (dL1/dt) * gpstk::L1_WAVELENGTH;        // m/s
-            	double x2 = (dL2/dt) * gpstk::L2_WAVELENGTH;        // m/s
+					double x1 = (dL1/dt) * gpstk::L1_WAVELENGTH_GPS;        // m/s
+            	double x2 = (dL2/dt) * gpstk::L2_WAVELENGTH_GPS;        // m/s
             	
             	double ionoErrorRate = (x1 - x2)/
-                                      ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-                                       (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1);
+                                      ((gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS)*
+                                       (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS) - 1);
 					ionoErrorRate *= 1000;	                            // mm/sec
 					
 					// if phase values produce a resonable iono rate, store
@@ -432,16 +432,16 @@ protected:
 					// initial filter result will be the actual value
 					RangePairVec rpVec = (*iter2).second;
 					double yPrev = (rpVec[0].first - rpVec[0].second)/
-                               ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-                                (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m					
+                               ((gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS)*
+                                (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS) - 1); // m					
 					double yCurr;
 					double a = 1.000/(numPoints + 1);
 					for (int index = 1; index < rpVec.size(); index++)
 					{
 						double xCurr;
 						xCurr = (rpVec[index].first - rpVec[index].second)/
-                           ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-                            (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m							
+                           ((gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS)*
+                            (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS) - 1); // m							
 						yCurr = a*xCurr + (1-a)*yPrev;
 						yPrev = yCurr;
 					}
@@ -463,8 +463,8 @@ protected:
 				
 				// check range values for this epoch
 				double ionoError = (prL1 - prL2)/
-                               ((gpstk::L1_FREQ/gpstk::L2_FREQ)*
-    		                       (gpstk::L1_FREQ/gpstk::L2_FREQ) - 1); // m
+                               ((gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS)*
+    		                       (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS) - 1); // m
     		   if ( (ionoError>-15) && (ionoError<0) )
     		   {
     		   	RangePair rangePair(prL1, prL2);

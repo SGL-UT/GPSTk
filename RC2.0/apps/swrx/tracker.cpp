@@ -39,7 +39,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "EMLTracker.hpp"
 #include "CCReplica.hpp"
@@ -182,11 +182,11 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
    {
       case 'c':
          codeGenPtr = new CACodeGenerator(prn);
-         chipFreq = CA_CHIP_FREQ;
+         chipFreq = CA_CHIP_FREQ_GPS;
          break;
       case 'p':
          codeGenPtr = new PCodeGenerator(prn);
-         chipFreq = PY_CHIP_FREQ;
+         chipFreq = PY_CHIP_FREQ_GPS;
          break;
       default:
          cout << "Unsupported code: " << code << endl;

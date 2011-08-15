@@ -1160,13 +1160,13 @@ int ReadFile(int nfile) throw(Exception)
          SR[1].Add(prsol.Solution(1));
          SR[2].Add(prsol.Solution(2));
          if ( prsol.Solution.size() == 5 )
-            SR[3].Add(prsol.Solution(4)/C_GPS_M*1e9); // GPS-GLO time offset (ns), mixed case only
+            SR[3].Add(prsol.Solution(4)/C_GPS_MPS*1e9); // GPS-GLO time offset (ns), mixed case only
          SSR[0].Add(prsol.Solution(0));
          SSR[1].Add(prsol.Solution(1));
          SSR[2].Add(prsol.Solution(2));
          if ( prsol.Solution.size() == 5 )
          {
-            SSR[3].Add(prsol.Solution(4)/C_GPS_M*1e9); // GPS-GLO time offset (ns), mixed case only
+            SSR[3].Add(prsol.Solution(4)/C_GPS_MPS*1e9); // GPS-GLO time offset (ns), mixed case only
          }
 
          // Accumulate weighted statistics, Autonomous and RAIM.
@@ -1704,7 +1704,7 @@ int SolutionAlgorithm(vector<SatID>& Sats,
          long sod;
          double fraction;
          CurrEpoch.get(day, sod, fraction);
-         cout << sod << " " << ( prsol.Solution(4) / C_GPS_M * 1.0e9 ) << endl;
+         cout << sod << " " << ( prsol.Solution(4) / C_GPS_MPS * 1.0e9 ) << endl;
       }
       
       if (prsol.isValid() && !C.OutRinexObs.empty())

@@ -55,7 +55,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "RinexUtilities.hpp"
 
 #include <string>
@@ -444,19 +444,19 @@ int main(int argc, char **argv)
                      //Because this uses the speed of light, doesn't matter that
                      //it is a GPS constant.
                   if(index == satSystem.indexC1C)
-                     C1 = (it->second)[index].data * 1000.0 / C_GPS_M;
+                     C1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
                   if(index == satSystem.indexC1P)
-                     P1 = (it->second)[index].data * 1000.0 / C_GPS_M;
+                     P1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
                   if(index == satSystem.indexL1C)
                   {
-                     L1 = (it->second)[index].data * 1000.0 / C_GPS_M;
+                     L1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
                      L1lli = (it->second)[index].lli;
                   }
                   if(index == satSystem.indexL1P && L1 == 0)
                   {
                         //Only use this one if the other L1 hasn't been found
                         //Do I need this?
-                     L1 = (it->second)[index].data * 1000.0 / C_GPS_M;
+                     L1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
                      L1lli = (it->second)[index].lli;
                   }
                   //Shouldn't need the debug statement.
@@ -479,16 +479,16 @@ int main(int argc, char **argv)
                      //Should this really be using the GPS L1_WAVELENGTH for
                      //every system?
                   if(P1 != 0 && ptab->prevP1 != 0)
-                     test = P1-L1_WAVELENGTH*L1
-                        - (ptab->prevP1-L1_WAVELENGTH*ptab->prevL1);
+                     test = P1-L1_WAVELENGTH_GPS*L1
+                        - (ptab->prevP1-L1_WAVELENGTH_GPS*ptab->prevL1);
                   else if(C1 != 0 && ptab->prevC1 != 0)
-                     test = C1-L1_WAVELENGTH*L1
-                        - (ptab->prevC1-L1_WAVELENGTH*ptab->prevL1);
+                     test = C1-L1_WAVELENGTH_GPS*L1
+                        - (ptab->prevC1-L1_WAVELENGTH_GPS*ptab->prevL1);
                   if(fabs(test) > 0.5)
                   {
                         //Test must be > 150 km =~ 1/2 millisecond
                         //Is it nearly an even multiple of 1 millisecond?
-                     //test *= 1000.0/C_GPS_M;  // leave sign on it
+                     //test *= 1000.0/C_GPS_MPS;  // leave sign on it
                      if(debug)
                         *pout << "possible clock jump: test = "
                                     << setprecision(9) << test;

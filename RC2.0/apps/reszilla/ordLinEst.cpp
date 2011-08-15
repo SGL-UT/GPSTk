@@ -106,7 +106,7 @@ struct ClockSegmentList : public list<ClockSegment>
       {
          output << "#  t0                   t1                   t0 offset(ns)"
                 << "  t1 offset(ns)  slope(ns/d)  abdev(ns)" << endl;
-         scale = 1e9/C_GPS_M;
+         scale = 1e9/C_GPS_MPS;
       }
       output << "#  -------------------  -------------------  "
              << "------------  ------------  ----------  --------" << endl;

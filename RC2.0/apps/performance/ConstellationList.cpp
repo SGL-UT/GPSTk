@@ -65,7 +65,7 @@
 // Library
 #include "BasicFramework.hpp"
 #include "CommonTime.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 // Project
 #include "ConstellationSet.hpp"

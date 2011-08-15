@@ -68,8 +68,8 @@ public:
    {
       switch(band)
       {
-         case 1: carrier_multiplier = gpstk::L1_MULT; break;
-         case 2: carrier_multiplier = gpstk::L2_MULT; break;
+         case 1: carrier_multiplier = gpstk::L1_MULT_GPS; break;
+         case 2: carrier_multiplier = gpstk::L2_MULT_GPS; break;
       }
    }
 

@@ -53,7 +53,7 @@
 
 #include "Position.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_gps_constants.hpp"     // for TWO_PI
+#include "GNSSconstants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 
 #include "RinexUtilities.hpp"

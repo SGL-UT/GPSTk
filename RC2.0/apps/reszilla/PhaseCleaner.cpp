@@ -95,8 +95,8 @@ void PhaseCleaner::addData(const ObsEpochMap& rx1,
          if (d == rotm1.end())
             continue;
 
-         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ : L1_FREQ;
-         rangeRate[prn][t] = d->second * C_GPS_M/freq;
+         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ_GPS : L1_FREQ_GPS;
+         rangeRate[prn][t] = d->second * C_GPS_MPS/freq;
 
          SvObsEpoch::const_iterator phase1;
          for (phase1 = rotm1.begin(); phase1 != rotm1.end(); phase1++)
@@ -562,8 +562,8 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
          if (d == soe.end())
             continue;
 
-         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ : L1_FREQ;
-         rangeRate[sv] = d->second * C_GPS_M/freq;
+         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ_GPS : L1_FREQ_GPS;
+         rangeRate[sv] = d->second * C_GPS_MPS/freq;
       }
 
       // Loop over all SVs in track on reciever #1
@@ -659,9 +659,9 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
 
                double lamdaInv;
                if (rot.band == ObsID::cbL1)
-                  lamdaInv = L1_FREQ/C_GPS_M;
+                  lamdaInv = L1_FREQ_GPS/C_GPS_MPS;
                else if (rot.band == ObsID::cbL2)
-                  lamdaInv = L2_FREQ/C_GPS_M;
+                  lamdaInv = L2_FREQ_GPS/C_GPS_MPS;
                else
                   continue;
 
@@ -726,9 +726,9 @@ void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
 
       double lamda;
       if (rot.band == ObsID::cbL1)
-         lamda = C_GPS_M/L1_FREQ;
+         lamda = C_GPS_MPS/L1_FREQ_GPS;
       else if (rot.band == ObsID::cbL2)
-         lamda = C_GPS_M/L2_FREQ;
+         lamda = C_GPS_MPS/L2_FREQ_GPS;
       else
          continue;
 
@@ -772,9 +772,9 @@ void PhaseCleanerA::dump(std::ostream& s) const
  
       double lamda;
       if (rot.band == ObsID::cbL1)
-         lamda = C_GPS_M/L1_FREQ;
+         lamda = C_GPS_MPS/L1_FREQ_GPS;
       else if (rot.band == ObsID::cbL2)
-         lamda = C_GPS_M/L2_FREQ;
+         lamda = C_GPS_MPS/L2_FREQ_GPS;
       else
          continue;
 

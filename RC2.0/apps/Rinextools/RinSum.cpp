@@ -41,7 +41,7 @@
 #include "RinexSatID.hpp"
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "RinexUtilities.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
@@ -364,10 +364,10 @@ try {
                   totals[k]++;
                }
                // save L1 range and phase for clk jump test below
-               if(jt->first==RinexObsHeader::C1) C1 = jt->second.data*1000.0/C_GPS_M;
-               if(jt->first==RinexObsHeader::P1) P1 = jt->second.data*1000.0/C_GPS_M;
+               if(jt->first==RinexObsHeader::C1) C1 = jt->second.data*1000.0/C_GPS_MPS;
+               if(jt->first==RinexObsHeader::P1) P1 = jt->second.data*1000.0/C_GPS_MPS;
                if(jt->first == RinexObsHeader::L1) {
-                  L1 = jt->second.data * 1000.0/C_GPS_M;
+                  L1 = jt->second.data * 1000.0/C_GPS_MPS;
                   L1lli = jt->second.lli;
                }
                // dump this data
@@ -384,16 +384,16 @@ try {
                double test;
                nsats++;
                if(P1 != 0 && ptab->prevP1 != 0)
-                  test = P1-L1_WAVELENGTH*L1
-                     - (ptab->prevP1-L1_WAVELENGTH*ptab->prevL1);
+                  test = P1-L1_WAVELENGTH_GPS*L1
+                     - (ptab->prevP1-L1_WAVELENGTH_GPS*ptab->prevL1);
                else if(C1 != 0 && ptab->prevC1 != 0)
-                  test = C1-L1_WAVELENGTH*L1
-                     - (ptab->prevC1-L1_WAVELENGTH*ptab->prevL1);
+                  test = C1-L1_WAVELENGTH_GPS*L1
+                     - (ptab->prevC1-L1_WAVELENGTH_GPS*ptab->prevL1);
                else
                   test = 0.0;
                if(fabs(test) > 0.5) {      // test must be > 150 km =~ 1/2 millisecond
                   // is it nearly an even multiple of 1 millisecond?
-                  //test *= 1000.0/C_GPS_M;  // leave sign on it
+                  //test *= 1000.0/C_GPS_MPS;  // leave sign on it
                   if(debug) *pout << "possible clock jump: test = "
                                  << setprecision(9) << test;
                   nms = long(test + (test > 0 ? 0.5 : -0.5));

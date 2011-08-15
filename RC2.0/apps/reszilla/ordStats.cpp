@@ -37,7 +37,7 @@
 
 #include "OrdApp.hpp"
 #include "OrdApp.cpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include <iostream>
 #include <list>
@@ -203,7 +203,7 @@ void OrdStats::process()
          if (!iter->second.clockOffset.is_valid())
             continue;
         const double offset = iter->second.clockOffset;
-        if (abs(offset) > (C_GPS_M/1000))
+        if (abs(offset) > (C_GPS_MPS/1000))
         {
           foundBigOffset = true;
           output << ">b " << iter->second.time << " "

@@ -58,7 +58,7 @@
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "EphemerisRange.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "Position.hpp"
 
 #include "YDSTime.hpp"
@@ -464,16 +464,16 @@ Triple permanentTide(double const phi)
 	int const MaxDim(phase ? 1000 : MaxUnkn); // For reserving array space
 	int const MaxSats(30);    // Same
 
-	const double gamma((L1_FREQ / L2_FREQ) * (L1_FREQ / L2_FREQ));
-	const double L1_F2(L1_FREQ * L1_FREQ), L2_F2(L2_FREQ * L2_FREQ);
+	const double gamma((L1_FREQ_GPS / L2_FREQ_GPS) * (L1_FREQ_GPS / L2_FREQ_GPS));
+	const double L1_F2(L1_FREQ_GPS * L1_FREQ_GPS), L2_F2(L2_FREQ_GPS * L2_FREQ_GPS);
 	const double LDIF_F2(L1_F2 - L2_F2);
 	// Weights for adding L1 and L2 pseudo-ranges into metric iono free
 	const double wt1(L1_F2 / LDIF_F2);
 	const double wt2(-L2_F2 / LDIF_F2);
 	double lambda1, lambda2;
 	if (phase) {
-	    lambda1 = C_GPS_M / L1_FREQ;
-	    lambda2 = C_GPS_M / L2_FREQ;
+	    lambda1 = C_GPS_MPS / L1_FREQ_GPS;
+	    lambda2 = C_GPS_MPS / L2_FREQ_GPS;
 	} else {
 	    lambda1 = 1.0;		// Already in metres
 	    lambda2 = 1.0;
@@ -839,8 +839,8 @@ Triple permanentTide(double const phi)
 					// Clock corrections:
 					double cc1 = lambda1 * rangeVecL1_1[j] - r1;
 					double cc2 = lambda1 * rangeVecL1_2[i] - r2;
-					rdiffL1 -= (rr1 * cc1 - rr2 * cc2) / C_GPS_M;
-					rdiffL2 -= (rr1 * cc1 - rr2 * cc2) / C_GPS_M;
+					rdiffL1 -= (rr1 * cc1 - rr2 * cc2) / C_GPS_MPS;
+					rdiffL2 -= (rr1 * cc1 - rr2 * cc2) / C_GPS_MPS;
 
 					if (iono) {
 					    // Ionospheric corrections:

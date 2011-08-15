@@ -28,7 +28,7 @@
 // GPSTk main library includes
 #include "BasicFramework.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "IonoModel.hpp"
 
 // From GPSTk's rxio

@@ -46,12 +46,12 @@
 
 //------------------------------------------------------------------------------------
 // GPSTk
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 //------------------------------------------------------------------------------------
-const double CFF=gpstk::C_GPS_M/gpstk::OSC_FREQ;
-const double F1=gpstk::L1_MULT;   // 154.0;
-const double F2=gpstk::L2_MULT;   // 120.0;
+const double CFF=gpstk::C_GPS_MPS/gpstk::OSC_FREQ_GPS;
+const double F1=gpstk::L1_MULT_GPS;   // 154.0;
+const double F2=gpstk::L2_MULT_GPS;   // 120.0;
 const double f12=F1*F1;
 const double f22=F2*F2;
 /// wavelength L1

@@ -975,7 +975,7 @@ try
       //if (1) {
       //   double clk=prsol.Solution(3);
       //   RinexObsData::RinexSatMap::iterator it;
-      //   robsd.time -= clk/C_GPS_M;
+      //   robsd.time -= clk/C_GPS_MPS;
       //   for (it=robsd.obs.begin(); it != robsd.obs.end(); ++it) {
       //      RinexObsData::RinexObsTypeMap::iterator jt;
       //      RinexObsData::RinexObsTypeMap& otmap=it->second; // NB must be reference

@@ -52,8 +52,8 @@ public:
    PhaseCleaner(long al, double at, double gt, double nt)
       : minArcLen(al), minArcTime(at), maxGapTime(gt), noiseThreshold(nt)
    {
-      lamda[gpstk::ObsID::cbL1] = gpstk::C_GPS_M/gpstk::L1_FREQ;
-      lamda[gpstk::ObsID::cbL2] = gpstk::C_GPS_M/gpstk::L2_FREQ;
+      lamda[gpstk::ObsID::cbL1] = gpstk::C_GPS_MPS/gpstk::L1_FREQ_GPS;
+      lamda[gpstk::ObsID::cbL2] = gpstk::C_GPS_MPS/gpstk::L2_FREQ_GPS;
    }
 
    void addData(

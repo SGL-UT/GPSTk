@@ -65,7 +65,7 @@
 #include "Stats.hpp"
 #include "Epoch.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_gps_constants.hpp"    // PI,C_GPS_M,OSC_FREQ,L1_MULT,L2_MULT
+#include "GNSSconstants.hpp"    // PI,C_GPS_MPS,OSC_FREQ,L1_MULT,L2_MULT
 
 #include "RinexEditor.hpp"
 #include "RinexUtilities.hpp"
@@ -92,9 +92,9 @@ string PrgmName("ResCor");
 string PrgmVers("4.1 9/21/09");
 
 // data used in program
-const double CFF=C_GPS_M/OSC_FREQ;
-const double F1=L1_MULT;   // 154.0;
-const double F2=L2_MULT;   // 120.0;
+const double CFF=C_GPS_MPS/OSC_FREQ_GPS;
+const double F1=L1_MULT_GPS;   // 154.0;
+const double F2=L2_MULT_GPS;   // 120.0;
 const double f12=F1*F1;
 const double f22=F2*F2;
 const double wl1=CFF/F1;
@@ -1806,7 +1806,7 @@ try {
                Trop = ggtm.correction(CER.elevation);
                if(doTgd && BCEphList.size() > 0) {
                   const EngEphemeris& eph = BCEphList.findEphemeris(sat,CurrentTime);
-                  Tgd = C_GPS_M * eph.getTgd();
+                  Tgd = C_GPS_MPS * eph.getTgd();
                }
             }
          }

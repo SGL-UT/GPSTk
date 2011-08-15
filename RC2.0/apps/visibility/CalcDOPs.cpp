@@ -122,7 +122,7 @@
 #include "Position.hpp"
 #include "Stats.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "GPSWeekSecond.hpp"

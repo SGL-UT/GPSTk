@@ -28,7 +28,7 @@
 #include <complex>
 #include <iostream>
 
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "CodeGenerator.hpp"
 

@@ -47,7 +47,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "SVSource.hpp"
 #include "normal.hpp"
@@ -121,8 +121,8 @@ GpsSim::GpsSim() throw() :
    rx_sample_rate(20.0e6),
    samples_per_period(20.0),
    interFreq(0.42e6),
-   rx_L1_LO(gpstk::L1_FREQ - 0.42e6),
-   rx_L2_LO(gpstk::L2_FREQ - 0.42e6),
+   rx_L1_LO(gpstk::L1_FREQ_GPS - 0.42e6),
+   rx_L2_LO(gpstk::L2_FREQ_GPS - 0.42e6),
    time_step(1.0/20e6),
    p_amplitude(0.1250*M_SQRT2),
    ca_amplitude(0.1767*M_SQRT2),
@@ -207,8 +207,8 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
 
    if (interFreqOpt.getCount()){
       interFreq = asDouble(interFreqOpt.getValue().front()) * 1e6;
-      rx_L1_LO = gpstk::L1_FREQ - interFreq;
-      rx_L2_LO = gpstk::L2_FREQ - interFreq;}
+      rx_L1_LO = gpstk::L1_FREQ_GPS - interFreq;
+      rx_L2_LO = gpstk::L2_FREQ_GPS - interFreq;}
 
    if (outputOpt.getCount())
    {
@@ -277,8 +277,8 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       cout << "# LO 1: " << setw(7) << lo[0] * 1e-6<< " MHz"
            <<    "  2: " << setw(7) << lo[1] * 1e-6<< " MHz"
            <<  endl
-           << "# IF 1: " << setw(7) << (L1_FREQ - lo[0]) * 1e-3<< " kHz"
-           <<    "  2: " << setw(7) << (L2_FREQ - lo[1]) * 1e-3<< " kHz"
+           << "# IF 1: " << setw(7) << (L1_FREQ_GPS - lo[0]) * 1e-3<< " kHz"
+           <<    "  2: " << setw(7) << (L2_FREQ_GPS - lo[1]) * 1e-3<< " kHz"
            <<  endl;
 
    for (int i=0; i < codeOpt.getCount(); i++)
@@ -310,12 +310,12 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       // This is the number of P code chips in one sample. If this
       // is not around or less than 1/2, we have a problem
       double sampleRate = 1.0/(rx_sample_rate); //sec
-      double chips_per_sample_base = gpstk::PY_CHIP_FREQ * sampleRate;
+      double chips_per_sample_base = gpstk::PY_CHIP_FREQ_GPS * sampleRate;
       
       switch(band)
       {
-         case 1: doppler *= sampleRate / L1_MULT; break;
-         case 2: doppler *= sampleRate / L2_MULT; break;
+         case 1: doppler *= sampleRate / L1_MULT_GPS; break;
+         case 2: doppler *= sampleRate / L2_MULT_GPS; break;
       }
 
       doppler *= 1-freqErr;
@@ -332,7 +332,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       src->p_amplitude = p_amplitude;
       src->ca_amplitude = ca_amplitude;
       // offset needs to be provided to the SVSource in units of P chips
-      src->slewZChipFraction(offset * gpstk::PY_CHIP_FREQ * 1.0e-6);
+      src->slewZChipFraction(offset * gpstk::PY_CHIP_FREQ_GPS * 1.0e-6);
 
       if (codeOnlyOpt.getCount())
          src->code_only = true;

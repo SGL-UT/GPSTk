@@ -31,7 +31,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "complex_math.h"
 #include "SimpleCorrelator.hpp"
@@ -218,11 +218,11 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
    {
       case 'c':
          codeGenPtr = new CACodeGenerator(prn);
-         chipFreq = CA_CHIP_FREQ;
+         chipFreq = CA_CHIP_FREQ_GPS;
          break;
       case 'p':
          codeGenPtr = new PCodeGenerator(prn);
-         chipFreq = PY_CHIP_FREQ;
+         chipFreq = PY_CHIP_FREQ_GPS;
          break;
       default:
          cout << "Unsupported code: " << code << endl;

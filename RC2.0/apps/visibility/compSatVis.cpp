@@ -44,7 +44,7 @@
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "gps_constants.hpp"
 #include "CivilTime.hpp"
 #include "YDSTime.hpp"

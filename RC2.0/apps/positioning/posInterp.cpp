@@ -42,7 +42,7 @@
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 #include "MiscMath.hpp"             // LagrangeIterpolation()
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "StringUtils.hpp"
 #include "TimeString.hpp"
 #include "Epoch.hpp"
@@ -101,8 +101,8 @@ typedef struct posInterpConfiguration {
 // data input from command line
 PIConfig PIC;
 // data used in program
-const double F1=L1_MULT;
-const double F2=L2_MULT;
+const double F1=L1_MULT_GPS;
+const double F2=L2_MULT_GPS;
 const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
 const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;

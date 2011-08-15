@@ -43,7 +43,7 @@
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "gps_constants.hpp"
 #include "TimeString.hpp"
 #include "Position.hpp"

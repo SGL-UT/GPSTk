@@ -32,7 +32,7 @@
 #include "Exception.hpp"
 #include "Position.hpp"
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
-#include "icd_gps_constants.hpp"     // for TWO_PI
+#include "GNSSconstants.hpp"     // for TWO_PI
 #include "MiscMath.hpp"
 #include "Epoch.hpp"
 #include "VTECMap.hpp"

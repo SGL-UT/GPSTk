@@ -93,9 +93,9 @@ OIDM DDEpoch::singleDifference(
       if (oid.type == ObsID::otPhase || oid.type == ObsID::otDoppler)
       {
          if (oid.band == ObsID::cbL1)
-            diff[oid] *=  C_GPS_M/L1_FREQ;
+            diff[oid] *=  C_GPS_MPS/L1_FREQ_GPS;
          else
-            diff[oid] *=  C_GPS_M/L2_FREQ;
+            diff[oid] *=  C_GPS_MPS/L2_FREQ_GPS;
       }
       // Then pull off the clock correction
       diff[oid] -= coc;
@@ -329,7 +329,7 @@ void DDEpochMap::compute(
             if (j->first.type == ObsID::otDoppler && 
                 j->first.band == ObsID::cbL1)
             {
-               curr.rangeRate[prn] = j->second * C_GPS_M/L1_FREQ;
+               curr.rangeRate[prn] = j->second * C_GPS_MPS/L1_FREQ_GPS;
                break;
             }
          curr.elevation[prn] = pem[t][prn];

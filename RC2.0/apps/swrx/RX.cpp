@@ -49,7 +49,7 @@ hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "EngNav.hpp"
 #include "EMLTracker.hpp"
 #include "CCReplica.hpp"
@@ -273,11 +273,11 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       {
          case 'c':
             codeGenPtr = new CACodeGenerator(prn);
-            chipFreq = CA_CHIP_FREQ;
+            chipFreq = CA_CHIP_FREQ_GPS;
             break;
          case 'p':
             codeGenPtr = new PCodeGenerator(prn);
-            chipFreq = PY_CHIP_FREQ;
+            chipFreq = PY_CHIP_FREQ_GPS;
             break;
          default:
             cout << "Unsupported code: " << code << endl;
@@ -492,7 +492,7 @@ void RxSim::process()
                if(dataPoints[i] != 0)
                {
                      // 0.073 is an arbitrary guessed time of flight
-                  obsVec[i] = gpstk::C_GPS_M*(0.073 - (refDataPoint - 
+                  obsVec[i] = gpstk::C_GPS_MPS*(0.073 - (refDataPoint - 
                        dataPoints[i])/(sampleRate)); //*2 because of hilbert
                }  
                else
@@ -513,10 +513,10 @@ void RxSim::process()
             cout << endl << "Position (ECEF): " << fixed << sol[0] 
                  << " " << sol[1] 
                  << " " << sol[2] << endl;
-            time -= (sol[3] / gpstk::C_GPS_M);
+            time -= (sol[3] / gpstk::C_GPS_MPS);
             cout << "Time: " << time << endl;  
                //cout << "Clock Error (includes that caused by guess): " 
-               //<< sol[3]*1000/gpstk::C_GPS_M << " ms" << endl;
+               //<< sol[3]*1000/gpstk::C_GPS_MPS << " ms" << endl;
             cout << "# good SV's: " << prSolver.Nsvs << endl
                  << "RMSResidual: " << prSolver.RMSResidual << " meters" 
                  << endl;
