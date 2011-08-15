@@ -26,7 +26,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include <iostream>
 
 using namespace std;
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
     cout << "Name your PRN of interest (by number: 1 through 32): ";
     cin  >> myprn;
 
-    double gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
+    double gamma = (L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS);
 
     try
     {
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
 //Compute multipath
 //-----------------
-                double mu = P1 -L1*(C_GPS_M/L1_FREQ) -2*(P1 -P2)/(1-gamma);
+                double mu = P1 -L1*(C_GPS_MPS/L1_FREQ_GPS) -2*(P1 -P2)/(1-gamma);
 
                 // The following line makes sure that you get a proper output format
                 // The line above with "roh.dump" sets this, but just in case...
