@@ -27,7 +27,7 @@
 //============================================================================
 
 #include "IERS.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "Epoch.hpp"
 #include <string>
 #include <fstream>

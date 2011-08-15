@@ -40,7 +40,7 @@
 #include <StringUtils.hpp>
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
-#include <gps_constants.hpp>
+#include <GNSSconstants.hpp>
 
 #include "MDPObsEpoch.hpp"
 #include "MDPStream.hpp"

@@ -20,7 +20,7 @@
 // GPSTk
 #include "CommonTime.hpp"
 #include "Position.hpp"
-#include "icd_gps_constants.hpp"       // TWO_PI
+#include "GNSSconstants.hpp"       // TWO_PI
 #include "geometry.hpp"                // DEG_TO_RAD
 #include "Epoch.hpp"
 #include "SolarPosition.hpp"

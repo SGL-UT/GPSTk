@@ -126,7 +126,7 @@ namespace gpstk
             }
             else if(ionoType == DualFreq)
             {
-               const double gamma = (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
+               const double gamma = (L1_FREQ_GPS/L2_FREQ_GPS) * (L1_FREQ_GPS/L2_FREQ_GPS);
 
                double P1(0.0);
                if(stv->second.find(TypeID::P1)==stv->second.end())
@@ -153,8 +153,8 @@ namespace gpstk
                }
             }
 
-            double ionL2 = ionL1 * (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
-            double ionL5 = ionL1 * (L1_FREQ/L5_FREQ) * (L1_FREQ/L5_FREQ);
+            double ionL2 = ionL1 * (L1_FREQ_GPS/L2_FREQ_GPS) * (L1_FREQ_GPS/L2_FREQ_GPS);
+            double ionL5 = ionL1 * (L1_FREQ_GPS/L5_FREQ_GPS) * (L1_FREQ_GPS/L5_FREQ_GPS);
             
                // TODO: more frequency later
 

@@ -79,7 +79,7 @@ namespace gpstk
       l1Prefit.body[TypeID::tropoSlant]   = -1.0;
       l1Prefit.body[TypeID::ionoL1]       = +1.0;
          // Coefficient for L1 windUp is L1 wavelength/2*PI
-      l1Prefit.body[TypeID::windUp]       = -L1_WAVELENGTH/TWO_PI;
+      l1Prefit.body[TypeID::windUp]       = -L1_WAVELENGTH_GPS/TWO_PI;
       l1Prefit.body[TypeID::mpL1]         = -1.0;
 
          // Definition to compute PC combination
@@ -135,10 +135,10 @@ namespace gpstk
       liCombination.body[TypeID::L2]      = -1.0;
 
 
-      double c( L1_FREQ/(L1_FREQ + L2_FREQ) );
-      double d( L2_FREQ/(L1_FREQ + L2_FREQ) );
-      double e( L1_FREQ/(L1_FREQ - L2_FREQ) );
-      double f( L2_FREQ/(L1_FREQ - L2_FREQ) );
+      double c( L1_FREQ_GPS/(L1_FREQ_GPS + L2_FREQ_GPS) );
+      double d( L2_FREQ_GPS/(L1_FREQ_GPS + L2_FREQ_GPS) );
+      double e( L1_FREQ_GPS/(L1_FREQ_GPS - L2_FREQ_GPS) );
+      double f( L2_FREQ_GPS/(L1_FREQ_GPS - L2_FREQ_GPS) );
 
          // Definition to compute Pdelta (PW) combination
       pdeltaCombination.header            = TypeID::Pdelta;
@@ -281,7 +281,7 @@ namespace gpstk
       // Return the wavelength of the combination in cycles: i * L1 + j * L2 
    double LinearCombinations::wavelengthOfLC(int i,int j,double f1,double f2)
    {
-      return C_GPS_M / freqOfLC(i,j,f1,f2);
+      return C_GPS_MPS / freqOfLC(i,j,f1,f2);
    }
 
    /// Return the f1 factor of the combination in cycles: i * L1 + j * L2 

@@ -35,7 +35,7 @@
 #include <algorithm>
 // gpstk
 #include "SatPass.hpp"
-#include "icd_gps_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
+#include "GNSSconstants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"
@@ -216,12 +216,12 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
    }
    if(indexForLabel.find("P1") == indexForLabel.end()) useC1=true;
 
-   //static const double CFF=C_GPS_M/OSC_FREQ;
-   static const double F1=L1_MULT;   // 154.0;
-   static const double F2=L2_MULT;   // 120.0;
+   //static const double CFF=C_GPS_MPS/OSC_FREQ;
+   static const double F1=L1_MULT_GPS;   // 154.0;
+   static const double F2=L2_MULT_GPS;   // 120.0;
    // wavelengths
-   static const double wl1=L1_WAVELENGTH; //CFF/F1;                        // 19.0cm
-   static const double wl2=L2_WAVELENGTH; //CFF/F2;                        // 24.4cm
+   static const double wl1=L1_WAVELENGTH_GPS; //CFF/F1;                        // 19.0cm
+   static const double wl2=L2_WAVELENGTH_GPS; //CFF/F2;                        // 24.4cm
    // ionospheric constant
    static const double alpha = ((F1/F2)*(F1/F2) - 1.0);
 

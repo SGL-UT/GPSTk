@@ -2908,7 +2908,7 @@ in matrix and number of types do not match") );
                   {
                      if(type == TypeID::L1)
                      {
-                        data.data /= L1_WAVELENGTH;
+                        data.data /= L1_WAVELENGTH_GAL;
                         data.ssi = f.body[*itSat][TypeID::SSI1];
                      }
  
@@ -2919,7 +2919,7 @@ in matrix and number of types do not match") );
                   {
                      if(type == TypeID::L2)
                      {
-                        data.data /= L2_WAVELENGTH;
+                        data.data /= L2_WAVELENGTH_GPS;
                         data.ssi = f.body[*itSat][TypeID::SSI2];
                      }
 
@@ -2930,7 +2930,7 @@ in matrix and number of types do not match") );
                   {
                      if(type == TypeID::L5)
                      {
-                        data.data /= L5_WAVELENGTH;
+                        data.data /= L5_WAVELENGTH_GAL;
                         data.ssi = f.body[*itSat][TypeID::SSI5];
                      }
 
@@ -2941,7 +2941,7 @@ in matrix and number of types do not match") );
                   {
                      if(type == TypeID::L6)
                      {
-                        data.data /= L6_WAVELENGTH;
+                        data.data /= L6_WAVELENGTH_GAL;
                         data.ssi = f.body[*itSat][TypeID::SSI6];
                      }
 
@@ -2952,7 +2952,7 @@ in matrix and number of types do not match") );
                   {
                      if(type == TypeID::L7)
                      {
-                        data.data /= L7_WAVELENGTH;
+                        data.data /= L7_WAVELENGTH_GAL;
                         data.ssi = f.body[*itSat][TypeID::SSI7];
                      }
 
@@ -2963,7 +2963,7 @@ in matrix and number of types do not match") );
                   {
                      if(type == TypeID::L8)
                      {
-                        data.data /= L8_WAVELENGTH;
+                        data.data /= L8_WAVELENGTH_GAL;
                         data.ssi = f.body[*itSat][TypeID::SSI8];
                      }
 
@@ -3086,37 +3086,37 @@ in matrix and number of types do not match") );
          {
             tvMap[TypeID::LLI1] = (*itObs).second.lli;
             tvMap[TypeID::SSI1] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH;
+            tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH_GAL;
          }
          if( type == TypeID::L2 )
          {
             tvMap[TypeID::LLI2] = (*itObs).second.lli;
             tvMap[TypeID::SSI2] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L2_WAVELENGTH;
+            tvMap[ type ] = tvMap[ type ] * L2_WAVELENGTH_GPS;
          }
          if( type == TypeID::L5 )
          {
             tvMap[TypeID::LLI5] = (*itObs).second.lli;
             tvMap[TypeID::SSI5] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L5_WAVELENGTH;
+            tvMap[ type ] = tvMap[ type ] * L5_WAVELENGTH_GAL;
          }
          if( type == TypeID::L6 )
          {
             tvMap[TypeID::LLI6] = (*itObs).second.lli;
             tvMap[TypeID::SSI6] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L6_WAVELENGTH;
+            tvMap[ type ] = tvMap[ type ] * L6_WAVELENGTH_GAL;
          }
          if( type == TypeID::L7 )
          {
             tvMap[TypeID::LLI7] = (*itObs).second.lli;
             tvMap[TypeID::SSI7] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L7_WAVELENGTH;
+            tvMap[ type ] = tvMap[ type ] * L7_WAVELENGTH_GAL;
          }
          if( type == TypeID::L8 )
          {
             tvMap[TypeID::LLI8] = (*itObs).second.lli;
             tvMap[TypeID::SSI8] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH;
+            tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH_GAL;
          }
 
       }  // End of "for( itObs = otmap.begin(); ..."

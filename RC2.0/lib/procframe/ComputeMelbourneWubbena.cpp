@@ -42,8 +42,8 @@ namespace gpstk
 
       // Default constructor
    ComputeMelbourneWubbena::ComputeMelbourneWubbena()
-      : type3(TypeID::L1), type4(TypeID::L2), DEN1(L1_FREQ + L2_FREQ),
-        DEN2(L1_FREQ - L2_FREQ)
+      : type3(TypeID::L1), type4(TypeID::L2), DEN1(L1_FREQ_GPS + L2_FREQ_GPS),
+        DEN2(L1_FREQ_GPS - L2_FREQ_GPS)
    {
       type1 = TypeID::P1;
       type2 = TypeID::P2;
@@ -125,8 +125,8 @@ namespace gpstk
                                                    const double& l2 )
    {
 
-      return (   ( L1_FREQ*l1 - L2_FREQ*l2 ) / ( DEN2 )
-               - ( L1_FREQ*p1 + L2_FREQ*p2 ) / ( DEN1 ) );
+      return (   ( L1_FREQ_GPS*l1 - L2_FREQ_GPS*l2 ) / ( DEN2 )
+               - ( L1_FREQ_GPS*p1 + L2_FREQ_GPS*p2 ) / ( DEN1 ) );
 
    }  // End of method 'ComputeMelbourneWubbena::getCombination()'
 

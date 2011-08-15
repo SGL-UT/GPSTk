@@ -48,7 +48,7 @@
 #include "CommonTime.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "NovatelData.hpp"
 #include "GPSWeekSecond.hpp"
 
@@ -62,9 +62,9 @@ namespace gpstk
 {
 
    // --------------------------------------------------------------------------------
-   const double CFF=C_GPS_M/OSC_FREQ;
-   const double wl1=CFF/L1_MULT;
-   const double wl2=CFF/L2_MULT;
+   const double CFF=C_GPS_MPS/OSC_FREQ_GPS;
+   const double wl1=CFF/L1_MULT_GPS;
+   const double wl2=CFF/L2_MULT_GPS;
    const double PhaseRollover=8388608;
 
    // --------------------------------------------------------------------------------

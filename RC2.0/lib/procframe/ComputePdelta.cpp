@@ -41,7 +41,7 @@ namespace gpstk
 
       // Default constructor
    ComputePdelta::ComputePdelta()
-      : DEN(L1_FREQ + L2_FREQ)
+      : DEN(L1_FREQ_GPS + L2_FREQ_GPS)
    {
       type1 = TypeID::P1;
       type2 = TypeID::P2;

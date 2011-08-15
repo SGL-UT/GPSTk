@@ -44,7 +44,7 @@
 // GPSTk includes
 #include "MiscMath.hpp"
 #include "GPSEllipsoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 #include "Xvt.hpp"
 // geomatics
@@ -211,9 +211,9 @@ namespace gpstk
    //   // XvtStore::getPrnXvt routines...
    //   // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
    //   // compute it separately here, in units seconds.
-   //   double dtr = -2*(R.X()/C_GPS_M)*(V.X()/C_GPS_M)
-   //                -2*(R.Y()/C_GPS_M)*(V.Y()/C_GPS_M)
-   //                -2*(R.Z()/C_GPS_M)*(V.Z()/C_GPS_M);
+   //   double dtr = -2*(R.X()/C_GPS_MPS)*(V.X()/C_GPS_MPS)
+   //                -2*(R.Y()/C_GPS_MPS)*(V.Y()/C_GPS_MPS)
+   //                -2*(R.Z()/C_GPS_MPS)*(V.Z()/C_GPS_MPS);
    
    //   return dtr;
    //}

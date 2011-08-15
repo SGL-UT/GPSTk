@@ -29,27 +29,27 @@
 
 
 #include "CorrectCodeBiases.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {
       
       const double CorrectCodeBiases::factoP1P2[6] = {
-        +L2_FREQ*L2_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),  // L1
-        +L1_FREQ*L1_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),  // L2
+        +L2_FREQ_GPS*L2_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS),  // L1
+        +L1_FREQ_GPS*L1_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS),  // L2
         +0.0,                                                  // L3
         -1.0,                                                  // L4
-        -L1_FREQ*L2_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),  // L5
+        -L1_FREQ_GPS*L2_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS),  // L5
          0.0                                                   // L6
       };
 
       const double CorrectCodeBiases::factorP1C1[6]={
         +1.0,                                                   // L1
         +0.0,                                                   // L2
-        +L1_FREQ*L1_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),   // L3
+        +L1_FREQ_GPS*L1_FREQ_GPS/(L1_FREQ_GPS*L1_FREQ_GPS - L2_FREQ_GPS*L2_FREQ_GPS),   // L3
         +1.0,                                                   // L4
-        +L1_FREQ/(L1_FREQ-L2_FREQ),                             // L5
-        -L1_FREQ/(L1_FREQ+L2_FREQ)                              // L6
+        +L1_FREQ_GPS/(L1_FREQ_GPS-L2_FREQ_GPS),                             // L5
+        -L1_FREQ_GPS/(L1_FREQ_GPS+L2_FREQ_GPS)                              // L6
       };
       
       const double CorrectCodeBiases::factorC1X2[6]={
@@ -228,7 +228,7 @@ namespace gpstk
 
          double dcb = dcb1 * (satP1P2 + receiverP1P2) + dcb2 * satP1C1;
          
-         return -1.0 * dcb * (C_GPS_M * 1.0e-9);    // ns -> meter
+         return -1.0 * dcb * (C_GPS_MPS * 1.0e-9);    // ns -> meter
 
       }  // End of method 'CorrectCodeBiases::getDCBCorrection()'
 

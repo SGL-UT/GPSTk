@@ -119,7 +119,7 @@ namespace gpstk
          /// Compute the combination of observables.
       virtual double getCombination( const double& obs1,
                                      const double& obs2 )
-      { return ( ( L1_FREQ*obs1 + L2_FREQ*obs2 ) / ( DEN ) ); };
+      { return ( ( L1_FREQ_GPS*obs1 + L2_FREQ_GPS*obs2 ) / ( DEN ) ); };
 
 
    private:

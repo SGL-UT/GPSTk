@@ -42,7 +42,7 @@
 #include "IonoModel.hpp"
 #include "IonoModelStore.hpp"
 #include "Position.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "TypeID.hpp"
 #include "DataStructures.hpp"
 

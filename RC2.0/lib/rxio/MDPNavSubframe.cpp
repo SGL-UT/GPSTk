@@ -39,7 +39,7 @@
 #include <sstream>
 #include <BinUtils.hpp>
 #include <StringUtils.hpp>
-#include <gps_constants.hpp>
+#include <GNSSconstants.hpp>
 #include <EngNav.hpp>
 
 #include "miscenum.hpp"
