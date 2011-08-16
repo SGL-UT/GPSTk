@@ -48,7 +48,7 @@
 #include "GPSWeekSecond.hpp"
 #include "CivilTime.hpp"
 #include "YDSTime.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {

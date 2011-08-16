@@ -37,7 +37,7 @@
 #include "Triple.hpp"
 #include "Position.hpp"
 #include "CommonTime.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 
 

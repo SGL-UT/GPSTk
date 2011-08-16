@@ -46,7 +46,7 @@
 
 #include <map>
 
-#include "icd_glo_constants.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {

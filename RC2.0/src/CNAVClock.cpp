@@ -42,6 +42,9 @@
  */
 #include <iomanip>
 #include <cmath>
+
+#include "StringUtils.hpp"
+#include "GNSSconstants.hpp"
 #include "MathBase.hpp"
 #include "CNAVClock.hpp"
 

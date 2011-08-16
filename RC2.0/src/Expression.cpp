@@ -37,7 +37,7 @@
 #include <ctype.h>
 #include <math.h>
 
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "StringUtils.hpp"
 #include "Expression.hpp"
 
@@ -575,17 +575,17 @@ namespace gpstk
    {
       bool gotSet = false;
       
-      gotSet |= set("gamma",(L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ));
+      gotSet |= set("gamma",(L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS));
       gotSet |= set("pi",PI);
-      gotSet |= set("c",C_GPS_M);
-      gotSet |= set("c_gps_m",C_GPS_M);
-      gotSet |= set("l0",OSC_FREQ);
-      gotSet |= set("f1",L1_MULT);
-      gotSet |= set("f2",L2_MULT);
-      gotSet |= set("l1",L1_FREQ);
-      gotSet |= set("l2",L2_FREQ);
-      gotSet |= set("wl1",C_GPS_M/L1_FREQ);
-      gotSet |= set("wl2",C_GPS_M/L2_FREQ);
+      gotSet |= set("c",C_GPS_MPS);
+      gotSet |= set("c_gps_m",C_GPS_MPS);
+      gotSet |= set("l0",OSC_FREQ_GPS);
+      gotSet |= set("f1",L1_MULT_GPS);
+      gotSet |= set("f2",L2_MULT_GPS);
+      gotSet |= set("l1",L1_FREQ_GPS);
+      gotSet |= set("l2",L2_FREQ_GPS);
+      gotSet |= set("wl1",C_GPS_MPS/L1_FREQ_GPS);
+      gotSet |= set("wl2",C_GPS_MPS/L2_FREQ_GPS);
       return gotSet;
    }
    

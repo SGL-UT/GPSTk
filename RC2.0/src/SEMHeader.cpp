@@ -28,7 +28,7 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "SEMHeader.hpp"
 #include "SEMStream.hpp"

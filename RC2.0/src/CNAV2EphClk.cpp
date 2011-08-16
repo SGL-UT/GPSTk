@@ -42,6 +42,11 @@
  */
 #include <iomanip>
 #include <cmath>
+
+#include "StringUtils.hpp"
+#include "GNSSconstants.hpp"
+#include "MathBase.hpp"
+#include "GPSEllipsoid.hpp"
 #include "CNAV2EphClk.hpp"
 
 namespace gpstk
@@ -98,7 +103,7 @@ namespace gpstk
       bool healthy = false;
       if (L1Health == 0) healthy = true;
 
-      double A     = A_REF + deltaA;
+      double A     = A_REF_GPS + deltaA;
       double Ahalf = sqrt(A);
       satSys       = "G";
       double timeDiff = ToeArg - TOWCount;
@@ -181,9 +186,9 @@ namespace gpstk
       ISCL1cd              = subframe2.asSignedDouble(552, 13, -35);
       short sflag          = subframe2.asUnsignedLong(565, 1, 1);
 
-      double A        = A_REF + deltaA;
+      double A        = A_REF_GPS + deltaA;
       double Ahalf    = sqrt(A);
-      double OMEGAdot = OMEGADOT_REF + deltaOMEGAdot;
+      double OMEGAdot = OMEGADOT_REF_GPS + deltaOMEGAdot;
 
       bool healthy = false;
       if (L1Health == 0) healthy = true;

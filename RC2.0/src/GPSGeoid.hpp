@@ -33,7 +33,7 @@
 //============================================================================
 
 #include "WGS84Geoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {
@@ -73,12 +73,12 @@ namespace gpstk
          /// defined in ICD-GPS-200C, 20.3.4.3
          /// @return Speed of light in m/s.
       virtual double c() const throw()
-      { return C_GPS_M; }
+      { return C_GPS_MPS; }
 
          /// derived from ICD-GPS-200C, 20.3.4.3
          /// @return Speed of light in km/s
       virtual double c_km() const throw()
-      { return (C_GPS_M / 1000); }
+      { return (C_GPS_MPS / 1000); }
 
    }; // class GPSGeoid
 

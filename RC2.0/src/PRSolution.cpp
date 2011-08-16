@@ -532,7 +532,7 @@ namespace gpstk
          
             // first estimate of transmit time
          tx = Tr;
-         tx -= Pseudorange[i]/C_GPS_M;
+         tx -= Pseudorange[i]/C_GPS_MPS;
             // get ephemeris range, etc
          try
          {
@@ -570,7 +570,7 @@ namespace gpstk
          {
             SVP(i,j) = PVT.x[j];
          }
-         SVP(i,3) = Pseudorange[i] + C_GPS_M * (PVT.clkbias + PVT.relcorr);
+         SVP(i,3) = Pseudorange[i] + C_GPS_MPS * (PVT.clkbias + PVT.relcorr);
          nsvs++;
       }
       

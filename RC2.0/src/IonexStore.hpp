@@ -39,7 +39,7 @@
 #include "IonexData.hpp"
 
 #include "geometry.hpp"                   // DEG_TO_RAD
-#include "icd_gps_constants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
+#include "GNSSconstants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
 #include "Triple.hpp"
 
 namespace gpstk
@@ -186,7 +186,7 @@ namespace gpstk
                         const double& tecval,
                         const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, L1_FREQ, ionoMapType); };
+      { return getIono(elevation, tecval, L1_FREQ_GPS, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L2 frequency
@@ -202,7 +202,7 @@ namespace gpstk
                         const double& tecval,
                         const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, L2_FREQ, ionoMapType); };
+      { return getIono(elevation, tecval, L2_FREQ_GPS, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L5 frequency
@@ -218,7 +218,7 @@ namespace gpstk
                         const double& tecval,
                         const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, L5_FREQ, ionoMapType); };
+      { return getIono(elevation, tecval, L5_FREQ_GPS, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L6 frequency
@@ -234,7 +234,7 @@ namespace gpstk
                         const double& tecval,
                         const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, L6_FREQ, ionoMapType); };
+      { return getIono(elevation, tecval, L6_FREQ_GAL, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L7 frequency
@@ -250,7 +250,7 @@ namespace gpstk
                         const double& tecval,
                         const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, L7_FREQ, ionoMapType); };
+      { return getIono(elevation, tecval, L7_FREQ_GAL, ionoMapType); };
 
 
          /** Get ionospheric slant delay for L8 frequency
@@ -266,7 +266,7 @@ namespace gpstk
                         const double& tecval,
                         const std::string& ionoMapType ) const
          throw (InvalidParameter)
-      { return getIono(elevation, tecval, L8_FREQ, ionoMapType); };
+      { return getIono(elevation, tecval, L8_FREQ_GAL, ionoMapType); };
 
 
          /** Ionosphere mapping function

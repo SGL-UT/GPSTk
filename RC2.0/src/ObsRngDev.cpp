@@ -47,7 +47,7 @@
 #include "EngEphemeris.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "MiscMath.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "TimeString.hpp"
 #include "ObsRngDev.hpp"
 

@@ -49,7 +49,7 @@
  */
 
 #include <math.h>
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "IonoModel.hpp"
 #include "YDSTime.hpp"
 #include "geometry.hpp"
@@ -155,7 +155,7 @@ namespace gpstk
          t_iono *= GAMMA_GPS;  //  GAMMA_GPS = (fL1 / fL2)^2
       }
       
-      double correction = t_iono * C_GPS_M;
+      double correction = t_iono * C_GPS_MPS;
       
       return correction;
    }

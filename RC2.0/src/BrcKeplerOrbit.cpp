@@ -41,6 +41,9 @@
  * Ephemeris data encapsulated in engineering terms
  */
 
+#include "StringUtils.hpp"
+#include "GNSSconstants.hpp"
+#include "GPSEllipsoid.hpp"
 #include "BrcKeplerOrbit.hpp"
 #include <cmath>
 

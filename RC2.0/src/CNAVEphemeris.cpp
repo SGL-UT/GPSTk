@@ -43,6 +43,11 @@
 #include <iomanip>
 #include <cmath>
 #include <iostream>
+
+#include "StringUtils.hpp"
+#include "GNSSconstants.hpp"
+#include "MathBase.hpp"
+#include "GPSEllipsoid.hpp"
 #include "CNAVEphemeris.hpp"
 
 namespace gpstk
@@ -98,10 +103,10 @@ namespace gpstk
       if (obsIDArg.band == ObsID::cbL2 && L2Health == 0) healthy = true;
       if (obsIDArg.band == ObsID::cbL5 && L5Health == 0) healthy = true;
 
-      double A             = A_REF + deltaA;
+      double A             = A_REF_GPS + deltaA;
       double Ahalf         = sqrt(A);
       double deltaOMEGAdot = deltaOMEGAdotArg;
-      double OMEGAdot      = OMEGADOT_REF + deltaOMEGAdot;
+      double OMEGAdot      = OMEGADOT_REF_GPS + deltaOMEGAdot;
       satSys = "G";
       double timeDiff = ToeArg - TOWCount[0];
       short epochWeek = TOWWeek;
@@ -178,9 +183,9 @@ namespace gpstk
       double Cus           = message11.asSignedDouble(227, 21, -30);
       double Cuc           = message11.asSignedDouble(248, 21, -30);
 
-      double A        = A_REF + deltaA;
+      double A        = A_REF_GPS + deltaA;
       double Ahalf    = sqrt(A);
-      double OMEGAdot = OMEGADOT_REF + deltaOMEGAdot;
+      double OMEGAdot = OMEGADOT_REF_GPS + deltaOMEGAdot;
 
       bool healthy = false;
       if (obsIDArg.band == ObsID::cbL2 && L2Health == 0) healthy = true;

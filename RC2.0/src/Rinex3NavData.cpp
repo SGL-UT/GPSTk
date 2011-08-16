@@ -49,7 +49,7 @@
 #include "GPSWeekSecond.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavStream.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {

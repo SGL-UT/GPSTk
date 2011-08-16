@@ -39,7 +39,7 @@
 #include "Matrix.hpp"
 #include "CommonTime.hpp"
 #include "BLQDataReader.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 
 

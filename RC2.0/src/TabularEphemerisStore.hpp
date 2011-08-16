@@ -59,7 +59,7 @@
 #include "XvtStore.hpp"
 #include "Xvt.hpp"
 #include "Xvt.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "MiscMath.hpp"
 
 namespace gpstk

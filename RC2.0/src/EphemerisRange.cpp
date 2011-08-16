@@ -44,7 +44,7 @@
 #include "EphemerisRange.hpp"
 #include "MiscMath.hpp"
 #include "GPSEllipsoid.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 
 using namespace std;
@@ -118,7 +118,7 @@ namespace gpstk
 
          // 0-th order estimate of transmit time = receiver - pseudorange/c
          transmit = tr_nom;
-         transmit -= pr/C_GPS_M;
+         transmit -= pr/C_GPS_MPS;
          tt = transmit;
 
          // correct for SV clock
@@ -190,10 +190,10 @@ namespace gpstk
 
    void CorrectedEphemerisRange::updateCER(const Position& Rx)
    {
-      relativity = svPosVel.computeRelativityCorrection() * C_GPS_M;
+      relativity = svPosVel.computeRelativityCorrection() * C_GPS_MPS;
       
-      svclkbias = svPosVel.clkbias * C_GPS_M;
-      svclkdrift = svPosVel.clkdrift * C_GPS_M;
+      svclkbias = svPosVel.clkbias * C_GPS_MPS;
+      svclkdrift = svPosVel.clkdrift * C_GPS_MPS;
       
       cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
       cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
@@ -232,7 +232,7 @@ namespace gpstk
       // compute it separately here, in units seconds.
       double dtr = ( -2.0 *( svPosVel.x[0] * svPosVel.v[0]
                              + svPosVel.x[1] * svPosVel.v[1]
-                             + svPosVel.x[2] * svPosVel.v[2] ) / C_GPS_M ) / C_GPS_M;
+                             + svPosVel.x[2] * svPosVel.v[2] ) / C_GPS_MPS ) / C_GPS_MPS;
       return dtr;
    }
 

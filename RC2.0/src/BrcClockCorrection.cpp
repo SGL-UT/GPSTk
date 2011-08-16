@@ -42,6 +42,7 @@
  */
 
 #include "StringUtils.hpp"
+#include "GNSSconstants.hpp"
 #include "BrcClockCorrection.hpp"
 #include <cmath>
 
@@ -167,7 +168,7 @@ namespace gpstk
       throw(gpstk::InvalidRequest)
    {
       double ret = svClockBias(t);
-      ret = ret*C_GPS_M;
+      ret = ret*C_GPS_MPS;
       return (ret);
    }
 

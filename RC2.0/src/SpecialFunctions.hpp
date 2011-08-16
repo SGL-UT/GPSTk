@@ -32,7 +32,7 @@
 
 
 #include <cmath>
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "Exception.hpp"
 
 

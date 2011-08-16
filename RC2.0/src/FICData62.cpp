@@ -49,7 +49,7 @@
  */
 
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "CommonTime.hpp"
 #include "FICData62.hpp"
 
