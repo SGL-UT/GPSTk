@@ -281,7 +281,7 @@ namespace gpstk
       // Return the wavelength of the combination in cycles: i * L1 + j * L2 
    double LinearCombinations::wavelengthOfLC(int i,int j,double f1,double f2)
    {
-      return C_GPS_MPS / freqOfLC(i,j,f1,f2);
+      return C_MPS / freqOfLC(i,j,f1,f2);
    }
 
    /// Return the f1 factor of the combination in cycles: i * L1 + j * L2 

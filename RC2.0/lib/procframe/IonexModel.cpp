@@ -30,7 +30,7 @@
 
 
 #include "IonexModel.hpp"
-#include "GNSSconstants.hpp"          // C_GPS_MPS
+#include "GNSSconstants.hpp"          // C_MPS
 
 
 namespace gpstk
@@ -237,7 +237,7 @@ namespace gpstk
                      // the second LC factor (see gpstk::LinearCombinations.cpp)
                      // see pg.14, Ionex manual
                   double kappa2(-1.0/0.646944444);
-                  double dcb(tempDCB * C_GPS_MPS * 1e-9);  // meters
+                  double dcb(tempDCB * C_MPS * 1e-9);  // meters
 
                   if( stv->second.find(TypeID::instC1) == stv->second.end() )
                   {

@@ -80,7 +80,7 @@ namespace gpstk
                }
 
                it->second[TypeID::P1] = it->second[TypeID::C1] 
-                                       +Bp1c1*(C_GPS_MPS * 1.0e-9);
+                                       +Bp1c1*(C_MPS * 1.0e-9);
             }
 
          }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
