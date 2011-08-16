@@ -43,7 +43,7 @@
 #include "StringUtils.hpp"
 #include "Stats.hpp"
 #include "PolyFit.hpp"
-#include "GNSSconstants.hpp"    // PI,C_GPS_MPS,OSC_FREQ_GPS,L1_MULT,L2_MULT
+#include "GNSSconstants.hpp"    // PI,C_MPS,OSC_FREQ_GPS,L1_MULT,L2_MULT
 #include "RobustStats.hpp"
 
 #include "DiscCorr.hpp"
@@ -489,7 +489,7 @@ enum obstypeenum {  L1=0, L2=1, P1=2, P2=3, A1=4, A2=5 };   // P1 will <=> C1 or
 vector<string> DCobstypes;       // above are indexes into both data and this vector
 
 // constants used in linear combinations
-const double CFF=C_GPS_MPS/OSC_FREQ_GPS;
+const double CFF=C_MPS/OSC_FREQ_GPS;
 const double F1=L1_MULT_GPS;   // 154.0;
 const double F2=L2_MULT_GPS;   // 120.0;
    // wavelengths

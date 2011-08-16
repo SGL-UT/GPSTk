@@ -216,7 +216,7 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
    }
    if(indexForLabel.find("P1") == indexForLabel.end()) useC1=true;
 
-   //static const double CFF=C_GPS_MPS/OSC_FREQ;
+   //static const double CFF=C_MPS/OSC_FREQ;
    static const double F1=L1_MULT_GPS;   // 154.0;
    static const double F2=L2_MULT_GPS;   // 120.0;
    // wavelengths
