@@ -46,7 +46,7 @@
 
 #include "CivilTime.hpp"
 #include "GloFreqIndex.hpp"
-#include "icd_glo_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "icd_glo_freqindex.hpp"
 #include "Rinex3NavData.hpp"
 #include "Rinex3NavHeader.hpp"

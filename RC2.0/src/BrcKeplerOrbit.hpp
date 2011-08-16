@@ -55,7 +55,7 @@
 #include "CommonTime.hpp"
 #include "Xv.hpp"
 #include "StringUtils.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "GPSEllipsoid.hpp"
 #include "MathBase.hpp"
 #include "TimeSystem.hpp"
