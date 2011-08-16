@@ -66,7 +66,7 @@ namespace gpstk
       /// relativity constant (sec/sqrt(m))
    const double REL_CONST = -4.442807633e-10;
       /// m/s, speed of light; this value defined by GPS but applies to GAL and GLO.
-   const double C_GPS_MPS = 2.99792458e8;
+   const double C_MPS = 2.99792458e8;
 
    // ---------------- GPS --------------------------------------
       /// Hz, GPS Oscillator or chip frequency
@@ -385,8 +385,8 @@ namespace gpstk
             else if(n == 5) return L5_WAVELENGTH_GPS;
             break;
          case SatID::systemGlonass:
-                 if(n == 1) return (C_GPS_MPS/(L1_FREQ_GLO + N*L1_FREQ_STEP_GLO));
-            else if(n == 2) return (C_GPS_MPS/(L2_FREQ_GLO + N*L2_FREQ_STEP_GLO));
+                 if(n == 1) return (C_MPS/(L1_FREQ_GLO + N*L1_FREQ_STEP_GLO));
+            else if(n == 2) return (C_MPS/(L2_FREQ_GLO + N*L2_FREQ_STEP_GLO));
             break;
          case SatID::systemGalileo:
                  if(n == 1) return L1_WAVELENGTH_GAL;

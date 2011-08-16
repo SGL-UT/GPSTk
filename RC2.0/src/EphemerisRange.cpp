@@ -118,7 +118,7 @@ namespace gpstk
 
          // 0-th order estimate of transmit time = receiver - pseudorange/c
          transmit = tr_nom;
-         transmit -= pr/C_GPS_MPS;
+         transmit -= pr/C_MPS;
          tt = transmit;
 
          // correct for SV clock
@@ -190,10 +190,10 @@ namespace gpstk
 
    void CorrectedEphemerisRange::updateCER(const Position& Rx)
    {
-      relativity = svPosVel.computeRelativityCorrection() * C_GPS_MPS;
+      relativity = svPosVel.computeRelativityCorrection() * C_MPS;
       
-      svclkbias = svPosVel.clkbias * C_GPS_MPS;
-      svclkdrift = svPosVel.clkdrift * C_GPS_MPS;
+      svclkbias = svPosVel.clkbias * C_MPS;
+      svclkdrift = svPosVel.clkdrift * C_MPS;
       
       cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
       cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
@@ -232,7 +232,7 @@ namespace gpstk
       // compute it separately here, in units seconds.
       double dtr = ( -2.0 *( svPosVel.x[0] * svPosVel.v[0]
                              + svPosVel.x[1] * svPosVel.v[1]
-                             + svPosVel.x[2] * svPosVel.v[2] ) / C_GPS_MPS ) / C_GPS_MPS;
+                             + svPosVel.x[2] * svPosVel.v[2] ) / C_MPS ) / C_MPS;
       return dtr;
    }
 

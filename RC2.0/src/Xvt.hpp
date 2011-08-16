@@ -100,7 +100,7 @@ namespace gpstk
    double computeRelativityCorrection(void)
    {
      // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
-     relcorr = (-2.0*(x[0]*v[0] + x[1]*v[1] + x[2]*v[2])/C_GPS_MPS)/ C_GPS_MPS;
+     relcorr = (-2.0*(x[0]*v[0] + x[1]*v[1] + x[2]*v[2])/C_MPS)/ C_MPS;
      return relcorr;
    }
 

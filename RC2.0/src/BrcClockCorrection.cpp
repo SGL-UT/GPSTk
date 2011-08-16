@@ -168,7 +168,7 @@ namespace gpstk
       throw(gpstk::InvalidRequest)
    {
       double ret = svClockBias(t);
-      ret = ret*C_GPS_MPS;
+      ret = ret*C_MPS;
       return (ret);
    }
 
