@@ -1,4 +1,4 @@
-#pragma ident "$Id: ARMLambda.hpp 2620 2011-05-26 14:42:13Z yanweignss $"
+#pragma ident "$Id$"
 
 /**
  * @file ARMLambda.hpp

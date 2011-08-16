@@ -83,9 +83,9 @@ namespace gpstk
                      double correction = 0) const
      throw();
 
-    Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
-    double clkbias;  ///< Sat clock correction in seconds
-    ReferenceFrame frame;
+   Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
+   double clkbias;  ///< Sat clock correction in seconds
+   ReferenceFrame frame;
 
    Triple getVel() throw()
    { return v; }

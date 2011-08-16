@@ -1,4 +1,4 @@
-#pragma ident "$Id: GPSEllipsoid.hpp 2293 2010-02-12 18:14:16Z btolman $"
+#pragma ident "$Id$"
 /**
  * @file GPSEllipsoid.hpp
  * The GPS Ellipsoid defined in ICD-GPS-200

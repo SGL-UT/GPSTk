@@ -1,4 +1,4 @@
-#pragma ident "$Id: icd_gps_constants.hpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id$"
 
 /**
  * @file icd_gps_constants.hpp

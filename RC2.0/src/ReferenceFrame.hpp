@@ -1,4 +1,4 @@
-#pragma ident "$Id: ReferenceFrame.hpp 2009-06-25 14:11:00 tvarney $"
+#pragma ident "$Id$"
 
 #ifndef GPSTK_REFERENCE_FRAME_HPP
 #define GPSTK_REFERENCE_FRAME_HPP

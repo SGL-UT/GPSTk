@@ -1,4 +1,4 @@
-#pragma ident "$Id: Rinex3ObsFilterOperators.hpp 1709 2009-02-18 20:27:47Z btolman $"
+#pragma ident "$Id$"
 
 /**
  * @file Rinex3ObsFilterOperators.hpp
