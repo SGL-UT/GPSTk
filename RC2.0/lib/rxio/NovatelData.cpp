@@ -62,7 +62,7 @@ namespace gpstk
 {
 
    // --------------------------------------------------------------------------------
-   const double CFF=C_GPS_MPS/OSC_FREQ_GPS;
+   const double CFF=C_MPS/OSC_FREQ_GPS;
    const double wl1=CFF/L1_MULT_GPS;
    const double wl2=CFF/L2_MULT_GPS;
    const double PhaseRollover=8388608;

@@ -219,7 +219,7 @@ namespace gpstk
       obs.carrier = cc;
       obs.range = rc;
       obs.snr = cb.snr(chipRate);
-      obs.pseudorange = cb.raw_range * C_GPS_MPS;
+      obs.pseudorange = cb.raw_range * C_MPS;
       obs.phase = cb.full_phase;
       obs.doppler = -cb.doppler; // yeah, the Ashtech sign is backwards
       obs.bw=1;
@@ -291,11 +291,11 @@ namespace gpstk
       pvt.x[0] = pben.navx;
       pvt.x[1] = pben.navy;
       pvt.x[2] = pben.navz;
-      pvt.dtime = pben.navt / C_GPS_MPS;
+      pvt.dtime = pben.navt / C_MPS;
       pvt.v[0] = pben.navxdot;
       pvt.v[1] = pben.navydot;
       pvt.v[2] = pben.navzdot;
-      pvt.ddtime = pben.navtdot / C_GPS_MPS;
+      pvt.ddtime = pben.navtdot / C_MPS;
       
       pvt.time=GPSWeekSecond(week, pben.sow);
       pvt.timep = pvt.time + pvt.dtime;
