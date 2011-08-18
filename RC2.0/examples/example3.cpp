@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 
 //Compute multipath
 //-----------------
-                double mu = P1 -L1*(C_GPS_MPS/L1_FREQ_GPS) -2*(P1 -P2)/(1-gamma);
+                double mu = P1 -L1*(C_MPS/L1_FREQ_GPS) -2*(P1 -P2)/(1-gamma);
 
                 // The following line makes sure that you get a proper output format
                 // The line above with "roh.dump" sets this, but just in case...
