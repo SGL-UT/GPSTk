@@ -173,7 +173,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
          wart = 1;
       double clk = ordEpoch.clockResidual;
       if (outputClockInNs)
-         clk *=  1e9/C_GPS_MPS;
+         clk *=  1e9/C_MPS;
       s << time << " " << setw(4) << type
         << " " << setprecision(5) << setw(24) << clk
         << setw(6) << wart << endl;
@@ -187,7 +187,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
          wart = 1;
       double clk = ordEpoch.clockOffset;
       if (outputClockInNs)
-         clk *= 1e9 / C_GPS_MPS;
+         clk *= 1e9 / C_MPS;
       s << time << " " << setw(4) << type
         << " " << setprecision(5) << setw(24) << clk
         << setw(6) << wart << endl;

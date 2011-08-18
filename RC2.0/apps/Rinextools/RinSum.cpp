@@ -364,10 +364,10 @@ try {
                   totals[k]++;
                }
                // save L1 range and phase for clk jump test below
-               if(jt->first==RinexObsHeader::C1) C1 = jt->second.data*1000.0/C_GPS_MPS;
-               if(jt->first==RinexObsHeader::P1) P1 = jt->second.data*1000.0/C_GPS_MPS;
+               if(jt->first==RinexObsHeader::C1) C1 = jt->second.data*1000.0/C_MPS;
+               if(jt->first==RinexObsHeader::P1) P1 = jt->second.data*1000.0/C_MPS;
                if(jt->first == RinexObsHeader::L1) {
-                  L1 = jt->second.data * 1000.0/C_GPS_MPS;
+                  L1 = jt->second.data * 1000.0/C_MPS;
                   L1lli = jt->second.lli;
                }
                // dump this data
@@ -393,7 +393,7 @@ try {
                   test = 0.0;
                if(fabs(test) > 0.5) {      // test must be > 150 km =~ 1/2 millisecond
                   // is it nearly an even multiple of 1 millisecond?
-                  //test *= 1000.0/C_GPS_MPS;  // leave sign on it
+                  //test *= 1000.0/C_MPS;  // leave sign on it
                   if(debug) *pout << "possible clock jump: test = "
                                  << setprecision(9) << test;
                   nms = long(test + (test > 0 ? 0.5 : -0.5));

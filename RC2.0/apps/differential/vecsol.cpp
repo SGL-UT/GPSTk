@@ -472,8 +472,8 @@ Triple permanentTide(double const phi)
 	const double wt2(-L2_F2 / LDIF_F2);
 	double lambda1, lambda2;
 	if (phase) {
-	    lambda1 = C_GPS_MPS / L1_FREQ_GPS;
-	    lambda2 = C_GPS_MPS / L2_FREQ_GPS;
+	    lambda1 = C_MPS / L1_FREQ_GPS;
+	    lambda2 = C_MPS / L2_FREQ_GPS;
 	} else {
 	    lambda1 = 1.0;		// Already in metres
 	    lambda2 = 1.0;
@@ -839,8 +839,8 @@ Triple permanentTide(double const phi)
 					// Clock corrections:
 					double cc1 = lambda1 * rangeVecL1_1[j] - r1;
 					double cc2 = lambda1 * rangeVecL1_2[i] - r2;
-					rdiffL1 -= (rr1 * cc1 - rr2 * cc2) / C_GPS_MPS;
-					rdiffL2 -= (rr1 * cc1 - rr2 * cc2) / C_GPS_MPS;
+					rdiffL1 -= (rr1 * cc1 - rr2 * cc2) / C_MPS;
+					rdiffL2 -= (rr1 * cc1 - rr2 * cc2) / C_MPS;
 
 					if (iono) {
 					    // Ionospheric corrections:

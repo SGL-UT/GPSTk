@@ -444,19 +444,19 @@ int main(int argc, char **argv)
                      //Because this uses the speed of light, doesn't matter that
                      //it is a GPS constant.
                   if(index == satSystem.indexC1C)
-                     C1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
+                     C1 = (it->second)[index].data * 1000.0 / C_MPS;
                   if(index == satSystem.indexC1P)
-                     P1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
+                     P1 = (it->second)[index].data * 1000.0 / C_MPS;
                   if(index == satSystem.indexL1C)
                   {
-                     L1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
+                     L1 = (it->second)[index].data * 1000.0 / C_MPS;
                      L1lli = (it->second)[index].lli;
                   }
                   if(index == satSystem.indexL1P && L1 == 0)
                   {
                         //Only use this one if the other L1 hasn't been found
                         //Do I need this?
-                     L1 = (it->second)[index].data * 1000.0 / C_GPS_MPS;
+                     L1 = (it->second)[index].data * 1000.0 / C_MPS;
                      L1lli = (it->second)[index].lli;
                   }
                   //Shouldn't need the debug statement.
@@ -488,7 +488,7 @@ int main(int argc, char **argv)
                   {
                         //Test must be > 150 km =~ 1/2 millisecond
                         //Is it nearly an even multiple of 1 millisecond?
-                     //test *= 1000.0/C_GPS_MPS;  // leave sign on it
+                     //test *= 1000.0/C_MPS;  // leave sign on it
                      if(debug)
                         *pout << "possible clock jump: test = "
                                     << setprecision(9) << test;

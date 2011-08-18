@@ -62,7 +62,7 @@ static bool debug=false;
 namespace gpstk
 {
 
-   static const double CFF=C_GPS_MPS/OSC_FREQ_GPS;
+   static const double CFF=C_MPS/OSC_FREQ_GPS;
    static const double wl1=CFF/L1_MULT_GPS;
    static const double wl2=CFF/L2_MULT_GPS;
 
@@ -217,9 +217,9 @@ namespace gpstk
          {
             
             int prn      = StringUtils::asInt(    StringUtils::word(i->buffer,3,','));
-            double C1    = StringUtils::asDouble( StringUtils::word(i->buffer,13,',')) * C_GPS_MPS / 1000.0;
-            double P1    = StringUtils::asDouble( StringUtils::word(i->buffer,23,',')) * C_GPS_MPS / 1000.0;
-            double P2    = StringUtils::asDouble( StringUtils::word(i->buffer,33,',')) * C_GPS_MPS / 1000.0;
+            double C1    = StringUtils::asDouble( StringUtils::word(i->buffer,13,',')) * C_MPS / 1000.0;
+            double P1    = StringUtils::asDouble( StringUtils::word(i->buffer,23,',')) * C_MPS / 1000.0;
+            double P2    = StringUtils::asDouble( StringUtils::word(i->buffer,33,',')) * C_MPS / 1000.0;
             double L1    = StringUtils::asDouble( StringUtils::word(i->buffer,22,','));
             double L2    = StringUtils::asDouble( StringUtils::word(i->buffer,32,','));
             double D1    = StringUtils::asDouble( StringUtils::word(i->buffer,24,','));

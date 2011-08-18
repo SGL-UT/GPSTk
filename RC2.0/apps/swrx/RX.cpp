@@ -492,7 +492,7 @@ void RxSim::process()
                if(dataPoints[i] != 0)
                {
                      // 0.073 is an arbitrary guessed time of flight
-                  obsVec[i] = gpstk::C_GPS_MPS*(0.073 - (refDataPoint - 
+                  obsVec[i] = gpstk::C_MPS*(0.073 - (refDataPoint - 
                        dataPoints[i])/(sampleRate)); //*2 because of hilbert
                }  
                else
@@ -513,10 +513,10 @@ void RxSim::process()
             cout << endl << "Position (ECEF): " << fixed << sol[0] 
                  << " " << sol[1] 
                  << " " << sol[2] << endl;
-            time -= (sol[3] / gpstk::C_GPS_MPS);
+            time -= (sol[3] / gpstk::C_MPS);
             cout << "Time: " << time << endl;  
                //cout << "Clock Error (includes that caused by guess): " 
-               //<< sol[3]*1000/gpstk::C_GPS_MPS << " ms" << endl;
+               //<< sol[3]*1000/gpstk::C_MPS << " ms" << endl;
             cout << "# good SV's: " << prSolver.Nsvs << endl
                  << "RMSResidual: " << prSolver.RMSResidual << " meters" 
                  << endl;

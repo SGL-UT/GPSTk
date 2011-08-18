@@ -49,7 +49,7 @@
 #include "GNSSconstants.hpp"
 
 //------------------------------------------------------------------------------------
-const double CFF=gpstk::C_GPS_MPS/gpstk::OSC_FREQ_GPS;
+const double CFF=gpstk::C_MPS/gpstk::OSC_FREQ_GPS;
 const double F1=gpstk::L1_MULT_GPS;   // 154.0;
 const double F2=gpstk::L2_MULT_GPS;   // 120.0;
 const double f12=F1*F1;

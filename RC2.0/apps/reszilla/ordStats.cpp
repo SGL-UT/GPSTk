@@ -203,7 +203,7 @@ void OrdStats::process()
          if (!iter->second.clockOffset.is_valid())
             continue;
         const double offset = iter->second.clockOffset;
-        if (abs(offset) > (C_GPS_MPS/1000))
+        if (abs(offset) > (C_MPS/1000))
         {
           foundBigOffset = true;
           output << ">b " << iter->second.time << " "

@@ -483,7 +483,7 @@ void RINEXPVTSolution::process()
 
                       if ((useSmoother) && (itL1 != otmap.end()))
 		                {
-                         double phase = ((*itL1).second.data)*C_GPS_MPS / L1_FREQ_GPS
+                         double phase = ((*itL1).second.data)*C_MPS / L1_FREQ_GPS
                                     + ionocorr;
                          range = carrierPhaseSmooth( (*it).first, range, phase, 
                                                  rod.time, 300.0, obsInterval);
@@ -512,8 +512,8 @@ void RINEXPVTSolution::process()
                        
                          if ( (useSmoother) && (itL1!=otmap.end()) && (itL2!=otmap.end()) )
                          {
-                             double ionocorrPhase = -1./(1.-gamma)*((*itL1).second.data*C_GPS_MPS / L1_FREQ_GPS-(*itL2).second.data*C_GPS_MPS / L2_FREQ_GPS);
-                             double phase = (*itL1).second.data * C_GPS_MPS / L1_FREQ_GPS - ionocorrPhase;
+                             double ionocorrPhase = -1./(1.-gamma)*((*itL1).second.data*C_MPS / L1_FREQ_GPS-(*itL2).second.data*C_MPS / L2_FREQ_GPS);
+                             double phase = (*itL1).second.data * C_MPS / L1_FREQ_GPS - ionocorrPhase;
 			                    range = carrierPhaseSmooth( (*it).first, range, phase, 
                                                           rod.time, 86400.0, obsInterval);
 		                   }

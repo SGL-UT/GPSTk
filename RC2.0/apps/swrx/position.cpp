@@ -259,7 +259,7 @@ void P::process()
       if(dataPoints[i] != 0)
       {
          // 0.073 is an arbitrary guessed time of flight
-         obsVec[i] = gpstk::C_GPS_MPS*(0.073 - (refDataPoint - 
+         obsVec[i] = gpstk::C_MPS*(0.073 - (refDataPoint - 
                                 dataPoints[i])/(1000*sampleRate*1000));
       }  
       else
@@ -286,7 +286,7 @@ void P::process()
 
    cout << endl << "Position (ECEF): " << fixed << sol[0] << " " << sol[1] 
         << " " << sol[2] << endl << "Clock Error (includes that caused by guess): " 
-        << sol[3]*1000/gpstk::C_GPS_MPS << " ms" << endl;
+        << sol[3]*1000/gpstk::C_MPS << " ms" << endl;
    cout << "# good SV's: " << prSolver.Nsvs << endl
         << "RMSResidual: " << prSolver.RMSResidual << " meters" << endl << endl;
 //----------------------------------------------------------------------------- 
@@ -325,7 +325,7 @@ void P::process()
 
 //----------------------------------------------------------------------------- 
 // Recalculate position using time corrected by clock error + ionosphere.
-   time -= (sol[3] / gpstk::C_GPS_MPS);
+   time -= (sol[3] / gpstk::C_MPS);
    GGTropModel gg2;
    gg2.setWeather(30.,1000., 20.); /*(Temp(C),Pressure(mbar),Humidity(%))*/    
    PRSolution prSolver2;
@@ -336,7 +336,7 @@ void P::process()
         << fixed << setprecision(6);
    cout << endl << "Position (ECEF): " << fixed << sol2[0] << " " << sol2[1] 
         << " " << sol2[2] << endl << "Clock Error: " 
-        << sol2[3]*1e6/gpstk::C_GPS_MPS << " us" << endl;
+        << sol2[3]*1e6/gpstk::C_MPS << " us" << endl;
    cout << "# good SV's: " << prSolver2.Nsvs << endl
         << "RMSResidual: " << prSolver2.RMSResidual << " meters" << endl;
 

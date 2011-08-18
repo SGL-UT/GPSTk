@@ -301,13 +301,13 @@ protected:
 
 				// note that raw_range is in seconds
 				if (mben.p1.raw_range)
-					prL1 = mben.p1.raw_range * C_GPS_MPS;
+					prL1 = mben.p1.raw_range * C_MPS;
 				else if (debugLevel > 3)
 					cout << "No L1 range value for PRN " << mben.svprn
 					     << " at time " << tempTime << endl;
 				
 				if (mben.p2.raw_range)
-					prL2 = mben.p2.raw_range * C_GPS_MPS;
+					prL2 = mben.p2.raw_range * C_MPS;
 				else if (debugLevel > 3)
 					cout << "No L2 range value for PRN " << mben.svprn
 					     << " at time " << tempTime << endl;
