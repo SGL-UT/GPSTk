@@ -28,7 +28,7 @@
 #include "math.h"
 
 #include "RACRotation.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "Xvt.hpp"
 #include "Position.hpp"
 
