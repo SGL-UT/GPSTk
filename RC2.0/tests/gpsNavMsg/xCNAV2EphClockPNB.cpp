@@ -15,7 +15,7 @@
 #include "CivilTime.hpp"
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "CNAV2EphClk.hpp"
 
 using namespace std;

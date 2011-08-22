@@ -12,7 +12,7 @@
 #include "CivilTime.hpp"
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 
 using namespace std;
 using namespace gpstk;

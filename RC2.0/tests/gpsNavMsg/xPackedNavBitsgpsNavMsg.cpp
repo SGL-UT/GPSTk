@@ -14,7 +14,7 @@
 #include "CivilTime.hpp"
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
-#include "icd_gps_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "xPackedNavBitsgpsNavMsg.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xPackedNavBitsgpsNavMsg);
