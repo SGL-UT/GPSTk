@@ -232,7 +232,11 @@ namespace gpstk
       strm.formattedGetLine(line);
       getBroadcastOrbit3(line);
 
-      if ( satSys == "G" || satSys == "E" )
+      if(satSys == "S" || satSys == "R") return;
+
+      // COMPASS "C" TBD
+
+      if(satSys == "G" || satSys == "E")
       {
         strm.formattedGetLine(line);
         getBroadcastOrbit4(line);
@@ -251,7 +255,7 @@ namespace gpstk
 
    void Rinex3NavData::dump(ostream& s) const
    {
-      if(satSys == "G")
+      if(satSys == "G")          // GPS
          s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
             << " TOE: " << printTime(time,"%4F %10.3g")
             << " TOC: " << setw(4) << weeknum << " " 
@@ -262,7 +266,7 @@ namespace gpstk
             << " IODE: " << setw(4) << int(IODE)            // IODE should be int
             << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
             << endl;
-      else if(satSys == "R")
+      else if(satSys == "R")     // GLONASS
          s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
             << " freq: " << setw(2) << freqNum
             << " hlth: " << setw(2) << health
@@ -272,6 +276,18 @@ namespace gpstk
             << " GammaN: " << setw(19) << GammaN
             << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo
             << endl;
+      else if(satSys == "S")     // Geosync (SBAS)
+         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
+            << " URAm: " << setw(2) << freqNum
+            << " hlth: " << setw(2) << health
+            << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
+            << " MFtime: " << setw(6) << MFtime
+            << " aGf0: " << scientific << setw(19) << setprecision(12) << TauN
+            << " aGf1: " << setw(19) << GammaN
+            << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo
+            << endl;
+      //else if(satSys == "E")   // Galileo
+      //else if(satSys == "C")   // Compass
       else
          s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
             << " (unknown system: " << satSys << ")" << endl;
@@ -386,7 +402,7 @@ namespace gpstk
       line += string(1, ' ');
       line += rightJustify(asString<short>(civtime.second), 2, '0');
 
-      if ( satSys == "R" ) // GLONASS
+      if ( satSys == "R" || satSys == "S" ) // GLONASS
         {
           line += string(1, ' ');
           line += doub2for(TauN          , 18, 2);
@@ -414,7 +430,7 @@ namespace gpstk
       string line;
 
       line += string(4, ' ');
-      if ( satSys == "R" )      // GLONASS
+      if ( satSys == "R" || satSys == "S" )      // GLONASS
         {
           line += string(1, ' ');
           line += doub2for(px, 18, 2);
@@ -457,7 +473,7 @@ namespace gpstk
       string line;
 
       line += string(4, ' ');
-      if ( satSys == "R" )
+      if ( satSys == "R" || satSys == "S" )
         {
           line += string(1, ' ');
           line += doub2for(py, 18, 2);
@@ -489,8 +505,7 @@ namespace gpstk
       string line;
 
       line += string(4, ' ');
-      if ( satSys == "R" )
-        {
+      if(satSys == "R" || satSys == "S") {
           line += string(1, ' ');
           line += doub2for(pz, 18, 2);
           line += string(1, ' ');
@@ -499,9 +514,8 @@ namespace gpstk
           line += doub2for(az, 18, 2);
           line += string(1, ' ');
           line += doub2for(ageOfInfo, 18, 2);
-        }
-      else
-        {
+      }
+      else {
           line += string(1, ' ');
           line += doub2for(Toe   , 18, 2);
           line += string(1, ' ');
@@ -645,6 +659,7 @@ namespace gpstk
          if      ( satSys == "G" ) sat = SatID(PRNID,SatID::systemGPS    );
          else if ( satSys == "R" ) sat = SatID(PRNID,SatID::systemGlonass);
          else if ( satSys == "E" ) sat = SatID(PRNID,SatID::systemGalileo);
+         else if ( satSys == "S" ) sat = SatID(PRNID,SatID::systemGeosync);
 
          short yr  = asInt(currentLine.substr( 4,4));
          short mo  = asInt(currentLine.substr( 9,2));
@@ -661,6 +676,7 @@ namespace gpstk
          if      ( satSys == "G" ) time.setTimeSystem(TimeSystem::GPS);
          else if ( satSys == "R" ) time.setTimeSystem(TimeSystem::GLO);
          else if ( satSys == "E" ) time.setTimeSystem(TimeSystem::GAL);
+         else if ( satSys == "S" ) time.setTimeSystem(TimeSystem::GPS); // TD ??
          if (ds != 0) time += ds;
 
          Toc = ((GPSWeekSecond)time).sow;
@@ -671,7 +687,7 @@ namespace gpstk
            af1 = StringUtils::for2doub(currentLine.substr(42,19));
            af2 = StringUtils::for2doub(currentLine.substr(61,19));
          }
-         else if ( satSys == "R" )
+         else if ( satSys == "R" || satSys == "S" )
          {
            TauN   =      StringUtils::for2doub(currentLine.substr(23,19));
            GammaN =      StringUtils::for2doub(currentLine.substr(42,19));
@@ -704,7 +720,7 @@ namespace gpstk
            dn     = StringUtils::for2doub(currentLine.substr(42,19));
            M0     = StringUtils::for2doub(currentLine.substr(61,19));
          }
-         else if ( satSys == "R" )
+         else if ( satSys == "R" || satSys == "S")
          {
            px     =        StringUtils::for2doub(currentLine.substr( 4,19));
            vx     =        StringUtils::for2doub(currentLine.substr(23,19));
@@ -731,7 +747,7 @@ namespace gpstk
            Cus   = StringUtils::for2doub(currentLine.substr(42,19));
            Ahalf = StringUtils::for2doub(currentLine.substr(61,19));
          }
-         else if ( satSys == "R" )
+         else if ( satSys == "R" || satSys == "S")
          {
            py      =        StringUtils::for2doub(currentLine.substr( 4,19));
            vy      =        StringUtils::for2doub(currentLine.substr(23,19));
@@ -758,7 +774,7 @@ namespace gpstk
            OMEGA0 = StringUtils::for2doub(currentLine.substr(42,19));
            Cis    = StringUtils::for2doub(currentLine.substr(61,19));
          }
-         else if ( satSys == "R" )
+         else if ( satSys == "R" || satSys == "S")
          {
            pz        = StringUtils::for2doub(currentLine.substr( 4,19));
            vz        = StringUtils::for2doub(currentLine.substr(23,19));
@@ -823,17 +839,17 @@ namespace gpstk
       {
          if ( satSys == "G" )
          {
-           accuracy  =                    StringUtils::for2doub(currentLine.substr( 4,19));
-           health    = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
-           Tgd       =                    StringUtils::for2doub(currentLine.substr(42,19));
-           IODC      =                    StringUtils::for2doub(currentLine.substr(61,19));
+           accuracy =                    StringUtils::for2doub(currentLine.substr( 4,19));
+           health   = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
+           Tgd      =                    StringUtils::for2doub(currentLine.substr(42,19));
+           IODC     =                    StringUtils::for2doub(currentLine.substr(61,19));
          }
          else if ( satSys == "E" )
          {
-           accuracy  =                    StringUtils::for2doub(currentLine.substr( 4,19));
-           health    = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
-           BGDa      =                    StringUtils::for2doub(currentLine.substr(42,19));
-           BGDb      =                    StringUtils::for2doub(currentLine.substr(61,19));
+           accuracy =                    StringUtils::for2doub(currentLine.substr( 4,19));
+           health   = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
+           BGDa     =                    StringUtils::for2doub(currentLine.substr(42,19));
+           BGDb     =                    StringUtils::for2doub(currentLine.substr(61,19));
          }
       }
       catch (std::exception &e)
