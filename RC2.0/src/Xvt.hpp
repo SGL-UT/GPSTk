@@ -47,73 +47,79 @@
 
 #include <iostream>
 #include "Triple.hpp"
-#include "ReferenceFrame.hpp"
 #include "EllipsoidModel.hpp"
+#include "ReferenceFrame.hpp"
 #include "GNSSconstants.hpp"
 
 namespace gpstk
 {
-  /** @addtogroup geodeticgroup */
-  //@{
+   /** @addtogroup geodeticgroup */
+   //@{
 
-  /// Earth-Centered, Earth-Fixed Cartesian position, velocity, clock bias and drift
-  class Xvt
-  {
-  public:
-
-   /// Default constructor
-   Xvt()
-     : v(0.,0.,0.), clkdrift(0.), relcorr(0.)
-   {}
-
-   /// Destructor.
-   virtual ~Xvt()
-   {}
-
-    Triple getPos()
-      throw()
-    { return x; }
-
-    double getClockBias()
-      throw()
-    { return clkbias; }
-
-   double preciseRho(const Triple& rxPos, 
-                     const EllipsoidModel& ellipsoid,
-                     double correction = 0) const
-     throw();
-
-   Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
-   double clkbias;  ///< Sat clock correction in seconds
-   ReferenceFrame frame;
-
-   Triple getVel() throw()
-   { return v; }
-
-   double getClockDrift() throw()
-   { return clkdrift; }
-
-   double getRelativityCorr() throw()
-   { return relcorr; }
-
-   /// Compute the relativity correction (-2R dot V/c^2) in seconds
-   double computeRelativityCorrection(void)
+   /// Earth-Centered, Earth-Fixed Cartesian position, velocity, clock bias and drift
+   class Xvt
    {
-     // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
-     relcorr = (-2.0*(x[0]*v[0] + x[1]*v[1] + x[2]*v[2])/C_MPS)/ C_MPS;
-     return relcorr;
-   }
+   public:
 
-//  protected:
+      /// Default constructor
+      Xvt() : x(0.,0.,0.), v(0.,0.,0.),
+              clkbias(0.), clkdrift(0.),
+              relcorr(0.) //, frame(ReferenceFrame::Unknown)
+         {};
 
-   Triple v;        ///< satellite velocity in ECEF Cartesian, meters/second
-   double clkdrift; ///< satellite clock drift in seconds/second
-   double relcorr;  ///< relativity correction (standard ICD 2R.V/c^2 term), seconds
-  };
+      /// Destructor.
+      virtual ~Xvt()
+         {}
 
-  //@}
+      /// access the position, ECEF Cartesian in meters
+      Triple getPos() throw()
+         { return x; }
 
-}
+      /// access the velocity in m/s
+      Triple getVel() throw()
+         { return v; }
+
+      /// access the clock bias, in second
+      double getClockBias() throw()
+         { return clkbias; }
+
+      /// access the clock drift, in second/second
+      double getClockDrift() throw()
+         { return clkdrift; }
+
+      /// access the relativity correction, in seconds
+      double getRelativityCorr() throw()
+         { return relcorr; }
+
+      /// Compute and return the relativity correction (-2R dot V/c^2) in seconds
+      /// NB -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
+      double computeRelativityCorrection(void);
+
+      /// Given the position of a ground location, compute the range
+      /// to the spacecraft position.
+      /// @param rxPos ground position at broadcast time in ECEF.
+      /// @param ellipsoid geodetic parameters.
+      /// @param correction offset in meters (include any factors other
+      /// than the SV clock correction and the relativity correction).
+      /// @return Range in meters
+      double preciseRho(const Triple& rxPos, 
+                        const EllipsoidModel& ellipsoid,
+                        double correction = 0) const throw();
+
+      // member data
+
+      Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
+      Triple v;        ///< satellite velocity in ECEF Cartesian, meters/second
+      double clkbias;  ///< Sat clock correction in seconds
+      double clkdrift; ///< satellite clock drift in seconds/second
+      double relcorr;  ///< relativity correction (standard 2R.V/c^2 term), seconds
+      ReferenceFrame frame;   ///< reference frame of this data
+
+   }; // end class Xvt
+
+   //@}
+
+}  // end namespace gpstk
 
 /**
  * Output operator for Xvt

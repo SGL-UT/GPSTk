@@ -141,6 +141,17 @@ namespace gpstk
          const throw()
       { return true; }
 
+      /// Return true if velocity data is present in the store
+      virtual bool hasVelocity() const throw()
+      { return true; }
+
+      /// Return true if the given SatID is present in the store
+      /// TD correct?
+      virtual bool isPresent(const SatID& id) const throw()
+      {
+         return (ube.find(id.id) != ube.end());
+      }
+
       //---------------------------------------------------------------
       // Below are interfaces that are unique to this class (i.e. not 
       // in the parent class)
