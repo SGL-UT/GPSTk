@@ -60,6 +60,9 @@
    // Class to filter out observables grossly out of limits
 #include "SimpleFilter.hpp"
 
+  // YDS Time-class
+#include "YDSTime.hpp"
+
 
 using namespace std;
 using namespace gpstk;
@@ -92,7 +95,7 @@ int main(void)
    ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
       // Beware: In this case, the same model will be used for the
       // full data span
-   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
 
       // Storing the ephemeris in "bceStore"
    while (rnavin >> rNavData)
@@ -155,7 +158,7 @@ int main(void)
                        (modelRef.rxPos.Y() + solver.solution[1]),
                        (modelRef.rxPos.Z() + solver.solution[2]) );
 
-      cout << gRin.header.epoch.DOYsecond() << " ";   // Output field #1
+      cout << static_cast<YDSTime>(gRin.header.epoch).sod << " ";   // Output field #1
       cout << solPos.X() << "   ";                    // Output field #2
       cout << solPos.Y() << "   ";                    // Output field #3
       cout << solPos.Z() << "   ";                    // Output field #4

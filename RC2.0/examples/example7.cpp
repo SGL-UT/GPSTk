@@ -99,6 +99,9 @@
    // Class to synchronize two GNSS Data Structures data streams.
 #include "Synchronize.hpp"
 
+  // YDS Time-class
+#include "YDSTime.hpp"
+
 #include "geometry.hpp"                   // DEG_TO_RAD
 
 
@@ -138,7 +141,7 @@ int main(void)
    ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
       // Beware: In this case, the same model will be used for the
       // full data span
-   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
 
       // Storing the ephemeris in "bceStore"
    while (rnavin >> rNavData)
@@ -419,7 +422,7 @@ int main(void)
 
 
          // Let's output the time stamp (in seconds of day)
-      cout << gOriginal.header.epoch.DOYsecond() << "  ";   // Output field #1
+      cout << static_cast<YDSTime>(gOriginal.header.epoch).sod << "  ";   // Output field #1
 
 
    //////////////////////////// CASE #1  ////////////////////////////

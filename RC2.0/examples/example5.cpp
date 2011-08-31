@@ -67,7 +67,8 @@
 
 #include "geometry.hpp"                   // DEG_TO_RAD
 
-
+// Time-class year-day-second
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -174,7 +175,7 @@ void example5::spinUp()
     // Let's feed the ionospheric model (Klobuchar type) from data in the Navigation file header
     ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
     // WARNING-WARNING-WARNING: In this case, the same model will be used for the full data span
-    ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+    ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
 
     // Storing the ephemeris in "bceStore"
     while (rNavFile >> rNavData) bceStore.addEphemeris(rNavData);
@@ -218,7 +219,7 @@ void example5::process()
                 rxLatitude = formerPosition.getGeodeticLatitude();
             }
             else {  // Use Bancroft method is no a priori position is available
-                cerr << "Bancroft method was used at epoch " << rData.time.DOYsecond() << endl;
+                cerr << "Bancroft method was used at epoch " << static_cast<YDSTime>(rData.time).sod << endl;
                 prepareResult = modelPR.Prepare(rData.time, obsC1.availableSV, obsC1.obsData, bceStore);
                 // We need to seed this kind of tropospheric model with receiver altitude
                 rxAltitude = modelPR.rxPos.getAltitude();
@@ -232,7 +233,7 @@ void example5::process()
             // If there were no problems, let's feed the tropospheric model
             mopsTM.setReceiverHeight(rxAltitude);
             mopsTM.setReceiverLatitude(rxLatitude);
-            mopsTM.setDayOfYear(rData.time.DOY());
+            mopsTM.setDayOfYear(static_cast<YDSTime>(rData.time).doy);
 
 
             // Now, let's compute the GPS model for our observable (C1)
@@ -254,7 +255,7 @@ void example5::process()
                     solver.Compute(modelPR.prefitResiduals, modelPR.geoMatrix, mopsWeights.weightsVector);
                 }
                 catch(InvalidSolver& e) {
-                    cerr << "Couldn't solve equations system at epoch " << rData.time.DOYsecond() << endl;
+                    cerr << "Couldn't solve equations system at epoch " << static_cast<YDSTime>(rData.time).sod << endl;
                     cerr << e << endl;
                     useFormerPos = false;  // The former position will not be valid next time
                     continue;
@@ -265,7 +266,7 @@ void example5::process()
                 Position solPos( (modelPR.rxPos.X() + solver.solution[0]), (modelPR.rxPos.Y() + solver.solution[1]), (modelPR.rxPos.Z() + solver.solution[2]) );
 
                 // Print results
-                cout << rData.time.DOYsecond()  << "   ";   // Output field #1
+                cout << static_cast<YDSTime>(rData.time).sod  << "   ";   // Output field #1
                 cout << solPos.X() << "   ";                // Output field #2
                 cout << solPos.Y() << "   ";                // Output field #3
                 cout << solPos.Z() << "   ";                // Output field #4

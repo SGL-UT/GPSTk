@@ -185,7 +185,7 @@ private:
       // Method to print solution values
    void printSolution( ofstream& outfile,
                        const  SolverLMS& solver,
-                       const  DayTime& time,
+                       const  CommonTime& time,
                        const  ComputeDOP& cDOP,
                        bool   useNEU,
                        int    numSats,
@@ -247,7 +247,7 @@ example9::example9(char* arg0)
    // Method to print solution values
 void example9::printSolution( ofstream& outfile,
                               const SolverLMS& solver,
-                              const DayTime& time,
+                              const CommonTime& time,
                               const ComputeDOP& cDOP,
                               bool  useNEU,
                               int   numSats,
@@ -260,9 +260,9 @@ void example9::printSolution( ofstream& outfile,
 
 
       // Print results
-   outfile << time.year()        << "  ";    // Year           - #1
-   outfile << time.DOY()         << "  ";    // DayOfYear      - #2
-   outfile << time.DOYsecond()   << "  ";    // SecondsOfDay   - #3
+   outfile << static_cast<YDSTime>(time).year        << "  ";    // Year           - #1
+   outfile << static_cast<YDSTime>(time).doy         << "  ";    // DayOfYear      - #2
+   outfile << static_cast<YDSTime>(time).sod   << "  ";    // SecondsOfDay   - #3
 
    if( useNEU )
    {
@@ -330,7 +330,7 @@ void example9::printModel( ofstream& modelfile,
    modelfile << fixed << setprecision( precision );
 
       // Get epoch out of GDS
-   DayTime time(gData.header.epoch);
+   CommonTime time(gData.header.epoch);
 
       // Iterate through the GNSS Data Structure
    for ( satTypeValueMap::const_iterator it = gData.body.begin();
@@ -339,9 +339,9 @@ void example9::printModel( ofstream& modelfile,
    {
 
          // Print epoch
-      modelfile << time.year()         << "  ";    // Year           #1
-      modelfile << time.DOY()          << "  ";    // DayOfYear      #2
-      modelfile << time.DOYsecond()    << "  ";    // SecondsOfDay   #3
+      modelfile << static_cast<YDSTime>(time).year         << "  ";    // Year           #1
+      modelfile << static_cast<YDSTime>(time).doy          << "  ";    // DayOfYear      #2
+      modelfile << static_cast<YDSTime>(time).sod    << "  ";    // SecondsOfDay   #3
 
          // Print satellite information (Satellite system and ID number)
       modelfile << (*it).first << " ";             // System         #4
@@ -502,21 +502,23 @@ void example9::process()
       SP3EphList.rejectBadPositions(true);
       SP3EphList.rejectBadClocks(true);
 
-         // Read if we should check for data gaps.
-      if ( confReader.getValueAsBoolean( "checkGaps", station ) )
-      {
-         SP3EphList.enableDataGapCheck();
-         SP3EphList.setGapInterval(
-                     confReader.getValueAsDouble("SP3GapInterval",station) );
-      }
-
-         // Read if we should check for too wide interpolation intervals
-      if ( confReader.getValueAsBoolean( "checkInterval", station ) )
-      {
-         SP3EphList.enableIntervalCheck();
-         SP3EphList.setMaxInterval(
-                     confReader.getValueAsDouble("maxSP3Interval",station) );
-      }
+// CNQ - enableDataGapCheck, setGapInterval, enableIntervalCheck, and setMaxInterval 
+//       are not SP3EphemerisStore member functions.
+//         // Read if we should check for data gaps.
+//      if ( confReader.getValueAsBoolean( "checkGaps", station ) )
+//      {
+//         SP3EphList.enableDataGapCheck();
+//         SP3EphList.setGapInterval(
+//                     confReader.getValueAsDouble("SP3GapInterval",station) );
+//      }
+//
+//         // Read if we should check for too wide interpolation intervals
+//      if ( confReader.getValueAsBoolean( "checkInterval", station ) )
+//      {
+//         SP3EphList.enableIntervalCheck();
+//         SP3EphList.setMaxInterval(
+//                    confReader.getValueAsDouble("maxSP3Interval",station) );
+//      }
 
 
          // Load all the SP3 ephemerides files from variable list
@@ -945,7 +947,7 @@ void example9::process()
       {
 
             // Store current epoch
-         DayTime time(gRin.header.epoch);
+         CommonTime time(gRin.header.epoch);
 
             // Compute solid, oceanic and pole tides effects at this epoch
          Triple tides( solid.getSolidTide( time, nominalPos )  +
@@ -1087,7 +1089,7 @@ void example9::process()
       while( fbpppSolver.LastProcess(gRin) )
       {
 
-         DayTime time(gRin.header.epoch);
+         CommonTime time(gRin.header.epoch);
 
          printSolution( outfile,
                         fbpppSolver,

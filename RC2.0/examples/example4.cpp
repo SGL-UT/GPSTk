@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
    }
 
    // Let's compute an useful constant (also found in "icd_200_constants.hpp")
-   const double gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
+   const double gamma = (L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS);
 
    try
    {

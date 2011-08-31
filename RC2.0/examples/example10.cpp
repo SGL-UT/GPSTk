@@ -349,7 +349,7 @@ int main(void)
    while(rin >> gRin)
    {
 
-      DayTime time(gRin.header.epoch);
+      CommonTime time(gRin.header.epoch);
 
          // Compute the effect of solid, oceanic and pole tides
       Triple tides( solid.getSolidTide(time, nominalPos) +
@@ -441,7 +441,7 @@ int main(void)
       if(printPosition)
       {
             // Print here the position results
-         cout << time.DOYsecond()      << "  ";     // Epoch - Output field #1
+         cout << static_cast<YDSTime>(time).sod      << "  ";     // Epoch - Output field #1
 
          cout << pppSolver.getSolution(TypeID::dLat) << "  ";    // dLat  - #2
          cout << pppSolver.getSolution(TypeID::dLon) << "  ";    // dLon  - #3
@@ -464,7 +464,7 @@ int main(void)
          cout << endl;
 
             // For statistical purposes we discard the first two hours of data
-         if (time.DOYsecond() > 7200.0)
+         if (static_cast<YDSTime>(time).sod > 7200.0)
          {
                // Statistical summary
             double errorV( pppSolver.solution[1]*pppSolver.solution[1] +
@@ -526,9 +526,9 @@ int main(void)
          {
 
                // Print epoch
-            cout << time.year()        << " ";
-            cout << time.DOY()         << " ";
-            cout << time.DOYsecond()   << " ";
+            cout << static_cast<YDSTime>(time).year        << " ";
+            cout << static_cast<YDSTime>(time).doy         << " ";
+            cout << static_cast<YDSTime>(time).sod  << " ";
 
             cout << cDOP.getGDOP()        << "  ";  // GDOP #4
             cout << cDOP.getPDOP()        << "  ";  // PDOP #5
