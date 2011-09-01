@@ -42,6 +42,7 @@
 #include <fstream>
 #include <string>
 
+#include "GNSSconstants.hpp"
 #include "BasicFramework.hpp"
 #include "Exception.hpp"
 #include "ORDEpoch.hpp"
