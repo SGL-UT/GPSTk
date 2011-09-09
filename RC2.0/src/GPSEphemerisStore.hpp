@@ -254,7 +254,7 @@ namespace gpstk
       void validSatSystem(const SatID sat)
           const throw(InvalidRequest)
       {
-          InvalidRequest ire( std::string("Try to get NONE GPS sat position ")
+          InvalidRequest ire( std::string("Try to get NON-GPS sat position ")
               + std::string("from GPSEphemerisStore, and it's forbidden!") );
 
           if(sat.system!=SatID::systemGPS) GPSTK_THROW(ire);

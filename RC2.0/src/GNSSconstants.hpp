@@ -52,7 +52,7 @@ namespace gpstk
       /**
        * @addtogroup geodeticgroup
        * @name GNSS Constants
-       * Time constants are in the time library.
+       * Time constants are in TimeConstants.hpp
        */
       //@{
 

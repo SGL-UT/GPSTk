@@ -145,7 +145,6 @@ namespace gpstk
 
       /// Return the system name as a string.
       /// @note Return only RINEX types or 'Unknown'.
-
       std::string systemString() const
          throw()
       {
@@ -158,6 +157,23 @@ namespace gpstk
             case systemTransit: return "Transit";
             case systemCompass: return "Compass";
             default:            return "Unknown";
+         }
+      };
+
+      /// Return the system name as a string of length 3.
+      /// @note Return only RINEX types or 'Unknown'.
+      std::string systemString3() const
+         throw()
+      {
+         switch(system)
+         {
+            case systemGPS:     return "GPS";
+            case systemGalileo: return "GAL";
+            case systemGlonass: return "GLO";
+            case systemGeosync: return "GEO";
+            case systemTransit: return "TRN";     // RINEX ver 2
+            case systemCompass: return "COM";
+            default:            return "Unk";
          }
       };
 

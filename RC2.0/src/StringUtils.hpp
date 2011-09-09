@@ -990,7 +990,7 @@ namespace gpstk
          /**
           * Work-horse method for printf.  Substitutes patterns
           * matching \a pat with \a rep.  Use only one pattern/token
-          * at a time!  This used to be CommonTime::iprint().
+          * at a time!  This used to be DayTime::iprint().
           * @param fmt format to use for this time.
           * @param pat regular expression pattern to match.
           * @param rep sprintf token replacement.  First character is
@@ -2377,7 +2377,7 @@ namespace gpstk
       {
          std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
          std::string::size_type prec = (precision > 0 ? precision : 1);
-         int leng = (length > 0 ? length : 1);
+         std::string::size_type leng = (length > 0 ? length : 1);
          int i = (int(leng) - int(elen) - 4);
          if(showPlus) i--;
          if(i > 0 && leng < i) leng = std::string::size_type(i);
@@ -2390,9 +2390,9 @@ namespace gpstk
          std::string::size_type pos = str1.find_first_of("EDed");
          str2 = str1.substr(0,pos+2);
          str1 = str1.substr(pos+2);
-         str2 += StringUtils::rightJustify( StringUtils::asString(
-                    StringUtils::asInt(str1)),elen,'0' );
-         if( static_cast<int>(str2.length()) < leng )
+         str2 += StringUtils::rightJustify(StringUtils::asString(
+                                             StringUtils::asInt(str1)),elen,'0' );
+         if(static_cast<int>(str2.length()) < leng)
             str2 = StringUtils::rightJustify(str2,leng);
          return str2;
       }
