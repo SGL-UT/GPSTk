@@ -48,7 +48,6 @@
 #include <iostream>
 #include "Triple.hpp"
 #include "Xvt.hpp"
-#include "TabularEphemerisStore.hpp"
 
 namespace gpstk
 {

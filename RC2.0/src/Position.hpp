@@ -50,8 +50,7 @@ namespace gpstk
       /** @addtogroup geodeticgroup */
       //@{
 
-      // The following forward declaration of Position and range are the only
-      // way I can get range to be a member of namespace gpstk.
+      // forward declarations
    class Position;
    double range(const Position& A, const Position& B) throw(GeometryException);
    

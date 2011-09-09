@@ -45,12 +45,12 @@
 
 namespace gpstk
 {
-   void GloRecord :: dump(ostream& s) const
+   void GloRecord::dump(std::ostream& s) const
       throw()
    {
-     s << "vel:" << v << ", acc:" << a << endl
-       << "TauN:" << clkbias << ", GammaN:" << clkdrift << endl
-       << "MFTime:" << MFtime<< ", health:" << health << endl
+     s << "vel:" << v << ", acc:" << a << std::endl
+       << "TauN:" << clkbias << ", GammaN:" << clkdrift << std::endl
+       << "MFTime:" << MFtime<< ", health:" << health << std::endl
        << "freqNum:" << freqNum << ", ageOfInfo:" << ageOfInfo;
    }
 
@@ -72,7 +72,7 @@ namespace gpstk
        return *this;
    }
 
-   ostream& operator<<(ostream& s, const GloRecord& glo)
+   std::ostream& operator<<(std::ostream& s, const GloRecord& glo)
    {
       glo.dump(s);
       return s;
