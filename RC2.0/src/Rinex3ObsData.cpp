@@ -44,7 +44,7 @@
 #include "StringUtils.hpp"
 #include "CivilTime.hpp"
 #include "TimeString.hpp"
-#include "ObsID.hpp"
+#include "RinexObsID.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsData.hpp"
 
@@ -393,13 +393,13 @@ namespace gpstk
 
       for(DataMap::const_iterator jt=obs.begin(); jt != obs.end(); jt++) {
          RinexSatID sat(jt->first);
-         const vector<ObsID> types(head.mapObsTypes[sat.toString().substr(0,1)]);
+         const vector<RinexObsID> types(head.mapObsTypes[sat.toString().substr(0,1)]);
          os << " " << sat.toString() << fixed << setprecision(3);
          for(int i=0; i<jt->second.size(); i++)
             os << " " << setw(13) << jt->second[i].data
                << "/" << jt->second[i].lli
                << "/" << jt->second[i].ssi
-               << "/" << asRinex3ID(types[i])
+               << "/" << asString(types[i])
                ;
          os << endl;
       }

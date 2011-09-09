@@ -55,7 +55,7 @@
 #include "Rinex3ObsBase.hpp"
 #include "Triple.hpp"
 #include "RinexSatID.hpp"
-#include "ObsID.hpp"
+#include "RinexObsID.hpp"
 
 namespace gpstk
 {
@@ -178,7 +178,7 @@ namespace gpstk
      };
 
      /// Scale Factor corrections for observations
-     typedef std::map<ObsID,int>      sfacMap; ///< scale factor map <ObsType, ScaleFactor>
+     typedef std::map<RinexObsID,int>      sfacMap; ///< scale factor map <ObsType, ScaleFactor>
      std::map<std::string,sfacMap> sysSfacMap; ///< sat. system map of scale factor maps
                                                ///< <(G/R/E/S), <Rinex3ObsType, scalefactor>>
 
@@ -213,8 +213,8 @@ namespace gpstk
      double        antennaZeroDirAzi;                ///< ANTENNA ZERODIR AZI            (optional)
      gpstk::Triple antennaZeroDirXYZ;                ///< ANTENNA ZERODIR XYZ            (optional)
      gpstk::Triple centerOfMass;                     ///< vehicle CENTER OF MASS: XYZ    (optional)
-     std::vector<ObsID> obsTypeList;                 ///< number & types of observations
-     map<std::string,vector<ObsID> > mapObsTypes;    ///< map for different sat. systems
+     std::vector<RinexObsID> obsTypeList;                 ///< number & types of observations
+     map<std::string,vector<RinexObsID> > mapObsTypes;    ///< map for different sat. systems
      std::string sigStrengthUnit;                    ///< SIGNAL STRENGTH UNIT           (optional)
      double interval;                                ///< INTERVAL                       (optional)
      CivilTime firstObs,                             ///< TIME OF FIRST OBS
@@ -223,8 +223,8 @@ namespace gpstk
      std::vector<Rinex3CorrInfo> infoDCBS;           ///< DCBS INFO                      (optional)
      std::vector<Rinex3CorrInfo> infoPCVS;           ///< PCVS INFO                      (optional)
      int factor, factorPrev;                         ///< scale factor (temp holders)
-     ObsID sysPhaseShiftObsID;                       ///< save ObsID for continuation "SYS / PHASE SHIFT"    R3.01
-     std::map<ObsID, std::map<RinexSatID,double> > sysPhaseShift;    ///< store obs,sat,correction "SYS / PHASE SHIFT"    R3.01
+     RinexObsID sysPhaseShiftObsID;                       ///< save RinexObsID for continuation "SYS / PHASE SHIFT"    R3.01
+     std::map<RinexObsID, std::map<RinexSatID,double> > sysPhaseShift;    ///< store obs,sat,correction "SYS / PHASE SHIFT"    R3.01
      std::map<RinexSatID,int> GlonassFreqNo;         ///< "GLONASS SLOT / FRQ #"         (optional) R3.01
      int leapSeconds;                                ///< LEAP SECONDS                   (optional)
      short numSVs;                                   ///< # OF SATELLITES                (optional)

@@ -60,14 +60,12 @@ namespace gpstk
    public:
 
       /// Empty constructor; creates an invalid object (Unknown, ID = -1).
-
       RinexSatID()
          throw()
       { id = -1; system = systemUnknown; }
 
 
       /// Explicit constructor, no defaults, RINEX systems only.
-
       RinexSatID(int p, SatelliteSystem s)
          throw()
       {
@@ -90,7 +88,6 @@ namespace gpstk
 
 
       /// Constructor from a string.
-
       RinexSatID(const std::string& str)
          throw(Exception)
       {
@@ -100,7 +97,6 @@ namespace gpstk
 
 
       /// Cast a SatID to a RinexSatID.
-
       RinexSatID(const SatID& sat)
          throw()
       { *this = RinexSatID(sat.id,sat.system); }
@@ -108,14 +104,12 @@ namespace gpstk
 
       /// Set the fill character used in output and
       /// return the current fill character.
-
       char setfill(char c)
          throw()
       { char csave = fillchar; fillchar = c; return csave; }
 
 
       /// Get the fill character used in output.
-
       char getfill()
          throw()
       { return fillchar; }
@@ -126,7 +120,6 @@ namespace gpstk
 
       /// Return the single-character system descriptor.
       /// @note return only RINEX types, for non-RINEX systems return '?'
-
       char systemChar() const
          throw()
       {
@@ -232,7 +225,6 @@ namespace gpstk
 
 
       /// Convert the RinexSatID to string (1 character plus 2-digit integer).
-
       std::string toString() const
          throw()
       {

@@ -46,6 +46,7 @@
 #include "StringUtils.hpp"
 #include "SystemTime.hpp"
 #include "TimeString.hpp"
+#include "RinexObsID.hpp"
 #include "Rinex3ObsStream.hpp"
 #include "Rinex3ObsHeader.hpp"
 
@@ -406,13 +407,13 @@ namespace gpstk
       {
          static const int maxObsPerLine = 13;
 
-         map<string,vector<ObsID> >::const_iterator mapIter;
-         for (mapIter = mapObsTypes.begin(); mapIter != mapObsTypes.end(); mapIter++)
+         map<string,vector<RinexObsID> >::const_iterator mapIter;
+         for (mapIter=mapObsTypes.begin(); mapIter != mapObsTypes.end(); mapIter++)
          {
             int obsWritten = 0;
             line = ""; // make sure the line contents are reset
 
-            vector<ObsID> ObsTypeList = mapIter->second;
+            vector<RinexObsID> ObsTypeList = mapIter->second;
 
             for (int i = 0; i < ObsTypeList.size(); i++)
             {
@@ -433,7 +434,7 @@ namespace gpstk
                   line  = string(6, ' ');
                }
                line += string(1, ' ');
-               line += rightJustify(ObsTypeList[i].asRinex3ID(), 3);
+               line += rightJustify(ObsTypeList[i].asString(), 3);
                obsWritten++;
             }
             line += string(60 - line.size(), ' ');
@@ -530,7 +531,7 @@ namespace gpstk
          map<string, sfacMap>::const_iterator mapIter;
          for (mapIter = sysSfacMap.begin(); mapIter != sysSfacMap.end(); mapIter++)
          {
-            map<ObsID, int>::const_iterator iter;
+            map<RinexObsID, int>::const_iterator iter;
 
             for (int i = 0; i < size; i++) // loop over possible factors (above)
             {
@@ -543,7 +544,7 @@ namespace gpstk
                   if ( iter->second == factors[i] )
                   {
                      count++;
-                     obsTypes.push_back(iter->first.asRinex3ID());
+                     obsTypes.push_back(iter->first.asString());
                   }
                }
 
@@ -580,10 +581,10 @@ namespace gpstk
 //      cout << "past validSystemScaleFac" << endl;
       if (valid & validSystemPhaseShift)
       {
-         //map<ObsID, map<RinexSatID,double> > sysPhaseShift;
-         map<ObsID, map<RinexSatID,double> >::const_iterator it;
+         //map<RinexObsID, map<RinexSatID,double> > sysPhaseShift;
+         map<RinexObsID, map<RinexSatID,double> >::const_iterator it;
          for(it=sysPhaseShift.begin(); it!=sysPhaseShift.end(); ++it) {
-            ObsID obsid(it->first);
+            RinexObsID obsid(it->first);
             RinexSatID sat(it->second.begin()->first);
             double corr(it->second.begin()->second);
 
@@ -595,7 +596,7 @@ namespace gpstk
                strm.lineNumber++;
             }
             else {                  // list of sats
-               line += obsid.asRinex3ID() + string(" ");
+               line += obsid.asString() + string(" ");
                line += rightJustify(asString(corr,5),8);
                setfill('0');
                line += string("  ") + rightJustify(asString(it->second.size()),2);
@@ -854,23 +855,23 @@ namespace gpstk
          {
             satSysTemp = satSysPrev;
             numObs = numObsPrev;
-            vector<ObsID> newTypeList = mapObsTypes.find(satSysTemp)->second;
+            vector<RinexObsID> newTypeList = mapObsTypes.find(satSysTemp)->second;
             for (int i = newTypeList.size();
                  (i < numObs) && ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                int position = 4*(i % maxObsPerLine) + 6 + 1;
-               ObsID rt(satSysTemp+line.substr(position,3));
+               RinexObsID rt(satSysTemp+line.substr(position,3));
                newTypeList.push_back(rt);
             }
             mapObsTypes[satSysTemp] = newTypeList;
          }
          else                    // it's a new line, use info. read in
          {
-            vector<ObsID> newTypeList;
+            vector<RinexObsID> newTypeList;
             for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
             {
                int position = 4*i + 6 + 1;
-               ObsID rt(satSysTemp+line.substr(position,3));
+               RinexObsID rt(satSysTemp+line.substr(position,3));
                newTypeList.push_back(rt);
             }
             mapObsTypes[satSysTemp] = newTypeList;
@@ -954,7 +955,7 @@ namespace gpstk
                         (i < numObs) && ((i % maxObsPerLine) < maxObsPerLine); i++)
          {
             int position = 4*(i % maxObsPerLine) + 10 + 1;
-            ObsID tempType(satSysTemp+strip(line.substr(position,3)));
+            RinexObsID tempType(satSysTemp+strip(line.substr(position,3)));
             tempSfacMap.insert(make_pair(tempType,factor));
          }
          sysSfacMap[satSysTemp] = tempSfacMap;
@@ -972,7 +973,7 @@ namespace gpstk
       }
       else if (label == stringSystemPhaseShift) ///< "SYS / PHASE SHIFTS"    R3.01
       {
-         //map<ObsID, map<RinexSatID,double> > sysPhaseShift;
+         //map<RinexObsID, map<RinexSatID,double> > sysPhaseShift;
          RinexSatID sat;
          // system
          satSysTemp = strip(line.substr(0,1));
@@ -1003,7 +1004,7 @@ namespace gpstk
 
             // obsid and correction may be blank <=> unknown: ignore this
             if(!str.empty()) {
-               ObsID obsid(satSysTemp+str);
+               RinexObsID obsid(satSysTemp+str);
                double corr(asDouble(strip(line.substr(6,8))));
                int nsat(asInt(strip(line.substr(16,2))));
                if(nsat > 0) {          // list of sats
@@ -1245,7 +1246,7 @@ namespace gpstk
          << "." << endl;
       s << "Antenna Delta (HEN,m) : " << setprecision(4) << antennaDeltaHEN
          << "." << endl;
-      map<string,vector<ObsID> >::const_iterator iter;
+      map<string,vector<RinexObsID> >::const_iterator iter;
       for (iter = mapObsTypes.begin(); iter != mapObsTypes.end(); iter++)
       {
          RinexSatID rsid;
@@ -1254,7 +1255,7 @@ namespace gpstk
             << iter->second.size() << "):" << endl;
          for (i = 0; i < iter->second.size(); i++) 
             s << " Type #" << setw(2) << setfill('0') << i+1 << setfill(' ')
-            << " (" << asRinex3ID(iter->second[i]) << ") "
+            << " (" << asString(iter->second[i]) << ") "
               << asString(iter->second[i]) << endl;
       }
       s << "Time of first obs "
@@ -1367,15 +1368,15 @@ namespace gpstk
             RinexSatID rsid;
             rsid.fromString(mapIter->first);
             s << rsid.systemString() << " scale factors applied:" << endl;
-            map<ObsID,int>::const_iterator iter;
+            map<RinexObsID,int>::const_iterator iter;
             // loop over scale factor map
             for(iter = mapIter->second.begin(); iter != mapIter->second.end(); iter++)
-               s << "   " << iter->first.asRinex3ID() << " " << iter->second << endl;
+               s << "   " << iter->first.asString() << " " << iter->second << endl;
          }
       }
       if (valid & validSystemPhaseShift )
       {
-         map<ObsID, map<RinexSatID,double> >::const_iterator it;
+         map<RinexObsID, map<RinexSatID,double> >::const_iterator it;
          for(it=sysPhaseShift.begin(); it!=sysPhaseShift.end(); ++it) {
             map<RinexSatID,double>::const_iterator jt;
             for(jt=it->second.begin(); jt!=it->second.end(); ++jt)

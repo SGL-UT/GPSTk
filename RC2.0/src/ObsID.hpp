@@ -65,7 +65,6 @@ namespace gpstk
    {
       /// convert this object to a string representation
       std::string asString(const ObsID& id);
-      std::string asRinex3ID(const ObsID& id);
    }
 
 
@@ -86,12 +85,12 @@ namespace gpstk
          otDoppler,   ///< Doppler, in Hz
          otSNR,       ///< Signal strength, in dB-Hz
          otChannel,   ///< Channel number
-         otIono,      ///< Ionospheric delay (see rinex3 section 5.12)
-         otSSI,       ///< Signal Strength Indicator (kinda a rinex thing)
-         otLLI,       ///< Loss of Lock Indicator (another rinex thing)
+         otIono,      ///< Ionospheric delay (see RINEX3 section 5.12)
+         otSSI,       ///< Signal Strength Indicator (RINEX)
+         otLLI,       ///< Loss of Lock Indicator (RINEX)
          otTrackLen,  ///< Number of continuous epochs of 'good' tracking
          otNavMsg,    ///< Navigation Message data
-         otUndefined,
+         otUndefined, ///< Undefined
          otLast       ///< Used to verify that all items are described at compile time
       };
 
@@ -101,15 +100,18 @@ namespace gpstk
       {
          cbUnknown,
          cbAny,  ///< Used to match any carrier band
-         cbZero, ///< Used with the channel observation type (see rinex3 section 5.13)
-         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1, Compass E1
-         cbL2,   ///< GPS L2, Compass E2
+         cbZero, ///< Used with the channel observation type (see RINEx3 section 5.13)
+         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1
+         cbL2,   ///< GPS L2
          cbL5,   ///< GPS L5, Galileo E5a, SBAS L5
          cbG1,   ///< Glonass G1
          cbG2,   ///< Glonass G2
          cbE5b,  ///< Galileo E5b, Compass E5b
          cbE5ab, ///< Galileo E5a+b
-         cbE6,   ///< Galileo E6, Compass E6
+         cbE1,   ///< Compass E1
+         cbE2,   ///< Compass E2
+         cbE6,   ///< Galileo E6
+         cbC6,   ///< Compass E6
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
          cbUndefined,
          cbLast  ///< Used to verify that all items are described at compile time
@@ -118,11 +120,12 @@ namespace gpstk
 
       /// The code used to collect the observation. Each of these should uniquely
       /// identify a code that was correlated against to track the signal. While the
-      /// notation generally follows section 5.1 of RINEX 3, due to ambiguities in that
-      /// specification some extensions are made. Note that as concrete specifications
-      /// for the codes are released, this list may need to be adjusted. Specifically,
-      /// this lists assumes that the same I & Q codes will be used on all three of the
-      /// Galileo carriers. If that is not true, more identifers need to be allocated
+      /// notation generally follows section 5.1 of RINEX 3, due to ambiguities in
+      /// that specification some extensions are made. Note that as concrete
+      /// specifications for the codes are released, this list may need to be
+      /// adjusted. Specifically, this lists assumes that the same I & Q codes will be
+      /// used on all three of the Galileo carriers. If that is not true, more
+      /// identifers need to be allocated
       enum TrackingCode
       {
          tcUnknown,
@@ -130,9 +133,9 @@ namespace gpstk
          tcCA,      ///< Legacy GPS civil code
          tcP,       ///< Legacy GPS precise code
          tcY,       ///< Encrypted legacy GPS precise code
-         tcW,       ///< Encrypted legacy GPS precise code, with codeless Z mode tracking
-         tcN,       ///< Encrypted legacy GPS precise code, with squaring codeless tracking
-         tcD,       ///< Encrypted legacy GPS precise code, with other codeless tracking
+         tcW,       ///< Encrypted legacy GPS precise code, codeless Z tracking
+         tcN,       ///< Encrypted legacy GPS precise code, squaring codeless tracking
+         tcD,       ///< Encrypted legacy GPS precise code, other codeless tracking
          tcM,       ///< Modernized GPS military unique code
          tcC2M,     ///< Modernized GPS L2 civil M code
          tcC2L,     ///< Modernized GPS L2 civil L code
@@ -181,15 +184,26 @@ namespace gpstk
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
          : type(ot), band(cb), code(tc) {};
 
-      /// Constructor from a Rinex 3 style descriptor. If this string is 3 
+      /// This string contains the system characters for all valid RINEX systems.
+      static std::string validRinexSystems;
+
+      /// This map[sys][freq] = valid codes gives valid tracking codes for RINEX
+      /// observations given the system and frequency; e.g.  valid['G'][1]="CSLXPWYMN* "
+      /// The only exception is there is no pseudorange (C) on GPS L1/L2 N (codeless)
+      /// NB These tracking code characters are ORDERED, basically 'best' to 'worst'
+      static std::map<char, std::map<char, std::string> > validRinexTrackingCodes;
+
+      /// Constructor from a string (Rinex 3 style descriptor). If this string is 3 
       /// characters long, the system is assumed to be GPS. If this string is 4
       /// characters long, the first character is the system designator as
       /// described in the Rinex 3 specification. If the Rinex 3 style descriptor
       /// isn't currently defined, a new one is silently automatically created
       /// with a blank description for the new characters.
-      ObsID(const std::string& id) throw(InvalidParameter);
-      ObsID(const char* id) throw(InvalidParameter)
-      { *this=ObsID(std::string(id));};
+      explicit ObsID(const std::string& id) throw(InvalidParameter);
+
+      /// Constructor from c-style string; see c'tor from a string.
+      explicit ObsID(const char* id) throw(InvalidParameter)
+         { *this=ObsID(std::string(id));}
 
       /// Equality requires all fields to be the same
       virtual bool operator==(const ObsID& right) const;
@@ -214,12 +228,6 @@ namespace gpstk
 
       bool operator>=(const ObsID& right) const
       { return !(operator<(right)); };
-
-      /// This returns a representation of this object using the observation
-      /// codes described in section 5.1 of the Rinex 3 specification. Note that
-      /// this always returns a three character identifier so some information
-      /// is lost because some codes are shared between satellite systems.
-      std::string asRinex3ID() const;
 
       /// Convenience output method
       virtual std::ostream& dump(std::ostream& s) const;
@@ -250,14 +258,13 @@ namespace gpstk
       static std::map< CarrierBand,     std::string > cbDesc;
       static std::map< ObservationType, std::string > otDesc;
 
-      /// These strings are used to translate this object to and from a
-      /// rinex identifier
-      static std::map< char, ObservationType> rinex2ot;
-      static std::map< char, CarrierBand> rinex2cb;
-      static std::map< char, TrackingCode> rinex2tc;
-      static std::map< ObservationType, char > ot2Rinex;
-      static std::map< CarrierBand, char > cb2Rinex;
-      static std::map< TrackingCode, char> tc2Rinex;
+      /// These strings are used to translate this object to and from a string id
+      static std::map< char, ObservationType> char2ot;
+      static std::map< char, CarrierBand> char2cb;
+      static std::map< char, TrackingCode> char2tc;
+      static std::map< ObservationType, char > ot2char;
+      static std::map< CarrierBand, char > cb2char;
+      static std::map< TrackingCode, char> tc2char;
 
       class Initializer
       {
@@ -271,6 +278,7 @@ namespace gpstk
       static ObsID idCreator(const std::string& id, const std::string& desc="");
 
    }; // class ObsID
+
 
 } // namespace gpstk
 #endif   // OBSID_HPP

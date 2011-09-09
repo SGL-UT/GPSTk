@@ -50,6 +50,7 @@
 
 #include "SatID.hpp"
 #include "RinexSatID.hpp"
+#include "RinexObsID.hpp"
 
 #include "CommandOptionParser.hpp"
 #include "CommandOption.hpp"
@@ -313,7 +314,7 @@ int main(int argc, char **argv)
          vector<TableData> table;
          map< char, vector<int> > totals;
          
-         map<std::string,vector<ObsID> >::const_iterator iter;
+         map<std::string,vector<RinexObsID> >::const_iterator iter;
          for( iter = rheader.mapObsTypes.begin(); iter != rheader.mapObsTypes.end(); ++iter)
          {
                //Set up the system flags
@@ -334,7 +335,7 @@ int main(int argc, char **argv)
                #ifdef DEBUG_PRINT
                   cout << index << "/" << (iter->second).size() << endl;
                #endif
-               std::string obsType((iter->second)[index].asRinex3ID());
+               std::string obsType((iter->second)[index].asString());
                if(obsType == "C1C")
                   currentSystem.indexC1C = i;
                else if(obsType == "C2C")
@@ -675,7 +676,7 @@ int main(int argc, char **argv)
             *pout << "\n          Summary of data available in this file: "
                   << "(Totals are based on times and interval)\n";
                //Print the obs types for each system
-            map<std::string,vector<ObsID> >::const_iterator sysIter;
+            map<std::string,vector<RinexObsID> >::const_iterator sysIter;
             sysIter = rheader.mapObsTypes.begin();
             
             for(sysIter; sysIter != rheader.mapObsTypes.end(); ++sysIter)
@@ -687,7 +688,7 @@ int main(int argc, char **argv)
                for(k = 0; k < (sysIter->second).size(); k++)
                {
                      //Prints the RINEX 3 code out
-                  *pout << setw(7) << (sysIter->second)[k].asRinex3ID();
+                  *pout << setw(7) << (sysIter->second)[k].asString();
                }
                *pout << "   Total             Begin time - End time" << endl;
                   //Print out every satellite with the same system code.
@@ -784,19 +785,19 @@ int main(int argc, char **argv)
                //Print out the obs types for the different systems...
                //System G Obs Types(4):
                // C1C C2C L1
-            map<std::string,vector<ObsID> >::const_iterator sysIter;
+            map<std::string,vector<RinexObsID> >::const_iterator sysIter;
             sysIter = rheader.mapObsTypes.begin();
             for(sysIter; sysIter != rheader.mapObsTypes.end(); ++sysIter)
             {
                string sysCode = (sysIter->first);
-               vector<ObsID>& vec = rheader.mapObsTypes[sysCode];
+               vector<RinexObsID>& vec = rheader.mapObsTypes[sysCode];
                *pout << "System " << sysCode << " Obs types(" << vec.size()
                      << "): ";
                
                for(i = 0; i < vec.size(); i++)
                {
                   //*pout << " " << rheader.obsTypeList[i].type;
-                  *pout << " " << vec[i].asRinex3ID();
+                  *pout << " " << vec[i].asString();
                }
                *pout << endl;
             }
@@ -842,7 +843,7 @@ int main(int argc, char **argv)
                if(vec[k] <= 0)
                   *pout << " WARNING: ObsType "
                         //<< rheader.mapObsTypes[sysCode][k].type
-                        << rheader.mapObsTypes[sysCode][k].asRinex3ID()
+                        << rheader.mapObsTypes[sysCode][k].asString()
                         << " for system " << sysCode
                         << " should be deleted from header.\n";
             }

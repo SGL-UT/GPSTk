@@ -43,7 +43,7 @@
 #include "CommandOption.hpp"
 
 #include "CommonTime.hpp"
-#include "ObsID.hpp"
+#include "RinexObsID.hpp"
 #include "RinexSatID.hpp"
 
 #include "Rinex3ObsBase.hpp"
@@ -79,10 +79,10 @@ string             delim = " || ";
 bool               allNumeric = false;
 bool               dumpPos = false;
 vector<string>     filenames;
-vector<ObsID>      GPSOTList;
-vector<ObsID>      GloOTList;
-vector<ObsID>      GalOTList;
-vector<ObsID>      SBASOTList;
+vector<RinexObsID>      GPSOTList;
+vector<RinexObsID>      GloOTList;
+vector<RinexObsID>      GalOTList;
+vector<RinexObsID>      SBASOTList;
 string             outputFormat = ("%4F %10.3g");
 vector<RinexSatID> satList;
 
@@ -144,7 +144,7 @@ void dumpCommandLineOptions()
    
    for (int i = 0; i < GPSOTList.size(); i++)
    {
-      cout << delim << delim << GPSOTList[i].asRinex3ID() << endl;
+      cout << delim << delim << GPSOTList[i].asString() << endl;
    }
    
    cout << delim << endl;
@@ -153,7 +153,7 @@ void dumpCommandLineOptions()
    
    for (int i = 0; i < GloOTList.size(); i++)
    {
-      cout << delim << delim << GloOTList[i].asRinex3ID() << endl;
+      cout << delim << delim << GloOTList[i].asString() << endl;
    }
    
    cout << delim << endl;
@@ -162,7 +162,7 @@ void dumpCommandLineOptions()
    
    for (int i = 0; i < GalOTList.size(); i++)
    {
-      cout << delim << delim << GalOTList[i].asRinex3ID() << endl;
+      cout << delim << delim << GalOTList[i].asString() << endl;
    }
    
    cout << delim << endl;
@@ -171,7 +171,7 @@ void dumpCommandLineOptions()
    
    for (int i = 0; i < SBASOTList.size(); i++)
    {
-      cout << delim << delim << SBASOTList[i].asRinex3ID() << endl;
+      cout << delim << delim << SBASOTList[i].asString() << endl;
    }
    
    cout << delim << endl;
@@ -354,7 +354,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
       // Get the actual values from the command line.
       vector<string> values;
 
-      ObsID ot;
+      RinexObsID ot;
       RinexSatID sat;
       
       if (dashfile.getCount())
@@ -390,9 +390,9 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          {
             try
             {
-               ot = ObsID(values[i]);
+               ot = RinexObsID(values[i]);
                               
-               if (asString(ot).compare("  ") != 0) // A valid ObsID.
+               if (asString(ot).compare("  ") != 0) // A valid RinexObsID.
                {
                   if (debug) cout << "Added obs type " << values[i] << "." << endl;
                   GPSOTList.push_back(ot);
@@ -402,7 +402,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
                }
                else
                {
-                  Exception e("Invalid ObsID, in Rinex3Dump.cpp:if (dashobs.getCount()).");
+                  Exception e("Invalid RinexObsID, in Rinex3Dump.cpp:if (dashobs.getCount()).");
                   GPSTK_THROW(e);
                }
             }
@@ -469,9 +469,9 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
          {
             try
             {
-               ot = ObsID(values[i]);
+               ot = RinexObsID(values[i]);
                
-               if (asString(ot).compare("  ") != 0) // A valid ObsID.
+               if (asString(ot).compare("  ") != 0) // A valid RinexObsID.
                {
                   if (debug) cout << "Added obs type " << values[i] << "." << endl << endl;
                   
@@ -488,7 +488,7 @@ int getCommandLineOptions(int argc, char **argv) throw (Exception)
             }
             catch (Exception& e)
             {
-               // Not an ObsID. Nothing to see here. Move along.
+               // Not an RinexObsID. Nothing to see here. Move along.
             }
          }
          
@@ -615,7 +615,7 @@ int main(int argc, char *argv[])
             SBASOTList.clear();
             
             // Add all obs types for each satellite system.
-            map<string, vector<ObsID> >::const_iterator map_iter;
+            map<string, vector<RinexObsID> >::const_iterator map_iter;
             
             if (debug) cout << "Obs Types found in " << filename << ":" << endl;
             
@@ -625,7 +625,7 @@ int main(int argc, char *argv[])
                
                for (int k = 0; k < map_iter->second.size(); k++)
                {
-                  if (debug) cout << delim << delim << "Type #" << k+1 << " = " << asRinex3ID(map_iter->second[k]) << endl;
+                  if (debug) cout << delim << delim << "Type #" << k+1 << " = " << asString(map_iter->second[k]) << endl;
                   
                   if (map_iter->first.compare("G") == 0) GPSOTList.push_back(map_iter->second[k]);
                   if (map_iter->first.compare("R") == 0) GloOTList.push_back(map_iter->second[k]);
@@ -642,11 +642,11 @@ int main(int argc, char *argv[])
             //       them with each OTList. This gives O(n + n lg n) performance, in contrast with
             //       O(n^2) (worst case) time when checking the OTList against the headerList.
             //
-            //       We also copy the ObsID's to a new vector then swap, which is faster than
+            //       We also copy the RinexObsID's to a new vector then swap, which is faster than
             //       deleting from the original OTLists, which shift all the elements.
-            set<ObsID> obsInHeader;
-            vector<ObsID> headerList;
-            vector<ObsID> goodObsTypes;
+            set<RinexObsID> obsInHeader;
+            vector<RinexObsID> headerList;
+            vector<RinexObsID> goodObsTypes;
             
             /**
              * Check for GPS obs types.
@@ -757,29 +757,29 @@ int main(int argc, char *argv[])
                   
                   if (!GPSOTList.empty())
                   {
-                     cout << "G - " << GPSOTList[0].asRinex3ID();
-                     for (int k = 1; k < GPSOTList.size(); k++) cout << ", " << GPSOTList[k].asRinex3ID();
+                     cout << "G - " << GPSOTList[0].asString();
+                     for (int k = 1; k < GPSOTList.size(); k++) cout << ", " << GPSOTList[k].asString();
                      cout << endl;
                   }
                   
                   if (!GloOTList.empty())
                   {
-                     cout << "R - " << GloOTList[0].asRinex3ID();
-                     for (int k = 1; k < GloOTList.size(); k++) cout << ", " << GloOTList[k].asRinex3ID();
+                     cout << "R - " << GloOTList[0].asString();
+                     for (int k = 1; k < GloOTList.size(); k++) cout << ", " << GloOTList[k].asString();
                      cout << endl;
                   }
                   
                   if (!GalOTList.empty())
                   {
-                     cout << "E - " << GalOTList[0].asRinex3ID();
-                     for (int k = 1; k < GalOTList.size(); k++) cout << ", " << GalOTList[k].asRinex3ID();
+                     cout << "E - " << GalOTList[0].asString();
+                     for (int k = 1; k < GalOTList.size(); k++) cout << ", " << GalOTList[k].asString();
                      cout << endl;
                   }
                   
                   if (!SBASOTList.empty())
                   {
-                     cout << "S - " << SBASOTList[0].asRinex3ID();
-                     for (int k = 1; k < SBASOTList.size(); k++) cout << ", " << SBASOTList[k].asRinex3ID();
+                     cout << "S - " << SBASOTList[0].asString();
+                     for (int k = 1; k < SBASOTList.size(); k++) cout << ", " << SBASOTList[k].asString();
                      cout << endl;
                   }
                }
