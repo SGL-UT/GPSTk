@@ -142,7 +142,7 @@ namespace gpstk{
       /**
        * Creates a new entry in the names map.
        * 
-       * This effectively eXvtends the ReferenceFrame enum at runtime for the duration of
+       * This effectively extends the ReferenceFrame enum at runtime for the duration of
        * the program. If the given name already exists, this method does not add a new
        * entry and simply returns the existing value.
        * 
@@ -155,7 +155,7 @@ namespace gpstk{
       /**
        * Creates a new entry in the names map.
        * 
-       * This effectively eXvtends the ReferenceFrame enum at runtime for the duration of
+       * This effectively extends the ReferenceFrame enum at runtime for the duration of
        * the program. If the given name already exists, this method does not add a new
        * entry and simply returns the existing value.
        * 
