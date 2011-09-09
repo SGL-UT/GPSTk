@@ -107,6 +107,7 @@ bool isRinex3ObsFile(const std::string& file);
     * Do not include files that are found not to be RINEX obs files, or that have
     * invalid headers.
     * @param files  vector<string> containing filenames, with path
+    * @return string containing error messages, if any
     */
 std::string sortRinexObsFiles(std::vector<std::string>& files) throw(Exception);
 
@@ -115,8 +116,9 @@ std::string sortRinexObsFiles(std::vector<std::string>& files) throw(Exception);
     * Do not include files that are found not to be RINEX 3 obs files, or that have
     * invalid headers.
     * @param files  vector<string> containing filenames, with path
+    * @return string containing error messages, if any
     */
-void sortRinex3ObsFiles(std::vector<std::string>& files);
+std::string sortRinex3ObsFiles(std::vector<std::string>& files);
 
    /** Open the files and add to the appropriate EphemerisStore.
     * @param files vector of the filenames.

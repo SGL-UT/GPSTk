@@ -89,13 +89,14 @@ namespace gpstk
       virtual ~SP3EphemerisStore()
       { }
 
+   // XvtStore interface:
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] sat the satellite of interest
       /// @param[in] ttag the time to look up
       /// @return the Xvt of the object at the indicated time
       /// @throw InvalidRequest If the request can not be completed for any
-      ///    reason, this is thrown. The teXvt may have additional
+      ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
       virtual Xvt getXvt(const SatID& sat, const CommonTime& ttag)
          const throw(InvalidRequest);
@@ -155,7 +156,7 @@ namespace gpstk
       /// @throw InvalidRequest if the object has no data.
       virtual CommonTime getFinalTime() const throw(InvalidRequest);
 
-      /// Return true if IndeXvtype=SatID is present in the data tables
+      /// Return true if IndexType=SatID is present in the data tables
       virtual bool isPresent(const SatID& sat) const throw()
          { return (posStore.isPresent(sat) && clkStore.isPresent(sat)); }
 

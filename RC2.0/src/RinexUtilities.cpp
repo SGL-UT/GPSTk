@@ -438,7 +438,8 @@ try {
             continue;
          }
          //hash[header.firstObs] = files[n];
-         hash.insert(multimap<CommonTime,string>::value_type(header.firstObs,files[n]));
+         hash.insert(multimap<CommonTime, string>::value_type(header.firstObs,
+                                                                      files[n]));
       }
       catch(Exception& e) {
          //msg += "Exception " + e.what() + " in file " + files[n] + "\n";
@@ -465,36 +466,45 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
 
 //------------------------------------------------------------------------------------
-void sortRinex3ObsFiles(vector<string>& files)
+string sortRinex3ObsFiles(vector<string>& files)
 {
+   string msg;
+   if(files.size() <= 1) { msg = string("No input files!"); return msg; }
+
 	try
 	{
 	   // build a hash with key = start time, value = filename
 	   map<CommonTime,string> hash;
 	   for(int n = 0; n < files.size(); n++)
 	   {
-	      Rinex3ObsHeader header;
-	      Rinex3ObsStream rostream(files[n].c_str());
-			rostream.exceptions(fstream::failbit);
-			try
-			{
+			try {
+	         Rinex3ObsHeader header;
+	         Rinex3ObsStream rostream(files[n].c_str());
+            if(!rostream.is_open()) {
+               msg += "Error - Could not open file " + files[n] + "\n";
+               continue;
+            }
+			   rostream.exceptions(fstream::failbit);
 				rostream >> header;
+				rostream.close();
+            if(!header.isValid()) {
+               msg += "Error - Invalid header in file " + files[n] + "\n";
+               continue;
+            }
+
+			   hash[header.firstObs] = files[n];
 			}
 			catch(Exception& e)
 			{
-				rostream.close();
+            msg += "Exception: " + e.what() + "\n";
 				continue;
 			}
-			rostream.close();
-			if(!header.isValid())
-				continue;
-			hash[header.firstObs] = files[n];
 		}
+
 		// return the sorted file names
 		files.clear();
 		map<CommonTime,string>::const_iterator it = hash.begin();
-		while(it != hash.end())
-		{
+		while(it != hash.end()) {
 			files.push_back(it->second);
 			it++;
 		}
@@ -513,6 +523,8 @@ void sortRinex3ObsFiles(vector<string>& files)
 		Exception e("Unknown exception");
 		GPSTK_THROW(e);
 	}
+
+   return msg;
 }
 
 //------------------------------------------------------------------------------------
