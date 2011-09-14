@@ -13,6 +13,7 @@
 #include <map>
 #include "RinexClockBase.hpp"
 #include "RinexSatID.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -27,7 +28,7 @@ namespace gpstk
    public:
 
          /// constructor
-      RinexClockHeader() : version(3.0), leapSeconds(0),
+      RinexClockHeader() : version(3.0), leapSeconds(0), timeSystem(TimeSystem::Any),
                     pcvsSystem(1, RinexSatID::systemGPS),
                     numSolnStations(0), numSolnSatellites(0)
                     {}
@@ -117,6 +118,7 @@ namespace gpstk
       std::string runby;                     ///< Run by string
       std::vector<std::string> dataTypes;    ///< list of data types
       int leapSeconds;                       ///< Leap seconds
+      TimeSystem timeSystem;                 ///< Time system
 
       std::string analCenterDesignator;      ///< Analysis center designator (3 char)
       std::string analysisCenter;            ///< Analysis center
@@ -151,6 +153,7 @@ namespace gpstk
          leapSeconds = 0;
          analysisCenter = std::string();
          terrRefFrame = std::string();
+         timeSystem = TimeSystem::Any;
          pcvsSystem = RinexSatID(-1, RinexSatID::systemGPS);
          pcvsProgram = std::string();
          pcvsSource = std::string();

@@ -37,6 +37,8 @@ namespace gpstk
       const throw(InvalidRequest)
    {
       try {
+         checkTimeSystem(ttag.getTimeSystem());
+
          bool isExact;
          ClockRecord rec;
          DataTableIterator it1, it2, kt;        // cf. TabularSatStore.hpp
@@ -166,8 +168,9 @@ namespace gpstk
       const throw(InvalidRequest)
    {
       try {
-         DataTableIterator it1, it2, kt;
+         checkTimeSystem(ttag.getTimeSystem());
 
+         DataTableIterator it1, it2, kt;
          if(getTableInterval(sat, ttag, Nhalf, it1, it2, true)) {
             // exact match
             ClockRecord rec;
@@ -214,8 +217,9 @@ namespace gpstk
       const throw(InvalidRequest)
    {
       try {
-         DataTableIterator it1, it2, kt;
+         checkTimeSystem(ttag.getTimeSystem());
 
+         DataTableIterator it1, it2, kt;
          bool isExact(getTableInterval(sat, ttag, Nhalf, it1, it2, haveClockDrift));
          if(isExact && haveClockDrift) {
             ClockRecord rec;
@@ -275,98 +279,122 @@ namespace gpstk
 
    // Add a ClockRecord to the store.
    void ClockSatStore::addClockRecord(const SatID& sat, const CommonTime& ttag,
-                                      const ClockRecord& rec) throw()
+                                      const ClockRecord& rec)
+      throw(InvalidRequest)
    {
-      if(rec.drift != 0.0) haveClockDrift = true;
-      if(rec.accel != 0.0) haveClockAccel = true;
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-            // record already exists in the table
-         ClockRecord& oldrec(tables[sat][ttag]);
-         oldrec.bias = rec.bias;
-         oldrec.sig_bias = rec.sig_bias;
-         if(haveClockDrift) {
-            oldrec.drift = rec.drift;
-            oldrec.sig_drift = rec.sig_drift;
+         if(rec.drift != 0.0) haveClockDrift = true;
+         if(rec.accel != 0.0) haveClockAccel = true;
+
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+               // record already exists in the table
+            ClockRecord& oldrec(tables[sat][ttag]);
+            oldrec.bias = rec.bias;
+            oldrec.sig_bias = rec.sig_bias;
+            if(haveClockDrift) {
+               oldrec.drift = rec.drift;
+               oldrec.sig_drift = rec.sig_drift;
+            }
+            if(haveClockAccel) {
+               oldrec.accel = rec.accel;
+               oldrec.sig_accel = rec.sig_accel;
+            }
          }
-         if(haveClockAccel) {
-            oldrec.accel = rec.accel;
-            oldrec.sig_accel = rec.sig_accel;
-         }
+         else  // create a new entry in the table
+            tables[sat][ttag] = rec;
       }
-      else  // create a new entry in the table
-         tables[sat][ttag] = rec;
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    // Add clock bias (only) data to the store
    void ClockSatStore::addClockBias(const SatID& sat, const CommonTime& ttag,
-                                    const double& bias, const double& sig) throw()
+                                    const double& bias, const double& sig)
+      throw(InvalidRequest)
    {
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in the table
-         ClockRecord& oldrec(tables[sat][ttag]);
-         oldrec.bias = bias;
-         oldrec.sig_bias = sig;
-      }
-      else {   // create a new entry in the table
-         ClockRecord rec;
-         rec.bias = bias;
-         rec.sig_bias = sig;
-         rec.drift = rec.sig_drift = 0.0;
-         rec.accel = rec.sig_accel = 0.0;
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-         tables[sat][ttag] = rec;
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in the table
+            ClockRecord& oldrec(tables[sat][ttag]);
+            oldrec.bias = bias;
+            oldrec.sig_bias = sig;
+         }
+         else {   // create a new entry in the table
+            ClockRecord rec;
+            rec.bias = bias;
+            rec.sig_bias = sig;
+            rec.drift = rec.sig_drift = 0.0;
+            rec.accel = rec.sig_accel = 0.0;
+
+            tables[sat][ttag] = rec;
+         }
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    // Add clock drift (only) data to the store
    void ClockSatStore::addClockDrift(const SatID& sat, const CommonTime& ttag,
-                                    const double& drift, const double& sig) throw()
+                                    const double& drift, const double& sig)
+      throw(InvalidRequest)
    {
-      haveClockDrift = true;
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in the table
-         ClockRecord& oldrec(tables[sat][ttag]);
-         oldrec.drift = drift;
-         oldrec.sig_drift = sig;
-      }
-      else {   // create a new entry in the table
-         ClockRecord rec;
-         rec.drift = drift;
-         rec.sig_drift = sig;
-         rec.bias = rec.sig_bias = 0.0;
-         rec.accel = rec.sig_accel = 0.0;
+         haveClockDrift = true;
 
-         tables[sat][ttag] = rec;
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in the table
+            ClockRecord& oldrec(tables[sat][ttag]);
+            oldrec.drift = drift;
+            oldrec.sig_drift = sig;
+         }
+         else {   // create a new entry in the table
+            ClockRecord rec;
+            rec.drift = drift;
+            rec.sig_drift = sig;
+            rec.bias = rec.sig_bias = 0.0;
+            rec.accel = rec.sig_accel = 0.0;
+
+            tables[sat][ttag] = rec;
+         }
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    // Add clock acceleration (only) data to the store
    void ClockSatStore::addClockAcceleration(const SatID& sat, const CommonTime& ttag,
-                                    const double& accel, const double& sig) throw()
+                                    const double& accel, const double& sig)
+      throw(InvalidRequest)
    {
-      haveClockAccel = true;
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in the table
-         ClockRecord& oldrec(tables[sat][ttag]);
-         oldrec.accel = accel;
-         oldrec.sig_accel = sig;
-      }
-      else {   // create a new entry in the table
-         ClockRecord rec;
-         rec.accel = accel;
-         rec.sig_accel = sig;
-         rec.drift = rec.sig_drift = 0.0;
-         rec.bias = rec.sig_bias = 0.0;
+         haveClockAccel = true;
 
-         tables[sat][ttag] = rec;
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in the table
+            ClockRecord& oldrec(tables[sat][ttag]);
+            oldrec.accel = accel;
+            oldrec.sig_accel = sig;
+         }
+         else {   // create a new entry in the table
+            ClockRecord rec;
+            rec.accel = accel;
+            rec.sig_accel = sig;
+            rec.drift = rec.sig_drift = 0.0;
+            rec.bias = rec.sig_bias = 0.0;
+
+            tables[sat][ttag] = rec;
+         }
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
 }  // End of namespace gpstk

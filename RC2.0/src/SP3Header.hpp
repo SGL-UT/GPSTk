@@ -50,6 +50,7 @@
 #include "SP3Base.hpp"
 #include "SP3SatID.hpp"
 #include "CommonTime.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -63,7 +64,6 @@ namespace gpstk
       /// this Header is used by SP3Stream to determine the format of output SP3Data.
       ///
       /// @sa gpstk::SP3Stream and gpstk::SP3Data for more information.
-      /// @sa sp3_test.cpp for an example.
    class SP3Header : public SP3Base
    {
    public:
@@ -78,19 +78,9 @@ namespace gpstk
          SP3c              ///< SP3 version c (contains a/b as a subset)
       };
 
-         /// Supported time systems (version 'c' only)
-      enum TimeSystem
-      {
-         timeGPS=1,
-         timeUTC,
-         timeGLO,
-         timeGAL,
-         timeTAI
-      };
-
          /// constructor
       SP3Header() : version(undefined), numberOfEpochs(0),
-                    system(1, SP3SatID::systemGPS), timeSystem(timeGPS),
+                    system(1, SP3SatID::systemGPS), timeSystem(TimeSystem::Any),
                     basePV(0.0), baseClk(0.0)
                     {}
 
@@ -150,16 +140,7 @@ namespace gpstk
 
          /// return a string with time system name
       std::string timeSystemString() const throw()
-      {
-         switch(timeSystem) {
-            case timeGPS: return "GPS";
-            case timeUTC: return "UTC";
-            case timeTAI: return "TAI";
-            case timeGLO: return "GLO";
-            case timeGAL: return "GAL";
-            default: return "??";            // this should never be reached
-         }
-      };
+      { return timeSystem.asString(); };
 
          // The next four lines is our common interface
          /// SP3Header is a "header" so this function always returns true.

@@ -66,7 +66,7 @@ namespace gpstk
       std::string datatype;   ///< Data type : AR, AS, etc
       RinexSatID sat;         ///< Satellite ID        (if AS)
       std::string site;       ///< Site label (4-char) (if AR)
-      CommonTime time;           ///< Time of epoch for this record
+      CommonTime time;        ///< Time of epoch for this record
       double bias;            ///< Clock bias in seconds
       double sig_bias;        ///< Clock bias sigma in seconds
       double drift;           ///< Clock drift in sec/sec

@@ -79,7 +79,7 @@ namespace gpstk
          kt = it1; n=0;
          while(1) {
             // find index matching ttag
-            if(isExact && ABS(kt->first-ttag) < 1.e-8)
+            if(isExact && ABS(kt->first - ttag) < 1.e-8)
                Nmatch = n;
             times.push_back(kt->first - ttag0);          // sec
             for(i=0; i<3; i++) {
@@ -311,95 +311,119 @@ namespace gpstk
 
    // Add a PositionRecord to the store.
    void PositionSatStore::addPositionRecord(const SatID& sat, const CommonTime& ttag,
-                                            const PositionRecord& rec) throw()
+                                            const PositionRecord& rec)
+      throw(InvalidRequest)
    {
-      int i;
-      if(!haveVelocity)
-         for(i=0; i<3; i++)
-            if(rec.Vel[i] != 0.0) { haveVelocity = true; break; }
-      if(!haveAcceleration)
-         for(i=0; i<3; i++)
-            if(rec.Acc[i] != 0.0) { haveAcceleration = true; break; }
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in table
-         PositionRecord& oldrec(tables[sat][ttag]);
-         oldrec.Pos = rec.Pos;
-         oldrec.sigPos = rec.sigPos;
-         if(haveVelocity) { oldrec.Vel = rec.Vel; oldrec.sigVel = rec.sigVel; }
-         if(haveAcceleration) { oldrec.Acc = rec.Acc; oldrec.sigAcc = rec.sigAcc; }
+         int i;
+         if(!haveVelocity)
+            for(i=0; i<3; i++)
+               if(rec.Vel[i] != 0.0) { haveVelocity = true; break; }
+         if(!haveAcceleration)
+            for(i=0; i<3; i++)
+               if(rec.Acc[i] != 0.0) { haveAcceleration = true; break; }
+
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in table
+            PositionRecord& oldrec(tables[sat][ttag]);
+            oldrec.Pos = rec.Pos;
+            oldrec.sigPos = rec.sigPos;
+            if(haveVelocity) { oldrec.Vel = rec.Vel; oldrec.sigVel = rec.sigVel; }
+            if(haveAcceleration) { oldrec.Acc = rec.Acc; oldrec.sigAcc = rec.sigAcc; }
+         }
+         else {   // create a new entry in the table
+            tables[sat][ttag] = rec;
+         }
       }
-      else {   // create a new entry in the table
-         tables[sat][ttag] = rec;
-      }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    // Add position data (only) to the store
    void PositionSatStore::addPositionData(const SatID& sat, const CommonTime& ttag,
-                     const Triple& Pos, const Triple& Sig) throw()
+                     const Triple& Pos, const Triple& Sig)
+      throw(InvalidRequest)
    {
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in table
-         PositionRecord& oldrec(tables[sat][ttag]);
-         oldrec.Pos = Pos;
-         oldrec.sigPos = Sig;
-      }
-      else {   // create a new entry in the table
-         PositionRecord rec;
-         rec.Pos = Pos;
-         rec.sigPos = Sig;
-         rec.Vel = rec.sigVel = rec.Acc = rec.sigAcc = Triple(0,0,0);
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-         tables[sat][ttag] = rec;
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in table
+            PositionRecord& oldrec(tables[sat][ttag]);
+            oldrec.Pos = Pos;
+            oldrec.sigPos = Sig;
+         }
+         else {   // create a new entry in the table
+            PositionRecord rec;
+            rec.Pos = Pos;
+            rec.sigPos = Sig;
+            rec.Vel = rec.sigVel = rec.Acc = rec.sigAcc = Triple(0,0,0);
+
+            tables[sat][ttag] = rec;
+         }
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    // Add velocity data (only) to the store
    void PositionSatStore::addVelocityData(const SatID& sat, const CommonTime& ttag,
-                        const Triple& Vel, const Triple& Sig) throw()
+                        const Triple& Vel, const Triple& Sig)
+      throw(InvalidRequest)
    {
-      haveVelocity = true;
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in table
-         PositionRecord& oldrec(tables[sat][ttag]);
-         oldrec.Vel = Vel;
-         oldrec.sigVel = Sig;
-      }
-      else {   // create a new entry in the table
-         PositionRecord rec;
-         rec.Vel = Vel;
-         rec.sigVel = Sig;
-         rec.Pos = rec.sigPos = rec.Acc = rec.sigAcc = Triple(0,0,0);
+         haveVelocity = true;
 
-         tables[sat][ttag] = rec;
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in table
+            PositionRecord& oldrec(tables[sat][ttag]);
+            oldrec.Vel = Vel;
+            oldrec.sigVel = Sig;
+         }
+         else {   // create a new entry in the table
+            PositionRecord rec;
+            rec.Vel = Vel;
+            rec.sigVel = Sig;
+            rec.Pos = rec.sigPos = rec.Acc = rec.sigAcc = Triple(0,0,0);
+
+            tables[sat][ttag] = rec;
+         }
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    // Add acceleration data (only) to the store
-   void PositionSatStore::addAccelerationData(const SatID& sat, const CommonTime& ttag,
-                            const Triple& Acc, const Triple& Sig) throw()
+   void PositionSatStore::addAccelerationData(const SatID& sat,
+                        const CommonTime& ttag, const Triple& Acc, const Triple& Sig)
+       throw(InvalidRequest)
    {
-      haveAcceleration = true;
+      try {
+         checkTimeSystem(ttag.getTimeSystem());
 
-      if(tables.find(sat) != tables.end() &&
-         tables[sat].find(ttag) != tables[sat].end()) {
-               // record already exists in table
-         PositionRecord& oldrec(tables[sat][ttag]);
-         oldrec.Acc = Acc;
-         oldrec.sigAcc = Sig;
-      }
-      else {   // create a new entry in the table
-         PositionRecord rec;
-         rec.Acc = Acc;
-         rec.sigAcc = Sig;
-         rec.Vel = rec.sigVel = rec.Pos = rec.sigPos = Triple(0,0,0);
+         haveAcceleration = true;
 
-         tables[sat][ttag] = rec;
+         if(tables.find(sat) != tables.end() &&
+            tables[sat].find(ttag) != tables[sat].end()) {
+                  // record already exists in table
+            PositionRecord& oldrec(tables[sat][ttag]);
+            oldrec.Acc = Acc;
+            oldrec.sigAcc = Sig;
+         }
+         else {   // create a new entry in the table
+            PositionRecord rec;
+            rec.Acc = Acc;
+            rec.sigAcc = Sig;
+            rec.Vel = rec.sigVel = rec.Pos = rec.sigPos = Triple(0,0,0);
+
+            tables[sat][ttag] = rec;
+         }
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
    }
 
    //@}

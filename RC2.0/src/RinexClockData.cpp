@@ -45,12 +45,6 @@ namespace gpstk
       line += string(1,' ');
 
       line += printTime(time,"%4Y %02m %02d %02H %02M %9.6f");
-      //line += rightJustify(asString(time.year()),4);
-      //line += rightJustify(asString(time.month()),3);
-      //line += rightJustify(asString(time.day()),3);
-      //line += rightJustify(asString(time.hour()),3);
-      //line += rightJustify(asString(time.minute()),3);
-      //line += rightJustify(asString(time.second(),6),10);
 
       // must count the data to output
       int n(2);
@@ -126,7 +120,8 @@ namespace gpstk
                      asInt(line.substr(15,3)),
                      asInt(line.substr(18,3)),
                      asInt(line.substr(21,3)),
-                     asDouble(line.substr(24,10)));
+                     asDouble(line.substr(24,10)),
+                     TimeSystem::Any);                // TD use system from header
 
       int n(asInt(line.substr(34,3)));
       bias = asDouble(line.substr(40,19));
@@ -153,7 +148,7 @@ namespace gpstk
       s << " " << datatype;
       if(datatype == string("AR")) s << " " << site;
       else s << " " << sat.toString();
-      s << " " << printTime(time,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g");
+      s << " " << printTime(time,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g %P");
       s << scientific << setprecision(12)
          << " " << setw(19) << bias
          << " " << setw(19) << sig_bias;

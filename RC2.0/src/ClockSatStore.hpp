@@ -79,9 +79,8 @@ namespace gpstk
       {
          // NB. if interpType = 1, interpOrder = 2 (linear)
          interpOrder = 2*Nhalf;
-         havePosition = haveVelocity = false;
          haveClockBias = true;
-         haveClockDrift = false;
+         haveClockDrift = havePosition = haveVelocity = false;
       }
 
       /// Destructor
@@ -152,19 +151,23 @@ namespace gpstk
       /// the value used must be EXACTLY the same in all calls; (numerical noise could
       /// cause the std::map to consider two "equal" ttags as different).
       void addClockRecord(const SatID& sat, const CommonTime& ttag,
-                          const ClockRecord& rec) throw();
+                          const ClockRecord& rec)
+         throw(InvalidRequest);
 
       /// Add clock bias data (only) to the store
       void addClockBias(const SatID& sat, const CommonTime& ttag,
-                        const double& bias, const double& sig=0.0) throw();
+                        const double& bias, const double& sig=0.0)
+         throw(InvalidRequest);
 
       /// Add clock drift data (only) to the store
       void addClockDrift(const SatID& sat, const CommonTime& ttag,
-                        const double& drift, const double& sig=0.0) throw();
+                        const double& drift, const double& sig=0.0)
+         throw(InvalidRequest);
 
       /// Add clock acceleration data (only) to the store
       void addClockAcceleration(const SatID& sat, const CommonTime& ttag,
-                        const double& accel, const double& sig=0.0) throw();
+                        const double& accel, const double& sig=0.0)
+         throw(InvalidRequest);
 
       /// Get current interpolation order.
       unsigned int getInterpolationOrder(void) throw()

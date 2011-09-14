@@ -45,6 +45,12 @@ namespace gpstk
       /// the data tables: std::map<SatID, std::map<CommonTime, DataRecord> >
       SatTable tables;
 
+      /// Time system of tables; default and initial value is TimeSystem::Any.
+      /// Set and maintained by derived classes, using set and checkTimeSystem();
+      /// Any call to add records with a specific system sets it; then other
+      /// add.. or get.. calls will throw if the time systems do not match.
+      TimeSystem storeTimeSystem;
+
       /// Flags indicating that various data are present and may be accessed with
       /// getValue(t) or other routines, via interpolation of the data tables.
       /// Defaults are false, but deriving class should define in c'tor.
@@ -75,12 +81,10 @@ namespace gpstk
 
       /// Default constructor
       TabularSatStore() throw()
-         : havePosition(false),
-           haveVelocity(false),
-           haveClockBias(false),
-           haveClockDrift(false),
-           checkDataGap(false),
-           checkInterval(false)
+         : havePosition(false), haveVelocity(false),
+           haveClockBias(false), haveClockDrift(false),
+           checkDataGap(false), checkInterval(false),
+           storeTimeSystem(TimeSystem::Any)
       {}
 
       /// Destructor
@@ -140,6 +144,7 @@ namespace gpstk
                                     bool exactReturn=true)
          const throw(InvalidRequest)
       {
+      try {
          // find the DataTable for this sat
          typename std::map<SatID, DataTable>::const_iterator satit;
          satit = tables.find(sat);
@@ -154,6 +159,7 @@ namespace gpstk
          static const char *fmt=" at time %4Y/%02m/%02d %2H:%02M:%02S";
 
          // find the timetag in this table
+         // NB. throw here if time systems do not match and are not "Any"
          it1 = dtable.find(ttag);
          // is it an exact match?
          bool exactMatch(it1 != dtable.end());
@@ -227,6 +233,8 @@ namespace gpstk
 
          return exactMatch;
       }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
+      }
 
    // interface like that of XvtStore
 
@@ -241,7 +249,7 @@ namespace gpstk
       {
          os << " Dump of TabularSatStore(" << detail << "):" << std::endl;
          if(detail >= 0) {
-            const char *fmt="%4F %10.3g %4Y/%02m/%02d %2H:%02M:%02S";
+            static const char *fmt="%4F %w %10.3g %4Y/%02m/%02d %2H:%02M:%02S %P";
 
             os << "  Data stored for " << nsats() << " satellites\n";
             os << "  Time span of data: ";
@@ -323,6 +331,20 @@ namespace gpstk
       /// Return true if the given SatID is present in the store
       virtual bool isPresent(const SatID& sat) const throw()
          { return (tables.find(sat) != tables.end()); }
+
+      /// determine if the input TimeSystem conflicts with the stored TimeSystem
+      /// @param ts TimeSystem to compare with stored TimeSystem
+      /// @throw if time systems are inconsistent
+      void checkTimeSystem(const TimeSystem& ts) const throw(InvalidRequest)
+      {
+         if(ts != TimeSystem::Any && storeTimeSystem != TimeSystem::Any
+                                       && ts != storeTimeSystem)
+         {
+            InvalidRequest ir("Conflicting time systems: "
+               + ts.asString() + " - " + storeTimeSystem.asString());
+            GPSTK_THROW(ir);
+         }
+      }
 
       /// Get the earliest time of data in the data tables.
       /// @return the earliest time
@@ -545,6 +567,12 @@ namespace gpstk
          maxInterval = interval;
       }
 
+      /// get the store's time system
+      TimeSystem getTimeSystem(void) throw() { return storeTimeSystem; }
+
+      /// set the store's time system
+      void setTimeSystem(const TimeSystem& ts) throw() { storeTimeSystem = ts; }
+      
    };
 
       //@}

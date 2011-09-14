@@ -110,7 +110,6 @@ namespace gpstk
          catch(InvalidRequest& e) { tc = CommonTime::END_OF_TIME; }
          try { tp = posStore.getFinalTime(); }
          catch(InvalidRequest& e) { tp = CommonTime::END_OF_TIME; }
-
          return (tc > tp ? tp : tc);
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
@@ -233,6 +232,27 @@ namespace gpstk
             GPSTK_RETHROW(e);
          }
          //cout << "Read header" << endl; head.dump();
+
+         // check/save TimeSystem to storeTimeSystem
+         if(head.timeSystem != TimeSystem::Any &&
+            head.timeSystem != TimeSystem::Unknown)
+         {
+            if(posStore.getTimeSystem() == TimeSystem::Any)
+               posStore.setTimeSystem(head.timeSystem);
+            else if(posStore.getTimeSystem() != head.timeSystem) {
+               InvalidRequest ir("Incompatible time systems (position)");
+               GPSTK_THROW(ir);
+            }
+
+            if(fillClockStore) {
+               if(clkStore.getTimeSystem() == TimeSystem::Any)
+                  clkStore.setTimeSystem(head.timeSystem);
+               else if(clkStore.getTimeSystem() != head.timeSystem) {
+                  InvalidRequest ir("Incompatible time systems (clock)");
+                  GPSTK_THROW(ir);
+               }
+            }
+         }
 
          // save in FileStore
          fileStore.addFile(filename, head);
@@ -516,6 +536,18 @@ namespace gpstk
             GPSTK_RETHROW(e);
          }
          //cout << "Read header" << endl; head.dump();
+
+         // check/save TimeSystem to storeTimeSystem
+         if(head.timeSystem != TimeSystem::Any &&
+            head.timeSystem != TimeSystem::Unknown)
+         {
+            if(clkStore.getTimeSystem() == TimeSystem::Any)
+               clkStore.setTimeSystem(head.timeSystem);
+            else if(clkStore.getTimeSystem() != head.timeSystem) {
+               InvalidRequest ir("Incompatible time systems");
+               GPSTK_THROW(ir);
+            }
+         }
 
          // save in FileStore
          clkFiles.addFile(filename, head);

@@ -93,8 +93,8 @@ namespace gpstk
                valid |= sysValid;
             }
             else if(label == timeSystemString) {
-               //string sys(strip(line.substr(3,3)));
-               //if(sys == string("GPS")) ...
+               string ts(upperCase(line.substr(3,3)));
+               timeSystem.fromString(ts);
                valid |= timeSystemValid;
             }
             else if(label == leapSecondsString) {

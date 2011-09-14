@@ -159,19 +159,23 @@ namespace gpstk
       /// the value used must be EXACTLY the same in all calls; (numerical noise could
       /// cause the std::map to consider two "equal" ttags as different).
       void addPositionRecord(const SatID& sat, const CommonTime& ttag,
-                             const PositionRecord& rec) throw();
+                             const PositionRecord& rec)
+         throw(InvalidRequest);
 
       /// Add position data to the store; nothing else is changed
       void addPositionData(const SatID& sat, const CommonTime& ttag,
-                           const Triple& Pos, const Triple& Sig=Triple()) throw();
+                           const Triple& Pos, const Triple& Sig=Triple())
+         throw(InvalidRequest);
 
       /// Add velocity data to the store; nothing else is changed
       void addVelocityData(const SatID& sat, const CommonTime& ttag,
-                           const Triple& Vel, const Triple& Sig=Triple()) throw();
+                           const Triple& Vel, const Triple& Sig=Triple())
+         throw(InvalidRequest);
 
       /// Add acceleration data to the store; nothing else is changed
       void addAccelerationData(const SatID& sat, const CommonTime& ttag,
-                               const Triple& Acc, const Triple& Sig=Triple()) throw();
+                               const Triple& Acc, const Triple& Sig=Triple())
+         throw(InvalidRequest);
 
       /// Get current interpolation order.
       unsigned int getInterpolationOrder(void) throw()

@@ -440,18 +440,21 @@ namespace gpstk
       /// the value used must be EXACTLY the same in all calls; (numerical noise could
       /// cause the std::map to consider two "equal" ttags as different).
       void addPositionRecord(const SatID& sat, const CommonTime& ttag,
-                        const PositionRecord& data) throw()
-      { posStore.addPositionRecord(sat,ttag,data); }
+                        const PositionRecord& data) throw(InvalidRequest)
+      try { posStore.addPositionRecord(sat,ttag,data); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
       /// Add position data to the store
       void addPositionData(const SatID& sat, const CommonTime& ttag,
-                        const Triple& Pos, const Triple& sig) throw()
-      { posStore.addPositionData(sat,ttag,Pos,sig); }
+                        const Triple& Pos, const Triple& sig) throw(InvalidRequest)
+      try { posStore.addPositionData(sat,ttag,Pos,sig); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
       /// Add velocity data to the store
       void addVelocityData(const SatID& sat, const CommonTime& ttag,
-                        const Triple& Vel, const Triple& sig) throw()
-      { posStore.addVelocityData(sat,ttag,Vel,sig); }
+                        const Triple& Vel, const Triple& sig) throw(InvalidRequest)
+      try { posStore.addVelocityData(sat,ttag,Vel,sig); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
       /// Add a complete ClockRecord to the store; this is the preferred method
       /// of adding data to the tables.
@@ -460,23 +463,31 @@ namespace gpstk
       /// the value used must be EXACTLY the same in all calls; (numerical noise could
       /// cause the std::map to consider two "equal" ttags as different).
       void addClockRecord(const SatID& sat, const CommonTime& ttag,
-                          const ClockRecord& rec) throw()
-      { clkStore.addClockRecord(sat,ttag,rec); }
+                          const ClockRecord& rec)
+         throw(InvalidRequest)
+      try { clkStore.addClockRecord(sat,ttag,rec); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
       /// Add clock bias data (only) to the store
       void addClockBias(const SatID& sat, const CommonTime& ttag,
-                        const double& bias, const double& sig=0.0) throw()
-      { clkStore.addClockBias(sat,ttag,bias,sig); }
+                        const double& bias, const double& sig=0.0)
+         throw(InvalidRequest)
+      try { clkStore.addClockBias(sat,ttag,bias,sig); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
       /// Add clock drift data (only) to the store
       void addClockDrift(const SatID& sat, const CommonTime& ttag,
-                        const double& drift, const double& sig=0.0) throw()
-      { clkStore.addClockDrift(sat,ttag,drift,sig); }
+                        const double& drift, const double& sig=0.0)
+         throw(InvalidRequest)
+      try { clkStore.addClockDrift(sat,ttag,drift,sig); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
       /// Add clock acceleration data (only) to the store
       void addClockAcceleration(const SatID& sat, const CommonTime& ttag,
-                        const double& accel, const double& sig=0.0) throw()
-      { clkStore.addClockAcceleration(sat,ttag,accel,sig); }
+                        const double& accel, const double& sig=0.0)
+         throw(InvalidRequest)
+      try { clkStore.addClockAcceleration(sat,ttag,accel,sig); }
+      catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
 
 
       /// Get number of files (all types) in FileStore.

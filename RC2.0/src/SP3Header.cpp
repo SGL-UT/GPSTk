@@ -199,20 +199,7 @@ namespace gpstk
 
             // time system
             string ts = upperCase(line.substr(9,3));
-            if(ts == string("GPS"))
-               timeSystem = timeGPS;
-            else if(ts == string("UTC"))
-               timeSystem = timeUTC;
-            else if(ts == string("GLO"))
-               timeSystem = timeGLO;
-            else if(ts == string("GAL"))
-               timeSystem = timeGAL;
-            else if(ts == string("TAI"))
-               timeSystem = timeTAI;
-            else {
-               FFStreamError e("Unknown time system (line 13) " + ts);
-               GPSTK_THROW(e);
-            }
+            timeSystem.fromString(ts);
          }
          else
          {
