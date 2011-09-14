@@ -26,15 +26,19 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
+#include "CivilTime.hpp"
 #include "GNSSconstants.hpp"
 #include <iostream>
+
 
 using namespace std;
 using namespace gpstk;
 
-// ISO C++ forbids declaration of `main' with no type
+
+    // ISO C++ forbids declaration of `main' with no type
 int main(int argc, char *argv[])
 {
+
     int myprn;
 
     if (argc<2)
@@ -50,82 +54,104 @@ int main(int argc, char *argv[])
 
     try
     {
-       cout << "Reading " << argv[1] << "." << endl;
 
-//Declare RINEX observation file streams and data objects
-//-------------------------------------------------------
-       RinexObsStream roffs(argv[1]);
-       // It is necessary to set the failbit in order to throw exceptions
-       roffs.exceptions(ios::failbit);
-       RinexObsHeader roh;
-       RinexObsData roe;
-       RinexObsData::RinexDatum dataobj;
+        cout << "Reading " << argv[1] << "." << endl;
 
-//Read the RINEX header (this could be skipped).
-//--------------------------------------------
-       roffs >> roh;
+            // Declare RINEX observation file streams and data objects
+            // -------------------------------------------------------
+        RinexObsStream roffs(argv[1]);
 
-//Print RINEX header to terminal screen
-//-------------------------------
-       roh.dump(cout);
+            // It is necessary to set the failbit in order to throw exceptions
+        roffs.exceptions(ios::failbit);
+        RinexObsHeader roh;
+        RinexObsData roe;
+        RinexObsData::RinexDatum dataobj;
 
-//Loop through epochs and process data for each.
-//----------------------------------------------
-       while (roffs >> roe)
-       {
+            // Read the RINEX header (this could be skipped).
+            // --------------------------------------------
+        roffs >> roh;
 
-            cout << roe.time  << " ";
+            // Print RINEX header to terminal screen
+            // -------------------------------
+        roh.dump(cout);
 
-//Make a GPSTK SatID object for your PRN so you can search for it.
-//-----------------------------------------------------------------
-            SatID prn(myprn, SatID::systemGPS);
+            // Loop through epochs and process data for each.
+            // ----------------------------------------------
+        while (roffs >> roe)
+        {
 
-//Check to see if your PRN is in view at this epoch (ie. search for the PRN).
-//-------------------------------------------------------------------------
+                // Let's use the CivilTime class to print time
+            CivilTime civtime( roe.time );
+
+            cout << civtime  << " ";
+
+                // Make a GPSTK SatID object for your PRN so you can search it
+                // -----------------------------------------------------------
+            SatID prn( myprn, SatID::systemGPS );
+
+                // Check to see if your PRN is in view at this epoch (ie.
+                // search for the PRN).
+                // -----------------------------------------------------------
             RinexObsData::RinexSatMap::iterator pointer = roe.obs.find(prn);
-            if( pointer == roe.obs.end() ) cout << "PRN " << myprn << " not in view " << endl;
+            if( pointer == roe.obs.end() )
+            {
+                cout << "PRN " << myprn << " not in view " << endl;
+            }
             else
             {
 
-//Get P1 pseudorange code.
-//Here are two equivalent ways to get the RinexDatum from the RinexObsData object
-//-------------------------------------------------------------------------------
-                dataobj = roe.obs[prn][RinexObsHeader::P1];  //The intuitive way
+                    // Get P1 pseudorange code.
+                    // Here there are two equivalent ways to get the RinexDatum
+                    // from the RinexObsData object
+                    // --------------------------------------------------------
 
-                RinexObsData::RinexDatum dataobj2 = (*pointer).second[RinexObsHeader::P1];  //The more efficient STL way
+                    // The intuitive way
+                dataobj = roe.obs[prn][RinexObsHeader::P1];
 
-                // Another way to do the same that above
-                //RinexObsData::RinexDatum dataobj2 = pointer->second[RinexObsHeader::P1];
+                    // The more efficient STL way
+                RinexObsData::RinexDatum dataobj2 =
+                    (*pointer).second[RinexObsHeader::P1];
 
-                if( dataobj.data != dataobj2.data) cout << "STL has a bug! (Type crtl-C now or else orcs will crawl from you ears!)" << endl;
+                    // Another way to do the same that above
+                    // RinexObsData::RinexDatum dataobj2 =
+                    //    pointer->second[RinexObsHeader::P1];
+
+                if( dataobj.data != dataobj2.data)
+                    cout << "STL has a bug! (Type crtl-C now or else orcs "
+                         << "will crawl from you ears!)" << endl;
 
                 double P1 = dataobj.data;
 
-//Get P2 pseudorange and L1 phase measurement.
-//We will stick with the intuitive way.
-//-------------------------------------
+                    // Get P2 pseudorange and L1 phase measurement.
+                    // We will stick with the intuitive way.
+                    // -------------------------------------
                 dataobj = roe.obs[prn][RinexObsHeader::P2];
                 double P2 = dataobj.data;
 
                 dataobj = roe.obs[prn][RinexObsHeader::L1];
                 double L1 = dataobj.data;
 
-//Compute multipath
-//-----------------
+                    // Compute multipath
+                    // -----------------
                 double mu = P1 -L1*(C_MPS/L1_FREQ_GPS) -2*(P1 -P2)/(1-gamma);
 
-                // The following line makes sure that you get a proper output format
-                // The line above with "roh.dump" sets this, but just in case...
+                    // The following line makes sure that you get a proper
+                    // output format. The line above with "roh.dump" sets
+                    // this, but just in case...
                 cout << fixed << setw(7) << setprecision(3);
 
-                cout << " PRN " << myprn << " biased multipath " <<  mu << endl;
-            }
+                cout << " PRN " << myprn
+                     << " biased multipath " <<  mu << endl;
 
-       }
+            } // End of 'if( pointer == roe.obs.end() )'
+
+       } // End of 'while (roffs >> roe)'
 
        cout << "Read " << roffs.recordNumber << " epochs.  Cheers."  << endl;
+       
        exit(0);
-    }
+
+    } // End of 'try' block
     catch(FFStreamError& e)
     {
        cout << e;
@@ -143,4 +169,5 @@ int main(int argc, char *argv[])
     }
 
     exit(0);
- }
+
+} // End of 'main()'
