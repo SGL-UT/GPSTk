@@ -19,8 +19,14 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       BinexData.cpp \
       BinUtils.cpp \
       BLQDataReader.cpp \
+      BrcClockCorrection.cpp \
+      BrcKeplerOrbit.cpp \
       Chi2Distribution.cpp \
       CivilTime.cpp \
+      ClockSatStore.cpp \
+	  CNAVClock.cpp \
+      CNAVEphemeris.cpp \
+      CNAV2EphClk.cpp \
       CodeBuffer.cpp \
       CommandOption.cpp \
       CommandOptionParser.cpp \
@@ -33,7 +39,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       DayTime.cpp \
       DCBDataReader.cpp \
       DOP.cpp \
-      ECEF.cpp \
       EngAlmanac.cpp \
       EngEphemeris.cpp \
       EngNav.cpp \
@@ -60,6 +65,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       GenXSequence.cpp \
       GloEphemerisStore.cpp \
       GloFreqIndex.cpp \
+      #GlonassSatelliteModel.cpp \
       GloRecord.cpp \
       GPSAlmanacStore.cpp \
       GPSEphemerisStore.cpp \
@@ -88,20 +94,24 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ObsID.cpp \
       ObsRngDev.cpp \
       OceanLoading.cpp \
+      PackedNavBits.cpp \
       PoleTides.cpp \
       Position.cpp \
+      PositionSatStore.cpp \
       PowerSum.cpp \
       PRSolution.cpp \
       RACRotation.cpp \
       ReferenceFrame.cpp \
       Rinex3ClockData.cpp \
       Rinex3ClockHeader.cpp \
-      Rinex3EphemerisStore.cpp \
+      #Rinex3EphemerisStore.cpp \
       Rinex3NavData.cpp \
       Rinex3NavHeader.cpp \
       Rinex3ObsData.cpp \
       Rinex3ObsHeader.cpp \
-      RinexConverter.cpp \
+      RinexClockData.cpp \
+      RinexClockHeader.cpp \
+      #RinexConverter.cpp \
       RinexEphemerisStore.cpp \
       RinexGloNavData.cpp \
       RinexGloNavHeader.cpp \
@@ -176,10 +186,16 @@ incl_HEADERS = AllanDeviation.hpp \
       BinUtils.hpp \
       BivarStats.hpp \
       BLQDataReader.hpp \
+      BrcClockCorrection.hpp \
+      BrcKeplerOrbit.hpp \
       CheckPRData.hpp \
       Chi2Distribution.hpp \
       CivilTime.hpp \
       ClockModel.hpp \
+      ClockSatStore.hpp \
+      CNAVClock.hpp \
+      CNAVEphemeris.hpp \
+      CNAV2EphClk.hpp \
       CodeBuffer.hpp \
       CommandOption.hpp \
       CommandOptionParser.hpp \
@@ -192,7 +208,6 @@ incl_HEADERS = AllanDeviation.hpp \
       DayTime.hpp \
       DCBDataReader.hpp \
       DOP.hpp \
-      ECEF.hpp \
       EllipsoidModel.hpp \
       EngAlmanac.hpp \
       EngEphemeris.hpp \
@@ -295,10 +310,12 @@ incl_HEADERS = AllanDeviation.hpp \
       OceanLoading.hpp \
       OrbElemStore.hpp \
       ORDEpoch.hpp \
+      PackedNavBits.hpp \
       PCodeConst.hpp \
       PoleTides.hpp \
       PolyFit.hpp \
       Position.hpp \
+      PositionSatStore.hpp \
       PowerSum.hpp \
       PRSolution.hpp \
       PZ90Ellipsoid.hpp \
@@ -308,7 +325,7 @@ incl_HEADERS = AllanDeviation.hpp \
       Rinex3ClockData.hpp \
       Rinex3ClockHeader.hpp \
       Rinex3ClockStream.hpp \
-      Rinex3EphemerisStore.hpp \
+      #Rinex3EphemerisStore.hpp \
       Rinex3NavBase.hpp \
       Rinex3NavData.hpp \
       Rinex3NavFilterOperators.hpp \
@@ -319,7 +336,12 @@ incl_HEADERS = AllanDeviation.hpp \
       Rinex3ObsFilterOperators.hpp \
       Rinex3ObsHeader.hpp \
       Rinex3ObsStream.hpp \
-      RinexConverter.hpp \
+      RinexClockBase.hpp \
+      RinexClockData.hpp \
+      RinexClockHeader.hpp \
+      RinexClockStore.hpp \
+      RinexClockStream.hpp \
+      #RinexConverter.hpp \
       RinexEphemerisStore.hpp \
       RinexGloNavData.hpp \
       RinexGloNavHeader.hpp \
@@ -376,6 +398,7 @@ incl_HEADERS = AllanDeviation.hpp \
       SVPCodeGen.hpp \
       SystemTime.hpp \
       TabularEphemerisStore.hpp \
+      TabularSatStore.hpp \
       TimeConstants.hpp \
       TimeConverters.hpp \
       TimeNamedFileStream.hpp \

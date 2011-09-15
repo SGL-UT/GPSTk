@@ -40,7 +40,7 @@ else
       Chi2Distribution.cpp
       CivilTime.cpp
       ClockSatStore.cpp
-		CNAVClock.cpp
+      CNAVClock.cpp
       CNAVEphemeris.cpp
       CNAV2EphClk.cpp
       CodeBuffer.cpp
@@ -127,7 +127,7 @@ else
       Rinex3ObsHeader.cpp
       RinexClockData.cpp
       RinexClockHeader.cpp
-      #RinexConverter.cpp
+#      RinexConverter.cpp
       RinexEphemerisStore.cpp
       RinexGloNavData.cpp
       RinexGloNavHeader.cpp
@@ -211,7 +211,7 @@ else
       CivilTime.hpp
       ClockModel.hpp
       ClockSatStore.hpp
-		CNAVClock.hpp
+      CNAVClock.hpp
       CNAVEphemeris.hpp
       CNAV2EphClk.hpp
       CodeBuffer.hpp
@@ -359,7 +359,7 @@ else
       RinexClockHeader.hpp	
       RinexClockStore.hpp	
       RinexClockStream.hpp	
-      #RinexConverter.hpp	
+#      RinexConverter.hpp	
       RinexEphemerisStore.hpp	
       RinexGloNavData.hpp	
       RinexGloNavHeader.hpp	

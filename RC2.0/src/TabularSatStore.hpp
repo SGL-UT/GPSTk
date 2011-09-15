@@ -511,7 +511,7 @@ namespace gpstk
          if(it == tables.end() || it->second.size() == 0) return 0.0;
 
          // save the most frequent N step sizes
-         static const int N(3);
+         static const int N=3;
          int i,ndt[N]={0,0,0};
          double dt[N],del;
 
