@@ -6,5 +6,4 @@ BonkForte ; # bleah.
 GPSMain rinexpvt : rinexpvt.cpp ;
 GPSMain poscvt : poscvt.cpp ;
 GPSMain PRSolve : PRSolve.cpp ;
-#GPSMain PRSolveR3 : PRSolveR3.cpp ;
 GPSMain posInterp : posInterp.cpp ;
