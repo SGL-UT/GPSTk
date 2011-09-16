@@ -79,12 +79,10 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 7/1/11 rev"));
+string Version(string("1.0 7/1/11"));
 // TD
 // Code selection is not implemented - where to replace C1* with C1W ?
 // option to use pos from PRSolve as ref
-// GPS nav and GLO nav
-// make R2 compatible - pos, ...
 // debiasing the output....
 
 //------------------------------------------------------------------------------------

@@ -1130,6 +1130,7 @@ namespace gpstk
       {
          haveSubframe[2] = false;
       }
+      A = ahalf*ahalf;     // TEMP fix BWT
       short fitHours = getLegacyFitInterval(IODC, fitint);
       long beginFitSOW = toe - (fitHours/2)*3600.0;
       long endFitSOW = toe + (fitHours/2)*3600.0;

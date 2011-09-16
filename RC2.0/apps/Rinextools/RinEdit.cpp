@@ -60,13 +60,11 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 8/1/11 rev"));
+string Version(string("1.0 8/1/11"));
 // TD
 // option to replace input with output?
 // include optional fmt input for t in edit cmds - is this feasible?
 // if given a 4-char OT and SV, check their consistency
-// OK - test it.  implement DO - how? copy and edit, or clear and copy?
-// OK - test it.  edit header when DS (alone) or DO appear ... how?
 // how to handle aux header data if its first - OF not yet opened
 
 //------------------------------------------------------------------------------------
