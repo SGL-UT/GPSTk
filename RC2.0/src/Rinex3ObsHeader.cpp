@@ -1594,21 +1594,21 @@ namespace gpstk
          }
 
          // TEMP?
-         //std::vector<std::string> R2ObsTypes;
-         //map<string, map<string, RinexObsID> > mapSysR2toR3ObsID;
-         map<string, map<string, RinexObsID> >::iterator jt;
-         sort(R2ObsTypes.begin(), R2ObsTypes.end());
-         cout << "Read (" << R2ObsTypes.size() << ") RINEX ver. 2 Obs Types:";
-         for(int i=0; i<R2ObsTypes.size(); i++) cout << " " << R2ObsTypes[i];
-         cout << endl;
+         ////std::vector<std::string> R2ObsTypes;
+         ////map<string, map<string, RinexObsID> > mapSysR2toR3ObsID;
+         //map<string, map<string, RinexObsID> >::iterator jt;
+         //sort(R2ObsTypes.begin(), R2ObsTypes.end());
+         //cout << "Read (" << R2ObsTypes.size() << ") RINEX ver. 2 Obs Types:";
+         //for(int i=0; i<R2ObsTypes.size(); i++) cout << " " << R2ObsTypes[i];
+         //cout << endl;
 
-         for(jt = mapSysR2toR3ObsID.begin(); jt != mapSysR2toR3ObsID.end(); ++jt) {
-            cout << "R2->R3 Map for sys " << jt->first << " :";
-            for(int i=0; i<R2ObsTypes.size(); i++)
-               cout << " " << R2ObsTypes[i]
-                  << ":" << jt->second[R2ObsTypes[i]].asString();
-            cout << endl;
-         }
+         //for(jt = mapSysR2toR3ObsID.begin(); jt != mapSysR2toR3ObsID.end(); ++jt) {
+         //   cout << "R2->R3 Map for sys " << jt->first << " :";
+         //   for(int i=0; i<R2ObsTypes.size(); i++)
+         //      cout << " " << R2ObsTypes[i]
+         //         << ":" << jt->second[R2ObsTypes[i]].asString();
+         //   cout << endl;
+         //}
       }
 
       // Since technically the Phase Shift record is required in ver 3.01,
@@ -1755,18 +1755,18 @@ namespace gpstk
       // else version 2 was read and R2ObsTypes and mapSysR2toR3ObsID were filled in reallyGet
 
       // TEMP?
-      sort(R2ObsTypes.begin(), R2ObsTypes.end());
-      cout << "Prepare to write (" << R2ObsTypes.size() << ") RINEX ver.2 ObsTypes:";
-      for(i=0; i<R2ObsTypes.size(); i++) cout << " " << R2ObsTypes[i];
-      cout << endl;
+      //sort(R2ObsTypes.begin(), R2ObsTypes.end());
+      //cout << "Prepare to write (" << R2ObsTypes.size()<< ") RINEX ver.2 ObsTypes:";
+      //for(i=0; i<R2ObsTypes.size(); i++) cout << " " << R2ObsTypes[i];
+      //cout << endl;
 
-      for(jt = mapSysR2toR3ObsID.begin(); jt != mapSysR2toR3ObsID.end(); ++jt) {
-         cout << "R3->R2 Map for sys " << jt->first << " :";
-         for(i=0; i<R2ObsTypes.size(); i++)
-            cout << " " << R2ObsTypes[i]
-               << ":" << jt->second[R2ObsTypes[i]].asString();
-         cout << endl;
-      }
+      //for(jt = mapSysR2toR3ObsID.begin(); jt != mapSysR2toR3ObsID.end(); ++jt) {
+      //   cout << "R3->R2 Map for sys " << jt->first << " :";
+      //   for(i=0; i<R2ObsTypes.size(); i++)
+      //      cout << " " << R2ObsTypes[i]
+      //         << ":" << jt->second[R2ObsTypes[i]].asString();
+      //   cout << endl;
+      //}
 
    }  // end PrepareVer2Write()
 

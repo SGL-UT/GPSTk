@@ -43,6 +43,7 @@
 
 //------------------------------------------------------------------------------------
 // system includes
+#include <map>
 
 // GPSTk includes 
 #include "RinexObsStream.hpp"
@@ -474,7 +475,7 @@ string sortRinex3ObsFiles(vector<string>& files)
 	try
 	{
 	   // build a hash with key = start time, value = filename
-	   map<CommonTime,string> hash;
+	   multimap<CommonTime,string> hash;
 	   for(int n = 0; n < files.size(); n++)
 	   {
 			try {
@@ -492,7 +493,7 @@ string sortRinex3ObsFiles(vector<string>& files)
                continue;
             }
 
-			   hash[header.firstObs] = files[n];
+			   hash.insert(make_pair(header.firstObs,files[n]));
 			}
 			catch(Exception& e)
 			{
@@ -503,7 +504,7 @@ string sortRinex3ObsFiles(vector<string>& files)
 
 		// return the sorted file names
 		files.clear();
-		map<CommonTime,string>::const_iterator it = hash.begin();
+		multimap<CommonTime,string>::const_iterator it = hash.begin();
 		while(it != hash.end()) {
 			files.push_back(it->second);
 			it++;
