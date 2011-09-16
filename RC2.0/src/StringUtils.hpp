@@ -53,8 +53,11 @@
 
 /// @todo Get rid of the stdio.h dependency if possible.
 #include <cstdio>
-#include <cstdlib>
+#ifdef _WIN32
+#include "regex1.h"
+#else
 #include <regex.h>
+#endif
 #include <cctype>
 #include <limits>
 
@@ -2375,25 +2378,38 @@ namespace gpstk
                                             const std::string::size_type explen,
                                             bool showPlus)
       {
+         // get final exp length, precision and total length
          std::string::size_type elen = (explen > 0 ? (explen < 3 ? explen : 3) : 1);
          std::string::size_type prec = (precision > 0 ? precision : 1);
          std::string::size_type leng = (length > 0 ? length : 1);
+
+         // i will be minimum length required with prec==1: force leng if necessary
          int i = (int(leng) - int(elen) - 4);
          if(showPlus) i--;
          if(i > 0 && leng < i) leng = std::string::size_type(i);
+
+         // set up the stream for writing
          std::stringstream ss;
          ss << std::scientific << std::setprecision(prec);
          if(showPlus) ss << std::showpos;
+
+         // write d to a string with precision, sign and in scientific notation
          ss << d;
+
+         // now read that string
          std::string str1,str2;
          ss >> str1;
-         std::string::size_type pos = str1.find_first_of("EDed");
-         str2 = str1.substr(0,pos+2);
-         str1 = str1.substr(pos+2);
-         str2 += StringUtils::rightJustify(StringUtils::asString(
-                                             StringUtils::asInt(str1)),elen,'0' );
-         if(static_cast<int>(str2.length()) < leng)
-            str2 = StringUtils::rightJustify(str2,leng);
+         std::string::size_type pos = str1.find_first_of("EDed");    // find exponent
+         str2 = str1.substr(0,pos+2);        // str2 = +123.2345e+
+         str1 = str1.substr(pos+2);          // str1 = exponent only
+
+         // make the exponent length elen
+         str2 += StringUtils::rightJustify(
+                     StringUtils::asString(StringUtils::asInt(str1)),elen,'0');
+
+         // pad if necessary
+         if(str2.length() < leng) str2 = StringUtils::rightJustify(str2,leng);
+
          return str2;
       }
 

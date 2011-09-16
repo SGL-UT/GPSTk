@@ -1,5 +1,9 @@
 #pragma ident "$Id$"
 
+/**
+ * @file Rinex3NavData.cpp
+ * Encapsulates RINEX 3 Navigation data.
+ */
 
 //============================================================================
 //
@@ -37,37 +41,29 @@
 //
 //=============================================================================
 
-
-/**
- * @file Rinex3NavData.cpp
- * Encapsulates RINEX 3 Navigation data.
- */
-
-#include "StringUtils.hpp"
 #include "CivilTime.hpp"
 #include "TimeString.hpp"
-#include "GPSWeekSecond.hpp"
-#include "Rinex3NavData.hpp"
-#include "Rinex3NavStream.hpp"
+//#include "GPSWeekSecond.hpp"
 #include "GNSSconstants.hpp"
+
+#include "Rinex3NavData.hpp"
 
 namespace gpstk
 {
    using namespace StringUtils;
    using namespace std;
 
-
    // This routine uses EngEphemeris, so is for GPS data only.
    // The comments about GPS v. Galileo next to each elements are just notes
    // from sorting out the ICDs in the RINEX 3 documentation.  Please leave
    // them there until we add a routine for handling GalRecord or similar type.
-   Rinex3NavData::Rinex3NavData(const EngEphemeris& ee) // GPS only, since EngEphemeris
+   Rinex3NavData::Rinex3NavData(const EngEphemeris& ee) // GPS only
    {
       // epoch info
 
       satSys = ee.getSatSys();
       PRNID  = ee.getPRNID();
-      sat    = SatID(PRNID,SatID::systemGPS);
+      sat    = RinexSatID(PRNID,SatID::systemGPS);
       time   = ee.getEpochTime();
 
       Toc     = ee.getToc();
@@ -127,6 +123,8 @@ namespace gpstk
 
    }
 
+   //Rinex3NavData::Rinex3NavData(const GloEphemeris& ge)
+
    // This constructor initializes R3NavData with Galileo data.
    // Refer to the previous constructor, ie. Rinex3NavData(const EngEphemeris& ee),
    // for more information on which elements are GPS and/or Galileo only.
@@ -136,7 +134,7 @@ namespace gpstk
 
       satSys = ge.getSatSys();
       PRNID  = ge.getPRNID();
-      sat    = SatID(PRNID,SatID::systemGPS);
+      sat    = RinexSatID(PRNID,SatID::systemGPS);
       time   = ge.getEpochTime();
 
       Toc     = ge.getToc();
@@ -184,87 +182,88 @@ namespace gpstk
 
    }
 
-   void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
-      throw(exception, FFStreamError, StringException)
-   {
-      Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
-
-      strm << putPRNEpoch() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit1() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit2() << endl;
-      strm.lineNumber++;
-      strm << putBroadcastOrbit3() << endl;
-      strm.lineNumber++;
-      if ( satSys == "G" || satSys == "E" ) // GPS and Galileo have 7 B.O.'s
-        {
-          strm << putBroadcastOrbit4() << endl;
-          strm.lineNumber++;
-          strm << putBroadcastOrbit5() << endl;
-          strm.lineNumber++;
-          strm << putBroadcastOrbit6() << endl;
-          strm.lineNumber++;
-          strm << putBroadcastOrbit7(strm.header.version) << endl;
-          strm.lineNumber++;
-        }
-   }
-
    void Rinex3NavData::reallyGetRecord(FFStream& ffs) 
       throw(exception, FFStreamError, StringException)
    {
-      Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
+      try {
+         Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
-      // If the header hasn't been read, read it...
-      if( !strm.headerRead ) strm >> strm.header;
+         // If the header hasn't been read, read it...
+         if(!strm.headerRead) {
+            try {
+               strm >> strm.header;
+            }
+            catch(exception& e) {
+               FFStreamError fse(string("std::exception reading header ") + e.what());
+               GPSTK_THROW(fse);
+            }
+            catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
+         }
 
-      string line;
+         // get the first line, the epoch line
+         getPRNEpoch(strm);
 
-      strm.formattedGetLine(line, true);
-      getPRNEpoch(line);
+         // get 3 data records
+         for(int i=1; i<=3; i++) getRecord(i, strm);
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit1(line);
+         // SBAS and GLO only have 3 records
+         if(satSys == "S" || satSys == "R") return;
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit2(line);
+         // COMPASS satSys == "C" TBD
 
-      strm.formattedGetLine(line);
-      getBroadcastOrbit3(line);
-
-      if(satSys == "S" || satSys == "R") return;
-
-      // COMPASS "C" TBD
-
-      if(satSys == "G" || satSys == "E")
-      {
-        strm.formattedGetLine(line);
-        getBroadcastOrbit4(line);
-
-        strm.formattedGetLine(line);
-        getBroadcastOrbit5(line);
-
-        strm.formattedGetLine(line);
-        getBroadcastOrbit6(line);
-
-        strm.formattedGetLine(line);
-        getBroadcastOrbit7(line);
+         // GPS and GAL have 7 records, get 4-7
+         if(satSys == "G" || satSys == "E")
+            for(int i=4; i<=7; i++) getRecord(i, strm);
       }
+      catch(exception& e) {
+         FFStreamError fse(string("std::exception: ") + e.what());
+         GPSTK_THROW(fse);
+      }
+      catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
+      catch(StringException& se) { GPSTK_RETHROW(se); }
+   }
 
+   void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
+      throw(exception, FFStreamError, StringException)
+   {
+      try {
+         Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
+
+         putPRNEpoch(strm);
+
+         // put 3 data records
+         for(int i=1; i<=3; i++) putRecord(i, strm);
+
+         // SBAS and GLO only have 3 records
+         if(satSys == "S" || satSys == "R") return;
+
+         // COMPASS satSys == "C" TBD
+
+         // GPS and GAL have 7 records, put 4-7
+         if(satSys == "G" || satSys == "E")
+            for(int i=4; i<=7; i++) putRecord(i, strm);
+      }
+      catch(exception& e) {
+         FFStreamError fse(string("std::exception: ") + e.what());
+         GPSTK_THROW(fse);
+      }
+      catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
+      catch(StringException& se) { GPSTK_RETHROW(se); }
    }
 
    void Rinex3NavData::dump(ostream& s) const
    {
       if(satSys == "G")          // GPS
          s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
-            << " TOE: " << printTime(time,"%4F %10.3g")
-            << " TOC: " << setw(4) << weeknum << " " 
-            << fixed << setw(10) << setprecision(3) << Toc
+            << " TOE: " << setw(4) << weeknum
+            << " " << fixed << setw(10) << setprecision(3) << Toe
+            << " TOC: " << printTime(time,"%4F %10.3g")
             << " codeflags: " << setw(3) << codeflgs
             << " L2Pflag: " << setw(3) << L2Pdata
             << " IODC: " << setw(4) << int(IODC)
             << " IODE: " << setw(4) << int(IODE)            // IODE should be int
             << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
+            << " FitInt: " << setw(6) << fitint
             << endl;
       else if(satSys == "R")     // GLONASS
          s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
@@ -305,8 +304,9 @@ namespace gpstk
 
       ee.setSF1(0, HOWtime, 0, weeknum, codeflgs, 0, health,
                 short(IODC), L2Pdata, Tgd, Toc, af2, af1, af0, 0, PRNID);
+
       ee.setSF2(0, HOWtime, 0, short(IODE), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
-                Toe, (fitint > 4) ? 1 : 0);
+                Toc, (fitint > 4) ? 1 : 0);
       ee.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
                 idot);
 
@@ -328,7 +328,7 @@ namespace gpstk
       ge.setSF1(0, HOWtime, 0, weeknum, datasources, 0, health,
                 BGDb, L2Pdata, BGDa, Toc, af2, af1, af0, 0, PRNID);
       ge.setSF2(0, HOWtime, 0, short(IODnav), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
-                Toe, 0);
+                Toc, 0);
       ge.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
                 idot);
 
@@ -361,7 +361,7 @@ namespace gpstk
       l.push_back(Crs);
       l.push_back(Cic);
       l.push_back(Cis);
-      l.push_back(Toe);
+      l.push_back(Toc);
       l.push_back(M0);
       l.push_back(dn);
       l.push_back(ecc);
@@ -376,322 +376,282 @@ namespace gpstk
       return l;
    }
 
-   string Rinex3NavData::putPRNEpoch(void) const
+   void Rinex3NavData::putPRNEpoch(Rinex3NavStream& strm) const
       throw(StringException)
    {
       string line;
-      CivilTime civtime = time;
+      CivilTime civtime(time);
 
-      line += satSys;
-      std::string tempString = asString(PRNID);
-      if ( PRNID < 10 )
-        {
-          tempString = "0" + tempString;
-        }
-      line += rightJustify(tempString, 2);
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.year  ), 4);
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.month ), 2, '0');
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.day   ), 2, '0');
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.hour  ), 2, '0');
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.minute), 2, '0');
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civtime.second), 2, '0');
+      if(strm.header.version >= 3) {                                 // version 3
+         line = sat.toString();
+         line += " ";
+         line += rightJustify(asString<short>(civtime.year), 4);
+         line += " ";
+         line += rightJustify(asString<short>(civtime.month), 2, '0');
+         line += " ";
+         line += rightJustify(asString<short>(civtime.day), 2, '0');
+         line += " ";
+         line += rightJustify(asString<short>(civtime.hour), 2, '0');
+         line += " ";
+         line += rightJustify(asString<short>(civtime.minute), 2, '0');
+         line += " ";
+         line += rightJustify(asString<short>(civtime.second), 2, '0');
+      }
+      else {                                                         // version 2
+         line = rightJustify(asString<short>(PRNID), 2);
+         line += " ";
+         line += rightJustify(asString<short>(civtime.year), 2, '0');
+         line += " ";
+         line += rightJustify(asString<short>(civtime.month), 2);
+         line += " ";
+         line += rightJustify(asString<short>(civtime.day), 2);
+         line += " ";
+         line += rightJustify(asString<short>(civtime.hour), 2);
+         line += " ";
+         line += rightJustify(asString<short>(civtime.minute), 2);
+         line += " ";
+         line += rightJustify(asString(civtime.second,1), 4);
+      }
 
-      if ( satSys == "R" || satSys == "S" ) // GLONASS
-        {
-          line += string(1, ' ');
-          line += doub2for(TauN          , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(GammaN        , 18, 2);
-          line += string(1, ' ');
-          line += doub2for((double)MFtime, 18, 2);
-        }
-      else                 // GPS or Galileo
-        {
-          line += string(1, ' ');
-          line += doub2for(af0, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(af1, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(af2, 18, 2);
-        }
-
-      return line;
-   }
-
-   string Rinex3NavData::putBroadcastOrbit1(void) const
-      throw(StringException)
-   {
-      string line;
-
-      line += string(4, ' ');
-      if ( satSys == "R" || satSys == "S" )      // GLONASS
-        {
-          line += string(1, ' ');
-          line += doub2for(px, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(vx, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(ax, 18, 2);
-          line += string(1, ' ');
-          line += doub2for((double)health, 18, 2);
-        }
-      else if ( satSys == "G" ) // GPS
-        {
-          line += string(1, ' ');
-          line += doub2for(IODE, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Crs , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(dn  , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(M0  , 18, 2);
-        }
-      else if ( satSys == "E" ) // Galileo
-        {
-          line += string(1, ' ');
-          line += doub2for(IODnav, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Crs   , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(dn    , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(M0    , 18, 2);
-        }
-
-      return line;
-   }
-
-   string Rinex3NavData::putBroadcastOrbit2(void) const
-      throw(StringException)
-   {
-      string line;
-
-      line += string(4, ' ');
-      if ( satSys == "R" || satSys == "S" )
-        {
-          line += string(1, ' ');
-          line += doub2for(py, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(vy, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(ay, 18, 2);
-          line += string(1, ' ');
-          line += doub2for((double)freqNum, 18, 2);
-        }
-      else
-        {
-          line += string(1, ' ');
-          line += doub2for(Cuc  , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(ecc  , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Cus  , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Ahalf, 18, 2);
-        }
-
-      return line;
-   }
-
-   string Rinex3NavData::putBroadcastOrbit3(void) const
-      throw(StringException)
-   {
-      string line;
-
-      line += string(4, ' ');
       if(satSys == "R" || satSys == "S") {
-          line += string(1, ' ');
-          line += doub2for(pz, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(vz, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(az, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(ageOfInfo, 18, 2);
+         line += doubleToScientific(TauN,19,12,2);
+         line += doubleToScientific(GammaN,19,12,2);
+         line += doubleToScientific((double)MFtime,19,12,2);
       }
-      else {
-          line += string(1, ' ');
-          line += doub2for(Toe   , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Cic   , 18, 2);
-          line += string(1, ' ');
-          line += doub2for(OMEGA0, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(Cis   , 18, 2);
-        }
+      else if(satSys == "G" || satSys == "E") {
+         line += doubleToScientific(af0,19,12,2);
+         line += doubleToScientific(af1,19,12,2);
+         line += doubleToScientific(af2,19,12,2);
+      }
+      //else if(satSys == "C")
 
-      return line;
+      strm << stripTrailing(line) << endl;
+      strm.lineNumber++;
    }
 
-   string Rinex3NavData::putBroadcastOrbit4(void) const
-      throw(StringException)
-   {
-      string line;
-
-      line += string(4, ' ');
-      line += string(1, ' ');
-      line += doub2for(i0, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(Crc, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(w, 18, 2);
-      line += string(1, ' ');
-      line += doub2for(OMEGAdot, 18, 2);
-
-      return line;
-   }
-
-   string Rinex3NavData::putBroadcastOrbit5(void) const
-      throw(StringException)
-   {
-      // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
-      // In RIENX 3 *files*, weeknum is the week of TOE.
-      double wk = double(weeknum);
-      if(HOWtime - Toe > HALFWEEK)
-         wk++;
-      else if(HOWtime - Toe < -(HALFWEEK))
-         wk--;
-
-      string line;
-
-      line += string(4, ' ');
-      line += string(1, ' ');
-      line += doub2for(idot, 18, 2);
-      if ( satSys == "G" )      // GPS
-        {
-          line += string(1, ' ');
-          line += doub2for((double)codeflgs, 18, 2);
-        }
-      else if ( satSys == "E" ) // Galileo
-        {
-          line += string(1, ' ');
-          line += doub2for((double)datasources, 18, 2);
-        }
-      line += string(1, ' ');
-      line += doub2for(wk, 18, 2);
-      if ( satSys == "G" )      // GPS
-        {
-          line += string(1, ' ');
-          line += doub2for((double)L2Pdata, 18, 2);
-        }
-      else if ( satSys == "E") // Galileo
-        {
-          line += string(1, ' ');
-          line += doub2for((double) 0, 18, 2);
-        }
-
-      return line;
-   }
-
-   string Rinex3NavData::putBroadcastOrbit6(void) const
-      throw(StringException)
-   {
-      string line;
-
-      line += string(4, ' ');
-      line += string(1, ' ');
-      line += doub2for(accuracy, 18, 2);
-      line += string(1, ' ');
-      line += doub2for((double)health, 18, 2);
-
-      if ( satSys == "G" )      // GPS
-        {
-          line += string(1, ' ');
-          line += doub2for(Tgd, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(IODC, 18, 2);
-        }
-      else if ( satSys == "E" ) // Galileo
-        {
-          line += string(1, ' ');
-          line += doub2for(BGDa, 18, 2);
-          line += string(1, ' ');
-          line += doub2for(BGDb, 18, 2);
-        }
-
-      return line;
-   }
-
-   string Rinex3NavData::putBroadcastOrbit7(const double ver) const
-      throw(StringException)
-   {
-      string line;
-
-      line += string(4, ' ');
-      line += string(1, ' ');
-      line += doub2for(HOWtime, 18, 2);
-      if ( satSys == "G" )
-        {
-          line += string(1, ' ');
-          line += doub2for(fitint, 18, 2);         
-        }
-      else if ( satSys == "E" )
-        {
-          line += string(1, ' ');
-          line += doub2for((double) 0, 18, 2);
-        }
-
-      return line;
-   }
-
-   void Rinex3NavData::getPRNEpoch(const string& currentLine)
+   void Rinex3NavData::putRecord(const int& nline, Rinex3NavStream& strm) const
       throw(StringException, FFStreamError)
    {
-      try
-      {
-         // check for spaces in the right spots...
-         if (currentLine[3] != ' ')
-            throw( FFStreamError("Badly formatted line") );
-         for (int i = 8; i <= 20; i += 3)
-            if (currentLine[i] != ' ')
-               throw( FFStreamError("Badly formatted line") );
+      if(nline < 1 || nline > 7) {
+         FFStreamError fse(string("Invalid line number ") + asString(nline));
+         GPSTK_THROW(fse);
+      }
 
-         satSys = currentLine.substr(0,1);
+      try {
+         string line;
 
-         PRNID = asInt(currentLine.substr(1,2));
+         if(strm.header.version < 3) line += string(3, ' ');
+         else                        line += string(4, ' ');
 
-         if      ( satSys == "G" ) sat = SatID(PRNID,SatID::systemGPS    );
-         else if ( satSys == "R" ) sat = SatID(PRNID,SatID::systemGlonass);
-         else if ( satSys == "E" ) sat = SatID(PRNID,SatID::systemGalileo);
-         else if ( satSys == "S" ) sat = SatID(PRNID,SatID::systemGeosync);
+         if(nline == 1) {
+            if(satSys == "R" || satSys == "S") {     // GLO and GEO
+               line += doubleToScientific(px,19,12,2);
+               line += doubleToScientific(vx,19,12,2);
+               line += doubleToScientific(ax,19,12,2);
+               line += doubleToScientific((double)health,19,12,2);
+            }
+            else if(satSys == "G") {                  // GPS
+               line += doubleToScientific(IODE,19,12,2);
+               line += doubleToScientific(Crs,19,12,2);
+               line += doubleToScientific(dn,19,12,2);
+               line += doubleToScientific(M0,19,12,2);
+            }
+            else if(satSys == "E") {                  // GAL
+               line += doubleToScientific(IODnav,19,12,2);
+               line += doubleToScientific(Crs,19,12,2);
+               line += doubleToScientific(dn,19,12,2);
+               line += doubleToScientific(M0,19,12,2);
+            }
+         }
 
-         short yr  = asInt(currentLine.substr( 4,4));
-         short mo  = asInt(currentLine.substr( 9,2));
-         short day = asInt(currentLine.substr(12,2));
-         short hr  = asInt(currentLine.substr(15,2));
-         short min = asInt(currentLine.substr(18,2));
-         short sec = asInt(currentLine.substr(21,2));
+         else if(nline == 2) {
+            if(satSys == "R" || satSys == "S") {      // GLO and GEO
+               line += doubleToScientific(py,19,12,2);
+               line += doubleToScientific(vy,19,12,2);
+               line += doubleToScientific(ay,19,12,2);
+               if(satSys == "R")
+                  line += doubleToScientific((double)freqNum,19,12,2);
+               else
+                  line += doubleToScientific(accCode,19,12,2);
+            }
+            else {
+               line += doubleToScientific(Cuc,19,12,2);
+               line += doubleToScientific(ecc,19,12,2);
+               line += doubleToScientific(Cus,19,12,2);
+               line += doubleToScientific(Ahalf,19,12,2);
+            }
+         }
 
-         // Real RINEX 2 had epochs 'yy mm dd hr 59 60.0' surprisingly often.
-         // Keep this in place (as Int) to be cautious.
+         else if(nline == 3) {
+            if(satSys == "R" || satSys == "S") {
+               line += doubleToScientific(pz,19,12,2);
+               line += doubleToScientific(vz,19,12,2);
+               line += doubleToScientific(az,19,12,2);
+               if(satSys == "R")
+                  line += doubleToScientific(ageOfInfo,19,12,2);
+               else                    // GEO
+                  line += doubleToScientific(IODN,19,12,2);
+            }
+            else {
+               line += doubleToScientific(Toe,19,12,2);
+               line += doubleToScientific(Cic,19,12,2);
+               line += doubleToScientific(OMEGA0,19,12,2);
+               line += doubleToScientific(Cis,19,12,2);
+            }
+         }
+
+         else if(nline == 4) {
+            line += doubleToScientific(i0,19,12,2);
+            line += doubleToScientific(Crc,19,12,2);
+            line += doubleToScientific(w,19,12,2);
+            line += doubleToScientific(OMEGAdot,19,12,2);
+         }
+
+         else if(nline == 5) {
+            // Internally (Rinex3NavData and EngEphemeris), weeknum = week of HOW.
+            // In RINEX 3 *files*, weeknum is the week of TOE.
+            double wk = double(weeknum);
+            if(HOWtime - Toe > HALFWEEK)
+               wk++;
+            else if(HOWtime - Toe < -(HALFWEEK))
+               wk--;
+
+            line += doubleToScientific(idot,19,12,2);
+            if(satSys == "G") {                         // GPS
+               line += doubleToScientific((double)codeflgs,19,12,2);
+            }
+            else if(satSys == "E") {                    // GAL
+               line += doubleToScientific((double)datasources,19,12,2);
+            }
+
+            line += doubleToScientific(wk,19,12,2);
+            if(satSys == "G") {                         // GPS
+               line += doubleToScientific((double)L2Pdata,19,12,2);
+            }
+            else if(satSys == "E") {                     // GAL
+               line += doubleToScientific((double) 0,19,12,2);
+            }
+         }
+
+         else if(nline == 6) {
+            line += doubleToScientific(accuracy,19,12,2);
+            line += doubleToScientific((double)health,19,12,2);
+
+            if(satSys == "G") {                        // GPS
+               line += doubleToScientific(Tgd,19,12,2);
+               line += doubleToScientific(IODC,19,12,2);
+            }
+            else if(satSys == "E") {                   // GAL
+               line += doubleToScientific(BGDa,19,12,2);
+               line += doubleToScientific(BGDb,19,12,2);
+            }
+         }
+
+         else if(nline == 7) {
+            line += doubleToScientific(HOWtime,19,12,2);
+
+            if(satSys == "G") {
+               line += doubleToScientific(fitint,19,12,2);
+            }
+            else if(satSys == "E") {
+               line += doubleToScientific(0.0,19,12,2);
+            }
+         }
+
+         strm << stripTrailing(line) << endl;
+         strm.lineNumber++;
+      }
+      catch (std::exception &e) {
+         FFStreamError err("std::exception: " + string(e.what()));
+         GPSTK_THROW(err);
+      }
+
+   }  // end putRecord()
+
+   void Rinex3NavData::getPRNEpoch(Rinex3NavStream& strm)
+      throw(StringException, FFStreamError)
+   {
+      try {
+         int i;
+         short yr,mo,day,hr,min;
+         double dsec;
+
+         string line;
+         strm.formattedGetLine(line, true);
+
+         if(strm.header.version >= 3) {
+            // check for spaces in the right spots...
+            if(line[3] != ' ')
+               throw(FFStreamError("Badly formatted epoch line"));
+            for(i = 8; i <= 20; i += 3)
+               if(line[i] != ' ')
+                  throw(FFStreamError("Badly formatted epoch line"));
+
+            satSys = line.substr(0,1);
+            PRNID = asInt(line.substr(1,2));
+            sat.fromString(line.substr(0,3));
+
+            yr  = asInt(line.substr( 4,4));
+            mo  = asInt(line.substr( 9,2));
+            day = asInt(line.substr(12,2));
+            hr  = asInt(line.substr(15,2));
+            min = asInt(line.substr(18,2));
+            dsec = asDouble(line.substr(21,2));
+         }
+         else {                  // RINEX 2
+            for(i=2; i <= 17; i+=3)
+               if(line[i] != ' ') {
+                  throw(FFStreamError("Badly formatted epoch line"));
+               }
+
+            satSys = string(1,strm.header.fileSys[0]);
+            PRNID = asInt(line.substr(0,2));
+            sat.fromString(satSys + line.substr(0,2));
+
+            yr  = asInt(line.substr( 2,3));
+            if(yr < 80) yr += 100;     // rollover is at 1980
+            yr += 1900;
+            mo  = asInt(line.substr( 5,3));
+            day = asInt(line.substr( 8,3));
+            hr  = asInt(line.substr(11,3));
+            min = asInt(line.substr(14,3));
+            dsec = asDouble(line.substr(17,5));
+         }
+
+         // Fix RINEX epochs of the form 'yy mm dd hr 59 60.0'
          short ds = 0;
-         if (sec >= 60) { ds = sec; sec = 0; }
-         time = CivilTime(yr,mo,day,hr,min,(double)sec).convertToCommonTime();
-         if      ( satSys == "G" ) time.setTimeSystem(TimeSystem::GPS);
-         else if ( satSys == "R" ) time.setTimeSystem(TimeSystem::GLO);
-         else if ( satSys == "E" ) time.setTimeSystem(TimeSystem::GAL);
-         else if ( satSys == "S" ) time.setTimeSystem(TimeSystem::GPS); // TD ??
-         if (ds != 0) time += ds;
+         if(dsec >= 60.) { ds = dsec; dsec = 0; }
+         time = CivilTime(yr,mo,day,hr,min,dsec).convertToCommonTime();
+         if(ds != 0) time += ds;
 
-         Toc = ((GPSWeekSecond)time).sow;
+         // do not specify the time system here - do it when cast into e.g. EngEphem.
+         time.setTimeSystem(TimeSystem::Any);
 
-         if ( satSys == "G" || satSys == "E" )
-         {
-           af0 = StringUtils::for2doub(currentLine.substr(23,19));
-           af1 = StringUtils::for2doub(currentLine.substr(42,19));
-           af2 = StringUtils::for2doub(currentLine.substr(61,19));
+         // TOC is the epoch time
+         GPSWeekSecond gws(time);
+         Toc = gws.sow;
+
+         if(strm.header.version < 3) {
+            if(satSys == "G") {
+               af0 = StringUtils::for2doub(line.substr(22,19));
+               af1 = StringUtils::for2doub(line.substr(41,19));
+               af2 = StringUtils::for2doub(line.substr(60,19));
+            }
+            else if(satSys == "R" || satSys == "S") {
+               TauN   =      StringUtils::for2doub(line.substr(22,19));
+               GammaN =      StringUtils::for2doub(line.substr(41,19));
+               MFtime = (int)StringUtils::for2doub(line.substr(60,19));
+            }
          }
-         else if ( satSys == "R" || satSys == "S" )
-         {
-           TauN   =      StringUtils::for2doub(currentLine.substr(23,19));
-           GammaN =      StringUtils::for2doub(currentLine.substr(42,19));
-           MFtime = (int)StringUtils::for2doub(currentLine.substr(61,19));
+         else if(satSys == "G" || satSys == "E") {
+            af0 = StringUtils::for2doub(line.substr(23,19));
+            af1 = StringUtils::for2doub(line.substr(42,19));
+            af2 = StringUtils::for2doub(line.substr(61,19));
+         }
+         else if(satSys == "R" || satSys == "S") {
+            TauN   =      StringUtils::for2doub(line.substr(23,19));
+            GammaN =      StringUtils::for2doub(line.substr(42,19));
+            MFtime = (int)StringUtils::for2doub(line.substr(61,19));
          }
       }
       catch (std::exception &e)
@@ -701,192 +661,135 @@ namespace gpstk
       }
    }
 
-   void Rinex3NavData::getBroadcastOrbit1(const string& currentLine)
+   void Rinex3NavData::getRecord(const int& nline, Rinex3NavStream& strm)
       throw(StringException, FFStreamError)
    {
-      try
-      {
-         if ( satSys == "G" )
-         {
-           IODE = StringUtils::for2doub(currentLine.substr( 4,19));
-           Crs  = StringUtils::for2doub(currentLine.substr(23,19));
-           dn   = StringUtils::for2doub(currentLine.substr(42,19));
-           M0   = StringUtils::for2doub(currentLine.substr(61,19));
+      if(nline < 1 || nline > 7) {
+         FFStreamError fse(string("Invalid line number ") + asString(nline));
+         GPSTK_THROW(fse);
+      }
+
+      try {
+         int n(strm.header.version < 3 ? 3 : 4);
+         string line;
+         strm.formattedGetLine(line);
+
+         if(nline == 1) {
+            if(satSys == "G") {
+               IODE = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               Crs  = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               dn   = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               M0   = StringUtils::for2doub(line.substr(n,19));
+            }
+            else if(satSys == "E") {
+               IODnav = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               Crs    = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               dn     = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               M0     = StringUtils::for2doub(line.substr(n,19));
+            }
+            else if(satSys == "R" || satSys == "S") {
+               px     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               vx     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               ax     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               health = (short)StringUtils::for2doub(line.substr(n,19));
+            }
          }
-         else if ( satSys == "E" )
-         {
-           IODnav = StringUtils::for2doub(currentLine.substr( 4,19));
-           Crs    = StringUtils::for2doub(currentLine.substr(23,19));
-           dn     = StringUtils::for2doub(currentLine.substr(42,19));
-           M0     = StringUtils::for2doub(currentLine.substr(61,19));
+
+         else if(nline == 2) {
+            if(satSys == "G" || satSys == "E") {
+               Cuc   = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               ecc   = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               Cus   = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               Ahalf = StringUtils::for2doub(line.substr(n,19));
+            }
+            else if(satSys == "R" || satSys == "S") {
+               py      =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               vy      =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               ay      =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               if(satSys == "R")
+                  freqNum = (short)StringUtils::for2doub(line.substr(n,19));
+               else                       // GEO
+                  accCode = StringUtils::for2doub(line.substr(n,19));
+            }
          }
-         else if ( satSys == "R" || satSys == "S")
-         {
-           px     =        StringUtils::for2doub(currentLine.substr( 4,19));
-           vx     =        StringUtils::for2doub(currentLine.substr(23,19));
-           ax     =        StringUtils::for2doub(currentLine.substr(42,19));
-           health = (short)StringUtils::for2doub(currentLine.substr(61,19));
+
+         else if(nline == 3) {
+            if(satSys == "G" || satSys == "E") {
+               Toe    = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               Cic    = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               OMEGA0 = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               Cis    = StringUtils::for2doub(line.substr(n,19));
+            }
+            else if(satSys == "R" || satSys == "S") {
+               pz        = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               vz        = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               az        = StringUtils::for2doub(line.substr(n,19)); n+=19;
+               if(satSys == "R")
+                  ageOfInfo = StringUtils::for2doub(line.substr(n,19));
+               else                       // GEO
+                  IODN = StringUtils::for2doub(line.substr(n,19));
+            }
+         }
+
+         else if(nline == 4) {
+            i0       = StringUtils::for2doub(line.substr(n,19)); n+=19;
+            Crc      = StringUtils::for2doub(line.substr(n,19)); n+=19;
+            w        = StringUtils::for2doub(line.substr(n,19)); n+=19;
+            OMEGAdot = StringUtils::for2doub(line.substr(n,19));
+         }
+
+         else if(nline == 5) {
+            if(satSys == "G") {
+               idot     =        StringUtils::for2doub(line.substr(n,19)); n+=19;
+               codeflgs = (short)StringUtils::for2doub(line.substr(n,19)); n+=19;
+               weeknum  = (short)StringUtils::for2doub(line.substr(n,19)); n+=19;
+               L2Pdata  = (short)StringUtils::for2doub(line.substr(n,19));
+            }
+            else if(satSys == "E") {
+               idot        =       StringUtils::for2doub(line.substr(n,19)); n+=19;
+               datasources =(short)StringUtils::for2doub(line.substr(n,19)); n+=19;
+               weeknum     =(short)StringUtils::for2doub(line.substr(n,19)); n+=19;
+            }
+         }
+
+         else if(nline == 6) {
+            if(satSys == "G") {
+               accuracy =       StringUtils::for2doub(line.substr(n,19)); n+=19;
+               health   = short(StringUtils::for2doub(line.substr(n,19))); n+=19;
+               Tgd      =       StringUtils::for2doub(line.substr(n,19)); n+=19;
+               IODC     =       StringUtils::for2doub(line.substr(n,19));
+            }
+            else if(satSys == "E") {
+               accuracy =       StringUtils::for2doub(line.substr(n,19)); n+=19;
+               health   = short(StringUtils::for2doub(line.substr(n,19))); n+=19;
+               BGDa     =       StringUtils::for2doub(line.substr(n,19)); n+=19;
+               BGDb     =       StringUtils::for2doub(line.substr(n,19));
+            }
+         }
+
+         else if(nline == 7) {
+            HOWtime = long(StringUtils::for2doub(line.substr(n,19))); n+=19;
+            fitint  =      StringUtils::for2doub(line.substr(n,19));
+   
+            // In RINEX *files*, weeknum is the week of TOE.
+            // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW
+            if(HOWtime - Toe > HALFWEEK)
+               weeknum--;
+            else if(HOWtime - Toe < -HALFWEEK)
+               weeknum++;
+   
+            // Some RINEX files have HOW < 0.
+            while(HOWtime < 0) {
+               HOWtime += (long)FULLWEEK;
+               weeknum--;
+            }
          }
       }
-      catch (std::exception &e)
-      {
+      catch (std::exception &e) {
          FFStreamError err("std::exception: " + string(e.what()));
          GPSTK_THROW(err);
       }
-   }
 
-   void Rinex3NavData::getBroadcastOrbit2(const string& currentLine)
-      throw(StringException, FFStreamError)
-   {
-      try
-      {
-         if ( satSys == "G" || satSys == "E" )
-         {
-           Cuc   = StringUtils::for2doub(currentLine.substr( 4,19));
-           ecc   = StringUtils::for2doub(currentLine.substr(23,19));
-           Cus   = StringUtils::for2doub(currentLine.substr(42,19));
-           Ahalf = StringUtils::for2doub(currentLine.substr(61,19));
-         }
-         else if ( satSys == "R" || satSys == "S")
-         {
-           py      =        StringUtils::for2doub(currentLine.substr( 4,19));
-           vy      =        StringUtils::for2doub(currentLine.substr(23,19));
-           ay      =        StringUtils::for2doub(currentLine.substr(42,19));
-           freqNum = (short)StringUtils::for2doub(currentLine.substr(61,19));
-         }
-      }
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + string(e.what()));
-         GPSTK_THROW(err);
-      }
-   }
-
-   void Rinex3NavData::getBroadcastOrbit3(const string& currentLine)
-      throw(StringException, FFStreamError)
-   {
-      try
-      {
-         if ( satSys == "G" || satSys == "E" )
-         {
-           Toe    = StringUtils::for2doub(currentLine.substr( 4,19));
-           Cic    = StringUtils::for2doub(currentLine.substr(23,19));
-           OMEGA0 = StringUtils::for2doub(currentLine.substr(42,19));
-           Cis    = StringUtils::for2doub(currentLine.substr(61,19));
-         }
-         else if ( satSys == "R" || satSys == "S")
-         {
-           pz        = StringUtils::for2doub(currentLine.substr( 4,19));
-           vz        = StringUtils::for2doub(currentLine.substr(23,19));
-           az        = StringUtils::for2doub(currentLine.substr(42,19));
-           ageOfInfo = StringUtils::for2doub(currentLine.substr(61,19));
-         }
-      }
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + string(e.what()));
-         GPSTK_THROW(err);
-      }
-   }
-
-   void Rinex3NavData::getBroadcastOrbit4(const string& currentLine)
-      throw(StringException, FFStreamError)
-   {
-      try
-      {
-         i0       = StringUtils::for2doub(currentLine.substr( 4,19));
-         Crc      = StringUtils::for2doub(currentLine.substr(23,19));
-         w        = StringUtils::for2doub(currentLine.substr(42,19));
-         OMEGAdot = StringUtils::for2doub(currentLine.substr(61,19));
-      }
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + string(e.what()));
-         GPSTK_THROW(err);
-      }
-   }
-
-   void Rinex3NavData::getBroadcastOrbit5(const string& currentLine)
-      throw(StringException, FFStreamError)
-   {
-      try
-      {
-         if ( satSys == "G" )
-         {
-           idot     =        StringUtils::for2doub(currentLine.substr( 4,19));
-           codeflgs = (short)StringUtils::for2doub(currentLine.substr(23,19));
-           weeknum  = (short)StringUtils::for2doub(currentLine.substr(42,19));
-           L2Pdata  = (short)StringUtils::for2doub(currentLine.substr(61,19));
-         }
-         else if ( satSys == "E" )
-         {
-           idot        =        StringUtils::for2doub(currentLine.substr( 4,19));
-           datasources = (short)StringUtils::for2doub(currentLine.substr(23,19));
-           weeknum     = (short)StringUtils::for2doub(currentLine.substr(42,19));
-         }
-      }
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + string(e.what()));
-         GPSTK_THROW(err);
-      }
-   }
-
-   void Rinex3NavData::getBroadcastOrbit6(const string& currentLine)
-      throw(StringException, FFStreamError)
-   {
-      try
-      {
-         if ( satSys == "G" )
-         {
-           accuracy =                    StringUtils::for2doub(currentLine.substr( 4,19));
-           health   = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
-           Tgd      =                    StringUtils::for2doub(currentLine.substr(42,19));
-           IODC     =                    StringUtils::for2doub(currentLine.substr(61,19));
-         }
-         else if ( satSys == "E" )
-         {
-           accuracy =                    StringUtils::for2doub(currentLine.substr( 4,19));
-           health   = static_cast<short>(StringUtils::for2doub(currentLine.substr(23,19)));
-           BGDa     =                    StringUtils::for2doub(currentLine.substr(42,19));
-           BGDb     =                    StringUtils::for2doub(currentLine.substr(61,19));
-         }
-      }
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + string(e.what()));
-         GPSTK_THROW(err);
-      }
-   }
-
-   void Rinex3NavData::getBroadcastOrbit7(const string& currentLine)
-      throw(StringException, FFStreamError)
-   {
-      try
-      {
-         HOWtime = static_cast<long>(StringUtils::for2doub(currentLine.substr( 4,19)));
-         fitint  =                   StringUtils::for2doub(currentLine.substr(23,19));
-
-         // In RINEX *files*, weeknum is the week of TOE.
-         // Internally (Rinex3NavData and EngEphemeris), weeknum is the week of HOW.
-         if (HOWtime - Toe > HALFWEEK)
-            weeknum--;
-         else if (HOWtime - Toe < -HALFWEEK)
-            weeknum++;
-
-         // Some RINEX files have HOW < 0.
-         while(HOWtime < 0)
-         {
-           HOWtime += (long)FULLWEEK;
-           weeknum--;
-         }
-
-      }
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + string(e.what()));
-         GPSTK_THROW(err);
-      }
-   }
+   }  // end getRecord()
 
 }  // end of namespace

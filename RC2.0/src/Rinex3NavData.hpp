@@ -1,6 +1,5 @@
 #pragma ident "$Id$"
 
-
 /**
  * @file Rinex3NavData.hpp
  * Encapsulates RINEX 3 Navigation data
@@ -52,9 +51,10 @@
 #include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "Rinex3NavBase.hpp"
+#include "Rinex3NavStream.hpp"
 #include "EngEphemeris.hpp"
 #include "GalEphemeris.hpp"
-#include "SatID.hpp"
+#include "RinexSatID.hpp"
 
 namespace gpstk
 {
@@ -72,221 +72,179 @@ namespace gpstk
    {
    public:
 
-     /**
-      * Constructor
-      * @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE USING!!
-      */
+      /// Constructor
+      /// @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE USING!!
       Rinex3NavData(void)
         : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
-     {}
+      {}
 
-     /// Initializes the nav data with an EngEphemeris
-     Rinex3NavData(const EngEphemeris& ee);
+      /// Initializes the nav data with an EngEphemeris
+      Rinex3NavData(const EngEphemeris& ee);
 
-     /// Initializes the nav data with a GalEphemeris
-     Rinex3NavData(const GalEphemeris& ge);
+      /// Initializes the nav data with a GalEphemeris
+      Rinex3NavData(const GalEphemeris& ge);
 
-     /// destructor
-     virtual ~Rinex3NavData() {}
+      /// destructor
+      virtual ~Rinex3NavData() {}
 
-     // The next five lines are our common interface.
-     /// Rinex3NavData is "data" so this function always returns true.
-     virtual bool isData(void) const {return true;}
+      // The next five lines are our common interface.
+      /// Rinex3NavData is "data" so this function always returns true.
+      virtual bool isData(void) const {return true;}
 
-     /**
-      * A debug output function.
-      * Prints the PRN id and the IODC for this record.
-      */ 
-     virtual void dump(std::ostream& s) const;
+      /// A debug output function.
+      /// Prints the PRN id and the IODC for this record.
+      virtual void dump(std::ostream& s) const;
 
-     /**
-      * Converts this Rinex3NavData to an EngEphemeris object.
-      */
-     operator EngEphemeris() const throw();
+      /// Converts this Rinex3NavData to an EngEphemeris object.
+      operator EngEphemeris() const throw();
 
-     /**
-      * Converts this Rinex3NavData to a GalEphemeris object.
-      */
-     operator GalEphemeris() const throw();
+      /// Converts this Rinex3NavData to a GalEphemeris object.
+      operator GalEphemeris() const throw();
 
-     /**
-      * Converts the (non-CommonTime) data to an easy list for comparison operators.
-      */
-     std::list<double> toList() const;
+      /// Converts the (non-CommonTime) data to an easy list for comparison operators.
+      std::list<double> toList() const;
 
-     /** @name EpochDataGeneral
-      */
-     //@{
-     CommonTime time;     ///< Time according to the record
-     std::string satSys;  ///< Satellite system of Epoch
-     short PRNID;         ///< SV PRN ID
-     SatID sat;           ///< SatID (from PRNID & satSys)
-     long HOWtime;        ///< Time of subframe 1-3 (sec of week)
-     short weeknum;       ///< GPS full week that corresponds to the HOWtime of SF1
-                          ///< (N.B.: in RINEX files, week number corresponds to ToE.)
-                          ///< Not GLO
-     double accuracy;     ///< SV accuracy (m)
-     short health;        ///< SV health
-     //@}
+      /// Sort on time, then satellite; for use with Rinex3EphemerisStore
+      bool operator<(const Rinex3NavData& right) const
+      {
+         if(time == right.time) return (sat < right.sat);
+         return (time < right.time);
+      }
 
-     /** @name EpochDataGPS
-      */
-     //@{
-     short   codeflgs;    ///< L2 codes
-     short   L2Pdata;     ///< L2 P data flag 
-     double  IODC;        ///< Index of data-clock
-     double  IODE;        ///< Index of data-eph
-     //@}
+      /** @name EpochDataGeneral */
+      //@{
+      CommonTime time;     ///< Time according to the sat/epoch record (TOC)
+      std::string satSys;  ///< Satellite system of Epoch: G,R,E,S,C
+      short PRNID;         ///< SV PRN ID
+      RinexSatID sat;      ///< RinexSatID (from PRNID & satSys)
+      long HOWtime;        ///< Time of subframe 1-3 (sec of week)
+      short weeknum;       ///< GPS full week that corresponds to the HOWtime of SF1
+                           ///< (N.B.:in RINEX files, week number corresponds to ToE.)
+                           ///< Not GLO
+      double accuracy;     ///< SV accuracy (m)
+      short health;        ///< SV health
+      //@}
 
-     /** @name EpochDataGLO
-      */
-     //@{
-     double  TauN;        ///< SV clock bias (sec)
-     double  GammaN;      ///< SV relative frequency bias
-     double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
-     int     MFtime;      ///< Message frame time (sec of UTC week) <short>
-     short   freqNum;     ///< Frequency number (-7..+12)
-     double  ageOfInfo;   ///< Age of oper. information (days)
-     //@}
+      /** @name EpochDataGPS */
+      //@{
+      short   codeflgs;    ///< L2 codes
+      short   L2Pdata;     ///< L2 P data flag 
+      double  IODC;        ///< Index of data-clock
+      double  IODE;        ///< Index of data-eph
+      //@}
 
-     /** @name EpochDataGAL
-      */
-     //@{
-     short   datasources; ///< Data sources
-     double  IODnav;      ///< Index of data-eph
-     //@}
+      /** @name EpochDataGLO */
+      //@{
+      double  TauN;        ///< SV clock bias (sec)
+      double  GammaN;      ///< SV relative frequency bias
+      double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
+      int     MFtime;      ///< Message frame time (sec of UTC week) <short>
+      short   freqNum;     ///< Frequency number (-7..+12)
+      double  ageOfInfo;   ///< Age of oper. information (days)
+      //@}
 
-     /** @name ClockInformation
-      */
-     //@{
-     double  Toc;         ///< Clock epoch (sec of week) (derived from epoch line of RINEX 3 Nav file)
-     double  af0;         ///< SV clock error (sec)
-     double  af1;         ///< SV clock drift (sec/sec)
-     double  af2;         ///< SV clock drift rate (sec/sec**2)
-     double  Tgd;         ///< Group delay differential (sec) (GPS)
-     double  BGDa, BGDb;  ///< SV clock parameters for E5a/E1 and E5b/E1 combinations (Galileo)
-     //@}
+      /** @name EpochDataGAL */
+      //@{
+      short   datasources; ///< Data sources
+      double  IODnav;      ///< Index of data-eph
+      //@}
 
-     /** @name HarmonicPerturbations
-      */
-     //@{
-     double  Cuc;         ///< Cosine latitude (rad)
-     double  Cus;         ///< Sine latitude (rad)
-     double  Crc;         ///< Cosine radius (m)
-     double  Crs;         ///< Sine radius (m)
-     double  Cic;         ///< Cosine inclination (rad)
-     double  Cis;         ///< Sine inclination (rad)
-     //@}
+      /** @name EpochDataGEO */
+      //@{
+      double  accCode;     ///< Accuracy code (URA, meters)
+      double  IODN;        ///< Issue of data navigation, DO229,
+                           ///< 8 first bits after Message type if MT9
+      //@}
 
-     /** @name MajorEphemerisParameters
-      */
-     //@{
-     double  Toe;         ///< Ephemeris epoch (sec of week)
-     double  M0;          ///< Mean anomaly (rad)
-     double  dn;          ///< Correction to mean motion (rad/sec)
-     double  ecc;         ///< Eccentricity
-     double  Ahalf;       ///< SQRT of semi-major axis (m**1/2)
-     double  OMEGA0;      ///< Rt ascension of ascending node (rad)
-     double  i0;          ///< Inclination (rad)
-     double  w;           ///< Argument of perigee (rad)
-     double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
-     double  idot;        ///< Rate of inclination angle (rad/sec)
-     double  fitint;      ///< Fit interval
-     //@}
+      /** @name ClockInformation */
+      //@{
+      double  Toc;         ///< Time of ephemeris (sec of week)
+      double  af0;         ///< SV clock error (sec)
+      double  af1;         ///< SV clock drift (sec/sec)
+      double  af2;         ///< SV clock drift rate (sec/sec**2)
+      double  Tgd;         ///< Group delay differential (sec) (GPS)
+      double  BGDa, BGDb;  ///< SV clock params for E5a/E1 and E5b/E1 combos (Galileo)
+      //@}
 
-     /** @name TabularEphemerisParameters
-      */
-     //@{
-     double  px, py, pz;  ///< SV position
-     double  vx, vy, vz;  ///< SV velocity
-     double  ax, ay, az;  ///< SV acceleration
-     //@}
+      /** @name HarmonicPerturbations */
+      //@{
+      double  Cuc;         ///< Cosine latitude (rad)
+      double  Cus;         ///< Sine latitude (rad)
+      double  Crc;         ///< Cosine radius (m)
+      double  Crs;         ///< Sine radius (m)
+      double  Cic;         ///< Cosine inclination (rad)
+      double  Cis;         ///< Sine inclination (rad)
+      //@}
+
+      /** @name MajorEphemerisParameters */
+      //@{
+      double  Toe;         ///< Ephemeris epoch (sec of week)
+      double  M0;          ///< Mean anomaly (rad)
+      double  dn;          ///< Correction to mean motion (rad/sec)
+      double  ecc;         ///< Eccentricity
+      double  Ahalf;       ///< SQRT of semi-major axis (m**1/2)
+      double  OMEGA0;      ///< Rt ascension of ascending node (rad)
+      double  i0;          ///< Inclination (rad)
+      double  w;           ///< Argument of perigee (rad)
+      double  OMEGAdot;    ///< Rate of Rt ascension (rad/sec)
+      double  idot;        ///< Rate of inclination angle (rad/sec)
+      double  fitint;      ///< Fit interval
+      //@}
+
+      /** @name TabularEphemerisParameters */
+      //@{
+      double  px, py, pz;  ///< SV position
+      double  vx, vy, vz;  ///< SV velocity
+      double  ax, ay, az;  ///< SV acceleration
+      //@}
 
    private:
 
-   /// Parses string \a currentLine to obtain PRN id and epoch.
-     void getPRNEpoch(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
+      /// Parses string \a currentLine to obtain PRN id and epoch.
+      /// @param strm RINEX Nav stream
+      void getPRNEpoch(Rinex3NavStream& strm)
+         throw(StringUtils::StringException, FFStreamError);
 
-     /** @name OrbitParameters
-      * Obtain orbit parameters from strint \a currentLine.
-      */
-     //@{
-     /// Reads line 1 of the Nav Data record
-     void getBroadcastOrbit1(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     /// Reads line 2 of the Nav Data record
-     void getBroadcastOrbit2(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     /// Reads line 3 of the Nav Data record
-     void getBroadcastOrbit3(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     /// Reads line 4 of the Nav Data record
-     void getBroadcastOrbit4(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     /// Reads line 5 of the Nav Data record
-     void getBroadcastOrbit5(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     /// Reads line 6 of the Nav Data record
-     void getBroadcastOrbit6(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     /// Reads line 7 of the Nav Data record
-     void getBroadcastOrbit7(const std::string& currentLine)
-       throw(StringUtils::StringException, FFStreamError);
-     //@}
+      /** @name OrbitParameters
+        * Obtain orbit parameters from strint \a currentLine.  */
+      //@{
+      /// Read and parse the nth record after the epoch record
+      /// @param int n record number (1-7), for nth record after the epoch line
+      /// @param Rinex3NavStream strm stream to read from
+      void getRecord(const int& n, Rinex3NavStream& strm)
+         throw(StringUtils::StringException, FFStreamError);
+      //@}
 
-     /// generates a line to be output to a file for the PRN/epoch line
-     std::string putPRNEpoch(void) const
-       throw(StringUtils::StringException);
+      /// generates the PRN/epoch line and outputs it to strm
+      /// @param strm RINEX Nav stream
+      void putPRNEpoch(Rinex3NavStream& strm) const
+         throw(StringUtils::StringException);
 
-     /** @name OrbitParameters
-      * Generate orbit parameter lines from data to be output to a file
-      */
-     //@{
-     /// Writes line 1 of the Nav Data record
-     std::string putBroadcastOrbit1(void) const
-       throw(StringUtils::StringException);
-     /// Writes line 2 of the Nav Data record
-     std::string putBroadcastOrbit2(void) const
-       throw(StringUtils::StringException);
-     /// Writes line 3 of the Nav Data record
-     std::string putBroadcastOrbit3(void) const
-       throw(StringUtils::StringException);
-     /// Writes line 4 of the Nav Data record
-     std::string putBroadcastOrbit4(void) const
-       throw(StringUtils::StringException);
-     /// Writes line 5 of the Nav Data record
-     std::string putBroadcastOrbit5(void) const
-       throw(StringUtils::StringException);
-     /// Writes line 6 of the Nav Data record
-     std::string putBroadcastOrbit6(void) const
-       throw(StringUtils::StringException);
-     /// Writes line 7 of the Nav Data record
-     /// @warning Pass in version to decide wheter or not
-     ///          to write fit interval.
-     std::string putBroadcastOrbit7(const double ver) const
-       throw(StringUtils::StringException);
-     //@}
+      /// @name OrbitParameters
+      /// Generate orbit parameter lines from data to be output to a file
+      //@{
+      /// Construct and write the nth record after the epoch record
+      /// @param int n record number (1-7), for nth record after the epoch line
+      /// @param Rinex3NavStream strm stream to read from
+      void putRecord(const int& n, Rinex3NavStream& strm) const
+         throw(StringUtils::StringException, FFStreamError);
+      //@}
 
    protected:
 
-     /// Outputs the record to the FFStream \a s.
-     virtual void reallyPutRecord(FFStream& s) const 
-       throw(std::exception, FFStreamError,
-             StringUtils::StringException);
+      /// This function retrieves a RINEX 3 NAV record from the given FFStream.
+      /// If an error is encountered in reading from the stream, the stream
+      /// is returned to its original position and its fail-bit is set.
+      /// @throws StringException when a StringUtils function fails
+      /// @throws FFStreamError when exceptions(failbit) is set and
+      ///  a read or formatting error occurs.  This also resets the
+      ///  stream to its pre-read position.
+      virtual void reallyGetRecord(FFStream& s)
+         throw(std::exception, FFStreamError, StringUtils::StringException);
 
-     /**
-      * This function retrieves a RINEX 3 NAV record from the given FFStream.
-      * If an error is encountered in reading from the stream, the stream
-      * is returned to its original position and its fail-bit is set.
-      * @throws StringException when a StringUtils function fails
-      * @throws FFStreamError when exceptions(failbit) is set and
-      *  a read or formatting error occurs.  This also resets the
-      *  stream to its pre-read position.
-      */
-     virtual void reallyGetRecord(FFStream& s)
-       throw(std::exception, FFStreamError,
-             StringUtils::StringException);
+      /// Outputs the record to the FFStream \a s.
+      virtual void reallyPutRecord(FFStream& s) const 
+         throw(std::exception, FFStreamError, StringUtils::StringException);
 
    };  // class Rinex3NavData
 
@@ -294,5 +252,4 @@ namespace gpstk
 
 } // namespace
 
-
-#endif
+#endif // RINEXNAVDATA_HPP
