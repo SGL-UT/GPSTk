@@ -90,7 +90,7 @@ try {
       // stochastic model
    StochasticModel = string("cos2");      // cos, cos2, SNR
       // for pseudorange solution
-   PRSrmsLimit = 6.5;                     // this is the PRSolution() default
+   PRSrmsLimit = 6.5;                     // this is the PRSolution2() default
    PRSalgebra = false;
    PRSnIter = 10;
    PRSconverge = 1.e-9;

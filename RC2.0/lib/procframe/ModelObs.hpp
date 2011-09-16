@@ -35,7 +35,7 @@
 
 #include "ModelObsFixedStation.hpp"
 #include "Bancroft.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 
 namespace gpstk
 {

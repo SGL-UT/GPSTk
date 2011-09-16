@@ -23,12 +23,12 @@
 //============================================================================
 
 /**
- * @file PRSolution.cpp
+ * @file PRSolution2.cpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm
  */
  
 #include "MathBase.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "EphemerisRange.hpp"
 #include "GPSEllipsoid.hpp"
 #include "GPSWeekSecond.hpp"
@@ -214,7 +214,7 @@ using namespace gpstk;
 
 namespace gpstk
 {
-   int PRSolution::RAIMCompute(const CommonTime& Tr,
+   int PRSolution2::RAIMCompute(const CommonTime& Tr,
                                vector<SatID>& Satellite,
                                const vector<double>& Pseudorange,
                                const XvtStore<SatID>& Eph,
@@ -491,13 +491,13 @@ namespace gpstk
       {
          GPSTK_RETHROW(e);
       }
-   }  // end PRSolution::RAIMCompute()
+   }  // end PRSolution2::RAIMCompute()
 
 ///-------------------------------------------------------------------------///
 ///----------------------PrepareAutonomousSolution--------------------------///
 ///-------------------------------------------------------------------------///
 
-   int PRSolution::PrepareAutonomousSolution(const CommonTime& Tr,
+   int PRSolution2::PrepareAutonomousSolution(const CommonTime& Tr,
                                              vector<SatID>& Satellite,
                                              const vector<double>& Pseudorange,
                                              const XvtStore<SatID>& Eph,
@@ -547,7 +547,7 @@ namespace gpstk
             #endif
             Satellite[i].id = -::abs(Satellite[i].id);
                if(pDebugStream) *pDebugStream
-                  << "Warning: PRSolution ignores satellite (ephemeris) "
+                  << "Warning: PRSolution2 ignores satellite (ephemeris) "
                   << Satellite[i] << endl;
             continue;
          }
@@ -582,7 +582,7 @@ namespace gpstk
 ///-------------------------------------------------------------------------///
 ///-------------------------------------------------------------------------///
 
-   int PRSolution::AlgebraicSolution(Matrix<double>& A,
+   int PRSolution2::AlgebraicSolution(Matrix<double>& A,
                                      Vector<double>& Q,
                                      Vector<double>& X,
                                      Vector<double>& R)
@@ -658,13 +658,13 @@ namespace gpstk
       {
          GPSTK_RETHROW(e);
       }
-   }  // end PRSolution::AlgebraicSolution
+   }  // end PRSolution2::AlgebraicSolution
 
 ///-------------------------------------------------------------------------///
 ///--------------------------AutonomousPRSolution---------------------------///
 ///-------------------------------------------------------------------------///
 
-   int PRSolution::AutonomousPRSolution(const CommonTime& T,
+   int PRSolution2::AutonomousPRSolution(const CommonTime& T,
                                         const vector<bool>& Use,
                                         const Matrix<double> SVP,
                                         TropModel *pTropModel,
@@ -851,7 +851,7 @@ namespace gpstk
                // ----------------- algebraic solution -----------------------
             if (satSystems == NULL && Algebraic)
             {
-               iret = PRSolution::AlgebraicSolution(A,Q,Sol,Resid);
+               iret = PRSolution2::AlgebraicSolution(A,Q,Sol,Resid);
                if (iret)
                   return iret;                     // (singular)
                if (n_iterate > 1)
@@ -913,7 +913,7 @@ namespace gpstk
       {
          GPSTK_RETHROW(e);
       }
-   } // end PRSolution::AutonomousPRSolution
+   } // end PRSolution2::AutonomousPRSolution
 
 ///-------------------------------------------------------------------------///
 ///-------------------------------------------------------------------------///

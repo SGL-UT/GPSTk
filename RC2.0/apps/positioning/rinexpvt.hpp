@@ -54,7 +54,7 @@
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 
 #include "IonoModel.hpp"
 
@@ -90,7 +90,7 @@ protected:
    SEMAlmanacStore   semStore;
    YumaAlmanacStore  yumaStore;
 
-   PRSolution prSolver;
+   PRSolution2 prSolver;
    GGTropModel ggTropModel;
 
    bool gotMet;

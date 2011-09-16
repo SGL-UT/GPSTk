@@ -1,7 +1,7 @@
 #pragma ident "$Id$"
 
 /**
- * @file PRSolution.hpp
+ * @file PRSolution2.hpp
  * Autonomous pseudorange navigation solution, including RAIM algorithm
  */
  
@@ -52,11 +52,11 @@ namespace gpstk
     * Three RAIM Methods," by R. Grover Brown, Journal of the Institute of
     * Navigation, Vol. 39, No. 3, Fall 1992, pg 301.
     */
-   class PRSolution
+   class PRSolution2
    {
    public:
          /// Constructor
-      PRSolution() throw() :
+      PRSolution2() throw() :
          RMSLimit(6.5), SlopeLimit(1000.), Algebraic(false),
          ResidualCriterion(true), ReturnAtOnce(false), NSatsReject(-1),
          Debug(false), pDebugStream(&std::cout), MaxNIterations(10),
@@ -273,7 +273,7 @@ namespace gpstk
                                                Vector<double>& X,
                                                Vector<double>& R);
 
-   }; // end class PRSolution
+   }; // end class PRSolution2
 
    //@}
 

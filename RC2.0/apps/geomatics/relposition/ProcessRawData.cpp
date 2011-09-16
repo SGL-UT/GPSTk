@@ -130,7 +130,7 @@ try {
       st.PRSZstats.Add(st.PRS.Solution(2));
    }
 
-      // if user wants PRSolution as a priori, update it here so that the
+      // if user wants PRSolution2 as a priori, update it here so that the
       // elevation can be computed - this serves to eliminate the low-elevation
       // data from the raw data buffers and simplifies processing.
       // it does not seem to affect the final estimation processing at all...
@@ -261,11 +261,11 @@ try {
    for(it=st.RawDataMap.begin(); it != st.RawDataMap.end(); it++) {
 
       // ER cannot be used until the a priori positions are computed --
-      // because user may want the PRSolution as the a priori, we must wait.
+      // because user may want the PRSolution2 as the a priori, we must wait.
       // This will be updated in RecomputeFromEphemeris(), after Synchronization()
       it->second.ER = 0.0;
 
-      // this will happen when user has chosen to use the PRSolution as the a priori
+      // this will happen when user has chosen to use the PRSolution2 as the a priori
       // and the st.pos has not yet been updated
       if(st.pos.getCoordinateSystem() == Position::Unknown) {
          it->second.elev = 90.0;       // include it in the PRS

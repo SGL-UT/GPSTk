@@ -65,7 +65,7 @@ hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
 #include <GPSEllipsoid.hpp>
-#include <PRSolution.hpp>
+#include <PRSolution2.hpp>
 using namespace gpstk;
 using namespace std;
 
@@ -506,7 +506,7 @@ void RxSim::process()
 
             GGTropModel gg;
             gg.setWeather(30., 1000., 50.);    
-            PRSolution prSolver;
+            PRSolution2 prSolver;
             prSolver.RMSLimit = 400;
             prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg); 
             Vector<double> sol = prSolver.Solution;

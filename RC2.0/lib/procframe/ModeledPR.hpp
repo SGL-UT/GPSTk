@@ -35,7 +35,7 @@
 #include "ModeledReferencePR.hpp"
 #include "Matrix.hpp"
 #include "Bancroft.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "DataStructures.hpp"
 
 

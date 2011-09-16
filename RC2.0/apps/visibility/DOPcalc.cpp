@@ -52,7 +52,7 @@
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
 #include "TropModel.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "DOP.hpp"
 #include "TimeString.hpp"
 
@@ -346,7 +346,7 @@ void DOPCalc::process()
       TropModel *tropPtr = &noTropModel;
          
          // use PRSolution class to get the covariance matrix
-      PRSolution prSolution;
+      PRSolution2 prSolution;
       prSolution.RAIMCompute(tempTime, satIDVec, rangeVec, ephStore, tropPtr);
          
          // use DOP class to compute DOPs

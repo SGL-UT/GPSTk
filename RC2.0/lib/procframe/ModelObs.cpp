@@ -274,7 +274,7 @@ namespace gpstk
       Matrix<double> SVP;
       Bancroft Ban;
       Vector<double> vPos;
-      PRSolution raimObj;
+      PRSolution2 raimObj;
 
       try
       {

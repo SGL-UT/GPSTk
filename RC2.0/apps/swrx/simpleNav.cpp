@@ -41,7 +41,7 @@ tries to estimate the pseudoranges from the correlation delays.
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
 #include <GPSEllipsoid.hpp>
-#include <PRSolution.hpp>
+#include <PRSolution2.hpp>
 #include <Position.hpp>
 #include "Xvt.hpp"
 
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
    {
       GGTropModel gg;
       gg.setWeather(20., 1000., 50.);    
-      PRSolution prSolver;
+      PRSolution2 prSolver;
       prSolver.RMSLimit = 400;
       prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg);
       Vector<double> sol = prSolver.Solution;

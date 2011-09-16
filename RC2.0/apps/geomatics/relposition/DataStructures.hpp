@@ -50,7 +50,7 @@
 #include <vector>
 
 // GPSTk
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "Stats.hpp"
 
 // DDBase
@@ -115,7 +115,7 @@ public:
    bool fixed;                      // if true, hold position fixed, else solve for it
    bool usePRS;                     // if true, use ave. PR solution as position
    gpstk::Position pos;             // either known or solution or apriori
-   gpstk::PRSolution PRS;           // pseudorange solution, includes clock bias
+   gpstk::PRSolution2 PRS;           // pseudorange solution, includes clock bias
    gpstk::Stats<double> PRSXstats;  // stats on pseudorange solution
    gpstk::Stats<double> PRSYstats;  // stats on pseudorange solution
    gpstk::Stats<double> PRSZstats;  // stats on pseudorange solution

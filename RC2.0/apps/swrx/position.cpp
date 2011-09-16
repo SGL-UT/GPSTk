@@ -43,7 +43,7 @@ We then solve for position.
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
 #include <GPSEllipsoid.hpp>
-#include <PRSolution.hpp>
+#include <PRSolution2.hpp>
 
 using namespace gpstk;
 using namespace std;
@@ -279,7 +279,7 @@ void P::process()
 // Calculate initial position solution.
    GGTropModel gg;
    gg.setWeather(30., 1000., 50.);    
-   PRSolution prSolver;
+   PRSolution2 prSolver;
    prSolver.RMSLimit = 400;
    prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg);
    Vector<double> sol = prSolver.Solution;
@@ -328,7 +328,7 @@ void P::process()
    time -= (sol[3] / gpstk::C_MPS);
    GGTropModel gg2;
    gg2.setWeather(30.,1000., 20.); /*(Temp(C),Pressure(mbar),Humidity(%))*/    
-   PRSolution prSolver2;
+   PRSolution2 prSolver2;
    prSolver2.RMSLimit = 400;
    prSolver2.RAIMCompute(time, svVec, obsVec, bce, &gg2);
    Vector<double> sol2 = prSolver2.Solution;
@@ -343,7 +343,7 @@ void P::process()
 //-----------------------------------------------------------------------------
 // Following block will make PRSolve compute residual from a known hardcoded
 // position
-   PRSolution prSolver3; 
+   PRSolution2 prSolver3; 
    vector<double> S;
 /*
    S.push_back(-756736.1300); // my house

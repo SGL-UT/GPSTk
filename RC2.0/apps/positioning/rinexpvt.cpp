@@ -399,7 +399,7 @@ void RINEXPVTSolution::process()
        exit(-1);
     }
 
-        // Tweaking the PRSolution object
+        // Tweaking the PRSolution2 object
     prSolver.RMSLimit = 400;
     //prSolver.Debug    = true;
 

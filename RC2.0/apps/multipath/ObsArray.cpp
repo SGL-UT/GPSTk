@@ -36,7 +36,7 @@
 #include <cmath>
 
 #include "ValarrayUtils.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "IonoModel.hpp"
 #include "Epoch.hpp"
 #include "ExtractPC.hpp"
@@ -125,7 +125,7 @@ namespace gpstk
             if (antennaPos.mag()<1) // A reported antenna position near the
                                     // center of the Earth. REcompute.
 	    {
-	       PRSolution prSolver;
+	       PRSolution2 prSolver;
                prSolver.RMSLimit = 400;
                GGTropModel ggTropModel; 
 	       ggTropModel.setWeather(20., 1000., 50.); // A default model for sea level.
