@@ -1,0 +1,22 @@
+Rinex tools (/apps/Rinextools)
+
+   This directory contains 4 standalone programs which are useful in
+manipulating Rinex version 2 or 3 observation files. Each program has a 'syntax page' that gives instructions on how to run it; see the syntax page by running without arguments or with --help.
+
+They apps are:
+   RinDump     dumps Rinex observation data in columns in a flat file, useful
+               for plotting; also computes and dumps standard linear combinations
+               of data, for example ionosphere-free phase or Melbourne-Wubbena combo.
+   RinSum      summarizes a Rinex observation file
+   RinEdit     reads and edits a Rinex observation file, writing out the a
+               new, edited one.
+   RinNav      reads any number of Rinex (ver 2 or 3) navigation files and prints a
+               summary on the screen; also, if an output file or files are specified,
+               writes a unique superset of all the ephemeris data to that file(s).
+               It will also correct the time on the epoch line if it is inconsistent
+               with the week number in the ephemeris.
+
+Comments appreciated; submit them to the wiki. Enjoy!
+
+Dr. Brian W. Tolman
+
