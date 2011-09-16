@@ -120,7 +120,7 @@ else
       ReferenceFrame.cpp
       Rinex3ClockData.cpp
       Rinex3ClockHeader.cpp
-#      Rinex3EphemerisStore.cpp
+      Rinex3EphemerisStore.cpp
       Rinex3NavData.cpp
       Rinex3NavHeader.cpp
       Rinex3ObsData.cpp
@@ -128,7 +128,6 @@ else
       RinexClockData.cpp
       RinexClockHeader.cpp
 #      RinexConverter.cpp
-      RinexEphemerisStore.cpp
       RinexGloNavData.cpp
       RinexGloNavHeader.cpp
       RinexMetData.cpp
@@ -343,7 +342,7 @@ else
       Rinex3ClockData.hpp	
       Rinex3ClockHeader.hpp	
       Rinex3ClockStream.hpp	
-#      Rinex3EphemerisStore.hpp	
+      Rinex3EphemerisStore.hpp	
       Rinex3NavBase.hpp	
       Rinex3NavData.hpp	
       Rinex3NavFilterOperators.hpp	
@@ -360,7 +359,6 @@ else
       RinexClockStore.hpp	
       RinexClockStream.hpp	
 #      RinexConverter.hpp	
-      RinexEphemerisStore.hpp	
       RinexGloNavData.hpp	
       RinexGloNavHeader.hpp	
       RinexGloNavStream.hpp	
