@@ -44,6 +44,7 @@ else
       CNAVEphemeris.cpp
       CNAV2EphClk.cpp
       CodeBuffer.cpp
+      CommandLine.cpp
       CommandOption.cpp
       CommandOptionParser.cpp
       CommandOptionWithCommonTimeArg.cpp
@@ -63,6 +64,7 @@ else
       Epoch.cpp
       EpochDataStore.cpp
       Exception.cpp
+      expandtilde.cpp
       Expression.cpp
       FFData.cpp
       FFStream.cpp
@@ -104,6 +106,7 @@ else
       MOPSWeight.cpp
       MSCData.cpp
       MSCStore.cpp
+      Namelist.cpp
       NEDUtil.cpp
       ObsClockModel.cpp
       ObsEpochMap.cpp
@@ -214,6 +217,8 @@ else
       CNAVEphemeris.hpp
       CNAV2EphClk.hpp
       CodeBuffer.hpp
+      Combinations.hpp
+      CommandLine.hpp
       CommandOption.hpp
       CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp
@@ -235,6 +240,7 @@ else
       EpochClockModel.hpp
       EpochDataStore.hpp
       Exception.hpp
+      expandtilde.hpp
       Expression.hpp
       ExtractC1.hpp
       ExtractCombinationData.hpp
@@ -300,6 +306,7 @@ else
       JulianDate.hpp	
       LinearClockModel.hpp	
       Logger.hpp	
+      logstream.hpp
       LoopedFramework.hpp	
       MainAdapter.hpp	
       MathBase.hpp	
@@ -319,6 +326,7 @@ else
       MSCHeader.hpp	
       MSCStore.hpp	
       MSCStream.hpp	
+      Namelist.hpp
       NEDUtil.hpp	
       ObsClockModel.hpp	
       ObsEpochMap.hpp	
@@ -392,6 +400,7 @@ else
       SEMStream.hpp	
       SimpleIURAWeight.hpp	
       SimpleKalmanFilter.hpp	
+      singleton.hpp
       SMODFData.hpp	
       SMODFStream.hpp	
       SolidTides.hpp	

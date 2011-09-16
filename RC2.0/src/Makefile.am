@@ -24,10 +24,11 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       Chi2Distribution.cpp \
       CivilTime.cpp \
       ClockSatStore.cpp \
-	  CNAVClock.cpp \
+      CNAVClock.cpp \
       CNAVEphemeris.cpp \
       CNAV2EphClk.cpp \
       CodeBuffer.cpp \
+      CommandLine.cpp \
       CommandOption.cpp \
       CommandOptionParser.cpp \
       CommandOptionWithCommonTimeArg.cpp \
@@ -47,6 +48,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       Epoch.cpp \
       EpochDataStore.cpp \
       Exception.cpp \
+      expandtilde.cpp \
       Expression.cpp \
       FFData.cpp \
       FFStream.cpp \
@@ -88,6 +90,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       MOPSWeight.cpp \
       MSCData.cpp \
       MSCStore.cpp \
+      Namelist.cpp \
       NEDUtil.cpp \
       ObsClockModel.cpp \
       ObsEpochMap.cpp \
@@ -104,7 +107,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ReferenceFrame.cpp \
       Rinex3ClockData.cpp \
       Rinex3ClockHeader.cpp \
-      #Rinex3EphemerisStore.cpp \
+      Rinex3EphemerisStore.cpp \
       Rinex3NavData.cpp \
       Rinex3NavHeader.cpp \
       Rinex3ObsData.cpp \
@@ -112,7 +115,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       RinexClockData.cpp \
       RinexClockHeader.cpp \
       #RinexConverter.cpp \
-      RinexEphemerisStore.cpp \
       RinexGloNavData.cpp \
       RinexGloNavHeader.cpp \
       RinexMetData.cpp \
@@ -197,6 +199,8 @@ incl_HEADERS = AllanDeviation.hpp \
       CNAVEphemeris.hpp \
       CNAV2EphClk.hpp \
       CodeBuffer.hpp \
+      Combinations.hpp \
+      CommandLine.hpp \
       CommandOption.hpp \
       CommandOptionParser.hpp \
       CommandOptionWithCommonTimeArg.hpp \
@@ -218,6 +222,7 @@ incl_HEADERS = AllanDeviation.hpp \
       EpochClockModel.hpp \
       EpochDataStore.hpp \
       Exception.hpp \
+      expandtilde.hpp \
       Expression.hpp \
       ExtractC1.hpp \
       ExtractCombinationData.hpp \
@@ -283,6 +288,7 @@ incl_HEADERS = AllanDeviation.hpp \
       JulianDate.hpp \
       LinearClockModel.hpp \
       Logger.hpp \
+      logstream.hpp \
       LoopedFramework.hpp \
       MainAdapter.hpp \
       MathBase.hpp \
@@ -302,6 +308,7 @@ incl_HEADERS = AllanDeviation.hpp \
       MSCHeader.hpp \
       MSCStore.hpp \
       MSCStream.hpp \
+      Namelist.hpp \
       NEDUtil.hpp \
       ObsClockModel.hpp \
       ObsEpochMap.hpp \
@@ -325,7 +332,7 @@ incl_HEADERS = AllanDeviation.hpp \
       Rinex3ClockData.hpp \
       Rinex3ClockHeader.hpp \
       Rinex3ClockStream.hpp \
-      #Rinex3EphemerisStore.hpp \
+      Rinex3EphemerisStore.hpp \
       Rinex3NavBase.hpp \
       Rinex3NavData.hpp \
       Rinex3NavFilterOperators.hpp \
@@ -342,7 +349,6 @@ incl_HEADERS = AllanDeviation.hpp \
       RinexClockStore.hpp \
       RinexClockStream.hpp \
       #RinexConverter.hpp \
-      RinexEphemerisStore.hpp \
       RinexGloNavData.hpp \
       RinexGloNavHeader.hpp \
       RinexGloNavStream.hpp \
@@ -374,6 +380,7 @@ incl_HEADERS = AllanDeviation.hpp \
       SEMData.hpp \
       SEMHeader.hpp \
       SEMStream.hpp \
+      singleton.hpp \
       SimpleIURAWeight.hpp \
       SimpleKalmanFilter.hpp \
       SMODFData.hpp \
