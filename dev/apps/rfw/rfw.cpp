@@ -161,6 +161,8 @@ protected:
       while (input)
       {
          input.read(data, max_len);
+         if (debugLevel)
+            cout << "process read: " << input.gcount() << " bytes read." << endl;
          if (use_stdout)
          {
             cout.write(data, input.gcount());
