@@ -163,8 +163,8 @@ namespace gpstk
          {
             string ifn=target;
             ifn.erase(0,4);
+
             int fd = ::open(ifn.c_str(), O_RDWR | O_NOCTTY);
-            
             if (fd<0)
             {
                cout << "Error opening " << ifn.c_str() << endl;
@@ -172,7 +172,7 @@ namespace gpstk
             }
 
 	    // Not sure why this was being done it really should have been
-	    // I think this is just another way to force blocking I/O
+	    // This is just another way to force blocking I/O
             int rc;
             rc = fcntl(fd, F_SETFL, 0);
            if (rc < 0)
@@ -181,11 +181,16 @@ namespace gpstk
                return;
             }
 
-            struct termios options;  
-            options.c_iflag = 0x00 | IGNBRK | IGNPAR; // 0x1;
-            options.c_lflag = 0x00; // Turn off all local processing of input
-            options.c_oflag = 0x00; // No output processing
-            options.c_cflag =  0x00 | CS8 | CSIZE | CREAD | HUPCL | CLOCAL; // 0x1cb2;
+            struct termios options;
+            rc=tcgetattr(fd, &options);
+
+            options.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR
+                                 | IGNCR | ICRNL | IXON);
+            options.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHONL | ISIG | IEXTEN);
+            options.c_oflag &= ~OPOST;
+            options.c_cflag &= ~(CSIZE | PARENB);
+            options.c_cflag |= CS8 | CREAD | HUPCL | CLOCAL;
+
             options.c_cc[VTIME] = 0; // Wait forever
             options.c_cc[VMIN] = 16; // And always get at least 16 characters
             if (rc=cfsetospeed(&options, B115200))
