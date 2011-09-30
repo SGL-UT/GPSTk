@@ -24,18 +24,28 @@ int main( int argc, char * argv[] )
    std::string SysID = "G";
    ObsID obsID( ObsID::otUndefined, ObsID::cbL1, ObsID::tcCA );
    short PRNID     = 3;
-   double Toc      = 388800.0;
    short weeknum   = 1638;     // By rules of Clock Correction, this must be week of Toc
-   double accuracy = 10.61;
+   double Toc      = 388800.0;
+   double Top      = 302400.0;
+   CommonTime TocCT = GPSWeekSecond(weeknum, Toc, TimeSystem::GPS);
+   CommonTime TopCT = GPSWeekSecond(weeknum, Top, TimeSystem::GPS);
+   short URAoc     = 5;
+   short URAoc1    = 7;
+   short URAoc2    = 7;
    bool healthy    = true;
    double af0      = 7.23189674E-04;
    double af1      = 5.11590770E-12;
    double af2      = 0.00000000E+00;
   
       // Test Data copied from RINEX file	
-   double rToc      = 388800.0;
    short rweeknum   = 1638;     // By rules of Clock Corection, this must be week of Toc
-   double raccuracy = 10.61;
+   double rToc      = 388800.0;
+   double rTop      = 302400.0;
+   CommonTime rTocCT = GPSWeekSecond(rweeknum, rToc, TimeSystem::GPS);
+   CommonTime rTopCT = GPSWeekSecond(rweeknum, rTop, TimeSystem::GPS);
+   short rURAoc     = 5;
+   short rURAoc1    = 7;
+   short rURAoc2    = 7;
    bool rhealthy    = true;
    double raf0      = 7.23189674318E-04;
    double raf1      = 5.11590769747E-12;
@@ -52,7 +62,7 @@ int main( int argc, char * argv[] )
       // First test case. Create an empty CC object, then load the data.
    cout << "Test Case 1: Creating an empty CC object and loading the data." << endl;
    BrcClockCorrection co1;
-   co1.loadData( SysID, obsID, PRNID, Toc, weeknum, accuracy, healthy, 
+   co1.loadData( SysID, obsID, PRNID, TocCT, TopCT, URAoc, URAoc1, URAoc2, healthy, 
 		           af0, af1, af2 ); 
 
    double ClkCorr1 = co1.svClockBias( dt );
@@ -61,7 +71,7 @@ int main( int argc, char * argv[] )
 
       // Second test case. Create an CC object with data available at time of construction.
    cout << "Test Case 2: Creating CC object with data." << endl;
-   BrcClockCorrection co2( SysID, obsID, PRNID, Toc, weeknum, accuracy, healthy, 
+   BrcClockCorrection co2( SysID, obsID, PRNID, TocCT, TopCT, URAoc, URAoc1, URAoc2, healthy, 
 		                     af0, af1, af2 ); 
 
    double ClkCorr2 = co2.svClockBias( dt ); 
@@ -84,7 +94,7 @@ int main( int argc, char * argv[] )
 
       // Fifth test case. Create an CC object with data available from RINEX file.
    cout << "Test Case 5: Creating CC object with data from RINEX file." << endl;
-   BrcClockCorrection co5( SysID, obsID, PRNID, rToc, rweeknum, raccuracy, rhealthy, 
+   BrcClockCorrection co5( SysID, obsID, PRNID, rTocCT, rTopCT, rURAoc, rURAoc1, rURAoc2, rhealthy, 
 		                     raf0, raf1, raf2 ); 
 
    double ClkCorr5 = co5.svClockBias( dt ); 

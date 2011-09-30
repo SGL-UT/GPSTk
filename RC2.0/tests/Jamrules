@@ -1,6 +1,6 @@
-#PATH_TO_CURRENT = /home/user/Cpptests/GoodTests  ; #Current directory; Main testing directory
-#CPPUNIT_LIB = /home/user/lib ; #Directory which holds the CppUnit Libraries
-#CPPUNIT_INC = /home/user/include ; #Directory which holds the CppUnit 
+PATH_TO_CURRENT = /home/mbratton/gpstk/RC2.0/tests  ; #Current directory; Main testing directory
+CPPUNIT_LIB = /usr/lib ; #Directory which holds the CppUnit Libraries
+CPPUNIT_INC = /home/mbratton/usr/include ; #Directory which holds the CppUnit 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags

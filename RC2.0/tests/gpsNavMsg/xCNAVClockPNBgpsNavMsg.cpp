@@ -133,7 +133,7 @@ void xCNAVClockPNBgpsNavMsg::firstTest(void)
    short PRNIDArg = 3; 
    short TOWWeek  = 1638;
    CNAVClock cc;   
-   cc.loadData( obsID, PRNIDArg, TOWWeek, pnb3_);
+   cc.loadData( obsID, PRNIDArg, TOWWeek, pnb3_);  
    double ClkCorr = cc.svClockBias( dt );
    double ClkDrift = cc.svClockDrift( dt ); 
    outf.setf(ios::scientific, ios::floatfield);

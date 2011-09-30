@@ -31,21 +31,31 @@ void xBrcClockCorrectiongpsNavMsg::firstTest(void)
    ObsID obsID( ObsID::otUndefined, ObsID::cbL1, ObsID::tcCA );
    short PRNID     = 3;
    double Toc      = 388800.0;
+   double Top      = 345600.0;
    short weeknum   = 1638;     // By rules of Clock Correction, this must be week of Toc
-   double accuracy = 10.61;
+   short URAoc     = 5;
+   short URAoc1    = 7;
+   short URAoc2    = 7;
    bool healthy    = true;
    double af0      = 7.23189674E-04;
    double af1      = 5.11590770E-12;
    double af2      = 0.00000000E+00;
+   CommonTime TocCT = GPSWeekSecond(weeknum, Toc, TimeSystem::GPS);
+   CommonTime TopCT = GPSWeekSecond(weeknum, Top, TimeSystem::GPS);
   
       // Test Data copied from RINEX file	
    double rToc      = 388800.0;
+   double rTop      = 345600.0;
    short rweeknum   = 1638;     // By rules of Clock Corection, this must be week of Toc
-   double raccuracy = 10.61;
+   short rURAoc     = 5;
+   short rURAoc1    = 7;
+   short rURAoc2    = 7;
    bool rhealthy    = true;
    double raf0      = 7.23189674318E-04;
    double raf1      = 5.11590769747E-12;
    double raf2      = 0.00000000000E+00;
+   CommonTime rTocCT = GPSWeekSecond(rweeknum, rToc, TimeSystem::GPS);
+   CommonTime rTopCT = GPSWeekSecond(rweeknum, rTop, TimeSystem::GPS);
 
    long subframe1[10] = { 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
                           0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C };
@@ -59,7 +69,7 @@ void xBrcClockCorrectiongpsNavMsg::firstTest(void)
       // First test case. Create an empty CC object, then load the data.
    outf << "Test Case 1: Creating an empty CC object and loading the data." << endl;
    BrcClockCorrection co1;
-   co1.loadData( SysID, obsID, PRNID, Toc, weeknum, accuracy, healthy, 
+   co1.loadData( SysID, obsID, PRNID, TocCT, TopCT, URAoc, URAoc1, URAoc2, healthy, 
 		           af0, af1, af2 ); 
 
    double ClkCorr1 = co1.svClockBias( dt );
@@ -68,7 +78,7 @@ void xBrcClockCorrectiongpsNavMsg::firstTest(void)
 
       // Second test case. Create an CC object with data available at time of construction.
    outf << "Test Case 2: Creating CC object with data." << endl;
-   BrcClockCorrection co2( SysID, obsID, PRNID, Toc, weeknum, accuracy, healthy, 
+   BrcClockCorrection co2( SysID, obsID, PRNID, TocCT, TopCT, URAoc, URAoc1, URAoc2, healthy, 
 		                     af0, af1, af2 ); 
 
    double ClkCorr2 = co2.svClockBias( dt ); 
@@ -91,7 +101,7 @@ void xBrcClockCorrectiongpsNavMsg::firstTest(void)
 
       // Fifth test case. Create an CC object with data available from RINEX file.
    outf << "Test Case 5: Creating CC object with data from RINEX file." << endl;
-   BrcClockCorrection co5( SysID, obsID, PRNID, rToc, rweeknum, raccuracy, rhealthy, 
+   BrcClockCorrection co5( SysID, obsID, PRNID, rTocCT, TopCT, URAoc, URAoc1, URAoc2, rhealthy, 
 		                     raf0, raf1, raf2 ); 
 
    double ClkCorr5 = co5.svClockBias( dt ); 

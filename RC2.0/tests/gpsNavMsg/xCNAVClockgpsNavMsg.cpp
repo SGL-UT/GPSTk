@@ -1,3 +1,4 @@
+
 #pragma ident "$Id: $"
 
 /*********************************************************************
@@ -114,8 +115,8 @@ void xCNAVClockgpsNavMsg::firstTest(void)
    outf << "Clock Bias cc1:         " << ClkCorr1 << endl;
    outf << "Clock Drift cc1:        " << ClkDrift1 << endl;
    outf << "Time of Prediction cc1: " << GPSWeekSecond(cc1.getTimeOfPrediction()).printf("%F, %g") << endl;
-   outf << "CNAV Accuracy Test:     " << SV_CNAV_ACCURACY_MAX_INDEX[URAoc_1+15] << endl;
-   outf << "legacy Accuracy Test:   " << SV_ACCURACY_MAX_INDEX[URAoc_1] << endl;
+   outf << "CNAV Accuracy Test:     " << SV_CNAV_ACCURACY_GPS_MAX_INDEX[URAoc_1+15] << endl;
+   outf << "legacy Accuracy Test:   " << SV_ACCURACY_GPS_MAX_INDEX[URAoc_1] << endl;
 
       // Second test case.  Create an CC object with data available from navdump.
    outf << endl << "Test Case 2: Creating CC object with data from navdump." << endl;

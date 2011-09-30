@@ -34,7 +34,6 @@ void xCNAVEphemerisPNBgpsNavMsg::firstTest(void)
    ObsID obsID( ObsID::otNavMsg, ObsID::cbL2, ObsID::tcC2LM );
    int bits = 2;
 
-
       // Test Data copied from RINEX file for PRN3, week 1638, day 153 2011
       // Message Type 10
    unsigned long PREAMBLEMsg10 = 139;
@@ -89,7 +88,7 @@ void xCNAVEphemerisPNBgpsNavMsg::firstTest(void)
    int n_rAhalf                = 32;
    int s_rAhalf                = -19;
 
-   double deltaA               = rAhalf*rAhalf - A_REF;
+   double deltaA               = rAhalf*rAhalf - A_REF_GPS;
    int n_deltaA                = 26;
    int s_deltaA                = -9;
 
@@ -166,11 +165,11 @@ void xCNAVEphemerisPNBgpsNavMsg::firstTest(void)
    int n_ri0                   = 33;
    int s_ri0                   = -32;
 
-   double rOMEGAdot            = -8.56285667735E-09;
+   double rOMEGAdot            = -8.56285667735E-09; // in radians/sec
    int n_rOMEGAdot             = 24;
    int s_rOMEGAdot             = -43;
 
-   double deltaOMEGAdot        = rOMEGAdot - OMEGADOT_REF;
+   double deltaOMEGAdot        = rOMEGAdot - OMEGADOT_REF_GPS;
    int n_deltaOMEGAdot         = 17;
    int s_deltaOMEGAdot         = -44;
 

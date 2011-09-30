@@ -89,7 +89,7 @@ void xCNAV2gpsNavMsg::firstTest(void)
    double raf2      = 0.0;
    double rTgd      = -4.65661287308E-09;
 
-   double deltaA    = rA - A_REF;
+   double deltaA    = rA - A_REF_GPS;
    long TOW         = 382500; 
    long Top         = 378000;
    short URAoe      = 1;
@@ -132,7 +132,7 @@ void xCNAV2gpsNavMsg::firstTest(void)
    double af2_2     = 0.0;
    double Tgd2      = -1.07102096E-08;
    short health     = 0;
-   double deltaA2   = A2 - A_REF;
+   double deltaA2   = A2 - A_REF_GPS;
    long TOW2        = 0; 
    long Top2        = 601200;
    short URAoe2     = 1;
@@ -176,7 +176,7 @@ void xCNAV2gpsNavMsg::firstTest(void)
    double af2_3     = 0.0;
    double Tgd3      = -5.58793545E-09;
    short health3    = 0;
-   double deltaA3   = A3 - A_REF;
+   double deltaA3   = A3 - A_REF_GPS;
    long TOW3        = 597600; 
    long Top3        = 594000;
    short URAoe3     = 1;
@@ -215,8 +215,8 @@ void xCNAV2gpsNavMsg::firstTest(void)
    outf << "Clock Drift cec: "        << xvt1.clkdrift << endl;
    outf << "RelCorr cec:     "        << xvt1.relcorr << endl;
    outf << "Time of Prediction cec: " << GPSWeekSecond(cec.getTimeOfPrediction()).printf("%F, %g") << endl;
-   outf<< "CNAV Accuracy Test:   "    << SV_CNAV_ACCURACY_MAX_INDEX[URAoe+15] << endl;
-   outf<< "legacy Accuracy Test: "    << SV_ACCURACY_MAX_INDEX[URAoe] << endl;
+   outf<< "CNAV Accuracy Test:   "    << SV_CNAV_ACCURACY_GPS_MAX_INDEX[URAoe+15] << endl;
+   outf<< "legacy Accuracy Test: "    << SV_ACCURACY_GPS_MAX_INDEX[URAoe] << endl;
 
 
       // Second test case.  Create an CEC object with data available from navdump.

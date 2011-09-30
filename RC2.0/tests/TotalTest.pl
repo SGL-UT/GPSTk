@@ -3,9 +3,9 @@
 
 use strict;
 use warnings;
+use Cwd;
 
-
-my $dirn = $ENV{PATH_TO_CURRENT};
+my $dirn = cwd();
 
 print "\n\n\n\n\n\n\nPLEASE WAIT THIS MAY TAKE SOME TIME\n\n\n\n\n\n\n\n";
 

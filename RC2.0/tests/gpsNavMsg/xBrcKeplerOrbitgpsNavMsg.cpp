@@ -32,7 +32,7 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
    short PRNID     = 3;
    double Toe      = 388800.0;
    short weeknum   = 1638;     // By rules of Kepler Orbit, this must be week of Toe
-   double accuracy = 10.61;
+   short URAoe     = 5;
    bool healthy    = true;
    double Cuc      = 9.57399607E-07;
    double Cus      = 8.35768878E-06;
@@ -52,14 +52,14 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
    double w        = 1.09154605E+00;
    double OMEGAdot = -8.56285668E-09;
    double idot     = 5.52880173E-10;
+   CommonTime ToeCT = GPSWeekSecond(weeknum, Toe, TimeSystem::GPS);
    CommonTime beginFit = GPSWeekSecond(weeknum, Toe - 7200, TimeSystem::GPS);
    CommonTime endFit = GPSWeekSecond(weeknum, Toe + 7200, TimeSystem::GPS);
 
       // Test Data copied from RINEX file	
    double rToe      = 388800.0;
    short rweeknum   = 1638;     // By rules of Kepler Orbit, this must be week of Toe
-   double raccuracy = 10.61;
-   short raccflag   = 0;
+   short rURAoe     = 5;
    bool rhealthy    = true;
    short rhealth    = 0;
    short riodc      = 22;
@@ -92,6 +92,7 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
    double raf1      = 5.11590769747E-12;
    double raf2      = 0.0;
    double rTgd      = -4.65661287308E-09;
+   CommonTime rToeCT = GPSWeekSecond(rweeknum, rToe, TimeSystem::GPS);  
   
    long subframe1[10] = { 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
                           0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C };
@@ -105,7 +106,7 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
       // First test case.  Create an empty KO object, then load the data.
    outf << "Test Case 1: Creating an empty KO object and loading the data." << endl;
    BrcKeplerOrbit ko1;
-   ko1.loadData( SysID, obsID, PRNID, beginFit, endFit, Toe, weeknum, accuracy, healthy, 
+   ko1.loadData( SysID, obsID, PRNID, beginFit, endFit, ToeCT, URAoe, healthy, 
 		           Cuc, Cus, Crc, Crs, Cic, Cis, M0, dn, dnDot, ecc, A, Ahalf, Adot,
                  OMEGA0, i0, w, OMEGAdot, idot ); 
 
@@ -115,7 +116,7 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
 
       // Second test case.  Create an KO object with data available at time of construction.
    outf << endl << "Test Case 2: Creating KO object with data." << endl;
-   BrcKeplerOrbit ko2( SysID, obsID, PRNID, beginFit, endFit, Toe, weeknum, accuracy, healthy, 
+   BrcKeplerOrbit ko2( SysID, obsID, PRNID, beginFit, endFit, ToeCT, URAoe, healthy, 
 		                 Cuc, Cus, Crc, Crs, Cic, Cis, M0, dn, dnDot, ecc, A, Ahalf, Adot, 
 		                 OMEGA0, i0, w, OMEGAdot, idot ); 
 
@@ -144,8 +145,8 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
 
       // Fifth test case.  Create an KO object with data available from RINEX file.
    outf << endl << "Test Case 5: Creating KO object with data from RINEX file." << endl;
-   BrcKeplerOrbit ko5( SysID, obsID, PRNID, beginFit, endFit, rToe, rweeknum, raccuracy,
-                       rhealthy, rCuc, rCus, rCrc, rCrs, rCic, rCis, rM0, rdn, rdnDot, 
+   BrcKeplerOrbit ko5( SysID, obsID, PRNID, beginFit, endFit, rToeCT, rURAoe, healthy,
+                       rCuc, rCus, rCrc, rCrs, rCic, rCis, rM0, rdn, rdnDot,
 		                 recc, rA, rAhalf, rAdot, rOMEGA0, ri0, rw, rOMEGAdot, ridot ); 
 
    Xv  xv5 = ko5.svXv( dt ); 
@@ -210,7 +211,7 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
                    381612,
                    381618};
    short asalert[3] = {1,1,1};
-   EEload.loadData( SysID, tlm, how, asalert, rTracker, PRNID, rweeknum, rcflags, raccflag, 
+   EEload.loadData( SysID, tlm, how, asalert, rTracker, PRNID, rweeknum, rcflags, rURAoe, 
                     rhealth, riodc, rl2pdata, raodo,  rTgd, rToc, raf2,  raf1, raf0, riode,
                     rCrs, rdn, rM0,  rCuc, recc, rCus, rAhalf, rToe, rfitInt, rCic, rOMEGA0,
                     rCis, ri0, rCrc, rw,  rOMEGAdot, ridot); 
@@ -226,7 +227,7 @@ void xBrcKeplerOrbitgpsNavMsg::firstTest(void)
    short asalert1 = 1;
    outf << "Before ESF1load.setSF1" << endl;
 
-   ESFload.setSF1( tlm1,  how1, asalert1, rweeknum, rcflags, raccflag, rhealth, riodc,
+   ESFload.setSF1( tlm1,  how1, asalert1, rweeknum, rcflags, rURAoe, rhealth, riodc,
                    rl2pdata, rTgd, rToc, raf2, raf1, raf0, rTracker, PRNID );
 
    ESFload.setSF2( tlm1, how2, asalert1, riode, rCrs, rdn, rM0, rCuc, recc, rCus,

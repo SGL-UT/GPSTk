@@ -63,7 +63,7 @@ void xCNAV2PNBgpsNavMsg::firstTest(void)
    int n_Ahalf             = 32;
    int s_Ahalf             = -19;
 
-   double deltaA           = Ahalf*Ahalf - A_REF;
+   double deltaA           = Ahalf*Ahalf - A_REF_GPS;
    int n_deltaA            = 26;
    int s_deltaA            = -9;
 
@@ -103,7 +103,7 @@ void xCNAV2PNBgpsNavMsg::firstTest(void)
    int n_OMEGAdot          = 24;
    int s_OMEGAdot          = -43;
 
-   double deltaOMEGAdot    = OMEGAdot - OMEGADOT_REF;
+   double deltaOMEGAdot    = OMEGAdot - OMEGADOT_REF_GPS;
    int n_deltaOMEGAdot     = 17;
    int s_deltaOMEGAdot     = -44;
 

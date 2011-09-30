@@ -1,5 +1,5 @@
-CCARGS = -I/home/mendiola/gpstk/gpstk/RC2.0/src
-LLARGS = -L/home/mendiola/gpstk/gpstk/RC2.0/src -lgpstk -lstdc++
+CCARGS = -I/home/mbratton/gpstk/RC2.0/src
+LLARGS = -L/home/mbratton/gpstk/RC2.0/src -lgpstk -lstdc++
 OBJ = $(SOURCE:.cpp=.o)
  
 clean:

@@ -76,10 +76,10 @@ void xCNAVEphemerisgpsNavMsg::firstTest(void)
    double ri0       = 9.28692497530E-01;
    double rw        = 1.09154604931E+00;
    double rOMEGAdot = -8.56285667735E-09;
-   double deltaOMEGAdot1 = rOMEGAdot - OMEGADOT_REF;
+   double deltaOMEGAdot1 = rOMEGAdot - OMEGADOT_REF_GPS;
    double ridot     = 5.52880172536E-10;
 
-   double deltaA    = rA - A_REF;
+   double deltaA    = rA - A_REF_GPS;
    long TOWMsg10_1  = 382500;
    long TOWMsg11_1  = 382500; 
    long Top         = 378000;
@@ -117,10 +117,10 @@ void xCNAVEphemerisgpsNavMsg::firstTest(void)
    double i02       = 9.74404003E-01;
    double w2        = -3.13294415E+00;
    double OMEGAdot2 = -8.35713382E-09;
-   double deltaOMEGAdot2 = OMEGAdot2 - OMEGADOT_REF;
+   double deltaOMEGAdot2 = OMEGAdot2 - OMEGADOT_REF_GPS;
    double idot2     = 1.21433630E-10;
    double Tgd2      = -1.07102096E-08;
-   double deltaA2   = A2 - A_REF;
+   double deltaA2   = A2 - A_REF_GPS;
    long TOWMsg10_2  = 0;
    long TOWMsg11_2  = 0; 
    long Top2        = 601200;
@@ -154,10 +154,10 @@ void xCNAVEphemerisgpsNavMsg::firstTest(void)
    double i03       = 9.83297588E-01;
    double w3        = 1.57216573E+00;
    double OMEGAdot3 = -8.40356433E-09;
-   double deltaOMEGAdot3 = OMEGAdot3 - OMEGADOT_REF;
+   double deltaOMEGAdot3 = OMEGAdot3 - OMEGADOT_REF_GPS;
    double idot3     = 1.36791412E-10;
    double Tgd3      = -5.58793545E-09;
-    double deltaA3  = A3 - A_REF;
+    double deltaA3  = A3 - A_REF_GPS;
    long TOWMsg10_3  = 597600;
    long TOWMsg11_3  = 597600; 
    long Top3        = 594000;
@@ -189,8 +189,8 @@ void xCNAVEphemerisgpsNavMsg::firstTest(void)
    outf << "Velocity ce1: "           << xv1.v << endl;
    outf << "RelCorr ce1:  "           << ce1.svRelativity(dt) << endl;
    outf << "Time of Prediction ce1: " << GPSWeekSecond(ce1.getTimeOfPrediction()).printf("%F, %g") << endl;
-   outf << "CNAV Accuracy Test:  "    << SV_CNAV_ACCURACY_MAX_INDEX[URAoe+15] << endl;
-   outf << "legacy Accuracy Test: "   << SV_ACCURACY_MAX_INDEX[URAoe] << endl;
+   outf << "CNAV Accuracy Test:  "    << SV_CNAV_ACCURACY_GPS_MAX_INDEX[URAoe+15] << endl;
+   outf << "legacy Accuracy Test: "   << SV_ACCURACY_GPS_MAX_INDEX[URAoe] << endl;
 
       // Second test case.  Create an CE object with data available from navdump.
    outf << endl << "Test Case 2: Creating CE object with data from navdump." << endl;
