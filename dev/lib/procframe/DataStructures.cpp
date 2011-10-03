@@ -1709,6 +1709,39 @@ in matrix and number of types do not match") );
 
 
 
+      /* Adds 'gnssDataMap' object data to this structure.
+       *
+       * @param gds     gnssDataMap object containing data to be added.
+       */
+   gnssDataMap& gnssDataMap::addGnssDataMap( const gnssDataMap& gds )
+   {
+         // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = gds.begin();
+           it != gds.end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue stv;
+            stv.header.epoch = time;
+            stv.header.source = itsrc->first;
+            stv.body = itsrc->second;
+
+            addGnssSatTypeValue(stv);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return (*this);
+   }
+
+
       // Returns a copy of the first element in the map.
    gnssDataMap gnssDataMap::front( void ) const
    {
@@ -2406,6 +2439,360 @@ in matrix and number of types do not match") );
 
 
 
+      // Returns a gnssDataMap with only this source.
+      // @param source Source to be extracted.
+   gnssDataMap gnssDataMap::extractSourceID(const SourceID& source)
+   {
+      SourceIDSet sourceSet;
+      sourceSet.insert(source);
+
+      return extractSourceID(sourceSet);
+   
+   }  // End of method 'gnssDataMap::extractSourceID()'
+
+
+
+      /// Returns a gnssDataMap with only these sources.
+      /// @param sourceSet Set(SourceIDSet) containing the sources 
+      ///                  to be extracted.
+   gnssDataMap gnssDataMap::extractSourceID(const SourceIDSet& sourceSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            SourceIDSet::const_iterator itsrc2 = sourceSet.find(itsrc->first);
+            if(itsrc2!=sourceSet.end())
+            {
+               gnssSatTypeValue gds;
+               gds.header.epoch = time;
+               gds.header.source = itsrc->first;
+               gds.body = itsrc->second;
+
+               dataMap.addGnssSatTypeValue(gds);
+            }
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return dataMap;
+
+   }  // End of method 'gnssDataMap::extractSourceID()'
+
+
+      // Modifies this object, keeping only this source.
+      // @param source Source to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySourceID(const SourceID& source)
+   {
+      (*this) = extractSourceID(source);
+      return (*this);
+   }
+
+
+      // Modifies this object, keeping only these sources.
+      // @param sourceSet Set(SourceIDSet) containing the sources 
+      //                  to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySourceID(const SourceIDSet& sourceSet)
+   {
+      (*this) = extractSourceID(sourceSet);
+      return (*this);
+   }
+
+
+      // Modifies this object, removing this source.
+      // @param source Source to be removed.
+   gnssDataMap& gnssDataMap::removeSourceID(const SourceID& source)
+   {
+      SourceIDSet sourceSet;
+      sourceSet.insert(source);
+
+      return removeSourceID(sourceSet);
+   }
+
+
+      // Modifies this object, keeping only these sources.
+      // @param sourceSet Set(SourceIDSet) containing the sources 
+      //                  to be removed.
+   gnssDataMap& gnssDataMap::removeSourceID(const SourceIDSet& sourceSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+            itsrc != sourceMap.end();
+            ++itsrc)
+         {
+            SourceIDSet::const_iterator itsrc2 = sourceSet.find(itsrc->first);
+            if(itsrc2==sourceSet.end())
+            {
+               gnssSatTypeValue gds;
+               gds.header.epoch = time;
+               gds.header.source = itsrc->first;
+               gds.body = itsrc->second;
+
+               dataMap.addGnssSatTypeValue(gds);
+            }
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+      
+      (*this) = dataMap;
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::removeSourceID()'
+
+
+      // Returns a gnssDataMap with only this satellite.
+      // @param sat Satellite to be extracted.
+   gnssDataMap gnssDataMap::extractSatID(const SatID& sat)
+   {
+      SatIDSet satSet;
+      satSet.insert(sat);
+
+      return extractSatID(satSet);
+   }
+
+
+      // Returns a gnssDataMap with only these satellites.
+      // @param satSet Set(SatIDSet) containing the satellite 
+      //               to be extracted.
+   gnssDataMap gnssDataMap::extractSatID(const SatIDSet& satSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.keepOnlySatID(satSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return dataMap;
+
+   }  // End of method 'gnssDataMap::extractSatID()'
+
+
+      // Modifies this object, keeping only this satellite.
+      // @param sat Satellite to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySatID(const SatID& sat)
+   {
+      (*this) = extractSatID(sat);
+      return (*this);
+   } 
+
+
+      // Modifies this object, keeping only these satellites.
+      // @param satSet Set(SatIDSet) containing the satellite 
+      //                  to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySatID(const SatIDSet& satSet)
+   {
+      (*this) = extractSatID(satSet);
+      return (*this);
+   }  
+
+      // Modifies this object, removing this satellite.
+      // @param sat Satellite to be removed.
+   gnssDataMap& gnssDataMap::removeSatID(const SatID& sat)
+   {
+      SatIDSet satSet;
+      satSet.insert(sat);
+
+      return removeSatID(satSet);
+   }
+
+
+      // Modifies this object, keeping only these satellites.
+      // @param satSet Set(SatIDSet) containing the satellites 
+      //               to be removed.
+   gnssDataMap& gnssDataMap::removeSatID(const SatIDSet& satSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.removeSatID(satSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      (*this) = dataMap;
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::removeSatID()'
+
+
+
+      /// Returns a gnssDataMap with only this type.
+      /// @param type Type to be extracted.
+   gnssDataMap gnssDataMap::extractTypeID(const TypeID& type)
+   {
+      TypeIDSet typeSet;
+      typeSet.insert(type);
+
+      return extractTypeID(typeSet);
+   }
+
+
+      // Returns a gnssDataMap with only these satellites.
+      // @param typeSet Set(TypeIDSet) containing the types 
+      //               to be extracted.
+   gnssDataMap gnssDataMap::extractTypeID(const TypeIDSet& typeSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.keepOnlyTypeID(typeSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return dataMap;
+   }
+
+
+      // Modifies this object, keeping only this type.
+      // @param type Type to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlyTypeID(const TypeID& type)
+   {
+      (*this) = extractTypeID(type);
+      return (*this);
+   }
+
+
+      // Modifies this object, keeping only these types.
+      // @param typeSet Set(TypeIDSet) containing the type 
+      //                  to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlyTypeID(const TypeIDSet& typeSet)
+   {
+      (*this) = extractTypeID(typeSet);
+      return (*this);
+   }
+
+
+      // Modifies this object, removing this type.
+      // @param type Type to be removed.
+   gnssDataMap& gnssDataMap::removeTypeID(const TypeID& type)
+   {
+      TypeIDSet typeSet;
+      typeSet.insert(type);
+
+      return removeTypeID(typeSet);
+   }
+
+
+      // Modifies this object, keeping only these types.
+      // @param typeSet Set(TypeIDSet) containing the types 
+      //               to be removed.
+   gnssDataMap& gnssDataMap::removeTypeID(const TypeIDSet& typeSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.removeTypeID(typeSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      (*this) = dataMap;
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::removeTypeID()'
 
 
       ////// Other stuff //////

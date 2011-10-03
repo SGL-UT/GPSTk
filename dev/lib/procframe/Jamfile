@@ -41,9 +41,9 @@ else
       ComputeSimpleWeights.hpp ComputeTropModel.hpp ComputeWindUp.hpp
       ConstraintSystem.hpp ConvertC1ToP1.hpp CorrectCodeBiases.hpp
       CorrectObservables.hpp DataHeaders.hpp DataStructures.hpp Decimate.hpp
-      DeltaOp.hpp Differentiator.hpp   DoubleOp.hpp Dumper.hpp
+      DeltaOp.hpp Differentiator.hpp DoubleOp.hpp Dumper.hpp
       EclipsedSatFilter.hpp Equation.hpp EquationSystem.hpp
-      GeneralConstraint.hpp GeneralEquations.hpp GravitationalDelay.hpp
+      GDSUtils.hpp GeneralConstraint.hpp GeneralEquations.hpp GravitationalDelay.hpp
       IonexModel.hpp Keeper.hpp
       LICSDetector.hpp LICSDetector2.hpp LinearCombinations.hpp ModeledPR.hpp
       ModeledReferencePR.hpp ModelObs.hpp ModelObsFixedStation.hpp
