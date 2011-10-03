@@ -40,10 +40,7 @@
  * @file BrcKeplerOrbit.cpp
  * Ephemeris data encapsulated in engineering terms
  */
-
-#include "StringUtils.hpp"
-#include "GNSSconstants.hpp"
-#include "GPSEllipsoid.hpp"
+#include <stdio.h>
 #include "BrcKeplerOrbit.hpp"
 #include <cmath>
 
@@ -57,33 +54,34 @@ namespace gpstk
    {
       dataLoaded = false;
 
-      PRNID = weeknum = 0;
+      PRNID = 0;
 
       satSys = "";
 
       healthy = false;     
      
-      Cuc = Cus = Crc = Crs = Cic = Cis = Toe = M0 = dn = dndot = 
-	   ecc = A = Ahalf =Adot = OMEGA0 = i0 = w = OMEGAdot = idot = accuracy = 0.0;
+      URAoe = -16;
+
+      Cuc = Cus = Crc = Crs = Cic = Cis = M0 = dn = dndot = 
+	   ecc = A = Ahalf =Adot = OMEGA0 = i0 = w = OMEGAdot = idot = 0.0;
    }
 
    BrcKeplerOrbit::BrcKeplerOrbit(const std::string satSysArg, const ObsID obsIDArg,
                                   const short PRNIDArg, const CommonTime beginFitArg,
-                                  const CommonTime endFitArg, const double ToeArg,
-                                  const short weeknumArg, const double accuracyArg,
-                                  const bool healthyArg, const double CucArg,
-                                  const double CusArg, const double CrcArg,
-                                  const double CrsArg, const double CicArg,
-                                  const double CisArg, const double M0Arg,
-                                  const double dnArg, const double dndotArg,
-		                            const double eccArg, const double AArg,
-                                  const double AhalfArg, const double AdotArg,
-                                  const double OMEGA0Arg, const double i0Arg,
-                                  const double wArg, const double OMEGAdotARg,
-                                  const double idotArg )
+                                  const CommonTime endFitArg, const CommonTime ToeArg,
+                                  const short URAoeArg, const bool healthyArg, 
+                                  const double CucArg, const double CusArg, 
+                                  const double CrcArg, const double CrsArg, 
+                                  const double CicArg, const double CisArg, 
+                                  const double M0Arg, const double dnArg, 
+                                  const double dndotArg, const double eccArg, 
+		                            const double AArg, const double AhalfArg, 
+                                  const double AdotArg, const double OMEGA0Arg, 
+                                  const double i0Arg, const double wArg, 
+                                  const double OMEGAdotARg, const double idotArg )
    {
       loadData(satSysArg, obsIDArg, PRNIDArg, beginFitArg, endFitArg, ToeArg,
-               weeknumArg, accuracyArg, healthyArg, CucArg, CusArg, CrcArg,
+               URAoeArg, healthyArg, CucArg, CusArg, CrcArg,
                CrsArg, CicArg, CisArg, M0Arg, dnArg, dndotArg, eccArg, AArg,
                AhalfArg, AdotArg, OMEGA0Arg, i0Arg, wArg, OMEGAdotARg, idotArg );
    }
@@ -98,20 +96,21 @@ namespace gpstk
       loadData(obsIDArg, PRNID,fullweeknum, subframe1, subframe2, subframe3 );
    }
 
+
+
    void BrcKeplerOrbit::loadData(const std::string satSysArg, const ObsID obsIDArg,
                                  const short PRNIDArg, const CommonTime beginFitArg,
-                                 const CommonTime endFitArg, const double ToeArg,
-                                 const short weeknumArg, const double accuracyArg,
-                                 const bool healthyArg, const double CucArg,
-                                 const double CusArg, const double CrcArg,
-                                 const double CrsArg, const double CicArg,
-                                 const double CisArg, const double M0Arg,
-                                 const double dnArg, const double dndotArg,
-		                           const double eccArg, const double AArg,
-                                 const double AhalfArg, const double AdotArg,
-                                 const double OMEGA0Arg, const double i0Arg,
-                                 const double wArg, const double OMEGAdotARg,
-                                 const double idotArg )
+                                 const CommonTime endFitArg, const CommonTime ToeArg,
+                                 const short URAoeArg, const bool healthyArg, 
+                                 const double CucArg, const double CusArg, 
+                                 const double CrcArg, const double CrsArg, 
+                                 const double CicArg, const double CisArg,  
+                                 const double M0Arg, const double dnArg, 
+                                 const double dndotArg, const double eccArg, 
+		                           const double AArg, const double AhalfArg, 
+                                 const double AdotArg, const double OMEGA0Arg, 
+                                 const double i0Arg, const double wArg, 
+                                 const double OMEGAdotARg, const double idotArg )
    {
 	   satSys      = satSysArg;
 	   obsID       = obsIDArg;
@@ -119,8 +118,7 @@ namespace gpstk
       beginFit    = beginFitArg;
       endFit      = endFitArg;
 	   Toe         = ToeArg;
-	   weeknum     = weeknumArg;
-	   accuracy    = accuracyArg;
+	   URAoe       = URAoeArg;
 	   healthy     = healthyArg;
 	   Cuc         = CucArg;
 	   Cus         = CusArg;
@@ -165,11 +163,10 @@ namespace gpstk
 	      GPSTK_THROW(exc);
 	   }
 
-	   weeknum       = static_cast<short>( ficked[5] );
+	   short weeknum = static_cast<short>( ficked[5] );
 	   short accFlag = static_cast<short>( ficked[7] );
 	   short health  = static_cast<short>( ficked[8] );
-	   //Convert the accuracy flag to a value...
-	   accuracy = gpstk::ura2accuracy(accFlag);
+	   URAoe = accFlag;
 	   healthy = false;
 	   if (health == 0)
 	   healthy = true;
@@ -190,11 +187,19 @@ namespace gpstk
 	   Cus    = ficked[11];
 	   Ahalf  = ficked[12];
 	   A      = Ahalf*Ahalf;
-	   Toe    = ficked[13];
+	   double ToeSOW = ficked[13];
+/*
+      double diff = Txmit - ToeSOW;
+      if (diff > HALFWEEK)          // NOTE: This USED to be in DayTime, but DayTime is going away.  Where is it now?
+         weeknum++;                 // Convert week # of transmission to week # of epoch time when Toc is forward across a week boundary
+      else if (diff < -HALFWEEK)
+         weeknum--;                 // Convert week # of transmission to week # of epoch time when Toc is back across a week boundary
+*/
+      Toe = GPSWeekSecond(weeknum, ToeSOW, TimeSystem::GPS);
       short fiti = static_cast<short>(ficked[14]);
       short fitHours = getLegacyFitInterval(iodc, fiti);
-      long beginFitSOW = Toe - (fitHours/2)*3600;
-      long endFitSOW = Toe + (fitHours/2)*3600;
+      long beginFitSOW = ToeSOW - (fitHours/2)*3600;
+      long endFitSOW = ToeSOW + (fitHours/2)*3600;
       short beginFitWk = weeknum;
       short endFitWk = weeknum;
       if (beginFitSOW < 0)
@@ -267,6 +272,8 @@ namespace gpstk
    {
       Xv sv;
 
+      GPSWeekSecond gpsws = (Toe);
+      double ToeSOW = gpsws.sow;
       double ea;              // eccentric anomaly //
       double delea;           // delta eccentric anomaly during iteration */
       double elapte;          // elapsed time since Toe 
@@ -350,7 +357,7 @@ namespace gpstk
 
          //  Longitude of ascending node (ANLON)
       ANLON = OMEGA0 + (OMEGAdot - ell.angVelocity()) *
-              elapte - ell.angVelocity() * Toe;
+              elapte - ell.angVelocity() * ToeSOW;
 
          // In plane location
       cosu = cos( U );
@@ -431,17 +438,7 @@ namespace gpstk
    CommonTime BrcKeplerOrbit::getOrbitEpoch() const
       throw(InvalidRequest)
    {
-      CommonTime toReturn;
-      if (satSys == "G" )
-         toReturn = GPSWeekSecond(weeknum, Toe, TimeSystem::GPS);
-      else if (satSys == "E" )
-         toReturn = GPSWeekSecond(weeknum, Toe, TimeSystem::GAL);
-      else
-      {
-         InvalidRequest exc("Invalid Time System in BrcKeplerOrbit::getOrbitEpoch()");
-         GPSTK_THROW(exc);
-      }
-      return toReturn;
+      return Toe;
    }
    
    CommonTime BrcKeplerOrbit::getBeginningOfFitInterval() const
@@ -485,7 +482,8 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return weeknum;
+      GPSWeekSecond gpsws(Toe);
+      return (gpsws.week);
    }   
   
    double BrcKeplerOrbit::getAccuracy()  const
@@ -496,8 +494,31 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
+      double accuracy = ura2CNAVaccuracy(URAoe);
       return accuracy;
    }   
+
+   void BrcKeplerOrbit::setAccuracy(const double& acc)
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      URAoe = accuracy2ura(acc);
+   }
+
+   short BrcKeplerOrbit::getURAoe() const
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
+      return URAoe;
+   }
          
    double BrcKeplerOrbit::getCus() const
       throw(InvalidRequest)
@@ -573,7 +594,8 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return Toe;
+      GPSWeekSecond gpsws(Toe);
+      return gpsws.sow;
    }
    
    double BrcKeplerOrbit::getM0() const

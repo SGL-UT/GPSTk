@@ -79,8 +79,9 @@ namespace gpstk
 
 	 /// General purpose constructor
       BrcClockCorrection( const std::string satSysArg, const ObsID obsIDArg, 
-                          const short PRNIDArg, const double TocArg,
-                          const short weeknumArg, const double accuracyArg, 
+                          const short PRNIDArg, const CommonTime TocArg,
+                          const CommonTime TopArg, const short URAocArg,
+                          const short URAoc1Arg, const short URAoc2Arg,
                           const bool healthyArg, const double af0Arg,
                           const double af1Arg, const double af2Arg );
 
@@ -110,7 +111,9 @@ namespace gpstk
          /**
           * This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message. */
-      double getAccuracy() const throw(gpstk::InvalidRequest);
+      double getAccuracy(const CommonTime& t) const throw(gpstk::InvalidRequest);
+
+      short getURAoc(const short& ndx) const throw(gpstk::InvalidRequest);
 
          /** Returns SV health status. */
       bool isHealthy() const throw(gpstk::InvalidRequest);
@@ -155,10 +158,18 @@ namespace gpstk
 
          /** General purpose means to load data into object. */
       void loadData( const std::string satSysArg, const ObsID obsIDArg,
-                     const short PRNIDArg, const double TocArg,
-                     const short weeknumArg, const double accuracyArg,
+                     const short PRNIDArg, const CommonTime TocArg,
+                     const CommonTime TopArg, const short URAocArg,
+                     const short URAoc1Arg, const short URAoc2Arg,
                      const bool healthyArg, const double af0Arg, 
                      const double af1Arg, const double af2Arg );
+
+         /** Load data based on the GPS Legacy message. */
+      void loadData(const std::string satSysArg, const ObsID obsIDArg,
+                    const short PRNIDArg, const CommonTime TocArg,
+                    const short URAocArg, const bool healthyArg,
+                    const double af0Arg, const double af1Arg,
+                    const double af2Arg );
 
 	      /** Load data based on the GPS Legacy message. */
       void loadData( const ObsID obsIDArg, const short PRNID, 
@@ -175,9 +186,11 @@ namespace gpstk
       std::string  satSys;   /**< Rinex satellite system ID */
       ObsID obsID;           /**< Defines carrier and tracking code */      
       short PRNID;           /**< SV PRN ID */
-      double Toc;            /**< Clock epoch (sec of week) */
-      short weeknum;         /**< GPS full week number of Toc */ 
-      double accuracy;       /**< SV accuracy */
+      CommonTime Toc;
+      CommonTime Top;
+      short URAoc;
+      short URAoc1;
+      short URAoc2;
       bool healthy;          /**< SV health */
 
          //@}

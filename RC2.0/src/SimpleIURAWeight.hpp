@@ -37,6 +37,7 @@
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
 #include "GNSSconstants.hpp"
+#include "GPS_URA.hpp"
 #include <vector>
 
 

@@ -47,6 +47,7 @@
 #include "GNSSconstants.hpp"
 #include "MathBase.hpp"
 #include "CNAVClock.hpp"
+#include "GPS_URA.hpp"
 
 namespace gpstk
 {
@@ -59,18 +60,18 @@ namespace gpstk
 
       satSys = "";
 
-      PRNID = TOWWeek = TOWCount = Alert = Top = URAoc = URAoc1 = URAoc2 = 0;
+      PRNID = TOWWeek = TOWCount = Alert = Top = 0;
    
-      accuracy = Toc = 0.0;
+      Toc = 0.0;
    }
 
    void CNAVClock::loadData( const std::string satSysArg, const ObsID obsIDArg,
                              const short PRNIDArg, const short AlertMsgArg,
                              const long TOWMsgArg, const short TOWWeekArg,
                              const long TopArg, const long TocArg,
-	                          const double accuracyArg, const short URAocArg,
-                             const short URAoc1Arg, const short URAoc2Arg,
-                             const double af0Arg, const double af1Arg,
+	                          const double accuracyArg, const short URAocArg, 
+                             const short URAoc1Arg, const short URAoc2Arg, 
+                             const double af0Arg, const double af1Arg, 
                              const double af2Arg )
    {
       satSys       = satSysArg;
@@ -81,10 +82,9 @@ namespace gpstk
       TOWWeek      = TOWWeekArg;
       Top          = TopArg;
       Toc          = TocArg;
-      URAoc        = URAocArg;
-      URAoc1       = URAoc1Arg;
-      URAoc2       = URAoc2Arg;
-      accuracy     = accuracyArg;
+      short URAoc  = URAocArg;
+      short URAoc1 = URAoc1Arg;
+      short URAoc2 = URAoc2Arg;
       bool healthy = false;
 
       satSys = "G";
@@ -93,14 +93,16 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-      accuracy = gpstk::ura2CNAVaccuracy(URAoc);   
+         // BrcClockCorrection takes Toc parameter as a CommonTime variable.
+      CommonTime TocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
+      CommonTime TopCT = GPSWeekSecond(epochWeek, Top, TimeSystem::GPS);
    
          // The observation ID has a type of navigation. The code type could
          // be L2 or L5.
       ObsID obsID(ObsID::otNavMsg, obsIDArg.band, obsIDArg.code);
 
-      bcClock.loadData( satSys, obsID, PRNID, Toc, epochWeek, 
-                        accuracy, healthy, af0Arg, af1Arg, af2Arg); 
+      bcClock.loadData( satSys, obsID, PRNID, TocCT, TopCT, URAoc,
+                        URAoc1, URAoc2, healthy, af0Arg, af1Arg, af2Arg); 
       dataLoaded  = true;   
    }
 
@@ -108,31 +110,32 @@ namespace gpstk
                              const short TOWWeekArg, const PackedNavBits message3_)
       throw( InvalidParameter)
    {
-      obsID      = obsIDArg;
-      PRNID      = PRNIDArg;
-      TOWWeek    = TOWWeekArg;
-      satSys     = "G";
-      Alert      = message3_.asUnsignedLong(37, 1, 1);
-      TOWCount   = message3_.asUnsignedLong(20, 17, 300);
-      Top        = message3_.asUnsignedLong(38, 11, 300);
-      URAoc      = message3_.asLong(49, 5, 1);
-      URAoc1     = message3_.asUnsignedLong(54, 3, 1);
-      URAoc2     = message3_.asUnsignedLong(57, 3, 1);
-      Toc        = message3_.asUnsignedLong(60, 11, 300);
-      double af0 = message3_.asSignedDouble(71, 26, -35);
-      double af1 = message3_.asSignedDouble(97, 20, -48);
-      double af2 = message3_.asSignedDouble(117, 10, -60);
+      obsID        = obsIDArg;
+      PRNID        = PRNIDArg;
+      TOWWeek      = TOWWeekArg;
+      satSys       = "G";
+      Alert        = message3_.asUnsignedLong(37, 1, 1);
+      TOWCount     = message3_.asUnsignedLong(20, 17, 300);
+      Top          = message3_.asUnsignedLong(38, 11, 300);
+      short URAoc  = message3_.asLong(49, 5, 1);
+      short URAoc1 = message3_.asUnsignedLong(54, 3, 1);
+      short URAoc2 = message3_.asUnsignedLong(57, 3, 1);
+      Toc          = message3_.asUnsignedLong(60, 11, 300);
+      double af0   = message3_.asSignedDouble(71, 26, -35);
+      double af1   = message3_.asSignedDouble(97, 20, -48);
+      double af2   = message3_.asSignedDouble(117, 10, -60);
 
       bool healthy    = false;
       double timeDiff = Toc - TOWCount;
       short epochWeek = TOWWeek;
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
+   
+      CommonTime TocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
+      CommonTime TopCT = GPSWeekSecond(epochWeek, Top, TimeSystem::GPS);
 
-      accuracy = gpstk::ura2CNAVaccuracy(URAoc);   
-
-      bcClock.loadData( satSys, obsID, PRNID, Toc, epochWeek,
-                        accuracy, healthy, af0, af1, af2); 
+      bcClock.loadData( satSys, obsID, PRNID, TocCT, TopCT, URAoc,
+                        URAoc1, URAoc2, healthy, af0, af1, af2); 
       dataLoaded = true;
    }
 
@@ -235,7 +238,7 @@ namespace gpstk
       return Alert;
    }
 
-   double CNAVClock::getAccuracy()  const
+   double CNAVClock::getAccuracy(const CommonTime& t)  const
       throw(InvalidRequest)
    {
       if (!dataLoaded)
@@ -243,7 +246,7 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return accuracy;
+      return bcClock.getAccuracy(t);
    }  
 
    short CNAVClock::getURAoc(const short ndx) const
@@ -254,11 +257,7 @@ namespace gpstk
          InvalidRequest exc("getURAoc(): Required data not stored.");
          GPSTK_THROW(exc);
       }
-      if (ndx==0) return URAoc;
-      else if (ndx==1) return URAoc1;
-      else if (ndx==2) return URAoc2;
-      InvalidParameter exc("Required data not stored.");
-      GPSTK_THROW(exc);
+      return bcClock.getURAoc(ndx);
    }
 
    long CNAVClock::getTop() const
@@ -388,8 +387,8 @@ namespace gpstk
       << "          ACCURACY PARAMETERS"
       << endl
       << endl
-      << "URAoc index:  " <<setw(3) << URAoc << "    " << setw(3) << URAoc1 
-      << "    " << setw(3) << URAoc2 << endl;
+      << "URAoc index:  " <<setw(3) << getURAoc(0) << "    " << setw(3) << getURAoc(1) 
+      << "    " << setw(3) << getURAoc(2) << endl;
 
       s.setf(ios::scientific, ios::floatfield);
       s.precision(11);

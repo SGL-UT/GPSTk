@@ -217,10 +217,6 @@ namespace gpstk
       long  TOWCount;      /**< TOW count associated with subframe 2 */
       long  Top;           /**< Time of prediction */
       short TOWWeek;       /**< GPS full week number that corresponds to the TOWtime of SF2 */
-      short URAoe;         /**< User Range Accuracy (URA) the accuracy flag */
-      short URAoc;         /**< User Range Accuracy (URA) the accuracy flag */
-      short URAoc1;
-      short URAoc2;
       short L1Health;      /**< SV health */
       double Tgd;
       double ISCL1cp;

@@ -42,8 +42,8 @@
  */
 
 #include "StringUtils.hpp"
-#include "GNSSconstants.hpp"
 #include "BrcClockCorrection.hpp"
+#include "GPS_URA.hpp"
 #include <cmath>
 
 namespace gpstk
@@ -56,23 +56,26 @@ namespace gpstk
    {
       dataLoaded = false;
 
-      PRNID = weeknum = 0;
+      PRNID = 0;
 
       satSys = "";
 
       healthy = false;     
  
-      Toc = af0 = af1 = af2 = accuracy = 0.0;
+      URAoc = -16;
+      URAoc1 = URAoc2 = 0;
+      Toc = af0 = af1 = af2 = 0.0;
    }
 
    BrcClockCorrection::BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg,
-                                          const short PRNIDArg, const double TocArg,
-                                          const short weeknumArg, const double accuracyArg,
+                                          const short PRNIDArg, const CommonTime TocArg,
+                                          const CommonTime TopArg, const short URAocArg,
+                                          const short URAoc1Arg, const short URAoc2Arg,
                                           const bool healthyArg, const double af0Arg,
                                           const double af1Arg, const double af2Arg )
    {
-      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, weeknumArg, accuracyArg, healthyArg,
-		         af0Arg, af1Arg, af2Arg );
+      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, TopArg, URAocArg, URAoc1Arg, URAoc2Arg, 
+               healthyArg, af0Arg, af1Arg, af2Arg );
    }
 
 		/// Legacy GPS Subframe 1-3  
@@ -83,8 +86,23 @@ namespace gpstk
    }
 
    void BrcClockCorrection::loadData(const std::string satSysArg, const ObsID obsIDArg,
-                                     const short PRNIDArg, const double TocArg,
-                                     const short weeknumArg, const double accuracyArg,
+                                     const short PRNIDArg, const CommonTime TocArg,
+                                     const short URAocArg, const bool healthyArg,
+                                     const double af0Arg, const double af1Arg,
+                                     const double af2Arg )
+   {
+      const CommonTime TopArg;
+      const short URAoc1Arg = 0;
+      const short URAoc2Arg = 0;
+
+      loadData(satSysArg, obsIDArg, PRNIDArg, TocArg, TopArg, URAocArg, URAoc1Arg, URAoc2Arg, 
+               healthyArg, af0Arg, af1Arg, af2Arg );
+   }
+
+   void BrcClockCorrection::loadData(const std::string satSysArg, const ObsID obsIDArg,
+                                     const short PRNIDArg, const CommonTime TocArg,
+                                     const CommonTime TopArg, const short URAocArg,
+                                     const short URAoc1Arg, const short URAoc2Arg,
                                      const bool healthyArg, const double af0Arg,
                                      const double af1Arg, const double af2Arg )
    {
@@ -92,8 +110,10 @@ namespace gpstk
 	   obsID       = obsIDArg;
 	   PRNID       = PRNIDArg;
 	   Toc         = TocArg;
-	   weeknum     = weeknumArg;
-	   accuracy    = accuracyArg;
+      Top         = TopArg;
+      URAoc       = URAocArg;
+      URAoc1      = URAoc1Arg;
+      URAoc2      = URAoc2Arg;
 	   healthy     = healthyArg;
 	   af0         = af0Arg;
 	   af1         = af1Arg;
@@ -118,15 +138,25 @@ namespace gpstk
          InvalidParameter exc("Subframe 1 not valid.");
 	      GPSTK_THROW(exc);
       }
-      weeknum       = static_cast<short>( ficked[5] );
+      double Txmit  = ficked[2];     // Time of week from handover word 
+      short weeknum = static_cast<short>( ficked[5] );
       short accFlag = static_cast<short>( ficked[7] );
       short health  = static_cast<short>( ficked[8] );
-      Toc           = ficked[12];
+      double TocSOW = ficked[12];
       af2           = ficked[13];
       af1           = ficked[14];
       af0           = ficked[15];
-         //Convert the accuracy flag to a value...
-      accuracy = gpstk::ura2accuracy(accFlag);
+
+      double diff = Txmit - TocSOW;
+      if (diff > HALFWEEK)          // NOTE: This USED to be in DayTime, but DayTime is going away.  Where is it now?
+         weeknum++;                 // Convert week # of transmission to week # of epoch time when Toc is forward across a week boundary
+      else if (diff < -HALFWEEK)
+         weeknum--;                 // Convert week # of transmission to week # of epoch time when Toc is back across a week boundary
+
+      Toc = GPSWeekSecond( weeknum, TocSOW, TimeSystem::GPS ); 
+      URAoc = accFlag;              //Store L1 C/A URA as URAoc
+      URAoc1 = 0;
+      URAoc2 = 0;
       healthy = false;
       if (health == 0)
       healthy = true;
@@ -142,17 +172,7 @@ namespace gpstk
    CommonTime BrcClockCorrection::getEpochTime() const
       throw(InvalidRequest)
    {
-      CommonTime toReturn;
-      if (satSys == "G" )
-         toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GPS);
-      else if (satSys == "E" )
-         toReturn = GPSWeekSecond(weeknum, Toc, TimeSystem::GAL);
-      else
-      {
-         InvalidRequest exc("Invalid Time System in BrcClockCorrection::getEpochTime()");
-         GPSTK_THROW(exc);
-      }
-      return toReturn;
+      return Toc;
    }
 
    double BrcClockCorrection::svClockBias(const CommonTime& t) const
@@ -200,19 +220,40 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return weeknum;
+      GPSWeekSecond gpsws(Toc);
+      return (gpsws.week);
    }
      
-   double BrcClockCorrection::getAccuracy()  const
+   double BrcClockCorrection::getAccuracy(const CommonTime& t)  const
       throw(InvalidRequest)
    {
+      double accuracy;
+
       if (!dataLoaded)
       {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
+      //if (obsID.code == "tcCA" ) // L1 C/A
+         accuracy = ura2accuracy(URAoc);
+      //else
+         accuracy = uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, t, Top);
       return accuracy;
    }   
+
+   short BrcClockCorrection::getURAoc(const short& ndx) const
+      throw(InvalidRequest)
+   {
+      if (!dataLoaded)
+      {
+         InvalidRequest exc("Required data not stored.");
+      }
+      if (ndx == 0) return URAoc;
+      else if (ndx == 1) return URAoc1;
+      else if (ndx == 2) return URAoc2;
+      InvalidParameter exc ("Required data not stored.");
+      GPSTK_THROW(exc);
+   }
 
    double BrcClockCorrection::getToc() const
       throw(InvalidRequest)
@@ -222,7 +263,8 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return Toc;
+      GPSWeekSecond gpsws(Toc);
+      return gpsws.sow;
    }
 
    double BrcClockCorrection::getAf0() const

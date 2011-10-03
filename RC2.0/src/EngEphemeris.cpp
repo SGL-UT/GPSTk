@@ -52,6 +52,7 @@
 #include "YDSTime.hpp"
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
+#include "GPS_URA.hpp"
 
 namespace gpstk
 {
@@ -67,12 +68,11 @@ namespace gpstk
       satSys = "";
 
       PRNID = tracker = ASalert[0] = ASalert[1] = ASalert[2] = weeknum =
-	   codeflags = accFlag = health = L2Pdata = 0;
+	   codeflags = health = L2Pdata = 0;
 
       HOWtime[0] = HOWtime[1] = HOWtime[2] = 0;
 
       IODC = IODE = 0;
-      accuracy = 0.0;
       Tgd = 0.0;
 
       fitint = 0;
@@ -217,7 +217,7 @@ namespace gpstk
       ASalert[0] = static_cast<short>( ficked[3] );
       weeknum    = static_cast<short>( ficked[5] );
       codeflags  = static_cast<short>( ficked[6] );
-      accFlag    = static_cast<short>( ficked[7] );
+      short accFlag = static_cast<short>( ficked[7] );
       health     = static_cast<short>( ficked[8] );
       IODC       = static_cast<short>( ldexp( ficked[9], -11 ) );
       L2Pdata    = static_cast<short>( ficked[10] );
@@ -227,8 +227,6 @@ namespace gpstk
       double af1 = ficked[14];
       double af0 = ficked[15];
       tracker    = track;
-         // convert the accuracy flag to a value...
-      accuracy = gpstk::ura2accuracy(accFlag);
 
       if (!subframeConvert(subframeStore[1], gpsWeek, ficked))
          return false;
@@ -276,12 +274,18 @@ namespace gpstk
       if (health==0) healthy = true;
       double Adot = 0.0;
       double dnDot = 0.0; 
-      double A = Ahalf * Ahalf; 
+      double A = Ahalf * Ahalf;
 
       double timeDiff = Toe - HOWtime[1];
       short epochWeek = weeknum;
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
+
+         // Toe is now in CommonTime, and needs to be passed to BrcKeplerOrbit as a CommonTime variable.
+         // URAoc and URAoe in legacy nav message are equal. Only CNAV and CNAV2 are they different
+      CommonTime ToeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
+      CommonTime TocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
+
       short fiti = static_cast<short>(ficked[14]);
       short fitHours = getLegacyFitInterval(IODC, fitint);
       long beginFitSOW = Toe - (fitHours/2)*3600;
@@ -302,12 +306,12 @@ namespace gpstk
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);   
       
-      orbit.loadData(satSys, obsID, PRN, beginFit, endFit, Toe, epochWeek, 
-                     accuracy, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
+      orbit.loadData(satSys, obsID, PRN, beginFit, endFit, ToeCT, 
+                     accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
                      dn, dnDot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot);
          
-      bcClock.loadData( satSys, obsID, PRNID, Toc, epochWeek, 
-                        accuracy, healthy, af0, af1, af2); 
+      bcClock.loadData( satSys, obsID, PRNID, TocCT,
+                        accFlag, healthy, af0, af1, af2); 
    }
 
    bool EngEphemeris::isData(short subframe) const
@@ -332,8 +336,7 @@ namespace gpstk
                               " meters is invalid.");
          GPSTK_THROW(exc);
       }
-      accuracy = acc;
-      accFlag = gpstk::accuracy2ura(acc);
+      orbit.setAccuracy(acc);
    }
 
       /**
@@ -593,7 +596,7 @@ namespace gpstk
          InvalidRequest exc("getAccuracy(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
-      return accuracy;
+      return orbit.getAccuracy();
    }
    
    short EngEphemeris::getAccFlag()  const
@@ -604,7 +607,7 @@ namespace gpstk
          InvalidRequest exc("getAccFlag(): Required subframe 1 not stored.");
          GPSTK_THROW(exc);
       }
-      return accFlag;
+      return orbit.getURAoe();
    }
    
    short EngEphemeris::getHealth() const
@@ -974,8 +977,8 @@ namespace gpstk
       }
       weeknum   = fullweek;
       codeflags = cflags;
-      accFlag   = acc;
-      accuracy  = gpstk::ura2accuracy(accFlag);
+      short accFlag = acc;
+      double accuracy = gpstk::ura2accuracy(accFlag);
       health    = svhealth;
       L2Pdata   = l2pdata;
       IODC      = iodc;
@@ -991,6 +994,9 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
+
+      CommonTime toeCT = GPSWeekSecond(weeknum, toe, TimeSystem::GPS);
+      CommonTime tocCT = GPSWeekSecond(weeknum, toc, TimeSystem::GPS);
 
       double A = ahalf*ahalf;
       double dndot = 0.0;
@@ -1013,12 +1019,12 @@ namespace gpstk
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toe, weeknum, 
-                     accuracy, health, cuc, cus, crc, crs, cic, cis, m0, Dn, 
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                     accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn, 
                      dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
          
-      bcClock.loadData( satSys, obsID, PRNID, toc, weeknum, 
-                        accuracy, health, Af0, Af1, Af2);
+      bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                        accFlag, health, Af0, Af1, Af2);
       haveSubframe[0] = true;
       haveSubframe[1] = true;
       haveSubframe[2] = true;
@@ -1039,7 +1045,7 @@ namespace gpstk
       ASalert[0] = asalert;
       weeknum    = fullweek;
       codeflags  = cflags;
-      accFlag    = acc;
+      short accFlag = acc;
       health     = svhealth;  
       IODC       = iodc;
       L2Pdata    = l2pdata;
@@ -1054,8 +1060,8 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-         // convert the accuracy flag to a value... 
-      accuracy = gpstk::ura2accuracy(accFlag);
+      CommonTime tocCT = GPSWeekSecond(epochWeek, toc, TimeSystem::GPS);
+
          // The system is assumed (legacy navigation message is from GPS)
       satSys = "G";
 
@@ -1064,8 +1070,8 @@ namespace gpstk
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
          
-      bcClock.loadData( satSys, obsID, PRNID, toc, epochWeek, 
-                        accuracy, healthy, Af0, Af1, Af2);
+      bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                        accFlag, healthy, Af0, Af1, Af2);
       haveSubframe[0] = true;
       return *this;
    }
@@ -1101,6 +1107,7 @@ namespace gpstk
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
+      short accFlag = 0;
       double crc = 0.0;
       double cis = 0.0;
       double dndot = 0.0;
@@ -1114,6 +1121,7 @@ namespace gpstk
       double IDot = 0.0;
       try
       {
+         accFlag = orbit.getURAoe();
          crc = orbit.getCrc();
          cis = orbit.getCis();
          cic = orbit.getCic();
@@ -1149,8 +1157,10 @@ namespace gpstk
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toe, epochWeek, 
-                     accuracy, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn, 
+      CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
+
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                     accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn, 
                      dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
       haveSubframe[1] = true;
       return *this;
@@ -1183,7 +1193,8 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-
+    
+      short accFlag = 0;
       double toe = 0.0;
       double cuc = 0.0;
       double cus = 0.0;
@@ -1196,9 +1207,10 @@ namespace gpstk
       double ahalf = 0.0;
       double Adot = 0.0;
       CommonTime beginFit;
-      CommonTime endFit;;
+      CommonTime endFit;
       try
       {
+         accFlag = orbit.getURAoe();
          toe = orbit.getToe();
          cuc = orbit.getCuc();
          cus = orbit.getCus();
@@ -1217,10 +1229,13 @@ namespace gpstk
       {
          haveSubframe[1] = false;
       }
+      
+      CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
 
-      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toe, epochWeek, 
-                      accuracy, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn, 
+      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                      accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn, 
                       dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
+
       haveSubframe[2] = true;
       return *this;
    }
@@ -1417,7 +1432,7 @@ namespace gpstk
         << endl
         << endl
         << "Health bits:   0x" << setfill('0')  << setw(2) << health
-        << "      URA index: " << setfill(' ') << setw(4) << accFlag << endl
+        << "      URA index: " << setfill(' ') << setw(4) << orbit.getURAoe() << endl
         << "Code on L2:   ";
       
       switch (codeflags)

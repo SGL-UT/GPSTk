@@ -130,7 +130,7 @@ namespace gpstk
          /** This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message, or
           * as set by the setAccuracy() method. */
-      double getAccuracy() const throw(gpstk::InvalidRequest);
+      double getAccuracy(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** This function returns the SV accuracy
           * index as it appears in the nav message. */
@@ -173,10 +173,7 @@ namespace gpstk
       long  Top;           /**< Time of Preditcion */
       double Toc;          /**< Clock epoch (sec of week) */
       short TOWWeek;       /**< GPS full week number that corresponds to the TOWtime of Message Type 10 */
-      short URAoc;         /**< User Range Accuracy (URA) the accuracy flag */
-      short URAoc1;
-      short URAoc2;
-      double accuracy;     /**< SV accuracy (m) computed from accuracy flag */
+      
          //@}
       
          /// Clock parameters

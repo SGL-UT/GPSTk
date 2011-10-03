@@ -178,11 +178,9 @@ namespace gpstk
       long  TOWCount[2];   /**< TOW count associated with message 10/11 */
       long Top;            /**< Time of Preditcion */
       short TOWWeek;       /**< GPS full week number that corresponds to the TOWtime of Message Type 10 */
-      short URAoe;         /**< User Range Accuracy (URA) the accuracy flag */
       short L1Health;      /**< SV health */
       short L2Health;
       short L5Health;
-      double accuracy;     /**< SV accuracy (m) computed from accuracy flag */
          //@}
       
          /// Orbit parameters

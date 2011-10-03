@@ -49,6 +49,7 @@
 #include "MathBase.hpp"
 #include "GPSEllipsoid.hpp"
 #include "CNAVEphemeris.hpp"
+#include "GPS_URA.hpp"
 
 namespace gpstk
 {
@@ -61,10 +62,9 @@ namespace gpstk
 
       satSys = "";
 
-      PRNID = TOWWeek = URAoe = L1Health = L2Health = L5Health =
+      PRNID = TOWWeek = L1Health = L2Health = L5Health =
       TOWCount[0] = TOWCount[1] = Alert[0] = Alert[1] = Top = 0;
-   
-      accuracy = 0.0;
+
    }
 
    void CNAVEphemeris::loadData( const std::string satSysArg, const ObsID obsIDArg, 
@@ -96,8 +96,7 @@ namespace gpstk
       L2Health      = L2HealthArg;
       L5Health      = L5HealthArg;
       Top           = TopArg;
-      URAoe         = URAoeArg;
-      accuracy      = accuracyArg;
+      short URAoe   = URAoeArg;
       double deltaA = deltaAArg;
       bool healthy  = false;
       if (obsIDArg.band == ObsID::cbL2 && L2Health == 0) healthy = true;
@@ -112,8 +111,6 @@ namespace gpstk
       short epochWeek = TOWWeek;
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
-
-      accuracy = gpstk::ura2CNAVaccuracy(URAoe);
     
          // The observation ID has a type of navigation. The code type could
          // be L1, L2, or L5.
@@ -133,8 +130,10 @@ namespace gpstk
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS); 
 
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, ToeArg, epochWeek,
-                     accuracy, healthy, CucArg, CusArg, CrcArg, CrsArg, CicArg,
+      CommonTime ToeCT = GPSWeekSecond(epochWeek, ToeArg, TimeSystem::GPS);
+
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, ToeCT,
+                     URAoe, healthy, CucArg, CusArg, CrcArg, CrsArg, CicArg,
                      CisArg, M0Arg, dnArg, dndotArg, eccArg, A, Ahalf, AdotArg, 
 		               OMEGA0Arg, i0Arg, wArg, OMEGAdot, idotArg);
       dataLoaded  = true;   
@@ -159,7 +158,7 @@ namespace gpstk
       L2Health      = message10.asUnsignedLong(52, 1, 1);
       L5Health      = message10.asUnsignedLong(53, 1, 1);
       Top           = message10.asUnsignedLong(54, 11, 300);
-      URAoe         = message10.asLong(65, 5, 1);
+      short URAoe   = message10.asLong(65, 5, 1);
       double Toe    = message10.asUnsignedLong(70, 11, 300);
       double deltaA = message10.asSignedDouble(81, 26, -9);
       double Adot   = message10.asSignedDouble(107, 25, -21);
@@ -196,8 +195,6 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-      accuracy = gpstk::ura2CNAVaccuracy(URAoe);
-
       long beginFitSOW = ((TOWCount[0])/7200)*7200;
       long endFitSOW   = beginFitSOW + 10800;
       short beginFitWk = TOWWeek;
@@ -212,8 +209,10 @@ namespace gpstk
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS); 
 
-      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, Toe, epochWeek,
-                     accuracy, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, dn,
+      CommonTime ToeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
+
+      orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, ToeCT,
+                     URAoe, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, dn,
                      dndot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot);
       dataLoaded = true;
    }
@@ -310,7 +309,7 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return accuracy;
+      return orbit.getAccuracy();
    }  
 
    short CNAVEphemeris::getURAoe() const
@@ -321,7 +320,7 @@ namespace gpstk
          InvalidRequest exc("getURAoe(): Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return URAoe;
+      return orbit.getURAoe();
    }
 
    short CNAVEphemeris::getHealth(const ObsID::CarrierBand cb) const
@@ -466,7 +465,7 @@ namespace gpstk
         << "          ACCURACY PARAMETERS"
         << endl
         << endl
-        << "URAoe index:  " << setw(4) << URAoe << endl;
+        << "URAoe index:  " << setw(4) << orbit.getURAoe() << endl;
 
       s.setf(ios::scientific, ios::floatfield);
       s.precision(11);

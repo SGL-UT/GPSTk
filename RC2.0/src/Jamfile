@@ -291,6 +291,7 @@ else
       GPSEllipsoid.hpp	
       GPSEphemerisStore.hpp	
       GPSGeoid.hpp	
+      GPS_URA.hpp
       GPSWeek.hpp	
       GPSWeekSecond.hpp	
       GPSWeekZcount.hpp	

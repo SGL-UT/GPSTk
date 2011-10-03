@@ -48,6 +48,7 @@
 #include "MathBase.hpp"
 #include "GPSEllipsoid.hpp"
 #include "CNAV2EphClk.hpp"
+#include "GPS_URA.hpp"
 
 namespace gpstk
 {
@@ -60,7 +61,7 @@ namespace gpstk
 
       satSys = "";
 
-      PRNID = TOWWeek = URAoe = URAoc = URAoc1 = URAoc2 = L1Health = 
+      PRNID = TOWWeek = L1Health = 
       TOWCount = Top = 0;
 
       Tgd = ISCL1cp = ISCL1cd = 0.0;
@@ -91,12 +92,13 @@ namespace gpstk
       TOWWeek      = TOWWeekArg;
       TOWCount     = TOWArg;
       Top          = TopArg;
+      long Toe     = ToeArg;
       L1Health     = L1HealthArg;
-      URAoe        = URAoeArg;
+      short URAoe  = URAoeArg;
       double deltaA = deltaAArg;
-      URAoc        = URAocArg;
-      URAoc1       = URAoc1Arg;
-      URAoc2       = URAoc2Arg;
+      short URAoc   = URAocArg;
+      short URAoc1  = URAoc1Arg;
+      short URAoc2  = URAoc2Arg;
       Tgd          = TgdArg;
       ISCL1cp      = ISCL1cpArg;
       ISCL1cd      = ISCL1cdArg;
@@ -110,9 +112,6 @@ namespace gpstk
       short epochWeek = TOWWeek;
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
-
-      double accuracy1 = gpstk::ura2CNAVaccuracy(URAoe);
-      double accuracy2 = gpstk::ura2CNAVaccuracy(URAoc);
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -133,13 +132,16 @@ namespace gpstk
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);   
 
-      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, ToeArg, epochWeek, 
-                      accuracy1, healthy, CucArg, CusArg, CrcArg, CrsArg, CicArg, 
+      CommonTime TopCT = GPSWeekSecond(epochWeek, Top, TimeSystem::GPS);
+      CommonTime ToeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
+
+      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, ToeCT, URAoe,
+                      healthy, CucArg, CusArg, CrcArg, CrsArg, CicArg, 
                       CisArg, M0Arg, dnArg, dndotArg, eccArg, A, Ahalf, AdotArg, 
 		                OMEGA0Arg, i0Arg, wArg, OMEGAdotArg, idotArg );
 
-      bcClock.loadData( satSys, obsID, PRNID, ToeArg, epochWeek, accuracy2, 
-                        healthy, Af0Arg, Af1Arg, Af2Arg); 
+      bcClock.loadData( satSys, obsID, PRNID, ToeCT, TopCT, URAoc,
+                        URAoc1, URAoc2, healthy, Af0Arg, Af1Arg, Af2Arg); 
       dataLoaded  = true;   
    }
 
@@ -156,7 +158,7 @@ namespace gpstk
       Top                  = subframe2.asUnsignedLong(21, 11, 300);
       L1Health             = subframe2.asUnsignedLong(32, 1, 1);
       TOWCount             = subframe1*18 + ITOW * 7200;
-      URAoe                = subframe2.asLong(33, 5, 1);
+      short URAoe          = subframe2.asLong(33, 5, 1);
       double Toe           = subframe2.asUnsignedLong(38, 11, 300);
       double deltaA        = subframe2.asSignedDouble(49, 26, -9);
       double Adot          = subframe2.asSignedDouble(75, 25, -21);
@@ -175,9 +177,9 @@ namespace gpstk
       double Crc           = subframe2.asSignedDouble(393, 24, -8);
       double Cus           = subframe2.asSignedDouble(417, 21, -30);
       double Cuc           = subframe2.asSignedDouble(438, 21, -30);
-      URAoc                = subframe2.asLong(459, 5, 1);
-      URAoc1               = subframe2.asUnsignedLong(464, 3, 1);
-      URAoc2               = subframe2.asUnsignedLong(467, 3, 1);
+      short URAoc          = subframe2.asLong(459, 5, 1);
+      short URAoc1         = subframe2.asUnsignedLong(464, 3, 1);
+      short URAoc2         = subframe2.asUnsignedLong(467, 3, 1);
       double af0           = subframe2.asSignedDouble(470, 26, -35);
       double af1           = subframe2.asSignedDouble(496, 20, -48);
       double af2           = subframe2.asSignedDouble(516, 10, -60);
@@ -198,7 +200,7 @@ namespace gpstk
       else if (timeDiff > HALFWEEK) epochWeek--;
 
       double accuracy1 = gpstk::ura2CNAVaccuracy(URAoe);
-      double accuracy2 = gpstk::ura2CNAVaccuracy(URAoc);
+      double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, TOWCount, Top);
 
       long beginFitSOW = ((TOWCount)/7200)*7200;
       long endFitSOW   = beginFitSOW + 10800;
@@ -212,14 +214,17 @@ namespace gpstk
          endFitSOW -= FULLWEEK;
          endFitWk++;
       }
-      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);   
+      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
-      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, Toe, epochWeek, 
-                      accuracy1, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
+      CommonTime TopCT = GPSWeekSecond(epochWeek, Top, TimeSystem::GPS);
+      CommonTime ToeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);   
+
+      orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, ToeCT, URAoe,
+                      healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
                       dn, dndot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot );
 
-      bcClock.loadData( satSys, obsID, PRNID, Toe, epochWeek,
-                        accuracy2, healthy, af0, af1, af2); 
+      bcClock.loadData( satSys, obsID, PRNID, ToeCT, Top, URAoc, 
+                        URAoc1, URAoc2, healthy, af0, af1, af2); 
       dataLoaded  = true;   
    }
 
@@ -298,7 +303,7 @@ namespace gpstk
          InvalidRequest exc("getURAoe(): Required data not stored.");
          GPSTK_THROW(exc);
       }
-      return URAoe;
+      return orbit.getURAoe();
    }
 
    short CNAV2EphClk::getHealth() const
@@ -320,11 +325,7 @@ namespace gpstk
          InvalidRequest exc("getURAoc(): Required data not stored.");
          GPSTK_THROW(exc);
       }
-      if (ndx==0) return URAoc;
-      else if (ndx==1) return URAoc1;
-      else if (ndx==2) return URAoc2;
-      InvalidParameter exc("Required data not stored.");
-      GPSTK_THROW(exc);
+      return bcClock.getURAoc(ndx);
    }
 
    double CNAV2EphClk::getTgd() const
@@ -513,9 +514,9 @@ namespace gpstk
         << "          ACCURACY PARAMETERS"
         << endl
         << endl
-        << "URAoe index:  " <<setw(3) << URAoe << endl
-        << "URAoc index:  " <<setw(3) << URAoc << "    " << setw(3) << URAoc1 
-        << "    " << setw(3) << URAoc2 << endl;
+        << "URAoe index:  " <<setw(3) << getURAoe() << endl
+        << "URAoc index:  " <<setw(3) << getURAoc(0) << "    " << setw(3) << getURAoc(1) 
+        << "    " << setw(3) << getURAoc(2) << endl;
 
       s.setf(ios::scientific, ios::floatfield);
       s.precision(11);

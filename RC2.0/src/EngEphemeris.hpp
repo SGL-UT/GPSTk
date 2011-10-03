@@ -545,8 +545,6 @@ namespace gpstk
       short ASalert[3];    /**< A-S and "alert" flags for each subframe */
       short weeknum;       /**< GPS full week number that corresponds to the HOWtime of SF1 */
       short codeflags;     /**< L2 codes */
-      double accuracy;      /**< SV accuracy (m)*/
-      short accFlag;       /**< User Range Accuracy (URA) the accuracy flag */
       short health;        /**< SV health */
       short L2Pdata;       /**< L2 P data flag */
       short IODC;         /**< Index of data-clock  */

@@ -53,6 +53,7 @@
 #include "YDSTime.hpp"
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
+#include "GPS_URA.hpp"
 
 namespace gpstk
 {

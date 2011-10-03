@@ -62,6 +62,7 @@
 #include "GPSWeekSecond.hpp"
 #include "YDSTime.hpp"
 #include "CivilTime.hpp"
+#include "GPS_URA.hpp"
 
 
 namespace gpstk
@@ -93,8 +94,8 @@ namespace gpstk
 	      /// General purpose constructor
       BrcKeplerOrbit( const std::string satSysArg, const ObsID obsIDArg, 
                       const short PRNIDArg, const CommonTime beginFitArg, 
-                      const CommonTime endFitArg, const double ToeArg, 
-                      const short weeknumArg, const double accuracyArg, 
+                      const CommonTime endFitArg, const CommonTime ToeArg, 
+                      const short URAoeArg, 
                       const bool healthyArg, const double CucArg, 
                       const double CusArg, const double CrcArg, 
                       const double CrsArg, const double CicArg, 
@@ -120,20 +121,20 @@ namespace gpstk
       virtual ~BrcKeplerOrbit() {}
 
          /// General purpose means to load data into object
-      void loadData( const std::string satSysArg, const ObsID obsIDArg, 
-                     const short PRNIDArg, const CommonTime beginFitArg, 
-                     const CommonTime endFitArg, const double ToeArg, 
-                     const short weeknumArg, const double accuracyArg, 
-                     const bool healthyArg, const double CucArg, 
-                     const double CusArg, const double CrcArg, 
-                     const double CrsArg, const double CicArg, 
-                     const double CisArg, const double M0Arg, 
-                     const double dnArg, const double dndotArg,
-		               const double eccArg, const double AArg, 
-                     const double AhalfArg, const double AdotArg,
-		               const double OMEGA0Arg, const double i0Arg, 
-                     const double wArg, const double OMEGAdotARg, 
-                     const double idotArg );
+
+      void loadData(const std::string satSysArg, const ObsID obsIDArg,
+                    const short PRNIDArg, const CommonTime beginFitArg,
+                    const CommonTime endFitArg, const CommonTime ToeArg,
+                    const short URAoeArg, const bool healthyArg, const double CucArg,
+                    const double CusArg, const double CrcArg,
+                    const double CrsArg, const double CicArg,
+                    const double CisArg, const double M0Arg,
+                    const double dnArg, const double dndotArg,
+		              const double eccArg, const double AArg,
+                    const double AhalfArg, const double AdotArg,
+                    const double OMEGA0Arg, const double i0Arg,
+                    const double wArg, const double OMEGAdotARg,
+                    const double idotArg );
 
          /// Load data based on the GPS Legacy message
       void loadData( const ObsID obsIDArg, 
@@ -181,6 +182,10 @@ namespace gpstk
           * computed from the accuracy information contained in the
 	       * nav message */
       double getAccuracy() const throw(gpstk::InvalidRequest);
+
+      void setAccuracy(const double& acc) throw(gpstk::InvalidRequest);
+   
+      short getURAoe() const throw(gpstk::InvalidRequest);
 
          /** This function returns the value of the sine latitude
           * harmonic perturbation in radians. */
@@ -278,9 +283,8 @@ namespace gpstk
       std::string satSys;     /**< Satellite system ID (as per Rinex) */
       ObsID   obsID;          /**< Defines carrier and tracking code */
       short   PRNID;          /**< SV PRN ID */
-      double  Toe;            /**< Orbit epoch (sec of week) */
-      short   weeknum;        /**< GPS full week number of Toe */
-      double  accuracy;       /**< SV accuracy (m) */
+      CommonTime Toe;         /**< Orbit epoch */
+      short   URAoe;          /**< SV accuracy Index */
       bool    healthy;        /**< SV health (healthy=true, other=false */
               //@}
 
