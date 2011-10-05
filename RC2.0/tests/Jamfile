@@ -22,7 +22,7 @@ SubInclude TOP RinexMet ;
 SubInclude TOP RinexNav ;
 SubInclude TOP RinexObs ;
 SubInclude TOP RungeKutta4 ;
-SubInclude TOP SP3EphemerisStore ;
+#SubInclude TOP SP3EphemerisStore ;
 SubInclude TOP Stats ;
 SubInclude TOP TimeConverters ;
 SubInclude TOP UnixTime ;
