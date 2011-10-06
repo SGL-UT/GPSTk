@@ -296,6 +296,7 @@ namespace gpstk
       MDPHeader::decode(ffs.rawHeader);
       ffs.streamState = MDPStream::gotHeader;
       ffs.header = *this;
+      ffs.headerCount++;
       if (debugLevel>2)
       {
          cout << "Got header at " << ffs.tellg()

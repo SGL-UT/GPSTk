@@ -122,7 +122,7 @@ void MDPProcessor::process()
       msgCount++;
 
       if (verboseLevel>5 || debugLevel>2)
-         out << "Record: " << in.recordNumber
+         out << "Record: " << in.headerCount
              << ", message: " << msgCount << endl;
 
       switch (header.id)
@@ -260,7 +260,7 @@ void MDPTableProcessor::process(const gpstk::MDPObsEpoch& oe)
           << ", " << setw(13) << obs.pseudorange
           << ", " << setw(14) << obs.phase
           << ", " << setw(10) << obs.doppler
-          << ", " << setw(10) << in.recordNumber
+          << ", " << setw(10) << in.headerCount
           << endl;
    }
 }
@@ -286,7 +286,7 @@ void MDPTableProcessor::process(const gpstk::MDPPVTSolution& pvt)
        << ", " << setw(8) << pvt.v[0]
        << ", " << setw(8) << pvt.v[1]
        << ", " << setw(8) << pvt.v[2]
-       << ", " << setw(10) << in.recordNumber
+       << ", " << setw(10) << in.headerCount
        << endl;
 }
 
@@ -329,7 +329,7 @@ void MDPTableProcessor::process(const gpstk::MDPSelftestStatus& sts)
        << ", " << setprecision(1) << sts.cpuLoad
        << ", " << hex << sts.extFreqStatus << dec
        << ", " << hex << sts.saasmStatusWord << dec
-       << ", " << setw(10) << in.recordNumber
+       << ", " << setw(10) << in.headerCount
        << endl;
 }
 
