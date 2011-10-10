@@ -309,15 +309,9 @@ namespace gpstk
             if( pDefaultIonoModel )
             {
 
-                  // Convert Position rxPos to Geodetic rxGeo
-//               Geodetic rxGeo( rxPos.getGeodeticLatitude(),
-//                               rxPos.getLongitude(),
-//                               rxPos.getAltitude() );
-
                tempIono = getIonoCorrections( pDefaultIonoModel,
                                               time,
                                               rxPos,
-//                                              rxGeo,
                                               cerange.elevationGeodetic,
                                               cerange.azimuthGeodetic );
 

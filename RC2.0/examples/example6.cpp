@@ -158,7 +158,8 @@ int main(void)
                        (modelRef.rxPos.Y() + solver.solution[1]),
                        (modelRef.rxPos.Z() + solver.solution[2]) );
 
-      cout << static_cast<YDSTime>(gRin.header.epoch).sod << " ";   // Output field #1
+      cout << static_cast<YDSTime>(gRin.header.epoch).sod
+           << " ";   // Output field #1
       cout << solPos.X() << "   ";                    // Output field #2
       cout << solPos.Y() << "   ";                    // Output field #3
       cout << solPos.Z() << "   ";                    // Output field #4
@@ -172,4 +173,4 @@ int main(void)
 
    exit(0);
 
-}
+}  // End of 'main()'

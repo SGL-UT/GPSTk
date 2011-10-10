@@ -422,7 +422,9 @@ int main(void)
 
 
          // Let's output the time stamp (in seconds of day)
-      cout << static_cast<YDSTime>(gOriginal.header.epoch).sod << "  ";   // Output field #1
+      YDSTime ydstime(gOriginal.header.epoch);
+
+      cout << ydstime.sod << "  ";                       // Output field #1
 
 
    //////////////////////////// CASE #1  ////////////////////////////
@@ -918,4 +920,4 @@ at epoch: " << gRef.header.epoch << endl;
 
    exit(0);
 
-}
+}  // End of 'main()'

@@ -2866,8 +2866,8 @@ in matrix and number of types do not match") );
 
    // Stream output for gnssRinex
    std::ostream& operator<<( std::ostream& s,
-	   gnssRinex& f )
-	   throw(FFStreamError, gpstk::StringUtils::StringException)
+                             gnssRinex& f )
+      throw(FFStreamError, gpstk::StringUtils::StringException)
    {
       FFStream* ffs = dynamic_cast<FFStream*>(&s);
       if(ffs)
@@ -3086,7 +3086,7 @@ in matrix and number of types do not match") );
          {
             tvMap[TypeID::LLI1] = (*itObs).second.lli;
             tvMap[TypeID::SSI1] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH_GAL;
+            tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH_GPS;
          }
          if( type == TypeID::L2 )
          {
@@ -3213,6 +3213,12 @@ in matrix and number of types do not match") );
          CivilTime cTime( yy+year, month, day, hour, min, sec,
                           hdr.firstObs.getTimeSystem() );
          CommonTime rv(cTime);
+
+            // Please note that the 'TimeSystem' is set to 'Any'. This implies
+            // that the 'TimeSystem' information is decided depending on the
+            // satellite system and the process at hand.
+         rv.setTimeSystem(TimeSystem::Any);
+
          if(ds != 0) rv += ds;
 
          return rv;
