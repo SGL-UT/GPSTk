@@ -70,6 +70,42 @@ namespace gpstk
    }  // End of method 'GloEphemerisStore::addEphemeris()'
 
 
+      // Add ephemeris information from a Rinex3NavData object.
+   void GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
+      throw()
+   {
+
+         // If enabled, check SV health before entering here (health = 0 -> OK).
+      if( (data.health == 0) || (!checkHealthFlag) )
+      {
+
+         CommonTime t = data.time;
+         SatID sat = data.sat;
+         GloRecord& glorecord = pe[sat][t]; // find or add entry
+
+         glorecord.x = Triple(data.px,data.py,data.pz);
+         glorecord.v = Triple(data.vx,data.vy,data.vz);
+         glorecord.a = Triple(data.ax,data.ay,data.az);
+
+         glorecord.clkbias   = data.TauN;
+         glorecord.clkdrift  = data.GammaN;
+         glorecord.MFtime    = data.MFtime;
+         glorecord.health    = data.health;
+         glorecord.freqNum   = data.freqNum;
+         glorecord.ageOfInfo = data.ageOfInfo;
+
+         if (t < initialTime)
+            initialTime = t;
+         else if (t > finalTime)
+            finalTime = t;
+
+      }  // End of 'if( (data.health == 0) || (!checkHealthFlag) )'
+
+      return;
+
+   }  // End of method 'GloEphemerisStore::addEphemeris()'
+
+
       /* Returns the position, velocity and clock offset of the indicated
        * satellite in ECEF coordinates (meters) at the indicated time,
        * in the PZ-90 ellipsoid.
@@ -254,7 +290,8 @@ namespace gpstk
 
          dxt4 = derivative( tempRes, accel );
          for( int j = 0; j < 6; ++j )
-            initialState(j) = initialState(j) + rkStep * ( dxt1(j) + 2.0*(dxt2(j)+dxt3(j)) + dxt4(j) )/6.0;
+            initialState(j) = initialState(j) + rkStep * ( dxt1(j)
+                            + 2.0 * ( dxt2(j) + dxt3(j) ) + dxt4(j) ) / 6.0;
 
             // If we are within teps of the goal time, we are done.
          workEpoch += rkStep;
