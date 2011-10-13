@@ -423,14 +423,16 @@ namespace gpstk
       {
          error = 0;
 
-         // Singleton reference.
-         GloFreq *inst;
-         inst = inst->instance();
+         if(band == 1 || band == 2)
+            return getWavelength(id,band,index);
+         //// Singleton reference.
+         //GloFreq *inst;
+         //inst = inst->instance();
 
-         if (band == 1)
-            return inst->getL1(index);
-         else if (band == 2)
-            return inst->getL2(index);
+         //if (band == 1)
+         //   return inst->getL1(index);
+         //else if (band == 2)
+         //   return inst->getL2(index);
          else
          {
             error = 2; // Invalid frequency band.
@@ -458,13 +460,18 @@ namespace gpstk
          error = 0;
 
          // Singleton reference.
-         GloFreq *inst;
-         inst = inst->instance();
+         //GloFreq *inst;
+         //inst = inst->instance();
 
-         if (band == 1)
-            return inst->getL1(index);
-         else if (band == 2)
-            return inst->getL2(index);
+         //if (band == 1)
+         //   return inst->getL1(index);
+         //else if (band == 2)
+         //   return inst->getL2(index);
+
+         if(band == 1)
+            return (L1_FREQ_GLO + index * L1_FREQ_STEP_GLO);
+         else if(band == 2)
+            return (L2_FREQ_GLO + index * L2_FREQ_STEP_GLO);
          else
          {
             error = 2; // Invalid frequency band.
