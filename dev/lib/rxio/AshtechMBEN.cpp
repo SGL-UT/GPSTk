@@ -209,8 +209,9 @@ namespace gpstk
           << "warn:" << (int)warning
           << " gb:" << (int)goodbad
           << " pol:" << (int)polarity_known
-          << " qa:" << (int)qa_phase
           << dec
+          << " ireg:" << (int)ireg
+          << " qa:" << (int)qa_phase
           << " phase:" << asString(full_phase, 1)
           << " range:" << asString(raw_range*1e3, 3)
           << " doppler:" << doppler
@@ -222,9 +223,11 @@ namespace gpstk
    //---------------------------------------------------------------------------
    float AshtechMBEN::code_block::snr(float chipRate) const throw()
    {
-      const int   n = 20000;     // number of samples in 1 ms
-      const float m = 4.14;      // magnitude of the carrier estimate;
-      float bw = 0.9 * chipRate; // equivalent noise bandwidth (Hz)
+      const float n = 20000;     // number of samples in 1 ms
+      // magnitude of the carrier estimate; should be 4.14 for 2 bit
+      // quantization, 2.18 for 1 bit. 
+      const float m = 2.18;
+      const float bw = 0.9 * chipRate; // equivalent noise bandwidth (Hz)
 
       const float d = PI/(n*n*m*m*4.0);
       float snr=0;
