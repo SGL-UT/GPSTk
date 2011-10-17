@@ -53,10 +53,11 @@ namespace gpstk
    using namespace StringUtils;
    using namespace std;
 
-   // This routine uses EngEphemeris, so is for GPS data only.
-   // The comments about GPS v. Galileo next to each elements are just notes
-   // from sorting out the ICDs in the RINEX 3 documentation.  Please leave
-   // them there until we add a routine for handling GalRecord or similar type.
+
+      // This routine uses EngEphemeris, so is for GPS data only.
+      // The comments about GPS v. Galileo next to each elements are just notes
+      // from sorting out the ICDs in the RINEX 3 documentation. Please leave
+      // them there until we add a routine for handling GalRecord or similar.
    Rinex3NavData::Rinex3NavData(const EngEphemeris& ee) // GPS only
    {
       // epoch info
@@ -121,20 +122,19 @@ namespace gpstk
 //      BGDa = ee.getBGDa(); // Galileo only
 //      BGDb = ee.getBGDb(); // Galileo only
 
-   }
+   }  // End of 'Rinex3NavData::Rinex3NavData(const EngEphemeris& ee)'
 
-   //Rinex3NavData::Rinex3NavData(const GloEphemeris& ge)
 
-   // This constructor initializes R3NavData with Galileo data.
-   // Refer to the previous constructor, ie. Rinex3NavData(const EngEphemeris& ee),
-   // for more information on which elements are GPS and/or Galileo only.
+      // This constructor initializes R3NavData with Galileo data.
+      // Refer to previous constructor, Rinex3NavData(const EngEphemeris& ee),
+      // for more information on which elements are GPS and/or Galileo only.
    Rinex3NavData::Rinex3NavData(const GalEphemeris& ge)
    {
       // epoch info
 
       satSys = ge.getSatSys();
       PRNID  = ge.getPRNID();
-      sat    = RinexSatID(PRNID,SatID::systemGPS);
+      sat    = RinexSatID(PRNID,SatID::systemGalileo);
       time   = ge.getEpochTime();
 
       Toc     = ge.getToc();
@@ -180,11 +180,22 @@ namespace gpstk
       BGDa = ge.getBGDa(); // Galileo only
       BGDb = ge.getBGDb(); // Galileo only
 
-   }
+   }  // End of 'Rinex3NavData::Rinex3NavData(const GalEphemeris& ge)'
 
-   void Rinex3NavData::reallyGetRecord(FFStream& ffs) 
+
+      /* This function retrieves a RINEX 3 NAV record from the given
+       *  FFStream.
+       *  If an error is encountered in reading from the stream, the stream
+       *  is returned to its original position and its fail-bit is set.
+       *  @throws StringException when a StringUtils function fails.
+       *  @throws FFStreamError when exceptions(failbit) is set and a read
+       *          or formatting error occurs. This also resets the stream
+       *          to its pre-read position.
+       */
+   void Rinex3NavData::reallyGetRecord(FFStream& ffs)
       throw(exception, FFStreamError, StringException)
    {
+
       try {
          Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
@@ -221,11 +232,15 @@ namespace gpstk
       }
       catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
       catch(StringException& se) { GPSTK_RETHROW(se); }
-   }
 
+   }  // End of method 'Rinex3NavData::reallyGetRecord(FFStream& ffs)'
+
+
+      // Outputs the record to the FFStream \a s.
    void Rinex3NavData::reallyPutRecord(FFStream& ffs) const
       throw(exception, FFStreamError, StringException)
    {
+
       try {
          Rinex3NavStream& strm = dynamic_cast<Rinex3NavStream&>(ffs);
 
@@ -249,51 +264,64 @@ namespace gpstk
       }
       catch(FFStreamError& fse) { GPSTK_RETHROW(fse); }
       catch(StringException& se) { GPSTK_RETHROW(se); }
-   }
 
+   }  // End of method 'Rinex3NavData::reallyPutRecord(FFStream& ffs)'
+
+
+      // A debug output function.
+      // Prints the PRN id and the IODC for this record.
    void Rinex3NavData::dump(ostream& s) const
    {
+
       if(satSys == "G")          // GPS
-         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
-            << " TOE: " << setw(4) << weeknum
-            << " " << fixed << setw(10) << setprecision(3) << Toe
-            << " TOC: " << printTime(time,"%4F %10.3g")
-            << " codeflags: " << setw(3) << codeflgs
-            << " L2Pflag: " << setw(3) << L2Pdata
-            << " IODC: " << setw(4) << int(IODC)
-            << " IODE: " << setw(4) << int(IODE)            // IODE should be int
-            << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
-            << " FitInt: " << setw(6) << fitint
-            << endl;
+         s << "Sat: " << satSys << setfill('0') << setw(2)
+           << PRNID << setfill(' ')
+           << " TOE: " << setw(4) << weeknum
+           << " " << fixed << setw(10) << setprecision(3) << Toe
+           << " TOC: " << printTime(time,"%4F %10.3g")
+           << " codeflags: " << setw(3) << codeflgs
+           << " L2Pflag: " << setw(3) << L2Pdata
+           << " IODC: " << setw(4) << int(IODC)
+           << " IODE: " << setw(4) << int(IODE)      // IODE should be int
+           << " HOWtime: " << setw(6) << HOWtime     // HOW should be double
+           << " FitInt: " << setw(6) << fitint
+           << endl;
       else if(satSys == "R")     // GLONASS
-         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
-            << " freq: " << setw(2) << freqNum
-            << " hlth: " << setw(2) << health
-            << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
-            << " MFtime: " << setw(6) << MFtime
-            << " TauN: " << scientific << setw(19) << setprecision(12) << TauN
-            << " GammaN: " << setw(19) << GammaN
-            << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo
-            << endl;
+         s << "Sat: " << satSys << setfill('0') << setw(2)
+           << PRNID << setfill(' ')
+           << " freq: " << setw(2) << freqNum
+           << " hlth: " << setw(2) << health
+           << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
+           << " MFtime: " << setw(6) << MFtime
+           << " TauN: " << scientific << setw(19) << setprecision(12) << TauN
+           << " GammaN: " << setw(19) << GammaN
+           << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo
+           << endl;
       else if(satSys == "S")     // Geosync (SBAS)
-         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
-            << " URAm: " << setw(2) << freqNum
-            << " hlth: " << setw(2) << health
-            << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
-            << " MFtime: " << setw(6) << MFtime
-            << " aGf0: " << scientific << setw(19) << setprecision(12) << TauN
-            << " aGf1: " << setw(19) << GammaN
-            << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo
-            << endl;
+         s << "Sat: " << satSys << setfill('0') << setw(2)
+            << PRNID << setfill(' ')
+           << " URAm: " << setw(2) << freqNum
+           << " hlth: " << setw(2) << health
+           << " " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f")
+           << " MFtime: " << setw(6) << MFtime
+           << " aGf0: " << scientific << setw(19) << setprecision(12) << TauN
+           << " aGf1: " << setw(19) << GammaN
+           << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo
+           << endl;
       //else if(satSys == "E")   // Galileo
       //else if(satSys == "C")   // Compass
       else
-         s << "Sat: " << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
-            << " (unknown system: " << satSys << ")" << endl;
-   }
+         s << "Sat: "<< satSys << setfill('0') << setw(2)
+           << PRNID << setfill(' ')
+           << " (unknown system: " << satSys << ")" << endl;
 
+   }  // End of method 'Rinex3NavData::dump(ostream& s)'
+
+
+      // Converts this Rinex3NavData to an EngEphemeris object.
    Rinex3NavData::operator EngEphemeris() const throw()
    {
+
       EngEphemeris ee;
 
       // There's no TLM word in Rinex3NavData, so it's set to 0.
@@ -313,10 +341,14 @@ namespace gpstk
       ee.setAccuracy(accuracy);
 
       return ee;
-   }
 
+   }  // End of 'Rinex3NavData::operator EngEphemeris()'
+
+
+      // Converts this Rinex3NavData to a GalEphemeris object.
    Rinex3NavData::operator GalEphemeris() const throw()
    {
+
       GalEphemeris ge;
 
       // There's no TLM word in Rinex3NavData, so it's set to 0.
@@ -335,10 +367,37 @@ namespace gpstk
       ge.setAccuracy(accuracy);
 
       return ge;
-   }
 
+   }  // End of 'Rinex3NavData::operator GalEphemeris()'
+
+
+      // Converts this Rinex3NavData to a GloRecord object.
+   Rinex3NavData::operator GloRecord() const throw()
+   {
+
+      GloRecord gr;
+
+      gr.x = Triple(px, py, pz);
+      gr.v = Triple(vx, vy, vz);
+      gr.a = Triple(ax, ay, az);
+
+      gr.clkbias   = TauN;
+      gr.clkdrift  = GammaN;
+      gr.MFtime    = MFtime;
+      gr.health    = health;
+      gr.freqNum   = freqNum;
+      gr.ageOfInfo = ageOfInfo;
+
+      return gr;
+
+   }  // End of 'Rinex3NavData::operator GloRecord()'
+
+
+      // Converts the (non-CommonTime) data to an easy list
+      // for comparison operators.
    list<double> Rinex3NavData::toList() const
    {
+
       list<double> l;
 
       l.push_back(PRNID);
@@ -374,8 +433,13 @@ namespace gpstk
       l.push_back(fitint);
 
       return l;
-   }
 
+   }  // End of method 'Rinex3NavData::toList()'
+
+
+      /* Generates the PRN/epoch line and outputs it to strm
+       *  @param strm RINEX Nav stream
+       */
    void Rinex3NavData::putPRNEpoch(Rinex3NavStream& strm) const
       throw(StringException)
    {
@@ -427,11 +491,19 @@ namespace gpstk
 
       strm << stripTrailing(line) << endl;
       strm.lineNumber++;
-   }
 
+   }  // End of 'Rinex3NavData::putPRNEpoch(Rinex3NavStream& strm)'
+
+
+      /* Construct and write the nth record after the epoch record
+       *  @param int n                 Record number (1-7), for nth record
+       *                               after the epoch line.
+       *  @param Rinex3NavStream strm  Stream to read from.
+       */
    void Rinex3NavData::putRecord(const int& nline, Rinex3NavStream& strm) const
       throw(StringException, FFStreamError)
    {
+
       if(nline < 1 || nline > 7) {
          FFStreamError fse(string("Invalid line number ") + asString(nline));
          GPSTK_THROW(fse);
@@ -508,7 +580,7 @@ namespace gpstk
          }
 
          else if(nline == 5) {
-            // Internally (Rinex3NavData and EngEphemeris), weeknum = week of HOW.
+            // Internally (Rinex3NavData and EngEphemeris), weeknum=week of HOW
             // In RINEX 3 *files*, weeknum is the week of TOE.
             double wk = double(weeknum);
             if(HOWtime - Toe > HALFWEEK)
@@ -566,7 +638,8 @@ namespace gpstk
          GPSTK_THROW(err);
       }
 
-   }  // end putRecord()
+   }  // End of method 'Rinex3NavData::putRecord(const int& nline,...'
+
 
    void Rinex3NavData::getPRNEpoch(Rinex3NavStream& strm)
       throw(StringException, FFStreamError)
@@ -660,6 +733,7 @@ namespace gpstk
          GPSTK_THROW(err);
       }
    }
+
 
    void Rinex3NavData::getRecord(const int& nline, Rinex3NavStream& strm)
       throw(StringException, FFStreamError)
@@ -792,4 +866,5 @@ namespace gpstk
 
    }  // end getRecord()
 
-}  // end of namespace
+
+}  // End of namespace gpstk

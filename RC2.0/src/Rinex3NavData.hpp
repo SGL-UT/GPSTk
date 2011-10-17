@@ -5,8 +5,8 @@
  * Encapsulates RINEX 3 Navigation data
  */
 
-#ifndef RINEXNAVDATA_HPP
-#define RINEXNAVDATA_HPP
+#ifndef GPSTK_RINEXNAVDATA_HPP
+#define GPSTK_RINEXNAVDATA_HPP
 
 //============================================================================
 //
@@ -54,6 +54,7 @@
 #include "Rinex3NavStream.hpp"
 #include "EngEphemeris.hpp"
 #include "GalEphemeris.hpp"
+#include "GloRecord.hpp"
 #include "RinexSatID.hpp"
 
 namespace gpstk
@@ -72,44 +73,63 @@ namespace gpstk
    {
    public:
 
-      /// Constructor
-      /// @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE USING!!
+
+         /** Constructor
+          * @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE
+          *          USING!!!.
+          */
       Rinex3NavData(void)
         : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
       {}
 
-      /// Initializes the nav data with an EngEphemeris
+
+         /// Initializes the nav data with an EngEphemeris
       Rinex3NavData(const EngEphemeris& ee);
 
-      /// Initializes the nav data with a GalEphemeris
+      
+         /// Initializes the nav data with a GalEphemeris
       Rinex3NavData(const GalEphemeris& ge);
 
-      /// destructor
+      
+         /// Destructor
       virtual ~Rinex3NavData() {}
 
-      // The next five lines are our common interface.
-      /// Rinex3NavData is "data" so this function always returns true.
+
+         // The next five lines are our common interface.
+
+         /// Rinex3NavData is "data" so this function always returns true.
       virtual bool isData(void) const {return true;}
 
-      /// A debug output function.
-      /// Prints the PRN id and the IODC for this record.
+
+         /// A debug output function.
+         /// Prints the PRN id and the IODC for this record.
       virtual void dump(std::ostream& s) const;
 
-      /// Converts this Rinex3NavData to an EngEphemeris object.
+
+         /// Converts this Rinex3NavData to an EngEphemeris object.
       operator EngEphemeris() const throw();
 
-      /// Converts this Rinex3NavData to a GalEphemeris object.
+
+         /// Converts this Rinex3NavData to a GalEphemeris object.
       operator GalEphemeris() const throw();
 
-      /// Converts the (non-CommonTime) data to an easy list for comparison operators.
+
+         /// Converts this Rinex3NavData to a GloRecord object.
+      operator GloRecord() const throw();
+
+
+         /// Converts the (non-CommonTime) data to an easy list
+         /// for comparison operators.
       std::list<double> toList() const;
 
-      /// Sort on time, then satellite; for use with Rinex3EphemerisStore
+
+         /// Sort on time, then satellite; for use with Rinex3EphemerisStore
       bool operator<(const Rinex3NavData& right) const
       {
          if(time == right.time) return (sat < right.sat);
          return (time < right.time);
       }
+
 
       /** @name EpochDataGeneral */
       //@{
@@ -118,9 +138,9 @@ namespace gpstk
       short PRNID;         ///< SV PRN ID
       RinexSatID sat;      ///< RinexSatID (from PRNID & satSys)
       long HOWtime;        ///< Time of subframe 1-3 (sec of week)
-      short weeknum;       ///< GPS full week that corresponds to the HOWtime of SF1
-                           ///< (N.B.:in RINEX files, week number corresponds to ToE.)
-                           ///< Not GLO
+      short weeknum;       ///< GPS full week corresponding to HOWtime of SF1
+                           ///< (N.B.:in RINEX files, week number corresponds
+                           /// >to ToE, not GLO)
       double accuracy;     ///< SV accuracy (m)
       short health;        ///< SV health
       //@}
@@ -198,58 +218,74 @@ namespace gpstk
       double  ax, ay, az;  ///< SV acceleration
       //@}
 
+
    private:
 
-      /// Parses string \a currentLine to obtain PRN id and epoch.
-      /// @param strm RINEX Nav stream
+
+         /** Parses string \a currentLine to obtain PRN id and epoch.
+          *  @param strm RINEX Nav stream
+          */
       void getPRNEpoch(Rinex3NavStream& strm)
          throw(StringUtils::StringException, FFStreamError);
 
-      /** @name OrbitParameters
-        * Obtain orbit parameters from strint \a currentLine.  */
-      //@{
-      /// Read and parse the nth record after the epoch record
-      /// @param int n record number (1-7), for nth record after the epoch line
-      /// @param Rinex3NavStream strm stream to read from
+
+         /** @name OrbitParameters
+          * Obtain orbit parameters from strint \a currentLine.
+          */
+         //@{
+         /**  Read and parse the nth record after the epoch record
+          *   @param int n record number (1-7), for nth record after the epoch line
+          *   @param Rinex3NavStream strm stream to read from
+          */
       void getRecord(const int& n, Rinex3NavStream& strm)
          throw(StringUtils::StringException, FFStreamError);
-      //@}
+         //@}
 
-      /// generates the PRN/epoch line and outputs it to strm
-      /// @param strm RINEX Nav stream
+         /** Generates the PRN/epoch line and outputs it to strm
+          *  @param strm RINEX Nav stream
+          */
       void putPRNEpoch(Rinex3NavStream& strm) const
          throw(StringUtils::StringException);
 
-      /// @name OrbitParameters
-      /// Generate orbit parameter lines from data to be output to a file
-      //@{
-      /// Construct and write the nth record after the epoch record
-      /// @param int n record number (1-7), for nth record after the epoch line
-      /// @param Rinex3NavStream strm stream to read from
+
+         /// @name OrbitParameters
+         /// Generate orbit parameter lines from data to be output to a file
+         //@{
+         /** Construct and write the nth record after the epoch record
+          *  @param int n                 Record number (1-7), for nth record
+          *                               after the epoch line.
+          *  @param Rinex3NavStream strm  Stream to read from.
+          */
       void putRecord(const int& n, Rinex3NavStream& strm) const
          throw(StringUtils::StringException, FFStreamError);
-      //@}
+         //@}
+
 
    protected:
 
-      /// This function retrieves a RINEX 3 NAV record from the given FFStream.
-      /// If an error is encountered in reading from the stream, the stream
-      /// is returned to its original position and its fail-bit is set.
-      /// @throws StringException when a StringUtils function fails
-      /// @throws FFStreamError when exceptions(failbit) is set and
-      ///  a read or formatting error occurs.  This also resets the
-      ///  stream to its pre-read position.
+
+         /** This function retrieves a RINEX 3 NAV record from the given
+          *  FFStream.
+          *  If an error is encountered in reading from the stream, the stream
+          *  is returned to its original position and its fail-bit is set.
+          *  @throws StringException when a StringUtils function fails.
+          *  @throws FFStreamError when exceptions(failbit) is set and a read
+          *          or formatting error occurs. This also resets the stream
+          *          to its pre-read position.
+          */
       virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError, StringUtils::StringException);
 
-      /// Outputs the record to the FFStream \a s.
+
+         /// Outputs the record to the FFStream \a s.
       virtual void reallyPutRecord(FFStream& s) const 
          throw(std::exception, FFStreamError, StringUtils::StringException);
 
-   };  // class Rinex3NavData
+
+   }; // End of class 'Rinex3NavData'
 
    //@}
 
-} // namespace
+}  // End of namespace gpstk
 
-#endif // RINEXNAVDATA_HPP
+#endif   // GPSTK_RINEXNAVDATA_HPP
