@@ -36,13 +36,9 @@ void xSP3EphemerisStore :: setUp (void)
 {
 }
 
-/*
-**** General test for the SP3EphemerisStore class
-**** Test to assure the that it throws its exceptions in the right place and
-**** that it loads the SP3 file correctly
-*/
+// General test for the SP3EphemerisStore
 
-void xSP3EphemerisStore::SP3Test(void)
+void xSP3EphemerisStore :: SP3Test(void)
 {
 	ofstream DumpData;
 		DumpData.open ("DumpData.txt");
@@ -64,6 +60,8 @@ void xSP3EphemerisStore::SP3Test(void)
 		Store.dump(DumpData,1);
 		DumpData.close();
 }
+
+// Test for getXvt
 
 void xSP3EphemerisStore :: SP3getXvtTest (void)
 {
@@ -89,8 +87,8 @@ void xSP3EphemerisStore :: SP3getXvtTest (void)
     gpstk::SatID sid32(PRN31,gpstk::SatID::systemGPS);
     gpstk::SatID sid33(PRN32,gpstk::SatID::systemGPS);
 
-	gpstk::CommonTime eTime(1997,4,6,6,15,0);  //Epoch Time (Exact time of epoch)
-	gpstk::CommonTime bTime(1997,4,6,0,0,0);   //Border Time (Time of Border test cases)
+	gpstk::CommonTime eTime = gpstk::CommonTime(1997,4,6,6,15,0);  //Epoch Time (Exact time of epoch)
+	gpstk::CommonTime bTime = gpstk::CommonTime(1997,4,6,0,0,0);   //Border Time (Time of Border test cases)
 
 	try
 	{
@@ -116,8 +114,60 @@ void xSP3EphemerisStore :: SP3getXvtTest (void)
 
 // Test for getInitialTime
 
+void xSP3EphemerisStore :: SP3getInitialTimeTest (void)
+{
+	gpstk::SP3EphemerisStore Store;
+	Store.loadFile("igs09000.sp3");
+
+	gpstk::CommonTime computedInitialTime = Store.getInitialTime;
+
+	gpstk::CommonTime knownInitialTime = gpstk::CommonTime(1997,4,6,0,0,0);
+
+	CPPUNIT_ASSERT_EQUAL(knownInitialTime,computedInitialTime);
+}
+
 // Test for getFinalTime
+
+void xSP3EphemerisStore :: SP3getFinalTimeTest (void)
+{
+	gpstk::SP3EphemerisStore Store;
+	Store.loadFile("igs09000.sp3");
+
+	gpstk::CommonTime computedFinalTime = Store.getFinalTime;
+
+	gpstk::CommonTime knownFinalTime = CommonTime(1997,4,6,23,45,0);
+
+	CPPUNIT_ASSERT_EQUAL(knownFinalTime,computedFinalTime);
+}
 
 // Test for getPosition
 
+void xSP3EphemerisStore :: SP3getPositionTest (void)
+{
+	gpstk::SP3EphemerisStore Store;
+	Store.loadFile("igs09000.sp3");
+
+	const short PRN1 = 1;
+	const short PRN15 = 15;
+
+	gpstk::CommonTime testTime(1997,4,6,2,0,0);
+
+	gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+	gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+
+	gpstk::Triple computedPosition_1 = Store.getPosition(sid1,testTime);
+	gpstk::Triple computedPosition_15 = Store.getPosition(sid15,testTime);
+
+	gpstk::Triple knownPosition_1 = gpstk::Triple(-17432.922132,6688.018407,-18768.291053);
+	gpstk::Triple knownPosition_15 = gpstk::Triple(2484.685581,14739.428502,-22173.216899);
+
+	CPPUNIT_ASSERT_EQUAL(knownPosition_1,computedPosition_1);
+	CPPUNIT_ASSERT_EQUAL(knownPosition_15,computedPosition_15);
+}
+
 // Test for getVelocity
+
+void xSP3EphemerisStore :: SP3getVelocityTest (void)
+{
+
+}
