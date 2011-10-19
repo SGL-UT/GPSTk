@@ -291,16 +291,19 @@ namespace gpstk
                // returns to start filling the records again.
                while(1) {
                   if(data.RecType == '*') {                                // epoch
-                     if(haveP || haveV) goNext = false;
+                     //cout << "* record.\n";
+                     if(haveP || haveV)
+                        goNext = false;
                      else {
                         ttag = data.time;
                         goNext = true;
                      }
                   }
                   else if(data.RecType == 'P' && !data.correlationFlag) {  // P
-                     if(haveP) goNext = false;
+                     //cout << "P record: "; data.dump(cout); cout << endl;
+                     if(haveP)
+                        goNext = false;
                      else {
-               //cout << "P record: "; data.dump(cout);
                         sat = data.sat;
                         for(i=0; i<3; i++) {
                            prec.Pos[i] = data.x[i];                        // km
@@ -323,9 +326,10 @@ namespace gpstk
                      }
                   }
                   else if(data.RecType == 'V' && !data.correlationFlag) {  // V
-                     if(haveV) goNext = false;
+                     //cout << "V record: "; data.dump(cout); cout << endl;
+                     if(haveV)
+                        goNext = false;
                      else {
-               //cout << "V record: "; data.dump(cout);
                         for(i=0; i<3; i++) {
                            prec.Vel[i] = data.x[i];                        // dm/s
                            if(isC && data.sig[i]>=0) prec.sigVel[i] =
@@ -347,9 +351,10 @@ namespace gpstk
                      }
                   }
                   else if(data.RecType == 'P' && data.correlationFlag) {   // EP
-                     if(haveEP) goNext = false;
+                     //cout << "EP record: "; data.dump(cout); cout << endl;
+                     if(haveEP)
+                        goNext = false;
                      else {
-               //cout << "EP record: "; data.dump(cout);
                         for(i=0; i<3; i++)
                            prec.sigPos[i] = data.sdev[i];
                         if(fillClockStore)
@@ -362,9 +367,10 @@ namespace gpstk
                      }
                   }
                   else if(data.RecType == 'V' && data.correlationFlag) {   // EV
-                     if(haveEV) goNext = false;
+                     //cout << "EV record: "; data.dump(cout); cout << endl;
+                     if(haveEV)
+                        goNext = false;
                      else {
-               //cout << "EV record: "; data.dump(cout);
                         for(i=0; i<3; i++)
                            prec.sigVel[i] = data.sdev[i];                  // 10-4mm/s
 
@@ -378,7 +384,7 @@ namespace gpstk
                      }
                   }
                   else {
-               //cout << "other record (" << data.RecType << "):\n";
+                     //cout << "other record (" << data.RecType << "):\n";
                      //data.dump(cout);
                      //throw?
                      goNext = true;
@@ -393,7 +399,7 @@ namespace gpstk
                      //cout << "Bad position" << endl;
                      haveP = false; // bad position record
                   }
-                  else if(rejectBadClk && crec.bias >= 999999.) {
+                  else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
                      //cout << "Bad clock" << endl;
                      haveP = false; // bad clock record
                   }
@@ -407,7 +413,8 @@ namespace gpstk
                      // prepare for next
                      haveP = haveV = haveEP = haveEV = predP = predC = false;
                      prec.Pos = prec.Vel = prec.sigPos = prec.sigVel = Triple(0,0,0);
-                     crec.bias = crec.drift = crec.sig_bias = crec.sig_drift = 0.0;
+                     if(fillClockStore)
+                        crec.bias = crec.drift = crec.sig_bias = crec.sig_drift = 0.0;
                   }
 
                   goNext = true;
@@ -422,7 +429,7 @@ namespace gpstk
                   //cout << "Bad last rec: position" << endl;
                   haveP = false;  // bad position record
                }
-               else if(rejectBadClk && crec.bias >= 999999.) {
+               else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
                   //cout << "Bad last rec: clock" << endl;
                   haveP = false;  // bad clock record
                }
