@@ -45,6 +45,7 @@ namespace gpstk
 {
 
       /** @addtogroup ephemstore */
+      /** @addtogroup ephemcalc */
 
       //@{
 

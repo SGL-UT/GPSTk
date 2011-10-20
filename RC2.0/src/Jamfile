@@ -81,6 +81,7 @@ else
       GalEphemerisStore.cpp
       GaussianDistribution.cpp
       GenXSequence.cpp
+      GloEphemeris.cpp
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
 #      GlonassSatelliteModel.cpp
@@ -284,6 +285,7 @@ else
       GaussianDistribution.hpp
       GenXSequence.hpp
       GeoidModel.hpp
+      GloEphemeris.hpp
       GloEphemerisStore.hpp
       GloFreqIndex.hpp
       GloRecord.hpp	
