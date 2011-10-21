@@ -52,15 +52,17 @@
 
 
 #include <string>
-#if (defined _MSC_VER) && !(defined _WINSOCKAPI_)
+#if defined _MSC_VER
+#ifndef _WINSOCKAPI_
 // timeval is defined in winsock.h, which we don't want to include
 // because it breaks lots of this code
-   #ifndef timeval
-   struct timeval {
+#ifndef timeval
+struct timeval {
    long    tv_sec;         /* seconds */
    long    tv_usec;        /* and microseconds */
-   };
-   #endif
+};
+#endif   // #ifndef timeval
+#endif   // #ifndef _WINSOCKAPI_
 #else
 #include <sys/time.h>
 #endif
