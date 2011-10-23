@@ -2,7 +2,7 @@
 
 /**
 * @file CorrectCodeBiases.hpp
-*
+* 
 */
 
 //============================================================================
@@ -35,7 +35,7 @@ namespace gpstk
 {
          // Index initially assigned to this class
       int CorrectCodeBiases::classIndex = 4800000;
-
+      
       const double CorrectCodeBiases::factoP1P2[6] = {
         +L2_FREQ*L2_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),  // L1
         +L1_FREQ*L1_FREQ/(L1_FREQ*L1_FREQ - L2_FREQ*L2_FREQ),  // L2
@@ -53,7 +53,7 @@ namespace gpstk
         +L1_FREQ/(L1_FREQ-L2_FREQ),                             // L5
         -L1_FREQ/(L1_FREQ+L2_FREQ)                              // L6
       };
-
+      
       const double CorrectCodeBiases::factorC1X2[6]={
          +1.0,
          +1.0,
@@ -73,8 +73,8 @@ namespace gpstk
       { return "CorrectCodeBiases"; }
 
          // Default constructor
-      CorrectCodeBiases::CorrectCodeBiases()
-         : usingC1(false),
+      CorrectCodeBiases::CorrectCodeBiases() 
+         : usingC1(false), 
          receiverName(""),
          crossCorrelationReceiver(false)
       {}
@@ -86,7 +86,7 @@ namespace gpstk
          dcbP1P2.close();
          dcbP1C1.close();
       }
-
+   
          /* Sets name of file containing DCBs data.
           * @param name      Name of the file containing DCB(P1-P2)
           * @param name      Name of the file containing DCB(P1-C1)
@@ -97,7 +97,7 @@ namespace gpstk
          dcbP1P2.open(fileP1P2);
          dcbP1C1.open(fileP1C1);
 
-         return (*this);
+         return (*this);   
       }
 
          /* Returns a satTypeValueMap object, adding the new data generated
@@ -125,7 +125,7 @@ namespace gpstk
                {
                   TypeID type = itt->first;
                   //itt->second += getDCBCorrection(receiverName, sat, type, usingC1);
-
+                  
                   if( (type == TypeID::C1) || (type == TypeID::P1))
                   {
                      gData[sat][TypeID::instC1] = getDCBCorrection(receiverName,
@@ -133,7 +133,7 @@ namespace gpstk
                   }
                   else if(type == TypeID::P2)
                   {
-                     gData[sat][TypeID::instC2] = getDCBCorrection(receiverName,
+                     gData[sat][TypeID::instC2] = getDCBCorrection(receiverName, 
                         sat, type, usingC1);
                   }
 
@@ -162,7 +162,7 @@ namespace gpstk
 
       }  // End of method 'CorrectCodeBiases::Process()'
 
-      double CorrectCodeBiases::getDCBCorrection(const string& receiver,
+      double CorrectCodeBiases::getDCBCorrection(const string& receiver, 
                                                  const SatID&  sat,
                                                  const TypeID& type,
                                                  const bool&   useC1)
@@ -170,7 +170,7 @@ namespace gpstk
          double satP1P2(0.0);
          double satP1C1(0.0);
          double receiverP1P2(0.0);
-
+         
          try
          {
             satP1P2 = dcbP1P2.getDCB(sat);
@@ -183,11 +183,11 @@ namespace gpstk
             satP1P2 = 0.0;
             satP1C1 = 0.0;
          }
-
+         
          int ind = -1;
 
          if( (type == TypeID::C1) ||
-             (type == TypeID::P1) ||
+             (type == TypeID::P1) || 
              (type == TypeID::GRAPHIC1) )
          {
             ind = 0;
@@ -215,7 +215,7 @@ namespace gpstk
 
             return 0.0;
          }
-
+         
          double dcb1(0.0), dcb2(0.0), dcb3(0.0);
          if(ind >= 0)
          {
@@ -235,7 +235,7 @@ namespace gpstk
          }
 
          double dcb = dcb1 * (satP1P2 + receiverP1P2) + dcb2 * satP1C1;
-
+         
          return -1.0 * dcb * (C_GPS_M * 1.0e-9);    // ns -> meter
 
       }  // End of method 'CorrectCodeBiases::getDCBCorrection()'

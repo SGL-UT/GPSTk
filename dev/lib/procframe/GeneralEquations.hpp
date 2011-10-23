@@ -37,11 +37,11 @@
 #include "EquationSystem.hpp"
 #include "DataStructures.hpp"
 
-
-using namespace std;
-
 namespace gpstk
 {
+   using namespace std;
+
+
       /// Handy type definition
    typedef std::map<SatID,SourceID> SatSourceMap;
 
@@ -57,10 +57,10 @@ namespace gpstk
          /// struct holding satellite related data
       struct SatData
       {
-         vector<SatID>  satellite;
-         vector<double> elevation;
-         vector<bool>   csflag;
-         vector<bool>   lockflag;
+         std::vector<SatID>  satellite;
+         std::vector<double> elevation;
+         std::vector<bool>   csflag;
+         std::vector<bool>   lockflag;
 
          void addData(SatID sat, double eleva=0.0, double cflag=0.0,
                       bool lflag=false)
@@ -247,6 +247,8 @@ namespace gpstk
       { return sourceRefsatMap; }
 
 
+      inline EquationSystem getPPPEquations(const SourceID& source);
+
    protected:
 
       virtual EquationSystem getEquations() = 0;
@@ -333,6 +335,8 @@ namespace gpstk
          /// Pointer to stochastic model for phase biases WL2
       StochasticModel* pBiasStoModelWL2;
 
+      /// Pointer to stochastic model for phase biases WL3
+      StochasticModel* pBiasStoModelWL3;
 
          /// Object holding the useful satellite data for pick up reference sat.
       SourceSatDataMap sourceSatDataMap;
@@ -361,6 +365,7 @@ namespace gpstk
       PhaseAmbiguityModel sm_ambLC;
       PhaseAmbiguityModel sm_ambWL;
       PhaseAmbiguityModel sm_ambWL2;
+      PhaseAmbiguityModel sm_ambWL3;
    };
 
       // Method to do the initialization work 
@@ -395,6 +400,7 @@ namespace gpstk
 
       pBiasStoModelWL = &sm_ambWL;
       pBiasStoModelWL2 = &sm_ambWL2;
+      pBiasStoModelWL3 = &sm_ambWL3;
 
    }  // End of method 'void GeneralEquations::init()'
 
@@ -595,7 +601,7 @@ namespace gpstk
                }
                
                data.addData(sat, itt1->second,
-                            (itt2->second!=0.0)?true:false, false);
+                            (itt2->second>0.0)?true:false, false);
  
             }  // End of 'for( satTypeValueMap::const_iterator ...'
 
@@ -729,7 +735,7 @@ namespace gpstk
          for(int i=0;i<it->second.satellite.size();i++)
          {
             s << setw(5)<< i << " " 
-               << StringUtils::asString(it->second.satellite[i])<<"  "
+              << StringUtils::asString(it->second.satellite[i])<<"  "
               << it->second.csflag[i] <<" " 
               << it->second.lockflag[i]<<" "
               << it->second.elevation[i]<<endl;
@@ -738,6 +744,51 @@ namespace gpstk
       
    }  // End of method 'GeneralEquations::dumpSourceSatData()'
 
+
+   EquationSystem GeneralEquations::getPPPEquations(const SourceID& source)
+   {
+      Variable dx(TypeID::dLat, pCoordXStoModel, true, false, 100.0);
+      Variable dy(TypeID::dLon, pCoordYStoModel, true, false, 100.0);
+      Variable dz(TypeID::dH, pCoordZStoModel, true, false, 100.0);
+
+      Variable cdt(TypeID::cdt,pClockStoModel,true,false,4e14,+1.0,true);
+      Variable trop(TypeID::wetMap,pTropStoModel,true,false,0.25);
+      Variable amb(TypeID::BLC,pBiasStoModelLC,true,true,4e14,1.0,true);
+
+      //((PhaseAmbiguityModel*)pBiasStoModelLC)->setWatchSatArc(false);
+
+      Variable prefitPC(TypeID::prefitC);
+      Variable prefitLC(TypeID::prefitL);
+
+      Equation equPCRover( prefitPC );
+      equPCRover.addVariable(dx);
+      equPCRover.addVariable(dy);
+      equPCRover.addVariable(dz);
+      equPCRover.addVariable(cdt);
+      equPCRover.addVariable(trop);
+
+      equPCRover.header.equationSource = source;
+
+      // Rover phase equation description
+      Equation equLCRover( prefitLC );
+      equLCRover.addVariable(dx);
+      equLCRover.addVariable(dy);
+      equLCRover.addVariable(dz);
+      equLCRover.addVariable(cdt);
+      equLCRover.addVariable(trop);
+      equLCRover.addVariable(amb);
+
+      equLCRover.setWeight(10000.0);     // 100.0 * 100.0
+      equLCRover.header.equationSource = source;
+
+      // Setup equation system
+      EquationSystem system;
+      system.addEquation(equPCRover);
+      system.addEquation(equLCRover);
+
+      return system;
+
+   }  // GeneralEquations::getPPPEquations()
 
 }  // End of namespace gpstk
 

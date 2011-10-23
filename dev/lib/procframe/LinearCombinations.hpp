@@ -157,6 +157,10 @@ namespace gpstk
          /// Definition to compute the Melbourne-Wubbena (W) combination
       gnssLinearCombination mwubbenaCombination;
 
+         /// Definition to compute the prefit residual of Melbourne-Wubbena (W) 
+         /// combination
+      gnssLinearCombination mwubbenaPrefit;
+
          /// Definition to compute the Melbourne-Wubbena (W) combination,
          /// using C1 instead of P1
       gnssLinearCombination mwubbenaCombWithC1;
@@ -189,9 +193,9 @@ namespace gpstk
          /// Combination (GRAPHIC) in the L8 frequency
       gnssLinearCombination GRAPHIC8Combination;
 
-         /// Definition to compute the WL combination
+         /// Definition to compute the WL combination 
       gnssLinearCombination wlCombination;
-
+      
          /// Definition to compute prefit residual of WL
       gnssLinearCombination wlPrefit;
 
@@ -206,20 +210,20 @@ namespace gpstk
 
          /// Definition to compute prefit residual of WL4
       gnssLinearCombination wl4Prefit;
-
+   
    public:
-
-         /// Return the frequency of the combination in cycles: i * L1 + j * L2
+      
+         /// Return the frequency of the combination in cycles: i * L1 + j * L2 
       static double freqOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
-
-         /// Return the wavelength of the combination in cycles: i * L1 + j * L2
+      
+         /// Return the wavelength of the combination in cycles: i * L1 + j * L2 
       static double wavelengthOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
-
-         /// Return the f1 factor of the combination in cycles: i * L1 + j * L2
+      
+         /// Return the f1 factor of the combination in cycles: i * L1 + j * L2 
       static double firstFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
-
-         /// Return the f2 factor of the combination in cycles: i * L1 + j * L2
-      static double secondFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      
+         /// Return the f2 factor of the combination in cycles: i * L1 + j * L2 
+      static double secondFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ); 
 
 
    }; // End of class 'LinearCombinations'

@@ -118,6 +118,9 @@ namespace gpstk
          /// Get the SourceID of the rinex observation file
       SourceID sourceIDOfRinexObsFile(std::string obsFile);
 
+      RinexObsStream* getRinexObsStream(const SourceID& source)
+      { return mapSourceStream[source]; }
+
    protected:
 
          /// Struct to hold all the data for a observation file
