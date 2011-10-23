@@ -243,6 +243,7 @@ namespace gpstk
          BLC,       ///< Phase ambiguity in LC
          BWL,       ///< Phase ambiguity in WL
          BWL2,      ///< Phase ambiguity in WL2
+         BWL3,      ///< Phase ambiguity in WL3
          BWL4,      ///< Phase ambiguity in WL4
             // Multipath-related types
          mpC1,      ///< Multipath bias, C1
@@ -287,11 +288,14 @@ namespace gpstk
          prefitGRAPHIC2,   ///< Prefit residual, GRAPHIC2
          postfitGRAPHIC1,  ///< Postfit residual, GRAPHIC1
          postfitGRAPHIC2,  ///< Postfit residual, GRAPHIC2
+         prefitMWubbena,   /// Prefit residual, MWubbena
          prefitWL,  ///< Prefit residual, WL
          prefitWL2, ///< Prefit residual, WL2
+         prefitWL3, ///< Prefit residual, WL3
          prefitWL4, ///< Prefit residual, WL4
          postfitWL, ///< Postfit residual, WL
          postfitWL2,///< Postfit residual, WL2
+         postfitWL3,///< Postfit residual, WL3
          postfitWL4,///< Postfit residual, WL4
          prefitC,   ///< Prefit residual, code
          prefitL,   ///< Prefit residual, phase
@@ -325,6 +329,9 @@ namespace gpstk
          cdtPC,     ///< Receiver clock offset of PC
          cdtLC,     ///< Receiver clock offset of LC
          cdtWL,     ///< Receiver clock offset of WL
+         cdtWL2,    ///< Receiver clock offset of WL2
+         cdtWL3,    ///< Receiver clock offset of WL3
+         cdtWL4,    ///< Receiver clock offset of WL4
          cdtMW,     ///< Receiver clock offset of MW
          cdtSatC1,  ///< Satellite clock offset of C1
          cdtSatP1,  ///< Satellite clock offset of P1
