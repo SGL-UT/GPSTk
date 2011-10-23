@@ -59,6 +59,10 @@ namespace gpstk
 
          /// Destractor
       virtual ~ARLambda(){}
+
+
+      bool isFixedSuccessfully(double threshhold = 3.0)
+      { return (squaredRatio>threshhold)?true:false; }
       
 
       double squaredRatio;

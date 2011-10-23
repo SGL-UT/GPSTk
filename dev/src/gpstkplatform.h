@@ -31,8 +31,8 @@
    Unless, of course, it has to go somewhere else. :-)
 */
 
-#ifndef GPSTK_PLATFORM_HPP
-#define GPSTK_PLATFORM_HPP
+#ifndef GPSTK_GPSTKPLATFORM_H
+#define GPSTK_GPSTKPLATFORM_H
 
 #ifdef _MSC_VER
 
@@ -49,6 +49,17 @@ typedef unsigned __int8  uint8_t;
 typedef unsigned __int16 uint16_t;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64_t;
+
+typedef __int8  Int8;
+typedef __int16 Int16;
+typedef __int32 Int32;
+typedef __int64 Int64;
+
+typedef unsigned __int8  UInt8;
+typedef unsigned __int16 UInt16;
+typedef unsigned __int32 UInt32;
+typedef unsigned __int64 UInt64;
+
 #include <sys/types.h>
 #include <sys/timeb.h>
 
