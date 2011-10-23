@@ -65,7 +65,7 @@ namespace gpstk
    class ReleaseCustomizePolicy
    {
    public:
-      static void release(C* pObj) { pObj->release(); }
+      static void release(C* pObj) { if(pObj) pObj->release(); }
    };
 
    // End of ReleasePolicy classes
@@ -144,7 +144,7 @@ namespace gpstk
        *
        * @warning DO NOT assign a pointer to multi AutoPtr Objects.
        */
-   template <class C, class RC = ReferenceCounter, class RP = ReleasePolicy<C> >
+   template <class C, class RP = ReleasePolicy<C>, class RC = ReferenceCounter >
    class AutoPtr
    {
    public:
