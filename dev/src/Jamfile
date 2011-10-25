@@ -37,7 +37,7 @@ else
       GPSZcount.cpp GaussianDistribution.cpp GenXSequence.cpp Geodetic.cpp
       IonexData.cpp IonexHeader.cpp IonexStore.cpp
       IonoModel.cpp IonoModelStore.cpp JulianDate.cpp LinearClockModel.cpp
-      Logger.cpp LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp
+      Logger.cpp LogChannel.cpp LoopedFramework.cpp MJD.cpp MOPSWeight.cpp MSCData.cpp
       MSCStore.cpp MoonPosition.cpp NEDUtil.cpp NumberFormatter.cpp NumberParser.cpp 
       ObsClockModel.cpp
       ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp OceanLoading.cpp PRSolution.cpp
@@ -90,7 +90,7 @@ else
       GaussianDistribution.hpp GenXSequence.hpp Geodetic.hpp GeoidModel.hpp
       InOutFramework.hpp IonexBase.hpp IonexData.hpp IonexHeader.hpp
       IonexStore.hpp IonexStream.hpp IonoModel.hpp IonoModelStore.hpp
-      JulianDate.hpp LinearClockModel.hpp Logger.hpp LoopedFramework.hpp
+      JulianDate.hpp LinearClockModel.hpp Logger.hpp LogChannel.hpp LogMessage.hpp LoopedFramework.hpp
       MainAdapter.hpp MJD.hpp MOPSWeight.hpp MSCBase.hpp MSCData.hpp
       MSCHeader.hpp MSCStore.hpp MSCStream.hpp MathBase.hpp Matrix.hpp
       MatrixBase.hpp MatrixBaseOperators.hpp MatrixFunctors.hpp
