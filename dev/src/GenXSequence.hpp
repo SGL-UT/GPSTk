@@ -44,8 +44,7 @@
 //=============================================================================
 
 
-
-#include <stdint.h>
+#include "gpstkplatform.h"
 #include "PCodeConst.hpp"
 #include "mergePCodeWords.h"
 
