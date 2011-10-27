@@ -1033,10 +1033,10 @@ namespace gpstk
                                               Triple& xyz)
       throw()
    {
-      double st=sin(tpr[0]*DEG_TO_RAD);
-      xyz[0] = tpr[2]*st*cos(tpr[1]*DEG_TO_RAD);
-      xyz[1] = tpr[2]*st*sin(tpr[1]*DEG_TO_RAD);
-      xyz[2] = tpr[2]*cos(tpr[0]*DEG_TO_RAD);
+      double st=::sin(tpr[0]*DEG_TO_RAD);
+      xyz[0] = tpr[2]*st*::cos(tpr[1]*DEG_TO_RAD);
+      xyz[1] = tpr[2]*st*::sin(tpr[1]*DEG_TO_RAD);
+      xyz[2] = tpr[2]*::cos(tpr[0]*DEG_TO_RAD);
    }
 
       // Fundamental routine to convert cartesian to spherical coordinates.
@@ -1053,13 +1053,13 @@ namespace gpstk
          tpr[1] = 0;
          return;
       }
-      tpr[0] = acos(xyz[2]/tpr[2]);
+      tpr[0] = ::acos(xyz[2]/tpr[2]);
       tpr[0] *= RAD_TO_DEG;
       if(RSS(xyz[0],xyz[1]) < Position::POSITION_TOLERANCE/5) {       // pole
          tpr[1] = 0;
          return;
       }
-      tpr[1] = atan2(xyz[1],xyz[0]);
+      tpr[1] = ::atan2(xyz[1],xyz[0]);
       tpr[1] *= RAD_TO_DEG;
       if(tpr[1] < 0) tpr[1] += 360;
    }
@@ -1083,21 +1083,21 @@ namespace gpstk
       if(p < Position::POSITION_TOLERANCE/5) {  // pole or origin
          llh[0] = (xyz[2] > 0 ? 90.0: -90.0);
          llh[1] = 0;                            // lon undefined, really
-         llh[2] = fabs(xyz[2]) - A*SQRT(1.0-eccSq);
+         llh[2] = ::fabs(xyz[2]) - A*SQRT(1.0-eccSq);
          return;
       }
-      llh[0] = atan2(xyz[2], p*(1.0-eccSq));
+      llh[0] = ::atan2(xyz[2], p*(1.0-eccSq));
       llh[2] = 0;
       for(int i=0; i<5; i++) {
-         slat = sin(llh[0]);
+         slat = ::sin(llh[0]);
          N = A / SQRT(1.0 - eccSq*slat*slat);
          htold = llh[2];
-         llh[2] = p/cos(llh[0]) - N;
+         llh[2] = p/::cos(llh[0]) - N;
          latold = llh[0];
-         llh[0] = atan2(xyz[2], p*(1.0-eccSq*(N/(N+llh[2]))));
-         if(fabs(llh[0]-latold) < 1.0e-9 && fabs(llh[2]-htold) < 1.0e-9 * A) break;
+         llh[0] = ::atan2(xyz[2], p*(1.0-eccSq*(N/(N+llh[2]))));
+         if(::fabs(llh[0]-latold) < 1.0e-9 && fabs(llh[2]-htold) < 1.0e-9 * A) break;
       }
-      llh[1] = atan2(xyz[1],xyz[0]);
+      llh[1] = ::atan2(xyz[1],xyz[0]);
       if(llh[1] < 0.0) llh[1] += TWO_PI;
       llh[0] *= RAD_TO_DEG;
       llh[1] *= RAD_TO_DEG;
@@ -1117,11 +1117,11 @@ namespace gpstk
                                              const double eccSq)
       throw()
    {
-      double slat = sin(llh[0]*DEG_TO_RAD);
-      double clat = cos(llh[0]*DEG_TO_RAD);
+      double slat = ::sin(llh[0]*DEG_TO_RAD);
+      double clat = ::cos(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
-      xyz[0] = (N+llh[2])*clat*cos(llh[1]*DEG_TO_RAD);
-      xyz[1] = (N+llh[2])*clat*sin(llh[1]*DEG_TO_RAD);
+      xyz[0] = (N+llh[2])*clat*::cos(llh[1]*DEG_TO_RAD);
+      xyz[1] = (N+llh[2])*clat*::sin(llh[1]*DEG_TO_RAD);
       xyz[2] = (N*(1.0-eccSq)+llh[2])*slat;
    }
 
@@ -1163,8 +1163,8 @@ namespace gpstk
    {
       double cl,p,sl,slat,N,htold,latold;
       llh[1] = llr[1];     // longitude is unchanged
-      cl = sin((90-llr[0])*DEG_TO_RAD);
-      sl = cos((90-llr[0])*DEG_TO_RAD);
+      cl = ::sin((90-llr[0])*DEG_TO_RAD);
+      sl = ::cos((90-llr[0])*DEG_TO_RAD);
       if(llr[2] <= Position::POSITION_TOLERANCE/5) {
          // radius is below tolerance, hence assign zero-length
          // arbitrarily set latitude = longitude = 0
@@ -1180,17 +1180,17 @@ namespace gpstk
          llh[2] = llr[2] - A*SQRT(1-eccSq);
          return;
       }
-      llh[0] = atan2(sl, cl*(1.0-eccSq));
+      llh[0] = ::atan2(sl, cl*(1.0-eccSq));
       p = cl*llr[2];
       llh[2] = 0;
       for(int i=0; i<5; i++) {
-         slat = sin(llh[0]);
+         slat = ::sin(llh[0]);
          N = A / SQRT(1.0 - eccSq*slat*slat);
          htold = llh[2];
-         llh[2] = p/cos(llh[0]) - N;
+         llh[2] = p/::cos(llh[0]) - N;
          latold = llh[0];
-         llh[0] = atan2(sl, cl*(1.0-eccSq*(N/(N+llh[2]))));
-         if(fabs(llh[0]-latold) < 1.0e-9 && fabs(llh[2]-htold) < 1.0e-9 * A) break;
+         llh[0] = ::atan2(sl, cl*(1.0-eccSq*(N/(N+llh[2]))));
+         if(fabs(llh[0]-latold) < 1.0e-9 && ::fabs(llh[2]-htold) < 1.0e-9 * A) break;
       }
       llh[0] *= RAD_TO_DEG;
    }
@@ -1207,7 +1207,7 @@ namespace gpstk
                                               const double eccSq)
       throw()
    {
-      double slat = sin(llh[0]*DEG_TO_RAD);
+      double slat = ::sin(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
       // longitude is unchanged
       llr[1] = llh[1];
@@ -1219,14 +1219,14 @@ namespace gpstk
          llr[0] = llr[1] = llr[2] = 0;
          return;
       }
-      if(1-fabs(slat) < 1.e-10) {             // at the pole
+      if(1-::fabs(slat) < 1.e-10) {             // at the pole
          if(slat < 0) llr[0] = -90;
          else         llr[0] =  90;
          llr[1] = 0.0;
          return;
       }
       // theta
-      llr[0] = acos((N*(1-eccSq)+llh[2])*slat/llr[2]);
+      llr[0] = ::acos((N*(1-eccSq)+llh[2])*slat/llr[2]);
       llr[0] *= RAD_TO_DEG;
       llr[0] = 90 - llr[0];
    }
@@ -1283,7 +1283,7 @@ namespace gpstk
                                 const double eccSq)
       throw()
    {
-      double slat=sin(DEG_TO_RAD*geolat);
+      double slat=::sin(DEG_TO_RAD*geolat);
       double e=(1.0-eccSq);
       double f=(1.0+(e*e-1.0)*slat*slat)/(1.0-eccSq*slat*slat);
       return (A * SQRT(f));
@@ -1339,7 +1339,7 @@ namespace gpstk
       }
 
       // Compute k vector in local North-East-Up (NEU) system
-      Triple kVector(cos(latGeodetic)*cos(longGeodetic), cos(latGeodetic)*sin(longGeodetic), sin(latGeodetic));
+      Triple kVector(::cos(latGeodetic)*::cos(longGeodetic), ::cos(latGeodetic)*::sin(longGeodetic), ::sin(latGeodetic));
       // Take advantage of dot method to get Up coordinate in local NEU system
       localUp = z.dot(kVector);
       // Let's get cos(z), being z the angle with respect to local vertical (Up);
@@ -1400,9 +1400,9 @@ namespace gpstk
       }
 
       // Compute i vector in local North-East-Up (NEU) system
-      Triple iVector(-sin(latGeodetic)*cos(longGeodetic), -sin(latGeodetic)*sin(longGeodetic), cos(latGeodetic));
+      Triple iVector(-::sin(latGeodetic)*::cos(longGeodetic), -::sin(latGeodetic)*::sin(longGeodetic), ::cos(latGeodetic));
       // Compute j vector in local North-East-Up (NEU) system
-      Triple jVector(-sin(longGeodetic), cos(longGeodetic), 0);
+      Triple jVector(-::sin(longGeodetic), ::cos(longGeodetic), 0);
 
       // Now, let's use dot product to get localN and localE unitary vectors
       localN = (z.dot(iVector))/z.mag();
@@ -1454,12 +1454,12 @@ namespace gpstk
       Position IPP(Rx);                   // copy system and geoid
       double el = elev * DEG_TO_RAD;
       // p is the angle subtended at Earth center by Rx and the IPP
-      double p = PI/2.0 - el - asin(AEarth*cos(el)/(AEarth+ionoht));
+      double p = PI/2.0 - el - ::asin(AEarth*::cos(el)/(AEarth+ionoht));
       double lat = Rx.theArray[0] * DEG_TO_RAD;
       double az = azim * DEG_TO_RAD;
-      IPP.theArray[0] = asin(sin(lat)*cos(p) + cos(lat)*sin(p)*cos(az));
+      IPP.theArray[0] = std::asin(std::sin(lat)*std::cos(p) + std::cos(lat)*std::sin(p)*std::cos(az));
       IPP.theArray[1] = Rx.theArray[1]*DEG_TO_RAD
-         + asin(sin(p)*sin(az)/cos(IPP.theArray[0]));
+         + ::asin(::sin(p)*::sin(az)/::cos(IPP.theArray[0]));
 
       IPP.theArray[0] *= RAD_TO_DEG;
       IPP.theArray[1] *= RAD_TO_DEG;

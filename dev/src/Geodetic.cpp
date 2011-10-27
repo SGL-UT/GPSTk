@@ -90,17 +90,17 @@ namespace gpstk
 
       for(int i=0; i<5; i++)
       {
-         slatd = sin(latd);
+         slatd = ::sin(latd);
          N = geo->a() / SQRT(1.0 - geo->eccSquared() * slatd * slatd);
          htold = ht;
-         ht = p/cos(latd) - N;
+         ht = p/::cos(latd) - N;
          latdold = latd;
-         latd = atan2(Z, p * (1.0 - geo->eccSquared() * (N/(N+ht)) ) );
+         latd = ::atan2(Z, p * (1.0 - geo->eccSquared() * (N/(N+ht)) ) );
          if(ABS(latd-latdold) < 1.0e-9 &&
             ABS(ht-htold) < (1.0e-9 * geo->a()))    break;
       }
 
-      double lon = atan2(Y,X);
+      double lon = ::atan2(Y,X);
 
       if(lon < 0.0)
          lon += TWO_PI;
@@ -183,7 +183,7 @@ namespace gpstk
 
          // radius of curvature in the prime vertical, formula 2.31
       rad_cur  = geoid->a() /
-         sqrt(1.0-geoid->eccSquared()*pow((sin(gdlat)),2.0));
+         ::sqrt(1.0-geoid->eccSquared()*::pow((::sin(gdlat)),2.0));
 
          // formula 2.30
       double xval = (rad_cur + gdalt) * ::cos(gdlat) * ::cos(gdlon);

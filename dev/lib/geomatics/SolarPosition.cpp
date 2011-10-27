@@ -10,7 +10,7 @@
 // within the U.S. Department of Defense. The U.S. Government retains all
 // rights to use, duplicate, distribute, disclose, or release this
 // software.
-//
+// 
 // Copyright 2008 The University of Texas at Austin
 // ======================================================================
 
@@ -82,12 +82,12 @@ Position SolarPosition(DayTime t, double& AR) throw()
    // AA 1990 has g = (357.528 + 0.9856003 * D) * DEG_TO_RAD;
    q = 280.459 + 0.98564736 * D;
    // AA 1990 has q = 280.460 + 0.9856474 * D;
-   L = (q + 1.915 * sin(g) + 0.020 * sin(2*g)) * DEG_TO_RAD;
+   L = (q + 1.915 * std::sin(g) + 0.020 * std::sin(2*g)) * DEG_TO_RAD;
 
    e = (23.439 - 0.00000036 * D) * DEG_TO_RAD;
    // AA 1990 has e = (23.439 - 0.0000004 * D) * DEG_TO_RAD;
-   RA = atan2(cos(e)*sin(L),cos(L)) * RAD_TO_DEG;
-   DEC = asin(sin(e)*sin(L)) * RAD_TO_DEG;
+   RA = std::atan2(std::cos(e)*std::sin(L),std::cos(L)) * RAD_TO_DEG;
+   DEC = std::asin(std::sin(e)*std::sin(L)) * RAD_TO_DEG;
 
    // equation of time = apparent solar time minus mean solar time
    // = [q-RA (deg)]/(15deg/hr)
@@ -100,12 +100,12 @@ Position SolarPosition(DayTime t, double& AR) throw()
    double lat = DEC;
 
    // ECEF unit vector in direction Earth to sun
-   double xhat = cos(lat*DEG_TO_RAD)*cos(lon*DEG_TO_RAD);
-   double yhat = cos(lat*DEG_TO_RAD)*sin(lon*DEG_TO_RAD);
-   double zhat = sin(lat*DEG_TO_RAD);
+   double xhat = std::cos(lat*DEG_TO_RAD)*std::cos(lon*DEG_TO_RAD);
+   double yhat = std::cos(lat*DEG_TO_RAD)*std::sin(lon*DEG_TO_RAD);
+   double zhat = std::sin(lat*DEG_TO_RAD);
 
    // R in AU
-   double R = 1.00014 - 0.01671 * cos(g) - 0.00014 * cos(2*g);
+   double R = 1.00014 - 0.01671 * std::cos(g) - 0.00014 * std::cos(2*g);
    // apparent angular radius in degrees
    AR = 0.2666/R;
    // convert to meters
@@ -124,9 +124,9 @@ void CrudeSolarPosition(DayTime t, double& lat, double& lon) throw()
 {
    int doy = t.DOY();
    int hod = int(t.secOfDay()/3600.0 + 0.5);
-   lat = sin(23.5*DEG_TO_RAD)*sin(TWO_PI*double(doy-83)/365.25);
-   lat = lat / sqrt(1.0-lat*lat);
-   lat = RAD_TO_DEG*atan(lat);
+   lat = std::sin(23.5*DEG_TO_RAD)*std::sin(TWO_PI*double(doy-83)/365.25);
+   lat = lat / std::sqrt(1.0-lat*lat);
+   lat = RAD_TO_DEG*std::atan(lat);
    lon = 180.0 - hod*15.0;
 }
 
@@ -180,7 +180,7 @@ void CrudeSolarPosition(DayTime t, double& lat, double& lon) throw()
 double shadowFactor(double Rearth, double Rsun, double dES) throw()
 {
    if(dES >= Rearth+Rsun) return 0.0;
-   if(dES <= fabs(Rearth-Rsun)) return 1.0;
+   if(dES <= std::fabs(Rearth-Rsun)) return 1.0;
    double r=Rsun, R=Rearth, L=dES;
    if(Rsun > Rearth) { r=Rearth; R=Rsun; }
    double cosalpha = (R/L)*(1.0+(L/R)*(L/R)-(r/R)*(r/R))/2.0;
@@ -232,11 +232,11 @@ Position LunarPosition(DayTime t, double& AR) throw()
 
    // convert to right ascension and declination,
    // (referred to mean equator and equinox of date)
-   double RA = atan2(m,l) * RAD_TO_DEG;
-   double DEC = asin(n) * RAD_TO_DEG;
+   double RA = ::atan2(m,l) * RAD_TO_DEG;
+   double DEC = ::asin(n) * RAD_TO_DEG;
 
    // compute the hour angle of the vernal equinox = GMST and convert RA to lon
-   double lon = fmod(RA-GMST(t),360.0);
+   double lon = ::fmod(RA-GMST(t),360.0);
    if(lon < -180.0) lon += 360.0;
    if(lon >  180.0) lon -= 360.0;
 
@@ -249,9 +249,9 @@ Position LunarPosition(DayTime t, double& AR) throw()
    R *= 6378137.0;
 
    // ECEF vector in direction Earth to moon
-   double x = R*cos(lat*DEG_TO_RAD)*cos(lon*DEG_TO_RAD);
-   double y = R*cos(lat*DEG_TO_RAD)*sin(lon*DEG_TO_RAD);
-   double z = R*sin(lat*DEG_TO_RAD);
+   double x = R*std::cos(lat*DEG_TO_RAD)*std::cos(lon*DEG_TO_RAD);
+   double y = R*std::cos(lat*DEG_TO_RAD)*std::sin(lon*DEG_TO_RAD);
+   double z = R*std::sin(lat*DEG_TO_RAD);
 
    Position EM;
    EM.setECEF(x,y,z);

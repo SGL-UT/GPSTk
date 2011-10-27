@@ -329,7 +329,7 @@ namespace gpstk
       double dxp,dyp,vxef,vyef,vzef;
       GPSGeoid geoid;
 
-      double sqrtgm = sqrt(geoid.gm());
+      double sqrtgm = ::sqrt(geoid.gm());
 
          // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
@@ -369,27 +369,27 @@ namespace gpstk
          meana = getM0();
       meana = fmod(meana, twoPI);
 
-      ea = meana + lecc * sin(meana);
+      ea = meana + lecc * ::sin(meana);
 
       int loop_cnt = 1;
       do  {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
+         F = meana - ( ea - lecc * ::sin(ea));
+         G = 1.0 - lecc * ::cos(ea);
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      } while ( (::fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
 
          // Compute clock corrections
       sv.ddtime = getAf1() + elaptc * getAf2();
       dtc = getAf0() + elaptc * ( sv.ddtime );
-      dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      dtr = REL_CONST * lecc * getAhalf() * ::sin(ea);
       sv.dtime = dtc + dtr;
 
          // Compute true anomaly
-      q = sqrt ( 1.0e0 - lecc*lecc);
-      sinea = sin(ea);
-      cosea = cos(ea);
+      q = ::sqrt ( 1.0e0 - lecc*lecc);
+      sinea = ::sin(ea);
+      cosea = ::cos(ea);
       G = 1.0e0 - lecc * cosea;
 
          //  G*SIN(TA) AND G*COS(TA)
@@ -397,13 +397,13 @@ namespace gpstk
       GCTA  = cosea - lecc;
 
          //  True anomaly
-      truea = atan2 ( GSTA, GCTA );
+      truea = ::atan2 ( GSTA, GCTA );
 
          // Argument of lat and correction terms (2nd harmonic)
       alat = truea + getW();
       talat = 2.0e0 * alat;
-      c2al = cos( talat );
-      s2al = sin( talat );
+      c2al = ::cos( talat );
+      s2al = ::sin( talat );
 
       du  = c2al * getCuc() +  s2al * getCus();
       dr  = c2al * getCrc() +  s2al * getCrs();
@@ -422,17 +422,17 @@ namespace gpstk
          ANLON = getOmega0() - getOmegaDot() * getToe();
 
          // In plane location
-      cosu = cos( U );
-      sinu = sin( U );
+      cosu = ::cos( U );
+      sinu = ::sin( U );
 
       xip  = R * cosu;
       yip  = R * sinu;
 
          //  Angles for rotation to earth fixed
-      can  = cos( ANLON );
-      san  = sin( ANLON );
-      cinc = cos( AINC  );
-      sinc = sin( AINC  );
+      can  = ::cos( ANLON );
+      san  = ::sin( ANLON );
+      cinc = ::cos( AINC  );
+      sinc = ::sin( AINC  );
 
          // Earth fixed - meters
       xef  =  xip*can  -  yip*cinc*san;
@@ -476,7 +476,7 @@ namespace gpstk
    {
       GPSGeoid geoid;
       double twoPI = 2.0e0 * PI;
-      double sqrtgm = sqrt(geoid.gm());
+      double sqrtgm = ::sqrt(geoid.gm());
       double elapte = t - getEphemerisEpoch();
       double elaptc = t - getEpochTime();
       double A = getA();
@@ -485,18 +485,18 @@ namespace gpstk
 
       if (getAhalf() < 2550.0e0 ) { lecc = 0.0e0; meana = getM0(); }
       else { lecc = getEcc(); meana = getM0() + elapte * amm; }
-      meana = fmod(meana, twoPI);
-      double ea = meana + lecc * sin(meana);
+      meana = ::fmod(meana, twoPI);
+      double ea = meana + lecc * ::sin(meana);
 
       int loop_cnt = 1;
       do  {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
+         F = meana - ( ea - lecc * ::sin(ea));
+         G = 1.0 - lecc * ::cos(ea);
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
-      } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
-      double dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      } while ( (::fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
+      double dtr = REL_CONST * lecc * getAhalf() * ::sin(ea);
       return dtr;
    }
 

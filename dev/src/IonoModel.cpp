@@ -112,15 +112,15 @@ namespace gpstk
 
       double psi = (0.0137 / (svE + 0.11)) - 0.022;
 
-      double phi_i = phi_u + psi * cos(azRad);
+      double phi_i = phi_u + psi * std::cos(azRad);
       if (phi_i > 0.416)
          phi_i = 0.416;
       if (phi_i < -0.416)
          phi_i = -0.416;
 
-      double lambda_i = lambda_u + psi * sin(azRad) / cos(phi_i*PI);
+      double lambda_i = lambda_u + psi * ::sin(azRad) / ::cos(phi_i*PI);
 
-      double phi_m = phi_i + 0.064 * cos((lambda_i - 1.617)*PI);
+      double phi_m = phi_i + 0.064 * ::cos((lambda_i - 1.617)*PI);
 
       double iAMP = 0.0;
       double iPER = 0.0;

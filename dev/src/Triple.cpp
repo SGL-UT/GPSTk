@@ -92,6 +92,23 @@ namespace gpstk
       return *this;
    }
 
+      // Return the data as a Vector<double> object
+   Vector<double> Triple::toVector()
+   {
+      Vector<double> toReturn(3,0.0);
+      for(int i=0;i<3;i++) toReturn(i) = theArray[i];
+      return toReturn;
+   }
+
+
+      // Return the data as a std::vector object
+   std::vector<double> Triple::toStdVector()
+   {
+      std::vector<double> toReturn;
+      //for(int i=0;i<3;i++) toReturn.push_back(theArray[i]);
+      return toReturn;
+   }
+
       // returns the dot product of the two vectors
    double Triple :: dot(const Triple& right) const
       throw()
@@ -117,13 +134,13 @@ namespace gpstk
 
    double Triple :: mag() const throw()
    {
-      return ::sqrt(dot(*this));
+      return std::sqrt(dot(*this));
    }
 
    Triple Triple::unitVector() const
        throw(GeometryException)
    {
-      double mag = sqrt(dot(*this));
+      double mag = std::sqrt(dot(*this));
       
       if (mag <= 1e-14)
       	GPSTK_THROW(GeometryException("Divide by Zero Error"));

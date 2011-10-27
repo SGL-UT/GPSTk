@@ -208,12 +208,12 @@ namespace gpstk
                        svPosVel.x[1]-Rx.Y(),
                        svPosVel.x[2]-Rx.Z())/geoid.c();
       double wt = geoid.angVelocity()*tof;
-      double sx =  cos(wt)*svPosVel.x[0] + sin(wt)*svPosVel.x[1];
-      double sy = -sin(wt)*svPosVel.x[0] + cos(wt)*svPosVel.x[1];
+      double sx =  ::cos(wt)*svPosVel.x[0] + ::sin(wt)*svPosVel.x[1];
+      double sy = -::sin(wt)*svPosVel.x[0] + ::cos(wt)*svPosVel.x[1];
       svPosVel.x[0] = sx;
       svPosVel.x[1] = sy;
-      sx =  cos(wt)*svPosVel.v[0] + sin(wt)*svPosVel.v[1];
-      sy = -sin(wt)*svPosVel.v[0] + cos(wt)*svPosVel.v[1];
+      sx =  ::cos(wt)*svPosVel.v[0] + ::sin(wt)*svPosVel.v[1];
+      sy = -::sin(wt)*svPosVel.v[0] + ::cos(wt)*svPosVel.v[1];
       svPosVel.v[0] = sx;
       svPosVel.v[1] = sy;
    }
