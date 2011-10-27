@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 /**
  * @file PlanetEphemeris.cpp
@@ -1145,4 +1145,6 @@ namespace gpstk
    }  // End of method 'PlanetEphemeris::computeState()'
    
 }   // End of namespace gpstk
+
+
 
