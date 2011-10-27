@@ -38,7 +38,8 @@
 
 /**
  * @file Rinex3NavHeader.cpp
- * Encapsulate header of RINEX 3 navigation file, including RINEX 2 compatibility
+ * Encapsulate header of RINEX 3 navigation file, including RINEX 2
+ * compatibility.
  */
 
 #include "StringUtils.hpp"
@@ -531,12 +532,12 @@ namespace gpstk
                                     << "," << tcit->second.refSOW
                                     << ", provider " << tcit->second.geoProvider
                                     << ", UTC ID = " << tcit->second.geoUTCid;
-            case TimeCorr::GLUT: s << "GLO to UTC, TauC = " << tcit->second.A0;
+            case TimeCorr::GLUT: s << "GLO to UTC, -TauC = " << tcit->second.A0;
             case TimeCorr::GPGA: s << "GPS to GAL, A0G = " << tcit->second.A0
                                     << ", A1G = " << tcit->second.A1
                                     << ", RefTime = " << tcit->second.refWeek
                                     << "," << tcit->second.refSOW;
-            case TimeCorr::GLGP: s << "GLO to GPS, TauGPS = " << tcit->second.A0
+            case TimeCorr::GLGP: s << "GLO to GPS, -TauGPS = " << tcit->second.A0
                                     << ", RefTime = " << tcit->second.refYr
                                     << "," << tcit->second.refMon
                                     << "," << tcit->second.refDay;
