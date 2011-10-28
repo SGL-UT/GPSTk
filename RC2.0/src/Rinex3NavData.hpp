@@ -54,6 +54,7 @@
 #include "Rinex3NavStream.hpp"
 #include "EngEphemeris.hpp"
 #include "GalEphemeris.hpp"
+#include "GloEphemeris.hpp"
 #include "GloRecord.hpp"
 #include "RinexSatID.hpp"
 
@@ -91,6 +92,10 @@ namespace gpstk
       Rinex3NavData(const GalEphemeris& ge);
 
       
+         /// Initializes the nav data with a GloEphemeris
+      Rinex3NavData(const GloEphemeris& gloe);
+
+
          /// Destructor
       virtual ~Rinex3NavData() {}
 
@@ -112,6 +117,10 @@ namespace gpstk
 
          /// Converts this Rinex3NavData to a GalEphemeris object.
       operator GalEphemeris() const throw();
+
+
+         /// Converts this Rinex3NavData to a GloEphemeris object.
+      operator GloEphemeris() const throw();
 
 
          /// Converts this Rinex3NavData to a GloRecord object.

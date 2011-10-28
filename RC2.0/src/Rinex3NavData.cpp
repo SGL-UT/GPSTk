@@ -183,6 +183,42 @@ namespace gpstk
    }  // End of 'Rinex3NavData::Rinex3NavData(const GalEphemeris& ge)'
 
 
+      // This constructor initializes R3NavData with Glonass data.
+   Rinex3NavData::Rinex3NavData(const GloEphemeris& gloe)
+   {
+
+         // Epoch info
+      satSys = gloe.getSatSys();
+      PRNID  = gloe.getPRNID();
+      sat    = RinexSatID(PRNID,SatID::systemGlonass);
+      time   = gloe.getEpochTime();
+
+         // GLONASS parameters
+      TauN = gloe.getTauN();
+      GammaN = gloe.getGammaN();
+      MFtime = gloe.getMFtime();
+      health = gloe.getHealth();
+      freqNum = gloe.getfreqNum();
+      ageOfInfo = gloe.getAgeOfInfo();
+
+      Triple x( gloe.x );
+      px = x[0];
+      py = x[1];
+      pz = x[2];
+
+      Triple v( gloe.v );
+      vx = v[0];
+      vy = v[1];
+      vz = v[2];
+
+      Triple a( gloe.getAcc() );
+      ax = a[0];
+      ay = a[1];
+      az = a[2];
+
+   }  // End of 'Rinex3NavData::Rinex3NavData(const GloEphemeris& ge)'
+
+
       /* This function retrieves a RINEX 3 NAV record from the given
        *  FFStream.
        *  If an error is encountered in reading from the stream, the stream
@@ -369,6 +405,30 @@ namespace gpstk
       return ge;
 
    }  // End of 'Rinex3NavData::operator GalEphemeris()'
+
+
+      // Converts this Rinex3NavData to a GloEphemeris object.
+   Rinex3NavData::operator GloEphemeris() const throw()
+   {
+
+      GloEphemeris gloe;
+
+      gloe.setRecord( satSys,
+                      PRNID,
+                      time,
+                      Triple(px, py, pz),
+                      Triple(vx, vy, vz),
+                      Triple(ax, ay, az),
+                      TauN,
+                      GammaN,
+                      MFtime,
+                      health,
+                      freqNum,
+                      ageOfInfo );
+
+      return gloe;
+
+   }  // End of 'Rinex3NavData::operator GloEphemeris()'
 
 
       // Converts this Rinex3NavData to a GloRecord object.

@@ -317,7 +317,7 @@ namespace gpstk
       // Set the parameters for this ephemeris object.
    GloEphemeris& GloEphemeris::setRecord( std::string svSys,
                                           short prn,
-                                          CommonTime epoch,
+                                          const CommonTime& epoch,
                                           Triple pos,
                                           Triple vel,
                                           Triple acc,

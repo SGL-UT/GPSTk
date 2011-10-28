@@ -86,6 +86,12 @@ namespace gpstk
          throw( gpstk::InvalidRequest );
 
 
+         /// Get the epoch time for this ephemeris
+      CommonTime getEpochTime() const
+         throw( gpstk::InvalidRequest )
+      { return getEphemerisEpoch(); };
+
+
          /** This functions returns the GNSS type (satellite system code) */
       std::string getSatSys() const
          throw()
@@ -131,43 +137,43 @@ namespace gpstk
 
 
          /// Get the acceleration vector.
-      Triple getAcc()
+      Triple getAcc() const
          throw()
       { return a; }
 
 
          /// Get the TauN parameter.
-      double getTauN()
+      double getTauN() const
          throw()
       { return clkbias; }
 
 
          /// Get the GammaN parameter.
-      double getGammaN()
+      double getGammaN() const
          throw()
       { return clkdrift; }
 
 
          /// Get the MFTime parameter.
-      short getMFtime()
+      short getMFtime() const
          throw()
       { return MFtime; }
 
 
          /// Get the health value parameter.
-      short getHealth()
+      short getHealth() const
          throw()
       { return health; }
 
 
          /// Get the frequency number.
-      short getfreqNum()
+      short getfreqNum() const
          throw()
       { return freqNum; }
 
 
          /// Get the age of the information.
-      double getAgeOfInfo()
+      double getAgeOfInfo() const
          throw()
       { return ageOfInfo; }
 
@@ -180,7 +186,7 @@ namespace gpstk
          /// Set the parameters for this ephemeris object.
       GloEphemeris& setRecord( std::string svSys,
                                short prn,
-                               CommonTime epoch,
+                               const CommonTime& epoch,
                                Triple pos,
                                Triple vel,
                                Triple acc,
