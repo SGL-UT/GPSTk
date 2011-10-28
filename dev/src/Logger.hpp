@@ -41,9 +41,12 @@
 #include "LogChannel.hpp"
 #include "MemoryUtils.hpp"
 #include "FormatUtils.hpp"
+#include "StreamBuf.hpp"
 
 namespace gpstk
 {
+
+   class LogStream;
 
    class Logger
    {
@@ -76,6 +79,8 @@ namespace gpstk
 
       std::string getName()
       {return this->name; }
+
+      void log(const std::string& text, LogLevel level);
 
       void log(const std::string& text, LogLevel level, ExceptionLocation location);
 
@@ -167,7 +172,7 @@ namespace gpstk
       static ConsoleLogChannel defaultChannel;
       static AutoReleasePool<LogChannel> channelPool;
 
-      //friend class AutoLoggerShutdown;
+      friend class LogStreamBuf;
 
    }; // End of class 'Logger'
 
@@ -202,6 +207,8 @@ namespace gpstk
    //
    // convenience macros
    //
+#define GPSTK_LOGGER_STREAM(name) \
+   LogStream( Logger::get(name) )
 
 #define GPSTK_NULL_LOGGER(name) \
    Logger::nullLogger(name)
@@ -389,6 +396,115 @@ namespace gpstk
 
 #endif   // #if defined(_DEBUG)
 
+
+//////////////////////////////////////////////////////////////////////////
+
+   /// This class implements a streambuf interface to a Logger.
+class LogStreamBuf: public StreamBuf   
+{
+public:
+   LogStreamBuf(Logger& logger, LogLevel level)
+      :_logger(logger),_level(level),_message("") {}
+ 
+   ~LogStreamBuf(){}
+
+   void setLevel(LogLevel level) { _level = level; }
+
+   LogLevel getLevel() const { return _level; }
+
+   Logger& logger() const { return _logger; }
+
+   void setLogger(Logger& logger){_logger=logger;}
+
+private:
+   int writeToDevice(char c)
+   {
+      if (c == '\n' || c == '\r')
+      {
+         LogMessage msg(_logger.name, _message, _level);
+         _logger.log(msg);
+
+         _message.clear();
+      }
+      else _message += c;
+      return c;
+   }
+
+private:
+   Logger&           _logger;
+   LogLevel          _level;
+   std::string       _message;
+};
+
+
+class LogStream : public std::ostream
+{
+public:
+   LogStream(Logger& logger, LogLevel level = LEVEL_INFORMATION)
+      : _buf(logger,level), std::ostream(&_buf) {}
+
+   LogStream(const std::string& loggerName, LogLevel level = LEVEL_INFORMATION)
+      : _buf(Logger::get(loggerName),level), std::ostream(&_buf) {}
+
+   LogStream(const LogStream& right)
+      : _buf(right._buf.logger(),right._buf.getLevel()), std::ostream(&_buf) {}
+
+   ~LogStream(){}
+
+   LogStream& operator=(const LogStream& right)
+   {
+      _buf.setLogger(right._buf.logger());
+      _buf.setLevel(right._buf.getLevel());
+   }
+
+   LogStream& fatal(){ return setLevel(LEVEL_FATAL);}
+
+   LogStream& fatal(const std::string& message)
+   { _buf.logger().log(message,LEVEL_FATAL); }
+
+   LogStream& critical(){ return setLevel(LEVEL_CRITICAL);}
+
+   LogStream& critical(const std::string& message)
+   { _buf.logger().log(message,LEVEL_CRITICAL); }
+
+   LogStream& error(){ return setLevel(LEVEL_ERROR);}
+
+   LogStream& error(const std::string& message)
+   { _buf.logger().log(message,LEVEL_ERROR); }
+
+   LogStream& warning(){ return setLevel(LEVEL_WARNING);}
+
+   LogStream& warning(const std::string& message)
+   { _buf.logger().log(message,LEVEL_WARNING); }
+
+   LogStream& notice(){ return setLevel(LEVEL_NOTICE);}
+
+   LogStream& notice(const std::string& message)
+   { _buf.logger().log(message,LEVEL_NOTICE); }
+
+   LogStream& information(){ return setLevel(LEVEL_INFORMATION);}
+
+   LogStream& information(const std::string& message)
+   { _buf.logger().log(message,LEVEL_INFORMATION); }
+
+   LogStream& debug(){ return setLevel(LEVEL_DEBUG);}
+
+   LogStream& debug(const std::string& message)
+   { _buf.logger().log(message,LEVEL_DEBUG); }
+
+   LogStream& trace(){ return setLevel(LEVEL_TRACE);}
+
+   LogStream& trace(const std::string& message)
+   { _buf.logger().log(message,LEVEL_TRACE); }
+
+   LogStream& setLevel(LogLevel level)
+   { _buf.setLevel(level); return (*this); }
+
+
+protected:
+   LogStreamBuf _buf;
+
+}; // End of method 'LogStream'
 
 
 }  // end of namespace 'gpstk'

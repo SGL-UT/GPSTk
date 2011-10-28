@@ -1095,6 +1095,11 @@ namespace gpstk
          throw(gpstk::StringUtils::StringException) 
       { return printf(fmt.c_str()) ; }
 
+         /// Returns the string formated as '2005-01-01 12:00:00'
+      std::string toString(int decimals=0,char datesep='-', char timesep=':') const
+         throw(gpstk::StringUtils::StringException);
+      
+
          /// Returns the string that operator<<() would print.
       std::string asString() const
          throw(gpstk::StringUtils::StringException);
@@ -1102,6 +1107,17 @@ namespace gpstk
          /// Dump everything possible, using every get() TD: keep?
       void dump(std::ostream& s) const
          throw(DayTimeException);
+
+         /// Updates the Timestamp with the current time.
+      void update() { setSystemTime(); }
+
+         /// Returns the time elapsed since the time
+      double elapsed() const {return ( DayTime() - (*this) );}
+
+         /// Returns true if the given interval has passed since the time
+      bool isElapsed(double interval) const 
+      { return elapsed()>interval?true:false; }
+
 
          // ----------- Part 11: functions: fundamental conversions ----------
          // 

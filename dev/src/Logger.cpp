@@ -64,6 +64,12 @@ namespace gpstk
       }
    }
 
+   void Logger::log(const std::string& text, LogLevel level)
+   {
+      LogMessage msg(name, text, level);
+      log(msg);
+   }
+
    void Logger::log(const std::string& text, LogLevel level, ExceptionLocation location)
    {
       DayTime now; now.setLocalTime();

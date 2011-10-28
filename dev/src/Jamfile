@@ -114,7 +114,7 @@ else
       SP3Stream.hpp SVExclusionList.hpp SVNumXRef.hpp SVPCodeGen.hpp
       SatDataReader.hpp SatID.hpp SimpleIURAWeight.hpp
       SimpleKalmanFilter.hpp SolidTides.hpp SolverBase.hpp
-      SourceID.hpp SpecialFunctions.hpp Stats.hpp String.hpp StringUtils.hpp
+      SourceID.hpp SpecialFunctions.hpp Stats.hpp String.hpp StreamBuf.hpp StringUtils.hpp
       StudentDistribution.hpp SunPosition.hpp SuperKalmanFilter.hpp SystemTime.hpp
       TabularEphemerisStore.hpp TimeConstants.hpp TimeConverters.hpp
       TimeNamedFileStream.hpp TimeString.hpp TimeTag.hpp Triple.hpp

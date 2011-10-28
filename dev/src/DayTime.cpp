@@ -55,6 +55,7 @@
 
 #include "gpstkplatform.h"
 #include "DayTime.hpp"
+#include "FormatUtils.hpp"
 
 namespace gpstk
 {
@@ -1605,6 +1606,15 @@ namespace gpstk
                           string("cd"), fullZcountFloor());
 
       return rv;
+   }
+
+   std::string DayTime::toString(int decimals,char datesep, char timesep) const
+      throw(gpstk::StringUtils::StringException)
+   {
+      int n = decimals<0?0:decimals;
+      string fmt = FormatUtils::format("%%04Y%c%%02m%c%%02d %%02H%c%%02M%c%%0%d.%df",
+                                       datesep,datesep,timesep,timesep,3+n,n);
+      return printf(fmt);
    }
 
       // Format this time into a string.
