@@ -71,10 +71,13 @@ namespace gpstk
    //--------------------------------------------------------------------------
    
       /// 'finals.data' from http://maia.usno.navy.mil/
-   void LoadIERSFile(std::string fileName);
+   void LoadIERSFile(const std::string& fileName);
    
       /// ERP data file from IGS
-   void LoadIGSFile(std::string fileName);
+   void LoadIGSFile(const std::string& fileName);
+
+      /// ERP data file from STK
+   void loadSTKFile(const std::string& fileName);
 
       /// Request EOP Data
    EOPDataStore::EOPData EOPData(DayTime UTC)

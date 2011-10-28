@@ -181,6 +181,66 @@ namespace gpstk
       }
    }
 
+      /** Add EOPs to the store via a flat STK file. 
+       *  EOP-v1.1.txt
+       *  http://celestrak.com/SpaceData/EOP-format.asp
+       *
+       *  @param stkFile  Name of file to read, including path.
+       */
+   void EOPDataStore::loadSTKFile(std::string stkFile)
+      throw(FileMissingException)
+   {
+      std::ifstream fstk(stkFile.c_str());
+
+      int  numData = 0;
+      bool bData = false;
+
+      std::string buf;
+      while(getline(fstk,buf))
+      {   
+         if(buf.substr(0,19) == "NUM_OBSERVED_POINTS")
+         {
+            numData = StringUtils::asInt(buf.substr(20));
+            continue;
+         }
+         else if(buf.substr(0,14) == "BEGIN OBSERVED")
+         {
+            bData = true;
+            continue;
+         }
+         else if(buf.substr(0,13) == "END PREDICTED")
+         {
+            bData = false;
+            break;
+         }
+         if(!StringUtils::isDigitString(buf.substr(0,4)))
+         {
+            // for observed data and predicted data
+            continue;
+         }
+
+         if(bData)
+         {
+            // # FORMAT(I4,I3,I3,I6,2F10.6,2F11.7,4F10.6,I4)
+            //int year = StringUtils::asInt(buf.substr(0,4));
+            //int month = StringUtils::asInt(buf.substr(4,3));
+            //int day = StringUtils::asInt(buf.substr(7,3));
+            double mjd = StringUtils::asInt(buf.substr(10,6));
+
+            double xp = StringUtils::asDouble(buf.substr(16,10));
+            double yp = StringUtils::asDouble(buf.substr(26,10));
+            double UT1mUTC = StringUtils::asDouble(buf.substr(36,11));
+            double dPsi = 0.0;
+            double dEps = 0.0;
+
+            addEOPData(DayTime(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+         }
+
+      }  // End of 'while'
+
+      fstk.close();
+   }
+
    ostream& operator<<(std::ostream& os, const EOPDataStore::EOPData& d)
    {
       os << " " << setw(18) << setprecision(8) << d.xp
