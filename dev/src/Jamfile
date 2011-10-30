@@ -71,7 +71,8 @@ else
       Chi2Distribution.hpp CivilTime.hpp ClockModel.hpp CodeBuffer.hpp
       CommandOption.hpp CommandOptionParser.hpp
       CommandOptionWithCommonTimeArg.hpp CommandOptionWithPositionArg.hpp
-      CommandOptionWithTimeArg.hpp CommonTime.hpp ConfDataReader.hpp
+      CommandOptionWithTimeArg.hpp CommonTime.hpp 
+      ConfData.hpp ConfDataItem.hpp ConfDataSection.hpp ConfDataStructures.hpp ConfDataReader.hpp
       ConfDataWriter.hpp DOP.hpp DayTime.hpp DCBDataReader.hpp DebugUtils.hpp ECEF.hpp
       EllipsoidModel.hpp EngAlmanac.hpp EngEphemeris.hpp
       EngNav.hpp ENUUtil.hpp EOPDataStore.hpp EphemerisRange.hpp Epoch.hpp

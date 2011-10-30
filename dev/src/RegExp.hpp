@@ -96,6 +96,7 @@ namespace gpstk
       void handleError(int rc, regex_t& re);
 
    protected:
+   	
       std::string _pattern;
       std::string _subject;
       std::vector<std::string> _matched;
@@ -105,10 +106,10 @@ namespace gpstk
       int _eflags;
       int _regerr; 
 
-   };   // End of class 'GPSTK_REGEXP_HPP'
+   };   // End of class 'RegExp'
    
 }   // End of namespace gpstk
 
 
-#endif  //GPSTK_REGULAREXPRESSION_HPP
+#endif  //GPSTK_REGEXP_HPP
 
