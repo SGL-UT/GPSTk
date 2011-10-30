@@ -43,7 +43,7 @@ else
       ObsEpochMap.cpp ObsID.cpp ObsRngDev.cpp OceanLoading.cpp 
       PlanetEphemeris.cpp PRSolution.cpp
       PoleTides.cpp Position.cpp PowerSum.cpp
-      RACRotation.cpp RinexEphemerisStore.cpp RinexGloNavHeader.cpp
+      RACRotation.cpp RegExp.cpp RinexEphemerisStore.cpp RinexGloNavHeader.cpp 
       RinexMetData.cpp RinexMetHeader.cpp RinexNavData.cpp RinexNavHeader.cpp
       RinexObsData.cpp RinexObsHeader.cpp RinexObsID.cpp
       RinexSatID.cpp RinexUtilities.cpp RungeKutta4.cpp
@@ -100,7 +100,7 @@ else
       ORDEpoch.hpp
       ObsClockModel.hpp ObsEpochMap.hpp ObsID.hpp ObsRngDev.hpp
       OceanLoading.hpp PCodeConst.hpp PRSolution.hpp PoleTides.hpp
-      PlanetEphemeris.hpp PolyFit.hpp Position.hpp PowerSum.hpp RACRotation.hpp
+      PlanetEphemeris.hpp PolyFit.hpp Position.hpp PowerSum.hpp RACRotation.hpp RegExp.hpp
       RTFileFrame.hpp RinexEphemerisStore.hpp RinexGloNavHeader.hpp
       RinexGloNavStream.hpp RinexMetBase.hpp RinexMetData.hpp
       RinexMetFilterOperators.hpp RinexMetHeader.hpp RinexMetStream.hpp
