@@ -154,7 +154,7 @@ namespace gpstk
    }
 
       // ERP data file from STK 
-   void loadSTKFile(const std::string& fileName)
+   void LoadSTKFile(const std::string& fileName)
    {
       eopDataTable.clear();
       try { eopDataTable.loadSTKFile(fileName); }
@@ -166,14 +166,14 @@ namespace gpstk
 
 
       // Request EOP Data
-   EOPDataStore::EOPData EOPData(DayTime UTC)
+   EOPDataStore::EOPData EOPData(const DayTime& UTC)
       throw(InvalidRequest)
    {
       return eopDataTable.getEOPData(UTC);
    }
 
       // in arcsecond
-   double PolarMotionX(DayTime UTC)
+   double PolarMotionX(const DayTime& UTC)
    {
       try { return EOPData(UTC).xp; }
       catch(...) 
@@ -186,7 +186,7 @@ namespace gpstk
    }
 
       // in arcsecond
-   double PolarMotionY(DayTime UTC)
+   double PolarMotionY(const DayTime& UTC)
    {
       try { return EOPData(UTC).yp; }
       catch(...) 
@@ -199,7 +199,7 @@ namespace gpstk
    }
 
       // in second
-   double UT1mUTC(DayTime UTC)
+   double UT1mUTC(const DayTime& UTC)
    {
       try { return EOPData(UTC).UT1mUTC; }
       catch(...) 
@@ -212,7 +212,7 @@ namespace gpstk
    }
 
       // in arcsecond
-   double NutationDPsi(DayTime UTC)
+   double NutationDPsi(const DayTime& UTC)
    {
       try { return EOPData(UTC).dPsi; }
       catch(...) 
@@ -225,7 +225,7 @@ namespace gpstk
    }
 
       // in arcsecond
-   double NutationDEps(DayTime UTC)
+   double NutationDEps(const DayTime& UTC)
    {
       try { return EOPData(UTC).dEps; }
       catch(...) 
@@ -240,7 +240,7 @@ namespace gpstk
    // Time System Handling
    //--------------------------------------------------------------------------
    
-   DayTime ConvertTimeSystem(DayTime time, TimeSystem from, TimeSystem to)
+   DayTime ConvertTimeSystem(const DayTime& time, TimeSystem from, TimeSystem to)
    {
       if(from==to) return time;
 
@@ -268,7 +268,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      typedef DayTime (*ConvertFunPtr)(DayTime);
+      typedef DayTime (*ConvertFunPtr)(const DayTime&);
       
       ConvertFunPtr funPtr1(0);
       if( itf->first == TS_UT1) funPtr1 = UT12UTC;
@@ -289,7 +289,7 @@ namespace gpstk
       return dest;
    }
 
-   DayTime GPST2UTC(DayTime GPST)
+   DayTime GPST2UTC(const DayTime& GPST)
    {
       // the input should be UTC
       int leapSec = TAImUTC(GPST);   
@@ -302,7 +302,7 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2GPST(DayTime UTC)
+   DayTime UTC2GPST(const DayTime& UTC)
    {
       DayTime GPST(UTC);
       GPST += TAImUTC(UTC);   // TAI
@@ -310,7 +310,7 @@ namespace gpstk
       return GPST;
    }
 
-   DayTime UT12UTC(DayTime UT1)
+   DayTime UT12UTC(const DayTime& UT1)
    {
       DayTime UTC(UT1);
       UTC -= UT1mUTC(UT1);   // input should be utc
@@ -323,7 +323,7 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2UT1(DayTime UTC)
+   DayTime UTC2UT1(const DayTime& UTC)
    {
       DayTime UT1(UTC);
       UT1 += UT1mUTC(UTC);
@@ -331,14 +331,14 @@ namespace gpstk
       return UT1;
    }
 
-   DayTime UT12UTC(DayTime UT1,double ut1mutc)
+   DayTime UT12UTC(const DayTime& UT1,double ut1mutc)
    {
       DayTime UTC(UT1);
       UTC -= ut1mutc;
 
       return UTC;
    }
-   DayTime UTC2UT1(DayTime UTC,double ut1mutc)
+   DayTime UTC2UT1(const DayTime& UTC,double ut1mutc)
    {
       DayTime UT1(UTC);
       UT1 += ut1mutc;
@@ -346,7 +346,7 @@ namespace gpstk
       return UT1;
    }
 
-   DayTime TT2UTC(DayTime TT)
+   DayTime TT2UTC(const DayTime& TT)
    {
       DayTime TAI  = TT;          // TT
       TAI -= TTmTAI();       // TAI
@@ -366,7 +366,7 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2TT(DayTime UTC)
+   DayTime UTC2TT(const DayTime& UTC)
    {
       DayTime TAI(UTC);
       TAI += TAImUTC(UTC);
@@ -377,7 +377,7 @@ namespace gpstk
       return TT;
    }
 
-   DayTime TAI2UTC(DayTime TAI)
+   DayTime TAI2UTC(const DayTime& TAI)
    {
       DayTime UTC(TAI);
       UTC -= TAImUTC(TAI); // input should be UTC     
@@ -390,7 +390,7 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2TAI(DayTime UTC)
+   DayTime UTC2TAI(const DayTime& UTC)
    {
       DayTime TAI(UTC);
       TAI += TAImUTC(UTC);      // TAI
@@ -398,14 +398,14 @@ namespace gpstk
       return TAI;
    }
 
-   DayTime BDT2UTC(DayTime BDT)
+   DayTime BDT2UTC(const DayTime& BDT)
    {
       DayTime GPST(BDT);
       GPST += 14.0;
 
       return GPST2UTC(GPST);
    }
-   DayTime UTC2BDT(DayTime UTC)
+   DayTime UTC2BDT(const DayTime& UTC)
    {
       DayTime BDT = UTC2GPST(UTC);  
       BDT -= 14.0;
@@ -757,10 +757,8 @@ namespace gpstk
    }
 
 
-   Triple sunJ2kPosition(const DayTime& time, TimeSystem sys)
+   Vector<double> sunJ2kPosition(const DayTime& TT)
    {
-      DayTime TT = ConvertTimeSystem(time,sys,TS_TT);
-
       // P70~P73
 
       // Obliquity of J2000 ecliptic
@@ -781,13 +779,11 @@ namespace gpstk
       double r = 149.619e9-2.499e9*std::cos(M)-0.021e9*std::cos(2.0*M);    
 
 
-      return Triple(r*std::cos(L),r*std::sin(L),0.0).R1(-eps*180.0/PI);
+      return Triple(r*std::cos(L),r*std::sin(L),0.0).R1(-eps*180.0/PI).toVector();
    }
 
-   Triple moonJ2kPosition(const DayTime& time, TimeSystem sys)
+   Vector<double> moonJ2kPosition(const DayTime& TT)
    {
-      DayTime TT = ConvertTimeSystem(time,sys,TS_TT);
-
       // Obliquity of J2000 ecliptic
       const double eps = 23.43929111 * PI / 180.0;
       const double Arcs = 3600.0*180.0/PI;
@@ -836,7 +832,7 @@ namespace gpstk
          R*std::sin(L)*std::cos(B),
          R*std::sin(B));
 
-      return rMoon.R1(-eps*180.0/PI);
+      return rMoon.R1(-eps*180.0/PI).toVector();
    }
 
 

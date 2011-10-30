@@ -77,26 +77,26 @@ namespace gpstk
    void LoadIGSFile(const std::string& fileName);
 
       /// ERP data file from STK
-   void loadSTKFile(const std::string& fileName);
+   void LoadSTKFile(const std::string& fileName);
 
       /// Request EOP Data
-   EOPDataStore::EOPData EOPData(DayTime UTC)
+   EOPDataStore::EOPData EOPData(const DayTime& UTC)
       throw(InvalidRequest);
    
       /// in arcsecond
-   double PolarMotionX(DayTime UTC);
+   double PolarMotionX(const DayTime& UTC);
 
       /// in arcsecond
-   double PolarMotionY(DayTime UTC);
+   double PolarMotionY(const DayTime& UTC);
 
       /// in second
-   double UT1mUTC(DayTime UTC);
+   double UT1mUTC(const DayTime& UTC);
 
       /// in arcsecond
-   double NutationDPsi(DayTime UTC);
+   double NutationDPsi(const DayTime& UTC);
 
       /// in arcsecond
-   double NutationDEps(DayTime UTC);
+   double NutationDEps(const DayTime& UTC);
 
 
       /// ftp://maia.usno.navy.mil/ser7/leapsec.dat
@@ -122,27 +122,26 @@ namespace gpstk
       TS_TT
    };
    
-   DayTime ConvertTimeSystem(DayTime time, TimeSystem from, TimeSystem to);
+   DayTime ConvertTimeSystem(const DayTime& time, TimeSystem from, TimeSystem to);
 
-   DayTime GPST2UTC(DayTime GPST);
-   DayTime UTC2GPST(DayTime UTC);
+   DayTime GPST2UTC(const DayTime& GPST);
+   DayTime UTC2GPST(const DayTime& UTC);
 
-   DayTime UT12UTC(DayTime UT1);
-   DayTime UTC2UT1(DayTime UTC);
+   DayTime UT12UTC(const DayTime& UT1);
+   DayTime UTC2UT1(const DayTime& UTC);
 
-   DayTime UT12UTC(DayTime UT1,double ut1mutc);
-   DayTime UTC2UT1(DayTime UTC,double ut1mutc);
+   DayTime UT12UTC(const DayTime& UT1,double ut1mutc);
+   DayTime UTC2UT1(const DayTime& UTC,double ut1mutc);
 
-   DayTime TT2UTC(DayTime TT);
-   DayTime UTC2TT(DayTime UTC);
+   DayTime TT2UTC(const DayTime& TT);
+   DayTime UTC2TT(const DayTime& UTC);
 
-   DayTime TAI2UTC(DayTime TAI);
-   DayTime UTC2TAI(DayTime UTC);
+   DayTime TAI2UTC(const DayTime& TAI);
+   DayTime UTC2TAI(const DayTime& UTC);
 
-   DayTime BDT2UTC(DayTime BDT);
-   DayTime UTC2BDT(DayTime UTC);
+   DayTime BDT2UTC(const DayTime& BDT);
+   DayTime UTC2BDT(const DayTime& UTC);
    
-
    // Reference System Handling
    //--------------------------------------------------------------------------
 
@@ -202,11 +201,11 @@ namespace gpstk
  
  
       /// sun position in J2000 
-   Triple sunJ2kPosition(const DayTime& time, TimeSystem sys = TS_GPST);
+   Vector<double> sunJ2kPosition(const DayTime& TT);
       
 
       /// moon position in J2000
-   Triple moonJ2kPosition(const DayTime& time, TimeSystem sys = TS_GPST);
+   Vector<double> moonJ2kPosition(const DayTime& TT);
 
       
    //////////////////////////////////////////////////////////////////////////
