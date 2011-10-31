@@ -55,7 +55,6 @@
 #include "EngEphemeris.hpp"
 #include "GalEphemeris.hpp"
 #include "GloEphemeris.hpp"
-#include "GloRecord.hpp"
 #include "RinexSatID.hpp"
 
 namespace gpstk
@@ -121,10 +120,6 @@ namespace gpstk
 
          /// Converts this Rinex3NavData to a GloEphemeris object.
       operator GloEphemeris() const throw();
-
-
-         /// Converts this Rinex3NavData to a GloRecord object.
-      operator GloRecord() const throw();
 
 
          /// Converts the (non-CommonTime) data to an easy list

@@ -68,8 +68,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       GloEphemeris.cpp \
       GloEphemerisStore.cpp \
       GloFreqIndex.cpp \
-      #GlonassSatelliteModel.cpp \
-      GloRecord.cpp \
       GPSAlmanacStore.cpp \
       GPSEphemerisStore.cpp \
       GPSWeek.cpp \
@@ -116,8 +114,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       RinexClockData.cpp \
       RinexClockHeader.cpp \
       #RinexConverter.cpp \
-      RinexGloNavData.cpp \
-      RinexGloNavHeader.cpp \
       RinexMetData.cpp \
       RinexMetHeader.cpp \
       RinexNavData.cpp \
@@ -269,7 +265,6 @@ incl_HEADERS = AllanDeviation.hpp \
       GloEphemeris.hpp \
       GloEphemerisStore.hpp \
       GloFreqIndex.hpp \
-      GloRecord.hpp \
       GPSAlmanacStore.hpp \
       GPSEllipsoid.hpp \
       GPSEphemerisStore.hpp \
@@ -351,9 +346,6 @@ incl_HEADERS = AllanDeviation.hpp \
       RinexClockStore.hpp \
       RinexClockStream.hpp \
       #RinexConverter.hpp \
-      RinexGloNavData.hpp \
-      RinexGloNavHeader.hpp \
-      RinexGloNavStream.hpp \
       RinexMetBase.hpp \
       RinexMetData.hpp \
       RinexMetFilterOperators.hpp \

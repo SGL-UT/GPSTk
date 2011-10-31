@@ -431,28 +431,6 @@ namespace gpstk
    }  // End of 'Rinex3NavData::operator GloEphemeris()'
 
 
-      // Converts this Rinex3NavData to a GloRecord object.
-   Rinex3NavData::operator GloRecord() const throw()
-   {
-
-      GloRecord gr;
-
-      gr.x = Triple(px, py, pz);
-      gr.v = Triple(vx, vy, vz);
-      gr.a = Triple(ax, ay, az);
-
-      gr.clkbias   = TauN;
-      gr.clkdrift  = GammaN;
-      gr.MFtime    = MFtime;
-      gr.health    = health;
-      gr.freqNum   = freqNum;
-      gr.ageOfInfo = ageOfInfo;
-
-      return gr;
-
-   }  // End of 'Rinex3NavData::operator GloRecord()'
-
-
       // Converts the (non-CommonTime) data to an easy list
       // for comparison operators.
    list<double> Rinex3NavData::toList() const

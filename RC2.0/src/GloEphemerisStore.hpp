@@ -33,8 +33,7 @@
 
 #include <iostream>
 #include "XvtStore.hpp"
-#include "GloRecord.hpp"
-#include "RinexGloNavData.hpp"
+#include "GloEphemeris.hpp"
 #include "Rinex3NavData.hpp"
 #include "PZ90Ellipsoid.hpp"
 #include "Vector.hpp"
@@ -51,9 +50,9 @@ namespace gpstk
 
       // First, let's declare some useful type definitions
 
-   typedef std::map<CommonTime, GloRecord> TimeGloMap;
+   typedef std::map<CommonTime, GloEphemeris> TimeGloMap2;
 
-   typedef std::map<SatID, TimeGloMap> GloEphMap;
+   typedef std::map<SatID, TimeGloMap2> GloEphMap2;
 
       /**
        * This adds the interface to get GLONASS broadcast ephemeris information
@@ -87,11 +86,6 @@ namespace gpstk
 
          /// Destructor
       virtual ~GloEphemerisStore() {};
-
-
-         /// Add ephemeris information from a RinexGloNavData object.
-      void addEphemeris(const RinexGloNavData& data)
-         throw();
 
 
          /// Add ephemeris information from a Rinex3NavData object.
@@ -201,7 +195,7 @@ namespace gpstk
 
 
          /// The map of SVs and Xvt's
-      GloEphMap pe;
+      GloEphMap2 pe;
 
 
          /// Earliest epoch of data available
@@ -219,15 +213,6 @@ namespace gpstk
          /// Flag signaling if satellites will be screened out according to
          /// their health bit (by default it is false)
       bool checkHealthFlag;
-
-
-         /// Compute true sidereal time (in hours) at Greenwich at 0 hours UT.
-      double getSidTime( const CommonTime& time ) const;
-
-
-         /// Function implementing the derivative of GLONASS orbital model.
-      Vector<double> derivative( const Vector<double>& inState,
-                                 const Vector<double>& accel ) const;
 
 
    };  // End of class 'GloEphemerisStore'
