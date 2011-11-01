@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
  * @file SimpleIURAWeight.cpp
@@ -23,7 +24,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2006
+//  Dagoberto Salazar - gAGE. 2006, 2011
 //
 //============================================================================
 
@@ -35,124 +36,135 @@ using namespace std;
 namespace gpstk
 {
 
-    // Compute and return a vector with the weights for the given satellites
-    // @param time           Epoch weights will be computed for
-    // @param Satellites     Vector of satellites
-    // @param bcEph          Satellite broadcast ephemeris
-    //
-    // @return
-    //  Number of satellites with valid weights
-    //
-    // NOTE: Method isValid() will return false if some satellite does not have a
-    // valid weight.
-    //
-    int SimpleIURAWeight::getWeights(CommonTime& time, Vector<SatID>& Satellites, GPSEphemerisStore& bcEph) throw(InvalidWeights)
-    {
-        int N = Satellites.size();
-        // We need at least one satellite
-        if (N == 0)
-        {
-            InvalidWeights eWeight("At least one satellite is needed to compute weights.");
-            GPSTK_THROW(eWeight);
-        }
+       // Compute and return a vector with the weights for the given satellites
+       // @param time           Epoch weights will be computed for
+       // @param Satellites     Vector of satellites
+       // @param bcEph          Satellite broadcast ephemeris
+       //
+       // @return
+       //  Number of satellites with valid weights
+       //
+       // NOTE: Method isValid() will return false if some satellite does not have a
+       // valid weight.
+       //
+   int SimpleIURAWeight::getWeights( CommonTime& time,
+                                     Vector<SatID>& Satellites,
+                                     GPSEphemerisStore& bcEph )
+      throw(InvalidWeights)
+   {
 
-        int i, iura;
-        double sigma;
-        // Some std::vectors to hold temporal values (do not confuse with gpstk::Vector)
-        vector<double> vWeight;
-        vector<SatID> vAvailableSV;
-        vector<SatID> vRejectedSV;
-        EngEphemeris engEph;
-        bool validFlag = true;
+      int N = Satellites.size();
+      
+         // We need at least one satellite
+      if (N == 0)
+      {
+         InvalidWeights eWeight("At least one satellite is needed to compute weights.");
+         GPSTK_THROW(eWeight);
+      }
 
-        for (i=0; i<N; i++)
-        {
-            try
-            {
-                engEph = bcEph.findEphemeris(Satellites(i), time);
-                iura = engEph.getAccFlag();
-            }
-            catch(...)
-            {
-                // If there are problems, we skip this satellite
-                vRejectedSV.push_back(Satellites(i));
-                validFlag = false;      // Validity flag is set to false
-                continue;
-            }
-            sigma = gpstk::ura2nominalAccuracy(iura);
-            vWeight.push_back( 1.0 / (sigma*sigma) );
-            vAvailableSV.push_back(Satellites(i));
-        }
+      int i, iura;
+      double sigma;
+      
+         // Some std::vectors to hold temporal values (do not confuse with gpstk::Vector)
+      vector<double> vWeight;
+      vector<SatID> vAvailableSV;
+      vector<SatID> vRejectedSV;
+      EngEphemeris engEph;
+      bool validFlag(true);
 
-        valid = validFlag;
-        weightsVector = vWeight;
-        availableSV = vAvailableSV;
-        rejectedSV = vRejectedSV;
+      for (i=0; i<N; i++)
+      {
+         try
+         {
+            engEph = bcEph.findEphemeris(Satellites(i), time);
+            iura = engEph.getAccFlag();
+         }
+         catch(...)
+         {
+               // If there are problems, we skip this satellite
+            vRejectedSV.push_back(Satellites(i));
+            validFlag = false;      // Validity flag is set to false
+            continue;
+         }
+         sigma = gpstk::ura2nominalAccuracy(iura);
+         vWeight.push_back( 1.0 / (sigma*sigma) );
+         vAvailableSV.push_back(Satellites(i));
+      }
 
-        return (int)(availableSV.size());
+      valid = validFlag;
+      weightsVector = vWeight;
+      availableSV = vAvailableSV;
+      rejectedSV = vRejectedSV;
 
-    }
+      return (int)(availableSV.size());
+
+   }  // End of method 'SimpleIURAWeight::getWeights()'
 
 
-    // Compute and return a vector with the weights for the given satellites
-    // @param time           Epoch weights will be computed for
-    // @param Satellites     Vector of satellites
-    // @param preciseEph     Satellite precise ephemeris
-    //
-    // @return
-    //  Number of satellites with valid weights
-    //
-    // NOTE: Method isValid() will return false if some satellite does not have a
-    // valid weight.
-    //
-    // NOTE: This method assigns an URA of 0.1 m to all satellites.
-    //
-    int SimpleIURAWeight::getWeights(CommonTime& time, Vector<SatID>& Satellites, TabularEphemerisStore<Xvt>& preciseEph) throw(InvalidWeights)
-    {
-        int N = Satellites.size();
-        // We need at least one satellite
-        if (N == 0)
-        {
-            InvalidWeights eWeight("At least one satellite is needed to compute weights.");
-            GPSTK_THROW(eWeight);
-        }
+       // Compute and return a vector with the weights for the given satellites
+       // @param time           Epoch weights will be computed for
+       // @param Satellites     Vector of satellites
+       // @param preciseEph     Satellite precise ephemeris
+       //
+       // @return
+       //  Number of satellites with valid weights
+       //
+       // NOTE: Method isValid() will return false if some satellite does not have a
+       // valid weight.
+       //
+       // NOTE: This method assigns an URA of 0.1 m to all satellites.
+       //
+   int SimpleIURAWeight::getWeights( CommonTime& time,
+                                     Vector<SatID>& Satellites,
+                                     TabularSatStore<Xvt>& preciseEph )
+      throw(InvalidWeights)
+   {
 
-        int i;
-        // Some std::vectors to hold temporal values (do not confuse with gpstk::Vector)
-        vector<double> vWeight;
-        vector<SatID> vAvailableSV;
-        vector<SatID> vRejectedSV;
-        bool validFlag = true;
+      int N = Satellites.size();
 
-        for (i=0; i<N; i++)
-        {
-            try
-            {
-                preciseEph.getXvt(Satellites(i), time);
-            }
-            catch(...)
-            {
-                // If the satellite is not available, we skip it
-                vRejectedSV.push_back(Satellites(i));
-                validFlag = false;      // Validity flag is set to false
-                continue;
-            }
+         // We need at least one satellite
+      if (N == 0)
+      {
+         InvalidWeights eWeight("At least one satellite is needed to compute weights.");
+         GPSTK_THROW(eWeight);
+      }
+
+      int i;
+
+         // Some std::vectors to hold temporal values (do not confuse with gpstk::Vector)
+      vector<double> vWeight;
+      vector<SatID> vAvailableSV;
+      vector<SatID> vRejectedSV;
+      bool validFlag = true;
+
+      for (i=0; i<N; i++)
+      {
+         try
+         {
+            preciseEph.getValue(Satellites(i), time);
+         }
+         catch(...)
+         {
+               // If the satellite is not available, we skip it
+            vRejectedSV.push_back(Satellites(i));
+            validFlag = false;      // Validity flag is set to false
+            continue;
+         }
+
             // An URA of 0.1 m is assumed for all satellites, so sigma=0.1*0.1= 0.01 m^2
-            vWeight.push_back( 100.0 );
-            vAvailableSV.push_back(Satellites(i));
-        }
+         vWeight.push_back( 100.0 );
+         vAvailableSV.push_back(Satellites(i));
+      }
 
-        valid = validFlag;
-        weightsVector = vWeight;
-        availableSV = vAvailableSV;
-        rejectedSV = vRejectedSV;
+      valid = validFlag;
+      weightsVector = vWeight;
+      availableSV = vAvailableSV;
+      rejectedSV = vRejectedSV;
 
-        return (int)(availableSV.size());
+      return (int)(availableSV.size());
 
-    }
+   }  // End of method 'SimpleIURAWeight::getWeights()'
 
 
-
-  
-}
+}  // End of namespace gpstk
 

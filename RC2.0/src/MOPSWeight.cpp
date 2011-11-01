@@ -2,7 +2,8 @@
 
 /**
  * @file MOPSWeight.cpp
- * Class for assign weights to satellites based on the Appendix J of MOPS C.
+ * Class to assign weights to satellites based on the Appendix J of MOPS
+ * document RTCA DO-229D.
  */
 
 
@@ -24,7 +25,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE. 2006, 2008
+//  Dagoberto Salazar - gAGE. 2006, 2008, 2011
 //
 //============================================================================
 
@@ -141,7 +142,7 @@ compute weights.");
        */
    int MOPSWeight::getWeights( CommonTime& time,
                                Vector<SatID>& Satellites,
-                               TabularEphemerisStore<Xvt>& preciseEph,
+                               TabularSatStore<Xvt>& preciseEph,
                                Vector<double>& ionoCorrections,
                                Vector<double>& elevationVector,
                                Vector<double>& azimuthVector,
