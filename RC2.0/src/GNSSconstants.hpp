@@ -113,8 +113,8 @@ namespace gpstk
          return 4;
       }
 
-      if (((fiti == 0) &&
-           (iodc & 0xFF) < 240 || (iodc & 0xFF) > 255 ))
+      if ( ( ( (fiti == 0) && (iodc & 0xFF) < 240 )
+             || (iodc & 0xFF) > 255 ) )
       {
             /* fit interval of 4 hours */
          return 4;
@@ -131,7 +131,7 @@ namespace gpstk
                /* fit interval of 8 hours */
             return 8;
          }
-         else if(iodc >= 248 && iodc <= 255 || iodc == 496)
+         else if( ( (iodc >= 248) && (iodc <= 255) ) || iodc == 496 )
          {
                /* fit interval of 14 hours */
             return 14;
@@ -146,7 +146,7 @@ namespace gpstk
                /* fit interval of 50 hours */
             return 50;
          }
-         else if(iodc == 511 || iodc >= 752 && iodc <= 756)
+         else if( iodc == 511 || ( (iodc >= 752) && (iodc <= 756) ) )
          {
                /* fit interval of 74 hours */
             return 74;
