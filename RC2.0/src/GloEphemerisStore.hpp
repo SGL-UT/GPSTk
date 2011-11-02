@@ -50,9 +50,9 @@ namespace gpstk
 
       // First, let's declare some useful type definitions
 
-   typedef std::map<CommonTime, GloEphemeris> TimeGloMap2;
+   typedef std::map<CommonTime, GloEphemeris> TimeGloMap;
 
-   typedef std::map<SatID, TimeGloMap2> GloEphMap2;
+   typedef std::map<SatID, TimeGloMap> GloEphMap;
 
       /**
        * This adds the interface to get GLONASS broadcast ephemeris information
@@ -195,7 +195,7 @@ namespace gpstk
 
 
          /// The map of SVs and Xvt's
-      GloEphMap2 pe;
+      GloEphMap pe;
 
 
          /// Earliest epoch of data available

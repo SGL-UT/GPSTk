@@ -90,7 +90,7 @@ namespace gpstk
       }
 
          // Look for the satellite in the 'pe' (EphMap) data structure.
-      GloEphMap2::const_iterator svmap = pe.find(sat);
+      GloEphMap::const_iterator svmap = pe.find(sat);
 
          // If satellite was not found, issue an exception
       if (svmap == pe.end())
@@ -101,10 +101,10 @@ namespace gpstk
       }
 
          // Let's take the second part of the EphMap
-      const TimeGloMap2& sem = svmap->second;
+      const TimeGloMap& sem = svmap->second;
 
          // Look for the exact epoch
-      TimeGloMap2::const_iterator i = sem.find(epoch);
+      TimeGloMap::const_iterator i = sem.find(epoch);
 
          // Values to be returned will be stored here
       Xvt sv;
@@ -135,17 +135,27 @@ namespace gpstk
       i = sem.lower_bound(epoch);
 
          // If we reached the end, the requested time is beyond the last
-         // ephemeris record, but still within the allowable time span,
-         // so we can use the last record.
+         // ephemeris record, but it may still be within the allowable time
+         // span, so we can use the last record.
       if ( i == sem.end() )
       {
          i = --i;
       }
 
-         // If key > (epoch+900), we must use the previous record.
-      if ( i->first > (epoch+900.0) )
+         // If key > (epoch+900), we must use the previous record if possible.
+      if ( ( i->first > (epoch+900.0) ) && ( i != sem.begin() ) )
       {
          i = --i;
+      }
+
+         // Check that the given epoch is within the available time limits for
+         // this specific satellite, with a margin of 15 minutes (900 seconds).
+      if ( epoch <  (i->first - 900.0) ||
+           epoch >= (i->first   + 900.0)   )
+      {
+         InvalidRequest e( "Requested time is out of boundaries for satellite "
+                          + StringUtils::asString(sat) );
+         GPSTK_THROW(e);
       }
 
          // We now have the proper reference data record. Let's use it
@@ -174,14 +184,14 @@ namespace gpstk
       throw()
    {
 
-         // Iterate through all items in the 'pe' GloEphMap2
-      for( GloEphMap2::const_iterator it = pe.begin();
+         // Iterate through all items in the 'pe' GloEphMap
+      for( GloEphMap::const_iterator it = pe.begin();
            it != pe.end();
            ++it )
       {
 
-            // Then, iterate through corresponding 'TimeGloMap2'
-         for( TimeGloMap2::const_iterator tgmIter = (*it).second.begin();
+            // Then, iterate through corresponding 'TimeGloMap'
+         for( TimeGloMap::const_iterator tgmIter = (*it).second.begin();
               tgmIter != (*it).second.end();
               ++tgmIter )
          {
@@ -210,9 +220,9 @@ namespace gpstk
                // Add end-of-line
             s << endl;
 
-         }  // End of 'for( TimeGloMap2::const_iterator tgmIter = ...'
+         }  // End of 'for( TimeGloMap::const_iterator tgmIter = ...'
 
-      }  // End of 'for( GloEphMap2::const_iterator it = pe.begin(); ...'
+      }  // End of 'for( GloEphMap::const_iterator it = pe.begin(); ...'
 
       return;
 
@@ -230,20 +240,20 @@ namespace gpstk
    {
 
          // Create a working copy
-      GloEphMap2 bak;
+      GloEphMap bak;
 
          // Reset the initial and final times
       initialTime = CommonTime::END_OF_TIME;
       finalTime   = CommonTime::BEGINNING_OF_TIME;
 
          // Iterate through all items in the 'bak' GloEphMap
-      for( GloEphMap2::const_iterator it = pe.begin();
+      for( GloEphMap::const_iterator it = pe.begin();
            it != pe.end();
            ++it )
       {
 
-            // Then, iterate through corresponding 'TimeGloMap2'
-         for( TimeGloMap2::const_iterator tgmIter = (*it).second.begin();
+            // Then, iterate through corresponding 'TimeGloMap'
+         for( TimeGloMap::const_iterator tgmIter = (*it).second.begin();
               tgmIter != (*it).second.end();
               ++tgmIter )
          {
@@ -268,7 +278,7 @@ namespace gpstk
 
             }  // End of 'if ( ( (*tgmIter).first >= tmin ) && ...'
 
-         }  // End of 'for( TimeGloMap2::const_iterator tgmIter = ...'
+         }  // End of 'for( TimeGloMap::const_iterator tgmIter = ...'
 
       }  // End of 'for( GloEphMap::const_iterator it = pe.begin(); ...'
 
@@ -325,7 +335,7 @@ namespace gpstk
    {
 
          // Look for the satellite in the 'pe' (GloEphMap) data structure.
-      GloEphMap2::const_iterator svmap = pe.find(id);
+      GloEphMap::const_iterator svmap = pe.find(id);
 
          // If satellite was not found return false, else return true
       if (svmap == pe.end())
