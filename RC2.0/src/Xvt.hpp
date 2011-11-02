@@ -64,7 +64,7 @@ namespace gpstk
       /// Default constructor
       Xvt() : x(0.,0.,0.), v(0.,0.,0.),
               clkbias(0.), clkdrift(0.),
-              relcorr(0.) //, frame(ReferenceFrame::Unknown)
+              relcorr(0.), frame(ReferenceFrame::Unknown)
          {};
 
       /// Destructor.

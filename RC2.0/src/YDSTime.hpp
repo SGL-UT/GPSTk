@@ -177,7 +177,7 @@ namespace gpstk
       bool operator!=( const YDSTime& right ) const
          throw();
       bool operator<( const YDSTime& right ) const
-	throw( gpstk::InvalidRequest );
+	      throw( gpstk::InvalidRequest );
       bool operator>( const YDSTime& right ) const
          throw( gpstk::InvalidRequest );
       bool operator<=( const YDSTime& right ) const

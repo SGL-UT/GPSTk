@@ -65,6 +65,8 @@ namespace gpstk
             break;
          case SatID::systemGlonass:
             //return GLOstore.addEphemeris(GloRecord(Rdata));
+            GLOstore.addEphemeris(Rdata);
+            return true;
             break;
          case SatID::systemGalileo:
             //return GALstore.addEphemeris(GalRecord(Rdata));

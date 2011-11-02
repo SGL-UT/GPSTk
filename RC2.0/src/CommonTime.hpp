@@ -458,11 +458,11 @@ namespace gpstk
       bool normalize()
          throw();
       
-      long m_day;     //< days (as a Julian Day)     0 <= val < 2^31
-      long m_msod;    //< milliseconds-of-day        0 <= val < 86400000
-      double m_fsod;  //< fractional seconds-of-day  0 <= val < 0.001
+      long m_day;     ///< days (as a Julian Day)     0 <= val < 2^31
+      long m_msod;    ///< milliseconds-of-day        0 <= val < 86400000
+      double m_fsod;  ///< fractional seconds-of-day  0 <= val < 0.001
 
-      TimeSystem m_timeSystem; // time frame (system representation) of the data
+      TimeSystem m_timeSystem; ///< time frame (system representation) of the data
 
    }; // end class CommonTime
 

@@ -190,6 +190,9 @@ namespace gpstk
          /// Return true if the given SatID is present in the store
       virtual bool isPresent(const SatID& id) const throw();
 
+         /// Return the number of satellites present in the store
+      int size(void) const throw()
+      { return pe.size(); }
 
    private:
 

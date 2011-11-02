@@ -49,6 +49,7 @@
 #include "GPSEphemerisStore.hpp"
 #include "MathBase.hpp"
 #include "CivilTime.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -150,10 +151,10 @@ namespace gpstk
             for (ei=em.begin(); ei != em.end(); ei++)
                if (detail==1)
                   s << "PRN " << setw(2) << it->first
-                    << " TOE " << ei->second.getEpochTime()
+                    << " TOE " << printTime(ei->second.getEpochTime(),"%4F %10.3g %P")
                     << " TOC " << fixed << setw(10) << setprecision(3) << ei->second.getToc()
                     << " HOW " << setw(10) << ei->second.getHOWTime(2)
-                    << " KEY " << ei->first
+                    << " KEY " << printTime(ei->first,"%4F %10.3g %P")
                     << std::endl;
                else
                   ei->second.dump(s);
@@ -292,7 +293,7 @@ namespace gpstk
          // t2 = HOW time
          t2 = current.getTransmitTime();
 
-         // Ephemeredes are ordered by fit interval.  
+         // Ephemerides are ordered by fit interval.  
          // If the start of the fit interval is in the future, 
          // this and any more ephemerides are not the one you are
          // looking for.
@@ -303,7 +304,10 @@ namespace gpstk
          
          double dt1 = t - t1;
          double dt2 = t - t2;
-
+//cout << "time t " << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
+//cout << "time t1 " << (static_cast<CivilTime>(t1)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
+//cout << "time t2 " << (static_cast<CivilTime>(t2)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
+//cout << "dt1 " << fixed << setprecision(3) << dt1 << " and dt2 " << dt2 << endl;
          if (dt1 >= 0 &&                           // t is after start of fit interval
              dt1 < current.getFitInterval() * 3600 &&  // t is within the fit interval
              dt2 >= 0 &&                           // t is after Tot
@@ -316,8 +320,8 @@ namespace gpstk
 
       if (it == em.end())
       {
-         string mess = "No eph found for satellite "
-            + asString(sat) + " at " + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         string mess = "No eph found for satellite " + asString(sat) + " at "
+            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
          InvalidRequest e(mess);
          GPSTK_THROW(e);
       }
@@ -384,8 +388,8 @@ namespace gpstk
 
       if (it == em.end())
       {
-         string mess = "No eph found for satellite "
-            + asString(sat) + " at " + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         string mess = "No eph found for satellite " + asString(sat) + " at "
+            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
          InvalidRequest e(mess);
          GPSTK_THROW(e);
       }

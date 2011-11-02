@@ -54,84 +54,81 @@
 
 namespace gpstk
 {
-  /** @addtogroup Rinex3Obs */
-  //@{
+   /** @addtogroup Rinex3Obs */
+   //@{
 
-  /**
-   * This class reads RINEX 3 Obs files.
-   *
-   * @sa Rinex3ObsData and Rinex3ObsHeader.
-   */
+   /**
+      * This class reads RINEX 3 Obs files.
+      *
+      * @sa Rinex3ObsData and Rinex3ObsHeader.
+      */
 
    class Rinex3ObsStream : public FFTextStream
    {
    public:
 
-     /// Default constructor
-     Rinex3ObsStream()
-       : headerRead(false)
-     {};
+      /// Default constructor
+      Rinex3ObsStream()
+         : headerRead(false)
+            {};
 
 
-     /** Common constructor.
-      *
-      * @param fn the RINEX file to open
-      * @param mode how to open \a fn.
-      */
-     Rinex3ObsStream( const char* fn,
-                      std::ios::openmode mode = std::ios::in )
-       : FFTextStream(fn, mode), headerRead(false) {};
+      /** Common constructor.
+       *
+       * @param fn the RINEX file to open
+       * @param mode how to open \a fn.
+       */
+      Rinex3ObsStream( const char* fn,
+                        std::ios::openmode mode = std::ios::in )
+         : FFTextStream(fn, mode), headerRead(false) {};
 
 
-     /** Common constructor.
-      *
-      * @param fn the RINEX file to open
-      * @param mode how to open \a fn.
-      */
-     Rinex3ObsStream( const std::string fn,
-                      std::ios::openmode mode = std::ios::in )
-       : FFTextStream(fn.c_str(), mode), headerRead(false) {};
+      /** Common constructor.
+       *
+       * @param fn the RINEX file to open
+       * @param mode how to open \a fn.
+       */
+      Rinex3ObsStream( const std::string fn,
+                        std::ios::openmode mode = std::ios::in )
+         : FFTextStream(fn.c_str(), mode), headerRead(false) {};
 
 
-     /// Destructor
-     virtual ~Rinex3ObsStream() {};
+      /// Destructor
+      virtual ~Rinex3ObsStream() {};
 
 
-     /** Overrides open to reset the header
-      *
-      * @param fn the RINEX file to open
-      * @param mode how to open \a fn.
-      */
-     virtual void open( const char* fn,
+      /** Overrides open to reset the header
+       *
+       * @param fn the RINEX file to open
+       * @param mode how to open \a fn.
+       */
+      virtual void open( const char* fn,
+                           std::ios::openmode mode )
+      {
+         FFTextStream::open(fn, mode);
+         headerRead = false;
+         header = Rinex3ObsHeader();
+      }
+
+
+      /** Overrides open to reset the header
+       *
+       * @param fn the RINEX 3 file to open
+       * @param mode how to open \a fn.
+       */
+      virtual void open( const std::string& fn,
                         std::ios::openmode mode )
-     {
-       FFTextStream::open(fn, mode);
-       headerRead = false;
-       header = Rinex3ObsHeader();
-     }
+         { open(fn.c_str(), mode); };
 
+      /// Whether or not the Rinex3ObsHeader has been read
+      bool headerRead;
 
-     /** Overrides open to reset the header
-      *
-      * @param fn the RINEX 3 file to open
-      * @param mode how to open \a fn.
-      */
-     virtual void open( const std::string& fn,
-                        std::ios::openmode mode )
-     { open(fn.c_str(), mode); };
-
-
-     /// Whether or not the Rinex3ObsHeader has been read
-     bool headerRead;
-
-
-     /// The header for this file.
-     Rinex3ObsHeader header;
-
+      /// The header for this file.
+      Rinex3ObsHeader header;
 
    }; // class 'Rinex3ObsStream'
 
-  //@} doxygen code block
+   //@} doxygen code block
 
 } // namespace gpstk
 
