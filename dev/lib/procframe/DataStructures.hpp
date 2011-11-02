@@ -1436,6 +1436,19 @@ namespace gpstk
       gnssDataMap& removeTypeID(const TypeIDSet& typeSet);
 
 
+         /** Edit the dataset, removing data outside the indicated time
+          *  interval.
+          *
+          * @param[in] tmin defines the beginning of the time interval
+          * @param[in] tmax defines the end of the time interval
+          */
+      virtual gnssDataMap& edit(DayTime tmin, 
+                                DayTime tmax = DayTime(DayTime::END_OF_TIME));
+
+         /// Load data from a rinex observation file
+      void loadObsFile(std::string obsFile);
+
+
          /// Tolerance set to get data from a given epoch
       double tolerance;
 

@@ -30,7 +30,6 @@
 
 #include "DataStructures.hpp"
 
-
 using namespace gpstk::StringUtils;
 using namespace std;
 
@@ -2793,6 +2792,56 @@ in matrix and number of types do not match") );
       return (*this);
 
    }  // End of method 'gnssDataMap::removeTypeID()'
+
+
+      /* Edit the dataset, removing data outside the indicated time
+       *  interval.
+       *
+       * @param[in] tmin defines the beginning of the time interval
+       * @param[in] tmax defines the end of the time interval
+       */
+   gnssDataMap& gnssDataMap::edit(DayTime tmin, DayTime tmax )
+   {
+      gnssDataMap dataMap;
+
+      while(!this->empty())
+      {
+         gnssDataMap gds = this->frontEpoch();
+
+         DayTime time(gds.begin()->first);
+         if( (time>=tmin) && (time<=tmax) ) dataMap.addGnssDataMap(gds);
+
+         this->pop_front_epoch();
+      }
+
+      (*this) = dataMap;
+
+      return (*this);
+   }
+
+      // Load data from a rinex observation file
+   void gnssDataMap::loadObsFile(std::string obsFile)
+   {
+      try
+      {
+         RinexObsStream rin(obsFile);
+         rin.exceptions(ios::failbit);
+
+         gnssRinex gRin;
+         while( rin >> gRin )
+         {
+            this->addGnssRinex(gRin);
+         }
+         
+         rin.close();
+      }
+      catch(...)
+      {
+         Exception e("Failed to load obs file '"+obsFile+"'.");
+         GPSTK_THROW(e);
+      }
+
+   }  // End of method 'gnssDataMap::loadObsFile()'
 
 
       ////// Other stuff //////

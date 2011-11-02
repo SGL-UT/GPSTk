@@ -1611,9 +1611,15 @@ namespace gpstk
    std::string DayTime::toString(int decimals,char datesep, char timesep) const
       throw(gpstk::StringUtils::StringException)
    {
-      int n = decimals<0?0:decimals;
-      string fmt = FormatUtils::format("%%04Y%c%%02m%c%%02d %%02H%c%%02M%c%%0%d.%df",
-                                       datesep,datesep,timesep,timesep,3+n,n);
+      string fmt = FormatUtils::format("%%04Y%c%%02m%c%%02d %%02H%c%%02M%c%%0%2.0f",
+                                        datesep,datesep,timesep,timesep);
+      if(decimals>0)
+      {
+         fmt = FormatUtils::format("%%04Y%c%%02m%c%%02d %%02H%c%%02M%c%%0%d.%df",
+                                   datesep,datesep,timesep,timesep,
+                                   3+decimals,decimals);
+      }
+
       return printf(fmt);
    }
 
