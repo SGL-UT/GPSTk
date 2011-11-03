@@ -252,8 +252,8 @@ namespace gpstk
    {
          // convert everything to days
       day = static_cast<double>( m_day ) + 
-            static_cast<double>( m_msod ) * MS_PER_DAY +
-            m_fsod * SEC_PER_DAY;
+            static_cast<double>( m_msod ) / MS_PER_DAY +
+            m_fsod / SEC_PER_DAY;
       timeSystem = m_timeSystem;
    }
 
