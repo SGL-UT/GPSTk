@@ -156,10 +156,12 @@ namespace gpstk
       switch(chunk)
       {
          case WEEK:
-            exStart = CivilTime(static_cast<GPSWeekSecond>(start).week, 0.0, static_cast<CivilTime>(start).year);
+            //exStart = CivilTime(static_cast<GPSWeekSecond>(start).week, 0.0, static_cast<CivilTime>(start).year);
+            exStart = GPSWeekSecond(static_cast<GPSWeekSecond>(start).week, 0.0);
             break;
          case DAY:
-            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
+            //exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
+            exStart = YDSTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
             break;
          case HOUR:
             exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
@@ -176,6 +178,19 @@ namespace gpstk
       vector<string> toReturn;
          // seed the return vector with an empty string.  you'll see why later
       toReturn.push_back(string());
+
+         // debug
+         /*
+      printf("FileHunter.fileSpecList.size() = %d\n",(int)fileSpecList.size());
+      int dcount = 0;
+      vector<FileSpec>::const_iterator ditr;
+      for (ditr=fileSpecList.begin(); ditr!=fileSpecList.end(); ++ditr)
+      {
+         printf("%2d:''%s''\n",dcount,(*ditr).getSpecString().c_str());
+         dcount++;
+      }
+      printf("END OF LIST.\n");
+          */
 
       try
       {
@@ -204,30 +219,31 @@ namespace gpstk
             vector<string> toReturnTemp;
             
                // counting variables            vector<string>::size_type i,j;
-
+            
             for(int i = 0; i < toReturn.size(); i++)
             {
                   // search for the next entries
                   
          //Debug
-         //printf("In .find() before call to serachHelper()\n");
+         //printf("In .find() before call to searchHelper()\n");
          //string temp = (*itr).createSearchString();
          //printf(" toReturn[%d]:'%s', spec:'%s'\n",
          //         i,toReturn[i].c_str(),temp.c_str());
-         
+
                vector<string> newEntries = searchHelper(toReturn[i],*itr);
          //Debug
-         /*
+         /*         
          vector<string>::iterator itr1 = newEntries.begin();
          int j1 = 0;
          printf("In .find() after call to searchHelper\n");
+         printf("  newEntries.size() = %d\n",(int)newEntries.size() ); 
          while (itr1 != newEntries.end())
          {
-            printf("toReturn[%d],item %d,'%s'\n",i,j1,(*itr1).c_str());
+            printf("newEntries[%d],item %d,'%s'\n",i,j1,(*itr1).c_str());
             itr1++;
             j1++;
          }
-         printf("In .find().  end of list\n");
+         printf("In .find().  end of newEntries list\n");
          */
                   // after getting the potential entries, filter
                   // them based on the user criteria...
@@ -235,16 +251,18 @@ namespace gpstk
 
          //Debug
          /*
+         printf("In .find() after call to filterHelper\n");
+         
          vector<string>::iterator itr2 = newEntries.begin();
          int j2 = 0;
-         printf("In .find() after call to filterHelper\n");
          while (itr2 != newEntries.end())
          {
-            printf("toReturn[%d],item %d,'%s'\n",i,j2,(*itr2).c_str());
+            printf("newEntries[%d],item %d,'%s'\n",i,j2,(*itr2).c_str());
             itr2++;
             j2++;
          }
-         printf("In .find().  end of list\n");
+         printf("In .find().  end of newEntries list\n");
+         printf("newEntries.size() : %d.\n", (int) newEntries.size() ); 
          */
          
                   // for each new entry, check the time (if possible)
@@ -298,11 +316,12 @@ namespace gpstk
                   }
                }
             }
+
             
             toReturn = toReturnTemp;
             
                // Debug
-         /*
+         /*         
          vector<string>::iterator itr3 = toReturn.begin();
          int j3 = 0;
          printf("In .find() just above toReturn empty check.\n");
@@ -338,6 +357,7 @@ namespace gpstk
    void FileHunter::init(const string& filespec)
       throw(FileHunterException)
    {
+         // debug
       try
       {
          fileSpecList.clear();
@@ -478,8 +498,8 @@ namespace gpstk
             FileSpec tempfs(fs.substr(0, slashpos));
 
                // debug
-            //printf(" fs, slashpos, tempfs = '%s', %d, '%s'.\n",
-            //   fs.c_str(),slashpos,tempfs.getSpecString().c_str());
+            //printf("FileHunter.init():  fs, slashpos, tempfs = '%s', %d, '%s'.\n",
+            //   fs.c_str(),(int)slashpos,tempfs.getSpecString().c_str());
 
             if (slashpos!=string::npos) fileSpecList.push_back(tempfs);
             fs.erase(0, slashpos);

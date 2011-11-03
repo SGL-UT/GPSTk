@@ -447,7 +447,7 @@ namespace gpstk
 
    Epoch& Epoch::scanf(const string& str,
                        const string& fmt)
-      throw(StringException)
+      throw(StringException, InvalidRequest)
    {
       try
       {

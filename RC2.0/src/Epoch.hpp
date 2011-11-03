@@ -594,7 +594,7 @@ namespace gpstk
           */
       Epoch& scanf(const std::string& str, 
                    const std::string& fmt)
-         throw(StringUtils::StringException);
+         throw(StringUtils::StringException, InvalidRequest);
 
          // if you can see this, ignore the \'s below, as they are for
          // the nasty html-ifying of doxygen.  Browsers try and
