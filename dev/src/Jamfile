@@ -21,7 +21,9 @@ else
 {
 # Please add in alphabetical order
    GPSBuildLibrary gpstk :
-      ANSITime.cpp AlmOrbit.cpp Antenna.cpp AntexReader.cpp ARBase.cpp ARMLambda.cpp ARLambda.cpp ARSimple.cpp
+      ANSITime.cpp AlmOrbit.cpp Antenna.cpp AntexReader.cpp 
+      Application.cpp
+      ARBase.cpp ARMLambda.cpp ARLambda.cpp ARSimple.cpp
       Ascii.cpp AstronomicalFunctions.cpp Bancroft.cpp BasicFramework.cpp BinUtils.cpp
       BinexData.cpp BLQDataReader.cpp Chi2Distribution.cpp CivilTime.cpp
       CodeBuffer.cpp CommandOption.cpp CommandOptionParser.cpp
@@ -53,7 +55,7 @@ else
       SVNumXRef.cpp SVPCodeGen.cpp SatDataReader.cpp
       SimpleIURAWeight.cpp SimpleKalmanFilter.cpp SolidTides.cpp
       SourceID.cpp SpecialFunctions.cpp StudentDistribution.cpp
-      SunPosition.cpp SuperKalmanFilter.cpp SystemTime.cpp
+      SunPosition.cpp SuperKalmanFilter.cpp SysInfo.cpp SystemTime.cpp
       TabularEphemerisStore.cpp TimeConverters.cpp TimeString.cpp
       TimeTag.cpp Triple.cpp TropModel.cpp TypeID.cpp UnixTime.cpp
       VectorBase.cpp WxObsMap.cpp X1Sequence.cpp X2Sequence.cpp
@@ -64,6 +66,7 @@ else
    InstallFile $(INCDIR) :
 # please add in alphabetical order
       AllanDeviation.hpp ANSITime.hpp Any.hpp AlmOrbit.hpp Antenna.hpp AntexReader.hpp
+      Application.hpp AppOption.hpp
       ARBase.hpp ARMLambda.hpp ARLambda.hpp ARSimple.hpp Ascii.hpp
       AstronomicalFunctions.hpp BaseDistribution.hpp Bancroft.hpp
       BasicFramework.hpp BinUtils.hpp BinexData.hpp BinexFilterOperators.hpp
@@ -116,7 +119,7 @@ else
       SatDataReader.hpp SatID.hpp SimpleIURAWeight.hpp
       SimpleKalmanFilter.hpp SolidTides.hpp SolverBase.hpp
       SourceID.hpp SpecialFunctions.hpp Stats.hpp String.hpp StreamBuf.hpp StringUtils.hpp
-      StudentDistribution.hpp SunPosition.hpp SuperKalmanFilter.hpp SystemTime.hpp
+      StudentDistribution.hpp SunPosition.hpp SuperKalmanFilter.hpp SysInfo.hpp SystemTime.hpp
       TabularEphemerisStore.hpp TimeConstants.hpp TimeConverters.hpp
       TimeNamedFileStream.hpp TimeString.hpp TimeTag.hpp Triple.hpp
       TropModel.hpp TypeID.hpp UnixTime.hpp ValidType.hpp Vector.hpp

@@ -84,6 +84,30 @@ namespace gpstk
 
       void log(const std::string& text, LogLevel level, ExceptionLocation location);
 
+      void fatal(const std::string& msg)
+      { log(msg,LEVEL_FATAL); }
+
+      void critical(const std::string& msg)
+      { log(msg,LEVEL_CRITICAL); }
+
+      void error(const std::string& msg)
+      { log(msg,LEVEL_ERROR); }
+ 
+      void warning(const std::string& msg)
+      { log(msg,LEVEL_WARNING); }
+
+      void notice(const std::string& msg)
+      { log(msg,LEVEL_NOTICE);}
+ 
+      void information(const std::string& msg)
+      { log(msg,LEVEL_INFORMATION); }
+
+      void debug(const std::string& msg)
+      { log(msg,LEVEL_DEBUG); }	
+
+      void trace(const std::string& msg)
+      { log(msg,LEVEL_TRACE); };
+
       bool is(int level) const
       { return level >= level;}
       
