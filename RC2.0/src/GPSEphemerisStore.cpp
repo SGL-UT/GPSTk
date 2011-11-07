@@ -130,12 +130,15 @@ namespace gpstk
       throw()
    {
       UBEMap::const_iterator it;
+      static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
 
       s << "Dump of GPSEphemerisStore:\n";
       if (detail==0)
       {
-         s << " Span is " << initialTime
-           << " to " << finalTime
+         s << " Span is " << (initialTime == CommonTime::END_OF_TIME
+                                      ? "End_time" : printTime(initialTime,fmt))
+           << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
+                                      ? "Begin_time" : printTime(finalTime,fmt))
            << " with " << ubeSize() << " entries."
            << std::endl;
       }
@@ -152,7 +155,8 @@ namespace gpstk
                if (detail==1)
                   s << "PRN " << setw(2) << it->first
                     << " TOE " << printTime(ei->second.getEpochTime(),"%4F %10.3g %P")
-                    << " TOC " << fixed << setw(10) << setprecision(3) << ei->second.getToc()
+                    << " TOC " << fixed << setw(10) << setprecision(3)
+                    << ei->second.getToc()
                     << " HOW " << setw(10) << ei->second.getHOWTime(2)
                     << " KEY " << printTime(ei->first,"%4F %10.3g %P")
                     << std::endl;

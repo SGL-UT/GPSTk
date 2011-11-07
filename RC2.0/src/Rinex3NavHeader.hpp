@@ -314,16 +314,11 @@ class Rinex3NavHeader : public Rinex3NavBase
    static const std::string stringIonoCorr;     // "IONOSPHERIC CORR"
    static const std::string stringTimeSysCorr;  // "TIME SYSTEM CORR"
    static const std::string stringLeapSeconds;  // "LEAP SECONDS"
-      // "DELTA-UTC: A0,A1,T,W" // R2.11 GPS
-   static const std::string stringDeltaUTC;
-      // "CORR TO SYSTEM TIME"  // R2.10 GLO
-   static const std::string stringCorrSysTime;
-      // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
-   static const std::string stringDUTC;
-      // "ION ALPHA"            // R2.11
-   static const std::string stringIonAlpha;
-      // "ION BETA"             // R2.11
-   static const std::string stringIonBeta;
+   static const std::string stringDeltaUTC;     // "DELTA-UTC: A0,A1,T,W" // R2.11 GPS
+   static const std::string stringCorrSysTime;  // "CORR TO SYSTEM TIME"  // R2.10 GLO
+   static const std::string stringDUTC;         // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
+   static const std::string stringIonAlpha;     // "ION ALPHA"            // R2.11
+   static const std::string stringIonBeta;      // "ION BETA"             // R2.11
    static const std::string stringEoH;          // "END OF HEADER"
 
       //@}

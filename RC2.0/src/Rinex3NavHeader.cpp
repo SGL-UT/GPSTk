@@ -43,6 +43,7 @@
  */
 
 #include "StringUtils.hpp"
+#include "GNSSconstants.hpp"
 #include "SystemTime.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
@@ -520,27 +521,29 @@ namespace gpstk
          switch(tcit->second.type) {
             case TimeCorr::GPUT: s << "GPS to UTC, A0 = " << tcit->second.A0
                                     << ", A1 = " << tcit->second.A1
-                                    << ", RefTime = " << tcit->second.refWeek
-                                    << "," << tcit->second.refSOW;
+                                    << ", RefTime = week/sow " << tcit->second.refWeek
+                                    << "/" << tcit->second.refSOW;
             case TimeCorr::GAUT: s << "GAL to UTC, A0 = " << tcit->second.A0
                                     << ", A1 = " << tcit->second.A1
-                                    << ", RefTime = " << tcit->second.refWeek
-                                    << "," << tcit->second.refSOW;
+                                    << ", RefTime = week/sow " << tcit->second.refWeek
+                                    << "/" << tcit->second.refSOW;
             case TimeCorr::SBUT: s << "SBAS to UTC, A0 = " << tcit->second.A0
                                     << ", A1 = " << tcit->second.A1
-                                    << ", RefTime = " << tcit->second.refWeek
-                                    << "," << tcit->second.refSOW
+                                    << ", RefTime = week/sow " << tcit->second.refWeek
+                                    << "/" << tcit->second.refSOW
                                     << ", provider " << tcit->second.geoProvider
                                     << ", UTC ID = " << tcit->second.geoUTCid;
             case TimeCorr::GLUT: s << "GLO to UTC, -TauC = " << tcit->second.A0;
             case TimeCorr::GPGA: s << "GPS to GAL, A0G = " << tcit->second.A0
                                     << ", A1G = " << tcit->second.A1
-                                    << ", RefTime = " << tcit->second.refWeek
-                                    << "," << tcit->second.refSOW;
+                                    << ", RefTime = week/sow " << tcit->second.refWeek
+                                    << "/" << tcit->second.refSOW;
             case TimeCorr::GLGP: s << "GLO to GPS, -TauGPS = " << tcit->second.A0
-                                    << ", RefTime = " << tcit->second.refYr
-                                    << "," << tcit->second.refMon
-                                    << "," << tcit->second.refDay;
+                                    << " s = " << tcit->second.A0 * C_MPS
+                                    << " m, RefTime = yr/mon/day "
+                                    << tcit->second.refYr
+                                    << "/" << tcit->second.refMon
+                                    << "/" << tcit->second.refDay;
          }
          s << endl;
       }

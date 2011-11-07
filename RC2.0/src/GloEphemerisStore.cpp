@@ -29,6 +29,7 @@
 
 
 #include "GloEphemerisStore.hpp"
+#include "TimeString.hpp"
 
 namespace gpstk
 {
@@ -183,6 +184,13 @@ namespace gpstk
    void GloEphemerisStore::dump( std::ostream& s, short detail ) const
       throw()
    {
+      static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
+      s << "Dump of GloEphemerisStore:\n";
+      s << "week   sow      = year/mn/dy hr:mi:sc Sys Sat   "
+         << "X                   Y                   Z                   "
+         << "VX                  VY                  VZ                  "
+         << "AX                  AY                  AZ                  "
+         << "TauN                GammaN            MFtime Hlth fNo AgeInfo\n";
 
          // Iterate through all items in the 'pe' GloEphMap
       for( GloEphMap::const_iterator it = pe.begin();
@@ -196,26 +204,38 @@ namespace gpstk
               ++tgmIter )
          {
 
-               // Declare a 'YDSTime' object to ease printing
-            YDSTime time( (*tgmIter).first );
-               // First, print year, Day-Of-Year and Seconds of Day
-            s << time.year << " "
-              << time.doy << " "
-              << time.sod << " ";
+            //   // Declare a 'YDSTime' object to ease printing
+            //YDSTime time( (*tgmIter).first );
+            //   // First, print year, Day-Of-Year and Seconds of Day
+            //s << time.year << " "
+            //  << time.doy << " "
+            //  << time.sod << " ";
+            s << printTime(tgmIter->first,fmt) << " ";
 
                // Second, print SatID information
-            s << (*it).first << " ";
+            s << RinexSatID((*it).first) << " ";
 
                // Third, print satellite ephemeris data
             GloEphemeris data( (*tgmIter).second );
                // Get the satellite's acceleration
             Triple a( data.getAcc() );
-            s << data.x[0] << " " << data.x[1] << " " << data.x[2] << " "
-              << data.v[0] << " " << data.v[1] << " " << data.v[2] << " "
-              << a[0] << " " << a[1] << " " << a[2] << " "
-              << data.getTauN() << " " << data.getGammaN() << " "
-              << data.getMFtime() << " " << data.getHealth() << " "
-              << data.getfreqNum() << " " << data.getAgeOfInfo();
+
+            s << scientific << setprecision(12);
+            s << setw(19) << data.x[0] << " "
+               << setw(19) << data.x[1] << " "
+               << setw(19) << data.x[2] << " "
+              << setw(19) << data.v[0] << " "
+               << setw(19) << data.v[1] << " "
+               << setw(19) << data.v[2] << " "
+              << setw(19) << a[0] << " "
+              << setw(19) << a[1] << " "
+              << setw(19) << a[2] << " "
+              << setw(19) << data.getTauN() << " "
+              << setw(19) << data.getGammaN() << " "
+              << setw(6) << data.getMFtime() << " "
+              << setw(3) << data.getHealth() << " "
+              << setw(3) << data.getfreqNum() << " "
+              << setprecision(2) << setw(5) << data.getAgeOfInfo();
 
                // Add end-of-line
             s << endl;
