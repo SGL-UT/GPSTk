@@ -55,7 +55,7 @@ namespace gpstk
 
          // Values to be returned will be stored here
       Xvt sv;
-
+/*
          // If the exact epoch is found, let's return the values
       if ( epoch == ephTime )       // exact match for epoch
       {
@@ -75,7 +75,7 @@ namespace gpstk
 
          return sv;
       }
-
+*/
          // Get the data out of the GloRecord structure
       double px( x[0] );   // X coordinate (km)
       double vx( v[0] );   // X velocity   (km/s)
@@ -198,8 +198,9 @@ namespace gpstk
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
       sv.relcorr = sv.computeRelativityCorrection();
-      sv.clkbias = clkbias - clkdrift * (epoch - ephTime) - sv.relcorr;
-      sv.clkdrift = clkdrift;
+//      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr/C_MPS;
+      sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
+      sv.clkdrift = clkdrift * (epoch - ephTime);
       sv.frame = ReferenceFrame::PZ90;
 
          // We are done, let's return
@@ -268,7 +269,8 @@ namespace gpstk
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
       sv.relcorr = sv.computeRelativityCorrection();
-      sv.clkbias = clkbias - clkdrift * (epoch - ephTime) - sv.relcorr;
+//      sv.clkbias = clkbias - clkdrift * (epoch - ephTime) - sv.relcorr;
+      sv.clkbias = clkbias + clkdrift * (epoch - ephTime);
 
       return sv.clkbias;
 
@@ -281,7 +283,7 @@ namespace gpstk
        *
        * @throw InvalidRequest if required data has not been stored.
        */
-   double GloEphemeris::svClockDrift(const CommonTime& t) const
+   double GloEphemeris::svClockDrift(const CommonTime& epoch) const
       throw( gpstk::InvalidRequest )
    {
 
@@ -292,7 +294,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      return clkdrift;
+      return ( clkdrift * (epoch - ephTime) );
 
    }  // End of method 'GloEphemeris::svClockDrift(const CommonTime& epoch)'
 
