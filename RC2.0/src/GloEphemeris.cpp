@@ -200,7 +200,7 @@ namespace gpstk
       sv.relcorr = sv.computeRelativityCorrection();
 //      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr/C_MPS;
       sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
-      sv.clkdrift = clkdrift * (epoch - ephTime);
+      sv.clkdrift = clkdrift;
       sv.frame = ReferenceFrame::PZ90;
 
          // We are done, let's return
@@ -294,7 +294,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      return ( clkdrift * (epoch - ephTime) );
+      return clkdrift;
 
    }  // End of method 'GloEphemeris::svClockDrift(const CommonTime& epoch)'
 

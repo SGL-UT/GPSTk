@@ -109,7 +109,7 @@ namespace gpstk
 
          // Values to be returned will be stored here
       Xvt sv;
-
+/*
          // If the exact epoch is found, let's return the values
       if (i != sem.end())      // exact match of epoch
       {
@@ -131,7 +131,7 @@ namespace gpstk
 
          return sv;
       }
-
+*/
          // 'i' will be the first element whose key >= epoch.
       i = sem.lower_bound(epoch);
 
@@ -222,11 +222,11 @@ namespace gpstk
 
             s << scientific << setprecision(12);
             s << setw(19) << data.x[0] << " "
-               << setw(19) << data.x[1] << " "
-               << setw(19) << data.x[2] << " "
+              << setw(19) << data.x[1] << " "
+              << setw(19) << data.x[2] << " "
               << setw(19) << data.v[0] << " "
-               << setw(19) << data.v[1] << " "
-               << setw(19) << data.v[2] << " "
+              << setw(19) << data.v[1] << " "
+              << setw(19) << data.v[2] << " "
               << setw(19) << a[0] << " "
               << setw(19) << a[1] << " "
               << setw(19) << a[2] << " "
