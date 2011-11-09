@@ -47,7 +47,7 @@ namespace gpstk
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).
       if ( epoch <  (ephTime - 900.0) ||
-           epoch >= (ephTime   + 900.0)   )
+           epoch >= (ephTime + 900.0)   )
       {
          InvalidRequest e( "Requested time is out of ephemeris data" );
          GPSTK_THROW(e);
@@ -198,8 +198,8 @@ namespace gpstk
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
       sv.relcorr = sv.computeRelativityCorrection();
-//      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr/C_MPS;
-      sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
+      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
+//      sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
       sv.clkdrift = clkdrift;
       sv.frame = ReferenceFrame::PZ90;
 
@@ -269,8 +269,8 @@ namespace gpstk
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
       sv.relcorr = sv.computeRelativityCorrection();
-//      sv.clkbias = clkbias - clkdrift * (epoch - ephTime) - sv.relcorr;
-      sv.clkbias = clkbias + clkdrift * (epoch - ephTime);
+      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
+//      sv.clkbias = clkbias + clkdrift * (epoch - ephTime);
 
       return sv.clkbias;
 
