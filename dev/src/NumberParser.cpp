@@ -29,6 +29,7 @@
 
 #include "NumberParser.hpp"
 #include "Exception.hpp"
+#include <cstdio>
 
 namespace gpstk
 {

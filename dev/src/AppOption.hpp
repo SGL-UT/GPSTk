@@ -260,7 +260,7 @@ namespace gpstk
          return *this;
       }
 
-      Option& Option::group(const std::string& group)
+      Option& group(const std::string& group)
       {
          _group = group;
          return *this;

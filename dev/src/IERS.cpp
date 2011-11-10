@@ -64,6 +64,7 @@ namespace gpstk
    Vector<double> IERS::planetJ2kPosVel( const DayTime& TT, 
                                          PlanetEphemeris::Planet entity,
                                          PlanetEphemeris::Planet center )
+      throw(Exception)
    {
       Vector<double> rvJ2k(6,0.0);
 
