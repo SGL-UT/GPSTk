@@ -1108,37 +1108,20 @@ namespace gpstk
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
       short accFlag = 0;
+      //local variables in SF3 that are needed to load SF2
       double crc = 0.0;
       double cis = 0.0;
-      double dndot = 0.0;
       double cic = 0.0;
-      double A = 0.0;
-      double Adot = 0.0;
       double Omega0 = 0.0; 
       double I0 = 0.0;
       double W = 0.0;
       double OmegaDot = 0.0;
       double IDot = 0.0;
-      try
-      {
-         accFlag = orbit.getURAoe();
-         crc = orbit.getCrc();
-         cis = orbit.getCis();
-         cic = orbit.getCic();
-         dndot = orbit.getDnDot();
-         A = orbit.getA();
-         Adot = orbit.getAdot();
-         Omega0 = orbit.getOmega0();
-         I0 = orbit.getI0();
-         W = orbit.getW();
-         OmegaDot = orbit.getOmegaDot();
-         IDot = orbit.getIDot();
-      }
-      catch(InvalidRequest)
-      {
-         haveSubframe[2] = false;
-      }
-      A = ahalf*ahalf;     // TEMP fix BWT
+      //also need locals for modernized nav quantaties not in SF2 or SF3
+      double A = ahalf*ahalf;     // TEMP fix BWT
+      double dndot = 0.0;  
+      double Adot = 0.0;
+
       short fitHours = getLegacyFitInterval(IODC, fitint);
       long beginFitSOW = toe - (fitHours/2)*3600.0;
       long endFitSOW = toe + (fitHours/2)*3600.0;
@@ -1227,7 +1210,10 @@ namespace gpstk
       }
       catch(InvalidRequest)
       {
+         //Should not get to this point because of the if(!haveSubFrame[1]) check above.
          haveSubframe[1] = false;
+         haveSubframe[2] = false;
+         return *this;
       }
       
       CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
