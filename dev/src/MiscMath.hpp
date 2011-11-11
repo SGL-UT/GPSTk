@@ -7,8 +7,8 @@
  * Miscellaneous mathematical algorithms
  */
 
-#ifndef GPSTK_MISC_MATH_HPP
-#define GPSTK_MISC_MATH_HPP
+#ifndef GPSTK_MISCMATH_HPP
+#define GPSTK_MISCMATH_HPP
 
 //============================================================================
 //
@@ -54,6 +54,8 @@ namespace gpstk
 {
    /** @defgroup math Mathematical algorithms */
    //@{
+
+   inline double Round(double x);
 
       /// Returns the Lagrange interpolation.
    template <class T>
@@ -380,6 +382,11 @@ namespace gpstk
       return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a) + (d/a)*(d/a));
    }
 
+
+   inline double Round(double x)
+   {
+      return double(std::floor(x+0.5));
+   }
    //@}
 
 }  // namespace gpstk

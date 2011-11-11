@@ -37,8 +37,17 @@
 namespace gpstk
 {
       /** This class ...
-       *
-       */
+      * RegExp reg("([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2})"); 
+      * cout << reg.match("20100331115531Z") << endl;;
+      * for(int i=0;i<reg.count();i++)
+      * {
+      *    cout << reg[i] <<endl;
+      * }
+      *
+      * cout << RegExp::replace("20100331115531Z",
+      *                "([0-9]{4})([0-9]{2})([0-9]{2})([0-9]{2})([0-9]{2}).*",
+      *                "Time \\& date: \\4:\\5 \\2/\\3/\\1")<<endl;
+      */
    class RegExp   
    {
    public:

@@ -249,7 +249,7 @@ namespace gpstk
       
       for(int i = 0; i < N; i++)
       {
-         vd[i] = LagrangeInterpolation(times,datas[i],dt,err);
+         vd[i] = LagrangeInterpolation(times,datas[i],dt);
       }
 
       return vd;

@@ -142,8 +142,6 @@ namespace gpstk
 
       void stopOptionsProcessing();
       
-      void setup();
-
       void processOptions();
 
       void initialize(Application& self);

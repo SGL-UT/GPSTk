@@ -43,7 +43,8 @@ namespace gpstk
         _initialized(false)
    {
       appInfo(author,version,desc,useage);
-      setup();
+
+      _pInstance = this;
    }
 
    Application::Application(int argc, char* argv[])
@@ -51,18 +52,11 @@ namespace gpstk
         _stopOptionsProcessing(false),
         _initialized(false)
    {
-      setup();
+      _pInstance = this;
+
       init(argc,argv);
    }
    
-   void Application::setup()
-   {
-      _pInstance = this;
-
-      appUsage = "[options] ...";
-
-      GPSTK_CONSOLE_LOGGER("");
-   }
 
    void Application::init(int argc, char* argv[])
    {
@@ -124,17 +118,15 @@ namespace gpstk
             }
             it = _args.erase(it);
          }
-         else ++it;
+         else it++;
       }
-      if (!_stopOptionsProcessing)
-         processor.checkRequired();
+      if (!_stopOptionsProcessing) processor.checkRequired();
    }
 
    void Application::defineOptions(OptionSet& options)
    {
       setupOptions(options);
       
-
       options.addOption(
          Option("verbose", "v", "Increase verbosity [0-8]")
          .required(false)
@@ -157,10 +149,7 @@ namespace gpstk
    {
       const Option& option = _options.getOption(name);
 
-      if (option.callback())
-      {
-         option.callback()->invoke(name, value);
-      }
+      if (option.callback()) option.callback()->invoke(name, value);
    }
 
    void Application::handleDefaultOptions(const std::string& name, 
@@ -196,7 +185,7 @@ namespace gpstk
          if(verboseLevel<0 || verboseLevel>8) 
          {
             verboseLevel = 6;
-            GPSTK_WARNING("","wrong verbose level, and set it to default 6 [information]");
+            logger().warning("wrong verbose level, and set it to default 6 [information]");
          }
       }
    }
@@ -325,5 +314,7 @@ namespace gpstk
 
       return (*this);
    }
+
+
 }   // End of namespace gpstk
 
