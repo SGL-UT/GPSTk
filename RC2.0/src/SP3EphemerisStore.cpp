@@ -473,24 +473,28 @@ namespace gpstk
 
          // must determine what kind of file it is
          bool isSP3(true);
-         {                    // decide if the file is SP3
+         while(1) {                    // decide if the file is SP3
             SP3Stream strm;
+
             // open
             try {
                strm.open(filename.c_str(),std::ios::in);
-               if(!strm.is_open()) isSP3 = false;
+               if(!strm.is_open()) { isSP3 = false; break; }
                strm.exceptions(std::fstream::failbit);
             }
-            catch(Exception& e) { isSP3 = false; }
-            catch(std::exception& e) { isSP3 = false; }
+            catch(Exception& e) { isSP3 = false; break; }
+            catch(std::exception& e) { isSP3 = false; break; }
 
             // read the header
             SP3Header header;
-            try { strm >> header; }
-            catch(Exception& e) { isSP3 = false; }
-            catch(std::exception& e) { isSP3 = false; }
+            try {
+               strm >> header;
+               strm.close();           // close will throw when file does not exist
+            }
+            catch(Exception& e) { isSP3 = false; break; }
+            catch(std::exception& e) { isSP3 = false; break; }
 
-            strm.close();
+            break;      // mandatory
          }
 
          // call the appropriate load routine
