@@ -187,33 +187,21 @@ protected:
          	cout << "Got first nav SF" << endl;
       }
 
-      MDPNavSubframe tmp = nav;
-
-      // First try the data assuming it is already upright
-      tmp.cooked = true;
-      bool parityGood = tmp.checkParity();
-      if (!parityGood)
+      nav.cookSubframe();
+      if (debugLevel > 1)
       {
-         if (debugLevel && firstEph)
-            cout << "Raw subframe" << endl;
-         nav.cooked = false;
-         nav.cookSubframe();
-         parityGood = nav.checkParity();
-      }
-      else
-      {
-         if (debugLevel && firstEph)
-            cout << "Cooked subframe" << endl;
+         if (nav.neededCooking)
+            cout << "Subframe required cooking" << endl;
+         if (nav.inverted)
+            cout << "Subframe was inverted" << endl;
+         if (!nav.parityGood)
+            cout << "Parity error" << endl;
       }
 
       firstEph=false;
 
-      if (!parityGood)
-      {
-         if (debugLevel)
-            cout << "Parity error" << endl;
+      if (!nav.parityGood)
          return;
-      }
 
       short sfid = nav.getSFID();
       if (sfid > 3)
