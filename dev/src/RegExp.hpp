@@ -34,6 +34,11 @@
 #include <vector>
 #include <regex.h>
 
+// it appears that some systems don't define this...
+#if !defined(REG_NOERROR)
+#define REG_NOERROR 0
+#endif
+
 namespace gpstk
 {
       /** This class ...
