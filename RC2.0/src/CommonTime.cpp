@@ -80,6 +80,7 @@ namespace gpstk
       return *this;
    }
 
+
    CommonTime& CommonTime::set( long day,
                                 long sod,
                                 double fsod,

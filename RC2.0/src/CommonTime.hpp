@@ -121,7 +121,8 @@ namespace gpstk
                   TimeSystem timeSystem )
          throw( InvalidParameter )
       { set( day, sod, timeSystem ); }
-      
+     
+
          /** 
           * Constructor that accepts days only.
           * All elements default to zero and Unknown.

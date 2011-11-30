@@ -53,7 +53,6 @@ else
       CommonTime.cpp
       ConfDataReader.cpp
       ConfDataWriter.cpp
-      DayTime.cpp
       DCBDataReader.cpp
       DOP.cpp
       EngAlmanac.cpp
@@ -175,7 +174,6 @@ else
       WxObsMap.cpp
       X1Sequence.cpp
       X2Sequence.cpp
-      Xt.cpp
       Xvt.cpp
       YDSTime.cpp
       YumaAlmanacStore.cpp
@@ -225,7 +223,6 @@ else
       CommonTime.hpp
       ConfDataReader.hpp
       ConfDataWriter.hpp
-      DayTime.hpp
       DCBDataReader.hpp
       DOP.hpp
       EllipsoidModel.hpp
@@ -280,14 +277,12 @@ else
       GalEphemerisStore.hpp
       GaussianDistribution.hpp
       GenXSequence.hpp
-      GeoidModel.hpp
       GloEphemeris.hpp
       GloEphemerisStore.hpp
       GloFreqIndex.hpp
       GPSAlmanacStore.hpp
       GPSEllipsoid.hpp	
       GPSEphemerisStore.hpp	
-      GPSGeoid.hpp	
       GPS_URA.hpp
       GPSWeek.hpp	
       GPSWeekSecond.hpp	
@@ -419,7 +414,6 @@ else
       SVNumXRef.hpp	
       SVPCodeGen.hpp	
       SystemTime.hpp	
-      TabularEphemerisStore.hpp	
       TabularSatStore.hpp	
       TimeConstants.hpp	
       TimeConverters.hpp	
@@ -438,7 +432,6 @@ else
       VectorOperators.hpp	
       WeightBase.hpp	
       WGS84Ellipsoid.hpp	
-      WGS84Geoid.hpp	
       WxObsMap.hpp	
       X1Sequence.hpp	
       X2Sequence.hpp	
@@ -455,10 +448,6 @@ else
       geometry.hpp	
       gps_constants.hpp	
       gpstkplatform.h	
-      icd_200_constants.hpp	
-      icd_glo_constants.hpp	
-      icd_glo_freqindex.hpp	
-      icd_gps_constants.hpp	
       mergePCodeWords.h	
       stl_helpers.hpp	
       $(GETOPT_INC)	

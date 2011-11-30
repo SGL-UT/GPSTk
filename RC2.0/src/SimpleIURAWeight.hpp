@@ -101,7 +101,6 @@ namespace gpstk
                               TabularSatStore<Xvt>& preciseEph )
          throw(InvalidWeights);
 
-
          /// Vector of weights for these satellites
       Vector<double> weightsVector;
 
