@@ -291,7 +291,6 @@ namespace gpstk
                // returns to start filling the records again.
                while(1) {
                   if(data.RecType == '*') {                                // epoch
-                     //cout << "* record.\n";
                      if(haveP || haveV)
                         goNext = false;
                      else {
@@ -395,13 +394,13 @@ namespace gpstk
 
                   if(rejectBadPos && (prec.Pos[0]==0.0 ||
                                       prec.Pos[1]==0.0 ||
-                                      prec.Pos[2]==0.)) {
+                                      prec.Pos[2]==0.0)) {
                      //cout << "Bad position" << endl;
-                     haveP = false; // bad position record
+                     haveP = haveV = haveEP = haveEV = false; // bad position record
                   }
                   else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
                      //cout << "Bad clock" << endl;
-                     haveP = false; // bad clock record
+                     haveP = haveV = haveEP = haveEV = false; // bad clock record
                   }
                   else {
                      //cout << "Add rec: " << sat << " " << ttag << " " << prec<<endl;
@@ -427,11 +426,11 @@ namespace gpstk
                                     prec.Pos[1]==0.0 ||
                                     prec.Pos[2]==0.0) ) {
                   //cout << "Bad last rec: position" << endl;
-                  haveP = false;  // bad position record
+                  //haveP = false;  // bad position record
                }
                else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
                   //cout << "Bad last rec: clock" << endl;
-                  haveP = false;  // bad clock record
+                  //haveP = false;  // bad clock record
                }
                else {
                   //cout << "Add last rec: "<< sat <<" "<< ttag <<" "<< prec << endl;
@@ -439,7 +438,7 @@ namespace gpstk
                      posStore.addPositionRecord(sat,ttag,prec);
                   if(fillClockStore && (!rejectPredClk || !predC))
                      clkStore.addClockRecord(sat,ttag,crec);
-                  haveP = haveV = predP = predC = false;
+                  //haveP = haveV = predP = predC = false;
                }
             }
          }
