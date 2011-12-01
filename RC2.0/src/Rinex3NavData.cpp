@@ -354,6 +354,34 @@ namespace gpstk
    }  // End of method 'Rinex3NavData::dump(ostream& s)'
 
 
+// This is the old converter from Rinex3NavData to EngEphemeris. The new one is below
+      // Converts this Rinex3NavData to an EngEphemeris object.
+/*    Rinex3NavData::operator EngEphemeris() const throw()
+ *  {
+ *
+ *     EngEphemeris ee;
+ *
+ *     // There's no TLM word in Rinex3NavData, so it's set to 0.
+ *     // Likewise, there's no AS alert or tracker.
+ *    // Also, in RINEX, the accuracy is in meters, and setSF1 expects
+ *     // the accuracy flag.  We'll give it zero and pass the accuracy
+ *    // separately via the setAccuracy() method.
+ *
+ *     ee.setSF1(0, HOWtime, 1, weeknum, codeflgs, 0, health,
+ *               short(IODC), L2Pdata, Tgd, Toc, af2, af1, af0, 0, PRNID);
+ *
+ *     ee.setSF2(0, HOWtime, 1, short(IODE), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
+ *               Toc, (fitint > 4) ? 1 : 0);
+ *     ee.setSF3(0, HOWtime, 1, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
+ *               idot);
+ *
+ *     ee.setAccuracy(accuracy);
+ *
+ *     return ee;
+ *
+ *  }  // End of 'Rinex3NavData::operator EngEphemeris()'
+ */
+
       // Converts this Rinex3NavData to an EngEphemeris object.
    Rinex3NavData::operator EngEphemeris() const throw()
    {
@@ -366,13 +394,82 @@ namespace gpstk
       // the accuracy flag.  We'll give it zero and pass the accuracy
       // separately via the setAccuracy() method.
 
-      ee.setSF1(0, HOWtime, 0, weeknum, codeflgs, 0, health,
-                short(IODC), L2Pdata, Tgd, Toc, af2, af1, af0, 0, PRNID);
+      ee.tlm_message[0] = 0;           
+      ee.tlm_message[1] = 0;
+      ee.tlm_message[2] = 0;
+      ee.HOWtime[0] = HOWtime;
+      ee.HOWtime[1] = HOWtime + 6;     //each subframe is 6 seconds apart
+      ee.HOWtime[2] = HOWtime + 12;
+      ee.ASalert[0] = 1;               //AS and alert flags set to 1 (default)
+      ee.ASalert[1] = 1;
+      ee.ASalert[2] = 1;
 
-      ee.setSF2(0, HOWtime, 0, short(IODE), Crs, dn, M0, Cuc, ecc, Cus, Ahalf,
-                Toc, (fitint > 4) ? 1 : 0);
-      ee.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
-                idot);
+      ee.weeknum    = weeknum;
+      ee.codeflags  = codeflgs;
+      ee.health     = health;  
+      ee.IODC       = short(IODC);
+      ee.L2Pdata    = L2Pdata;
+      ee.Tgd        = Tgd;
+      ee.tracker    = 0;
+      ee.PRNID      = PRNID;
+      ee.satSys     = satSys;
+      bool healthy = false;
+      if (health == 0) healthy = true;
+      short accFlag = 0; //will be set later. BrcClockCorrection takes a flag, while EngEphemeris takes a double.
+      double toc    = Toc;
+
+      double timeDiff =toc - ee.HOWtime[0];
+      short epochWeek = ee.weeknum;
+      if (timeDiff < -HALFWEEK) epochWeek++;
+      else if (timeDiff > HALFWEEK) epochWeek--;
+
+      CommonTime tocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
+
+         // The observation ID has a type of navigation, but the
+         // carrier and code types are undefined.  They could be
+         // L1/L2 C/A, P, Y,.....
+      ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
+      ee.bcClock.loadData( satSys, obsID, PRNID, tocCT,
+                        accFlag, healthy, af0, af1, af2);
+
+      ee.IODE    = short(IODE);      
+      ee.fitint  = (fitint > 4) ? 1 : 0;
+      double toe = Toe; //?????
+      
+      //Needed for modernized nav quatities
+      double A = Ahalf * Ahalf;
+      double dndot = 0.0;
+      double Adot = 0.0;
+
+      short fitHours = getLegacyFitInterval(ee.IODC, ee.fitint);
+      long beginFitSOW = Toe - (fitHours/2)*3600.0;
+      long endFitSOW = Toe + (fitHours/2)*3600.0;
+      short beginFitWk = ee.weeknum;
+      short endFitWk = ee.weeknum;
+
+      if (beginFitSOW < 0)
+      {
+         beginFitSOW += FULLWEEK;
+         beginFitWk--;
+      }
+      CommonTime beginFit = GPSWeekSecond(beginFitWk, beginFitSOW, TimeSystem::GPS);
+      if (endFitSOW >= FULLWEEK)
+      {
+         endFitSOW += FULLWEEK;
+         endFitWk++;
+      }
+
+      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
+      CommonTime toeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
+
+      ee.orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
+                      accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, 
+                      M0, dn, dndot, ecc, A, Ahalf, Adot, OMEGA0, i0, 
+                      w, OMEGAdot, idot);
+
+      ee.haveSubframe[0] = true;    //need to be true to perform certain EngEphemeris functions
+      ee.haveSubframe[1] = true;    // examples: ee.dump(), ee.setAccuracy()
+      ee.haveSubframe[2] = true;
 
       ee.setAccuracy(accuracy);
 
