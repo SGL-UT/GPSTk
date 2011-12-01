@@ -114,21 +114,14 @@ namespace gpstk
       if (i != sem.end())      // exact match of epoch
       {
 
-         sv = i->second;
+         CommonTime refEpoch( i->first );
+         GloEphemeris data( i->second );
 
-         sv.x[0]   *= 1.e3;   // m
-         sv.x[1]   *= 1.e3;   // m
-         sv.x[2]   *= 1.e3;   // m
-         sv.v[0]   *= 1.e3;  // m/sec
-         sv.v[1]   *= 1.e3;  // m/sec
-         sv.v[2]   *= 1.e3;  // m/sec
+            // Compute the satellite position, velocity and clock offset
+         sv = data.svXvt( epoch );
+//         sv = data.svXvt( refEpoch );
 
-            // In the GLONASS system, 'clkbias' already includes the
-            // relativistic correction, therefore we must substract the late
-            // from the former.
-         sv.clkbias = sv.clkbias - sv.computeRelativityCorrection();
-         sv.frame = ReferenceFrame::PZ90;
-
+            // We are done, let's return
          return sv;
       }
 */
@@ -160,11 +153,12 @@ namespace gpstk
       }
 
          // We now have the proper reference data record. Let's use it
-      CommonTime refEpoch( i->first );
+//      CommonTime refEpoch( i->first );
       GloEphemeris data( i->second );
 
          // Compute the satellite position, velocity and clock offset
       sv = data.svXvt( epoch );
+//      sv = data.svXvt( refEpoch );
 
          // We are done, let's return
       return sv;
