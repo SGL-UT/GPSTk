@@ -44,6 +44,11 @@
 
 namespace gpstk
 {
+// YDSTime constant corresponding to CommonTime::BEGINNING_OF_TIME
+
+   const CommonTime ct = CommonTime::BEGINNING_OF_TIME;
+   const YDSTime BEGIN_TIME(const CommonTime& ct);
+
    YDSTime& YDSTime::operator=( const YDSTime& right )
       throw()
    {
@@ -284,5 +289,20 @@ namespace gpstk
    {
       return ( !operator<( right ) );
    }
+
+      // ----------- YDSTime operator<< --------------
+      //
+      // Stream output for YDSTime objects.  Typically used for debugging.
+      // @param s stream to append formatted YDSTime to.
+      // @param t YDSTime to append to stream \c s.
+      // @return reference to \c s.
+
+   ostream& operator<<( ostream& s, 
+                        const YDSTime& yt )
+   {
+      s << yt.printf("%04Y/%03j %s %P");
+      return s;
+   }
+  
    
 } // namespace

@@ -403,5 +403,20 @@ namespace gpstk
    {
       return ( !operator<( right ) );
    }
+
+      // ----------- CivilTime operator<< --------------
+      //
+      // Stream output for CivilTime objects.  Typically used for debugging.
+      // @param s stream to append formatted CivilTime to.
+      // @param cit CivilTime to append to stream \c s.
+      // @return reference to \c s.
+
+   ostream& operator<<( ostream& s, 
+                        const CivilTime& cit )
+   {
+      s << cit.printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
+      return s;
+   }
+  
    
 } // namespace

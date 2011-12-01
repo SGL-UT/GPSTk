@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -48,25 +48,26 @@
 #include <string>
 #include "StringUtils.hpp"
 #include "Triple.hpp"
-// #include "ECEF.hpp" add in when ECEF is added to RC2.0
+#include "Position.hpp"
 #include "CommonTime.hpp"
+#include "YDSTime.hpp"
 #include "FFData.hpp"
 #include "Xvt.hpp"
 
 namespace gpstk
 {
-      /** @addtogroup MSC */ /** @addtogroup icd211group ICD-GPS-211 Classes */
+      /** @addtogroup MSC */
       //@{
 
-      /**
+      /** 
        * Model for a Monitor Station Coordinates File Data Record
        */
    class MSCData : public gpstk::FFData
    {
    public:
          /// constructor
-      MSCData() throw() : time(gpstk::CommonTime(0.L)) {}
-
+      MSCData() throw() : time(gpstk::YDSTime()) {}
+      
          /// destructor
       virtual ~MSCData() throw() {}
 
@@ -75,16 +76,16 @@ namespace gpstk
          /// @throw InvalidRequest If the request can not be completed for any
          ///    reason, this is thrown. The text may have additional
          ///    information as to why the request failed.
-      Xvt getXvt(const CommonTime& t)
+      Xvt getXvt(const YDSTime& t)
          const throw(InvalidRequest);
 
-      gpstk::CommonTime time;  ///< date coordinates released
+      gpstk::YDSTime time;  ///< date coordinates released
                             ///<   (Bookkeeping convenience not used)
       unsigned long station; ///< Monitor Station number (e.g. 10234)
       std::string mnemonic;  ///< Monitor Station identifier (e.g. ARLM)
-      gpstk::CommonTime refepoch;  ///< epoch of coordinates and velocities
-      gpstk::CommonTime effepoch;  ///< earliest epoch data is valid
-      gpstk::Triple coordinates; ///< ECEF XYZ coordinates /// gpstk::ECEF coordinates; add in when ECEF is added to RC2.0
+      gpstk::YDSTime refepoch;  ///< epoch of coordinates and velocities
+      gpstk::YDSTime effepoch;  ///< earliest epoch data is valid
+      gpstk::Triple coordinates;  ///< ECEF XYZ coordinates
       gpstk::Triple velocities; ///< XYZ velocities
 
          /// MSCData \b is data, so this always return \c true
@@ -95,7 +96,7 @@ namespace gpstk
       virtual void reallyPutRecord(gpstk::FFStream& ffs) const
          throw(std::exception, gpstk::FFStreamError,
                gpstk::StringUtils::StringException);
-
+      
          /**
           * Retrieve an MSCData record from the given gpstk::FFStream.
           * If there is a problem reading from the stream, it
@@ -107,12 +108,12 @@ namespace gpstk
           */
       virtual void reallyGetRecord(gpstk::FFStream& ffs)
          throw(std::exception, gpstk::FFStreamError,
-               gpstk::StringUtils::StringException);
+               gpstk::StringUtils::StringException);  
    }; // class MSCData
 
       //@}
 
 } // namespace gpstk
 
-#endif
-
+#endif   
+      

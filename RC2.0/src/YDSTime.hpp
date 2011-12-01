@@ -53,6 +53,18 @@ namespace gpstk
    {
    public:
          /**
+          * @defgroup ydstc YDSTime Time Constants
+          * YDSTime-structured Constants
+          */
+         //@{
+         /**
+          * YDSTime constant corresponding to CommonTime::BEGINNING_OF_TIME
+          */
+
+      static const YDSTime BEGIN_TIME;
+
+         //@}
+         /**
           * @defgroup ydstbo YDSTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
@@ -190,6 +202,17 @@ namespace gpstk
       int doy; 
       double sod;
    };
+
+      // -----------YDSTime operator<< -----------
+      //
+      /**
+       * Stream output for YDSTime objects.  Typically used for debugging.
+       * @param s stream to append formatted YDSTime to.
+       * @param yt YDSTime to append to stream \c s.
+       * @return reference to \c s.
+       */
+   std::ostream& operator<<( std::ostream& s,
+                             const gpstk::YDSTime& yt );
    
 } // namespace
 
