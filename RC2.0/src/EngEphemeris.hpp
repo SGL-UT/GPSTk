@@ -520,13 +520,12 @@ namespace gpstk
                             double Omega0, double cis, double I0, double crc,
                             double W, double OmegaDot, double IDot )
          throw();
-
+   
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
          throw();
 
 
-   protected:
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */
 
@@ -542,7 +541,8 @@ namespace gpstk
       short PRNID;         /**< SV PRN ID */
       short tracker;       /**< Tracker number */
       long HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
-      short ASalert[3];    /**< A-S and "alert" flags for each subframe */
+      short ASalert[3];    /**< A-S and "alert" flags for each subframe. 2 bit quantity with A-S flag the high
+                                 order bit and the alert flag low order bit */
       short weeknum;       /**< GPS full week number that corresponds to the HOWtime of SF1 */
       short codeflags;     /**< L2 codes */
       short health;        /**< SV health */
