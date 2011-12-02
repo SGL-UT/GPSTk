@@ -42,6 +42,10 @@
 //=============================================================================
 
 #include "TimeTag.hpp"
+#include "Exception.hpp"
+#include "TimeConstants.hpp"
+#include "TimeSystem.hpp"
+
 
 namespace gpstk
 {

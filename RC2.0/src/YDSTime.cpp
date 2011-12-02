@@ -46,8 +46,8 @@ namespace gpstk
 {
 // YDSTime constant corresponding to CommonTime::BEGINNING_OF_TIME
 
-   const CommonTime ct = CommonTime::BEGINNING_OF_TIME;
-   const YDSTime BEGIN_TIME(const CommonTime& ct);
+   
+   const YDSTime YDSTime::BEGIN_TIME(CommonTime::BEGINNING_OF_TIME);
 
    YDSTime& YDSTime::operator=( const YDSTime& right )
       throw()
