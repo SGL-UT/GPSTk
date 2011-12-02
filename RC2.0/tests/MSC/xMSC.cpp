@@ -37,9 +37,9 @@ void xMSC :: firstTest (void)
 	MSCStream Input("Logs/CoordFile");
 	MSCStream Out("Logs/Output",ios::out);
 	MSCData Data;
-	
+
 	Input >> Data;
-	gpstk::CommonTime Time(2001,360,0.0);
+	gpstk::YDSTime Time(2001L,360L,0.0,TimeSystem::Unknown);
 	CPPUNIT_ASSERT_EQUAL(Time,Data.time);
 	CPPUNIT_ASSERT_EQUAL((long unsigned) 11111,Data.station);
 	CPPUNIT_ASSERT_EQUAL((string)"AAA    " ,Data.mnemonic);
@@ -49,7 +49,7 @@ void xMSC :: firstTest (void)
 	{
 		Out << Data;
 	}
-	
+
 	MSCStream Input2("Logs/Output");
 	MSCStream Out2("Logs/Output2",ios::out);
 	MSCData Data2;
@@ -57,11 +57,11 @@ void xMSC :: firstTest (void)
 	{
 		Out2 << Data2;
 	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/CoordFile",(char*)"Logs/Output"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/CoordFile",(char*)"Logs/Output2"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/CoordFile","Logs/Output"));
+	CPPUNIT_ASSERT(fileEqualTest("Logs/CoordFile","Logs/Output2"));
 }
 
-bool xMSC :: fileEqualTest (char* handle1, char* handle2)
+bool xMSC :: fileEqualTest (const char* handle1, const char* handle2)
 {
 	bool isEqual = false;
 	

@@ -29,6 +29,8 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
+#include "YDSTime.hpp"
+#include "CommonTime.hpp"
 
 using namespace std;
 
@@ -43,7 +45,7 @@ class xMSC: public CPPUNIT_NS :: TestFixture
 
 	protected:
 		void firstTest (void);
-		bool fileEqualTest (char*, char*);
+		bool fileEqualTest (const char*, const char*);
 
 	private:
 

@@ -32,7 +32,7 @@
 
 int main (int argc, char* argv[])
 {
-        
+
 	// informs test-listener about testresults
 	CPPUNIT_NS :: TestResult testresult;
 
