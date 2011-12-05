@@ -67,6 +67,8 @@ namespace gpstk
          sv.v[1] = v[1]*1.e3;  // m/sec
          sv.v[2] = v[2]*1.e3;  // m/sec
 
+// XXX Major check here!!!
+
             // In the GLONASS system, 'clkbias' already includes the
             // relativistic correction, therefore we must substract the late
             // from the former.
@@ -177,7 +179,8 @@ namespace gpstk
             initialState(j) = initialState(j) + rkStep * ( dxt1(j)
                             + 2.0 * ( dxt2(j) + dxt3(j) ) + dxt4(j) ) / 6.0;
 
-            // If we are within teps of the goal time, we are done.
+
+            // If we are within tolerance of the target time, we are done.
          workEpoch += rkStep;
          if ( std::fabs(epoch - workEpoch ) < tolerance )
             done = true;
@@ -192,13 +195,16 @@ namespace gpstk
       vy = initialState(3);
       vz = initialState(5);
 
-      sv.x[0] = 1000.0*( px*cs + py*ss);         // X coordinate
-      sv.v[0] = 1000.0*( vx*cs + vy*ss + we*py); // X velocity
-      sv.x[1] = 1000.0*(-px*ss + py*cs);         // Y coordinate
-      sv.v[1] = 1000.0*(-vx*ss + vy*cs - we*px); // Y velocity
-      sv.x[2] = 1000.0*pz;                       // Z coordinate
-      sv.v[2] = 1000.0*vz;                       // Z velocity
+      sv.x[0] = 1000.0*( px*cs + py*ss );         // X coordinate
+      sv.x[1] = 1000.0*(-px*ss + py*cs);          // Y coordinate
+      sv.x[2] = 1000.0*pz;                        // Z coordinate
+//      sv.v[0] = 1000.0*( vx*cs + vy*ss + we*py ); // X velocity
+//      sv.v[1] = 1000.0*(-vx*ss + vy*cs - we*px ); // Y velocity
+      sv.v[0] = 1000.0*( vx*cs + vy*ss + we*(sv.x[1]/1000.0) ); // X velocity
+      sv.v[1] = 1000.0*(-vx*ss + vy*cs - we*(sv.x[0]/1000.0) ); // Y velocity
+      sv.v[2] = 1000.0*vz;                        // Z velocity
 
+// XXX Major check here!!!
 
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
@@ -206,6 +212,8 @@ namespace gpstk
 //      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
       sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
       sv.clkdrift = clkdrift * 1000.0; // WHY I MUST USE 1000.0 TO GET IT RIGHT???
+                                       // Check the units in all time-related
+                                       // items, including relativity.
       sv.frame = ReferenceFrame::PZ90;
 
          // We are done, let's return
@@ -265,6 +273,8 @@ namespace gpstk
          InvalidRequest exc("svClockBias(): No valid data stored.");
          GPSTK_THROW(exc);
       }
+
+// XXX Major check here!!!
 
          // Auxiliar object
       Xvt sv;
