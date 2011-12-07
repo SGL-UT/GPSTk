@@ -59,6 +59,7 @@ class xSP3EphemerisStore: public CPPUNIT_NS :: TestFixture
 		void SP3getFinalTimeTest (void);
 		void SP3getPositionTest (void);
 		void SP3getVelocityTest (void);
+		bool fileEqualTest (char[], char[]);
 
 	private:
 
