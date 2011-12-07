@@ -67,15 +67,12 @@ namespace gpstk
          sv.v[1] = v[1]*1.e3;  // m/sec
          sv.v[2] = v[2]*1.e3;  // m/sec
 
-// XXX Major check here!!!
-
             // In the GLONASS system, 'clkbias' already includes the
             // relativistic correction, therefore we must substract the late
             // from the former.
          sv.relcorr = sv.computeRelativityCorrection();
-//         sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
-         sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
-         sv.clkdrift = clkdrift * 1000.0;
+         sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
+         sv.clkdrift = clkdrift;
          sv.frame = ReferenceFrame::PZ90;
 
             // We are done, let's return
@@ -198,22 +195,15 @@ namespace gpstk
       sv.x[0] = 1000.0*( px*cs + py*ss );         // X coordinate
       sv.x[1] = 1000.0*(-px*ss + py*cs);          // Y coordinate
       sv.x[2] = 1000.0*pz;                        // Z coordinate
-//      sv.v[0] = 1000.0*( vx*cs + vy*ss + we*py ); // X velocity
-//      sv.v[1] = 1000.0*(-vx*ss + vy*cs - we*px ); // Y velocity
       sv.v[0] = 1000.0*( vx*cs + vy*ss + we*(sv.x[1]/1000.0) ); // X velocity
       sv.v[1] = 1000.0*(-vx*ss + vy*cs - we*(sv.x[0]/1000.0) ); // Y velocity
       sv.v[2] = 1000.0*vz;                        // Z velocity
 
-// XXX Major check here!!!
-
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
       sv.relcorr = sv.computeRelativityCorrection();
-//      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
-      sv.clkbias = clkbias  + clkdrift * (epoch - ephTime);
-      sv.clkdrift = clkdrift * 1000.0; // WHY I MUST USE 1000.0 TO GET IT RIGHT???
-                                       // Check the units in all time-related
-                                       // items, including relativity.
+      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
+      sv.clkdrift = clkdrift;
       sv.frame = ReferenceFrame::PZ90;
 
          // We are done, let's return
@@ -274,8 +264,6 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-// XXX Major check here!!!
-
          // Auxiliar object
       Xvt sv;
       sv.x = x;
@@ -284,8 +272,7 @@ namespace gpstk
          // In the GLONASS system, 'clkbias' already includes the relativistic
          // correction, therefore we must substract the late from the former.
       sv.relcorr = sv.computeRelativityCorrection();
-//      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
-      sv.clkbias = clkbias + clkdrift * (epoch - ephTime);
+      sv.clkbias = clkbias + clkdrift * (epoch - ephTime) - sv.relcorr;
 
       return sv.clkbias;
 
