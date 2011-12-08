@@ -109,22 +109,7 @@ namespace gpstk
 
          // Values to be returned will be stored here
       Xvt sv;
-/*
-         // If the exact epoch is found, let's return the values
-      if (i != sem.end())      // exact match of epoch
-      {
 
-         CommonTime refEpoch( i->first );
-         GloEphemeris data( i->second );
-
-            // Compute the satellite position, velocity and clock offset
-         sv = data.svXvt( epoch );
-//         sv = data.svXvt( refEpoch );
-
-            // We are done, let's return
-         return sv;
-      }
-*/
          // 'i' will be the first element whose key >= epoch.
       i = sem.lower_bound(epoch);
 
@@ -153,12 +138,10 @@ namespace gpstk
       }
 
          // We now have the proper reference data record. Let's use it
-//      CommonTime refEpoch( i->first );
       GloEphemeris data( i->second );
 
          // Compute the satellite position, velocity and clock offset
       sv = data.svXvt( epoch );
-//      sv = data.svXvt( refEpoch );
 
          // We are done, let's return
       return sv;
