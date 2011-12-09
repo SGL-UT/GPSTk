@@ -104,14 +104,11 @@ namespace gpstk
          // Let's take the second part of the EphMap
       const TimeGloMap& sem = svmap->second;
 
-         // Look for the exact epoch
-      TimeGloMap::const_iterator i = sem.find(epoch);
+         // Look for 'i': the first element whose key >= epoch.
+      TimeGloMap::const_iterator i = sem.lower_bound(epoch);;
 
          // Values to be returned will be stored here
       Xvt sv;
-
-         // 'i' will be the first element whose key >= epoch.
-      i = sem.lower_bound(epoch);
 
          // If we reached the end, the requested time is beyond the last
          // ephemeris record, but it may still be within the allowable time
@@ -325,6 +322,76 @@ namespace gpstk
       return finalTime;
 
    }; // End of method 'GloEphemerisStore::getFinalTime()'
+
+
+      /* Find the corresponding GLONASS ephemeris for the given epoch.
+       *
+       * @param sat SatID of satellite of interest.
+       * @param t time with which to search for ephemeris.
+       *
+       * @return a reference to the desired ephemeris.
+       * @throw InvalidRequest object thrown when no ephemeris is found.
+       */
+   const GloEphemeris& GloEphemerisStore::findEphemeris( const SatID& sat,
+                                                const CommonTime& epoch ) const
+      throw( InvalidRequest )
+   {
+
+         // Check that the given epoch is within the available time limits.
+         // We have to add a margin of 15 minutes (900 seconds).
+      if ( epoch <  (initialTime - 900.0) ||
+           epoch >= (finalTime   + 900.0)   )
+      {
+         InvalidRequest e( "Requested time is out of boundaries for satellite "
+                          + StringUtils::asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+         // Look for the satellite in the 'pe' (EphMap) data structure.
+      GloEphMap::const_iterator svmap = pe.find(sat);
+
+         // If satellite was not found, issue an exception
+      if (svmap == pe.end())
+      {
+         InvalidRequest e( "Ephemeris for satellite  "
+                           + StringUtils::asString(sat) + " not found." );
+         GPSTK_THROW(e);
+      }
+
+         // Let's take the second part of the EphMap
+      const TimeGloMap& sem = svmap->second;
+
+         // 'i' will be the first element whose key >= epoch.
+      TimeGloMap::const_iterator i = sem.lower_bound(epoch);
+
+         // If we reached the end, the requested time is beyond the last
+         // ephemeris record, but it may still be within the allowable time
+         // span, so we can use the last record.
+      if ( i == sem.end() )
+      {
+         i = --i;
+      }
+
+         // If key > (epoch+900), we must use the previous record if possible.
+      if ( ( i->first > (epoch+900.0) ) && ( i != sem.begin() ) )
+      {
+         i = --i;
+      }
+
+         // Check that the given epoch is within the available time limits for
+         // this specific satellite, with a margin of 15 minutes (900 seconds).
+      if ( epoch <  (i->first - 900.0) ||
+           epoch >= (i->first   + 900.0)   )
+      {
+         InvalidRequest e( "Requested time is out of boundaries for satellite "
+                          + StringUtils::asString(sat) );
+         GPSTK_THROW(e);
+      }
+
+         // We now have the proper reference data record. Let's return it
+      return ( i->second );
+
+   }; // End of method 'GloEphemerisStore::findEphemeris()'
 
 
       // Return true if the given SatID is present in the store

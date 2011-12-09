@@ -165,18 +165,24 @@ namespace gpstk
       { pe.clear(); return; };
 
 
-         /// Determine the earliest time for which this object can successfully
-         /// determine the Xvt for any object.
-         /// @return The initial time
-         /// @throw InvalidRequest This is thrown if the object has no data.
+         /** Determine the earliest time for which this object can successfully
+          *  determine the Xvt for any object.
+          *
+          * @return The initial time.
+          *
+          * @throw InvalidRequest This is thrown if the object has no data.
+          */
       virtual CommonTime getInitialTime() const
          throw(InvalidRequest);
 
 
-         /// Determine the latest time for which this object can successfully
-         /// determine the Xvt for any object.
-         /// @return The final time
-         /// @throw InvalidRequest This is thrown if the object has no data.
+         /** Determine the latest time for which this object can successfully
+          *  determine the Xvt for any object.
+          *
+          * @return The final time.
+          *
+          * @throw InvalidRequest This is thrown if the object has no data.
+          */
       virtual CommonTime getFinalTime() const
          throw(InvalidRequest);
 
@@ -193,6 +199,56 @@ namespace gpstk
          /// Return the number of satellites present in the store
       int size(void) const throw()
       { return pe.size(); }
+
+
+         /** Find the corresponding GLONASS ephemeris for the given epoch.
+          *
+          * @param sat     SatID of satellite of interest.
+          * @param epoch   time with which to search for ephemeris.
+          *
+          * @return a reference to the desired ephemeris.
+          * @throw InvalidRequest object thrown when no ephemeris is found.
+          */
+      const GloEphemeris& findEphemeris( const SatID& sat,
+                                         const CommonTime& epoch ) const
+         throw( InvalidRequest );
+
+
+         /** Find the corresponding GLONASS ephemeris for the given epoch.
+          *
+          * @param sat SatID of satellite of interest.
+          * @param t time with which to search for ephemeris.
+          *
+          * @return a reference to the desired ephemeris.
+          * @throw InvalidRequest object thrown when no ephemeris is found.
+          *
+          * @note This method is added for consistency with classes
+          * GPSEphemerisStore.hpp and GalEphemerisStore.hpp, because in GLONASS
+          * the returned ephemeris is ALWAYS the nearest one.
+          */
+      const GloEphemeris& findUserEphemeris( const SatID& sat,
+                                             const CommonTime& t ) const
+         throw( InvalidRequest )
+      { return findEphemeris(sat, t); };
+
+
+         /** Find the corresponding GLONASS ephemeris for the given epoch.
+          *
+          * @param sat SatID of satellite of interest.
+          * @param t time with which to search for ephemeris.
+          *
+          * @return a reference to the desired ephemeris.
+          * @throw InvalidRequest object thrown when no ephemeris is found.
+          *
+          * @note This method is added for consistency with classes
+          * GPSEphemerisStore.hpp and GalEphemerisStore.hpp, because in GLONASS
+          * the returned ephemeris is ALWAYS the nearest one.
+          */
+      const GloEphemeris& findNearEphemeris( const SatID& sat,
+                                             const CommonTime& t ) const
+         throw( InvalidRequest )
+      { return findEphemeris(sat, t); };
+
 
    private:
 
