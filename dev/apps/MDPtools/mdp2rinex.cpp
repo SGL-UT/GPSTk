@@ -81,7 +81,7 @@ public:
          c2Opt('c', "l2c",
                "Enable output of L2C data in C2"),
          anyNavOpt('a',"any-nav-source", 
-                "Accept subframes from any code/carrier"),
+                "Accept subframes from any code/carrier");
          //fixHalfOpt('f',"fix-half-cycle","Apply half-cycle corrections to phase");
 
       if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
