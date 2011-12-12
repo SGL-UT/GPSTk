@@ -63,7 +63,7 @@ public:
       throw()
       : InOutFramework<MDPStream, RinexObsStream>(
          applName, "Converts an MDP stream to RINEX."),
-        anyNav(false)
+        anyNav(false), fixHalf(true)
    {}
 
    bool initialize(int argc, char *argv[]) throw()
@@ -81,7 +81,8 @@ public:
          c2Opt('c', "l2c",
                "Enable output of L2C data in C2"),
          anyNavOpt('a',"any-nav-source", 
-                "Accept subframes from any code/carrier");
+                "Accept subframes from any code/carrier"),
+         //fixHalfOpt('f',"fix-half-cycle","Apply half-cycle corrections to phase");
 
       if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
          return false;
@@ -103,6 +104,9 @@ public:
 
       if (anyNavOpt.getCount())
          anyNav = true;
+
+      //if (fixHalfOpt.getCount())
+      //   fixHalf = true;
 
       roh.valid |= RinexObsHeader::allValid21;
       roh.fileType = "Observation";
@@ -193,7 +197,7 @@ protected:
          if (nav.neededCooking)
             cout << "Subframe required cooking" << endl;
          if (nav.inverted)
-            cout << "Subframe was inverted" << endl;
+            cout << "Subframe " << nav.getSFID() << " was inverted" << endl;
          if (!nav.parityGood)
             cout << "Parity error" << endl;
       }
@@ -204,8 +208,8 @@ protected:
          return;
 
       short sfid = nav.getSFID();
-      if (sfid > 3)
-         return;
+      //BWT process all subframes
+      //if (sfid > 3) return;
 
       short week = nav.time.GPSfullweek();
       long sow = nav.getHOWTime();
@@ -216,12 +220,13 @@ protected:
          return;
       }
 
-      if (debugLevel>1)
+      //BWT if (debugLevel>1)
          nav.dump(cout);
-      DayTime howTime(week, sow);
 
-      if (!anyNav && (nav.range != rcCA || nav.carrier != ccL1))
-         return;
+      //BWT not used DayTime howTime(week, sow);
+
+      //BWT if (!anyNav && (nav.range != rcCA || nav.carrier != ccL1))
+         //BWT return;
 
       NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       ephData[ni] = nav;
@@ -269,9 +274,44 @@ protected:
          epoch.clear();
          prevTime = t;
       }
+
+      //cout << "Before correction\n"; obs.dump(cout);
+      if(fixHalf) correctHalfCycle(obs);
+      //cout << "After correction\n"; obs.dump(cout);
+
       epoch.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
+
    } // MDP2Rinex::process(MDPObsEpoch)
 
+   void correctHalfCycle(MDPObsEpoch& epoch)
+   {
+      int prn(epoch.prn);
+      MDPObsEpoch::ObsMap& obsmap(epoch.obs);
+      MDPObsEpoch::ObsMap::iterator jt;
+      for(jt = obsmap.begin(); jt != obsmap.end(); ++jt) {
+         CarrierCode cc(jt->first.first);
+         RangeCode rc(jt->first.second);
+
+         NavIndex ni(RangeCarrierPair(rc, cc), prn);
+         if(ephData.find(ni) == ephData.end())        // no nav - can't fix
+            continue;
+
+         MDPNavSubframe& nav(ephData[ni]);
+         //if(debugLevel)
+         //cout << "halfcycle inversion prn " << prn
+            //<< " L" << cc << " " << (rc==rcCA ? "CA":"Y")
+            //<< " " << (nav.inverted ? "-1":"+1") << endl;
+         if(!nav.inverted)                            // not inverted - no fix needed
+            continue;
+
+         // fix the phase data
+         jt->second.phase += 0.5;
+         //if(debugLevel)
+         //cout << "correct phase prn " << prn << " L" << cc
+         //   << " " << (rc==rcCA ? "CA":"Y") << endl;
+         //jt->second.dump(cout); cout << endl;
+      }
+   }
 
    virtual void process()
    {
@@ -329,6 +369,7 @@ private:
 
    bool thin;
    bool anyNav;
+   bool fixHalf;
    int thinning;
    bool firstObs, firstEph;
    DayTime prevTime;
