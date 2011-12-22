@@ -65,7 +65,7 @@ StaPosList  VisSupport::getStationCoordinates(
       }
       
          // In the second case, the user has provided a specific list of 
-         // staitons that are to be excluded from the list provided in 
+         // stations that are to be excluded from the list provided in 
          // the station coordinates file. 
       else if (excludeStation.getCount()>0)
       {

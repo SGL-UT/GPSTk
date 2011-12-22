@@ -39,12 +39,16 @@
 #include "StringUtils.hpp"
 #include "TimeString.hpp"
 #include "CommandOptionWithTimeArg.hpp"
+#include "CommonTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "TimeConstants.hpp"
+#include "YDSTime.hpp"
 #include "AlmOrbit.hpp"
 #include "GPSAlmanacStore.hpp"
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "GNSSconstants.hpp"
+//#include "icd_gps_constants.hpp"
 #include "gps_constants.hpp"
 #include "CivilTime.hpp"
 #include "YDSTime.hpp"
@@ -381,7 +385,7 @@ void compSatVis::printNavFileReferenceTime(FILE* logfp)
 
 gpstk::CommonTime compSatVis::setStartTime()
 {
-   CommonTime retDT = CommonTime( 621, 0.0 );     // 12/1/1991
+   CommonTime retDT = GPSWeekSecond( 621, 0.0 );     // 12/1/1991
    CommonTime initialTime;
    CommonTime finalTime;
    
@@ -422,7 +426,7 @@ gpstk::CommonTime compSatVis::setStartTime()
    double diff = finalTime - initialTime;
    retDT = initialTime;
    retDT += diff/2.0;
-   retDT = CommonTime( static_cast<YDSTime>(retDT).year, static_cast<YDSTime>(retDT).doy, 0.0 );
+   retDT = YDSTime( static_cast<YDSTime>(retDT).year, static_cast<YDSTime>(retDT).doy, 0.0 );
    return(retDT);
 }        
 
@@ -458,7 +462,7 @@ void compSatVis::process()
    if (debugLevel) cout << "Setting evaluation start time: ";
    startT = evalStartTime;
    if (!evalStartTimeSet) startT = setStartTime();
-   if (debugLevel) cout << printTime(startT,"%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
+   if (debugLevel) cout << printTime(startT, "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
    
       // If no end time commanded, compute for 23h 56m (GPS ground track repeat)
    if (debugLevel) cout << "Setting evaluation end time: ";
@@ -489,7 +493,7 @@ void compSatVis::process()
    {
       if (debugLevel)
       {
-         long sec = (long) static_cast<CivilTime>(currT).second;
+         long sec = (long) static_cast<GPSWeekSecond>(currT).sow;
          long newValue = sec / 3600;
          if (newValue!=lastValue)
          {
