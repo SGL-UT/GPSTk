@@ -43,6 +43,7 @@
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "YDSTime.hpp"
+#include "SystemTime.hpp"
 #include "AlmOrbit.hpp"
 #include "GPSAlmanacStore.hpp"
 #include "YumaAlmanacStore.hpp"
@@ -516,10 +517,10 @@ void compSatVis::process()
 
 void compSatVis::generateHeader( gpstk::CommonTime currT )
 {
-   CommonTime now;
+   SystemTime sysTime;
    string tform = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w";
    fprintf(logfp,"compSatVis output file.  Generated at %s\n",
-           printTime(now,"%02H:%02M on %02m/%02d/%02y").c_str() );
+           printTime(sysTime,"%02H:%02M on %02m/%02d/%02y").c_str() );
    fprintf(logfp,"Program arguments:\n");
    fprintf(logfp,"  Navigation file         : ",nFileNameOpt.getValue().front().c_str());
    vector<std::string> values = nFileNameOpt.getValue();

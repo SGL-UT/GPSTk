@@ -43,6 +43,7 @@
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "YDSTime.hpp"
+#include "SystemTime.hpp"
 #include "GPSAlmanacStore.hpp"
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
@@ -389,7 +390,7 @@ void compStaVis::printNavFileReferenceTime(FILE* logfp)
 
 gpstk::CommonTime compStaVis::setStartTime()
 {
-   CommonTime retDT = CommonTime( 621, 0.0 );     // 12/1/1991
+   CommonTime retDT = GPSWeekSecond( 621, 0.0 );     // 12/1/1991
    CommonTime initialTime;
    CommonTime finalTime;
    
@@ -430,7 +431,7 @@ gpstk::CommonTime compStaVis::setStartTime()
    double diff = finalTime - initialTime;
    retDT = initialTime;
    retDT += diff/2.0;
-   retDT = CommonTime( static_cast<YDSTime>(retDT).year, static_cast<YDSTime>(retDT).doy, 0.0 );
+   retDT = YDSTime( static_cast<YDSTime>(retDT).year, static_cast<YDSTime>(retDT).doy, 0.0 );
    return(retDT);
 }        
 
@@ -540,7 +541,7 @@ void compStaVis::process()
 
 void compStaVis::generateHeader( gpstk::CommonTime currT )
 {
-   CommonTime now;
+   SystemTime now;
    string tform = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w";
    fprintf(logfp,"compStaVis output file.  Generated at %s\n",
            printTime(now,"%02H:%02M on %02m/%02d/%02y").c_str() );
