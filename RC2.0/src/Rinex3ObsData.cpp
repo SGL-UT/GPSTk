@@ -54,124 +54,211 @@ using namespace std;
 
 namespace gpstk
 {
-   
-   void reallyPutRecordVer2(Rinex3ObsStream& strm, const Rinex3ObsData& rod)
+
+
+   void reallyPutRecordVer2( Rinex3ObsStream& strm,
+                             const Rinex3ObsData& rod )
       throw(FFStreamError, StringException)
    {
-   // is there anything to write?
-   if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
-            && (rod.numSVs==0 || rod.obs.empty()) ) return;
-   if(rod.epochFlag>=2 && rod.epochFlag<=5
-            && rod.auxHeader.NumberHeaderRecordsToBeWritten()==0) return;
 
-   // first the epoch line to 'line'
-   //line  = writeTime(rod.time); // (ver 2 RinexObsData::writeTime)
-   string line;
-   if(rod.time == CommonTime::BEGINNING_OF_TIME)
-   line = string(26, ' ');
-   else {
-      CivilTime civTime(rod.time);
-      line  = string(1, ' ');
-      line += rightJustify(asString<short>(civTime.year),2);
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civTime.month),2);
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civTime.day),2);
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civTime.hour),2);
-      line += string(1, ' ');
-      line += rightJustify(asString<short>(civTime.minute),2);
-      line += rightJustify(asString(civTime.second, 7),11);
-      line += string(2, ' ');
-      line += rightJustify(asString<short>(rod.epochFlag), 1);
-      line += rightJustify(asString<short>(rod.numSVs), 3);
-   }
-        
-   // write satellite ids to 'line'
-   const int maxPrnsPerLine = 12;
-   int satsWritten = 0;
-   Rinex3ObsData::DataMap::const_iterator itr(rod.obs.begin());
-   if(rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6) {
-      while(itr != rod.obs.end() && satsWritten < maxPrnsPerLine) {
-         line += itr->first.toString();
-         satsWritten++;
-         itr++;
+         // is there anything to write?
+      if( (rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6)
+          && (rod.numSVs==0 || rod.obs.empty()) ) return;
+      
+      if( rod.epochFlag>=2 
+          && rod.epochFlag<=5
+          && rod.auxHeader.NumberHeaderRecordsToBeWritten()==0 ) return;
+
+      // first the epoch line to 'line'
+      //line  = writeTime(rod.time); // (ver 2 RinexObsData::writeTime)
+      string line;
+      if(rod.time == CommonTime::BEGINNING_OF_TIME)
+         line = string(26, ' ');
+      else
+      {
+         CivilTime civTime(rod.time);
+         line  = string(1, ' ');
+         line += rightJustify(asString<short>(civTime.year),2);
+         line += string(1, ' ');
+         line += rightJustify(asString<short>(civTime.month),2);
+         line += string(1, ' ');
+         line += rightJustify(asString<short>(civTime.day),2);
+         line += string(1, ' ');
+         line += rightJustify(asString<short>(civTime.hour),2);
+         line += string(1, ' ');
+         line += rightJustify(asString<short>(civTime.minute),2);
+         line += rightJustify(asString(civTime.second, 7),11);
+         line += string(2, ' ');
+         line += rightJustify(asString<short>(rod.epochFlag), 1);
+         line += rightJustify(asString<short>(rod.numSVs), 3);
       }
 
-      // add clock offset
-      if(rod.clockOffset != 0.0) {
-         line += string(68 - line.size(), ' ');
-         line += rightJustify(asString(rod.clockOffset, 9), 12);
-      }
-   
-      // continuation lines
-      while(satsWritten != rod.obs.size()) {
-         if((satsWritten % maxPrnsPerLine) == 0) {
-            strm << line << endl;
-            strm.lineNumber++;
-            line  = string(32, ' ');
+         // write satellite ids to 'line'
+      const int maxPrnsPerLine = 12;
+      int satsWritten = 0;
+
+      Rinex3ObsData::DataMap::const_iterator itr(rod.obs.begin());
+
+      if( rod.epochFlag==0 || rod.epochFlag==1 || rod.epochFlag==6 )
+      {
+         while( itr != rod.obs.end() && satsWritten < maxPrnsPerLine )
+         {
+            line += itr->first.toString();
+            satsWritten++;
+            itr++;
          }
-         line += itr->first.toString();
-         satsWritten++;
-         itr++;
-      }
-   }
 
-   // write the epoch line
-   strm << line << endl;
-   strm.lineNumber++;         
-     
-   // write the auxiliary header records, if any
-   if(rod.epochFlag >= 2 && rod.epochFlag <= 5) {
-      try { rod.auxHeader.WriteHeaderRecords(strm); }
-      catch(FFStreamError& e) { GPSTK_RETHROW(e); }
-      catch(StringException& e) { GPSTK_RETHROW(e); }
-   }
-   // write out data
-   else if(rod.epochFlag == 0 || rod.epochFlag == 1 || rod.epochFlag == 6) {
-      int i;
-      const int maxObsPerLine(5);
-      // loop over satellites in R3 obs data
-      for(itr = rod.obs.begin(); itr != rod.obs.end(); ++itr) {
-         RinexSatID sat(itr->first);               // current satellite
-         string sys(string(1,sat.systemChar()));   // system
-         itr = rod.obs.find(sat);                  // get data vector to be written
-         int obsWritten(0);
-         line = string("");
-         for(i=0; i<strm.header.R2ObsTypes.size(); i++) {   // loop over R2 obstypes
-            // get the R3 obs ID from the map
-            RinexObsID obsid;
-            obsid = strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
-            // now find index of that data from R3 header
-            const vector<RinexObsID>& vecData(strm.header.mapObsTypes[sys]);
-            vector<RinexObsID>::const_iterator jt;
-            jt = find(vecData.begin(), vecData.end(), obsid);
-            int ind(-1);                           // index into vecData
-            if(jt != vecData.end()) ind = jt-vecData.begin();
-
-            // need a continuation line?
-            if(obsWritten != 0 && (obsWritten % maxObsPerLine) == 0) {
+            // add clock offset
+         if( rod.clockOffset != 0.0 )
+         {
+            line += string(68 - line.size(), ' ');
+            line += rightJustify( asString(rod.clockOffset, 9), 12 );
+         }
+   
+            // continuation lines
+         while( satsWritten != rod.obs.size() )
+         {
+            if((satsWritten % maxPrnsPerLine) == 0)
+            {
                strm << line << endl;
                strm.lineNumber++;
-               line = string("");
+               line  = string(32, ' ');
             }
-
-            // write the line
-            line += rightJustify(asString(            // double 14.3
-                                    (ind == -1 ? 0.0 : itr->second[ind].data),3),14);
-            line += (ind == -1 || itr->second[ind].lli == 0)
-                        ? string(1, ' ')
-                        : rightJustify(asString<short>(itr->second[ind].lli),1);
-            line += (ind == -1 || itr->second[ind].ssi == 0)
-                        ? string(1, ' ')
-                        : rightJustify(asString<short>(itr->second[ind].ssi),1);
-            obsWritten++;
+            line += itr->first.toString();
+            satsWritten++;
+            itr++;
          }
-         strm << line << endl;
-         strm.lineNumber++;
+
+      }  // End of 'if( rod.epochFlag==0 || rod.epochFlag==1 || ...'
+
+         // write the epoch line
+      strm << line << endl;
+      strm.lineNumber++;         
+
+         // write the auxiliary header records, if any
+      if( rod.epochFlag >= 2 && rod.epochFlag <= 5 )
+      {
+         try
+         {
+            rod.auxHeader.WriteHeaderRecords(strm);
+         }
+         catch(FFStreamError& e)
+         {
+            GPSTK_RETHROW(e);
+         }
+         catch(StringException& e)
+         {
+            GPSTK_RETHROW(e);
+         }
+      }  // write out data
+      else if( rod.epochFlag == 0 || rod.epochFlag == 1 || rod.epochFlag == 6 )
+      {
+         int i;
+         const int maxObsPerLine(5);
+
+            // loop over satellites in R3 obs data
+         for( itr = rod.obs.begin(); itr != rod.obs.end(); ++itr )
+         {
+
+            RinexSatID sat(itr->first);               // current satellite
+            string sys(string(1,sat.systemChar()));   // system
+            itr = rod.obs.find(sat);           // get data vector to be written
+            int obsWritten(0);
+            line = string("");
+
+               // loop over R2 obstypes
+            for( i=0; i<strm.header.R2ObsTypes.size(); i++ )
+            {
+
+                  // get the R3 obs ID from the map
+               RinexObsID obsid;
+               obsid =
+                 strm.header.mapSysR2toR3ObsID[sys][strm.header.R2ObsTypes[i]];
+
+                 // now find index of that data from R3 header
+               const vector<RinexObsID>& vecData(strm.header.mapObsTypes[sys]);
+
+               vector<RinexObsID>::const_iterator jt;
+               jt = find(vecData.begin(), vecData.end(), obsid);
+
+               int ind(-1);                           // index into vecData
+
+               if( jt != vecData.end() ) ind = jt-vecData.begin();
+
+                  // need a continuation line?
+               if( obsWritten != 0 && (obsWritten % maxObsPerLine) == 0 )
+               {
+                  strm << line << endl;
+                  strm.lineNumber++;
+                  line = string("");
+               }
+
+                  // write the line
+               line += rightJustify(asString(            // double 14.3
+                          ( ind == -1 ? 0.0 : itr->second[ind].data),3),14 );
+               line += (ind == -1 || itr->second[ind].lli == 0)
+                       ? string(1, ' ')
+                       : rightJustify(asString<short>(itr->second[ind].lli),1);
+               line += (ind == -1 || itr->second[ind].ssi == 0)
+                       ? string(1, ' ')
+                       : rightJustify(asString<short>(itr->second[ind].ssi),1);
+               obsWritten++;
+
+            }  // End of 'for( i=0; i<strm.header.R2ObsTypes.size(); i++ )'
+
+            strm << line << endl;
+            strm.lineNumber++;
+
+         }  // End of 'for( itr = rod.obs.begin(); itr != rod.obs.end();...'
+
+      }  // Ebf of 'else if( rod.epochFlag == 0 || rod.epochFlag == 1 || ...'
+
+   }  // End of function 'reallyPutRecordVer2()'
+
+
+     /* This method returns the numerical value of a given observation
+      *
+      * @param sat  Satellite whose observation we want to fetch.
+      * @param type String representing the observation type.
+      * @param hdr  RINEX Observation Header for current RINEX file.
+      */
+   double Rinex3ObsData::getValue( const SatID& sat,
+                                   std::string type,
+                                   const Rinex3ObsHeader& hdr ) const
+      throw(InvalidRequest)
+   {
+
+         // We will need the system 'char' of the satellite
+      RinexSatID rsat(sat);
+
+         // Add GNSS code if needed
+      if( type.size() == 3 )
+      {
+         char sysCode = rsat.systemChar();
+         type = sysCode + type;
       }
-   }
- }   // end reallyPutRecordVer2
+
+         // Get the index corresponding to this observation type
+      int index( hdr.getObsIndex(type) );
+
+         // Look for the satellite in 'DataMap'
+      Rinex3ObsData::DataMap::const_iterator it;
+      it = obs.find(rsat);
+
+         // Check if satellite was found
+      if( it == obs.end() )
+      {
+         InvalidRequest ir( rsat.toString() + " is not available.");
+         GPSTK_THROW(ir);
+      }
+
+         // Extract a copy of the data vector 
+      vector<Rinex3ObsData::RinexDatum> vecData(it->second);
+
+         // Return the corresponding data
+      return vecData[index].data;
+
+   }  // End of method 'Rinex3ObsData::getValue( const SatID sat,...'
 
 
    void Rinex3ObsData::reallyPutRecord(FFStream& ffs) const 

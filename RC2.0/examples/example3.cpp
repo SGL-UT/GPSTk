@@ -22,10 +22,10 @@
 //
 //============================================================================
 
-#include "RinexObsBase.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsBase.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsStream.hpp"
 #include "CivilTime.hpp"
 #include "GNSSconstants.hpp"
 #include <iostream>
@@ -59,21 +59,27 @@ int main(int argc, char *argv[])
 
          // Declare RINEX observation file streams and data objects
          // -------------------------------------------------------
-      RinexObsStream roffs(argv[1]);
+      Rinex3ObsStream roffs(argv[1]);
 
          // It is necessary to set the failbit in order to throw exceptions
       roffs.exceptions(ios::failbit);
-      RinexObsHeader roh;
-      RinexObsData roe;
-      RinexObsData::RinexDatum dataobj;
+      Rinex3ObsHeader roh;
+      Rinex3ObsData roe;
+      Rinex3ObsData::RinexDatum dataobj;
 
-         // Read the RINEX header (this could be skipped).
+         // Read the RINEX header (don't skip this step)
          // --------------------------------------------
       roffs >> roh;
 
          // Print RINEX header to terminal screen
-         // -------------------------------
+         // -------------------------------------
       roh.dump(cout);
+
+         // The following lines fetch the corresponding indexes to each
+         // observation type we are interested in
+      int indexP1( roh.getObsIndex( "P1" ) );
+      int indexL1( roh.getObsIndex( "L1" ) );
+      int indexP2( roh.getObsIndex( "P2" ) );
 
          // Loop through epochs and process data for each.
          // ----------------------------------------------
@@ -92,7 +98,7 @@ int main(int argc, char *argv[])
             // Check to see if your PRN is in view at this epoch (ie.
             // search for the PRN).
             // -----------------------------------------------------------
-         RinexObsData::RinexSatMap::iterator pointer = roe.obs.find(prn);
+         Rinex3ObsData::DataMap::iterator pointer = roe.obs.find(prn);
          if( pointer == roe.obs.end() )
          {
             cout << "PRN " << myprn << " not in view " << endl;
@@ -104,30 +110,22 @@ int main(int argc, char *argv[])
                // from the RinexObsData object
                // --------------------------------------------------------
 
-               // The intuitive way
-            dataobj = roe.obs[prn][RinexObsHeader::P1];
-
-               // The more efficient STL way
-            RinexObsData::RinexDatum dataobj2 =
-                                       (*pointer).second[ RinexObsHeader::P1 ];
-
-               // Another way to do the same that above
-               // RinexObsData::RinexDatum dataobj2 =
-               //    pointer->second[ RinexObsHeader::P1 ];
-
-            if( dataobj.data != dataobj2.data )
-               cout << "STL has a bug! (Type crtl-C now or else orcs "
-                    << "will crawl from you ears!)" << endl;
-
+               // The fast but dangerous method
+            dataobj = roe.obs[prn][indexP1];
             double P1 = dataobj.data;
 
+               // With the former method there is a chance of unawarely change
+               // the contents of "roe.obs".
+               // The following method is secure but slower
+            double P2b = roe.getValue(prn, "P2", roh);
+
                // Get P2 pseudorange and L1 phase measurement.
-               // We will stick with the intuitive way.
-               // -------------------------------------
-            dataobj = roe.obs[prn][RinexObsHeader::P2];
+               // We will stick with fast and dangerous way.
+               // ------------------------------------------
+            dataobj = roe.obs[prn][indexP2];
             double P2 = dataobj.data;
 
-            dataobj = roe.obs[prn][RinexObsHeader::L1];
+            dataobj = roe.obs[prn][indexL1];
             double L1 = dataobj.data;
 
                // Compute multipath

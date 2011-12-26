@@ -2000,4 +2000,87 @@ namespace gpstk
    } // end dump
 
 
+      /* This method returns the numerical index of a given observation
+       *
+       * @param type String representing the observation type.
+       */
+   int Rinex3ObsHeader::getObsIndex( std::string type ) const
+      throw(InvalidRequest)
+   {
+
+         // 'old-style' type: Let's change it to 'new style'.
+      if( type.size() == 2 )
+      {
+
+         if( type == "C1" ) type = "C1C";
+         else if( type == "P1" ) type = "C1P";
+         else if( type == "L1" ) type = "L1P";
+         else if( type == "D1" ) type = "D1P";
+         else if( type == "S1" ) type = "S1P";
+         else if( type == "C2" ) type = "C2C";
+         else if( type == "P2" ) type = "C2P";
+         else if( type == "L2" ) type = "L2P";
+         else if( type == "D2" ) type = "D2P";
+         else if( type == "S2" ) type = "S2P";
+         else
+         {
+            InvalidRequest exc("Invalid type.");
+            GPSTK_THROW(exc);
+         }
+      }
+
+         // Add GNSS code. By default the system is GPS
+      if( type.size() == 3 )
+      {
+         type = "G" + type;
+      }
+
+         // Check if resulting 'type' is valid
+      if( !isValidRinexObsID(type) )
+      {
+         InvalidRequest ir(type + " is not a valid RinexObsID!.");
+         GPSTK_THROW(ir);
+      }
+
+         // Extract the GNSS from the type
+      string sysStr( type, 0, 1 );
+      
+         // Create a RinexObsID object from current type
+      RinexObsID robs(type);
+
+         // We need to look for the GNSS in the map
+      map<std::string,vector<RinexObsID> >::const_iterator it;
+      it = mapObsTypes.find(sysStr);
+
+         // Check if GNSS was found
+      if( it == mapObsTypes.end() )
+      {
+         InvalidRequest ir(sysStr + " is not a valid GNSS!.");
+         GPSTK_THROW(ir);
+      }
+
+         // Extract a copy of the vector of observations types
+      vector<RinexObsID> vecObs(it->second);
+
+      int index(0);
+      bool found(false);
+      while( !found && index < vecObs.size() )
+      {
+         found = ( vecObs[index] == robs );
+         index++;
+      }
+      --index;
+
+         // This observation type is not stored
+      if( !found )
+      {
+         InvalidRequest ir(type + " RinexObsID is not stored!.");
+         GPSTK_THROW(ir);
+      }
+
+      return index;
+
+   }  // End of method 'Rinex3ObsHeader::getObsIndex()'
+
+
 } // namespace gpstk

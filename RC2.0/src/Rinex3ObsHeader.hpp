@@ -276,6 +276,15 @@ namespace gpstk
       /// RINEX header.
       virtual void dump(std::ostream& s) const;
 
+
+         /** This method returns the numerical index of a given observation
+          *
+          * @param type String representing the observation type.
+          */
+      virtual int getObsIndex( std::string type ) const
+         throw(InvalidRequest);
+
+
       /// Parse a single header record, and modify valid accordingly.
       /// Used by reallyGetRecord for both Rinex3ObsHeader and Rinex3ObsData.
       void ParseHeaderRecord(std::string& line)
@@ -296,7 +305,9 @@ namespace gpstk
       /// Compute map of obs types for use in writing version 2 header and data
       void PrepareVer2Write(void) throw();
 
+
    protected:
+
 
       /// outputs this record to the stream correctly formatted.
       virtual void reallyPutRecord(FFStream& s) const
@@ -314,6 +325,7 @@ namespace gpstk
 
       friend class Rinex3ObsData;
 
+
    private:
 
       /// Converts the daytime \a dt into a Rinex Obs time
@@ -323,6 +335,7 @@ namespace gpstk
       /// This function sets the time for this header.
       /// It looks at \a line to obtain the needed information.
       CivilTime parseTime(const std::string& line) const;
+
 
    }; // end class Rinex3ObsHeader
 
