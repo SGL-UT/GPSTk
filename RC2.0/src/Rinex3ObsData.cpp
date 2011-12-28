@@ -216,15 +216,49 @@ namespace gpstk
    }  // End of function 'reallyPutRecordVer2()'
 
 
-     /* This method returns the numerical value of a given observation
+      /* This method returns the RinexDatum of a given observation
+       *
+       * @param sat     Satellite whose observation we want to fetch.
+       * @param index   Index representing the observation type. It is
+       *                obtained from corresponding RINEX Observation Header
+       *                using method 'Rinex3ObsHeader::getObsIndex()'.
+       */
+   Rinex3ObsData::RinexDatum Rinex3ObsData::getObs( const SatID& sat,
+                                                    int index ) const
+      throw(InvalidRequest)
+   {
+
+      RinexSatID rsat(sat);
+
+         // Look for the satellite in 'DataMap'
+      Rinex3ObsData::DataMap::const_iterator it;
+      it = obs.find(rsat);
+
+         // Check if satellite was found
+      if( it == obs.end() )
+      {
+         InvalidRequest ir( rsat.toString() + " is not available.");
+         GPSTK_THROW(ir);
+      }
+
+         // Extract a copy of the data vector
+      vector<Rinex3ObsData::RinexDatum> vecData(it->second);
+
+         // Return the corresponding data
+      return vecData[index];
+
+   }  // End of method 'Rinex3ObsData::getObs()'
+
+
+     /* This method returns the RinexDatum of a given observation
       *
       * @param sat  Satellite whose observation we want to fetch.
       * @param type String representing the observation type.
       * @param hdr  RINEX Observation Header for current RINEX file.
       */
-   double Rinex3ObsData::getValue( const SatID& sat,
-                                   std::string type,
-                                   const Rinex3ObsHeader& hdr ) const
+   Rinex3ObsData::RinexDatum Rinex3ObsData::getObs( const SatID& sat,
+                                                    std::string type,
+                                             const Rinex3ObsHeader& hdr ) const
       throw(InvalidRequest)
    {
 
@@ -241,22 +275,8 @@ namespace gpstk
          // Get the index corresponding to this observation type
       int index( hdr.getObsIndex(type) );
 
-         // Look for the satellite in 'DataMap'
-      Rinex3ObsData::DataMap::const_iterator it;
-      it = obs.find(rsat);
-
-         // Check if satellite was found
-      if( it == obs.end() )
-      {
-         InvalidRequest ir( rsat.toString() + " is not available.");
-         GPSTK_THROW(ir);
-      }
-
-         // Extract a copy of the data vector 
-      vector<Rinex3ObsData::RinexDatum> vecData(it->second);
-
          // Return the corresponding data
-      return vecData[index].data;
+      return getObs(sat, index);
 
    }  // End of method 'Rinex3ObsData::getValue( const SatID sat,...'
 

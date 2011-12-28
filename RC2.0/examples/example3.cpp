@@ -75,10 +75,9 @@ int main(int argc, char *argv[])
          // -------------------------------------
       roh.dump(cout);
 
-         // The following lines fetch the corresponding indexes to each
-         // observation type we are interested in
+         // The following lines fetch the corresponding indexes for some
+         // observation types we are interested in
       int indexP1( roh.getObsIndex( "P1" ) );
-      int indexL1( roh.getObsIndex( "L1" ) );
       int indexP2( roh.getObsIndex( "P2" ) );
 
          // Loop through epochs and process data for each.
@@ -105,27 +104,27 @@ int main(int argc, char *argv[])
          }
          else
          {
-               // Get P1 pseudorange code.
-               // Here there are two equivalent ways to get the RinexDatum
+               // Get P1, P2 and L1 observations
+               // Here there are three equivalent ways to get the RinexDatum
                // from the RinexObsData object
-               // --------------------------------------------------------
 
-               // The fast but dangerous method
+               // The first one is a fast but DANGEROUS method, because there
+               // is a chance of unawarely change the contents of "roe.obs".
+               // -----------------------------------------------------------
             dataobj = roe.obs[prn][indexP1];
             double P1 = dataobj.data;
 
-               // With the former method there is a chance of unawarely change
-               // the contents of "roe.obs".
-               // The following method is secure but slower
-            double P2b = roe.getValue(prn, "P2", roh);
-
-               // Get P2 pseudorange and L1 phase measurement.
-               // We will stick with fast and dangerous way.
-               // ------------------------------------------
-            dataobj = roe.obs[prn][indexP2];
+               // The second method is secure but a little slower.
+               // This should be your preferred method
+               // -----------------------------------------------------------
+            dataobj = roe.getObs(prn, indexP2);
             double P2 = dataobj.data;
 
-            dataobj = roe.obs[prn][indexL1];
+               // The third method is also secure but it is the slowest.
+               // On the other hand it has the advantage that it doesn't need
+               // a prior call to method 'Rinex3ObsHeader::getObsIndex()'
+               // -----------------------------------------------------------
+            dataobj = roe.getObs(prn, "L1", roh);
             double L1 = dataobj.data;
 
                // Compute multipath

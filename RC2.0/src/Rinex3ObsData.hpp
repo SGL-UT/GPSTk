@@ -120,15 +120,26 @@ namespace gpstk
       Rinex3ObsHeader auxHeader; ///< auxiliary header records (epochFlag 2-5)
 
 
-         /** This method returns the numerical value of a given observation
+         /** This method returns the RinexDatum of a given observation
+          *
+          * @param sat     Satellite whose observation we want to fetch.
+          * @param index   Index representing the observation type. It is
+          *                obtained from corresponding RINEX Observation Header
+          *                using method 'Rinex3ObsHeader::getObsIndex()'.
+          */
+      virtual RinexDatum getObs( const SatID& sat, int index ) const
+         throw(InvalidRequest);
+
+
+         /** This method returns the RinexDatum of a given observation
           *
           * @param sat  Satellite whose observation we want to fetch.
           * @param type String representing the observation type.
           * @param hdr  RINEX Observation Header for current RINEX file.
           */
-      virtual double getValue( const SatID& sat,
-                               std::string type,
-                               const Rinex3ObsHeader& hdr ) const
+      virtual RinexDatum getObs( const SatID& sat,
+                                 std::string type,
+                                 const Rinex3ObsHeader& hdr ) const
          throw(InvalidRequest);
 
 
