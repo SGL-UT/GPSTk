@@ -31,17 +31,15 @@
 #include <vector>
 
    // Classes for handling observations RINEX files (data)
-#include "RinexObsBase.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsStream.hpp"
 
    // Classes for handling satellite navigation parameters RINEX
    // files (ephemerides)
-#include "RinexNavBase.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
 
    // Classes for handling RINEX files with meteorological parameters
 #include "RinexMetBase.hpp"
@@ -104,9 +102,9 @@ int main(int argc, char *argv[])
    {
 
          // Read nav file and store unique list of ephemerides
-      RinexNavStream rnffs(argv[2]);    // Open ephemerides data file
-      RinexNavData rne;
-      RinexNavHeader hdr;
+      Rinex3NavStream rnffs(argv[2]);    // Open ephemerides data file
+      Rinex3NavData rne;
+      Rinex3NavHeader hdr;
 
          // Let's read the header (may be skipped)
       rnffs >> hdr;
@@ -143,16 +141,40 @@ int main(int argc, char *argv[])
 
          // Open and read the observation file one epoch at a time.
          // For each epoch, compute and print a position solution
-      RinexObsStream roffs(argv[1]);    // Open observations data file
+      Rinex3ObsStream roffs(argv[1]);    // Open observations data file
 
          // In order to throw exceptions, it is necessary to set the failbit
       roffs.exceptions(ios::failbit);
 
-      RinexObsHeader roh;
-      RinexObsData rod;
+      Rinex3ObsHeader roh;
+      Rinex3ObsData rod;
 
          // Let's read the header (may be skipped)
       roffs >> roh;
+
+         // The following lines fetch the corresponding indexes for some
+         // observation types we are interested in. Given that old-style
+         // observation types are used, GPS is assumed.
+      int indexP1;
+      try
+      {
+         indexP1 = roh.getObsIndex( "P1" );
+      }
+      catch(...)
+      {
+         cerr << "The observation file doesn't have P1 pseudoranges." << endl;
+         exit(1);
+      }
+
+      int indexP2;
+      try
+      {
+         indexP2 = roh.getObsIndex( "P2" );
+      }
+      catch(...)
+      {
+         indexP2 = -1;
+      }
 
          // Defining iterator "mi" for meteorological data linked list
          // "rml", and set it to the beginning
@@ -193,87 +215,70 @@ int main(int argc, char *argv[])
             vector<double> rangeVec;
 
                // Define the "it" iterator to visit the observations PRN map. 
-               // RinexSatMap is a map from SatID to RinexObsTypeMap:
-               //      std::map<SatID, RinexObsTypeMap>
-            RinexObsData::RinexSatMap::const_iterator it;
+               // Rinex3ObsData::DataMap is a map from RinexSatID to
+               // vector<RinexDatum>:
+               //      std::map<RinexSatID, vector<RinexDatum> >
+            Rinex3ObsData::DataMap::const_iterator it;
 
                // This part gets the PRN numbers and ionosphere-corrected
                // pseudoranges for the current epoch. They are correspondly fed
                // into "prnVec" and "rangeVec"; "obs" is a public attribute of
-               // RinexObsData to get the map of observations
+               // Rinex3ObsData to get the map of observations
             for( it = rod.obs.begin(); it!= rod.obs.end(); it++ )
             {
-                  // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
-                  //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
-               RinexObsData::RinexObsTypeMap otmap;
 
-                  // Define two iterators to visit the observations type map
-               RinexObsData::RinexObsTypeMap::const_iterator itP1, itP2;
+                  // The RINEX file may have P1 observations, but the current
+                  // satellite may not have them.
+               double P1( 0.0 );
+               try
+               {
+                  P1 = rod.getObs( (*it).first, indexP1 ).data;
+               }
+               catch(...)
+               {
+                     // Ignore this satellite if P1 is not found
+                  continue;
+               }
 
-                  /////////////////////////////////////////////////
-                  //
-                  //    What did we do in the former code lines?:
-                  //
-                  // For each observation data epoch (rod), if valid
-                  // (rod.epochFlag = 0 or 1):
-                  // - use "it" iterator to visit the RinexObsTypeMap of each
-                  //   satellite,
-                  // - and then use "itP1" and "itP2" iterators to visit the
-                  //   observation data (RinexDatum) according to their type
-                  //  (RinexObsType)
-                  //
-                  /////////////////////////////////////////////////
+               double ionocorr( 0.0 );
 
-
-                  // The "second" field of a RinexPrnMap (it) is a
-                  // RinexObsTypeMap (otmap)
-               otmap = (*it).second;
-
-                  // Let's find a P1 observation inside the RinexObsTypeMap
-                  // that is "otmap"
-               itP1 = otmap.find(RinexObsHeader::P1);
-
-                  // If "itP1" is not the last type of observation, there may
-                  // be a P2 observation and the double-frequency ionospheric
-                  // corrections may be applied
-               if( itP1 != otmap.end() )
+                  // If there are P2 observations, let's try to apply the
+                  // ionospheric corrections
+               if( indexP2 >= 0 )
                {
 
-                  double ionocorr = 0;
-
-                     // Now, let's find a P2 observation inside the
-                     // RinexObsTypeMap that is "otmap"
-                  itP2 = otmap.find(RinexObsHeader::P2);
-
-                     // If we indeed found a P2 observation, let's apply the
-                     // ionospheric corrections
-                  if( itP2 != otmap.end() )
+                     // The RINEX file may have P2 observations, but the
+                     // current satellite may not have them.
+                  double P2( 0.0 );
+                  try
                   {
-
-                        // The "second" part of a RinexObsTypeMap is a
-                        // RinexDatum, whose public attribute "data" indeed
-                        // holds the actual data point
-                     ionocorr = 1.0 / (1.0 -gamma) *
-                                 ( (*itP1).second.data - (*itP2).second.data );
-
+                     P2 = rod.getObs( (*it).first, indexP2 ).data;
+                  }
+                  catch(...)
+                  {
+                        // Ignore this satellite if P1 is not found
+                     continue;
                   }
 
-                     // Now, we include the current PRN number in the first
-                     // part of "it" (a RinexPrnMap) into the vector holding
-                     // PRN numbers.
-                     // All satellites in view at this epoch that also have P1
-                     // and P2 observations will be included.
-                  prnVec.push_back((*it).first);
+                     // Vector 'vecData' contains RinexDatum, whose public
+                     // attribute "data" indeed holds the actual data point
+                  ionocorr = 1.0 / (1.0 - gamma) * ( P1 - P2 );
 
-                     // The same is done for the vector of doubles holding the
-                     // corrected ranges
-                  rangeVec.push_back((*itP1).second.data-ionocorr);
+               }
+
+                  // Now, we include the current PRN number in the first part
+                  // of "it" iterator into the vector holding the satellites.
+                  // All satellites in view at this epoch that have P1 or P1+P2
+                  // observations will be included.
+               prnVec.push_back( (*it).first );
+
+                  // The same is done for the vector of doubles holding the
+                  // corrected ranges
+               rangeVec.push_back( P1 - ionocorr );
 
                      // WARNING: Please note that so far no further correction
                      // is done on data: Relativistic effects, tropospheric
                      // correction, instrumental delays, etc.
-
-               }  // End of 'if( itP1 != otmap.end() )'
 
             }  // End of 'for( it = rod.obs.begin(); it!= rod.obs.end(); ...'
 
@@ -288,10 +293,10 @@ int main(int argc, char *argv[])
                // ranges, the object containing satellite ephemerides, and a
                // pointer to the tropospheric model to be applied
             raimSolver.RAIMCompute( rod.time,
-                                   prnVec,
-                                   rangeVec,
-                                   bcestore,
-                                   tropModelPtr );
+                                    prnVec,
+                                    rangeVec,
+                                    bcestore,
+                                    tropModelPtr );
 
                // Note: Given that the default constructor sets public
                // attribute "Algebraic" to FALSE, a linearized least squares
