@@ -157,7 +157,6 @@ else
       SpecialFunctions.cpp
       StudentDistribution.cpp
       SunPosition.cpp
-      SuperKalmanFilter.cpp
       SVExclusionList.cpp
       SVNumXRef.cpp
       SVPCodeGen.cpp
@@ -409,7 +408,6 @@ else
       StringUtils.hpp	
       StudentDistribution.hpp	
       SunPosition.hpp	
-      SuperKalmanFilter.hpp	
       SVExclusionList.hpp	
       SVNumXRef.hpp	
       SVPCodeGen.hpp	

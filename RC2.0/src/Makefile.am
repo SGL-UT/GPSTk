@@ -141,7 +141,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       SpecialFunctions.cpp \
       StudentDistribution.cpp \
       SunPosition.cpp \
-      SuperKalmanFilter.cpp \
       SVExclusionList.cpp \
       SVNumXRef.cpp \
       SVPCodeGen.cpp \
@@ -393,7 +392,6 @@ incl_HEADERS = AllanDeviation.hpp \
       StringUtils.hpp \
       StudentDistribution.hpp \
       SunPosition.hpp \
-      SuperKalmanFilter.hpp \
       SVExclusionList.hpp \
       SVNumXRef.hpp \
       SVPCodeGen.hpp \
