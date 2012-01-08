@@ -175,7 +175,7 @@ void example5::spinUp()
       // We need the index pointing to C1-type observations
    try
    {
-      indexC1 = roh.getObsIndex( "P1" );
+      indexC1 = roh.getObsIndex( "C1" );
    }
    catch(...)
    {
