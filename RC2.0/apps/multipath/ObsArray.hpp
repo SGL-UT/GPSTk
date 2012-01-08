@@ -43,6 +43,8 @@
 #include "Exception.hpp" 
 #include "Expression.hpp"
 #include "RinexObsHeader.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 #include "SatID.hpp"
 
 namespace gpstk

@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
       Rinex3ObsHeader roh;
       Rinex3ObsData rod;
 
-         // Let's read the header (may be skipped)
+         // Let's read the header
       roffs >> roh;
 
          // The following lines fetch the corresponding indexes for some

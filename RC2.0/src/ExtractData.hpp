@@ -5,8 +5,8 @@
  * This is the base class to ease data extraction from a RinexObsData object.
  */
 
-#ifndef ExtractData_GPSTK
-#define ExtractData_GPSTK
+#ifndef GPSTK_EXTRACTDATA_HPP
+#define GPSTK_EXTRACTDATA_HPP
 
 //============================================================================
 //
@@ -26,151 +26,129 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //  
-//  Dagoberto Salazar - gAGE. 2006
+//  Dagoberto Salazar - gAGE. 2006, 2012
 //
 //============================================================================
 
 
-
 #include "Exception.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 #include "CheckPRData.hpp"
 #include "Vector.hpp"
 
 
 namespace gpstk
 {
-    /// Thrown when some problem appeared when extracting data
-    /// @ingroup exceptiongroup
-    NEW_EXCEPTION_CLASS(InvalidData, gpstk::Exception);
+
+      /** @addtogroup RinexObs */
+      //@{
 
 
-    /** @addtogroup RinexObs */
-    //@{
+      /// This is the base class to ease data extraction from a RinexObsData object.
+   class ExtractData
+   {
+   public:
+
+         /// Return validity of data
+      inline bool isValid(void) const
+      { return valid; }
 
 
-    /// This is the base class to ease data extraction from a RinexObsData object.
-    class ExtractData
-    {
-    public:
-
-        /// Return validity of data
-        inline bool isValid(void)
-            { return valid; }
+         /// Number of satellites with available data
+      int numSV;
 
 
-        /// Number of satellites with available data
-        int numSV;
+         /// Vector with the PRN of satellites with available data.
+      Vector<SatID> availableSV;
 
 
-        /// Vector with the PRN of satellites with available data.
-        Vector<SatID> availableSV;
+         /// Vector holding the available data
+      Vector<double> obsData;
 
 
-        /// Vector holding the available data
-        Vector<double> obsData;
+         /// Default constructor
+      ExtractData()
+         : checkData(true), valid(false), minPRange(15000000.0),
+           maxPRange(30000000.0)
+      {};
 
 
-        /// Default constructor
-        ExtractData() throw(InvalidData) : checkData(true), valid(false), minPRange(15000000.0), maxPRange(30000000.0) {};
+         /** Pull out the selected observation type from a Rinex3ObsData object
+          *
+          * @param rinexData  The Rinex data set holding the observations
+          * @param index      Index representing the observation type. It is
+          *                   obtained from corresponding RINEX Obs Header
+          *                   using method 'Rinex3ObsHeader::getObsIndex()'.
+          *
+          * @return
+          *  Number of satellites with this kind of data available
+          */
+      virtual int getData( const Rinex3ObsData& rinexData, int index )
+         throw(InvalidRequest);
 
 
-        /** Pull out the selected observation type from a RinexObsData object
-         * @param rinexData     The Rinex data set holding the observations
-         * @param typeObs       The type of observation we want to get
-         *
-         * @return
-         *  Number of satellites with this kind of data available
-         */
-        inline virtual int getData(const RinexObsData& rinexData, RinexObsHeader::RinexObsType typeObs) throw(InvalidData)
-        {
-        try {
-            // Let's make sure each time we start with clean Vectors
-            availableSV.resize(0);
-            obsData.resize(0);
-
-            // Create a CheckPRData object with the given limits
-            CheckPRData checker(minPRange, maxPRange);
-
-            // Let's define the "it" iterator to visit the observations PRN map
-            // RinexSatMap is a map from SatID to RinexObsTypeMap: 
-            //      std::map<SatID, RinexObsTypeMap>
-            RinexObsData::RinexSatMap::const_iterator it;
-            for (it = rinexData.obs.begin(); it!= rinexData.obs.end(); it++) 
-            {
-                // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
-                //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
-                RinexObsData::RinexObsTypeMap otmap;
-                // Let's define a iterator to visit the observations type map
-                RinexObsData::RinexObsTypeMap::const_iterator itObs1;
-                // The "second" field of a RinexSatMap (it) is a RinexObsTypeMap (otmap)
-                otmap = (*it).second;
-
-                // Let's find the observation type inside the RinexObsTypeMap that is "otmap"
-                itObs1 = otmap.find(typeObs);
-
-                // Let's check if we found this type of observation and it is between the limits
-                if ( (itObs1!=otmap.end()) && ( (checker.check((*itObs1).second.data)) || !(checkData) ) )
-                {
-                    // Store all relevant data of this epoch
-                    availableSV = availableSV && (*it).first;
-                    obsData = obsData && (*itObs1).second.data;
-                }
-            } // End of data extraction from this epoch
-        }
-        catch(...) {
-            InvalidData e("Unable to get data from RinexObsData object");
-            GPSTK_THROW(e);
-        }
-
-        // Let's record the number of SV with this type of data available
-        numSV = (int)obsData.size();
-
-        // If everything is fine so far, then the results should be valid
-        valid = true;
-
-        return numSV;
-
-        };  // end ExtractData::getData()
+         /** Pull out the selected observation type from a Rinex3ObsData object
+          *
+          * @param rinexData  The Rinex data set holding the observations
+          * @param type       String representing the observation type.
+          * @param hdr        RINEX Observation Header for current RINEX file.
+          */
+      virtual int getData( const Rinex3ObsData& rinexData,
+                           std::string type,
+                           const Rinex3ObsHeader& hdr )
+         throw(InvalidRequest);
 
 
-        /// Set this to true if you want to enable data checking within given boundaries (default for code measurements)
-        bool checkData;
-
-        /// Set the minimum pseudorange value allowed for data (in meters).
-        virtual void setMinPRange(const double minPR) { minPRange = minPR; };
-
-        /// Get the minimum pseudorange value allowed for data (in meters).
-        virtual double getMinPRange(void) { return minPRange; };
-
-        /// Set the maximum pseudorange value allowed for data (in meters).
-        virtual void setMaxPRange(const double maxPR) { maxPRange = maxPR; };
-
-        /// Get the minimum pseudorange value allowed for data (in meters).
-        virtual double getMaxPRange(void) { return maxPRange; };
+         /// Set this to true if you want to enable data checking within given
+         /// boundaries (default for code measurements)
+      bool checkData;
 
 
-        /// Destructor
-        inline virtual ~ExtractData() {};
+         /// Set the minimum pseudorange value allowed for data (in meters).
+      virtual ExtractData& setMinPRange( double minPR )
+      { minPRange = minPR; return (*this); };
 
 
-    protected:
-        /// True only if results are valid
-        bool valid;
-
-        /// Minimum pseudorange value allowed for input data (in meters).
-        double minPRange;
-
-        /// Maximum pseudorange value allowed for input data (in meters).
-        double maxPRange;
+         /// Get the minimum pseudorange value allowed for data (in meters).
+      virtual double getMinPRange(void) const
+      { return minPRange; };
 
 
-   }; // end class ExtractData
+         /// Set the maximum pseudorange value allowed for data (in meters).
+      virtual ExtractData& setMaxPRange( double maxPR )
+      { maxPRange = maxPR; return (*this); };
+
+
+         /// Get the minimum pseudorange value allowed for data (in meters).
+      virtual double getMaxPRange(void) const
+      { return maxPRange; };
+
+
+         /// Destructor
+      virtual ~ExtractData() {};
+
+
+   protected:
+
+
+         /// True only if results are valid
+      bool valid;
+
+
+         /// Minimum pseudorange value allowed for input data (in meters).
+      double minPRange;
+
+
+         /// Maximum pseudorange value allowed for input data (in meters).
+      double maxPRange;
+
+
+   }; // End of class 'ExtractData'
    
 
-   //@}
+      //@}
    
-}
+}  // End of namespace gpstk
 
-#endif
+#endif   // GPSTK_EXTRACTDATA_HPP

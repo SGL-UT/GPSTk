@@ -31,19 +31,17 @@
 #include <iostream>
 
    // Classes for handling observations RINEX files (data)
-#include "RinexObsBase.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsStream.hpp"
 
-   // Class to extract C1 data from RinexObsData objects
-#include "ExtractC1.hpp"
+   // Class to easily extract data from Rinex3ObsData objects
+#include "ExtractData.hpp"
 
    // Classes for handling satellite navigation parameters RINEX files
    // (Broadcast ephemerides)
-#include "RinexNavBase.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
 
    // Class to store satellite broadcast navigation data
 #include "GPSEphemerisStore.hpp"
@@ -103,17 +101,18 @@ private:
 
       // If you want to share objects and variables among methods, you'd
       // better declare them here
-   RinexObsStream rObsFile;      // Object to read Rinex observation data files
-   RinexObsData rData;           // Object to store Rinex observation data
-   RinexNavStream rNavFile;      // Object to read Rinex navigation data files
-   RinexNavData rNavData;        // Object to store Rinex navigation data
-   RinexNavHeader rNavHeader;    // Object to read the header of Rinex
+   Rinex3ObsStream rObsFile;     // Object to read Rinex observation data files
+   Rinex3ObsData rData;          // Object to store Rinex observation data
+   Rinex3NavStream rNavFile;     // Object to read Rinex navigation data files
+   Rinex3NavData rNavData;       // Object to store Rinex navigation data
+   Rinex3NavHeader rNavHeader;   // Object to read the header of Rinex
                                  // navigation data files
    IonoModelStore ionoStore;     // Object to store ionospheric models
    GPSEphemerisStore bceStore;   // Object to store ephemeris
    ModeledPR modelPR;            // Declare a ModeledReferencePR object
    MOPSTropModel mopsTM;         // Declare a MOPSTropModel object
-   ExtractC1 obsC1;              // Declare an ExtractData object
+   ExtractData obsC1;            // Declare an ExtractData object
+   int indexC1;                  // Index to "C1" observation
    bool useFormerPos;            // Flag indicating if we have an a priori
                                  // position
    Position formerPosition;      // Object to store the former position
@@ -157,7 +156,7 @@ void example5::spinUp()
       // First, data RINEX reading object
    try
    {
-   rObsFile.open(dataFile.getValue()[0].c_str(), std::ios::in);
+      rObsFile.open(dataFile.getValue()[0].c_str(), std::ios::in);
    }
    catch(...)
    {
@@ -167,6 +166,21 @@ void example5::spinUp()
            << "permissions." << endl;
 
       exit (-1);
+   }
+
+      // We need to read the header of the observations file
+   Rinex3ObsHeader roh;
+   rObsFile >> roh;
+
+      // We need the index pointing to C1-type observations
+   try
+   {
+      indexC1 = roh.getObsIndex( "P1" );
+   }
+   catch(...)
+   {
+      cerr << "The observation file doesn't have C1 pseudoranges." << endl;
+      exit(1);
    }
 
 
@@ -192,8 +206,22 @@ void example5::spinUp()
    rNavFile >> rNavHeader;
 
       // Let's feed the ionospheric model (Klobuchar type) from data in the
-      // navigation (ephemeris) file header
-   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
+      // navigation (ephemeris) file header. First, we must check if there are
+      // valid ionospheric correction parameters in the header
+   if(rNavHeader.valid & Rinex3NavHeader::validIonoCorrGPS)
+   {
+         // Extract the Alpha and Beta parameters from the header
+      double* ionAlpha = rNavHeader.mapIonoCorr["GPSA"].param;
+      double* ionBeta  = rNavHeader.mapIonoCorr["GPSB"].param;
+
+         // Feed the ionospheric model with the parameters
+      ioModel.setModel(ionAlpha, ionBeta);
+   }
+   else
+   {
+      cerr << "WARNING: Navigation file " << navFile.getValue()[0].c_str()
+           << " doesn't have valid ionospheric correction parameters." << endl;
+   }
    
       // WARNING-WARNING-WARNING: In this case, the same model will be used
       // for the full data span
@@ -225,7 +253,7 @@ void example5::process()
 
          // Begin usable data with enough number of satellites
       if( (rData.epochFlag == 0 || rData.epochFlag == 1) &&
-          (rData.numSvs > 3) )
+          (rData.numSVs > 3) )
       {
 
             // Number of satellites with valid data in this epoch
@@ -236,7 +264,7 @@ void example5::process()
 
             // We need to extract C1 data from this epoch. Skip epoch if not
             // enough data (4 SV at least) is available
-         if( obsC1.getData(rData) < 4 )
+         if( obsC1.getData(rData, indexC1) < 4 )
          {
                // The former position will not be valid next time
             useFormerPos = false;

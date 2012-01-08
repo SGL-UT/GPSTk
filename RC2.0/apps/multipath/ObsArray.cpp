@@ -130,13 +130,17 @@ namespace gpstk
                GGTropModel ggTropModel; 
 	       ggTropModel.setWeather(20., 1000., 50.); // A default model for sea level.
 
+          // NOTE: The following section is partially adapted to Rinex3, but
+          //       more work is needed here
                RinexObsStream tempObsStream(obsList[i]);
-               RinexObsData   tempObsData;
+               Rinex3ObsData   tempObsData;
+               Rinex3ObsHeader tempObsHeader;
                 
+               tempObsStream >> tempObsHeader;
                tempObsStream >> tempObsData;
 
                ExtractPC ifObs;
-               ifObs.getData(tempObsData);
+               ifObs.getData(tempObsData, tempObsHeader);
 
 	       std::vector<SatID> vsats(ifObs.availableSV.size());
                for (size_t ii=0; ii<ifObs.availableSV.size(); ++ii)

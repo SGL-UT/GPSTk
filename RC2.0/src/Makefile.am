@@ -50,6 +50,8 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       Exception.cpp \
       expandtilde.cpp \
       Expression.cpp \
+      ExtractCombinationData.cpp \
+      ExtractData.cpp \
       FFData.cpp \
       FFStream.cpp \
       FICData.cpp \
@@ -220,16 +222,9 @@ incl_HEADERS = AllanDeviation.hpp \
       Exception.hpp \
       expandtilde.hpp \
       Expression.hpp \
-      ExtractC1.hpp \
       ExtractCombinationData.hpp \
-      ExtractD1.hpp \
-      ExtractD2.hpp \
       ExtractData.hpp \
-      ExtractL1.hpp \
-      ExtractL2.hpp \
       ExtractLC.hpp \
-      ExtractP1.hpp \
-      ExtractP2.hpp \
       ExtractPC.hpp \
       FFBinaryStream.hpp \
       FFData.hpp \
