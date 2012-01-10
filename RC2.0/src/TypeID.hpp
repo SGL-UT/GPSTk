@@ -30,7 +30,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2012
 //
 //============================================================================
 
@@ -152,6 +152,69 @@ namespace gpstk
          WL3,       ///< Wide-lane combination(-3*L1+4*L2)
          WL4,       ///< Wide-lane combination(+4*L1-5*L2)
          EWL,       ///< Wide-lane combination(-7*L1+9*L2)
+            // Rinex 3.00 types. See Section "5.1 Observation codes"
+         C1C,       /// C/A (in L1, G1, E1 and SBAS-L1)
+         L1C,
+         D1C,
+         S1C,
+         C1P,       /// P (in L1 and G1)
+         L1P,
+         D1P,
+         S1P,
+         C1W,       /// Z-tracking and similar (AS on, in L1)
+         L1W,
+         D1W,
+         S1W,
+         C1Y,       /// Y (in L1)
+         L1Y,
+         D1Y,
+         S1Y,
+         C1M,       /// M (in L1)
+         L1M,
+         D1M,
+         S1M,
+         L1N,       /// Codeless (in L1)
+         D1N,
+         S1N,
+         C2C,       /// C/A, (in L2 and G2 - GLONASS M)
+         L2C,
+         D2C,
+         S2C,
+         C2D,       /// L1(C/A)+(P2-P1), (semicodeless in L2)
+         L2D,
+         D2D,
+         S2D,
+         C2S,       /// L2C (M) (in L2)
+         L2S,
+         D2S,
+         S2S,
+         C2L,       /// L2C (L) (in L2)
+         L2L,
+         D2L,
+         S2L,
+         C2X,       /// L2C (M+L) (in L2. See example on Rinex v3 standard)
+         L2X,
+         D2X,
+         S2X,
+         C2P,       /// P (in L2 and G2)
+         L2P,
+         D2P,
+         S2P,
+         C2W,       /// Z-tracking and similar (AS on, in L2)
+         L2W,
+         D2W,
+         S2W,
+         C2Y,       /// Y (in L2)
+         L2Y,
+         D2Y,
+         S2Y,
+         C2M,       /// M (in L2)
+         L2M,
+         D2M,
+         S2M,
+         L2N,       /// Codeless (in L2)
+         D2N,
+         S2N,
             // Derivatives of observations and combinations
          L1dot,     ///< GPS L1 phase observation first derivative
          L1dot2,    ///< GPS L1 phase observation second derivative
