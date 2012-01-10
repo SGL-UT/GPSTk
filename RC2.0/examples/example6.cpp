@@ -18,7 +18,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2012
 //
 //============================================================================
 
@@ -31,12 +31,12 @@
 #include <iomanip>
 
    // Class for handling satellite observation parameters RINEX files
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsStream.hpp"
 
    // Classes for handling RINEX Broadcast ephemeris files 
-#include "RinexNavStream.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
 
    // Class in charge of the GPS signal modelling
 #include "ModelObs.hpp"
@@ -74,25 +74,40 @@ int main(void)
 
    cout << fixed << setprecision(8);   // Set a proper output format
 
-   RinexNavData rNavData;              // Object to store Rinex navigation data
+   Rinex3NavData rNavData;             // Object to store Rinex navigation data
    GPSEphemerisStore bceStore;         // Object to store satellites ephemeris
-   RinexNavHeader rNavHeader;          // Object to read the header of Rinex
+   Rinex3NavHeader rNavHeader;         // Object to read the header of Rinex
                                        // navigation data files
    IonoModelStore ionoStore;           // Object to store ionospheric models
    IonoModel ioModel;                  // Declare a Ionospheric Model object
 
       // Create the input observation file stream
-   RinexObsStream rin("bahr1620.04o");
+   Rinex3ObsStream rin("bahr1620.04o");
 
       // Create the input navigation file stream
-   RinexNavStream rnavin("bahr1620.04n");
+   Rinex3NavStream rnavin("bahr1620.04n");
 
       // We need to read ionospheric parameters (Klobuchar model) from header
    rnavin >> rNavHeader;
 
-      // Let's feed the ionospheric model (Klobuchar type) with data from the
-      // Navigation file header
-   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
+      // Let's feed the ionospheric model (Klobuchar type) from data in the
+      // navigation (ephemeris) file header. First, we must check if there are
+      // valid ionospheric correction parameters in the header
+   if(rNavHeader.valid & Rinex3NavHeader::validIonoCorrGPS)
+   {
+         // Extract the Alpha and Beta parameters from the header
+      double* ionAlpha = rNavHeader.mapIonoCorr["GPSA"].param;
+      double* ionBeta  = rNavHeader.mapIonoCorr["GPSB"].param;
+
+         // Feed the ionospheric model with the parameters
+      ioModel.setModel(ionAlpha, ionBeta);
+   }
+   else
+   {
+      cerr << "WARNING: Navigation file bahr1620.04n "
+           << "doesn't have valid ionospheric correction parameters." << endl;
+   }
+
       // Beware: In this case, the same model will be used for the
       // full data span
    ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);

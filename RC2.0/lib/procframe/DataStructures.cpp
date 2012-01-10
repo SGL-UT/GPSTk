@@ -23,7 +23,8 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011,
+//                                                   2012
 //
 //============================================================================
 
@@ -2475,9 +2476,9 @@ in matrix and number of types do not match") );
    }  // End of 'operator<<'
 
 
-
-      // Input for gnssSatTypeValue from RinexObsHeader
-   gnssSatTypeValue& operator>>( const RinexObsHeader& roh,
+/*
+      // Input for gnssSatTypeValue from Rinex3ObsHeader
+   gnssSatTypeValue& operator>>( const Rinex3ObsHeader& roh,
                                  gnssSatTypeValue& f )
    {
 
@@ -2493,8 +2494,25 @@ in matrix and number of types do not match") );
 
 
 
-      // Input for gnssRinex from RinexObsHeader
-   gnssRinex& operator>>( const RinexObsHeader& roh,
+      // Input for gnssSatTypeValue from Rinex3ObsData
+   gnssSatTypeValue& operator>>( const Rinex3ObsData& rod,
+                                 gnssSatTypeValue& f )
+   {
+
+         // Fill header epoch with the proper value
+      f.header.epoch = rod.time;
+
+         // Extract the observations map and store it in the body
+      f.body = FillsatTypeValueMapwithRinex3ObsData(rod);
+
+      return f;
+
+   }  // End of 'operator>>'
+
+
+
+      // Input for gnssRinex from Rinex3ObsHeader
+   gnssRinex& operator>>( const Rinex3ObsHeader& roh,
                           gnssRinex& f )
    {
 
@@ -2516,25 +2534,8 @@ in matrix and number of types do not match") );
 
 
 
-      // Input for gnssSatTypeValue from RinexObsData
-   gnssSatTypeValue& operator>>( const RinexObsData& rod,
-                                 gnssSatTypeValue& f )
-   {
-
-         // Fill header epoch with the proper value
-      f.header.epoch = rod.time;
-
-         // Extract the observations map and store it in the body
-      f.body = FillsatTypeValueMapwithRinexObsData(rod);
-
-      return f;
-
-   }  // End of 'operator>>'
-
-
-
-      // Input for gnssRinex from RinexObsData
-   gnssRinex& operator>>( const RinexObsData& rod,
+      // Input for gnssRinex from Rinex3ObsData
+   gnssRinex& operator>>( const Rinex3ObsData& rod,
                           gnssRinex& f )
    {
 
@@ -2545,14 +2546,14 @@ in matrix and number of types do not match") );
       f.header.epochFlag = rod.epochFlag;
 
          // Extract the observations map and store it in the body
-      f.body = FillsatTypeValueMapwithRinexObsData(rod);
+      f.body = FillsatTypeValueMapwithRinex3ObsData(rod);
 
       return f;
 
    }  // End of 'operator>>'
+*/
 
-
-
+/*
       // Stream input for gnssSatTypeValue
    std::istream& operator>>( std::istream& i,
                              gnssSatTypeValue& f )
@@ -2564,13 +2565,13 @@ in matrix and number of types do not match") );
       {
          try
          {
-            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
+            Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(*ffs);
 
                // If the header hasn't been read, read it...
             if(!strm.headerRead) strm >> strm.header;
 
                // Clear out this object
-            RinexObsHeader& hdr = strm.header;
+            Rinex3ObsHeader& hdr = strm.header;
 
             hdr >> f;
 
@@ -2600,7 +2601,7 @@ in matrix and number of types do not match") );
 
             short numSvs = asInt(line.substr(29,3));
 
-            RinexObsData rod;
+            Rinex3ObsData rod;
 
                // Now read the observations ...
             if( epochFlag==0 ||
@@ -2646,7 +2647,7 @@ in matrix and number of types do not match") );
                   {
 
                      SatID sat = satIndex[isv];
-                     RinexObsHeader::RinexObsType obs_type =
+                     Rinex3ObsHeader::RinexObsType obs_type =
                                                          hdr.obsTypeList[ndx];
                      if( !(line_ndx % 5) )
                      {
@@ -2677,7 +2678,7 @@ in matrix and number of types do not match") );
 
             }  // End of 'if( epochFlag==0 || ... )'
 
-            f.body = FillsatTypeValueMapwithRinexObsData(rod);
+            f.body = FillsatTypeValueMapwithRinex3ObsData(rod);
 
             return i;
 
@@ -2721,13 +2722,13 @@ in matrix and number of types do not match") );
       {
          try
          {
-            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
+            Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(*ffs);
 
                // If the header hasn't been read, read it...
             if(!strm.headerRead) strm >> strm.header;
 
                // Clear out this object
-            RinexObsHeader& hdr = strm.header;
+            Rinex3ObsHeader& hdr = strm.header;
 
             hdr >> f;
 
@@ -2759,7 +2760,7 @@ in matrix and number of types do not match") );
 
             short numSvs = asInt(line.substr(29,3));
 
-            RinexObsData rod;
+            Rinex3ObsData rod;
 
                // Now read the observations ...
             if( epochFlag==0 ||
@@ -2801,7 +2802,7 @@ in matrix and number of types do not match") );
                   for( ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++ )
                   {
                      SatID sat = satIndex[isv];
-                     RinexObsHeader::RinexObsType obs_type =
+                     Rinex3ObsHeader::RinexObsType obs_type =
                                                          hdr.obsTypeList[ndx];
                      if( !(line_ndx % 5) )
                      {
@@ -2833,7 +2834,7 @@ in matrix and number of types do not match") );
 
             }  // End of if( epochFlag==0 || ... )
 
-            f.body = FillsatTypeValueMapwithRinexObsData(rod);
+            f.body = FillsatTypeValueMapwithRinex3ObsData(rod);
 
             return i;
          }  // End of "try" block
@@ -2874,12 +2875,12 @@ in matrix and number of types do not match") );
       {
          try
          {
-            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
+            Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(*ffs);
 
             // Clear out this object
-            RinexObsHeader& hdr = strm.header;
+            Rinex3ObsHeader& hdr = strm.header;
             
-            RinexObsData rod;
+            Rinex3ObsData rod;
             
             rod.time = f.header.epoch;
             rod.epochFlag = f.header.epochFlag; 
@@ -2892,14 +2893,14 @@ in matrix and number of types do not match") );
                itSat != satSet.end();
                ++itSat)
             {
-               vector<RinexObsHeader::RinexObsType>::iterator obsTypeItr = 
+               vector<Rinex3ObsHeader::RinexObsType>::iterator obsTypeItr =
                   hdr.obsTypeList.begin();
 
                while (obsTypeItr != strm.header.obsTypeList.end())
                {
                   TypeID type( RinexType2TypeID( *obsTypeItr ) );
                   
-                  RinexObsData::RinexDatum data;
+                  Rinex3ObsData::RinexDatum data;
                   data.data = f.body[*itSat][type];
                   data.ssi = 0;
                   data.lli = 0;
@@ -3061,17 +3062,17 @@ in matrix and number of types do not match") );
       // Convenience function to fill a typeValueMap with data
       // from RinexObsTypeMap.
    typeValueMap FilltypeValueMapwithRinexObsTypeMap(
-                                 const RinexObsData::RinexObsTypeMap& otmap )
+                                 const Rinex3ObsData::RinexObsTypeMap& otmap )
    {
 
          // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
-         //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
+         //   std::map<Rinex3ObsHeader::RinexObsType, RinexDatum>
 
          // We will need a typeValueMap
       typeValueMap tvMap;
 
          // Let's visit the RinexObsTypeMap (RinexObsType -> RinexDatum)
-      for( RinexObsData::RinexObsTypeMap::const_iterator itObs = otmap.begin();
+      for( Rinex3ObsData::RinexObsTypeMap::const_iterator itObs = otmap.begin();
            itObs!= otmap.end();
            ++itObs )
       {
@@ -3128,9 +3129,9 @@ in matrix and number of types do not match") );
 
 
       // Convenience function to fill a satTypeValueMap with data
-      // from RinexObsData.
-      // @param rod RinexObsData holding the data.
-   satTypeValueMap FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
+      // from Rinex3ObsData.
+      // @param rod Rinex3ObsData holding the data.
+   satTypeValueMap FillsatTypeValueMapwithRinex3ObsData(const Rinex3ObsData& rod)
    {
 
          // We need to declare a satTypeValueMap
@@ -3139,15 +3140,15 @@ in matrix and number of types do not match") );
          // Let's define the "it" iterator to visit the observations PRN map
          // RinexSatMap is a map from SatID to RinexObsTypeMap:
          //      std::map<SatID, RinexObsTypeMap>
-      for( RinexObsData::RinexSatMap::const_iterator it = rod.obs.begin();
+      for( Rinex3ObsData::RinexSatMap::const_iterator it = rod.obs.begin();
            it!= rod.obs.end();
            ++it )
       {
             // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
-            //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
+            //   std::map<Rinex3ObsHeader::RinexObsType, RinexDatum>
             // The "second" field of a RinexSatMap (it) is a
             // RinexObsTypeMap (otmap)
-         RinexObsData::RinexObsTypeMap otmap = (*it).second;
+         Rinex3ObsData::RinexObsTypeMap otmap = (*it).second;
 
          theMap[(*it).first] = FilltypeValueMapwithRinexObsTypeMap(otmap);
 
@@ -3155,8 +3156,8 @@ in matrix and number of types do not match") );
 
       return theMap;
 
-   } // End FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
-
+   } // End FillsatTypeValueMapwithRinex3ObsData(const Rinex3ObsData& rod)
+*/
 
 
       /* This function constructs a CommonTime object from the given parameters.
@@ -3165,8 +3166,8 @@ in matrix and number of types do not match") );
        * @param hdr     the RINEX Observation Header object for the current
        *                RINEX file.
        */
-   CommonTime parseTime( const std::string& line,
-                         const RinexObsHeader& hdr )
+/*   CommonTime parseTime( const std::string& line,
+                         const Rinex3ObsHeader& hdr )
       throw(FFStreamError)
    {
 
@@ -3238,6 +3239,6 @@ in matrix and number of types do not match") );
       }
 
    }  // End of parseTime()
-
+*/
 
 }  // End of namespace gpstk

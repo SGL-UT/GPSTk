@@ -26,7 +26,8 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011,
+//                                                   2012
 //
 //============================================================================
 
@@ -39,8 +40,8 @@
 
 #include "DataHeaders.hpp"
 #include "FFData.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsData.hpp"
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
@@ -84,8 +85,8 @@ namespace gpstk
        * in order to do something like the following to process GNSS data:
        *
        * @code
-       *   RinexObsStream rin("bahr1620.04o"); // Create the input file stream
-       *   gnssRinex gRin;                     // Declare a gnssRinex object
+       *   Rinex3ObsStream rin("bahr1620.04o"); // Create the input file stream
+       *   gnssRinex gRin;                      // Declare a gnssRinex object
        *
        *   ModeledPR modelPR;          // Declare a ModeledReferencePR object
        *   SolverLMS solver;           // Declare an object to apply LMS method
@@ -952,7 +953,7 @@ namespace gpstk
           *
           * @code
           *   // Create the input file stream
-          *   RinexObsStream rin("bahr1620.04o");
+          *   Rinex3ObsStream rin("bahr1620.04o");
           *
           *   // Declare a gnssRinex object
           *   gnssRinex gRin;
@@ -1406,7 +1407,7 @@ namespace gpstk
    typedef std::list<gnssLinearCombination> LinearCombList;
 
 
-
+/*
       /// Stream input for gnssSatTypeValue.
       /// @param i Input stream.
       /// @param f gnssSatTypeValue receiving the data.
@@ -1415,31 +1416,31 @@ namespace gpstk
       throw(FFStreamError, gpstk::StringUtils::StringException);
 
 
-      /// Input for gnssSatTypeValue from RinexObsHeader.
-      /// @param roh RinexObsHeader holding the data.
+      /// Input for gnssSatTypeValue from Rinex3ObsHeader.
+      /// @param roh Rinex3ObsHeader holding the data.
       /// @param f gnssSatTypeValue receiving the data.
-   gnssSatTypeValue& operator>>( const RinexObsHeader& roh,
+   gnssSatTypeValue& operator>>( const Rinex3ObsHeader& roh,
                                  gnssSatTypeValue& f );
 
 
-      /// Input for gnssSatTypeValue from RinexObsData.
-      /// @param rod RinexObsData holding the data.
+      /// Input for gnssSatTypeValue from Rinex3ObsData.
+      /// @param rod Rinex3ObsData holding the data.
       /// @param f gnssSatTypeValue receiving the data.
-   gnssSatTypeValue& operator>>( const RinexObsData& rod,
+   gnssSatTypeValue& operator>>( const Rinex3ObsData& rod,
                                  gnssSatTypeValue& f );
 
 
-      /// Input for gnssRinex from RinexObsHeader.
-      /// @param roh RinexObsHeader holding the data.
+      /// Input for gnssRinex from Rinex3ObsHeader.
+      /// @param roh Rinex3ObsHeader holding the data.
       /// @param f gnssRinex receiving the data.
-   gnssRinex& operator>>( const RinexObsHeader& roh,
+   gnssRinex& operator>>( const Rinex3ObsHeader& roh,
                           gnssRinex& f );
 
 
-      /// Input for gnssRinex from RinexObsData.
-      /// @param rod RinexObsData holding the data.
+      /// Input for gnssRinex from Rinex3ObsData.
+      /// @param rod Rinex3ObsData holding the data.
       /// @param f gnssRinex receiving the data.
-   gnssRinex& operator>>( const RinexObsData& rod,
+   gnssRinex& operator>>( const Rinex3ObsData& rod,
                           gnssRinex& f );
 
 
@@ -1451,26 +1452,26 @@ namespace gpstk
       /// Convenience function to fill a typeValueMap with data
       /// from RinexObsTypeMap.
    typeValueMap FilltypeValueMapwithRinexObsTypeMap(
-                                 const RinexObsData::RinexObsTypeMap& otmap );
+                                 const Rinex3ObsData::RinexObsTypeMap& otmap );
 
 
       /// Convenience function to fill a satTypeValueMap with data
-      /// from RinexObsData.
-      /// @param rod RinexObsData holding the data.
-   satTypeValueMap FillsatTypeValueMapwithRinexObsData(
-                                                   const RinexObsData& rod );
-
+      /// from Rinex3ObsData.
+      /// @param rod Rinex3ObsData holding the data.
+   satTypeValueMap FillsatTypeValueMapwithRinex3ObsData(
+                                                   const Rinex3ObsData& rod );
+*/
 
       /** Stream input for gnssRinex.
        *
        * This handy operator allows to fed a gnssRinex data structure
-       * directly from an input stream such a RinexObsStream object.
+       * directly from an input stream such a Rinex3ObsStream object.
        *
        * For example:
        *
        * @code
        *   // Create the input file stream
-       *   RinexObsStream rin("bahr1620.04o");
+       *   Rinex3ObsStream rin("bahr1620.04o");
        *
        *   // Declare a gnssRinex object
        *   gnssRinex gRin;
@@ -1482,30 +1483,30 @@ namespace gpstk
        *   }
        * @endcode
        */
-   std::istream& operator>>( std::istream& i,
+/*   std::istream& operator>>( std::istream& i,
                              gnssRinex& f )
       throw(FFStreamError, gpstk::StringUtils::StringException);
+*/
 
-
-	   /** Stream output for gnssRinex.
+      /** Stream output for gnssRinex.
        *
        * This handy operator allows to output a gnssRinex data structure
-       * directly to an output stream such a RinexObsStream object.
+       * directly to an output stream such a Rinex3ObsStream object.
        * 
-       * The RinexObsHeader object of output stream should be initialized
+       * The Rinex3ObsHeader object of output stream should be initialized
        * correctly before any output operation.
        *
        * For example:
        *
        * @code
        *   // Create the input file stream
-       *   RinexObsStream rin("bahr1620.04o");
+       *   Rinex3ObsStream rin("bahr1620.04o");
        *
        *   //Create the output file stream
-       *   RinexObsStream rout("bahr1620.04o.new", ios::out|ios::trunc);
+       *   Rinex3ObsStream rout("bahr1620.04o.new", ios::out|ios::trunc);
        *
        *   // Read the RINEX header
-       *   RinexObsHeader head; //RINEX header object
+       *   Rinex3ObsHeader head; //RINEX header object
        *   rin >> head;
        *   rout.header = rin.header;
        *
@@ -1518,10 +1519,10 @@ namespace gpstk
        *   }
        * @endcode
        */
-   std::ostream& operator<<( std::ostream& s,
+/*   std::ostream& operator<<( std::ostream& s,
                              gnssRinex& f )
       throw(FFStreamError, gpstk::StringUtils::StringException);
-
+*/
 
       /** This function constructs a CommonTime object from the given parameters.
        * 
@@ -1529,10 +1530,10 @@ namespace gpstk
        * @param hdr     the RINEX Observation Header object for the current
        *                RINEX file.
        */
-   CommonTime parseTime( const std::string& line,
-                      const RinexObsHeader& hdr )
+/*   CommonTime parseTime( const std::string& line,
+                      const Rinex3ObsHeader& hdr )
       throw(FFStreamError);
-
+*/
 
       //@}
 
