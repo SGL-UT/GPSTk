@@ -398,6 +398,7 @@ incl_HEADERS = AllanDeviation.hpp \
       TimeNamedFileStream.hpp \
       TimeString.hpp \
       TimeSystem.hpp \
+      TimeSystemCorr.hpp \
       TimeTag.hpp \
       Triple.hpp \
       TropModel.hpp \
