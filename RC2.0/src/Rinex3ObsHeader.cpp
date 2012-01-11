@@ -1544,15 +1544,17 @@ namespace gpstk
                }
 
                // SBAS / GEO
-               // C1 L1 D1        =>  C1C L1C D1C
-               // C5 L5 D5        =>  C5X L5X D5X
+               // C1 L1 D1        =>  C1C L1C D1C S1C
+               // C5 L5 D5        =>  C5X L5X D5X S5X
                else if(s == "S") {
                        if(ot == "C1") obsid = string("SC1C");
                   else if(ot == "L1") obsid = string("SL1C");
                   else if(ot == "D1") obsid = string("SD1C");
+                  else if(ot == "S1") obsid = string("SS1C");
                   else if(ot == "C5") obsid = string("SC5X");
                   else if(ot == "L5") obsid = string("SL5X");
                   else if(ot == "D5") obsid = string("SD5X");
+                  else if(ot == "S5") obsid = string("SS5X");
                }
 
                // create the obs id and save it
