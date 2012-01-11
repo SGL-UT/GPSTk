@@ -182,7 +182,7 @@ namespace gpstk
          }
 
          else if(thisLabel == stringDeltaUTC) {   // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
-            TimeCorr tc("GPUT");
+            TimeSystemCorrection tc("GPUT");
             tc.A0 = for2doub(line.substr(3,19));
             tc.A1 = for2doub(line.substr(22,19));
             tc.refSOW = asInt(line.substr(41,9));
@@ -190,12 +190,12 @@ namespace gpstk
             tc.geoProvider = string("    ");
             tc.geoUTCid = 0;
 
-            mapTimeCorr[tc.asString()] = tc;
+            mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
          // R2.11 but Javad uses it in 3.01
          else if(thisLabel == stringCorrSysTime) { // "CORR TO SYSTEM TIME"  R2.10 GLO
-            TimeCorr tc("GLGP");
+            TimeSystemCorrection tc("GLGP");
             tc.refYr = asInt(line.substr(0,6));
             tc.refMon = asInt(line.substr(6,6));
             tc.refDay = asInt(line.substr(12,6));
@@ -211,11 +211,11 @@ namespace gpstk
             tc.geoProvider = string("    ");
             tc.geoUTCid = 0;
 
-            mapTimeCorr[tc.asString()] = tc;
+            mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
          else if(thisLabel == stringDUTC) {     // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
-            TimeCorr tc("SBUT");
+            TimeSystemCorrection tc("SBUT");
             tc.A0 = for2doub(line.substr(0,19));
             tc.A1 = for2doub(line.substr(19,19));
             tc.refSOW = asInt(line.substr(38,7));
@@ -223,11 +223,11 @@ namespace gpstk
             tc.geoProvider = line.substr(51,5);
             tc.geoUTCid = asInt(line.substr(57,2));
 
-            mapTimeCorr[tc.asString()] = tc;
+            mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
          else if(thisLabel == stringTimeSysCorr) {  // R3 only // "TIME SYSTEM CORR"
-            TimeCorr tc;
+            TimeSystemCorrection tc;
             try { tc.fromString(strip(line.substr(0,4))); }
             catch(Exception& e) {
                FFStreamError fse(e.what());
@@ -241,7 +241,7 @@ namespace gpstk
             tc.geoProvider = strip(line.substr(51,6));
             tc.geoUTCid = asInt(line.substr(57,2));
 
-            if(tc.type == TimeCorr::GLGP) {
+            if(tc.type == TimeSystemCorrection::GLGP) {
                GPSWeekSecond gws(tc.refWeek,tc.refSOW);
                CivilTime ct(gws);
                tc.refYr = ct.year;
@@ -249,7 +249,7 @@ namespace gpstk
                tc.refDay = ct.day;
             }
 
-            mapTimeCorr[tc.asString()] = tc;
+            mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
          }
 
@@ -401,13 +401,14 @@ namespace gpstk
       }
    
       if(valid & validTimeSysCorr) {               // "TIME SYSTEM CORR"
-         map<string,TimeCorr>::const_iterator it;
+         map<string,TimeSystemCorrection>::const_iterator it;
          for(it=mapTimeCorr.begin(); it != mapTimeCorr.end(); ++it) {
-            const TimeCorr& tc(it->second);
+            const TimeSystemCorrection& tc(it->second);
             if(version >= 3) {
-               line = tc.asString() + " ";
+               line = tc.asString4() + " ";
                line += doubleToScientific(tc.A0,17,10,2);
-               if(tc.type == TimeCorr::GLUT || tc.type == TimeCorr::GLGP)
+               if(tc.type == TimeSystemCorrection::GLUT
+                           || tc.type == TimeSystemCorrection::GLGP)
                   line += doubleToScientific(0.0,16,9,2);
                else
                   line += doubleToScientific(tc.A1,16,9,2);
@@ -415,7 +416,7 @@ namespace gpstk
                line += rightJustify(asString<long>(tc.refSOW),7);
                line += rightJustify(asString<long>(tc.refWeek),5);
 
-               if(tc.type == TimeCorr::SBUT) {
+               if(tc.type == TimeSystemCorrection::SBUT) {
                   line += rightJustify(tc.geoProvider,6);
                   line += " ";
                   line += rightJustify(asString<int>(tc.geoUTCid),2);
@@ -427,7 +428,7 @@ namespace gpstk
                line += leftJustify(stringTimeSysCorr,20);
             }
             else {
-               if(tc.asString() == "GPUT") {     // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
+               if(tc.asString4() == "GPUT") {     // "DELTA-UTC: A0,A1,T,W" R2.11 GPS
                   line = "   ";
                   line += doubleToScientific(tc.A0,19,12,2);
                   line += doubleToScientific(tc.A1,19,12,2);
@@ -436,7 +437,7 @@ namespace gpstk
                   line += " ";
                   line += leftJustify(stringDeltaUTC,20);
                }
-               else if(tc.asString() == "GLGP") { // "CORR TO SYSTEM TIME" R2.10 GLO
+               else if(tc.asString4() == "GLGP") { // "CORR TO SYSTEM TIME" R2.10 GLO
                   line = rightJustify(asString<long>(tc.refYr),6);
                   line += rightJustify(asString<long>(tc.refMon),6);
                   line += rightJustify(asString<long>(tc.refDay),6);
@@ -444,7 +445,7 @@ namespace gpstk
                   line += string(23,' ');
                   line += leftJustify(stringCorrSysTime,20);
                }
-               else if(tc.asString() == "SBUT") { // "D-UTC A0,A1,T,W,S,U" R2.11 GEO
+               else if(tc.asString4() == "SBUT") { // "D-UTC A0,A1,T,W,S,U" R2.11 GEO
                   line = doubleToScientific(tc.A0,19,12,2);
                   line += doubleToScientific(tc.A1,19,12,2);
                   line += rightJustify(asString<long>(tc.refSOW),7);
@@ -514,31 +515,37 @@ namespace gpstk
       s << "---------------------------------- OPTIONAL "
          << "----------------------------------\n";
    
-      map<string,TimeCorr>::const_iterator tcit;
+      map<string,TimeSystemCorrection>::const_iterator tcit;
       for(tcit=mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit) {
-         s << "Time correction for " << tcit->second.asString() << " : "
-            << scientific << setprecision(12);
+         s << "Time correction for " << tcit->second.asString4() << " : "
+            << tcit->second.asString() << " " << scientific << setprecision(12);
          switch(tcit->second.type) {
-            case TimeCorr::GPUT: s << "GPS to UTC, A0 = " << tcit->second.A0
+            case TimeSystemCorrection::GPUT: s << tcit->second.asString()
+                                    << ", A0 = " << tcit->second.A0
                                     << ", A1 = " << tcit->second.A1
                                     << ", RefTime = week/sow " << tcit->second.refWeek
                                     << "/" << tcit->second.refSOW;
-            case TimeCorr::GAUT: s << "GAL to UTC, A0 = " << tcit->second.A0
+            case TimeSystemCorrection::GAUT: s << tcit->second.asString()
+                                    << ", A0 = " << tcit->second.A0
                                     << ", A1 = " << tcit->second.A1
                                     << ", RefTime = week/sow " << tcit->second.refWeek
                                     << "/" << tcit->second.refSOW;
-            case TimeCorr::SBUT: s << "SBAS to UTC, A0 = " << tcit->second.A0
+            case TimeSystemCorrection::SBUT: s << tcit->second.asString()
+                                    << ", A0 = " << tcit->second.A0
                                     << ", A1 = " << tcit->second.A1
                                     << ", RefTime = week/sow " << tcit->second.refWeek
                                     << "/" << tcit->second.refSOW
                                     << ", provider " << tcit->second.geoProvider
                                     << ", UTC ID = " << tcit->second.geoUTCid;
-            case TimeCorr::GLUT: s << "GLO to UTC, -TauC = " << tcit->second.A0;
-            case TimeCorr::GPGA: s << "GPS to GAL, A0G = " << tcit->second.A0
+            case TimeSystemCorrection::GLUT: s << tcit->second.asString()
+                                    << ", -TauC = " << tcit->second.A0;
+            case TimeSystemCorrection::GPGA: s << tcit->second.asString()
+                                    << ", A0G = " << tcit->second.A0
                                     << ", A1G = " << tcit->second.A1
                                     << ", RefTime = week/sow " << tcit->second.refWeek
                                     << "/" << tcit->second.refSOW;
-            case TimeCorr::GLGP: s << "GLO to GPS, -TauGPS = " << tcit->second.A0
+            case TimeSystemCorrection::GLGP: s << tcit->second.asString()
+                                    << ", -TauGPS = " << tcit->second.A0
                                     << " s = " << tcit->second.A0 * C_MPS
                                     << " m, RefTime = yr/mon/day "
                                     << tcit->second.refYr

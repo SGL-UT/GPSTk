@@ -38,6 +38,7 @@
 #include "PZ90Ellipsoid.hpp"
 #include "Vector.hpp"
 #include "YDSTime.hpp"
+#include "TimeSystemCorr.hpp"
 
 
 namespace gpstk
@@ -199,6 +200,9 @@ namespace gpstk
          /// Return the number of satellites present in the store
       int size(void) const throw()
       { return pe.size(); }
+
+         /// Return time system (NB assumed to always be GLONASS)
+      TimeSystem getTimeSystem(void) const throw() { return TimeSystem::GLO; }
 
 
          /** Find the corresponding GLONASS ephemeris for the given epoch.

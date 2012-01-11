@@ -228,9 +228,9 @@ namespace gpstk
          int n(0);
          if(sys==SatID::systemMixed || sys==SatID::systemGPS)
             n += GPSstore.size();
-         /*
          if(sys==SatID::systemMixed || sys==SatID::systemGlonass)
             n += GLOstore.size();
+         /*
          if(sys==SatID::systemMixed || sys==SatID::systemGalileo)
             n += GALstore.size();
          if(sys==SatID::systemMixed || sys==SatID::systemGeosync)

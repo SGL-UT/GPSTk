@@ -66,7 +66,7 @@ namespace gpstk
    template <class T>
    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& err)
    {
-      size_t i,j,k;
+      std::size_t i,j,k;
       T y,del;
       std::vector<T> D,Q;
 
@@ -115,7 +115,7 @@ namespace gpstk
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& y, T& dydx)
    {
-      size_t i,j,k,N=X.size(),M;
+      std::size_t i,j,k,N=X.size(),M;
       M = (N*(N+1))/2;
       std::vector<T> P(N,T(1)),Q(M,T(1)),D(N,T(1));
       for(i=0; i<N; i++) {

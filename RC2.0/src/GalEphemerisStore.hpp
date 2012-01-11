@@ -57,6 +57,7 @@
 #include "XvtStore.hpp"
 #include "GalEphemeris.hpp"
 #include "OrbElemStore.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -196,6 +197,9 @@ namespace gpstk
          throw()
       { return ubeSize(); };
       
+      /// Return time system (NB assumed always to be Galileo)
+      TimeSystem getTimeSystem(void) const throw() { return TimeSystem::GAL; }
+
       /// Find an ephemeris based upon the search method configured
       /// by SearchNear/SearchPast
       /// @param sat SatID of satellite of interest

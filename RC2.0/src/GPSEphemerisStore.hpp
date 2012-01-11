@@ -55,6 +55,7 @@
 #include "XvtStore.hpp"
 #include "EngEphemeris.hpp"
 #include "OrbElemStore.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -194,6 +195,9 @@ namespace gpstk
          throw()
       { return ubeSize(); };
       
+      /// Return time system (NB assumed always to be GPS)
+      TimeSystem getTimeSystem(void) const throw() { return TimeSystem::GPS; }
+
       /// Find an ephemeris based upon the search method configured
       /// by SearchNear/SearchPast
       /// @param sat SatID of satellite of interest

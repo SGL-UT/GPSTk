@@ -42,7 +42,7 @@ namespace gpstk
    // param[in] ttag the time to look up
    // return the Xvt of the object at the indicated time
    // throw InvalidRequest If the request can not be completed for any
-   //    reason, this is thrown. The Text may have additional
+   //    reason, this is thrown. The text may have additional
    //    information as to why the request failed.
    Xvt SP3EphemerisStore::getXvt(const SatID& sat, const CommonTime& ttag)
       const throw(InvalidRequest)
@@ -257,9 +257,6 @@ namespace gpstk
          // save in FileStore
          fileStore.addFile(filename, head);
 
-         // posStore.addPositionRecord will set haveVelocity
-         //posStore.haveVelocity = head.containsVelocity;
-
          // read data
          bool isC(head.version==SP3Header::SP3c);
          bool haveRec,goNext,haveP,haveV,haveEP,haveEV,predP,predC;
@@ -384,7 +381,7 @@ namespace gpstk
                   }
                   else {
                      //cout << "other record (" << data.RecType << "):\n";
-                     //data.dump(cout);
+                     //data.dump(cout); cout << endl;
                      //throw?
                      goNext = true;
                   }
@@ -396,11 +393,11 @@ namespace gpstk
                                       prec.Pos[1]==0.0 ||
                                       prec.Pos[2]==0.0)) {
                      //cout << "Bad position" << endl;
-                     haveP = haveV = haveEP = haveEV = false; // bad position record
+                     haveP = haveV = haveEV = haveEP = false; // bad position record
                   }
                   else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
                      //cout << "Bad clock" << endl;
-                     haveP = haveV = haveEP = haveEV = false; // bad clock record
+                     haveP = haveV = haveEV = haveEP = false; // bad clock record
                   }
                   else {
                      //cout << "Add rec: " << sat << " " << ttag << " " << prec<<endl;
@@ -426,11 +423,11 @@ namespace gpstk
                                     prec.Pos[1]==0.0 ||
                                     prec.Pos[2]==0.0) ) {
                   //cout << "Bad last rec: position" << endl;
-                  //haveP = false;  // bad position record
+                  ;
                }
                else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
                   //cout << "Bad last rec: clock" << endl;
-                  //haveP = false;  // bad clock record
+                  ;
                }
                else {
                   //cout << "Add last rec: "<< sat <<" "<< ttag <<" "<< prec << endl;
@@ -438,7 +435,6 @@ namespace gpstk
                      posStore.addPositionRecord(sat,ttag,prec);
                   if(fillClockStore && (!rejectPredClk || !predC))
                      clkStore.addClockRecord(sat,ttag,crec);
-                  //haveP = haveV = predP = predC = false;
                }
             }
          }

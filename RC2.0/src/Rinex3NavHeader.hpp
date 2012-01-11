@@ -54,6 +54,7 @@
 #include "FFStream.hpp"
 #include "Rinex3NavBase.hpp"
 #include "RinexSatID.hpp"
+#include "TimeSystemCorr.hpp"
 
 namespace gpstk
 {
@@ -152,77 +153,6 @@ class Rinex3NavHeader : public Rinex3NavBase
       allValid2 = 0x080000003
    };
 
-      /// Time System Corrections
-   class TimeCorr
-   {
-   public:
-         /// Supported time system correction types
-      enum CorrType
-      {
-         GPUT,    ///< GPS  to UTC using A0, A1
-         GAUT,    ///< GAL  to UTC using A0, A1
-         SBUT,    ///< SBAS to UTC using A0, A1, incl. provider and UTC ID
-         GLUT,    ///< GLO  to UTC using A0 = -TauC , A1 = 0
-         GPGA,    ///< GPS  to GAL using A0 = A0G   , A1 = A1G
-         GLGP     ///< GLO  to GPS using A0 = -TauGPS, A1 = 0
-      };
-
-         //// Member data
-      CorrType type;
-      double A0, A1;
-      long refWeek,refSOW;       ///< reference time for polynominal (week,sow)
-      long refYr,refMon,refDay;  ///< reference time (yr,mon,day) for ver 2 GLO
-      std::string geoProvider;   ///< string 'EGNOS' 'WAAS' or 'MSAS'
-      int geoUTCid;              ///< UTC Identifier [0 unknown, 1=UTC(NIST),
-                                 ///<  2=UTC(USNO), 3=UTC(SU), 4=UTC(BIPM),
-                                 ///<  5=UTC(Europe), 6=UTC(CRL)]
-
-         /// Empty constructor
-      TimeCorr() { }
-
-         /// Constructor from string
-      TimeCorr(std::string str) { this->fromString(str); }
-
-         /// Return string version of CorrType
-      std::string asString() const throw()
-      {
-         switch(type) {
-            case GPUT: return std::string("GPUT"); break;
-            case GAUT: return std::string("GAUT"); break;
-            case SBUT: return std::string("SBUT"); break;
-            case GLUT: return std::string("GLUT"); break;
-            case GPGA: return std::string("GPGA"); break;
-            case GLGP: return std::string("GLGP"); break;
-         }
-      }
-
-
-      void fromString(const std::string str) throw(Exception)
-      {
-         std::string STR(gpstk::StringUtils::upperCase(str));
-              if(STR == std::string("GPUT")) type = GPUT;
-         else if(STR == std::string("GAUT")) type = GAUT;
-         else if(STR == std::string("SBUT")) type = SBUT;
-         else if(STR == std::string("GLUT")) type = GLUT;
-         else if(STR == std::string("GPGA")) type = GPGA;
-         else if(STR == std::string("GLGP")) type = GLGP;
-         else {
-            Exception e("Unknown TimeCorr type: " + str);
-            GPSTK_THROW(e);
-         }
-      }
-
-
-         /// Equal operator
-      inline bool operator==(const TimeCorr& tc)
-      { return tc.type == type; }
-
-         /// Less than operator - required for map.find()
-      inline bool operator<(const TimeCorr& tc)
-      { return tc.type < type; }
-
-   }; // End of class 'TimeCorr'
-
 
       /// Ionospheric Corrections
    class IonoCorr
@@ -236,10 +166,9 @@ class Rinex3NavHeader : public Rinex3NavBase
          GPSB     ///< GPS beta
       };
 
-
-         //// Member data
-      CorrType type;
-      double param[4];
+         // Member data
+      CorrType type;       ///< type of correction - enum CorrType
+      double param[4];     ///< parameters ai0-ai2,0(GAL), alpha0-3 or beta0-3(GPS)
 
          /// Constructor
       IonoCorr() { }
@@ -257,7 +186,6 @@ class Rinex3NavHeader : public Rinex3NavBase
          }
       }
 
-
       void fromString(const std::string str) throw(Exception)
       {
          std::string STR(gpstk::StringUtils::upperCase(str));
@@ -269,7 +197,6 @@ class Rinex3NavHeader : public Rinex3NavBase
             GPSTK_THROW(e);
          }
       }
-
 
          /// Equal operator
       inline bool operator==(const IonoCorr& ic)
@@ -293,9 +220,9 @@ class Rinex3NavHeader : public Rinex3NavBase
    std::string fileAgency;         ///< Agency string
    std::string date;               ///< Date string; includes "UTC" at the end
    std::vector<std::string> commentList;  ///< Comment list
-      /// map of label: GAUT, GPUT, etc, and Time Corrections
-   std::map<std::string,TimeCorr> mapTimeCorr;
-      /// map of label: GAL, GPSA or GPSB and IONO CORRs
+      /// map of label: GAUT, GPUT, etc, and TimeCorr
+   std::map<std::string,TimeSystemCorrection> mapTimeCorr;
+      /// map of label : GAL, GPSA or GPSB, and IONO CORRs
    std::map<std::string,IonoCorr> mapIonoCorr;
    long leapSeconds;               ///< Leap seconds
    long leapDelta;                 ///< Change in Leap seconds at ref time
