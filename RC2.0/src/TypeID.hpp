@@ -152,23 +152,23 @@ namespace gpstk
          WL3,       ///< Wide-lane combination(-3*L1+4*L2)
          WL4,       ///< Wide-lane combination(+4*L1-5*L2)
          EWL,       ///< Wide-lane combination(-7*L1+9*L2)
-            // Rinex 3.00 types. See Section "5.1 Observation codes"
-         C1C,       /// C/A (in L1, G1, E1 and SBAS-L1)
+            // Rinex 3.01 types. See Section "5.1 Observation codes"
+         C1A,       /// A-PRS (in E1)
+         L1A,
+         D1A,
+         S1A,
+         C1B,       /// B-I/NAV OS/CS/SoL (in E1)
+         L1B,
+         D1B,
+         S1B,
+         C1C,       /// C/A (in L1, G1, SBAS-L1), C in E1
          L1C,
          D1C,
          S1C,
-         C1P,       /// P (in L1 and G1)
-         L1P,
-         D1P,
-         S1P,
-         C1W,       /// Z-tracking and similar (AS on, in L1)
-         L1W,
-         D1W,
-         S1W,
-         C1Y,       /// Y (in L1)
-         L1Y,
-         D1Y,
-         S1Y,
+         C1L,       /// L1C(L) (in L1)
+         L1L,
+         D1L,
+         S1L,
          C1M,       /// M (in L1)
          L1M,
          D1M,
@@ -176,6 +176,30 @@ namespace gpstk
          L1N,       /// Codeless (in L1)
          D1N,
          S1N,
+         C1P,       /// P (in L1 and G1)
+         L1P,
+         D1P,
+         S1P,
+         C1S,       /// L1C(M) (in L1)
+         L1S,
+         D1S,
+         S1S,
+         C1W,       /// Z-tracking and similar (AS on, in L1)
+         L1W,
+         D1W,
+         S1W,
+         C1X,       /// L1C(M+L) (in L1), B+C (in E1)
+         L1X,
+         D1X,
+         S1X,
+         C1Y,       /// Y (in L1)
+         L1Y,
+         D1Y,
+         S1Y,
+         C1Z,       /// A+B+C (in E1)
+         L1Z,
+         D1Z,
+         S1Z,
          C2C,       /// C/A, (in L2 and G2 - GLONASS M)
          L2C,
          D2C,
@@ -184,30 +208,14 @@ namespace gpstk
          L2D,
          D2D,
          S2D,
-         C2S,       /// L2C (M) (in L2)
-         L2S,
-         D2S,
-         S2S,
+         C2I,       /// I (in E2)
+         L2I,
+         D2I,
+         S2I,
          C2L,       /// L2C (L) (in L2)
          L2L,
          D2L,
          S2L,
-         C2X,       /// L2C (M+L) (in L2. See example on Rinex v3 standard)
-         L2X,
-         D2X,
-         S2X,
-         C2P,       /// P (in L2 and G2)
-         L2P,
-         D2P,
-         S2P,
-         C2W,       /// Z-tracking and similar (AS on, in L2)
-         L2W,
-         D2W,
-         S2W,
-         C2Y,       /// Y (in L2)
-         L2Y,
-         D2Y,
-         S2Y,
          C2M,       /// M (in L2)
          L2M,
          D2M,
@@ -215,6 +223,94 @@ namespace gpstk
          L2N,       /// Codeless (in L2)
          D2N,
          S2N,
+         C2P,       /// P (in L2 and G2)
+         L2P,
+         D2P,
+         S2P,
+         C2Q,       /// Q (in E2)
+         L2Q,
+         D2Q,
+         S2Q,
+         C2S,       /// L2C (M) (in L2)
+         L2S,
+         D2S,
+         S2S,
+         C2W,       /// Z-tracking and similar (AS on, in L2)
+         L2W,
+         D2W,
+         S2W,
+         C2X,       /// L2C (M+L) (in L2. See example on Rinex v3.01 standard)
+         L2X,       /// I+Q (in E2)
+         D2X,
+         S2X,
+         C2Y,       /// Y (in L2)
+         L2Y,
+         D2Y,
+         S2Y,
+         C5I,       /// I (in L5, SBAS-L5), I F/NAV OS (in E5a)
+         L5I,
+         D5I,
+         S5I,
+         C5Q,       /// Q (in L5, SBAS-L5, E5a - no data)
+         L5Q,
+         D5Q,
+         S5Q,
+         C5X,       /// I+Q (in L5, SBAS-L5, E5a)
+         L5X,
+         D5X,
+         S5X,
+         C6A,       /// A-PRS (in E6)
+         L6A,
+         D6A,
+         S6A,
+         C6B,       /// B-C/NAV CS (in E6)
+         L6B,
+         D6B,
+         S6B,
+         C6C,       /// C - no data (in E6)
+         L6C,
+         D6C,
+         S6C,
+         C6I,       /// I (in E6)
+         L6I,
+         D6I,
+         S6I,
+         C6Q,       /// Q (in E6)
+         L6Q,
+         D6Q,
+         S6Q,
+         C6X,       /// B+C (in E6-Galileo), I+Q (in E6-Compass)
+         L6X,
+         D6X,
+         S6X,
+         C6Z,       /// A+B+C (in E6)
+         L6Z,
+         D6Z,
+         S6Z,
+         C7I,       /// I-I/NAV OS/CS/SoL (in E5b)
+         L7I,
+         D7I,
+         S7I,
+         C7Q,       /// Q - no data (in E5b)
+         L7Q,
+         D7Q,
+         S7Q,
+         C7X,       /// I+Q (in E5b)
+         L7X,
+         D7X,
+         S7X,
+         C8I,       /// I (in E5 (E5a+E5b))
+         L8I,
+         D8I,
+         S8I,
+         C8Q,       /// Q (in E5 (E5a+E5b))
+         L8Q,
+         D8Q,
+         S8Q,
+         C8X,       /// I+Q (in E5 (E5a+E5b))
+         L8X,
+         D8X,
+         S8X,
             // Derivatives of observations and combinations
          L1dot,     ///< GPS L1 phase observation first derivative
          L1dot2,    ///< GPS L1 phase observation second derivative
