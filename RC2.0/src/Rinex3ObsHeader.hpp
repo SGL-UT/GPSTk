@@ -171,7 +171,7 @@ namespace gpstk
          allValid2 = 0x801607CB,
          //allValid30 = 0x801207CB,  // case for static receivers - AntennaPosition present
          allValid30 = 0x801205CB,    // case for moving receivers -- make default
-         allValid301 = 0x841205CB,
+         allValid301 = 0x841205CB
       };
    
       /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
