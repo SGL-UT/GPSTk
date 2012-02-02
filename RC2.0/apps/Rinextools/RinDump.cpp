@@ -79,11 +79,18 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 7/1/11"));
+string Version(string("1.1 1/31/12"));
 // TD
 // Code selection is not implemented - where to replace C1* with C1W ?
 // option to use pos from PRSolve as ref
+// GPS nav and GLO nav
+// make R2 compatible - pos, ...
 // debiasing the output....
+//    combo only, phase SI VI IF GF WL NL + RP IR...explicit?
+//    initial value / resets (limit)
+//    always remove initial value for above combos, unless told not to --nozero
+//    incl option to reset bias when change exceeds limit --debias <lim>
+// END TD
 
 //------------------------------------------------------------------------------------
 // object to hold linear combination information
@@ -1019,9 +1026,8 @@ string Configuration::BuildCommandLine(void) throw()
 "\n"
 " Usage: " + PrgmName + " [options] <file> [<sat>] <data>\n"
 "      E.g. " + PrgmName + " test2820.11o G17 C1C L1C R09 ELE AZI\n"
-"   <file> is the input RINEX observation file,\n"
-"   <sat>  is the satellite(s) to output (e.g. G17 or R9), optional: default all,\n"
-"\n"
+"   <file> is the input RINEX observation file\n"
+"   <sat>  is the satellite(s) to output (e.g. G17 or R9); optional, default all\n"
 "   <data> is the quantity to be output, either raw data, satellite-dependent data\n"
 "          or other things, as given by one of the following tags:\n"
 "# Raw data:\n"
@@ -1517,9 +1523,17 @@ try {
                for(it=Rdata.obs.begin(); it!=Rdata.obs.end(); ++it) {
                   sat = it->first;
                   // output this sat?
-                  if(C.InputSats.size() > 0 && find(C.InputSats.begin(),
-                                 C.InputSats.end(), sat) == C.InputSats.end())
-                     continue;
+                  if(C.InputSats.size() > 0 &&
+                     find(C.InputSats.begin(), C.InputSats.end(), sat)
+                                                              == C.InputSats.end()) {
+                     // check for all sats of this system
+                     RinexSatID tsat(-1, sat.system);
+                     if(find(C.InputSats.begin(), C.InputSats.end(), tsat)
+                                                           == C.InputSats.end()) {
+                        //LOG(INFO) << "Reject sat " << sat;
+                        continue;
+                     }
+                  }
 
                   // is system allowed?
                   bool ok(false);
@@ -1529,7 +1543,10 @@ try {
                         break;
                      }
                   }
-                  if(!ok) continue;
+                  if(!ok) {
+                     //LOG(WARNING) << "Warning - system " << sat << " not allowed.";
+                     continue;
+                  }
 
                   // access the data
                   const vector<Rinex3ObsData::RinexDatum>& vrdata(it->second);

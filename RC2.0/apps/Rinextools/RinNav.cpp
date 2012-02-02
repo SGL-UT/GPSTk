@@ -63,8 +63,9 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 9/1/11"));
+string Version(string("1.1 2/2/12"));
 // TD
+// END TD
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -604,7 +605,7 @@ try {
       // merge headers
       else {
          // add Time Correction records from Rhead to Rheadout
-         map<string,Rinex3NavHeader::TimeCorr>::iterator tcit;
+         map<string,TimeSystemCorrection>::iterator tcit;
          for(tcit=C.NavStore.Rhead.mapTimeCorr.begin();
                tcit != C.NavStore.Rhead.mapTimeCorr.end(); ++tcit)
          {
