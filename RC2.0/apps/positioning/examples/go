@@ -1,21 +1,39 @@
 #!/bin/bash
+
+# mixed systems, with SP3 ephemeris, all in GPS time
 ../PRSolve --verbose --obs ARL82660.09o \
    --eph igs15502.sp3,igs15503.sp3,igs15504.sp3 \
    --eph igl15502.sp3,igl15503.sp3,igl15504.sp3 \
    --clk igs15502.clk_30s,igs15503.clk_30s,igs15504.clk_30s \
    --clk esa15502.clk,esa15503.clk,esa15504.clk \
    --ref -740311.8581,-5457066.4731,3207249.3343:%x,%y,%z \
-   --sol GPS:12:WC,GLO:12:PC,GPS+GLO:12:WC+PC \
-   "$@"
+   --sol GPS:12:WC,GLO:12:PC,GPS+GLO:12:WC+PC
 
-../PRSplot.pl --tag RNE pos clk dop rms
+# plot results
+../PRSplot.pl --desc GPS+GLO:12:WC+PC --tag RNE pos clk dop rms
+../PRSplot.pl --desc GPS+GLO:12:WC+PC --tag RNE scatter
    
-# test with broadcast ephemeris
-../PRSolve --verbose --log prs_brc.log \
+# GPS broadcast ephemeris only
+../PRSolve --verbose --log prs-gps-brc.log \
    --obs ARL82660.09o --nav ARL82660.09N \
    --ref -740311.8581,-5457066.4731,3207249.3343:%x,%y,%z \
-   --sol GPS:12:WC \
-   "$@"
-   #not yet --nav ARL82660.09G --nav ARL82660.09H \
+   --sol GPS:12:WC
 
-../PRSplot.pl --file prs_brc.log --tag RNE pos clk dop rms
+# plot results
+../PRSplot.pl --file prs-gps-brc.log --tag RNE pos clk dop rms
+
+# GLO broadcast ephemeris only - data in GPS time but result in PZ90 frame.
+../PRSolve --verbose --log prs-glo-brc.log \
+   --obs wtzz0200.12o --nav wtzz0200.12g \
+   --sol GLO:12:PC --elev 10 \
+   --ref 4075576.9521,931852.4505,4801567.0552
+
+# plot results
+../PRSplot.pl --file prs-glo-brc.log --tag RNE pos clk dop rms
+
+# mixed GPS+GLO using only broadcast ephemeris
+# ** not yet, requires Helmert transform PZ90 -> WGS84 **
+#../PRSolve --verbose --log prs-gpsglo-brc.log \
+#   --obs wtzz0200.12o --nav wtzz0200.12g,wtzz0200.12n \
+#   --sol GPS+GLO:12:WX+PC --elev 10 \
+#   --ref 4075576.9521,931852.4505,4801567.0552

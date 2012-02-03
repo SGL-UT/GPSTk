@@ -198,16 +198,10 @@ namespace gpstk
    }
 
 
-   // This is a utility routine used by the loadFile and loadSP3File routines.
+   // This is a private utility routine used by the loadFile and loadSP3File routines.
    // Store position (velocity) and clock data from SP3 files in clock and position
    // stores. Also update the FileStore with the filename and SP3 header.
-   void loadSP3Store(const string& filename,
-                     FileStore<SP3Header>& fileStore,
-                     ClockSatStore& clkStore,
-                     PositionSatStore& posStore,
-                     bool rejectBadPos, bool rejectBadClk,
-                     bool rejectPredPos, bool rejectPredClk,
-                     bool fillClockStore)
+   void SP3EphemerisStore::loadSP3Store(const string& filename, bool fillClockStore)
       throw(Exception)
    {
       try {
@@ -228,7 +222,7 @@ namespace gpstk
             strm >> head;
          }
          catch(Exception& e) {
-            e.addText("Error reading header of file " + filename);
+            e.addText("Error reading header of file " + filename + e.getText());
             GPSTK_RETHROW(e);
          }
          //cout << "Read header" << endl; head.dump();
@@ -237,25 +231,27 @@ namespace gpstk
          if(head.timeSystem != TimeSystem::Any &&
             head.timeSystem != TimeSystem::Unknown)
          {
-            if(posStore.getTimeSystem() == TimeSystem::Any)
+            // if store time system has not been set, do so
+            if(storeTimeSystem == TimeSystem::Any) {
+               // NB. store-, pos- and clk- TimeSystems must always be the same
+               storeTimeSystem = head.timeSystem;
                posStore.setTimeSystem(head.timeSystem);
-            else if(posStore.getTimeSystem() != head.timeSystem) {
-               InvalidRequest ir("Incompatible time systems (position)");
+               clkStore.setTimeSystem(head.timeSystem);
+            }
+
+            // if store system has been set, and it doesn't agree, throw
+            else if(storeTimeSystem != head.timeSystem)
+            {
+               InvalidRequest ir("Time system of file " + filename
+                  + " (" + head.timeSystem.asString()
+                  + ") is incompatible with store time system ("
+                  + storeTimeSystem.asString() + ").");
                GPSTK_THROW(ir);
             }
-
-            if(fillClockStore) {
-               if(clkStore.getTimeSystem() == TimeSystem::Any)
-                  clkStore.setTimeSystem(head.timeSystem);
-               else if(clkStore.getTimeSystem() != head.timeSystem) {
-                  InvalidRequest ir("Incompatible time systems (clock)");
-                  GPSTK_THROW(ir);
-               }
-            }
-         }
+         }  // end if header time system is set
 
          // save in FileStore
-         fileStore.addFile(filename, head);
+         SP3Files.addFile(filename, head);
 
          // read data
          bool isC(head.version==SP3Header::SP3c);
@@ -389,21 +385,21 @@ namespace gpstk
                   //cout << "goNext is " << (goNext ? "T":"F") << endl;
                   if(goNext) break;
 
-                  if(rejectBadPos && (prec.Pos[0]==0.0 ||
+                  if(rejectBadPosFlag && (prec.Pos[0]==0.0 ||
                                       prec.Pos[1]==0.0 ||
                                       prec.Pos[2]==0.0)) {
                      //cout << "Bad position" << endl;
                      haveP = haveV = haveEV = haveEP = false; // bad position record
                   }
-                  else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
+                  else if(fillClockStore && rejectBadClockFlag && crec.bias >= 999999.) {
                      //cout << "Bad clock" << endl;
                      haveP = haveV = haveEV = haveEP = false; // bad clock record
                   }
                   else {
                      //cout << "Add rec: " << sat << " " << ttag << " " << prec<<endl;
-                     if(!rejectPredPos || !predP)
+                     if(!rejectPredPosFlag || !predP)
                         posStore.addPositionRecord(sat,ttag,prec);
-                     if(fillClockStore && (!rejectPredClk || !predC))
+                     if(fillClockStore && (!rejectPredClockFlag || !predC))
                         clkStore.addClockRecord(sat,ttag,crec);
 
                      // prepare for next
@@ -419,21 +415,21 @@ namespace gpstk
             }  // end read loop
 
             if(haveP || haveV) {
-               if( rejectBadPos && (prec.Pos[0]==0.0 ||
+               if( rejectBadPosFlag && (prec.Pos[0]==0.0 ||
                                     prec.Pos[1]==0.0 ||
                                     prec.Pos[2]==0.0) ) {
                   //cout << "Bad last rec: position" << endl;
                   ;
                }
-               else if(fillClockStore && rejectBadClk && crec.bias >= 999999.) {
+               else if(fillClockStore && rejectBadClockFlag && crec.bias >= 999999.) {
                   //cout << "Bad last rec: clock" << endl;
                   ;
                }
                else {
                   //cout << "Add last rec: "<< sat <<" "<< ttag <<" "<< prec << endl;
-                  if(!rejectPredPos || !predP)
+                  if(!rejectPredPosFlag || !predP)
                      posStore.addPositionRecord(sat,ttag,prec);
-                  if(fillClockStore && (!rejectPredClk || !predC))
+                  if(fillClockStore && (!rejectPredClockFlag || !predC))
                      clkStore.addClockRecord(sat,ttag,crec);
                }
             }
@@ -460,9 +456,7 @@ namespace gpstk
       try {
          // if using only SP3, simply read the SP3
          if(useSP3clock) {
-            loadSP3Store(filename, SP3Files, clkStore, posStore,
-                  rejectBadPosFlag, rejectBadClockFlag,
-                  rejectPredPosFlag, rejectPredClockFlag, true);
+            loadSP3Store(filename, true);
             return;
          }
 
@@ -506,9 +500,7 @@ namespace gpstk
       throw(Exception)
    {
       try {
-         loadSP3Store(filename, SP3Files, clkStore, posStore,
-               rejectBadPosFlag, rejectBadClockFlag,
-               rejectPredPosFlag, rejectPredClockFlag, useSP3clock);
+         loadSP3Store(filename, useSP3clock);
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
@@ -547,13 +539,24 @@ namespace gpstk
          if(head.timeSystem != TimeSystem::Any &&
             head.timeSystem != TimeSystem::Unknown)
          {
-            if(clkStore.getTimeSystem() == TimeSystem::Any)
+            // if store time system has not been set, do so
+            if(storeTimeSystem == TimeSystem::Any) {
+               // NB. store-, pos- and clk- TimeSystems must always be the same
+               storeTimeSystem = head.timeSystem;
+               posStore.setTimeSystem(head.timeSystem);
                clkStore.setTimeSystem(head.timeSystem);
-            else if(clkStore.getTimeSystem() != head.timeSystem) {
-               InvalidRequest ir("Incompatible time systems");
+            }
+
+            // if store system has been set, and it doesn't agree, throw
+            else if(storeTimeSystem != head.timeSystem)
+            {
+               InvalidRequest ir("Time system of file " + filename
+                  + " (" + head.timeSystem.asString()
+                  + ") is incompatible with store time system ("
+                  + storeTimeSystem.asString() + ").");
                GPSTK_THROW(ir);
             }
-         }
+         }  // end if header time system is set
 
          // save in FileStore
          clkFiles.addFile(filename, head);

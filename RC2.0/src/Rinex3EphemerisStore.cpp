@@ -41,9 +41,6 @@
 //
 //=============================================================================
 
-#include <string>
-#include <list>
-
 #include "Rinex3EphemerisStore.hpp"
 #include "Rinex3NavStream.hpp"
 #include "Rinex3NavData.hpp"
@@ -64,18 +61,16 @@ namespace gpstk
             return GPSstore.addEphemeris(EngEphemeris(Rdata));
             break;
          case SatID::systemGlonass:
-            //return GLOstore.addEphemeris(GloRecord(Rdata));
-            GLOstore.addEphemeris(Rdata);
-            return true;
+            return GLOstore.addEphemeris(GloEphemeris(Rdata));
             break;
          case SatID::systemGalileo:
-            //return GALstore.addEphemeris(GalRecord(Rdata));
+            return GALstore.addEphemeris(GalEphemeris(Rdata));
             break;
          case SatID::systemGeosync:
-            //return GEOstore.addEphemeris(GeoRecord(Rdata));
+            //return GEOstore.addEphemeris(GeoEphemeris(Rdata));
             break;
          case SatID::systemCompass:
-            //return COMstore.addEphemeris(ComRecord(Rdata));
+            //return COMstore.addEphemeris(ComEphemeris(Rdata));
             break;
          default:
             break;
@@ -105,7 +100,8 @@ namespace gpstk
 
          try { strm >> Rhead; }
          catch(Exception& e) {
-            what = string("Failed to read header of file ") + filename;
+            what = string("Failed to read header of file ") + filename
+               + string(" : ") + e.getText();
             return -2;
          }
          if(dump) Rhead.dump(s);
@@ -113,11 +109,19 @@ namespace gpstk
          // add to FileStore
          NavFiles.addFile(filename, Rhead);
 
+         // add to mapTimeCorr
+         if(Rhead.mapTimeCorr.size() > 0) {
+            map<string, TimeSystemCorrection>::const_iterator it;
+            for(it=Rhead.mapTimeCorr.begin(); it!=Rhead.mapTimeCorr.end(); ++it)
+               addTimeCorr(it->second);
+         }
+
          while(1) {
             // read the record
             try { strm >> Rdata; }
             catch(Exception& e) {
-               what = string("Failed to read data in file ") + filename;
+               what = string("Failed to read data in file ") + filename
+                  + string(" : ") + e.getText();
                return -3;
             }
             catch(exception& e) {
@@ -146,6 +150,40 @@ namespace gpstk
 
    } // end Rinex3EphemerisStore::loadFile
 
+   // Utility routine for getXvt to test time systems and convert.
+   // Convert ttag to the target time system, using the first appropriate correction
+   // in the list, and return it. If no correction is found, ttag is unchanged and
+   // an exception is thrown.
+   CommonTime correctTimeSystem(const CommonTime ttag,
+                                const TimeSystem targetSys,
+                                const map<string, TimeSystemCorrection>& theMap)
+      throw(InvalidRequest)
+   {
+      CommonTime toReturn(ttag);
+
+      // is a conversion necessary?
+      if(ttag.getTimeSystem() == targetSys)
+         return toReturn;
+
+      // the corrected timetag: now only the system, not the value, matters
+      toReturn.setTimeSystem(targetSys);
+
+      // look up the TimeSystemCorr in list, and do the conversion
+      map<string, TimeSystemCorrection>::const_iterator it;
+      for(it = theMap.begin(); it != theMap.end(); ++it) {
+         if(it->second.convertSystem(ttag, toReturn))
+            return toReturn;
+      }
+
+      // failure
+      InvalidRequest e("Unable to convert time system "
+         + ttag.getTimeSystem().asString() + " to satellite system "
+         + targetSys.asString());
+      GPSTK_THROW(e);
+
+      return ttag;      // never reached, satisfy some compilers
+   }
+
    // Returns the position, velocity, and clock offset of the indicated
    // object in ECEF coordinates (meters) at the indicated time.
    // @param[in] sat the satellite of interest
@@ -154,29 +192,37 @@ namespace gpstk
    // @throw InvalidRequest If the request can not be completed for any
    //    reason, this is thrown. The text may have additional
    //    information as to why the request failed.
-   Xvt Rinex3EphemerisStore::getXvt(const SatID& sat, const CommonTime& ttag)
+   Xvt Rinex3EphemerisStore::getXvt(const SatID& sat, const CommonTime& inttag)
       const throw(InvalidRequest)
    {
       try {
          Xvt xvt;
+         CommonTime ttag;
 
          switch(sat.system) {
             case SatID::systemGPS:
+               ttag = correctTimeSystem(inttag, TimeSystem::GPS, mapTimeCorr);
                xvt = GPSstore.getXvt(sat,ttag);
                break;
             case SatID::systemGlonass:
+               ttag = correctTimeSystem(inttag, TimeSystem::GLO, mapTimeCorr);
                xvt = GLOstore.getXvt(sat,ttag);
                break;
             case SatID::systemGalileo:
+               ttag = correctTimeSystem(inttag, TimeSystem::GAL, mapTimeCorr);
                xvt = GALstore.getXvt(sat,ttag);
                break;
             //case SatID::systemGeosync:
+            //   ttag = correctTimeSystem(inttag, TimeSystem::GEO, mapTimeCorr);
             //   xvt = GEOstore.getXvt(sat,ttag);
             //   break;
             //case SatID::systemCompass:
+            //   ttag = correctTimeSystem(inttag, TimeSystem::COM, mapTimeCorr);
             //   xvt = COMstore.getXvt(sat,ttag);
             //   break;
             default:
+               InvalidRequest e("Unsupported satellite system");
+               GPSTK_THROW(e);
                break;
          }
 
@@ -286,26 +332,26 @@ namespace gpstk
          for(it=GPSlist.begin(); it != GPSlist.end(); ++it)
             thelist.push_back(Rinex3NavData(*it));
       }
-      /*
       if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGlonass) {
-         list<GloRecord> GLOlist;
-         n += GLOstore.addToList(list);
+         list<GloEphemeris> GLOlist;
+         n += GLOstore.addToList(GLOlist);
 
-         list<GloRecord>::const_iterator it;
+         list<GloEphemeris>::const_iterator it;
          for(it=GLOlist.begin(); it != GLOlist.end(); ++it)
             thelist.push_back(Rinex3NavData(*it));
       }
       if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGalileo) {
-         list<GalRecord> GALlist;
-         n += GALstore.addToList(list);
+         list<GalEphemeris> GALlist;
+         n += GALstore.addToList(GALlist);
 
-         list<GalRecord>::const_iterator it;
+         list<GalEphemeris>::const_iterator it;
          for(it=GALlist.begin(); it != GALlist.end(); ++it)
             thelist.push_back(Rinex3NavData(*it));
       }
+      /*
       if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGeosync) {
          list<GeoRecord> GEOlist;
-         n += GEOstore.addToList(list);
+         n += GEOstore.addToList(GEOlist);
 
          list<GeoRecord>::const_iterator it;
          for(it=GEOlist.begin(); it != GEOlist.end(); ++it)
@@ -313,7 +359,7 @@ namespace gpstk
       }
       if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemCompass) {
          list<ComRecord> COMlist;
-         n += COMstore.addToList(list);
+         n += COMstore.addToList(COMlist);
 
          list<ComRecord>::const_iterator it;
          for(it=COMlist.begin(); it != COMlist.end(); ++it)

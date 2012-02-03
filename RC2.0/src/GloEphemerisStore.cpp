@@ -36,17 +36,19 @@ namespace gpstk
 
 
       // Add ephemeris information from a Rinex3NavData object.
-   void GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
+   bool GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
       throw()
    {
 
          // If enabled, check SV health before entering here (health = 0 -> OK)
       if( (data.health == 0) || (!checkHealthFlag) )
       {
-
             // Get a GloEphemeris object from Rinex3NavData object
          GloEphemeris gloEphem(data);
-         CommonTime t( data.time );
+
+         CommonTime t( data.time);
+         t.setTimeSystem(TimeSystem::GLO);   // must be GLONASS time
+
          SatID sat( data.sat );
          pe[sat][t] = gloEphem; // find or add entry
 
@@ -55,9 +57,11 @@ namespace gpstk
          else if (t > finalTime)
             finalTime = t;
 
+         return true;
+
       }  // End of 'if( (data.health == 0) || (!checkHealthFlag) )'
 
-      return;
+      return false;
 
    }  // End of method 'GloEphemerisStore::addEphemeris()'
 
@@ -79,7 +83,13 @@ namespace gpstk
                                   const CommonTime& epoch ) const
       throw( InvalidRequest )
    {
-
+      // TD is this too strict?
+      if(epoch.getTimeSystem() != initialTime.getTimeSystem())
+      {
+         InvalidRequest e(string("Requested time system is not GLONASS time"));
+         GPSTK_THROW(e);
+      }
+      
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).
       if ( epoch <  (initialTime - 900.0) ||
@@ -160,7 +170,21 @@ namespace gpstk
    {
       static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
       s << "Dump of GloEphemerisStore:\n";
-      s << "week   sow      = year/mn/dy hr:mi:sc Sys Sat   "
+
+      s << "  There are " << pe.size() << " satellites in the store.\n";
+      for(GloEphMap::const_iterator it = pe.begin(); it != pe.end(); ++it ) {
+         TimeGloMap::const_iterator tgmIter = it->second.begin();
+         s << "  Sat " << RinexSatID(it->first)
+            << ": " << it->second.size()
+            << " records, with time limits: " << printTime(tgmIter->first,fmt);
+         tgmIter = it->second.end();
+         tgmIter--;
+         s << " - " << printTime(tgmIter->first,fmt) << "\n";
+      }
+
+      if(detail < 1) return;
+
+      s << "Dump every record:\nweek   sow      = year/mn/dy hr:mi:sc Sys Sat   "
          << "X                   Y                   Z                   "
          << "VX                  VY                  VZ                  "
          << "AX                  AY                  AZ                  "
@@ -178,12 +202,7 @@ namespace gpstk
               ++tgmIter )
          {
 
-            //   // Declare a 'YDSTime' object to ease printing
-            //YDSTime time( (*tgmIter).first );
-            //   // First, print year, Day-Of-Year and Seconds of Day
-            //s << time.year << " "
-            //  << time.doy << " "
-            //  << time.sod << " ";
+                 // First, print year, Day-Of-Year and Seconds of Day
             s << printTime(tgmIter->first,fmt) << " ";
 
                // Second, print SatID information
@@ -412,6 +431,23 @@ namespace gpstk
       }
 
    }; // End of method 'GloEphemerisStore::isPresent(const SatID& id)'
+
+
+   int GloEphemerisStore::addToList(std::list<GloEphemeris>& v) const
+      throw()
+   {
+      int n = 0;
+      for(GloEphMap::const_iterator it = pe.begin(); it != pe.end(); ++it )
+      {
+         for(TimeGloMap::const_iterator tgmIter = (*it).second.begin();
+              tgmIter != (*it).second.end(); ++tgmIter )
+         {
+             v.push_back(tgmIter->second);
+             n++;
+         }
+      }
+      return n;
+   }
 
 
 }  // End of namespace gpstk

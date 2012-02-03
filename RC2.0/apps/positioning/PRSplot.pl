@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: PRSplot.pl 61 2011-09-16 13:51:32Z btolman $
+# $Id: PRSplot.pl 72 2011-11-02 21:14:41Z btolman $
 use strict;
 use warnings;
 
@@ -14,9 +14,7 @@ package PRSplot;
 # Name:    PRSplot
 # Purpose: plot output of PRSolve
 # Author:  B W Tolman
-# Version  2.0
-my $version = '2.0 July 15, 2011';
-my $debug; # = 1;
+# Version  2.0 see below in sub Clear: my $version = '2.0 July 15, 2011';
 # Created: June 2007
 # Mods:
 #####################################################################################
@@ -38,6 +36,9 @@ sub new {
 sub Clear {
    my $self = shift;
 
+   $self->{version} = '2.1 Jan 31, 2012';
+   #$self->{debug}=1;
+
    my $gnu = "gnuplot";
    if($^O eq 'MSWin32') { $gnu = "start /B C:\\gnuplot\\bin\\wgnuplot"; }
 
@@ -46,7 +47,7 @@ sub Clear {
    # note that short options are possible but must be hardwired below
    # NB. RPV/SPV exist only here, not in PRSolve
    $self->{syntax} = <<"END_OF_SYNTAX";
-Usage: PRSplot (or $0) [options]
+Usage: PRSplot (or $0) (ver. $self->{version}) [options]
  Plot the position solutions in a PRSolve (pseudorange solution) output file; the
   plot may include the solution residuals (XYZ or NEU), the clock solution,
   the number of satellites, DOPs and the RMS residual. Scatter plots (X vs Y and
@@ -57,7 +58,7 @@ Usage: PRSplot (or $0) [options]
  Options (default):
 # Input data
   --file <f>   input PRSolve log file <f> [-f] (prs.log)
-  --desc <d>   use solution descriptor [defaults to last in PRSolve file][-d] ()
+  --desc <d>   use solution descriptor [defaults to first in PRSolve file][-d] ()
   --tag <t>    choices as follows [-t] (RPV)
                   RPF  RAIM ECEF XYZ solution
                   RPV  RAIM ECEF XYZ solution minus average position
@@ -70,6 +71,7 @@ Usage: PRSplot (or $0) [options]
 # Edit data
   --beg <[w,]s>  ignore data before this GPS <week,sow> time [-b] (0,0)
   --end <[w,]s>  ignore data after this GPS <week,sow> time [-e] (9999,604800)
+  --nosus        ignore 'suspect' solutions as well as invalid [NV] ones
   --no4          reject solutions using only 4 satellites
 # What to plot [one or more must be given]
   --scatter    plot 'X vs Y' and 'Y vs Z' [or 'E vs N' and 'E vs U']
@@ -77,6 +79,7 @@ Usage: PRSplot (or $0) [options]
   --clk        plot clock bias for each system
   --rms        plot RMS residual, Nsats, and RAIM slope
   --dop        plot GDOP, PDOP, and Nsats
+  --sats       plot only Nsats and the number of rejected satellites
 # Details of plot(s)
   --gnuplot <g>   name, with path, of the gnuplot executable ($gnu)
   --yrange <l:h>  set range of left axis on position plots to l(low)-h(high) ()
@@ -107,26 +110,26 @@ END_OF_SYNTAX
       chomp;                   # NB chomp removes the current contents of $/ from EOL
       s/\r//g;                 # but $/ is OS-dependent, so a dos file on linux has \r
       if(m/^\s*#/) {
-         $debug and print "Comment $_\n";
+         $self->{debug} and print "Comment $_\n";
       }
       elsif(m/^\s+--/) {
          ($arg) = /^\s+--(\S+) /;
-         $debug and print "arg: $arg ";
+         $self->{debug} and print "arg: $arg ";
          if(m/^\s+--$arg\s+<[^>]+> / and m/ \(.*\)$/) { #m/ \([^\)]*\)$/) 
             ($self->{$arg}) = / \(([^)]*)\)$/;
             $self->{valueArgs}->{$arg} = 1;
-            $debug and print " => '$self->{$arg}'\n";
+            $self->{debug} and print " => '$self->{$arg}'\n";
          }
          else {
             $self->{$arg} = '';
             $self->{boolArgs}->{$arg} = 1;
-            $debug and print " = bool\n";
+            $self->{debug} and print " = bool\n";
          }
       }
       elsif($arg and $arg eq 'tag') {  # also pull out the descriptions of each tag
          my ($key,$value) = /\s+([RPFSNEV]{3})\s+(.*)/;
          $self->{tags}->{$key} = $value;
-         $debug and print "tag: $key = $value\n";
+         $self->{debug} and print "tag: $key = $value\n";
       }
    }
 
@@ -134,6 +137,7 @@ END_OF_SYNTAX
 }
 
 #####################################################################################
+# main program
 sub Run {
    my $self = shift;
 
@@ -154,7 +158,7 @@ sub Run {
 
    # any plots?
    if(not $self->{pos} and not $self->{clk} and not $self->{rms} and
-                           not $self->{dop} and not $self->{scatter})
+      not $self->{dop} and not $self->{sats} and not $self->{scatter})
    {
       if(not $self->{quiet}) {
          foreach(@{$self->{solns}}) { print "Found description: $_\n"; }
@@ -168,6 +172,7 @@ sub Run {
    if($self->{clk})  { return if $self->Plot('clk'); }
    if($self->{rms})  { return if $self->Plot('rms'); }
    if($self->{dop})  { return if $self->Plot('dop'); }
+   if($self->{sats}) { return if $self->Plot('sats'); }
    if($self->{scatter}) { return if $self->Scatter(); }
 
    return;
@@ -219,7 +224,7 @@ sub ProcessArgs {
 # Dump - dump the current configuration to a string and return it
 sub Dump {
    my $self = shift;
-   my $msg = "PRSplot configuration:\n";
+   my $msg = "PRSplot (ver $self->{version}) configuration:\n";
 
    #foreach(keys %{$self->{tags}}) {
    #   if($self->{tags}->{$_} ne '') { $msg .= " tag $_ is $self->{tags}->{$_}\n"; }
@@ -269,7 +274,7 @@ sub ProcessInput {
    if(@{$self->{errors}}) { $self->Errors(); return 'fail'; }
 
    # initialize stuff
-   @{$self->{lines}} = ();
+   @{$self->{pdata}} = ();
    @{$self->{solns}} = ();
 
    # wgnuplot on windows won't pipe
@@ -308,7 +313,7 @@ sub ProcessData {
 
    # get the (descriptor), average solution and covariance
    my ($n,$desc);
-   foreach (0..$#blines) {
+   foreach (0..$#blines) {          # loop over lines, starting at end
       if($blines[$#blines-$_] =~ m/Weighted average/ and
          $blines[$#blines-$_] =~ m/RAIM solution/)
       {
@@ -316,11 +321,22 @@ sub ProcessData {
          $desc = $blines[$#blines-$_];
          $desc =~ s/Weighted average //;
          $desc =~ s/ RAIM solution//;
-         push @{$self->{solns}},$desc;
-         if($self->{desc} eq "") { $self->{desc} = $desc; }
-         else { next unless $blines[$#blines-$_] =~ m/ $self->{desc} /; }
-         if(not $self->{quiet}) { print "Solution description is $self->{desc}\n"; }
-         #last;
+         if($self->{desc} eq "") {
+            #$self->{desc} = $desc;
+            push @{$self->{solns}},$desc;
+         }
+         else {
+            next unless $blines[$#blines-$_] =~ m/ $self->{desc} /;
+            if(not $self->{quiet}) { print "Descriptor is $self->{desc}\n"; }
+            last;
+         }
+      }
+      if($blines[$#blines-$_] =~ m/^RPF/) {
+         if($self->{desc} eq "") {
+            $self->{desc} = $desc;
+            if(not $self->{quiet}) { print "Descriptor is $self->{desc}\n"; }
+         }
+         last;
       }
    }
    if(not defined $n) {
@@ -335,7 +351,7 @@ sub ProcessData {
    my $Y = $fields[2];
    my $Z = $fields[3];
    my $N = $fields[$#fields];
-   #print "X,Y,Z,N is $X,$Y,$Z,$N\n";
+   $self->{debug} and print "X,Y,Z,N is $X,$Y,$Z,$N\n";
 
    ($no,$sX,$no,$no) = split /\s+/,$blines[$n+3];
    if($sX eq "ECEF_X") {                                 # PRSolve
@@ -367,7 +383,7 @@ sub ProcessData {
    # process the file --------------------------------
    $N = 0;
    my ($sow,$Nbad) = (0,0);
-   $self->{lines} = ();
+   $self->{pdata} = ();
    $self->{week} = -1;
    $self->{rejects} = {};
 
@@ -380,8 +396,8 @@ sub ProcessData {
    $desc = $self->{desc};
    $desc =~ s/\+/\\\+/g;
 
-   # stuff for $self->{lines}
-   my ($nsv,$x,$y,$z,$rms,$slope,$gdop,$pdop)=(0,0,0,0,0,0,0,0);
+   # stuff for $self->{pdata}
+   my ($nsv,$rej,$x,$y,$z,$rms,$slope,$gdop,$pdop)=(0,0,0,0,0,0,0,0,0);
    my @clocks = ();
    my @clocklabels = ();
    $sow = '0';
@@ -389,12 +405,12 @@ sub ProcessData {
       chomp;
       s/^\s+//;
 
-      # epoch is complete - blank line and status is on
+      # epoch is complete - blank line and status is on - save data in lines
       if($_ eq '' and $sow ne '0') {
          # sow nsv x y z rms slope gdop pdop clk clk...
-         push @{$self->{lines}},join(' ',($sow, $nsv, $x, $y, $z,
+         push @{$self->{pdata}},join(' ',($sow, $nsv, $rej, $x, $y, $z,
                    $rms, $slope, $gdop, $pdop, @clocklabels, @clocks));
-         #print "Save line: ", ${$self->{lines}}[$N],"\n";
+         #print "Save line: ", ${$self->{pdata}}[$N],"\n";
          $N++;
 
          # prepare for next epoch
@@ -405,7 +421,7 @@ sub ProcessData {
       next unless m/ $desc /;    # must be our solution
       next if m/ PFR /;          # for now...
       next if m/ DAT /;          # for now...
-      #print "Good line >$_<\n";
+      $self->{debug} and print "Good line (tag $tag) >$_<\n";
 
       @fields = split /\s+/, $_;
 
@@ -419,11 +435,12 @@ sub ProcessData {
          if($self->{week} == -1) { $self->{week} = $fields[3]; }
          # week rollover
          $sow = sprintf("%.3f", ($fields[3]-$self->{week})*604800.0+$fields[4]);
-         #print "sow is $sow\n";
+         $self->{debug} and print "week,sow : $self->{week},$sow\n";
       }
 
       # get clocks
       if($fields[0] eq 'RPF' and $fields[2] eq 'NAV') {
+         @clocks = @clocklabels = ();
          $n=8;
          while(1) {
             last if($fields[$n] =~ m/\(/ or $n > $#fields);
@@ -431,15 +448,17 @@ sub ProcessData {
             push @clocks, $fields[$n+1];
             $n += 2;
          }
-         #print "Got clocks:",join(' ',(@clocklabels,@clocks)),"\n";
+         if(not defined $self->{nclks}) { $self->{nclks} = ($n-8)/2; }
+         $self->{debug} and print "clocks : ",join(' ',(@clocklabels,@clocks)),"\n";
       }
 
       # get position and rejects
       if($fields[0] eq $tag and ($fields[2] eq 'POS' or $fields[2] eq 'NAV')) {
          #$no = $_; $no =~ s/.*\s+\((-?\d+\D*)\) V$/$1/; print "Test is >$no<\n";
          # rejects
-         if(m/NV$/ or m/missed trop. corr./ or m/large slope/ or m/large RMS/) {
-            #print "Reject >$_<\n";
+         if(m/NV$/ or ($self->{nosus}
+               and (m/missed trop. corr./ or m/large slope/ or m/large RMS/))) {
+            $self->{debug} and print "Reject >$_<\n";
             $Nbad++;
             $_ =~ s/.*\s+\((-?\d+\D*)\) NV$/$1/;
             # NB all three can appear in the same line
@@ -459,11 +478,13 @@ sub ProcessData {
             $y = sprintf("%16.6f",$y - $Y);
             $z = sprintf("%16.6f",$z - $Z);
          }
+         $self->{debug} and print "position : $x $y $z ($X $Y $Z)\n";
       }
 
       # get rest
       if($fields[0] eq 'RPF' and $fields[2] eq 'RMS') {
          $nsv = $fields[6];
+         $rej = $fields[5];
          if($self->{no4} and $nsv <= 4) {
             $Nbad++;
             $self->{rejects}->{'4svs'}++;
@@ -481,7 +502,7 @@ sub ProcessData {
       push @{$self->{errors}},
          "No data to plot! (Are tag or desc not found in file?) Abort.";
    }
-   #print "Lines:\n",join("\n",@{$self->{lines}}),"\n";
+   #print "Lines:\n",join("\n",@{$self->{pdata}}),"\n";
 
    if(not $self->{quiet}) {
       if($Nbad) {
@@ -589,9 +610,11 @@ sub Plot {
    if($arg eq 'clk') {
       print FPIPE "set title \"Clock Bias Solution\\n" .
                            "PRSolve Solution $self->{desc} in file $self->{file}\"\n";
-      print FPIPE "set autoscale y2\n";
-      print FPIPE "set ytics nomirror\n";
-      print FPIPE "set y2tics\n";
+      if($self->{nclks} > 1) {
+         print FPIPE "set autoscale y2\n";
+         print FPIPE "set ytics nomirror\n";
+         print FPIPE "set y2tics\n";
+      }
    }
    if($arg eq 'dop') {
       print FPIPE "set title \"GDOP, PDOP and Number Sats\\n" .
@@ -611,6 +634,10 @@ sub Plot {
       print FPIPE "set ylabel \"RMS residual (meters) or Number Sats\"\n";
       print FPIPE "set y2label \"RAIM Slope (meters)\"\n";
    }
+   if($arg eq 'sats') {
+      print FPIPE "set title \"Satellites: number used and number rejected\"\n";
+      print FPIPE "set ylabel \"Number of satellites\"\n";
+   }
 
    # add other stuff
    print FPIPE "set xlabel \"GPS Seconds of Week $self->{week}\"\n";
@@ -627,23 +654,23 @@ sub Plot {
 
    # add plot description(s)
    if($arg eq 'pos') {
-      print FPIPE "$plot using 1:5 t \"$Z\" with points ps $ps";
+      print FPIPE "$plot using 1:6 t \"$Z\" with points ps $ps";
       $plot = ", ''";
-      print FPIPE "$plot using 1:4 t \"$Y\" with points ps $ps";
-      print FPIPE "$plot using 1:3 t \"$X\" with points ps $ps";
+      print FPIPE "$plot using 1:5 t \"$Y\" with points ps $ps";
+      print FPIPE "$plot using 1:4 t \"$X\" with points ps $ps";
       $N += 3;
    }
    if($arg eq 'clk') {
-      #print "$self->{lines}[0]\n";
-      my @fields = split /\s+/,$self->{lines}[0];
-      my $nclks = ($#fields - 8)/2;
+      #print "$self->{pdata}[0]\n";
+      my @fields = split /\s+/,$self->{pdata}[0];
+      my $nclks = $self->{nclks};
       my @lab;
-      for(1..$nclks) { push @lab,$fields[8+$_]; }
+      for(1..$nclks) { push @lab,$fields[9+$_]; }
       #print "Clock labels are ",join(' ',@lab),"\n";
       print FPIPE "set ylabel \"$lab[0] Clock (meters)\"\n";
-      print FPIPE "set y2label \"Other Clock(s) (meters)\"\n";
+      if($nclks > 1)  { print FPIPE "set y2label \"Other Clock(s) (meters)\"\n"; }
       for(0..$nclks-1) {
-         my $n = 10+$nclks+$_;
+         my $n = 11+$nclks+$_;
          print FPIPE "$plot using 1:$n $axes t \"$lab[$_]\" with linespoints ps $ps";
          $plot = ", ''";
          $axes = '';
@@ -651,23 +678,29 @@ sub Plot {
       }
    }
    if($arg eq 'rms') {
-      print FPIPE "$plot using 1:6 t \"RMS\" with lines";
+      print FPIPE "$plot using 1:7 t \"RMS\" with lines";
       $plot = ", ''";
       print FPIPE "$plot using 1:2 t \"Nsat\" with lines";
-      print FPIPE "$plot using 1:7 $axes t \"Slope\" with lines";
+      print FPIPE "$plot using 1:8 $axes t \"Slope\" with lines";
       $N += 3;
    }
    if($arg eq 'dop') {
-      print FPIPE "$plot using 1:8 t \"GDOP\" with lines";
+      print FPIPE "$plot using 1:9 t \"GDOP\" with lines";
       $plot = ", ''";
-      print FPIPE "$plot using 1:9 t \"PDOP\" with lines";
+      print FPIPE "$plot using 1:10 t \"PDOP\" with lines";
       print FPIPE "$plot using 1:2 $axes t \"Nsat\" with lines";
       $N += 3;
+   }
+   if($arg eq 'sats') {
+      print FPIPE "$plot using 1:2 t \"used\" with lines";
+      $plot = ", ''";
+      print FPIPE "$plot using 1:3 t \"rejected\" with linespoints lt 3 pt 7";
+      $N = 2;
    }
    print FPIPE "\n";
 
    foreach(1..$N) {
-      foreach (@{$self->{lines}}) { print FPIPE "$_\n"; }
+      foreach (@{$self->{pdata}}) { print FPIPE "$_\n"; }
       print FPIPE "e\n";
    }
 
@@ -759,29 +792,30 @@ sub Scatter {
       print FPIPE "set title \"$self->{tags}->{$self->{tag}}\\n" .
                               "PRSolve $self->{desc} in file $self->{file}\"\n";
 
-      # sow nsv x y z clk rms slope glo
-      my $cols = '3:4';
+      # sow nsv nrej x y z clk rms slope glo
+      my $cols = '4:5';
       if($self->{tag} eq 'RNE' or $self->{tag} eq 'SNE') {
          if($_ eq 0) {
             print FPIPE "set xlabel \"East residual (m)\"\n";
             print FPIPE "set ylabel \"North residual (m)\"\n";
-            $cols = '4:3';
+            $cols = '5:4';
          }
          else {
             print FPIPE "set xlabel \"East residual (m)\"\n";
             print FPIPE "set ylabel \"Up residual (m)\"\n";
-            $cols = '4:5';
+            $cols = '5:6';
          }
       }
       else {
          if($_ eq 0) {
             print FPIPE "set xlabel \"ECEF X (m)\"\n";
             print FPIPE "set ylabel \"ECEF Y (m)\"\n";
+            $cols = '4:5';
          }
          else {
             print FPIPE "set xlabel \"ECEF Y (m)\"\n";
             print FPIPE "set ylabel \"ECEF Z (m)\"\n";
-            $cols = '4:5';
+            $cols = '5:6';
          }
       }
       #print FPIPE "unset mouse\n";
@@ -792,7 +826,7 @@ sub Scatter {
       my $lt = $_+1;
       print FPIPE "plot '-' using $cols t \"\" with points lt $lt ps $ps";
       print FPIPE "\n";
-      foreach (@{$self->{lines}}) { print FPIPE "$_\n"; }
+      foreach (@{$self->{pdata}}) { print FPIPE "$_\n"; }
       print FPIPE "e\n";
       close FPIPE;
 

@@ -45,12 +45,17 @@
 #define GPSTK_RINEX3EPHEMERISSTORE_HPP
 
 #include <iostream>
+#include <string>
+#include <list>
+#include <map>
+#include <algorithm>
 
 #include "CommonTime.hpp"
 #include "SatID.hpp"
+#include "Xvt.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavData.hpp"
-#include "Xvt.hpp"
+#include "TimeSystemCorr.hpp"
 
 #include "FileStore.hpp"
 #include "GPSEphemerisStore.hpp"
@@ -95,6 +100,12 @@ namespace gpstk
       /// Rinex file data last read by loadFile()
       Rinex3NavData Rdata;
 
+      /// Map of time system corrections, similar to mapTimeCorr in Rinex3NavHeader,
+      /// and taken from either loadFile() (RinexNavHeader) or user input.
+      /// key = TimeSystemCorrection::asString4().
+      /// User may add to the list with addTimeCorr()
+      map<string, TimeSystemCorrection> mapTimeCorr;
+
       /// string containing what() of exceptions caught by loadFile()
       std::string what;
 
@@ -130,7 +141,55 @@ namespace gpstk
       {
          // may have to re-write this...
          os << "Dump Rinex3EphemerisStore:" << std::endl;
+         // dump the time system corrections
+         map<string,TimeSystemCorrection>::const_iterator tcit;
+         for(tcit=mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit) {
+            os << "Time correction for " << tcit->second.asString4() << " : "
+               << tcit->second.asString() << " " << scientific << setprecision(12);
+            switch(tcit->second.type) {
+               case TimeSystemCorrection::GPUT:
+                    os << ", A0 = " << tcit->second.A0
+                        << ", A1 = " << tcit->second.A1
+                        << ", RefTime = week/sow " << tcit->second.refWeek
+                        << "/" << tcit->second.refSOW;
+                  break;
+               case TimeSystemCorrection::GAUT:
+                    os << ", A0 = " << tcit->second.A0
+                        << ", A1 = " << tcit->second.A1
+                        << ", RefTime = week/sow " << tcit->second.refWeek
+                        << "/" << tcit->second.refSOW;
+                  break;
+               case TimeSystemCorrection::SBUT:
+                    os << ", A0 = " << tcit->second.A0
+                        << ", A1 = " << tcit->second.A1
+                        << ", RefTime = week/sow " << tcit->second.refWeek
+                        << "/" << tcit->second.refSOW
+                        << ", provider " << tcit->second.geoProvider
+                        << ", UTC ID = " << tcit->second.geoUTCid;
+                  break;
+               case TimeSystemCorrection::GLUT:
+                    os << ", -TauC = " << tcit->second.A0;
+                  break;
+               case TimeSystemCorrection::GPGA:
+                    os << ", A0G = " << tcit->second.A0
+                        << ", A1G = " << tcit->second.A1
+                        << ", RefTime = week/sow " << tcit->second.refWeek
+                        << "/" << tcit->second.refSOW;
+                  break;
+               case TimeSystemCorrection::GLGP:
+                    os << ", TauGPS = " << tcit->second.A0
+                        << " = " << tcit->second.A0 * C_MPS
+                        << " m, RefTime = yr/mon/day "
+                        << tcit->second.refYr
+                        << "/" << tcit->second.refMon
+                        << "/" << tcit->second.refDay;
+                  break;
+            }
+            os << endl;
+         }
+
          NavFiles.dump(os, detail);
+
          GPSstore.dump(os, detail);
          GLOstore.dump(os, detail);
          GALstore.dump(os, detail);
@@ -161,6 +220,12 @@ namespace gpstk
          //GEOstore.clear();
          //COMstore.clear();
       }
+
+      /// Return time system of this store. NB this is needed only to satisfy the
+      /// XvtStore virtual interface; the system stores (GPSstore, GLOstore, etc)
+      /// will be used internally to determine time system.
+      virtual TimeSystem getTimeSystem(void) const throw()
+         { return TimeSystem::Any; }
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
@@ -230,14 +295,98 @@ namespace gpstk
             n += GPSstore.size();
          if(sys==SatID::systemMixed || sys==SatID::systemGlonass)
             n += GLOstore.size();
-         /*
          if(sys==SatID::systemMixed || sys==SatID::systemGalileo)
             n += GALstore.size();
-         if(sys==SatID::systemMixed || sys==SatID::systemGeosync)
-            n += GEOstore.size();
-         if(sys==SatID::systemMixed || sys==SatID::systemCompass)
-            n += COMstore.size();
-         */
+         //if(sys==SatID::systemMixed || sys==SatID::systemGeosync)
+         //   n += GEOstore.size();
+         //if(sys==SatID::systemMixed || sys==SatID::systemCompass)
+         //   n += COMstore.size();
+         return n;
+      }
+
+      /// Add to the map of time system corrections. Overwrite the existing
+      /// correction of the same type, if it exists.
+      /// @return true if an existing correction was overwritten.
+      bool addTimeCorr(const TimeSystemCorrection& tsc) throw()
+      {
+         // true if this type already exists
+         bool overwrite(mapTimeCorr.find(tsc.asString4()) != mapTimeCorr.end());
+
+         // add or overwrite it
+         mapTimeCorr[tsc.asString4()] = tsc;
+
+         return overwrite;
+      }
+
+      /// Delete from the map of time system corrections.
+      /// @param type of TimeSystemCorrection, as a string,
+      ///                   i.e. TimeSystemCorrection::asString4()
+      /// @return true if an existing correction was deleted.
+      bool delTimeCorr(const string& typestr) throw()
+      {
+         map<string, TimeSystemCorrection>::iterator it;
+         it = mapTimeCorr.find(typestr);
+         if(it != mapTimeCorr.end()) {
+            mapTimeCorr.erase(it);
+            return true;
+         }
+         return false;
+      }
+
+      /// Fill out the time system corrections "network" by adding corrections that
+      /// can be derived from existing corrections. For example,
+      ///   given GPUT (GPS to UTC(USNO), from LEAP SECONDS)
+      ///     and GLUT (GLO to UTC(SU), from CORR TO SYSTEM TIME)
+      /// compute GLGP (GLO to GPS) by assuming all UTC's are equivalent.
+      /// @return the number of new TimeSystemCorrection's
+      int expandTimeCorrMap(void) throw()
+      {
+         int n(0);
+         map<string, TimeSystemCorrection>::iterator it,jt;
+
+         // currently there are only two possibilities : GPGA and GLGP
+         // GLGP : GLO to GPS
+         it = mapTimeCorr.find(string("GPUT"));
+         jt = mapTimeCorr.find(string("GLUT"));
+         if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
+            && mapTimeCorr.find(string("GLGP")) == mapTimeCorr.end())
+         {
+            TimeSystemCorrection tc("GLGP");
+            tc.A0 = jt->second.A0 - it->second.A0;
+            tc.A1 = jt->second.A1 - it->second.A1; // probably zeros
+            tc.refYr = jt->second.refYr;           // take ref time from GLO
+            tc.refMon = jt->second.refMon;
+            tc.refDay = jt->second.refDay;
+            tc.refWeek = jt->second.refWeek;
+            tc.refSOW = jt->second.refSOW;
+            tc.refSOW = jt->second.refSOW;
+            tc.geoProvider = jt->second.geoProvider;  // blank
+            tc.geoUTCid = 0;                          // NA
+            mapTimeCorr[tc.asString4()] = tc;
+            n++;
+         }
+
+         // GPGA : GPS to GAL
+         it = mapTimeCorr.find(string("GAUT"));
+         jt = mapTimeCorr.find(string("GPUT"));
+         if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
+            && mapTimeCorr.find(string("GPGA")) == mapTimeCorr.end())
+         {
+            TimeSystemCorrection tc("GPGA");
+            tc.A0 = jt->second.A0 - it->second.A0;
+            tc.A1 = jt->second.A1 - it->second.A1;
+            tc.refYr = it->second.refYr;           // take ref time from GAL
+            tc.refMon = it->second.refMon;
+            tc.refDay = it->second.refDay;
+            tc.refWeek = it->second.refWeek;
+            tc.refSOW = it->second.refSOW;
+            tc.refSOW = it->second.refSOW;
+            tc.geoProvider = it->second.geoProvider;  // blank
+            tc.geoUTCid = 0;                          // NA
+            mapTimeCorr[tc.asString4()] = tc;
+            n++;
+         }
+
          return n;
       }
 

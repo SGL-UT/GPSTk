@@ -96,6 +96,10 @@ namespace gpstk
       virtual void clear(void) throw()
          = 0;
 
+      /// Return the time system of the store
+      virtual TimeSystem getTimeSystem(void) const throw()
+         = 0;
+
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return The initial time

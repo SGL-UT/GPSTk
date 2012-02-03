@@ -6,9 +6,6 @@
  * including RINEX 2, and used to convert CommonTime between systems.
  */
 
-#ifndef GPSTK_TIMESYSTEMCORRECTION_INCLUDE
-#define GPSTK_TIMESYSTEMCORRECTION_INCLUDE
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -45,16 +42,19 @@
 //
 //=============================================================================
 
+#ifndef GPSTK_TIMESYSTEMCORRECTION_INCLUDE
+#define GPSTK_TIMESYSTEMCORRECTION_INCLUDE
+
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 
 namespace gpstk {
 
-      /// Time System Corrections
+      /// Time System Corrections as defined in the RINEX version 3 Navigation header.
    class TimeSystemCorrection
    {
    public:
-         /// Supported time system correction types
+         /// Supported time system correction types, cf. RINEX version 3 spec.
       enum CorrType
       {
          Unknown=0,
@@ -133,17 +133,19 @@ namespace gpstk {
       inline bool operator<(const TimeSystemCorrection& tc)
       { return tc.type < type; }
 
-         /// Compute the correction from the time system that is given (fromTime)
-         /// to the time system of the target (toTime), and
-         /// apply it to the given time (fromTime) to yield the target time (toTime);
-         /// i.e. toTime = fromTime + correction(from => to).
-         /// @param fromTime CommonTime, on input is a time in the "from" system,
+         /// Given a time in one system (fromTime), compute the correction between
+         /// the given system and the target system (toTime.system),
+         /// and apply it to fromTime, placing the result in the target toTime.
+         /// i.e. toTime = (const)fromTime + correction(from => to).
+         /// @param fromTime CommonTime, on input is a time in the given system,
          ///     unchanged on output.
-         /// @param toTime CommonTime, on input is in the "to" system, on output is
-         ///     set to "fromTime" plus the correction, in the "to" system.
-         /// @throw Exception of this object has not been defined, or if conversion is
-         ///      not available (this object is not a conversion "from" => "to").
-      void convertSystem(const CommonTime& fromTime, CommonTime& toTime) const
+         /// @param toTime CommonTime, on input this defines the target system and
+         ///     the value is ignored; on output the value is set to "given time plus
+         ///     correction" and the system is left as the target system.
+         /// @return true if successful, false if the input systems are not those
+         ///     that can be converted by this TimeSystemCorr object.
+         /// @throw Exception if this object has not been defined.
+      bool convertSystem(const CommonTime& fromTime, CommonTime& toTime) const
          throw(Exception)
       {
          switch(type) {
@@ -161,7 +163,7 @@ namespace gpstk {
                   toTime = fromTime + A0 + A1*dt;
                   toTime.setTimeSystem(TimeSystem::UTC);
 
-                  return;
+                  return true;
                }
                // ------------------------------------------------- UTC => GPS
                else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
@@ -176,7 +178,7 @@ namespace gpstk {
                   toTime = fromTime - A0 - A1*dt;
                   toTime.setTimeSystem(TimeSystem::GPS);
 
-                  return;
+                  return true;
                }
 
             case GAUT:
@@ -193,7 +195,7 @@ namespace gpstk {
                   toTime = fromTime + A0 + A1*dt;
                   toTime.setTimeSystem(TimeSystem::UTC);
 
-                  return;
+                  return true;
                }
                // ------------------------------------------------- UTC => GAL
                else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
@@ -209,7 +211,7 @@ namespace gpstk {
                   toTime = fromTime - A0 - A1*dt;
                   toTime.setTimeSystem(TimeSystem::GAL);
 
-                  return;
+                  return true;
                }
 
             case SBUT:
@@ -219,7 +221,8 @@ namespace gpstk {
                {
                   // TBD
                   // depends on provider and UT ID
-                  // make it throw until implemented  return;
+                  Exception e("TimeSystemCorr SBAS <=> UTC has not been implemented");
+                  GPSTK_THROW(e);
                }
 
             case GLUT:
@@ -229,7 +232,7 @@ namespace gpstk {
                {
                   toTime = fromTime + A0;
                   toTime.setTimeSystem(TimeSystem::UTC);
-                  return;
+                  return true;
                }
                // ------------------------------------------------- UTC => GLO
                else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
@@ -237,7 +240,7 @@ namespace gpstk {
                {
                   toTime = fromTime - A0;
                   toTime.setTimeSystem(TimeSystem::GLO);
-                  return;
+                  return true;
                }
 
             case GPGA:
@@ -254,7 +257,7 @@ namespace gpstk {
                   toTime = fromTime + A0 + A1*dt;
                   toTime.setTimeSystem(TimeSystem::GAL);
 
-                  return;
+                  return true;
                }
                // ------------------------------------------------- GAL => GPS
                else if(fromTime.getTimeSystem() == TimeSystem::GAL &&
@@ -269,7 +272,7 @@ namespace gpstk {
                   toTime = fromTime - A0 - A1*dt;
                   toTime.setTimeSystem(TimeSystem::GPS);
 
-                  return;
+                  return true;
                }
 
             case GLGP:
@@ -279,7 +282,7 @@ namespace gpstk {
                {
                   toTime = fromTime + A0;
                   toTime.setTimeSystem(TimeSystem::GLO);
-                  return;
+                  return true;
                }
                // ------------------------------------------------- GLO => GPS
                else if(fromTime.getTimeSystem() == TimeSystem::GLO &&
@@ -287,7 +290,7 @@ namespace gpstk {
                {
                   toTime = fromTime - A0;
                   toTime.setTimeSystem(TimeSystem::GPS);
-                  return;
+                  return true;
                }
 
             default:
@@ -295,11 +298,12 @@ namespace gpstk {
                GPSTK_THROW(e);
          }
 
-         Exception e(string("Cannot convert time systems: input is ")
-                     + fromTime.getTimeSystem().asString() + string(" => ")
-                     + toTime.getTimeSystem().asString()
-                     + string(", but conversion object is ") + asString());
-         GPSTK_THROW(e);
+         //Exception e(string("Cannot convert time systems: input is ")
+         //            + fromTime.getTimeSystem().asString() + string(" => ")
+         //            + toTime.getTimeSystem().asString()
+         //            + string(", but conversion object is ") + asString());
+         //GPSTK_THROW(e);
+         return false;
       }
 
    }; // End of class 'TimeSystemCorrection'

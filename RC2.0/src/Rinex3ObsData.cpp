@@ -360,11 +360,13 @@ namespace gpstk
    void reallyGetRecordVer2(Rinex3ObsStream& strm, Rinex3ObsData& rod)
       throw(Exception)
    {
-      string line;
       static CommonTime previousTime(CommonTime::BEGINNING_OF_TIME);
 
       // get the epoch line and check
-      strm.formattedGetLine(line, true);
+      string line;
+      while(line.empty())        // ignore blank lines in place of epoch lines
+         strm.formattedGetLine(line, true);
+
       if(line.size()>80 || line[0] != ' ' || line[3] != ' ' || line[6] != ' ') {
          FFStreamError e("Bad epoch line: >" + line + "<");
          GPSTK_THROW(e);
@@ -372,8 +374,7 @@ namespace gpstk
      
       // process the epoch line, including SV list and clock bias
       rod.epochFlag = asInt(line.substr(28,1));
-      if((rod.epochFlag < 0) || (rod.epochFlag > 6))
-      {
+      if((rod.epochFlag < 0) || (rod.epochFlag > 6)) {
          FFStreamError e("Invalid epoch flag: " + asString(rod.epochFlag));
          GPSTK_THROW(e);
       }

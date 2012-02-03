@@ -44,6 +44,11 @@ namespace gpstk
 
    // member data
    private:
+      /// Time system for this store (NB usually GPS, but CANNOT assume so)
+      /// Must set, and keep consistent, in loadFile
+      /// Returned in getTimeSystem() (virtual in XvtStore)
+      TimeSystem storeTimeSystem;
+
       /// PositionSatStore for SP3 ephemeris data
       PositionSatStore posStore;
 
@@ -75,10 +80,19 @@ namespace gpstk
       bool rejectPredClockFlag;
 
    // member functions
+
+      /// Private utility routine used by the loadFile and loadSP3File routines.
+      /// Store position (velocity) and clock data from SP3 files in clock and
+      /// position stores. Also update the FileStore with the filename and SP3 header.
+      /// Check time systems consistentcy, and if possible set store time system.
+      void loadSP3Store(const string& filename, bool fillClockStore)
+         throw(Exception);
+
    public:
 
       /// Default constructor
-      SP3EphemerisStore() throw() : useSP3clock(true),
+      SP3EphemerisStore() throw() : storeTimeSystem(TimeSystem::Any),
+                                    useSP3clock(true),
                                     rejectBadPosFlag(true),
                                     rejectBadClockFlag(true),
                                     rejectPredPosFlag(false),
@@ -143,6 +157,10 @@ namespace gpstk
       /// Clear the dataset, meaning remove all data
       virtual void clear(void) throw()
          { clearPosition(); clearClock(); }
+ 
+      /// Return time system (NB usually GPS, but CANNOT assume so)
+      virtual TimeSystem getTimeSystem(void) const throw()
+         { return storeTimeSystem; }
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.

@@ -121,6 +121,10 @@ namespace gpstk
          throw();
 
 
+      /// Return time system (NB assumed always to be Galileo)
+      virtual TimeSystem getTimeSystem(void) const throw()
+         { return TimeSystem::GAL; }
+
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any satellite.
       /// @return The initial time
@@ -197,9 +201,6 @@ namespace gpstk
          throw()
       { return ubeSize(); };
       
-      /// Return time system (NB assumed always to be Galileo)
-      TimeSystem getTimeSystem(void) const throw() { return TimeSystem::GAL; }
-
       /// Find an ephemeris based upon the search method configured
       /// by SearchNear/SearchPast
       /// @param sat SatID of satellite of interest

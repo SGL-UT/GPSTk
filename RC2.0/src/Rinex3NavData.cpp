@@ -785,7 +785,8 @@ namespace gpstk
          double dsec;
 
          string line;
-         strm.formattedGetLine(line, true);
+         while(line.empty())        // ignore blank lines in place of epoch lines
+            strm.formattedGetLine(line, true);
 
          if(strm.header.version >= 3) {
             // check for spaces in the right spots...

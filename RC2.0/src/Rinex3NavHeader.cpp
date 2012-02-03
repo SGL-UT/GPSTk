@@ -99,6 +99,7 @@ namespace gpstk
    
          string thisLabel(line, 60, 20);
 
+         // following is huge if else else ... endif for each record type
          if(thisLabel == stringVersion) {                // "RINEX VERSION / TYPE"
             version = asDouble(line.substr( 0,20));
 
@@ -195,11 +196,11 @@ namespace gpstk
          }
          // R2.11 but Javad uses it in 3.01
          else if(thisLabel == stringCorrSysTime) { // "CORR TO SYSTEM TIME"  R2.10 GLO
-            TimeSystemCorrection tc("GLGP");
+            TimeSystemCorrection tc("GLUT");
             tc.refYr = asInt(line.substr(0,6));
             tc.refMon = asInt(line.substr(6,6));
             tc.refDay = asInt(line.substr(12,6));
-            tc.A0 = for2doub(line.substr(21,19));
+            tc.A0 = -for2doub(line.substr(21,19));    // -TauC
 
             // convert to week,sow
             CivilTime ct(tc.refYr,tc.refMon,tc.refDay,0,0,0.0);
@@ -209,10 +210,18 @@ namespace gpstk
 
             tc.A1 = 0.0;
             tc.geoProvider = string("    ");
-            tc.geoUTCid = 0;
+            tc.geoUTCid = 3;                          // UTC(SU)
 
             mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
+
+            // TD need to generate a GLGP with this and leapSeconds
+            // TAI = GPS + 19sec
+            // GPS = UTC + leapSeconds
+            // GLO = UTC - tauC
+            // so
+            // GPS = UTC + leapSeconds = GLO + tauC + leapSeconds
+            // GLO = GPS - tauC - leapSeconds;
          }
          else if(thisLabel == stringDUTC) {     // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
             TimeSystemCorrection tc("SBUT");
@@ -259,6 +268,27 @@ namespace gpstk
             leapWeek = asInt(line.substr(12,6));      // R3 only
             leapDay = asInt(line.substr(18,6));       // R3 only
             valid |= validLeapSeconds;
+
+            // leap seconds give the time correction between GPS and UTC(USNO)
+            // GPS = UTC(USNO) + leapSeconds
+            TimeSystemCorrection tc("GPUT");
+            tc.A0 = double(leapSeconds);
+            tc.A1 = 0.0;
+
+            // reference time - convert to week,sow
+            tc.refYr = 0;           // TD ??
+            tc.refMon = 0;
+            tc.refDay = 0;
+            //CivilTime ct(tc.refYr,tc.refMon,tc.refDay,0,0,0.0);
+            //GPSWeekSecond gws(ct);
+            tc.refWeek = 0; // gws.week;
+            tc.refSOW = 0.0; // gws.sow;
+
+            tc.geoProvider = string("    ");
+            tc.geoUTCid = 2;                          // UTC(USNO)
+
+            mapTimeCorr[tc.asString4()] = tc;
+            valid |= validTimeSysCorr;
          }
 
          else if(thisLabel == stringEoH) {                        // "END OF HEADER"
@@ -520,37 +550,43 @@ namespace gpstk
          s << "Time correction for " << tcit->second.asString4() << " : "
             << tcit->second.asString() << " " << scientific << setprecision(12);
          switch(tcit->second.type) {
-            case TimeSystemCorrection::GPUT: s << tcit->second.asString()
-                                    << ", A0 = " << tcit->second.A0
-                                    << ", A1 = " << tcit->second.A1
-                                    << ", RefTime = week/sow " << tcit->second.refWeek
-                                    << "/" << tcit->second.refSOW;
-            case TimeSystemCorrection::GAUT: s << tcit->second.asString()
-                                    << ", A0 = " << tcit->second.A0
-                                    << ", A1 = " << tcit->second.A1
-                                    << ", RefTime = week/sow " << tcit->second.refWeek
-                                    << "/" << tcit->second.refSOW;
-            case TimeSystemCorrection::SBUT: s << tcit->second.asString()
-                                    << ", A0 = " << tcit->second.A0
-                                    << ", A1 = " << tcit->second.A1
-                                    << ", RefTime = week/sow " << tcit->second.refWeek
-                                    << "/" << tcit->second.refSOW
-                                    << ", provider " << tcit->second.geoProvider
-                                    << ", UTC ID = " << tcit->second.geoUTCid;
-            case TimeSystemCorrection::GLUT: s << tcit->second.asString()
-                                    << ", -TauC = " << tcit->second.A0;
-            case TimeSystemCorrection::GPGA: s << tcit->second.asString()
-                                    << ", A0G = " << tcit->second.A0
-                                    << ", A1G = " << tcit->second.A1
-                                    << ", RefTime = week/sow " << tcit->second.refWeek
-                                    << "/" << tcit->second.refSOW;
-            case TimeSystemCorrection::GLGP: s << tcit->second.asString()
-                                    << ", -TauGPS = " << tcit->second.A0
-                                    << " s = " << tcit->second.A0 * C_MPS
-                                    << " m, RefTime = yr/mon/day "
-                                    << tcit->second.refYr
-                                    << "/" << tcit->second.refMon
-                                    << "/" << tcit->second.refDay;
+            case TimeSystemCorrection::GPUT:
+                   s << ", A0 = " << tcit->second.A0
+                     << ", A1 = " << tcit->second.A1
+                     << ", RefTime = week/sow " << tcit->second.refWeek
+                     << "/" << tcit->second.refSOW;
+               break;
+            case TimeSystemCorrection::GAUT:
+                   s << ", A0 = " << tcit->second.A0
+                     << ", A1 = " << tcit->second.A1
+                     << ", RefTime = week/sow " << tcit->second.refWeek
+                     << "/" << tcit->second.refSOW;
+               break;
+            case TimeSystemCorrection::SBUT:
+                   s << ", A0 = " << tcit->second.A0
+                     << ", A1 = " << tcit->second.A1
+                     << ", RefTime = week/sow " << tcit->second.refWeek
+                     << "/" << tcit->second.refSOW
+                     << ", provider " << tcit->second.geoProvider
+                     << ", UTC ID = " << tcit->second.geoUTCid;
+               break;
+            case TimeSystemCorrection::GLUT:
+                   s << ", -TauC = " << tcit->second.A0;
+               break;
+            case TimeSystemCorrection::GPGA:
+                   s << ", A0G = " << tcit->second.A0
+                     << ", A1G = " << tcit->second.A1
+                     << ", RefTime = week/sow " << tcit->second.refWeek
+                     << "/" << tcit->second.refSOW;
+               break;
+            case TimeSystemCorrection::GLGP:
+                   s << ", TauGPS = " << tcit->second.A0
+                     << " = " << tcit->second.A0 * C_MPS
+                     << " m, RefTime = yr/mon/day "
+                     << tcit->second.refYr
+                     << "/" << tcit->second.refMon
+                     << "/" << tcit->second.refDay;
+               break;
          }
          s << endl;
       }

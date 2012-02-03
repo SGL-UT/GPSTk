@@ -119,6 +119,10 @@ namespace gpstk
          throw();
 
 
+      /// Return time system (NB assumed always to be GPS)
+      virtual TimeSystem getTimeSystem(void) const throw()
+         { return TimeSystem::GPS; }
+
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any satellite.
       /// @return The initial time
@@ -195,17 +199,14 @@ namespace gpstk
          throw()
       { return ubeSize(); };
       
-      /// Return time system (NB assumed always to be GPS)
-      TimeSystem getTimeSystem(void) const throw() { return TimeSystem::GPS; }
-
       /// Find an ephemeris based upon the search method configured
       /// by SearchNear/SearchPast
       /// @param sat SatID of satellite of interest
       /// @param t time with which to search for ephemeris
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findEphemeris( const SatID& sat, const CommonTime& t ) const
-         throw( InvalidRequest );
+      const EngEphemeris& findEphemeris( const SatID& sat, const CommonTime& t )
+         const throw( InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// is chosen to be the one that 1) is within the fit interval
@@ -215,8 +216,8 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to the desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findUserEphemeris( const SatID& sat, const CommonTime& t ) const
-         throw( InvalidRequest );
+      const EngEphemeris& findUserEphemeris( const SatID& sat, const CommonTime& t )
+         const throw( InvalidRequest );
 
       /// Find an ephemeris for the indicated satellite at time t. The ephemeris
       /// chosen is the one with HOW time closest to the time t, (i.e. with
@@ -225,8 +226,8 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to desired ephemeris
       /// @throw InvalidRequest object thrown when no ephemeris is found
-      const EngEphemeris& findNearEphemeris( const SatID& sat, const CommonTime& t ) const
-         throw( InvalidRequest );
+      const EngEphemeris& findNearEphemeris( const SatID& sat, const CommonTime& t )
+         const throw( InvalidRequest );
 
       /// Add all ephemerides to an existing list<EngEphemeris>.
       /// @return the number of ephemerides added.

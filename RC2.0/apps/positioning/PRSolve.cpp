@@ -72,12 +72,12 @@
 
 #include "SP3EphemerisStore.hpp"
 #include "Rinex3EphemerisStore.hpp"
-//#include "GPSEphemerisStore.hpp"
-//#include "GloEphemerisStore.hpp"
 
 #include "Position.hpp"
 #include "TropModel.hpp"
 #include "EphemerisRange.hpp"
+#include "RinexUtilities.hpp"
+
 #include "Stats.hpp"
 #include "Namelist.hpp"
 
@@ -89,7 +89,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("4.0 6/1/11"));
+string Version(string("4.1 2/2/12"));
 // TD
 // Trop. test all trop models, w and w/o --ref
 // Why does Neill triple the total time !? is this b/c of bad at elev 0?
@@ -97,6 +97,7 @@ string Version(string("4.0 6/1/11"));
 // Add option to fix (remove) millisecond clock jumps - make portable
 // Test met
 // Does --wt work?
+// Implement Rx PCOs, and add input switches to turn off sat/rx pco correction
 
 // forward declarations
 class SolutionObject;
@@ -150,7 +151,7 @@ public:
    vector<string> InputMetFiles; // RINEX met file names
    vector<string> InputDCBFiles; // differential code bias C1-P1 file names
 
-   string Obspath,SP3path,Clkpath,Navpath,Metpath,DCBpath;      // paths
+   string Obspath,SP3path,Clkpath,Navpath,Metpath,DCBpath,ANTpath;      // paths
 
    // times derived from --start and --stop
    string defaultstartStr,startStr;
@@ -330,6 +331,7 @@ public:
                     const vector<Rinex3ObsData::RinexDatum>& v) throw();
 
    // Compute a solution for the given epoch; call after CollectData()
+   // same return value as RAIMCompute()
    int ComputeSolution(const CommonTime& t) throw(Exception);
 
    // Write out ORDs - call after ComputeSolution
@@ -472,8 +474,12 @@ catch (...) { cerr << "Unknown exception.  Abort." << endl; }
 int Initialize(string& errors) throw(Exception)
 {
 try {
-   bool isValid(true);
    Configuration& C(Configuration::Instance());
+   bool isValid(true);
+   int i,j,nfile,nread,nrec;
+   ostringstream ossE;
+   CommonTime typtime;        // typical time for the dataset
+
    errors = string("");
 
    // add path to filenames, and expand tilde (~)
@@ -491,8 +497,44 @@ try {
    expand_filename(C.InputMetFiles);
    expand_filename(C.InputDCBFiles);
 
-   int i,j,nfile,nread;
-   ostringstream ossE;
+   // -------- quick check that obs files exist and are RINEX -------
+   if(C.InputObsFiles.size() > 0) {
+      try {
+         for(nread=0,nfile=0; nfile<C.InputObsFiles.size(); nfile++) {
+            Rinex3ObsStream rostrm(C.InputObsFiles[nfile].c_str(), ios_base::in);
+            if(!rostrm.is_open()) {
+               ossE << "Error : failed to open RINEX obs file: "
+                  << C.InputObsFiles[nfile] << endl;
+               isValid = false;
+               continue;
+            }
+            Rinex3ObsHeader rhead;
+            rostrm >> rhead;
+
+            typtime = rhead.firstObs.convertToCommonTime();
+            typtime.setTimeSystem(TimeSystem::Any);
+
+            rostrm.close();
+
+            if(!isRinex3ObsFile(C.InputObsFiles[nfile])) {
+               ossE << "Error : File: " << C.InputObsFiles[nfile]
+                  << " is not a valid RINEX file." << endl;
+               isValid = false;
+            }
+            nread++;
+            LOG(VERBOSE) << "Found RINEX obs file " << C.InputObsFiles[nfile];
+         }
+      }
+      catch(Exception& e) {
+         ossE << "Error : failed to read RINEX obs files: " << e.getText(0) << endl;
+         isValid = false;
+      }
+
+   }
+   else {
+      ossE << "Error : no RINEX observation files specified.\n";
+      isValid = false;
+   }
 
    // -------- RINEX clock files --------------------------
    // Read RINEX clock files for clock (only) store.
@@ -519,8 +561,8 @@ try {
 
    // -------- SP3 files --------------------------
    // read ephemeris files and fill store
-   // first sort them on start time; this for ultra-rapid files, which overlap
-   {
+   // first sort them on start time; this for ultra-rapid files, which overlap in time
+   if(C.InputSP3Files.size() > 0) {
       ostringstream os;
       multimap<CommonTime,string> startNameMap;
       for(nfile=0; nfile<C.InputSP3Files.size(); nfile++) {
@@ -548,19 +590,23 @@ try {
       for(multimap<CommonTime,string>::const_iterator it = startNameMap.begin();
                                                       it != startNameMap.end(); ++it)
          C.InputSP3Files.push_back(it->second);
-   }
 
-   // read sorted ephemeris files and fill store
-   try {
-      if(isValid) for(nread=0,nfile=0; nfile<C.InputSP3Files.size(); nfile++) {
-         LOG(VERBOSE) << "Load SP3 file " << C.InputSP3Files[nfile];
-         C.SP3EphStore.loadSP3File(C.InputSP3Files[nfile]);
-         nread++;
+      // read sorted ephemeris files and fill store
+      if(isValid) {
+         try {
+            if(isValid) for(nread=0,nfile=0; nfile<C.InputSP3Files.size(); nfile++) {
+               LOG(VERBOSE) << "Load SP3 file " << C.InputSP3Files[nfile];
+               C.SP3EphStore.loadSP3File(C.InputSP3Files[nfile]);
+               nread++;
+            }
+         }
+         catch(Exception& e) {
+            ossE << "Error : failed to read ephemeris files: "
+               << e.getText(0) << endl;
+            isValid = false;
+         }
+
       }
-   }
-   catch(Exception& e) {
-      ossE << "Error : failed to read ephemeris files: " << e.getText(0) << endl;
-      isValid = false;
    }
 
    // ------------- configure and dump SP3 and clock stores -----------------
@@ -632,58 +678,9 @@ try {
    // NB Nav files may set GLOfreqChannel
    if(C.InputNavFiles.size() > 0) {
       try {
-         for(nread=0,nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
-            /*
-            Rinex3NavStream nstrm(C.InputNavFiles[nfile].c_str());
-            if(!nstrm.is_open()) {
-               ossE << "Error : failed to open RINEX Nav file "
-                           << C.InputNavFiles[nfile] << endl;
-               isValid = false;
-               continue;
-            }
-            nstrm.exceptions(ios_base::failbit);
-
-            Rinex3NavHeader nhead;
-            Rinex3NavData ndata;
-
-            // read header
-            try { nstrm >> nhead; }
-            catch(Exception& e) {
-               ossE << "Warning : Failed to read header of nav file "
-                  << C.InputNavFiles[i] << ":\n  " << e.getText(0);
-               continue;
-            }
-
-            if(C.verbose) {
-               LOG(VERBOSE) << "Read header of file " << C.InputNavFiles[nfile];
-               nhead.dump(LOGstrm);
-            }
-
-            while(nstrm >> ndata) {
-               if(C.verbose) ndata.dump(LOGstrm);
-               if(ndata.satSys == "G") {           // GPS
-                  C.GPSEphStore.addEphemeris(ndata);
-               }
-               else if(ndata.satSys == "R") {      // GLO
-                  RinexSatID sat(ndata.PRNID,SatID::systemGlonass);
-                  C.GLOfreqChannel.insert(make_pair(sat,ndata.freqNum));
-                  //needs work C.GLOEphStore.addEphemeris(ndata);
-               }
-               else if(ndata.satSys == "E") {      // GAL
-               }
-               else if(ndata.satSys == "S") {      // GEO / SBAS
-               }
-               else if(ndata.satSys == "C") {      // COM
-               }
-            }  // end loop over data records
-
-            nread++;
-            nstrm.close();
-            */
-
+         for(nrec=0,nread=0,nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
             string filename(C.InputNavFiles[nfile]);
-            int n(0);
-            n = C.RinEphStore.loadFile(filename,(C.debug > -1),LOGstrm);
+            int n(C.RinEphStore.loadFile(filename,(C.debug > -1),LOGstrm));
             if(n == -1) {        // failed to open
                LOG(WARNING) << C.RinEphStore.what;
                continue;
@@ -701,13 +698,18 @@ try {
                continue;
             }
 
-            nread += n;
+            nrec += n;           // number of records read
+            nread += 1;
 
             if(C.verbose) {
-               LOG(VERBOSE) << "Read header of file " << filename;
+               LOG(VERBOSE) << "Read " << n << " ephemeris data from file "
+                  << filename << "; header follows.";
                C.RinEphStore.Rhead.dump(LOGstrm);
             }
          }  // end loop over InputNavFiles
+
+         // expand the network of time system corrections
+         C.RinEphStore.expandTimeCorrMap();
       }
       catch(Exception& e) {
          ossE << "Error : while reading RINEX nav files: " << e.what() << endl;
@@ -715,11 +717,14 @@ try {
       }
 
       if(isValid) {
-         LOG(VERBOSE) << "Read " << nread << " RINEX navigation files into store.";
+         LOG(VERBOSE) << "Read " << nread << " RINEX navigation files, containing "
+            << nrec << " records, into store.";
          LOG(VERBOSE) << "GPS ephemeris store contains "
             << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
-         //LOG(VERBOSE) << "GLO ephemeris store contains "
-            //<< C.RinEphStore.size(SatID::systemGlonass) << " ephemerides.";
+         LOG(VERBOSE) << "GLO ephemeris store contains "
+            << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
+         // TD temp? debug?
+         C.RinEphStore.dump(LOGstrm);
       }
    }
 
@@ -1051,8 +1056,8 @@ try {
             else {
                C.ORDout = true;
                // write header
-               C.ordstrm << "ORD sat week  sec-of-wk   "
-                  << "elev   iono     ORD1     ORD2      ORD Solution_descriptor\n";
+               C.ordstrm << "ORD sat week  sec-of-wk   elev   iono     ORD1"
+                  << "     ORD2      ORD    Clock  Solution_descriptor\n";
             }
          }
 
@@ -1145,7 +1150,7 @@ try {
 
             // is this system excluded?
             if(find(C.allsyss.begin(),C.allsyss.end(),sys) == C.allsyss.end()) {
-               LOG(DEBUG) << " System " << sys << " is excluded.";
+               LOG(DEBUG) << " Sat " << sat << " : system " << sys << " is excluded.";
                continue;
             }
 
@@ -1181,7 +1186,8 @@ try {
                      ER = CER.rawrange - CER.svclkbias - CER.relativity + tcorr;
                   }
                   if(elev < C.elevLimit) {         // TD add elev mask [azim]
-                     LOG(VERBOSE) << " Reject sat " << sat << " on elevation at time "
+                     LOG(VERBOSE) << " Reject sat " << sat << " for elevation "
+                        << fixed << setprecision(2) << elev << " at time "
                         << printTime(Rdata.time,C.longfmt);
                      continue;
                   }
@@ -1218,10 +1224,10 @@ try {
                << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);
 
             // compute the solution
-            C.SolObjs[i].ComputeSolution(Rdata.time);
+            j = C.SolObjs[i].ComputeSolution(Rdata.time);
 
-            // write ORDs
-            if(C.ORDout) C.SolObjs[i].WriteORDs(Rdata.time);
+            // write ORDs, if solution is good
+            if(C.ORDout && j==0) C.SolObjs[i].WriteORDs(Rdata.time);
          }
 
          // write to output RINEX ----------------------------
@@ -1563,7 +1569,7 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "out", "fn", false, false, &OutputObsFile, "",
             "Output RINEX observations (with position solution in comments)");
    opts.Add(0, "ver2", "", false, false, &outver2, "",
-            "Write out (--obs) version 2 of RINEX");
+            "In output RINEX (--out), write RINEX version 2.11 [otherwise 3.01]");
    opts.Add(0, "ref", "p[:f]", false, false, &refPosStr, "",
             "Known position p in fmt f (def. '%x,%y,%z'), for resids, elev and ORDs");
    opts.Add(0, "SPSout", "", false, false, &SPSout, "",
@@ -2308,11 +2314,15 @@ void SolutionObject::CollectData(const RinexSatID& sat,
 }
 
 //------------------------------------------------------------------------------------
+// return 0 good, negative failure - same as RAIMCompute
 int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
 {
    try {
       int i,n,iret;
       Configuration& C(Configuration::Instance());
+
+      LOG(DEBUG) << "ComputeSolution for " << Descriptor
+            << " at time " << printTime(ttag,C.longfmt);
 
       // compute the inverse measurement covariance
       Matrix<double> invMCov;       // default is empty
@@ -2393,7 +2403,8 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
       }
 
       // get the RAIM solution ------------------------------------------
-      iret=prs.RAIMCompute(ttag, Satellites, Syss, PRanges, invMCov, C.pEph, C.pTrop);
+      iret = prs.RAIMCompute(ttag, Satellites, Syss, PRanges, invMCov, C.pEph,
+                              C.pTrop);
 
       if(iret < 0) {
          LOG(VERBOSE) << "RAIMCompute failed "
@@ -2497,13 +2508,13 @@ int SolutionObject::WriteORDs(const CommonTime& time) throw(Exception)
          C.ordstrm << "ORD " << RinexSatID(Satellites[i]).toString()
             << " " << printTime(time,C.userfmt) << fixed << setprecision(3)
             << " " << setw(6) << Elevations[i]
-            //<< " " << setw(12) << PRanges[i]
-            //<< " " << setw(12) << ERanges[i]
             << " " << setw(6) << RIono[i]
-            //<< " " << setw(10) << clk
             << " " << setw(8) << R1[i] - ERanges[i] - clk
             << " " << setw(8) << R2[i] - ERanges[i] - clk
             << " " << setw(8) << PRanges[i] - ERanges[i] - clk
+            << " " << setw(13) << clk
+            //<< " " << setw(12) << PRanges[i]
+            //<< " " << setw(12) << ERanges[i]
             << " " << Descriptor
             << endl;
       }

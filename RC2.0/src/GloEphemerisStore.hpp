@@ -90,7 +90,8 @@ namespace gpstk
 
 
          /// Add ephemeris information from a Rinex3NavData object.
-      void addEphemeris(const Rinex3NavData& data)
+         /// @return true unless the data was not added.
+      bool addEphemeris(const Rinex3NavData& data)
          throw();
 
 
@@ -166,6 +167,10 @@ namespace gpstk
       { pe.clear(); return; };
 
 
+         /// Return time system (NB assumed always to be GLONASS)
+      virtual TimeSystem getTimeSystem(void) const throw()
+      { return TimeSystem::GLO; }
+
          /** Determine the earliest time for which this object can successfully
           *  determine the Xvt for any object.
           *
@@ -200,9 +205,6 @@ namespace gpstk
          /// Return the number of satellites present in the store
       int size(void) const throw()
       { return pe.size(); }
-
-         /// Return time system (NB assumed to always be GLONASS)
-      TimeSystem getTimeSystem(void) const throw() { return TimeSystem::GLO; }
 
 
          /** Find the corresponding GLONASS ephemeris for the given epoch.
@@ -252,6 +254,11 @@ namespace gpstk
                                              const CommonTime& t ) const
          throw( InvalidRequest )
       { return findEphemeris(sat, t); };
+
+      /// Add all ephemerides to an existing list<GloEphemeris>.
+      /// @return the number of ephemerides added.
+      int addToList( std::list<GloEphemeris>& v ) const
+         throw();
 
 
    private:

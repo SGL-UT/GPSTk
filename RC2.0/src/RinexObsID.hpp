@@ -71,22 +71,23 @@ namespace gpstk
    /// This map[sys][freq] = valid codes; e.g.  valid['G'][1]="CSLXPWYMN"
    /// Only exception is there is no pseudorange (C) on GPS L1/L2 N (codeless)
    /// RINEX 3.01 document, section 5.1
-   /// GPS   L1   C,S,L,X,P,W,Y,M,N       G 1 CSLXPWYMN (but not C1N)
-   ///       L2   C,D,S,L,X,P,W,Y,M,N     G 2 CDSLXPWYMN (but not C2N)
-   ///       L5   I,Q,X                   G 5 IQX
-   /// GLO   G1   C,P                     R 1 CP
-   ///       G2   C,P                     R 2 CP
-   /// GAL   E1   A,B,C,X,Z               E 1 ABCXZ
-   ///       E5a  I,Q,X                   E 5 IQX
-   ///       E5b  I,Q,X                   E 7 IQX
-   ///       E5ab I,Q,X                   E 8 IQX
-   ///       E6   A,B,C,X,Z               E 6 ABCXZ
-   /// SBAS  L1   C                       S 1 C
-   ///       L5   I,Q,X                   S 5 IQX
-   /// COM   E1   -                       C 1 -
-   ///       E2   I,Q,X                   C 2 IQX
-   ///       E5b  I,Q,X                   C 7 IQX
-   ///       E6   I,Q,X                   C 6 IQX
+   /// sys  freq  code                    ObsID = sys+type+freq+code
+   /// GPS   L1   C,S,L,X,P,W,Y,M,N       G CLDS 1 CSLXPWYMN (but not C1N)
+   ///       L2   C,D,S,L,X,P,W,Y,M,N     G CLDS 2 CDSLXPWYMN (but not C2N)
+   ///       L5   I,Q,X                   G CLDS 5 IQX
+   /// GLO   G1   C,P                     R CLDS 1 CP
+   ///       G2   C,P                     R CLDS 2 CP
+   /// GAL   E1   A,B,C,X,Z               E CLDS 1 ABCXZ
+   ///       E5a  I,Q,X                   E CLDS 5 IQX
+   ///       E5b  I,Q,X                   E CLDS 7 IQX
+   ///       E5ab I,Q,X                   E CLDS 8 IQX
+   ///       E6   A,B,C,X,Z               E CLDS 6 ABCXZ
+   /// SBAS  L1   C                       S CLDS 1 C
+   ///       L5   I,Q,X                   S CLDS 5 IQX
+   /// COM   E1   -                       C CLDS 1 -
+   ///       E2   I,Q,X                   C CLDS 2 IQX
+   ///       E5b  I,Q,X                   C CLDS 7 IQX
+   ///       E6   I,Q,X                   C CLDS 6 IQX
    class RinexObsID : public ObsID
    {
    public:

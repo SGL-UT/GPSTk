@@ -107,7 +107,7 @@ namespace gpstk
          catch(InvalidRequest& e) {
             LOG(DEBUG) << "Warning - PRSolution ignores satellite (no ephemeris) "
                << RinexSatID(Sats[i]) << " at time " << printTime(tx,timfmt)
-               << " [" << e.what() << "]";
+               << " [" << e.getText() << "]";
             Sats[i].id = -::abs(Sats[i].id);
             ++noeph;
             continue;
@@ -121,7 +121,7 @@ namespace gpstk
          catch(InvalidRequest& e) {                   // unnecessary....you'd think!
             LOG(DEBUG) << "Warning - PRSolution ignores satellite (no ephemeris 2) "
                << RinexSatID(Sats[i]) << " at time " << printTime(tx,timfmt)
-               << " [" << e.what() << "]";
+               << " [" << e.getText() << "]";
             Sats[i].id = -::abs(Sats[i].id);
             ++noeph;
             continue;
@@ -233,7 +233,7 @@ namespace gpstk
                }
                ++n;
             }
-         LOG(DEBUG) << "inv MCov matrix is\n" << fixed << setprecision(4) << iMC;
+            LOG(DEBUG) << "inv MCov matrix is\n" << fixed << setprecision(4) << iMC;
          }
 
          // -----------------------------------------------------------
@@ -646,7 +646,7 @@ namespace gpstk
             stage++;
 
             // but not if too many are being rejected
-            if(NSatsReject > 0 && stage > NSatsReject) {
+            if(NSatsReject > -1 && stage > NSatsReject) {
                LOG(DEBUG) << " RAIM: break before stage " << stage
                   << " due to NSatsReject " << NSatsReject;
                break;
@@ -666,7 +666,7 @@ namespace gpstk
          // ----------------------------------------------------------------
          // copy out the best solution and return
          if(iret >= 0) {
-            SatelliteIDs = BestSats;
+            Sats = SatelliteIDs = BestSats;
             SystemIDs = BestSyss;
             Solution = BestSol;
             Covariance = BestCov;
