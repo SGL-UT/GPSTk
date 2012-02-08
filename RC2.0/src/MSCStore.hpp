@@ -130,6 +130,10 @@ namespace gpstk
          const throw()
       {return true;}
 
+      /// Return time system
+      TimeSystem getTimeSystem(void) const throw()
+         { return TimeSystem::Any; }
+
       //---------------------------------------------------------------
       // FileStore interfaces
       //---------------------------------------------------------------

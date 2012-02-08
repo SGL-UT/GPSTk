@@ -124,6 +124,9 @@ namespace gpstk
       virtual void clear(void) throw()
       { uba.clear(); }
 
+      /// Return time system (NB assumed always to be GPS)
+      virtual TimeSystem getTimeSystem(void) const throw()
+         { return TimeSystem::GPS; }
 
       /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
