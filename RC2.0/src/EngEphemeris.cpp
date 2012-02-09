@@ -1045,7 +1045,7 @@ namespace gpstk
       ASalert[0] = asalert;
       weeknum    = fullweek;
       codeflags  = cflags;
-      short accFlag = acc;
+      accFlagTmp = acc;
       health     = svhealth;  
       IODC       = iodc;
       L2Pdata    = l2pdata;
@@ -1107,7 +1107,7 @@ namespace gpstk
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
 
-      short accFlag = 0;
+      short accFlag = accFlagTmp;   // accFlagTmp set in setSF1( )
       //local variables in SF3 that are needed to load SF2
       double crc = 0.0;
       double cis = 0.0;
