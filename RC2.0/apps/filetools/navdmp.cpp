@@ -120,7 +120,7 @@ NavDump::NavDump(char* arg0)
                        " default values for record filtration"),
         rinexOption('r',"RINEX", "Assume input file is a RINEX navigation"
                          " message file"),
-        startTime(0,0.0),
+        startTime(CommonTime::BEGINNING_OF_TIME),
         endTime(CommonTime::END_OF_TIME)
 {
    seTimeOptions.addOption(&timeOption);
