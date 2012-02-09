@@ -555,14 +555,14 @@ namespace gpstk
          //@}
 
          // The following is an odd, special case.
-      short accFlagTmp;    /** Accuracy flag (URA index).  NOTE:  We should 
-                           /** use orbit.getURAoe( ) for this value.  However
-                           /** we had to have someplace to temporarily store
-                           /** this value between setSF1( ) and setSF2( ).  
-                           /** Frankly, are the ONLY two methods that should
-                           /** make use of this member. Its status is NOT
-                           /** GUARANTEED outside the time setSF1( ) loads it
-                           /** and setSF2( ) uses it. 
+      short accFlagTmp;    // Accuracy flag (URA index).  NOTE:  We should 
+                           // use orbit.getURAoe( ) for this value.  However
+                           // we had to have someplace to temporarily store
+                           // this value between setSF1( ) and setSF2( ).  
+                           // Frankly, are the ONLY two methods that should
+                           // make use of this member. Its status is NOT
+                           // GUARANTEED outside the time setSF1( ) loads it
+                           // and setSF2( ) uses it. 
 
          /// Clock information
          //@{

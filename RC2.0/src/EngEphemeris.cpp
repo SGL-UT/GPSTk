@@ -1071,7 +1071,7 @@ namespace gpstk
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
          
       bcClock.loadData( satSys, obsID, PRNID, tocCT,
-                        accFlag, healthy, Af0, Af1, Af2);
+                        accFlagTmp, healthy, Af0, Af1, Af2);
       haveSubframe[0] = true;
       return *this;
    }
