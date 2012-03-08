@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <cmath>
+#include <list>
 
 #include "BasicFramework.hpp"
 #include "FICStream.hpp"
@@ -40,7 +41,6 @@ public:
    {
       inputOpt.setMaxCount(1);
       outputOpt.setMaxCount(1);
-      killOpt.setMaxCount(1);
    };
    
    bool initialize(int argc, char *argv[]) throw();
@@ -51,6 +51,12 @@ protected:
 private:
    CommandOptionWithAnyArg inputOpt, outputOpt, killOpt;
 
+   struct kill_rec {
+      int block;
+      int prn;
+      CommonTime t;
+      bool found;
+   };
 };
 
 
@@ -62,27 +68,26 @@ bool FICedit::initialize(int argc, char *argv[]) throw()
    return true;
 }
 
-
 void FICedit::process()
 {
-   struct {
-      int block;
-      int prn;
-      CommonTime t;
-      bool found;
-   } kill;
+   list<kill_rec> kills;
 
-   string ks=killOpt.getValue()[0];
-   if (numWords(ks, ',') != 3)
+   for (int i=0; i<killOpt.getCount(); i++)
    {
-      cout << "Invalid -r specifier:" << ks << endl;
-      return;
+      string ks=killOpt.getValue()[i];
+      kill_rec kill;
+      if (numWords(ks, ',') != 3)
+      {
+         cout << "Invalid -r specifier:" << ks << endl;
+         return;
+      }
+      
+      kill.block = asInt(word(ks, 0, ','));
+      kill.prn = asInt(word(ks, 1, ','));
+      mixedScanTime(kill.t, word(ks, 2, ','), "%04Y/%03j/%02H:%02M:%02S");
+      kill.found = false;
+      kills.push_back(kill);
    }
-
-   kill.block = asInt(word(ks, 0, ','));
-   kill.prn = asInt(word(ks, 1, ','));
-   mixedScanTime(kill.t, word(ks, 2, ','), "%04Y/%03j/%02H:%02M:%02S");
-   kill.found = false;
 
    string ifn = inputOpt.getValue()[0];
    string ofn = outputOpt.getValue()[0];
@@ -91,9 +96,12 @@ void FICedit::process()
    FICStream output(ofn.c_str(), ios::out|ios::binary);
 
    if (verboseLevel || debugLevel)
-      cout << "Reading " << ifn << " writing " << ofn << endl
-           << "Looking for block " << kill.block << " for prn " << kill.prn
-           << " at " << CivilTime(kill.t) << endl;
+   {
+      cout << "Reading " << ifn << " writing " << ofn << endl;
+      for (list<kill_rec>::const_iterator i=kills.begin(); i != kills.end(); i++)
+         cout << "Looking for block " << i->block << " for prn " << i->prn
+              << " at " << CivilTime(i->t) << endl;
+   }
 
    FICHeader hdr;
    input >> hdr;
@@ -130,18 +138,25 @@ void FICedit::process()
       }
       CommonTime t(GPSWeekSecond(week,sow));
       t -= 6; // Time in the HOW is for the *next* subframe.
-      if (debugLevel)
+      bool killme=false;
+      if (debugLevel>1)
          cout << CivilTime(t) << " " << d.blockNum << " " << prn << endl;
-      if (t == kill.t && prn == kill.prn && d.blockNum == kill.block)
+      for (list<kill_rec>::iterator i=kills.begin(); i != kills.end(); i++)
       {
-         cout << "Found " << CivilTime(t) << " " << d.blockNum << " " << prn << endl;
-         kill.found = true;
+         if (t == i->t && prn == i->prn && d.blockNum == i->block)
+         {
+            cout << "Found and killed " << CivilTime(t) << " " << d.blockNum << " " << prn << endl;
+            i->found = true;
+            killme=true;
+         }
       }
-      else
+      if (!killme)
          output << d;
    }
-   if (!kill.found)
-      cout << "Did not find " << CivilTime(kill.t) << " " << kill.block << " " << kill.prn << endl;
+
+   for (list<kill_rec>::const_iterator i=kills.begin(); i != kills.end(); i++)
+      if (!i->found)
+         cout << "Did not find " << CivilTime(i->t) << " " << i->block << " " << i->prn << endl;
 
    input.close();
    output.close();
