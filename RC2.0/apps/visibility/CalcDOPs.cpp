@@ -121,7 +121,7 @@
 #include "Matrix.hpp"
 #include "Position.hpp"
 #include "Stats.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "GNSSconstants.hpp"
 #include "geometry.hpp"
 #include "GPSEphemerisStore.hpp"
@@ -183,7 +183,7 @@ const double GridSpace = 111111.1; // grid spacing in km
 int MaxNLon;                       // this will be the width (# of lons) in grid
 vector<GridData> Grid;             // Grid is a vector of GridData structures;
                                    // each is a (lon,lat,data) pt. for one timept.
-WGS84Geoid WGS84;
+WGS84Ellipsoid WGS84;
 
 // computing on the grid
 
@@ -356,7 +356,7 @@ try
        CommonTime latest = ges.getFinalTime();
 //       CommonTime start = latest - gpstk::CommonTime::SEC_DAY/2; /* make sure you're in the right day */
        CommonTime start = latest - 6*3600.0; /* go back 6 h: covers any 4 h ephemeris going into the next day */
-       tt = CivilTime( static_cast<CivilTime>(start).year, static_cast<CivilTime>(start).month, static_cast<CivilTime>(start).day, 0, 0, 0.0 );
+       tt = CivilTime( static_cast<CivilTime>(start).year, static_cast<CivilTime>(start).month, static_cast<CivilTime>(start).day, 0, 0, 0.0, TimeSystem::GPS );
        starttime = tt;
        lofs << " Initial time tag is " << printTime(tt,"%4F %8.1g") << endl;
        initialTimeSet = true;
@@ -395,7 +395,7 @@ try
        if (aomap[i].getTransmitTime()>start) start = aomap[i].getTransmitTime();
      }
      // Set starting time to beginning of day in which majority of almanac was collected.
-       tt = CivilTime( static_cast<CivilTime>(start).year, static_cast<CivilTime>(start).month, static_cast<CivilTime>(start).day, 0, 0, 0.0 );
+       tt = CivilTime( static_cast<CivilTime>(start).year, static_cast<CivilTime>(start).month, static_cast<CivilTime>(start).day, 0, 0, 0.0, TimeSystem::GPS );
      starttime = tt;
      lofs << " Initial time tag is " << printTime(tt,"%4F %8.1g") << endl;
      initialTimeSet = true;
@@ -438,11 +438,9 @@ try
 
    // compute away
    dlon = 360.0/double(MaxNLon);
-
    for (j=0; j<nt; j++)             // LOOP OVER TIMES
    {
       SVs.clear();                  // clear SV position array
-
       for (i=0; i<Sats.size(); i++) // LOOP OVER SVs -- get positions at each time step
       {
         if (ephmode)  // ephemeris mode
@@ -739,7 +737,6 @@ try
       lofs << "Reading failed (" << iret << ")" << endl;
       return iret;  // appears to be able to return only 0 right now
    }
-
    lofs << "Here is the AO list (" << aomap.size() << ") :";
    map<int,AlmOrbit>::iterator itao = aomap.begin();
    while (itao != aomap.end())
