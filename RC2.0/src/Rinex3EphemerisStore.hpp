@@ -190,11 +190,11 @@ namespace gpstk
 
          NavFiles.dump(os, detail);
 
-         GPSstore.dump(os, detail);
-         GLOstore.dump(os, detail);
-         GALstore.dump(os, detail);
-         //GEOstore.dump(os, detail);
-         //COMstore.dump(os, detail);
+         if(GPSstore.size()) GPSstore.dump(os, detail);
+         if(GLOstore.size()) GLOstore.dump(os, detail);
+         if(GALstore.size()) GALstore.dump(os, detail);
+         //if(GEOstore.size()) GEOstore.dump(os, detail);
+         //if(COMstore.size()) COMstore.dump(os, detail);
          os << "End dump Rinex3EphemerisStore." << std::endl;
       }
 
