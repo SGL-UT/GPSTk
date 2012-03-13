@@ -39,45 +39,47 @@
 
 #include "TimeSystem.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
    // Static initialization of const std::strings for asString().
-   // Must parallel enum SystemsEnum in TimeSystem.hpp.
+   // Must parallel enum Systems in TimeSystem.hpp.
    // NB: DO NOT use std::map here; on some systems initialization fails.
-   const std::string TimeSystem::Strings[TAI+1] =
+   const string TimeSystem::Strings[count] =
      {
-       std::string("Unknown"),
-       std::string("Any"),
-       std::string("GPS"),
-       std::string("GLO"),
-       std::string("GAL"),
-       std::string("UTC"),
-       std::string("TAI")
+       string("Unknown"),
+       string("Any"),
+       string("GPS"),
+       string("GLO"),
+       string("GAL"),
+       string("UTC"),
+       string("TAI")
      };
 
-   void TimeSystem::setTimeSystem( const SystemsEnum& sys )
+   void TimeSystem::setTimeSystem(const Systems& sys)
       throw()
    {
-      if (sys < 0 || sys > TAI)
-      {
+      if(sys < 0 || sys >= count)
          system = Unknown;
-      }
       else
-      {
          system = sys;
-      }
    }
 
-   void TimeSystem::fromString(const std::string str)
+   void TimeSystem::fromString(const string str)
       throw()
    {
       system = Unknown;
-      for(int i=0; i<=TAI; i++) {
+      for(int i=0; i<count; i++) {
          if(Strings[i] == str) {
-            system = static_cast<SystemsEnum>(i);
+            system = static_cast<Systems>(i);
             break;
          }
       }
    }
 
+   ostream& operator<<(ostream os, const TimeSystem& ts)
+   {
+      return os << ts.asString();
+   }
 }   // end namespace

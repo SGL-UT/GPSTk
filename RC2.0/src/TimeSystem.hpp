@@ -40,95 +40,110 @@
 //=============================================================================
 
 #include <iostream>
-#include <iomanip>
 #include <string>
 
 namespace gpstk
 {
-   /// This class encapsulates time systems, including std::string I/O
+   /// This class encapsulates time systems, including std::string I/O. This is an
+   /// example of a 'smart enum' class.
    class TimeSystem
    {
    public:
 
       /// list of time systems supported by this class
-      enum SystemsEnum
+      enum Systems
       {
+         // add new systems BEFORE count,
+         // then add to Strings[] in TimeSystem.cpp and make parallel to this enum.
+
+         // Unknown MUST BE FIRST, and must = 0
          Unknown = 0, ///< unknown time frame; for legacy code compatibility
          Any,         ///< wildcard; allows comparison with any other type
          GPS,         ///< GPS system time
          GLO,         ///< GLONASS system time
          GAL,         ///< Galileo system time
          UTC,         ///< Coordinated Universal Time (e.g., from NTP)
-         TAI          ///< International Atomic Time
-
-         // Add new GNSS systems *before* UTC, or other new time systems
-         // before TAI, then modify Strings[] in TimeSystem.cpp.
+         TAI,         ///< International Atomic Time
+         // count MUST BE LAST
+         count        ///< the number of systems - not a system
       };
 
       /// Constructor, including empty constructor
-      TimeSystem(SystemsEnum sys = Unknown)
-         throw()
+      TimeSystem(Systems sys = Unknown) throw()
       {
-         if(sys < 0 || sys > TAI)
+         if(sys < 0 || sys >= count)
             system = Unknown;
          else
             system = sys;
       }
 
       /// constructor from int
-      TimeSystem(int i)
-         throw()
+      TimeSystem(int i) throw()
       {
-         if(i < 0 || i > TAI)
+         if(i < 0 || i >= count)
             system = Unknown;
          else
-            system = static_cast<SystemsEnum>(i);
+            system = static_cast<Systems>(i);
       }
 
       // (copy constructor and operator= are defined by compiler)
       
-      void setTimeSystem( const SystemsEnum& sys )
-         throw();
+      /// set the time system
+      void setTimeSystem(const Systems& sys) throw();
 
-      SystemsEnum getTimeSystem() const
-         throw()
+      /// get the time system
+      Systems getTimeSystem() const throw()
       { return system; }
 
       /// Return a std::string for each system (these strings are const and static).
       /// @return the std::string
-      std::string asString() const
-         throw()
+      std::string asString() const throw()
       { return Strings[system]; }
 
       /// define system based on input string
       /// @param str input string, expected to match output string for given system
-      void fromString(const std::string str)
-         throw();
+      void fromString(const std::string str) throw();
       
       /// boolean operator==
-      bool operator==(const TimeSystem& right) const
-         throw()
+      bool operator==(const TimeSystem& right) const throw()
       { return system == right.system; }
 
-      /// boolean operator!=
-      bool operator!=(const TimeSystem& right) const
-         throw()
-      { return system != right.system; }
-
       /// boolean operator< (used by STL to sort)
-      bool operator<(const TimeSystem& right) const
-         throw()
+      bool operator<(const TimeSystem& right) const throw()
       { return system < right.system; }
+
+      // the rest follow from Boolean algebra...
+      /// boolean operator!=
+      bool operator!=(const TimeSystem& right) const throw()
+      { return !operator==(right); }
+
+      /// boolean operator>=
+      bool operator>=(const TimeSystem& right) const throw()
+      { return !operator<(right); }
+
+      /// boolean operator<=
+      bool operator<=(const TimeSystem& right) const throw()
+      { return (operator<(right) || operator==(right)); }
+
+      /// boolean operator>
+      bool operator>(const TimeSystem& right) const throw()
+      { return (!operator<(right) && !operator==(right)); }
 
    private:
 
-      /// time system (= element of SystemsEnum enum) for this object
-      SystemsEnum system;
+      /// time system (= element of Systems enum) for this object
+      Systems system;
 
-      /// set of string labels for elements of SystemsEnum
+      /// set of string labels for elements of Systems
       static const std::string Strings[];
 
    };   // end class TimeSystem
+
+   /// Write name (asString()) of a TimeSystem to an output stream.
+   /// @param os The output stream
+   /// @param ts The TimeSystem to be written
+   /// @return reference to the output stream
+   std::ostream& operator<<(std::ostream os, const TimeSystem& ts);
 
 }   // end namespace
 

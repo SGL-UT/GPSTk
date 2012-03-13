@@ -23,7 +23,7 @@
 //============================================================================
 
 #include "rinexpvt.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "CivilTime.hpp"
 #include "TimeString.hpp"
 
@@ -348,7 +348,7 @@ void RINEXPVTSolution::process()
 
     if ((!aprioriPositionDefined) && (roh.valid & RinexObsHeader::antennaPositionValid) )
     {
-       WGS84Geoid WGS84;
+       WGS84Ellipsoid WGS84;
        double AEarth = WGS84.a();
        double eccSquared = WGS84.eccSquared();
        Position target(roh.antennaPosition);
@@ -602,7 +602,7 @@ void RINEXPVTSolution::process()
                 aprioriPositionXYZ = Triple(prSolver.Solution[0], 
                                          prSolver.Solution[1],
                                          prSolver.Solution[2]);
-                WGS84Geoid WGS84;
+                WGS84Ellipsoid WGS84;
                 double AEarth = WGS84.a();
                 double eccSquared = WGS84.eccSquared();
                 Position target(aprioriPositionXYZ);

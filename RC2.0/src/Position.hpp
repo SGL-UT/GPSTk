@@ -379,7 +379,7 @@ namespace gpstk
       //
 
          /// return coordinate ReferenceFrame
-      const ReferenceFrame& getFrame() const
+      const ReferenceFrame& getReferenceFrame() const
          throw();
       
          /// return X coordinate (meters)

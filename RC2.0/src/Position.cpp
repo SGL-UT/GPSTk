@@ -222,7 +222,7 @@ namespace gpstk
    {
       if(AEarth != right.AEarth || eccSquared != right.eccSquared)
          return false;
-      if(right.getFrame() != refFrame)
+      if(right.getReferenceFrame() != refFrame)
          return false;   //Unknown frames are considered the same.
       if(range(*this,right) < tolerance)
          return true;
@@ -342,7 +342,7 @@ namespace gpstk
    // system if that is required.
    //
    
-   const ReferenceFrame& Position::getFrame() const
+   const ReferenceFrame& Position::getReferenceFrame() const
       throw()
    {   
       return refFrame;

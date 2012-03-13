@@ -52,7 +52,7 @@
 #include "Matrix.hpp"
 
 #include "Position.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "GNSSconstants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 
@@ -103,7 +103,7 @@ XvtStore<SatID> *pEph;
    // obs types needed
 RinexObsHeader::RinexObsType ELot,LAot,LOot,SRot,SSot;
    // geoid
-WGS84Geoid WGS84;
+WGS84Ellipsoid WGS84;
    // Start and stop times
 CommonTime BegTime,EndTime;
 

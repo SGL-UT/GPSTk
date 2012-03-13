@@ -89,7 +89,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("4.1 2/2/12"));
+string Version(string("4.2 3/13/12"));
 // TD
 // Trop. test all trop models, w and w/o --ref
 // Why does Neill triple the total time !? is this b/c of bad at elev 0?
@@ -156,7 +156,7 @@ public:
    // times derived from --start and --stop
    string defaultstartStr,startStr;
    string defaultstopStr,stopStr;
-   CommonTime beginTime,endTime,decTime;
+   CommonTime beginTime,endTime,gpsBeginTime,decTime;
 
    double decimate;           // decimate input data
    double elevLimit;          // limit sats to elevation mask
@@ -863,14 +863,11 @@ try {
 
    // ------ compute and save a reference time for decimation
    if(C.decimate > 0.0) {
-      // TD what if beginTime == BEGINNING_OF_TIME ?
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
       if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
          << "(--start) is not an even GPS-seconds-of-week mark.";
-      C.decTime = static_cast<CommonTime>(
-         GPSWeekSecond(static_cast<GPSWeekSecond>(C.decTime).week,0.0));
    }
 
    // ------ compute rotation matrix for knownPos
@@ -901,7 +898,7 @@ try {
       C.pTrop->setReceiverHeight(0.0);
    }
 
-   if(C.beginTime != CommonTime::BEGINNING_OF_TIME) {
+   if(C.beginTime != C.gpsBeginTime) {
       C.pTrop->setDayOfYear(static_cast<YDSTime>(C.beginTime).doy);
       C.TropTime = true;
    }
@@ -1103,15 +1100,14 @@ try {
          // normal EOF
          if(!istrm.good() || istrm.eof()) { iret = 0; break; }
 
-         LOG(INFO) << "";
-         LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
-            << ", timetag " << printTime(Rdata.time,C.longfmt);
-
          // if aux header data, or no data, skip it
          if(Rdata.epochFlag > 1 || Rdata.obs.empty()) {
             LOG(DEBUG) << " RINEX Data is aux header or empty.";
             continue;
          }
+
+         LOG(DEBUG) << "\n Read RINEX data: flag " << Rdata.epochFlag
+            << ", timetag " << printTime(Rdata.time,C.longfmt);
 
          // stay within time limits
          if(Rdata.time < C.beginTime) {
@@ -1211,6 +1207,9 @@ try {
          // update the trop model's weather ------------------
          if(C.MetStore.size() > 0) C.setWeather(Rdata.time);
 
+         // put a blank line here for readability
+         LOG(INFO) << "";
+
          // compute the solution(s) --------------------------
          if(C.verbose) C.msg = printTime(Rdata.time,"DAT "+C.gpsfmt);   // tag for DAT
 
@@ -1271,9 +1270,9 @@ try {
             auxData.numSVs = k;            // number of lines to write
             auxData.auxHeader.valid |= Rinex3ObsHeader::validComment;
             ostrm << auxData;
-         }
 
-         ostrm << Rdata;
+            ostrm << Rdata;
+         }
 
       }  // end while loop over epochs
 
@@ -1318,7 +1317,7 @@ void Configuration::SetDefaults(void) throw()
    forceElev = false;
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
-   beginTime = CommonTime::BEGINNING_OF_TIME;
+   beginTime = gpsBeginTime = GPSWeekSecond(0,0.,TimeSystem::Any);
    endTime = CommonTime::END_OF_TIME;
 
    inSolSys = string("GPS,GLO,GPS+GLO");
@@ -1930,9 +1929,10 @@ void Configuration::BuildSolDescriptors(ostringstream& oss) throw()
 void Configuration::setWeather(const CommonTime& ttag) throw(Exception)
 {
    try {
+      Configuration& C(Configuration::Instance());
       static list<RinexMetData>::iterator it(MetStore.begin());
       list<RinexMetData>::iterator nextit;
-      static CommonTime currentTime(CommonTime::BEGINNING_OF_TIME);
+      static CommonTime currentTime(C.gpsBeginTime);
       double dt;
 
       while(it != MetStore.end()) {

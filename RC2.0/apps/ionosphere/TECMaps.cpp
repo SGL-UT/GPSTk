@@ -42,7 +42,7 @@
 #include "GPSWeekSecond.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "Position.hpp"
 #include "Epoch.hpp"
 #include "VTECMap.hpp"
@@ -90,7 +90,7 @@ XvtStore<SatID> *pEph;         // is this used?
 RinexObsHeader::RinexObsType ELot,AZot,VRot,SRot,TPot;
 RinexObsHeader::RinexObsType LAot,LOot;
    // geoid
-WGS84Geoid WGS84;
+WGS84Ellipsoid WGS84;
    // Start and stop times
 CommonTime BegTime,EndTime;
    // processing

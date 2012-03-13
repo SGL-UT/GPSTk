@@ -52,7 +52,7 @@
 #include "SP3Stream.hpp"
 
 #include "TropModel.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "IonoModelStore.hpp"
 
 #include "GPSEphemerisStore.hpp"
@@ -384,7 +384,7 @@ Triple permanentTide(double const phi)
 
 	GPSEphemerisStore bcestore;
 	SP3EphemerisStore sp3store;
-	WGS84Geoid geoid;
+	WGS84Ellipsoid geoid;
 	IonoModelStore ion;
 	CorrectedEphemerisRange CER1, CER2;
 	SimpleTropModel trop;

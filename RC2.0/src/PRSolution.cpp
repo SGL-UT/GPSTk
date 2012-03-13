@@ -753,12 +753,17 @@ namespace gpstk
    int PRSolution::DOPCompute(void) throw(Exception)
    {
       try {
-         PDOP = TDOP = GDOP = 0.0;
          Matrix<double> PTP(transpose(Partials)*Partials);
          Matrix<double> Cov(inverseLUD(PTP));
-         PDOP = Cov(0,0) + Cov(1,1) + Cov(2,2);
+
+         PDOP = SQRT(Cov(0,0)+Cov(1,1)+Cov(2,2));
+
+         TDOP = 0.0;
          for(int i=3; i<Cov.rows(); i++) TDOP += Cov(i,i);
-         GDOP = PDOP + TDOP;
+         TDOP = SQRT(TDOP);
+
+         GDOP = RSS(PDOP,TDOP);
+
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }

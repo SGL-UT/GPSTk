@@ -40,7 +40,7 @@
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "Position.hpp"
 #include "GNSSconstants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG

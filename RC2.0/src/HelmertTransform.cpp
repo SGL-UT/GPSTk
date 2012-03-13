@@ -156,13 +156,14 @@ Position HelmertTransform::transform(const ReferenceFrame& to,
    throw(InvalidParameter)
 {
    // Throw an error if either Reference Frame is unknown.
-   if (pos.getFrame() == ReferenceFrame::Unknown || to == ReferenceFrame::Unknown)
+   if (pos.getReferenceFrame() == ReferenceFrame::Unknown ||
+         to == ReferenceFrame::Unknown)
       throw InvalidParameter(unknownExceptionTeXvt);
 
    Position cartPos = pos;
    cartPos.transformTo(Position::Cartesian);
    Triple newPosition = (Triple)cartPos;
-   newPosition = posTransform(cartPos.getFrame(), to, newPosition);
+   newPosition = posTransform(cartPos.getReferenceFrame(), to, newPosition);
 
    cartPos.setReferenceFrame(to);
    // Not sure if this needs to use setECEF or if it is already set.
