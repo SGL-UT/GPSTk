@@ -35,10 +35,9 @@
 //
 //=============================================================================
 
-// Scans FIC and RINEX files for erroneous 
-// ephemeris data due to a receiver mistagging
-// PRN ID.
-
+// Removes ephemeris data that does not match almanac data from
+// FIC and RINEX files. This was originally developed to fix
+// files with data corrupted due to receiver PRN mistagging.
 
 #include <iostream>
 #include <cmath>
@@ -92,8 +91,7 @@ public:
    FICFixer(const string& applName) throw()
       : BasicFramework(
          applName,
-         "Scans GPS RINEX nav and/or FIC files for ephemerides with mistagged PRN IDs and writes "
-         "new filess without these errors."),
+         "Removes ephemeris data that does not match almanac data from FIC and RINEX files."),
         ephFileOpt('e',
                    "eph",
                    "File file to be scanned against provided almanac. This file"
@@ -115,9 +113,7 @@ protected:
 
    virtual void process();
    
-   virtual void shutDown()
-   
-   {};
+   virtual void shutDown(){};
 
 private:
 
@@ -255,6 +251,8 @@ void FICFixer::scanFIC(const string& fn)
             if (verboseLevel)
                cout << "Have (block 9) ephemeris but no alm data for "  
                     << satID << " at " << ephEpoch << endl;
+            // Keep data when we can't verify it.
+            correctedFS << ficData;
             continue;
          }
             
@@ -289,6 +287,8 @@ void FICFixer::scanFIC(const string& fn)
             if (verboseLevel)
                cout << "Have (block 109) ephemeris but no alm data for "  
                     << satID << " at " << ephEpoch << endl;
+            // Keep data when we can't verify it.
+            correctedFS << ficData;
             continue;
          }
          xvtEph = engEph.svXvt(ephEpoch);            
@@ -487,6 +487,7 @@ void FICFixer::scanRIN(const string& fn)
         if (verboseLevel)
            cout << "Have ephemeris but no alm data for "  
                 << satID << " at " << ephEpoch << endl;
+        correctedRS << rinNavData; // keep data if it's OK
         continue;
      }
 
