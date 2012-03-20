@@ -171,7 +171,7 @@ void FICFixer::spinUp()
        (almanacStore.getFinalTime() == DayTime::BEGINNING_OF_TIME))
    {
       cout << "No almanac data found. Exiting." << endl;
-      exit(0);
+      exit(-1);
    }
    
    if (debugLevel || verboseLevel)
@@ -191,7 +191,8 @@ void FICFixer::process()
       else if (id == FFIdentifier::tFIC)
          scanFIC(fn);
       else
-         cout << "Can not process file of type " << FFIdentifier::describe(id) << ". Skipping " << fn << endl;
+         cout << "Can not process file of type " << FFIdentifier::describe(id)
+              << ". Skipping " << fn << endl;
    }
 }
 
@@ -201,7 +202,7 @@ void FICFixer::scanFIC(const string& fn)
    int n=StringUtils::numWords(fn, '/');
    string ofn=StringUtils::word(fn, n-1, '/');
       
-   if (debugLevel)
+   if (verboseLevel)
       cout << "Scanning " << fn << " saving to " << ofn << endl;
 
    //output file stream
@@ -251,9 +252,9 @@ void FICFixer::scanFIC(const string& fn)
          }
          catch (gpstk::Exception &exc)
          {
-            if (debugLevel>1 || verboseLevel>2)
+            if (verboseLevel)
                cout << "Have (block 9) ephemeris but no alm data for "  
-                    << satID << " at " << ephEpoch << ":" << exc;
+                    << satID << " at " << ephEpoch << endl;
             continue;
          }
             
@@ -285,9 +286,9 @@ void FICFixer::scanFIC(const string& fn)
          }
          catch (gpstk::Exception &exc)
          {
-            if (debugLevel>1 || verboseLevel>2)
+            if (verboseLevel)
                cout << "Have (block 109) ephemeris but no alm data for "  
-                    << satID << " at " << ephEpoch << ":" << endl << exc;
+                    << satID << " at " << ephEpoch << endl;
             continue;
          }
          xvtEph = engEph.svXvt(ephEpoch);            
@@ -409,7 +410,6 @@ void FICFixer::scanFIC(const string& fn)
                  << engEphTemp.getIODC() << ", IODE: 0x" << setw(3) 
                  << setfill('0') << engEphTemp.getIODE()                    
                  << ", Position Diff: " << magTemp << "m" << dec << endl;
-           
          }
 
       } // for (list<FICData>::iterator itrInner = ficDataList.begin()....
@@ -428,7 +428,7 @@ void FICFixer::scanFIC(const string& fn)
 
    }
 
-   if (verboseLevel || debugLevel)
+   if (verboseLevel)
       cout << "Done scanning FIC file." << endl;
 }
 
@@ -437,7 +437,7 @@ void FICFixer::scanRIN(const string& fn)
    int n=StringUtils::numWords(fn,'/');
    string ofn=StringUtils::word(fn, n-1, '/');
       
-   if (debugLevel)
+   if (verboseLevel)
       cout << "Scanning " << fn << " saving to " << ofn << endl;
    
    //output file stream
@@ -484,9 +484,9 @@ void FICFixer::scanRIN(const string& fn)
      }
      catch (gpstk::Exception &exc)
      {
-        if (debugLevel>1 || verboseLevel>2)
+        if (verboseLevel)
            cout << "Have ephemeris but no alm data for "  
-                << satID << " at " << ephEpoch << ":" << endl << exc;
+                << satID << " at " << ephEpoch << endl;
         continue;
      }
 
@@ -561,7 +561,7 @@ void FICFixer::scanRIN(const string& fn)
 
    } // for (int i=0;ficFileOpt.getCount(); i++)  
 
-   if (verboseLevel || debugLevel)
+   if (verboseLevel)
       cout << "Done scanning " << fn << endl;
 }
 
