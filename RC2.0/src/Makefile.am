@@ -104,6 +104,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       PositionSatStore.cpp \
       PowerSum.cpp \
       PRSolution.cpp \
+      PRSolution2.cpp \
       RACRotation.cpp \
       ReferenceFrame.cpp \
       Rinex3ClockData.cpp \
@@ -316,6 +317,7 @@ incl_HEADERS = AllanDeviation.hpp \
       PositionSatStore.hpp \
       PowerSum.hpp \
       PRSolution.hpp \
+      PRSolution2.hpp \
       PZ90Ellipsoid.hpp \
       RACRotation.hpp \
       ReferenceFrame.hpp \
