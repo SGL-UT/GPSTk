@@ -487,7 +487,7 @@ SVNumXRef::SVNumXRef( )
                                        CivilTime( 1996,  9, 12,  0,  0,  0.0, TimeSystem::GPS),
                                        CivilTime( 2011,  8,  4, 23, 59, 59.0, TimeSystem::GPS))));
    PtoNMap.insert( std::pair<const int, XRefNode>( 30, XRefNode(  35, 
-                                       CivilTime( 2011,  8,  6,  0,  0,  0.0, TimeSystem::GPS),
+                                       CivilTime( 2011,  8,  5,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
    PtoNMap.insert( std::pair<const int, XRefNode>( 31, XRefNode( 31, 
                                        CivilTime( 1993,  3, 30,  0,  0,  0.0, TimeSystem::GPS),

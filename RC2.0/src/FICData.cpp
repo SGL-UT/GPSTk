@@ -494,6 +494,7 @@ namespace gpstk
       short rotate;
       char  ochar;
       short almType;
+      unsigned long word3;
 
       os << "**************************************";
       os << "**************************************\n";
@@ -624,33 +625,60 @@ namespace gpstk
             break;
 
          case 52:
+               // Hexadecimal dump
+            os << "\n";
+            os << "Page Type: Subframe 4 Page 13, Navigation Message Correction Table\n";
+            os << "Hexadecimal dump of non-parity bits of words 3-10\n";
+
+            word3 = (unsigned long) f[2];
+            word3 >>= 14;
+            word3 &= 0x00000003;
+            os << "Avaiability Indicator (AI): "; 
+            if (word3==0)       os << "NMCT Unencrypted"; 
+             else if (word3==1) os << "NMCT Encrypted";
+             else if (word3==2) os << "NMCT Unavailable"; 
+             else               os << "RESERVED (NMCT status not stated)"; 
+            os << "\n";
+            
+            os.setf(ios::uppercase);
+            for (k=2;k<10;k++)
+            {
+               if (k==2 || k==6 ) os << "\n";
+               os << "    ";
+               os.width(2);
+               os << (k+1) << ":";
+               os.width(6);      // 'stead 6
+               os.fill('0');
+               aword = (unsigned long) f[k+5];
+                  // during subframe conversion.
+               os << hex << aword << dec;
+               os.fill(' ');
+            }
+            break; 
+
+         
          case 53:
          case 54:
             os << "\n";
-            if (almType==52) os << "Page Type: Subframe 4 Page 13, Reserved Bits\n";
             if (almType==53) os << "Page Type: Subframe 4 Page 14, Reserved Bits\n";
             if (almType==54) os << "Page Type: Subframe 4 Page 15, Reserved Bits\n";
                // Hexadecimal dump
             os << "Hexadecimal dump of non-parity bits of words 3-10\n";
-            os << "     **This feature under construction.**\n";
-            os << "     **This page is decoded incorrectly in the ";
-            os << "subframe converter.**\n";
-/*       os.setf(ios::uppercase);
-         for (j=2;j<10;j++)
-         {
-                        if (j==2 || j==6 ) os << "\n";
-                        os << "    ";
-                        os.width(2);
-                        os << (j+1) << ":";
-                        os.width(6);
-                        os.fill('0');
-                        aword = i[j+2];
-                        aword >>= 6;
-                        os << hex << aword << dec;
-                        os.fill(' ');
-         }
-*/
-            break;
+            os.setf(ios::uppercase);
+            for (k=2;k<10;k++)
+            {
+               if (k==2 || k==6 ) os << "\n";
+               os << "    ";
+               os.width(2);
+               os << (k+1) << ":";
+               os.width(6);      // 'stead 6
+               os.fill('0');
+               aword = (unsigned long) f[k+5];
+                  // during subframe conversion.
+               os << hex << aword << dec;
+               os.fill(' ');
+            }
+            break; 
 
          case 55:
             os << "\n";
