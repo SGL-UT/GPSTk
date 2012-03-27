@@ -563,8 +563,10 @@ namespace gpstk
       {
             // Hexadecimal dump
          os << "\n";
-         os << "Hexadecimal dump of non-parity bits of words 3-10\n";
-//    os << "     **This feature under construction.**\n";
+         os << "Hexadecimal dump of reserved bits of words 3-9\n";
+         os << " In terms of a 300 bit subframe the words are as follows:\n";
+         os << "     3:069-084    4:091-114    5:121-144    6:151-174\n";
+         os << "     7:181-204    8:211-234    9:241-247   10:249-264\n";
          os.setf(ios::uppercase);
          for (k=2;k<10;k++)
          {
@@ -629,11 +631,17 @@ namespace gpstk
             os << "\n";
             os << "Page Type: Subframe 4 Page 13, Navigation Message Correction Table\n";
             os << "Hexadecimal dump of non-parity bits of words 3-10\n";
+            os << " For historical reasons, the preceding statement\n";
+            os << " NOT QUITE TRUE.  The actual bits (given in terms\n";
+            os << " of a 300 bit subframe) are as follows:\n";
+            os << "     3:069-084    4:091-114    5:121-144    6:151-174\n";
+            os << "     7:181-204    8:211-234    9:241-247   10:249-264\n";
 
-            word3 = (unsigned long) f[2];
+               // Word 3 is index 2 and there's a five item offset
+            word3 = (unsigned long) f[2+5];
             word3 >>= 14;
-            word3 &= 0x00000003;
-            os << "Avaiability Indicator (AI): "; 
+            word3 &= 0x00000003L;
+            os << "\nAvailability Indicator (AI): " << word3 << ", "; 
             if (word3==0)       os << "NMCT Unencrypted"; 
              else if (word3==1) os << "NMCT Encrypted";
              else if (word3==2) os << "NMCT Unavailable"; 
@@ -664,6 +672,11 @@ namespace gpstk
             if (almType==54) os << "Page Type: Subframe 4 Page 15, Reserved Bits\n";
                // Hexadecimal dump
             os << "Hexadecimal dump of non-parity bits of words 3-10\n";
+            os << " For historical reasons, the preceding statement\n";
+            os << " NOT QUITE TRUE.  The actual bits (given in terms\n";
+            os << " of a 300 bit subframe) are as follows:\n";
+            os << "     3:069-084    4:091-114    5:121-144    6:151-174\n";
+            os << "     7:181-204    8:211-234    9:241-247   10:249-264\n";
             os.setf(ios::uppercase);
             for (k=2;k<10;k++)
             {
