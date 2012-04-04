@@ -25,7 +25,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009, 2012
 //
 //============================================================================
 
@@ -536,7 +536,7 @@ namespace gpstk
        *                      (2) MSLM Modified Single Layer Model (CODE)
        *                      (3) ESM  Extended Slab Model (JLP)
        *
-       * Details at: http://aiuws.unibe.ch/ionosphere/mslm.pdf
+       * Details at: www.aiub.unibe.ch/download/users/schaer/igsiono/doc/mslm.pdf
        *
        * @warning No implementation for JPL's mapping function.
        */
@@ -568,21 +568,19 @@ namespace gpstk
       }
       else if( ionoMapType == "MSLM" )
       {
-            // maximum zenith distance is 80 degrees
-         if( z0 > 80.0 )
+         // maximum zenith distance is 80 degrees
+         if( z0 <= 80.0 )
          {
-            map = 1.0;
+           // ionosphere height in KM
+           double ionoHeight = 506.7;
+           double alfa       = 0.9782;
+           // zenith angle of the ionospheric pierce point (IPP)
+           double sinzipp = Re / (Re + ionoHeight)
+               * std::sin(alfa * z0 * DEG_TO_RAD);
+           double zipprad = std::asin(sinzipp);
+
+           map = 1.0/std::cos(zipprad);
          }
-
-            // ionosphere height in KM
-         double ionoHeight = 506.7;
-         double alfa       = 0.9782;
-            // zenith angle of the ionospheric pierce point (IPP)
-         double sinzipp  = Re / (Re + ionoHeight) * 
-                                 std::sin( alfa * z0 * DEG_TO_RAD );
-         double zipprad  = std::asin(sinzipp);
-
-         map      = 1.0/std::cos(zipprad);
 
       }
       else if( ionoMapType == "ESM" )
