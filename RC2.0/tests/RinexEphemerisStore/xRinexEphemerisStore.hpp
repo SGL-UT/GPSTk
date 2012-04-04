@@ -29,8 +29,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "RinexEphemerisStore.hpp"
-#include "SatID.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include <fstream>
 
 

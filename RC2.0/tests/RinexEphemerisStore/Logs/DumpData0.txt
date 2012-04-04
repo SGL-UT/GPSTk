@@ -1,4 +1,7 @@
-Dump of RinexEphemerisStore:
-TestRinex06.031
-Dump of BCEphemerisStore:
- Span is 01/31/2006 00:00:00 to 01/31/2006 22:00:00 with 41 entries.
+Dump Rinex3EphemerisStore:
+Dump of FileStore
+ File  1: TestRinex06.031
+End dump of FileStore
+Dump of GPSEphemerisStore:
+ Span is 1360 172800.000 = 2006/01/31 00:00:00 GPS to 1360 266400.000 = 2006/02/01 02:00:00 GPS with 41 entries.
+End dump Rinex3EphemerisStore.

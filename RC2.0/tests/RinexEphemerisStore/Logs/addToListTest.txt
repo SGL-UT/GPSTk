@@ -12,9 +12,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    172806  Tue-2:00:00:06   0x043      0     off
-SF2 HOW:    172806  Tue-2:00:00:06    0x43      0     off
-SF3 HOW:    172806  Tue-2:00:00:06    0x43      0     off
+SF1 HOW:    172806  Tue-2:00:00:06   0x043      0      on
+SF2 HOW:    172806  Tue-2:00:00:06    0x43      0      on
+SF3 HOW:    172806  Tue-2:00:00:06    0x43      0      on
 
            CLOCK
 
@@ -58,9 +58,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    181806  Tue-2:02:30:06   0x044      0     off
-SF2 HOW:    181806  Tue-2:02:30:06    0x44      0     off
-SF3 HOW:    181806  Tue-2:02:30:06    0x44      0     off
+SF1 HOW:    181806  Tue-2:02:30:06   0x044      0      on
+SF2 HOW:    181806  Tue-2:02:30:06    0x44      0      on
+SF3 HOW:    181806  Tue-2:02:30:06    0x44      0      on
 
            CLOCK
 
@@ -104,9 +104,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    192216  Tue-2:05:23:36   0x259      0     off
-SF2 HOW:    192216  Tue-2:05:23:36    0x59      0     off
-SF3 HOW:    192216  Tue-2:05:23:36    0x59      0     off
+SF1 HOW:    192216  Tue-2:05:23:36   0x259      0      on
+SF2 HOW:    192216  Tue-2:05:23:36    0x59      0      on
+SF3 HOW:    192216  Tue-2:05:23:36    0x59      0      on
 
            CLOCK
 
@@ -150,9 +150,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    187206  Tue-2:04:00:06   0x23F      0     off
-SF2 HOW:    187206  Tue-2:04:00:06    0x3F      0     off
-SF3 HOW:    187206  Tue-2:04:00:06    0x3F      0     off
+SF1 HOW:    187206  Tue-2:04:00:06   0x23F      0      on
+SF2 HOW:    187206  Tue-2:04:00:06    0x3F      0      on
+SF3 HOW:    187206  Tue-2:04:00:06    0x3F      0      on
 
            CLOCK
 
@@ -196,9 +196,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    194406  Tue-2:06:00:06   0x15A      0     off
-SF2 HOW:    194406  Tue-2:06:00:06    0x5A      0     off
-SF3 HOW:    194406  Tue-2:06:00:06    0x5A      0     off
+SF1 HOW:    194406  Tue-2:06:00:06   0x15A      0      on
+SF2 HOW:    194406  Tue-2:06:00:06    0x5A      0      on
+SF3 HOW:    194406  Tue-2:06:00:06    0x5A      0      on
 
            CLOCK
 
@@ -242,9 +242,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    208446  Tue-2:09:54:06   0x073      0     off
-SF2 HOW:    208446  Tue-2:09:54:06    0x73      0     off
-SF3 HOW:    208446  Tue-2:09:54:06    0x73      0     off
+SF1 HOW:    208446  Tue-2:09:54:06   0x073      0      on
+SF2 HOW:    208446  Tue-2:09:54:06    0x73      0      on
+SF3 HOW:    208446  Tue-2:09:54:06    0x73      0      on
 
            CLOCK
 
@@ -288,9 +288,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    201606  Tue-2:08:00:06   0x15B      0     off
-SF2 HOW:    201606  Tue-2:08:00:06    0x5B      0     off
-SF3 HOW:    201606  Tue-2:08:00:06    0x5B      0     off
+SF1 HOW:    201606  Tue-2:08:00:06   0x15B      0      on
+SF2 HOW:    201606  Tue-2:08:00:06    0x5B      0      on
+SF3 HOW:    201606  Tue-2:08:00:06    0x5B      0      on
 
            CLOCK
 
@@ -334,9 +334,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    208806  Tue-2:10:00:06   0x174      0     off
-SF2 HOW:    208806  Tue-2:10:00:06    0x74      0     off
-SF3 HOW:    208806  Tue-2:10:00:06    0x74      0     off
+SF1 HOW:    208806  Tue-2:10:00:06   0x174      0      on
+SF2 HOW:    208806  Tue-2:10:00:06    0x74      0      on
+SF3 HOW:    208806  Tue-2:10:00:06    0x74      0      on
 
            CLOCK
 
@@ -380,9 +380,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    216006  Tue-2:12:00:06   0x175      0     off
-SF2 HOW:    216006  Tue-2:12:00:06    0x75      0     off
-SF3 HOW:    216006  Tue-2:12:00:06    0x75      0     off
+SF1 HOW:    216006  Tue-2:12:00:06   0x175      0      on
+SF2 HOW:    216006  Tue-2:12:00:06    0x75      0      on
+SF3 HOW:    216006  Tue-2:12:00:06    0x75      0      on
 
            CLOCK
 
@@ -426,9 +426,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    223206  Tue-2:14:00:06   0x176      0     off
-SF2 HOW:    223206  Tue-2:14:00:06    0x76      0     off
-SF3 HOW:    223206  Tue-2:14:00:06    0x76      0     off
+SF1 HOW:    223206  Tue-2:14:00:06   0x176      0      on
+SF2 HOW:    223206  Tue-2:14:00:06    0x76      0      on
+SF3 HOW:    223206  Tue-2:14:00:06    0x76      0      on
 
            CLOCK
 
@@ -472,9 +472,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    230406  Tue-2:16:00:06   0x177      0     off
-SF2 HOW:    230406  Tue-2:16:00:06    0x77      0     off
-SF3 HOW:    230406  Tue-2:16:00:06    0x77      0     off
+SF1 HOW:    230406  Tue-2:16:00:06   0x177      0      on
+SF2 HOW:    230406  Tue-2:16:00:06    0x77      0      on
+SF3 HOW:    230406  Tue-2:16:00:06    0x77      0      on
 
            CLOCK
 
@@ -518,9 +518,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    237606  Tue-2:18:00:06   0x178      0     off
-SF2 HOW:    237606  Tue-2:18:00:06    0x78      0     off
-SF3 HOW:    237606  Tue-2:18:00:06    0x78      0     off
+SF1 HOW:    237606  Tue-2:18:00:06   0x178      0      on
+SF2 HOW:    237606  Tue-2:18:00:06    0x78      0      on
+SF3 HOW:    237606  Tue-2:18:00:06    0x78      0      on
 
            CLOCK
 
@@ -564,9 +564,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    250056  Tue-2:21:27:36   0x08D      0     off
-SF2 HOW:    250056  Tue-2:21:27:36    0x8D      0     off
-SF3 HOW:    250056  Tue-2:21:27:36    0x8D      0     off
+SF1 HOW:    250056  Tue-2:21:27:36   0x08D      0      on
+SF2 HOW:    250056  Tue-2:21:27:36    0x8D      0      on
+SF3 HOW:    250056  Tue-2:21:27:36    0x8D      0      on
 
            CLOCK
 
@@ -610,9 +610,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    244806  Tue-2:20:00:06   0x173      0     off
-SF2 HOW:    244806  Tue-2:20:00:06    0x73      0     off
-SF3 HOW:    244806  Tue-2:20:00:06    0x73      0     off
+SF1 HOW:    244806  Tue-2:20:00:06   0x173      0      on
+SF2 HOW:    244806  Tue-2:20:00:06    0x73      0      on
+SF3 HOW:    244806  Tue-2:20:00:06    0x73      0      on
 
            CLOCK
 
@@ -656,9 +656,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    252006  Tue-2:22:00:06   0x08E      0     off
-SF2 HOW:    252006  Tue-2:22:00:06    0x8E      0     off
-SF3 HOW:    252006  Tue-2:22:00:06    0x8E      0     off
+SF1 HOW:    252006  Tue-2:22:00:06   0x08E      0      on
+SF2 HOW:    252006  Tue-2:22:00:06    0x8E      0      on
+SF3 HOW:    252006  Tue-2:22:00:06    0x8E      0      on
 
            CLOCK
 
@@ -702,9 +702,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    172806  Tue-2:00:00:06   0x2AC      0     off
-SF2 HOW:    172806  Tue-2:00:00:06    0xAC      0     off
-SF3 HOW:    172806  Tue-2:00:00:06    0xAC      0     off
+SF1 HOW:    172806  Tue-2:00:00:06   0x2AC      0      on
+SF2 HOW:    172806  Tue-2:00:00:06    0xAC      0      on
+SF3 HOW:    172806  Tue-2:00:00:06    0xAC      0      on
 
            CLOCK
 
@@ -748,9 +748,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    180006  Tue-2:02:00:06   0x2AD      0     off
-SF2 HOW:    180006  Tue-2:02:00:06    0xAD      0     off
-SF3 HOW:    180006  Tue-2:02:00:06    0xAD      0     off
+SF1 HOW:    180006  Tue-2:02:00:06   0x2AD      0      on
+SF2 HOW:    180006  Tue-2:02:00:06    0xAD      0      on
+SF3 HOW:    180006  Tue-2:02:00:06    0xAD      0      on
 
            CLOCK
 
@@ -794,9 +794,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    193626  Tue-2:05:47:06   0x2C4      0     off
-SF2 HOW:    193626  Tue-2:05:47:06    0xC4      0     off
-SF3 HOW:    193626  Tue-2:05:47:06    0xC4      0     off
+SF1 HOW:    193626  Tue-2:05:47:06   0x2C4      0      on
+SF2 HOW:    193626  Tue-2:05:47:06    0xC4      0      on
+SF3 HOW:    193626  Tue-2:05:47:06    0xC4      0      on
 
            CLOCK
 
@@ -840,9 +840,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    187206  Tue-2:04:00:06   0x2AE      0     off
-SF2 HOW:    187206  Tue-2:04:00:06    0xAE      0     off
-SF3 HOW:    187206  Tue-2:04:00:06    0xAE      0     off
+SF1 HOW:    187206  Tue-2:04:00:06   0x2AE      0      on
+SF2 HOW:    187206  Tue-2:04:00:06    0xAE      0      on
+SF3 HOW:    187206  Tue-2:04:00:06    0xAE      0      on
 
            CLOCK
 
@@ -886,9 +886,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    194406  Tue-2:06:00:06   0x1C5      0     off
-SF2 HOW:    194406  Tue-2:06:00:06    0xC5      0     off
-SF3 HOW:    194406  Tue-2:06:00:06    0xC5      0     off
+SF1 HOW:    194406  Tue-2:06:00:06   0x1C5      0      on
+SF2 HOW:    194406  Tue-2:06:00:06    0xC5      0      on
+SF3 HOW:    194406  Tue-2:06:00:06    0xC5      0      on
 
            CLOCK
 
@@ -932,9 +932,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    201606  Tue-2:08:00:06   0x1C6      0     off
-SF2 HOW:    201606  Tue-2:08:00:06    0xC6      0     off
-SF3 HOW:    201606  Tue-2:08:00:06    0xC6      0     off
+SF1 HOW:    201606  Tue-2:08:00:06   0x1C6      0      on
+SF2 HOW:    201606  Tue-2:08:00:06    0xC6      0      on
+SF3 HOW:    201606  Tue-2:08:00:06    0xC6      0      on
 
            CLOCK
 
@@ -978,9 +978,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    208806  Tue-2:10:00:06   0x1C7      0     off
-SF2 HOW:    208806  Tue-2:10:00:06    0xC7      0     off
-SF3 HOW:    208806  Tue-2:10:00:06    0xC7      0     off
+SF1 HOW:    208806  Tue-2:10:00:06   0x1C7      0      on
+SF2 HOW:    208806  Tue-2:10:00:06    0xC7      0      on
+SF3 HOW:    208806  Tue-2:10:00:06    0xC7      0      on
 
            CLOCK
 
@@ -1024,9 +1024,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    216006  Tue-2:12:00:06   0x1C8      0     off
-SF2 HOW:    216006  Tue-2:12:00:06    0xC8      0     off
-SF3 HOW:    216006  Tue-2:12:00:06    0xC8      0     off
+SF1 HOW:    216006  Tue-2:12:00:06   0x1C8      0      on
+SF2 HOW:    216006  Tue-2:12:00:06    0xC8      0      on
+SF3 HOW:    216006  Tue-2:12:00:06    0xC8      0      on
 
            CLOCK
 
@@ -1070,9 +1070,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    223206  Tue-2:14:00:06   0x0C9      0     off
-SF2 HOW:    223206  Tue-2:14:00:06    0xC9      0     off
-SF3 HOW:    223206  Tue-2:14:00:06    0xC9      0     off
+SF1 HOW:    223206  Tue-2:14:00:06   0x0C9      0      on
+SF2 HOW:    223206  Tue-2:14:00:06    0xC9      0      on
+SF3 HOW:    223206  Tue-2:14:00:06    0xC9      0      on
 
            CLOCK
 
@@ -1116,9 +1116,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    230406  Tue-2:16:00:06   0x3C4      0     off
-SF2 HOW:    230406  Tue-2:16:00:06    0xC4      0     off
-SF3 HOW:    230406  Tue-2:16:00:06    0xC4      0     off
+SF1 HOW:    230406  Tue-2:16:00:06   0x3C4      0      on
+SF2 HOW:    230406  Tue-2:16:00:06    0xC4      0      on
+SF3 HOW:    230406  Tue-2:16:00:06    0xC4      0      on
 
            CLOCK
 
@@ -1162,9 +1162,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    237606  Tue-2:18:00:06   0x2C5      0     off
-SF2 HOW:    237606  Tue-2:18:00:06    0xC5      0     off
-SF3 HOW:    237606  Tue-2:18:00:06    0xC5      0     off
+SF1 HOW:    237606  Tue-2:18:00:06   0x2C5      0      on
+SF2 HOW:    237606  Tue-2:18:00:06    0xC5      0      on
+SF3 HOW:    237606  Tue-2:18:00:06    0xC5      0      on
 
            CLOCK
 
@@ -1208,9 +1208,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    244806  Tue-2:20:00:06   0x2C6      0     off
-SF2 HOW:    244806  Tue-2:20:00:06    0xC6      0     off
-SF3 HOW:    244806  Tue-2:20:00:06    0xC6      0     off
+SF1 HOW:    244806  Tue-2:20:00:06   0x2C6      0      on
+SF2 HOW:    244806  Tue-2:20:00:06    0xC6      0      on
+SF3 HOW:    244806  Tue-2:20:00:06    0xC6      0      on
 
            CLOCK
 
@@ -1254,9 +1254,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    252006  Tue-2:22:00:06   0x2C7      0     off
-SF2 HOW:    252006  Tue-2:22:00:06    0xC7      0     off
-SF3 HOW:    252006  Tue-2:22:00:06    0xC7      0     off
+SF1 HOW:    252006  Tue-2:22:00:06   0x2C7      0      on
+SF2 HOW:    252006  Tue-2:22:00:06    0xC7      0      on
+SF3 HOW:    252006  Tue-2:22:00:06    0xC7      0      on
 
            CLOCK
 
@@ -1300,9 +1300,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    172806  Tue-2:00:00:06   0x1B4      0     off
-SF2 HOW:    172806  Tue-2:00:00:06    0xB4      0     off
-SF3 HOW:    172806  Tue-2:00:00:06    0xB4      0     off
+SF1 HOW:    172806  Tue-2:00:00:06   0x1B4      0      on
+SF2 HOW:    172806  Tue-2:00:00:06    0xB4      0      on
+SF3 HOW:    172806  Tue-2:00:00:06    0xB4      0      on
 
            CLOCK
 
@@ -1346,9 +1346,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    180006  Tue-2:02:00:06   0x1B5      0     off
-SF2 HOW:    180006  Tue-2:02:00:06    0xB5      0     off
-SF3 HOW:    180006  Tue-2:02:00:06    0xB5      0     off
+SF1 HOW:    180006  Tue-2:02:00:06   0x1B5      0      on
+SF2 HOW:    180006  Tue-2:02:00:06    0xB5      0      on
+SF3 HOW:    180006  Tue-2:02:00:06    0xB5      0      on
 
            CLOCK
 
@@ -1392,9 +1392,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    187206  Tue-2:04:00:06   0x1B6      0     off
-SF2 HOW:    187206  Tue-2:04:00:06    0xB6      0     off
-SF3 HOW:    187206  Tue-2:04:00:06    0xB6      0     off
+SF1 HOW:    187206  Tue-2:04:00:06   0x1B6      0      on
+SF2 HOW:    187206  Tue-2:04:00:06    0xB6      0      on
+SF3 HOW:    187206  Tue-2:04:00:06    0xB6      0      on
 
            CLOCK
 
@@ -1438,9 +1438,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    194406  Tue-2:06:00:06   0x1B7      0     off
-SF2 HOW:    194406  Tue-2:06:00:06    0xB7      0     off
-SF3 HOW:    194406  Tue-2:06:00:06    0xB7      0     off
+SF1 HOW:    194406  Tue-2:06:00:06   0x1B7      0      on
+SF2 HOW:    194406  Tue-2:06:00:06    0xB7      0      on
+SF3 HOW:    194406  Tue-2:06:00:06    0xB7      0      on
 
            CLOCK
 
@@ -1484,9 +1484,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    201606  Tue-2:08:00:06   0x1B8      0     off
-SF2 HOW:    201606  Tue-2:08:00:06    0xB8      0     off
-SF3 HOW:    201606  Tue-2:08:00:06    0xB8      0     off
+SF1 HOW:    201606  Tue-2:08:00:06   0x1B8      0      on
+SF2 HOW:    201606  Tue-2:08:00:06    0xB8      0      on
+SF3 HOW:    201606  Tue-2:08:00:06    0xB8      0      on
 
            CLOCK
 
@@ -1530,9 +1530,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    208806  Tue-2:10:00:06   0x1B9      0     off
-SF2 HOW:    208806  Tue-2:10:00:06    0xB9      0     off
-SF3 HOW:    208806  Tue-2:10:00:06    0xB9      0     off
+SF1 HOW:    208806  Tue-2:10:00:06   0x1B9      0      on
+SF2 HOW:    208806  Tue-2:10:00:06    0xB9      0      on
+SF3 HOW:    208806  Tue-2:10:00:06    0xB9      0      on
 
            CLOCK
 
@@ -1576,9 +1576,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    219786  Tue-2:13:03:06   0x0CE      0     off
-SF2 HOW:    219786  Tue-2:13:03:06    0xCE      0     off
-SF3 HOW:    219786  Tue-2:13:03:06    0xCE      0     off
+SF1 HOW:    219786  Tue-2:13:03:06   0x0CE      0      on
+SF2 HOW:    219786  Tue-2:13:03:06    0xCE      0      on
+SF3 HOW:    219786  Tue-2:13:03:06    0xCE      0      on
 
            CLOCK
 
@@ -1622,9 +1622,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    216006  Tue-2:12:00:06   0x2B4      0     off
-SF2 HOW:    216006  Tue-2:12:00:06    0xB4      0     off
-SF3 HOW:    216006  Tue-2:12:00:06    0xB4      0     off
+SF1 HOW:    216006  Tue-2:12:00:06   0x2B4      0      on
+SF2 HOW:    216006  Tue-2:12:00:06    0xB4      0      on
+SF3 HOW:    216006  Tue-2:12:00:06    0xB4      0      on
 
            CLOCK
 
@@ -1668,9 +1668,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    223206  Tue-2:14:00:06   0x0CF      0     off
-SF2 HOW:    223206  Tue-2:14:00:06    0xCF      0     off
-SF3 HOW:    223206  Tue-2:14:00:06    0xCF      0     off
+SF1 HOW:    223206  Tue-2:14:00:06   0x0CF      0      on
+SF2 HOW:    223206  Tue-2:14:00:06    0xCF      0      on
+SF3 HOW:    223206  Tue-2:14:00:06    0xCF      0      on
 
            CLOCK
 
@@ -1714,9 +1714,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    230406  Tue-2:16:00:06   0x0D0      0     off
-SF2 HOW:    230406  Tue-2:16:00:06    0xD0      0     off
-SF3 HOW:    230406  Tue-2:16:00:06    0xD0      0     off
+SF1 HOW:    230406  Tue-2:16:00:06   0x0D0      0      on
+SF2 HOW:    230406  Tue-2:16:00:06    0xD0      0      on
+SF3 HOW:    230406  Tue-2:16:00:06    0xD0      0      on
 
            CLOCK
 
@@ -1760,9 +1760,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    237666  Tue-2:18:01:06   0x0D1      0     off
-SF2 HOW:    237666  Tue-2:18:01:06    0xD1      0     off
-SF3 HOW:    237666  Tue-2:18:01:06    0xD1      0     off
+SF1 HOW:    237666  Tue-2:18:01:06   0x0D1      0      on
+SF2 HOW:    237666  Tue-2:18:01:06    0xD1      0      on
+SF3 HOW:    237666  Tue-2:18:01:06    0xD1      0      on
 
            CLOCK
 
@@ -1806,9 +1806,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    244806  Tue-2:20:00:06   0x0D2      0     off
-SF2 HOW:    244806  Tue-2:20:00:06    0xD2      0     off
-SF3 HOW:    244806  Tue-2:20:00:06    0xD2      0     off
+SF1 HOW:    244806  Tue-2:20:00:06   0x0D2      0      on
+SF2 HOW:    244806  Tue-2:20:00:06    0xD2      0      on
+SF3 HOW:    244806  Tue-2:20:00:06    0xD2      0      on
 
            CLOCK
 
@@ -1852,9 +1852,9 @@ Fit interval flag :  0
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    252006  Tue-2:22:00:06   0x0D3      0     off
-SF2 HOW:    252006  Tue-2:22:00:06    0xD3      0     off
-SF3 HOW:    252006  Tue-2:22:00:06    0xD3      0     off
+SF1 HOW:    252006  Tue-2:22:00:06   0x0D3      0      on
+SF2 HOW:    252006  Tue-2:22:00:06    0xD3      0      on
+SF3 HOW:    252006  Tue-2:22:00:06    0xD3      0      on
 
            CLOCK
 

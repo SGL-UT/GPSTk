@@ -397,9 +397,9 @@ namespace gpstk
       ee.tlm_message[0] = 0;           
       ee.tlm_message[1] = 0;
       ee.tlm_message[2] = 0;
-      ee.HOWtime[0] = HOWtime;
-      ee.HOWtime[1] = HOWtime + 6;     //each subframe is 6 seconds apart
-      ee.HOWtime[2] = HOWtime + 12;
+      ee.HOWtime[0] = HOWtime;  // RINEX does not actually specify 
+      ee.HOWtime[1] = HOWtime;  // how the transmit time is derived.  Therefore,
+      ee.HOWtime[2] = HOWtime;  // These values may be misleading.  
       ee.ASalert[0] = 1;               //AS and alert flags set to 1 (default)
       ee.ASalert[1] = 1;
       ee.ASalert[2] = 1;

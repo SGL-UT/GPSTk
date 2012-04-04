@@ -24,9 +24,6 @@
 //============================================================================
 
 #include "xIonoModel.hpp"
-#include "EngAlmanac.hpp"
-#include "DayTime.hpp"
-#include "Position.hpp"
 
 
 

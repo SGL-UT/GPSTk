@@ -84,7 +84,7 @@ namespace gpstk
    //        -3 failed to read data (this->Rdata),
    //       >=0 number of nav records read
    int Rinex3EphemerisStore::loadFile(const string& filename, bool dump, ostream& s)
-      throw(Exception)
+      throw(gpstk::Exception)
    {
       try {
          int nread(0);

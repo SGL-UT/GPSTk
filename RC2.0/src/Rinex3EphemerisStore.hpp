@@ -50,6 +50,7 @@
 #include <map>
 #include <algorithm>
 
+#include "Exception.hpp"
 #include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Xvt.hpp"
@@ -280,7 +281,7 @@ namespace gpstk
       ///        >=0 number of nav records read
       /// @throw some other problem
       int loadFile(const std::string& filename, bool dump=false, ostream& s=std::cout)
-         throw(Exception);
+         throw(gpstk::Exception);
 
       /// use to access the data records in the store in bulk
       int addToList(list<Rinex3NavData>& theList,

@@ -23,11 +23,18 @@
 //
 //============================================================================
 
+#include <list>
+#include <string>
+
 #include "xRinexEphemerisStore.hpp"
-#include "SatID.hpp"
 #include "Exception.hpp"
 #include "CivilTime.hpp"
 #include "CommonTime.hpp"
+#include "Rinex3NavData.hpp"
+#include "EngEphemeris.hpp"
+#include "GPSEphemerisStore.hpp"
+#include "SatID.hpp"
+#include "Rinex3NavStream.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexEphemerisStore);
 
@@ -37,7 +44,7 @@ void xRinexEphemerisStore :: setUp (void)
 }
 
 /*
-**** General test for the RinexEphemerisStore (RES) class
+**** General test for the Rinex3EphemerisStore (RES) class
 **** Test to assure the that RES throws its exceptions in the right place and
 **** that it loads the RINEX Nav file correctly
 
@@ -49,17 +56,23 @@ void xRinexEphemerisStore :: RESTest (void)
 	ofstream DumpData;
 	DumpData.open ("DumpData.txt");
 
-	CPPUNIT_ASSERT_NO_THROW(gpstk::RinexEphemerisStore Store);
-	gpstk::RinexEphemerisStore Store;
+	CPPUNIT_ASSERT_NO_THROW(gpstk::Rinex3EphemerisStore Store);
+	gpstk::Rinex3EphemerisStore Store;
+
+        cout << "just before try-catch block" << endl;
+
 	try
 	{
-	  CPPUNIT_ASSERT_THROW(Store.loadFile("NotaFILE"),gpstk::FileMissingException);
+          cout << "just before assert_equal" << endl;
+	  CPPUNIT_ASSERT_EQUAL(Store.loadFile("NotaFILE"), int(-1));
+          cout << "just after assert_equal" << endl;
 	}
 	catch (gpstk::Exception& e)
 	{
 	  cout << "unexpected exception thrown" << endl;
 	  cout << e << endl;
 	}
+        cout << "after try-catch block" << endl;
 
 	CPPUNIT_ASSERT_NO_THROW(Store.loadFile("TestRinex06.031"));
 	Store.loadFile("TestRinex06.031");
@@ -89,36 +102,54 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 	fPRN15.open ("Logs/findEph15.txt");
 	fPRN32.open ("Logs/findEph32.txt");
 
-	gpstk::RinexEphemerisStore Store;
+	gpstk::Rinex3EphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
+
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        std::list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
+        // debug dump of GStore
+
+        ofstream GDumpData;
+        GDumpData.open("GDumpData.txt");
+        GStore.dump(GDumpData,1);
 
 	const short PRN0 = 0; // Zero PRN (Border test case)
 	const short PRN1 = 1;
 	const short PRN15 = 15;
 	const short PRN32 = 32;
 	const short PRN33 = 33;  //Top PRN (33) (Border test case);
-   gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
-   gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
-   gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
-   gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
-   gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 
-	gpstk::CivilTime Time(2006,1,31,11,45,0);
-	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+        const gpstk::SatID sid0(PRN0,gpstk::SatID::systemGPS);
+        const gpstk::SatID sid1(PRN1,gpstk::SatID::systemGPS);
+        const gpstk::SatID sid15(PRN15,gpstk::SatID::systemGPS);
+        const gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
+        const gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
+
+	gpstk::CivilTime Time(2006,1,31,11,45,0,2);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
+        const gpstk::CommonTime CombTime = (gpstk::CommonTime)bTime;
+
 
 
 	try
 	{
-		gpstk::CivilTime crazy(200000,1,31,2,0,0);
-		CPPUNIT_ASSERT_NO_THROW(Store.findEphemeris(sid1,Time));
+		gpstk::CivilTime crazy(200000,1,31,2,0,0,2);
+                const gpstk::CommonTime Comcrazy = (gpstk::CommonTime)crazy;
+		CPPUNIT_ASSERT_NO_THROW(GStore.findEphemeris(sid1,ComTime));
 
-		fPRN1 << Store.findEphemeris(sid1,Time);
-		fPRN15 << Store.findEphemeris(sid15,Time);
-		fPRN32 << Store.findEphemeris(sid32,Time);
+		fPRN1 << GStore.findEphemeris(sid1,ComTime);
+		fPRN15 << GStore.findEphemeris(sid15,ComTime);
+		fPRN32 << GStore.findEphemeris(sid32,ComTime);
 
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(sid0,bTime),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(sid33,bTime),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findEphemeris(sid32,crazy),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findEphemeris(sid0,CombTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findEphemeris(sid33,CombTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findEphemeris(sid32,Comcrazy),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -153,7 +184,7 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
 	fPRN15.open ("Logs/getXvt15.txt");
 	fPRN32.open ("Logs/getXvt32.txt");
 
-	gpstk::RinexEphemerisStore Store;
+	gpstk::Rinex3EphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	const short PRN0 = 0; // Zero PRN (Border test case)
@@ -167,19 +198,21 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
    gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
    gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 
-	gpstk::CivilTime Time(2006,1,31,11,45,0);
-	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+	gpstk::CivilTime Time(2006,1,31,11,45,0,2);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
+        const gpstk::CommonTime CombTime = (gpstk::CommonTime)bTime;
 
 	try
 	{
-		CPPUNIT_ASSERT_NO_THROW(Store.getXvt(sid1,Time));
+		CPPUNIT_ASSERT_NO_THROW(Store.getXvt(sid1,ComTime));
 
-		fPRN1 << Store.getXvt(sid1,Time) << endl;
-		fPRN15 << Store.getXvt(sid15,Time) << endl;
-		fPRN32 << Store.getXvt(sid32,Time) << endl;
+		fPRN1 << Store.getXvt(sid1,ComTime) << endl;
+		fPRN15 << Store.getXvt(sid15,ComTime) << endl;
+		fPRN32 << Store.getXvt(sid32,ComTime) << endl;
 
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,bTime),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,CombTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,CombTime),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -216,9 +249,17 @@ void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 	fPRN15.open ("Logs/getXvt2_15.txt");
 	fPRN32.open ("Logs/getXvt2_32.txt");
 
-	gpstk::RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
+	gpstk::Rinex3EphemerisStore Store;
+        int nr;
+	nr = Store.loadFile("TestRinex06.031");
 
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+        
 	const short PRN0 = 0; // Zero PRN (Border test case)
 	const short PRN1 = 1;
 	const short PRN15 = 15;
@@ -236,17 +277,19 @@ void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 	short IODC32 = 441;
 	short IODC33 = 392;
 
-	gpstk::CivilTime Time(2006,1,31,11,45,0);
-	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+	gpstk::CivilTime Time(2006,1,31,11,45,0,2);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
+        const gpstk::CommonTime CombTime = (gpstk::CommonTime)bTime;
 
 	try
 	{
-		fPRN1 << Store.getXvt(sid1,Time,IODC1) << endl;
-		fPRN15 << Store.getXvt(sid15,Time,IODC15) << endl;
-		fPRN32 << Store.getXvt(sid32,Time,IODC32) << endl;
+		fPRN1 << GStore.getXvt(sid1,ComTime,IODC1) << endl;
+		fPRN15 << GStore.getXvt(sid15,ComTime,IODC15) << endl;
+		fPRN32 << GStore.getXvt(sid32,ComTime,IODC32) << endl;
 
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,bTime,IODC0),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,bTime,IODC33),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.getXvt(sid0,CombTime,IODC0),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.getXvt(sid33,CombTime,IODC33),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -280,24 +323,35 @@ void xRinexEphemerisStore :: BCESgetSatHealthTest (void)
    gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
    gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 
-	gpstk::RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
+	gpstk::Rinex3EphemerisStore Store;
+        int nr;
+	nr = Store.loadFile("TestRinex06.031");
 
-	gpstk::CivilTime Time(2006,1,31,11,45,0);
-	gpstk::CivilTime bTime(2006,1,31,2,0,0); //Border Time (Time of Border test cases)
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
+	gpstk::CivilTime Time(2006,1,31,11,45,0,2);
+	gpstk::CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
+        const gpstk::CommonTime CombTime = (gpstk::CommonTime)bTime;
+
 
 	try
 	{
 
 
-		CPPUNIT_ASSERT_NO_THROW(Store.getSatHealth(sid1,Time));
+		CPPUNIT_ASSERT_NO_THROW(GStore.getSatHealth(sid1,ComTime));
 
-		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getSatHealth(sid1,Time));
-		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getSatHealth(sid15,Time));
-		CPPUNIT_ASSERT_EQUAL((short) 0,Store.getSatHealth(sid32,Time));
+		CPPUNIT_ASSERT_EQUAL((short) 0,GStore.getSatHealth(sid1,Time));
+		CPPUNIT_ASSERT_EQUAL((short) 0,GStore.getSatHealth(sid15,Time));
+		CPPUNIT_ASSERT_EQUAL((short) 0,GStore.getSatHealth(sid32,Time));
 
-		CPPUNIT_ASSERT_THROW(Store.getSatHealth(sid0,bTime),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.getSatHealth(sid33,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.getSatHealth(sid0,bTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.getSatHealth(sid33,bTime),gpstk::InvalidRequest);
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -327,7 +381,7 @@ void xRinexEphemerisStore :: BCESdumpTest (void)
 	DumpData1.open ("Logs/DumpData1.txt");
 	DumpData2.open ("Logs/DumpData2.txt");
 
-	gpstk::RinexEphemerisStore Store;
+	gpstk::Rinex3EphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	try
@@ -365,22 +419,33 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
 
 
 	gpstk::GPSEphemerisStore Blank;
-	gpstk::RinexEphemerisStore Store;
+	gpstk::Rinex3EphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
+
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        std::list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
 	short PRN = 1;
    gpstk::SatID sid(PRN,gpstk::SatID::systemGPS);
 
-	gpstk::CivilTime Time(2006,1,31,11,45,0);
-	gpstk::CivilTime TimeB(2006,1,31,9,59,44);
-	const gpstk::EngEphemeris& eph = Store.findEphemeris(sid,Time);
+	gpstk::CivilTime Time(2006,1,31,11,45,0,2);
+	gpstk::CivilTime TimeB(2006,1,31,9,59,44,2);
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
+        const gpstk::CommonTime ComTimeB = (gpstk::CommonTime)TimeB;
+
+	const gpstk::EngEphemeris& eph = GStore.findEphemeris(sid,ComTime);
 
 	try
 	{
 		CPPUNIT_ASSERT_NO_THROW(Blank.addEphemeris(eph));
 		Blank.addEphemeris(eph);
 
-		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeB,Blank.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeB,Blank.getFinalTime());
+		CPPUNIT_ASSERT_EQUAL(ComTimeB,Blank.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL(ComTimeB,Blank.getFinalTime());
 
 		Blank.dump(DumpData,1);
 	}
@@ -406,18 +471,25 @@ void xRinexEphemerisStore :: BCESeditTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/editTest.txt");
 
-	gpstk::RinexEphemerisStore Store;
+	gpstk::Rinex3EphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-	gpstk::CivilTime TimeMax(2006,1,31,15,45,0);
-	gpstk::CivilTime TimeMin(2006,1,31,3,0,0);
+	gpstk::CivilTime TimeMax(2006,1,31,15,45,0,2);
+	gpstk::CivilTime TimeMin(2006,1,31,3,0,0,2);
+
+        //cout << "TimeMax: " << TimeMax << "\n" << "TimeMin: " << TimeMin << "\n";
+
+        const gpstk::CommonTime ComTMax = (gpstk::CommonTime)TimeMax;
+        const gpstk::CommonTime ComTMin = (gpstk::CommonTime)TimeMin;
+
+	//cout << "ComTMax: " << ComTMax << "\n" << "ComTMin: " << ComTMin << "\n";
 
 	try
 	{
-		CPPUNIT_ASSERT_NO_THROW(Store.edit(TimeMin, TimeMax));
-		Store.edit(TimeMin, TimeMax);
-		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeMin,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)TimeMax,Store.getFinalTime());
+		CPPUNIT_ASSERT_NO_THROW(Store.edit(ComTMin, ComTMax));
+		Store.edit(ComTMin, ComTMax);
+		CPPUNIT_ASSERT_EQUAL(ComTMin,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL(ComTMax,Store.getFinalTime());
 		Store.dump(DumpData,1);
 
 	}
@@ -448,30 +520,39 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 	DumpData2.open ("Logs/wiperTest2.txt");
 
 
-	gpstk::RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
+	gpstk::Rinex3EphemerisStore Store;
+        int nr;
+	nr = Store.loadFile("TestRinex06.031");
 
-	gpstk::CivilTime Time(2006,1,31,11,45,0);
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
+	gpstk::CivilTime Time(2006,1,31,11,45,0,2);
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
 
 	try
 	{
 		//Make sure it doesn't fail but dont wipe anything
-		CPPUNIT_ASSERT_NO_THROW(Store.wiper(gpstk::CommonTime::BEGINNING_OF_TIME));
+		CPPUNIT_ASSERT_NO_THROW(GStore.wiper(gpstk::CommonTime::BEGINNING_OF_TIME));
 		//Wipe everything outside interval and make sure that we did wipe all the data
-		Store.wiper(Time);
-		Store.dump(DumpData1,1);
+		GStore.wiper(ComTime);
+		GStore.dump(DumpData1,1);
 
-		CPPUNIT_ASSERT_EQUAL((gpstk::CommonTime)Time,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL(ComTime,GStore.getInitialTime());
 
 		//Wipe everything, return size (should be zero)
-		Store.wiper(gpstk::CommonTime::END_OF_TIME);
-		unsigned int Num = Store.ubeSize();
+		GStore.wiper(gpstk::CommonTime::END_OF_TIME);
+		unsigned int Num = GStore.ubeSize();
 
 		CPPUNIT_ASSERT_EQUAL((unsigned) 0,Num);
 
-		Store.dump(DumpData2,1);
+		GStore.dump(DumpData2,1);
 
-		CPPUNIT_ASSERT_EQUAL(gpstk::CommonTime::END_OF_TIME,Store.getInitialTime());
+		CPPUNIT_ASSERT_EQUAL(gpstk::CommonTime::END_OF_TIME,GStore.getInitialTime());
 
 
 	}
@@ -498,7 +579,7 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/clearTest.txt");
 
-	gpstk::RinexEphemerisStore Store;
+	gpstk::Rinex3EphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	try
@@ -537,10 +618,19 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/findUserTest.txt");
 
-	gpstk::RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
+	gpstk::Rinex3EphemerisStore Store;
+        int nr;
+	nr = Store.loadFile("TestRinex06.031");
 
-	gpstk::CivilTime Time(2006,1,31,13,0,1);
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
+	gpstk::CivilTime Time(2006,1,31,13,0,1,2);
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
 
 	short PRN0 = 0;
 	short PRN1 = 1;
@@ -555,24 +645,24 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 
 	try
 	{
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid0,Time),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid33,Time),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findUserEphemeris(sid1,gpstk::CommonTime::END_OF_TIME),
+		CPPUNIT_ASSERT_THROW(GStore.findUserEphemeris(sid0,ComTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findUserEphemeris(sid33,ComTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findUserEphemeris(sid1,gpstk::CommonTime::END_OF_TIME),
 					gpstk::InvalidRequest);
 
-		CPPUNIT_ASSERT_NO_THROW(Store.findUserEphemeris(sid1, Time));
+		CPPUNIT_ASSERT_NO_THROW(GStore.findUserEphemeris(sid1, ComTime));
 
-		const gpstk::EngEphemeris& Eph1 = Store.findUserEphemeris(sid1, Time);
-		const gpstk::EngEphemeris& Eph15 = Store.findUserEphemeris(sid15, Time);
-		const gpstk::EngEphemeris& Eph32 = Store.findUserEphemeris(sid32, Time);
+		const gpstk::EngEphemeris& Eph1 = GStore.findUserEphemeris(sid1, ComTime);
+		const gpstk::EngEphemeris& Eph15 = GStore.findUserEphemeris(sid15, ComTime);
+		const gpstk::EngEphemeris& Eph32 = GStore.findUserEphemeris(sid32, ComTime);
 
-		Store.clear();
+		GStore.clear();
 
-		Store.addEphemeris(Eph1);
-		Store.addEphemeris(Eph15);
-		Store.addEphemeris(Eph32);
+		GStore.addEphemeris(Eph1);
+		GStore.addEphemeris(Eph15);
+		GStore.addEphemeris(Eph32);
 
-		Store.dump(DumpData,1);
+		GStore.dump(DumpData,1);
 
 	}
 	catch (gpstk::Exception& e)
@@ -600,10 +690,19 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/findNearTest.txt");
 
-	gpstk::RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
+	gpstk::Rinex3EphemerisStore Store;
+        int nr;
+	nr = Store.loadFile("TestRinex06.031");
 
-	gpstk::CivilTime Time(2006,1,31,13,0,1);
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
+	gpstk::CivilTime Time(2006,1,31,13,0,1,2);
+        const gpstk::CommonTime ComTime = (gpstk::CommonTime)Time;
 
 	short PRN0 = 0;
 	short PRN1 = 1;
@@ -618,24 +717,24 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 
 	try
 	{
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid0,Time),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid33,Time),gpstk::InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.findNearEphemeris(sid1,gpstk::CommonTime::END_OF_TIME),
+		CPPUNIT_ASSERT_THROW(GStore.findNearEphemeris(sid0,ComTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findNearEphemeris(sid33,ComTime),gpstk::InvalidRequest);
+		CPPUNIT_ASSERT_THROW(GStore.findNearEphemeris(sid1,gpstk::CommonTime::END_OF_TIME),
 					gpstk::InvalidRequest);
 
-		CPPUNIT_ASSERT_NO_THROW(Store.findNearEphemeris(sid1, Time));
+		CPPUNIT_ASSERT_NO_THROW(GStore.findNearEphemeris(sid1, ComTime));
 
-		const gpstk::EngEphemeris& Eph1 = Store.findNearEphemeris(sid1, Time);
-		const gpstk::EngEphemeris& Eph15 = Store.findNearEphemeris(sid15, Time);
-		const gpstk::EngEphemeris& Eph32 = Store.findNearEphemeris(sid32, Time);
+		const gpstk::EngEphemeris& Eph1 = GStore.findNearEphemeris(sid1, ComTime);
+		const gpstk::EngEphemeris& Eph15 = GStore.findNearEphemeris(sid15, ComTime);
+		const gpstk::EngEphemeris& Eph32 = GStore.findNearEphemeris(sid32, ComTime);
 
-		Store.clear();
+		GStore.clear();
 
-		Store.addEphemeris(Eph1);
-		Store.addEphemeris(Eph15);
-		Store.addEphemeris(Eph32);
+		GStore.addEphemeris(Eph1);
+		GStore.addEphemeris(Eph15);
+		GStore.addEphemeris(Eph32);
 
-		Store.dump(DumpData,1);
+		GStore.dump(DumpData,1);
 
 	}
 	catch (gpstk::Exception& e)
@@ -663,16 +762,25 @@ void xRinexEphemerisStore :: BCESaddToListTest (void)
 	DumpData.open ("Logs/addToListTest.txt");
 
 
-	gpstk::RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
+	gpstk::Rinex3EphemerisStore Store;
+        int nr;
+	nr = Store.loadFile("TestRinex06.031");
+
+        std::list<gpstk::Rinex3NavData> R3NList;
+        gpstk::GPSEphemerisStore GStore;
+        list<gpstk::Rinex3NavData>::const_iterator it;
+        Store.addToList(R3NList);
+        for (it = R3NList.begin(); it != R3NList.end(); ++it)
+          GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
 
 	try
 	{
 		std::list<gpstk::EngEphemeris> EphList; // Empty Ephemeris List
 
 		//Assert that the number of added members equals the size of Store (all members added)
-		CPPUNIT_ASSERT_EQUAL(Store.ubeSize(),(unsigned) Store.addToList(EphList));
-		CPPUNIT_ASSERT_EQUAL((unsigned) EphList.size(),Store.ubeSize());
+		CPPUNIT_ASSERT_EQUAL(GStore.ubeSize(),(unsigned) GStore.addToList(EphList));
+		CPPUNIT_ASSERT_EQUAL((unsigned) EphList.size(),GStore.ubeSize());
 
 		typedef list<gpstk::EngEphemeris>::const_iterator LI;
 		for (LI i = EphList.begin();i!=EphList.end();i++)
