@@ -36,8 +36,8 @@ Broadcast Ephemeris (Engineering Units)
 PRN :  3
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
-Clock Epoch:  1638( 614)  388800   Thu-4   153   43200  06/02/2011   12:00:00
-Eph Epoch:    1638( 614)  388800   Thu-4   153   43200  06/02/2011   12:00:00
+Clock Epoch:  1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
+Eph Epoch:    1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
 Transmit Week:1638
 Fit interval flag :  0
 
