@@ -1,5 +1,5 @@
      2.100          NAVIGATION                              RINEX VERSION / TYPE
-XXRINEXN V3         AIUB                03/28/2012 15:15:41 PGM / RUN BY / DATE
+XXRINEXN V3         AIUB                04/18/2012 15:54:21 PGM / RUN BY / DATE
 THIS IS A DIFFERENT COMMENT                                 COMMENT
 THIS IS ONE COMMENT                                         COMMENT
    .167600D-07 .223500D-07-.119200D-06-.119200D-06          ION ALPHA
