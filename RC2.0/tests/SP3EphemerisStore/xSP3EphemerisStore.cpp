@@ -50,7 +50,7 @@ void xSP3EphemerisStore :: SP3Test(void)
 	CPPUNIT_ASSERT_NO_THROW(SP3EphemerisStore Store);
 	SP3EphemerisStore Store;
 	CPPUNIT_ASSERT_THROW(Store.loadFile("NotaFILE"),Exception);
-	CPPUNIT_ASSERT_NO_THROW(Store.loadFile("SP3/igs09000.sp3"));
+	CPPUNIT_ASSERT_NO_THROW(Store.loadFile("igs09000.sp3"));
 	Store.dump(DumpData,1);
 	DumpData.close();
 }
@@ -65,7 +65,7 @@ void xSP3EphemerisStore :: SP3Test(void)
 void xSP3EphemerisStore :: SP3getXvtTest (void)
 {
 	SP3EphemerisStore Store;
-	Store.loadFile("SP3/igs09000.sp3");
+	Store.loadFile("igs09000.sp3");
 
 	ofstream fPRN1;
 	ofstream fPRN15;
@@ -128,7 +128,7 @@ void xSP3EphemerisStore :: SP3getXvtTest (void)
 void xSP3EphemerisStore :: SP3getInitialTimeTest (void)
 {
 	SP3EphemerisStore Store;
-	Store.loadFile("SP3/igs09000.sp3");
+	Store.loadFile("igs09000.sp3");
 
 	CommonTime computedInitialTime = Store.getInitialTime();
 
@@ -147,7 +147,7 @@ void xSP3EphemerisStore :: SP3getInitialTimeTest (void)
 void xSP3EphemerisStore :: SP3getFinalTimeTest (void)
 {
 	SP3EphemerisStore Store;
-	Store.loadFile("SP3/igs09000.sp3");
+	Store.loadFile("igs09000.sp3");
 
 	CommonTime computedFinalTime = Store.getFinalTime();
 
@@ -168,7 +168,7 @@ void xSP3EphemerisStore :: SP3getPositionTest (void)
 {
 
 	SP3EphemerisStore igsStore;
-	igsStore.loadFile("SP3/igs09000.sp3");
+	igsStore.loadFile("igs09000.sp3");
 
 	const short PRN1 = 1;
 	const short PRN31 = 31;
@@ -194,7 +194,7 @@ void xSP3EphemerisStore :: SP3getPositionTest (void)
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(knownPosition_igs31[2],computedPosition_igs31[2],0.001);
 
 	SP3EphemerisStore apcStore;
-	apcStore.loadFile("SP3/apc01000");
+	apcStore.loadFile("apc01000");
 
 	CivilTime apcTime_civ(2001,7,22,2,0,0);
 	CommonTime apcTime = apcTime_civ.convertToCommonTime();
@@ -225,7 +225,7 @@ void xSP3EphemerisStore :: SP3getPositionTest (void)
 void xSP3EphemerisStore :: SP3getVelocityTest (void)
 {
 	SP3EphemerisStore Store;
-	Store.loadFile("SP3/apc01000");
+	Store.loadFile("apc01000");
 
 	const short PRN1 = 1;
 	const short PRN31 = 31;

@@ -4,7 +4,7 @@ Dump SP3EphemerisStore:
  Do not reject predicted positions.
  Do not reject predicted clocks.
 Dump of FileStore
- File  1: SP3/igs09000.sp3 (header for this file follows)
+ File  1: igs09000.sp3 (header for this file follows)
 SP3 Header: version SP3a containing positions only.
  Time tag : 1997/04/06  0:00:00
  Timespacing is 900 sec, and the number of epochs is 96
