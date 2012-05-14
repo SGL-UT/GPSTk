@@ -74,7 +74,10 @@ namespace gpstk
          : initialTime(CommonTime::END_OF_TIME), 
            finalTime(CommonTime::BEGINNING_OF_TIME),
            strictMethod(true)
-      {}
+      {
+       initialTime.setTimeSystem(TimeSystem::GPS);
+       finalTime.setTimeSystem(TimeSystem::GPS);
+      }
 
 
       virtual ~GPSEphemerisStore()
@@ -129,7 +132,7 @@ namespace gpstk
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getInitialTime() const
          throw()
-      { return initialTime; }
+         { return initialTime; }
 
       
       /// Determine the latest time for which this object can successfully 
@@ -138,7 +141,7 @@ namespace gpstk
       /// @throw InvalidRequest This is thrown if the object has no data.
       virtual CommonTime getFinalTime() const
          throw()
-      { return finalTime; }
+         { return finalTime; }
 
       virtual bool velocityIsPresent()
          const throw()
@@ -186,8 +189,10 @@ namespace gpstk
          throw()
       {
         ube.clear();
-        initialTime = CommonTime::END_OF_TIME;
-        finalTime = CommonTime::BEGINNING_OF_TIME;
+        initialTime = gpstk::CommonTime::END_OF_TIME;
+        finalTime = gpstk::CommonTime::BEGINNING_OF_TIME;
+        initialTime.setTimeSystem(TimeSystem::GPS);
+        finalTime.setTimeSystem(TimeSystem::GPS);
       }
       
       /// Get the number of EngEphemeris objects in this collection.
@@ -239,7 +244,7 @@ namespace gpstk
          throw()
       { strictMethod = false; }
 
-      /// use findEphemeris() in the getSat...() routines (the default)
+      /// use findUserEphemeris() in the getSat...() routines (the default)
       void SearchPast(void)
          throw()
       { strictMethod = true; }

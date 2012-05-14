@@ -141,7 +141,7 @@ namespace gpstk
                                       ? "Begin_time" : printTime(finalTime,fmt))
            << " with " << ubeSize() << " entries."
            << std::endl;
-      }
+      } // end if-block
       else
       {
          for (it = ube.begin(); it != ube.end(); it++)
@@ -149,24 +149,29 @@ namespace gpstk
             const EngEphMap& em = it->second;
             s << "  BCE map for satellite " << it->first
               << " has " << em.size() << " entries." << std::endl;
-      
             EngEphMap::const_iterator ei;
-            for (ei=em.begin(); ei != em.end(); ei++)
-               if (detail==1)
+
+            for (ei=em.begin(); ei != em.end(); ei++) {
+               if (detail==1){
                   s << "PRN " << setw(2) << it->first
                     << " TOE " << printTime(ei->second.getEpochTime(),"%4F %10.3g %P")
                     << " TOC " << fixed << setw(10) << setprecision(3)
                     << ei->second.getToc()
                     << " HOW " << setw(10) << ei->second.getHOWTime(2)
                     << " KEY " << printTime(ei->first,"%4F %10.3g %P")
-                    << std::endl;
+                    << std::endl;}
                else
                   ei->second.dump(s);
-         }
+
+            } //end inner for-loop
+
+         } // end outer for-loop
    
          s << "  End of GPSEphemerisStore data." << std::endl << std::endl;
-      }
-   }
+
+      } //end else-block
+
+   } // end GPSEphemerisStore::dump
 
 //--------------------------------------------------------------------------
 // Keeps only one ephemeris with a given IODC/time.
@@ -183,9 +188,10 @@ namespace gpstk
 
       CommonTime endEff(0.L);
       endEff = eph.getEphemerisEpoch() + 0.5*3600.0*eph.getFitInterval();
-   
+
       EngEphMap& eem = ube[eph.getPRNID()];
       EngEphMap::iterator sfi = eem.find(t);
+
       if ( sfi == eem.end())
       {
          eem[t] = eph;
@@ -194,34 +200,34 @@ namespace gpstk
       else
       {
          // Store the new eph only if it has a later transmit time
+
          EngEphemeris& current = sfi->second;
-         CommonTime ephTot, currentTot;
 
          if (eph.getTransmitTime() > current.getTransmitTime())
          {
             //if (eph.getIODC() != current.getIODC())
-            //cerr << "Wierd: prn:" << setw(2) << eph.getPRNID()
+            //cerr << "Weird: prn:" << setw(2) << eph.getPRNID()
             //<< ", Toe:" << eph.getToe()
             //<< ", New IODC:" << eph.getIODC()
             //<< ", New TTx:" << eph.getTot()
             //<< ", Old IODC:" << current.getIODC()
             //<< ", Old TTx:" << current.getTot()
             //<< endl;
-            
             current = eph;
             rc = true;
          }
       }
 
       // In any case, update the initial and final times
+
+
       if (rc)
       {
         if (t<initialTime)
           initialTime = t;
-        else if (endEff>finalTime)
+        if (endEff>finalTime)
           finalTime = endEff;
       }
-
       return rc;
    }
 
@@ -380,7 +386,6 @@ namespace gpstk
          
          double dt1 = t - tstart;
          double dt2 = t - how;
-
          if (dt1 >= 0 &&                           // t is after start of fit interval
              dt1 <= current.getFitInterval()*3600 &&  // t is within the fit interval
              (dt2min == -1 || fabs(dt2) < dt2min))  // t is closest to HOW
@@ -397,7 +402,6 @@ namespace gpstk
          InvalidRequest e(mess);
          GPSTK_THROW(e);
       }
-
       return it->second;
    }
 

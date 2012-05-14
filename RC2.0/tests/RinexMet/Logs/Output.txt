@@ -1,5 +1,5 @@
      2.10           Meteorological                          RINEX VERSION / TYPE
-GFW - RMW           NIMA                20120328 151542 UTC PGM / RUN BY / DATE
+GFW - RMW           NIMA                20120419 182025 UTC PGM / RUN BY / DATE
 Some weather data may have corrected values                 COMMENT
 85408                                                       MARKER NAME
 85408                                                       MARKER NUMBER

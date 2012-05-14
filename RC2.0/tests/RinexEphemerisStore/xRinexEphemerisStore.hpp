@@ -56,7 +56,7 @@ class xRinexEphemerisStore: public CPPUNIT_NS :: TestFixture
 	CPPUNIT_TEST_SUITE_END ();
 
 	public:
-		void setUp (void); //Sets up test enviornment
+		void setUp (void); //Sets up test environment
 		
 	protected:
 		

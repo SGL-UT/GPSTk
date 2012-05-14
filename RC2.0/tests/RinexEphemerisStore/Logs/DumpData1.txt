@@ -56,4 +56,10 @@ PRN 32 TOE 1360 252000.000 GPS TOC 252000.000 HOW 244806.000 KEY 1360 244800.000
 PRN 32 TOE 1360 259200.000 GPS TOC 259200.000 HOW 252006.000 KEY 1360 252000.000 GPS
   End of GPSEphemerisStore data.
 
+Dump of GloEphemerisStore:
+  End of GloEphemerisStore data.
+
+Dump of GalEphemerisStore:
+  End of GalEphemerisStore data.
+
 End dump Rinex3EphemerisStore.

@@ -47,10 +47,11 @@ namespace gpstk
       }
       
       /// Add a filename, with its header, to the store
-      void addFile(const std::string& fn, const HeaderType& header)
+      void addFile(const std::string& fn, HeaderType& header)
          throw(InvalidRequest)
       {
          if(headerMap.find(fn) != headerMap.end()) {
+            dump(std::cout, 1);
             InvalidRequest e("Duplicate file name");
             GPSTK_THROW(e);
          }
@@ -84,6 +85,15 @@ namespace gpstk
          }
          os << "End dump of FileStore\n";
       }
+
+      /// Clear the contents of the (filename, header) map
+ 
+      void clear()
+         throw()
+      {
+        headerMap.clear();
+      }
+
 
       /// Return the size of the (filename,header) map
       unsigned size() const throw() { return headerMap.size(); }

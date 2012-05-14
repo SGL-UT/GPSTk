@@ -164,7 +164,11 @@ namespace gpstk
 
          /// Clear the dataset, meaning remove all data
       virtual void clear(void) throw()
-      { pe.clear(); return; };
+      { pe.clear();
+        initialTime = CommonTime::END_OF_TIME;
+        finalTime = CommonTime::BEGINNING_OF_TIME;
+        return;
+      };
 
 
          /// Return time system (NB assumed always to be GLONASS)

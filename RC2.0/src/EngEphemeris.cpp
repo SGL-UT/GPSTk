@@ -1453,12 +1453,20 @@ namespace gpstk
       s << endl
         << endl;
       s.flags(oldFlags);
-      
+
    } // end of SF123::dump()
    
    ostream& operator<<(ostream& s, const EngEphemeris& eph)
    {
+     try
+{
       eph.dump(s);
+}
+     catch(gpstk::Exception& ex)
+{
+     ex.addLocation(FILE_LOCATION);
+     GPSTK_RETHROW(ex);
+}
       return s;
 
    } // end of operator<<

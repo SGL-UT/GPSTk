@@ -160,7 +160,7 @@ void xRinexNav :: dataTest (void)
 		gpstk::Rinex3EphemerisStore Store;
                 Store.loadFile("Logs/RinexNavExample.99n");
 
-		gpstk::CivilTime Time(1999,9,2,17,51,44);
+		gpstk::CivilTime Time(1999,9,2,17,51,44,TimeSystem::GPS);
 
 //Load data into GPSEphemerisStore object so can invoke findUserEphemeris on it
 

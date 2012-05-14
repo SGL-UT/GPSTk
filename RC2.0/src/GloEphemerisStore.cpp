@@ -171,36 +171,34 @@ namespace gpstk
       static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
       s << "Dump of GloEphemerisStore:\n";
 
-      s << "  There are " << pe.size() << " satellites in the store.\n";
-      for(GloEphMap::const_iterator it = pe.begin(); it != pe.end(); ++it ) {
-         TimeGloMap::const_iterator tgmIter = it->second.begin();
-         s << "  Sat " << RinexSatID(it->first)
-            << ": " << it->second.size()
-            << " records, with time limits: " << printTime(tgmIter->first,fmt);
-         tgmIter = it->second.end();
-         tgmIter--;
-         s << " - " << printTime(tgmIter->first,fmt) << "\n";
+      if (detail == 0 )
+      {
+        s << " Span is " << (initialTime == CommonTime::END_OF_TIME
+                                      ? "End_time" : printTime(initialTime, fmt))
+          << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
+                                      ? "Begin_time" : printTime(finalTime, fmt))
+          << " with " << pe.size() << " entries."
+          << std::endl;
       }
-
-      if(detail < 1) return;
-
-      s << "Dump every record:\nweek   sow      = year/mn/dy hr:mi:sc Sys Sat   "
+      else
+      {
+      if (pe.size()) s << "Dump every record:\nweek   sow      = year/mn/dy hr:mi:sc Sys Sat   "
          << "X                   Y                   Z                   "
          << "VX                  VY                  VZ                  "
          << "AX                  AY                  AZ                  "
          << "TauN                GammaN            MFtime Hlth fNo AgeInfo\n";
 
          // Iterate through all items in the 'pe' GloEphMap
-      for( GloEphMap::const_iterator it = pe.begin();
+        for( GloEphMap::const_iterator it = pe.begin();
            it != pe.end();
            ++it )
-      {
+        {
 
             // Then, iterate through corresponding 'TimeGloMap'
-         for( TimeGloMap::const_iterator tgmIter = (*it).second.begin();
+          for( TimeGloMap::const_iterator tgmIter = (*it).second.begin();
               tgmIter != (*it).second.end();
               ++tgmIter )
-         {
+          {
 
                  // First, print year, Day-Of-Year and Seconds of Day
             s << printTime(tgmIter->first,fmt) << " ";
@@ -233,11 +231,13 @@ namespace gpstk
                // Add end-of-line
             s << endl;
 
-         }  // End of 'for( TimeGloMap::const_iterator tgmIter = ...'
+          }  // End of 'for( TimeGloMap::const_iterator tgmIter = ...'
 
-      }  // End of 'for( GloEphMap::const_iterator it = pe.begin(); ...'
+        }  // End of 'for( GloEphMap::const_iterator it = pe.begin(); ...'
 
-      return;
+        s << "  End of GloEphemerisStore data." << std::endl << std::endl;
+
+      }  // End of 'else', i.e., detail != 0
 
    }; // End of method 'GloEphemerisStore::dump()'
 

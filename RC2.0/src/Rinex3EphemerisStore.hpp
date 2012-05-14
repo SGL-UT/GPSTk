@@ -191,9 +191,9 @@ namespace gpstk
 
          NavFiles.dump(os, detail);
 
-         if(GPSstore.size()) GPSstore.dump(os, detail);
-         if(GLOstore.size()) GLOstore.dump(os, detail);
-         if(GALstore.size()) GALstore.dump(os, detail);
+         GPSstore.dump(os, detail);
+         GLOstore.dump(os, detail);
+         GALstore.dump(os, detail);
          //if(GEOstore.size()) GEOstore.dump(os, detail);
          //if(COMstore.size()) COMstore.dump(os, detail);
          os << "End dump Rinex3EphemerisStore." << std::endl;
@@ -205,9 +205,9 @@ namespace gpstk
       virtual void edit(const CommonTime& tmin, 
                         const CommonTime& tmax = CommonTime::END_OF_TIME) throw()
       {
-         GPSstore.edit(tmin, tmax);
-         GLOstore.edit(tmin, tmax);
-         GALstore.edit(tmin, tmax);
+         if (GPSstore.size()) GPSstore.edit(tmin, tmax);
+         if (GLOstore.size()) GLOstore.edit(tmin, tmax);
+         if (GALstore.size()) GALstore.edit(tmin, tmax);
          //GEOstore.edit(tmin, tmax);
          //COMstore.edit(tmin, tmax);
       }
@@ -215,6 +215,7 @@ namespace gpstk
       /// Clear the dataset, meaning remove all data
       virtual void clear(void) throw()
       {
+         NavFiles.clear();
          GPSstore.clear();
          GLOstore.clear();
          GALstore.clear();
@@ -268,7 +269,7 @@ namespace gpstk
       /// add filename and header to FileStore
       /// @param string filename file name to be added
       /// @param Rinex3NavHeader Rhead header to be added
-      void addFile(const std::string& filename, const Rinex3NavHeader& head) throw()
+      void addFile(const std::string& filename, Rinex3NavHeader& head) throw()
       { NavFiles.addFile(filename,head); }
 
       /// load a RINEX navigation file

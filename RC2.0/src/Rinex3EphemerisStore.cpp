@@ -86,6 +86,7 @@ namespace gpstk
    int Rinex3EphemerisStore::loadFile(const string& filename, bool dump, ostream& s)
       throw(gpstk::Exception)
    {
+
       try {
          int nread(0);
          Rinex3NavStream strm;
@@ -96,6 +97,7 @@ namespace gpstk
             what = string("File ") + filename + string(" could not be opened.");
             return -1;
          }
+
          strm.exceptions(ios::failbit);
 
          try { strm >> Rhead; }
@@ -107,7 +109,13 @@ namespace gpstk
          if(dump) Rhead.dump(s);
 
          // add to FileStore
-         NavFiles.addFile(filename, Rhead);
+         try {NavFiles.addFile(filename, Rhead); }
+         catch(InvalidRequest& ir) {
+           cout << " Exception caught from FileStore addFile in Rinex3EphemerisStore, line 122 "
+                << endl << " Invoking dump of filestore: " << endl;
+      NavFiles.dump(cout, 1);
+      GPSTK_RETHROW(ir);
+         }
 
          // add to mapTimeCorr
          if(Rhead.mapTimeCorr.size() > 0) {
@@ -139,12 +147,14 @@ namespace gpstk
             nread++;
             if(dump) Rdata.dump(s);
 
-            addEphemeris(Rdata);
+            bool added;
+            added = addEphemeris(Rdata);
          }
-
          return nread;
       }
+
       catch(Exception& e) {
+
          GPSTK_RETHROW(e);
       }
 
@@ -240,24 +250,29 @@ namespace gpstk
       try {
          CommonTime retTime(CommonTime::END_OF_TIME),time;
 
-         // CommonTime does not allow comparisions unless TimeSystems agree,
+         // CommonTime does not allow comparisons unless TimeSystems agree,
          // or if one is "Any"
-         retTime.setTimeSystem(TimeSystem::Any);
          
-         time = GPSstore.getInitialTime();
-         if(time < retTime) {
+         if (GPSstore.size()) {
+           time = GPSstore.getInitialTime();
+           retTime.setTimeSystem(TimeSystem::GPS);
+           if(time < retTime) {
             retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+           }
          }
-         time = GLOstore.getInitialTime();
-         if(time < retTime) {
+         if (GLOstore.size()) {
+           time = GLOstore.getInitialTime();
+           retTime.setTimeSystem(TimeSystem::GLO);
+           if(time < retTime) {
             retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+           }
          }
-         time = GALstore.getInitialTime();
-         if(time < retTime) {
+         if (GALstore.size()) {
+           time = GALstore.getInitialTime();
+           retTime.setTimeSystem(TimeSystem::GAL);
+           if(time < retTime) {
             retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+           }
          }
          //time = GEOstore.getInitialTime();
          //if(time < retTime) {
@@ -286,29 +301,34 @@ namespace gpstk
 
          // CommonTime does not allow comparisions unless TimeSystems agree,
          // or if one is "Any"
-         retTime.setTimeSystem(TimeSystem::Any);
          
-         time = GPSstore.getInitialTime();
-         if(time > retTime) {
-            retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+         if (GPSstore.size()) { 
+           time = GPSstore.getFinalTime();
+           retTime.setTimeSystem(TimeSystem::GPS);
+           if(time > retTime) {
+              retTime = time;
+           }
          }
-         time = GLOstore.getInitialTime();
-         if(time > retTime) {
+         if (GLOstore.size()) {
+           time = GLOstore.getFinalTime();
+           retTime.setTimeSystem(TimeSystem::GLO);
+           if(time > retTime) {
             retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+           }
          }
-         time = GALstore.getInitialTime();
-         if(time > retTime) {
+         if (GALstore.size()) {
+           time = GALstore.getFinalTime();
+           retTime.setTimeSystem(TimeSystem::GAL);
+           if(time > retTime) {
             retTime = time;
-            retTime.setTimeSystem(TimeSystem::Any);
+           }
          }
-         //time = GEOstore.getInitialTime();
+         //time = GEOstore.getFinalTime();
          //if(time > retTime) {
          //   retTime = time;
          //   retTime.setTimeSystem(TimeSystem::Any);
          //}
-         //time = COMstore.getInitialTime();
+         //time = COMstore.getFinalTime();
          //if(time > retTime) {
          //   retTime = time;
          //   retTime.setTimeSystem(TimeSystem::Any);
