@@ -34,7 +34,7 @@ hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
