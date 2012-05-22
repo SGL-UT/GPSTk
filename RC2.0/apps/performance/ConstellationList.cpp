@@ -64,6 +64,7 @@
 
 // Library
 #include "BasicFramework.hpp"
+#include "YDSTime.hpp"
 #include "CommonTime.hpp"
 #include "GNSSconstants.hpp"
 
@@ -181,11 +182,12 @@ void ConstellationList::process()
    if (year<100) year += 1900;
 
    int DOY = StringUtils::asInt( DOYOption.getValue().front() );
-
-   CommonTime dt = CommonTime( (short) year, (short) DOY, (SEC_PER_DAY / 2));
+ 
+   YDSTime yt((short) year, (short) DOY, (SEC_PER_DAY / 2));
+   CommonTime dt = yt;
 
       // Try some samples
-   ConstellationDefinition cd = cs.findCD( dt );
+   ConstellationDefinition cd = cs.findCD( yt );
 
       // Test each PRN ID in order and
       // output a comma separated list of those match the selected criteriaz
