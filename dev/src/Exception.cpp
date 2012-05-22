@@ -194,14 +194,12 @@ namespace gpstk
       return oss.str();
    }
 
-   const char* Exception::what() const
+   string Exception::what() const
       throw()
    {
       ostringstream oss;
       this->dump(oss);
-      whatBuffer = oss.str();
-
-      return whatBuffer.c_str();
+      return oss.str();
    }
 
     ostream& operator<<( ostream& s, 
