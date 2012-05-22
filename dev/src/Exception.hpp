@@ -152,7 +152,7 @@ namespace gpstk
        *
        * @ingroup exceptiongroup
        */
-   class Exception : public std::exception
+   class Exception
    {
    public:
          /// Exception severity classes.
@@ -299,7 +299,7 @@ namespace gpstk
          throw();
 
          /// Dump to a string
-      virtual const char* what() const throw();
+      std::string what() const throw();
 
          /**
           * Output stream operator for ::Exception.
@@ -336,8 +336,6 @@ namespace gpstk
    private:
          /// Buffer for stream output.
       std::string streamBuffer;
-         /// Buffer for what
-      mutable std::string whatBuffer;
    }; // class Exception
 
 
@@ -478,7 +476,6 @@ namespace gpstk
       /// Attempted to access a null pointer
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(NullPointerException, Exception);
-
 
 } // namespace gpstk
 #endif
