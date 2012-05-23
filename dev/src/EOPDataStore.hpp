@@ -48,7 +48,7 @@ namespace gpstk
    {
    public:
      
-      typedef struct EOPData
+      struct EOPData
       {
          double xp;        /// arcseconds
          double yp;        /// arcseconds
