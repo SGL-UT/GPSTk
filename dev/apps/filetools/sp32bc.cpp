@@ -35,8 +35,6 @@
 #include "RinexNavStream.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavData.hpp"
-#include "EphemerisStore.hpp"
-#include "BCEphemerisStore.hpp"
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
