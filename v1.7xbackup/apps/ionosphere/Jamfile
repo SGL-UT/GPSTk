@@ -1,0 +1,10 @@
+#
+# $Id$
+#
+
+SubDir TOP apps ionosphere ;
+
+GPSLinkLibraries IonoBias TECMaps : gpstk geomatics ;
+
+GPSMain IonoBias : IonoBias.cpp ;
+GPSMain TECMaps : TECMaps.cpp VTECMap.cpp ;

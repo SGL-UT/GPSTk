@@ -1,0 +1,30 @@
+#
+# $Id$
+#
+
+SubDir TOP apps ;
+
+SubInclude TOP apps checktools ;
+SubInclude TOP apps clocktools ;
+SubInclude TOP apps converters ;
+SubInclude TOP apps DataAvailability ;
+SubInclude TOP apps differential ;
+SubInclude TOP apps difftools ;
+SubInclude TOP apps filetools ;
+SubInclude TOP apps geomatics ;
+SubInclude TOP apps ionosphere ;
+SubInclude TOP apps mergetools ;
+if $(UNIX)
+{
+   SubInclude TOP apps MDPtools ; 
+   SubInclude TOP apps rfw ;
+   SubInclude TOP apps swrx ;
+#   SubInclude TOP apps receiver ;
+}
+SubInclude TOP apps multipath ;
+SubInclude TOP apps positioning ;
+SubInclude TOP apps performance ;
+SubInclude TOP apps reszilla ;
+SubInclude TOP apps Rinextools ;
+SubInclude TOP apps time ;
+SubInclude TOP apps visibility ;

@@ -1,0 +1,38 @@
+<h1>Example: A Basic GPSTk Application in Python</h1>
+
+<p>This example serves as an introdcution to using the GPSTk in Python.  The code associated with the example can be found in the file <em>example1.py</em>.  Its purpose is to illustrate the most basic concepts required for effective use of the GPSTk.</p>
+
+<pre>
+   1  #!/usr/bin/python
+
+   2  from gpstkPython import *
+
+   3  try:
+   4      time = DayTime()
+ 
+   5      print 'Hello world!'
+   6      print 'The current GPS week is', time.GPSfullweek()
+   7      print 'The day of the GPS week is', time.GPSday()
+   8      print 'The seconds of the GPS week is', time.GPSsecond()
+
+   9  except Exception:
+  10      print 'Error'
+</pre>
+
+<p>Line 2 imports Python module "gpstkPython" which contains the GPSTk class DayTime.  As you might expect, DayTime is a class that represents time.  As time is an integral concept to GPS, this class plays an important part in the foundation of the GPSTk.</p>
+
+<p>Line 3 establishes a try-catch block, so that if a GPSTk-derived exception is thrown it is caught and displayed, in lines 9-10.
+<p>Lines 4 through 8 demonstrate use of the DayTime class.  Note that the default constructor represents the current system time.</p>
+
+<p>To execute the above code in Linux would look like the following.</p>
+
+<pre>
+bash-3.00$ ./example1.py
+Hello world!
+The current GPS week is 1334
+The day of the GPS week is 2
+The seconds of the GPS week is 242457.693899
+</pre>
+
+<p>More example code can be found in the source distribution under <em>gpstk/examples</em>, <em>gpstk/tests</em> and <em>gpstk/apps</em>. </p>
+

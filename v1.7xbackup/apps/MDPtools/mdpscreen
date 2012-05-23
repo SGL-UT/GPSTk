@@ -1,0 +1,6 @@
+#!/bin/sh
+# $Id$
+
+echo -ne "\033]0;$1\007"
+
+rfw -i $1 -o - | mdpscreenx

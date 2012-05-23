@@ -1,0 +1,3 @@
+SubDir TOP Matrix ;
+
+TestMain Matrix/xMatrix.tst : Matrix/xMatrixM.cpp Matrix/xMatrix.cpp ;

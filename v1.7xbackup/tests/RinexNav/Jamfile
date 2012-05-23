@@ -1,0 +1,2 @@
+SubDir TOP RinexNav ;
+TestMain RinexNav/xRinexNav.tst : RinexNav/xRinexNavM.cpp RinexNav/xRinexNav.cpp RinexNav/RinexNavBase.cpp RinexNav/RinexNavData.cpp RinexNav/RinexNavFilterOperators.cpp RinexNav/RinexNavHeader.cpp RinexNav/RinexNavStream.cpp ;
