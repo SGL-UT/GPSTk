@@ -1,0 +1,2 @@
+SubDir TOP ReferenceFrame ;
+TestMain ReferenceFrame/ReferenceFrame.tst : ReferenceFrame/xReferenceFrameM.cpp ReferenceFrame/xReferenceFrame.cpp ReferenceFrame/ReferenceFrame.cpp ;

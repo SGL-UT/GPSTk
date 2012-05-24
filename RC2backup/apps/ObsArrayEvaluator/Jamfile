@@ -1,0 +1,7 @@
+SubDir TOP apps ObsArrayEvaluator ;
+# Obs Array Evaluator: A front end to the ObsArray and Expression evaluator
+
+GPSLinkLibraries oae : gpstk rxio ;
+
+GPSMain oae : oae.cpp ObsArray.cpp ;
+

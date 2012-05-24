@@ -1,0 +1,42 @@
+# $Id$
+
+SubDir TOP lib rxio ;
+
+if $(PREPROCESSING)
+{
+   GPSSetupLibrary rxio : gpstk ;
+}
+else
+{
+  # Please add in alphabetic order
+  GPSBuildLibrary rxio : 
+	AshtechALB.cpp 
+	AshtechData.cpp 
+	AshtechEPB.cpp 
+	AshtechMBEN.cpp 
+	AshtechPBEN.cpp
+	ATSData.cpp 
+	EphReader.cpp 
+	FFIdentifier.cpp 
+	MDPHeader.cpp
+	MDPNavSubframe.cpp 
+	MDPObsEpoch.cpp 
+	MDPPVTSolution.cpp
+	MDPSelftestStatus.cpp 
+	MetReader.cpp 
+	NovatelData.cpp 
+    ObsEphReaderFramework.cpp
+    ObsReader.cpp ObsUtils.cpp RinexConverters.cpp
+    ;
+
+  InstallFile $(INCDIR) : AshtechALB.hpp AshtechData.hpp 
+    AshtechEPB.hpp AshtechMBEN.hpp AshtechPBEN.hpp
+    AshtechStream.hpp  ATSStream.hpp ATSData.hpp DataStatus.hpp
+    EphReader.hpp FFIdentifier.hpp MDPHeader.hpp MDPNavSubframe.hpp
+    MDPObsEpoch.hpp MDPPVTSolution.hpp MDPSelftestStatus.hpp MetReader.hpp
+    NovatelData.hpp NovatelStream.hpp
+    ObsEphReaderFramework.hpp
+    ObsReader.hpp ObsUtils.hpp RinexConverters.hpp miscenum.hpp MDPStream.hpp
+    miscdefs.hpp
+    ;
+}

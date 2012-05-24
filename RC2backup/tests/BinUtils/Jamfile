@@ -1,0 +1,3 @@
+SubDir TOP BinUtils ;
+
+TestMain BinUtils/xBinUtils.tst : BinUtils/xBinUtilsM.cpp BinUtils/xBinUtils.cpp BinUtils/BinUtils.cpp ;

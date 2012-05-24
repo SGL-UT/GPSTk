@@ -1,0 +1,162 @@
+# THIS IN AN EXAMPLE OF A CONFIGURATION FILE.
+# THIS FILE WILL BE USED BY THE 'example14' APPLICATION.
+# CASE IS InDiFfErEnT FOR VARIABLE NAMES.
+
+# ALL SECTIONS OF THIS FILE, EXCEPT FOR "Default" SECTION, CORRESPOND TO
+# THE NAME OF A GIVEN GPS RECEIVER.
+
+# We curently are at "Default" section, because no section has been
+# declared so far...
+
+# Warning: You must use square brackets '[]' ONLY to declare section names!!!
+
+# Default variables. If field 'ConfDataReader::fallback2Default' is set to
+# TRUE, these variables are valid for ALL receivers unless one of them
+# declares its own version.
+
+
+oceanLoadingFile = OCEAN-GOT00.dat  , file with ocean loading parameters
+satDataFile      = PRN_GPS          , constellation data file
+precision        = 5                , number of decimal places in output file
+cutOffElevation, minimum allowed satellite elevation = 10.0, in degrees
+
+
+useC1 = FALSE
+
+
+# The following parameters control some sanity checks for SP3 data. The values
+# are typical for 15-minutes-per-sample SP3 files
+
+checkGaps = TRUE, check for data gaps bigger than 901 seconds
+SP3GapInterval = 901, seconds
+
+checkInterval = TRUE, don't allow interpolation intervals bigger than 8105 s
+maxSP3Interval = 8105, seconds
+
+
+filterCode = FALSE
+
+filterPC = TRUE
+
+
+dayOfYear = 148, days of year for May/27/2008.
+
+
+SP3List, SP3 ephemeris file list    = igs14811.sp3  igs14812.sp3  igs14813.sp3
+
+
+poleDisplacements, for May/27/2008  = 0.105648   0.541502, arcsec
+
+
+useAntex       = TRUE                  # We will use Antex files
+antexFile      = igs05.atx             # Name of Antex file (absolute PC)
+
+# Should we use antenna phase variation patterns or just eccentricity?
+usePCPatterns = TRUE
+
+# Should we use elevation/azimuth patterns or just elevation?
+useAzim = TRUE
+
+
+printModel = FALSE
+
+
+# By default, ALL stations are REFERENCE stations
+# If that is not the case, REMEMBER to deactivate "refStation" and activate
+# the correct option
+masterStation = FALSE
+refStation = TRUE
+roverStation = FALSE
+
+
+
+[ACOR]
+
+useC1 = TRUE
+
+rinexObsFile, Rinex observation file = acor1480.08o
+
+# Nominal positions were found using GPSTk's 'example9' PPP processing
+nominalPosition, ECEF-GPSTk = 4594489.6577  -678367.6943  4357066.1512, meters
+
+antennaModel   = LEIAT504        LEIS  # Antenna model
+
+offsetARP, dH dLon dLat (UEN) = 3.046  0.000  0.000, meters
+
+#printModel = TRUE
+#modelFile  = acor.pop.mod
+
+# ACOR station will be the MASTER station
+masterStation = TRUE
+refStation = FALSE
+
+
+
+[MADR]
+
+rinexObsFile, Rinex observation file = madr1480.08o
+
+nominalPosition, ECEF-GPSTk = 4849202.332  -360328.9051  4114913.2288, meters
+
+antennaModel   = AOAD/M_T        NONE  # Antenna model
+
+offsetARP, dH dLon dLat (UEN) = 0.0254  0.000  0.000, meters
+
+#printModel = TRUE
+#modelFile  = madr.pop.mod
+
+# MADR station will be the ROVER station
+roverStation = TRUE
+refStation = FALSE
+
+
+
+[SCOA]
+
+rinexObsFile, Rinex observation file = scoa1480.08o
+
+nominalPosition, ECEF-GPSTk = 4639940.6168  -136225.1643  4359552.2808, meters
+
+antennaModel   = LEIAT504        NONE  # Antenna model
+
+offsetARP, dH dLon dLat (UEN) =  0.000  0.000  0.000, meters
+
+#printModel = TRUE
+#modelFile  = scoa.pop.mod
+
+
+
+[SFER]
+
+useC1 = TRUE
+
+rinexObsFile, Rinex observation file = sfer1480.08o
+
+nominalPosition, ECEF-GPSTk = 5105518.9543  -555145.8212  3769803.4005, meters
+
+antennaModel   = TRM29659.00     NONE  # Antenna model
+
+offsetARP, dH dLon dLat (UEN) =  1.6260  0.000  0.000, meters
+
+#printModel = TRUE
+#modelFile  = sfer.pop.mod
+
+
+
+[TLSE]
+
+useC1 = TRUE
+
+rinexObsFile, Rinex observation file = tlse1480.08o
+
+nominalPosition, ECEF-GPSTk = 4627851.7782  119640.0763  4372993.5686, meters
+
+antennaModel   = TRM29659.00     NONE  # Antenna model
+
+offsetARP, dH dLon dLat (UEN) =  1.0530  0.000  0.000, meters
+
+#printModel = TRUE
+#modelFile  = tlse.pop.mod
+
+
+

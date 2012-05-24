@@ -1,0 +1,49 @@
+String:  TEST
+
+Time of Transmission:     2455715 44084000 0.000000000000000 GPS
+Time of Transmission pnb: 1638, 389684.000000
+
+PNB3_ Object Dump:
+****************************************************************************
+Packed Nav Bits
+
+SatID:  GPS 1
+
+Carrier: L2      Code: GPSC2L+M
+
+Number Of Bits: 159
+
+              Week(10bt)     SOW     DOW   UTD     SOD  MM/DD/YYYY   HH:MM:SS
+Clock Epoch:  1638( 614)  389684   Thu-4   153   44084  06/02/2011   12:14:44
+
+Packed Bits, Left Justified, 32 Bits Long:
+  0x8B0CA027  0xDA763CAA  0x20BD9470  0x002D0000  0xA88AA6A8
+
+Test Case 2: Creating CC object with data from RINEX file.
+Time = 06/02/2011 12:14:44 GPS
+Clock Bias cc:  7.23194196780E-04
+Clock Drift cc: 5.11590769747E-12
+Time of Prediction cc: 1638, 378000.000000
+
+CC Object Dump:
+****************************************************************************
+CNAV Message Type 3?
+
+PRN:  3      System: G      Carrier: L2      Code: GPSC2L+M
+
+                  Week        SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
+Clock Epoch:    1638( 614)  388800   Thu-4   153   43200  06/02/2011   12:00:00
+Transmit Time:  1638( 614)  382500   Thu-4   153   36900  06/02/2011   10:15:00
+Time of Predict:1638( 614)  378000   Thu-4   153   32400  06/02/2011   09:00:00
+
+          ACCURACY PARAMETERS
+
+URAoc index:   15      1      2
+
+           CLOCK
+
+Bias T0:      7.23189674318E-04 sec
+Drift:        5.11590769747E-12 sec/sec
+Drift rate:   0.00000000000E+00 sec/(sec**2)
+****************************************************************************
+

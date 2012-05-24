@@ -1,0 +1,14 @@
+     2.10           Observation         GPS                 RINEX VERSION / TYPE
+rtAshtech/GPSTk     UT Aerospace Dept.  03/31/2004 23:59:49 PGM / RUN BY / DATE
+Here is a comment.                                          COMMENT
+UTWRW                                                       MARKER NAME
+1                                                           MARKER NUMBER
+Nobody              UT Aerospace Dept.                      OBSERVER / AGENCY
+1                   ZY12                                    REC # / TYPE / VERS
+1                   AshTech Geodetic 3                      ANT # / TYPE
+  -740289.835  -5457071.7414  3207245.6211                  APPROX POSITION XYZ
+        0.0000        0.0000        0.0000                  ANTENNA: DELTA H/E/N
+     1     1     0                                          WAVELENGTH FACT L1/2
+     9    L1    L2    C1    P1    P2    D1    D2    S1    S2# / TYPES OF OBSERV
+  2004     4     1     0     0    0.0000000                 TIME OF FIRST OBS
+                                                            END OF HEADER
