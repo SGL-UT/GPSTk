@@ -30,6 +30,7 @@
 
 #include "SolverGeneral.hpp"
 #include "GeneralConstraint.hpp"
+#include "SolverConstraint.hpp"
 
 namespace gpstk
 {

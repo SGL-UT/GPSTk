@@ -63,6 +63,7 @@ libprocframe_la_SOURCES = BasicModel.cpp \
       RequireObservables.cpp \
       SatArcMarker.cpp \
       SimpleFilter.cpp \
+      SolverConstraint.cpp \
       SolverGeneral.cpp \
       SolverLMS.cpp \
       SolverPPP.cpp \
@@ -136,6 +137,7 @@ incl_HEADERS = BasicModel.hpp \
       RequireObservables.hpp \
       SatArcMarker.hpp \
       SimpleFilter.hpp \
+      SolverConstraint.hpp \
       SolverGeneral.hpp \
       SolverLMS.hpp \
       SolverPPP.hpp \

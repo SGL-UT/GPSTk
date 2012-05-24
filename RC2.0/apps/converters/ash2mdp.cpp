@@ -186,8 +186,7 @@ protected:
             if (pben_count==1)
             {
                time.sow = pben.sow;
-               if (debugLevel)
-                  cout << "sow is: " << time.sow << endl;
+               continue;
                continue;
             }
 

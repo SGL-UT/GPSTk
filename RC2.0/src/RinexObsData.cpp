@@ -196,13 +196,43 @@ namespace gpstk
 
       string line;
 
-      strm.formattedGetLine(line, true);
-
-      if (line.size()>80 || line[0] != ' ' || line[3] != ' ' || line[6] != ' ')
+         // The following block handles Rinex2 observation files that have
+         // empty (but otherwise valid) epoch lines and comments in the middle
+         // of the observation section. This is frequent in Rinex2 files that
+         // are 'spliced' every hour.
+      bool isValidEpochLine(false);
+      while( !isValidEpochLine )
       {
-         FFStreamError e("Bad epoch line");
-         GPSTK_THROW(e);
-      }
+            // Get line
+         strm.formattedGetLine(line, true);
+
+         isValidEpochLine = true;
+
+         try
+         {
+               // Rinex2 observation lines have a 80 characters length limit
+            if( line.size()>80 ) isValidEpochLine = false;
+
+               // Try to read the epoch
+            DayTime tempEpoch = parseTime(line, hdr);
+
+               // We also have to check if the epoch is valid
+            if( tempEpoch == DayTime::BEGINNING_OF_TIME )
+            {
+               isValidEpochLine = false;
+            }
+            
+               // Check if it is a number; if not, an exception will be thrown
+            short tempNumSat = asInt(line.substr(29,3));
+            
+         }
+         catch(...)
+         {
+               // Any problem will cause the loop to be repeated
+            isValidEpochLine = false;
+         }
+
+      }  // End of 'while( !isValidEpochLine )'
 
          // process the epoch line, including SV list and clock bias
       epochFlag = asInt(line.substr(28,1));
@@ -212,7 +242,32 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-        time = parseTime(line, hdr);
+         // Not all epoch flags are required to have a time.
+         // Specifically, 0, 1, 5, 6 must have an epoch time and
+         // it is optional for 2, 3, 4.
+         // If there is and epoch time, parse it and load it in
+         // the member "time".
+         // If epoch flag = 0, 1, 5, or 6 and there is NO epoch time,
+         // then throw an error.
+         // If epoch flag = 2, 3, or 4 and there is no epoch time,
+         // use the time of the previous record.
+      bool noEpochTime = (line.substr(0,26) == string(26, ' ')); 
+      if (noEpochTime &&
+          (epochFlag==0 || epochFlag==1 || epochFlag==5 || epochFlag==6 ))
+      {
+         FFStreamError e("Required epoch time missing: " + line);
+         GPSTK_THROW(e);
+      }
+      else if (noEpochTime)
+      {
+         time = previousTime;
+      }
+      else
+      {
+         time = parseTime(line, hdr);
+         previousTime = time;
+      }
+
       numSvs = asInt(line.substr(29,3));
 
       if( line.size() > 68 )

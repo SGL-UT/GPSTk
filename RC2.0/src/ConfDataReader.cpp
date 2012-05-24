@@ -256,7 +256,8 @@ namespace gpstk
        *
        */
    string ConfDataReader::getValue( string variable,
-                                    string section )
+                                    string section,
+                                    string defaultVal )
       throw(ConfigurationException)
    {
 
@@ -312,7 +313,7 @@ namespace gpstk
                else
                {
 
-                  return "";
+                  return defaultVal;
 
                }
 
@@ -320,7 +321,7 @@ namespace gpstk
             else
             {
 
-               return "";
+               return defaultVal;
 
             }  // End of 'if ( getFallback2Default() )'
 
@@ -345,7 +346,8 @@ namespace gpstk
        *
        */
    bool ConfDataReader::getValueAsBoolean( string variable,
-                                           string section )
+                                           string section,
+                                           bool   defaultVal )
       throw(ConfigurationException)
    {
 
@@ -365,7 +367,7 @@ namespace gpstk
          {
                // Return false if variable is empty. Be aware that an empty
                // variable is NOT the same as an unexistent variable
-            return false;
+            return defaultVal;
 
          }
 
@@ -428,7 +430,8 @@ namespace gpstk
        * 'variableList'.
        */
    string ConfDataReader::fetchListValue( string variableList,
-                                          string section )
+                                          string section, 
+                                          string defaultVal )
       throw(ConfigurationException)
    {
 
@@ -449,7 +452,8 @@ namespace gpstk
          confData[section][variableList].value = StringUtils::strip(origValue);
 
             // Return the first value
-         return ( StringUtils::strip(firstValue) );
+         string value = StringUtils::strip(firstValue);
+         return ( (value=="") ? string(defaultVal) : value );
 
       }
       catch (ConfigurationException& e)
@@ -474,7 +478,8 @@ namespace gpstk
        * 'variableList'.
        */
    bool ConfDataReader::fetchListValueAsBoolean( string variableList,
-                                                 string section )
+                                                 string section,
+                                                 bool   defaultVal )
       throw(ConfigurationException)
    {
 
@@ -504,7 +509,7 @@ namespace gpstk
                 (result == "") )    // If list is empty returns false
             {
 
-               return false;
+               return defaultVal;
 
             }
             else

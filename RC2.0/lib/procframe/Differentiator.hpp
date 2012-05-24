@@ -85,7 +85,7 @@ namespace gpstk
       Differentiator()
          : inputType(TypeID::L1), outputType(TypeID::L1dot),
            tolerance(0.005), useSatArcs(true), watchCSFlag(TypeID::CSL1)
-      { setSamplingPeriod(1.0); };
+      { setSamplingPeriod(1.0); setIndex(); };
 
 
          /** Common constructor.
@@ -236,6 +236,10 @@ namespace gpstk
       virtual gnssDataMap& Process(gnssDataMap& gData)
          throw(ProcessingException);
 
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
+
+      
 
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
@@ -316,6 +320,21 @@ namespace gpstk
                     const SourceID& source,
                     const satTypeValueMap& gData )
          throw(ProcessingException);
+
+   private:
+
+
+         /// Initial index assigned to this class.
+      static int classIndex;
+
+
+         /// Index belonging to this object.
+      int index;
+
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; };
 
 
    }; // End of class 'Differentiator'

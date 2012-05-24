@@ -376,6 +376,8 @@ namespace gpstk
 
    private:
 
+         /// Object holding constraints equations
+      ConstraintSystem equationConstraints;
 
          /// Object holding constraints equations
       ConstraintSystem equationConstraints;

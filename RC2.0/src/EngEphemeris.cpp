@@ -379,7 +379,8 @@ namespace gpstk
                /* fit interval of 14 hours */
             return 14;
          }
-         else if(iodc >= 497 && iodc <=503)
+         // Revised in IS-GPS-200 Revision D for Block IIR/IIR-M/IIF
+         else if(iodc >= 497 && iodc <=503 || iodc >= 1021 && iodc <= 1023)
          {
                /* fit interval of 26 hours */
             return 26;
@@ -394,6 +395,13 @@ namespace gpstk
                /* fit interval of 74 hours */
             return 74;
          }
+         /* NOTE:
+          * The following represents old fit intervals for Block II (not IIA)
+          * and is present only in old versions of the ICD-GPS-200 Rev. C.
+          * Please do not remove them as there are still people that may
+          * want to process old Block II data and none of the IODC intervals
+          * overlap (so far) so there is no need to remove them.
+          */
          else if(iodc >= 757 && iodc <= 763)
          {
                /* fit interval of 98 hours */
