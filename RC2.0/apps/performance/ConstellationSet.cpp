@@ -113,7 +113,7 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) c
          throw(NoConstellationFound)
 {
    CommonTime localDT = dt;
-   localDT=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;   // Set to noon to match CDs
+   //localDT=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;   // Set to noon to match CDs -- Not sure why this was here, commenting out removes error.
 
       // Best case (hopefully nominal) is that there is a definition
       // available for the date in question.

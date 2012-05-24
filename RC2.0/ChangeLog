@@ -1,4 +1,4 @@
-Version 2.0   Thursday, 1 September, 2011
+Version 2.0   Thursday, 24 May, 2012
 
    General modifications
    ---------------------
@@ -36,16 +36,22 @@ Version 2.0   Thursday, 1 September, 2011
        Rinex3ClockStream.hpp
        Rinex3EphemerisStore.cpp
        Rinex3EphemerisStore.hpp
+	   Added handling of time transformations in mixed system processing.
+
        Rinex3NavBase.hpp
        Rinex3NavData.cpp
        Rinex3NavData.hpp
        Rinex3NavFilterOperators.hpp
        Rinex3NavHeader.cpp
        Rinex3NavHeader.hpp
+	  Added handling of time transformations in mixed system processing.
+
        Rinex3NavStream.hpp
        Rinex3ObsBase.hpp
        Rinex3ObsData.cpp
        Rinex3ObsData.hpp
+	   The new 'Rinex3ObsData' method was modified and renamed to improve consistency 	     with the former GPSTk version, and a new method was added. 
+
        Rinex3ObsFilterOperators.hpp
        Rinex3ObsHeader.cpp
        Rinex3ObsHeader.hpp
@@ -54,6 +60,16 @@ Version 2.0   Thursday, 1 September, 2011
        RinexConverter.hpp
        TimeSystem.cpp
        TimeSystem.hpp
+       TimeSystemCorr.hpp
+	   Move TimeSystem correction out of Rinex3NavHeader and into its own class, 		   preparatory to implementing time system conversions and doing real mixed-system 		   applications.
+
+       TypeID.cpp
+       TypeID.hpp
+	   Added all RINEX 3.01 observable types.
+
+       SVNumXRef.cpp
+           Updated PRN-SVN numbers through 2011 abd added TimeSystem definition.
+
        Xt.cpp
        Xt.hpp
        icd_glo_constants.hpp
@@ -204,6 +220,10 @@ Version 2.0   Thursday, 1 September, 2011
        SP3Stream.hpp
        SimpleIURAWeight.cpp
        SimpleIURAWeight.hpp
+       SimpleKalmanFilter.cpp
+       SimpleKalmanFilter.hpp
+	  Removed the SuperKalmanFilter class and combined the features into 		   		  SimpleKalmanFilter.
+
        SolidTides.hpp
        SpecialFunctions.hpp
        SunPosition.hpp
@@ -233,7 +253,7 @@ Version 2.0   Thursday, 1 September, 2011
        RinexGloNavHeader.cpp
        RinexGloNavHeader.hpp
        RinexGloNavStream.hpp
-          Propagating soem of Dagoberto's changes/additions in /src.
+          Propagating some of Dagoberto's changes/additions in /src.
 
        GPSAlmanacStore.[h|c]pp
           Adjusted some functions in GPSAlmanacStore so that it and 
@@ -285,11 +305,14 @@ Version 2.0   Thursday, 1 September, 2011
 	  TabularSatStore; eventually TabularEphemerisStore will be deleted. 
 	  Add classes ClockSatStore and PositionSatStore, which are 
 	  standalone functional stores, derived from TabularSatStore, 
-	  which are not associated with any file type.
+	  which are not associated with any file type.Added 'findEphemeris()' methods to 		  'GloEphemerisStore' in order to keep consistency with 'GPSEphemerisStore' and 	  'GalEphemerisStore' classes.
 
        AlmOrbit.cpp
        ENUUtil.cpp
        EngEphemeris.cpp
+       EngEphemeris.hpp
+          Removed protection on EngEphemeris variables to make it easier to convert from 		  Rinex3NavData to EngEphemeris objects.
+
        EphemerisRange.cpp
        EphemerisRange.hpp
        GPSAlmanacStore.hpp
@@ -1216,6 +1239,9 @@ Version 2.0   Thursday, 1 September, 2011
        /Rinextools/RinexDump.cpp
        /Rinextools/RinexEditor.cpp
        /Rinextools/RinexEditor.hpp
+       /Rinextools/RinNav.cpp
+       /Rinextools/RinSum.cpp
+	   Added visibility plot and table to RinSum output
        /converters/ash2xyz.cpp
        /DataAvailability/DataAvailabilityAnalyzer.cpp
        /differential/vecsol.cpp
@@ -1284,6 +1310,8 @@ Version 2.0   Thursday, 1 September, 2011
        /performance/ConstellationDefinition.hpp
        /performance/ConstellationList.cpp
        /performance/ConstellationSet.[h|c]pp
+	   Changed Daytime objects to CommonTime and YDSTime objects.
+
        /geomatics/relposition/ComputeRAIMSolution.cpp
        /geomatics/relposition/Configure.cpp
        /geomatics/relposition/DDBase.[h|c]pp
@@ -1545,6 +1573,10 @@ Version 2.0   Thursday, 1 September, 2011
 	  Added new tests from UnitTests in Rinex-3 branch to tests 
 	  directory in RC2.0.
 
+       /RinexNav/xRinexTest.cpp
+	  Added new tests for the EngEphemeris cast operator, found in 	
+	  src/Rinex3NavData.cpp
+
        /gpsNavMsg/xCNAV2EphClk.cpp
        /gpsNavMsg/xCNAV2EphClockPNB.cpp
        /gpsNavMsg/xCNAVClock.cpp
@@ -1611,6 +1643,24 @@ Version 2.0   Thursday, 1 September, 2011
 	  Added test programs for CNAV/CNAV2 classes utilizing the cppunit
 	  test module.
 
+
+	/SP3EphemerisStore/Checks
+   	/SP3EphemerisStore/Checks/findXvt1.txt
+   	/SP3EphemerisStore/Checks/findXvt15.txt
+   	/SP3EphemerisStore/Checks/findXvt31.txt
+   	/SP3EphemerisStore/DumpData.txt
+   	/SP3EphemerisStore/Logs
+   	/SP3EphemerisStore/Logs/DumpData.txt
+   	/SP3EphemerisStore/Logs/findXvt1.txt
+   	/SP3EphemerisStore/Logs/findXvt15.txt
+   	/SP3EphemerisStore/Logs/findXvt31.txt
+   	/SP3EphemerisStore/SP3
+   	/SP3EphemerisStore/SP3/apc01000
+   	/SP3EphemerisStore/SP3/igs09000.sp3
+   	/SP3EphemerisStore/igs09000.sp3
+   	/SP3EphemerisStore/xSP3EphemerisStore.cpp
+   	/SP3EphemerisStore/xSP3EphemerisStore.hpp
+   
    - Modified in tests
 
        /ANSITime/xANSITime.[h|c]pp
@@ -1658,6 +1708,9 @@ Version 2.0   Thursday, 1 September, 2011
         Yuma/YumaData.[h|c]pp
         Yuma/YumaStream.hpp
            Adapting test suite to new GNSSconstants.hpp.
+
+	
+	   
 
       /RACRotation/xRACRotation.cpp
       /SEM/SEMData.cpp

@@ -24,6 +24,8 @@
 
 #ifndef CHECKFRAME_HPP
 #define CHECKFRAME_HPP
+#include <iostream>
+#include <fstream>
 
 #include "CommandOptionWithTimeArg.hpp"
 #include "FileFilterFrame.hpp"
@@ -93,26 +95,33 @@ public:
 protected:
    virtual void process()
    {
+      ofstream op;
+      op.open ("op.txt");
+ 
       unsigned errors = 0;
       std::vector<std::string> inputFiles = inputFileOption.getValue();
       std::vector<std::string>::iterator itr = inputFiles.begin();
       FilterTimeOperator timeFilt(startTime, endTime);
+  
       while (itr != inputFiles.end())
       {
+
          std::cout << "Checking " << *itr << std::endl;
          unsigned long recCount = 0;
          try
          {
-            FileStream f((*itr).c_str());
+       
+	    FileStream f((*itr).c_str());
             f.exceptions(std::ios::failbit);
-            
+            int n = 0;
             FileData temp;
             while (f >> temp)
             {
-               if (!timeFilt(temp))
+                op << f << endl;
+		if (!timeFilt(temp))
                   recCount++;
             }
-            
+            op << "here 6" << endl;
             std::cout << "Read " << recCount << " records." 
                       << std::endl << std::endl;
          }
@@ -140,7 +149,7 @@ protected:
          
          itr++;
       }
-
+      op << "here 7" << endl;
       if (errors > 0)
       {
             // Throw an exception so the app returns 1 on any errors.
@@ -149,6 +158,7 @@ protected:
                               " error(s).");
          GPSTK_THROW(exc);
       }
+      op.close();
    }
    
       /// Quit on first error.
