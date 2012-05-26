@@ -46,9 +46,12 @@ namespace gpstk
       {
             // allocate memory
          oData.pObsStream = new RinexObsStream();
-         if(!oData.pObsStream)
+         oData.pSynchro = new Synchronize();
+         if(!oData.pObsStream || !oData.pSynchro)
          {
-            // Failed to allocate memory
+            if(oData.pObsStream) delete oData.pObsStream;
+            if(oData.pSynchro) delete oData.pSynchro;
+
             return false;
          }
             // Open the file
@@ -65,9 +68,13 @@ namespace gpstk
 
          oData.obsSource = gRin.header.source;
 
+         oData.pSynchro->setReferenceSource(*oData.pObsStream);
+
             // Now, we should store the data for the receiver
          allStreamData.push_back(oData);
-         mapSourceStream[gRin.header.source] = oData.pObsStream;
+
+         mapSourceStream[oData.obsSource] = oData.pObsStream;
+         mapSourceSynchro[oData.obsSource] = oData.pSynchro;
 
          referenceSource = gRin.header.source;
 
@@ -111,14 +118,15 @@ namespace gpstk
             ++it)
          {
             if( it->first == referenceSource) continue;
-            
-            Synchronize synchro( (*(*it).second), gRef);
+
+            Synchronize* synchro = mapSourceSynchro[it->first];
+            synchro->setRoverData(gRef);
 
             gnssRinex gRin;
 
             try
             {
-               gRin >> synchro;
+               gRin >> (*synchro);
                gdsMap.addGnssRinex(gRin);
             }
             catch(...)
@@ -156,9 +164,18 @@ namespace gpstk
            it != allStreamData.end();
          ++it)
       {
-         it->pObsStream->close();
-         delete it->pObsStream;
-         it->pObsStream = (RinexObsStream*)0;
+         if(it->pObsStream)
+         {
+            it->pObsStream->close();
+            delete it->pObsStream;
+            it->pObsStream = (RinexObsStream*)0;
+         }
+         
+         if(it->pSynchro)
+         {
+            delete it->pSynchro;
+            it->pSynchro = (Synchronize*)0;
+         }
       }
 
       allStreamData.clear();

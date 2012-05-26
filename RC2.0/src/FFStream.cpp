@@ -113,6 +113,16 @@ namespace gpstk
             rec.reallyGetRecord(*this);
             recordNumber++;
          }
+         catch (EndOfFile& e)
+         {
+            // EOF - do nothing - eof causes fail() to be set which
+            // is handled by std::fstream
+            e.addText("In record " +
+               gpstk::StringUtils::asString(recordNumber));
+            e.addText("In file " + filename);
+            e.addLocation(FILE_LOCATION);
+            mostRecentException = e;
+         }
          catch (std::exception &e)
          {
             mostRecentException = FFStreamError("std::exception thrown: " +
@@ -126,16 +136,6 @@ namespace gpstk
             recordNumber = initialRecordNumber;
             setstate(std::ios::failbit);
             conditionalThrow();
-         }
-            // EOF - do nothing - eof causes fail() to be set which
-            // is handled by std::fstream
-         catch (EndOfFile& e)
-         {
-            e.addText("In record " +
-                      gpstk::StringUtils::asString(recordNumber));
-            e.addText("In file " + filename);
-            e.addLocation(FILE_LOCATION);
-            mostRecentException = e;
          }
          catch (gpstk::StringUtils::StringException& e)
          {

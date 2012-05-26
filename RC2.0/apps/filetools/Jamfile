@@ -1,15 +1,23 @@
-#
 # $Id$
 #
 
 SubDir TOP apps filetools ;
 
+<<<<<<< .working
 GPSLinkLibraries ficafic ficfica navdmp navsum fic2rin rinexthin sp3version sp32bc bc2sp3 ephsum : gpstk ;
+=======
+GPSLinkLibraries ficafic ficfica navdmp navsum fic2rin rinexthin sp3version bc2sp3 
+   ephsum ficedit sp32bc : gpstk ;
+>>>>>>> .merge-right.r3070
+
+GPSLinkLibraries ephemfix : rxio gpstk ;
 
 GPSMain navdmp : navdmp.cpp ;
 GPSMain ficfica : ficfica.cpp ;
 GPSMain ficafic : ficafic.cpp ;
 GPSMain fic2rin : fic2rin.cpp ;
+GPSMain ficedit : ficedit.cpp ;
+GPSMain ephemfix : ephemfix.cpp ;
 GPSMain rinexthin : RinexThin.cpp ;
 GPSMain sp3version : sp3version.cpp ;
 GPSMain bc2sp3 : bc2sp3.cpp ;

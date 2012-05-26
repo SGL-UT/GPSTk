@@ -2,7 +2,7 @@
 
 
 /*
-  First shot at integrating position solutions into the tracking algorithm. 
+  First shot at integrating position solutions into the tracking algorithm.
 */
 
 /*
@@ -13,8 +13,8 @@ g++ -c -o RX.o -O -I. -I/.../gpstk/dev/apps/swrx -I/.../gpstk/dev/src RX.cpp
 g++ -o RX RX.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/src/libgpstk.a -lm -lstdc++ -lfftw3 -lm -lpthread
 
 SAMPLE USAGE:
-hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c c:1:2:410.191:-8300 -c c:1:10:836.144:-9000 -c c:1:15:174.609:-4000 -c c:1:18:255.254:-3500 -c c:1:24:183.284:-5700 -c c:1:26:907.747:-4300 -c c:1:29:355.327:-5400 -p 1 -e rin269.08n -w 1498  
-  
+hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c c:1:2:410.191:-8300 -c c:1:10:836.144:-9000 -c c:1:15:174.609:-4000 -c c:1:18:255.254:-3500 -c c:1:24:183.284:-5700 -c c:1:26:907.747:-4300 -c c:1:29:355.327:-5400 -p 1 -e rin269.08n -w 1498
+
 */
 
 
@@ -35,7 +35,7 @@ hilbert -i data.bin | ./RX -b 1 -q 2 -x 4.13 -r 8.184 -c c:1:30:416.789:-8800 -c
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -77,12 +77,12 @@ using namespace std;
 struct Buffer // input buffer
 {
    vector< complex<float> > arr;
-}; 
+};
 
 struct Par // Parameters to pass to Pthread function.
 {
    int dp;
-   int bufferSize; 
+   int bufferSize;
    EMLTracker *tr;
    Buffer *s;
    int *count;
@@ -107,7 +107,7 @@ public:
    RxSim() throw();
 
    bool initialize(int argc, char *argv[]) throw();
-   void function(EMLTracker *tr, int dp, int *count, 
+   void function(EMLTracker *tr, int dp, int *count,
                      complex<double> s, NavFramer *nf);
 
 protected:
@@ -119,7 +119,7 @@ private:
    int band;
    double gain;
    bool fakeL2;
-   int sat; 
+   int sat;
 
    double timeStep; // Time between samples
    double interFreq; // Intermediate frequency from receive
@@ -138,7 +138,7 @@ private:
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6), 
+   cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6),
    fakeL2(false), gain(1), timeLimit(9e99), iadMax(20460), solvePos(false)
 {}
 
@@ -193,9 +193,9 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       timeLimitOpt('t', "time-limit",
                   "Limit the amount of data to process. Specify time in ms. Defaults to all data."),
 
-      inputOpt('i', "input", 
+      inputOpt('i', "input",
                "Where to get the IQ samples from. The default is to use stdin."),
-      posOpt('p',"prsolve", "Solve for position solution every subframe." 
+      posOpt('p',"prsolve", "Solve for position solution every subframe."
                   " An ephemeris file and gpsWeek number must also be "
                   "supplied if this option is selected."
              " Any value can be entered, e.g. '-p 7'"),
@@ -206,11 +206,11 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
                 "The GPSWeek, used for position solution.")
 ;
 
-   CommandOptionWithNumberArg 
+   CommandOptionWithNumberArg
       bandsOpt('b', "bands",
                "The number of complex samples per epoch. The default is 2.");
 
-   if (!BasicFramework::initialize(argc,argv)) 
+   if (!BasicFramework::initialize(argc,argv))
       return false;
 
    if (timeLimitOpt.getCount())
@@ -237,13 +237,13 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
               << "Exiting." << endl;
          return false;
       }
-      
+
    }
 
    if(gpsWeekOpt.getCount())
    {
       gpsWeek = asInt(gpsWeekOpt.getValue().front());
-   }   
+   }
    if(ephFileOption.getCount())
    {
       ephFile = ephFileOption.getValue()[0];
@@ -314,12 +314,12 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 
       tr[i]->prn = prn;
       tr[i]->debugLevel = debugLevel;
-      
+
       if(verboseLevel)
          tr[i]->dump(cout, 1);
    }
 
-   char quantization='f';   
+   char quantization='f';
    if (quantizationOpt.getCount())
       quantization = quantizationOpt.getValue()[0][0];
 
@@ -362,7 +362,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 
    return true;
 }
-   
+
 
 
 //-----------------------------------------------------------------------------
@@ -377,8 +377,8 @@ void RxSim::process()
 
    vector<NavFramer> nf(numTrackers);
    long int dataPoint =0;
-   vector<int> count(numTrackers); 
-   
+   vector<int> count(numTrackers);
+
    for(int i=0;i<numTrackers;i++)
    {
       nf[i].debugLevel = debugLevel;
@@ -395,9 +395,9 @@ void RxSim::process()
       int index = 0;
       int bufferSize = 40*16367;
       while(index < bufferSize) // Fill input buffer
-      {   
+      {
          *input >> s;
-         b.arr.push_back(s);   
+         b.arr.push_back(s);
          index++;
          dataPoint++;
       }
@@ -416,7 +416,7 @@ void RxSim::process()
          p[i].v = (verboseLevel);
          p[i].prn = tr[i]->prn;
          p[i].solvePos = solvePos;
-         
+
    // Split
          rc = pthread_create( &thread_id[i], &attr, Cfunction, &p[i] ) ;
          if (rc)
@@ -437,7 +437,7 @@ void RxSim::process()
          }
       }
       if(edgeFound == true)
-      {         
+      {
 //---------------------------------------------------------------------------
 // Position Solution
          if(solvePos == true)
@@ -453,7 +453,7 @@ void RxSim::process()
             Triple antennaPos;
 
             CommonTime t(gpsWeek,zCount);
-            time = t; 
+            time = t;
 
             RinexNavStream rns(ephFile.c_str(), ios::in);
             rns.exceptions(ifstream::failbit);
@@ -492,33 +492,37 @@ void RxSim::process()
                if(dataPoints[i] != 0)
                {
                      // 0.073 is an arbitrary guessed time of flight
+<<<<<<< .working
                   obsVec[i] = gpstk::C_MPS*(0.073 - (refDataPoint - 
+=======
+                  obsVec[i] = gpstk::C_GPS_M*(0.073 - (refDataPoint -
+>>>>>>> .merge-right.r3070
                        dataPoints[i])/(sampleRate)); //*2 because of hilbert
-               }  
+               }
                else
                {
-                  SatID temp(0, SatID::systemGPS); 
-                  svVec[i] = temp; // set SatID equal to 0, 
+                  SatID temp(0, SatID::systemGPS);
+                  svVec[i] = temp; // set SatID equal to 0,
                                    //the SV won't be considered
                }
             }
 // Calculate initial position solution.
 
             GGTropModel gg;
-            gg.setWeather(30., 1000., 50.);    
+            gg.setWeather(30., 1000., 50.);
             PRSolution2 prSolver;
             prSolver.RMSLimit = 400;
-            prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg); 
+            prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg);
             Vector<double> sol = prSolver.Solution;
-            cout << endl << "Position (ECEF): " << fixed << sol[0] 
-                 << " " << sol[1] 
+            cout << endl << "Position (ECEF): " << fixed << sol[0]
+                 << " " << sol[1]
                  << " " << sol[2] << endl;
             time -= (sol[3] / gpstk::C_MPS);
-            cout << "Time: " << time << endl;  
-               //cout << "Clock Error (includes that caused by guess): " 
+            cout << "Time: " << time << endl;
+               //cout << "Clock Error (includes that caused by guess): "
                //<< sol[3]*1000/gpstk::C_MPS << " ms" << endl;
             cout << "# good SV's: " << prSolver.Nsvs << endl
-                 << "RMSResidual: " << prSolver.RMSResidual << " meters" 
+                 << "RMSResidual: " << prSolver.RMSResidual << " meters"
                  << endl;
 
 // If we wanted to just output ranges, we can correct the obsVector
@@ -535,7 +539,7 @@ void RxSim::process()
             for (int i=1; i<=32; i++)
             {
                SatID sv(i, SatID::systemGPS);
-               try 
+               try
                {
                   Xvt svpos = bce.getXvt(sv, time);
                   double el = antennaPos.elvAngle(svpos.x);
@@ -551,7 +555,7 @@ void RxSim::process()
                for(int i = 0; i < 32; i++)
                {
                   cout << svVec[i] << " "  << obsVec[i] << " " << ionoVec[i] << endl;
-         
+
                }
             }
             for(int i=0;i<32;i++)
@@ -594,7 +598,7 @@ int main(int argc, char *argv[])
 void *Cfunction(void* p)
 {
    Par *par = (Par*)p;
-   
+
    EMLTracker *tr = par->tr;
    int *count = par->count;
    NavFramer *nf = par->nf;
@@ -604,7 +608,7 @@ void *Cfunction(void* p)
    bool v = par->v;
    int prn = par->prn;
    bool solvePos = par->solvePos;
-   
+
    int index = 0;
    pthread_mutex_lock (&mutexVec);
    edgeFound = false;
@@ -616,10 +620,10 @@ void *Cfunction(void* p)
       {
          if(v)
             tr->dump(cout);
-         
+
          if(tr->navChange)
          {
-            if(nf->process(*tr, dp, 
+            if(nf->process(*tr, dp,
                            (float)tr->localReplica.getCodePhaseOffsetSec()*1e6))
             {
                pthread_mutex_lock (&mutexVec);
@@ -629,20 +633,20 @@ void *Cfunction(void* p)
                pthread_mutex_unlock (&mutexVec);
                if(!solvePos)
                {nf->subframes.back().dump(cout,1);}
-               
-/*cout << "DataPoint: " << nf->subframes.back().dataPoint 
-                     << "Zcount: " 
+
+/*cout << "DataPoint: " << nf->subframes.back().dataPoint
+                     << "Zcount: "
                      << EngNav::getHOWTime(nf->subframes.back().words[1])
                      << */
             }
-            
+
             *count = 0;
          }
          if(*count == 20)
          // The *20* depends on the EMLtracker updating every C/A period.
          {
             *count = 0;
-            if(nf->process(*tr, dp, 
+            if(nf->process(*tr, dp,
                            (float)tr->localReplica.getCodePhaseOffsetSec()*1e6))
             {
                pthread_mutex_lock (&mutexVec);

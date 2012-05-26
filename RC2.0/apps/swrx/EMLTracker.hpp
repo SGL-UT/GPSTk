@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -48,7 +48,7 @@ public:
    GenericTracker(CCReplica& localReplica) :
       localReplica(localReplica)
    {};
-   
+
    // This needs to be called to process every sample
    // It returns true when a dump was performed
    virtual bool process(std::complex<double> s) = 0;
@@ -67,7 +67,7 @@ class EMLTracker : public GenericTracker
 public:
 
    /// param localReplica the code/carrier that this object is to track
-   /// param codeSpacing the correlator spacing (in sec) that will be used for 
+   /// param codeSpacing the correlator spacing (in sec) that will be used for
    /// the code. This class will quantize this value to the closest number
    /// of ticks.
    EMLTracker(CCReplica& localReplica, double codeSpacing);
@@ -99,7 +99,7 @@ public:
    double getSNR() const {return snr;}
    double getSqrtSumSq() const {return sqrtSumSq;}
    unsigned getIntegrateCount() const {return iadCount;}
-   
+
 private:
    void integrate(std::complex<double> in);
    void updateLoop();
@@ -111,7 +111,7 @@ private:
 
    bool nav;
    bool prevNav;
-  
+
 
    SimpleCorrelator<double> early, prompt, late;
    double emag, pmag, lmag, pI, pQ;
@@ -125,7 +125,7 @@ private:
 
    // Used to detect whether the peak is close.
    double iadThreshold;
-   
+
    const unsigned ticksPerChip;
 
    // correlator spacing, in units of ticks

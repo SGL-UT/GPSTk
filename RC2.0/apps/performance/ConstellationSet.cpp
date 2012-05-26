@@ -43,6 +43,10 @@
    // Language Headers
 #include <stdio.h>
 #include <string>
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "TimeConstants.hpp"
 
 
    // Project Headers
@@ -112,9 +116,15 @@ void ConstellationSet::dump( FILE * logfp) const
 ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) const
          throw(NoConstellationFound)
 {
+<<<<<<< .working
    CommonTime localDT = dt;
    //localDT=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;   // Set to noon to match CDs -- Not sure why this was here, commenting out removes error.
 
+=======
+   CommonTime localDT = dt;
+   localDT=static_cast<YDSTime>((SEC_PER_DAY/2)).sod;   // Set to noon to match CDs
+   
+>>>>>>> .merge-right.r3070
       // Best case (hopefully nominal) is that there is a definition
       // available for the date in question.
 
@@ -229,8 +239,13 @@ gpstk::CommonTime ConstellationSet::parseDate(string date)
    try
    {
       //cout << dateString << endl;
+<<<<<<< .working
       static_cast<Epoch>(dt).scanf(dateString, "%d %b %Y");
       dt=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;
+=======
+      static_cast<Epoch>(dt).scanf(dateString, "%d %b %Y");
+      dt=static_cast<YDSTime>(SEC_PER_DAY/2).sod;
+>>>>>>> .merge-right.r3070
       return dt;
    }
    catch(Exception exc)
@@ -308,7 +323,11 @@ int ConstellationSet::loadFileARL( const std::string filename )
          {
             try
             {
+<<<<<<< .working
                tempDT = CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+=======
+               tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+>>>>>>> .merge-right.r3070
                cd.setEffectiveTime( tempDT );
                inDefinition = true;
             }
@@ -378,8 +397,13 @@ int ConstellationSet::loadFileCSV( const std::string filename )
    if (inf==0) return(0);
 
    std::string temp;
+<<<<<<< .working
    CommonTime tempDT;
    CommonTime testDT = CivilTime(2011,1,1,12,0,0.0);
+=======
+   CommonTime tempDT;
+   CommonTime testDT = CivilTime(2008,1,1,12,0,0.0);
+>>>>>>> .merge-right.r3070
    string whiteSpace = " \t\n\r";
    char comma = ',';
    
@@ -413,7 +437,11 @@ int ConstellationSet::loadFileCSV( const std::string filename )
 
          try
          {
+<<<<<<< .working
             tempDT = CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+=======
+            tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+>>>>>>> .merge-right.r3070
             cd.setEffectiveTime( tempDT );
          }
          catch(Exception e)

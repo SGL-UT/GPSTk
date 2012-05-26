@@ -16,14 +16,14 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2008, The University of Texas at Austin
 //
 //============================================================================
 //
-// Compute number of stations visible to a set of space vehicles (SV) 
-// over a requested period (default 23:56).  Accept FIC 
-// almanac format, FIC ephemeris, Rinex nav, Yuma almanac, SEM almanac, 
+// Compute number of stations visible to a set of space vehicles (SV)
+// over a requested period (default 23:56).  Accept FIC
+// almanac format, FIC ephemeris, Rinex nav, Yuma almanac, SEM almanac,
 // or SP3 as input
 //
 // Assumptions:
@@ -69,7 +69,7 @@ public:
               const std::string& applDesc) throw();
    ~compSatVis() {}
    virtual bool initialize(int argc, char *argv[]) throw();
-   
+
 protected:
    virtual void process();
 
@@ -86,7 +86,7 @@ protected:
    gpstk::CommandOptionWithTimeArg evalStartTimeOpt;
    gpstk::CommandOptionWithTimeArg evalEndTimeOpt;
    std::list<long> blocklist;
-   
+
    FILE *logfp;
 
    static const int FIC_ALM;
@@ -95,18 +95,18 @@ protected:
    static const int Yuma_ALM;
    static const int SEM_ALM;
    static const int SP3;
-   int navFileType; 
-   
+   int navFileType;
+
    bool detailPrint;
    bool evalStartTimeSet;
    CommonTime evalStartTime;
    bool evalEndTimeSet;
    CommonTime evalEndTime;
-   
+
    double intervalInSeconds;
    double minimumElevationAngle;
    int minStationCount;
-   
+
    GPSAlmanacStore BCAlmList;
    GPSEphemerisStore BCEphList;
    SP3EphemerisStore SP3EphList;
@@ -114,27 +114,27 @@ protected:
    SEMAlmanacStore SEMAlmStore;
 
    StaPosList stationPositions;
-      
-      // Storage for min, max , avg. statistics.  Storage is both by-SV 
+
+      // Storage for min, max , avg. statistics.  Storage is both by-SV
       // and over the entire constellation
    typedef map<int,StaStats> StaStatsList;
    StaStatsList staStatsList;
    StaStats statsOverAllPRNs;
    int epochCount;
-   
+
      // Storage for the literal count of number of epochs with a particular
      // number of stations in view.  It turns out we frequently care not
      // only about min/max/avg but the fraction of time a typical SV is in
      // view of "at least X" number of stations.  This is partially addressed
      // by the -m option which allows the user to specify a particular number
-     // of interest, but we frequently want to know this information for the 
+     // of interest, but we frequently want to know this information for the
      // full range of stations.
    map <int,DiscreteVisibleCounts> dvcList;
-   
+
    CommonTime startT;
    CommonTime endT;
-   bool siderealDay; 
-   
+   bool siderealDay;
+
    void generateHeader( gpstk::CommonTime currT );
    void generateTrailer( );
    gpstk::CommonTime setStartTime();
@@ -170,7 +170,7 @@ int main( int argc, char*argv[] )
    return 0;
 }
 
-compSatVis::compSatVis(const std::string& applName, 
+compSatVis::compSatVis(const std::string& applName,
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
            statsOverAllPRNs("0",0,0),
@@ -198,7 +198,7 @@ compSatVis::compSatVis(const std::string& applName,
    evalStartTimeSet = false;
    evalEndTimeOpt.setMaxCount(1);
    evalEndTimeSet = false;
-   
+
    epochCount = 0;
 }
 
@@ -206,15 +206,15 @@ bool compSatVis::initialize(int argc, char *argv[])
    throw()
 {
    if (!BasicFramework::initialize(argc, argv)) return false;
-   
+
       // Open the output file
    logfp = fopen( outputOpt.getValue().front().c_str(),"wt");
-   if (logfp==0) 
+   if (logfp==0)
    {
       cout << "Failed to open output file. Exiting." << endl;
       return false;
    }
-   
+
       // Set up starting CommonTime, ending CommonTime, number and size of intervals
    vector<string> values;
    intervalInSeconds = 60.0;        // default
@@ -247,9 +247,9 @@ bool compSatVis::initialize(int argc, char *argv[])
    if (minElvOpt.getCount()!=0)
    {
       values = minElvOpt.getValue();
-      minimumElevationAngle = StringUtils::asDouble( values[0] ); 
+      minimumElevationAngle = StringUtils::asDouble( values[0] );
    }
-   
+
    detailPrint = false;
    if (detailPrintOpt.getCount()!=0) detailPrint = true;
 
@@ -260,13 +260,13 @@ bool compSatVis::initialize(int argc, char *argv[])
       minStationCount = StringUtils::asInt( values[0] );
    }
 
-      // Initialize the statistics objects   
+      // Initialize the statistics objects
    for (int PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
    {
       StaStats temp = StaStats( StringUtils::asString(PRNID), 0, minStationCount );
       pair<int,StaStats> node( PRNID, temp );
       staStatsList.insert( node );
-       
+
       DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
       pair<int,DiscreteVisibleCounts> dvcNode(PRNID, dvcTemp);
       dvcList.insert(dvcNode);
@@ -275,48 +275,48 @@ bool compSatVis::initialize(int argc, char *argv[])
    DiscreteVisibleCounts dvcTemp = DiscreteVisibleCounts();
    pair<int,DiscreteVisibleCounts> dvcNode(0, dvcTemp);
    dvcList.insert(dvcNode);
-  
+
       // If the user SPECIFIED a start time for the evaluation, store that
       // time and set the flag.
    evalStartTimeSet = false;
    evalStartTime=CommonTime::BEGINNING_OF_TIME;
-   if (evalStartTimeOpt.getCount()!=0) 
+   if (evalStartTimeOpt.getCount()!=0)
    {
       if (debugLevel) cout << "Reading start time from command line." << endl;
       std::vector<CommonTime> tvalues = evalStartTimeOpt.getTime();
       evalStartTime = tvalues[0];
       evalStartTimeSet = true;
-      
+
          // Reinit YumaAlmStore to know the time of interest..
       if (navFileType==Yuma_ALM) YumaAlmStore = YumaAlmanacStore( evalStartTime );
       if (navFileType==SEM_ALM) SEMAlmStore = SEMAlmanacStore( evalStartTime );
    }
-   
+
       // If the user SPECIFIED an end time for the evaluation, store that
       // time and set the flag.
    evalEndTimeSet = false;
    evalEndTime=CommonTime::END_OF_TIME;
-   if (evalEndTimeOpt.getCount()!=0) 
+   if (evalEndTimeOpt.getCount()!=0)
    {
       if (debugLevel) cout << "Reading end time from command line." << endl;
       std::vector<CommonTime> tvalues = evalEndTimeOpt.getTime();
       evalEndTime = tvalues[0];
       evalEndTimeSet = true;
    }
-   
-   return true;   
+
+   return true;
 }
 
 void compSatVis::printNavFileReferenceTime(FILE* logfp)
 {
    string tform2 = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M:%02S";
    CommonTime t;
-   
+
       // If the user did not specify a start time for the evaulation, find the
       // epoch time of the navigation data set and work from that.
-      // In the case of almanac data, the "initial time" is derived from the 
+      // In the case of almanac data, the "initial time" is derived from the
       // earliest almanac reference time minus a half week.  Therefore, we
-      // add the halfweek back in.  
+      // add the halfweek back in.
    switch(navFileType)
    {
          // For ephemeris, initial time is earliest beginning of effectivty.
@@ -332,7 +332,7 @@ void compSatVis::printNavFileReferenceTime(FILE* logfp)
          fprintf(logfp,"     Latest               : %s\n",
                  printTime(t,tform2).c_str());
          break;
-            
+
       case FIC_ALM:
          t = BCAlmList.getInitialTime();
          t += HALFWEEK;
@@ -368,7 +368,7 @@ void compSatVis::printNavFileReferenceTime(FILE* logfp)
          fprintf(logfp,"     Latest               : %s\n",
                        printTime(t,tform2).c_str());
          break;
-         
+
       case SP3:
       {
          CommonTime begin = SP3EphList.getInitialTime();
@@ -379,7 +379,7 @@ void compSatVis::printNavFileReferenceTime(FILE* logfp)
          fprintf(logfp,"     Latest               : %s\n",
                  printTime(end,tform2).c_str());
          break;
-      }   
+      }
    }
    return;
 }
@@ -389,7 +389,7 @@ gpstk::CommonTime compSatVis::setStartTime()
    CommonTime retDT = GPSWeekSecond( 621, 0.0 );     // 12/1/1991
    CommonTime initialTime;
    CommonTime finalTime;
-   
+
    switch(navFileType)
    {
       case FIC_EPH:
@@ -397,7 +397,7 @@ gpstk::CommonTime compSatVis::setStartTime()
          initialTime = BCEphList.getInitialTime();
          finalTime   = BCEphList.getFinalTime();
          break;
-            
+
       case FIC_ALM:
          initialTime = BCAlmList.getInitialTime();
          finalTime   = BCAlmList.getFinalTime();
@@ -413,8 +413,8 @@ gpstk::CommonTime compSatVis::setStartTime()
          finalTime   = SEMAlmStore.getFinalTime();
          break;
 
-         // If loading "day at a time" files, will need 
-         // three days to cover middle day.  We need to 
+         // If loading "day at a time" files, will need
+         // three days to cover middle day.  We need to
          // find the middle of whatever period was loaded
          // and back up to the beginning of that day.
       case SP3:
@@ -422,14 +422,14 @@ gpstk::CommonTime compSatVis::setStartTime()
          initialTime = SP3EphList.getInitialTime();
          finalTime = SP3EphList.getFinalTime();
          break;
-      }   
+      }
    }
    double diff = finalTime - initialTime;
    retDT = initialTime;
    retDT += diff/2.0;
    retDT = YDSTime( static_cast<YDSTime>(retDT).year, static_cast<YDSTime>(retDT).doy, 0.0 );
    return(retDT);
-}        
+}
 
 void compSatVis::process()
 {
@@ -439,7 +439,7 @@ void compSatVis::process()
       cout << "Loading navigation message data from ";
       int nfiles = nFileNameOpt.getCount();
       vector<std::string> names = nFileNameOpt.getValue();
-      for (int i1=0;i1<nfiles;++i1) 
+      for (int i1=0;i1<nfiles;++i1)
       {
          if (i1>0) cout << ", ";
          cout << names[i1];
@@ -451,46 +451,51 @@ void compSatVis::process()
       case FIC_EPH: VisSupport::readFICNavData(nFileNameOpt,BCAlmList,BCEphList); break;
       case FIC_ALM: VisSupport::readFICNavData(nFileNameOpt,BCAlmList,BCEphList); break;
       case RINEX_NAV: VisSupport::readRINEXNavData(nFileNameOpt,BCEphList); break;
-      case Yuma_ALM: VisSupport::readYumaData(nFileNameOpt,YumaAlmStore); break; 
+      case Yuma_ALM: VisSupport::readYumaData(nFileNameOpt,YumaAlmStore); break;
       case SEM_ALM:  VisSupport::readSEMData(nFileNameOpt,SEMAlmStore); break;
       case SP3: VisSupport::readPEData(nFileNameOpt,SP3EphList); break;
       default:
          cerr << "Unknown navigation file type in process()." << endl;
          cerr << "Fatal error. compSatVis will halt." << endl; exit(1);
    }
-   
+
       // Determine day of interest
    if (debugLevel) cout << "Setting evaluation start time: ";
    startT = evalStartTime;
    if (!evalStartTimeSet) startT = setStartTime();
    if (debugLevel) cout << printTime(startT, "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
-   
+
       // If no end time commanded, compute for 23h 56m (GPS ground track repeat)
    if (debugLevel) cout << "Setting evaluation end time: ";
    siderealDay = true;
    endT = startT + ( (double) SEC_PER_DAY - 240.0);
    if (evalEndTimeSet) endT = evalEndTime;
    if ((int)(endT-startT)!=(int)(SEC_PER_DAY-240)) siderealDay = false;
-   if (debugLevel) 
+   if (debugLevel)
    {
       cout << printTime(endT,"%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
       cout << "Sidereal Day flag : " << siderealDay << endl;
    }
+<<<<<<< .working
    CommonTime currT = startT;   
    
+=======
+   DayTime currT = startT;
+
+>>>>>>> .merge-right.r3070
       // Get coordinates for the stations
    stationPositions = VisSupport::getStationCoordinates( mscFileName,
-                                                         startT, 
-                                                         includeStation, 
+                                                         startT,
+                                                         includeStation,
                                                          excludeStation );
-   
+
       // Generate the header
    generateHeader( startT );
-      
+
       // For each interval, calculate SV-station visibility
    if (debugLevel) cout << "Entering calculation loop." << endl;
    long lastValue = -1;
-   while (currT <= endT) 
+   while (currT <= endT)
    {
       if (debugLevel)
       {
@@ -507,12 +512,12 @@ void compSatVis::process()
       currT += intervalInSeconds;
       epochCount++;
    }
-   
+
    if (debugLevel) cout << endl << "Generating trailer." << endl;
    generateTrailer( );
-  
+
    fclose(logfp);
-   
+
 }
 
 void compSatVis::generateHeader( gpstk::CommonTime currT )
@@ -524,7 +529,7 @@ void compSatVis::generateHeader( gpstk::CommonTime currT )
    fprintf(logfp,"Program arguments:\n");
    fprintf(logfp,"  Navigation file         : ",nFileNameOpt.getValue().front().c_str());
    vector<std::string> values = nFileNameOpt.getValue();
-   for (int i=0; i<nFileNameOpt.getCount(); ++i) 
+   for (int i=0; i<nFileNameOpt.getCount(); ++i)
       fprintf(logfp,"%s  ",values[i].c_str());
    fprintf(logfp,"\n");
    fprintf(logfp,"  Day of interest         : %s\n",printTime(currT,tform).c_str());
@@ -536,7 +541,7 @@ void compSatVis::generateHeader( gpstk::CommonTime currT )
    fprintf(logfp,"  End time of evaluation  : %s\n",printTime(endT,tform+", %02H:%02M:%02S").c_str());
    if (siderealDay)
       fprintf(logfp,"  Evaluation covers one sidereal day.\n");
-   
+
       // Print list of stations
    if (includeStation.getCount() || excludeStation.getCount() )
    {
@@ -566,23 +571,23 @@ void compSatVis::generateTrailer( )
    fprintf(logfp,"   SV     Avg  !        Minimum        !      Maximum          !  #Mins\n");
    fprintf(logfp," PRN ID  #Stas ! #Sta Dur(min)  #Occur ! #Sta Dur(min)  #Occur ! < %d Stas\n",
            minStationCount);
-   
+
    int dum2 = (int) intervalInSeconds;
-   
+
    StaStatsList::const_iterator sslCI;
    for (sslCI =staStatsList.begin();
         sslCI!=staStatsList.end(); ++sslCI)
    {
       int staNum = sslCI->first;
       StaStats ss = sslCI->second;
-      if (ss.atLeastOneEntry()) 
+      if (ss.atLeastOneEntry())
       {
          std::string dummy = ss.getSatStr( dum2 );
          fprintf(logfp,"%s\n",dummy.c_str());
       }
    }
    fprintf(logfp,"%s\n",statsOverAllPRNs.getSatAvgStr( ).c_str());
-   
+
       // Now output the percentages related to the fraction of time
       // a particular number of stations see a SV and the average
       //
@@ -604,7 +609,7 @@ void compSatVis::generateTrailer( )
          fprintf(logfp,"    %02d:%s\n",PRNID,str.c_str());
    }
    fprintf(logfp,"\n");
-   
+
    fprintf(logfp,"\n Fraction of time an SV is visible to >= a given number of stations.\n");
    fprintf(logfp,"PRN ID ");
    for (int i=0;i<=max;++i) fprintf(logfp,"   >=%2d",i);
@@ -627,7 +632,7 @@ void compSatVis::computeVisibility( gpstk::CommonTime currT )
    gpstk::Position SVpos[gpstk::MAX_PRN+1];
    bool SVAvail[gpstk::MAX_PRN+1];
    Xvt SVxvt;
-   
+
       // Compute SV positions for this epoch
    int PRNID;
    for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
@@ -642,37 +647,37 @@ void compSatVis::computeVisibility( gpstk::CommonTime currT )
             case RINEX_NAV:
                SVxvt = BCEphList.getXvt( satid, currT );
                break;
-            
+
             case FIC_ALM:
                SVxvt = BCAlmList.getXvt( satid, currT );
                break;
-            
+
             case Yuma_ALM:
                SVxvt = YumaAlmStore.getXvt( satid, currT );
                break;
- 
+
             case SEM_ALM:
                SVxvt = SEMAlmStore.getXvt( satid, currT );
                break;
-            
+
             case SP3:
                SVxvt = SP3EphList.getXvt( satid, currT );
                break;
-               
+
             default:
                cerr << "Unknown navigation file type in computeVisibility()." << endl;
                cerr << "Fatal error. compSatVis will halt." << endl;
                exit(1);
          }
-         SVpos[PRNID] = SVxvt.x; 
+         SVpos[PRNID] = SVxvt.x;
          SVAvail[PRNID] = true;
       }
       catch(InvalidRequest& e)
-      { 
+      {
          continue;
       }
    }
-   
+
       // If first time through, print the detail hearder if required.
    if (detailPrint && currT==startT)
    {
@@ -684,15 +689,15 @@ void compSatVis::computeVisibility( gpstk::CommonTime currT )
       }
       fprintf(logfp,"   Max,   Min\n");
    }
-   
+
    if (detailPrint) fprintf(logfp,"%s, ",printTime(currT,"%02H:%02M").c_str());
 
       // Now count number of Stations visible to each SV
    int maxNum = 0;
-   int minNum = stationPositions.size() + 1; 
+   int minNum = stationPositions.size() + 1;
    StaPosList::const_iterator splCI;
    DiscreteVisibleCounts& dvc0 = dvcList.find(0)->second;
-   
+
    for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
    {
       if (!SVAvail[PRNID]) continue;
@@ -708,7 +713,7 @@ void compSatVis::computeVisibility( gpstk::CommonTime currT )
       if (detailPrint) fprintf(logfp,"   %2d,",numVis);
       if (numVis>maxNum) maxNum = numVis;
       if (numVis<minNum) minNum = numVis;
-      
+
       StaStatsList::iterator sslI = staStatsList.find( PRNID );
       if (sslI==staStatsList.end())
       {

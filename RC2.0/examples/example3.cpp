@@ -52,10 +52,27 @@ int main(int argc, char *argv[])
 
    double gamma = (L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS);
 
+<<<<<<< .working
    try
    {
+=======
+//Declare RINEX observation file streams and data objects
+//-------------------------------------------------------
+       RinexObsStream roffs(argv[1]);
+       // It is necessary to set the failbit in order to throw exceptions
+       roffs.exceptions(ios::failbit);
+       RinexObsHeader roh;
+       RinexObsData roe;
+       RinexObsData::RinexDatum dataobj;
+>>>>>>> .merge-right.r3070
 
+<<<<<<< .working
       cout << "Reading " << argv[1] << "." << endl;
+=======
+//Read the RINEX header (this could be skipped).
+//--------------------------------------------
+       roffs >> roh;
+>>>>>>> .merge-right.r3070
 
          // Declare RINEX observation file streams and data objects
          // -------------------------------------------------------
@@ -120,12 +137,22 @@ int main(int argc, char *argv[])
             dataobj = roe.getObs(prn, indexP2);
             double P2 = dataobj.data;
 
+<<<<<<< .working
                // The third method is also secure but it is the slowest.
                // On the other hand it has the advantage that it doesn't need
                // a prior call to method 'Rinex3ObsHeader::getObsIndex()'
                // -----------------------------------------------------------
             dataobj = roe.getObs(prn, "L1", roh);
             double L1 = dataobj.data;
+=======
+//Compute multipath
+//-----------------
+                double mu = P1 -L1*(C_GPS_M/L1_FREQ) -2*(P1 -P2)/(1-gamma);
+
+                // The following line makes sure that you get a proper output format
+                // The line above with "roh.dump" sets this, but just in case...
+                cout << fixed << setw(7) << setprecision(3);
+>>>>>>> .merge-right.r3070
 
                // Compute multipath
                // -----------------

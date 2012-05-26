@@ -44,6 +44,8 @@
 //
 //=============================================================================
 
+
+
    // Language headers
 #include <cstring>
 #include <stdio.h>
@@ -58,11 +60,11 @@ namespace gpstk
 {
       // Static Variable Definition
    bool X2Sequence::isInit = false;
-   unsigned long* X2Sequence::X2Bits = 0;
-   unsigned long* X2Sequence::X2BitsEOW = 0;
+   uint32_t* X2Sequence::X2Bits = 0;
+   uint32_t* X2Sequence::X2BitsEOW = 0;
 
       // See program x2EOW.cpp for derivation of these values
-   unsigned long X2Sequence::EOWEndOfSequence[LENGTH_OF_EOW_OVERLAP] =
+   uint32_t X2Sequence::EOWEndOfSequence[LENGTH_OF_EOW_OVERLAP] =
    {
     0xFA5F8298, 0xB30C04D9, 0xD5CACBCA, 0x0ED47FFF, 0xFFFFFFFF, 0xFFFFFFFF,
     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF,
@@ -104,14 +106,20 @@ namespace gpstk
          GPSTK_THROW(e);
       }
       
-      X2Bits =    new unsigned long[NUM_X2_WORDS];
-      X2BitsEOW = new unsigned long[NUM_X2_WORDS];
+      X2Bits =    new uint32_t[NUM_X2_WORDS];
+      X2BitsEOW = new uint32_t[NUM_X2_WORDS];
       if (X2Bits==0 || X2BitsEOW==0) 
       {
          gpstk::Exception e ("X2Sequence::allocateMemory() - allocation failed.");
          GPSTK_THROW(e);
       }
    
+      for (long ndx = 0; ndx < NUM_X2_WORDS; ndx++)
+      {
+         X2Bits[ndx] = 0x00000000;
+         X2BitsEOW[ndx] = 0x00000000;
+      }
+
          // Last words of X2Bits and X2BitsEOW are only partially filled.
          // Initialize to 0 to avoid confusion.
       X2Bits[NUM_X2_WORDS-1] = 0x00000000;
@@ -126,11 +134,9 @@ namespace gpstk
          /*
              In order to handle the beginning of week case, obtain the 
              initial X2 bit, then copy this bit into the first 37 bit 
-             positions of the X2 sequence.  The X2Ainit and X2Binit variables
-             are purposely chosen to be SIGNED integers to take advantage of 
-             the arithmetic shift behavior.
+             positions of the X2 sequence.
          */
-      unsigned long firstTest = X2A[0] ^ X2B[0];
+      uint32_t firstTest = X2A[0] ^ X2B[0];
       if (firstTest & 0x80000000 ) 
          X2Bits[0] = 0xFFFFFFFF;
        else
@@ -146,8 +152,8 @@ namespace gpstk
             The combination will be performed for four X2 epochs.
             This will generate six seconds+ of X2 bits sequence.
          */
-      unsigned long X2Abits;
-      unsigned long X2Bbits;
+      uint32_t X2Abits;
+      uint32_t X2Bbits;
       X2Aepoch = 1;
       X2Acount = 27;
       X2Bepoch = 1;

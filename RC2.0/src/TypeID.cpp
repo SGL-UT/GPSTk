@@ -196,6 +196,7 @@ namespace gpstk
       tStrings[BLC]        = "ambiguityLC";
       tStrings[BWL]        = "ambiguityWL";
       tStrings[BWL2]       = "ambiguityWL2";
+      tStrings[BWL3]       = "ambiguityWL3";
       tStrings[BWL4]       = "ambiguityWL4";
       tStrings[mpC1]       = "multipathC1";
       tStrings[mpC2]       = "multipathC2";
@@ -240,11 +241,14 @@ namespace gpstk
       tStrings[prefitGRAPHIC2]  = "prefitResidualGRAPHIC2";
       tStrings[postfitGRAPHIC1] = "postfitResidualGRAPHIC1";
       tStrings[postfitGRAPHIC2] = "postfitResidualGRAPHIC2";
+      tStrings[prefitMWubbena]   = "prefitMWubbena";
       tStrings[prefitWL]   = "prefitResidualWL";
       tStrings[prefitWL2]  = "prefitResidualWL2";
+      tStrings[prefitWL3]  = "prefitResidualWL3";
       tStrings[prefitWL4]  = "prefitResidualWL4";
       tStrings[postfitWL]  = "postfitResidualWL";
       tStrings[postfitWL2] = "postfitResidualWL2";
+      tStrings[postfitWL3] = "postfitResidualWL3";
       tStrings[postfitWL4] = "postfitResidualWL4";
       tStrings[prefitC]    = "prefitResidualCode";
       tStrings[prefitL]    = "prefitResidualPhase";
@@ -279,6 +283,10 @@ namespace gpstk
       tStrings[cdtPC]    = "cdtPC";
       tStrings[cdtLC]    = "cdtLC";
       tStrings[cdtWL]    = "cdtWL";
+      tStrings[cdtWL2]    = "cdtWL2";
+      tStrings[cdtWL3]    = "cdtWL3";
+      tStrings[cdtWL4]    = "cdtWL4";
+      tStrings[cdtMW]    = "cdtMW";
 
       tStrings[cdtSatC1]    = "cdtSatC1";
       tStrings[cdtSatP1]    = "cdtSatP1";
@@ -292,6 +300,7 @@ namespace gpstk
       tStrings[cdtSatPC]    = "cdtSatPC";
       tStrings[cdtSatLC]    = "cdtSatLC";
       tStrings[cdtSatWL]    = "cdtSatWL";
+      tStrings[cdtSatMW]    = "cdtSatMW";
 
       tStrings[recX]       = "RxPositionX";
       tStrings[recY]       = "RxPositionY";
@@ -516,8 +525,6 @@ namespace gpstk
          {
             TypeID::tStrings.erase(it2);
          }
-
-         mapUserTypeID.erase(it);
       }
       mapUserTypeID.clear();
 

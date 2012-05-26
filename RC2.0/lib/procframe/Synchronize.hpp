@@ -165,7 +165,11 @@ namespace gpstk
                    gnssRinex& roverData,
                    const double tol = 1.0 )
          : tolerance(tol), firstTime(true)
+<<<<<<< .working
       { setReferenceSource(rinexObs); setRoverData(roverData); };
+=======
+      { setReferenceSource(rinexObs); setRoverData(roverData); setIndex(); };
+>>>>>>> .merge-right.r3070
 
 
          /** Common constructor.
@@ -178,7 +182,11 @@ namespace gpstk
                    gnssSatTypeValue& roverData,
                    const double tol = 1.0 )
          : tolerance(tol), firstTime(true)
+<<<<<<< .working
       { setReferenceSource(rinexObs); setRoverData(roverData); };
+=======
+      { setReferenceSource(rinexObs); setRoverData(roverData); setIndex(); };
+>>>>>>> .merge-right.r3070
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data
@@ -250,8 +258,13 @@ namespace gpstk
 
    protected:
 
+<<<<<<< .working
       virtual gnssRinex& Process(CommonTime time, gnssRinex& gData)
          throw(SynchronizeException);
+=======
+      virtual gnssRinex& Process(DayTime time, gnssRinex& gData)
+         throw(SynchronizeException);
+>>>>>>> .merge-right.r3070
 
 
          /// gnssRinex data buffer

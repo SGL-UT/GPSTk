@@ -52,11 +52,11 @@ namespace gpstk
 
       Triple res;
 
-      res.theArray[0] = cos(ts)*posCIS.theArray[0] +
-                        sin(ts)*posCIS.theArray[1];
+      res.theArray[0] = ::cos(ts)*posCIS.theArray[0] +
+                        ::sin(ts)*posCIS.theArray[1];
 
-      res.theArray[1] = -sin(ts)*posCIS.theArray[0] +
-                        cos(ts)*posCIS.theArray[1];
+      res.theArray[1] = -::sin(ts)*posCIS.theArray[0] +
+                         ::cos(ts)*posCIS.theArray[1];
 
       res.theArray[2] = posCIS.theArray[2];
 
@@ -92,7 +92,7 @@ namespace gpstk
                   tt*( (0.093104) - (6.2e-6*tt)) ) );
 
       sid = sid/3600.0 + h;
-      sid = fmod(sid,24.0);
+      sid = ::fmod(sid,24.0);
 
       if (sid < 0.0)
       {

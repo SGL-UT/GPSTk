@@ -28,13 +28,23 @@
 //============================================================================
 
 #include "ConstraintSystem.hpp"
+<<<<<<< .working
 #include <vector>
+=======
+#include <vector>
+>>>>>>> .merge-right.r3070
 
 namespace gpstk
 {
+<<<<<<< .working
       // Remove a single constraint
    ConstraintSystem& ConstraintSystem::removeConstraint(
                                                   const Constraint& constraint )
+=======
+      // Remove a single constraint
+   ConstraintSystem& ConstraintSystem::removeConstraint(
+                                                  const Constraint& constraint )
+>>>>>>> .merge-right.r3070
    {
       ConstraintList backupList;
       
@@ -61,7 +71,45 @@ namespace gpstk
       }
       
       return (*this);
+<<<<<<< .working
 
+   }  // End of method 'ConstraintSystem::removeConstraint()'
+
+
+      // Method to set multi-constraints
+   ConstraintSystem& ConstraintSystem::setConstraint(const VariableSet& varSet, 
+                                                   const Vector<double>& prefit)
+   {
+      // Fist, we check the size of inputs
+      const int size = varSet.size();
+
+      if( prefit.size()!=size )
+      {
+         Exception e("The input size doesn't match.");
+         GPSTK_THROW(e);
+      }
+=======
+>>>>>>> .merge-right.r3070
+
+<<<<<<< .working
+      clearConstraint();
+
+      int i(0);
+      
+      for(VariableSet::const_iterator it = varSet.begin();
+         it != varSet.end();
+         ++it)
+      {
+         Constraint constraint;
+         constraint.header.prefit = prefit[i];
+         constraint.body[*it] = 1.0;
+
+         addConstraint(constraint);
+   
+         i++;
+      }
+
+=======
    }  // End of method 'ConstraintSystem::removeConstraint()'
 
 
@@ -95,12 +143,20 @@ namespace gpstk
          i++;
       }
 
+>>>>>>> .merge-right.r3070
       return (*this);
 
+<<<<<<< .working
    }  // End of method 'ConstraintSystem::setConstraint()'
 
 
       // Method to set multi-constraints
+=======
+   }  // End of method 'ConstraintSystem::setConstraint()'
+
+
+      // Method to set multi-constraints
+>>>>>>> .merge-right.r3070
    ConstraintSystem& ConstraintSystem::setConstraint(const VariableSet& varSet,
                                                    const Vector<double>& prefit,
                                                    const Matrix<double>& design)
@@ -115,32 +171,67 @@ namespace gpstk
       }
       
       clearConstraint();
+<<<<<<< .working
       
       std::vector<Variable> vars;
+=======
+
+      std::vector<Variable> vars;
+>>>>>>> .merge-right.r3070
       for(VariableSet::const_iterator it = varSet.begin();
          it != varSet.end();
          ++it)
       {
+<<<<<<< .working
          vars.push_back(*it);
       }
 
       for (int i=0; i<vars.size(); i++)
       {
+=======
+         vars.push_back(*it);
+      }
+      
+      for(int i=0; i<vars.size(); i++)
+      {
+>>>>>>> .merge-right.r3070
          VariableDataMap dataMap;
          for(int k=0;k<size;k++)
          {
+<<<<<<< .working
             if(design[i][k]!=0.0) dataMap[ vars[k] ] = design[i][k];
+=======
+            if(design[i][k]!=0.0) dataMap[ vars[k] ] = design[i][k];
+>>>>>>> .merge-right.r3070
          }
+<<<<<<< .working
 
+=======
+
+>>>>>>> .merge-right.r3070
          Constraint constraint;
          constraint.header.prefit = prefit[i];
          constraint.body = dataMap;
-         
+
          addConstraint(constraint);
       }
-
+      
       return (*this);
+<<<<<<< .working
    }  // End of method 'ConstraintSystem::setConstraint()'
+=======
+>>>>>>> .merge-right.r3070
+
+      
+   }  // End of method 'ConstraintSystem::setConstraint()'
+
+<<<<<<< .working
+   ConstraintSystem& ConstraintSystem::constraintMatrix(
+                                                    const VariableSet& allVar,
+                                                    Vector<double>& prefit,
+                                                    Matrix<double>& design,
+                                                    Matrix<double>& covariance )
+=======
 
 
    ConstraintSystem& ConstraintSystem::constraintMatrix(
@@ -148,6 +239,7 @@ namespace gpstk
                                                     Vector<double>& prefit,
                                                     Matrix<double>& design,
                                                     Matrix<double>& covariance )
+>>>>>>> .merge-right.r3070
       throw(InvalidConstraintSystem)
    {
       const int rowSize = constraintList.size();
@@ -198,6 +290,7 @@ namespace gpstk
       }
 
       return (*this);
+<<<<<<< .working
 
    }  // End of method 'ConstraintSystem::constraintMatrix()'
 
@@ -215,6 +308,24 @@ namespace gpstk
 
       return (*this);
 
+=======
+
+   }  // End of method 'ConstraintSystem::constraintMatrix()'
+
+
+      // Add a constraint list
+   ConstraintSystem& ConstraintSystem::addConstraintList(
+                                             const ConstraintList& equationList)
+   {
+      for(ConstraintList::const_iterator it = equationList.begin();
+         it != equationList.end();
+         ++it)
+      {
+         addConstraint(*it);
+      }
+
+      return (*this);
+>>>>>>> .merge-right.r3070
    }
 
 }  // End of namespace gpstk

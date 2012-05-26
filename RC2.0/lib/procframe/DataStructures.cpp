@@ -30,7 +30,6 @@
 
 #include "DataStructures.hpp"
 
-
 using namespace gpstk::StringUtils;
 using namespace std;
 
@@ -1709,6 +1708,39 @@ in matrix and number of types do not match") );
 
 
 
+      /* Adds 'gnssDataMap' object data to this structure.
+       *
+       * @param gds     gnssDataMap object containing data to be added.
+       */
+   gnssDataMap& gnssDataMap::addGnssDataMap( const gnssDataMap& gds )
+   {
+         // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = gds.begin();
+           it != gds.end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue stv;
+            stv.header.epoch = time;
+            stv.header.source = itsrc->first;
+            stv.body = itsrc->second;
+
+            addGnssSatTypeValue(stv);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return (*this);
+   }
+
+
       // Returns a copy of the first element in the map.
    gnssDataMap gnssDataMap::front( void ) const
    {
@@ -2408,6 +2440,410 @@ in matrix and number of types do not match") );
 
 
 
+      // Returns a gnssDataMap with only this source.
+      // @param source Source to be extracted.
+   gnssDataMap gnssDataMap::extractSourceID(const SourceID& source)
+   {
+      SourceIDSet sourceSet;
+      sourceSet.insert(source);
+
+      return extractSourceID(sourceSet);
+   
+   }  // End of method 'gnssDataMap::extractSourceID()'
+
+
+
+      /// Returns a gnssDataMap with only these sources.
+      /// @param sourceSet Set(SourceIDSet) containing the sources 
+      ///                  to be extracted.
+   gnssDataMap gnssDataMap::extractSourceID(const SourceIDSet& sourceSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            SourceIDSet::const_iterator itsrc2 = sourceSet.find(itsrc->first);
+            if(itsrc2!=sourceSet.end())
+            {
+               gnssSatTypeValue gds;
+               gds.header.epoch = time;
+               gds.header.source = itsrc->first;
+               gds.body = itsrc->second;
+
+               dataMap.addGnssSatTypeValue(gds);
+            }
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return dataMap;
+
+   }  // End of method 'gnssDataMap::extractSourceID()'
+
+
+      // Modifies this object, keeping only this source.
+      // @param source Source to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySourceID(const SourceID& source)
+   {
+      (*this) = extractSourceID(source);
+      return (*this);
+   }
+
+
+      // Modifies this object, keeping only these sources.
+      // @param sourceSet Set(SourceIDSet) containing the sources 
+      //                  to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySourceID(const SourceIDSet& sourceSet)
+   {
+      (*this) = extractSourceID(sourceSet);
+      return (*this);
+   }
+
+
+      // Modifies this object, removing this source.
+      // @param source Source to be removed.
+   gnssDataMap& gnssDataMap::removeSourceID(const SourceID& source)
+   {
+      SourceIDSet sourceSet;
+      sourceSet.insert(source);
+
+      return removeSourceID(sourceSet);
+   }
+
+
+      // Modifies this object, keeping only these sources.
+      // @param sourceSet Set(SourceIDSet) containing the sources 
+      //                  to be removed.
+   gnssDataMap& gnssDataMap::removeSourceID(const SourceIDSet& sourceSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+            itsrc != sourceMap.end();
+            ++itsrc)
+         {
+            SourceIDSet::const_iterator itsrc2 = sourceSet.find(itsrc->first);
+            if(itsrc2==sourceSet.end())
+            {
+               gnssSatTypeValue gds;
+               gds.header.epoch = time;
+               gds.header.source = itsrc->first;
+               gds.body = itsrc->second;
+
+               dataMap.addGnssSatTypeValue(gds);
+            }
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+      
+      (*this) = dataMap;
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::removeSourceID()'
+
+
+      // Returns a gnssDataMap with only this satellite.
+      // @param sat Satellite to be extracted.
+   gnssDataMap gnssDataMap::extractSatID(const SatID& sat)
+   {
+      SatIDSet satSet;
+      satSet.insert(sat);
+
+      return extractSatID(satSet);
+   }
+
+
+      // Returns a gnssDataMap with only these satellites.
+      // @param satSet Set(SatIDSet) containing the satellite 
+      //               to be extracted.
+   gnssDataMap gnssDataMap::extractSatID(const SatIDSet& satSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.keepOnlySatID(satSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return dataMap;
+
+   }  // End of method 'gnssDataMap::extractSatID()'
+
+
+      // Modifies this object, keeping only this satellite.
+      // @param sat Satellite to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySatID(const SatID& sat)
+   {
+      (*this) = extractSatID(sat);
+      return (*this);
+   } 
+
+
+      // Modifies this object, keeping only these satellites.
+      // @param satSet Set(SatIDSet) containing the satellite 
+      //                  to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlySatID(const SatIDSet& satSet)
+   {
+      (*this) = extractSatID(satSet);
+      return (*this);
+   }  
+
+      // Modifies this object, removing this satellite.
+      // @param sat Satellite to be removed.
+   gnssDataMap& gnssDataMap::removeSatID(const SatID& sat)
+   {
+      SatIDSet satSet;
+      satSet.insert(sat);
+
+      return removeSatID(satSet);
+   }
+
+
+      // Modifies this object, keeping only these satellites.
+      // @param satSet Set(SatIDSet) containing the satellites 
+      //               to be removed.
+   gnssDataMap& gnssDataMap::removeSatID(const SatIDSet& satSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.removeSatID(satSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      (*this) = dataMap;
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::removeSatID()'
+
+
+
+      /// Returns a gnssDataMap with only this type.
+      /// @param type Type to be extracted.
+   gnssDataMap gnssDataMap::extractTypeID(const TypeID& type)
+   {
+      TypeIDSet typeSet;
+      typeSet.insert(type);
+
+      return extractTypeID(typeSet);
+   }
+
+
+      // Returns a gnssDataMap with only these satellites.
+      // @param typeSet Set(TypeIDSet) containing the types 
+      //               to be extracted.
+   gnssDataMap gnssDataMap::extractTypeID(const TypeIDSet& typeSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.keepOnlyTypeID(typeSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      return dataMap;
+   }
+
+
+      // Modifies this object, keeping only this type.
+      // @param type Type to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlyTypeID(const TypeID& type)
+   {
+      (*this) = extractTypeID(type);
+      return (*this);
+   }
+
+
+      // Modifies this object, keeping only these types.
+      // @param typeSet Set(TypeIDSet) containing the type 
+      //                  to be extracted.
+   gnssDataMap& gnssDataMap::keepOnlyTypeID(const TypeIDSet& typeSet)
+   {
+      (*this) = extractTypeID(typeSet);
+      return (*this);
+   }
+
+
+      // Modifies this object, removing this type.
+      // @param type Type to be removed.
+   gnssDataMap& gnssDataMap::removeTypeID(const TypeID& type)
+   {
+      TypeIDSet typeSet;
+      typeSet.insert(type);
+
+      return removeTypeID(typeSet);
+   }
+
+
+      // Modifies this object, keeping only these types.
+      // @param typeSet Set(TypeIDSet) containing the types 
+      //               to be removed.
+   gnssDataMap& gnssDataMap::removeTypeID(const TypeIDSet& typeSet)
+   {
+      gnssDataMap dataMap;
+
+      // Iterate through all items in the gnssDataMap
+      for( gnssDataMap::const_iterator it = this->begin();
+           it != this->end();
+           ++it )
+      {
+         const DayTime& time(it->first);
+         const sourceDataMap& sourceMap(it->second);
+
+         for(sourceDataMap::const_iterator itsrc = sourceMap.begin();
+             itsrc != sourceMap.end();
+             ++itsrc)
+         {
+            gnssSatTypeValue gds;
+            gds.header.epoch = time;
+            gds.header.source = itsrc->first;
+            gds.body = itsrc->second;
+
+            gds.body.removeTypeID(typeSet);
+
+            dataMap.addGnssSatTypeValue(gds);
+
+         }  // loop in the sources
+
+      }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
+
+      (*this) = dataMap;
+
+      return (*this);
+
+   }  // End of method 'gnssDataMap::removeTypeID()'
+
+
+      /* Edit the dataset, removing data outside the indicated time
+       *  interval.
+       *
+       * @param[in] tmin defines the beginning of the time interval
+       * @param[in] tmax defines the end of the time interval
+       */
+   gnssDataMap& gnssDataMap::edit(DayTime tmin, DayTime tmax )
+   {
+      gnssDataMap dataMap;
+
+      while(!this->empty())
+      {
+         gnssDataMap gds = this->frontEpoch();
+
+         DayTime time(gds.begin()->first);
+         if( (time>=tmin) && (time<=tmax) ) dataMap.addGnssDataMap(gds);
+
+         this->pop_front_epoch();
+      }
+
+      (*this) = dataMap;
+
+      return (*this);
+   }
+
+      // Load data from a rinex observation file
+   void gnssDataMap::loadObsFile(std::string obsFile)
+   {
+      try
+      {
+         RinexObsStream rin(obsFile);
+         rin.exceptions(ios::failbit);
+
+         gnssRinex gRin;
+         while( rin >> gRin )
+         {
+            this->addGnssRinex(gRin);
+         }
+         
+         rin.close();
+      }
+      catch(...)
+      {
+         Exception e("Failed to load obs file '"+obsFile+"'.");
+         GPSTK_THROW(e);
+      }
+
+   }  // End of method 'gnssDataMap::loadObsFile()'
 
 
       ////// Other stuff //////
@@ -2571,112 +3007,13 @@ in matrix and number of types do not match") );
 
                // Clear out this object
             RinexObsHeader& hdr = strm.header;
-
             hdr >> f;
 
-            std::string line;
-
-            strm.formattedGetLine(line, true);
-
-            if( line.size()>80 ||
-                line[0] != ' ' ||
-                line[3] != ' ' ||
-                line[6] != ' ' )
-            {
-               FFStreamError e("Bad epoch line");
-               GPSTK_THROW(e);
-            }
-
-               // process the epoch line, including SV list and clock bias
-            short epochFlag = asInt(line.substr(28,1));
-            if( (epochFlag < 0) ||
-                (epochFlag > 6) )
-            {
-               FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
-               GPSTK_THROW(e);
-            }
-
-            f.header.epoch = parseTime(line, hdr);
-
-            short numSvs = asInt(line.substr(29,3));
-
             RinexObsData rod;
+            strm >> rod;
 
-               // Now read the observations ...
-            if( epochFlag==0 ||
-                epochFlag==1 ||
-                epochFlag==6 )
-            {
-
-               int isv, ndx, line_ndx;
-               vector<SatID> satIndex(numSvs);
-               int col=30;
-
-               for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)
-               {
-
-                  if( !(isv % 13) )
-                  {
-                     strm.formattedGetLine(line);
-                     isv = 1;
-                     if(line.size() > 80)
-                     {
-                        FFStreamError err( "Invalid line size:" +
-                                           asString(line.size()) );
-                        GPSTK_THROW(err);
-                     }
-                  }
-                  try
-                  {
-                     satIndex[ndx] = RinexSatID( line.substr(col+isv*3-1,3) );
-                  }
-                  catch (Exception& e)
-                  {
-                     FFStreamError ffse(e);
-                     GPSTK_THROW(ffse);
-                  }
-
-               } // End of 'for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)'
-
-
-               for (isv=0; isv < numSvs; isv++)
-               {
-                  short numObs = hdr.obsTypeList.size();
-                  for(ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
-                  {
-
-                     SatID sat = satIndex[isv];
-                     RinexObsHeader::RinexObsType obs_type =
-                                                         hdr.obsTypeList[ndx];
-                     if( !(line_ndx % 5) )
-                     {
-                        strm.formattedGetLine(line);
-                        line_ndx = 0;
-                        if( line.size() > 80 )
-                        {
-                           FFStreamError err("Invalid line size:" +
-                                                      asString(line.size()));
-                           GPSTK_THROW(err);
-                        }
-                     }
-
-                     line.resize(80, ' ');
-
-                     rod.obs[sat][obs_type].data =
-                                 asDouble( line.substr(line_ndx*16,   14) );
-
-                     rod.obs[sat][obs_type].lli =
-                                    asInt( line.substr(line_ndx*16+14, 1) );
-
-                     rod.obs[sat][obs_type].ssi =
-                                    asInt( line.substr(line_ndx*16+15, 1) );
-
-                  }  // End of 'for(ndx=0, line_ndx=0; ndx < numObs; ...)'
-
-               }  // End of 'for (isv=0; isv < numSvs; isv++)'
-
-            }  // End of 'if( epochFlag==0 || ... )'
-
+            f.header.epoch = rod.time;
+            
             f.body = FillsatTypeValueMapwithRinexObsData(rod);
 
             return i;
@@ -2728,136 +3065,13 @@ in matrix and number of types do not match") );
 
                // Clear out this object
             RinexObsHeader& hdr = strm.header;
-
             hdr >> f;
-
-            std::string line;
-
-               // The following block handles Rinex2 observation files that have
-               // empty (but otherwise valid) epoch lines and comments in the middle
-               // of the observation section. This is frequent in Rinex2 files that
-               // are 'spliced' every hour.
-            bool isValidEpochLine(false);
-            while( !isValidEpochLine )
-            {
-                  // Get line
-               strm.formattedGetLine(line, true);
-
-               isValidEpochLine = true;
-
-               try
-               {
-                     // R2 observation lines have a 80 characters length limit
-                  if( line.size()>80 ) isValidEpochLine = false;
-
-                     // Try to read the epoch
-                  DayTime tempEpoch = parseTime(line, hdr);
-
-                     // We also have to check if the epoch is valid
-                  if( tempEpoch == DayTime::BEGINNING_OF_TIME )
-                  {
-                     isValidEpochLine = false;
-                  }
-
-                     // If it is not a number, an exception will be thrown
-                   short tempNumSat = asInt(line.substr(29,3));                   
-               }
-               catch(...)
-               {
-                     // Any problem will cause the loop to be repeated
-                  isValidEpochLine = false;
-               }
-
-            }  // End of 'while( !isValidEpochLine )'
-
-               // process the epoch line, including SV list and clock bias
-            short epochFlag = asInt(line.substr(28,1));
-            if( (epochFlag < 0) ||
-                (epochFlag > 6) )
-            {
-               FFStreamError e("Invalid epoch flag: " + asString(epochFlag));
-               GPSTK_THROW(e);
-            }
-
-            f.header.epochFlag = epochFlag;
-
-            f.header.epoch = parseTime(line, hdr);
-
-            short numSvs = asInt(line.substr(29,3));
-
+            
             RinexObsData rod;
-
-               // Now read the observations ...
-            if( epochFlag==0 ||
-                epochFlag==1 ||
-                epochFlag==6 )
-            {
-               int isv, ndx, line_ndx;
-               vector<SatID> satIndex(numSvs);
-               int col=30;
-
-               for( isv=1, ndx=0; ndx<numSvs; isv++, ndx++ )
-               {
-                  if( !(isv % 13) )
-                  {
-                     strm.formattedGetLine(line);
-                     isv = 1;
-                     if( line.size() > 80 )
-                     {
-                        FFStreamError err("Invalid line size:" +
-                                                      asString( line.size()) );
-                        GPSTK_THROW(err);
-                     }
-                  }
-
-                  try
-                  {
-                     satIndex[ndx] = RinexSatID( line.substr(col+isv*3-1, 3) );
-                  }
-                  catch (Exception& e)
-                  {
-                     FFStreamError ffse(e);
-                     GPSTK_THROW(ffse);
-                  }
-               } // End of for( isv=1 ... )
-
-               for( isv=0; isv < numSvs; isv++ )
-               {
-                  short numObs = hdr.obsTypeList.size();
-                  for( ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++ )
-                  {
-                     SatID sat = satIndex[isv];
-                     RinexObsHeader::RinexObsType obs_type =
-                                                         hdr.obsTypeList[ndx];
-                     if( !(line_ndx % 5) )
-                     {
-                        strm.formattedGetLine(line);
-                        line_ndx = 0;
-
-                        if( line.size() > 80 )
-                        {
-                           FFStreamError err("Invalid line size:" +
-                                                      asString( line.size()) );
-                           GPSTK_THROW(err);
-                        }
-                     }
-
-                     line.resize(80, ' ');
-
-                     rod.obs[sat][obs_type].data =
-                                    asDouble( line.substr(line_ndx*16, 14) );
-
-                     rod.obs[sat][obs_type].lli =
-                                    asInt( line.substr(line_ndx*16+14, 1) );
-
-                     rod.obs[sat][obs_type].ssi =
-                                    asInt( line.substr(line_ndx*16+15, 1) );
-
-                  } // End of for( ndx=0 ...)
-
-               }  // End of for( isv=0 ...)
-
-            }  // End of if( epochFlag==0 || ... )
+            strm >> rod;
+            
+            f.header.epochFlag = rod.epochFlag;
+            f.header.epoch = rod.time;
 
             f.body = FillsatTypeValueMapwithRinexObsData(rod);
 

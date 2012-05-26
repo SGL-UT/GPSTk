@@ -203,8 +203,13 @@ try {
 
    if(iret == 0) {
       // write out timetable to log
+<<<<<<< .working
       // REF site site sat week use_start use_stop data_start data_stop
       CommonTime tt;
+=======
+      // REF site site sat week use_start use_stop data_start data_stop
+      DayTime tt;
+>>>>>>> .merge-right.r3070
       GSatID sat;
       oflog << "Here is the time table (" << TimeTable.size() << ")" << endl;
       if(CI.Screen)
@@ -217,20 +222,37 @@ try {
          oflog << "REF " << ttit->site1 << " " << ttit->site2 << " " << ttit->sat;
          if(CI.Screen)
             cout << "REF " << ttit->site1 << " " << ttit->site2 << " " << ttit->sat;
+<<<<<<< .working
          tt = FirstEpoch + CI.DataInterval * ttit->usestart;
          oflog << printTime(tt," %4F %10.3g");        // TD week rollover!
+=======
+         tt = FirstEpoch + CI.DataInterval * ttit->usestart;
+         oflog << tt.printf(" %4F %10.3g");        // TD week rollover!
+>>>>>>> .merge-right.r3070
          if(CI.Screen)
+<<<<<<< .working
             cout << printTime(tt," %4F %10.3g");        // TD week rollover!
          tt = FirstEpoch + CI.DataInterval * ttit->usestop;
          oflog << printTime(tt," %10.3g");
+=======
+            cout << tt.printf(" %4F %10.3g");        // TD week rollover!
+         tt = FirstEpoch + CI.DataInterval * ttit->usestop;
+         oflog << tt.printf(" %10.3g");
+>>>>>>> .merge-right.r3070
          if(CI.Screen)
             cout << printTime(tt," %10.3g");
          tt = FirstEpoch + CI.DataInterval * ttit->start;
          oflog << printTime(tt," %10.3g");
          if(CI.Screen)
+<<<<<<< .working
             cout << printTime(tt," %10.3g");
          tt = FirstEpoch + CI.DataInterval * ttit->stop;
          oflog << printTime(tt," %10.3g");
+=======
+            cout << tt.printf(" %10.3g");
+         tt = FirstEpoch + CI.DataInterval * ttit->stop;
+         oflog << tt.printf(" %10.3g");
+>>>>>>> .merge-right.r3070
          if(CI.Screen)
             cout << printTime(tt," %10.3g");
          // TD? ttit->minelev, ttit->maxelev, ttit->length, ttit->metric()
@@ -300,20 +322,35 @@ try {
 
       week = asInt(words(line,4,1));
       sow = asInt(words(line,5,1));
+<<<<<<< .working
       tt=GPSWeekSecond(week,sow);           // TD handle week rollover
       ts.usestart = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+=======
+      tt.setGPSfullweek(week,sow);           // TD handle week rollover
+      ts.usestart = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+>>>>>>> .merge-right.r3070
 
       sow = asInt(words(line,6,1));
+<<<<<<< .working
       tt=GPSWeekSecond(week,sow);
       ts.usestop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+=======
+      tt.setGPSfullweek(week,sow);
+      ts.usestop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+>>>>>>> .merge-right.r3070
 
       sow = asInt(words(line,7,1));
       tt=GPSWeekSecond(week,sow);
       ts.start = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,8,1));
+<<<<<<< .working
       tt=GPSWeekSecond(week,sow);
       ts.stop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+=======
+      tt.setGPSfullweek(week,sow);
+      ts.stop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
+>>>>>>> .merge-right.r3070
 
       //ts.minelev = ts.maxelev = 0.0;
       ts.length = ts.stop - ts.start + 1;

@@ -97,7 +97,7 @@ namespace gpstk
          {
             if ((index % 4) == 0)
                strm << '\n';
-            double l10 = log10(fabs(f[index]));
+            double l10 = ::log10(::fabs(f[index]));
             if ( ((l10 >= 100) || (l10 <= -100)) && (f[index] != 0))
                strm << doub2for(f[index], 20, 3);
             else

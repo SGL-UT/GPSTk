@@ -217,9 +217,15 @@ void xRACRotation :: fifthTest (void)
    rotxvt.relcorr = 0.0;
 
    RACRotation rot5( rotxvt );
+<<<<<<< .working
 
       // OK, now set up a unit vector in the original radius and the
       // original velocity and see that the results align properly.
+=======
+
+      // OK, now set up a unit vector in the original radius and the
+      // orignial velocity and see that the results align properly.
+>>>>>>> .merge-right.r3070
    Xvt testxvt1;
    testxvt1.x = Position( 1.0, 0.0, 0.0 );
    testxvt1.v = Triple( 0.0, 0.0, 1.0 );
@@ -227,13 +233,24 @@ void xRACRotation :: fifthTest (void)
    testxvt1.clkdrift = 0.0;
    testxvt1.relcorr = 0.0;
    Xvt testxvtRAC1 = rot5.convertToRAC( testxvt1 );
+<<<<<<< .working
 
    CPPUNIT_ASSERT_EQUAL(Position(1,0,0),(gpstk::Position)testxvtRAC1.x);
+=======
+
+   CPPUNIT_ASSERT_EQUAL(ECEF(1,0,0),testxvtRAC1.x);
+>>>>>>> .merge-right.r3070
    CPPUNIT_ASSERT_EQUAL(Triple(0,1,0),testxvtRAC1.v);
+<<<<<<< .working
    CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkbias);
    CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkdrift);
    CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.relcorr);
 
+=======
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.dtime);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.ddtime);
+
+>>>>>>> .merge-right.r3070
       // Reverse the two vectors and observe the results
    testxvt1.x = Position( -1.0, 0.0, 0.0);
    testxvt1.v = Triple(  0.0, 0.0,-1.0);
@@ -241,13 +258,24 @@ void xRACRotation :: fifthTest (void)
    testxvt1.clkdrift = 0.0;
    testxvt1.relcorr = 0.0;
    testxvtRAC1 = rot5.convertToRAC( testxvt1 );
+<<<<<<< .working
 
    CPPUNIT_ASSERT_EQUAL(Position(-1,0,0),(gpstk::Position)testxvtRAC1.x);
+=======
+
+   CPPUNIT_ASSERT_EQUAL(ECEF(-1,0,0),testxvtRAC1.x);
+>>>>>>> .merge-right.r3070
    CPPUNIT_ASSERT_EQUAL(Triple(0,-1,0),testxvtRAC1.v);
+<<<<<<< .working
    CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkbias);
    CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkdrift);
    CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.relcorr);
 
+=======
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.dtime);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.ddtime);
+
+>>>>>>> .merge-right.r3070
    testErrXYZ = Triple( 0.0, 0.0, -1.0);
    testErrRAC = rot5.convertToRAC( testErrXYZ );
 }

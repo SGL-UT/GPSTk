@@ -47,8 +47,8 @@
 //       Politecnica de Catalunya, Barcelona, Spain.
 //
 //    Salazar, D., Hernandez-Pajares, M., Juan, J.M., Sanz J. and
-//       A. Aragon-Angel (2011(. "EVA: GPS-based extended velocity and
-//       acceleration determination". Journal of Geodesy.
+//       A. Aragon-Angel. "EVA: GPS-based extended velocity and acceleration
+//       determination". Journal of Geodesy. Volume 85, Issue 6, pp. 329-340,
 //       DOI: 10.1007/s00190-010-0439-6, 2011.
 //
 // The modifications done to the original method are two:
@@ -142,9 +142,6 @@
 
    // Class to compute statistics.
 #include "Stats.hpp"
-
-   // Class to print the content of the data structures.
-#include "Dumper.hpp"
 
 
 #include "geometry.hpp"                   // DEG_TO_RAD

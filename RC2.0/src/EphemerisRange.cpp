@@ -17,20 +17,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -163,6 +163,7 @@ namespace gpstk
          svPosVel = eph.getXvt(sat, tt_nom);
 
          // compute rotation angle in the time of signal transit
+<<<<<<< .working
          // While this is quite similiar to rotateEarth, its not the same
          // and jcl doesn't know which is really correct
          // BWT this uses the measured pseudorange, corrected for SV clock and
@@ -173,13 +174,19 @@ namespace gpstk
          GPSEllipsoid ell;
          double range(pr/ell.c() - svPosVel.clkbias - svPosVel.relcorr);
          double rotation_angle = -ell.angVelocity() * range;
+=======
+         // While this is quite similiar to rotateEarth, its not the same and jcl doesn't
+         // know which is really correct
+         GPSGeoid gm;
+         double rotation_angle = -gm.angVelocity() * (pr/gm.c() - svPosVel.dtime);
+>>>>>>> .merge-right.r3070
          svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
          svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
          svPosVel.x[2] = svPosVel.x[2];
 
          rawrange =rx.slantRange(svPosVel.x);
          updateCER(rx);
-         
+
          return rawrange - svclkbias - relativity;
       }
       catch (Exception& e) {
@@ -191,14 +198,14 @@ namespace gpstk
    void CorrectedEphemerisRange::updateCER(const Position& Rx)
    {
       relativity = svPosVel.computeRelativityCorrection() * C_MPS;
-      
+
       svclkbias = svPosVel.clkbias * C_MPS;
       svclkdrift = svPosVel.clkdrift * C_MPS;
-      
+
       cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
       cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
       cosines[2] = (Rx.Z()-svPosVel.x[2])/rawrange;
-      
+
       Position SV(svPosVel);
       elevation = Rx.elevation(SV);
       azimuth = Rx.azimuth(SV);
@@ -214,12 +221,12 @@ namespace gpstk
                        svPosVel.x[1]-Rx.Y(),
                        svPosVel.x[2]-Rx.Z())/ellipsoid.c();
       double wt = ellipsoid.angVelocity()*tof;
-      double sx =  cos(wt)*svPosVel.x[0] + sin(wt)*svPosVel.x[1];
-      double sy = -sin(wt)*svPosVel.x[0] + cos(wt)*svPosVel.x[1];
+      double sx =  ::cos(wt)*svPosVel.x[0] + ::sin(wt)*svPosVel.x[1];
+      double sy = -::sin(wt)*svPosVel.x[0] + ::cos(wt)*svPosVel.x[1];
       svPosVel.x[0] = sx;
       svPosVel.x[1] = sy;
-      sx =  cos(wt)*svPosVel.v[0] + sin(wt)*svPosVel.v[1];
-      sy = -sin(wt)*svPosVel.v[0] + cos(wt)*svPosVel.v[1];
+      sx =  ::cos(wt)*svPosVel.v[0] + ::sin(wt)*svPosVel.v[1];
+      sy = -::sin(wt)*svPosVel.v[0] + ::cos(wt)*svPosVel.v[1];
       svPosVel.v[0] = sx;
       svPosVel.v[1] = sy;
    }

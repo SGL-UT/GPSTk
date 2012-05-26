@@ -1185,6 +1185,13 @@ namespace gpstk
       gnssRinex getGnssRinex( const SourceID& source ) const;
 
 
+         /** Adds 'gnssDataMap' object data to this structure.
+          *
+          * @param gds     gnssDataMap object containing data to be added.
+          */
+      gnssDataMap& addGnssDataMap( const gnssDataMap& gds );
+
+
          /// Returns a copy of the first element in the map.
       gnssDataMap front( void ) const;
 
@@ -1330,6 +1337,118 @@ namespace gpstk
          /// Convenience output method
       virtual std::ostream& dump( std::ostream& s,
                                   int mode = 0) const;
+
+         
+         /// Returns a gnssDataMap with only this source.
+         /// @param source Source to be extracted.
+      gnssDataMap extractSourceID(const SourceID& source);
+         
+
+         /// Returns a gnssDataMap with only these sources.
+         /// @param sourceSet Set(SourceIDSet) containing the sources 
+         ///                  to be extracted.
+      gnssDataMap extractSourceID(const SourceIDSet& sourceSet);
+
+
+         /// Modifies this object, keeping only this source.
+         /// @param source Source to be extracted.
+      gnssDataMap& keepOnlySourceID(const SourceID& source);
+
+
+         /// Modifies this object, keeping only these sources.
+         /// @param sourceSet Set(SourceIDSet) containing the sources 
+         ///                  to be extracted.
+      gnssDataMap& keepOnlySourceID(const SourceIDSet& sourceSet);
+
+
+         /// Modifies this object, removing this source.
+         /// @param source Source to be removed.
+      gnssDataMap& removeSourceID(const SourceID& source);
+
+
+         /// Modifies this object, keeping only these sources.
+         /// @param sourceSet Set(SourceIDSet) containing the sources 
+         ///                  to be removed.
+      gnssDataMap& removeSourceID(const SourceIDSet& sourceSet);
+
+
+         /// Returns a gnssDataMap with only this satellite.
+         /// @param sat Satellite to be extracted.
+      gnssDataMap extractSatID(const SatID& sat);
+
+
+         /// Returns a gnssDataMap with only these satellites.
+         /// @param satSet Set(SatIDSet) containing the satellite 
+         ///               to be extracted.
+      gnssDataMap extractSatID(const SatIDSet& satSet);
+
+
+         /// Modifies this object, keeping only this satellite.
+         /// @param sat Satellite to be extracted.
+      gnssDataMap& keepOnlySatID(const SatID& sat);
+
+
+         /// Modifies this object, keeping only these satellites.
+         /// @param satSet Set(SatIDSet) containing the satellite 
+         ///                  to be extracted.
+      gnssDataMap& keepOnlySatID(const SatIDSet& satSet);
+
+
+         /// Modifies this object, removing this satellite.
+         /// @param sat Satellite to be removed.
+      gnssDataMap& removeSatID(const SatID& sat);
+
+
+         /// Modifies this object, keeping only these satellites.
+         /// @param satSet Set(SatIDSet) containing the satellites 
+         ///               to be removed.
+      gnssDataMap& removeSatID(const SatIDSet& satSet);
+
+
+         /// Returns a gnssDataMap with only this type.
+         /// @param type Type to be extracted.
+      gnssDataMap extractTypeID(const TypeID& type);
+
+
+         /// Returns a gnssDataMap with only these satellites.
+         /// @param typeSet Set(TypeIDSet) containing the types 
+         ///               to be extracted.
+      gnssDataMap extractTypeID(const TypeIDSet& typeSet);
+
+
+         /// Modifies this object, keeping only this type.
+         /// @param type Type to be extracted.
+      gnssDataMap& keepOnlyTypeID(const TypeID& type);
+
+
+         /// Modifies this object, keeping only these types.
+         /// @param typeSet Set(TypeIDSet) containing the type 
+         ///                  to be extracted.
+      gnssDataMap& keepOnlyTypeID(const TypeIDSet& typeSet);
+
+
+         /// Modifies this object, removing this type.
+         /// @param type Type to be removed.
+      gnssDataMap& removeTypeID(const TypeID& type);
+
+
+         /// Modifies this object, keeping only these types.
+         /// @param typeSet Set(TypeIDSet) containing the types 
+         ///               to be removed.
+      gnssDataMap& removeTypeID(const TypeIDSet& typeSet);
+
+
+         /** Edit the dataset, removing data outside the indicated time
+          *  interval.
+          *
+          * @param[in] tmin defines the beginning of the time interval
+          * @param[in] tmax defines the end of the time interval
+          */
+      virtual gnssDataMap& edit(DayTime tmin, 
+                                DayTime tmax = DayTime(DayTime::END_OF_TIME));
+
+         /// Load data from a rinex observation file
+      void loadObsFile(std::string obsFile);
 
 
          /// Tolerance set to get data from a given epoch

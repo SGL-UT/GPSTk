@@ -182,9 +182,14 @@ void ConstellationList::process()
    if (year<100) year += 1900;
 
    int DOY = StringUtils::asInt( DOYOption.getValue().front() );
+<<<<<<< .working
  
    YDSTime yt((short) year, (short) DOY, (SEC_PER_DAY / 2));
    CommonTime dt = yt;
+=======
+
+   DayTime dt = DayTime( (short) year, (short) DOY, (DayTime::SEC_DAY / 2));
+>>>>>>> .merge-right.r3070
 
       // Try some samples
    ConstellationDefinition cd = cs.findCD( yt );

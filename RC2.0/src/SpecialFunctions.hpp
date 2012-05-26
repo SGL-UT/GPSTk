@@ -91,8 +91,8 @@ namespace gpstk
        *  d < 360 has been tested
        */
    double factorial(const double d);
-   
-   
+
+
       /** Error function.
        *
        * This is a C++ implementation of the free Python code found in:

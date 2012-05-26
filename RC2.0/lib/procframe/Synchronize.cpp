@@ -67,8 +67,13 @@ namespace gpstk
    gnssRinex& Synchronize::Process(gnssRinex& gData)
       throw(SynchronizeException)
    {
+<<<<<<< .working
       CommonTime time = dynamic_cast<gnssRinex*>(pgRov1)->header.epoch;
       Process(time,gData);
+=======
+      DayTime time = dynamic_cast<gnssRinex*>(pgRov1)->header.epoch;
+      Process(time,gData);
+>>>>>>> .merge-right.r3070
 
       return gData;
       
@@ -84,6 +89,7 @@ namespace gpstk
    gnssSatTypeValue& Synchronize::Process(gnssSatTypeValue& gData)
       throw(SynchronizeException)
    {
+<<<<<<< .working
       CommonTime time(pgRov1->header.epoch);
       
       gnssRinex gRin;
@@ -91,9 +97,19 @@ namespace gpstk
       
       gData.header = gRin.header;
       gData.body = gRin.body;
+=======
+      DayTime time(pgRov1->header.epoch);
+      
+      gnssRinex gRin;
+      Process(time,gRin);
+      
+      gData.header = gRin.header;
+      gData.body = gRin.body;
+>>>>>>> .merge-right.r3070
 
       return gData;
 
+<<<<<<< .working
    }  // End of method 'Synchronize::Process()'
 
 
@@ -101,6 +117,15 @@ namespace gpstk
       throw(SynchronizeException)
    {
       
+=======
+   }  // End of method 'Synchronize::Process()'
+
+
+   gnssRinex& Synchronize::Process(DayTime time, gnssRinex& gData)
+      throw(SynchronizeException)
+   {
+      
+>>>>>>> .merge-right.r3070
       if (firstTime)
       {
          (*pRinexRef) >> gData;      // Get data out of ref station RINEX file
@@ -146,8 +171,15 @@ namespace gpstk
 
 
       return gData;
+   }
 
+<<<<<<< .working
    }  // End of method 'Synchronize::Process(CommonTime time, gnssRinex& gData)'
+=======
+>>>>>>> .merge-right.r3070
 
+<<<<<<< .working
 
+=======
+>>>>>>> .merge-right.r3070
 }  // End of namespace gpstk

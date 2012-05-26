@@ -157,6 +157,10 @@ namespace gpstk
          /// Definition to compute the Melbourne-Wubbena (W) combination
       gnssLinearCombination mwubbenaCombination;
 
+         /// Definition to compute the prefit residual of Melbourne-Wubbena (W) 
+         /// combination
+      gnssLinearCombination mwubbenaPrefit;
+
          /// Definition to compute the Melbourne-Wubbena (W) combination,
          /// using C1 instead of P1
       gnssLinearCombination mwubbenaCombWithC1;
