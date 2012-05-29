@@ -106,6 +106,7 @@ namespace gpstk
       // Add to the store directly
    void EpochDataStore::addData(const CommonTime& time, 
                                 const std::vector<double>& data)
+      throw()
    {
       
       allData[time] = data;

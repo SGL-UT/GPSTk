@@ -122,7 +122,8 @@ namespace gpstk
    protected:
 
          /// Add to the store directly
-      void addData(const CommonTime& time,const std::vector<double>& data);
+      void addData(const CommonTime& time,const std::vector<double>& data)
+         throw();
 
 
          /** Get the Data at the given epoch and return it.
