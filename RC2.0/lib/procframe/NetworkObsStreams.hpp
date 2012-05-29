@@ -26,7 +26,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010
+//  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
 //============================================================================
 
@@ -127,6 +127,7 @@ namespace gpstk
          
          SourceID obsSource;
 
+         Synchronize* pSynchro;
          RinexObsStream* pObsStream;
       };
 
@@ -135,6 +136,9 @@ namespace gpstk
 
          /// Map to easy access the streams by 'SourceID'
       std::map<SourceID, RinexObsStream*> mapSourceStream;
+
+         /// Map to easy access the synchronize object
+      std::map<SourceID, Synchronize*> mapSourceSynchro;
      
          /// Reference Sourcee
       SourceID referenceSource;

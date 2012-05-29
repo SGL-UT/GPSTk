@@ -146,8 +146,6 @@ namespace gpstk
 
 
       return gData;
-
    }  // End of method 'Synchronize::Process(CommonTime time, gnssRinex& gData)'
-
 
 }  // End of namespace gpstk

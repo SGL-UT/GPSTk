@@ -253,7 +253,6 @@ namespace gpstk
       virtual gnssRinex& Process(CommonTime time, gnssRinex& gData)
          throw(SynchronizeException);
 
-
          /// gnssRinex data buffer
       std::list<gnssRinex> gnssRinexBuffer;
 
