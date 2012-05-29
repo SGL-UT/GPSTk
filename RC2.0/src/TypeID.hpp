@@ -240,6 +240,9 @@ namespace gpstk
          BL7,       ///< Phase ambiguity in L7
          BL8,       ///< Phase ambiguity in L8
          BLC,       ///< Phase ambiguity in LC
+         BWL,       ///< Phase ambiguity in WL
+         BWL2,      ///< Phase ambiguity in WL2
+         BWL4,      ///< Phase ambiguity in WL4
             // Multipath-related types
          mpC1,      ///< Multipath bias, C1
          mpC2,      ///< Multipath bias, C2

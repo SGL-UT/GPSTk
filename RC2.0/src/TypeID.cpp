@@ -192,6 +192,9 @@ namespace gpstk
       tStrings[BL7]        = "ambiguityL7";
       tStrings[BL8]        = "ambiguityL8";
       tStrings[BLC]        = "ambiguityLC";
+      tStrings[BWL]        = "ambiguityWL";
+      tStrings[BWL2]       = "ambiguityWL2";
+      tStrings[BWL4]       = "ambiguityWL4";
       tStrings[mpC1]       = "multipathC1";
       tStrings[mpC2]       = "multipathC2";
       tStrings[mpC5]       = "multipathC5";
