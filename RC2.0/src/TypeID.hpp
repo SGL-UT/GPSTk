@@ -304,6 +304,7 @@ namespace gpstk
          dLon,      ///< Position bias, Longitude component
          dH,        ///< Position bias, Height component
          cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
+         cdtSat,    ///< In the position domain: Satellite clock offset, meters; in the range domain: cdt coefficient
          dSatX,     ///< dSatX coefficient for satellite position in XYZ
          dSatY,     ///< dSatY coefficient for satellite position in XYZ
          dSatZ,     ///< dSatZ coefficient for satellite position in XYZ
@@ -321,6 +322,9 @@ namespace gpstk
          cdtL1,     ///< Receiver clock offset of L1
          cdtL2,     ///< Receiver clock offset of L2
          cdtL5,     ///< Receiver clock offset of L5
+         cdtPC,     ///< Receiver clock offset of PC
+         cdtLC,     ///< Receiver clock offset of LC
+         cdtWL,     ///< Receiver clock offset of WL
          cdtSatC1,  ///< Satellite clock offset of C1
          cdtSatP1,  ///< Satellite clock offset of P1
          cdtSatC2,  ///< Satellite clock offset of C2
@@ -330,6 +334,9 @@ namespace gpstk
          cdtSatL1,  ///< Satellite clock offset of L1
          cdtSatL2,  ///< Satellite clock offset of L2
          cdtSatL5,  ///< Satellite clock offset of L5
+         cdtSatPC,  ///< Satellite clock offset of PC
+         cdtSatLC,  ///< Satellite clock offset of LC
+         cdtSatWL,  ///< Satellite clock offset of WL
             // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component
