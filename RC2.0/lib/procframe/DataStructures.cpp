@@ -2733,31 +2733,41 @@ in matrix and number of types do not match") );
 
             std::string line;
 
-            while(1)
+               // The following block handles Rinex2 observation files that have
+               // empty (but otherwise valid) epoch lines and comments in the middle
+               // of the observation section. This is frequent in Rinex2 files that
+               // are 'spliced' every hour.
+            bool isValidEpochLine(false);
+            while( !isValidEpochLine )
             {
+                  // Get line
                strm.formattedGetLine(line, true);
-               
-               bool isValidEpochLine(true);
+
+               isValidEpochLine = true;
 
                try
                {
+                     // R2 observation lines have a 80 characters length limit
                   if( line.size()>80 ) isValidEpochLine = false;
 
+                     // Try to read the epoch
                   CommonTime tempEpoch = parseTime(line, hdr);
+                     // We also have to check if the epoch is valid
                   if(tempEpoch==CommonTime::BEGINNING_OF_TIME)
                   {
                      isValidEpochLine = false;
                   }
-                     // check is it a number, if not exception will be throwed
+
+                     // If it is not a number, an exception will be thrown
                    short tempNumSat = asInt(line.substr(29,3));                   
                }
                catch(...)
                {
+                     // Any problem will cause the loop to be repeated
                   isValidEpochLine = false;
                }
 
-               if(isValidEpochLine) break;
-            }            
+            }  // End of 'while( !isValidEpochLine )'
 
                // process the epoch line, including SV list and clock bias
             short epochFlag = asInt(line.substr(28,1));

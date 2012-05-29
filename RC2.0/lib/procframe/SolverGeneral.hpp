@@ -48,6 +48,11 @@ namespace gpstk
 
       class GeneralConstraint;
 
+         /// Handy type definition
+      typedef std::map<Variable, double> VariableDataMap;
+
+      class SolverConstraint;
+
       //@{
 
       /** This class is an Extended Kalman Filter (EKF) implementation that
@@ -170,7 +175,7 @@ namespace gpstk
           *
           * @param equation      Object describing the equations to be solved.
           */
-      SolverGeneral( const Equation& equation ) : firstTime(true)
+      SolverGeneral( const Equation& equation ) : firstTime(true), pConstraint(0)
       { equSystem.addEquation(equation); };
 
 
@@ -187,7 +192,7 @@ namespace gpstk
           * @param equationSys         Object describing an equation system to
           *                            be solved.
           */
-      SolverGeneral( const EquationSystem& equationSys ) : firstTime(true)
+      SolverGeneral( const EquationSystem& equationSys ) : firstTime(true), pConstraint(0)
       { equSystem = equationSys; };
 
 
@@ -250,6 +255,14 @@ namespace gpstk
           */
       virtual SolverGeneral& clearEquations()
       { equSystem.clearEquations(); return (*this); };
+
+
+         /** Set the SolverConstraint object.
+          *
+          * @param pSolverConstraint       Object to do constraint
+          */
+      virtual SolverGeneral& setConstraint(SolverConstraint* pSolverConstraint=0 )
+      { pConstraint=pSolverConstraint; return (*this); };
 
 
          /// This method resets the filter, setting all variance values in
@@ -446,6 +459,10 @@ namespace gpstk
 
          /// Equation system
       EquationSystem equSystem;
+
+
+         /// Constraint system
+      SolverConstraint* pConstraint;
 
 
          /** Code to be executed before 'Compute()' method.
