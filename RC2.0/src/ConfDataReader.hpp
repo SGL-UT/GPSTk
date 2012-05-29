@@ -204,7 +204,8 @@ namespace gpstk
           *
           */
       virtual string getValue( string variable,
-                               string section = "DEFAULT" )
+                               string section = "DEFAULT",
+                               string defaultVal = "")
          throw(ConfigurationException);
 
 
@@ -215,9 +216,13 @@ namespace gpstk
           *
           */
       virtual double getValueAsDouble( string variable,
-                                       string section = "DEFAULT" )
+                                       string section = "DEFAULT",
+                                       double defaultVal = 0.0)
          throw(ConfigurationException)
-      { return StringUtils::asDouble( getValue(variable, section) ); };
+      { 
+         return StringUtils::asDouble( 
+               getValue(variable, section, StringUtils::asString(defaultVal)) ); 
+      };
 
 
          /** Method to get the value of a given variable as an integer
@@ -227,9 +232,13 @@ namespace gpstk
           *
           */
       virtual int getValueAsInt( string variable,
-                                 string section = "DEFAULT" )
+                                 string section = "DEFAULT",
+                                 int    defaultVal = 0 )
          throw(ConfigurationException)
-      { return StringUtils::asInt( getValue(variable, section) ); };
+      { 
+         return StringUtils::asInt( 
+                  getValue(variable, section, StringUtils::asString(defaultVal)) ); 
+      };
 
 
          /** Method to get the value of a given variable as a boolean
@@ -239,7 +248,8 @@ namespace gpstk
           *
           */
       virtual bool getValueAsBoolean( string variable,
-                                      string section = "DEFAULT" )
+                                      string section = "DEFAULT", 
+                                      bool   defaultVal = false )
          throw(ConfigurationException);
 
 
@@ -256,7 +266,8 @@ namespace gpstk
           * 'variableList'.
           */
       virtual string fetchListValue( string variableList,
-                                     string section = "DEFAULT" )
+                                     string section = "DEFAULT",
+                                     string defaultVal = "" )
          throw(ConfigurationException);
 
 
@@ -273,9 +284,13 @@ namespace gpstk
           * 'variableList'.
           */
       virtual double fetchListValueAsDouble( string variableList,
-                                             string section = "DEFAULT" )
+                                             string section = "DEFAULT",
+                                             double defaultVal = 0.0 )
          throw(ConfigurationException)
-      { return StringUtils::asDouble( fetchListValue(variableList,section) ); };
+      { 
+         return StringUtils::asDouble( 
+         fetchListValue(variableList,section,StringUtils::asString(defaultVal))); 
+      };
 
 
          /** Method to fetch (as integer) the first value of a given
@@ -291,9 +306,13 @@ namespace gpstk
           * 'variableList'.
           */
       virtual int fetchListValueAsInt( string variableList,
-                                       string section = "DEFAULT" )
+                                       string section = "DEFAULT",
+                                       int    defaultVal = 0 )
          throw(ConfigurationException)
-      { return StringUtils::asInt( fetchListValue(variableList,section) ); };
+      { 
+         return StringUtils::asInt( 
+         fetchListValue(variableList,section,StringUtils::asString(defaultVal))); 
+      };
 
 
          /** Method to fetch (as boolean) the first value of a given
@@ -311,7 +330,8 @@ namespace gpstk
           * \warning If variable list is empty, it will return FALSE.
           */
       virtual bool fetchListValueAsBoolean( string variableList,
-                                            string section = "DEFAULT" )
+                                            string section = "DEFAULT",
+                                            bool   defaultVal = false)
          throw(ConfigurationException);
 
 

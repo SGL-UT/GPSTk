@@ -88,6 +88,11 @@ namespace gpstk
 	class ConfDataWriter:public FFTextStream
 	{
 	public:
+
+      /// Default constructor
+      ConfDataWriter()
+      { setVariableWidth(); setValuePrecision();}
+
 		   /** Common constructor. It will always open 'file' for read and will
 		    *  configuration data in one pass.
 		    *
@@ -159,7 +164,7 @@ namespace gpstk
                          const int&    val,
                          const string& varComment = "",
                          const string& valComment = "")
-      { writeVariable(var,StringUtils::asString(val),varComment,valComment);};
+      { writeVariable(var,StringUtils::asString(val),varComment,valComment);}
 		
          
          /** Write a double variable with general format
@@ -172,8 +177,7 @@ namespace gpstk
       void writeVariable(const string& var,
                          const double& val,
                          const string& varComment = "",
-                         const string& valComment = "")
-      { writeVariable(var,StringUtils::asString(val),varComment,valComment);};
+                         const string& valComment = "");
 
 
 		   
@@ -247,17 +251,30 @@ namespace gpstk
          /// written by this class.
 		void writeEnd();
 
+         /// Method to set the variable name with to make the output looks
+         /// more neat and beauty.
+      void setVariableWidth(const int width = 0)
+      { variableWidth = width;}
+
+         /// Method to set the precision of double variable's value to make the output looks
+         /// the output looks more neat and beauty.
+      void setValuePrecision(const int precision = 6)
+      { valuePrecison = precision;}
+
 	protected:
 
          /// Write a string line to the file.
 		void formattedPutLine(const string& sline);
 
+      int variableWidth;
+      
+      int valuePrecison;
 
-	};  // End of 'class ConfDataWriter'
+	};  // End of class 'ConfDataWriter'
 
        //@}
 
-}  // End of 'namespace gpstk'
+}  // End of namespace gpstk
 
 
 

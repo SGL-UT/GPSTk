@@ -1,3 +1,4 @@
+#pragma ident "$Id$"
 
 /**
 * @file GPSTK_CONVERTC1TOP1_HPP.hpp
@@ -56,8 +57,14 @@ namespace gpstk
                                                 satTypeValueMap& gData )
       throw(ProcessingException)
    {
+      
       try
       {
+         static const double minLimit(15000000.0);
+         static const double maxLimit(30000000.0);
+
+         SatIDSet satRejectedSet;
+
          // Loop through all the satellites
          satTypeValueMap::iterator it;
          for (it = gData.begin(); it != gData.end(); ++it)
@@ -66,8 +73,29 @@ namespace gpstk
             
             typeValueMap::iterator ittC1 = it->second.find(TypeID::C1);
             typeValueMap::iterator ittP1 = it->second.find(TypeID::P1);
-            
-            if( (ittC1!=it->second.end()) && (ittP1==it->second.end()) )
+
+            bool hasC1( ittC1 != it->second.end() );
+            bool hasP1( ittP1 != it->second.end() );
+
+            // filter out C1 and P1
+            if(hasC1)
+            {
+               if( it->second[TypeID::C1]<minLimit || 
+                   it->second[TypeID::C1]>maxLimit      ) { hasC1 = false;}
+            }
+            if(hasP1)
+            {
+               if( it->second[TypeID::P1]<minLimit || 
+                   it->second[TypeID::P1]>maxLimit      ) { hasP1 = false;}
+            }
+
+               // If no desirable data, then schedule this satellite for removal
+            if( !hasC1 && !hasP1)
+            {
+               satRejectedSet.insert(it->first);
+            }
+
+            if( hasC1 && !hasP1 )
             {
                double Bp1c1(0.0);      // in ns
                try
@@ -84,6 +112,8 @@ namespace gpstk
             }
 
          }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
+
+         gData.removeSatID(satRejectedSet);
 
          return gData;
             
