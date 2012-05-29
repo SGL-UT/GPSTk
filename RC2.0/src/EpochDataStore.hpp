@@ -64,6 +64,12 @@ namespace gpstk
            interPoints(10)
       {}
 
+      EpochDataStore(int interpolationPoints)
+         : initialTime(CommonTime::END_OF_TIME),
+         finalTime(CommonTime::BEGINNING_OF_TIME),
+         interPoints(interpolationPoints)
+      {}
+
          /// Default deconstructor
       virtual ~EpochDataStore()
       { allData.clear(); }
@@ -109,11 +115,14 @@ namespace gpstk
       { return finalTime; };
 
 
+      EpochDataStore& setInterpolationPoints(const int& n)
+      { interPoints = n; return (*this); }
+
+
    protected:
 
          /// Add to the store directly
-      void addData(const CommonTime& time,const std::vector<double>& data)
-         throw();
+      void addData(const CommonTime& time,const std::vector<double>& data);
 
 
          /** Get the Data at the given epoch and return it.
