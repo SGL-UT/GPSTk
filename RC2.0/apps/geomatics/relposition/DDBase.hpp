@@ -55,7 +55,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <ctime>
 
 // GPSTk
 //#define RANGECHECK // if defined, Vector and Matrix will throw on invalid index.
@@ -81,6 +80,7 @@
 #include "format.hpp"
 
 //------------------------------------------------------------------------------------
+#include <time.h>
 extern clock_t totaltime;        // for timing tests
 
 //------------------------------------------------------------------------------------

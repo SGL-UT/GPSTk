@@ -128,7 +128,7 @@ namespace gpstk
           * @throw FFStreamError if EOF is found and \a expectEOF is false
           * @throw gpstk::StringUtils::StringException when a string error occurs
           * or if any other error happens.
-          * @warning There is a maximum line length of 1500 characters when
+          * @warning There is a maximum line length of 256 characters when
           * using this function.
           */
       inline void formattedGetLine( std::string& line,

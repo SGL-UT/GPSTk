@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Dagoberto Salazar - gAGE. 2006, 2012
 //
 //============================================================================
@@ -88,18 +88,13 @@ namespace gpstk
    protected:
 
 
-<<<<<<< .working
          /// Compute the combination of observables.
       virtual double getCombination( double obs1, double obs2 )
          throw(InvalidRequest)
       {
          return ( (GAMMA_GPS*obs1 - obs2)/(GAMMA_GPS - 1.0) );
       };
-=======
-   }; // end class ExtractPC
->>>>>>> .merge-right.r3070
 
-<<<<<<< .working
 
    private:
 
@@ -111,11 +106,7 @@ namespace gpstk
 
 
       //@}
-=======
-
-   //@}
->>>>>>> .merge-right.r3070
-
+   
 }  // End of namespace gpstk
 
 #endif   // GPSTK_EXTRACTPC_HPP

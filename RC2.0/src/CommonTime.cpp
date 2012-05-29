@@ -253,14 +253,9 @@ namespace gpstk
    {
          // convert everything to days
       day = static_cast<double>( m_day ) + 
-<<<<<<< .working
             static_cast<double>( m_msod ) / MS_PER_DAY +
             m_fsod / SEC_PER_DAY;
       timeSystem = m_timeSystem;
-=======
-         static_cast<double>( m_msod ) / MS_PER_DAY +
-         m_fsod / SEC_PER_DAY;
->>>>>>> .merge-right.r3070
    }
 
    void CommonTime::get( double& day ) const

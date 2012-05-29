@@ -44,12 +44,9 @@
 
 //------------------------------------------------------------------------------------
 // system includes
-<<<<<<< .working
 #include "TimeString.hpp"
 #include <CivilTime.hpp>
 #include <time.h>
-=======
->>>>>>> .merge-right.r3070
 
 // GPSTk
 //#define RANGECHECK // throw on invalid ranges in Vector and Matrix
@@ -63,8 +60,7 @@ using namespace std;
 using namespace gpstk;
 
 //------------------------------------------------------------------------------------
-string Version("4.8 5/13/11");
-// 4.8  5/13/11 Timetable algorithm 'using' ave time btwn segments for a gap; bug213
+string Version("4.7b 6/23/10");
 // 4.7b 6/23/10 Minor change so NewB trop. model works properly
 // 4.7 12/10/08 Fix empty buffers bug (131) in Timetable
 // 4.6 12/5/08  Remove clock jump code in ClockModel.cpp
@@ -165,8 +161,7 @@ try {
    " will read GPS data from any number of RINEX obs files and process them\n"
    " in a double-differenced carrier phase estimation algorithm to produce precise\n"
    " estimates of relative positions. Input is on the command line, or of the same\n"
-   " format in a file (see -f<file> below). "
-   "DDBase is built on the GPS Toolkit (GPSTk).\n"
+   " format in a file (see -f<file> below). DDBase is built on the GPS Toolkit (GPSTk).\n"
    " NB. Input option --DT <data_interval_(seconds)> is optional but recommended.\n"
    " NB. Stations are defined, and many inputs for each are identified, by a label\n"
    "  (called station label or id below), which is case sensitive and must be used\n"
@@ -179,7 +174,6 @@ try {
    " description, and the default value, if there is one, in ().\n";
 
       // get current time
-<<<<<<< .working
    CurrEpoch.setLocalTime();
    time_t timer;
    struct tm *tblock;
@@ -187,14 +181,11 @@ try {
    tblock = localtime(&timer);
    CurrEpoch=CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
                tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
-=======
-   CurrEpoch.setLocalTime();
->>>>>>> .merge-right.r3070
       // print title and current time to screen
    Title += printTime(CurrEpoch,", Run %04Y/%02m/%02d %02H:%02M:%02S");
    cout << Title << endl;
 
-   for(;;) {      // a convenience
+   for(;;) {
          // ------------------------------------------------------------------
          // get command line input; -99 is 'help' return
       if((iret = CI.GetCmdInput(argc, argv))) break;

@@ -7,8 +7,8 @@
  * Miscellaneous mathematical algorithms
  */
 
-#ifndef GPSTK_MISCMATH_HPP
-#define GPSTK_MISCMATH_HPP
+#ifndef GPSTK_MISC_MATH_HPP
+#define GPSTK_MISC_MATH_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,132 +46,18 @@
 //
 //=============================================================================
 
+
+
+
+
+
 #include <vector>
 #include "MathBase.hpp"
-#include "DebugUtils.hpp"
 
 namespace gpstk
 {
    /** @defgroup math Mathematical algorithms */
    //@{
-
-   inline double Round(double x);
-
-      /// Returns the Lagrange interpolation.
-   template <class T>
-   T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, T x)
-   {
-      GPSTK_ASSERT(X.size()==Y.size());
-
-      T Yx(0.0);
-      for(size_t i=0;i<X.size();i++)
-      {
-         if(x==X[i]) return Y[i];
-
-         T Li(1.0);
-         for(size_t j=0;j<X.size();j++)
-         {
-            if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
-         }
-         Yx += Li*Y[i];
-      }
-
-      return Yx;
-
-   }  // end T LagrangeInterpolation(vector, vector, const T, T&)
-
-      /// Returns the first derivative of Lagrange interpolation.
-   template <class T>
-   T LagrangeFirstDerivative(const std::vector<T>& X, const std::vector<T>& Y, T x)
-   {
-      GPSTK_ASSERT(X.size()==Y.size());
-
-      T dY1(0.0);
-      for(size_t i=0; i<X.size(); i++)
-      { 
-         T temp1(1.0);
-         T temp2(0.0);
-         for(size_t j=0; j<X.size(); j++)
-         {
-            if(j==i) continue;
-
-            T temp3(1.0);
-            for(size_t k=0;k<X.size();k++)
-            {
-               if( (k!=i) && (k!=j) ) temp3 *= (x-X[k]);
-            }
-
-            temp1 *= (X[i]-X[j]); 
-            temp2 += temp3;
-         }
-
-         dY1 += temp2/temp1*Y[i];
-      }
-
-      return dY1;
-   }
-
-      /// Returns the first derivative of Lagrange interpolation.
-   template <class T>
-   T LagrangeSecondDerivative(const std::vector<T>& X, const std::vector<T>& Y, T x)
-   {
-      GPSTK_ASSERT(X.size()==Y.size());
-
-      const size_t degree( X.size() );
-
-      // First, compute interpolation factors
-      typedef std::vector< T > vectorType;
-      std::vector< vectorType > delta( degree, vectorType(degree, 0.0) );
-
-      for (size_t i = 0; i < degree; ++i)
-      {
-         for (size_t j = 0; j < degree; ++j)
-         {
-            if (j != i) delta[i][j] = ( (x - X[j]) / (X[i] - X[j]) );
-         }
-      }
-
-      double retVal(0.0);
-
-      for( int i = 0; i < degree; ++i )
-      {
-         double sum( 0.0 );
-
-         for( int m = 0; m < degree; ++m )
-         {
-            if( m != i )
-            {
-               double weight1( 1.0/(X[i]-X[m]) );
-               double sum2( 0.0 );
-
-               for( int j = 0; j < degree; ++j )
-               {
-                  if( (j != i) && (j != m) )
-                  {
-                     double weight2( 1.0/(X[i]-X[j]) );
-
-                     for( int n = 0; n < degree; ++n )
-                     {
-                        if( (n != j) && (n != m) && (n != i) ) weight2 *= delta[i][n];
-                     }
-                     sum2 += weight2;
-                  }
-               }
-
-               sum += sum2*weight1;
-            }
-         }
-
-         retVal += Y[i] * sum;
-      }
-
-      return retVal;
-
-   }  // End of 'lagrangeInterpolating2ndDerivative()'
-
-
-   /// ATTENTION: THERE ARE SOME BUGS IN THE FOLLOWING LagrangeInterpolation
-   //=============================================================================
 
    /** Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
     * returning the value of Y(x). Also return an estimate of the estimation error in 'err'.
@@ -180,9 +66,30 @@ namespace gpstk
    template <class T>
    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& err)
    {
-      err = 0.0;
-      return LagrangeInterpolation(X,Y,x);
+      std::size_t i,j,k;
+      T y,del;
+      std::vector<T> D,Q;
 
+      err = T(0);
+      k = X.size()/2;
+      if(x == X[k]) return Y[k];
+      if(x == X[k-1]) return Y[k-1];
+      if(ABS(x-X[k-1]) < ABS(x-X[k])) k=k-1;
+      for(i=0; i<X.size(); i++) {
+         Q.push_back(Y[i]);
+         D.push_back(Y[i]);
+      }
+      y = Y[k--];
+      for(j=1; j<X.size(); j++) {
+         for(i=0; i<X.size()-j; i++) {
+            del = (Q[i+1]-D[i])/(X[i]-X[i+j]);
+            D[i] = (X[i+j]-x)*del;
+            Q[i] = (X[i]-x)*del;
+         }
+         err = (2*k < X.size()-j ? Q[k+1] : D[k--]);
+         y += err;
+      }
+      return y;
    }  // end T LagrangeInterpolation(vector, vector, const T, T&)
 
    // The following is a
@@ -208,7 +115,7 @@ namespace gpstk
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& y, T& dydx)
    {
-      size_t i,j,k,N=X.size(),M;
+      std::size_t i,j,k,N=X.size(),M;
       M = (N*(N+1))/2;
       std::vector<T> P(N,T(1)),Q(M,T(1)),D(N,T(1));
       for(i=0; i<N; i++) {
@@ -382,11 +289,6 @@ namespace gpstk
       return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a) + (d/a)*(d/a));
    }
 
-
-   inline double Round(double x)
-   {
-      return double(std::floor(x+0.5));
-   }
    //@}
 
 }  // namespace gpstk

@@ -46,10 +46,8 @@
  */
 
    // Local headers
-#include <string>
 #include "GenXSequence.hpp"
 
-using namespace std;
 namespace gpstk
 {
       // Constructor
@@ -75,7 +73,7 @@ namespace gpstk
       lengthOfSequence = initialLengthOfSequence;
       maxOfSequence = lengthOfSequence + maxDelay;
    
-      uint32_t output;
+      unsigned long output;
       word_num = 0;
       bit_num = 0;
       int bit16cnt;
@@ -83,7 +81,7 @@ namespace gpstk
       int i;
    
          // Clear the output array 
-      for ( i=0; i<MAX_WORD; ++i ) bits[i] = 0x00000000;
+      for ( i=0; i<MAX_WORD; ++i ) bits[i] = 0L;
       debugPrint = false;
       
       for ( i=0; i<lengthOfSequence ; ++i)
@@ -104,6 +102,7 @@ namespace gpstk
          }
          int newBit = cnt % 2;
          reg |= newBit;
+      
       }
 
          // Fill delay bits with copies of the last ouptut bit
@@ -115,7 +114,7 @@ namespace gpstk
    }
 
       // Private helper method to avoid duplicate code.
-   void GenXSequence::addBitToSequence( uint32_t newBit )
+   void GenXSequence::addBitToSequence( unsigned long newBit )
    {
          // Left shift any pre-existing data, then OR on the new 
          // data (assumed to be right-justified).
@@ -142,11 +141,9 @@ namespace gpstk
           Note that the location of the wrap around can be modified using the
           function GenXSequence::setEndOfSequence( int los );
        */
-   uint32_t GenXSequence::operator[] ( const int ia )
+   unsigned long GenXSequence::operator[] ( int i )
    {
-      uint32_t retArg = 0x00000000;
-      int i = ia;
-      if (i >= lengthOfSequence) i = i % lengthOfSequence;
+      unsigned long retArg;
       int ndx1 = i / MAX_BIT;
       int offset = i % MAX_BIT;
       if ( (i+MAX_BIT) <= lengthOfSequence )
@@ -166,6 +163,7 @@ namespace gpstk
          */
       else
       {
+         retArg = 0L;
          int numRemainingInSequence = lengthOfSequence - i;
          int numRemainingInWord = MAX_BIT - offset;
          int numFilled = 0;
@@ -180,7 +178,7 @@ namespace gpstk
             numFilled = numRemainingInWord;
          }
 
-         uint32_t temp = bits[ndx1];
+         unsigned long temp = bits[ndx1];
             /*
                Get bits from last word
                Case 1: No bits from previous word, need only "middle" section
@@ -191,7 +189,7 @@ namespace gpstk
          if (numFilled==0 && offset!=0)
          {
             temp <<= offset;     // Move to left to clear excess msb
-            temp >>= (MAX_BIT-numRemainingInSequence);   // Shift right to clear excess lsb
+            temp >>= (MAX_BIT-numRemainingInSequence);   // Shift right to clear excess lsb         retArg |= temp;
             temp <<= (MAX_BIT - (numRemainingInSequence+numFilled) );
             retArg |= temp;
          }

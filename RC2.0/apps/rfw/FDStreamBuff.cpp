@@ -80,17 +80,16 @@ namespace gpstk
    {
       if( !is_open() )
          return EOF;
-
       if( n == 0 )
          return 0;
-
+   
       for(;;)
       {
          const int char_read = ::read(handle, buffer, n);
          if( char_read >= 0 )
             return char_read;
-         if ( errno == EAGAIN || errno == EINTR )
-            cout << "read: EAGAIN or EINTR" << endl;
+         if( errno == EAGAIN || errno == EINTR )
+            cout << "to be implimented" << endl;
          else
             return EOF;
       }
@@ -150,7 +149,7 @@ namespace gpstk
 
       if( base() == 0 )	// If there wasn't any buffer, make one first
          doallocate();
-
+  
       //assert( base() );
       base();
       const int count = read(base(),ebuf() - base());
@@ -174,14 +173,12 @@ namespace gpstk
       return 1;
    }
 
+
    // Associate a user buffer with the FDStreamBuff
    FDStreamBuff* FDStreamBuff::setbuf(char* p, const int len)
    {
       if( streambuf::setbuf(p,len) == 0 )
-      {
-         cout << "throw an exception here?" << endl;
          return 0;
-      }
 
       setp(base(),base());
       setg(base(),base(),base());

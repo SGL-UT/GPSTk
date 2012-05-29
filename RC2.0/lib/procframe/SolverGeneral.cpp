@@ -29,12 +29,7 @@
 
 
 #include "SolverGeneral.hpp"
-<<<<<<< .working
 #include "GeneralConstraint.hpp"
-#include "SolverConstraint.hpp"
-=======
-#include "GeneralConstraint.hpp"
->>>>>>> .merge-right.r3070
 
 namespace gpstk
 {
@@ -806,11 +801,7 @@ covariance matrix.");
          VariableDataMap::const_iterator it2 = it1->second.find(var2);
          if(it2!=it1->second.end())
          {
-<<<<<<< .working
             return it2->second; // covarianceMap[var1][var2];
-=======
-            return it2->second;
->>>>>>> .merge-right.r3070
          }
          else
          {
@@ -818,11 +809,7 @@ covariance matrix.");
             if(it1!=covarianceMap.end())
             {
                it2 = it1->second.find(var1);
-<<<<<<< .working
                if(it2!=it1->second.end()) it2->second; //return covarianceMap[var2][var1];
-=======
-               if(it2!=it1->second.end()) return it2->second;
->>>>>>> .merge-right.r3070
             }
          }
       }

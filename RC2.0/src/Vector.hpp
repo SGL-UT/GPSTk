@@ -33,7 +33,6 @@
 //============================================================================
 
 #include <limits>
-#include <vector>
 #include "VectorBase.hpp"
 
 namespace gpstk
@@ -256,15 +255,6 @@ namespace gpstk
                v[i] = defaultValue;
             return *this;
          }
-
-        // convert the gpstk vector to std vector
-      std::vector<T> toStdVector()
-      {
-          std::vector<T> v;
-          for(size_t i = 0; i < s; i++)
-              v.push_back(v[i] );
-          return v;
-      }
 
     /// Returns the concatenation of this Vector and Vector b
     inline Vector operator&&(const Vector &b) 

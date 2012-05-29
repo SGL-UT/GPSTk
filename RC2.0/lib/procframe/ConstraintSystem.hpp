@@ -44,7 +44,7 @@ namespace gpstk
       double prefit;
       double variance;     // the smaller the tighter constraint
 
-      constraintHeader():prefit(0.0),variance(1e-12){}
+      constraintHeader():prefit(0),variance(1e-12){}
 
       constraintHeader(double meas,double var=1e-12)
          : prefit(meas),variance(var){}
@@ -55,27 +55,6 @@ namespace gpstk
    {
          /// Default constructor.
       Constraint() {};
-
-
-
-         /// Common constructor.
-<<<<<<< .working
-      Constraint( const constraintHeader& h)
-      { header = h; }
-=======
-      Constraint( const constraintHeader& h)
-      { header = h; }
-
-
-         /// Common constructor.
-      Constraint( const constraintHeader& h,
-                  const VariableDataMap& b )
-      {
-         header = h;
-         body   = b;
-      }
->>>>>>> .merge-right.r3070
-
 
          /// Common constructor.
       Constraint( const constraintHeader& h,
@@ -107,49 +86,14 @@ namespace gpstk
       ~ConstraintSystem(){}
 
 
-<<<<<<< .working
-         /// Add a single constraint
-      virtual ConstraintSystem& addConstraint(const Constraint& constraint)
-      { constraintList.push_back(constraint); return (*this); }
-=======
-         /// Add a single constraint
-      virtual ConstraintSystem& addConstraint(const Constraint& constraint)
-      { constraintList.push_back(constraint); return (*this); }
->>>>>>> .merge-right.r3070
+      virtual ConstraintSystem& addConstraint(const Constraint& constraint);
 
-<<<<<<< .working
 
-         /// Remove a single constraint
       virtual ConstraintSystem& removeConstraint(const Constraint& constraint);
 
       
-         /// Clear all of  the constraint
       virtual ConstraintSystem& clearConstraint();
-=======
->>>>>>> .merge-right.r3070
-      { constraintList.clear(); return (*this); }
 
-<<<<<<< .working
-
-         /// Method to set multi-constraints
-=======
-         /// Remove a single constraint
-      virtual ConstraintSystem& removeConstraint(const Constraint& constraint);
-
-         
-         /// Clear all of the constraints
-      virtual ConstraintSystem& clearConstraint()
-      { constraintList.clear(); return (*this); }
-
-
-         /// Method to set multi-constraints
-      virtual ConstraintSystem& setConstraint(const VariableSet& varSet, 
-                                              const Vector<double>& prefit);
-
-         /// Method to set multi-constraints
->>>>>>> .merge-right.r3070
-      virtual ConstraintSystem& setConstraint(const VariableSet& varSet,
-                                              const Vector<double>& prefit);
 
          /// Method to set multi-constraints
       virtual ConstraintSystem& setConstraint(const VariableSet& varSet,
@@ -163,77 +107,26 @@ namespace gpstk
                                                  Matrix<double>& covariance)
          throw(InvalidConstraintSystem);
 
-<<<<<<< .working
 
-         /// Return current constraints
-=======
-   
-         /// Return current constraints
->>>>>>> .merge-right.r3070
       ConstraintList getCurrentConstraints()
       { return constraintList; }
 
-<<<<<<< .working
-         /// Return number of constraints
-=======
-
-         /// Return the number of constraints
->>>>>>> .merge-right.r3070
       int numberOfConstraints()
       { return constraintList.size(); }
 
-<<<<<<< .working
-         /// Check is there any constraint
-=======
-
-         /// Check is there any constraint
->>>>>>> .merge-right.r3070
       bool hasConstraints()
       { return (constraintList.size()>0)?true:false; }
 
 
-         /// Return the current constraints
       virtual ConstraintList getConstraintList() const
       { return constraintList; };
 
 
-         /// Build up the constraint system with a constraint list
       virtual ConstraintSystem& setConstraintList(
                                          const ConstraintList& equationList )
       { constraintList = equationList; return (*this); };
 
-
-<<<<<<< .working
-         /// Add a constraint list
-      virtual ConstraintSystem& addConstraintList(
-                                            const ConstraintList& equationList);
-=======
-         /// Return the current constraints
-      virtual ConstraintList getConstraintList() const
-      { return constraintList; };
->>>>>>> .merge-right.r3070
-
-<<<<<<< .working
    protected:
-
-=======
-         
-         /// Build up the constraint system with a constraint list
->>>>>>> .merge-right.r3070
-<<<<<<< .working
-=======
-      virtual ConstraintSystem& setConstraintList(
-                                         const ConstraintList& equationList )
-      { constraintList = equationList; return (*this); };
-
-
-         /// Add a constraint list
-      virtual ConstraintSystem& addConstraintList(
-                                            const ConstraintList& equationList);
-
-   protected:
->>>>>>> .merge-right.r3070
-
          /// Object to hold all constraints
       ConstraintList constraintList;
 

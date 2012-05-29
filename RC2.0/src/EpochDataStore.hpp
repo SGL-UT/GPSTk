@@ -64,12 +64,6 @@ namespace gpstk
            interPoints(10)
       {}
 
-      EpochDataStore(int interpolationPoints)
-         : initialTime(CommonTime::END_OF_TIME),
-         finalTime(CommonTime::BEGINNING_OF_TIME),
-         interPoints(interpolationPoints)
-      {}
-
          /// Default deconstructor
       virtual ~EpochDataStore()
       { allData.clear(); }
@@ -115,10 +109,6 @@ namespace gpstk
       { return finalTime; };
 
 
-      EpochDataStore& setInterpolationPoints(const int& n)
-      { interPoints = n; return (*this); }
-
-
    protected:
 
          /// Add to the store directly
@@ -135,6 +125,8 @@ namespace gpstk
       std::vector<double> getData(const CommonTime& t) const
          throw(InvalidRequest);
 
+
+   
       
          /// Object holding all the data for the vehicle
       EpochData allData;
@@ -155,4 +147,9 @@ namespace gpstk
 
 
 #endif   // GPSTK_EPOCH_DATA_STORE_HPP
+
+
+
+
+
 

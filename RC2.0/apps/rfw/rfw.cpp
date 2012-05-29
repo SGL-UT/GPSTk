@@ -61,8 +61,7 @@ class RollingFileWriter : public gpstk::BasicFramework
 public:
    RollingFileWriter(const std::string& applName) throw()
       : BasicFramework(applName,
-                       "Reads data from a stream and writes the data out to a"
-                       "TimeNamedFileStream."),
+                       "Reads data from a stream and writes the data out to a TimeNamedFileStream."),
         output("tmp%03j_%04Y.raw", std::ios::app|std::ios::out)
    {}
 
@@ -75,18 +74,10 @@ public:
          "device (ser:/dev/ttyS0), a tcp port (tcp:hostname:port), or "
          "standard input. The default is just to take standard input.");
 
-      CommandOptionWithAnyArg passwordOpt(
-         '\0', "password", 
-         "Provide a login password to tcp device.");
-
-      CommandOptionWithAnyArg usernameOpt(
-         '\0', "username", 
-         "Provide a login username to tcp device.");
-
       CommandOptionWithAnyArg sendStringOpt(
          's', "send-string",
          "A string to send to the device being recorded. For example to querry an "
-         "Ashtech Z(Y)-12 for as-broadcast ephemeris use the following string: "
+         "Ashtech Z(Y)-12 for as-broadcast ephemeris use the following string:\n\t "
          "'$PASHQ,EPB'$'\\r\\n'");
 
       CommandOptionWithAnyArg sendPeriodOpt(
@@ -141,20 +132,10 @@ public:
 
       output.debugLevel = debugLevel;
 
-      if (passwordOpt.getCount())
-         password = passwordOpt.getValue()[0];
-
-      if (usernameOpt.getCount())
-         username = usernameOpt.getValue()[0];
-
       if (debugLevel)
       {
          cout << "Using " << output.getFilespec() 
               << " for output files" << endl;
-         if (username != "" || password != "")
-            cout << "Sending username:" << username
-                 << ", password:" << password
-                 << " for login." << endl;
          for (int i=0; i<sendString.size(); i++)
          {
             cout << "Send period:" << sendPeriod[i] << endl;
@@ -177,36 +158,9 @@ protected:
       bool use_stdout = output.getFilespec() == "<stdout>";
       const size_t max_len=512;
       char data[max_len];
-
-      if (username != "" || password != "")
-      {
-         string str;
-         while (input)
-         {
-            input.read(data, 1);
-            str += data[0];
-            if (str.find("login: ") != string::npos)
-            {
-               if (debugLevel)
-                  cout << "got login prompt" << endl;
-               input << username << endl;
-               str = "";
-            }
-            if (str.find("Password: ") != string::npos)
-            {
-               if (debugLevel)
-                  cout << "got password prompt" << endl;
-               input << password << endl;
-               break;
-            }
-         }
-      }
-
       while (input)
       {
          input.read(data, max_len);
-         if (debugLevel)
-            cout << "process read: " << input.gcount() << " bytes read." << endl;
          if (use_stdout)
          {
             cout.write(data, input.gcount());
@@ -240,8 +194,6 @@ private:
    DeviceStream<std::fstream> input;
 
    TimeNamedFileStream<ofstream> output;
-
-   string username, password;
 
    vector<string> sendString;
    vector<int> sendPeriod;

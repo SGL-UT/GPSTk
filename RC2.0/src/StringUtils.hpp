@@ -1299,37 +1299,6 @@ namespace gpstk
          return temp; 
       }
 
-         /** Split a string by some delimiters
-          * @param  aStr           the string to be splitted
-          * @param  theDelimiters  the delimiters to split the string
-          * @param  trimWhitespace will trim the token string, default is false
-          * @param  ignoreEmpty    will ignore the empty tokens, default is true
-          */
-      inline std::vector<std::string> split(const std::string& aStr,
-                                            const std::string& theDelimiters=" ",
-                                            bool trimWhitespace = false, 
-                                            bool ignoreEmpty = true)
-      {
-         std::vector<std::string> toReturn;
-
-         std::string::size_type lastPos = aStr.find_first_not_of(theDelimiters, 0);         
-         std::string::size_type pos     = aStr.find_first_of(theDelimiters, lastPos);      
-
-         while (std::string::npos != pos || std::string::npos != lastPos)     
-         {              
-            std::string token = aStr.substr(lastPos, pos - lastPos);
-
-            if(trimWhitespace) token = StringUtils::strip(token);
-
-            if(!token.empty() || !ignoreEmpty) toReturn.push_back(token);  
-
-            lastPos = aStr.find_first_not_of(theDelimiters, pos);              
-            pos = aStr.find_first_of(theDelimiters, lastPos);     
-         } 
-
-         return toReturn;
-      }
-
    } // namespace StringUtils
   
 } // namespace gpstk

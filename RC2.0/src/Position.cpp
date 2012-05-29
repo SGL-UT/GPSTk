@@ -28,7 +28,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -58,7 +58,7 @@ namespace gpstk
    string Position::getSystemName()
       throw()
    { return SystemNames[system]; }
-
+  
    // ----------- Part  2: tolerance -----------------------------------------
       // One millimeter tolerance.
    const double Position::ONE_MM_TOLERANCE = 0.001;
@@ -66,7 +66,7 @@ namespace gpstk
    const double Position::ONE_CM_TOLERANCE = 0.01;
       // One micron tolerance.
    const double Position::ONE_UM_TOLERANCE = 0.000001;
-
+   
       // Default tolerance for time equality in meters.
    double Position::POSITION_TOLERANCE = Position::ONE_MM_TOLERANCE;
 
@@ -334,9 +334,9 @@ namespace gpstk
       *this = target;
       return *this;
    }
-
+  
    // ----------- Part  7: member functions: get -----------------------------
-   //
+   // 
    // These routines retrieve coordinate values in all coordinate systems.
    // Note that calling these will transform the Position to another coordinate
    // system if that is required.
@@ -639,7 +639,7 @@ namespace gpstk
       // pos.setToString("123.4342,9328.1982,-128987.399", "%X,%Y,%Z");
       // @endcode
       //
-      // works but
+      // works but 
       //
       // @code
       // pos.setToString("123.4342,9328.1982", "%X,%Y");
@@ -664,10 +664,10 @@ namespace gpstk
       throw(GeometryException,Epoch::FormatException,StringUtils::StringException)
    {
       try {
-            // make an object to return (so we don't fiddle with *this
+            // make an object to return (so we don't fiddle with *this 
             // until it's necessary)
          Position toReturn;
-
+         
             // flags indicated these defined
          bool hX=false, hY=false, hZ=false;
          bool hglat=false, hlon=false, hht=false;
@@ -680,7 +680,7 @@ namespace gpstk
          string s = str;
          stripLeading(s);
          stripTrailing(f);
-
+         
             // parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
          while ( (s.size() > 0) && (f.size() > 0) )
@@ -696,22 +696,22 @@ namespace gpstk
                stripLeading(s);
                stripLeading(f);
             }
-
+            
                // check just in case we hit the end of either string...
             if ( (s.length() == 0) || (f.length() == 0) )
                break;
-
+            
                // lose the '%' in f...
             f.erase(0,1);
-
+            
                // if the format string is like %03f, get '3' as the field
                // length.
             string::size_type fieldLength = string::npos;
-
+            
             if (!isalpha(f[0]))
             {
                fieldLength = asInt(f);
-
+               
                   // remove everything else up to the next character
                   // (in "%03f", that would be 'f')
                while ((!f.empty()) && (!isalpha(f[0])))
@@ -719,7 +719,7 @@ namespace gpstk
                if (f.empty())
                   break;
             }
-
+            
                // finally, get the character that should end this field, if any
             char delimiter = 0;
             if (f.size() > 1)
@@ -727,7 +727,7 @@ namespace gpstk
                if (f[1] != '%')
                {
                   delimiter = f[1];
-
+                  
                   if (fieldLength == string::npos)
                      fieldLength = s.find(delimiter,0);
                }
@@ -739,13 +739,13 @@ namespace gpstk
                   fieldLength = 1;
                }
             }
-
+            
                // figure out the next string to be removed.  if there is a field
                // length, use that first
             string toBeRemoved = s.substr(0, fieldLength);
-
+            
                // based on char at f[0], we know what to do...
-            switch (f[0])
+            switch (f[0]) 
             {
           //%x   X() (meters)
           //%y   Y() (meters)
@@ -894,24 +894,24 @@ namespace gpstk
             }
                // remove the part of s that we processed
             stripLeading(s,toBeRemoved,1);
-
+            
                // remove the character we processed from f
-            f.erase(0,1);
-
+            f.erase(0,1);    
+            
                // check for whitespace again...
             stripLeading(f);
             stripLeading(s);
-
+            
          }
-
-         if ( s.length() != 0  )
+         
+         if ( s.length() != 0  ) 
          {
                // throw an error - something didn't get processed in the strings
             Epoch::FormatException fe(
                "Processing error - parts of strings left unread - " + s);
             GPSTK_THROW(fe);
          }
-
+         
          if (f.length() != 0)
          {
                // throw an error - something didn't get processed in the strings
@@ -919,7 +919,7 @@ namespace gpstk
                "Processing error - parts of strings left unread - " + f);
             GPSTK_THROW(fe);
          }
-
+         
             // throw if the specification is incomplete
          if ( !(hX && hY && hZ) && !(hglat && hlon && hht) &&
               !(hclat && hlon && hrad) && !(htheta && hphi && hrad)) {
@@ -1042,7 +1042,7 @@ namespace gpstk
    }
 
    // ----------- Part 10: functions: fundamental conversions ---------------
-   //
+   // 
       // Fundamental conversion from spherical to cartesian coordinates.
       // @param trp (input): theta, phi, radius
       // @param xyz (output): X,Y,Z in units of radius
@@ -1051,10 +1051,10 @@ namespace gpstk
                                               Triple& xyz)
       throw()
    {
-      double st=::sin(tpr[0]*DEG_TO_RAD);
-      xyz[0] = tpr[2]*st*::cos(tpr[1]*DEG_TO_RAD);
-      xyz[1] = tpr[2]*st*::sin(tpr[1]*DEG_TO_RAD);
-      xyz[2] = tpr[2]*::cos(tpr[0]*DEG_TO_RAD);
+      double st=sin(tpr[0]*DEG_TO_RAD);
+      xyz[0] = tpr[2]*st*cos(tpr[1]*DEG_TO_RAD);
+      xyz[1] = tpr[2]*st*sin(tpr[1]*DEG_TO_RAD);
+      xyz[2] = tpr[2]*cos(tpr[0]*DEG_TO_RAD);
    }
 
       // Fundamental routine to convert cartesian to spherical coordinates.
@@ -1071,13 +1071,13 @@ namespace gpstk
          tpr[1] = 0;
          return;
       }
-      tpr[0] = ::acos(xyz[2]/tpr[2]);
+      tpr[0] = acos(xyz[2]/tpr[2]);
       tpr[0] *= RAD_TO_DEG;
       if(RSS(xyz[0],xyz[1]) < Position::POSITION_TOLERANCE/5) {       // pole
          tpr[1] = 0;
          return;
       }
-      tpr[1] = ::atan2(xyz[1],xyz[0]);
+      tpr[1] = atan2(xyz[1],xyz[0]);
       tpr[1] *= RAD_TO_DEG;
       if(tpr[1] < 0) tpr[1] += 360;
    }
@@ -1089,7 +1089,7 @@ namespace gpstk
       //                             height above ellipsoid (meters)
       // @param A (input) Earth semi-major axis
       // @param eccSq (input) square of Earth eccentricity
-      // Algorithm references:
+      // Algorithm references: 
    void Position::convertCartesianToGeodetic(const Triple& xyz,
                                              Triple& llh,
                                              const double A,
@@ -1101,21 +1101,21 @@ namespace gpstk
       if(p < Position::POSITION_TOLERANCE/5) {  // pole or origin
          llh[0] = (xyz[2] > 0 ? 90.0: -90.0);
          llh[1] = 0;                            // lon undefined, really
-         llh[2] = ::fabs(xyz[2]) - A*SQRT(1.0-eccSq);
+         llh[2] = fabs(xyz[2]) - A*SQRT(1.0-eccSq);
          return;
       }
-      llh[0] = ::atan2(xyz[2], p*(1.0-eccSq));
+      llh[0] = atan2(xyz[2], p*(1.0-eccSq));
       llh[2] = 0;
       for(int i=0; i<5; i++) {
-         slat = ::sin(llh[0]);
+         slat = sin(llh[0]);
          N = A / SQRT(1.0 - eccSq*slat*slat);
          htold = llh[2];
-         llh[2] = p/::cos(llh[0]) - N;
+         llh[2] = p/cos(llh[0]) - N;
          latold = llh[0];
-         llh[0] = ::atan2(xyz[2], p*(1.0-eccSq*(N/(N+llh[2]))));
-         if(::fabs(llh[0]-latold) < 1.0e-9 && fabs(llh[2]-htold) < 1.0e-9 * A) break;
+         llh[0] = atan2(xyz[2], p*(1.0-eccSq*(N/(N+llh[2]))));
+         if(fabs(llh[0]-latold) < 1.0e-9 && fabs(llh[2]-htold) < 1.0e-9 * A) break;
       }
-      llh[1] = ::atan2(xyz[1],xyz[0]);
+      llh[1] = atan2(xyz[1],xyz[0]);
       if(llh[1] < 0.0) llh[1] += TWO_PI;
       llh[0] *= RAD_TO_DEG;
       llh[1] *= RAD_TO_DEG;
@@ -1128,18 +1128,18 @@ namespace gpstk
       // @param xyz (output): X,Y,Z in meters
       // @param A (input) Earth semi-major axis
       // @param eccSq (input) square of Earth eccentricity
-      // Algorithm references:
+      // Algorithm references: 
    void Position::convertGeodeticToCartesian(const Triple& llh,
                                              Triple& xyz,
                                              const double A,
                                              const double eccSq)
       throw()
    {
-      double slat = ::sin(llh[0]*DEG_TO_RAD);
-      double clat = ::cos(llh[0]*DEG_TO_RAD);
+      double slat = sin(llh[0]*DEG_TO_RAD);
+      double clat = cos(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
-      xyz[0] = (N+llh[2])*clat*::cos(llh[1]*DEG_TO_RAD);
-      xyz[1] = (N+llh[2])*clat*::sin(llh[1]*DEG_TO_RAD);
+      xyz[0] = (N+llh[2])*clat*cos(llh[1]*DEG_TO_RAD);
+      xyz[1] = (N+llh[2])*clat*sin(llh[1]*DEG_TO_RAD);
       xyz[2] = (N*(1.0-eccSq)+llh[2])*slat;
    }
 
@@ -1181,8 +1181,8 @@ namespace gpstk
    {
       double cl,p,sl,slat,N,htold,latold;
       llh[1] = llr[1];   // longitude is unchanged
-      cl = ::sin((90-llr[0])*DEG_TO_RAD);
-      sl = ::cos((90-llr[0])*DEG_TO_RAD);
+      cl = sin((90-llr[0])*DEG_TO_RAD);
+      sl = cos((90-llr[0])*DEG_TO_RAD);
       if(llr[2] <= Position::POSITION_TOLERANCE/5) {
          // radius is below tolerance, hence assign zero-length
          // arbitrarily set latitude = longitude = 0
@@ -1198,17 +1198,17 @@ namespace gpstk
          llh[2] = llr[2] - A*SQRT(1-eccSq);
          return;
       }
-      llh[0] = ::atan2(sl, cl*(1.0-eccSq));
+      llh[0] = atan2(sl, cl*(1.0-eccSq));
       p = cl*llr[2];
       llh[2] = 0;
       for(int i=0; i<5; i++) {
-         slat = ::sin(llh[0]);
+         slat = sin(llh[0]);
          N = A / SQRT(1.0 - eccSq*slat*slat);
          htold = llh[2];
-         llh[2] = p/::cos(llh[0]) - N;
+         llh[2] = p/cos(llh[0]) - N;
          latold = llh[0];
-         llh[0] = ::atan2(sl, cl*(1.0-eccSq*(N/(N+llh[2]))));
-         if(fabs(llh[0]-latold) < 1.0e-9 && ::fabs(llh[2]-htold) < 1.0e-9 * A) break;
+         llh[0] = atan2(sl, cl*(1.0-eccSq*(N/(N+llh[2]))));
+         if(fabs(llh[0]-latold) < 1.0e-9 && fabs(llh[2]-htold) < 1.0e-9 * A) break;
       }
       llh[0] *= RAD_TO_DEG;
    }
@@ -1225,7 +1225,7 @@ namespace gpstk
                                               const double eccSq)
       throw()
    {
-      double slat = ::sin(llh[0]*DEG_TO_RAD);
+      double slat = sin(llh[0]*DEG_TO_RAD);
       double N = A/SQRT(1.0-eccSq*slat*slat);
       // longitude is unchanged
       llr[1] = llh[1];
@@ -1237,14 +1237,14 @@ namespace gpstk
          llr[0] = llr[1] = llr[2] = 0;
          return;
       }
-      if(1-::fabs(slat) < 1.e-10) {             // at the pole
+      if(1-fabs(slat) < 1.e-10) {             // at the pole
          if(slat < 0) llr[0] = -90;
          else         llr[0] =  90;
          llr[1] = 0.0;
          return;
       }
       // theta
-      llr[0] = ::acos((N*(1-eccSq)+llh[2])*slat/llr[2]);
+      llr[0] = acos((N*(1-eccSq)+llh[2])*slat/llr[2]);
       llr[0] *= RAD_TO_DEG;
       llr[0] = 90 - llr[0];
    }
@@ -1301,7 +1301,7 @@ namespace gpstk
                                 const double eccSq)
       throw()
    {
-      double slat=::sin(DEG_TO_RAD*geolat);
+      double slat=sin(DEG_TO_RAD*geolat);
       double e=(1.0-eccSq);
       double f=(1.0+(e*e-1.0)*slat*slat)/(1.0-eccSq*slat*slat);
       return (A * SQRT(f));
@@ -1321,7 +1321,7 @@ namespace gpstk
       // use Triple:: functions in cartesian coordinates (only)
       double elevation;
       try {
-         elevation = R.elvAngle(S);
+         elevation = R.elvAngle(S);         
       }
       catch(GeometryException& ge)
       {
@@ -1357,7 +1357,7 @@ namespace gpstk
       }
 
       // Compute k vector in local North-East-Up (NEU) system
-      Triple kVector(::cos(latGeodetic)*::cos(longGeodetic), ::cos(latGeodetic)*::sin(longGeodetic), ::sin(latGeodetic));
+      Triple kVector(cos(latGeodetic)*cos(longGeodetic), cos(latGeodetic)*sin(longGeodetic), sin(latGeodetic));
       // Take advantage of dot method to get Up coordinate in local NEU system
       localUp = z.dot(kVector);
       // Let's get cos(z), being z the angle with respect to local vertical (Up);
@@ -1382,14 +1382,14 @@ namespace gpstk
       try
       {
          az = R.azAngle(S);
-
+         
       }
       catch(GeometryException& ge)
       {
          GPSTK_RETHROW(ge);
       }
-
-      return az;
+      
+      return az; 
    }
 
       // A member function that computes the azimuth of the input
@@ -1416,11 +1416,11 @@ namespace gpstk
          GeometryException ge("Positions are within .1 millimeter");
          GPSTK_THROW(ge);
       }
-
+      
       // Compute i vector in local North-East-Up (NEU) system
-      Triple iVector(-::sin(latGeodetic)*::cos(longGeodetic), -::sin(latGeodetic)*::sin(longGeodetic), ::cos(latGeodetic));
+      Triple iVector(-sin(latGeodetic)*cos(longGeodetic), -sin(latGeodetic)*sin(longGeodetic), cos(latGeodetic));
       // Compute j vector in local North-East-Up (NEU) system
-      Triple jVector(-::sin(longGeodetic), ::cos(longGeodetic), 0);
+      Triple jVector(-sin(longGeodetic), cos(longGeodetic), 0);
 
       // Now, let's use dot product to get localN and localE unitary vectors
       localN = (z.dot(iVector))/z.mag();
@@ -1437,7 +1437,7 @@ namespace gpstk
       {
          return alpha + 360.0;
       }
-      else
+      else 
       {
          return alpha;
       }
@@ -1472,12 +1472,12 @@ namespace gpstk
       Position IPP(Rx);                   // copy system and geoid
       double el = elev * DEG_TO_RAD;
       // p is the angle subtended at Earth center by Rx and the IPP
-      double p = PI/2.0 - el - ::asin(AEarth*::cos(el)/(AEarth+ionoht));
+      double p = PI/2.0 - el - asin(AEarth*cos(el)/(AEarth+ionoht));
       double lat = Rx.theArray[0] * DEG_TO_RAD;
       double az = azim * DEG_TO_RAD;
-      IPP.theArray[0] = std::asin(std::sin(lat)*std::cos(p) + std::cos(lat)*std::sin(p)*std::cos(az));
+      IPP.theArray[0] = asin(sin(lat)*cos(p) + cos(lat)*sin(p)*cos(az));
       IPP.theArray[1] = Rx.theArray[1]*DEG_TO_RAD
-         + ::asin(::sin(p)*::sin(az)/::cos(IPP.theArray[0]));
+         + asin(sin(p)*sin(az)/cos(IPP.theArray[0]));
 
       IPP.theArray[0] *= RAD_TO_DEG;
       IPP.theArray[1] *= RAD_TO_DEG;

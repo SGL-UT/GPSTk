@@ -45,9 +45,7 @@
 //=============================================================================
 
 #include <valarray>
-#include <vector>
 #include "Exception.hpp"
-#include "Vector.hpp"
 
 namespace gpstk
 {
@@ -88,14 +86,6 @@ namespace gpstk
           */
       Triple& operator=(const std::valarray<double>& right)
          throw(GeometryException);
-
-         
-         /// Return the data as a Vector<double> object
-      Vector<double> toVector();
-
-
-         /// Return the data as a std::vector object
-      std::vector<double> toStdVector();
 
          /**
           * Computes the Dot Product of two vectors

@@ -36,15 +36,6 @@
 #include <vector>
 #include <iomanip>
 
-// to solve the conflict with windows.h
-#if defined(min)
-#undef min
-#endif
-
-#if defined(max)
-#undef max
-#endif
-
 namespace gpstk
 {
 

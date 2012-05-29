@@ -472,22 +472,6 @@ namespace gpstk
       { qMatrix = pMatrix; return (*this); };
 
 
-<<<<<<< .working
-=======
-
-          /** Set the positioning mode, kinematic or static.
-           */
-      virtual SolverPPP& setKinematic( bool kinematicMode = true,
-                                       double sigmaX = 100.0,
-                                       double sigmaY = 100.0,
-                                       double sigmaZ = 100.0 );
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
->>>>>>> .merge-right.r3070
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -594,11 +578,6 @@ namespace gpstk
 
          /// Constant stochastic model
       StochasticModel constantModel;
-
-         /// White noise stochastic model for position
-      WhiteNoiseModel whitenoiseModelX;
-      WhiteNoiseModel whitenoiseModelY;
-      WhiteNoiseModel whitenoiseModelZ;
 
 
          /// Random Walk stochastic model

@@ -53,11 +53,13 @@ namespace gpstk
       /* This method provides the stochastic model with all the available
        * information and takes appropriate actions.
        *
+       * @param type       Type of variable.
        * @param sat        Satellite.
        * @param gData      Data object holding the data.
        *
        */
-   void RandomWalkModel::Prepare( const SatID& sat,
+   void RandomWalkModel::Prepare( const TypeID& type,
+                                  const SatID& sat,
                                   gnssSatTypeValue& gData )
    {
 
@@ -73,13 +75,16 @@ namespace gpstk
 
 
       /* This method provides the stochastic model with all the available
-       * information and takes appropriate actions.
+       * information and takes appropriate actions. By default, it does
+       * nothing.
        *
+       * @param type       Type of variable.
        * @param sat        Satellite.
        * @param gData      Data object holding the data.
        *
        */
-   void RandomWalkModel::Prepare( const SatID& sat,
+   void RandomWalkModel::Prepare( const TypeID& type,
+                                  const SatID& sat,
                                   gnssRinex& gData )
    {
 
@@ -132,12 +137,14 @@ namespace gpstk
 
       /* This method checks if a cycle slip happened.
        *
+       * @param type       Type of variable.
        * @param sat        Satellite.
        * @param data       Object holding the data.
        * @param source     Object holding the source of data.
        *
        */
-   void PhaseAmbiguityModel::checkCS( const SatID& sat,
+   void PhaseAmbiguityModel::checkCS( const TypeID& type,
+                                      const SatID& sat,
                                       satTypeValueMap& data,
                                       SourceID& source )
    {
@@ -162,7 +169,7 @@ namespace gpstk
          {
                // In this case, we only use cycle slip flags
                // Check if there was a cycle slip
-            if (data(sat)(csFlagType) > 0.0)
+            if (data(sat)(type) > 0.0)
             {
                setCS(true);
             }
@@ -235,11 +242,13 @@ namespace gpstk
       /* This method provides the stochastic model with all the available
        *  information and takes appropriate actions.
        *
+       * @param type       Type of variable.
        * @param sat        Satellite.
        * @param gData      Data object holding the data.
        *
        */
-   void TropoRandomWalkModel::Prepare( const SatID& sat,
+   void TropoRandomWalkModel::Prepare( const TypeID& type,
+                                       const SatID& sat,
                                        gnssSatTypeValue& gData )
    {
 
@@ -250,7 +259,7 @@ namespace gpstk
       setCurrentTime(source, gData.header.epoch );
 
          // Third, compute Q value
-      computeQ(sat, gData.body, source);
+      computeQ(type, sat, gData.body, source);
 
          // Fourth, prepare for next iteration updating previous epoch
       setPreviousTime(source, tmData[source].currentTime);
@@ -264,11 +273,13 @@ namespace gpstk
       /* This method provides the stochastic model with all the available
        *  information and takes appropriate actions.
        *
+       * @param type       Type of variable.
        * @param sat        Satellite.
        * @param gData      Data object holding the data.
        *
        */
-   void TropoRandomWalkModel::Prepare( const SatID& sat,
+   void TropoRandomWalkModel::Prepare( const TypeID& type,
+                                       const SatID& sat,
                                        gnssRinex& gData )
    {
 
@@ -279,7 +290,7 @@ namespace gpstk
       setCurrentTime(source, gData.header.epoch );
 
          // Third, compute Q value
-      computeQ(sat, gData.body, source);
+      computeQ(type, sat, gData.body, source);
 
          // Fourth, prepare for next iteration updating previous epoch
       setPreviousTime(source, tmData[source].currentTime);
@@ -293,12 +304,14 @@ namespace gpstk
       /* This method computes the right variance value to be returned
        *  by method 'getQ()'.
        *
+       * @param type       Type of variable.
        * @param sat        Satellite.
        * @param data       Object holding the data.
        * @param source     Object holding the source of data.
        *
        */
-   void TropoRandomWalkModel::computeQ( const SatID& sat,
+   void TropoRandomWalkModel::computeQ( const TypeID& type,
+                                        const SatID& sat,
                                         satTypeValueMap& data,
                                         SourceID& source )
    {

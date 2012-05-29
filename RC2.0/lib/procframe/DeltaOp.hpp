@@ -133,7 +133,7 @@ namespace gpstk
          /// and will delete satellites present in reference station data but
          /// missing in input data.
       DeltaOp()
-         : deleteMissingSats(true), updateCSFlag(true)
+         : deleteMissingSats(true)
       { diffTypes.insert(TypeID::prefitC); };
 
 
@@ -153,7 +153,7 @@ namespace gpstk
           */
       DeltaOp( const satTypeValueMap& gData,
                const bool& delSats = true )
-         : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
+         : refData(gData), deleteMissingSats(delSats)
       { diffTypes.insert(TypeID::prefitC); };
 
 
@@ -174,7 +174,7 @@ namespace gpstk
       DeltaOp( const satTypeValueMap& gData,
                const TypeID& difftype,
                const bool& delSats = true )
-         : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
+         : refData(gData), deleteMissingSats(delSats)
       { diffTypes.insert(difftype); };
 
 
@@ -195,8 +195,7 @@ namespace gpstk
       DeltaOp( const satTypeValueMap& gData,
                const TypeIDSet& diffSet,
                const bool& delSats = true )
-         : refData(gData), deleteMissingSats(delSats), updateCSFlag(true),
-           diffTypes(diffSet)
+         : refData(gData), deleteMissingSats(delSats), diffTypes(diffSet)
       { };
 
 
@@ -216,7 +215,7 @@ namespace gpstk
           */
       DeltaOp( const gnssSatTypeValue& gData,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
+         : refData(gData.body), deleteMissingSats(delSats)
       { diffTypes.insert(TypeID::prefitC); };
 
 
@@ -237,7 +236,7 @@ namespace gpstk
       DeltaOp( const gnssSatTypeValue& gData,
                const TypeID& difftype,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
+         : refData(gData.body), deleteMissingSats(delSats)
       { diffTypes.insert(difftype); };
 
 
@@ -258,8 +257,7 @@ namespace gpstk
       DeltaOp( const gnssSatTypeValue& gData,
                const TypeIDSet& diffSet,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
-           diffTypes(diffSet)
+         : refData(gData.body), deleteMissingSats(delSats), diffTypes(diffSet)
       { };
 
 
@@ -278,7 +276,7 @@ namespace gpstk
           */
       DeltaOp( const gnssRinex& gData,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
+         : refData(gData.body), deleteMissingSats(delSats)
       { diffTypes.insert(TypeID::prefitC); };
 
 
@@ -298,7 +296,7 @@ namespace gpstk
       DeltaOp( const gnssRinex& gData,
                const TypeID& difftype,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
+         : refData(gData.body), deleteMissingSats(delSats)
       { diffTypes.insert(difftype); };
 
 
@@ -318,8 +316,7 @@ namespace gpstk
       DeltaOp( const gnssRinex& gData,
                const TypeIDSet& diffSet,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
-           diffTypes(diffSet)
+         : refData(gData.body), deleteMissingSats(delSats), diffTypes(diffSet)
       { };
 
 
@@ -465,11 +462,6 @@ namespace gpstk
 
          /// satTypeValueMap data structure containing reference station data.
       satTypeValueMap refData;
-
-
-         /// Flag indicating if the CSF(Cycle Slip Flag) input GDS will be 
-         /// synchronized with the refData
-      bool updateCSFlag;
 
 
          /// Flag indicating if satellites present in reference station data

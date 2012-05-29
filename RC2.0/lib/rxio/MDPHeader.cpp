@@ -60,8 +60,8 @@ using gpstk::BinUtils::decodeVar;
 
 namespace gpstk
 {
-   const uint16_t MDPHeader::myLength = 16;
-   const uint16_t MDPHeader::frameWord = 0x9c9c;
+   const unsigned MDPHeader::myLength = 16;
+   const unsigned MDPHeader::frameWord = 0x9c9c;
 
    // Set to zero for no debugging output
    // set to 1 to output text messages about decode/format/range errors
@@ -298,7 +298,6 @@ namespace gpstk
       MDPHeader::decode(ffs.rawHeader);
       ffs.streamState = MDPStream::gotHeader;
       ffs.header = *this;
-      ffs.headerCount++;
       if (debugLevel>2)
       {
          cout << "Got header at " << ffs.tellg()

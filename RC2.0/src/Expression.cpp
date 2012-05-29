@@ -69,17 +69,17 @@ namespace gpstk
       // To get the value, compute the value of the right first
       double rightVal = right->getValue();
 
-      if (op=="cos") return ::cos(rightVal);
-      if (op=="sin") return ::sin(rightVal);
-      if (op=="tan") return ::tan(rightVal);
-      if (op=="acos") return ::acos(rightVal);
-      if (op=="asin") return ::asin(rightVal);
-      if (op=="atan") return ::atan(rightVal);
-      if (op=="exp") return ::exp(rightVal);
-      if (op=="abs") return ::fabs(rightVal);
-      if (op=="sqrt") return ::sqrt(rightVal);
-      if (op=="log") return ::log(rightVal);
-      if (op=="log10") return ::log10(rightVal);
+      if (op=="cos") return cos(rightVal);
+      if (op=="sin") return sin(rightVal);
+      if (op=="tan") return tan(rightVal);
+      if (op=="acos") return acos(rightVal);
+      if (op=="asin") return asin(rightVal);
+      if (op=="atan") return atan(rightVal);
+      if (op=="exp") return exp(rightVal);
+      if (op=="abs") return fabs(rightVal);
+      if (op=="sqrt") return sqrt(rightVal);
+      if (op=="log") return log(rightVal);
+      if (op=="log10") return log10(rightVal);
 
       // else THROW exception
       GPSTK_THROW(ExpressionException());

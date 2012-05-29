@@ -36,23 +36,15 @@
 //
 //=============================================================================
 
-
-#include <iostream>
 #include "SVPCodeGen.hpp"
 #include "Epoch.hpp"
 
-using namespace std;
 namespace gpstk
 {
    const long LAST_6SEC_ZCOUNT_OF_WEEK = 403200 - 4;
 
    SVPCodeGen::SVPCodeGen( const int SVPRNID, const gpstk::CommonTime& dt )
    {
-      if (SVPRNID < 1 || SVPRNID > 210)
-      {
-         gpstk::Exception e("Must provide a prn between 1 and 210");
-         GPSTK_THROW(e);
-      }
       currentZTime = dt;
       PRNID = SVPRNID;
    }
@@ -62,8 +54,6 @@ namespace gpstk
          // Compute appropriate X2A offset
       long X2count;
       long X1count = static_cast<Epoch>(currentZTime).GPSzcount();
-      int dayAdvance;
-      int EffPRNID;
    
          /*
             Trivial, but special, case for beginning of week.  This
@@ -73,7 +63,7 @@ namespace gpstk
             is the only time the X2count should be "negative".  The offset is
             handled within the X2Sequence::operator[] method.
          */
-      if (X1count==0 && PRNID <= 37) X2count = -PRNID;
+      if (X1count==0) X2count = -PRNID;
    
          /*
             At the beginning of an X1 epoch, the previous X2 epoch
@@ -84,9 +74,7 @@ namespace gpstk
          */
       else
       {
-         dayAdvance = (PRNID - 1) / 37;
-         EffPRNID = PRNID - dayAdvance * 37;
-         long cumulativeX2Delay = X1count * X2A_EPOCH_DELAY + dayAdvance * X1_PER_DAY * X2A_EPOCH_DELAY + EffPRNID;
+         long cumulativeX2Delay = X1count * X2A_EPOCH_DELAY + PRNID;
          X2count = MAX_X2_TEST - cumulativeX2Delay;
          if (X2count<0) X2count += MAX_X2_TEST;
       }

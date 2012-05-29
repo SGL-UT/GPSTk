@@ -191,11 +191,6 @@ namespace gpstk
             (*stv).second[TypeID::dx] = cerange.cosines[0];
             (*stv).second[TypeID::dy] = cerange.cosines[1];
             (*stv).second[TypeID::dz] = cerange.cosines[2];
-
-            (*stv).second[TypeID::dSatX] = -cerange.cosines[0];
-            (*stv).second[TypeID::dSatY] = -cerange.cosines[1];
-            (*stv).second[TypeID::dSatZ] = -cerange.cosines[2];
-
                // When using pseudorange method, this is 1.0
             (*stv).second[TypeID::cdt] = 1.0;
 

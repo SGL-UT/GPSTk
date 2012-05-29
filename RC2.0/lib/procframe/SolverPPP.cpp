@@ -72,10 +72,6 @@ namespace gpstk
          // Set default coordinates stochastic model (constant)
       setCoordinatesModel( &constantModel );
 
-      whitenoiseModelX.setSigma(100.0);
-      whitenoiseModelY.setSigma(100.0);
-      whitenoiseModelZ.setSigma(100.0);
-
          // Pointer to default receiver clock stochastic model (white noise)
       pClockStoModel = &whitenoiseModel;
 
@@ -466,30 +462,33 @@ covariance matrix.");
 
             // Now, let's fill the Phi and Q matrices
          SatID  dummySat;
+         TypeID dummyType;
 
             // First, the troposphere
-         pTropoStoModel->Prepare( dummySat,
+         pTropoStoModel->Prepare( dummyType,
+                                  dummySat,
                                   gData );
          phiMatrix(0,0) = pTropoStoModel->getPhi();
          qMatrix(0,0)   = pTropoStoModel->getQ();
 
 
             // Second, the coordinates
-         pCoordXStoModel->Prepare(dummySat, gData);
+         pCoordXStoModel->Prepare(dummyType, dummySat, gData);
          phiMatrix(1,1) = pCoordXStoModel->getPhi();
          qMatrix(1,1)   = pCoordXStoModel->getQ();
 
-         pCoordYStoModel->Prepare(dummySat, gData);
+         pCoordYStoModel->Prepare(dummyType, dummySat, gData);
          phiMatrix(2,2) = pCoordYStoModel->getPhi();
          qMatrix(2,2)   = pCoordYStoModel->getQ();
 
-         pCoordZStoModel->Prepare(dummySat, gData);
+         pCoordZStoModel->Prepare(dummyType, dummySat, gData);
          phiMatrix(3,3) = pCoordZStoModel->getPhi();
          qMatrix(3,3)   = pCoordZStoModel->getQ();
 
 
             // Third, the receiver clock
-         pClockStoModel->Prepare( dummySat,
+         pClockStoModel->Prepare( dummyType,
+                                  dummySat,
                                   gData );
          phiMatrix(4,4) = pClockStoModel->getPhi();
          qMatrix(4,4)   = pClockStoModel->getQ();
@@ -503,7 +502,8 @@ covariance matrix.");
          {
 
                // Prepare stochastic model
-            pBiasStoModel->Prepare( *itSat,
+            pBiasStoModel->Prepare( TypeID::CSL1,
+                                    *itSat,
                                     gData );
 
                // Get values into phi and q matrices
@@ -768,37 +768,6 @@ covariance matrix.");
       return (*this);
 
    }  // End of method 'SolverPPP::setCoordinatesModel()'
-
-
-<<<<<<< .working
-=======
-   
-       /** Set the positioning mode, kinematic or static.
-        */
-   SolverPPP& SolverPPP::setKinematic( bool kinematicMode,
-                                       double sigmaX,
-                                       double sigmaY,
-                                       double sigmaZ )
-   {
-      if(kinematicMode)
-      {
-         whitenoiseModelX.setSigma(sigmaX);
-         whitenoiseModelY.setSigma(sigmaY);
-         whitenoiseModelZ.setSigma(sigmaZ);
-
->>>>>>> .merge-right.r3070
-         setXCoordinatesModel(&whitenoiseModelX);
-         setYCoordinatesModel(&whitenoiseModelY);
-         setZCoordinatesModel(&whitenoiseModelZ);
-      }
-      else
-      {
-         setCoordinatesModel(&constantModel);
-      }
-
-      return (*this);
-
-   }  // End of method 'SolverPPP::setKinematic()'
 
 
 }  // End of namespace gpstk

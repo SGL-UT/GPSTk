@@ -25,12 +25,12 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
-
+ 
 #include <cmath>
 #include <string>
 
@@ -95,6 +95,6 @@ namespace gpstk
    double UTC2SID(const CommonTime& t);
 
       //@}
-
+   
 } // namespace gpstk
 #endif  // ASTRONOMICALFUNCTIONS_HPP

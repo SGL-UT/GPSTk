@@ -324,8 +324,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
          {
             gpstk::MDPObsEpoch::Observation prev =
                prevObs[chan].getObservation(curr.carrier, curr.range);
-            if (curr.lockCount - prev.lockCount != 1 && prev.lockCount > 0 && 
-                prevObs[chan].prn == msg.prn)
+            if (curr.lockCount - prev.lockCount != 1 && prev.lockCount > 0)
             {
                // figure out what bins we should update loss-of-lock counts on
                rcpair rcPair(curr.range, curr.carrier);

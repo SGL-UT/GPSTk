@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -123,11 +123,11 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
                  "Specify the frequency error on the local receiver's "
                  "oscilator, in ppm. The default is 0 ppm"),
 
-      inputOpt('i', "input",
+      inputOpt('i', "input", 
                "Where to get the IQ samples from. The default is to use "
                "standard input.");
 
-   CommandOptionWithNumberArg
+   CommandOptionWithNumberArg 
       stepsOpt('s', "steps",
                "The number of 1/4 chip steps to take. Defaults to 4092."),
 
@@ -138,7 +138,7 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
       peakOnlyOpt('p', "peak",
                   "Only output the peak correlation/snr values.");
 
-   if (!BasicFramework::initialize(argc,argv))
+   if (!BasicFramework::initialize(argc,argv)) 
       return false;
 
    peakOnly = peakOnlyOpt.getCount()>0;
@@ -170,7 +170,7 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
       case 'f':
       default:  input = new IQFloatStream(); break;
    }
-
+   
    if (inputOpt.getCount())
    {
       input->open(inputOpt.getValue()[0].c_str());
@@ -239,7 +239,7 @@ void Corltr::process()
 {
    const unsigned windowTicks = static_cast<unsigned>(window / timeStep);
    const unsigned maxSamp=windowTicks+1;
-   const double stepSize = cc->codeChipLen/4;
+   const double stepSize = cc->codeChipLen/4; 
    vector< complex<double> > in(maxSamp);
    unsigned numSamp = 0;
    complex<float> s;
@@ -267,8 +267,8 @@ void Corltr::process()
            << "# freqErr:" << freqErr * 1e6 << " ppm" << endl
            << "# offset:" << offset*1e6 << " usec" << endl
            << "# Input sumSq: " << sumSq << endl;
-
-
+   
+         
    cc->setCodeFreqOffsetHz(doppler);
    cc->setCarrierFreqOffsetHz(doppler);
 
@@ -309,7 +309,7 @@ void Corltr::process()
          maxR=r;
          maxDelay=delay;
       }
-
+         
       if (!peakOnly)
          cout << setprecision(9) << delay*1e6
               << " " << setprecision(4) << abs(sum())

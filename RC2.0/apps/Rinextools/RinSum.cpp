@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -160,15 +160,9 @@ struct TableData
    // needed for find()
    inline bool operator==(const TableData& d) { return d.sat == sat; }
 };
-<<<<<<< .working
 // needed for sort()
 class TableSATLessThan {      
    public:
-=======
-   // for sort()
-class TableSATLessThan  {
-public:
->>>>>>> .merge-right.r3070
    bool operator()(const TableData& d1, const TableData& d2)
       { return d1.sat < d2.sat; }
 };
@@ -459,17 +453,10 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          }
          catch(Exception& e) { ok = false; LOG(INFO) << "excep " << e.what(); }
       }
-<<<<<<< .working
 
       if(ok) {
          msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL);
          if(msg.find("Error") != string::npos) ok = false;
-=======
-
-         // input header
-      try {
-         InStream >> rheader;
->>>>>>> .merge-right.r3070
       }
 
       if(!ok)
@@ -822,19 +809,11 @@ try {
          continue;
       }
 
-<<<<<<< .working
       // Compute interval -------------------------------------------------
       for(i=1,j=0; i < ndtmax; i++) {
          if(ndt[i] > ndt[j]) j = i;
          dt = bestdt[j];
       }
-=======
-         // compute interval
-      for(i=1,j=0; i<ndtmax; i++) if(ndt[i]>ndt[j]) j=i;
-      compDT = bestdt[j];
-
-      ostringstream oss;
->>>>>>> .merge-right.r3070
 
       // Summary info -----------------------------------------------------
       LOG(INFO) << "Computed interval " << fixed << setw(5) << setprecision(2)
@@ -1151,7 +1130,6 @@ try {
                   << " END";
             }
 
-<<<<<<< .working
             // differences
             /*
             LOG(INFO) << "\nVisibility of pairs of sats - for differencing\n"
@@ -1195,113 +1173,8 @@ try {
                }
             }
             */
-=======
-   CommandOption dasho(CommandOption::hasArgument, CommandOption::stdType,'o',
-      "output"," [-o|--output] <file> Output the summary to a file named <file> ()");
-   dasho.setMaxCount(1);
 
-   CommandOption dashp(CommandOption::hasArgument, CommandOption::stdType, 'p',
-      "path"," [-p|--path] <path>   Find the input file(s) in this directory (.)");
-   dashp.setMaxCount(1);
->>>>>>> .merge-right.r3070
-
-<<<<<<< .working
          }  // end if C.vres > 0 (user chose vis output)
-=======
-   CommandOptionNoArg dashr('R', "Replace",
-      " [-R|--Replace]       Replace input file header with a full one, in place ()");
-   dashr.setMaxCount(1);
-
-   CommandOptionNoArg dashs('s', "sort",
-      " [-s|--sort]          Sort the SAT/Obs table on begin time (don't)");
-
-   CommandOptionNoArg dashg('g', "gps",
-      " [-g|--gps]           Print times in the SAT/Obs table as GPS times (don't)");
-
-   CommandOption dashgap(CommandOption::hasArgument, CommandOption::stdType,0,"gaps",
-      " --gaps <dt>          Print a table of gaps in the data, assuming interval dt"
-      " (don't)");
-
-   // time
-   // times - don't use CommandOptionWithTimeArg
-   CommandOption dashbt(CommandOption::hasArgument, CommandOption::stdType,
-      0,"start", " --start <time>       Start time: <time> is 'GPSweek,sow' OR "
-      "'YYYY,MM,DD,HH,Min,Sec' ()");
-   dashbt.setMaxCount(1);
-
-   CommandOption dashet(CommandOption::hasArgument, CommandOption::stdType,
-      0,"stop", " --stop <time>        Stop time: <time> is 'GPSweek,sow' OR "
-      "'YYYY,MM,DD,HH,Min,Sec' ()");
-   dashet.setMaxCount(1);
-
-   CommandOptionNoArg dashb('b', "brief",
-      " [-b|--brief]         produce a brief (6-line) summary (don't)");
-
-   // help and debug
-   CommandOptionNoArg dashh('h', "help",
-      " [-h|--help]          print this help page and quit (don't)");
-   CommandOptionNoArg dashd('d', "debug",
-      " [-d|--debug]         print debugging info (don't)");
-
-   // ... other options
-   CommandOptionRest Rest("<filename(s)>");
-
-   CommandOptionParser Par(
-      "Prgm RinSum reads a Rinex file and summarizes it content. It can also\n"
-      " (option) fill in the header of the input file. NB. Either <filenames>\n"
-      " or --input is required; put <filenames> after all options.\n"
-      );
-
-   // allow user to put all options in a file
-   // could also scan for debug here
-   vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
-
-   if(Args.size()==0)
-      Args.push_back(string("-h"));
-
-   argc = Args.size()+1;
-   char **CArgs;
-   CArgs = new char * [argc];
-   if(!CArgs) { cerr << "Failed to allocate CArgs\n"; return -1; }
-   CArgs[0] = argv[0];
-   for(j=1; j<argc; j++) {
-      CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
-      strcpy(CArgs[j],Args[j-1].c_str());
-   }
-
-   Par.parseOptions(argc, CArgs);
-   delete[] CArgs;
-
-      // get help option first
-   if(dashh.getCount()) {
-      Par.displayUsage(cout,false);
-      help = true;   //return 1;
-   }
-
-   if(Par.hasErrors()) {
-      cerr << "\nErrors found in command line input:\n";
-      Par.dumpErrors(cerr);
-      cerr << "...end of Errors\n\n";
-      Par.displayUsage(cout,false);
-      help = true; // return -1;
-   }
-
-      // get values found on command line
-   string msg;
-   vector<string> values,field;
-
-      // f never appears because we intercept it above
-   //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
-
-   if(dashi.getCount()) {
-      InputFiles = dashi.getValue();
-      if(help) {
-         cout << "Input: input files (--input) are:\n";
-         for(int i=0; i<InputFiles.size(); i++)
-            cout << "   " << InputFiles[i] << endl;
->>>>>>> .merge-right.r3070
       }
 
       // Warnings

@@ -473,10 +473,6 @@ namespace gpstk
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(ObjectNotFound, AccessError);
 
-      /// Attempted to access a null pointer
-      /// @ingroup exceptiongroup
-   NEW_EXCEPTION_CLASS(NullPointerException, Exception);
-
 } // namespace gpstk
 #endif
 

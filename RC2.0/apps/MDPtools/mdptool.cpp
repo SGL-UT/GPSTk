@@ -76,7 +76,7 @@ public:
         styleOpt(
            's', "output-style",
            "What type of output to produce from the "
-           "MDP stream. Valid styles are: brief, verbose, table, header, csv, track, "
+           "MDP stream. Valid styles are: brief, verbose, table, csv, track, "
            "null, mdp, nav, subframe, and summary. The default is summary. Some "
            "modes aren't quite complete. Sorry."),
         pvtOpt('p', "pvt",  "Enable pvt output"),
@@ -176,8 +176,6 @@ public:
          processor = new MDPBriefProcessor(mdpInput, output);
       else if (style == "table")
          processor = new MDPTableProcessor(mdpInput, output);
-      else if (style == "header")
-         processor = new MDPHeaderProcessor(mdpInput, output);
       else if (style == "csv")
          processor = new MDPCSVProcessor(mdpInput, output);
       else if (style == "verbose")

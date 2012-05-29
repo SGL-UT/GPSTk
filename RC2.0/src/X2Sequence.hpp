@@ -48,8 +48,6 @@
 
 
    // Local headers
-
-#include "gpstkplatform.h"
 #include "PCodeConst.hpp"
 #include "mergePCodeWords.h"
 
@@ -182,7 +180,7 @@ namespace gpstk
              *  driven by the occurrence of the next X1 epoch and be tracked 
              *  one level up in the corresponding SVPcodeGen object.
              */
-         uint32_t operator[]( long i );
+         unsigned long operator[]( long i );
 
             /**  Controls whether the X2 Epoch is set to EOW condition
              *   or normal condition.  Should only be set true for the final
@@ -191,10 +189,10 @@ namespace gpstk
          void setEOWX2Epoch( const bool tf );
 
       private:
-         uint32_t *bitsP;
-         static uint32_t* X2Bits;
-         static uint32_t* X2BitsEOW;
-         static uint32_t EOWEndOfSequence[LENGTH_OF_EOW_OVERLAP];
+         unsigned long *bitsP;
+         static unsigned long* X2Bits;
+         static unsigned long* X2BitsEOW;
+         static unsigned long EOWEndOfSequence[LENGTH_OF_EOW_OVERLAP];
          static bool isInit; 
    };
 
@@ -203,11 +201,11 @@ namespace gpstk
           return the next 32 bits.  Note: if there are insufficient bits left
           to fill the request, wrap around to the beginning of the sequence.
        */
-   inline uint32_t X2Sequence::operator[] ( long i )
+   inline unsigned long X2Sequence::operator[] ( long i )
    {
       long adjustedCount = i + X2A_EPOCH_DELAY;
    
-      uint32_t retArg = 0L;
+      unsigned long retArg;
       int ndx1 = adjustedCount / MAX_BIT;
       int offset = adjustedCount - (ndx1 * MAX_BIT);
       if ( (adjustedCount+MAX_BIT) <= MAX_X2_COUNT )
@@ -239,6 +237,7 @@ namespace gpstk
          */
       else
       {
+         retArg = 0L;
          int numRemainingInSequence = MAX_X2_COUNT - adjustedCount;
          int numRemainingInWord;
          int numFilled = 0;
@@ -253,7 +252,7 @@ namespace gpstk
          }
       
             // Handle word n
-         uint32_t temp = bitsP[ndx1];
+         unsigned long temp = bitsP[ndx1];
          numRemainingInWord = numRemainingInSequence;
          temp >>= (MAX_BIT-numRemainingInWord);
          temp <<= (MAX_BIT-(numRemainingInWord+numFilled));

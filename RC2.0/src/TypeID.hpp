@@ -195,7 +195,6 @@ namespace gpstk
          iono,      ///< Vertical ionospheric delay
          ionoTEC,   ///< Total Electron Content (in TECU), 1TECU = 1e+16 electrons per m**2
          ionoMap,   ///< Ionospheric mapping function
-         ionoMap2,  ///< Ionospheric mapping function for second order ionospheric delay
          ionoL1,    ///< Slant ionospheric delay, frequency L1
          ionoL2,    ///< Slant ionospheric delay, frequency L2
          ionoL5,    ///< Slant ionospheric delay, frequency L5
@@ -241,10 +240,6 @@ namespace gpstk
          BL7,       ///< Phase ambiguity in L7
          BL8,       ///< Phase ambiguity in L8
          BLC,       ///< Phase ambiguity in LC
-         BWL,       ///< Phase ambiguity in WL
-         BWL2,      ///< Phase ambiguity in WL2
-         BWL3,      ///< Phase ambiguity in WL3
-         BWL4,      ///< Phase ambiguity in WL4
             // Multipath-related types
          mpC1,      ///< Multipath bias, C1
          mpC2,      ///< Multipath bias, C2
@@ -288,14 +283,11 @@ namespace gpstk
          prefitGRAPHIC2,   ///< Prefit residual, GRAPHIC2
          postfitGRAPHIC1,  ///< Postfit residual, GRAPHIC1
          postfitGRAPHIC2,  ///< Postfit residual, GRAPHIC2
-         prefitMWubbena,   /// Prefit residual, MWubbena
          prefitWL,  ///< Prefit residual, WL
          prefitWL2, ///< Prefit residual, WL2
-         prefitWL3, ///< Prefit residual, WL3
          prefitWL4, ///< Prefit residual, WL4
          postfitWL, ///< Postfit residual, WL
          postfitWL2,///< Postfit residual, WL2
-         postfitWL3,///< Postfit residual, WL3
          postfitWL4,///< Postfit residual, WL4
          prefitC,   ///< Prefit residual, code
          prefitL,   ///< Prefit residual, phase
@@ -308,44 +300,8 @@ namespace gpstk
          dLon,      ///< Position bias, Longitude component
          dH,        ///< Position bias, Height component
          cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
-         cdtSat,    ///< In the position domain: Satellite clock offset, meters; in the range domain: cdt coefficient
-         dSatX,     ///< dSatX coefficient for satellite position in XYZ
-         dSatY,     ///< dSatY coefficient for satellite position in XYZ
-         dSatZ,     ///< dSatZ coefficient for satellite position in XYZ
-         dSatR,     ///< dSatR coefficient for satellite position in RTN
-         dSatT,     ///< dSatT coefficient for satellite position in RTN
-         dSatN,     ///< dSatN coefficient for satellite position in RTN
          weight,    ///< Weight assigned to a given observation
          codeBias,  ///< Code bias by both receiver and satellite
-         cdtC1,     ///< Receiver clock offset of C1
-         cdtP1,     ///< Receiver clock offset of P1
-         cdtC2,     ///< Receiver clock offset of C2
-         cdtP2,     ///< Receiver clock offset of P2
-         cdtC5,     ///< Receiver clock offset of C5
-         cdtP5,     ///< Receiver clock offset of P5
-         cdtL1,     ///< Receiver clock offset of L1
-         cdtL2,     ///< Receiver clock offset of L2
-         cdtL5,     ///< Receiver clock offset of L5
-         cdtPC,     ///< Receiver clock offset of PC
-         cdtLC,     ///< Receiver clock offset of LC
-         cdtWL,     ///< Receiver clock offset of WL
-         cdtWL2,    ///< Receiver clock offset of WL2
-         cdtWL3,    ///< Receiver clock offset of WL3
-         cdtWL4,    ///< Receiver clock offset of WL4
-         cdtMW,     ///< Receiver clock offset of MW
-         cdtSatC1,  ///< Satellite clock offset of C1
-         cdtSatP1,  ///< Satellite clock offset of P1
-         cdtSatC2,  ///< Satellite clock offset of C2
-         cdtSatP2,  ///< Satellite clock offset of P2
-         cdtSatC5,  ///< Satellite clock offset of C5
-         cdtSatP5,  ///< Satellite clock offset of P5
-         cdtSatL1,  ///< Satellite clock offset of L1
-         cdtSatL2,  ///< Satellite clock offset of L2
-         cdtSatL5,  ///< Satellite clock offset of L5
-         cdtSatPC,  ///< Satellite clock offset of PC
-         cdtSatLC,  ///< Satellite clock offset of LC
-         cdtSatWL,  ///< Satellite clock offset of WL
-         cdtSatMW,  ///< Satellite clock offset of MW
             // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component

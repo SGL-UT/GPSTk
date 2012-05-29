@@ -31,6 +31,7 @@
 
 #include "ConfDataWriter.hpp"
 
+using namespace std;
 
 namespace gpstk
 {
@@ -99,9 +100,6 @@ namespace gpstk
 	{
 		string line=var;
 
-      if(var.length()<variableWidth) 
-         line = StringUtils::leftJustify(var,variableWidth);
-
 		if(varComment.length()>0) line += " , " + varComment;
 		
       line += " = " + val;
@@ -110,23 +108,6 @@ namespace gpstk
 		
       formattedPutLine(line);
 	}
-
-      /* Write a double variable with general format
-       *
-       * @param var          variable name
-       * @param val          variable value
-       * @param varComment   variable comment 
-       * @param valComment   value comment
-       */
-   void ConfDataWriter::writeVariable(const string& var,
-                      const double& val,
-                      const string& varComment,
-                      const string& valComment)
-   { 
-      writeVariable(var,StringUtils::asString(val,valuePrecison),
-                                                         varComment,valComment);
-   }
-
       
 
 	   /* Write a string variable list with general format
@@ -144,10 +125,6 @@ namespace gpstk
                                           const string& valComment)
 	{
 		string line=var;
-
-      if(var.length()<variableWidth) 
-         line = StringUtils::leftJustify(var,variableWidth);
-
 		if(varComment.length() > 0) line += " , " + varComment;
 
 		line += " = ";
@@ -174,10 +151,6 @@ namespace gpstk
                                           const string&         valComment)
 	{
 		string line=var;
-
-      if(var.length()<variableWidth) 
-         line = StringUtils::leftJustify(var,variableWidth);
-
 		if(varComment.length() > 0) line += " , " + varComment;
 
 		line += " = ";
@@ -236,7 +209,7 @@ namespace gpstk
 		vector<string> vals;
 		for(int i = 0; i < n; i++) 
       {
-         vals.push_back(StringUtils::asString(valList[i],valuePrecison));
+         vals.push_back(StringUtils::asString(valList[i]));
       }
 
 		writeVariableList(var, vals, varComment, valComment);

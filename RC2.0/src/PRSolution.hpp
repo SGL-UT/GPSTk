@@ -5,7 +5,7 @@
  * Pseudorange navigation solution, either a simple solution using all the given data,
  * or a solution including editing via a RAIM algorithm.
  */
-
+ 
 #ifndef PRS_POSITION_SOLUTION_HPP
 #define PRS_POSITION_SOLUTION_HPP
 
@@ -26,7 +26,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -46,7 +46,6 @@ namespace gpstk
 {
    /** @defgroup GPSsolutions GPS solution algorithms and Tropospheric models */
    //@{
-<<<<<<< .working
 
    class WtdAveStats {
    private:
@@ -58,27 +57,7 @@ namespace gpstk
       Matrix<double> sumInfo;
       Vector<double> sumInfoState;
 
-=======
-
-   /** This class defines an interface to routines which compute a position
-    * and time solution from pseudorange data, with a data editing algorithm
-    * based on Receiver Autonomous Integrity Monitoring (RAIM) concepts.
-    * RAIM ref. "A Baseline GPS RAIM Scheme and a Note on the Equivalence of
-    * Three RAIM Methods," by R. Grover Brown, Journal of the Institute of
-    * Navigation, Vol. 39, No. 3, Fall 1992, pg 301.
-    */
-   class PRSolution
-   {
->>>>>>> .merge-right.r3070
    public:
-<<<<<<< .working
-=======
-         /// Constructor
-      PRSolution() throw() : RMSLimit(6.5), SlopeLimit(1000.),
-         Algebraic(false), ResidualCriterion(true), ReturnAtOnce(false),
-         NSatsReject(-1), Debug(false), pDebugStream(&std::cout),
-         MaxNIterations(10),  ConvergenceLimit(3.e-7), Valid(false) {};
->>>>>>> .merge-right.r3070
 
       // ctor
       WtdAveStats(void) : N(0)

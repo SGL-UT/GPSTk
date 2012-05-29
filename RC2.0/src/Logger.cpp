@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009~2015
 //
@@ -29,152 +29,91 @@
 
 #include "Logger.hpp"
 #include "StringUtils.hpp"
-#include "MemoryUtils.hpp"
-#include "String.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
 
 namespace gpstk
 {
    using namespace std;
 
    std::map<std::string, Logger*> Logger::loggerMap;
-   AutoReleasePool<LogChannel> Logger::channelPool;
-   ConsoleLogChannel Logger::defaultChannel;
+
+   const std::string Logger::DEFAULT = "";
+
+   const std::string Logger::LogLevelName[MAX_LEVEL]=
+   {
+      "","Fatal","Critical","Error","Warning","Notice","Information",
+      "Debug","Trace"
+   };
 
    Logger::Logger(const Logger& right)
    {
       this->name = right.name;
       this->level = right.level;
-      this->channel = right.channel;
+      this->pstrm = right.pstrm;
    }
 
    Logger& Logger::operator = (const Logger& right)
    {
       this->name = right.name;
       this->level = right.level;
-      this->channel = right.channel;
+      this->pstrm = right.pstrm;
 
       return *this;
    }
 
    void Logger::log(const LogMessage& msg)
    {
-      if( (msg.level <= level) && (channel) )
+      if( (msg.level <= level) && (pstrm->good()) )
       {
-         channel->log(msg);
-      }
-   }
+         string slevel = LogLevelName[msg.level];
 
-   void Logger::log(const std::string& text, LogLevel level)
-   {
-      LogMessage msg(name, text, level);
-      log(msg);
+         ostringstream ss;
+         ss << msg.file <<":"
+            << msg.line <<":"
+            << msg.function;
+         string slocation = ss.str();
+
+         if(printInDetail)
+         {
+            (*pstrm) << "@ [" << StringUtils::lowerCase(slevel) << "] "
+               << printTime(msg.time,"%04Y/%02m/%02d %02H:%02M:%06.3f") << " " 
+               << slocation <<"\n  "
+               << msg.text << endl;
+         }
+         else
+         {
+            (*pstrm) << "[" << StringUtils::lowerCase(slevel) << "] "
+                     << msg.text << endl;
+         }
+         
+                
+         (*pstrm).flush();
+      }
    }
 
    void Logger::log(const std::string& text, LogLevel level, ExceptionLocation location)
    {
       CommonTime now; static_cast<Epoch>(now).setLocalTime();
-      LogMessage msg(name, text, level, now,
-                     location.getFileName(),
-                     location.getFunctionName(),
-                     location.getLineNumber());
+      LogMessage msg(text,level,now,
+         location.getFileName(),
+         location.getFunctionName(),
+         location.getLineNumber());
       log(msg);
-   }
-
-   void Logger::setLevel(const std::string& level)
-   {
-      string temp = toLower(level);
-
-      if (temp == "none")
-         setLevel(0);
-      else if (temp == "fatal")
-         setLevel(LEVEL_FATAL);
-      else if (temp == "critical")
-         setLevel(LEVEL_CRITICAL);
-      else if (temp == "error")
-         setLevel(LEVEL_ERROR);
-      else if (temp == "warning")
-         setLevel(LEVEL_WARNING);
-      else if (temp == "notice")
-         setLevel(LEVEL_NOTICE);
-      else if (temp == "information")
-         setLevel(LEVEL_INFORMATION);
-      else if (temp == "debug")
-         setLevel(LEVEL_DEBUG);
-      else if (temp == "trace")
-         setLevel(LEVEL_TRACE);
-      else
-         throw Exception("Not a valid log level"+level);
    }
    
    //
    // static method
    //
 
-   Logger& Logger::nullLogger(const std::string& logname,
-                              LogLevel loglevel, 
-                              const std::string& pattern)
-   {
-      LogChannel* pChannel = new LogChannel(pattern);
-      channelPool.add(pChannel);
-
-      Logger* pLogger = find(logname);
-      if(pLogger)
-      {
-         pLogger->setChannel(pChannel);
-      }
-      else
-      {
-         return create(logname,pChannel,loglevel);
-      }
-
-   }
-
-
-   Logger& Logger::consoleLogger(const std::string& logname,
-                                 LogLevel loglevel, 
-                                 const std::string& pattern)
-   {
-      LogChannel* pChannel = new ConsoleLogChannel(pattern);
-      channelPool.add(pChannel);
-
-      Logger* pLogger = find(logname);
-      if(pLogger)
-      {
-         pLogger->setChannel(pChannel);
-      }
-      else
-      {
-         return create(logname,pChannel,loglevel);
-      }
-   }
-
-   Logger& Logger::fileLogger(const std::string& logname,
-                              const std::string& filename,
-                              LogLevel loglevel, 
-                              const std::string& pattern)
-   {
-      LogChannel* pChannel = new FileLogChannel(filename,pattern);
-      channelPool.add(pChannel);
-
-      Logger* pLogger = find(logname);
-      if(pLogger)
-      {
-         pLogger->setChannel(pChannel);
-      }
-      else
-      {
-         return create(logname,pChannel,loglevel);
-      }
-   }
-
-   Logger& Logger::create( const std::string& logname,
-                           LogChannel* logchannel,
-                           LogLevel loglevel )
+   Logger& Logger::create(std::string logname,
+      LogLevel loglevel, 
+      std::ostream* logstrm )
    {
       Logger* pLogger = find(logname);
       if (!pLogger)
       {
-         pLogger = new Logger(logname, loglevel, logchannel);
+         pLogger = new Logger(logname, loglevel, logstrm);
          add(pLogger);
       }
 
@@ -184,9 +123,10 @@ namespace gpstk
    Logger* Logger::find(const std::string& name)
    {
       
-      LoggerMap::iterator it = loggerMap.find(name);
+      map<string, Logger*>::iterator it = loggerMap.find(name);
       if (it != loggerMap.end()) return it->second;
       else return 0;
+      
    }
 
    void Logger::add(Logger* pLogger)
@@ -197,7 +137,7 @@ namespace gpstk
 
    void Logger::destroy(const std::string& name)
    {
-      LoggerMap::iterator it = loggerMap.find(name);
+      map<string, Logger*>::iterator it = loggerMap.find(name);
       if (it != loggerMap.end())
       {
          delete it->second;
@@ -208,7 +148,7 @@ namespace gpstk
 
    void Logger::shutdown()
    {
-      LoggerMap::iterator it;
+      map<string, Logger*>::iterator it;
       for (it = loggerMap.begin(); it != loggerMap.end(); ++it)
       {
          delete it->second;
@@ -222,9 +162,9 @@ namespace gpstk
       Logger* pLogger = find(name);
       if (!pLogger)
       {
-         if (name == "")
+         if (name == DEFAULT)
          {
-            pLogger = new Logger(name, LEVEL_INFORMATION, &defaultChannel);
+            pLogger = new Logger(name,Logger::ERROR,&std::clog);
          }
          
          add(pLogger);
@@ -239,22 +179,25 @@ namespace gpstk
    class AutoLoggerShutdown
    {
    public:
-      AutoLoggerShutdown()  
-      {
-      }
-      
-      ~AutoLoggerShutdown() 
-      { 
-         Logger::shutdown(); 
-         Logger::channelPool.release();
-      }
-
-   protected:
-      
+      AutoLoggerShutdown()  {/*Logger::create("",Logger::TRACE);*/}
+      ~AutoLoggerShutdown() { Logger::shutdown(); }
    };
 
    
    static AutoLoggerShutdown als;
+   
+   Logger& LoggerStream::clog = Logger::get("");
+   Logger& LoggerStream::log  = clog;
+
+   Logger& LoggerStream::fatal = Logger::create("fatal",Logger::FATAL,&std::clog);
+   Logger& LoggerStream::critical = Logger::create("critical",Logger::CRITICAL,&std::clog);
+   Logger& LoggerStream::error = Logger::create("error",Logger::ERROR,&std::cerr);
+   Logger& LoggerStream::warning = Logger::create("warning",Logger::WARNING,&std::clog);
+   Logger& LoggerStream::notice = Logger::create("notice",Logger::NOTICE,&std::clog);
+   Logger& LoggerStream::information = Logger::create("information",Logger::INFORMATION,&std::clog);
+
+   Logger& LoggerStream::debug = Logger::create("debug",Logger::DEBUG,&std::clog);
+   Logger& LoggerStream::trace = Logger::create("trace",Logger::TRACE,&std::clog);
 
 }  // End of namespace 'gpstk'
 

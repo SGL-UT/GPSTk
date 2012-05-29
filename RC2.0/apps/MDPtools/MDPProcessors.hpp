@@ -125,36 +125,6 @@ public:
    {};
 };
 
-//-----------------------------------------------------------------------------
-class MDPHeaderProcessor : public MDPProcessor
-{
-   void process(const gpstk::MDPObsEpoch& oe)
-   {ohr(oe);};
-
-   void process(const gpstk::MDPPVTSolution& pvt)
-   {ohr(pvt);};
-
-   void process(const gpstk::MDPNavSubframe& sf)
-   {ohr(sf);};
-
-   void process(const gpstk::MDPSelftestStatus& sts)
-   {ohr(sts);};
-
-   void ohr(const gpstk::MDPHeader& h)
-   {
-      out << h.time.printf(timeFormat)
-          << std::fixed
-          << ", " << std::setw(3) << h.id
-          << ", " << std::setw(10) << in.headerCount
-          << std::endl;
-   }
-
-public:
-   MDPHeaderProcessor(gpstk::MDPStream& in, std::ofstream& out) :
-      MDPProcessor(in, out)
-   {};
-};
-
 
 //-----------------------------------------------------------------------------
 class MDPVerboseProcessor : public MDPProcessor

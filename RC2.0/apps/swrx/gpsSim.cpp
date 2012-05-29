@@ -17,14 +17,14 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 /**
    A simple GPS signal simulator. Based upon code from Johnathan York.
-
+  
    See http://sglwiki/cgi-bin/twiki/view/SGL/SwRxSignalPathDesign for the
    derivation of the several of the values below.
 
@@ -100,15 +100,15 @@ public:
 
    list<SVSource*> sv_sources;
 
-   vector<double> omega_lo;
+   vector<double> omega_lo; 
 
    double freqErr;
 
    IQStream *output;
 
-
-
-
+   
+   
+   
 protected:
    virtual void process();
 };
@@ -184,12 +184,12 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       outputOpt('o', "output",
                  "Where to write the output. The default is stdout");
 
-   if (!BasicFramework::initialize(argc,argv))
+   if (!BasicFramework::initialize(argc,argv)) 
       return false;
 
    using namespace gpstk::StringUtils;
 
-   char quantization='f';
+   char quantization='f';   
    if (quantizationOpt.getCount())
       quantization = quantizationOpt.getValue()[0][0];
    switch (quantization)
@@ -268,7 +268,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
    omega_lo.resize(LO_COUNT);
    omega_lo[0] = 2.0*gpstk::PI*rx_L1_LO/rx_sample_rate;
    omega_lo[1] = 2.0*gpstk::PI*rx_L2_LO/rx_sample_rate;
-
+   
    vector<double> lo(LO_COUNT);
    lo[0] = omega_lo[0]/time_step / 2 /PI;
    lo[1] = omega_lo[1]/time_step / 2 /PI;
@@ -311,7 +311,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
       // is not around or less than 1/2, we have a problem
       double sampleRate = 1.0/(rx_sample_rate); //sec
       double chips_per_sample_base = gpstk::PY_CHIP_FREQ_GPS * sampleRate;
-
+      
       switch(band)
       {
          case 1: doppler *= sampleRate / L1_MULT_GPS; break;
@@ -339,7 +339,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
 
       if (debugLevel)
          src->dump(cout);
-
+         
       sv_sources.push_back(src);
    }
    return true;
@@ -354,7 +354,7 @@ void GpsSim::process()
    // simulation time, in seconds
    double rx_time = 0;
    int max_samples = periods_to_generate*static_cast<int>(samples_per_period);
-
+     
    for(int sample=0; sample < max_samples; ++sample)
    {
       rx_time += time_step;
@@ -380,7 +380,7 @@ void GpsSim::process()
          complex<double> lo = sincos(omega_lo[i] * sample);
          complex<double> noise(generate_normal_rv()*noise_amplitude,
                                   generate_normal_rv()*noise_amplitude);
-
+            
          // Heterodyne the signals
          if (!codeOnly)
          accum[i] *= conj(lo);
@@ -393,9 +393,9 @@ void GpsSim::process()
 
          // And output the samples
          *output << accum[i];
-      }
+      }         
    }
-
+         
 }
 
 int main(int argc, char *argv[])

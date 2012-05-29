@@ -102,7 +102,7 @@ try {
          oflog << "Opened file " << CI.OutputPRSFile << " for PRS output." << endl;
          ofprs << "# " << Title << endl;
          ofprs << "PRS site ns week  sec wk              dX(m)            dY(m)"
-               << "            dZ(m)           clk(m)   rms(m) slope PRNs..."
+               << "            dZ(m)           clk(m)   rms(m) PRNs..."
                //<< "    (ret) Valid/NotValid"
                << endl;
       }

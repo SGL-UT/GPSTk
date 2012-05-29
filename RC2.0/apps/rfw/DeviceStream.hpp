@@ -163,44 +163,24 @@ namespace gpstk
          {
             string ifn=target;
             ifn.erase(0,4);
-
-            int fd = ::open(ifn.c_str(), O_RDWR | O_NOCTTY);
+            int fd = ::open(ifn.c_str(), O_RDWR | O_NOCTTY | O_NDELAY);
+            
             if (fd<0)
-            {
-               cout << "Error opening " << ifn.c_str() << endl;
                return;
-            }
-
-	    // Not sure why this was being done it really should have been
-	    // This is just another way to force blocking I/O
-            int rc;
-            rc = fcntl(fd, F_SETFL, 0);
-           if (rc < 0)
-            {
-               cout << "Error in fcntl, rc=" << rc << endl;
-               return;
-            }
-
-            struct termios options;
-            rc=tcgetattr(fd, &options);
-
-            options.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR
-                                 | IGNCR | ICRNL | IXON);
-            options.c_lflag &= ~(ICANON | ECHO | ECHOE | ECHONL | ISIG | IEXTEN);
-            options.c_oflag &= ~OPOST;
-            options.c_cflag &= ~(CSIZE | PARENB);
-            options.c_cflag |= CS8 | CREAD | HUPCL | CLOCAL;
-
-            options.c_cc[VTIME] = 0; // Wait forever
-            options.c_cc[VMIN] = 16; // And always get at least 16 characters
-            if (rc=cfsetospeed(&options, B115200))
-               cout << "Error in cfsetospeed(), rc=" << rc << endl;
-            if (rc=cfsetispeed(&options, B115200))
-               cout << "Error in cfsetispeed(), rc=" << rc << endl;
-
+            
+            int rtn = fcntl(fd, F_SETFL, 0);
+            
+            struct termios options;  
+            
+            options.c_iflag = 0x00 | IGNBRK;// | IGNPAR; // 0x1;
+            options.c_lflag = 0x00;
+            options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+            options.c_oflag = 0x00;
+            options.c_cflag =  0x00 | CS8 | CSIZE | CREAD | HUPCL | CLOCAL; // 0x1cb2;
+            cfsetispeed(&options, B115200);
+            
             // Final step... apply them
-            if (rc=tcsetattr(fd, TCSANOW, &options))
-               cout << "Error in tcsetattr(), rc=" << rc << endl;
+            tcsetattr(fd, TCSANOW, &options);
 
             deviceType = dtSerial;
             fdbuff = new FDStreamBuff(fd);

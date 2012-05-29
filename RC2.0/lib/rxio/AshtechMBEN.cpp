@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -60,7 +60,7 @@ namespace gpstk
 
       // If this object doesn't have an id set yet, assume that the streams
       // most recent read id is what we need to be
-      if (id == "" && rawData.size()>=11 &&
+      if (id == "" && rawData.size()>=11 && 
           rawData.substr(0,7) == preamble &&
           rawData[10]==',')
          id = rawData.substr(7,3);
@@ -116,7 +116,7 @@ namespace gpstk
          ascii=true;
          header = str.substr(0,11); str.erase(0,11);
          stringstream iss(str);
-         char c;
+         char c; 
          iss >> seq >> c
              >> left >> c
              >> svprn >> c
@@ -209,9 +209,8 @@ namespace gpstk
           << "warn:" << (int)warning
           << " gb:" << (int)goodbad
           << " pol:" << (int)polarity_known
-          << dec
-          << " ireg:" << (int)ireg
           << " qa:" << (int)qa_phase
+          << dec
           << " phase:" << asString(full_phase, 1)
           << " range:" << asString(raw_range*1e3, 3)
           << " doppler:" << doppler
@@ -223,16 +222,13 @@ namespace gpstk
    //---------------------------------------------------------------------------
    float AshtechMBEN::code_block::snr(float chipRate) const throw()
    {
-      const float n = 20000;     // number of samples in 1 ms
-      // magnitude of the carrier estimate; should be 4.14 for 2 bit
-      // quantization, 2.18 for 1 bit. 
-      const float m = 2.18;
-      const float bw = 0.9 * chipRate; // equivalent noise bandwidth (Hz)
+      const int   n = 20000;     // number of samples in 1 ms
+      const float m = 4.14;      // magnitude of the carrier estimate;
+      float bw = 0.9 * chipRate; // equivalent noise bandwidth (Hz)
 
       const float d = PI/(n*n*m*m*4.0);
       float snr=0;
-      // Note that ireg is as output from the MBEN which is 0-255, not the 0-99
-      // as displayed on the front panel. 
+
       if (ireg)
       {
          snr = exp(((float)ireg)/25.0);
@@ -242,7 +238,7 @@ namespace gpstk
 
       return snr;
    }
-
+   
    //---------------------------------------------------------------------------
    void AshtechMBEN::dump(ostream& out) const throw()
    {

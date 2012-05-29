@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -119,7 +119,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
@@ -135,7 +135,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
@@ -175,7 +175,7 @@ namespace gpstk
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
+         /// @param wx the weather to use for this correction       
       virtual void setWeather(const WxObservation& wx)
          throw(InvalidParameter);
 
@@ -210,7 +210,7 @@ namespace gpstk
       double humid;               // latest value of relative humidity (percent)
 
    }; // end class TropModel
-
+   
 
    //---------------------------------------------------------------------------------
    /// The 'zero' trop model, meaning it always returns zero.
@@ -232,7 +232,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
@@ -249,7 +249,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
@@ -338,7 +338,7 @@ namespace gpstk
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
+         /// @param wx the weather to use for this correction       
       virtual void setWeather(const WxObservation& wx)
          throw(InvalidParameter);
 
@@ -411,7 +411,7 @@ namespace gpstk
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
+         /// @param wx the weather to use for this correction       
       virtual void setWeather(const WxObservation& wx)
          throw(InvalidParameter);
 
@@ -502,7 +502,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
@@ -518,7 +518,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
@@ -558,7 +558,7 @@ namespace gpstk
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
+         /// @param wx the weather to use for this correction       
       virtual void setWeather(const WxObservation& wx)
          throw(InvalidParameter);
 
@@ -681,7 +681,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
@@ -697,7 +697,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
@@ -728,7 +728,7 @@ namespace gpstk
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
+         /// @param wx the weather to use for this correction       
       virtual void setWeather(const WxObservation& wx)
          throw(InvalidParameter);
 
@@ -846,7 +846,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position
           * @param SV  Satellite position
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Position& RX,
                                 const Position& SV,
@@ -862,7 +862,7 @@ namespace gpstk
           * correction(elevation) routine.
           * @param RX  Receiver position in ECEF cartesian coordinates (meters)
           * @param SV  Satellite position in ECEF cartesian coordinates (meters)
-          * @param tt  Time tag of the signal
+          * @param tt  Time tag of the signal 
           */
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
@@ -893,7 +893,7 @@ namespace gpstk
 
          /// Re-define the tropospheric model with explicit weather data.
          /// Typically called just before correction().
-         /// @param wx the weather to use for this correction
+         /// @param wx the weather to use for this correction       
       virtual void setWeather(const WxObservation& wx)
          throw(InvalidParameter);
 
@@ -986,7 +986,7 @@ namespace gpstk
          /// Constructor to create a GCAT trop model providing  the height
          /// of the receiver above mean sea level (as defined by ellipsoid
          /// model).
-         ///
+         /// 
          /// @param ht Height of the receiver above mean sea level, in meters.
       GCATTropModel(const double& ht);
 
@@ -1151,7 +1151,7 @@ namespace gpstk
        * On the other hand, the outputs are the tropospheric correction (in
        * meters) and the sigma-squared of tropospheric delay residual error
        * (meters^2).
-       *
+       * 
        * A typical way to use this model follows:
        *
        * @code
@@ -1216,7 +1216,7 @@ namespace gpstk
           * @param elevation   Elevation of satellite as seen at receiver, in
           *                    degrees.
           */
-      virtual double correction(double elevation) const
+      virtual double correction(double elevation) const 
          throw(InvalidTropModel);
 
 
@@ -1409,7 +1409,7 @@ namespace gpstk
           * @param elevation  Elevation of satellite as seen at receiver,
           *                   in degrees
           */
-      double MOPSsigma2(double elevation)
+      double MOPSsigma2(double elevation) 
          throw(TropModel::InvalidTropModel);
 
 
@@ -1443,8 +1443,8 @@ namespace gpstk
       /** Tropospheric model based in the Neill mapping functions.
        *
        * This model uses the mapping functions developed by A.E. Niell and
-       * published in Neill, A.E., 1996, 'Global Mapping Functions for the
-       * Atmosphere Delay of Radio Wavelengths,' J. Geophys. Res., 101,
+       * published in Neill, A.E., 1996, 'Global Mapping Functions for the 
+       * Atmosphere Delay of Radio Wavelengths,' J. Geophys. Res., 101, 
        * pp. 3227-3246 (also see IERS TN 32).
        *
        * The coefficients of the hydrostatic mapping function depend on the
@@ -1452,7 +1452,7 @@ namespace gpstk
        * the day of the year. On the other hand, the wet mapping function
        * depends only on latitude.
        *
-       * This mapping is independent from surface meteorology, while having
+       * This mapping is independent from surface meteorology, while having 
        * comparable accuracy and precision to those that require such data.
        * This characteristic makes this model very useful, and it is
        * implemented in geodetic software such as JPL's Gipsy/OASIS.
@@ -1483,7 +1483,7 @@ namespace gpstk
    public:
 
          /// Default constructor
-      NeillTropModel(void)
+      NeillTropModel(void) 
       { validHeight=false; validLat=false; validDOY=false; valid=false; };
 
 
@@ -1491,7 +1491,7 @@ namespace gpstk
          /// height of the receiver above mean sea level. The other
          /// parameters must be set with the appropriate set methods before
          /// calling correction methods.
-         ///
+         /// 
          /// @param ht   Height of the receiver above mean sea level, in
          ///             meters.
       NeillTropModel(const double& ht)
@@ -1501,7 +1501,7 @@ namespace gpstk
          /// Constructor to create a Neill trop model providing the height of
          /// the receiver above mean sea level (as defined by ellipsoid
          /// model), its latitude and the day of year.
-         ///
+         /// 
          /// @param ht   Height of the receiver above mean sea level,
          ///             in meters.
          /// @param lat  Latitude of receiver, in degrees.
@@ -1514,7 +1514,7 @@ namespace gpstk
 
          /// Constructor to create a Neill trop model providing the position
          /// of the receiver and current time.
-         ///
+         /// 
          /// @param RX   Receiver position.
          /// @param time Time.
       NeillTropModel( const Position& RX,
@@ -1743,8 +1743,8 @@ namespace gpstk
 
 
    };    // end class NeillTropModel
-
+   
       //@}
-
+   
 }
 #endif   // TROPOSPHERIC_MODELS_GPSTK

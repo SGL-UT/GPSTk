@@ -117,8 +117,8 @@ namespace gpstk
       mutable unsigned short length;  ///< number of bytes in this message (includes the length of the header)
       mutable unsigned short crc;     ///< the 16 bit CCITT crc covering the header and body of the message
 
-      static const uint16_t myLength;  ///< = 16
-      static const uint16_t frameWord; ///< = 0x9c9c
+      static const unsigned myLength;  ///< = 16
+      static const unsigned frameWord; ///< = 0x9c9c
       static int debugLevel;
       static bool hexDump;
 

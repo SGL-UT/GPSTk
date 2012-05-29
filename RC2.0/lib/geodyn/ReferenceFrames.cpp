@@ -579,7 +579,7 @@ namespace gpstk
        */
    double ReferenceFrames::earthRotationAngleRate1(const double& mjdTT)
    {
-      double T = (mjdTT + (JD_TO_MJD - DJ00) )/36525.0;
+      double T = (mjdTT - (JD_TO_MJD - DJ00) )/36525.0;
       double dera = (1.002737909350795 + 5.9006e-11 * T - 5.9e-15 * T * T ) 
          * D2PI / 86400.0;
 
@@ -593,7 +593,7 @@ namespace gpstk
        */
    double ReferenceFrames::earthRotationAngleRate2(const double& mjdTT)
    {
-      double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
+      double T = ( mjdTT - (JD_TO_MJD - DJ00) ) / 36525.0;
       double dera = (5.9006e-11 - 5.9e-15 * T) * D2PI / 86400.0;
 
       return dera;
@@ -606,7 +606,7 @@ namespace gpstk
        */
    double ReferenceFrames::earthRotationAngleRate3(const double& mjdTT)
    {
-      double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
+      double T = ( mjdTT - (JD_TO_MJD - DJ00) ) / 36525.0;
       double dera = ( -5.9e-15 ) * D2PI / 86400.0;
 
       return dera;

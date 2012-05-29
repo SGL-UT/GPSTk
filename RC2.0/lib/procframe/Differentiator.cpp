@@ -34,15 +34,6 @@
 namespace gpstk
 {
 
-      // Index initially assigned to this class
-   int Differentiator::classIndex = 9900000;
-
-
-      // Returns an index identifying this object.
-   int Differentiator::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string Differentiator::getClassName() const
    { return "Differentiator"; }
@@ -68,7 +59,6 @@ namespace gpstk
 
       setSamplingPeriod(samplingPeriod);
       setTolerance(tol);
-      setIndex();
 
    }  // End of 'Differentiator::Differentiator()'
 
@@ -326,7 +316,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -358,7 +347,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -390,7 +378,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -478,7 +465,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);

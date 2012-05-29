@@ -31,8 +31,8 @@
    Unless, of course, it has to go somewhere else. :-)
 */
 
-#ifndef GPSTK_GPSTKPLATFORM_H
-#define GPSTK_GPSTKPLATFORM_H
+#ifndef GPSTK_PLATFORM_HPP
+#define GPSTK_PLATFORM_HPP
 
 #ifdef _MSC_VER
 
@@ -49,8 +49,6 @@ typedef unsigned __int8  uint8_t;
 typedef unsigned __int16 uint16_t;
 typedef unsigned __int32 uint32_t;
 typedef unsigned __int64 uint64_t;
-
-
 #include <sys/types.h>
 #include <sys/timeb.h>
 
@@ -58,15 +56,5 @@ typedef unsigned __int64 uint64_t;
 #elif !defined(__SUNPRO_CC)
 #include <stdint.h>
 #endif
-
-typedef int8_t  Int8;
-typedef int16_t Int16;
-typedef int32_t Int32;
-typedef int64_t Int64;
-
-typedef uint8_t  UInt8;
-typedef uint16_t UInt16;
-typedef uint32_t UInt32;
-typedef uint64_t UInt64;
 
 #endif

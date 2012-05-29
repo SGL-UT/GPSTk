@@ -24,189 +24,214 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009~2015
 //
 //============================================================================
 
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <string>
 #include <cstdarg>
 #include "CommonTime.hpp"
 #include "Exception.hpp"
 #include "Matrix.hpp"
-#include "LogMessage.hpp"
-#include "LogChannel.hpp"
-#include "MemoryUtils.hpp"
-#include "FormatUtils.hpp"
-#include "StreamBuf.hpp"
 
 namespace gpstk
 {
-
-   class LogStream;
-
+      /**
+       * This class encapsulates the logging framework.
+       * @code
+       *    ofstream logstrm("debug.txt");
+       *    string logname("debug");
+       *
+       *    slog(logname).setLevel(Logger::TRACE);
+       *    slog(logname).setStream(&logstrm);
+       *
+       *    GPSTK_ERROR(slog("debug"),"error message");
+       *    GPSTK_FATAL(slog("debug"),"crushed");
+       *    GPSTK_DEBUG(slog("debug"),"debug message");
+       *    GPSTK_DEBUG(slog("debug"),"trace message");
+       * @endcode
+       */
    class Logger
    {
    public:
+         /// The type of log level
+      enum LogLevel
+      {
+         FATAL = 1,   /// A fatal error. The application will most likely terminate. This is the highest priority.
+         CRITICAL,    /// A critical error. The application might not be able to continue running successfully.
+         ERROR,       /// An error. An operation did not complete successfully, but the application as a whole is not affected.
+         WARNING,     /// A warning. An operation completed with an unexpected result.
+         NOTICE,      /// A notice, which is an information with just a higher priority.
+         INFORMATION, /// An informational message, usually denoting the successful completion of an operation.
+         DEBUG,       /// A debugging message.
+         TRACE,       /// A tracing message. This is the lowest priority.
+         MAX_LEVEL
+      };
+         
+         /// The struct of log message
+      struct LogMessage
+      {
+         std::string text;
+         LogLevel    level;
+         CommonTime     time;
+         std::string file;
+         std::string function;
+         int         line;
+         
+
+         LogMessage()
+            :text(""),level(INFORMATION),file(""),function(""),line(0)
+         {}
+
+         LogMessage(std::string text,
+            LogLevel level,
+            CommonTime time = CommonTime(),
+            std::string file = "",
+            std::string function = "",
+            int line = 0)
+         {
+            this->text = text;
+            this->level = level;
+            this->time = time;
+            this->file = file;
+            this->function = function;
+            this->line = line;
+         }
+      };
+
+   public:
+         /// Copy constructor
       Logger(const Logger& right);
 
       Logger& operator = (const Logger& right);
 
+         /// Default deconstructor
       ~Logger(){};
 
-      Logger& setChannelPattern(const std::string fmt="%t")
-      { 
-         if(this->channel) this->channel->setPattern(fmt); 
-         return (*this);
-      }
+         /// Set log stream
+      Logger& setStream(std::ostream* pos)
+      { pstrm = pos; return (*this);}
+         
+         /// Return log stream
+      std::ostream* getStream() const
+      { return pstrm;}
 
-      Logger& setChannel(LogChannel* pChannel=&defaultChannel)
-      { this->channel = pChannel; return (*this);}
-      
-      LogChannel* getChannel() const
-      { return channel; }
-     
+         /// Sets the Logger's log level.
       Logger& setLevel(int level)
       { this->level = level; return (*this);}
 
-      void setLevel(const std::string& level);
-
+         /// Returns the Logger's log level.
       int getLevel() const
       { return this->level; }
 
+         /// Get logger's name
       std::string getName()
       {return this->name; }
 
-      void log(const std::string& text, LogLevel level);
-
+      Logger& setPrintInDetail(bool inDetail = true)
+      { this->printInDetail = inDetail; return (*this);}
+      
+         /// Write log message to logging stream
       void log(const std::string& text, LogLevel level, ExceptionLocation location);
 
-      void fatal(const std::string& msg)
-      { log(msg,LEVEL_FATAL); }
-
-      void critical(const std::string& msg)
-      { log(msg,LEVEL_CRITICAL); }
-
-      void error(const std::string& msg)
-      { log(msg,LEVEL_ERROR); }
- 
-      void warning(const std::string& msg)
-      { log(msg,LEVEL_WARNING); }
-
-      void notice(const std::string& msg)
-      { log(msg,LEVEL_NOTICE);}
- 
-      void information(const std::string& msg)
-      { log(msg,LEVEL_INFORMATION); }
-
-      void debug(const std::string& msg)
-      { log(msg,LEVEL_DEBUG); }	
-
-      void trace(const std::string& msg)
-      { log(msg,LEVEL_TRACE); };
-
+         /// Returns true if at least the given log level is set.
       bool is(int level) const
       { return level >= level;}
       
+         /// Returns true if the log level is at least PRIO_FATAL.
       bool fatal() const
-      { return level >= LEVEL_FATAL; }
+      { return level >= FATAL; }
       
+         /// Returns true if the log level is at least PRIO_CRITICAL.
       bool critical() const
-      { return level >= LEVEL_CRITICAL; }
+      { return level >= CRITICAL; }
       
+         /// Returns true if the log level is at least PRIO_ERROR.
       bool error() const
-      { return level >= LEVEL_ERROR; }
+      { return level >= ERROR; }
       
+         /// Returns true if the log level is at least PRIO_WARNING.
       bool warning() const
-      { return level >= LEVEL_WARNING; }
+      { return level >= WARNING; }
       
+         /// Returns true if the log level is at least PRIO_NOTICE.
       bool notice() const
-      { return level >= LEVEL_NOTICE; }
+      { return level >= NOTICE; }
       
+         /// Returns true if the log level is at least PRIO_INFORMATION.
       bool information() const
-      { return level >= LEVEL_INFORMATION; }
+      { return level >= INFORMATION; }
       
+         /// Returns true if the log level is at least PRIO_DEBUG.
       bool debug() const
-      { return level >= LEVEL_DEBUG; }
+      { return level >= DEBUG; }
       
+         /// Returns true if the log level is at least PRIO_TRACE.
       bool trace() const
-      { return level >= LEVEL_TRACE; }
+      { return level >= TRACE; }
 
       
       // static method
       //------------------
 
-      static Logger& create( const std::string& logname,
-                             LogChannel* logchannel = &defaultChannel,
-                             LogLevel loglevel = LEVEL_INFORMATION);
+         /// Create a logger object and stored in map indexed by name
+      static Logger& create(std::string logname,
+         LogLevel loglevel=INFORMATION, 
+         std::ostream* logstrm = &std::clog);
          
+         /// Destroy a logger object by name
       static void destroy(const std::string& name);
 
-
+         /// Get a logger object by name
       static Logger& get(const std::string& name);
       
-
+         /// Delete all logger objects
       static void shutdown();
 
-
-      static Logger& nullLogger(const std::string& logname,
-                                LogLevel loglevel = LEVEL_INFORMATION, 
-                                const std::string& pattern = "%p: %t");
-
-
-      static Logger& consoleLogger(const std::string& logname,
-                           LogLevel loglevel = LEVEL_INFORMATION, 
-                           const std::string& pattern = "%p: %t");
-
-
-      static Logger& fileLogger(const std::string& logname,
-                                const std::string& filename,
-                                LogLevel loglevel = LEVEL_INFORMATION, 
-                                const std::string& pattern = "%p: %t");
      
    protected:
-
       void log(const LogMessage& msg);
-      
       static Logger* find(const std::string& name);
-      
       static void add(Logger* pLogger);
-   
-   protected:
-      typedef std::map<std::string, Logger*> LoggerMap;
 
+      bool printInDetail;
+         
+   protected:
+         /// Default constructor
       Logger(){}
 
-      Logger(const std::string& logname,
-             LogLevel    loglevel   = LEVEL_INFORMATION, 
-             LogChannel* logchannel = &defaultChannel) 
-         : name(logname),level(loglevel), channel(logchannel) {}
+      Logger(std::string logname,
+         LogLevel loglevel=INFORMATION, 
+         std::ostream* logstrm = &std::clog) 
+         : name(logname),level(loglevel), pstrm(logstrm),
+           printInDetail(false)
+      {};
 
       std::string   name;     /// log name
       int           level;    /// log level
-      LogChannel*   channel;  /// log channel
+      std::ostream* pstrm;    /// log stream
 
-      static LoggerMap loggerMap;
+         /// Object to store all loggers indexed by name
+      static std::map<std::string, Logger*> loggerMap;
       
+         /// The name of the default logger ("").
+      static const std::string DEFAULT; 
 
-   public:
-      static ConsoleLogChannel defaultChannel;
-      static AutoReleasePool<LogChannel> channelPool;
-
-      friend class LogStreamBuf;
+      static const std::string LogLevelName[MAX_LEVEL];
 
    }; // End of class 'Logger'
 
-
-
    template <class T>
    inline std::string mat2str(const Vector<T>& vec, size_t width, size_t digit,
-                              std::string desc="")
+      std::string desc="")
    {
-      std::ostringstream ss;
+      //std::ostringstream ss;
+      std::stringstream ss;
       ss << std::fixed;
       ss << "["<< vec.size() << "x1]: " << desc << std::endl;
       for(int i=0;i<vec.size();i++)
@@ -219,317 +244,145 @@ namespace gpstk
 
    template <class T>
    inline std::string mat2str(const Matrix<T>& mat, size_t width, size_t digit,
-                              std::string desc="")
+      std::string desc="")
    {
-      std::ostringstream ss;
-      ss << std::fixed;
+      //std::ostringstream ss;
+      std::stringstream ss;
+      ss << (std::fixed);
       ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]: "<< desc << std::endl;
       ss << std::setw(width) << std::setprecision(digit) << mat;
       return ss.str();
    }
-
+ 
    //
    // convenience macros
    //
-#define GPSTK_LOGGER_STREAM(name) \
-   LogStream( Logger::get(name) )
+#define GPSTK_MAX_BUFFER_SIZE 1024*100
 
-#define GPSTK_NULL_LOGGER(name) \
-   Logger::nullLogger(name)
+#define GPSTK_LOGGING(logger,level,msg) \
+   logger.log(msg,level,FILE_LOCATION); 
 
-#define GPSTK_CONSOLE_LOGGER(name) \
-   Logger::consoleLogger(name)
+#define GPSTK_FATAL( msg ) \
+   slog.fatal.log(msg,Logger::FATAL,FILE_LOCATION);
 
-#define GPSTK_FILE_LOGGER(name,file) \
-   Logger::fileLogger(name,file)
+#define GPSTK_CRITICAL( msg ) \
+   slog.critical.log(msg,Logger::CRITICAL,FILE_LOCATION);
 
-#define GPSTK_LOGGER_PATTERN(name,pattern) \
-   Logger::get(name).setChannelPattern(pattern)
+#define GPSTK_ERROR( msg ) \
+   slog.error.log(msg,Logger::ERROR,FILE_LOCATION);
 
-#define GPSTK_LOGGER_LEVEL(name,level) \
-   Logger::get(name).setLevel(name,level)
+#define GPSTK_WARNING( msg ) \
+   slog.warning.log(msg,Logger::WARNING,FILE_LOCATION);
 
+#define GPSTK_NOTICE( msg ) \
+   slog.notice.log(msg,Logger::NOTICE,FILE_LOCATION);
 
-#define GPSTK_FATAL(name, msg) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(msg, LEVEL_FATAL, FILE_LOCATION); else (void) 0
+#define GPSTK_INFORMATION( msg ) \
+   slog.information.log(msg,Logger::INFORMATION,FILE_LOCATION);
 
-#define GPSTK_FATAL_F1(name, fmt, arg1) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(FormatUtils::format((fmt), arg1), LEVEL_FATAL, FILE_LOCATION); else (void) 0
+   //
+#define GPSTK_FATAL2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_FATAL(ss);}
 
-#define GPSTK_FATAL_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_FATAL, FILE_LOCATION); else (void) 0
+#define GPSTK_CRITICAL2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_CRITICAL(ss);}
 
-#define GPSTK_FATAL_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_FATAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_FATAL_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_FATAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_FATAL_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_FATAL, FILE_LOCATION); else (void) 0
-
-
-#define GPSTK_CRITICAL(name, msg) \
-   if (Logger::get(name).critical()) Logger::get(name).log(msg, LEVEL_CRITICAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_CRITICAL_F1(name, fmt, arg1) \
-   if (Logger::get(name).critical()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_CRITICAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_CRITICAL_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).critical()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_CRITICAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_CRITICAL_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).critical()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_CRITICAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_CRITICAL_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).critical()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_CRITICAL, FILE_LOCATION); else (void) 0
-
-#define GPSTK_CRITICAL_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc),LEVEL_CRITICAL, FILE_LOCATION); else (void) 0
-
-
-#define GPSTK_ERROR(name, msg) \
-   if (Logger::get(name).error()) Logger::get(name).log(msg, LEVEL_ERROR, FILE_LOCATION); else (void) 0
-
-#define GPSTK_ERROR_F1(name, fmt, arg1) \
-   if (Logger::get(name).error()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_ERROR, FILE_LOCATION); else (void) 0
-
-#define GPSTK_ERROR_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).error()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_ERROR, FILE_LOCATION); else (void) 0
-
-#define GPSTK_ERROR_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).error()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_ERROR, FILE_LOCATION); else (void) 0
-
-#define GPSTK_ERROR_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).error()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_ERROR, FILE_LOCATION); else (void) 0
-
-#define GPSTK_ERROR_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_ERROR, FILE_LOCATION); else (void) 0
-
-
-#define GPSTK_WARNING(name, msg) \
-   if (Logger::get(name).warning()) Logger::get(name).log(msg, LEVEL_WARNING, FILE_LOCATION); else (void) 0
-
-#define GPSTK_WARNING_F1(name, fmt, arg1) \
-   if (Logger::get(name).warning()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_WARNING, FILE_LOCATION); else (void) 0
-
-#define GPSTK_WARNING_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).warning()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_WARNING, FILE_LOCATION); else (void) 0
-
-#define GPSTK_WARNING_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).warning()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_WARNING, FILE_LOCATION); else (void) 0
-
-#define GPSTK_WARNING_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).warning()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_WARNING, FILE_LOCATION); else (void) 0
-
-#define GPSTK_WARNING_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_WARNING, FILE_LOCATION); else (void) 0
+#define GPSTK_ERROR2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_ERROR(ss);}
    
+#define GPSTK_WARNING2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_WARNING(ss);}
 
-#define GPSTK_NOTICE(name, msg) \
-   if (Logger::get(name).notice()) Logger::get(name).log(msg, LEVEL_NOTICE, FILE_LOCATION); else (void) 0
+#define GPSTK_NOTICE2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_NOTICE(ss);}
 
-#define GPSTK_NOTICE_F1(name, fmt, arg1) \
-   if (Logger::get(name).notice()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_NOTICE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_NOTICE_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).notice()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_NOTICE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_NOTICE_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).notice()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_NOTICE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_NOTICE_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).notice()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_NOTICE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_NOTICE_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_NOTICE, FILE_LOCATION); else (void) 0
-
-
-#define GPSTK_INFORMATION(name, msg) \
-   if (Logger::get(name).information()) Logger::get(name).log(msg, LEVEL_INFORMATION, FILE_LOCATION); else (void) 0
-
-#define GPSTK_INFORMATION_F1(name, fmt, arg1) \
-   if (Logger::get(name).information()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_INFORMATION, FILE_LOCATION); else (void) 0
-
-#define GPSTK_INFORMATION_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).information()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_INFORMATION, FILE_LOCATION); else (void) 0
-
-#define GPSTK_INFORMATION_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).information()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_INFORMATION, FILE_LOCATION); else (void) 0
-
-#define GPSTK_INFORMATION_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).information()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_INFORMATION, FILE_LOCATION); else (void) 0
-
-#define GPSTK_INFORMATION_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_INFORMATION, FILE_LOCATION); else (void) 0
+#define GPSTK_INFORMATION2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_INFORMATION(ss);}
 
 #if defined(_DEBUG)
 
-#define GPSTK_DEBUG(name, msg) \
-   if (Logger::get(name).debug()) Logger::get(name).log(msg, LEVEL_DEBUG, FILE_LOCATION); else (void) 0
+#define GPSTK_DEBUG( msg ) \
+   slog.debug.log(msg,Logger::DEBUG,FILE_LOCATION);
 
-#define GPSTK_DEBUG_F1(name, fmt, arg1) \
-   if (Logger::get(name).debug()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_DEBUG, FILE_LOCATION); else (void) 0
+#define GPSTK_DEBUG2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_DEBUG(ss);}
 
-#define GPSTK_DEBUG_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).debug()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_DEBUG, FILE_LOCATION); else (void) 0
+#define GPSTK_DEBUG_MAT( mat, w, d, desc) \
+   {std::string ss = mat2str(mat,w,d,desc); GPSTK_DEBUG(ss);}
 
-#define GPSTK_DEBUG_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).debug()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_DEBUG, FILE_LOCATION); else (void) 0
+#define GPSTK_TRACE( msg ) \
+   slog.trace.log(msg,Logger::TRACE,FILE_LOCATION);
 
-#define GPSTK_DEBUG_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).debug()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_DEBUG, FILE_LOCATION); else (void) 0
+#define GPSTK_TRACE2(format, ...) \
+   {char ss[GPSTK_MAX_BUFFER_SIZE]={0}; \
+   sprintf(ss,format,__VA_ARGS__); \
+   GPSTK_TRACE(ss);}
 
-#define GPSTK_DEBUG_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_DEBUG, FILE_LOCATION); else (void) 0
+#define GPSTK_TRACE_MAT( mat, w, d, desc) \
+   {std::string ss = mat2str(mat,w,d,desc); GPSTK_TRACE(ss);}
 
+#else
 
-#define GPSTK_TRACE(name, msg) \
-   if (Logger::get(name).trace()) Logger::get(name).log(msg, LEVEL_TRACE, FILE_LOCATION); else (void) 0
+#define GPSTK_DEBUG(logger, msg)
+#define GPSTK_DEBUG2(format, ...)
+#define GPSTK_DEBUG_MAT( mat, w, d, desc)
 
-#define GPSTK_TRACE_F1(name, fmt, arg1) \
-   if (Logger::get(name).trace()) Logger::get(name).log(FormatUtils::format((fmt), (arg1)), LEVEL_TRACE, FILE_LOCATION); else (void) 0
+#define GPSTK_TRACE(logger, msg)
+#define GPSTK_TRACE2(format, ...)
+#define GPSTK_TRACE_MAT( mat, w, d, desc)
 
-#define GPSTK_TRACE_F2(name, fmt, arg1, arg2) \
-   if (Logger::get(name).trace()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2)), LEVEL_TRACE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_TRACE_F3(name, fmt, arg1, arg2, arg3) \
-   if (Logger::get(name).trace()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3)), LEVEL_TRACE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_TRACE_F4(name, fmt, arg1, arg2, arg3, arg4) \
-   if (Logger::get(name).trace()) Logger::get(name).log(FormatUtils::format((fmt), (arg1), (arg2), (arg3), (arg4)), LEVEL_TRACE, FILE_LOCATION); else (void) 0
-
-#define GPSTK_TRACE_MAT(name, mat, w, d, desc) \
-   if (Logger::get(name).fatal()) Logger::get(name).log(mat2str(mat,w,d,desc), LEVEL_TRACE, FILE_LOCATION); else (void) 0
-
-#else // #if defined(_DEBUG)
-
-#define GPSTK_DEBUG(name, msg)
-#define GPSTK_DEBUG_F1(name, fmt, arg1)
-#define GPSTK_DEBUG_F2(name, fmt, arg1, arg2)
-#define GPSTK_DEBUG_F3(name, fmt, arg1, arg2, arg3)
-#define GPSTK_DEBUG_F4(name, fmt, arg1, arg2, arg3, arg4)
-#define GPSTK_DEBUG_MAT(name, mat, w, d, desc)
-
-#define GPSTK_TRACE(name, msg)
-#define GPSTK_TRACE_F1(name, fmt, arg1)
-#define GPSTK_TRACE_F2(name, fmt, arg1, arg2)
-#define GPSTK_TRACE_F3(name, fmt, arg1, arg2, arg3)
-#define GPSTK_TRACE_F4(name, fmt, arg1, arg2, arg3, arg4)
-#define GPSTK_TRACE_MAT(name, mat, w, d, desc)
-
-#endif   // #if defined(_DEBUG)
-
-
-//////////////////////////////////////////////////////////////////////////
-
-   /// This class implements a streambuf interface to a Logger.
-class LogStreamBuf: public StreamBuf   
-{
-public:
-   LogStreamBuf(Logger& logger, LogLevel level)
-      :_logger(logger),_level(level),_message("") {}
- 
-   ~LogStreamBuf(){}
-
-   void setLevel(LogLevel level) { _level = level; }
-
-   LogLevel getLevel() const { return _level; }
-
-   Logger& logger() const { return _logger; }
-
-   void setLogger(Logger& logger){_logger=logger;}
-
-private:
-   int writeToDevice(char c)
+#endif
+      /**
+       * This class easy the logging framework calling.
+       */
+   class LoggerStream 
    {
-      if (c == '\n' || c == '\r')
-      {
-         LogMessage msg(_logger.name, _message, _level);
-         _logger.log(msg);
+   public:
+      Logger& operator() (std::string logname)
+      { return Logger::get(logname); }
 
-         _message.clear();
-      }
-      else _message += c;
-      return c;
-   }
+      Logger& operator[] (std::string logname)
+      { return Logger::get(logname); }
 
-private:
-   Logger&           _logger;
-   LogLevel          _level;
-   std::string       _message;
-};
+      Logger& create(std::string logname,
+         Logger::LogLevel loglevel = Logger::INFORMATION, 
+         std::ostream* logstrm = &std::clog)
+      { return Logger::create(logname,loglevel,logstrm); }
 
+      void destroy(const std::string& logname)
+      { Logger::destroy(logname); }
 
-class LogStream : public std::ostream
-{
-public:
-   LogStream(Logger& logger, LogLevel level = LEVEL_INFORMATION)
-      : _buf(logger,level), std::ostream(&_buf) {}
+      // Objects to easy access
+      static Logger& clog;           // std::clog
+      static Logger& log;
 
-   LogStream(const std::string& loggerName, LogLevel level = LEVEL_INFORMATION)
-      : _buf(Logger::get(loggerName),level), std::ostream(&_buf) {}
+      static Logger& fatal;
+      static Logger& critical;
+      static Logger& error;
+      static Logger& warning;
+      static Logger& notice;
+      static Logger& information;
+      static Logger& debug;
+      static Logger& trace;
 
-   LogStream(const LogStream& right)
-      : _buf(right._buf.logger(),right._buf.getLevel()), std::ostream(&_buf) {}
-
-   ~LogStream(){}
-
-   LogStream& operator=(const LogStream& right)
-   {
-      _buf.setLogger(right._buf.logger());
-      _buf.setLevel(right._buf.getLevel());
-   }
-
-   LogStream& fatal(){ return setLevel(LEVEL_FATAL);}
-
-   LogStream& fatal(const std::string& message)
-   { _buf.logger().log(message,LEVEL_FATAL); }
-
-   LogStream& critical(){ return setLevel(LEVEL_CRITICAL);}
-
-   LogStream& critical(const std::string& message)
-   { _buf.logger().log(message,LEVEL_CRITICAL); }
-
-   LogStream& error(){ return setLevel(LEVEL_ERROR);}
-
-   LogStream& error(const std::string& message)
-   { _buf.logger().log(message,LEVEL_ERROR); }
-
-   LogStream& warning(){ return setLevel(LEVEL_WARNING);}
-
-   LogStream& warning(const std::string& message)
-   { _buf.logger().log(message,LEVEL_WARNING); }
-
-   LogStream& notice(){ return setLevel(LEVEL_NOTICE);}
-
-   LogStream& notice(const std::string& message)
-   { _buf.logger().log(message,LEVEL_NOTICE); }
-
-   LogStream& information(){ return setLevel(LEVEL_INFORMATION);}
-
-   LogStream& information(const std::string& message)
-   { _buf.logger().log(message,LEVEL_INFORMATION); }
-
-   LogStream& debug(){ return setLevel(LEVEL_DEBUG);}
-
-   LogStream& debug(const std::string& message)
-   { _buf.logger().log(message,LEVEL_DEBUG); }
-
-   LogStream& trace(){ return setLevel(LEVEL_TRACE);}
-
-   LogStream& trace(const std::string& message)
-   { _buf.logger().log(message,LEVEL_TRACE); }
-
-   LogStream& setLevel(LogLevel level)
-   { _buf.setLevel(level); return (*this); }
-
-
-protected:
-   LogStreamBuf _buf;
-
-}; // End of method 'LogStream'
-
+   }; // End of class 'LoggerStream'
+   
+      /// Entry point of the logging framework
+   static LoggerStream slog;
 
 }  // end of namespace 'gpstk'
 

@@ -386,59 +386,6 @@ namespace gpstk
    }
 
 /**
- * Block diagonal concatenation of matrix input.
- */
-   template <class T, class BaseClass>
-   inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
-                            const ConstMatrixBase<T, BaseClass>& m2)
-      throw(MatrixException)
-   {
-      if ( (m1.rows() != m1.cols()) || (m1.cols() < 1) ||
-           (m2.rows() != m2.cols()) || (m2.cols() < 1) )
-      {
-         MatrixException e("Invalid matrix dimensions of input.");
-         GPSTK_THROW(e);
-      }
-
-      const size_t dim1 = m1.rows();
-      const size_t dim2 = m2.rows();
-
-      Matrix<T> temp(dim1+dim2, dim1+dim2, T(0));
-      for (size_t i = 0; i < dim1; i++)
-      {
-         for(size_t j = 0; j < dim1; j++)
-         {
-            temp(i,j) = m1(i,j);
-         }
-      }
-      for (size_t i = 0; i < dim2; i++)
-      {
-         for(size_t j = 0; j < dim2; j++)
-         {
-            temp(i+dim1,j+dim1) = m2(i,j);
-         }
-      }
-
-      return temp;
-   }
-
-   template <class T, class BaseClass>
-   inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
-                            const ConstMatrixBase<T, BaseClass>& m2,
-                            const ConstMatrixBase<T, BaseClass>& m3)
-      throw(MatrixException)
-   { return blkdiag( blkdiag(m1,m2), m3 ); }
-
-   template <class T, class BaseClass>
-   inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
-                            const ConstMatrixBase<T, BaseClass>& m2,
-                            const ConstMatrixBase<T, BaseClass>& m3,
-                            const ConstMatrixBase<T, BaseClass>& m4)
-      throw(MatrixException)
-   { return blkdiag( blkdiag(m1,m2,m3), m4 ); }
-
-
-/**
  * Return a rotation matrix [dimensioned 3x3, inverse() = transpose()]
  * for the rotation through \c angle radians about \c axis number (= 1, 2 or 3).
  */

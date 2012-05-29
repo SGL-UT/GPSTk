@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -74,7 +74,7 @@ namespace gpstk
          valid = false;
       }
    }
-
+   
 
    void IonoModel::setModel(const double a[4], const double b[4]) throw()
    {
@@ -100,7 +100,7 @@ namespace gpstk
          InvalidIonoModel e("Alpha and beta parameters invalid.");
          GPSTK_THROW(e);
       }
-
+      
          // all angle units are in semi-circles (radians / TWO_PI)
          // Note: math functions (cos, sin, etc.) require arguments in
          // radians so all semi-circles must be multiplied by TWO_PI
@@ -110,19 +110,19 @@ namespace gpstk
 
       double phi_u = rxgeo.getGeodeticLatitude() / 180.0;
       double lambda_u = rxgeo.getLongitude() / 180.0;
-
+      
       double psi = (0.0137 / (svE + 0.11)) - 0.022;
-
-      double phi_i = phi_u + psi * std::cos(azRad);
+      
+      double phi_i = phi_u + psi * cos(azRad);
       if (phi_i > 0.416)
          phi_i = 0.416;
       if (phi_i < -0.416)
          phi_i = -0.416;
 
-      double lambda_i = lambda_u + psi * ::sin(azRad) / ::cos(phi_i*PI);
-
-      double phi_m = phi_i + 0.064 * ::cos((lambda_i - 1.617)*PI);
-
+      double lambda_i = lambda_u + psi * sin(azRad) / cos(phi_i*PI);
+      
+      double phi_m = phi_i + 0.064 * cos((lambda_i - 1.617)*PI);
+      
       double iAMP = 0.0;
       double iPER = 0.0;
       iAMP = alpha[0]+phi_m*(alpha[1]+phi_m*(alpha[2]+phi_m*alpha[3]));
@@ -132,7 +132,7 @@ namespace gpstk
          iAMP = 0.0;
       if (iPER < 72000.0)
          iPER = 72000.0;
-
+      
       double t = 43200.0 * lambda_i + YDSTime(time).sod;
       if (t >= 86400.0)
          t -= 86400.0;
@@ -140,7 +140,7 @@ namespace gpstk
          t += 86400.0;
 
       double x = TWO_PI * (t - 50400.0) / iPER; // x is in radians
-
+      
       double iF = 1.0 + 16.0 * (0.53 - svE)*(0.53 - svE)*(0.53 - svE);
 
       double t_iono = 0.0;
@@ -148,18 +148,18 @@ namespace gpstk
          t_iono = iF * (5.0e-9 + iAMP * (1 + x*x * (-0.5 + x*x/24.0)));
       else
          t_iono = iF * 5.0e-9;
-
+      
       if (freq == L2)
       {
             // see ICD-GPS-200 20.3.3.3.3.2
          t_iono *= GAMMA_GPS;  //  GAMMA_GPS = (fL1 / fL2)^2
       }
-
+      
       double correction = t_iono * C_MPS;
-
+      
       return correction;
    }
-
+   
    bool IonoModel::operator==(const IonoModel& right) const
       throw()
    {
@@ -175,9 +175,9 @@ namespace gpstk
       throw()
    {
       return !(operator==(right));
-   }
+   }   
 }
 
-
-
-
+         
+         
+      

@@ -75,29 +75,6 @@ namespace gpstk
        *    }
        * @endcode
        *
-       * There is another way to use this class:
-       * @code
-       *       // Declarations and initializations here...
-       *    SimpleKalmanFilter kalman(xhat0, pmatrix);
-       *
-       *       // Call this method to reset the filter
-       *    kalman.Reset(initialValue,initialErrorVariance);
-       *    
-       *       // One time time update
-       *    kalman.TimeUpdate(phiMatrix, processNoiseCovariance );
-       *
-       *       // Following several times measurement update
-       *    kalman.MeasUpdate( measurements1, measurementsMatrix1, 
-       *                                               measurementsCovariance1);
-       *
-       *    kalman.MeasUpdate( measurements2, measurementsMatrix2, 
-       *                                               measurementsCovariance2);
-       *      // Get the final solution
-       *    Vector<double> x = kalman.xwhat;
-       *    Matrix<double> p = kalman.P;
-       *
-       * @endcode
-       *
        * More information about the Kalman filter may be found in the
        * excellent and easy introduction by Welch, G. and G. Bishop.
        * "An Introduction to the Kalman Filter", at:
@@ -273,39 +250,6 @@ namespace gpstk
                            const double& measurementsGain,
                            const double& measurementsNoiseVariance )
          throw(InvalidSolver);
-
-
-         /** Predicts (or "time updates") the a priori estimate of the
-          *  system state, as well as the a priori estimate error
-          *  covariance matrix.
-          *  This version assumes that the phiMatrix is indedify matrix, 
-          *  previousState is the last state of the filter, no process
-          *  noise, and no control inputs act on the system.
-          *
-          * @return
-          *  0 if OK
-          *  -1 if problems arose
-          */
-      virtual int TimeUpdate()
-      { xhatminus=xhat;Pminus=P; return 0;}
-
-
-      /** Predicts (or "time updates") the a priori estimate of the
-          *  system state, as well as the a priori estimate error
-          *  covariance matrix.
-          *  This version assumes that no control inputs act on the system.
-          *
-          * @param phiMatrix         State transition matrix.
-          * @param processNoiseCovariance    Process noise covariance matrix.
-          *
-          * @return
-          *  0 if OK
-          *  -1 if problems arose
-          */
-      virtual int TimeUpdate( const Matrix<double>& phiMatrix,
-                              const Matrix<double>& processNoiseCovariance )
-         throw(InvalidSolver)
-      { return Predict(phiMatrix,xhat,processNoiseCovariance); }
 
 
          /** Predicts (or "time updates") the a priori estimate of the
