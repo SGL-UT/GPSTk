@@ -205,46 +205,28 @@ namespace gpstk
                                     const Triple& sunPosition )
    {
 
-         // Unitary vector from satellite to Earth mass center
-      Triple rk( ( (-1.0)*(sat.unitVector()) ) );
-
-         // Unitary vector from Earth mass center to Sun
-      Triple ri( sunPosition.unitVector() );
-
-         // rj = rk x ri
-      Triple rj(rk.cross(ri));
-
-         // ri = rj x rk
-      ri = rj.cross(rk);
-
-         // Let's convert ri, rj to unitary vectors.
-         // Now ri, rj, rk form a base in the ECEF reference frame
-      ri = ri.unitVector();
-      rj = rj.unitVector();
-
-
          // Get satellite rotation angle
 
          // Get vector from Earth mass center to receiver
       Triple rxPos(nominalPos.X(), nominalPos.Y(), nominalPos.Z());
 
-         // Compute unitary vector vector from satellite to RECEIVER
-      Triple rrho( (rxPos-sat).unitVector() );
-
          // Vector from SV to Sun center of mass
       Triple gps_sun( sunPosition-sat );
 
-         // Redefine rk: Unitary vector from SV to Earth mass center
-      rk = (-1.0)*(sat.unitVector());
+         // Define rk: Unitary vector from satellite to Earth mass center
+      Triple rk( ( (-1.0)*(sat.unitVector()) ) );
 
-         // Redefine rj: rj = rk x gps_sun, then make sure it is unitary
-      rj = (rk.cross(gps_sun)).unitVector();
+         // Define rj: rj = rk x gps_sun, then make sure it is unitary
+      Triple rj( (rk.cross(gps_sun)).unitVector() );
 
-         // Redefine ri: ri = rj x rk, then make sure it is unitary
+         // Define ri: ri = rj x rk, then make sure it is unitary
          // Now, ri, rj, rk form a base in the satellite body reference
          // frame, expressed in the ECEF reference frame
-      ri = (rj.cross(rk)).unitVector();
+      Triple ri( (rj.cross(rk)).unitVector() );
 
+
+         // Compute unitary vector vector from satellite to RECEIVER
+      Triple rrho( (rxPos-sat).unitVector() );
 
          // Projection of "rk" vector to line of sight vector (rrho)
       double zk(rrho.dot(rk));

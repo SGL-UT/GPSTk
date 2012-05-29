@@ -46,12 +46,10 @@ namespace gpstk
       /** @addtogroup GPSsolutions */
       /// @ingroup math
 
-      class GeneralConstraint;
+      /// Handy type definition
+   typedef std::map<Variable, double> VariableDataMap;
 
-         /// Handy type definition
-      typedef std::map<Variable, double> VariableDataMap;
-
-      class SolverConstraint;
+   class SolverConstraint;
 
       //@{
 
@@ -175,7 +173,7 @@ namespace gpstk
           *
           * @param equation      Object describing the equations to be solved.
           */
-      SolverGeneral( const Equation& equation ) : firstTime(true), pConstraint(0)
+      SolverGeneral( const Equation& equation ) : firstTime(true)
       { equSystem.addEquation(equation); };
 
 
@@ -192,7 +190,7 @@ namespace gpstk
           * @param equationSys         Object describing an equation system to
           *                            be solved.
           */
-      SolverGeneral( const EquationSystem& equationSys ) : firstTime(true), pConstraint(0)
+      SolverGeneral( const EquationSystem& equationSys ) : firstTime(true)
       { equSystem = equationSys; };
 
 
@@ -255,14 +253,6 @@ namespace gpstk
           */
       virtual SolverGeneral& clearEquations()
       { equSystem.clearEquations(); return (*this); };
-
-
-         /** Set the SolverConstraint object.
-          *
-          * @param pSolverConstraint       Object to do constraint
-          */
-      virtual SolverGeneral& setConstraint(SolverConstraint* pSolverConstraint=0 )
-      { pConstraint=pSolverConstraint; return (*this); };
 
 
          /// This method resets the filter, setting all variance values in
@@ -461,10 +451,6 @@ namespace gpstk
       EquationSystem equSystem;
 
 
-         /// Constraint system
-      SolverConstraint* pConstraint;
-
-
          /** Code to be executed before 'Compute()' method.
           *
           * @param gData    Data object holding the data.
@@ -575,8 +561,8 @@ namespace gpstk
                            const Matrix<double>& weightMatrix )
          throw(InvalidSolver);
 
-
       friend class GeneralConstraint;
+      friend class SolverConstraint;
 
    }; // End of class 'SolverGeneral'
 

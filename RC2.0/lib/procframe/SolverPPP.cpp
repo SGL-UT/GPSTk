@@ -462,33 +462,30 @@ covariance matrix.");
 
             // Now, let's fill the Phi and Q matrices
          SatID  dummySat;
-         TypeID dummyType;
 
             // First, the troposphere
-         pTropoStoModel->Prepare( dummyType,
-                                  dummySat,
+         pTropoStoModel->Prepare( dummySat,
                                   gData );
          phiMatrix(0,0) = pTropoStoModel->getPhi();
          qMatrix(0,0)   = pTropoStoModel->getQ();
 
 
             // Second, the coordinates
-         pCoordXStoModel->Prepare(dummyType, dummySat, gData);
+         pCoordXStoModel->Prepare(dummySat, gData);
          phiMatrix(1,1) = pCoordXStoModel->getPhi();
          qMatrix(1,1)   = pCoordXStoModel->getQ();
 
-         pCoordYStoModel->Prepare(dummyType, dummySat, gData);
+         pCoordYStoModel->Prepare(dummySat, gData);
          phiMatrix(2,2) = pCoordYStoModel->getPhi();
          qMatrix(2,2)   = pCoordYStoModel->getQ();
 
-         pCoordZStoModel->Prepare(dummyType, dummySat, gData);
+         pCoordZStoModel->Prepare(dummySat, gData);
          phiMatrix(3,3) = pCoordZStoModel->getPhi();
          qMatrix(3,3)   = pCoordZStoModel->getQ();
 
 
             // Third, the receiver clock
-         pClockStoModel->Prepare( dummyType,
-                                  dummySat,
+         pClockStoModel->Prepare( dummySat,
                                   gData );
          phiMatrix(4,4) = pClockStoModel->getPhi();
          qMatrix(4,4)   = pClockStoModel->getQ();
@@ -502,8 +499,7 @@ covariance matrix.");
          {
 
                // Prepare stochastic model
-            pBiasStoModel->Prepare( TypeID::CSL1,
-                                    *itSat,
+            pBiasStoModel->Prepare( *itSat,
                                     gData );
 
                // Get values into phi and q matrices

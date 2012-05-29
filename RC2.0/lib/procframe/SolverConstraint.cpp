@@ -29,6 +29,7 @@
 
 
 #include "SolverConstraint.hpp"
+#include "SolverGeneral.hpp"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -37,35 +38,81 @@ namespace gpstk
 {
    using namespace std;
 
-   void SolverConstraint::constraint(gnssDataMap& gdsMap)
+   int SolverConstraint::constraint(gnssDataMap& gdsMap)
    {
-      // Do nothing by default
+      try
+      {
+         realConstraint(gdsMap);
+      }
+      catch (...)
+      {
+      	return -1;
+      }
+  
+      return 0;
    }
 
-   bool SolverConstraint::isValid()
+   int SolverConstraint::constraint(gnssSatTypeValue& gData)
    {
-      bool valid(true);
+      gnssRinex g1;
+      g1.header = gData.header;
+      g1.body = gData.body;
 
+      int toReturn = constraint(g1);
+
+      gData.body = g1.body;
+
+      return toReturn;
+   }
+
+   int SolverConstraint::constraint(gnssRinex& gRin)
+   {
+      gnssDataMap gdsMap;
+      SourceID source( gRin.header.source );
+      gdsMap.addGnssRinex( gRin );
+      
+      int toReturn = constraint(gdsMap);
+
+      return toReturn;
+   }
+
+   int SolverConstraint::constraintToSolver( ConstraintSystem& system,
+                                             gnssDataMap& gdsMap)
+   {
       try
       {
          Vector<double> meas;
          Matrix<double> design;
          Matrix<double> covariance;
-         constraintMatrix(meas,design,covariance);
 
-         if(meas.size()<1) valid = false;
+         system.constraintMatrix(getVariables(),meas,design,covariance);
+
+         if(meas.size()>0)
+         {    
+            solver.kFilter.MeasUpdate(meas,design,covariance);
+
+            Vector<double> measVector = solver.getEquationSystem().getPrefitsVector();
+            Matrix<double> designMatrix = solver.getEquationSystem().getGeometryMatrix();
+
+            solver.solution = solver.kFilter.xhat;
+            solver.covMatrix = solver.kFilter.P;
+            solver.postfitResiduals = measVector - (designMatrix * solver.solution);
+
+            solver.postCompute(gdsMap);
+         }
+
+         return 0;
       }
       catch (...)
       {
-         valid = false;
+         return -1;
       }
-
-      return valid;
    }
+
 
    VariableSet SolverConstraint::getVariables()
    {
-      EquationSystem eqs = solver->getEquationSystem();
+      EquationSystem eqs = solver.getEquationSystem();
       VariableSet unkSet( eqs.getVarUnknowns() );
       
       return unkSet;
@@ -75,7 +122,7 @@ namespace gpstk
    {
       VariableSet vset;
 
-      EquationSystem eqs = solver->getEquationSystem();
+      EquationSystem eqs = solver.getEquationSystem();
       VariableSet unkSet( eqs.getVarUnknowns() );
 
       if(source==Variable::allSources) unkSet; 
@@ -136,7 +183,7 @@ namespace gpstk
    {
       VariableSet vset;
 
-      EquationSystem eqs = solver->getEquationSystem();
+      EquationSystem eqs = solver.getEquationSystem();
       VariableSet unkSet( eqs.getVarUnknowns() );
 
       for( VariableSet::const_iterator itv = unkSet.begin();
@@ -193,7 +240,7 @@ namespace gpstk
    {
       VariableSet vset;
       
-      EquationSystem eqs = solver->getEquationSystem();
+      EquationSystem eqs = solver.getEquationSystem();
       VariableSet unkSet( eqs.getVarUnknowns() );
 
       if(sat==Variable::noSats) return vset;
@@ -290,7 +337,7 @@ namespace gpstk
          it!=varSet.end();
          ++it)
       {
-         solution[i] = solver->getSolution(*it);
+         solution[i] = solver.getSolution(*it);
 
          i++;
       }
@@ -313,8 +360,7 @@ namespace gpstk
             itj!=varSet.end();
             ++itj)
          {
-            covariance[i][j] = solver->getCovariance(*iti,*itj);
-
+            covariance[i][j] = solver.getCovariance(*iti,*itj);
             j++;
          }
 

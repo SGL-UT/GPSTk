@@ -516,12 +516,8 @@ namespace gpstk
             gnssRinex gRin( gdsMap.getGnssRinex( (*itVar).getSource() ) );
 
                // Prepare variable's stochastic model
-            (*itVar).getModel()->Prepare( (*itVar).getType(),
-                                          (*itVar).getSatellite(),
+            (*itVar).getModel()->Prepare( (*itVar).getSatellite(),
                                           gRin );
-
-//            (*itVar).getModel()->Prepare( (*itVar).getSatellite(),
-//                                          gRin );
 
                // Now, check if this is an 'old' variable
             if( oldUnknowns.find( (*itVar) ) != oldUnknowns.end() )

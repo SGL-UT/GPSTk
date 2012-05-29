@@ -30,43 +30,37 @@
 //
 //============================================================================
 
-#include "ConstraintSystem.hpp"
-#include "SolverGeneral.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
+#include "ConstraintSystem.hpp"
+#include "SolverGeneral.hpp"
 
 namespace gpstk
 {
-   class SolverGeneral;
+
 
    class SolverConstraint
    {
    public:
 
          /// Common constructor
-      SolverConstraint():solver(0){}
+      SolverConstraint(SolverGeneral& solverGeneral):solver(solverGeneral){}
 
-         /// Method to  do constraint processing
-      void constraint(SolverGeneral* pSolver,gnssDataMap& gdsMap)
-      { solver=pSolver; constraint(gdsMap); }
+      int constraint(gnssSatTypeValue& gData);
 
-         /// Method to get constraint matrix to feed back to the kalman filter
-      void constraintMatrix(Vector<double>& prefit,
-                            Matrix<double>& design,
-                            Matrix<double>& covariance)
-      { constraintSystem.constraintMatrix(getVariables(),prefit,design,covariance); }
+      int constraint(gnssRinex& gRin);
 
+      int constraint(gnssDataMap& gdsMap);
 
-      bool isValid();
-         
          /// Default destructor
       virtual ~SolverConstraint(){}
     
    protected:
 
-         /// Abstract to be overrided
-      virtual void constraint(gnssDataMap& gdsMap);
+      virtual void realConstraint(gnssDataMap& gdsMap){}
 
+      int constraintToSolver(ConstraintSystem& system,gnssDataMap& gdsMap);
+      
          // Methods to parsing data from SolverGeneral
 
       VariableSet getVariables();
@@ -91,15 +85,24 @@ namespace gpstk
 
       VariableSet getVariables(const SourceID& source, const SatID& sat, const TypeID& type);
 
+      SourceIDSet getCurrentSources()
+      { return solver.getEquationSystem().getCurrentSources();}
+
+      VariableSet getCurrentUnknowns()
+      { return solver.getEquationSystem().getCurrentUnknowns();}
+
+      SatIDSet getCurrentSats()
+      { return solver.getEquationSystem().getCurrentSats();}
+
+
       Vector<double> getSolution(const VariableSet& varSet);
 
       Matrix<double> getCovariance(const VariableSet& varSet);
 
    protected:
 
-      SolverGeneral* solver;
+      SolverGeneral& solver;
 
-      ConstraintSystem constraintSystem;
    };
 
 }  // End of namespace gpstk

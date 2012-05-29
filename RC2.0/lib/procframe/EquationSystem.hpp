@@ -376,10 +376,8 @@ namespace gpstk
 
    private:
 
-
          /// Object holding constraints equations
       ConstraintSystem equationConstraints;
-
 
          /// List containing the DESCRIPTIONS of Equation objects.
       std::list<Equation> equationDescriptionList;
