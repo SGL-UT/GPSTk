@@ -56,7 +56,6 @@ namespace gpstk
        * @param[in] tmax defines the end of the time interval
        */
    void EpochDataStore::edit( CommonTime tmin, CommonTime tmax  )
-      throw()
    {
       if(tmin > tmax) 
       {
@@ -106,7 +105,6 @@ namespace gpstk
       // Add to the store directly
    void EpochDataStore::addData(const CommonTime& time, 
                                 const std::vector<double>& data)
-      throw()
    {
       
       allData[time] = data;
