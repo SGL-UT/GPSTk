@@ -195,6 +195,7 @@ namespace gpstk
          iono,      ///< Vertical ionospheric delay
          ionoTEC,   ///< Total Electron Content (in TECU), 1TECU = 1e+16 electrons per m**2
          ionoMap,   ///< Ionospheric mapping function
+         ionoMap2,  ///< Ionospheric mapping function for second order ionospheric delay
          ionoL1,    ///< Slant ionospheric delay, frequency L1
          ionoL2,    ///< Slant ionospheric delay, frequency L2
          ionoL5,    ///< Slant ionospheric delay, frequency L5
@@ -303,8 +304,32 @@ namespace gpstk
          dLon,      ///< Position bias, Longitude component
          dH,        ///< Position bias, Height component
          cdt,       ///< In the position domain: Receiver clock offset, meters; in the range domain: cdt coefficient
+         dSatX,     ///< dSatX coefficient for satellite position in XYZ
+         dSatY,     ///< dSatY coefficient for satellite position in XYZ
+         dSatZ,     ///< dSatZ coefficient for satellite position in XYZ
+         dSatR,     ///< dSatR coefficient for satellite position in RTN
+         dSatT,     ///< dSatT coefficient for satellite position in RTN
+         dSatN,     ///< dSatN coefficient for satellite position in RTN
          weight,    ///< Weight assigned to a given observation
          codeBias,  ///< Code bias by both receiver and satellite
+         cdtC1,     ///< Receiver clock offset of C1
+         cdtP1,     ///< Receiver clock offset of P1
+         cdtC2,     ///< Receiver clock offset of C2
+         cdtP2,     ///< Receiver clock offset of P2
+         cdtC5,     ///< Receiver clock offset of C5
+         cdtP5,     ///< Receiver clock offset of P5
+         cdtL1,     ///< Receiver clock offset of L1
+         cdtL2,     ///< Receiver clock offset of L2
+         cdtL5,     ///< Receiver clock offset of L5
+         cdtSatC1,  ///< Satellite clock offset of C1
+         cdtSatP1,  ///< Satellite clock offset of P1
+         cdtSatC2,  ///< Satellite clock offset of C2
+         cdtSatP2,  ///< Satellite clock offset of P2
+         cdtSatC5,  ///< Satellite clock offset of C5
+         cdtSatP5,  ///< Satellite clock offset of P5
+         cdtSatL1,  ///< Satellite clock offset of L1
+         cdtSatL2,  ///< Satellite clock offset of L2
+         cdtSatL5,  ///< Satellite clock offset of L5
             // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component

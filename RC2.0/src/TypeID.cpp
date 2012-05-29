@@ -150,6 +150,7 @@ namespace gpstk
       tStrings[iono]       = "verticalIono";
       tStrings[ionoTEC]    = "TotalElectronContent";
       tStrings[ionoMap]    = "ionoMap";
+      tStrings[ionoMap2]   = "ionoMap2";
       tStrings[ionoL1]     = "slantIonoL1";
       tStrings[ionoL2]     = "slantIonoL2";
       tStrings[ionoL5]     = "slantIonoL5";
@@ -178,6 +179,7 @@ namespace gpstk
       tStrings[satJ2kAZ]   = "satJ2kAZ";
       tStrings[elevation]  = "elevation";
       tStrings[azimuth]    = "azimuth";
+
       tStrings[CSL1]       = "CSL1";
       tStrings[CSL2]       = "CSL2";
       tStrings[CSL5]       = "CSL5";
@@ -255,8 +257,35 @@ namespace gpstk
       tStrings[dLat]       = "dLat";
       tStrings[dLon]       = "dLon";
       tStrings[dH]         = "dH";
+      tStrings[dSatX]      = "dSatX";
+      tStrings[dSatY]      = "dSatY";
+      tStrings[dSatZ]      = "dSatZ";
+      tStrings[dSatR]      = "dSatR";
+      tStrings[dSatT]      = "dSatT";
+      tStrings[dSatN]      = "dSatN";
       tStrings[weight]     = "weight";
-      tStrings[codeBias]  = "codeBias";
+      tStrings[codeBias]   = "codeBias";
+
+      tStrings[cdtC1]    = "cdtC1";
+      tStrings[cdtP1]    = "cdtP1";
+      tStrings[cdtC2]    = "cdtC2";
+      tStrings[cdtP2]    = "cdtP2";
+      tStrings[cdtC5]    = "cdtC5";
+      tStrings[cdtP5]    = "cdtP5";
+      tStrings[cdtL1]    = "cdtL1";
+      tStrings[cdtL2]    = "cdtL2";
+      tStrings[cdtL5]    = "cdtL5";
+
+      tStrings[cdtSatC1]    = "cdtSatC1";
+      tStrings[cdtSatP1]    = "cdtSatP1";
+      tStrings[cdtSatC2]    = "cdtSatC2";
+      tStrings[cdtSatP2]    = "cdtSatP2";
+      tStrings[cdtSatC5]    = "cdtSatC5";
+      tStrings[cdtSatP5]    = "cdtSatP5";
+      tStrings[cdtSatL1]    = "cdtSatL1";
+      tStrings[cdtSatL2]    = "cdtSatL2";
+      tStrings[cdtSatL5]    = "cdtSatL5";
+
       tStrings[recX]       = "RxPositionX";
       tStrings[recY]       = "RxPositionY";
       tStrings[recZ]       = "RxPositionZ";
@@ -275,15 +304,15 @@ namespace gpstk
       tStrings[recALat]    = "RxAccelerationLat";
       tStrings[recALon]    = "RxAccelerationLon";
       tStrings[recAH]      = "RxAccelerationH";
-      tStrings[recJ2kX]       = "RxJ2kPositionX";
-      tStrings[recJ2kY]       = "RxJ2kPositionY";
-      tStrings[recJ2kZ]       = "RxJ2kPositionZ";
-      tStrings[recJ2kVX]      = "RxJ2kVelocityX";
-      tStrings[recJ2kVY]      = "RxJ2kVelocityY";
-      tStrings[recJ2kVZ]      = "RxJ2kVelocityZ";
-      tStrings[recJ2kAX]      = "RxJ2kAccelerationX";
-      tStrings[recJ2kAY]      = "RxJ2kAccelerationY";
-      tStrings[recJ2kAZ]      = "RxJ2kAccelerationZ";
+      tStrings[recJ2kX]    = "RxJ2kPositionX";
+      tStrings[recJ2kY]    = "RxJ2kPositionY";
+      tStrings[recJ2kZ]    = "RxJ2kPositionZ";
+      tStrings[recJ2kVX]   = "RxJ2kVelocityX";
+      tStrings[recJ2kVY]   = "RxJ2kVelocityY";
+      tStrings[recJ2kVZ]   = "RxJ2kVelocityZ";
+      tStrings[recJ2kAX]   = "RxJ2kAccelerationX";
+      tStrings[recJ2kAY]   = "RxJ2kAccelerationY";
+      tStrings[recJ2kAZ]   = "RxJ2kAccelerationZ";
       tStrings[sigma]      = "sigma";
       tStrings[iura]       = "iura";
       tStrings[dummy0]     = "dummy0";
