@@ -508,8 +508,9 @@ namespace gpstk
    }  // End of method 'GeneralConstraint::getCovariance(...'
 
 
-   GeneralConstraint& GeneralConstraint::changeState( const VariableList& varList,
-                                                      const Matrix<double>& convertMat)
+   GeneralConstraint& GeneralConstraint::changeState(
+                                               const VariableList& varList,
+                                               const Matrix<double>& convertMat)
    {
       VariableSet allVariable = getCurrentUnknowns();
 
