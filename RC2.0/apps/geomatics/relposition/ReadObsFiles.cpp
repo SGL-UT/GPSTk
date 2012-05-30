@@ -130,9 +130,6 @@ try {
       ObsFileList[i].inD1 = ObsFileList[i].inD2 = -1;
       ObsFileList[i].inS1 = ObsFileList[i].inS2 = -1;
 
-
-
-
       RinexObsHeader::RinexObsType otC1(RinexObsHeader::convertObsType("C1"));
       RinexObsHeader::RinexObsType otL1(RinexObsHeader::convertObsType("L1"));
       RinexObsHeader::RinexObsType otL2(RinexObsHeader::convertObsType("L2"));
@@ -142,6 +139,7 @@ try {
       RinexObsHeader::RinexObsType otD2(RinexObsHeader::convertObsType("D2"));
       RinexObsHeader::RinexObsType otS1(RinexObsHeader::convertObsType("S1"));
       RinexObsHeader::RinexObsType otS2(RinexObsHeader::convertObsType("S2"));
+
       for(j=0; j<ObsFileList[i].Rhead.obsTypeList.size(); j++) {
          if(ObsFileList[i].Rhead.obsTypeList[j]==otC1) ObsFileList[i].inC1 = j;
          if(ObsFileList[i].Rhead.obsTypeList[j]==otL1) ObsFileList[i].inL1 = j;
@@ -152,7 +150,7 @@ try {
          if(ObsFileList[i].Rhead.obsTypeList[j]==otD2) ObsFileList[i].inD2 = j;
          if(ObsFileList[i].Rhead.obsTypeList[j]==otS1) ObsFileList[i].inS1 = j;
          if(ObsFileList[i].Rhead.obsTypeList[j]==otS2) ObsFileList[i].inS2 = j;
-	}
+      }
 
 
       ObsFileList[i].nread = 0;

@@ -58,7 +58,6 @@ namespace gpstk
       Vector<double> sumInfoState;
 
    public:
-
       // ctor
       WtdAveStats(void) : N(0)
          { lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z"; }
@@ -314,7 +313,12 @@ namespace gpstk
          /// Constructor
       PRSolution() throw() : RMSLimit(6.5),
                              SlopeLimit(1000.),
+                             Algebraic(false),
+                             ResidualCriterion(true),
+                             ReturnAtOnce(false),
                              NSatsReject(-1),
+                             Debug(false),
+                             pDebugStream(&std::cout),
                              MaxNIterations(10),
                              ConvergenceLimit(3.e-7),
                              Valid(false),
@@ -332,11 +336,34 @@ namespace gpstk
       /// Slope limit (dimensionless).
       double SlopeLimit;
 
+      /// Use an algebraic (if true) or linearized least squares (if false) algorithm.
+      bool Algebraic;
+
+      /** Use a rejection criterion based on RMS residual of fit (true)
+       * or RMS distance from an a priori position. If false, member Vector Solution
+       * must be defined as this a priori position when RAIMCompute() is called.
+       */
+      bool ResidualCriterion;
+
+      /** Return as soon as a solution meeting the limit requirements is found
+       * (this makes it a non-RAIM algorithm).
+       */
+      bool ReturnAtOnce;
+
       /// Maximum number of satellites that may be rejected in the RAIM algorithm;
       /// if this = -1, as many as possible will be rejected (RAIM requires at least 5
       /// satellites). A (single) non-RAIM solution can be obtained by setting this
       /// to 0 before calling RAIMCompute().
       int NSatsReject;
+
+      /// If true, RAIMCompute() will output solution information to *pDebugStream.
+      bool Debug;
+
+      /// Pointer to an ostream, default &std::cout; if Debug is true, RAIMCompute()
+      /// will print all preliminary solutions to this stream.
+      std::ostream *pDebugStream;
+
+      // TD optional: measurement covariance matrix
 
       /// Maximum number of iterations allowed in the linearized least squares
       /// algorithm.

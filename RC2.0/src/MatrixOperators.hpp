@@ -396,7 +396,7 @@ namespace gpstk
       if ( (m1.rows() != m1.cols()) || (m1.cols() < 1) ||
            (m2.rows() != m2.cols()) || (m2.cols() < 1) )
       {
-         MatrixException e("invalid matrix dimensions for ident()");
+         MatrixException e("Invalid matrix dimensions of input.");
          GPSTK_THROW(e);
       }
 
@@ -421,6 +421,22 @@ namespace gpstk
 
       return temp;
    }
+
+   template <class T, class BaseClass>
+   inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
+                            const ConstMatrixBase<T, BaseClass>& m2,
+                            const ConstMatrixBase<T, BaseClass>& m3)
+      throw(MatrixException)
+   { return blkdiag( blkdiag(m1,m2), m3 ); }
+
+   template <class T, class BaseClass>
+   inline Matrix<T> blkdiag(const ConstMatrixBase<T, BaseClass>& m1,
+                            const ConstMatrixBase<T, BaseClass>& m2,
+                            const ConstMatrixBase<T, BaseClass>& m3,
+                            const ConstMatrixBase<T, BaseClass>& m4)
+      throw(MatrixException)
+   { return blkdiag( blkdiag(m1,m2,m3), m4 ); }
+
 
 /**
  * Return a rotation matrix [dimensioned 3x3, inverse() = transpose()]

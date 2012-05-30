@@ -82,7 +82,7 @@ public:
    std::string StochasticModel;
       // for configuration of pseudorange solution
    double PRSrmsLimit;
-   //double PRSslopeLimit;   // no
+   double PRSslopeLimit;
    bool PRSalgebra;
    //bool PRSresidCrit;      // no
    //bool PRSreturnatonce    // no
