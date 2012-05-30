@@ -42,6 +42,7 @@
 */
    // Language Headers
 #include <stdio.h>
+#include "TimeString.hpp"
 
    // Library Headers
 #include "GNSSconstants.hpp"
@@ -50,6 +51,7 @@
 
    // Project Headers
 #include "ConstellationDefinition.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;

@@ -800,7 +800,7 @@ covariance matrix.");
          VariableDataMap::const_iterator it2 = it1->second.find(var2);
          if(it2!=it1->second.end())
          {
-            return it2->second; // covarianceMap[var1][var2];
+            return it2->second;
          }
          else
          {
@@ -808,7 +808,7 @@ covariance matrix.");
             if(it1!=covarianceMap.end())
             {
                it2 = it1->second.find(var1);
-               if(it2!=it1->second.end()) it2->second; //return covarianceMap[var2][var1];
+               if(it2!=it1->second.end()) return it2->second;
             }
          }
       }

@@ -43,6 +43,9 @@
    // Language Headers
 #include <stdio.h>
 #include <string>
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
 
 
    // Project Headers

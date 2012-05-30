@@ -304,6 +304,7 @@ else
       MatrixFunctors.hpp	
       MatrixImplementation.hpp	
       MatrixOperators.hpp	
+      MemoryUtils.hpp
       MiscMath.hpp	
       MJD.hpp	
       ModeledPseudorangeBase.hpp	

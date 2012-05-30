@@ -77,7 +77,7 @@ public:
       CommandOptionWithAnyArg sendStringOpt(
          's', "send-string",
          "A string to send to the device being recorded. For example to querry an "
-         "Ashtech Z(Y)-12 for as-broadcast ephemeris use the following string:\n\t "
+         "Ashtech Z(Y)-12 for as-broadcast ephemeris use the following string: "
          "'$PASHQ,EPB'$'\\r\\n'");
 
       CommandOptionWithAnyArg sendPeriodOpt(
@@ -161,6 +161,8 @@ protected:
       while (input)
       {
          input.read(data, max_len);
+         if (debugLevel)
+            cout << "process read: " << input.gcount() << " bytes read." << endl;
          if (use_stdout)
          {
             cout.write(data, input.gcount());
