@@ -472,6 +472,18 @@ namespace gpstk
       { qMatrix = pMatrix; return (*this); };
 
 
+          /** Set the positioning mode, kinematic or static.
+           */
+      virtual SolverPPP& setKinematic( bool kinematicMode = true,
+                                       double sigmaX = 100.0,
+                                       double sigmaY = 100.0,
+                                       double sigmaZ = 100.0 );
+
+
+         /// Returns an index identifying this object.
+      virtual int getIndex(void) const;
+
+
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -579,6 +591,11 @@ namespace gpstk
          /// Constant stochastic model
       StochasticModel constantModel;
 
+         /// White noise stochastic model for position
+      WhiteNoiseModel whitenoiseModelX;
+      WhiteNoiseModel whitenoiseModelY;
+      WhiteNoiseModel whitenoiseModelZ;
+
 
          /// Random Walk stochastic model
       RandomWalkModel rwalkModel;
@@ -593,6 +610,17 @@ namespace gpstk
 
 
          // Some methods that we want to hide
+         /// Initial index assigned to this class.
+      static int classIndex;
+
+         /// Index belonging to this object.
+      int index;
+
+         /// Sets the index and increment classIndex.
+      void setIndex(void)
+      { index = classIndex++; };
+
+
       virtual int Compute( const Vector<double>& prefitResiduals,
                            const Matrix<double>& designMatrix )
          throw(InvalidSolver)

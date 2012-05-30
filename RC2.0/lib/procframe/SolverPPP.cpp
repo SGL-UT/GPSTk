@@ -35,6 +35,14 @@
 namespace gpstk
 {
 
+      // Index initially assigned to this class
+   int SolverPPP::classIndex = 9300000;
+
+      // Returns an index identifying this object.
+   int SolverPPP::getIndex() const
+   { return index; }
+
+
       // Returns a string identifying this object.
    std::string SolverPPP::getClassName() const
    { return "SolverPPP"; }
@@ -71,6 +79,10 @@ namespace gpstk
 
          // Set default coordinates stochastic model (constant)
       setCoordinatesModel( &constantModel );
+
+      whitenoiseModelX.setSigma(100.0);
+      whitenoiseModelY.setSigma(100.0);
+      whitenoiseModelZ.setSigma(100.0);
 
          // Pointer to default receiver clock stochastic model (white noise)
       pClockStoModel = &whitenoiseModel;
@@ -764,6 +776,33 @@ covariance matrix.");
       return (*this);
 
    }  // End of method 'SolverPPP::setCoordinatesModel()'
+
+
+       /** Set the positioning mode, kinematic or static.
+        */
+   SolverPPP& SolverPPP::setKinematic( bool kinematicMode,
+                                       double sigmaX,
+                                       double sigmaY,
+                                       double sigmaZ )
+   {
+      if(kinematicMode)
+      {
+         whitenoiseModelX.setSigma(sigmaX);
+         whitenoiseModelY.setSigma(sigmaY);
+         whitenoiseModelZ.setSigma(sigmaZ);
+
+         setXCoordinatesModel(&whitenoiseModelX);
+         setYCoordinatesModel(&whitenoiseModelY);
+         setZCoordinatesModel(&whitenoiseModelZ);
+      }
+      else
+      {
+         setCoordinatesModel(&constantModel);
+      }
+
+      return (*this);
+
+   }  // End of method 'SolverPPP::setKinematic()'
 
 
 }  // End of namespace gpstk
