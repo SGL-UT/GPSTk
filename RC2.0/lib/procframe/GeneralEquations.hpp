@@ -378,3 +378,4 @@ namespace gpstk
 }  // End of namespace gpstk
 
 #endif   // GPSTK_GENERALEQUATIONS_HPP
+

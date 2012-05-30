@@ -70,7 +70,6 @@ else
       RequireObservables.cpp
       SatArcMarker.cpp
       SimpleFilter.cpp
-      SolverConstraint.cpp
       SolverGeneral.cpp
       SolverLMS.cpp
       SolverPPP.cpp
@@ -145,7 +144,6 @@ else
       RequireObservables.hpp
       SatArcMarker.hpp
       SimpleFilter.hpp
-      SolverConstraint.hpp
       SolverGeneral.hpp
       SolverLMS.hpp
       SolverPPP.hpp

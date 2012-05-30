@@ -30,7 +30,6 @@
 
 #include "SolverGeneral.hpp"
 #include "GeneralConstraint.hpp"
-#include "SolverConstraint.hpp"
 
 namespace gpstk
 {
@@ -894,7 +893,6 @@ covariance matrix.");
    {
          // Declare an iterator for 'stateMap' and go to the first element
       VariableDataMap::const_iterator it = stateMap.begin();
-
          // Look for a variable with the same type and source
       while( !( (*it).first.getType()   == type &&
          (*it).first.getSource() == source ) &&

@@ -48,8 +48,8 @@ namespace gpstk
 
       /// Handy type definition
    typedef std::map<Variable, double> VariableDataMap;
-
-   class SolverConstraint;
+   
+   class GeneralConstraint;
 
       //@{
 
@@ -562,7 +562,6 @@ namespace gpstk
          throw(InvalidSolver);
 
       friend class GeneralConstraint;
-      friend class SolverConstraint;
 
    }; // End of class 'SolverGeneral'
 
