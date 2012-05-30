@@ -83,7 +83,6 @@ else
       ;
 
    InstallFile $(INCDIR) :
-# Please add in alphabetical order
       BasicModel.hpp
       CodeKalmanSolver.hpp
       CodeSmoother.hpp
@@ -118,6 +117,7 @@ else
       EclipsedSatFilter.hpp
       Equation.hpp
       EquationSystem.hpp
+      GDSUtils.hpp
       GeneralConstraint.hpp
       GeneralEquations.hpp
       GravitationalDelay.hpp

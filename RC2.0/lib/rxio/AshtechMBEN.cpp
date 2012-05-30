@@ -228,7 +228,8 @@ namespace gpstk
 
       const float d = PI/(n*n*m*m*4.0);
       float snr=0;
-
+      // Note that ireg is as output from the MBEN which is 0-255, not the 0-99
+      // as displayed on the front panel. 
       if (ireg)
       {
          snr = exp(((float)ireg)/25.0);

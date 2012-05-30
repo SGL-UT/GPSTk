@@ -34,6 +34,7 @@
 #include <StringUtils.hpp>
 #include <Stats.hpp>
 #include <CommonTime.hpp>
+#include <TimeString.hpp>
 
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
@@ -121,6 +122,36 @@ class MDPBriefProcessor : public MDPProcessor
 
 public:
    MDPBriefProcessor(gpstk::MDPStream& in, std::ofstream& out) :
+      MDPProcessor(in, out)
+   {};
+};
+
+//-----------------------------------------------------------------------------
+class MDPHeaderProcessor : public MDPProcessor
+{
+   void process(const gpstk::MDPObsEpoch& oe)
+   {ohr(oe);};
+
+   void process(const gpstk::MDPPVTSolution& pvt)
+   {ohr(pvt);};
+
+   void process(const gpstk::MDPNavSubframe& sf)
+   {ohr(sf);};
+
+   void process(const gpstk::MDPSelftestStatus& sts)
+   {ohr(sts);};
+
+   void ohr(const gpstk::MDPHeader& h)
+   {
+      out << printTime(h.time, timeFormat)
+          << std::fixed
+          << ", " << std::setw(3) << h.id
+          << ", " << std::setw(10) << in.headerCount
+          << std::endl;
+   }
+
+public:
+   MDPHeaderProcessor(gpstk::MDPStream& in, std::ofstream& out) :
       MDPProcessor(in, out)
    {};
 };

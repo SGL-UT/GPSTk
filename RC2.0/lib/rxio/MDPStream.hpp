@@ -55,7 +55,9 @@ namespace gpstk
    class MDPStream : public FFBinaryStream
    {
    public:
-      MDPStream() : streamState(outOfSync)
+      MDPStream()
+         : streamState(outOfSync),
+           headerCount(0)
       {}
 
          /**
@@ -65,7 +67,8 @@ namespace gpstk
       MDPStream(const char* fn,
                 std::ios::openmode mode = std::ios::in)
          : FFBinaryStream(fn, mode), 
-           streamState(outOfSync)
+           streamState(outOfSync),
+           headerCount(0)
       {}
 
       /// destructor per the coding standards
@@ -84,6 +87,7 @@ namespace gpstk
 
       /// A copy of the most recent header read
       MDPHeader header;
+      unsigned long headerCount;
 
       /// The raw bytes of the above header
       std::string rawHeader;

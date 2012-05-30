@@ -152,7 +152,7 @@ public:
       {
          static_cast<Epoch>(tEnd).scanf(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
          if (debugLevel || verboseLevel)
-            cout << "Throwing out data after  " << tEnd << endl;
+            cout << "Throwing out data after " << tEnd << endl;
       }
       else
       {
@@ -235,13 +235,14 @@ protected:
 
          if (!input)
             break;
-         else if (header.time > tEnd)
+
+         if (header.time > tEnd)
             continue;
-         else if (recordEnd && (input.recordNumber > recordEnd))
+         else if (recordEnd && (input.headerCount > recordEnd))
 	    return;
 	 else if (header.time < tStart)
 	    continue;
-         else if (recordStart && (input.recordNumber < recordStart))
+         else if (recordStart && (input.headerCount < recordStart))
             continue;
 	 
          msgCount++;
@@ -253,10 +254,6 @@ protected:
                cout << "First message at " << header.time << endl;
          }
 
-         if (verboseLevel > 4 || debugLevel > 3)
-            cout << "Record: "    << input.recordNumber
-                 << ", message: " << msgCount << ":" << endl;
-              
          switch (input.header.id)
          {
             case gpstk::MDPObsEpoch::myId:
@@ -340,7 +337,7 @@ protected:
                   if (debugLevel > 3)
                   {
                      cout << "  Ignoring obs message from record "
-                          << input.recordNumber << endl;
+                          << input.headerCount << endl;
                   }
                }
                break;
@@ -369,7 +366,7 @@ protected:
                else if (debugLevel > 3)
                {
                   cout << "  Ignoring pvt message from record "
-                       << input.recordNumber << endl;
+                       << input.headerCount << endl;
                }               
                break;
 
@@ -401,7 +398,7 @@ protected:
                else if (debugLevel > 3)
                {
                   cout << "  Ignoring nav message from record "
-                       << input.recordNumber << endl;                     
+                       << input.headerCount << endl;                     
                }
                break;
 
@@ -424,7 +421,7 @@ protected:
                else if (debugLevel > 3)
                {
                   cout << "  Ignoring status message from record "
-                       << input.recordNumber << endl;                     
+                       << input.headerCount << endl;                     
                }               
                break;
 
