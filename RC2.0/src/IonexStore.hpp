@@ -127,7 +127,7 @@ namespace gpstk
           *                   (4) take neareast rotated map.
           *
           * @return values    TEC, RMS and ionosphere height values
-          *                   (Triple object with: TEC and RMS in TECU and 
+          *                   (Triple object with: TEC and RMS in TECU and
           *                   the ionosphere height in meters)
           */
       Triple getIonexValue( const CommonTime& t,

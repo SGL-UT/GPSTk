@@ -25,12 +25,12 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
 //============================================================================
 
- 
+
 #include <cmath>
 #include <string>
 
@@ -48,15 +48,15 @@ namespace gpstk
 {
       /** @addtogroup GPSsolutions */
       //@{
-   
+
       /** This class computes the effect of solid Earth tides at a given
        * position and epoch.
        *
        * The model used is the simple quadrupole response model described
        * by J.G. Williams (1970).
        *
-       * Given the limitations of the algorithms used to compute the Sun 
-       * and Moon positions, this class is limited to the period between 
+       * Given the limitations of the algorithms used to compute the Sun
+       * and Moon positions, this class is limited to the period between
        * March 1st, 1900 and February 28th, 2100.
        *
        */
@@ -102,6 +102,6 @@ namespace gpstk
 
 
    //@}
-   
+
 } // namespace gpstk
 #endif  // SOLIDTIDES_HPP

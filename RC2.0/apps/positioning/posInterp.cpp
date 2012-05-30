@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -108,7 +108,7 @@ const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;
 string Title;
 RinexObsStream ofstr;      // output Rinex files
-RinexObsHeader rhead, rheadout;   
+RinexObsHeader rhead, rheadout;
 int inC1,inP1,inP2,inL1,inL2,inD1,inD2,inS1,inS2;      // indexes in rhead
 Epoch CurrEpoch,PrgmEpoch,PrevEpoch;
 
@@ -244,7 +244,7 @@ try {
 
    ifstr.clear();
    ifstr.close();
-   
+
    PIC.oflog << endl << "Finished reading (" << reading
       << ") file " << PIC.InputObsName[nfile] << endl;
 
@@ -737,7 +737,7 @@ try {
 
    PIC.irate = 4;
    PIC.DataInt = -1.0;
-   
+
    PIC.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
    PIC.HDRunby = string("ARL:UT/SGL/GPSTK");
 
@@ -783,35 +783,35 @@ try {
    //CommandOption dashDT(CommandOption::hasArgument, CommandOption::stdType,
       //0,"DT"," --DT <dt>              Time interval (sec) of data points");
    //dashDT.setMaxCount(1);
-   
+
    CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
       0,"Log"," --Log <file>        Output log file name (pi.log)");
    dashLog.setMaxCount(1);
-   
+
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
       0,"outRinex"," --outRinex <file>     Output Rinex obs file name");
    dashRfile.setMaxCount(1);
-   
+
    CommandOption dashRrun(CommandOption::hasArgument, CommandOption::stdType,
       0,"RunBy"," --RunBy <string>    Output Rinex header 'RUN BY' string");
    dashRrun.setMaxCount(1);
-   
+
    CommandOption dashRobs(CommandOption::hasArgument, CommandOption::stdType,
       0,"Observer"," --Observer <string> Output Rinex header 'OBSERVER' string");
    dashRobs.setMaxCount(1);
-   
+
    CommandOption dashRag(CommandOption::hasArgument, CommandOption::stdType,
       0,"Agency"," --Agency <string>   Output Rinex header 'AGENCY' string");
    dashRag.setMaxCount(1);
-   
+
    CommandOption dashRmark(CommandOption::hasArgument, CommandOption::stdType,
       0,"Marker"," --Marker <string>   Output Rinex header 'MARKER' string");
    dashRmark.setMaxCount(1);
-   
+
    CommandOption dashRnumb(CommandOption::hasArgument, CommandOption::stdType,
       0,"Number"," --Number <string>   Output Rinex header 'NUMBER' string");
    dashRnumb.setMaxCount(1);
-   
+
    CommandOptionNoArg dashdmap(0,"dumpMap",
       " --dumpMap           Dump the Time/Position map to the log file.");
 
@@ -872,7 +872,7 @@ try {
       cout << "...end of Errors\n\n";
       help = true;
    }
-   
+
       // -------------------------------------------------
       // get values found on command line
    vector<string> values,field;

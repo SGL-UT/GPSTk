@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -82,8 +82,8 @@ bool CodeDump::initialize(int argc, char *argv[]) throw()
               "Offset is a number in chips. For example, to generate P code "
               "for PRN 3, with no initial time offset, "
               "specify -c p:3:0");
-   
-   if (!BasicFramework::initialize(argc,argv)) 
+
+   if (!BasicFramework::initialize(argc,argv))
       return false;
 
    if (!codeOpt.getCount())

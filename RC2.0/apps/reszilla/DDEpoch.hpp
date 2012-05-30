@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -57,10 +57,10 @@ typedef std::map<SatIdPair, OIDM > PrOIDM;
 struct DDEpoch
 {
    DDEpoch() : valid(false){};
-   
+
    SvOIDM ddSvOIDM;
    PrOIDM ddPrOIDM;
-   
+
    mutable SvShortMap health;
    mutable SvDoubleMap rangeRate;
    mutable SvDoubleMap elevation;
@@ -75,7 +75,7 @@ struct DDEpoch
       const gpstk::SvObsEpoch& rx1obs,
       const gpstk::SvObsEpoch& rx2obs,
       double rangeRate);
-   
+
    // Sets the valid flag true if successfull
    // also sets the masterPrn to the one actually used
    void doubleDifference(
@@ -83,11 +83,11 @@ struct DDEpoch
       const gpstk::ObsEpoch& rx2);
 
    // Criteria for the masterPrn:
-   //   it has an elevation > the min, 
+   //   it has an elevation > the min,
    //   it it on the way up (i.e. doppler>0),
-   //   there is a record for it on the other receiver     
+   //   there is a record for it on the other receiver
    void selectMasterPrn(
-      const gpstk::ObsEpoch& rx1, 
+      const gpstk::ObsEpoch& rx1,
       const gpstk::ObsEpoch& rx2);
 
 };
@@ -118,7 +118,7 @@ struct DDEpochMap : public std::map<gpstk::CommonTime, DDEpoch>
 
    void outputAverages(std::ostream& s) const;
    void dump(std::ostream& s) const;
-   
+
    static unsigned debugLevel;
    static bool useMasterSV;
    unsigned long windowLength;    // seconds

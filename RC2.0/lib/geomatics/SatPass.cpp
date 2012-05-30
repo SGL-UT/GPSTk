@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -907,7 +907,7 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                indexForSat[sat] = SPList.size()-1;
                satit = indexForSat.find(sat);
             }
-            
+
             // add the data to the SatPass
             do {
                i = SPList[satit->second].addData(obsdata.time,obstypes,data,lli,ssi);

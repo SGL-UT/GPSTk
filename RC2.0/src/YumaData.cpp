@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -55,15 +55,15 @@ namespace gpstk
    const std::string YumaData::sAf1  = "Af1(s/s):";
    const std::string YumaData::sweek = "week:";
 
-   void YumaData::reallyPutRecord(FFStream& ffs) const 
-      throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException)  
+   void YumaData::reallyPutRecord(FFStream& ffs) const
+      throw(std::exception, FFStreamError,
+               gpstk::StringUtils::StringException)
    {
       YumaStream& strm = dynamic_cast<YumaStream&>(ffs);
-      
+
       const int width=27;
       strm << "******** Week" << setw(5) << (week % 1024)
-           << " almanac for PRN-" << PRN 
+           << " almanac for PRN-" << PRN
            << " ********" << endl
            << left
            << setw(width) << sID   << PRN << endl
@@ -90,7 +90,7 @@ namespace gpstk
       // Gotta have a colon or the format is wrong
       if (i == string::npos)
          GPSTK_THROW(FFStreamError("Format error in YumaData"));
-      
+
       // Only compare the first five characters since some files differ after that
       int w = std::min(5, std::min(i, (int)s.size()));
       if (line.substr(0,w) != s.substr(0,w))
@@ -100,17 +100,17 @@ namespace gpstk
    }
 
 
-   void YumaData::reallyGetRecord(FFStream& ffs) 
-      throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException)  
+   void YumaData::reallyGetRecord(FFStream& ffs)
+      throw(std::exception, FFStreamError,
+               gpstk::StringUtils::StringException)
    {
       YumaStream& strm = dynamic_cast<YumaStream&>(ffs);
-            
+
       string line;
- 
+
       // We don't need first line as we will get all the information from the others
       strm.formattedGetLine(line, true);
-      
+
       //Second Line - PRN
       strm.formattedGetLine(line, true);
       PRN = asInt(lineParser(line, sID));
@@ -118,7 +118,7 @@ namespace gpstk
       //Third Line - Satellite Health
       strm.formattedGetLine(line, true);
       SV_health = asInt(lineParser(line, sHlth));
-      
+
       //Fourth Line - Eccentricity
       strm.formattedGetLine(line, true);
       ecc = asDouble(lineParser(line, sEcc));
@@ -131,35 +131,35 @@ namespace gpstk
       strm.formattedGetLine(line, true);
       double i_total = asDouble(lineParser(line, sOrbI));
       i_offset = i_total - 54.0 * (gpstk::PI / 180.0);
-      
+
       //Seventh Line - Rate of Right Ascen
       strm.formattedGetLine(line, true);
       OMEGAdot = asDouble(lineParser(line, sRRA));
-      
+
       //Eigth Line - SqrtA
       strm.formattedGetLine(line, true);
       Ahalf = asDouble(lineParser(line, sSqrA));
-      
+
       //Ninth Line - Right Ascen at Week
       strm.formattedGetLine(line, true);
       OMEGA0 = asDouble(lineParser(line, sRtAs));
-      
+
       //Tenth Line - Argument of Perigee
       strm.formattedGetLine(line, true);
       w = asDouble(lineParser(line, sArgP));
-      
+
       //Eleventh Line - Mean Anomaly
       strm.formattedGetLine(line, true);
       M0 = asDouble(lineParser(line, sMnAn));
-      
+
       //Twelfth Line - Af0
       strm.formattedGetLine(line, true);
       AF0 = asDouble(lineParser(line, sAf0));
-      
+
       //Thirteenth Line - Af1
       strm.formattedGetLine(line, true);
       AF1 = asDouble(lineParser(line, sAf1));
-      
+
       //Fourteenth Line - week
       // Its unclear whether this is a full week or week % 1024
       strm.formattedGetLine(line, true);
@@ -176,14 +176,14 @@ namespace gpstk
          else if(diff < -512)
             week -= 512;
       }
-      
+
       xmit_time = 0;
       strm.formattedGetLine(line,true);
-      
+
    } // end of reallyGetRecord()
 
-   void YumaData::dump(ostream& s) const 
-   {      
+   void YumaData::dump(ostream& s) const
+   {
       cout << "PRN = " << PRN << endl;
       cout << "week = " << week << endl;
       cout << "SV_health = " << SV_health << endl;
@@ -198,15 +198,15 @@ namespace gpstk
       cout << "AF0 = " << AF0 << endl;
       cout << "AF1 = " << AF1 << endl;
       cout << "xmit_time = " << xmit_time << endl;
-   
+
    } // end of dump()
-   
+
    YumaData::operator AlmOrbit() const
    {
       AlmOrbit ao(PRN, ecc,i_offset, OMEGAdot, Ahalf, OMEGA0,
                    w, M0, AF0, AF1, Toa, xmit_time, week, SV_health);
-      
+
       return ao;
-   
+
    } // end of AlmOrbit()
 } // namespace

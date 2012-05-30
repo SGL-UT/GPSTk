@@ -25,13 +25,13 @@ g++ -o trackerMT trackerMT.o /.../gpstk/dev/apps/swrx/simlib.a /.../gpstk/dev/sr
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 /*
-  The first cut at a parallel tracker for multiple PRNs. 
+  The first cut at a parallel tracker for multiple PRNs.
 */
 
 #include <math.h>
@@ -65,7 +65,7 @@ using namespace std;
 struct Buffer // input buffer
 {
    vector< complex<float> > arr;
-}; 
+};
 
 struct Par // Parameters to pass to Pthread function.
 {
@@ -88,7 +88,7 @@ public:
    RxSim() throw();
 
    bool initialize(int argc, char *argv[]) throw();
-   void function(EMLTracker *tr, int dp, int *count, 
+   void function(EMLTracker *tr, int dp, int *count,
                      complex<double> s, NavFramer *nf);
 
 protected:
@@ -100,7 +100,7 @@ private:
    int band;
    double gain;
    bool fakeL2;
-   int sat; 
+   int sat;
 
    double timeStep; // Time between samples
    double interFreq; // Intermediate frequency from receive
@@ -115,7 +115,7 @@ private:
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6), 
+   cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6),
    fakeL2(false), gain(1), timeLimit(9e99),iadMax(20460)
 {}
 
@@ -170,14 +170,14 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
       timeLimitOpt('t', "time-limit",
                   "Limit the amount of data to process. Specify time in ms. Defaults to all data."),
 
-      inputOpt('i', "input", 
+      inputOpt('i', "input",
                "Where to get the IQ samples from. The default is to use stdin.");
 
-   CommandOptionWithNumberArg 
+   CommandOptionWithNumberArg
       bandsOpt('b', "bands",
                "The number of complex samples per epoch. The default is 2.");
 
-   if (!BasicFramework::initialize(argc,argv)) 
+   if (!BasicFramework::initialize(argc,argv))
       return false;
 
    if (timeLimitOpt.getCount())
@@ -259,12 +259,12 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
 
       tr[i]->prn = prn;
       tr[i]->debugLevel = debugLevel;
-      
+
       if(verboseLevel)
          tr[i]->dump(cout, 1);
    }
 
-   char quantization='f';   
+   char quantization='f';
    if (quantizationOpt.getCount())
       quantization = quantizationOpt.getValue()[0][0];
 
@@ -321,8 +321,8 @@ void RxSim::process()
 
    vector<NavFramer> nf(numTrackers);
    long int dataPoint =0;
-   vector<int> count(numTrackers); 
-   
+   vector<int> count(numTrackers);
+
    pthread_attr_init(&attr);
    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
 
@@ -342,9 +342,9 @@ void RxSim::process()
       int index = 0;
       int bufferSize = 40*16367;
       while(index < bufferSize) // Fill input buffer
-      {   
+      {
          *input >> s;
-         b.arr.push_back(s);   
+         b.arr.push_back(s);
          index++;
          dataPoint++;
       }
@@ -357,7 +357,7 @@ void RxSim::process()
          p[i].tr = tr[i];
          p[i].nf = &nf[i];
          p[i].v = (verboseLevel);
-         
+
    // Split
          rc = pthread_create( &thread_id[i], &attr, Cfunction, &p[i] ) ;
          if (rc)
@@ -406,7 +406,7 @@ int main(int argc, char *argv[])
 void *Cfunction(void* p)
 {
    Par *par = (Par*)p;
-   
+
    EMLTracker *tr = par->tr;
    int *count = par->count;
    NavFramer *nf = par->nf;
@@ -414,19 +414,19 @@ void *Cfunction(void* p)
    int dp = par->dp - bufferSize;
    Buffer *b = par->s;
    bool v = par->v;
-   
-   int index = 0; 
-   
+
+   int index = 0;
+
    while(index < bufferSize + 1) // number of data points to track before join.
    {
       if (tr->process(b->arr[index]))
       {
          if(v)
             tr->dump(cout);
-         
+
          if(tr->navChange)
          {
-            nf->process(*tr, dp, 
+            nf->process(*tr, dp,
                      (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
             *count = 0;
          }
@@ -434,15 +434,15 @@ void *Cfunction(void* p)
          // The *20* depends on the tracker updating every C/A period.
          {
             *count = 0;
-            nf->process(*tr, dp, 
+            nf->process(*tr, dp,
                      (float)tr->localReplica.getCodePhaseOffsetSec()*1e6);
          }
-         
+
          *count = *count + 1;
       }
       index++;
       dp++;
-   } 
+   }
    pthread_exit(NULL);
    return NULL;
 }

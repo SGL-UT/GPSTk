@@ -10,7 +10,7 @@
 // within the U.S. Department of Defense. The U.S. Government retains all
 // rights to use, duplicate, distribute, disclose, or release this
 // software.
-// 
+//
 // Copyright 2008 The University of Texas at Austin
 // ======================================================================
 

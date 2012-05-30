@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -139,19 +139,19 @@ namespace gpstk
       short PRNArg;
       short trackArg;
 
-      for (int i=0;i<10;++i) 
+      for (int i=0;i<10;++i)
       {
          paddedSF[i] = subframe[i];
          paddedSF[i] <<= 6;
          paddedSF[i] &= 0x3FFFFFC0;    // Guarantee 2 msb and 6 lsb are zeroes
       }
-      PRNArg = PRN;                  
-      trackArg = track; 
+      PRNArg = PRN;
+      trackArg = track;
       return( addSubframe( paddedSF, gpsWeek, PRNArg, trackArg ));
    }
 
    bool EngEphemeris::addIncompleteSF1Thru3(
-      const long sf1[8], const long sf2[8], const long sf3[8], 
+      const long sf1[8], const long sf2[8], const long sf3[8],
       const long sf1TransmitSOW, const int gpsWeek,
       const short PRN, const short track)
    {
@@ -162,7 +162,7 @@ namespace gpstk
       const long sf1Lead[2] = { 0x00000000, 0x00000900 };
       const long sf2Lead[2] = { 0x00000000, 0x00000A00 };
       const long sf3Lead[2] = { 0x00000000, 0x00000B00 };
-      
+
          // Handover word times represent the time of the leading edge of the
          // NEXvt subframe.  Therefore, HOW should always correspond to
          //   :06/:36 for SF 1
@@ -172,20 +172,20 @@ namespace gpstk
          // user, but it WILL enforce this relationship.
       long frameCount = sf1TransmitSOW / 30;
       long SF1HOWTime = (frameCount * 30) + 6;
-      
+
          // Convert subframe 1 parameters
       subframeStore[0][0] = sf1Lead[0];
       subframeStore[0][1] = sf1Lead[1];
       int i;
       for (i=0; i<8; ++i) subframeStore[0][i+2] = sf1[i];
       haveSubframe[0] = true;
-      
+
          // Convert subframe 2 parameters
       subframeStore[1][0] = sf2Lead[0];
       subframeStore[1][1] = sf2Lead[1];
       for (i=0; i<8; ++i) subframeStore[1][i+2] = sf2[i];
       haveSubframe[1] = true;
-      
+
          // Convert subframe 3 parameters
       subframeStore[2][0] = sf3Lead[0];
       subframeStore[2][1] = sf3Lead[1];
@@ -211,7 +211,6 @@ namespace gpstk
 
       if (!subframeConvert(subframeStore[0], gpsWeek, ficked))
          return false;
-   
       tlm_message[0] = (subframeStore[0][0] >> 8) & 0x3fff;
       HOWtime[0] = static_cast<long>( ficked[2] );
       ASalert[0] = static_cast<short>( ficked[3] );
@@ -246,9 +245,10 @@ namespace gpstk
       fitint         = static_cast<short>( ficked[14] );
       AODO           = static_cast<long>( ficked[15] );
 
+
       if (!subframeConvert(subframeStore[2], gpsWeek, ficked))
          return false;
-   
+
       tlm_message[2]   = (subframeStore[2][0] >> 8) & 0x3fff;
       HOWtime[2]       = static_cast<long>( ficked[2] );
       ASalert[2]       = static_cast<short>( ficked[3] );
@@ -305,7 +305,7 @@ namespace gpstk
          endFitWk++;
       }
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);   
-      
+
       orbit.loadData(satSys, obsID, PRN, beginFit, endFit, ToeCT, 
                      accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
                      dn, dnDot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot);
@@ -355,7 +355,7 @@ namespace gpstk
             /* error in iodc, return minimum fit */
          return 4;
       }
-      
+
       if (((fiti == 0) &&
            (iodc & 0xFF) < 240 || (iodc & 0xFF) > 255 ))
       {
@@ -429,7 +429,7 @@ namespace gpstk
             /* error in ephemeris/iodc, return minimum fit */
          return 4;
       }
-      
+
       return 0; // never reached
    }
 
@@ -481,7 +481,7 @@ namespace gpstk
       }
       return tlm_message[subframe-1];
    }
-      
+
    CommonTime EngEphemeris::getTransmitTime() const
       throw()
    {
@@ -534,7 +534,7 @@ namespace gpstk
       }
       return PRNID;
    }
-   
+
    short EngEphemeris::getTracker() const
       throw( InvalidRequest )
    {
@@ -545,7 +545,7 @@ namespace gpstk
       }
       return tracker;
    }
-   
+
    double EngEphemeris::getHOWTime(short subframe) const
       throw( InvalidRequest )
    {
@@ -573,7 +573,7 @@ namespace gpstk
       }
       return ASalert[subframe-1];
    }
-   
+
    short EngEphemeris::getFullWeek()  const
       throw( InvalidRequest )
    {
@@ -584,7 +584,7 @@ namespace gpstk
       }
       return weeknum;
    }
-   
+
    short EngEphemeris::getCodeFlags()  const
       throw( InvalidRequest )
    {
@@ -595,7 +595,7 @@ namespace gpstk
       }
       return codeflags;
    }
-   
+
    double EngEphemeris::getAccuracy()  const
       throw( InvalidRequest )
    {
@@ -606,7 +606,7 @@ namespace gpstk
       }
       return orbit.getAccuracy();
    }
-   
+
    short EngEphemeris::getAccFlag()  const
       throw( InvalidRequest )
    {
@@ -617,7 +617,7 @@ namespace gpstk
       }
       return orbit.getURAoe();
    }
-   
+
    short EngEphemeris::getHealth() const
       throw( InvalidRequest )
    {
@@ -628,7 +628,7 @@ namespace gpstk
       }
       return health;
    }
-   
+
    short EngEphemeris::getL2Pdata() const
       throw( InvalidRequest )
    {
@@ -639,7 +639,7 @@ namespace gpstk
       }
       return L2Pdata;
    }
-   
+
    short EngEphemeris::getIODC() const
       throw( InvalidRequest )
    {
@@ -650,7 +650,7 @@ namespace gpstk
       }
       return static_cast<short>(IODC);
    }
-   
+
    short EngEphemeris::getIODE() const
       throw( InvalidRequest )
    {
@@ -661,7 +661,7 @@ namespace gpstk
       }
       return static_cast<short>(IODE);
    }
-   
+
    long EngEphemeris::getAODO() const
       throw( InvalidRequest )
    {
@@ -672,7 +672,7 @@ namespace gpstk
       }
       return AODO;
    }
-   
+
    double EngEphemeris::getToc() const
       throw( InvalidRequest )
    {
@@ -683,7 +683,7 @@ namespace gpstk
       }
       return bcClock.getToc();
    }
-   
+
    double EngEphemeris::getAf0() const
       throw( InvalidRequest )
    {
@@ -694,7 +694,7 @@ namespace gpstk
       }
       return bcClock.getAf0();
    }
-   
+
    double EngEphemeris::getAf1() const
       throw( InvalidRequest )
    {
@@ -705,7 +705,7 @@ namespace gpstk
       }
       return bcClock.getAf1();
    }
-   
+
    double EngEphemeris::getAf2() const
       throw( InvalidRequest )
    {
@@ -716,7 +716,7 @@ namespace gpstk
       }
       return bcClock.getAf2();
    }
-   
+
    double EngEphemeris::getTgd() const
       throw( InvalidRequest )
    {
@@ -727,7 +727,7 @@ namespace gpstk
       }
       return Tgd;
    }
-   
+
    double EngEphemeris::getCus() const
       throw( InvalidRequest )
    {
@@ -738,7 +738,7 @@ namespace gpstk
       }
       return orbit.getCus();
    }
-   
+
    double EngEphemeris::getCrs() const
       throw( InvalidRequest )
    {
@@ -749,7 +749,7 @@ namespace gpstk
       }
       return orbit.getCrs();
    }
-   
+
    double EngEphemeris::getCis() const
       throw( InvalidRequest )
    {
@@ -760,7 +760,7 @@ namespace gpstk
       }
       return orbit.getCis();
    }
-   
+
    double EngEphemeris::getCrc() const
       throw( InvalidRequest )
    {
@@ -771,7 +771,7 @@ namespace gpstk
       }
       return orbit.getCrc();
    }
-   
+
    double EngEphemeris::getCuc() const
       throw( InvalidRequest )
    {
@@ -782,7 +782,7 @@ namespace gpstk
       }
       return orbit.getCuc();
    }
-  
+
    double EngEphemeris::getCic() const
       throw( InvalidRequest )
    {
@@ -793,7 +793,7 @@ namespace gpstk
       }
       return orbit.getCic();
    }
-   
+
    double EngEphemeris::getToe() const
       throw( InvalidRequest )
    {
@@ -804,7 +804,7 @@ namespace gpstk
       }
       return orbit.getToe();
    }
-   
+
    double EngEphemeris::getM0() const
       throw( InvalidRequest )
    {
@@ -815,7 +815,7 @@ namespace gpstk
       }
       return orbit.getM0();
    }
-   
+
    double EngEphemeris::getDn() const
       throw( InvalidRequest )
    {
@@ -826,7 +826,7 @@ namespace gpstk
       }
       return orbit.getDn();
    }
-   
+
    double EngEphemeris::getEcc() const
       throw( InvalidRequest )
    {
@@ -837,7 +837,7 @@ namespace gpstk
       }
       return orbit.getEcc();
    }
-   
+
    double EngEphemeris::getAhalf() const
       throw( InvalidRequest )
    {
@@ -848,7 +848,7 @@ namespace gpstk
       }
       return orbit.getAhalf();
    }
-   
+
    double EngEphemeris::getA() const
       throw( InvalidRequest )
    {
@@ -859,7 +859,7 @@ namespace gpstk
       }
       return orbit.getA();
    }
-   
+
    double EngEphemeris::getOmega0() const
       throw( InvalidRequest )
    {
@@ -870,7 +870,7 @@ namespace gpstk
       }
       return orbit.getOmega0();
    }
-   
+
    double EngEphemeris::getI0() const
       throw( InvalidRequest )
    {
@@ -881,7 +881,7 @@ namespace gpstk
       }
       return orbit.getI0();
    }
-   
+
    double EngEphemeris::getW() const
       throw( InvalidRequest )
    {
@@ -892,7 +892,7 @@ namespace gpstk
       }
       return orbit.getW();
    }
-   
+
    double EngEphemeris::getOmegaDot() const
       throw( InvalidRequest )
    {
@@ -903,7 +903,7 @@ namespace gpstk
       }
       return orbit.getOmegaDot();
    }
-   
+
    double EngEphemeris::getIDot() const
       throw( InvalidRequest )
    {
@@ -914,7 +914,7 @@ namespace gpstk
       }
       return orbit.getIDot();
    }
-   
+
    short EngEphemeris::getFitInt() const
       throw( InvalidRequest )
    {
@@ -926,7 +926,7 @@ namespace gpstk
       return fitint;
    }
 
-   long EngEphemeris::getTot() const 
+   long EngEphemeris::getTot() const
       throw( InvalidRequest )
    {
       if(!haveSubframe[0])
@@ -944,18 +944,18 @@ namespace gpstk
          InvalidRequest exc("getTot(): Required subframe 3 not stored.");
          GPSTK_THROW(exc);
       }
-      
+
       // MSVC
 #ifdef _MSC_VER
       long foo = static_cast<long>( getHOWTime(1) < getHOWTime(2) ) ? getHOWTime(1) : getHOWTime(2);
       foo = ( foo < getHOWTime(3) ) ? foo : getHOWTime(3) ;
 #else
-      long foo = 
-         static_cast<long>( min( getHOWTime(1), 
+      long foo =
+         static_cast<long>( min( getHOWTime(1),
                                  min( getHOWTime(2), getHOWTime(3) ) ) );
 #endif
          // The ephemeris comes on 30 second boundaries, so...
-      foo/=30;  
+      foo/=30;
       foo*=30;
       return foo;
    }
@@ -1043,7 +1043,7 @@ namespace gpstk
                                        short fullweek, short cflags, short acc, 
                                        short svhealth, short iodc, short l2pdata,
                                        double tgd, double toc, double Af2,
-                                       double Af1, double Af0, short Tracker, 
+                                       double Af1, double Af0, short Tracker,
                                        short prn )
       throw()
    {
@@ -1085,9 +1085,9 @@ namespace gpstk
    }
 
    EngEphemeris& EngEphemeris::setSF2( unsigned tlm, double how, short asalert,
-                                       short iode, double crs, double Dn, 
-                                       double m0, double cuc, double Ecc, 
-                                       double cus, double ahalf, double toe, 
+                                       short iode, double crs, double Dn,
+                                       double m0, double cuc, double Ecc,
+                                       double cus, double ahalf, double toe,
                                        short fitInt )
       throw()
    {
@@ -1158,8 +1158,8 @@ namespace gpstk
    }
 
    EngEphemeris& EngEphemeris::setSF3( unsigned tlm, double how, short asalert,
-                                       double cic, double Omega0, double cis, 
-                                       double I0, double crc, double W, 
+                                       double cic, double Omega0, double cis,
+                                       double I0, double crc, double W,
                                        double OmegaDot, double IDot )
       throw()
    {
@@ -1233,7 +1233,7 @@ namespace gpstk
       haveSubframe[2] = true;
       return *this;
    }
-   
+
    static void timeDisplay( ostream & os, const CommonTime& t )
    {
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
@@ -1263,7 +1263,7 @@ namespace gpstk
       short DOW, hour, min, sec;
       long SOD, SOW;
       short SOH;
-      
+
       SOW = static_cast<long>( HOW );
       DOW = static_cast<short>( SOW / SEC_PER_DAY );
       SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
@@ -1304,20 +1304,20 @@ namespace gpstk
       }
 
       ios::fmtflags oldFlags = s.flags();
-   
+
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
       s.precision(0);
       s.fill(' ');
-      
+
       s << "****************************************************************"
         << "************" << endl
         << "Broadcast Ephemeris (Engineering Units)" << endl
         << endl
         << "PRN : " << setw(2) << PRNID << endl
         << endl;
-  
+
 
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
         << "   MM/DD/YYYY   HH:MM:SS\n";
@@ -1328,7 +1328,7 @@ namespace gpstk
       s << "Eph Epoch:    ";
       timeDisplay(s, orbit.getOrbitEpoch());
       s << endl;
-  
+
 #if 0
          // FIX when moved from sf123, the tot got zapped.. because in
          // order for EngEphemeris to be able to use such a thing, it
@@ -1343,8 +1343,8 @@ namespace gpstk
 #endif
          // nuts to the above, let's just make it look like navdump output
       s << "Transmit Week:" << setw(4) << weeknum << endl
-        << "Fit interval flag :  " << fitint << endl;      
-      
+        << "Fit interval flag :  " << fitint << endl;
+
       s << endl
         << "          SUBFRAME OVERHEAD"
         << endl
@@ -1355,37 +1355,37 @@ namespace gpstk
          s << "SF" << setw(1) << (i+1)
            << " HOW:   " << setw(7) << HOWtime[i]
            << "  ";
-         
+
          shortcut( s, HOWtime[i]);
          if (i==0)
             s << "   ";
          else
             s << "    ";
-         
+
          s << "0x" << setfill('0') << hex;
-         
+
          if (i==0)
             s << setw(3) << IODC;
          else
             s << setw(2) << IODE;
-         
+
          s << dec << "      " << setfill(' ');
-         
+
          if (ASalert[i] & 0x0002)    // "Alert" bit handling
             s << "1     ";
          else
             s << "0     ";
-         
+
          if (ASalert[i] & 0x0001)     // A-S flag handling
             s << " on";
          else
             s << "off";
          s << endl;
       }
-      
+
       s.setf(ios::scientific, ios::floatfield);
       s.precision(8);
-      
+
       s << endl
         << "           CLOCK"
         << endl
@@ -1394,7 +1394,7 @@ namespace gpstk
         << "Drift:       " << setw(16) << bcClock.getAf1() << " sec/sec" << endl
         << "Drift rate:  " << setw(16) << bcClock.getAf2() << " sec/(sec**2)" << endl
         << "Group delay: " << setw(16) << Tgd << " sec" << endl;
-      
+
       s << endl
         << "           ORBIT PARAMETERS"
         << endl
@@ -1409,7 +1409,7 @@ namespace gpstk
         << setw(16) << orbit.getOmegaDot() << " rad/sec" << endl
         << "Inclination:           " << setw(16) << orbit.getI0()     << " rad    "
         << setw(16) << orbit.getIDot()     << " rad/sec" << endl;
-      
+
       s << endl
         << "           HARMONIC CORRECTIONS"
         << endl
@@ -1428,42 +1428,42 @@ namespace gpstk
         << "Health bits:   0x" << setfill('0')  << setw(2) << health
         << "      URA index: " << setfill(' ') << setw(4) << orbit.getURAoe() << endl
         << "Code on L2:   ";
-      
+
       switch (codeflags)
       {
          case 0:
             s << "reserved ";
             break;
-            
+
          case 1:
             s << " P only  ";
             break;
-            
+
          case 2:
             s << " C/A only";
             break;
-            
+
          case 3:
             s << " P & C/A ";
             break;
-            
+
          default:
             break;
-            
+
       }
-      
+
       s << "    L2 P Nav data:          ";
       if (L2Pdata!=0)
          s << "off";
       else
          s << "on";
-      
+
       s << endl
         << endl;
       s.flags(oldFlags);
 
    } // end of SF123::dump()
-   
+
    ostream& operator<<(ostream& s, const EngEphemeris& eph)
    {
      try

@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -407,7 +407,7 @@ try
    }
 
    // allocate Stats objects for each grid point's DOPs
-   GGridStats = new Stats<double>[Grid.size()];    
+   GGridStats = new Stats<double>[Grid.size()];
    PGridStats = new Stats<double>[Grid.size()];
    HGridStats = new Stats<double>[Grid.size()];
    VGridStats = new Stats<double>[Grid.size()];
@@ -904,7 +904,7 @@ try
    RinexNavData rne;
    RinexNavStream RNFileIn(infile.c_str());
    RNFileIn.exceptions(fstream::failbit);
-   
+
    RNFileIn >> rnh;
    while (RNFileIn >> rne)
    {
@@ -1064,7 +1064,7 @@ try
                  << " N";
          }
          sofs << " " << setw(12) << W;
-   
+
          wtd = NGridStats[i].Weighted();
          if (wtd)
          {
@@ -1165,7 +1165,7 @@ try
 
    }
    sofs.close();
-   
+
 return 0;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }

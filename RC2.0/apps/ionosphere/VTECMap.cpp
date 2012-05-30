@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -256,7 +256,7 @@ void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data, double b
       //if(d < -0.5) output warning: negative TEC set to 0
       d = 0.0;
    }
-   
+
    gridpt.value = d;
 }
 
@@ -378,7 +378,7 @@ void MUFMap::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 }
 
 //------------------------------------------------------------------------------------
-// First cut at foF2 assuming constant slab thickness of 280 km and 
+// First cut at foF2 assuming constant slab thickness of 280 km and
 // TEC = 1.24e10 (foF2)^2 tau / 10^16
 void F0F2Map::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 {

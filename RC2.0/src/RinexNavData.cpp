@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -50,7 +50,7 @@
 #include "RinexNavData.hpp"
 #include "RinexNavStream.hpp"
 #include "GNSSconstants.hpp"
- 
+
 namespace gpstk
 {
    using namespace gpstk::StringUtils;
@@ -95,11 +95,11 @@ namespace gpstk
       fitint = ee.getFitInterval();
    }
 
-   void RinexNavData::reallyPutRecord(FFStream& ffs) const 
+   void RinexNavData::reallyPutRecord(FFStream& ffs) const
       throw(exception, FFStreamError, StringException)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
-      
+
       strm << putPRNEpoch() << endl;
       strm.lineNumber++;
       strm << putBroadcastOrbit1() << endl;
@@ -118,39 +118,39 @@ namespace gpstk
       strm.lineNumber++;
    }
 
-   void RinexNavData::reallyGetRecord(FFStream& ffs) 
+   void RinexNavData::reallyGetRecord(FFStream& ffs)
       throw(exception, FFStreamError, StringException)
    {
       RinexNavStream& strm = dynamic_cast<RinexNavStream&>(ffs);
-      
+
          // If the header hasn't been read, read it...
       if(!strm.headerRead)
          strm >> strm.header;
-      
+
       string line;
-            
-      strm.formattedGetLine(line, true); 
+
+      strm.formattedGetLine(line, true);
       getPRNEpoch(line);
 
-      strm.formattedGetLine(line); 
+      strm.formattedGetLine(line);
       getBroadcastOrbit1(line);
-      
-      strm.formattedGetLine(line); 
+
+      strm.formattedGetLine(line);
       getBroadcastOrbit2(line);
-      
-      strm.formattedGetLine(line); 
+
+      strm.formattedGetLine(line);
       getBroadcastOrbit3(line);
 
-      strm.formattedGetLine(line); 
+      strm.formattedGetLine(line);
       getBroadcastOrbit4(line);
-      
-      strm.formattedGetLine(line); 
+
+      strm.formattedGetLine(line);
       getBroadcastOrbit5(line);
 
-      strm.formattedGetLine(line); 
+      strm.formattedGetLine(line);
       getBroadcastOrbit6(line);
 
-      strm.formattedGetLine(line); 
+      strm.formattedGetLine(line);
       getBroadcastOrbit7(line);
    }
 
@@ -158,7 +158,7 @@ namespace gpstk
    {
       s << "PRN: " << setw(2) << PRNID
         << " TOE: " << time
-        << " TOC: " << setw(4) << weeknum << " " 
+        << " TOC: " << setw(4) << weeknum << " "
         << fixed << setw(10) << setprecision(3) << Toc
         << " IODE: " << setw(4) << int(IODE)            // IODE should be int
         << " HOWtime: " << setw(6) << HOWtime           // HOW should be double
@@ -181,9 +181,9 @@ namespace gpstk
                 Toe, (fitint > 4) ? 1 : 0);
       ee.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
                 idot);
-      
+
       ee.setAccuracy(accuracy);
-      
+
       return ee;
    }
 
@@ -369,7 +369,7 @@ namespace gpstk
       if (ver >= 2.1)
       {
          line += string(1, ' ');
-         line += doub2for(fitint, 18, 2);         
+         line += doub2for(fitint, 18, 2);
       }
       return line;
    }
@@ -383,7 +383,7 @@ namespace gpstk
          for (int i = 2; i <= 17; i += 3)
             if (currentLine[i] != ' ')
                throw(FFStreamError("Badly formatted line"));
-         
+
          PRNID = asInt(currentLine.substr(0,2));
 
          short yr = asInt(currentLine.substr(2,3));
@@ -392,7 +392,7 @@ namespace gpstk
          short hr = asInt(currentLine.substr(11,3));
          short min = asInt(currentLine.substr(14,3));
          double sec = asDouble(currentLine.substr(17,5));
-         
+
             // years 80-99 represent 1980-1999
          const int rolloverYear = 80;
          if (yr < rolloverYear)
@@ -404,7 +404,7 @@ namespace gpstk
          if(sec >= 60.) { ds=sec; sec=0.0; }
          time = CivilTime(yr,mo,day,hr,min,sec).convertToCommonTime();
          if(ds != 0) time += ds;
-         
+
          Toc = (static_cast<GPSWeekSecond>(time)).sow;
          af0 = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
          af1 = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
@@ -526,7 +526,7 @@ namespace gpstk
          Tgd = gpstk::StringUtils::for2doub(currentLine.substr(41,19));
          IODC = gpstk::StringUtils::for2doub(currentLine.substr(60,19));
 
-   
+
          health = (short) SV_health;
       }
       catch (std::exception &e)
@@ -546,7 +546,7 @@ namespace gpstk
 
          HOW_sec = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
          fitint = gpstk::StringUtils::for2doub(currentLine.substr(22,19));
-   
+
          HOWtime = (long) HOW_sec;
 
          // In Rinex *files*, weeknum is the week of TOE
@@ -561,7 +561,7 @@ namespace gpstk
 	   HOWtime += (long) FULLWEEK;
             weeknum--;
          }
-         
+
       }
       catch (std::exception &e)
       {
