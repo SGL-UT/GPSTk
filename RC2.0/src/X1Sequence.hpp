@@ -48,6 +48,7 @@
 
 
    // Project headers
+#include "gpstkplatform.h"
 #include "PCodeConst.hpp"
 
 namespace gpstk

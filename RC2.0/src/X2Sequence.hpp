@@ -48,6 +48,7 @@
 
 
    // Local headers
+#include "gpstkplatform.h"
 #include "PCodeConst.hpp"
 #include "mergePCodeWords.h"
 

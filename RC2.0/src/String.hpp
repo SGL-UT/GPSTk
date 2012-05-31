@@ -30,7 +30,7 @@
 //
 //============================================================================
 
-#include <string>
+#include <cstring>
 #include "Ascii.hpp"
 #include "StringUtils.hpp"
 

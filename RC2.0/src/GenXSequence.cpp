@@ -46,6 +46,7 @@
  */
 
    // Local headers
+#include <string>
 #include "GenXSequence.hpp"
 
 namespace gpstk

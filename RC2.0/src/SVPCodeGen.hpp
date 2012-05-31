@@ -39,7 +39,6 @@
 #ifndef SVPCODEGEN_HPP
 #define SVPCODEGEN_HPP
 
-
 #include "CommonTime.hpp"
 #include "PCodeConst.hpp"
 #include "CodeBuffer.hpp"

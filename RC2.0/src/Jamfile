@@ -61,6 +61,7 @@ else
       EngEphemeris.cpp
       EngNav.cpp
       ENUUtil.cpp
+      EOPDataStore.cpp
       EphemerisRange.cpp
       Epoch.cpp
       EpochDataStore.cpp
@@ -103,6 +104,7 @@ else
       JulianDate.cpp
       LinearClockModel.cpp
       Logger.cpp
+      LogChannel.cpp
       LoopedFramework.cpp
       MJD.cpp
       MoonPosition.cpp
@@ -239,6 +241,7 @@ else
       EngEphemeris.hpp
       EngNav.hpp
       ENUUtil.hpp
+      EOPDataStore.hpp
       EphemerisRange.hpp
       Epoch.hpp
       EpochClockModel.hpp
@@ -302,7 +305,9 @@ else
       IonoModelStore.hpp	
       JulianDate.hpp	
       LinearClockModel.hpp	
+      LogChannel.hpp
       Logger.hpp	
+      LogMessage.hpp
       logstream.hpp
       LoopedFramework.hpp	
       MainAdapter.hpp	

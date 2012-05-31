@@ -34,6 +34,8 @@
          integer.  The first_bit argument defines the most significant
          bit of the merged word.  The bits are numbered from 0 - MAX_BIT-1.
 */
+#include "gpstkplatform.h"
+
 #ifndef MERGEPCODEWORDS_H
 #define MERGEPCODEWORDS_H
 
