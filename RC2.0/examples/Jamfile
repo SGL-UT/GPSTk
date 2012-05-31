@@ -10,6 +10,7 @@ example11 example14 example16 example17 : gpstk procframe ;
 GPSLinkLibraries example12 : gpstk ;
 GPSLinkLibraries example11 example13 :  gpstk vdraw vplot ;
 GPSLinkLibraries example15 : gpstk geomatics ;
+GPSLinkLibraries example18 : gpstk procframe geomatics ;
 
 # Note that we use the Main rule here as opposed to the GPSMain rule. That is
 # to prevent these binaries from getting installed as part of the Jam install

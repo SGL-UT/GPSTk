@@ -222,27 +222,27 @@ void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data, double b
       destLon = data[k].longitude * DEG_TO_RAD;
       // compute distance in the plane from grid to dest(data)
       dLon = destLon - gridLon;
-      sg = sin(gridLat);
-      cg = cos(gridLat);
-      sd = sin(destLat);
-      d = sg*sd + cg*cos(destLat)*cos(dLon);
-      dist = acos(d);
+      sg = ::sin(gridLat);
+      cg = ::cos(gridLat);
+      sd = ::sin(destLat);
+      d = sg*sd + cg*::cos(destLat)*::cos(dLon);
+      dist = ::acos(d);
       // TD what is range? where does the 1.852 come from?
       // TD what are the units of range? assume km, then Decorrelation = TECU/1000km
       // decor error = range * Decorrelation
       range = 1.852 * 60 * dist * RAD_TO_DEG;   // 1.852 * distance in min of arc
       if(ABS(dist) < 0.01) dist = 0.01;
-      d = (sd - sg*cos(dist)) / sin(dist)*cg;   // d = cos(bearing)
+      d = (sd - sg*::cos(dist)) / ::sin(dist)*cg;   // d = cos(bearing)
       if(ABS(d) > 1) {
          if(d > 0) d = 1.0;
          else d = -1.0;
       }
-      bear = acos(d);
+      bear = ::acos(d);
       if(dLon > 0) bear = TWO_PI - bear;
 
       vtec.push_back(data[k].VTEC);
       xtmp.push_back(range * d);       // this is probably slow
-      ytmp.push_back(range * sin(bear));
+      ytmp.push_back(range * ::sin(bear));
       // sigma = RSS(measurement error, term ~ range = decorrelation)
       d = data[k].VTECerror * data[k].VTECerror
          + range * range * (Decorrelation/1000) * (Decorrelation/1000);

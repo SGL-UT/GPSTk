@@ -96,6 +96,7 @@ else
       GPSWeekZcount.cpp
       GPSZcount.cpp
       HelmertTransform.cpp
+      IERSConventions.cpp
       IonexData.cpp
       IonexHeader.cpp
       IonexStore.cpp
@@ -121,6 +122,7 @@ else
       ObsRngDev.cpp
       OceanLoading.cpp
       PackedNavBits.cpp
+      PlanetEphemeris.cpp
       PoleTides.cpp
       Position.cpp
       PositionSatStore.cpp
@@ -295,6 +297,7 @@ else
       GPSWeekZcount.hpp	
       GPSZcount.hpp	
       HelmertTransform.hpp	
+      IERSConventions.hpp
       InOutFramework.hpp	
       IonexBase.hpp	
       IonexData.hpp	
@@ -342,6 +345,7 @@ else
       ORDEpoch.hpp
       PackedNavBits.hpp	
       PCodeConst.hpp	
+      PlanetEphemeris.hpp
       PoleTides.hpp	
       PolyFit.hpp	
       Position.hpp	
