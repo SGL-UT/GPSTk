@@ -110,27 +110,27 @@ namespace gpstk
 
          /* compute the mean anomaly */
       meana = M0 + elapt * n;
-      meana = fmod(meana, 2.0 * PI);
+      meana = ::fmod(meana, 2.0 * PI);
 
          /* compute eccentric anomaly by iteration */
 
-      ea = meana + ecc * sin(meana);
+      ea = meana + ecc * ::sin(meana);
       loop = 1;
 
       do {
-         f = meana - (ea - ecc * sin(ea));
+         f = meana - (ea - ecc * ::sin(ea));
          g = 1.0 - ecc * ::cos(ea);
          delea = f / g;
          ea += delea;
          loop++;
-      }  while ( fabs(delea) > 1.0e-11 && (loop <= 20));
+      }  while ( ::fabs(delea) > 1.0e-11 && (loop <= 20));
 
          /* compute clock corrections (no relativistic correction computed) */
       dtc = AF0 + elapt * AF1;
       sv.clkbias = dtc;
 
          /* compute the true anomaly */
-      q = sqrt (1.0e0 - ecc * ecc);
+      q = ::sqrt (1.0e0 - ecc * ecc);
       sinea = ::sin(ea);
       cosea = ::cos(ea);
       gsta = q * sinea;

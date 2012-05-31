@@ -289,7 +289,7 @@ namespace gpstk
       double dxp,dyp,vxef,vyef,vzef;
       GPSEllipsoid ell;
 
-      double sqrtgm = sqrt(ell.gm());
+      double sqrtgm = SQRT(ell.gm());
 
          // Check for ground transmitter
       double twoPI = 2.0e0 * PI;
@@ -316,21 +316,21 @@ namespace gpstk
       meana = M0 + elapte * amm;
       meana = fmod(meana, twoPI);
    
-      ea = meana + lecc * sin(meana);
+      ea = meana + lecc * ::sin(meana);
 
       int loop_cnt = 1;
       do  {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
+         F = meana - ( ea - lecc * ::sin(ea));
+         G = 1.0 - lecc * ::cos(ea);
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
       } while ( (fabs(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
    
          // Compute true anomaly
-      q     = sqrt ( 1.0e0 - lecc*lecc);
-      sinea = sin(ea);
-      cosea = cos(ea);
+      q     = SQRT( 1.0e0 - lecc*lecc);
+      sinea = ::sin(ea);
+      cosea = ::cos(ea);
       G     = 1.0e0 - lecc * cosea;
    
          //  G*SIN(TA) AND G*COS(TA)
@@ -343,8 +343,8 @@ namespace gpstk
          // Argument of lat and correction terms (2nd harmonic)
       alat  = truea + w;
       talat = 2.0e0 * alat;
-      c2al  = cos( talat );
-      s2al  = sin( talat );
+      c2al  = ::cos( talat );
+      s2al  = ::sin( talat );
 
       du  = c2al * Cuc +  s2al * Cus;
       dr  = c2al * Crc +  s2al * Crs;
@@ -360,17 +360,17 @@ namespace gpstk
               elapte - ell.angVelocity() * ToeSOW;
 
          // In plane location
-      cosu = cos( U );
-      sinu = sin( U );
+      cosu = ::cos( U );
+      sinu = ::sin( U );
 
       xip  = R * cosu;
       yip  = R * sinu;
 
          //  Angles for rotation to earth fixed
-      can  = cos( ANLON );
-      san  = sin( ANLON );
-      cinc = cos( AINC  );
-      sinc = sin( AINC  );
+      can  = ::cos( ANLON );
+      san  = ::sin( ANLON );
+      cinc = ::cos( AINC  );
+      sinc = ::sin( AINC  );
  
          // Earth fixed - meters
       xef  =  xip*can  -  yip*cinc*san;
@@ -421,17 +421,17 @@ namespace gpstk
       
       meana = M0 + elapte * amm; 
       meana = fmod(meana, twoPI);
-      double ea = meana + ecc * sin(meana);
+      double ea = meana + ecc * ::sin(meana);
 
       int loop_cnt = 1;
       do {
-         F     = meana - ( ea - ecc * sin(ea));
-         G     = 1.0 - ecc * cos(ea);
+         F     = meana - ( ea - ecc * ::sin(ea));
+         G     = 1.0 - ecc * ::cos(ea);
          delea = F/G;
          ea    = ea + delea;
          loop_cnt++;
       } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
-      double dtr = REL_CONST * ecc * Ahalf * sin(ea);
+      double dtr = REL_CONST * ecc * Ahalf * ::sin(ea);
       return dtr;
    }
 

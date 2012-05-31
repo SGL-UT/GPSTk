@@ -77,30 +77,30 @@ namespace gpstk
    void LoadIGSFile(const std::string& fileName);
 
       /// ERP data file from STK
-   void loadSTKFile(const std::string& fileName);
+   void LoadSTKFile(const std::string& fileName);
 
       /// Request EOP Data
-   EOPDataStore::EOPData EOPData(CommonTime UTC)
+   EOPDataStore::EOPData EOPData(const CommonTime& UTC)
       throw(InvalidRequest);
    
       /// in arcsecond
-   double PolarMotionX(CommonTime UTC);
+   double PolarMotionX(const CommonTime& UTC);
 
       /// in arcsecond
-   double PolarMotionY(CommonTime UTC);
+   double PolarMotionY(const CommonTime& UTC);
 
       /// in second
-   double UT1mUTC(CommonTime UTC);
+   double UT1mUTC(const CommonTime& UTC);
 
       /// in arcsecond
-   double NutationDPsi(CommonTime UTC);
+   double NutationDPsi(const CommonTime& UTC);
 
       /// in arcsecond
-   double NutationDEps(CommonTime UTC);
+   double NutationDEps(const CommonTime& UTC);
 
 
       /// ftp://maia.usno.navy.mil/ser7/leapsec.dat
-   int TAImUTC(CommonTime UTC)
+   int TAImUTC(const CommonTime& UTC)
       throw(InvalidRequest);
 
 
@@ -123,27 +123,26 @@ namespace gpstk
       TS_TT
    };
    
-   CommonTime ConvertTimeSystem(CommonTime time, TimeSystemEnum from, TimeSystemEnum to);
+   CommonTime ConvertTimeSystem(const CommonTime& time, TimeSystemEnum from, TimeSystemEnum to);
 
-   CommonTime GPST2UTC(CommonTime GPST);
-   CommonTime UTC2GPST(CommonTime UTC);
+   CommonTime GPST2UTC(const CommonTime& GPST);
+   CommonTime UTC2GPST(const CommonTime& UTC);
 
-   CommonTime UT12UTC(CommonTime UT1);
-   CommonTime UTC2UT1(CommonTime UTC);
+   CommonTime UT12UTC(const CommonTime& UT1);
+   CommonTime UTC2UT1(const CommonTime& UTC);
 
-   CommonTime UT12UTC(CommonTime UT1,double ut1mutc);
-   CommonTime UTC2UT1(CommonTime UTC,double ut1mutc);
+   CommonTime UT12UTC(const CommonTime& UT1,double ut1mutc);
+   CommonTime UTC2UT1(const CommonTime& UTC,double ut1mutc);
 
-   CommonTime TT2UTC(CommonTime TT);
-   CommonTime UTC2TT(CommonTime UTC);
+   CommonTime TT2UTC(const CommonTime& TT);
+   CommonTime UTC2TT(const CommonTime& UTC);
 
-   CommonTime TAI2UTC(CommonTime TAI);
-   CommonTime UTC2TAI(CommonTime UTC);
+   CommonTime TAI2UTC(const CommonTime& TAI);
+   CommonTime UTC2TAI(const CommonTime& UTC);
 
-   CommonTime BDT2UTC(CommonTime BDT);
-   CommonTime UTC2BDT(CommonTime UTC);
+   CommonTime BDT2UTC(const CommonTime& BDT);
+   CommonTime UTC2BDT(const CommonTime& UTC);
    
-
    // Reference System Handling
    //--------------------------------------------------------------------------
 
@@ -203,11 +202,11 @@ namespace gpstk
  
  
       /// sun position in J2000 
-   Triple sunJ2kPosition(const CommonTime& time, TimeSystemEnum sys = TS_GPST);
+   Vector<double> sunJ2kPosition(const CommonTime& TT);
       
 
       /// moon position in J2000
-   Triple moonJ2kPosition(const CommonTime& time, TimeSystemEnum sys = TS_GPST);
+   Vector<double> moonJ2kPosition(const CommonTime& TT);
 
       
    //////////////////////////////////////////////////////////////////////////
@@ -217,16 +216,16 @@ namespace gpstk
    
 
       /// Nutation angles by IAU 1980 model
-   void nutationAngles(CommonTime TT, double& dpsi, double& deps);
+   void nutationAngles(const CommonTime& TT, double& dpsi, double& deps);
 
       /// Mean obliquity of the ecliptic by IAU 1980 model
-   double meanObliquity(CommonTime TT);
+   double meanObliquity(const CommonTime& TT);
 
       /// Equation of the equinoxes by IAU 1994 model
-   double iauEqeq94(CommonTime TT,double eps, double dPsi);
+   double iauEqeq94(const CommonTime& TT,double eps, double dPsi);
 
       /// Greenwich mean sidereal time by IAU 1982 model
-   double iauGmst82(CommonTime UT1);
+   double iauGmst82(const CommonTime& UT1);
 
 
       /// Nutation matrix from nutation angles
@@ -235,13 +234,13 @@ namespace gpstk
                           const double& deps);
 
       /// earth rotation angle
-   double earthRotationAngle(CommonTime UT1);
+   double earthRotationAngle(const CommonTime& UT1);
 
       /**Earth rotation angle first order rate.
        *  @param TT         Modified Julian Date in TT
        *  @return              d(GAST)/d(t) in [rad]
        */
-   double earthRotationAngleRate1(CommonTime TT);
+   double earthRotationAngleRate1(const CommonTime& TT);
 
 
       //@}

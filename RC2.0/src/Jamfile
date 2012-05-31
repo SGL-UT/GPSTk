@@ -132,6 +132,7 @@ else
       PRSolution2.cpp
       RACRotation.cpp
       ReferenceFrame.cpp
+      RegExp.cpp
       Rinex3ClockData.cpp
       Rinex3ClockHeader.cpp
       Rinex3EphemerisStore.cpp
@@ -234,7 +235,11 @@ else
       CommandOptionWithPositionArg.hpp
       CommandOptionWithTimeArg.hpp
       CommonTime.hpp
+      ConfData.hpp
+      ConfDataItem.hpp
       ConfDataReader.hpp
+      ConfDataSection.hpp
+      ConfDataStructures.hpp
       ConfDataWriter.hpp
       DCBDataReader.hpp
       DebugUtils.hpp
@@ -358,6 +363,7 @@ else
       PZ90Ellipsoid.hpp	
       RACRotation.hpp	
       ReferenceFrame.hpp	
+      RegExp.hpp
       Rinex3ClockBase.hpp	
       Rinex3ClockData.hpp	
       Rinex3ClockHeader.hpp	

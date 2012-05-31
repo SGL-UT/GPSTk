@@ -106,7 +106,7 @@ namespace gpstk
       if (L1Health == 0) healthy = true;
 
       double A     = A_REF_GPS + deltaA;
-      double Ahalf = sqrt(A);
+      double Ahalf = SQRT(A);
       satSys       = "G";
       double timeDiff = ToeArg - TOWCount;
       short epochWeek = TOWWeek;
@@ -189,7 +189,7 @@ namespace gpstk
       short sflag          = subframe2.asUnsignedLong(565, 1, 1);
 
       double A        = A_REF_GPS + deltaA;
-      double Ahalf    = sqrt(A);
+      double Ahalf    = SQRT(A);
       double OMEGAdot = OMEGADOT_REF_GPS + deltaOMEGAdot;
 
       bool healthy = false;

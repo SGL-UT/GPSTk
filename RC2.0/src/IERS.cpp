@@ -30,6 +30,8 @@
 #include <string>
 #include <fstream>
 #include <cmath>
+#include "Logger.hpp"
+#include "MJD.hpp"
 
 namespace gpstk
 {
@@ -38,58 +40,110 @@ namespace gpstk
 
       // Arcseconds to radius convention 
    const double IERS::ARCSEC2RAD =  PI / 180.0 / 3600.0;
-      
 
-      // UT1-UTC time difference [s]
-   double IERS::UT1mUTC(double mjdUTC)
-      throw (InvalidRequest) { return gpstk::UT1mUTC( CommonTime(mjdUTC) ); }
+   PlanetEphemeris IERS::jplEphemeris;
 
+      // Load the JPL ephemeris from a binary file
+   void IERS::loadBinaryEphemeris(const std::string ephFile)
+      throw(Exception)
+   {
+      int rc = jplEphemeris.initializeWithBinaryFile(ephFile);
+      if(rc!=0)
+      {
+         Exception e("Failed to load the JPL ephemeris '"+ephFile+"'.");
+         GPSTK_THROW(e);
+      }
+   }
 
-      // Pole coordinate x [arcseconds]
-   double IERS::xPole(double mjdUTC)
-      throw (InvalidRequest) { return gpstk::PolarMotionX( CommonTime(mjdUTC) ); }
+      /* Compute planet position and velocity in J2000
+       *  
+       * @param TT         Time(Modified Julian Date in TT<TAI+32.184>) of interest 
+       * @param entity     The planet to be computed
+       * @param center     relative to whick the result apply
+       * @return           The position and velocity of the planet in km and km/s
+       */
+   Vector<double> IERS::planetJ2kPosVel( const CommonTime& TT, 
+                                         PlanetEphemeris::Planet entity,
+                                         PlanetEphemeris::Planet center )
+   {
+      Vector<double> rvJ2k(6,0.0);
 
+      try
+      {
+         double rvState[6] = {0.0};
+         int rc = jplEphemeris.computeState(JulianDate(TT).jd,entity, center, rvState);
 
-      // Pole coordinate y [arcseconds]
-   double IERS::yPole(double mjdUTC)
-      throw (InvalidRequest) { return gpstk::PolarMotionY( CommonTime(mjdUTC) );}
+         // change the unit to km/s from km/day
+         rvState[3] /= 86400.0;
+         rvState[4] /= 86400.0;
+         rvState[5] /= 86400.0;
 
+         if(rc == 0)
+         {
+            rvJ2k = rvState;
+            return rvJ2k*1000.0; // km->m
+         }
+         else
+         {
+            rvJ2k.resize(6,0.0);
 
-      // Nutation dPsi [arcseconds]
-      // @param  Modified Julidate in UTC
-      // @return dPsi in arcseconds
-   double IERS::dPsi(double mjdUTC)
-      throw (InvalidRequest) {return gpstk::NutationDPsi( CommonTime(mjdUTC) );}
+            // failed to compute
+            InvalidRequest e("Failed to compute, error code: "
+               +StringUtils::asString(rc)+" with meaning\n"
+               +"-1 and -2 given time is out of the file \n"
+               +"-3 and -4 input stream is not open or not valid,"
+               +" or EOF was found prematurely");
 
+            GPSTK_THROW(e);
+         }
+      }
+      catch(...)
+      {
+         Exception e("Failed to compute positon and velocity from JPL ephemeris.");
+         GPSTK_THROW(e);
+      }
 
-      // Nutation dEps [arcseconds]
-      // @param  Modified Julidate in UTC
-      // @return dEps in arcseconds
-   double IERS::dEps(double mjdUTC)
-      throw (InvalidRequest) {return gpstk::NutationDEps( CommonTime(mjdUTC) );}
+      return rvJ2k;
+   }
 
+   Vector<double> IERS::sunJ2kPosition(const CommonTime& TT)
+   {
+      Vector<double> pos(3,0.0);
+      try
+      {
+         Vector<double> posvel = planetJ2kPosVel(TT,PlanetEphemeris::Sun);
+         for(int i=0;i<3;i++) pos(i) = posvel(i);
+         return pos;
+      }
+      catch(...)
+      {
+         return gpstk::sunJ2kPosition(TT);
+      }
+   }
 
-      // 'finals.data' from http://maia.usno.navy.mil
-   void IERS::loadIERSFile(const std::string& iersFile)
-      throw(FileMissingException) { gpstk::LoadIERSFile(iersFile); } 
-   
+   Vector<double> IERS::moonJ2kPosition(const CommonTime& TT)
+   {
+      Vector<double> pos(3,0.0);
+      try
+      {
+         Vector<double> posvel = planetJ2kPosVel(TT,PlanetEphemeris::Moon);
+         for(int i=0;i<3;i++) pos(i) = posvel(i);
+         return pos;
+      }
+      catch(...)
+      {
+         return gpstk::moonJ2kPosition(TT);
+      }
+   }
 
-      // ERP data file from IGS 
-   void IERS::loadIGSFile(const std::string& igsFile)
-      throw(FileMissingException) { gpstk::LoadIGSFile(igsFile); } 
+   Vector<double> IERS::sunECEFPosition(const CommonTime& TT)
+   {
+      return J2kPosToECEF( GPST2UTC(TT), sunJ2kPosition(TT) );
+   }
 
-
-      // ERP data file from STK
-   void IERS::loadSTKFile(const std::string& stkFile)
-      throw(FileMissingException) { gpstk::loadSTKFile(stkFile); } 
-
-
-   CommonTime IERS::GPST2UTC(CommonTime GPST)
-   { return gpstk::GPST2UTC(GPST); }
-
-
-   int IERS::TAImUTC(const double& mjdUTC)
-   { return gpstk::TAImUTC( CommonTime(mjdUTC) ); } 
-
+   Vector<double> IERS::moonECEFPosition(const CommonTime& TT)
+   {
+      return J2kPosToECEF( GPST2UTC(TT), moonJ2kPosition(TT) );
+   }
 
 }  // End of namespace 'gpstk'

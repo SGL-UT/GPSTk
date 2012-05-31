@@ -384,13 +384,13 @@ namespace gpstk
          meana = getM0();
       meana = fmod(meana, twoPI);
    
-      ea = meana + lecc * sin(meana);
+      ea = meana + lecc * ::sin(meana);
 
       int loop_cnt = 1;
       do
       {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
+         F = meana - ( ea - lecc * ::sin(ea));
+         G = 1.0 - lecc * ::cos(ea);
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
@@ -399,14 +399,14 @@ namespace gpstk
       // Compute clock corrections
       sv.clkdrift = getAf1() + elaptc * getAf2();
       dtc = getAf0() + elaptc * ( sv.clkdrift );
-      dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      dtr = REL_CONST * lecc * getAhalf() * ::sin(ea);
       sv.clkbias = dtc;
       sv.relcorr = dtr;
    
       // Compute true anomaly
       q = SQRT(1.0e0 - lecc*lecc);
-      sinea = sin(ea);
-      cosea = cos(ea);
+      sinea = ::sin(ea);
+      cosea = ::cos(ea);
       G = 1.0e0 - lecc * cosea;
    
       // G*SIN(TA) AND G*COS(TA)
@@ -419,8 +419,8 @@ namespace gpstk
       // Argument of lat and correction terms (2nd harmonic)
       alat = truea + getW();
       talat = 2.0e0 * alat;
-      c2al = cos( talat );
-      s2al = sin( talat );
+      c2al = ::cos( talat );
+      s2al = ::sin( talat );
 
       du  = c2al * getCuc() +  s2al * getCus();
       dr  = c2al * getCrc() +  s2al * getCrs();
@@ -439,17 +439,17 @@ namespace gpstk
          ANLON = getOmega0() - getOmegaDot() * getToe();
 
       // In plane location
-      cosu = cos( U );
-      sinu = sin( U );
+      cosu = ::cos( U );
+      sinu = ::sin( U );
 
       xip  = R * cosu;
       yip  = R * sinu;
 
       // Angles for rotation to earth fixed
-      can  = cos( ANLON );
-      san  = sin( ANLON );
-      cinc = cos( AINC  );
-      sinc = sin( AINC  );
+      can  = ::cos( ANLON );
+      san  = ::sin( ANLON );
+      cinc = ::cos( AINC  );
+      sinc = ::sin( AINC  );
  
       // Earth fixed - meters
       xef  =  xip*can  -  yip*cinc*san;
@@ -503,17 +503,17 @@ namespace gpstk
       if (getAhalf() < 2550.0e0 ) { lecc = 0.0e0; meana = getM0(); }
       else { lecc = getEcc(); meana = getM0() + elapte * amm; }
       meana = fmod(meana, twoPI);
-      double ea = meana + lecc * sin(meana);
+      double ea = meana + lecc * ::sin(meana);
 
       int loop_cnt = 1;
       do  {
-         F = meana - ( ea - lecc * sin(ea));
-         G = 1.0 - lecc * cos(ea);
+         F = meana - ( ea - lecc * ::sin(ea));
+         G = 1.0 - lecc * ::cos(ea);
          delea = F/G;
          ea = ea + delea;
          loop_cnt++;
       } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
-      double dtr = REL_CONST * lecc * getAhalf() * sin(ea);
+      double dtr = REL_CONST * lecc * getAhalf() * ::sin(ea);
       return dtr;
    }
 
@@ -987,8 +987,8 @@ namespace gpstk
       foo = ( foo < getHOWTime(3) ) ? foo : getHOWTime(3) ;
 #else
       long foo = 
-         static_cast<long>( min( getHOWTime(1), 
-                                 min( getHOWTime(2), getHOWTime(3) ) ) );
+         static_cast<long>( ::min( getHOWTime(1), 
+                                   ::min( getHOWTime(2), getHOWTime(3) ) ) );
 #endif
          // The ephemeris comes on 30 second boundaries, so...
       foo/=30;  

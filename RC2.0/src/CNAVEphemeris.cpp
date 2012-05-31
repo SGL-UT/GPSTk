@@ -103,7 +103,7 @@ namespace gpstk
       if (obsIDArg.band == ObsID::cbL5 && L5Health == 0) healthy = true;
 
       double A             = A_REF_GPS + deltaA;
-      double Ahalf         = sqrt(A);
+      double Ahalf         = SQRT(A);
       double deltaOMEGAdot = deltaOMEGAdotArg;
       double OMEGAdot      = OMEGADOT_REF_GPS + deltaOMEGAdot;
       satSys = "G";
@@ -183,7 +183,7 @@ namespace gpstk
       double Cuc           = message11.asSignedDouble(248, 21, -30);
 
       double A        = A_REF_GPS + deltaA;
-      double Ahalf    = sqrt(A);
+      double Ahalf    = SQRT(A);
       double OMEGAdot = OMEGADOT_REF_GPS + deltaOMEGAdot;
 
       bool healthy = false;
