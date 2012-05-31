@@ -203,6 +203,33 @@ namespace gpstk
          // Handling the ConstraintSystem
       imposeConstraints();
 
+      /*
+      ofstream debugstrm("unknows.debug");
+      debugstrm << StringUtils::asString(varUnknowns) << endl;
+      debugstrm.close();
+
+      debugstrm.open("phiMatrix.debug");
+      debugstrm << phiMatrix << endl;
+      debugstrm.close();
+
+      debugstrm.open("qMatrix.debug");
+      debugstrm << qMatrix << endl;
+      debugstrm.close();
+
+      debugstrm.open("rMatrix.debug");
+      debugstrm << rMatrix << endl;
+      debugstrm.close();
+
+      debugstrm.open("measVector.debug");
+      debugstrm<<measVector<<endl;
+      debugstrm.close();
+
+      debugstrm.open("hMatrix.debug");
+      debugstrm<<hMatrix<<endl;
+      debugstrm.close();
+      */
+
+
          // Set this object as "prepared"
       isPrepared = true;
 

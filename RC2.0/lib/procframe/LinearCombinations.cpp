@@ -163,6 +163,15 @@ namespace gpstk
       mwubbenaCombination.body[TypeID::P1] = -c;
       mwubbenaCombination.body[TypeID::P2] = -d;
 
+
+         // Definition to compute the prefit residual of Melbourne-Wubbena (W) 
+         // combination
+      mwubbenaPrefit.header           = TypeID::prefitMWubbena;
+      mwubbenaPrefit.body[TypeID::L1] = +e;
+      mwubbenaPrefit.body[TypeID::L2] = -f;
+      mwubbenaPrefit.body[TypeID::P1] = -c;
+      mwubbenaPrefit.body[TypeID::P2] = -d;
+
          // Definition to compute the Melbourne-Wubbena (W) combination,
          // using C1 instead of P1
       mwubbenaCombWithC1.header           = TypeID::MWubbena;

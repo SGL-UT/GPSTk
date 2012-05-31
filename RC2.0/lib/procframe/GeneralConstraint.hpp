@@ -39,6 +39,10 @@
 
 namespace gpstk
 {
+      /// Thrown when attempting to use an invalid Constraint
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(InvalidConstraint, gpstk::Exception);
+
 
       /** This class working with 'SolverGeneral'.
        *
@@ -53,29 +57,45 @@ namespace gpstk
          
 
          /// Feed the  constraint equations to the solver
-      int constraint( gnssSatTypeValue& gData );
-      
+      virtual void process( gnssRinex& gRin,
+                            GeneralEquations* gEquPtr = 0 );
+
 
          /// Feed the  constraint equations to the solver
-      int constraint( gnssRinex& gRin );
-      
+      virtual void process( gnssDataMap& gdsMap,
+                            GeneralEquations* gEquPtr = 0 );
+
+
+         /// Default destructor
+      virtual ~GeneralConstraint(){}
+
+   protected:
 
          /// Feed the  constraint equations to the solver
-      int constraint( gnssDataMap& gdsMap );
+      virtual void constraint( gnssRinex& gRin )
+         throw(InvalidConstraint);
+
+
+         /// Feed the  constraint equations to the solver
+      virtual void constraint( gnssDataMap& gdsMap )
+         throw(InvalidConstraint);
+      
+
+         /// Override this method to design your own constraint equations
+      virtual void realConstraint(gnssDataMap& gdsMap){}
 
 
          /// The method is used to update the solver state when the reference 
          /// satellite changed.
-      virtual void updateRefSat( const SourceID& source, const SatID& sat )
-      { /* Do nothing by default */ }
-
-
-         /// The method is used to update the solver state when the reference 
-         /// satellite changed.
-      virtual void updateRefSat( const SatSourceMap& refsatSource,
+      virtual void updateRefSat( const CommonTime& time, 
+                                 const SatSourceMap& refsatSource,
                                  const SourceSatMap& sourceRefsat )
       { /* Do nothing by default */ }
 
+
+         /// Low level method impose a ConstraintSystem object to the solver
+      int constraintToSolver( ConstraintSystem& system, gnssDataMap& gdsMap );
+      
 
       Matrix<double> convertMatrix(size_t n, size_t oi, size_t ni);
 
@@ -83,20 +103,6 @@ namespace gpstk
       Matrix<double> convertMatrix(size_t n, size_t oi, size_t ni,
                                    std::vector<int> iv);
 
-         /// Default destructor
-      virtual ~GeneralConstraint(){}
-
-
-   protected:
-
-
-         /// Override this method to design your own constraint equations
-      virtual void realConstraint(gnssDataMap& gdsMap){}
-
-
-         /// Low level method impose a ConstraintSystem object to the solver
-      int constraintToSolver( ConstraintSystem& system, gnssDataMap& gdsMap );
-      
 
          // Methods to parsing data from SolverGeneral
 
@@ -143,55 +149,73 @@ namespace gpstk
                                 const SatID& sat, 
                                 const TypeID& type );
    
+      VariableSet getVariables( const SourceID& source, 
+                                const SatIDSet& satSet, 
+                                 const TypeID& type );
 
+         /// Get the current sources of the solver
       SourceIDSet getCurrentSources()
       { return solver.getEquationSystem().getCurrentSources();}
 
 
+         /// Get the current variables of the solver
       VariableSet getCurrentUnknowns()
       { return solver.getEquationSystem().getCurrentUnknowns();}
 
 
+         /// Get the current satellite of the solver
       SatIDSet getCurrentSats()
       { return solver.getEquationSystem().getCurrentSats();}
 
 
+         /// Get solution of the interesting variables
       Vector<double> getSolution(const VariableSet& varSet);
 
 
+         /// Get covariance of the interesting variables
       Matrix<double> getCovariance(const VariableSet& varSet);
 
-
+         /// Method of updating the solution of the variable
       GeneralConstraint& setSolution( const Variable& variable,
                                       const double& val )
       { solver.setSolution(variable,val); return (*this); }
 
 
+         /// Method of updating the covariance of the variable
       GeneralConstraint& setCovariance( const Variable& var1, 
                                         const Variable& var2,
                                         const double& cov )
       { solver.setCovariance(var1,var2,cov); return (*this); }
 
-      
+
+         /// Change the state of the filter
       GeneralConstraint& changeState( const VariableList& varList,
                                       const Matrix<double>& convertMat );
 
+
+         /// Method to get the index of the interesting sat in the SatSet object
       int findIndexOfSat(const SatIDSet& satSet,const SatID& sat);
 
-
+      
+         /// Method to static VariableSet to a VariableList object
       void stackVariables(VariableList& varList,const VariableSet& varSet);
 
 
+         /// Method to get the union of the input VariableSet objects.
       VariableSet unionVariables(const VariableSet& vs1,
                                  const VariableSet& vs2);
 
 
+         /// Method to get the difference of the input VariableSet objects.
       VariableSet differenceVariables( const VariableSet& vs1,
                                        const VariableSet& vs2 );
 
-
+         /// Method to get the intersection of the input VariableSet objects.
       VariableSet intersectionVariables( const VariableSet& vs1,
                                          const VariableSet& vs2 );
+         
+         /// Check if the satellite is a reference satellite.
+      bool isRefSat(const SatID& sat);
 
 
    protected:
@@ -199,6 +223,12 @@ namespace gpstk
 
          /// The partner solver it work with
       SolverGeneral& solver;
+
+         /// Object holding the map of reference satellite to source. 
+      SatSourceMap refsatSourceMap;
+
+         /// Object holding the map of source to reference satellite. 
+      SourceSatMap sourceRefsatMap;
 
 
    }; // End of class 'GeneralConstraint'

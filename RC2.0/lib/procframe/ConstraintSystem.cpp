@@ -28,17 +28,11 @@
 //============================================================================
 
 #include "ConstraintSystem.hpp"
-
+#include <vector>
 
 namespace gpstk
 {
-   ConstraintSystem& ConstraintSystem::addConstraint(
-                                                   const Constraint& constraint)
-   {
-      constraintList.push_back(constraint);
-      return (*this);
-   }
-
+      // Remove a single constraint
    ConstraintSystem& ConstraintSystem::removeConstraint(
                                                   const Constraint& constraint )
    {
@@ -67,14 +61,46 @@ namespace gpstk
       }
       
       return (*this);
-   }
 
-   ConstraintSystem& ConstraintSystem::clearConstraint()
+   }  // End of method 'ConstraintSystem::removeConstraint()'
+
+
+      // Method to set multi-constraints
+   ConstraintSystem& ConstraintSystem::setConstraint(const VariableSet& varSet, 
+                                                   const Vector<double>& prefit)
    {
-      constraintList.clear();
-      return (*this);
-   }
+      // Fist, we check the size of inputs
+      const int size = varSet.size();
 
+      if( prefit.size()!=size )
+      {
+         Exception e("The input size doesn't match.");
+         GPSTK_THROW(e);
+      }
+
+      clearConstraint();
+
+      int i(0);
+      
+      for(VariableSet::const_iterator it = varSet.begin();
+         it != varSet.end();
+         ++it)
+      {
+         Constraint constraint;
+         constraint.header.prefit = prefit[i];
+         constraint.body[*it] = 1.0;
+
+         addConstraint(constraint);
+   
+         i++;
+      }
+
+      return (*this);
+
+   }  // End of method 'ConstraintSystem::setConstraint()'
+
+
+      // Method to set multi-constraints
    ConstraintSystem& ConstraintSystem::setConstraint(const VariableSet& varSet,
                                                    const Vector<double>& prefit,
                                                    const Matrix<double>& design)
@@ -89,32 +115,35 @@ namespace gpstk
       }
       
       clearConstraint();
-      
-      int i(0);
-      
+
+      std::vector<Variable> vars;
       for(VariableSet::const_iterator it = varSet.begin();
          it != varSet.end();
          ++it)
       {
+         vars.push_back(*it);
+      }
+      
+      for(int i=0; i<vars.size(); i++)
+      {
          VariableDataMap dataMap;
          for(int k=0;k<size;k++)
          {
-            if(design[i][k]!=0.0)
-            {
-               dataMap[*it] = design[i][k];
-            }
+            if(design[i][k]!=0.0) dataMap[ vars[k] ] = design[i][k];
          }
+
          Constraint constraint;
          constraint.header.prefit = prefit[i];
          constraint.body = dataMap;
-         
+
          addConstraint(constraint);
-
-         i++;
       }
-
+      
       return (*this);
-   }
+
+      
+   }  // End of method 'ConstraintSystem::setConstraint()'
+
 
 
    ConstraintSystem& ConstraintSystem::constraintMatrix(
@@ -169,6 +198,22 @@ namespace gpstk
 
 
          irow++;
+      }
+
+      return (*this);
+
+   }  // End of method 'ConstraintSystem::constraintMatrix()'
+
+
+      // Add a constraint list
+   ConstraintSystem& ConstraintSystem::addConstraintList(
+                                             const ConstraintList& equationList)
+   {
+      for(ConstraintList::const_iterator it = equationList.begin();
+         it != equationList.end();
+         ++it)
+      {
+         addConstraint(*it);
       }
 
       return (*this);

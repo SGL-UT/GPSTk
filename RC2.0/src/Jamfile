@@ -29,6 +29,7 @@ else
       ARLambda.cpp
       ARMLambda.cpp
       ARSimple.cpp
+      Ascii.cpp
       AstronomicalFunctions.cpp
       Bancroft.cpp
       BasicFramework.cpp
@@ -55,6 +56,7 @@ else
       ConfDataWriter.cpp
       DCBDataReader.cpp
       DOP.cpp
+      DebugUtils.cpp
       EngAlmanac.cpp
       EngEphemeris.cpp
       EngNav.cpp
@@ -78,6 +80,7 @@ else
       FileHunter.cpp
       FileSpec.cpp
       FIRDifferentiator5thOrder.cpp
+      FormatUtils.cpp
       GalEphemeris.cpp
       GalEphemerisStore.cpp
       GaussianDistribution.cpp
@@ -108,6 +111,8 @@ else
       MSCStore.cpp
       Namelist.cpp
       NEDUtil.cpp
+      NumberFormatter.cpp
+      NumberParser.cpp
       ObsClockModel.cpp
       ObsEpochMap.cpp
       ObsID.cpp
@@ -189,10 +194,12 @@ else
       ANSITime.hpp
       Antenna.hpp
       AntexReader.hpp
+      Any.hpp
       ARBase.hpp
       ARLambda.hpp
       ARMLambda.hpp
       ARSimple.hpp
+      Ascii.hpp
       AstronomicalFunctions.hpp
       Bancroft.hpp
       BaseDistribution.hpp
@@ -225,6 +232,7 @@ else
       ConfDataReader.hpp
       ConfDataWriter.hpp
       DCBDataReader.hpp
+      DebugUtils.hpp
       DOP.hpp
       EllipsoidModel.hpp
       EngAlmanac.hpp
@@ -267,6 +275,7 @@ else
       FileUtils.hpp
       FilterBase.hpp
       FIRDifferentiator5thOrder.hpp
+      FormatUtils.hpp
       GalEphemeris.hpp
       GalEphemerisStore.hpp
       GaussianDistribution.hpp
@@ -316,7 +325,9 @@ else
       MSCStore.hpp	
       MSCStream.hpp	
       Namelist.hpp
-      NEDUtil.hpp	
+      NEDUtil.hpp
+      NumberFormatter.hpp
+      NumberParser.hpp	
       ObsClockModel.hpp	
       ObsEpochMap.hpp	
       ObsID.hpp	
@@ -401,6 +412,7 @@ else
       SP3Stream.hpp	
       SpecialFunctions.hpp	
       Stats.hpp	
+      String.hpp
       StringUtils.hpp	
       StudentDistribution.hpp	
       SunPosition.hpp	

@@ -39,7 +39,8 @@ namespace gpstk
    using namespace std;
 
       // Feed the  constraint equations to the solver
-   int GeneralConstraint::constraint( gnssDataMap& gdsMap )
+   void GeneralConstraint::constraint( gnssDataMap& gdsMap )
+      throw(InvalidConstraint)
    {
       try
       {
@@ -47,43 +48,84 @@ namespace gpstk
       }
       catch (...)
       {
-      	return -1;
+      	InvalidConstraint e("Invalid constraint.");
+         GPSTK_THROW(e);
       }
   
-      return 0;
-
    }  // End of method 'GeneralConstraint::constraint'
          
 
       // Feed the  constraint equations to the solver
-   int GeneralConstraint::constraint( gnssSatTypeValue& gData )
-   {
-      gnssRinex g1;
-      g1.header = gData.header;
-      g1.body = gData.body;
-
-      int toReturn = constraint(g1);
-
-      gData.body = g1.body;
-
-      return toReturn;
-
-   }  // End of method 'GeneralConstraint::constraint('
-
-
-      // Feed the  constraint equations to the solver
-   int GeneralConstraint::constraint( gnssRinex& gRin )
+   void GeneralConstraint::constraint( gnssRinex& gRin )
+      throw(InvalidConstraint)
    {
       gnssDataMap gdsMap;
       SourceID source( gRin.header.source );
       gdsMap.addGnssRinex( gRin );
       
-      int toReturn = constraint(gdsMap);
-
-      return toReturn;
+      constraint(gdsMap);
 
    }  // End of method 'GeneralConstraint::constraint('
-      
+   
+
+      // Feed the  constraint equations to the solver
+   void GeneralConstraint::process( gnssRinex& gRin, GeneralEquations* gEquPtr )
+   {
+      if(gEquPtr)
+      {
+         
+         solver.setEquationSystemConstraints(
+                                          gEquPtr->getConstraintSystem(gRin) );
+
+         CommonTime time(gRin.header.epoch);
+         updateRefSat( time,
+                       gEquPtr->getRefSatSourceMap(),
+                       gEquPtr->getSourceRefSatMap() );
+         
+         solver.Process(gRin); 
+
+         refsatSourceMap = gEquPtr->getRefSatSourceMap();
+         sourceRefsatMap = gEquPtr->getSourceRefSatMap();
+
+         constraint(gRin); 
+      }
+      else
+      {
+         solver.Process(gRin); 
+         constraint(gRin); 
+      }
+
+   }  // End of method 'GeneralConstraint::process(...'
+
+
+      // Feed the  constraint equations to the solver
+   void GeneralConstraint::process( gnssDataMap& gdsMap,
+                                    GeneralEquations* gEquPtr )
+   { 
+      if(gEquPtr)
+      {
+         solver.setEquationSystemConstraints(
+                                         gEquPtr->getConstraintSystem(gdsMap) );
+
+         CommonTime time( ( *gdsMap.begin() ).first );
+         updateRefSat( time,
+                       gEquPtr->getRefSatSourceMap(),
+                       gEquPtr->getSourceRefSatMap() );
+         
+         solver.Process(gdsMap); 
+
+         refsatSourceMap = gEquPtr->getRefSatSourceMap();
+         sourceRefsatMap = gEquPtr->getSourceRefSatMap();
+
+         constraint(gdsMap); 
+      }
+      else
+      {
+         solver.Process(gdsMap); 
+         constraint(gdsMap); 
+      }
+
+   }  // End of method 'GeneralConstraint::process(...'
 
       // Low level metod impose a ConstraintSystem object to the solver
    int GeneralConstraint::constraintToSolver( ConstraintSystem& system,
@@ -96,6 +138,16 @@ namespace gpstk
          Matrix<double> covariance;
 
          system.constraintMatrix(getVariables(),meas,design,covariance);
+         
+         /*
+         cout << StringUtils::asString(getVariables()) << endl;
+
+         cout << meas << endl;
+
+         cout << design << endl;
+
+         cout << covariance << endl;
+         */
 
          if(meas.size()>0)
          {    
@@ -236,7 +288,7 @@ namespace gpstk
 
       VariableSet unkSet( getVariables() );
 
-      if(source==Variable::allSources) unkSet; 
+      if(source==Variable::allSources) return unkSet; 
       
       for( VariableSet::const_iterator itv = unkSet.begin();
          itv != unkSet.end();
@@ -454,7 +506,27 @@ namespace gpstk
          itv!=varSet.end();
          ++itv)
       {
-         if( itv->getType()==type ) vset.insert(*itv);
+         if( itv->getSatellite()==sat ) vset.insert(*itv);
+      }
+
+      return vset;
+
+   }  // End of method 'GeneralConstraint::getVariables(...'
+
+
+   VariableSet GeneralConstraint::getVariables( const SourceID& source, 
+                                                const SatIDSet& satSet, 
+                                                const TypeID& type )
+   {
+      VariableSet vset;
+
+      VariableSet varSet = getVariables(source,type);
+      for(VariableSet::iterator itv=varSet.begin();
+         itv!=varSet.end();
+         ++itv)
+      {
+         SatIDSet::const_iterator it = satSet.find(itv->getSatellite());
+         if( it != satSet.end() ) vset.insert(*itv);
       }
 
       return vset;
@@ -681,6 +753,39 @@ namespace gpstk
       return tempSet;
 
    }  // End of method 'GeneralConstraint::intersectionVariables()'
+
+
+      // Check if the satellite is a reference satellite.
+   bool GeneralConstraint::isRefSat(const SatID& sat)
+   {
+      bool isRef(false);
+
+      for(SatSourceMap::iterator it = refsatSourceMap.begin();
+         it!=refsatSourceMap.end();
+         ++it)
+      {
+         if(it->first==sat)
+         {
+            isRef = true;
+            break;
+         }
+      }
+
+      for(SourceSatMap::iterator it = sourceRefsatMap.begin();
+         it!=sourceRefsatMap.end();
+         ++it)
+      {
+         if(it->second==sat)
+         {
+            isRef = true;
+            break;
+         }
+      }
+
+      return isRef;
+
+   }  // End of method 'GeneralConstraint::isRefSat()'
+
 
 
 }  // End of namespace 'gpstk'

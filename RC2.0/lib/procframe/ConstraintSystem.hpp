@@ -44,7 +44,7 @@ namespace gpstk
       double prefit;
       double variance;     // the smaller the tighter constraint
 
-      constraintHeader():prefit(0),variance(1e-12){}
+      constraintHeader():prefit(0.0),variance(1e-12){}
 
       constraintHeader(double meas,double var=1e-12)
          : prefit(meas),variance(var){}
@@ -86,14 +86,23 @@ namespace gpstk
       ~ConstraintSystem(){}
 
 
-      virtual ConstraintSystem& addConstraint(const Constraint& constraint);
+         /// Add a single constraint
+      virtual ConstraintSystem& addConstraint(const Constraint& constraint)
+      { constraintList.push_back(constraint); return (*this); }
 
 
+         /// Remove a single constraint
       virtual ConstraintSystem& removeConstraint(const Constraint& constraint);
 
-      
-      virtual ConstraintSystem& clearConstraint();
+         
+         /// Clear all of the constraints
+      virtual ConstraintSystem& clearConstraint()
+      { constraintList.clear(); return (*this); }
 
+
+         /// Method to set multi-constraints
+      virtual ConstraintSystem& setConstraint(const VariableSet& varSet, 
+                                              const Vector<double>& prefit);
 
          /// Method to set multi-constraints
       virtual ConstraintSystem& setConstraint(const VariableSet& varSet,
@@ -107,13 +116,18 @@ namespace gpstk
                                                  Matrix<double>& covariance)
          throw(InvalidConstraintSystem);
 
-
+   
+         /// Return current constraints
       ConstraintList getCurrentConstraints()
       { return constraintList; }
 
+
+         /// Return the number of constraints
       int numberOfConstraints()
       { return constraintList.size(); }
 
+
+         /// Check is there any constraint
       bool hasConstraints()
       { return (constraintList.size()>0)?true:false; }
 
@@ -126,7 +140,13 @@ namespace gpstk
                                          const ConstraintList& equationList )
       { constraintList = equationList; return (*this); };
 
+
+         /// Add a constraint list
+      virtual ConstraintSystem& addConstraintList(
+                                            const ConstraintList& equationList);
+
    protected:
+
          /// Object to hold all constraints
       ConstraintList constraintList;
 

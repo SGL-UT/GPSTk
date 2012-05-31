@@ -157,6 +157,10 @@ namespace gpstk
          /// Definition to compute the Melbourne-Wubbena (W) combination
       gnssLinearCombination mwubbenaCombination;
 
+         /// Definition to compute the prefit residual of Melbourne-Wubbena (W) 
+         /// combination
+      gnssLinearCombination mwubbenaPrefit;
+
          /// Definition to compute the Melbourne-Wubbena (W) combination,
          /// using C1 instead of P1
       gnssLinearCombination mwubbenaCombWithC1;
@@ -220,7 +224,6 @@ namespace gpstk
       
          /// Return the f2 factor of the combination in cycles: i * L1 + j * L2 
       static double secondFactorOfLC(int i, int j, double f1 = L1_FREQ_GPS, double f2 = L2_FREQ_GPS); 
-
 
    }; // End of class 'LinearCombinations'
 
