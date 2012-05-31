@@ -42,18 +42,18 @@ namespace gpstk
       // Reference epoch (J2000)
    const CommonTime J2000(CivilTime(2000,1,1,12,0,0.0));
 
-   const double PI = 3.1415926535897932; //std::atan(1.0)*4.0;
+   const double PI = std::atan(1.0)*4.0;    // 3.1415926535897932; 
       // 2PI
-   const double D2PI = PI+PI; //6.283185307179586476925287;
+   const double D2PI = PI+PI;               // 6.283185307179586476925287;
 
       // Days per Julian century 
    const double DJC = 36525.0;
 
       // Arcseconds to radians 
-   const double DAS2R = PI/180.0/3600.0; //4.848136811095359935899141e-6;
+   const double DAS2R = PI/180.0/3600.0;    // 4.848136811095359935899141e-6;
 
       // seconds to radians
-   const double DS2R = PI/43200.0;      //7.272205216643039903848712e-5;
+   const double DS2R = PI/43200.0;          // 7.272205216643039903848712e-5;
 
 
    // IERS Data Handling
@@ -136,8 +136,9 @@ namespace gpstk
    static EOPDataStore eopDataTable;
 
       // 'finals.data' from http://maia.usno.navy.mil/
-   void LoadIERSFile(std::string fileName)
+   void LoadIERSFile(const std::string& fileName)
    {
+      eopDataTable.clear();
       try { eopDataTable.loadIERSFile(fileName); }
       catch(...)
       {
@@ -146,14 +147,27 @@ namespace gpstk
    }
 
       // ERP data file from IGS
-   void LoadIGSFile(std::string fileName)
+   void LoadIGSFile(const std::string& fileName)
    {
+      eopDataTable.clear();
       try { eopDataTable.loadIGSFile(fileName); }
       catch(...)
       {
          GPSTK_WARNING_F1("","Failed to load the IGS ERP File '%s'.", fileName );
       }
    }
+
+      // ERP data file from STK 
+   void loadSTKFile(const std::string& fileName)
+   {
+      eopDataTable.clear();
+      try { eopDataTable.loadSTKFile(fileName); }
+      catch(...)
+      {
+         GPSTK_WARNING_F1("","Failed to load the STK ERP File '%s'.", fileName );
+      }
+   }
+
 
       // Request EOP Data
    EOPDataStore::EOPData EOPData(CommonTime UTC)

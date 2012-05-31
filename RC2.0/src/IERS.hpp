@@ -26,12 +26,13 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Wei Yan - Chinese Academy of Sciences . 2009, 2010
+//  Wei Yan - Chinese Academy of Sciences . 2010
 //
 //============================================================================
 
 #include <string>
-#include "EarthOrientation.hpp"
+#include "IERSConventions.hpp"
+
 
 namespace gpstk
 {
@@ -44,32 +45,26 @@ namespace gpstk
    class IERS
    {
    public:
+         /// PI
+      static const double PI;
+
          /// Arcseconds to radius convention 
       static const double ARCSEC2RAD;
 
-         /** Add EOPs to the store via a flat IERS file. 
-          *  get finals.data from http://maia.usno.navy.mil/
-          *
-          *  @param iersFile  Name of file to read, including path.
-          */
-      static void loadIERSFile(std::string iersFile)
+         /// 'finals.data' from http://maia.usno.navy.mil/
+      static void loadIERSFile(const std::string& iersFile)
          throw(FileMissingException);
+
+         /// ERP data file from IGS
+      static void loadIGSFile(const std::string& igsFile)
+         throw(FileMissingException);
+
       
-         /** Add EOPs to the store via a flat STK file. 
-          *  EOP-v1.1.txt
-          *  http://celestrak.com/SpaceData/EOP-format.asp
-          *
-          *  @param stkFile  Name of file to read, including path.
-          */
-      static void loadSTKFile(std::string stkFile)
+         /// ERP data file from STK
+      static void loadSTKFile(const std::string& stkFile)
          throw(FileMissingException);
 
-         /// UT1-UTC time difference [seconds]
-         /// @param  Modified Julidate in UTC
-         /// @return UT1-UTC time difference in seconds
-      static double UT1mUTC(double mjdUTC)
-         throw (InvalidRequest); 
-
+        
          /// Pole coordinate [arcseconds]
          /// @param  Modified Julidate in UTC
          /// @return Pole coordinate x in arcseconds
@@ -81,6 +76,27 @@ namespace gpstk
          /// @return Pole coordinate x in arcseconds
       static double yPole(double mjdUTC)
          throw (InvalidRequest);
+
+         /// UT1-UTC time difference [seconds]
+         /// @param  Modified Julidate in UTC
+         /// @return UT1-UTC time difference in seconds
+      static double UT1mUTC(double mjdUTC)
+         throw (InvalidRequest); 
+
+      
+         /// Nutation dPsi [arcseconds]
+         /// @param  Modified Julidate in UTC
+         /// @return dPsi in arcseconds
+      static double dPsi(double mjdUTC)
+         throw (InvalidRequest);
+
+
+         /// Nutation dEps [arcseconds]
+         /// @param  Modified Julidate in UTC
+         /// @return dEps in arcseconds
+      static double dEps(double mjdUTC)
+         throw (InvalidRequest);
+
 
          /** Return the difference between TAI and UTC (known as leap seconds).
           * Values from the USNO website: ftp://maia.usno.navy.mil/ser7/leapsec.dat
@@ -96,19 +112,11 @@ namespace gpstk
          /// Transform GPS Time to UTC Time
       static CommonTime GPST2UTC(CommonTime gpst);
 
-      void test();
 
    protected:
+      IERS() {}
+      ~IERS() {}
       
-         /// Default constructor
-      IERS() { }
-         
-         /// Default destructor
-      ~IERS() { }
-      
-         /// Object to hold EOP data
-      static EOPStore eopStore;
-
    }; // End of class 'IERS'
 
       // @}

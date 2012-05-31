@@ -89,6 +89,15 @@ namespace gpstk
       void loadIGSFile(std::string igsFile)
          throw(FileMissingException);
 
+         /** Add EOPs to the store via a flat STK file. 
+          *  EOP-v1.1.txt
+          *  http://celestrak.com/SpaceData/EOP-format.asp
+          *
+          *  @param stkFile  Name of file to read, including path.
+          */
+      void loadSTKFile(std::string stkFile)
+         throw(FileMissingException);
+
    protected:
 
 
