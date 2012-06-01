@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2011
 //
@@ -33,6 +33,11 @@
 #include <string>
 #include <vector>
 #include <regex.h>
+
+// it appears that some systems don't define this...
+#if !defined(REG_NOERROR)
+#define REG_NOERROR 0
+#endif
 
 namespace gpstk
 {
@@ -105,7 +110,7 @@ namespace gpstk
       void handleError(int rc, regex_t& re);
 
    protected:
-
+   	
       std::string _pattern;
       std::string _subject;
       std::vector<std::string> _matched;
@@ -120,5 +125,6 @@ namespace gpstk
 }   // End of namespace gpstk
 
 
-#endif  //GPSTK_REGULAREXPRESSION_HPP
+#endif  //GPSTK_REGEXP_HPP
+
 

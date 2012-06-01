@@ -127,11 +127,12 @@ void VisSupport::readFICNavData( const CommandOptionWithAnyArg& navFileNameOpt,
                                  GPSAlmanacStore& BCAlmList,
                                  GPSEphemerisStore& BCEphList)
 {
-      // Get name of the navigation file
-   string fullName = navFileNameOpt.getValue().front();
-   FileFilterFrame<FICStream, FICData> input(fullName);
-   
-      // filter the FIC data for the requested vlock(s)
+      // Get name of the navigation file (could be more than one)
+   int nFiles = navFileNameOpt.getCount();
+   vector<std::string> fullNames = navFileNameOpt.getValue();
+   FileFilterFrame<FICStream, FICData> input(fullNames);
+
+      // filter the FIC data for the requested block(s)
    std::list<long> blockList;
    blockList.push_back(9);
    blockList.push_back(62);
