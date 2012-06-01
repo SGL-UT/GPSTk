@@ -32,6 +32,7 @@
 
 #include <list>
 #include <algorithm>
+#include <cassert>
 
 namespace gpstk
 {
@@ -215,12 +216,6 @@ namespace gpstk
          std::swap(_pCounter, ptr._pCounter);
       }
 
-         /// Casts the AutoPtr via a dynamic cast to the given type.
-         /// Returns an AutoPtr containing NULL if the cast fails.
-         /// Example: (assume class Sub: public Super)
-         ///    AutoPtr<Super> super(new Sub());
-         ///    AutoPtr<Sub> sub = super.cast<Sub>();
-         ///    poco_assert (sub.get());
       template <class Other> 
       AutoPtr<Other, RC, RP> cast() const
       {
@@ -230,11 +225,6 @@ namespace gpstk
          return AutoPtr<Other, RC, RP>();
       }
 
-         /// Casts the AutoPtr via a static cast to the given type.
-         /// Example: (assume class Sub: public Super)
-         ///    AutoPtr<Super> super(new Sub());
-         ///    AutoPtr<Sub> sub = super.unsafeCast<Sub>();
-         ///    poco_assert (sub.get());
       template <class Other> 
       AutoPtr<Other, RC, RP> unsafeCast() const
       {
@@ -339,7 +329,6 @@ namespace gpstk
 
       void release()
       {
-         //poco_assert_dbg (_pCounter);
          int i = _pCounter->release();
          if (i == 0)
          {
@@ -352,9 +341,7 @@ namespace gpstk
       }
 
       AutoPtr(RC* pCounter, C* ptr): _pCounter(pCounter), _ptr(ptr)
-         /// for cast operation
       {
-         //poco_assert_dbg (_pCounter);
          _pCounter->duplicate();
       }
 
@@ -371,6 +358,55 @@ namespace gpstk
    {
       p1.swap(p2);
    }
+
+
+   template <class T>
+   class Buffer
+   {
+   public:
+      Buffer(std::size_t size):_size(size),_ptr(new T[size]){}
+
+      ~Buffer(){ if(_ptr) delete [] _ptr;}
+
+      std::size_t size() const {return _size;}
+
+      T* begin() { return _ptr; }
+
+      const T* begin() const{return _ptr;}
+
+      T* end(){return _ptr + _size;}
+
+      const T* end() const { return _ptr + _size;}
+
+      T& operator [] (std::size_t index)
+      {
+         if(index<0 || index>=_size)
+         {
+            GPSTK_THROW(Exception("The input index is out of range."));
+         }
+         
+         return _ptr[index];
+      }
+
+      const T& operator [] (std::size_t index) const
+      {
+         if(index<0 || index>=_size)
+         {
+            GPSTK_THROW(Exception("The input index is out of range."));
+         }
+
+         return _ptr[index];
+      }
+
+   private:
+      Buffer();
+      Buffer(const Buffer&);
+      Buffer& operator = (const Buffer&);
+
+      std::size_t _size;
+      T* _ptr;
+   }; // End of class 'Buffer'
+
 
 }   // End of namespace gpstk
 

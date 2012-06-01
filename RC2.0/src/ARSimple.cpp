@@ -60,7 +60,7 @@ namespace gpstk
          }
          else
          {
-            ambFixed(i) = double( std::floor(ambFloat(i)+0.5) );//ambFloat(i); 
+            ambFixed(i) = ambFloat(i);       // keep it with float value
          }
       }
 

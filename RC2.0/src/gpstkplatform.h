@@ -31,8 +31,8 @@
    Unless, of course, it has to go somewhere else. :-)
 */
 
-#ifndef GPSTK_PLATFORM_HPP
-#define GPSTK_PLATFORM_HPP
+#ifndef GPSTK_GPSTKPLATFORM_H
+#define GPSTK_GPSTKPLATFORM_H
 
 #ifdef _MSC_VER
 

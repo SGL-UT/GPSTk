@@ -3,7 +3,7 @@
 
 SubDir TOP apps filetools ;
 
-GPSLinkLibraries ficafic ficfica navdmp navsum fic2rin rinexthin sp3version sp32bc bc2sp3 ephsum ficedit : gpstk ;
+GPSLinkLibraries ficafic ficfica navdmp navsum fic2rin rinexthin sp3version bc2sp3 ephsum ficedit sp32bc : gpstk ;
 
 GPSLinkLibraries ephemfix : rxio gpstk ;
 
