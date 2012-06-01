@@ -25,6 +25,7 @@ else
       ANSITime.cpp
       Antenna.cpp
       AntexReader.cpp
+      Application.cpp
       ARBase.cpp
       ARLambda.cpp
       ARMLambda.cpp
@@ -173,6 +174,7 @@ else
       SVExclusionList.cpp
       SVNumXRef.cpp
       SVPCodeGen.cpp
+      SysInfo.cpp
       SystemTime.cpp
       TimeConverters.cpp
       TimeString.cpp
@@ -201,6 +203,8 @@ else
       Antenna.hpp
       AntexReader.hpp
       Any.hpp
+      Application.hpp
+      AppOption.hpp
       ARBase.hpp
       ARLambda.hpp
       ARMLambda.hpp
@@ -429,6 +433,7 @@ else
       SP3Stream.hpp	
       SpecialFunctions.hpp	
       Stats.hpp	
+      StreamBuf.hpp
       String.hpp
       StringUtils.hpp	
       StudentDistribution.hpp	
@@ -436,6 +441,7 @@ else
       SVExclusionList.hpp	
       SVNumXRef.hpp	
       SVPCodeGen.hpp	
+      SysInfo.hpp
       SystemTime.hpp	
       TabularSatStore.hpp	
       TimeConstants.hpp	

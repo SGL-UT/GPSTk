@@ -59,6 +59,8 @@ namespace gpstk
    /** @defgroup math Mathematical algorithms */
    //@{
 
+   inline double Round(double x);
+
    /** Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
     * returning the value of Y(x). Also return an estimate of the estimation error in 'err'.
     * Assumes k=X.size() is even, and that x is between X[j-1] and X[j], where j=k/2.
@@ -289,6 +291,11 @@ namespace gpstk
       return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a) + (d/a)*(d/a));
    }
 
+
+   inline double Round(double x)
+   {
+      return double(std::floor(x+0.5));
+   }
    //@}
 
 }  // namespace gpstk
