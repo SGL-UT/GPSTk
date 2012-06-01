@@ -48,10 +48,10 @@
 #include "GNSSconstants.hpp"
 #include "TimeString.hpp"
 #include "YDSTime.hpp"
+#include "TimeConstants.hpp"
 
    // Project Headers
 #include "ConstellationDefinition.hpp"
-#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -122,8 +122,9 @@ void ConstellationDefinition::setPlaneSlot( const SatID SV, const SlotDef sd )
 
 void ConstellationDefinition::setEffectiveTime( const gpstk::CommonTime dt )
 {
-   effectiveDate = dt;
-   effectiveDate=static_cast<YDSTime>( (SEC_PER_DAY/2) ).sod;
+   YDSTime yds_temp(dt);
+   yds_temp.sod = SEC_PER_DAY / 2;
+   effectiveDate = yds_temp;
 }
 
 void ConstellationDefinition::setSVNforPRN( const SatID SV, const int SVN )
