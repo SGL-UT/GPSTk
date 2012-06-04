@@ -142,7 +142,7 @@ namespace gpstk
       
          // Convert to double and scale
       double dval = (double) uint;
-      dval *= pow(2, power2);
+      dval *= pow(static_cast<double>(2), power2);
       return( dval );
    }
 
@@ -153,7 +153,7 @@ namespace gpstk
 
          // Convert to double and scale
       double dval = (double) s;
-      dval *= pow(2, power2);
+      dval *= pow(static_cast<double>(2), power2);
       return( dval );
    }
 
@@ -187,7 +187,7 @@ namespace gpstk
       uint64_t out = (uint64_t) value;
       out /= scale;
 
-      uint64_t test = pow(2,numBits) - 1; 
+      uint64_t test = pow(static_cast<double>(2),numBits) - 1; 
       if ( out > test )
       {
          InvalidParameter exc("Scaled value too large for specifed bit length");
@@ -207,7 +207,7 @@ namespace gpstk
       out = (int64_t) value;
       out /= scale;
 
-      int64_t test = pow(2,numBits-1) - 1; 
+      int64_t test = pow(static_cast<double>(2),numBits-1) - 1; 
       if ( ( out > test ) || ( out < -( test + 1 ) ) )
       {
          InvalidParameter exc("Scaled value too large for specifed bit length");
@@ -221,7 +221,7 @@ namespace gpstk
       throw(InvalidParameter)
    {
       uint64_t out = (uint64_t) ScaleValue(value, power2);
-      uint64_t test = pow(2,numBits) - 1;
+      uint64_t test = pow(static_cast<double>(2),numBits) - 1;
       if ( out > test )
       {
          InvalidParameter exc("Scaled value too large for specifed bit length");
@@ -241,7 +241,7 @@ namespace gpstk
          int64_t out;
       };
       out = (int64_t) ScaleValue(value, power2);
-      int64_t test = pow(2,numBits-1) - 1; 
+      int64_t test = pow(static_cast<double>(2),numBits-1) - 1; 
       if ( ( out > test ) || ( out < -( test + 1 ) ) )
       {
          InvalidParameter exc("Scaled value too large for specifed bit length");
@@ -261,7 +261,7 @@ namespace gpstk
       };
       double temp = Radians/PI;
       out = (int64_t) ScaleValue(temp, power2);
-      int64_t test = pow(2,numBits-1) - 1; 
+      int64_t test = pow(static_cast<double>(2), numBits-1) - 1; 
       if ( ( out > test ) || ( out < -( test + 1 ) ) )
       {
          InvalidParameter exc("Scaled value too large for specifed bit length");
@@ -350,7 +350,7 @@ namespace gpstk
    double PackedNavBits::ScaleValue( const double value, const int power2) const
    {
       double temp = value;
-      temp /= pow(2, power2);
+      temp /= pow(static_cast<double>(2), power2);
       if (temp >= 0) temp += 0.5; // Takes care of rounding
       else temp -= 0.5;
       return ( temp );

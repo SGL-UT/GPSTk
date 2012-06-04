@@ -300,7 +300,7 @@ namespace gpstk
 
    double Application::toltalMilliseconds()
    {
-      return (static_cast<CommonTime>(SystemTime()) - runTime)*1000.0;
+      return (SystemTime().convertToCommonTime() - runTime) * 1000.0;
    }
 
    Application& Application::appInfo(const std::string& author,

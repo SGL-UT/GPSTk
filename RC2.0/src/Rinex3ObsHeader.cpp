@@ -1300,7 +1300,7 @@ namespace gpstk
             if(str.empty()) break;
             sat = RinexSatID(str);
             str = strip(line.substr(8+i*7,2));
-            GlonassFreqNo.insert(make_pair(sat,asInt(str)));
+            GlonassFreqNo.insert(make_pair(sat, static_cast<int>(asInt(str))));
          }
 
          valid |= validGlonassFreqNo;

@@ -492,8 +492,8 @@ string sortRinex3ObsFiles(vector<string>& files)
                msg += "Error - Invalid header in file " + files[n] + "\n";
                continue;
             }
+            hash.insert(pair<const CommonTime, string>(header.firstObs, files[n]));
 
-			   hash.insert(make_pair(header.firstObs,files[n]));
 			}
 			catch(Exception& e)
 			{

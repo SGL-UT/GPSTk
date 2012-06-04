@@ -89,7 +89,7 @@ namespace gpstk
        //allRequiredValid    = 0x07F9A3, ///< this mask if for all required fields
        //allRequiredValid    = 0x07F903, ///< this mask if for all required fields
          allRequiredValid    = 0x07C903, ///< this mask if for all required fields
-         allValid            = 0x07FFFF, ///< all the bits
+         allValid            = 0x07FFFF  ///< all the bits
       };
 
          /// destructor

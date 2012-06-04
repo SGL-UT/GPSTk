@@ -142,7 +142,7 @@ namespace gpstk
           Note that the location of the wrap around can be modified using the
           function GenXSequence::setEndOfSequence( int los );
        */
-   uint32_t GenXSequence::operator[] ( const int ia )
+   uint32_t GenXSequence::operator[] ( int ia )
    {
       uint32_t retArg = 0x00000000;
       int i = ia;

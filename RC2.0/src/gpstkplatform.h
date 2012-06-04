@@ -55,8 +55,15 @@ typedef unsigned __int64 uint64_t;
 #include <sys/timeb.h>
 
 
-#elif !defined(__SUNPRO_CC)
+#elif defined(__SUNPRO_CC)
+
+#include <sys/types.h>
+#include <sys/timeb.h>
+
+#else
+
 #include <stdint.h>
+
 #endif
 
 typedef int8_t  Int8;
