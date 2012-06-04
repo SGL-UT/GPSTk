@@ -582,7 +582,7 @@ try {
             os << "Exception: " << e.what() << endl; isValid = false; continue; }
          catch(exception& e) {
             os << "exception: " << e.what(); isValid = false; continue; }
-         startNameMap.insert(make_pair(header.time,C.InputSP3Files[nfile]));
+         startNameMap.insert(multimap<CommonTime, string>::value_type(header.time, C.InputSP3Files[nfile]));
       }
 
       ossE << os.str();
@@ -651,7 +651,7 @@ try {
                            && sats[i].system == RinexSatID::systemGlonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
-               C.GLOfreqChannel.insert(make_pair(sats[i],0)); // set it to zero
+               C.GLOfreqChannel.insert(map<RinexSatID, int>::value_type(sats[i], 0)); // set it to zero
                it = C.GLOfreqChannel.find(sats[i]);
             }
             C.msg = string(" frch ") + rightJustify(asString(it->second),2);
@@ -2270,7 +2270,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
       double PR,RI(0),Rone(0),Rtwo(0);
       if(freqs[i].size() == 1) {
          PR = RawPRs[freqs[i]];
-         UsedObsIDs.insert(make_pair(sat,used[freqs[i]]));
+         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used[freqs[i]]));
          ok = (used[freqs[i]] != freqs[i]+"-");
       }
       else if(freqs[i] == "12" || freqs[i] == "21") {
@@ -2278,7 +2278,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
          RI = (RawPRs["1"]-RawPRs["2"])*b12[sys];
          Rone = RawPRs["1"];
          Rtwo = RawPRs["2"];
-         UsedObsIDs.insert(make_pair(sat,used["1"]+used["2"]));
+         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used["1"]+used["2"]));
          ok = (used["1"] != "1-" && used["2"] != "2-");
       }
       else if(freqs[i] == "15" || freqs[i] == "51") {
@@ -2286,7 +2286,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
          RI = (RawPRs["1"]-RawPRs["5"])*b15[sys];
          Rone = RawPRs["1"];
          Rtwo = RawPRs["5"];
-         UsedObsIDs.insert(make_pair(sat,used["1"]+used["5"]));
+         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used["1"]+used["5"]));
          ok = (used["1"] != "1-" && used["5"] != "5-");
       }
       else if(freqs[i] == "25" || freqs[i] == "52") {
@@ -2294,7 +2294,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
          RI = (RawPRs["2"]-RawPRs["5"])*b25[sys];
          Rone = RawPRs["2"];
          Rtwo = RawPRs["5"];
-         UsedObsIDs.insert(make_pair(sat,used["2"]+used["5"]));
+         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used["2"]+used["5"]));
          ok = (used["2"] != "2-" && used["5"] != "5-");
       }
       // TD else three-freq ?

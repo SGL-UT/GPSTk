@@ -337,7 +337,7 @@ try {
          catch(exception& e) {
             os << "exception: " << e.what(); isValid = false; continue; }
 
-         startNameMap.insert(make_pair(header.time,C.InputSP3Files[i]));
+         startNameMap.insert(multimap<CommonTime, string>::value_type(header.time,C.InputSP3Files[i]));
       }
 
       ossE << os.str();
@@ -394,7 +394,7 @@ try {
                if(C.debug > -1) ndata.dump(LOGstrm);
                if(ndata.satSys == "R") {
                   RinexSatID sat(ndata.PRNID,SatID::systemGlonass);
-                  C.GLOfreqChan.insert(make_pair(sat,ndata.freqNum));
+                  C.GLOfreqChan.insert(map<RinexSatID, int>::value_type(sat, ndata.freqNum));
                }
                C.haveEph = true;
             }
@@ -450,7 +450,7 @@ try {
                                  && sats[i].system==RinexSatID::systemGlonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
-               C.GLOfreqChan.insert(make_pair(sats[i],0)); // set it to zero
+               C.GLOfreqChan.insert(map<RinexSatID, int>::value_type(sats[i], 0)); // set it to zero
                it = C.GLOfreqChan.find(sats[i]);
             }
             C.msg = string(" freq.chan. ") + rightJustify(asString(it->second),2);
@@ -1231,7 +1231,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
             << GLOfreqStrs[i] << endl;
       else {
          RinexSatID sat(fld[0]);
-         GLOfreqChan.insert(make_pair(sat, asInt(fld[1])));
+         GLOfreqChan.insert(map<RinexSatID, int>::value_type(sat, asInt(fld[1])));
       }
    }
 

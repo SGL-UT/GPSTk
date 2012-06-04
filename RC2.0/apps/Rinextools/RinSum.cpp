@@ -548,7 +548,7 @@ try {
 
       // get file size
       istrm.seekg(0,ios::end);
-      ios::streampos filesize(istrm.tellg());
+      streampos filesize(istrm.tellg());
       istrm.seekg(0,ios::beg);
 
       // read the header ----------------------------------------------
@@ -1039,7 +1039,7 @@ try {
                   // satellite 'off'
                   j = int(double(tabIt->gapcount[i]/dn));
                   if(!first) {
-                     vtab.insert(make_pair(kk, string("-")+asString(tabIt->sat)));
+                     vtab.insert(multimap<int, string>::value_type(kk, string("-")+asString(tabIt->sat)));
                      //ossvt << " " << kk << "-,";
                      kk = j;
                   }
@@ -1052,7 +1052,7 @@ try {
                   }
                   // satellite 'on'
                   j = int(double(tabIt->gapcount[i+1]/dn));
-                  vtab.insert(make_pair(kk, string("+")+asString(tabIt->sat)));
+                  vtab.insert(multimap<int, string>::value_type(kk, string("+")+asString(tabIt->sat)));
                   //ossvt << " " << kk << "+,";
                   kk = j;
                   jj = j-k;
@@ -1063,7 +1063,7 @@ try {
                      k = j;
                   }
                }
-               vtab.insert(make_pair(kk, string("-")+asString(tabIt->sat)));
+               vtab.insert(multimap<int, string>::value_type(kk, string("-")+asString(tabIt->sat)));
                //oss << "-" << kk;
                LOG(INFO) << oss.str();
                //LOG(INFO) << ossvt.str() << " " << kk << "-";
