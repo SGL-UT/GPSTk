@@ -300,6 +300,7 @@ namespace gpstk
       tStrings[cdtSatPC]    = "cdtSatPC";
       tStrings[cdtSatLC]    = "cdtSatLC";
       tStrings[cdtSatWL]    = "cdtSatWL";
+      tStrings[cdtSatMW]    = "cdtSatMW";
 
       tStrings[recX]       = "RxPositionX";
       tStrings[recY]       = "RxPositionY";

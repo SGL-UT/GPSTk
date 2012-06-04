@@ -140,14 +140,14 @@ namespace gpstk
           *  current value for lengthOfSequence, the function will wrap around
           *  to the beginning of sequence.
           */
-         unsigned long operator[] ( int i );
+         uint32_t operator[] ( int i );
          
          ///  Set the end of sequence for the current cycle.  
          void setLengthOfSequence( int i );
       
       private:
-         void addBitToSequence( unsigned long newBit );
-         unsigned long bits[MAX_WORD];
+         void addBitToSequence( uint32_t newBit );
+         uint32_t bits[MAX_WORD];
          int lengthOfSequence;
          int maxOfSequence;
          bool debugPrint;

@@ -39,11 +39,11 @@
 #ifndef MERGEPCODEWORDS_H
 #define MERGEPCODEWORDS_H
 
-   inline unsigned long merge( unsigned long w1,
-                        unsigned long w2,
+   inline uint32_t merge( uint32_t w1,
+                        uint32_t w2,
                         int first_bit )
    {
-      unsigned long outword = w1;
+      uint32_t outword = w1;
       if (first_bit==0) return(outword);
       
       outword <<= first_bit;

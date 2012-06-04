@@ -345,6 +345,7 @@ namespace gpstk
          cdtSatPC,  ///< Satellite clock offset of PC
          cdtSatLC,  ///< Satellite clock offset of LC
          cdtSatWL,  ///< Satellite clock offset of WL
+         cdtSatMW,  ///< Satellite clock offset of MW
             // Other types
          recX,      ///< Receiver position, X component
          recY,      ///< Receiver position, Y component

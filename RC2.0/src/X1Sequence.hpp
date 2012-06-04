@@ -46,7 +46,6 @@
 
 
 
-
    // Project headers
 #include "gpstkplatform.h"
 #include "PCodeConst.hpp"
@@ -109,24 +108,24 @@ namespace gpstk
          static void allocateMemory( );
          static void deAllocateMemory( );
          
-         unsigned long & operator[]( int i );
+         uint32_t & operator[]( int i );
             /**
              *  Given a word number from 0 to NUM_6SEC_WORDS, return the 
              *  requested word.
              */
-         const unsigned long & operator[] ( int i ) const;
+         const uint32_t & operator[] ( int i ) const;
      
       private:
-         static unsigned long* X1Bits;
+         static uint32_t* X1Bits;
          static bool isInit; 
    };
 
-   inline unsigned long & X1Sequence::operator[] ( int i )
+   inline uint32_t & X1Sequence::operator[] ( int i )
    {
       return(X1Bits[i]); 
    }
 
-   inline const unsigned long & X1Sequence::operator[] ( int i ) const
+   inline const uint32_t & X1Sequence::operator[] ( int i ) const
    {
       return(X1Bits[i]);
    }
