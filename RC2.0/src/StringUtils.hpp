@@ -53,11 +53,11 @@
 
 /// @todo Get rid of the stdio.h dependency if possible.
 #include <cstdio>
-#ifdef _WIN32
-#include "regex1.h"
-#else
+//#ifdef _WIN32
+//#include "regex1.h"
+//#else
 #include <regex.h>
-#endif
+//#endif
 #include <cctype>
 #include <limits>
 
