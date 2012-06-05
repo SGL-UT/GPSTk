@@ -388,7 +388,7 @@ namespace gpstk
          std::vector<SatID> clkList(clkStore.getSatList());
          std::vector<SatID> retList;
          for(int i=0; i<posList.size(); i++)
-            if(find(clkList.begin(),clkList.end(),posList[i]) != clkList.end())
+            if(std::find(clkList.begin(),clkList.end(),posList[i]) != clkList.end())
                retList.push_back(posList[i]);
          return retList;
       }
