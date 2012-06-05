@@ -207,36 +207,6 @@ namespace gpstk
       { m_timeSystem = timeSystem; }
 
          /**
-          * Set the object's time using POSIX structures.
-          * This uses the POSIX timeval struct to set the time.  This
-          * structure represents the time with a resolution of
-          * microseconds.
-          * @param t time to set
-          * @param f Time frame (see #TimeFrame)
-          * @return a reference to this object.
-          */
-      CommonTime& setUnix(const struct timeval& t,
-                       TimeSystem)
-         throw(Exception);
-
-         /**
-          * Set the object's time using ANSI structures.  This uses
-          * the ANSI C/C++ time_t struct to set the time.  This
-          * structure represents the time with a resolution of
-          * seconds.
-          * @param t time to set
-          * @param f Time frame (see #TimeFrame)
-          * @return a reference to this object.
-          */
-      CommonTime& setANSI(const time_t& t,
-                       TimeSystem)
-         throw(Exception);
-
-    CommonTime& setMJD(long double mjd,
-                             TimeSystem)
-       throw(Exception);   
-
-         /**
           * Get method.  Obtain values in days, second of day and fractional
           * second of day, plus the time frame.
           */

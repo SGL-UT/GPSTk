@@ -183,30 +183,6 @@ namespace gpstk
       return *this;
    }
 
-      // set using unix timeval struct
-   CommonTime& CommonTime::setUnix(const struct timeval& t,
-                             TimeSystem)
-      throw(Exception)
-   {
-      long sec = t.tv_sec ;
-      double dt = double(sec) + (t.tv_usec * 1.e-6) ;
-      long jday = MJD_JDAY + UNIX_MJD + long(dt / SEC_PER_DAY) ;
-      sec -= long(dt / SEC_PER_DAY) * SEC_PER_DAY ;
-      dt = double(sec) + (t.tv_usec * 1.e-6) ;
-      return set(jday,sec,dt);
-   }
-
-   CommonTime& CommonTime::setANSI(const time_t& t,
-                             TimeSystem timeSystem = TimeSystem::Unknown)
-      throw(Exception)
-   {
-      long double dt = (long double)(t);
-      dt /= SEC_PER_DAY;
-      dt += UNIX_MJD;
-      return set(dt, timeSystem);
-   }
-
-
    void CommonTime::get( long& day,
                          long& sod,
                          double& fsod,

@@ -363,9 +363,9 @@ namespace gpstk
            currentTime(beginning), endTime(ending), readMode(frm), getMode(grm)
    {
          // zero out seconds
-      startTime.setMJDdate(floor(startTime.MJDdate()));
-      endTime.setMJDdate(floor(endTime.MJDdate()));
-      currentTime.setMJDdate(floor(currentTime.MJDdate()));
+      startTime = MJD(floor(MJD(startTime).mjd));
+      endTime = MJD(floor(MJD(endTime).mjd));
+      currentTime = MJD(floor(MJD(curretnTime).mjd));
 
          // set up the stream
       openCurrentFile();
