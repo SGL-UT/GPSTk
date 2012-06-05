@@ -43,8 +43,6 @@
 #include "TimeConstants.hpp"
 #include "TimeSystem.hpp"
 
-using namespace std;
-
 namespace gpstk
 {
       /** 
