@@ -40,7 +40,6 @@
 #include "CommonTime.hpp"
 #include "SatID.hpp"
 
-using namespace std;
 
 namespace gpstk
 {
@@ -98,7 +97,7 @@ namespace gpstk
           * @param fn   DCB data file to read
           *
           */
-      DCBDataReader(const string& fn)
+      DCBDataReader(const std::string& fn)
          : FFTextStream(fn.c_str(), std::ios::in)
       { loadData(); };
 
@@ -109,7 +108,7 @@ namespace gpstk
 
          /// Method to open AND load DCB data file. It doesn't
          /// clear data previously loaded.
-      virtual void open(const string& fn);
+      virtual void open(const std::string& fn);
 
 
          /// Get DCB data of a satellite
@@ -129,7 +128,7 @@ namespace gpstk
          /// @param    station    the receiver name you desired
          /// @param    system     the satellite system you desired
          /// @return              P1-P2
-      double getDCB(const string& station,
+      double getDCB(const std::string& station,
          const SatID::SatelliteSystem& system = SatID::systemGPS);
 
 
@@ -143,7 +142,7 @@ namespace gpstk
       typedef std::map< SatID, double > SatDCBData;
       
          // Map holding receiver DCB data
-      typedef std::map< string, double > ReceiverDCBData;
+      typedef std::map< std::string, double > ReceiverDCBData;
          
          /// A structure used to store daily DCB data
       struct DailyDCBData

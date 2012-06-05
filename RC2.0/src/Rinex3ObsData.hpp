@@ -88,7 +88,7 @@ namespace gpstk
 
          /// Map from RinexSatID to RinexDatum; order of the data matches the
          /// order of RinexObsIDs in the header
-      typedef std::map<RinexSatID, vector<RinexDatum> > DataMap;
+      typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
 
 
          /// Time corresponding to the observations
@@ -150,7 +150,7 @@ namespace gpstk
 
 
          /// Another dump, using information from the header
-      void dump(ostream& s, Rinex3ObsHeader& head) const;
+      void dump(std::ostream& s, Rinex3ObsHeader& head) const;
 
 
    protected:

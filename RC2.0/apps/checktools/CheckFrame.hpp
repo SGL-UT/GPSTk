@@ -95,7 +95,7 @@ public:
 protected:
    virtual void process()
    {
-      ofstream op;
+      std::ofstream op;
       op.open ("op.txt");
  
       unsigned errors = 0;
@@ -117,11 +117,11 @@ protected:
             FileData temp;
             while (f >> temp)
             {
-                op << f << endl;
+                op << f << std::endl;
 		if (!timeFilt(temp))
                   recCount++;
             }
-            op << "here 6" << endl;
+            op << "here 6" << std::endl;
             std::cout << "Read " << recCount << " records." 
                       << std::endl << std::endl;
          }
@@ -149,7 +149,7 @@ protected:
          
          itr++;
       }
-      op << "here 7" << endl;
+      op << "here 7" << std::endl;
       if (errors > 0)
       {
             // Throw an exception so the app returns 1 on any errors.

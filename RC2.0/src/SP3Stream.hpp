@@ -114,7 +114,7 @@ namespace gpstk
 
          // this is necessary in order for SP3Data::reallyGetRecord() to
          // process the last line in the file when there is no EOF record...why?
-         if(mode & std::ios::in) exceptions(ifstream::failbit);
+         if(mode & std::ios::in) exceptions(std::ifstream::failbit);
       }
 
          ///@name data members

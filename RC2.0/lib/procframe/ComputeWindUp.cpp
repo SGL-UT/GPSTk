@@ -30,6 +30,7 @@
 
 #include "ComputeWindUp.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

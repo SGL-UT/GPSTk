@@ -120,7 +120,7 @@ namespace gpstk
           */
       ComputeSatPCenter( XvtStore<SatID>& ephem,
                          const Position& stapos,
-                         string filename="PRN_GPS" )
+                         std::string filename="PRN_GPS" )
          : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
            fileData(filename), pAntexReader(NULL)
       { };
@@ -136,7 +136,7 @@ namespace gpstk
           * file named "PRN_GPS" in the current directory.
           */
       ComputeSatPCenter( const Position& stapos,
-                         string filename="PRN_GPS" )
+                         std::string filename="PRN_GPS" )
          : pEphemeris(NULL), nominalPos(stapos), satData(filename),
            fileData(filename), pAntexReader(NULL)
       { };
@@ -206,14 +206,14 @@ namespace gpstk
 
 
          /// Returns name of "PRN_GPS"-like file containing satellite data.
-      virtual string getFilename(void) const
+      virtual std::string getFilename(void) const
       { return fileData; };
 
 
          /** Sets name of "PRN_GPS"-like file containing satellite data.
           * @param name      Name of satellite data file.
           */
-      virtual ComputeSatPCenter& setFilename(const string& name);
+      virtual ComputeSatPCenter& setFilename(const std::string& name);
 
 
          /// Returns nominal position of receiver station.
@@ -280,7 +280,7 @@ namespace gpstk
 
 
          /// Name of "PRN_GPS"-like file containing satellite data.
-      string fileData;
+      std::string fileData;
 
 
          /// Pointer to object containing satellite antenna data, if available.

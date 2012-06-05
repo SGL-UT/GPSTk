@@ -40,8 +40,6 @@
 #include "Matrix.hpp"
 
 
-using namespace std;
-
 namespace gpstk
 {
       /** @addtogroup formattedfile */
@@ -118,7 +116,7 @@ namespace gpstk
           * @param fn   BLQ data file to read
           *
           */
-      BLQDataReader(const string& fn)
+      BLQDataReader(const std::string& fn)
          : FFTextStream(fn.c_str(), std::ios::in)
       { loadData(); };
 
@@ -130,7 +128,7 @@ namespace gpstk
 
          /// Method to open AND load ocean tide harmonics data file. It doesn't
          /// clear data previously loaded.
-      virtual void open(const string& fn);
+      virtual void open(const std::string& fn);
 
 
          /// Method to clear all previously loaded ocean tide harmonics data.
@@ -149,7 +147,7 @@ namespace gpstk
           * phases (radial, west, south, in degrees). If station is 
           * not found, this method will return a matrix full of zeros.
           */
-      virtual Matrix<double> getTideHarmonics(const string& station);
+      virtual Matrix<double> getTideHarmonics(const std::string& station);
 
 
          /// Destructor
@@ -170,11 +168,11 @@ namespace gpstk
 
 
          /// Handy iterator type
-      typedef std::map<string, tideData>::const_iterator tideDataIt;
+      typedef std::map<std::string, tideData>::const_iterator tideDataIt;
 
 
          /// Map holding the information regarding ocean tide harmonics
-      std::map<string, tideData> OceanTidesData;
+      std::map<std::string, tideData> OceanTidesData;
 
 
          /** Method to store ocean tide harmonics data in this class'
@@ -183,9 +181,9 @@ namespace gpstk
           * @param stationName String holding station name.
           * @param data        tideData structure holding the harmonics data
           */
-      void setData( const string& stationName,
+      void setData( const std::string& stationName,
                     const tideData& data )
-      { OceanTidesData.insert(pair<string, tideData>(stationName, data)); };
+      { OceanTidesData.insert(make_pair(stationName, data)); };
 
 
          /// Method to store ocean tide harmonics data in this class' data map

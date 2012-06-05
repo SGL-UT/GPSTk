@@ -85,7 +85,7 @@ namespace gpstk
       /// Store position (velocity) and clock data from SP3 files in clock and
       /// position stores. Also update the FileStore with the filename and SP3 header.
       /// Check time systems consistentcy, and if possible set store time system.
-      void loadSP3Store(const string& filename, bool fillClockStore)
+      void loadSP3Store(const std::string& filename, bool fillClockStore)
          throw(Exception);
 
    public:

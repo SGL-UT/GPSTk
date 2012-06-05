@@ -105,7 +105,7 @@ namespace gpstk
       /// and taken from either loadFile() (RinexNavHeader) or user input.
       /// key = TimeSystemCorrection::asString4().
       /// User may add to the list with addTimeCorr()
-      map<string, TimeSystemCorrection> mapTimeCorr;
+      std::map<std::string, TimeSystemCorrection> mapTimeCorr;
 
       /// string containing what() of exceptions caught by loadFile()
       std::string what;
@@ -143,10 +143,10 @@ namespace gpstk
          // may have to re-write this...
          os << "Dump Rinex3EphemerisStore:" << std::endl;
          // dump the time system corrections
-         map<string,TimeSystemCorrection>::const_iterator tcit;
+         std::map<std::string,TimeSystemCorrection>::const_iterator tcit;
          for(tcit=mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit) {
             os << "Time correction for " << tcit->second.asString4() << " : "
-               << tcit->second.asString() << " " << scientific << setprecision(12);
+               << tcit->second.asString() << " " << std::scientific << std::setprecision(12);
             switch(tcit->second.type) {
                case TimeSystemCorrection::GPUT:
                     os << ", A0 = " << tcit->second.A0
@@ -186,7 +186,7 @@ namespace gpstk
                         << "/" << tcit->second.refDay;
                   break;
             }
-            os << endl;
+            os << std::endl;
          }
 
          NavFiles.dump(os, detail);
@@ -281,11 +281,11 @@ namespace gpstk
       ///         -3 failed to read data (this->Rdata),
       ///        >=0 number of nav records read
       /// @throw some other problem
-      int loadFile(const std::string& filename, bool dump=false, ostream& s=std::cout)
+      int loadFile(const std::string& filename, bool dump=false, std::ostream& s=std::cout)
          throw(gpstk::Exception);
 
       /// use to access the data records in the store in bulk
-      int addToList(list<Rinex3NavData>& theList,
+      int addToList(std::list<Rinex3NavData>& theList,
                     SatID sysSat=SatID(-1,SatID::systemMixed))
          const throw();
 
@@ -324,9 +324,9 @@ namespace gpstk
       /// @param type of TimeSystemCorrection, as a string,
       ///                   i.e. TimeSystemCorrection::asString4()
       /// @return true if an existing correction was deleted.
-      bool delTimeCorr(const string& typestr) throw()
+      bool delTimeCorr(const std::string& typestr) throw()
       {
-         map<string, TimeSystemCorrection>::iterator it;
+         std::map<std::string, TimeSystemCorrection>::iterator it;
          it = mapTimeCorr.find(typestr);
          if(it != mapTimeCorr.end()) {
             mapTimeCorr.erase(it);
@@ -344,14 +344,14 @@ namespace gpstk
       int expandTimeCorrMap(void) throw()
       {
          int n(0);
-         map<string, TimeSystemCorrection>::iterator it,jt;
+         std::map<std::string, TimeSystemCorrection>::iterator it,jt;
 
          // currently there are only two possibilities : GPGA and GLGP
          // GLGP : GLO to GPS
-         it = mapTimeCorr.find(string("GPUT"));
-         jt = mapTimeCorr.find(string("GLUT"));
+         it = mapTimeCorr.find(std::string("GPUT"));
+         jt = mapTimeCorr.find(std::string("GLUT"));
          if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
-            && mapTimeCorr.find(string("GLGP")) == mapTimeCorr.end())
+            && mapTimeCorr.find(std::string("GLGP")) == mapTimeCorr.end())
          {
             TimeSystemCorrection tc("GLGP");
             tc.A0 = jt->second.A0 - it->second.A0;
@@ -369,10 +369,10 @@ namespace gpstk
          }
 
          // GPGA : GPS to GAL
-         it = mapTimeCorr.find(string("GAUT"));
-         jt = mapTimeCorr.find(string("GPUT"));
+         it = mapTimeCorr.find(std::string("GAUT"));
+         jt = mapTimeCorr.find(std::string("GPUT"));
          if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
-            && mapTimeCorr.find(string("GPGA")) == mapTimeCorr.end())
+            && mapTimeCorr.find(std::string("GPGA")) == mapTimeCorr.end())
          {
             TimeSystemCorrection tc("GPGA");
             tc.A0 = jt->second.A0 - it->second.A0;

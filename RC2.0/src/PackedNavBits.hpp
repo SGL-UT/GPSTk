@@ -133,7 +133,7 @@ namespace gpstk
           * numChars represents number of chars (8 bits each) to add to PackedBits.
           * If numChars < length of String only, chars 1..numChars will be added.
           * If numChars > length of String, blanks will be added at the end. */
-      void addString(const string String, const int numChars)
+      void addString(const std::string String, const int numChars)
          throw(InvalidParameter);
    
          /* Resize the vector holding the packed data. */
@@ -143,7 +143,7 @@ namespace gpstk
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */
       CommonTime TransmitTime; /**< Time nav message is trasnmitted */
-      vector<bool> bits;       /**< Holds the packed data */
+      std::vector<bool> bits;  /**< Holds the packed data */
       int bits_used;
 
          /** Unpack the bits */

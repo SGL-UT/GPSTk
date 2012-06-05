@@ -411,8 +411,8 @@ namespace gpstk
       // @param cit CivilTime to append to stream \c s.
       // @return reference to \c s.
 
-   ostream& operator<<( ostream& s, 
-                        const CivilTime& cit )
+   std::ostream& operator<<( std::ostream& s, 
+                             const CivilTime& cit )
    {
       s << cit.printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
       return s;

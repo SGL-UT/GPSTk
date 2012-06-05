@@ -51,8 +51,8 @@ namespace gpstk
    private:
       unsigned int N;
       double APV;
-      string msg;
-      string lab[3];
+      std::string msg;
+      std::string lab[3];
       Stats<double> S[3];
       Matrix<double> sumInfo;
       Vector<double> sumInfoState;
@@ -62,10 +62,10 @@ namespace gpstk
       WtdAveStats(void) : N(0)
          { lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z"; }
 
-      void setMessage(string m) throw() { msg = m; }
-      string getMessage(void) const throw() { return msg; }
+      void setMessage(std::string m) throw() { msg = m; }
+      std::string getMessage(void) const throw() { return msg; }
 
-      void setLabels(string lab1, string lab2, string lab3) throw()
+      void setLabels(std::string lab1, std::string lab2, std::string lab3) throw()
          { lab[0]=lab1; lab[1]=lab2; lab[2]=lab3; }
 
       Matrix<double> getCov(void) const { return inverseSVD(sumInfo); }
@@ -113,33 +113,33 @@ namespace gpstk
       }
 
       // dump statistics and weighted average
-      void dump(ostream& os, string msg="") const throw(Exception)
+      void dump(std::ostream& os, std::string msg="") const throw(Exception)
       {
          try {
-            os << "Simple statistics on " << msg << endl
-               << fixed << setprecision(3);
+            os << "Simple statistics on " << msg << std::endl
+               << std::fixed << std::setprecision(3);
             if(N > 0) {
-               os << "  " << lab[0] << " N: " << S[0].N() << fixed << setprecision(4)
+               os << "  " << lab[0] << " N: " << S[0].N() << std::fixed << std::setprecision(4)
                   << " Ave: " << S[0].Average() << " Std: " << S[0].StdDev()
-                  << " Min: " << S[0].Minimum() << " Max: " << S[0].Maximum() << endl;
-               os << "  " << lab[1] << " N: " << S[1].N() << fixed << setprecision(4)
+                  << " Min: " << S[0].Minimum() << " Max: " << S[0].Maximum() << std::endl;
+               os << "  " << lab[1] << " N: " << S[1].N() << std::fixed << std::setprecision(4)
                   << " Ave: " << S[1].Average() << " Std: " << S[1].StdDev()
-                  << " Min: " << S[1].Minimum() << " Max: " << S[1].Maximum() << endl;
-               os << "  " << lab[2] << " N: " << S[2].N() << fixed << setprecision(4)
+                  << " Min: " << S[1].Minimum() << " Max: " << S[1].Maximum() << std::endl;
+               os << "  " << lab[2] << " N: " << S[2].N() << std::fixed << std::setprecision(4)
                   << " Ave: " << S[2].Average() << " Std: " << S[2].StdDev()
-                  << " Min: " << S[2].Minimum() << " Max: " << S[2].Maximum() << endl;
+                  << " Min: " << S[2].Minimum() << " Max: " << S[2].Maximum() << std::endl;
 
-               os << "Weighted average " << msg << endl;
+               os << "Weighted average " << msg << std::endl;
                Matrix<double> Cov(inverseSVD(sumInfo));
                Vector<double> Sol(Cov * sumInfoState);
-               os << setw(14) << setprecision(4) << Sol << "    " << N;
+               os << std::setw(14) << std::setprecision(4) << Sol << "    " << N;
             }
             else os << " No data!";
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-      friend ostream& operator<<(ostream& s, const WtdAveStats& as);
+      friend std::ostream& operator<<(std::ostream& s, const WtdAveStats& as);
 
    }; // end class WtdAveStats
 
@@ -245,11 +245,11 @@ namespace gpstk
       }
 
       // dump statistics and weighted average
-      void dump(ostream& os, string msg="PRS") throw(Exception)
+      void dump(std::ostream& os, std::string msg="PRS") throw(Exception)
       {
          try {
             was.setMessage(msg);
-            os << was << endl;
+            os << was << std::endl;
 
             if(ndof > 0) {
                // scale covariance
@@ -263,8 +263,8 @@ namespace gpstk
                LabelledMatrix LM(NL,Cov);
                LM.scientific().setprecision(3).setw(14);
 
-               os << "Covariance: " << msg << endl << LM << endl;
-               os << "APV: " << msg << fixed << setprecision(3) << " sigma = "
+               os << "Covariance: " << msg << std::endl << LM << std::endl;
+               os << "APV: " << msg << std::fixed << std::setprecision(3) << " sigma = "
                   << sig << " meters with "
                   << ndof << " degrees of freedom.";
             }
@@ -273,7 +273,7 @@ namespace gpstk
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
 
-      friend ostream& operator<<(ostream& s, const PRSMemory& as);
+      friend std::ostream& operator<<(std::ostream& s, const PRSMemory& as);
 
    }; // end class PRSMemory
 
@@ -617,7 +617,7 @@ namespace gpstk
       CommonTime currTime;
 
       /// time formats used in prints
-      static const string calfmt,gpsfmt,timfmt;
+      static const std::string calfmt,gpsfmt,timfmt;
 
       /// empty vector used to detect default
       static const Vector<double> PRSNullVector;

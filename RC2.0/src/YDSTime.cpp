@@ -297,8 +297,8 @@ namespace gpstk
       // @param t YDSTime to append to stream \c s.
       // @return reference to \c s.
 
-   ostream& operator<<( ostream& s, 
-                        const YDSTime& yt )
+   std::ostream& operator<<( std::ostream& s, 
+                             const YDSTime& yt )
    {
       s << yt.printf("%04Y/%03j %s %P");
       return s;

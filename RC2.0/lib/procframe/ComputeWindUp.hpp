@@ -120,7 +120,7 @@ namespace gpstk
           */
       ComputeWindUp( XvtStore<SatID>& ephem,
                      const Position& stapos,
-                     string filename="PRN_GPS" )
+                     std::string filename="PRN_GPS" )
          : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
            fileData(filename)
       { };
@@ -158,14 +158,14 @@ namespace gpstk
 
 
          /// Returns name of "PRN_GPS"-like file containing satellite data.
-      virtual string getFilename(void) const
+      virtual std::string getFilename(void) const
       { return fileData; };
 
 
          /** Sets name of "PRN_GPS"-like file containing satellite data.
           * @param name      Name of satellite data file.
           */
-      virtual ComputeWindUp& setFilename(const string& name);
+      virtual ComputeWindUp& setFilename(const std::string& name);
 
 
          /// Returns nominal position of receiver station.
@@ -217,7 +217,7 @@ namespace gpstk
 
 
          /// Name of "PRN_GPS"-like file containing satellite data.
-      string fileData;
+      std::string fileData;
 
 
          /// A structure used to store phase data.
@@ -231,15 +231,15 @@ namespace gpstk
 
 
          /// Map to store station phase data
-      map<SatID, phaseData> phase_station;
+      std::map<SatID, phaseData> phase_station;
 
 
          /// Map to store satellite phase data
-      map<SatID, phaseData> phase_satellite;
+      std::map<SatID, phaseData> phase_satellite;
 
 
          /// Map to store satellite arc data
-      map<SatID, double> satArcMap;
+      std::map<SatID, double> satArcMap;
 
 
          /** Compute the value of the wind-up, in radians.

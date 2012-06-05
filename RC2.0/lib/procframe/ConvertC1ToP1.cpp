@@ -30,6 +30,8 @@
 
 #include "ConvertC1ToP1.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
 

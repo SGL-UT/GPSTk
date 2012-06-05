@@ -32,6 +32,7 @@
 #include "OceanLoading.hpp"
 #include "YDSTime.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

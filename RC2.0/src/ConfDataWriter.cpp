@@ -31,6 +31,7 @@
 
 #include "ConfDataWriter.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

@@ -236,7 +236,7 @@ namespace gpstk
       std::vector<ExtraWaveFact> extraWaveFactList;///< extra (per sat) WAVELENGTH FACT R2 only
       gpstk::Triple centerOfMass;                  ///< vehicle CENTER OF MASS: XYZ    (optional)
       std::vector<RinexObsID> obsTypeList;         ///< number & types of observations R2 only
-      map<std::string,vector<RinexObsID> > mapObsTypes; ///< map <sys char, vec<ObsID> >;
+      std::map<std::string,std::vector<RinexObsID> > mapObsTypes; ///< map <sys char, vec<ObsID> >;
                                                         ///< NB defines data vec in ObsData
       std::string sigStrengthUnit;                 ///< SIGNAL STRENGTH UNIT           (optional)
       double interval;                             ///< INTERVAL                       (optional)
@@ -247,11 +247,11 @@ namespace gpstk
       std::vector<Rinex3CorrInfo> infoPCVS;        ///< PCVS INFO                      (optional)
       int factor, factorPrev;                      ///< scale factor (temp holders)
       RinexObsID sysPhaseShiftObsID;               ///< save ObsID for cont. "PHASE SHIFT" R3.01
-      std::map<std::string, map<RinexObsID, map<RinexSatID,double> > > sysPhaseShift;
+      std::map<std::string, std::map<RinexObsID, std::map<RinexSatID,double> > > sysPhaseShift;
       std::map<RinexSatID,int> GlonassFreqNo;      ///< "GLONASS SLOT / FRQ #"    (optional) R3.01
       int leapSeconds;                             ///< LEAP SECONDS              (optional)
       short numSVs;                                ///< # OF SATELLITES           (optional)
-      std::map<RinexSatID,vector<int> > numObsForSat; ///< PRN / # OF OBS         (optional)
+      std::map<RinexSatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS         (optional)
       unsigned long valid;                         ///< bits set when header rec.s present & valid
       std::string satSysTemp,                      ///< save the syschar while reading ScaleFactor
                   satSysPrev;                      ///< recall the prev sat. sys for cont. lines

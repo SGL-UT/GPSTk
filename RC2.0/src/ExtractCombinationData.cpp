@@ -31,6 +31,7 @@
 
 #include "ExtractCombinationData.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

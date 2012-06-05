@@ -32,7 +32,7 @@
 
 #include "ConfDataReader.hpp"
 
-
+using namespace std;
 
 namespace gpstk
 {

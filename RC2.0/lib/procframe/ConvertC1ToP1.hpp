@@ -83,7 +83,7 @@ namespace gpstk
          /** Sets name of file containing DCBs data.
           * @param name      Name of the file containing DCB(P1-C1)
           */
-      virtual ConvertC1ToP1& setDCBFile(const string& fileP1C1);
+      virtual ConvertC1ToP1& setDCBFile(const std::string& fileP1C1);
 
          /** Returns a satTypeValueMap object, adding the new data generated
           *  when calling this object.

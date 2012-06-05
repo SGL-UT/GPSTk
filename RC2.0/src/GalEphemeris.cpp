@@ -55,9 +55,10 @@
 #include "TimeSystem.hpp"
 #include "GPS_URA.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
-   using namespace std;
 
    GalEphemeris::GalEphemeris()
       throw()
@@ -987,8 +988,8 @@ namespace gpstk
       foo = ( foo < getHOWTime(3) ) ? foo : getHOWTime(3) ;
 #else
       long foo = 
-         static_cast<long>( ::min( getHOWTime(1), 
-                                   ::min( getHOWTime(2), getHOWTime(3) ) ) );
+         static_cast<long>( std::min( getHOWTime(1), 
+                                      std::min( getHOWTime(2), getHOWTime(3) ) ) );
 #endif
          // The ephemeris comes on 30 second boundaries, so...
       foo/=30;  

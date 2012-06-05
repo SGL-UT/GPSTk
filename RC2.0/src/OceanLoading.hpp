@@ -89,7 +89,7 @@ namespace gpstk
           * @warning If filename is not given, this class will look for
           * a file named "oceanloading.blq" in the current directory.
           */
-      OceanLoading(string filename="oceanloading.blq")
+      OceanLoading(std::string filename="oceanloading.blq")
          : blqData(filename), fileData(filename) {};
 
 
@@ -106,13 +106,13 @@ namespace gpstk
           * reason, this is thrown. The text may have additional information
           * about the reason the request failed.
           */
-      Triple getOceanLoading( const string& name,
+      Triple getOceanLoading( const std::string& name,
                               const CommonTime& t )
          throw(InvalidRequest);
 
 
          /// Returns the name of BLQ file containing ocean tides harmonics data.
-      virtual string getFilename(void) const
+      virtual std::string getFilename(void) const
       { return fileData; };
 
 
@@ -120,7 +120,7 @@ namespace gpstk
           *
           * @param name      Name of BLQ tides harmonics data file.
           */
-      virtual OceanLoading& setFilename(const string& name);
+      virtual OceanLoading& setFilename(const std::string& name);
 
 
          /// Destructor
@@ -135,7 +135,7 @@ namespace gpstk
 
 
          /// Name of BLQ file containing ocean tides harmonics data.
-      string fileData;
+      std::string fileData;
 
 
          /** Compute the value of the corresponding astronomical arguments,

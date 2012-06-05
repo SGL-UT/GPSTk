@@ -33,6 +33,7 @@
 #include "SatDataReader.hpp"
 #include "Epoch.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

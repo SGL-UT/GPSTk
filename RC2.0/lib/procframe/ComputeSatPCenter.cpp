@@ -30,6 +30,7 @@
 
 #include "ComputeSatPCenter.hpp"
 
+using namespace std;
 
 namespace gpstk
 {

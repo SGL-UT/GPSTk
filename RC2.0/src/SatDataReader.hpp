@@ -41,8 +41,6 @@
 #include "SatID.hpp"
 
 
-using namespace std;
-
 namespace gpstk
 {
       /** @addtogroup formattedfile */
@@ -106,7 +104,7 @@ namespace gpstk
           * @param fn   Satellite data file to read
           *
           */
-      SatDataReader(const string& fn) : FFTextStream(fn.c_str(), std::ios::in)
+      SatDataReader(const std::string& fn) : FFTextStream(fn.c_str(), std::ios::in)
       { loadData(); }
 
 
@@ -115,7 +113,7 @@ namespace gpstk
 
 
          /// Method to open AND load satellite data file.
-      virtual void open(const string& fn);
+      virtual void open(const std::string& fn);
 
 
          /// Method to clear all previously loaded satellite data.
@@ -132,8 +130,8 @@ namespace gpstk
           * not found or epoch is out of proper launch/deactivation bounds,
           * this method will return an empty string.
           */
-      virtual string getBlock(const SatID& sat,
-                              const CommonTime& epoch) const;
+      virtual std::string getBlock(const SatID& sat,
+                                   const CommonTime& epoch) const;
 
 
          /** Method to get the GPS number of a given SV at a given epoch.
@@ -196,7 +194,7 @@ namespace gpstk
          CommonTime launchDate;         ///< SV launch date.
          CommonTime deactivationDate;   ///< SV deactivation date.
          int gpsNumber;              ///< GPS number.
-         string block;               ///< Block the SV belongs to
+         std::string block;               ///< Block the SV belongs to
       };
 
 
@@ -214,7 +212,7 @@ namespace gpstk
           */
       void setData(const SatID& sat,
                    const svData& data)
-      { SatelliteData.insert(pair<const SatID, svData>(sat, data)); }
+      { SatelliteData.insert(std::pair<const SatID, svData>(sat, data)); }
 
 
          /// Method to load satellite data in this class' data map

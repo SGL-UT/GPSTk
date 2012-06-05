@@ -31,6 +31,8 @@
 #include "GloEphemerisStore.hpp"
 #include "TimeString.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
 

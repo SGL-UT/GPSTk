@@ -33,9 +33,6 @@
 #include <vector>
 #include "Matrix.hpp"
 
-using namespace std;
-using namespace gpstk;
-
 namespace gpstk
 {
       /** @defgroup GPSsolutions GPS solution algorithms and Tropospheric
