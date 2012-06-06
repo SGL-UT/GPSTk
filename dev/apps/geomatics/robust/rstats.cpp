@@ -53,6 +53,7 @@ int BadOption(string& arg) {
 }
 //------------------------------------------------------------------------------------
 // TD i don't think weighted stddev is right...
+// TD add setw(width) everywhere
 int main(int argc, char **argv)
 {
    clock_t totaltime;            // for timing tests
@@ -61,57 +62,39 @@ int main(int argc, char **argv)
    try {
       bool help,nostats=false,plot=false,qplot=false,domin=false,domax=false;
       bool doKS=false,dobeg=false,doend=false,doseq=false;
-      int i,j,col=1,xcol=-1,fit=0,prec=3,brief=0;
-      double out=0.0,min,max,beg,end;
+      size_t pos;
+      int i,j,k,col=1,xcol=-1,fit=0,prec=3,width=0,windwid(0);
+      unsigned int brief=0;
+      double sigout=0.0,min,max,beg,end,dht(0.0),ddt(0.0);
       string filename,label=string();
       ostream *pout;
 
+      // process command line --------------------------------------------------
       help = (argc <= 1);
       for(i=1; i<argc; i++) {
          if(argv[i][0] == '-') { // && argv[i][1] == '-')
             string arg(argv[i]);
             if(arg == string("--help") || arg == string("-h"))
                help = true;
-            else if(arg == string("--plot") || arg == string("-p"))
-               plot = true;
-            else if(arg == string("--qplot") || arg == string("-q"))
-               qplot = true;
-            else if(arg == string("--outliers") || arg == string("--outs")
-                  || arg == string("-o")) {
-               if(i==argc-1) return BadOption(arg);
-               out = atof(argv[++i]);
-            }
-            else if(arg == string("--nostats") || arg == string("-n"))
-               nostats = true;
+// input
             else if(arg == string("--col")
                  || arg == string("-c") || arg == string("-y")) {
                if(i==argc-1) return BadOption(arg);
-               col = atoi(argv[++i]);
+               j = atoi(argv[++i]);
+               if(j <= 0) {
+                  cout << "Ignore invalid option --col " << j << endl;
+                  help = true;
+               }
+               else col = j;
             }
             else if(arg == string("--xcol") || arg == string("-x")) {
                if(i==argc-1) return BadOption(arg);
-               xcol = atoi(argv[++i]);
-            }
-            else if(arg == string("--fit") || arg == string("-f")) {
-               if(i==argc-1) return BadOption(arg);
-               fit = atoi(argv[++i]);
-            }
-            else if(arg == string("--seq") || arg == string("-s")) {
-               doseq = true;
-            }
-            else if(arg == string("--prec")) {
-               if(i==argc-1) return BadOption(arg);
-               prec = atoi(argv[++i]);
-            }
-            else if(arg == string("--min")) {
-               if(i==argc-1) return BadOption(arg);
-               min = atof(argv[++i]);
-               domin = true;
-            }
-            else if(arg == string("--max")) {
-               if(i==argc-1) return BadOption(arg);
-               max = atof(argv[++i]);
-               domax = true;
+               j = atoi(argv[++i]);
+               if(j <= 0) {
+                  cout << "Ignore invalid option --xcol " << j << endl;
+                  help = true;
+               }
+               else xcol = j;
             }
             else if(arg == string("--beg")) {
                if(i==argc-1) return BadOption(arg);
@@ -123,21 +106,60 @@ int main(int argc, char **argv)
                end = atof(argv[++i]);
                doend = true;
             }
+            else if(arg == string("--min")) {
+               if(i==argc-1) return BadOption(arg);
+               min = atof(argv[++i]);
+               domin = true;
+            }
+            else if(arg == string("--max")) {
+               if(i==argc-1) return BadOption(arg);
+               max = atof(argv[++i]);
+               domax = true;
+            }
+// plots
+            else if(arg == string("--plot"))
+               plot = true;
+            else if(arg == string("--qplot") || arg == string("-q"))
+               qplot = true;
+// analysis
+            else if(arg == string("--fit") || arg == string("-f")) {
+               if(i==argc-1) return BadOption(arg);
+               fit = atoi(argv[++i]);
+            }
+            else if(arg == string("--seq") || arg == string("-s")) {
+               doseq = true;
+            }
+            else if(arg == string("--nostats") || arg == string("-n"))
+               nostats = true;
+// outputs
+            else if(arg == string("--outliers") || arg == string("--outs")
+                  || arg == string("-o")) {
+               if(i==argc-1) return BadOption(arg);
+               sigout = atof(argv[++i]);
+            }
+            else if(arg == string("--prec") || arg == string("-p")) {
+               if(i==argc-1) return BadOption(arg);
+               prec = atoi(argv[++i]);
+            }
+            else if(arg == string("--width") || arg == string("-w")) {
+               if(i==argc-1) return BadOption(arg);
+               width = atoi(argv[++i]);
+            }
             else if(arg == string("--KS")) {
                doKS = true;
+            }
+            else if(arg.substr(0,7) == string("--brief") ||
+                    arg.substr(0,2) == string("-b")) {
+               if(arg == string("--brief") || arg == string("-b")) brief |= 1;
+               else if(arg == string("--briefc") || arg == string("-bc")) brief |= 1;
+               else if(arg == string("--briefw") || arg == string("-bw")) brief |= 2;
+               else if(arg == string("--briefr") || arg == string("-br")) brief |= 4;
+               else if(arg == string("--brief2") || arg == string("-b2")) brief |= 8;
+               else cout << "Ignore unknown option: " << arg << endl;
             }
             else if(arg == string("--label") || arg == string("-l")) {
                if(i==argc-1) return BadOption(arg);
                label = string(argv[++i]);
-            }
-            else if(arg.substr(0,7) == string("--brief") ||
-                    arg.substr(0,2) == string("-b")) {
-               if(arg == string("--brief") || arg == string("-b")) brief=1;
-               else if(arg == string("--briefc") || arg == string("-bc")) brief=1;
-               else if(arg == string("--briefw") || arg == string("-bw")) brief=2;
-               else if(arg == string("--briefr") || arg == string("-br")) brief=3;
-               else if(arg == string("--brief2") || arg == string("-b2")) brief=4;
-               else cout << "Ignore unknown option: " << arg << endl;
             }
             else {
                cout << "Ignore unknown option: " << arg << endl;
@@ -153,26 +175,31 @@ int main(int argc, char **argv)
 "Usage: rstats [options] <file>\n"
 "  Compute standard and robust statistics on numbers in one column of <file>.\n"
 "  Options (default):\n"
+"# input\n"
 "   --col <c>   use data in column <c> (1)\n"
 "   --xcol <cx> specify another column, and output 2-sample stats ()\n"
 "   --beg <b>   include only data that satisfies x > b\n"
 "   --end <e>   include only data that satisfies x < e\n"
 "   --min <lo>  include only data that satisfies d > lo\n"
 "   --max <hi>  include only data that satisfies d < hi\n"
+"# plots\n"
 "   --plot      generate a stem-and-leaf plot\n"
-"   --qplot     generate data for a quantile-quantile plot\n"
-"                (data written to file qplot.out)\n"
+"   --qplot     generate data for a quantile-quantile plot [write qplot.out]\n"
+"# analysis\n"
 "   --fit <f>   fit a robust polynomial of degree <f> (>0) to data,\n"
-"                using xcol as independent variable, output in rstats.out\n"
+"                using xcol as independent variable, output in rstats.out;\n"
+"                stats that follow are for residuals of fit.\n"
 "   --seq       output data, in input order, with sequential stats\n"
-"   --nostats   supress total stats output (for --fit and --seq)\n"
+"   --nostats   supress total stats output (for fit, seq)\n"
+"# outputs\n"
 "   --outs <s>  explicitly list all data outside s*outlier limits\n"
-"   --prec <p>  specify precision of fit and data outputs (" << prec << ")\n"
+"   --prec <p>  specify precision of all outputs (" << prec << ")\n"
+"   --width <w> specify width of all outputs (" << width << ")\n"
 "   --KS        output the Anderson-Darling statistic (a form of the KS-test),\n"
 "                where AD>0.752 means non-normal\n"
-"   --label <l> add label l to the output\n"
 "   --brief     brief output (conventional stats)\n"
-"                (use --briefw for weighted, --briefr for robust --brief2 for 2-sample)\n"
+"                (--briefw for wt'ed, --briefr for robust --brief2 for 2-sample)\n"
+"   --label <l> add label l to the (brief,fit,seq) outputs\n"
 "   --help      print this and quit\n"
          ;
          return -1;
@@ -183,6 +210,7 @@ int main(int argc, char **argv)
          return -1;
       }
 
+      // open input file -------------------------------------------------------
       istream *pin;                 // do it this way for Windows...
       if(!filename.empty()) {
          pin = new ifstream(filename.c_str());
@@ -201,10 +229,10 @@ int main(int argc, char **argv)
          ;
       }
       else {
-         cout << "rstats for ";
+         cout << "# rstats for ";
          if(pin == &cin) cout << "data from stdin";
          else            cout << "file: " << filename;
-         cout << ", stats (col " << col << ")";
+            cout << ", stats (col " << col << ")";
          if(xcol > -1) {
             cout << " and 2-sample stats (x-col " << xcol << ")";
             if(fit > 0) {
@@ -215,6 +243,7 @@ int main(int argc, char **argv)
          cout << endl;
       }
 
+      // read input file -------------------------------------------------------
       const int BUFF_SIZE=1024;
       char buffer[BUFF_SIZE];
       int nd,nxd;
@@ -223,6 +252,7 @@ int main(int argc, char **argv)
       vector<double> data,wts,xdata;
       Stats<double> cstats;
       TwoSampleStats<double> TSS;
+      ostringstream oss;
 
       nd = nxd = 0;
       while(pin->getline(buffer,BUFF_SIZE)) {
@@ -262,7 +292,7 @@ int main(int argc, char **argv)
 
          data.push_back(d);
          cstats.Add(d);
-      }
+      }  // end input loop
 
       if(pin != &cin) {
          ((ifstream *)pin)->close();
@@ -275,6 +305,10 @@ int main(int argc, char **argv)
          if(nd > 0) cout << " [data(col) not found on " << nd << " lines]";
          if(nxd > 0) cout << " [data(xcol) not found on " << nxd << " lines]";
          cout << "." << endl;
+         return -3;
+      }
+      if(xcol != -1 && xdata.size() == 0) {
+         cout << "Abort: No data found in 'x' column." << endl;
          return -3;
       }
       if(nd > data.size()/2)
@@ -291,7 +325,14 @@ int main(int argc, char **argv)
       //
       //cout << "Conventional median is " << median(data) << endl;
 
-      // process fit
+      // label used in output
+      oss.str("");
+      oss << "Data of column " << col;
+      if(xcol != -1) oss << ", x column " << xcol;
+      oss << ", file " << filename;
+      string msg(oss.str());
+
+      // process fit -----------------------------------------------------------
       if(fit > 0) {
          vector<double> savedata(data);
          double *coef,eval,tt,t0;
@@ -353,13 +394,20 @@ int main(int argc, char **argv)
             //QSort(&wts[0],wts.size());
             //Robust::StemLeafPlot(cout, &wts[0], wts.size(), "weights");
          }
-         cout << endl;
+         //cout << endl;
          delete[] coef;
          if(nostats) return 0;
-      }
 
+         oss.str("");
+         oss << "Residuals of fit (deg " << fit << ") col " << col
+            << " vs x col " << xcol << ", file " << filename;
+         msg = oss.str();
+      }  // end if fit
+
+      // output data with sequential stats -------------------------------------
       if(doseq) {
          cstats.Reset();
+         cout << "Data and sequential stats ([lab] [xdata] data n ave std)\n";
          cout << fixed << setprecision(prec);
          for(i=0; i<data.size(); i++) {
             cstats.Add(data[i]);
@@ -372,8 +420,10 @@ int main(int argc, char **argv)
          if(nostats) return 0;
       }
 
+      // compute robust stats --------------------------------------------------
       double median,mad,mest,Q1,Q3,KS;
-      QSort(&data[0],data.size());
+      if(xdata.size() > 0) QSort(&data[0],&xdata[0],data.size());
+      else                 QSort(&data[0],data.size());
       Robust::Quartiles(&data[0],data.size(),Q1,Q3);
       // outlier limit (high) 2.5Q3-1.5Q1
       // outlier limit (low ) 2.5Q1-1.5Q3
@@ -383,9 +433,10 @@ int main(int argc, char **argv)
 
       cout << fixed << setprecision(prec);
 
-      if(brief==1 || brief==4)
+      // output stats ----------------------------------------------------------
+      if(brief & 1 || brief & 8)
          cout << "rstats(con):" << (label.empty() ? "" : " "+label)
-            << " N " << cstats.N()
+            << " N " << setw(prec) << cstats.N()
             << "  Ave " << setw(prec+3) << cstats.Average()
             << "  Std " << setw(prec+3) << cstats.StdDev()
             << "  Var " << setw(prec+3) << cstats.Variance()
@@ -394,7 +445,8 @@ int main(int argc, char **argv)
             << "  P2P " << setw(prec+3) << cstats.Maximum()-cstats.Minimum()
             << endl;
       else if(brief==0)
-         cout << "Conventional statistics:\n" << cstats << endl;
+         cout << "Conventional statistics: " << msg << ":\n"
+               << cstats << endl;
 
       if(doKS) {
          KS = ADtest(&data[0],data.size(),cstats.Average(),cstats.StdDev(),false);
@@ -408,9 +460,9 @@ int main(int argc, char **argv)
          cstats.Add(data[i],wts[i]);
       }
 
-      if(brief==2) cout << "rstats(wtd)" << (fit==0 ? "" : "(fit resid)")
+      if(brief & 2) cout << "rstats(wtd)" << (fit==0 ? "" : "(fit resid)")
          << ":" << (label.empty() ? "" : " "+label)
-         << " N " << cstats.N()
+         << " N " << setw(prec) << cstats.N()
          << "  Ave " << setw(prec+3) << cstats.Average()
          << "  Std " << setw(prec+3) << cstats.StdDev()
          << "  Var " << setw(prec+3) << cstats.Variance()
@@ -419,12 +471,11 @@ int main(int argc, char **argv)
          << "  P2P " << setw(prec+3) << cstats.Maximum()-cstats.Minimum()
          << endl;
       else if(brief==0)
-         cout << "Conventional statistics with robust weighting"
-            << (fit==0 ? "" : " (fit resids)") << ":\n"
+         cout << "Conventional statistics with robust weighting: " << msg << ":\n"
             << fixed << setprecision(prec) << cstats << endl;
 
       if(xcol > -1) {
-         if(brief==4) cout << "rstats(2sm)"
+         if(brief & 8) cout << "rstats(2sm)"
             << ":" << (label.empty() ? "" : " "+label)
             << " N " << data.size()
             //<< " VarX " << setprecision(prec) << TSS.VarianceX()
@@ -435,10 +486,11 @@ int main(int argc, char **argv)
             << "  CSig " << setprecision(prec) << TSS.SigmaYX()
             << "  Corr " << setprecision(prec) << TSS.Correlation()
             << endl;
-         else cout << "Two-sample statistics:\n" << setprecision(prec) << TSS << endl;
+         else if(brief==0) cout << "Two-sample statistics: " << msg << ":\n"
+                                 << setprecision(prec) << TSS << endl;
       }
       
-      if(brief==3) cout << "rstats(rob)" << (fit==0 ? "" : "(fit resid)")
+      if(brief & 4) cout << "rstats(rob)" << (fit==0 ? "" : "(fit resid)")
          << ":" << (label.empty() ? "" : " "+label)
          << " N " << data.size()
          << "  Med " << setw(prec+3) << median << "  MAD " << mad
@@ -448,7 +500,7 @@ int main(int argc, char **argv)
          << "  Q1 " << setw(prec+3) << Q1 << "  Q3 " << setw(prec+3) << Q3
          << endl;
       else if(brief==0) {
-         cout << "Robust statistics" << (fit==0 ? "" : "(fit resids)") << ":\n";
+         cout << "Robust statistics: " << msg << ":\n";
 	      cout << " Number    = " << data.size() << endl;
 	      cout << " Quartiles = " << setw(11) << setprecision(prec) << Q1
                         << " " << setw(11) << setprecision(prec) << Q3 << endl;
@@ -457,10 +509,10 @@ int main(int argc, char **argv)
 	      cout << " MAD       = " << setw(11) << setprecision(prec) << mad << endl;
       }
 
+      // output stem and leaf plot ---------------------------------------------
       if(plot) {
          try {
-            Robust::StemLeafPlot(cout, &data[0], data.size(),
-            string("Robust stats for column ")+asString(col)+string(" of ")+filename);
+            Robust::StemLeafPlot(cout, &data[0], data.size(), msg);
          }
          catch(Exception& e) {
             if(e.getText(0) == string("Invalid input") ||
@@ -473,9 +525,10 @@ int main(int argc, char **argv)
          }
       }
 
-      if(out) {
-         double OH = Q3 + out*1.5*(Q3-Q1); // normally 2.5*Q3 - 1.5*Q1;
-         double OL = Q1 - out*1.5*(Q3-Q1); // normally 2.5*Q1 - 1.5*Q3;
+      // output outliers -------------------------------------------------------
+      if(sigout) {      // TD does this work when ave != 0?
+         double OH = Q3 + sigout*1.5*(Q3-Q1); // normally 2.5*Q3 - 1.5*Q1;
+         double OL = Q1 - sigout*1.5*(Q3-Q1); // normally 2.5*Q1 - 1.5*Q3;
          vector<int> outhi,outlo;
          for(i=0; i<data.size(); i++) {
             if(data[i] > OH)
@@ -486,15 +539,22 @@ int main(int argc, char **argv)
          cout << "There are " << outhi.size()+outlo.size() << " outliers; "
             << outlo.size() << " low (< " << setprecision(prec) << OL << ") and "
             << outhi.size() << " high (> " << setprecision(prec) << OH << ")."
-            << endl;
-         for(i=0; i<outlo.size(); i++)
-            cout << " OTL " << fixed << setprecision(prec)
-                << xdata[outlo[i]] << " " << data[outlo[i]] << endl;
-         for(i=0; i<outhi.size(); i++)
-            cout << " OTH " << fixed << setprecision(prec)
-                << xdata[outhi[i]] << " " << data[outhi[i]] << endl;
+            << endl << "     n  " << (xdata.size() > 0 ? "x-value" : "")
+            << "   value  val/outlim" << endl;
+         // NB data and xdata have been sorted together
+         for(j=1,i=0; i<outlo.size(); i++,j++) {
+            cout << " OTL " << j << " ";
+            if(xdata.size() > 0) cout << xdata[outlo[i]] << " ";
+            cout << data[outlo[i]] << " " << data[outlo[i]]/OL << endl;
+         }
+         for(i=0; i<outhi.size(); i++,j++) {
+            cout << " OTH " << j << " ";
+            if(xdata.size() > 0) cout << xdata[outhi[i]] << " ";
+            cout << data[outhi[i]] << " " << data[outhi[i]]/OH << endl;
+         }
       }
 
+      // output quantile plot --------------------------------------------------
       if(qplot) {
          xdata.resize(data.size());    // replace xcol data with quantiles.
          Robust::QuantilePlot(&data[0],data.size(),&xdata[0]);
@@ -523,7 +583,7 @@ int main(int argc, char **argv)
             << endl;
       }
 
-      // compute and print run time
+      // finish up - compute and print run time --------------------------------
       totaltime = clock()-totaltime;
       if(brief==0) cout << "rstats timing: " << fixed << setprecision(3)
          << double(totaltime)/double(CLOCKS_PER_SEC) << " seconds." << endl;
