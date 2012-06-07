@@ -74,6 +74,8 @@ namespace gpstk
 
       IODC = IODE = 0;
       Tgd = 0.0;
+     
+      isFIC = true;
 
       fitint = 0;
 
@@ -1233,6 +1235,11 @@ namespace gpstk
       haveSubframe[2] = true;
       return *this;
    }
+     
+  void EngEphemeris::setFIC(const bool arg)
+  {
+	isFIC = arg;
+  } 
 
    static void timeDisplay( ostream & os, const CommonTime& t )
    {
@@ -1295,6 +1302,8 @@ namespace gpstk
    void EngEphemeris :: dump(ostream& s) const
       throw()
    {
+      
+       
        // Check if the subframes have been loaded before attempting
        // to dump them.
       if (!haveSubframe[0] || !haveSubframe[1] || !haveSubframe[2])
@@ -1313,10 +1322,18 @@ namespace gpstk
 
       s << "****************************************************************"
         << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)" << endl
-        << endl
-        << "PRN : " << setw(2) << PRNID << endl
-        << endl;
+        << "Broadcast Ephemeris (Engineering Units)";
+	if(isFIC)
+	{
+		s << " -FIC" << endl;
+	}
+	else
+	{
+		s << " -RINEX" << endl;
+	}
+      s << endl;
+      s << "PRN : " << setw(2) << PRNID << endl;
+      s << endl;
 
 
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
@@ -1328,7 +1345,7 @@ namespace gpstk
       s << "Eph Epoch:    ";
       timeDisplay(s, orbit.getOrbitEpoch());
       s << endl;
-
+/*
 #if 0
          // FIX when moved from sf123, the tot got zapped.. because in
          // order for EngEphemeris to be able to use such a thing, it
@@ -1342,49 +1359,64 @@ namespace gpstk
         << " (" << getFitInt() << " hours)" << endl;
 #endif
          // nuts to the above, let's just make it look like navdump output
-      s << "Transmit Week:" << setw(4) << weeknum << endl
-        << "Fit interval flag :  " << fitint << endl;
-
-      s << endl
-        << "          SUBFRAME OVERHEAD"
-        << endl
-        << endl
-        << "               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S\n";
-      for (int i=0;i<3;i++)
+*/
+      s << "Transmit Time:";
+	timeDisplay(s, getTransmitTime());
+      s << endl;
+      s << "Fit interval flag :  " << fitint << endl;
+      if(isFIC)
       {
-         s << "SF" << setw(1) << (i+1)
-           << " HOW:   " << setw(7) << HOWtime[i]
-           << "  ";
+     	 s << endl
+      	  << "          SUBFRAME OVERHEAD"
+      	  << endl
+      	  << endl
+      	  << "               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S\n";
+     	 for (int i=0;i<3;i++)
+     	 {
+        	 s << "SF" << setw(1) << (i+1)
+          	 << " HOW:   " << setw(7) << HOWtime[i]
+          	 << "  ";
 
-         shortcut( s, HOWtime[i]);
-         if (i==0)
-            s << "   ";
-         else
-            s << "    ";
+       	 	 shortcut( s, HOWtime[i]);
+        	 if (i==0)
+        	    s << "   ";
+        	 else
+        	    s << "    ";
 
-         s << "0x" << setfill('0') << hex;
+       		  s << "0x" << setfill('0') << hex;
 
-         if (i==0)
-            s << setw(3) << IODC;
-         else
-            s << setw(2) << IODE;
+        	 if (i==0)
+           		 s << setw(3) << IODC;
+        	 else
+        	    s << setw(2) << IODE;
+	
+       		  s << dec << "      " << setfill(' ');
 
-         s << dec << "      " << setfill(' ');
+        	 if (ASalert[i] & 0x0002)    // "Alert" bit handling
+        	    s << "1     ";
+        	 else
+        	    s << "0     ";
 
-         if (ASalert[i] & 0x0002)    // "Alert" bit handling
-            s << "1     ";
-         else
-            s << "0     ";
-
-         if (ASalert[i] & 0x0001)     // A-S flag handling
-            s << " on";
-         else
-            s << "off";
-         s << endl;
-      }
-
+       		  if (ASalert[i] & 0x0001)     // A-S flag handling
+        	    s << " on";
+        	 else
+        	    s << "off";
+        	 s << endl;
+       }
+     }
+     else
+     {
+        s << endl;
+	s << "IODC: 0x"
+	  << setfill('0') << hex;
+	s << setw(3) << IODC << endl;
+	s << "IODE:  0x"
+	  << setfill('0') << hex;
+	s << setw(2) << IODE << endl;
+    }
       s.setf(ios::scientific, ios::floatfield);
       s.precision(8);
+      s.fill(' ');
 
       s << endl
         << "           CLOCK"
@@ -1451,15 +1483,16 @@ namespace gpstk
             break;
 
       }
+      if(isFIC)
+      {
+      	s << "  L2 P Nav data:          ";
+     	if (L2Pdata!=0)
+        	s << "off";
+      	else
+         	s << "on";
+      }
 
-      s << "    L2 P Nav data:          ";
-      if (L2Pdata!=0)
-         s << "off";
-      else
-         s << "on";
-
-      s << endl
-        << endl;
+      s << endl;
       s.flags(oldFlags);
 
    } // end of SF123::dump()

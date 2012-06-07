@@ -181,7 +181,7 @@ namespace gpstk
                 Toe, (fitint > 4) ? 1 : 0);
       ee.setSF3(0, HOWtime, 0, Cic, OMEGA0, Cis, i0, Crc, w, OMEGAdot,
                 idot);
-
+      ee.setFIC(false);
       ee.setAccuracy(accuracy);
 
       return ee;

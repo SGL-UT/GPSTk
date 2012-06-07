@@ -523,8 +523,9 @@ namespace gpstk
    
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
-         throw();
-
+         throw(); 
+    
+     void setFIC(const bool arg);
 
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */
@@ -533,7 +534,9 @@ namespace gpstk
                            const short PRN, 
                            const short track);
       long subframeStore[3][10];
-
+      // True if initialized with FIC data
+      bool isFIC;
+      
          /// Ephemeris overhead information
          //@{
       unsigned short tlm_message[3];
