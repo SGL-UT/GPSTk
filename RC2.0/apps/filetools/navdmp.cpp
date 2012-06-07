@@ -378,7 +378,18 @@ void NavDump::process()
       list<FICData>::iterator itr = ficlist.begin();
       while (itr != ficlist.end())
       {
-         (*itr).prettyDump(out);
+//         (*itr).prettyDump(out);
+	 FICData& f = *itr;
+	 if(f.blockNum == 9)
+	{
+	
+          EngEphemeris ee(f);
+	 ee.dump(out);
+	}
+	else
+	{
+	  f.prettyDump(out);
+	}	
          itr++;
       }
    }
