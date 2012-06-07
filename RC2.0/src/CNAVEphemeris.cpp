@@ -290,7 +290,7 @@ namespace gpstk
    }
 
    short CNAVEphemeris::getAlert(short messageNum)  const
-      throw( InvalidRequest )
+      throw( InvalidRequest, Exception )
    {
       if (!dataLoaded)
       {
@@ -299,6 +299,9 @@ namespace gpstk
       }
       if (messageNum == 10) return Alert[0];
       if (messageNum == 11) return Alert[1];
+
+	  Exception e("getAlert(): unrecognized value for messageNum: " + messageNum);
+	  GPSTK_THROW(e);
    }
 
    double CNAVEphemeris::getAccuracy()  const

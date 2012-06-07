@@ -177,12 +177,14 @@ class Rinex3NavHeader : public Rinex3NavBase
       IonoCorr(std::string str) { this->fromString(str); }
 
          /// Return string version of CorrType
-      std::string asString() const throw()
+      std::string asString() const throw(Exception)
       {
          switch(type) {
             case GAL: return std::string("GAL"); break;
             case GPSA: return std::string("GPSA"); break;
             case GPSB: return std::string("GPSB"); break;
+			default  : Exception e("Unrecognized IonoCorr type");
+				       GPSTK_THROW(e);
          }
       }
 

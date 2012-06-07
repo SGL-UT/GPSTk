@@ -47,6 +47,7 @@
 
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
+#include "Exception.hpp"
 
 namespace gpstk {
 
@@ -83,7 +84,7 @@ namespace gpstk {
       TimeSystemCorrection(std::string str) { this->fromString(str); }
 
          /// Return readable string version of CorrType
-      std::string asString() const throw()
+      std::string asString() const throw(Exception)
       {
          switch(type) {
             case GPUT: return std::string("GPS to UTC (A0,A1)"); break;
@@ -93,11 +94,13 @@ namespace gpstk {
             case GLUT: return std::string("GLO to UTC (TauC)"); break;
             case GPGA: return std::string("GPS to GAL (A0G,A1G)"); break;
             case GLGP: return std::string("GLO to GPS (TauGPS)"); break;
+			default  : Exception e("Cannot convert correction descriptor to string - unknown type");
+				       GPSTK_THROW(e);
          }
       }
 
          /// Return 4-char string version of CorrType
-      std::string asString4() const throw()
+      std::string asString4() const throw(Exception)
       {
          switch(type) {
             case GPUT: return std::string("GPUT"); break;
@@ -106,6 +109,8 @@ namespace gpstk {
             case GLUT: return std::string("GLUT"); break;
             case GPGA: return std::string("GPGA"); break;
             case GLGP: return std::string("GLGP"); break;
+			default  : Exception e("Cannot convert correction type to string - unknown type");
+				       GPSTK_THROW(e);
          }
       }
 

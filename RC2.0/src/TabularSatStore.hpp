@@ -15,6 +15,7 @@
 #include "SatID.hpp"
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
+#include "Xvt.hpp"
 
 namespace gpstk
 {
@@ -288,8 +289,8 @@ namespace gpstk
                   typename DataTable::const_iterator jt;
                   for(jt=it->second.begin(); jt!=it->second.end(); jt++)
                      os << " " << printTime(jt->first,fmt)
-                        << " " << it->first
-                        << " " << jt->second // NB requires operator<<(DataRecord)
+                        << " " << it->first << " ";
+                     os << jt->second // NB requires operator<<(DataRecord)
                         << std::endl;
                }
             }

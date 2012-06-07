@@ -39,6 +39,8 @@
 #include "RinexObsHeader.hpp"
 #include "GNSSconstants.hpp"
 #include "GPS_URA.hpp"
+#include "Xvt.hpp"
+#include "XvtStore.hpp"
 #include <vector>
 
 

@@ -41,18 +41,19 @@
 #define HAVE_STRING_H 1
 #define STDC_HEADERS  1
 
-typedef __int8  int8_t;
-typedef __int16 int16_t;
-typedef __int32 int32_t;
-typedef __int64 int64_t;
-typedef unsigned __int8  uint8_t;
-typedef unsigned __int16 uint16_t;
-typedef unsigned __int32 uint32_t;
-typedef unsigned __int64 uint64_t;
+//typedef __int8  int8_t;
+//typedef __int16 int16_t;
+//typedef __int32 int32_t;
+//typedef __int64 int64_t;
+//typedef unsigned __int8  uint8_t;
+//typedef unsigned __int16 uint16_t;
+//typedef unsigned __int32 uint32_t;
+//typedef unsigned __int64 uint64_t;
 
 
 #include <sys/types.h>
 #include <sys/timeb.h>
+#include <stdint.h>
 
 
 #elif defined(__SUNPRO_CC)

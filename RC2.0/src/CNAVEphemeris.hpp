@@ -54,6 +54,7 @@
 
 #include "BrcKeplerOrbit.hpp"
 #include "PackedNavBits.hpp"
+#include "Exception.hpp"
 
 namespace gpstk
 {

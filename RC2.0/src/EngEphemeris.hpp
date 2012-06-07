@@ -514,19 +514,18 @@ namespace gpstk
       EngEphemeris& setSF2( unsigned tlm, double how, short asalert, short iode,
                             double crs, double Dn, double m0, double cuc, double Ecc,
                             double cus, double ahalf, double toe, short fitInt )
-         throw();
+         throw( InvalidRequest );
 
       EngEphemeris& setSF3( unsigned tlm, double how, short asalert, double cic,
                             double Omega0, double cis, double I0, double crc,
                             double W, double OmegaDot, double IDot )
-         throw();
+         throw( InvalidRequest );
    
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
-         throw(); 
+         throw( InvalidRequest );
     
-     void setFIC(const bool arg);
-
+      void setFIC(const bool arg);
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */
 

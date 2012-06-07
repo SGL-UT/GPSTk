@@ -314,6 +314,8 @@ namespace gpstk
          
       bcClock.loadData( satSys, obsID, PRNID, TocCT,
                         accFlag, healthy, af0, af1, af2); 
+
+	  return true;
    }
 
    bool EngEphemeris::isData(short subframe) const
@@ -1091,7 +1093,7 @@ namespace gpstk
                                        double m0, double cuc, double Ecc,
                                        double cus, double ahalf, double toe,
                                        short fitInt )
-      throw()
+      throw( InvalidRequest )
    {
       tlm_message[1] = tlm;
       HOWtime[1] = static_cast<long>( how );
@@ -1163,7 +1165,7 @@ namespace gpstk
                                        double cic, double Omega0, double cis,
                                        double I0, double crc, double W,
                                        double OmegaDot, double IDot )
-      throw()
+      throw( InvalidRequest )
    {
       tlm_message[2] = tlm;
       HOWtime[2] = static_cast<long>( how );
@@ -1300,7 +1302,7 @@ namespace gpstk
    }
 
    void EngEphemeris :: dump(ostream& s) const
-      throw()
+      throw( InvalidRequest )
    {
       
        

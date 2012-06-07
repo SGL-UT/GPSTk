@@ -122,7 +122,7 @@ namespace gpstk
       Logger* pLogger = find(logname);
       if(pLogger)
       {
-         pLogger->setChannel(pChannel);
+         return pLogger->setChannel(pChannel);
       }
       else
       {
@@ -142,7 +142,7 @@ namespace gpstk
       Logger* pLogger = find(logname);
       if(pLogger)
       {
-         pLogger->setChannel(pChannel);
+         return pLogger->setChannel(pChannel);
       }
       else
       {
@@ -161,7 +161,7 @@ namespace gpstk
       Logger* pLogger = find(logname);
       if(pLogger)
       {
-         pLogger->setChannel(pChannel);
+         return pLogger->setChannel(pChannel);
       }
       else
       {

@@ -45,7 +45,7 @@
 #include "Xvt.hpp"
 
 // Output operator for Xvt
-// @param s output stream to which \c xvt is sent
+// @param os output stream to which \c xvt is sent
 // @param xvt Xvt that is sent to \c os
 std::ostream& operator<<(std::ostream& os, const gpstk::Xvt& xvt) throw()
 {
