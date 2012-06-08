@@ -62,6 +62,7 @@
 #include "BrcKeplerOrbit.hpp"
 #include "BrcClockCorrection.hpp"
 
+
 namespace gpstk
 {
    /** @addtogroup ephemcalc */
@@ -526,6 +527,7 @@ namespace gpstk
          throw( InvalidRequest );
     
       void setFIC(const bool arg);
+
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */
 
