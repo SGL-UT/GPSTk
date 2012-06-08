@@ -134,7 +134,7 @@ namespace gpstk
       
          /** This function returns the alert flag for either
           * message 10 or 11. */
-      short getAlert(short messageNum) const throw(gpstk::InvalidRequest);
+      short getAlert(short messageNum) const throw(gpstk::InvalidRequest, Exception);
       
          /** This function returns the value of the SV accuracy (m)
           * computed from the accuracy flag in the nav message. */
