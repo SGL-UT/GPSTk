@@ -55,6 +55,9 @@
 #include "RinexNavFilterOperators.hpp"
 #include "GPSWeekSecond.hpp"
 #include "gps_constants.hpp"
+#include "TimeString.hpp"
+#include "EngEphemeris.hpp"
+
 
 using namespace std;
 using namespace gpstk;
@@ -75,6 +78,7 @@ private:
    void getNewTime(CommonTime& dt);
    void getFICBlocks();
    void getSVs();
+   void printTerseHeader(ostream& s, const EngEphemeris ee);
 
    CommandOptionWithAnyArg inputFileOption;
    CommandOptionWithAnyArg outputFileOption;
@@ -92,12 +96,15 @@ private:
    CommandOptionWithNumberArg blockOption;
       /// command option for using a RINEX navigation message file (vice FIC)
    CommandOptionNoArg rinexOption;
+      /// command option for terse(one line) output
+   CommandOptionNoArg terseOption;
 
    CommonTime startTime, endTime;
    list<long> prnFilterList;
    list<long> blockFilterList;
    
    bool isRinexInput;
+   bool isTerse;
 };
 
 NavDump::NavDump(char* arg0)
@@ -120,6 +127,7 @@ NavDump::NavDump(char* arg0)
                        " default values for record filtration"),
         rinexOption('r',"RINEX", "Assume input file is a RINEX navigation"
                          " message file"),
+        terseOption('s', "terse", "One line per SF 1/2/3"),
         startTime(CommonTime::BEGINNING_OF_TIME),
         endTime(CommonTime::END_OF_TIME)
 {
@@ -130,6 +138,7 @@ NavDump::NavDump(char* arg0)
    timeOption.setMaxCount(1);
    eTimeOption.setMaxCount(1);
    isRinexInput = false;
+   isTerse = false;
 }
 
 void NavDump::printCurrentFilter()
@@ -182,6 +191,8 @@ bool NavDump::initialize(int argc, char* argv[]) throw()
 
    if (rinexOption.getCount())
       isRinexInput = true;
+   if(terseOption.getCount())
+      isTerse = true;
    
    return true;
 }
@@ -208,7 +219,10 @@ void NavDump::additionalSetup()
            << "\t3) Select specific PRNs" << endl;
       if (!isRinexInput)
       {
-      cout << "\t4) Select specific FIC block numbers" << endl;
+        if(!isTerse)    
+           cout << "\t4) Select specific FIC block numbers" << endl;
+        else
+           cout << "\t ) Terse output automatically filters for only Block 9" << endl;  
       }
       cout << "\t5) Process the file" << endl
            << "use ctrl-c to exit" << endl
@@ -236,7 +250,7 @@ void NavDump::additionalSetup()
             option = 0;
             break;
          case 4:
-            if (!isRinexInput) getFICBlocks();
+            if (!isRinexInput && !isTerse) getFICBlocks();
             option = 0;
             break;
          case 5:
@@ -349,7 +363,7 @@ void NavDump::getNewTime(CommonTime& dt)
 
 void NavDump::process()
 {
-   
+   bool isFirst = true;  
    ofstream out;
    out.open(outputFileOption.getValue()[0].c_str());
    if (out.fail())
@@ -360,7 +374,7 @@ void NavDump::process()
            << endl;
       return;
    }
-
+   
    if (!isRinexInput)
    {
          // filter the data...  first by block number, then by PRN
@@ -382,14 +396,24 @@ void NavDump::process()
 	 FICData& f = *itr;
 	 if(f.blockNum == 9)
 	{
-	
-          EngEphemeris ee(f);
-	 ee.dump(out);
+	  EngEphemeris ee(f);
+	  if(isTerse)
+          {
+            if(isFirst)
+            {
+              printTerseHeader(out, ee);
+              isFirst = false;
+            }
+            ee.dumpTerse(out);
+          } 
+          else
+            ee.dump(out);
 	}
 	else
-	{
-	  f.prettyDump(out);
-	}	
+	{ 
+          if(!isTerse)
+            f.prettyDump(out);
+        }	
          itr++;
       }
    }
@@ -406,10 +430,38 @@ void NavDump::process()
       {
          RinexNavData& r = *itr;
          EngEphemeris ee(r);
-         ee.dump(out);
+         if(isTerse)
+         {
+	    if(isFirst)
+            {
+              printTerseHeader(out, ee);
+              isFirst = false;
+            }
+            ee.dumpTerse(out);
+         }
+         else
+           ee.dump(out);
          itr++;
       }
    }
+}
+
+void NavDump::printTerseHeader(ostream& out, const EngEphemeris ee)
+{
+   std::cout.setf(std::ios::fixed);
+   std::cout.precision(0);
+   out.fill(' ');
+   string tform = "%04F(%4G)  %.0g  %03j   %.0s  %02m/%02d/%4Y  %02H:%02M:%02S";
+   out << "Epoch Time (Toe) of first SF 1/2/3                  ";
+   if(!isRinexInput)
+      out << " -FIC" << endl;
+   else
+      out << " -RINEX" << endl;
+   out << "Week(10bt)     SOW  UTD    SOD  MM/DD/YYYY  HH:MM:SS" << endl;
+   out << printTime(ee.getEpochTime(), tform);
+   out << endl << endl;
+   out << "         !     Xmit     !      Toe     !  End of Eff. ! URA(m) !  IODC !   Health  !" << endl;
+   out << " SVN PRN ! DOY hh:mm:ss ! DOY hh:mm:ss ! DOY hh:mm:ss !   dec  !   hex !  hex  dec !" << endl;
 }
 
 int main(int argc, char* argv[])
