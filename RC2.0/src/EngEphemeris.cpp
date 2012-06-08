@@ -1303,7 +1303,7 @@ namespace gpstk
          << setfill(' ');
    }
    void EngEphemeris :: dumpTerse(ostream& s) const
-      throw()
+      throw(InvalidRequest )
    {
      
        // Check if the subframes have been loaded before attempting

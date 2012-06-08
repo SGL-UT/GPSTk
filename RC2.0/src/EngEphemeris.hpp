@@ -527,6 +527,9 @@ namespace gpstk
          throw( InvalidRequest );
     
       void setFIC(const bool arg);
+     
+      void dumpTerse(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
 
 
       bool haveSubframe[3];/**< flags indicating presence of a subframe */
