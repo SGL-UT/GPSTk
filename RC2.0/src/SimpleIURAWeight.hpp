@@ -41,7 +41,14 @@
 #include "GPS_URA.hpp"
 #include "Xvt.hpp"
 #include "XvtStore.hpp"
+#include "Vector.hpp"
 #include <vector>
+
+#include "Position.hpp"
+#include "TropModel.hpp"
+#include "geometry.hpp"                   // DEG_TO_RAD
+#include <cmath>
+
 
 
 namespace gpstk
