@@ -53,6 +53,8 @@
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
 #include "GPS_URA.hpp"
+#include "TimeString.hpp"
+#include "SVNumXRef.hpp"
 
 namespace gpstk
 {
@@ -1300,6 +1302,59 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
+   void EngEphemeris :: dumpTerse(ostream& s) const
+      throw()
+   {
+     
+       // Check if the subframes have been loaded before attempting
+       // to dump them.
+      if (!haveSubframe[0] || !haveSubframe[1] || !haveSubframe[2])
+      {
+         InvalidRequest exc("Need to load subframes 1,2 and 3");
+         GPSTK_THROW(exc);
+      }
+
+      ios::fmtflags oldFlags = s.flags();
+
+      s.setf(ios::fixed, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.setf(ios::uppercase);
+      s.precision(0);
+      s.fill(' ');
+
+      SVNumXRef svNumXRef; 
+      int NAVSTARNum = 0;
+      try
+      {
+	NAVSTARNum = svNumXRef.getNAVSTAR(PRNID, bcClock.getEpochTime());
+        
+     
+        s << setw(2) << " " << NAVSTARNum << "  ";
+      }
+      catch(SVNumXRef::NoNAVSTARNumberFound)
+      { 
+	s << "XX  ";
+      }
+
+      s << setw(2) << PRNID << " ! ";
+      
+      string tform = "%3j %02H:%02M:%02S";
+
+      s << printTime(getTransmitTime(), tform) << " ! ";
+      s << printTime(bcClock.getEpochTime(), tform) << " ! ";
+      s << printTime(orbit.getEndOfFitInterval(), tform) << " !  ";
+
+      s << setw(4) << setprecision(1) << getAccuracy() << "  ! ";
+      s << "0x" << setfill('0') << hex << setw(3) << IODC << " ! ";
+      s << "0x" << setfill('0')  << setw(2) << health;
+      s << setfill(' ') << dec;
+      s << "    " << health << " ! ";
+
+      s << endl;
+      s.flags(oldFlags);
+
+    } // end of SF123::dumpTerse()
+
 
    void EngEphemeris :: dump(ostream& s) const
       throw( InvalidRequest )
