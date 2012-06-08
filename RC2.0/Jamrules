@@ -235,7 +235,7 @@ rule GPSBuildLibrary
    # Until we can figure out how to properly split our library, we just can't
    # build DLLs for Windows/cygwin.
    # so shared libraries are disabled for now
-   if $(UNIX) && $(OS) != CYGWIN
+   if $(UNIX) && $(OS) != CYGWIN && $(OS) != MACOSX
    {
      soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
