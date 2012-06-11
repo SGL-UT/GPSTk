@@ -60,6 +60,15 @@ namespace gpstk
       virtual ~SystemTime()
          throw()
       {}
+      
+         /**
+          * Copy Constructor.
+          * @param right a reference to teh SystemTime object to copy.
+          */
+      SystemTime( const SystemTime& right )
+         throw()
+            : UnixTime( right )
+      {}
          //@}
 
          /** 
@@ -68,16 +77,6 @@ namespace gpstk
           */
       SystemTime& update()
          throw();
-
-   protected:
-         /** 
-          * Disallow Copy Constructor.
-          */
-      SystemTime( const SystemTime& right )
-         throw()
-            : UnixTime( right )
-      {}
-
    };
 
 }
