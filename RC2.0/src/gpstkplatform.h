@@ -36,10 +36,12 @@
 
 #ifdef _MSC_VER
 
-#include<stdlib.h>
+#include <cstdlib>
 
 #define HAVE_STRING_H 1
 #define STDC_HEADERS  1
+
+// commented out - problems with doubly-defined types on Windows
 
 //typedef __int8  int8_t;
 //typedef __int16 int16_t;
@@ -51,19 +53,19 @@
 //typedef unsigned __int64 uint64_t;
 
 
-#include <sys/types.h>
+//#include <sys/types.h>
 #include <sys/timeb.h>
 #include <stdint.h>
 
 
-#elif defined(__SUNPRO_CC)
+#elif defined __SUNPRO_CC
 
 #include <sys/types.h>
 #include <sys/timeb.h>
 
 #else
 
-#include <stdint.h>
+#include <cstdint>
 
 #endif
 
