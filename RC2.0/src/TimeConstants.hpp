@@ -47,9 +47,9 @@ namespace gpstk
    const double MJD_TO_JD = 2400000.5;
       /// 'Julian day' offset from MJD
    const long MJD_JDAY = 2400001L;
-      /// 'Julian day' of GPS epoch (Jan. 1, 1980).
+      /// 'Julian day' of GPS epoch (Jan. 6, 1980).
    const long GPS_EPOCH_JDAY = 2444245L;
-      /// Modified Julian Date of GPS epoch (Jan. 1, 1980).
+      /// Modified Julian Date of GPS epoch (Jan. 6, 1980).
    const long GPS_EPOCH_MJD = 44244L;
       /// Modified Julian Date of UNIX epoch (Jan. 1, 1970).
    const long UNIX_MJD = 40587L;
