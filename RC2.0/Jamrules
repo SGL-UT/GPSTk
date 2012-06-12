@@ -196,8 +196,12 @@ rule GPSSetupLibrary
 {
    local lib = [ FGristFiles $(LIBPREFIX)$(<:S=$(SUFLIB)) ] ;
    MakeLocate $(lib) : $(LOCATE_SOURCE) ;
-   Echo "GPSSetupLib lib = " $(lib) ;
-   Echo "GPSSetupLib SUFLIB = " $(SUFLIB) ;
+
+# Debug prints to examine library variables
+
+#   Echo "GPSSetupLib lib = " $(lib) ;
+#   Echo "GPSSetupLib SUFLIB = " $(SUFLIB) ;
+
    $(1)_DIR = $(SUBDIR) ;
    $(1)_GRIST = $(lib) ;
    $(1)_DEPENDENCIES = $(2) ;
@@ -231,8 +235,8 @@ rule GPSBuildLibrary
 
 # get some visibility into library values
 
-   Echo " LIBDIR IS " $(LIBDIR) ;
-   Echo " ARLIB IS " $(arlib) ;
+#   Echo " LIBDIR IS " $(LIBDIR) ;
+#   Echo " ARLIB IS " $(arlib) ;
 
    # Windows/cygwin is limited to 1024 character command lines.  
    # This goes over that.
@@ -249,7 +253,7 @@ rule GPSBuildLibrary
 
    if $(UNIX) && $(OS) != CYGWIN && $(OS) != MACOSX
    {
-     Echo " Inside UNIX (non-Cygwin/Mac) Block " ;
+#    Echo " Inside UNIX (non-Cygwin/Mac) Block " ;
      soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
      shrobjs = $(>:S=$(SUFOBJ2)) ;
