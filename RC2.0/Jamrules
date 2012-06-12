@@ -80,7 +80,6 @@ if $(UNIX)
 }
 else if $(NT)
 {
-   Echo " else if NT is TRUE " ;
    LIBPREFIX       = "" ;
    # do NOT define __STDC__ here
 
