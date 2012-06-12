@@ -31,14 +31,14 @@ Clock Drift EE: 2.3874235922e-12
 Dump Output for Test Cases 4 and 6.
 dump EE:
 ****************************************************************************
-Broadcast Ephemeris (Engineering Units)
+Broadcast Ephemeris (Engineering Units) -FIC
 
 PRN :  3
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
 Clock Epoch:  1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
 Eph Epoch:    1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
-Transmit Week:1638
+Transmit Time:1638( 614)  381600   Thu-4   153   36000   06/02/2011   10:00:00
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
@@ -74,8 +74,7 @@ In-track      Sine:   8.35768878E-06 rad  Cosine:   9.57399607E-07 rad
            SV STATUS
 
 Health bits:   0x00      URA index:    0
-Code on L2:    P only      L2 P Nav data:          on
-
+Code on L2:    P only    L2 P Nav data:          on
 
 dump co4:
 ****************************************************************************

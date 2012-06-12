@@ -44,14 +44,14 @@ Before ESF1load.setSF1
 dump output for Test Cases 4,6, and 9.
 EE dump: 
 ****************************************************************************
-Broadcast Ephemeris (Engineering Units)
+Broadcast Ephemeris (Engineering Units) -FIC
 
 PRN :  3
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
 Clock Epoch:  1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
 Eph Epoch:    1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
-Transmit Week:1638
+Transmit Time:1638( 614)  381600   Thu-4   153   36000   06/02/2011   10:00:00
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
@@ -87,8 +87,7 @@ In-track      Sine:   8.35768878E-06 rad  Cosine:   9.57399607E-07 rad
            SV STATUS
 
 Health bits:   0x00      URA index:    0
-Code on L2:    P only      L2 P Nav data:          on
-
+Code on L2:    P only    L2 P Nav data:          on
 
 ko4 dump: 
 ****************************************************************************
@@ -119,14 +118,14 @@ In-track      Sine:   8.35768878E-06 rad  Cosine:   9.57399607E-07 rad
 
 setSubframe methods: 
 ****************************************************************************
-Broadcast Ephemeris (Engineering Units)
+Broadcast Ephemeris (Engineering Units) -FIC
 
 PRN :  3
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
 Clock Epoch:  1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
 Eph Epoch:    1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
-Transmit Week:1638
+Transmit Time:1638( 614)  381600   Thu-4   153   36000   06/02/2011   10:00:00
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
@@ -162,19 +161,18 @@ In-track      Sine:   8.35768878E-06 rad  Cosine:   9.57399607E-07 rad
            SV STATUS
 
 Health bits:   0x00      URA index:    5
-Code on L2:    P only      L2 P Nav data:          on
-
+Code on L2:    P only    L2 P Nav data:          on
 
 SF1,2, and 3 methods: 
 ****************************************************************************
-Broadcast Ephemeris (Engineering Units)
+Broadcast Ephemeris (Engineering Units) -FIC
 
 PRN :  3
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
 Clock Epoch:  1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
 Eph Epoch:    1638( 614)  388800   Thu-4   153   43200   06/02/2011   12:00:00
-Transmit Week:1638
+Transmit Time:1638( 614)  381600   Thu-4   153   36000   06/02/2011   10:00:00
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
@@ -210,18 +208,17 @@ In-track      Sine:   8.35768878E-06 rad  Cosine:   9.57399607E-07 rad
            SV STATUS
 
 Health bits:   0x00      URA index:    5
-Code on L2:    P only      L2 P Nav data:          on
-
+Code on L2:    P only    L2 P Nav data:          on
 
 ****************************************************************************
-Broadcast Ephemeris (Engineering Units)
+Broadcast Ephemeris (Engineering Units) -FIC
 
 PRN :  9
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
 Clock Epoch:  1639( 615)       0   Sun-0   156       0   06/05/2011   00:00:00
 Eph Epoch:    1639( 615)       0   Sun-0   156       0   06/05/2011   00:00:00
-Transmit Week:1638
+Transmit Time:1638( 614)  597600   Sat-6   155   79200   06/04/2011   22:00:00
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
@@ -257,8 +254,7 @@ In-track      Sine:   1.83656812E-06 rad  Cosine:   1.31130219E-06 rad
            SV STATUS
 
 Health bits:   0x00      URA index:    0
-Code on L2:    P only      L2 P Nav data:          on
-
+Code on L2:    P only    L2 P Nav data:          on
 
 
 Fit Interval Tests
