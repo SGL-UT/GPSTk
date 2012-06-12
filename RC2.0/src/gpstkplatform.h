@@ -65,7 +65,7 @@
 
 #else
 
-#include <cstdint>
+#include <stdint.h>
 
 #endif
 

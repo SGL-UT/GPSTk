@@ -31,6 +31,7 @@ if $(UNIX)
    switch $(OS)
    {
       case CYGWIN :
+#         Echo " Setting Cygwin LINKLIBS " ;
          LINKLIBS += -lstdc++ ;
 
       case LINUX :
@@ -79,6 +80,7 @@ if $(UNIX)
 }
 else if $(NT)
 {
+   Echo " else if NT is TRUE " ;
    LIBPREFIX       = "" ;
    # do NOT define __STDC__ here
 
@@ -142,7 +144,7 @@ if $(PREFIX)
    BINDIR = [ FDirName $(PREFIX) bin ] ;
    LIBDIR = [ FDirName $(PREFIX) lib ] ;
    INCDIR = [ FDirName $(PREFIX) include gpstk ] ;
-#   Echo " BINDIR=" $(BINDIR) ; Echo " LIBDIR=" $(LIBDIR) ; Echo " INCDIR="$(INCDIR) ;
+#   Echo " BINDIR=" $(BINDIR) ; Echo " LIBDIR=" $(LIBDIR) ; Echo " INCDIR=" $(INCDIR) ;
 }
 
 # debug - edit this as needed.
@@ -194,6 +196,8 @@ rule GPSSetupLibrary
 {
    local lib = [ FGristFiles $(LIBPREFIX)$(<:S=$(SUFLIB)) ] ;
    MakeLocate $(lib) : $(LOCATE_SOURCE) ;
+   Echo "GPSSetupLib lib = " $(lib) ;
+   Echo "GPSSetupLib SUFLIB = " $(SUFLIB) ;
    $(1)_DIR = $(SUBDIR) ;
    $(1)_GRIST = $(lib) ;
    $(1)_DEPENDENCIES = $(2) ;
@@ -235,8 +239,17 @@ rule GPSBuildLibrary
    # Until we can figure out how to properly split our library, we just can't
    # build DLLs for Windows/cygwin.
    # so shared libraries are disabled for now
+
+   # Debug prints - environment variables used by jam 
+
+#   Echo " UNIX: " $(UNIX) ;
+#   Echo " CYGWIN: " $(CYGWIN) ;
+#   Echo " MACOSX: " $(MACOSX) ;
+#   Echo " OS: " $(OS) ;
+
    if $(UNIX) && $(OS) != CYGWIN && $(OS) != MACOSX
    {
+     Echo " Inside UNIX (non-Cygwin/Mac) Block " ;
      soname = $(LIBPREFIX)$(<:S=$(SUFLIBSHR)).$(GPSTK_SO_VERSION) ;
      shlib = $(LIBPREFIX)$(<:S=$(SUFLIBSHR).$(GPSTK_SO_VERSION).0) ;
      shrobjs = $(>:S=$(SUFOBJ2)) ;
@@ -261,6 +274,7 @@ rule GPSBuildLibrary
         shlib = $(LIBPREFIX)$(<:S=.$(GPSTK_SO_VERSION)$(SUFLIBSHR).0) ;
         LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM)  -install_name @rpath/$(soname) ;
      }
+
      Depends lib : $(shlib) ;
      LibObjects $(>) ;
      MainFromObjects $(shlib) : $(shrobjs) ;
