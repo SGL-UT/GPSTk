@@ -1,0 +1,14 @@
+Time of Transmission: 2455715 44084000 0.000000000000000 GPS
+Time of Transmission pcb: 1638, 389684.000000
+****************************************************************************
+Packed Nav Bits
+
+SatID:  GPS 1
+
+Carrier: L2      Code: GPSC2L+M
+
+Number Of Bits: 0
+
+              Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
+Clock Epoch:  1638( 614)  389684   Thu-4   153   44084  06/02/2011   12:14:44
+

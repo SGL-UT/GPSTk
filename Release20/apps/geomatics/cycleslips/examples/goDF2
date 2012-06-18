@@ -1,0 +1,16 @@
+# run DiscFix
+../DiscFix -fdf_occult.inp -ichmp0110.02o.G31
+#
+# correct the data, creating a new Rinex file
+../../Rinextools/EditRinex -IFchmp0110.02o.G31 -OFchmpDF.obs -TT0.5 -fdf.out
+#
+# see a table of the results
+grep "^GDC" df.log
+#
+# look at results for Sat G31, unique number 6, using gnuplot
+sed -n -e "s/WLSS 6 G31 [1-9] //p" df.log > junk
+awk -f mjd2gps.awk -v C=1 -v ROLL=NO -v WEEK=NO junk > WLSS6G31.dat
+sed -n -e "s/GFRF 6 G31 [1-9] //p" df.log > junk
+awk -f mjd2gps.awk -v C=1 -v ROLL=NO -v WEEK=NO junk > GFRF6G31.dat
+/usr/bin/gnuplot -persist WLSS6.gp
+/usr/bin/gnuplot -persist GFP6.gp

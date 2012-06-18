@@ -1,0 +1,2 @@
+SubDir TOP RinexMet ;
+TestMain RinexMet/xRinexMet.tst : RinexMet/xRinexMetM.cpp RinexMet/xRinexMet.cpp RinexMet/RinexMetBase.cpp RinexMet/RinexMetData.cpp RinexMet/RinexMetHeader.cpp RinexMet/RinexMetFilterOperators.cpp RinexMet/RinexMetStream.cpp ;

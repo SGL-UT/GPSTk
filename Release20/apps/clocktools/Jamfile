@@ -1,0 +1,19 @@
+# $Id: Jamfile 1210 2008-04-22 03:46:29Z ocibu $
+
+SubDir TOP apps clocktools ;
+
+GPSLinkLibraries dallandev ffp mallandev nallandev oallandev ohadamarddev ORDPhaseParser pff rmoutlier scale tallandev TIAPhaseParser trunc : gpstk ;
+
+GPSMain dallandev : dallandev.cpp ;
+GPSMain ffp : ffp.cpp ;
+GPSMain mallandev : mallandev.cpp ;
+GPSMain nallandev : nallandev.cpp ;
+GPSMain oallandev : oallandev.cpp ;
+GPSMain ohadamarddev : ohadamarddev.cpp ;
+GPSMain ORDPhaseParser : ORDPhaseParser.cpp ;
+GPSMain pff : pff.cpp ;
+GPSMain rmoutlier : rmoutlier.cpp ;
+GPSMain scale : scale.cpp ;
+GPSMain tallandev : tallandev.cpp ;
+GPSMain TIAPhaseParser : TIAPhaseParser.cpp ;
+GPSMain trunc : trunc.cpp ;

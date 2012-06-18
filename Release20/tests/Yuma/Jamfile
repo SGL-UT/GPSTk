@@ -1,0 +1,2 @@
+SubDir TOP Yuma ;
+TestMain Yuma/xYuma.tst : Yuma/xYuma.cpp Yuma/YumaBase.cpp Yuma/YumaData.cpp Yuma/YumaStream.cpp Yuma/StringUtils.cpp ;
