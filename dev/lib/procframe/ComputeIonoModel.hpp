@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -100,7 +100,7 @@ namespace gpstk
          /// Default constructor.
       ComputeIonoModel()
          : ionoType(Zero), nominalPos(0.0,0.0,0.0)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -109,7 +109,7 @@ namespace gpstk
           */
       ComputeIonoModel(const Position& stapos) 
          : ionoType(Zero), nominalPos(stapos)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -118,7 +118,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -176,10 +176,6 @@ namespace gpstk
       virtual ComputeIonoModel& setNominalPosition(const Position& stapos)
         { nominalPos = stapos; return (*this); };
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -189,6 +185,7 @@ namespace gpstk
 
 
    private:
+
 
       IonoModelType  ionoType;
 
@@ -200,19 +197,6 @@ namespace gpstk
 
          /// Receiver position
       Position nominalPos;
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'ComputeIonoModel'

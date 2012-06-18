@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -87,7 +87,7 @@ public:
    gpstk::MDPObsEpoch currentObs[13];
    gpstk::MDPPVTSolution currentPvt;
    gpstk::MDPSelftestStatus currentSts;
-   gpstk::DayTime lastUpdateTime;
+   gpstk::CommonTime lastUpdateTime;
 
    // This is really a triple: prn, RangeCode, CarrierCode
    typedef std::pair<gpstk::RangeCode, gpstk::CarrierCode> RangeCarrierPair;

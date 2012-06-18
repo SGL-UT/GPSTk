@@ -5,8 +5,8 @@
  * Class to compute the code-based solution using a simple Kalman solver.
  */
 
-#ifndef CODEKALMANSOLVER_HPP
-#define CODEKALMANSOLVER_HPP
+#ifndef GPSTK_CODEKALMANSOLVER_HPP
+#define GPSTK_CODEKALMANSOLVER_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -353,10 +353,6 @@ namespace gpstk
       { qMatrix = pMatrix; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -428,20 +424,10 @@ namespace gpstk
       WhiteNoiseModel whitenoiseModel;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'CodeKalmanSolver'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // CODEKALMANSOLVER_HPP
+
+#endif   // GPSTK_CODEKALMANSOLVER_HPP

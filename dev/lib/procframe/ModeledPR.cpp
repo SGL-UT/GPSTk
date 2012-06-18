@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -294,7 +294,7 @@ namespace gpstk
        *  0 if OK
        *  -1 if problems arose
        */
-   int ModeledPR::Prepare( const DayTime& Tr,
+   int ModeledPR::Prepare( const CommonTime& Tr,
                            std::vector<SatID>& Satellite,
                            std::vector<double>& Pseudorange,
                            const XvtStore<SatID>& Eph )
@@ -303,7 +303,7 @@ namespace gpstk
       Matrix<double> SVP;
       Bancroft Ban;
       Vector<double> vPos;
-      PRSolution raimObj;
+      PRSolution2 raimObj;
 
       try
       {
@@ -342,7 +342,7 @@ namespace gpstk
        *  0 if OK
        *  -1 if problems arose
        */
-   int ModeledPR::Prepare( const DayTime& Tr,
+   int ModeledPR::Prepare( const CommonTime& Tr,
                            const Vector<SatID>& Satellite,
                            const Vector<double>& Pseudorange,
                            const XvtStore<SatID>& Eph )
@@ -372,7 +372,7 @@ namespace gpstk
       /* Method to set an a priori position of receiver using Bancroft's
        * method. Intended to be used with GNSS data structures.
        *
-       * @param time      DayTime object for this epoch
+       * @param time      CommonTime object for this epoch
        * @param data      satTypeValueMap data structure holding
        *                  the data.
        *
@@ -380,7 +380,7 @@ namespace gpstk
        *  0 if OK
        *  -1 if problems arose
        */
-   int ModeledPR::Prepare( const DayTime& time,
+   int ModeledPR::Prepare( const CommonTime& time,
                            const satTypeValueMap& data )
    {
 
@@ -418,10 +418,11 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s,
-                           GeoidModel *geoid )
+                           EllipsoidModel *ell,
+                           ReferenceFrame frame )
    {
 
-      int result = setInitialRxPosition(aRx, bRx, cRx, s, geoid);
+      int result = setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
 
          // If everything is OK, the model is prepared
       if( result == 0 )
@@ -472,7 +473,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ModeledPR::processModel( const DayTime& time,
+   satTypeValueMap& ModeledPR::processModel( const CommonTime& time,
                                              satTypeValueMap& gData )
       throw(Exception)
    {

@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 #ifndef GPSTK_CIVILTIME_HPP
 #define GPSTK_CIVILTIME_HPP
 
@@ -21,13 +19,28 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "TimeTag.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -39,6 +52,7 @@ namespace gpstk
    class CivilTime : public TimeTag
    {
    public:
+
          /**
           * @defgroup caltbo CivilTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
@@ -53,10 +67,11 @@ namespace gpstk
                  int dy = 0,
                  int hr = 0,
                  int mn = 0,
-                 double s = 0.0 )
+                 double s = 0.0,
+                 TimeSystem ts = TimeSystem::Unknown )
          throw()
-            : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s) 
-      {}
+	    : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s)
+      { timeSystem = ts; }
       
          /**
           * Copy Constructor.
@@ -64,10 +79,9 @@ namespace gpstk
           */
       CivilTime( const CivilTime& right )
          throw()
-            : year( right.year ), month( right.month ), day( right.day ),
-              hour( right.hour ), minute( right.minute ), 
-              second( right.second )
-      {}
+            : year( right.year ), month( right.month )  , day( right.day ),
+              hour( right.hour ), minute( right.minute ), second( right.second )
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -77,7 +91,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       CivilTime( const TimeTag& right )
-         throw( InvalidRequest )
+         throw()
       {
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
@@ -117,7 +131,7 @@ namespace gpstk
       
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -146,14 +160,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "YymbBdHMSf";
+         return "YymbBdHMSfP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%02m/%02d/%04Y %02H:%02M:%02S";
+         return "%02m/%02d/%04Y %02H:%02M:%02S %P";
       }
 
       virtual bool isValid() const
@@ -175,13 +189,13 @@ namespace gpstk
       bool operator!=( const CivilTime& right ) const
          throw();
       bool operator<( const CivilTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>( const CivilTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const CivilTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const CivilTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       int year;
@@ -192,6 +206,17 @@ namespace gpstk
       double second;
 
    };
+
+      // -----------CivilTime operator<< -----------
+      //
+      /**
+       * Stream output for CivilTime objects.  Typically used for debugging.
+       * @param s stream to append formatted YDSTime to.
+       * @param cit CivilTime to append to stream \c s.
+       * @return reference to \c s.
+       */
+   std::ostream& operator<<( std::ostream& s,
+                             const gpstk::CivilTime& cit );
 
 } // namespace
 

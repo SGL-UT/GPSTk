@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -39,9 +39,9 @@
 #ifndef DDEPOCH_HPP
 #define DDEPOCH_HPP
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <stl_helpers.hpp>
-#include <icd_200_constants.hpp>
+#include <GNSSconstants.hpp>
 
 #include "ElevationRange.hpp"
 #include "SvElevationMap.hpp"
@@ -93,7 +93,7 @@ struct DDEpoch
 };
 
 
-struct DDEpochMap : public std::map<gpstk::DayTime, DDEpoch>
+struct DDEpochMap : public std::map<gpstk::CommonTime, DDEpoch>
 {
 
    // compute the double difference of all common epochs

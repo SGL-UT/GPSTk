@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -32,6 +32,7 @@
 #include <iomanip>
 
 #include "StringUtils.hpp"
+#include "CommonTime.hpp"
 #include "MSCStore.hpp"
 #include "MathBase.hpp"
 
@@ -43,27 +44,12 @@ namespace gpstk
 {
       // The number o seconds in a year is 365 and a quetar days time
       // the number of seconds in a day.
-   const double MSCStore::SEC_YEAR = 365.25 * DayTime::SEC_DAY;
+   const double MSCStore::SEC_YEAR = 365.25 * gpstk::SEC_PER_DAY;
    
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   Xvt MSCStore::getXvt(const std::string stationID, const DayTime& t)
-      const throw(InvalidRequest)
-   {
-      try
-      {
-            // Find an appropriate MSCData object.  
-         const MSCData& msc = findMSC( stationID, t ); 
 
-         return( msc.getXvt(t) );
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
-   } // end of MSCStore::getXvt()
-
-   Xvt MSCStore::getXvt(unsigned long stationIDno, const DayTime& t)
+   Xvt MSCStore::getXvt(unsigned long& stationIDno, const CommonTime& t)
       const throw(InvalidRequest)
    {
       try
@@ -81,7 +67,7 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void MSCStore::dump(std::ostream& s, short detail) const
+   void MSCStore::dump(ostream& s, short detail) const
       throw()
    {
       MMci it;
@@ -97,13 +83,13 @@ namespace gpstk
          s << " Span is " << initialTime
            << " to " << finalTime
            << " with " << msc_count << " entries."
-           << std::endl;
+           << endl;
       }
       else
       {
          for (it = mscMap.begin(); it != mscMap.end(); it++)
          {
-            s << "Coordinates for station '" << (std::string) it->first << "'" << endl;
+            s << "Coordinates for station '" << (string) it->first << "'" << endl;
             SMMci it2;
             for (it2 = it->second.begin(); it2 != it->second.end(); ++it2)
             {
@@ -114,10 +100,10 @@ namespace gpstk
                  << ", Eff epoch   " << em.effepoch
                  << ", Coordinates " << em.coordinates
                  << ", Velocities  " << em.velocities   
-                 << std::endl;
+                 << endl;
             }
          }
-         s << "  End of MSCStore data." << std::endl << std::endl;
+         s << "  End of MSCStore data." << endl << endl;
       }
    } // end of MSCStore::dump()
 
@@ -143,7 +129,7 @@ namespace gpstk
 //   Cases 1-5 are degenerate examples of case 6.
 //
 //-----------------------------------------------------------------------------
-   void MSCStore::edit(const DayTime& tmin, const DayTime& tmax)
+   void MSCStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
       
@@ -180,7 +166,7 @@ namespace gpstk
 
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
-   void MSCStore::loadFile(const std::string& filename)
+   void MSCStore::loadFile(const string& filename)
       throw(FileMissingException)
    {
       try
@@ -214,7 +200,7 @@ namespace gpstk
       throw()
    {
          // Chop off any leading/trailing whitespace
-      std::string key = StringUtils::stripTrailing(msc.mnemonic);
+      string key = StringUtils::stripTrailing(msc.mnemonic);
       key = StringUtils::stripLeading(key);
       
       StaMSCMap& mm = mscMap[key];
@@ -229,12 +215,12 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const MSCData&
-   MSCStore::findMSC(const unsigned long stationID, const DayTime& t) 
+   MSCStore::findMSC(const unsigned long stationID, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       try
       {
-         std::string sid = StringUtils::asString( stationID );
+         string sid = StringUtils::asString( stationID );
          return( findMSC( sid, t ));
       }
       catch(InvalidRequest& ir)
@@ -245,12 +231,12 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const MSCData&
-   MSCStore::findMSC(const std::string stationID, const DayTime& t) 
+   MSCStore::findMSC(const string stationID, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       try
       {
-         std::string key = StringUtils::stripTrailing( stationID );
+         string key = StringUtils::stripTrailing( stationID );
          key = StringUtils::stripLeading( key ); 
          MMci mm = mscMap.find( key );
 
@@ -286,15 +272,14 @@ namespace gpstk
          StaMSCMap::const_reverse_iterator smmir;
          for (smmir = mm->second.rbegin(); smmir != mm->second.rend(); ++smmir)
          {
-            const DayTime& dtr = smmir->first;
+            const CommonTime& dtr = smmir->first;
             if (dtr<=t) return( smmir->second );
          }
 
             // If we reach this point, there's no time-approprate entry for 
             // this station
          InvalidRequest e("No station coordinates for station " + 
-                           stationID + " at time " +
-                           t.printf("%02m/%02d/%02y") );
+                           stationID + " at time " + t.asString() );
          GPSTK_THROW(e);
       }
       catch(InvalidRequest& ir)
@@ -318,7 +303,7 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   int MSCStore::addToList(std::list<MSCData>& v) const throw()
+   int MSCStore::addToList(list<MSCData>& v) const throw()
    {
       int n=0;
       for (MMci i = mscMap.begin(); i != mscMap.end(); ++i)
@@ -336,9 +321,9 @@ namespace gpstk
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-   list<std::string> MSCStore::getIDList()
+   list<string> MSCStore::getIDList()
    {
-      list<std::string> temp;
+      list<string> temp;
       MMci mmci;
       for(mmci = mscMap.begin(); mmci != mscMap.end(); mmci++)
       {

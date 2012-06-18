@@ -16,8 +16,8 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -44,6 +44,8 @@
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
+#include "CivilTime.hpp"
+#include "SystemTime.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -119,7 +121,7 @@ namespace gpstk
    const RinexObsHeader::RinexObsType RinexObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
 
    RinexObsHeader::RinexObsType sot[29] =
-   { 
+   {
       RinexObsHeader::UN,
       RinexObsHeader::L1, RinexObsHeader::L2,
       RinexObsHeader::C1, RinexObsHeader::C2,
@@ -140,13 +142,13 @@ namespace gpstk
    std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::RegisteredRinexObsTypes
       = RinexObsHeader::StandardRinexObsTypes;
 
-   void RinexObsHeader::reallyPutRecord(FFStream& ffs) const 
+   void RinexObsHeader::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
-      
+
       strm.header = *this;
-      
+
       unsigned long allValid;
       if (version == 2.0)        allValid = allValid20;
       else if (version == 2.1)   allValid = allValid21;
@@ -157,14 +159,14 @@ namespace gpstk
          err.addText("Make sure to set the version correctly.");
          GPSTK_THROW(err);
       }
-      
+
       if ((valid & allValid) != allValid)
       {
          FFStreamError err("Incomplete or invalid header.");
          err.addText("Make sure you set all header valid bits for all of the available data.");
          GPSTK_THROW(err);
       }
-      
+
       try
       {
          WriteHeaderRecords(strm);
@@ -179,7 +181,7 @@ namespace gpstk
       }
 
    }  // end RinexObsHeader::reallyPutRecord
-      
+
 
       // this function computes the number of valid header records which WriteHeaderRecords will write
    int RinexObsHeader::NumberHeaderRecordsToBeWritten(void) const throw()
@@ -224,7 +226,7 @@ namespace gpstk
          line += string(11, ' ');
          if ((fileType[0] != 'O') && (fileType[0] != 'o'))
          {
-            FFStreamError err("This isn't a Rinex Observation file: " + 
+            FFStreamError err("This isn't a Rinex Observation file: " +
                               fileType.substr(0,1));
             GPSTK_THROW(err);
          }
@@ -237,12 +239,8 @@ namespace gpstk
 
          line += leftJustify(string("Observation"), 20);
          std::string str;
-         if(system.system == SatID::systemMixed)
-            str = "M (Mixed)";
-         else {
-            str = RinexSatID(system).systemChar();
-            str = str + " (" + RinexSatID(system).systemString() + ")";
-         }
+         str = system.systemChar();
+         str = str + " (" + system.systemString() + ")";
          line += leftJustify(str, 20);
          line += versionString;
          strm << line << endl;
@@ -252,9 +250,9 @@ namespace gpstk
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
-         DayTime dt;
-         dt.setLocalTime();
-         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         CommonTime dt;
+         SystemTime sysTime;
+         string dat = (static_cast<CivilTime>(sysTime)).printf("%04Y%02m%02d %02H%02M%02S %P");
          line += leftJustify(dat, 20);
          line += runByString;
          strm << line << endl;
@@ -321,12 +319,12 @@ namespace gpstk
          line += waveFactString;
          strm << line << endl;
          strm.lineNumber++;
-         
+
             // handle continuation lines
          if (!extraWaveFactList.empty())
          {
             vector<ExtraWaveFact>::const_iterator itr = extraWaveFactList.begin();
-            
+
             while (itr != extraWaveFactList.end())
             {
                const int maxSatsPerLine = 7;
@@ -367,9 +365,9 @@ namespace gpstk
          const int maxObsPerLine = 9;
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
-         
+
          vector<RinexObsType>::const_iterator itr = obsTypeList.begin();
-         
+
          while (itr != obsTypeList.end())
          {
                // the first line needs to have the # of obs
@@ -475,7 +473,7 @@ namespace gpstk
          while (itr != numObsForSat.end())
          {
             int numObsWritten = 0;
-            
+
             vector<int>::const_iterator vecItr = (*itr).second.begin();
             while (vecItr != (*itr).second.end())
             {
@@ -487,7 +485,7 @@ namespace gpstk
                   }
                   catch (Exception& e) {
                      FFStreamError ffse(e);
-                     GPSTK_RETHROW(ffse); 
+                     GPSTK_RETHROW(ffse);
                   }
                }
                else if ((numObsWritten % maxObsPerLine)  == 0)
@@ -513,8 +511,8 @@ namespace gpstk
          line  = string(60, ' ');
          line += endOfHeader;
          strm << line << endl;
-         strm.lineNumber++;               
-      }   
+         strm.lineNumber++;
+      }
    }   // end RinexObsHeader::WriteHeaderRecords()
 
 
@@ -523,10 +521,11 @@ namespace gpstk
       throw(FFStreamError)
    {
       string label(line, 60, 20);
-         
+
       if (label == versionString)
       {
          version = asDouble(line.substr(0,20));
+//         cout << "R2ObsHeader:ParseHeaderRecord:version = " << version << endl;
          fileType = strip(line.substr(20, 20));
          if ( (fileType[0] != 'O') &&
               (fileType[0] != 'o'))
@@ -536,9 +535,7 @@ namespace gpstk
          }
          string system_str = strip(line.substr(40, 20));
          try {
-            RinexSatID rsat;
-            rsat.fromString(system_str);     // fromString includes Mixed!
-            system.system = rsat.system;
+            system.fromString(system_str);
          }
          catch (Exception& e)
          {
@@ -621,25 +618,25 @@ namespace gpstk
             ewf.wavelengthFactor[0] = asInt(line.substr(0,6));
             ewf.wavelengthFactor[1] = asInt(line.substr(6,6));
             Nsats = asInt(line.substr(12,6));
-               
+
             if (Nsats > maxSatsPerLine)   // > not >=
             {
                FFStreamError e("Invalid number of Sats for " + waveFactString);
                GPSTK_THROW(e);
             }
-               
+
             for (int i = 0; i < Nsats; i++)
             {
                try {
                   RinexSatID prn(line.substr(21+i*6,3));
-                  ewf.satList.push_back(prn); 
+                  ewf.satList.push_back(prn);
                }
                catch (Exception& e){
                   FFStreamError ffse(e);
                   GPSTK_RETHROW(ffse);
                }
             }
-               
+
             extraWaveFactList.push_back(ewf);
          }
       }
@@ -650,7 +647,7 @@ namespace gpstk
          if (! (valid & obsTypeValid))
          {
             numObs = asInt(line.substr(0,6));
-            
+
             for (int i = 0; (i < numObs) && (i < maxObsPerLine); i++)
             {
                int position = i * 6 + 6 + 4;
@@ -715,8 +712,8 @@ namespace gpstk
          if ((lastPRN.id != -1) &&
              (numObsForSat[lastPRN].size() != obsTypeList.size()))
          {
-            for(int i = numObsForSat[lastPRN].size(); 
-                (i < obsTypeList.size()) && 
+            for(int i = numObsForSat[lastPRN].size();
+                (i < obsTypeList.size()) &&
                    ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                numObsForSat[lastPRN].push_back(asInt(line.substr((i%maxObsPerLine)*6+6,6)));
@@ -724,7 +721,7 @@ namespace gpstk
          }
          else
          {
-            try { 
+            try {
                lastPRN.fromString(line.substr(3,3));
             }
             catch (Exception& e) {
@@ -732,7 +729,7 @@ namespace gpstk
                GPSTK_RETHROW(ffse);
             }
             vector<int> numObsList;
-            for(int i = 0; 
+            for(int i = 0;
                    (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
             {
                numObsList.push_back(asInt(line.substr(i*6+6,6)));
@@ -756,11 +753,11 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void RinexObsHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, 
+      throw(std::exception, FFStreamError,
             gpstk::StringUtils::StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
-      
+
          // if already read, just return
       if (strm.headerRead == true)
          return;
@@ -778,9 +775,9 @@ namespace gpstk
       valid = 0;
       numObs = 0;
       lastPRN.id = -1;
-      
+
       string line;
-      
+
       while (!(valid & endValid))
       {
          strm.formattedGetLine(line);
@@ -805,7 +802,7 @@ namespace gpstk
          {
             GPSTK_RETHROW(e);
          }
-         
+
       }   // end while(not end of header)
 
       unsigned long allValid;
@@ -814,26 +811,26 @@ namespace gpstk
       else if (version == 2.11)     allValid = allValid211;
       else
       {
-         FFStreamError e("Unknown or unsupported RINEX version " + 
+         FFStreamError e("Unknown or unsupported RINEX version " +
                          asString(version));
          GPSTK_THROW(e);
       }
-            
+
       if ( (allValid & valid) != allValid)
       {
          FFStreamError e("Incomplete or invalid header");
-         GPSTK_THROW(e);               
+         GPSTK_THROW(e);
       }
-            
+
          // If we get here, we should have reached the end of header line
       strm.header = *this;
       strm.headerRead = true;
-            
+
    }  // end of reallyGetRecord()
 
 
 
-   RinexObsHeader::RinexObsType 
+   RinexObsHeader::RinexObsType
    RinexObsHeader::convertObsType(const string& oneObs)
       throw(FFStreamError)
    {
@@ -848,7 +845,7 @@ namespace gpstk
       }
       return ot;
    }
-   string 
+   string
    RinexObsHeader::convertObsType(const RinexObsHeader::RinexObsType& oneObs)
       throw(FFStreamError)
    {
@@ -856,29 +853,30 @@ namespace gpstk
    }
 
 
-   DayTime RinexObsHeader::parseTime(const string& line) const
+   CommonTime RinexObsHeader::parseTime(const string& line) const
    {
       int year, month, day, hour, min;
       double sec;
-   
+
       year  = asInt(   line.substr(0,  6 ));
       month = asInt(   line.substr(6,  6 ));
       day   = asInt(   line.substr(12, 6 ));
       hour  = asInt(   line.substr(18, 6 ));
       min   = asInt(   line.substr(24, 6 ));
       sec   = asDouble(line.substr(30, 13));
-      return DayTime(year, month, day, hour, min, sec);
+      return CivilTime(year, month, day, hour, min, sec).convertToCommonTime();
    }
 
-   string RinexObsHeader::writeTime(const DayTime& dt) const
+   string RinexObsHeader::writeTime(const CommonTime& dt) const
    {
       string line;
-      line  = rightJustify(asString<short>(dt.year()), 6);
-      line += rightJustify(asString<short>(dt.month()), 6);
-      line += rightJustify(asString<short>(dt.day()), 6);
-      line += rightJustify(asString<short>(dt.hour()), 6);
-      line += rightJustify(asString<short>(dt.minute()), 6);
-      line += rightJustify(asString(dt.second(), 7), 13);
+      CivilTime civTime(dt);
+      line  = rightJustify(asString<short>(civTime.year), 6);
+      line += rightJustify(asString<short>(civTime.month), 6);
+      line += rightJustify(asString<short>(civTime.day), 6);
+      line += rightJustify(asString<short>(civTime.hour), 6);
+      line += rightJustify(asString<short>(civTime.minute), 6);
+      line += rightJustify(asString(civTime.second, 7), 13);
       return line;
    }
 
@@ -887,12 +885,8 @@ namespace gpstk
       int i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
       string str;
-      if(system.system == SatID::systemMixed)
-         str = "M (Mixed)";
-      else {
-         str = RinexSatID(system).systemChar();
-         str = str + " (" + RinexSatID(system).systemString() + ")";
-      }
+      str = system.systemChar();
+      str = str + " (" + system.systemString() + ")";
       s << "Rinex Version " << fixed << setw(5) << setprecision(2) << version
          << ",  File type " << fileType << ",  System " << str << ".\n";
       s << "Prgm: " << fileProgram << ",  Run: " << date << ",  By: " << fileAgency << endl;
@@ -914,12 +908,12 @@ namespace gpstk
          s << endl;
       }
       s << "Observation types (" << obsTypeList.size() << ") :\n";
-      for(i=0; i<obsTypeList.size(); i++) 
+      for(i=0; i<obsTypeList.size(); i++)
          s << " Type #" << i << " = "
             << gpstk::RinexObsHeader::convertObsType(obsTypeList[i])
             << " " << obsTypeList[i].description
             << " (" << obsTypeList[i].units << ")." << endl;
-      s << "Time of first obs " << firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+      s << "Time of first obs " << (static_cast<CivilTime>(firstObs)).printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (firstSystem.system==RinexSatID::systemGlonass ? "GLO" :
                    (firstSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       s << "(This header is ";
@@ -947,7 +941,7 @@ namespace gpstk
       if(valid & intervalValid) s << "Interval = "
          << fixed << setw(7) << setprecision(3) << interval << endl;
       if(valid & lastTimeValid) s << "Time of last obs "
-         << lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << (static_cast<CivilTime>(lastObs)).printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (lastSystem.system==RinexSatID::systemGlonass ? "GLO":
                    (lastSystem.system==RinexSatID::systemGalileo ? "GAL" : "GPS")) << endl;
       if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;

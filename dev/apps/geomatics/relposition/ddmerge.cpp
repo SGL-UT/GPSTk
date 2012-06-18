@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -53,7 +53,8 @@
 #include <map>
 
 // GPSTk
-#include "DayTime.hpp"
+#include "Epoch.hpp"
+#include "CommonTime.hpp"
 #include "StringUtils.hpp"
 
 //------------------------------------------------------------------------------------
@@ -126,7 +127,7 @@ try {
    string line,line2,id,rawfile,ddrfile,outfile,site1,site2,sat1,sat2;
    ifstream instr;
    ofstream outstr;
-   DayTime CurrEpoch;
+   Epoch CurrEpoch;
 
    clock_t totaltime = clock();
       // print title and current time to screen

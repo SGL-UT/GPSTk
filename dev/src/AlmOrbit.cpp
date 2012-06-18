@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,10 +48,10 @@
  * Encapsulate almanac data, and compute satellite orbit, etc.
  */
 
-
-#include "icd_200_constants.hpp"
-#include "GPSGeoid.hpp"
+#include "GNSSconstants.hpp"
+#include "GPSEllipsoid.hpp"
 #include "AlmOrbit.hpp"
+#include "GPSWeekSecond.hpp"
 #include <cmath>
 
 namespace gpstk
@@ -76,11 +76,11 @@ namespace gpstk
    {
    }
 
-   Xvt AlmOrbit :: svXvt(const DayTime& t) const
+   Xvt AlmOrbit :: svXvt(const CommonTime& t) const
       throw()
    {
       Xvt sv;
-      GPSGeoid geoid;
+      GPSEllipsoid ell;
 
       double elapt;                 /* elapsed time since Toa */
       double A;                     /* semi-major axis */
@@ -99,7 +99,7 @@ namespace gpstk
       double anlon;                 /* corrected longitue of ascending node */
       double xip,yip,can,san,cinc,sinc,xef,yef,zef,dek,dlk,div,domk,duv,
          drv,dxp,dyp,vxef,vyef,vzef;
-      double sqrtgm = ::sqrt(geoid.gm());
+      double sqrtgm = ::sqrt(ell.gm());
 
 /*   Compute time since Almanac epoch (Toa) including week change */
       elapt = t - getToaTime();
@@ -127,7 +127,7 @@ namespace gpstk
 
          /* compute clock corrections (no relativistic correction computed) */
       dtc = AF0 + elapt * AF1;
-      sv.dtime = dtc;
+      sv.clkbias = dtc;
 
          /* compute the true anomaly */
       q = ::sqrt (1.0e0 - ecc * ecc);
@@ -147,8 +147,8 @@ namespace gpstk
 
          /* compute corrected longitude of ascending node */
       anlon = OMEGA0 +
-         (OMEGAdot - geoid.angVelocity()) * elapt -
-         geoid.angVelocity() * (double)Toa;
+         (OMEGAdot - ell.angVelocity()) * elapt -
+         ell.angVelocity() * (double)Toa;
 
          /* compute positions in orbital plane */
       cosu = ::cos(ualat);
@@ -174,7 +174,7 @@ namespace gpstk
       dek = n * A / r;
       dlk = sqrtgm * Ahalf * q / (r * r);
       div = 0.0e0;
-      domk = OMEGAdot - geoid.angVelocity();
+      domk = OMEGAdot - ell.angVelocity();
       duv = dlk;
       drv = A * ecc * dek * sinea;
 
@@ -194,10 +194,10 @@ namespace gpstk
       return sv;
    }
 
-   DayTime AlmOrbit::getTransmitTime() const throw()
+   CommonTime AlmOrbit::getTransmitTime() const throw()
    {
-      DayTime transmitTime(0.L);
-      transmitTime.setGPSfullweek(getFullWeek(), (double)xmit_time);
+      CommonTime transmitTime(0.L);
+      transmitTime=GPSWeekSecond(getFullWeek(), (double)xmit_time);
       return transmitTime;
    }
 
@@ -206,18 +206,18 @@ namespace gpstk
          // return value of the transmit week for the given PRN
       short xmit_week = week;
       double sow_diff = (double)(Toa - xmit_time);
-      if (sow_diff < -DayTime::HALFWEEK)
+      if (sow_diff < -HALFWEEK)
          xmit_week--;
-      else if (sow_diff > DayTime::HALFWEEK)
+      else if (sow_diff > HALFWEEK)
          xmit_week++;
 
       return xmit_week;
    }
 
-   DayTime AlmOrbit::getToaTime() const throw()
+   CommonTime AlmOrbit::getToaTime() const throw()
    {
-      DayTime toaTime(0.L);
-      toaTime.setGPSfullweek(week, (double)Toa);
+      CommonTime toaTime(0.L);
+      toaTime=GPSWeekSecond(week, (double)Toa);
       return toaTime;
    }
 

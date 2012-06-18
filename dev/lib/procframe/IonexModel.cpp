@@ -22,28 +22,19 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009
+//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008, 2009, 2011
 //
 //============================================================================
 
 
 #include "IonexModel.hpp"
-#include "icd_200_constants.hpp"          // C_GPS_M
+#include "GNSSconstants.hpp"          // C_MPS
 
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class.
-   int IonexModel::classIndex = 5100000;
-
-
-      // Returns an index identifying this object.
-   int IonexModel::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string IonexModel::getClassName() const
@@ -62,7 +53,6 @@ namespace gpstk
       useDCB = true;
       setIonoMapType("NONE");
       setInitialRxPosition(RxCoordinates);
-      setIndex();
 
    }  // End of constructor 'IonexModel::IonexModel()'
 
@@ -92,7 +82,6 @@ namespace gpstk
          defaultObservable = dObservable;
          useDCB = applyDCB;
          setIonoMapType(ionoMap);
-         setIndex();
 
       }  // End of constructor 'IonexModel::IonexModel()'
 
@@ -104,7 +93,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& IonexModel::Process( const DayTime& time,
+   satTypeValueMap& IonexModel::Process( const CommonTime& time,
                                          satTypeValueMap& gData )
       throw(Exception)
    {
@@ -248,7 +237,7 @@ namespace gpstk
                      // the second LC factor (see gpstk::LinearCombinations.cpp)
                      // see pg.14, Ionex manual
                   double kappa2(-1.0/0.646944444);
-                  double dcb(tempDCB * C_GPS_M * 1e-9);  // meters
+                  double dcb(tempDCB * C_MPS * 1e-9);  // meters
 
                   if( stv->second.find(TypeID::instC1) == stv->second.end() )
                   {
@@ -366,7 +355,7 @@ namespace gpstk
           *
           * @ return          Differential Code Bias (nanoseconds)
           */
-   double IonexModel::getDCBCorrections( const DayTime& time,
+   double IonexModel::getDCBCorrections( const CommonTime& time,
                                          const IonexStore& Maps,
                                          SatID sat )
       throw()
@@ -388,7 +377,6 @@ namespace gpstk
       }
 
    }  // End of method 'IonexModel::getDCBCorrections()'
-
 
 
 }  // End of namespace gpstk

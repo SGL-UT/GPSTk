@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -37,9 +37,9 @@ void xMSC :: firstTest (void)
 	MSCStream Input("Logs/CoordFile");
 	MSCStream Out("Logs/Output",ios::out);
 	MSCData Data;
-	
+
 	Input >> Data;
-	gpstk::DayTime Time(2001,360,0.0);
+	gpstk::YDSTime Time(2001L,360L,0.0,TimeSystem::Unknown);
 	CPPUNIT_ASSERT_EQUAL(Time,Data.time);
 	CPPUNIT_ASSERT_EQUAL((long unsigned) 11111,Data.station);
 	CPPUNIT_ASSERT_EQUAL((string)"AAA    " ,Data.mnemonic);
@@ -49,7 +49,7 @@ void xMSC :: firstTest (void)
 	{
 		Out << Data;
 	}
-	
+
 	MSCStream Input2("Logs/Output");
 	MSCStream Out2("Logs/Output2",ios::out);
 	MSCData Data2;
@@ -61,7 +61,7 @@ void xMSC :: firstTest (void)
 	CPPUNIT_ASSERT(fileEqualTest("Logs/CoordFile","Logs/Output2"));
 }
 
-bool xMSC :: fileEqualTest (char* handle1, char* handle2)
+bool xMSC :: fileEqualTest (const char* handle1, const char* handle2)
 {
 	bool isEqual = false;
 	

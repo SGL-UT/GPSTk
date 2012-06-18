@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -45,12 +45,13 @@
 #include "TimeString.hpp"
 
    // Library Headers
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
+#include "TimeString.hpp"
+#include "YDSTime.hpp"
 #include "TimeConstants.hpp"
 
    // Project Headers
 #include "ConstellationDefinition.hpp"
-#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -121,8 +122,9 @@ void ConstellationDefinition::setPlaneSlot( const SatID SV, const SlotDef sd )
 
 void ConstellationDefinition::setEffectiveTime( const gpstk::CommonTime dt )
 {
-   effectiveDate = dt;
-   effectiveDate=YDSTime( SEC_PER_DAY/2 ).sod;
+   YDSTime yds_temp(dt);
+   yds_temp.sod = SEC_PER_DAY / 2;
+   effectiveDate = yds_temp;
 }
 
 void ConstellationDefinition::setSVNforPRN( const SatID SV, const int SVN )

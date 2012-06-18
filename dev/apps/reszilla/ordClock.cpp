@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -100,7 +100,7 @@ void OrdClock::process()
    if (estimateOnlyOption.getCount())
       debias = false;
 
-   map<DayTime, double> clocks;
+   map<CommonTime, double> clocks;
    if (clockSource.getCount())
    {
       string fn = clockSource.getValue()[0];
@@ -128,7 +128,7 @@ void OrdClock::process()
       }
       else
       {
-         map<DayTime, double>::const_iterator o=clocks.find(ordEpoch.time);
+         map<CommonTime, double>::const_iterator o=clocks.find(ordEpoch.time);
          if (o != clocks.end())
             ordEpoch.clockOffset = o->second;
       }

@@ -5,8 +5,8 @@
  * This class synchronizes two GNSS Data Structures data streams.
  */
 
-#ifndef SYNCHRONIZE_HPP
-#define SYNCHRONIZE_HPP
+#ifndef GPSTK_SYNCHRONIZE_HPP
+#define GPSTK_SYNCHRONIZE_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
 //============================================================================
 
@@ -152,7 +152,7 @@ namespace gpstk
       Synchronize()
          : pRinexRef(NULL), pgRov1(NULL), tolerance(1.0),
            firstTime(true)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor.
@@ -165,7 +165,7 @@ namespace gpstk
                    gnssRinex& roverData,
                    const double tol = 1.0 )
          : tolerance(tol), firstTime(true)
-      { setReferenceSource(rinexObs); setRoverData(roverData); setIndex(); };
+      { setReferenceSource(rinexObs); setRoverData(roverData); };
 
 
          /** Common constructor.
@@ -178,7 +178,7 @@ namespace gpstk
                    gnssSatTypeValue& roverData,
                    const double tol = 1.0 )
          : tolerance(tol), firstTime(true)
-      { setReferenceSource(rinexObs); setRoverData(roverData); setIndex(); };
+      { setReferenceSource(rinexObs); setRoverData(roverData); };
 
 
          /** Returns a gnnsSatTypeValue object, adding the new data
@@ -240,10 +240,6 @@ namespace gpstk
       { pgRov1 = &roverData; return (*this); }
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -254,9 +250,8 @@ namespace gpstk
 
    protected:
 
-      virtual gnssRinex& Process(DayTime time, gnssRinex& gData)
+      virtual gnssRinex& Process(CommonTime time, gnssRinex& gData)
          throw(SynchronizeException);
-
 
          /// gnssRinex data buffer
       std::list<gnssRinex> gnssRinexBuffer;
@@ -276,20 +271,11 @@ namespace gpstk
          /// Flag to mark that first data batch was read.
       bool firstTime;
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
 
    }; // End of class 'Synchronize'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // SYNCHRONIZE_HPP
+
+#endif   // GPSTK_SYNCHRONIZE_HPP

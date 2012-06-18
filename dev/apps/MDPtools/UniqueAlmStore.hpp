@@ -28,7 +28,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -52,7 +52,7 @@
 #define GPSTK_UNIQUEALMSTORE_HPP
 
 #include "FICStream.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngAlmanac.hpp"
 
    // Project
@@ -102,7 +102,7 @@ namespace gpstk
       
       long startingSOW;
       long candidateToa;
-      gpstk::DayTime ToaTime;    // Not valid until state==COMPLETE | WRITTEN
+      gpstk::CommonTime ToaTime;    // Not valid until state==COMPLETE | WRITTEN
       PageMap pageMap; 
       
          // Possible values for member state

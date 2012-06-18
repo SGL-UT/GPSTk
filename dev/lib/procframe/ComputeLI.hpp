@@ -5,8 +5,8 @@
  * This class eases computing LI combination for GNSS data structures.
  */
 
-#ifndef COMPUTELI_HPP
-#define COMPUTELI_HPP
+#ifndef GPSTK_COMPUTELI_HPP
+#define GPSTK_COMPUTELI_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -93,10 +93,6 @@ namespace gpstk
       { ComputeCombination::Process(gData); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -114,23 +110,10 @@ namespace gpstk
       { return ( obs1 - obs2 ); };
 
 
-    private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputeLI'
 
       //@}
 
-}
-#endif   // COMPUTELI_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_COMPUTELI_HPP

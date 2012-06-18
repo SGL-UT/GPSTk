@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -90,7 +90,7 @@ namespace gpstk
       vdouble clockOffset;    ///< clock bias value (application defined units)
       vdouble clockResidual;  ///< clock bias minus expected value
       ORDMap ords;            ///< map of ORDs in epoch
-      gpstk::DayTime time;
+      gpstk::CommonTime time;
       bool wonky;             ///< Indicates that this epoch is suspect
 
       friend std::ostream& operator<<(std::ostream& s, 
@@ -108,6 +108,6 @@ namespace gpstk
    };
 
    // this is a store of ORDs over time
-   typedef std::map<gpstk::DayTime, gpstk::ORDEpoch> ORDEpochMap;
+   typedef std::map<gpstk::CommonTime, gpstk::ORDEpoch> ORDEpochMap;
 }
 #endif

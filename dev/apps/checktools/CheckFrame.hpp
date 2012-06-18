@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -24,6 +24,8 @@
 
 #ifndef CHECKFRAME_HPP
 #define CHECKFRAME_HPP
+#include <iostream>
+#include <fstream>
 
 #include "CommandOptionWithTimeArg.hpp"
 #include "FileFilterFrame.hpp"
@@ -33,8 +35,8 @@ template <class FileData>
 struct NullTimeFilter : public std::unary_function<FileData, bool>
 {
 public:
-   NullTimeFilter(const gpstk::DayTime& startTime,
-                  const gpstk::DayTime& endTime)
+   NullTimeFilter(const gpstk::CommonTime& startTime,
+                  const gpstk::CommonTime& endTime)
    {}
 
    bool operator() (const FileData& l) const
@@ -63,8 +65,8 @@ public:
                      " = \"end of time\")"),
          inputFileOption("Each input file is checked for errors.", true),
          quitOnFirstError(false),
-         startTime(gpstk::DayTime::BEGINNING_OF_TIME),
-         endTime(gpstk::DayTime::END_OF_TIME)
+         startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+         endTime(gpstk::CommonTime::END_OF_TIME)
    {
       timeOption.setMaxCount(1);
       eTimeOption.setMaxCount(1);
@@ -93,26 +95,33 @@ public:
 protected:
    virtual void process()
    {
+      std::ofstream op;
+      op.open ("op.txt");
+ 
       unsigned errors = 0;
       std::vector<std::string> inputFiles = inputFileOption.getValue();
       std::vector<std::string>::iterator itr = inputFiles.begin();
       FilterTimeOperator timeFilt(startTime, endTime);
+  
       while (itr != inputFiles.end())
       {
+
          std::cout << "Checking " << *itr << std::endl;
          unsigned long recCount = 0;
          try
          {
-            FileStream f((*itr).c_str());
+       
+	    FileStream f((*itr).c_str());
             f.exceptions(std::ios::failbit);
-            
+            int n = 0;
             FileData temp;
             while (f >> temp)
             {
-               if (!timeFilt(temp))
+                op << f << std::endl;
+		if (!timeFilt(temp))
                   recCount++;
             }
-            
+            op << "here 6" << std::endl;
             std::cout << "Read " << recCount << " records." 
                       << std::endl << std::endl;
          }
@@ -140,7 +149,7 @@ protected:
          
          itr++;
       }
-
+      op << "here 7" << std::endl;
       if (errors > 0)
       {
             // Throw an exception so the app returns 1 on any errors.
@@ -149,6 +158,7 @@ protected:
                               " error(s).");
          GPSTK_THROW(exc);
       }
+      op.close();
    }
    
       /// Quit on first error.
@@ -162,7 +172,7 @@ protected:
    gpstk::CommandOptionRest inputFileOption;
    
    bool quitOnFirstError;
-   gpstk::DayTime startTime, endTime;
+   gpstk::CommonTime startTime, endTime;
    
 };
 

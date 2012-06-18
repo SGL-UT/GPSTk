@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -29,7 +29,7 @@
 #include <cstring>
 #include <vector>
 
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "RinexSatID.hpp"
 
 #include "RinexObsBase.hpp"
@@ -54,11 +54,13 @@
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
 
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 
 #include "IonoModel.hpp"
 
 #include "BasicFramework.hpp"
+
+#include "Position.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -88,7 +90,7 @@ protected:
    SEMAlmanacStore   semStore;
    YumaAlmanacStore  yumaStore;
 
-   PRSolution prSolver;
+   PRSolution2 prSolver;
    GGTropModel ggTropModel;
 
    bool gotMet;
@@ -101,7 +103,7 @@ protected:
 
    double elevationMask;
 
-   Geodetic aprioriPositionGeodetic, enuOrigin;
+   Position aprioriPositionGeodetic, enuOrigin;
    Position aprioriPositionXYZ;
    Triple eastVector, upVector, northVector;
 

@@ -27,15 +27,15 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 #include "Position.hpp"
-#include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"    // for TWO_PI, etc
+#include "WGS84Ellipsoid.hpp"
+#include "GNSSconstants.hpp"    // for TWO_PI, etc
 #include "geometry.hpp"             // for RAD_TO_DEG, etc
 #include "MiscMath.hpp"             // for RSS, SQRT
 
@@ -87,7 +87,7 @@ namespace gpstk
    Position::Position()
       throw()
    {
-      WGS84Geoid WGS84;
+      WGS84Ellipsoid WGS84;
       initialize(0.0,0.0,0.0,Unknown,&WGS84);
    }
 
@@ -95,11 +95,12 @@ namespace gpstk
                       const double& b,
                       const double& c,
                       Position::CoordinateSystem s,
-                      GeoidModel *geoid)
+                      EllipsoidModel *ell,
+                      ReferenceFrame frame)
       throw(GeometryException)
    {
       try {
-         initialize(a,b,c,s,geoid);
+         initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -108,14 +109,15 @@ namespace gpstk
 
    Position::Position(const double ABC[3],
                       CoordinateSystem s,
-                      GeoidModel *geoid)
+                      EllipsoidModel *ell,
+                      ReferenceFrame frame)
       throw(GeometryException)
    {
       double a=ABC[0];
       double b=ABC[1];
       double c=ABC[2];
       try {
-         initialize(a,b,c,s,geoid);
+         initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -124,14 +126,15 @@ namespace gpstk
 
    Position::Position(const Triple& ABC,
                       CoordinateSystem s,
-                      GeoidModel *geoid)
+                      EllipsoidModel *ell,
+                      ReferenceFrame frame)
       throw(GeometryException)
    {
       double a=ABC[0];
       double b=ABC[1];
       double c=ABC[2];
       try {
-         initialize(a,b,c,s,geoid);
+         initialize(a,b,c,s,ell,frame);
       }
       catch(GeometryException& ge) {
          GPSTK_RETHROW(ge);
@@ -144,7 +147,7 @@ namespace gpstk
       double a=xvt.x[0];
       double b=xvt.x[1];
       double c=xvt.x[2];
-      initialize(a,b,c,Cartesian);
+      initialize(a,b,c,Cartesian, NULL, xvt.frame);
    }
 
    // ----------- Part  4: member functions: arithmetic ----------------------
@@ -213,19 +216,21 @@ namespace gpstk
 
    // ----------- Part  5: member functions: comparisons ---------------------
    //
-      // Equality operator. Returns false if geoid values differ.
+      // Equality operator. Returns false if ell values differ.
    bool Position::operator==(const Position &right) const
       throw()
    {
       if(AEarth != right.AEarth || eccSquared != right.eccSquared)
          return false;
+      if(right.getReferenceFrame() != refFrame)
+         return false;   //Unknown frames are considered the same.
       if(range(*this,right) < tolerance)
          return true;
       else
          return false;
    }
 
-      // Inequality operator. Returns true if geoid values differ.
+      // Inequality operator. Returns true if ell values differ.
    bool Position::operator!=(const Position &right) const
       throw()
    {
@@ -336,6 +341,13 @@ namespace gpstk
    // Note that calling these will transform the Position to another coordinate
    // system if that is required.
    //
+   
+   const ReferenceFrame& Position::getReferenceFrame() const
+      throw()
+   {   
+      return refFrame;
+   }
+   
       // Get X coordinate (meters)
    double Position::X() const
       throw()
@@ -451,19 +463,27 @@ namespace gpstk
 
    // ----------- Part  8: member functions: set -----------------------------
    //
-      // Set the geoid values for this Position given a geoid.
-      // @param geoid Pointer to the GeoidModel.
-      // @throw GeometryException if input is NULL.
-   void Position::setGeoidModel(const GeoidModel *geoid)
+   void Position::setReferenceFrame(const ReferenceFrame& frame)
+      throw()
+   {
+      refFrame = frame;
+   }
+   
+      /**
+      * Set the ellipsoid values for this Position given a ellipsoid.
+      * @param ell  Pointer to the EllipsoidModel.
+      * @throw      GeometryException if input is NULL.
+      */
+   void Position::setEllipsoidModel(const EllipsoidModel *ell)
       throw(GeometryException)
    {
-      if(!geoid)
+      if(!ell)
       {
-         GeometryException ge("Given GeoidModel pointer is NULL.");
+         GeometryException ge("Given EllipsoidModel pointer is NULL.");
          GPSTK_THROW(ge);
       }
-      AEarth = geoid->a();
-      eccSquared = geoid->eccSquared();
+      AEarth = ell->a();
+      eccSquared = ell->eccSquared();
    }
 
       // Set the Position given geodetic coordinates, system is set to Geodetic.
@@ -475,7 +495,7 @@ namespace gpstk
    Position& Position::setGeodetic(const double lat,
                                    const double lon,
                                    const double ht,
-                                   const GeoidModel *geoid)
+                                   const EllipsoidModel *ell)
       throw(GeometryException)
    {
       if(lat > 90 || lat < -90)
@@ -494,9 +514,9 @@ namespace gpstk
 
       theArray[2] = ht;
 
-      if(geoid) {
-         AEarth = geoid->a();
-         eccSquared = geoid->eccSquared();
+      if(ell) {
+         AEarth = ell->a();
+         eccSquared = ell->eccSquared();
       }
       system = Geodetic;
 
@@ -641,9 +661,7 @@ namespace gpstk
       // @return a reference to this object.
    Position& Position::setToString(const std::string& str,
                                    const std::string& fmt)
-      throw(GeometryException,
-            DayTime::FormatException,
-            StringUtils::StringException)
+      throw(GeometryException,Epoch::FormatException,StringUtils::StringException)
    {
       try {
             // make an object to return (so we don't fiddle with *this
@@ -661,7 +679,7 @@ namespace gpstk
          string f = fmt;
          string s = str;
          stripLeading(s);
-         stripTrailing(s);
+         stripTrailing(f);
 
             // parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
@@ -764,7 +782,7 @@ namespace gpstk
                case 'A':
                   glat = asDouble(toBeRemoved);
                   if(glat > 90. || glat < -90.) {
-                     DayTime::FormatException f(
+                     Epoch::FormatException f(
                            "Invalid geodetic latitude for setTostring: "
                            + toBeRemoved);
                      GPSTK_THROW(f);
@@ -774,7 +792,7 @@ namespace gpstk
                case 'a':
                   clat = asDouble(toBeRemoved);
                   if(clat > 90. || clat < -90.) {
-                     DayTime::FormatException f(
+                     Epoch::FormatException f(
                            "Invalid geocentric latitude for setTostring: "
                            + toBeRemoved);
                      GPSTK_THROW(f);
@@ -808,7 +826,7 @@ namespace gpstk
                case 't':
                   theta = asDouble(toBeRemoved);
                   if(theta > 180. || theta < 0.) {
-                     DayTime::FormatException f("Invalid theta for setTostring: "
+                     Epoch::FormatException f("Invalid theta for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -817,7 +835,7 @@ namespace gpstk
                case 'T':
                   theta = asDouble(toBeRemoved) * RAD_TO_DEG;
                   if(theta > 90. || theta < -90.) {
-                     DayTime::FormatException f("Invalid theta for setTostring: "
+                     Epoch::FormatException f("Invalid theta for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -848,7 +866,7 @@ namespace gpstk
                case 'r':
                   rad = asDouble(toBeRemoved);
                   if(rad < 0.0) {
-                     DayTime::FormatException f("Invalid radius for setTostring: "
+                     Epoch::FormatException f("Invalid radius for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -857,7 +875,7 @@ namespace gpstk
                case 'R':
                   rad = asDouble(toBeRemoved) * 1000;
                   if(rad < 0.0) {
-                     DayTime::FormatException f("Invalid radius for setTostring: "
+                     Epoch::FormatException f("Invalid radius for setTostring: "
                                                 + toBeRemoved);
                      GPSTK_THROW(f);
                   }
@@ -889,7 +907,7 @@ namespace gpstk
          if ( s.length() != 0  )
          {
                // throw an error - something didn't get processed in the strings
-            DayTime::FormatException fe(
+            Epoch::FormatException fe(
                "Processing error - parts of strings left unread - " + s);
             GPSTK_THROW(fe);
          }
@@ -897,7 +915,7 @@ namespace gpstk
          if (f.length() != 0)
          {
                // throw an error - something didn't get processed in the strings
-            DayTime::FormatException fe(
+            Epoch::FormatException fe(
                "Processing error - parts of strings left unread - " + f);
             GPSTK_THROW(fe);
          }
@@ -905,7 +923,7 @@ namespace gpstk
             // throw if the specification is incomplete
          if ( !(hX && hY && hZ) && !(hglat && hlon && hht) &&
               !(hclat && hlon && hrad) && !(htheta && hphi && hrad)) {
-            DayTime::FormatException fe("Incomplete specification for setToString");
+            Epoch::FormatException fe("Incomplete specification for setToString");
             GPSTK_THROW(fe);
          }
 
@@ -1162,7 +1180,7 @@ namespace gpstk
       throw()
    {
       double cl,p,sl,slat,N,htold,latold;
-      llh[1] = llr[1];     // longitude is unchanged
+      llh[1] = llr[1];   // longitude is unchanged
       cl = ::sin((90-llr[0])*DEG_TO_RAD);
       sl = ::cos((90-llr[0])*DEG_TO_RAD);
       if(llr[2] <= Position::POSITION_TOLERANCE/5) {
@@ -1257,7 +1275,7 @@ namespace gpstk
       // the Position passed as input.
       // @param right Position to which to find the range
       // @return the range (in meters)
-      // @throw GeometryException if geoid values differ
+      // @throw GeometryException if ell values differ
    double range(const Position& A,
                 const Position& B)
       throw(GeometryException)
@@ -1471,6 +1489,38 @@ namespace gpstk
       return IPP;
    }
 
+
+        /**
+        * A member function that computes the radius of curvature of the 
+        * meridian (Rm) corresponding to this Position.
+        * @return radius of curvature of the meridian (in meters)
+        */
+    double Position::getCurvMeridian() const
+        throw()
+    {
+    
+        double slat = ::sin(geodeticLatitude()*DEG_TO_RAD);
+        double W = 1.0/SQRT(1.0-eccSquared*slat*slat);
+        
+        return AEarth*(1.0-eccSquared)*W*W*W;
+        
+    }
+
+        /**
+        * A member function that computes the radius of curvature in the 
+        * prime vertical (Rn) corresponding to this Position.
+        * @return radius of curvature in the prime vertical (in meters)
+        */
+    double Position::getCurvPrimeVertical() const
+        throw()
+    {
+    
+        double slat = ::sin(geodeticLatitude()*DEG_TO_RAD);
+        
+        return AEarth/SQRT(1.0-eccSquared*slat*slat);
+        
+    }
+
    // ----------- Part 12: private functions and member data -----------------
    //
       // Initialization function, used by the constructors.
@@ -1484,7 +1534,8 @@ namespace gpstk
                   const double b,
                   const double c,
                   Position::CoordinateSystem s,
-                  GeoidModel *geoid)
+                  EllipsoidModel *ell,
+                  ReferenceFrame frame)
       throw(GeometryException)
    {
       double bb(b);
@@ -1528,17 +1579,18 @@ namespace gpstk
       theArray[1] = bb;
       theArray[2] = c;
 
-      if(geoid) {
-         AEarth = geoid->a();
-         eccSquared = geoid->eccSquared();
+      if(ell) {
+         AEarth = ell->a();
+         eccSquared = ell->eccSquared();
       }
       else {
-         WGS84Geoid WGS84;
+         WGS84Ellipsoid WGS84;
          AEarth = WGS84.a();
          eccSquared = WGS84.eccSquared();
       }
       system = s;
       tolerance = POSITION_TOLERANCE;
+      refFrame = frame;
    }
 
 }  // namespace gpstk

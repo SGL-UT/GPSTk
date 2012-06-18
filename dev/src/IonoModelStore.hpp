@@ -1,5 +1,9 @@
 #pragma ident "$Id$"
 
+/**
+ * @file IonoModelStore.hpp
+ * Store GPS Navigation Message based ionospheric models
+ */
 
 
 #ifndef GPSTK_IONOMODELSTORE_HPP
@@ -21,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -42,17 +46,8 @@
 //=============================================================================
 
 
-
-
-
-
-/**
- * @file IonoModelStore.hpp
- * Store GPS Navigation Message based ionospheric models
- */
-
 #include <map>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "IonoModel.hpp"
 
 namespace gpstk
@@ -68,20 +63,25 @@ namespace gpstk
    class IonoModelStore
    {
    public:
+
+
          /**
           * Thrown when attempting to get a model that isn't stored.
           * @ingroup exceptiongroup
           */
       NEW_EXCEPTION_CLASS(NoIonoModelFound, gpstk::Exception);
-      
+
+
          /// constructor
       IonoModelStore() throw() {}
-      
+
+
          /// destructor
       virtual ~IonoModelStore() throw() {}
-      
-         /**
-          * get the ionospheric correction value.
+
+
+         /** Get the ionospheric correction value.
+          *
           * \param time the time of the observation
           * \param rxgeo the WGS84 geodetic position of the receiver
           * \param svel the elevation angle between the rx and SV (degrees)
@@ -89,29 +89,37 @@ namespace gpstk
           * \param freq the GPS frequency the observation was made from
           * \return the ionospheric correction (meters)
           */
-      double getCorrection(const DayTime& time,
-                           const Geodetic& rxgeo,
+      double getCorrection(const CommonTime& time,
+                           const Position& rxgeo,
                            double svel,
                            double svaz,
                            IonoModel::Frequency freq = IonoModel::L1) const
          throw(NoIonoModelFound);
 
-         /**
-          * add an IonoModel to this collection
+
+         /** Add an IonoModel to this collection
+          *
           * \param mt the time the model is valid from
           * \param im the IonoModel to add
           * \return true if the model was added, false otherwise
           */
-      bool addIonoModel(const DayTime& mt, const IonoModel& im) throw();
-      
+      bool addIonoModel( const CommonTime& mt,
+                         const IonoModel& im )
+         throw();
+
 
    private:
-      
-      typedef std::map<DayTime, IonoModel> IonoModelMap;
+
+
+      typedef std::map<CommonTime, IonoModel> IonoModelMap;
+
       IonoModelMap ims;
-   };
+
+
+   }; // End of class 'IonoModelStore'
    
       //@}
-}
 
-#endif
+}  // End of namespace gpstk
+
+#endif   // GPSTK_IONOMODELSTORE_HPP

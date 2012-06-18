@@ -20,7 +20,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2010
 //
@@ -31,6 +31,7 @@
 #include <fstream>
 #include <cmath>
 #include "Logger.hpp"
+#include "MJD.hpp"
 
 namespace gpstk
 {
@@ -61,17 +62,16 @@ namespace gpstk
        * @param center     relative to whick the result apply
        * @return           The position and velocity of the planet in km and km/s
        */
-   Vector<double> IERS::planetJ2kPosVel( const DayTime& TT, 
+   Vector<double> IERS::planetJ2kPosVel( const CommonTime& TT, 
                                          PlanetEphemeris::Planet entity,
                                          PlanetEphemeris::Planet center )
-      throw(Exception)
    {
       Vector<double> rvJ2k(6,0.0);
 
       try
       {
          double rvState[6] = {0.0};
-         int rc = jplEphemeris.computeState(TT.JD(),entity, center, rvState);
+         int rc = jplEphemeris.computeState(JulianDate(TT).jd,entity, center, rvState);
 
          // change the unit to km/s from km/day
          rvState[3] /= 86400.0;
@@ -106,7 +106,7 @@ namespace gpstk
       return rvJ2k;
    }
 
-   Vector<double> IERS::sunJ2kPosition(const DayTime& TT)
+   Vector<double> IERS::sunJ2kPosition(const CommonTime& TT)
    {
       Vector<double> pos(3,0.0);
       try
@@ -121,7 +121,7 @@ namespace gpstk
       }
    }
 
-   Vector<double> IERS::moonJ2kPosition(const DayTime& TT)
+   Vector<double> IERS::moonJ2kPosition(const CommonTime& TT)
    {
       Vector<double> pos(3,0.0);
       try
@@ -136,12 +136,12 @@ namespace gpstk
       }
    }
 
-   Vector<double> IERS::sunECEFPosition(const DayTime& TT)
+   Vector<double> IERS::sunECEFPosition(const CommonTime& TT)
    {
       return J2kPosToECEF( GPST2UTC(TT), sunJ2kPosition(TT) );
    }
 
-   Vector<double> IERS::moonECEFPosition(const DayTime& TT)
+   Vector<double> IERS::moonECEFPosition(const CommonTime& TT)
    {
       return J2kPosToECEF( GPST2UTC(TT), moonJ2kPosition(TT) );
    }

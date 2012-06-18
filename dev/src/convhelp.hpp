@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -51,7 +51,7 @@
 
 
 
-#include "GeoidModel.hpp"
+#include "EllipsoidModel.hpp"
 
 namespace gpstk
 {
@@ -62,26 +62,26 @@ namespace gpstk
        * Convert a phase and frequency to meters
        * @param phase Phase in cycles (radians?)
        * @param freq Frequency in Hertz
-       * @param geoid geodetic parameters (for c)
+       * @param ellipsoid geodetic parameters (for c)
        * @return Range in meters
        * @see meters2cycles
        */
-   inline double cycles2meters(double phase, double freq, GeoidModel& geoid)
+   inline double cycles2meters(double phase, double freq, EllipsoidModel& ellipsoid)
    {
-      return geoid.c()/freq * phase;
+      return ellipsoid.c()/freq * phase;
    }
    
       /**
        * Convert a range and frequency to cycles
        * @param range Distance in meters
        * @param freq Frequency in Hertz
-       * @param geoid geodetic parameters (for c)
+       * @param ellipsoid geodetic parameters (for c)
        * @return Phase in cycles (radians?)
        * @see cycles2meters
        */
-   inline double meters2cycles(double range, double freq, GeoidModel& geoid)
+   inline double meters2cycles(double range, double freq, EllipsoidModel& ellipsoid)
    {
-      return freq/geoid.c() * range;
+      return freq/ellipsoid.c() * range;
    }
    
       /**

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -43,6 +43,7 @@
 
 #include "MDPPVTSolution.hpp"
 #include "MDPStream.hpp"
+#include "GPSWeekSecond.hpp"
 
 using gpstk::StringUtils::asString;
 using gpstk::BinUtils::hostToNet;
@@ -58,7 +59,7 @@ namespace gpstk
       throw()
    {
       id = myId;
-      timep = gpstk::DayTime::BEGINNING_OF_TIME;
+      timep = gpstk::CommonTime::BEGINNING_OF_TIME;
       x[0] = x[1] = x[2] = 0;
       v[0] = v[1] = v[2] = 0;
       dtime = ddtime = 0;
@@ -79,8 +80,8 @@ namespace gpstk
       str += encodeVar<float>(v[2]);
       str += encodeVar<uint8_t>(numSVs);
       str += encodeVar<int8_t>(fom);
-      str += encodeVar<uint16_t>(time.GPSfullweek());
-      str += encodeVar<double>(time.GPSsecond());
+      str += encodeVar<uint16_t>(static_cast<GPSWeekSecond>(time).week);
+      str += encodeVar<double>(static_cast<GPSWeekSecond>(time).sow);
       str += encodeVar<double>(dtime);
       str += encodeVar<double>(ddtime);
       str += encodeVar<uint8_t>(pvtMode);
@@ -116,7 +117,7 @@ namespace gpstk
       if (week < 0 || week > 5000 || sow < 0 || sow > 604800)
          return;
 
-      timep.setGPS(week, sow);
+      timep=GPSWeekSecond(week, sow);
 
       clearstate(fmtbit);
    } // MDPPVTSolution::decode()

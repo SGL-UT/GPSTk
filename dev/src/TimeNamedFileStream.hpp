@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -47,8 +47,9 @@
 #include <string>
 
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
+#include "TimeString.hpp"
 
 namespace gpstk
 {
@@ -96,15 +97,15 @@ namespace gpstk
 
 
       // Return the time used to generate the current file name
-      DayTime getCurrentTime(void) const
+      CommonTime getCurrentTime(void) const
       { return currentTime; };
 
 
       // Update the file name, returns true if the file name changed
-      bool updateFileName(const DayTime& t=DayTime())
+      bool updateFileName(const CommonTime& t=CommonTime())
       {
          bool openedNewFile = false;
-         const std::string newFilename=t.printf(filespec);
+         const std::string newFilename=printTime(t,filespec);
          if (currentFilename.size() == 0 && newFilename.size() > 0)
          {
             currentFilename = newFilename;
@@ -145,7 +146,7 @@ namespace gpstk
       std::string currentFilename;
 
       /// The time used to generate currentFilename
-      DayTime currentTime;
+      CommonTime currentTime;
 
       // The flags to use when opening the files
       std::ios::openmode omode;

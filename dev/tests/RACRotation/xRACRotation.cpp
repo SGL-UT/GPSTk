@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -28,8 +28,9 @@
 #include "math.h"
 
 #include "RACRotation.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "Xvt.hpp"
+#include "Position.hpp"
 
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRACRotation);
@@ -145,7 +146,7 @@ void xRACRotation :: fourthTest (void)
 {
       // A little Spherical to Cartesian slight of hand to make sure
       // I know where the SV vectors are.
-      // Position
+      // ECEF
       // Spherical: R = 26M m, phi = 45 deg N, theta = 45 deg E
       // x = r sin phi cos theta
       // y = r sin phi sin theta
@@ -209,38 +210,43 @@ void xRACRotation :: fifthTest (void)
 {
 
    Xvt rotxvt;
-   rotxvt.x = ECEF( GPSAlt, 0, 0 );
+   rotxvt.x = Position( GPSAlt, 0, 0 );
    rotxvt.v = Triple( 0, 0, 4000 );
-   rotxvt.dtime = 0.0;
-   rotxvt.ddtime = 0.0;
+   rotxvt.clkbias = 0.0;
+   rotxvt.clkdrift = 0.0;
+   rotxvt.relcorr = 0.0;
 
    RACRotation rot5( rotxvt );
 
       // OK, now set up a unit vector in the original radius and the
-      // orignial velocity and see that the results align properly.
+      // original velocity and see that the results align properly.
    Xvt testxvt1;
-   testxvt1.x = ECEF( 1.0, 0.0, 0.0 );
+   testxvt1.x = Position( 1.0, 0.0, 0.0 );
    testxvt1.v = Triple( 0.0, 0.0, 1.0 );
-   testxvt1.dtime = 0.0;
-   testxvt1.ddtime = 0.0;
+   testxvt1.clkbias = 0.0;
+   testxvt1.clkdrift = 0.0;
+   testxvt1.relcorr = 0.0;
    Xvt testxvtRAC1 = rot5.convertToRAC( testxvt1 );
 
-   CPPUNIT_ASSERT_EQUAL(ECEF(1,0,0),testxvtRAC1.x);
+   CPPUNIT_ASSERT_EQUAL(Position(1,0,0),(gpstk::Position)testxvtRAC1.x);
    CPPUNIT_ASSERT_EQUAL(Triple(0,1,0),testxvtRAC1.v);
-   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.dtime);
-   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.ddtime);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkbias);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkdrift);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.relcorr);
 
       // Reverse the two vectors and observe the results
-   testxvt1.x = ECEF( -1.0, 0.0, 0.0);
+   testxvt1.x = Position( -1.0, 0.0, 0.0);
    testxvt1.v = Triple(  0.0, 0.0,-1.0);
-   testxvt1.dtime = 0.0;
-   testxvt1.ddtime = 0.0;
+   testxvt1.clkbias = 0.0;
+   testxvt1.clkdrift = 0.0;
+   testxvt1.relcorr = 0.0;
    testxvtRAC1 = rot5.convertToRAC( testxvt1 );
 
-   CPPUNIT_ASSERT_EQUAL(ECEF(-1,0,0),testxvtRAC1.x);
+   CPPUNIT_ASSERT_EQUAL(Position(-1,0,0),(gpstk::Position)testxvtRAC1.x);
    CPPUNIT_ASSERT_EQUAL(Triple(0,-1,0),testxvtRAC1.v);
-   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.dtime);
-   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.ddtime);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkbias);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.clkdrift);
+   CPPUNIT_ASSERT_EQUAL(0.0,testxvtRAC1.relcorr);
 
    testErrXYZ = Triple( 0.0, 0.0, -1.0);
    testErrRAC = rot5.convertToRAC( testErrXYZ );

@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,7 +48,7 @@
 
 //------------------------------------------------------------------------------------
 // GPSTk
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Position.hpp"
 #include "XvtStore.hpp"
 #include "SatID.hpp"
@@ -79,7 +79,7 @@ namespace gpstk
       /// XvtStore, from receiver at position Rx with measured pseudorange pr and
       /// time tag nomRecTime, to the GPS satellite given by SatID sat,
       /// as well as all the CER quantities.
-      /// @param DayTime nomRecTime  nominal receive time
+      /// @param CommonTime nomRecTime  nominal receive time
       /// @param double pr           measured pseudorange at this time
       /// @param Position& Rx        receiver position
       /// @param SatID sat           satellite
@@ -92,7 +92,7 @@ namespace gpstk
       ///                               else antenna-phase-center, default false.
       /// @return corrected raw range
       /// @throw if ephemeris is not found
-      double ComputeAtTransmitTime(const DayTime& nomRecTime,
+      double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
                                    const SatID sat,
@@ -104,7 +104,7 @@ namespace gpstk
          throw(Exception);
 
       /// Version with no antenna; cf. doc for other version.
-      double ComputeAtTransmitTime(const DayTime& nomRecTime,
+      double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
                                    const SatID sat,
@@ -120,7 +120,7 @@ namespace gpstk
       }
 
       /// Version without high-accuracy SolarSystem; cf. doc for other version.
-      double ComputeAtTransmitTime(const DayTime& nomRecTime,
+      double ComputeAtTransmitTime(const CommonTime& nomRecTime,
                                    const double pr,
                                    const Position& Rx,
                                    const SatID sat,
@@ -162,7 +162,7 @@ namespace gpstk
       double azimuthGeodetic;
 
       /// The computed transmit time of the signal.
-      DayTime transmit;
+      CommonTime transmit;
 
       /// The direction cosines of the satellite, as seen at the receiver (XYZ).
       Triple cosines;
@@ -180,8 +180,8 @@ namespace gpstk
 
    }; // end class PreciseRange
 
-   /// Compute relativity correction (meters) from the satellite position and velocity
-   double RelativityCorrection(const Position& R, const Position& V);
+   // Compute relativity correction (meters) from the satellite position and velocity
+   //double RelativityCorrection(const Position& R, const Position& V);
 
    //@}
 

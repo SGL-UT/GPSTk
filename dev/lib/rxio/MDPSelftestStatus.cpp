@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -43,6 +43,8 @@
 
 #include "MDPSelftestStatus.hpp"
 #include "MDPStream.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 using gpstk::StringUtils::asString;
 using gpstk::BinUtils::encodeVar;
@@ -54,8 +56,8 @@ namespace gpstk
    //---------------------------------------------------------------------------
    MDPSelftestStatus::MDPSelftestStatus()
       throw() :
-      selfTestTime(gpstk::DayTime::BEGINNING_OF_TIME),
-      firstPVTTime(gpstk::DayTime::BEGINNING_OF_TIME),
+      selfTestTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+      firstPVTTime(gpstk::CommonTime::BEGINNING_OF_TIME),
       antennaTemp(0), receiverTemp(0), status(0xffffffff),
       cpuLoad(0), extFreqStatus(0)
    {
@@ -72,10 +74,10 @@ namespace gpstk
       str += encodeVar( (float)    receiverTemp);
       str += encodeVar( (uint32_t) status);
       str += encodeVar( (float)    cpuLoad);
-      str += encodeVar( (uint32_t) 100*selfTestTime.GPSsecond());
-      str += encodeVar( (uint16_t) selfTestTime.GPSfullweek());
-      str += encodeVar( (uint16_t) firstPVTTime.GPSfullweek());
-      str += encodeVar( (uint32_t) 100*firstPVTTime.GPSsecond());
+      str += encodeVar( (uint32_t) 100*(static_cast<GPSWeekSecond>(selfTestTime).sow));
+      str += encodeVar( (uint16_t) static_cast<GPSWeekSecond>(selfTestTime).week);
+      str += encodeVar( (uint16_t) static_cast<GPSWeekSecond>(firstPVTTime).week);
+      str += encodeVar( (uint32_t) 100*(static_cast<GPSWeekSecond>(firstPVTTime).sow));
       str += encodeVar( (uint16_t) extFreqStatus);
       str += encodeVar( (uint16_t) saasmStatusWord);
       return str;
@@ -101,10 +103,10 @@ namespace gpstk
       cpuLoad       = decodeVar<float>(str);
       sow100        = decodeVar<uint32_t>(str);
       week          = decodeVar<uint16_t>(str);
-      selfTestTime.setGPSfullweek(week, double(sow100)*0.01);
+      selfTestTime=GPSWeekSecond(week, double(sow100)*0.01);
       week          = decodeVar<uint16_t>(str);
       sow100        = decodeVar<uint32_t>(str);
-      firstPVTTime.setGPSfullweek(week, double(sow100)*0.01);
+      firstPVTTime=GPSWeekSecond(week, double(sow100)*0.01);
       extFreqStatus = decodeVar<uint16_t>(str);
       saasmStatusWord  = decodeVar<uint16_t>(str);
       
@@ -122,8 +124,8 @@ namespace gpstk
 
       MDPHeader::dump(oss);
       oss << getName() << "1:"
-          << " Tst:" << selfTestTime.printf("%4F/%9.2g")
-          << " Tpvt:" << firstPVTTime.printf("%4F/%9.2g")
+          << " Tst:" << printTime(selfTestTime,"%4F/%9.2g")
+          << " Tpvt:" << printTime(firstPVTTime,"%4F/%9.2g")
           << " Ant. Temp:" << antennaTemp
           << " Rx. Temp:" << receiverTemp
           << " status:" << hex << status << dec

@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -105,7 +105,7 @@ namespace gpstk
       ComputeSatPCenter()
          : pEphemeris(NULL), nominalPos(0.0, 0.0, 0.0),
            satData("PRN_GPS"), fileData("PRN_GPS"), pAntexReader(NULL)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -120,10 +120,10 @@ namespace gpstk
           */
       ComputeSatPCenter( XvtStore<SatID>& ephem,
                          const Position& stapos,
-                         string filename="PRN_GPS" )
+                         std::string filename="PRN_GPS" )
          : pEphemeris(&ephem), nominalPos(stapos), satData(filename),
            fileData(filename), pAntexReader(NULL)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -136,10 +136,10 @@ namespace gpstk
           * file named "PRN_GPS" in the current directory.
           */
       ComputeSatPCenter( const Position& stapos,
-                         string filename="PRN_GPS" )
+                         std::string filename="PRN_GPS" )
          : pEphemeris(NULL), nominalPos(stapos), satData(filename),
            fileData(filename), pAntexReader(NULL)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor. Uses satellite antenna data from an Antex file.
@@ -156,7 +156,7 @@ namespace gpstk
                          const Position& stapos,
                          AntexReader& antexObj )
          : pEphemeris(&ephem), nominalPos(stapos), pAntexReader(&antexObj)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor. Uses satellite antenna data from an Antex file.
@@ -171,7 +171,7 @@ namespace gpstk
       ComputeSatPCenter( const Position& stapos,
                          AntexReader& antexObj )
          : pEphemeris(NULL), nominalPos(stapos), pAntexReader(&antexObj)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -180,7 +180,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -206,14 +206,14 @@ namespace gpstk
 
 
          /// Returns name of "PRN_GPS"-like file containing satellite data.
-      virtual string getFilename(void) const
+      virtual std::string getFilename(void) const
       { return fileData; };
 
 
          /** Sets name of "PRN_GPS"-like file containing satellite data.
           * @param name      Name of satellite data file.
           */
-      virtual ComputeSatPCenter& setFilename(const string& name);
+      virtual ComputeSatPCenter& setFilename(const std::string& name);
 
 
          /// Returns nominal position of receiver station.
@@ -256,10 +256,6 @@ namespace gpstk
       { pAntexReader = &antexObj; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -284,7 +280,7 @@ namespace gpstk
 
 
          /// Name of "PRN_GPS"-like file containing satellite data.
-      string fileData;
+      std::string fileData;
 
 
          /// Pointer to object containing satellite antenna data, if available.
@@ -300,20 +296,9 @@ namespace gpstk
           * @return Satellite antenna phase correction, in meters.
           */
       virtual double getSatPCenter( const SatID& satid,
-                                    const DayTime& time,
+                                    const CommonTime& time,
                                     const Triple& satpos,
                                     const Triple& sunPosition );
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'ComputeSatPCenter'

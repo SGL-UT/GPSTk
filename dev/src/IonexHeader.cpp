@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
 //
@@ -34,6 +34,7 @@
 #include "MathBase.hpp"
 #include "IonexHeader.hpp"
 #include "IonexStream.hpp"
+#include "CivilTime.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -838,7 +839,7 @@ namespace gpstk
        *
        * It looks at \a line to obtain the needed information.
        */
-   DayTime IonexHeader::parseTime(const string& line) const
+   CommonTime IonexHeader::parseTime(const string& line) const
    {
 
       int year, month, day, hour, min, sec;
@@ -850,25 +851,25 @@ namespace gpstk
       min   = asInt(line.substr(24,6));
       sec   = asInt(line.substr(30,6));
 
-      return DayTime(year, month, day, hour, min, (double)sec);
+      return CivilTime(year, month, day, hour, min, (double)sec);
 
    }  // End of method 'IonexHeader::parseTime()'
 
 
-         /** Converts the daytime \a dt into a Ionex Obs time
+         /** Converts the CommonTime \a dt into a Ionex Obs time
           * string for the header
           */
-   string IonexHeader::writeTime(const DayTime& dt) const
+   string IonexHeader::writeTime(const CommonTime& dt) const
    {
 
       string line;
 
-      line  = rightJustify(asString<short>(dt.year()), 6);
-      line += rightJustify(asString<short>(dt.month()), 6);
-      line += rightJustify(asString<short>(dt.day()), 6);
-      line += rightJustify(asString<short>(dt.hour()), 6);
-      line += rightJustify(asString<short>(dt.minute()), 6);
-      line += rightJustify(asString (static_cast<int>(dt.second())), 6);
+      line  = rightJustify(asString<short>(static_cast<CivilTime>(dt).year), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).month), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).day), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).hour), 6);
+      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).minute), 6);
+      line += rightJustify(asString (static_cast<int>(static_cast<CivilTime>(dt).second)), 6);
 
       return line;
 

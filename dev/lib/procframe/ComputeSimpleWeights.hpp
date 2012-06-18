@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2011
 //
@@ -88,7 +88,7 @@ namespace gpstk
 
          /// Default constructor.
       ComputeSimpleWeights()
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data
@@ -97,7 +97,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -120,10 +120,6 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -137,16 +133,6 @@ namespace gpstk
 
          /// Nominal position.
       Position nominalPos;
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'ComputeSimpleWeights'

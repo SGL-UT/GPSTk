@@ -249,7 +249,7 @@ double computeSigmaIono( const SourceID& source,
 
 
       // Add first values to vectors
-   t.push_back( gRin.header.epoch.DOYsecond() );
+   t.push_back( YDSTime(gRin.header.epoch).sod );
    y.push_back( gRin.getValue( highSat, TypeID::L1 ) -
                 gRin.getValue( highSat, TypeID::LC ) );
    el.push_back( gRin.getValue( highSat, TypeID::elevation ) );
@@ -285,7 +285,7 @@ double computeSigmaIono( const SourceID& source,
                // This procedure is less efficient but should be safer
 
                // Try to get the values
-            double ttemp( gRin.header.epoch.DOYsecond() );
+            double ttemp( YDSTime(gRin.header.epoch).sod );
             double ytemp( gRin.getValue( highSat, TypeID::L1 ) -
                           gRin.getValue( highSat, TypeID::LC ) );
             double eltemp( gRin.getValue( highSat, TypeID::elevation ) );
@@ -1441,7 +1441,7 @@ int main( int argc, char **argv )
    gnssDataMap gIono;
 
       // Map to store rover positions
-   std::map<DayTime, Position> posMap;
+   std::map<CommonTime, Position> posMap;
 
       // Prepare for printing
    int precision( confReader.getValueAsInt( "precision", "DEFAULT" ) );
@@ -1469,7 +1469,7 @@ int main( int argc, char **argv )
    {
 
          // Get current epoch
-      DayTime curEpoch( gRover.header.epoch );
+      CommonTime curEpoch( gRover.header.epoch );
 
          // Object to store the reference satellite
       SatID refSat;
@@ -2024,7 +2024,7 @@ int main( int argc, char **argv )
          {
 
             cerr << "Unable to invert matrix CDD matrix at epoch: "
-                 << gRover.header.epoch.DOYsecond()
+                 << YDSTime(gRover.header.epoch).sod()
                  << ". Skipping it." << endl;
 
                // Remove first element

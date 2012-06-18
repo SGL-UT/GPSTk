@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,7 +48,7 @@
 #include <iostream>
 
 #include <Exception.hpp>
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
 
@@ -109,7 +109,7 @@ namespace gpstk
       void checkCRC(std::string str) throw();
 
       unsigned short id;              ///< Identifies this data's type.
-      gpstk::DayTime time;            ///< The time associated with this message
+      gpstk::CommonTime time;            ///< The time associated with this message
       unsigned short freshnessCount;  ///< A message counter
 
       // These items need to be mutable so they can be set when an object

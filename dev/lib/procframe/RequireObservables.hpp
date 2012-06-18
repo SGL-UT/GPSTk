@@ -5,8 +5,8 @@
  * This class filters out satellites with observations grossly out of bounds.
  */
 
-#ifndef REQUIREOBSERVABLES_HPP
-#define REQUIREOBSERVABLES_HPP
+#ifndef GPSTK_REQUIREOBSERVABLES_HPP
+#define GPSTK_REQUIREOBSERVABLES_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -83,7 +83,7 @@ namespace gpstk
 
          /// Default constructor.
       RequireObservables()
-      { setIndex(); };
+      { };
 
 
          /** Explicit constructor
@@ -91,7 +91,7 @@ namespace gpstk
           * @param type      TypeID to be required.
           */
       RequireObservables(const TypeID& type)
-      { setRequiredType(type); setIndex(); };
+      { setRequiredType(type); };
 
 
          /** Explicit constructor
@@ -100,7 +100,7 @@ namespace gpstk
           */
       RequireObservables(const TypeIDSet& typeSet)
          : requiredTypeSet(typeSet)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, checking the required
@@ -170,10 +170,6 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -189,21 +185,10 @@ namespace gpstk
       TypeIDSet requiredTypeSet;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
    }; // End of class 'RequireObservables'
 
       //@}
 
-}
-#endif  // REQUIREOBSERVABLES_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_REQUIREOBSERVABLES_HPP

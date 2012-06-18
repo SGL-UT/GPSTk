@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -34,15 +34,15 @@
 //------------------------------------------------------------------------------------
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
 
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "Position.hpp"
-#include "icd_200_constants.hpp"     // for TWO_PI
+#include "GNSSconstants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 #include "MiscMath.hpp"              // for RSS
 
@@ -70,7 +70,7 @@ public:
    //int inC1,inL1,inL2,inP1,inP2,inD1,inD2,inS1,inS2;        // indexes in header
    Position xyz;                         // cartesian position (ECEF)
    Position llr;                         // geocentric position in LLR
-   std::map<SatID,DayTime> InitTime;     // time of start of this (cont) phase seg
+   std::map<SatID,CommonTime> InitTime;     // time of start of this (cont) phase seg
 
    friend std::ostream& operator<<(std::ostream& os, const Station& f);
 };
@@ -140,7 +140,7 @@ public:
       /// @param epoch time of interest
       /// @param data vector of ObsData structures for all observed data
       /// @param bias overall bias to add to vertical TEC data
-   virtual void ComputeMap(DayTime& epoch, std::vector<ObsData>& data, double bias);
+   virtual void ComputeMap(CommonTime& epoch, std::vector<ObsData>& data, double bias);
 
       /// write the computed grid values to a file
       /// @param ostream on which to write
@@ -181,7 +181,7 @@ public:
       /// @param vtec Vertical TEC
       /// @param epoch TD doc
       /// @param lon Longitude of TD doc
-   double VTECtoF0F2(int method, double vtec, DayTime& epoch, double lon);
+   double VTECtoF0F2(int method, double vtec, CommonTime& epoch, double lon);
 
       /// Compute the error on the VTEC
       /// @param t acquisition time in sec ?
@@ -224,7 +224,7 @@ public:
       /// @param epoch time of interest
       /// @param data vector of ObsData structures for all observed data
       /// @param bias overall bias to add to vertical TEC data
-   void ComputeMap(DayTime& epoch, std::vector<ObsData>& data, double bias);
+   void ComputeMap(CommonTime& epoch, std::vector<ObsData>& data, double bias);
 };
 
 /// class MUFMap is a VTECMap that computes F0F2 on the grid points.
@@ -234,7 +234,7 @@ public:
       /// @param epoch time of interest
       /// @param data vector of ObsData structures for all observed data
       /// @param bias overall bias to add to vertical TEC data
-   void ComputeMap(DayTime& epoch, std::vector<ObsData>& data, double bias);
+   void ComputeMap(CommonTime& epoch, std::vector<ObsData>& data, double bias);
 };
 
 //------------------------------------------------------------------------------------

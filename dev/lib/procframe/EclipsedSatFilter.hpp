@@ -5,8 +5,8 @@
  * This class filters out satellites that are eclipsed by Earth shadow.
  */
 
-#ifndef ECLIPSEDSATFILTER_HPP
-#define ECLIPSEDSATFILTER_HPP
+#ifndef GPSTK_ECLIPSEDSATFILTER_HPP
+#define GPSTK_ECLIPSEDSATFILTER_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
 //============================================================================
 
@@ -104,7 +104,7 @@ namespace gpstk
 
          /// Default constructor.
       EclipsedSatFilter() : coneAngle(30.0), postShadowPeriod(1800.0)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -116,7 +116,7 @@ namespace gpstk
       EclipsedSatFilter( const double angle,
                          const double pShTime )
          : coneAngle(angle), postShadowPeriod(pShTime)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -125,7 +125,7 @@ namespace gpstk
           * @param epoch     Time of observations.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -177,10 +177,6 @@ namespace gpstk
       virtual EclipsedSatFilter& setPostShadowPeriod(const double pShTime);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -200,23 +196,12 @@ namespace gpstk
       double postShadowPeriod;
 
          /// Map holding the time information about every satellite in eclipse
-      std::map<SatID, DayTime> shadowEpoch;
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
+      std::map<SatID, CommonTime> shadowEpoch;
 
    }; // End of class 'EclipsedSatFilter'
 
-
       //@}
 
-}
-#endif   // ECLIPSEDSATFILTER_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_ECLIPSEDSATFILTER_HPP

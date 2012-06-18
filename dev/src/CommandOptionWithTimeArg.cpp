@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -45,11 +45,12 @@
 
 /**
  * @file CommandOptionWithTimeArg.cpp
- * Command line options with time (class DayTime) arguments
+ * Command line options with time (class CommonTime) arguments
  */
 
 #include "StringUtils.hpp"
 #include "CommandOptionWithTimeArg.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 
@@ -69,8 +70,8 @@ namespace gpstk
          if (thisTimeSpec != string())
          {
             try {
-               DayTime dt;
-               dt.setToString(value[vecindex], thisTimeSpec);
+               CommonTime dt;
+               static_cast<Epoch>(dt).scanf(value[vecindex], thisTimeSpec);
                times.push_back(dt);
             }
             catch (...)

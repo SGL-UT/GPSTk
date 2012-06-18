@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
 //
@@ -148,11 +148,12 @@ int main(void)
    SP3EphList.rejectBadPositions(true);
    SP3EphList.rejectBadClocks(true);
 
-      // Set flags to check for data gaps and too wide interpolation intervals.
-      // Default values for "gapInterval" (901.0 s) and "maxInterval"
-      // (8105.0 s) will be used.
-   SP3EphList.enableDataGapCheck();
-   SP3EphList.enableIntervalCheck();
+// CNQ- enableDataGapCheck and enableIntervalCheck are not SP3EphemerisStore member functions.
+//      // Set flags to check for data gaps and too wide interpolation intervals.
+//      // Default values for "gapInterval" (901.0 s) and "maxInterval"
+//      // (8105.0 s) will be used.
+//   SP3EphList.enableDataGapCheck();
+//   SP3EphList.enableIntervalCheck();
 
       // Load all the SP3 ephemerides files
    SP3EphList.loadFile("igs13354.sp3");
@@ -314,7 +315,7 @@ int main(void)
    while(rin >> gRin)
    {
 
-      DayTime time(gRin.header.epoch);
+      CommonTime time(gRin.header.epoch);
 
          // Compute the effect of solid, oceanic and pole tides
       Triple tides( solid.getSolidTide(time, nominalPos) +
@@ -373,7 +374,7 @@ int main(void)
       if(printPosition)
       {
             // Print here the position results
-         cout << time.DOYsecond()      << "  ";     // Epoch - Output field #1
+         cout << static_cast<YDSTime>(time).sod      << "  ";     // Epoch - Output field #1
 
          cout << pppSolver.getSolution(TypeID::dLat) << "  ";    // dLat  - #2
          cout << pppSolver.getSolution(TypeID::dLon) << "  ";    // dLon  - #3
@@ -396,7 +397,7 @@ int main(void)
          cout << endl;
 
             // For statistical purposes we discard the first two hours of data
-         if (time.DOYsecond() > 7200.0)
+         if (static_cast<YDSTime>(time).sod > 7200.0)
          {
                // Statistical summary
             double errorV( pppSolver.solution[1]*pppSolver.solution[1] +
@@ -458,9 +459,9 @@ int main(void)
          {
 
                // Print epoch
-            cout << time.year()        << " ";
-            cout << time.DOY()         << " ";
-            cout << time.DOYsecond()   << " ";
+            cout << static_cast<YDSTime>(time).year        << " ";
+            cout << static_cast<YDSTime>(time).doy         << " ";
+            cout << static_cast<YDSTime>(time).sod   << " ";
 
             cout << cDOP.getGDOP()        << "  ";  // GDOP #4
             cout << cDOP.getPDOP()        << "  ";  // PDOP #5

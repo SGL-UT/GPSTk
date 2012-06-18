@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,8 +48,9 @@
 #include <string>
 #include "StringUtils.hpp"
 #include "Triple.hpp"
-#include "ECEF.hpp"
-#include "DayTime.hpp"
+#include "Position.hpp"
+#include "CommonTime.hpp"
+#include "YDSTime.hpp"
 #include "FFData.hpp"
 #include "Xvt.hpp"
 
@@ -65,7 +66,7 @@ namespace gpstk
    {
    public:
          /// constructor
-      MSCData() throw() : time(gpstk::DayTime(0.L)) {}
+      MSCData() throw() : time(gpstk::YDSTime()) {}
       
          /// destructor
       virtual ~MSCData() throw() {}
@@ -75,16 +76,16 @@ namespace gpstk
          /// @throw InvalidRequest If the request can not be completed for any
          ///    reason, this is thrown. The text may have additional
          ///    information as to why the request failed.
-      Xvt getXvt(const DayTime& t)
+      Xvt getXvt(const YDSTime& t)
          const throw(InvalidRequest);
 
-      gpstk::DayTime time;  ///< date coordinates released
+      gpstk::YDSTime time;  ///< date coordinates released
                             ///<   (Bookkeeping convenience not used)
       unsigned long station; ///< Monitor Station number (e.g. 10234)
       std::string mnemonic;  ///< Monitor Station identifier (e.g. ARLM)
-      gpstk::DayTime refepoch;  ///< epoch of coordinates and velocities
-      gpstk::DayTime effepoch;  ///< earliest epoch data is valid
-      gpstk::ECEF coordinates;  ///< ECEF XYZ coordinates
+      gpstk::YDSTime refepoch;  ///< epoch of coordinates and velocities
+      gpstk::YDSTime effepoch;  ///< earliest epoch data is valid
+      gpstk::Triple coordinates;  ///< ECEF XYZ coordinates
       gpstk::Triple velocities; ///< XYZ velocities
 
          /// MSCData \b is data, so this always return \c true

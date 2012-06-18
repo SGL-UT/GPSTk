@@ -30,13 +30,17 @@
 
 #include "IERSConventions.hpp"
 #include "Logger.hpp"
+#include "CommonTime.hpp"
+#include "YDSTime.hpp"
+#include "MJD.hpp"
+#include "CivilTime.hpp"
 
 namespace gpstk
 {
    using namespace std;
    
       // Reference epoch (J2000)
-   const DayTime J2000(2000,1,1,12,0,0.0);
+   const CommonTime J2000(CivilTime(2000,1,1,12,0,0.0));
 
    const double PI = std::atan(1.0)*4.0;    // 3.1415926535897932; 
       // 2PI
@@ -55,11 +59,11 @@ namespace gpstk
    // IERS Data Handling
    //--------------------------------------------------------------------------
    
-   class TAImUTCData : public map<DayTime,int>
+   class TAImUTCData : public map<CommonTime,int>
    {     
    public:
       void leapHistory(int year, int month, int day,int leap)
-      { (*this)[ DayTime(year,month,day,0,0,0.0) ] = leap; }  
+      { (*this)[ CivilTime(year,month,day,0,0,0.0) ] = leap; }  
       
       TAImUTCData()
       {         
@@ -96,10 +100,10 @@ namespace gpstk
       // Leap seconds data table
    static const TAImUTCData  lsDataTable;
 
-   int TAImUTC(DayTime UTC)
+   int TAImUTC(const CommonTime& UTC)
       throw(InvalidRequest)
    {
-      if( UTC < DayTime(1972,1,1,0,0,0.0) )
+      if( UTC < CivilTime(1972,1,1,0,0,0.0) )
       {  
          GPSTK_THROW(
             InvalidRequest( "There are no leap second data for the epoch"
@@ -166,14 +170,14 @@ namespace gpstk
 
 
       // Request EOP Data
-   EOPDataStore::EOPData EOPData(const DayTime& UTC)
+   EOPDataStore::EOPData EOPData(const CommonTime& UTC)
       throw(InvalidRequest)
    {
       return eopDataTable.getEOPData(UTC);
    }
 
       // in arcsecond
-   double PolarMotionX(const DayTime& UTC)
+   double PolarMotionX(const CommonTime& UTC)
    {
       try { return EOPData(UTC).xp; }
       catch(...) 
@@ -186,7 +190,7 @@ namespace gpstk
    }
 
       // in arcsecond
-   double PolarMotionY(const DayTime& UTC)
+   double PolarMotionY(const CommonTime& UTC)
    {
       try { return EOPData(UTC).yp; }
       catch(...) 
@@ -199,7 +203,7 @@ namespace gpstk
    }
 
       // in second
-   double UT1mUTC(const DayTime& UTC)
+   double UT1mUTC(const CommonTime& UTC)
    {
       try { return EOPData(UTC).UT1mUTC; }
       catch(...) 
@@ -212,7 +216,7 @@ namespace gpstk
    }
 
       // in arcsecond
-   double NutationDPsi(const DayTime& UTC)
+   double NutationDPsi(const CommonTime& UTC)
    {
       try { return EOPData(UTC).dPsi; }
       catch(...) 
@@ -225,7 +229,7 @@ namespace gpstk
    }
 
       // in arcsecond
-   double NutationDEps(const DayTime& UTC)
+   double NutationDEps(const CommonTime& UTC)
    {
       try { return EOPData(UTC).dEps; }
       catch(...) 
@@ -240,11 +244,11 @@ namespace gpstk
    // Time System Handling
    //--------------------------------------------------------------------------
    
-   DayTime ConvertTimeSystem(const DayTime& time, TimeSystem from, TimeSystem to)
+   CommonTime ConvertTimeSystem(const CommonTime& time, TimeSystemEnum from, TimeSystemEnum to)
    {
       if(from==to) return time;
 
-      static std::map<TimeSystem,std::string> mapTSName;
+      static std::map<TimeSystemEnum,std::string> mapTSName;
       if(mapTSName.size()==0)
       {
          mapTSName[TS_UTC] = "UTC";
@@ -254,7 +258,7 @@ namespace gpstk
          mapTSName[TS_TT]  = "TT";
       }     
       
-      std::map<TimeSystem,std::string>::const_iterator itf,itt,ite;
+      std::map<TimeSystemEnum,std::string>::const_iterator itf,itt,ite;
       itf = mapTSName.find(from);
       itt = mapTSName.find(to);
       ite = mapTSName.end();
@@ -268,7 +272,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      typedef DayTime (*ConvertFunPtr)(const DayTime&);
+      typedef CommonTime (*ConvertFunPtr)(const CommonTime&);
       
       ConvertFunPtr funPtr1(0);
       if( itf->first == TS_UT1) funPtr1 = UT12UTC;
@@ -276,7 +280,7 @@ namespace gpstk
       if( itf->first == TS_TAI) funPtr1 = TAI2UTC;
       if( itf->first == TS_TT)  funPtr1 = TT2UTC;
 
-      DayTime utc = funPtr1 ? funPtr1(time) : time;
+      CommonTime utc = funPtr1 ? funPtr1(time) : time;
       
       ConvertFunPtr funPtr2(0);
       if( itt->first == TS_UT1) funPtr2 = UTC2UT1;
@@ -284,16 +288,16 @@ namespace gpstk
       if( itt->first == TS_TAI) funPtr2 = UTC2TAI;
       if( itt->first == TS_TT)  funPtr2 = UTC2TT;
 
-      DayTime dest = funPtr2 ? funPtr2(utc) : utc;
+      CommonTime dest = funPtr2 ? funPtr2(utc) : utc;
 
       return dest;
    }
 
-   DayTime GPST2UTC(const DayTime& GPST)
+   CommonTime GPST2UTC(const CommonTime& GPST)
    {
       // the input should be UTC
       int leapSec = TAImUTC(GPST);   
-      DayTime UTC = GPST;
+      CommonTime UTC = GPST;
       UTC += (19.0 - double(leapSec));
 
       leapSec = TAImUTC(UTC);
@@ -302,20 +306,20 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2GPST(const DayTime& UTC)
+   CommonTime UTC2GPST(const CommonTime& UTC)
    {
-      DayTime GPST(UTC);
+      CommonTime GPST(UTC);
       GPST += TAImUTC(UTC);   // TAI
       GPST +=-TAImGPST();     // GPST
       return GPST;
    }
 
-   DayTime UT12UTC(const DayTime& UT1)
+   CommonTime UT12UTC(const CommonTime& UT1)
    {
-      DayTime UTC(UT1);
+      CommonTime UTC(UT1);
       UTC -= UT1mUTC(UT1);   // input should be utc
       
-      DayTime T(UT1);
+      CommonTime T(UT1);
       T -= UT1mUTC(UTC);
 
       UTC = UT1;
@@ -323,38 +327,38 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2UT1(const DayTime& UTC)
+   CommonTime UTC2UT1(const CommonTime& UTC)
    {
-      DayTime UT1(UTC);
+      CommonTime UT1(UTC);
       UT1 += UT1mUTC(UTC);
 
       return UT1;
    }
 
-   DayTime UT12UTC(const DayTime& UT1,double ut1mutc)
+   CommonTime UT12UTC(const CommonTime& UT1,double ut1mutc)
    {
-      DayTime UTC(UT1);
+      CommonTime UTC(UT1);
       UTC -= ut1mutc;
 
       return UTC;
    }
-   DayTime UTC2UT1(const DayTime& UTC,double ut1mutc)
+   CommonTime UTC2UT1(const CommonTime& UTC,double ut1mutc)
    {
-      DayTime UT1(UTC);
+      CommonTime UT1(UTC);
       UT1 += ut1mutc;
 
       return UT1;
    }
 
-   DayTime TT2UTC(const DayTime& TT)
+   CommonTime TT2UTC(const CommonTime& TT)
    {
-      DayTime TAI  = TT;          // TT
+      CommonTime TAI  = TT;          // TT
       TAI -= TTmTAI();       // TAI
 
-      DayTime UTC = TAI;
+      CommonTime UTC = TAI;
       UTC -= TAImUTC(TAI); // input should be UTC     
 
-      DayTime UTC2(UTC);
+      CommonTime UTC2(UTC);
 
       UTC = TAI;
       UTC -= TAImUTC(UTC2);
@@ -366,23 +370,23 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2TT(const DayTime& UTC)
+   CommonTime UTC2TT(const CommonTime& UTC)
    {
-      DayTime TAI(UTC);
+      CommonTime TAI(UTC);
       TAI += TAImUTC(UTC);
 
-      DayTime TT(TAI);
+      CommonTime TT(TAI);
       TT += TTmTAI();
       
       return TT;
    }
 
-   DayTime TAI2UTC(const DayTime& TAI)
+   CommonTime TAI2UTC(const CommonTime& TAI)
    {
-      DayTime UTC(TAI);
+      CommonTime UTC(TAI);
       UTC -= TAImUTC(TAI); // input should be UTC     
 
-      DayTime UTC2 = TAI;
+      CommonTime UTC2 = TAI;
       UTC2 -= TAImUTC(UTC);
 
       UTC = TAI;
@@ -390,24 +394,24 @@ namespace gpstk
 
       return UTC;
    }
-   DayTime UTC2TAI(const DayTime& UTC)
+   CommonTime UTC2TAI(const CommonTime& UTC)
    {
-      DayTime TAI(UTC);
+      CommonTime TAI(UTC);
       TAI += TAImUTC(UTC);      // TAI
 
       return TAI;
    }
 
-   DayTime BDT2UTC(const DayTime& BDT)
+   CommonTime BDT2UTC(const CommonTime& BDT)
    {
-      DayTime GPST(BDT);
+      CommonTime GPST(BDT);
       GPST += 14.0;
 
       return GPST2UTC(GPST);
    }
-   DayTime UTC2BDT(const DayTime& UTC)
+   CommonTime UTC2BDT(const CommonTime& UTC)
    {
-      DayTime BDT = UTC2GPST(UTC);  
+      CommonTime BDT = UTC2GPST(UTC);  
       BDT -= 14.0;
 
       return BDT;
@@ -416,34 +420,34 @@ namespace gpstk
    // Reference System Handling
    //--------------------------------------------------------------------------
 
-   Triple J2kPosToECEF(const Triple& j2kPos, const DayTime& time, TimeSystem sys)
+   Triple J2kPosToECEF(const Triple& j2kPos, const CommonTime& time, TimeSystemEnum sys)
    {
       Vector<double> j2kR(3,0.0);
       j2kR[0] = j2kPos[0];
       j2kR[1] = j2kPos[1];
       j2kR[2] = j2kPos[2];
       
-      DayTime UTC = ConvertTimeSystem(time, sys, TS_UTC);
+      CommonTime UTC = ConvertTimeSystem(time, sys, TS_UTC);
       Vector<double> ecefR = J2kPosToECEF(UTC,j2kR);
 
       return Triple(ecefR[0], ecefR[1], ecefR[2]);
    }
 
-   Triple ECEFPosToJ2k(const Triple& ecefPos, const DayTime& time, TimeSystem sys)
+   Triple ECEFPosToJ2k(const Triple& ecefPos, const CommonTime& time, TimeSystemEnum sys)
    {
       Vector<double> ecefR(3,0.0);
       ecefR[0] = ecefPos[0];
       ecefR[1] = ecefPos[1];
       ecefR[2] = ecefPos[2];
 
-      DayTime UTC = ConvertTimeSystem(time, sys, TS_UTC);
+      CommonTime UTC = ConvertTimeSystem(time, sys, TS_UTC);
       Vector<double> j2kR = ECEFPosToJ2k(UTC,ecefR);
 
       return Triple(j2kR[0], j2kR[1], j2kR[2]);
    }
 
 
-   double iauNut80Args(const DayTime& TT,double& eps, double& dpsi,double& deps)
+   double iauNut80Args(const CommonTime& TT,double& eps, double& dpsi,double& deps)
       throw(Exception)
    {
       static const double nut[106][10]={
@@ -601,7 +605,7 @@ namespace gpstk
    }  // End of method 'iauNut80Args()'
 
 
-   void J2kToECEFMatrix(const DayTime& UTC, 
+   void J2kToECEFMatrix(const CommonTime& UTC, 
                         const EOPDataStore::EOPData& ERP,
                         Matrix<double>& POM, 
                         Matrix<double>& Theta, 
@@ -614,8 +618,8 @@ namespace gpstk
       double ddeps = ERP.dEps * DAS2R;
       double ddpsi = ERP.dPsi * DAS2R;
       
-      DayTime TT = UTC2TT(UTC);
-      DayTime UT1 = UTC2UT1(UTC,ut1_utc);
+      CommonTime TT = UTC2TT(UTC);
+      CommonTime UT1 = UTC2UT1(UTC,ut1_utc);
       
       // IAU 1976 precession matrix 
       Matrix<double> P = iauPmat76(TT);
@@ -628,8 +632,10 @@ namespace gpstk
 
       NP = N * P;                     // output NP
 
-      double  ut1_sec = UT1.DOYsecond();
-      DayTime ut1_day(UT1.year(),UT1.DOY(),0.0); 
+      YDSTime ut1_yds(UT1);
+      double  ut1_sec = ut1_yds.sod;
+      ut1_yds.sod = 0.0;
+      CommonTime ut1_day(ut1_yds);
       const double t = (ut1_day-J2000) / 86400.0 / DJC;
    
       double temp = 24110.54841+8640184.812866*t+0.093104*(t*t)-6.2E-6*(t*t*t)
@@ -648,7 +654,7 @@ namespace gpstk
    }
 
    // ECI to ECF transform matrix, POM * Theta * NP 
-   Matrix<double> J2kToECEFMatrix(const DayTime& UTC,const EOPDataStore::EOPData& ERP)
+   Matrix<double> J2kToECEFMatrix(const CommonTime& UTC,const EOPDataStore::EOPData& ERP)
    {
       Matrix<double> POM, Theta, NP;
       J2kToECEFMatrix(UTC,ERP,POM,Theta,NP);
@@ -657,7 +663,7 @@ namespace gpstk
    }
 
       // Convert position from J2000 to ECEF.
-   Vector<double> J2kPosToECEF(const DayTime& UTC, const Vector<double>& j2kPos)
+   Vector<double> J2kPosToECEF(const CommonTime& UTC, const Vector<double>& j2kPos)
       throw(Exception)
    {
       EOPDataStore::EOPData ERP = EOPData(UTC);
@@ -667,7 +673,7 @@ namespace gpstk
 
 
       // Convert position from ECEF to J2000.
-   Vector<double> ECEFPosToJ2k(const DayTime& UTC, const Vector<double>& ecefPos)
+   Vector<double> ECEFPosToJ2k(const CommonTime& UTC, const Vector<double>& ecefPos)
       throw(Exception)
    {
       EOPDataStore::EOPData ERP = EOPData(UTC);
@@ -676,7 +682,7 @@ namespace gpstk
    }
 
    // Convert position and velocity from J2000 to ECEF.
-   Vector<double> J2kPosVelToECEF(const DayTime& UTC, const Vector<double>& j2kPosVel)
+   Vector<double> J2kPosVelToECEF(const CommonTime& UTC, const Vector<double>& j2kPosVel)
       throw(Exception)
    {
       EOPDataStore::EOPData ERP = EOPData(UTC);
@@ -716,7 +722,7 @@ namespace gpstk
    }
 
    // Convert position and velocity from ECEF to J2000.
-   Vector<double> ECEFPosVelToJ2k(const DayTime& UTC, const Vector<double>& ecefPosVel)
+   Vector<double> ECEFPosVelToJ2k(const CommonTime& UTC, const Vector<double>& ecefPosVel)
       throw(Exception)
    {
       EOPDataStore::EOPData ERP = EOPData(UTC);
@@ -757,7 +763,7 @@ namespace gpstk
    }
 
 
-   Vector<double> sunJ2kPosition(const DayTime& TT)
+   Vector<double> sunJ2kPosition(const CommonTime& TT)
    {
       // P70~P73
 
@@ -782,7 +788,7 @@ namespace gpstk
       return Triple(r*std::cos(L),r*std::sin(L),0.0).R1(-eps*180.0/PI).toVector();
    }
 
-   Vector<double> moonJ2kPosition(const DayTime& TT)
+   Vector<double> moonJ2kPosition(const CommonTime& TT)
    {
       // Obliquity of J2000 ecliptic
       const double eps = 23.43929111 * PI / 180.0;
@@ -893,7 +899,7 @@ namespace gpstk
       return r;
    }
 
-   Matrix<double> iauPmat76(const DayTime& TT)
+   Matrix<double> iauPmat76(const CommonTime& TT)
    {
       // Interval between fundamental epoch J2000.0 and start epoch (JC). 
       const double t0 = 0.0;
@@ -917,7 +923,7 @@ namespace gpstk
    }  // End of method 'iauPmat76()'
 
 
-   void nutationAngles(DayTime TT, double& dpsi, double& deps)
+   void nutationAngles(const CommonTime& TT, double& dpsi, double& deps)
    {
       // Units of 0.1 milliarcsecond to radians 
       const double U2R = DAS2R / 1e4;
@@ -1133,7 +1139,7 @@ namespace gpstk
    }  // End of 'nutationAngles()'
 
 
-   double meanObliquity(DayTime TT)
+   double meanObliquity(const CommonTime& TT)
    {
       // Interval between fundamental epoch J2000.0 and given date (JC)
       const double t = ( TT - J2000 ) / 86400.0 / DJC;
@@ -1143,7 +1149,7 @@ namespace gpstk
       return (84381.448-46.8150*t-0.00059*t2+0.001813*t3)*DAS2R;
    }
 
-   double iauEqeq94(DayTime TT,double eps,double dPsi)
+   double iauEqeq94(const CommonTime& TT,double eps,double dPsi)
    {
       // Interval between fundamental epoch J2000.0 and given date (JC). 
       double t = ( TT - J2000 ) / 86400.0 / DJC;
@@ -1167,7 +1173,7 @@ namespace gpstk
       return ee;
    }
 
-   double iauGmst82(DayTime UT1)
+   double iauGmst82(const CommonTime& UT1)
    {
       // Coefficients of IAU 1982 GMST-UT1 model 
       const double A = 24110.54841  -  86400.0 / 2.0;
@@ -1180,9 +1186,9 @@ namespace gpstk
       // at noon.                                                    
 
       // Julian centuries since fundamental epoch. 
-      double d2 = DayTime::JD_TO_MJD;
-      double d1 = UT1.MJD();
-      double t = ( UT1.MJD() - J2000.MJD() ) / DJC;
+      double d2 = MJD_TO_JD;
+      double d1 = MJD(UT1).mjd;
+      double t = ( MJD(UT1).mjd - MJD(J2000).mjd ) / DJC;
 
       // Fractional part of JD(UT1), in seconds. 
       double f = 86400.0 * (fmod(d1, 1.0) + fmod(d2, 1.0));
@@ -1196,7 +1202,7 @@ namespace gpstk
    }  // End of method 'iauGmst82()'
 
       // Greenwich mean sidereal time by IAU 2000 model
-   double iauGmst00(DayTime UT1,DayTime TT)
+   double iauGmst00(const CommonTime& UT1,CommonTime TT)
    {
 
       // TT Julian centuries since J2000.0. 
@@ -1224,11 +1230,12 @@ namespace gpstk
 
 
       // Get earth rotation angle
-   double earthRotationAngle(DayTime UT1)
+   double earthRotationAngle(const CommonTime& UT1)
    {
       // IAU 2000 model
-      double t = (UT1 -J2000)/86400.0;
-      double f = fmod(UT1.MJD(),1.0) + fmod(DayTime::JD_TO_MJD, 1.0);
+      double t = (UT1 - J2000)/86400.0;
+         double f = ( fmod(static_cast<double>(MJD(UT1).mjd), 1.0) +
+                      fmod(static_cast<double>(MJD_TO_JD), 1.0) );
 
       double era = normalizeAngle(D2PI*(f+0.7790572732640+0.00273781191135448*t));
 
@@ -1239,7 +1246,7 @@ namespace gpstk
        *  @param mjdTT         Modified Julian Date in TT
        *  @return              d(GAST)/d(t) in [rad]
        */
-   double earthRotationAngleRate1(DayTime TT)
+   double earthRotationAngleRate1(const CommonTime& TT)
    {
       double T = ( TT - J2000 )/86400.0/36525.0;
       double dera = (1.002737909350795 + 5.9006e-11 * T - 5.9e-15 * T * T ) 

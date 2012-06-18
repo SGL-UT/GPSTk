@@ -18,11 +18,25 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
@@ -39,7 +53,7 @@ namespace gpstk
    }
    
    CommonTime GPSWeekSecond::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -49,7 +63,8 @@ namespace gpstk
          double sod(  sow - SEC_PER_DAY * dow );
          return CommonTime( jday, 
                             static_cast<long>( sod ),
-                            sod - static_cast<long>( sod ) );
+                            sod - static_cast<long>( sod ),
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -59,10 +74,10 @@ namespace gpstk
    }
    
    void GPSWeekSecond::convertFromCommonTime( const CommonTime& ct )
-      throw(InvalidRequest)
+      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime convertible to GPSWeekSecond.
-      static const CommonTime MIN_CT = GPSWeekSecond();
+      static const CommonTime MIN_CT = GPSWeekSecond(0,0.,TimeSystem::Any);
 
       if (ct < MIN_CT)
       {
@@ -72,7 +87,7 @@ namespace gpstk
       
       long day, sod;
       double fsod;
-      ct.get( day, sod, fsod );
+      ct.get( day, sod, fsod, timeSystem );
 
          // find the number of days since the beginning of the GPS Epoch
       day -= GPS_EPOCH_JDAY;
@@ -92,11 +107,13 @@ namespace gpstk
          using gpstk::StringUtils::formattedPrint;
          
          std::string rv = GPSWeek::printf( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "w",
                               "wu", getDayOfWeek() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
                               "gf", sow);
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", timeSystem.asString().c_str() );
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -117,7 +134,9 @@ namespace gpstk
          rv = formattedPrint( rv, getFormatPrefixInt() + "w",
                               "ws", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
-                              "gs", getError().c_str() );               
+                              "gs", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );               
          return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
@@ -143,6 +162,9 @@ namespace gpstk
                break;
             case 'g':
                sow = asDouble( i->second );
+               break;
+            case 'P':
+	            timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
             default:
                   // do nothing
@@ -180,7 +202,7 @@ namespace gpstk
    GPSWeekSecond::operator!=( const GPSWeekSecond& right ) const
       throw()
    {
-      return (! operator==( right ) );
+      return ( !operator==( right ) );
    }
 
    bool 
@@ -206,7 +228,7 @@ namespace gpstk
    GPSWeekSecond::operator>( const GPSWeekSecond& right ) const
       throw()
    {
-      return (! operator<=( right ) );
+      return ( !operator<=( right ) );
    }
 
    bool 
@@ -220,7 +242,7 @@ namespace gpstk
    GPSWeekSecond::operator>=( const GPSWeekSecond& right ) const
       throw()
    {
-      return (! operator<( right ) );
+      return ( !operator<( right ) );
    }
 
 } // namespace

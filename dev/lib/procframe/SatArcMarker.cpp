@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -33,16 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int SatArcMarker::classIndex = 3400000;
-
-
-      // Returns an index identifying this object.
-   int SatArcMarker::getIndex() const
-   { return index; }
-
-
 
       // Returns a string identifying this object.
    std::string SatArcMarker::getClassName() const
@@ -66,8 +56,6 @@ namespace gpstk
 
          // Set unstableTime value
       setUnstablePeriod( unstableTime );
-
-      setIndex();
 
    }  // End of method 'SatArcMarker::SatArcMarker()'
 
@@ -102,16 +90,16 @@ namespace gpstk
       /* Method to get the arc changed epoch.
        * @param sat              Interested SatID.
        */
-   DayTime SatArcMarker::getArcChangedEpoch(const SatID& sat)
+   CommonTime SatArcMarker::getArcChangedEpoch(const SatID& sat)
    {
-      std::map<SatID, DayTime>::iterator it = satArcChangeMap.find(sat);
+      std::map<SatID, CommonTime>::iterator it = satArcChangeMap.find(sat);
       if(it!=satArcChangeMap.end())
       {
          return it->second;
       }
       else
       {
-         return DayTime(DayTime::BEGINNING_OF_TIME);
+         return CommonTime(CommonTime::BEGINNING_OF_TIME);
       }
 
    }  // End of method 'SatArcMarker::getArcChangedEpoch()'
@@ -123,7 +111,7 @@ namespace gpstk
        * @param epoch     Time of observations.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& SatArcMarker::Process( const DayTime& epoch,
+   satTypeValueMap& SatArcMarker::Process( const CommonTime& epoch,
                                            satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -160,7 +148,7 @@ namespace gpstk
             {
                   // If it doesn't have an entry, insert one
                satArcMap[ (*it).first ] = 0.0;
-               satArcChangeMap[ (*it).first ] = DayTime::BEGINNING_OF_TIME;
+               satArcChangeMap[ (*it).first ] = CommonTime::BEGINNING_OF_TIME;
 
                   // This is a new satellite
                satIsNewMap[ (*it).first ] = true;
@@ -224,7 +212,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -256,7 +243,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -288,7 +274,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -296,7 +281,6 @@ namespace gpstk
       }
 
    }  // End of method 'SatArcMarker::Process()'
-
 
 
 }  // End of namespace gpstk

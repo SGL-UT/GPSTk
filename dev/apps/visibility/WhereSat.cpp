@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,12 +46,14 @@
 #include <fstream>
 #include <set>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "EphReader.hpp"
-
+#include "CivilTime.hpp"
+#include "TimeString.hpp"
+#include "Xvt.hpp"
 using namespace std;
 using namespace gpstk;
 using namespace gpstk::StringUtils;
@@ -71,7 +73,7 @@ int main(int argc, char *argv[])
                  "\"MO/DD/YYYY HH:MM:SS\"."),
     endTimeOpt('\0',"end", "Ignore data after this time. Format as string: "
                "\"MO/DD/YYYY HH:MM:SS\"."),
-    formatOpt('f',"time-format","DayTime format specifier used for times in the output. "
+    formatOpt('f',"time-format","CommonTime format specifier used for times in the output. "
               "The default is \"%4Y %3j %02H:%02M:%04.1f\".");
 
   CommandOptionWithNumberArg 
@@ -155,29 +157,29 @@ int main(int argc, char *argv[])
     }
   XvtStore<SatID>& ephStore = *ephReader.eph;
 
-  DayTime tStart,tEnd;
+  CommonTime tStart,tEnd;
   if (startTimeOpt.getCount())
     {
       double ss;
       int mm,dd,yy,hh,minu; 
       sscanf(startTimeOpt.getValue().front().c_str(), 
              "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
-      tStart.setYMDHMS((short)yy, (short)mm, (short)dd, (short)hh, 
+      tStart=CivilTime((short)yy, (short)mm, (short)dd, (short)hh, 
                        (short)minu, (double)ss);
       cout << tStart << endl;
     }
   else
     {
-      //extra code b/c sscanf reads in int's but setYMDHMS needs shorts
+      //extra code b/c sscanf reads in int's but CivilTime needs shorts
       cout << ephStore.getInitialTime() << endl;
-      DayTime tFile(ephStore.getInitialTime());	  
-      short year = tFile.year();
-      short month = tFile.month();
-      short day = tFile.day();
-      short hour = tFile.hour();
-      short minute = tFile.minute();
-      double ss = tFile.second();
-      tStart.setYMDHMS(year,month,day,hour,minute,ss);
+      CommonTime tFile(ephStore.getInitialTime());	  
+      short year = static_cast<CivilTime>(tFile).year;
+      short month = static_cast<CivilTime>(tFile).month;
+      short day = static_cast<CivilTime>(tFile).day;
+      short hour = static_cast<CivilTime>(tFile).hour;
+      short minute = static_cast<CivilTime>(tFile).minute;
+      double ss = static_cast<CivilTime>(tFile).second;
+      tStart = CivilTime(year,month,day,hour,minute,ss);
       cout << tStart << endl;
     }
 
@@ -187,25 +189,25 @@ int main(int argc, char *argv[])
       int mm,dd,yy,hh,minu; 
       sscanf(endTimeOpt.getValue().front().c_str(), 
              "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
-      tEnd.setYMDHMS((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, 
+      tEnd = CivilTime((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, 
                      (double)ss);
       cout << tEnd << endl;
     }
   else
     {
-      //extra code b/c sscanf reads in int's but setYMDHMS needs shorts
-      DayTime tFile(ephStore.getFinalTime());	
-      short year = tFile.year();
-      short month = tFile.month();
-      short day = tFile.day();
-      short hour = tFile.hour();
-      short minute = tFile.minute();
-      double ss = tFile.second();
-      tEnd.setYMDHMS(year,month,day,hour,minute,ss);
+      //extra code b/c sscanf reads in int's but CivilTime needs shorts
+      CommonTime tFile(ephStore.getFinalTime());	
+      short year = static_cast<CivilTime>(tFile).year;
+      short month = static_cast<CivilTime>(tFile).month;
+      short day = static_cast<CivilTime>(tFile).day;
+      short hour = static_cast<CivilTime>(tFile).hour;
+      short minute = static_cast<CivilTime>(tFile).minute;
+      double ss = static_cast<CivilTime>(tFile).second;
+      tEnd = CivilTime(year,month,day,hour,minute,ss);
       cout << tEnd << endl;
     }
 
-  DayTime t = tStart;
+  CommonTime t = tStart;
 
   while (t <= tEnd)
     {
@@ -215,15 +217,15 @@ int main(int argc, char *argv[])
           try
             {
               Xvt xvt = ephStore.getXvt(thisSat, t);
-              cout << t.printf(timeFormat) << right << fixed  << setprecision(3)  
+              cout << printTime(t,timeFormat) << right << fixed  << setprecision(3)  
                    << " " << setw(3)  <<  *i
                    << " " << setw(14) << xvt.x[0]
                    << " " << setw(14) << xvt.x[1]
                    << " " << setw(14) << xvt.x[2]
-                   << " " << setprecision(6) << setw(10)  << (xvt.dtime*1000);
+                   << " " << setprecision(6) << setw(10)  << ((xvt.clkdrift + xvt.relcorr)*1000);
 
-              WGS84Geoid geoid;
-              double correction = (xvt.dtime) * (geoid.c());
+              WGS84Ellipsoid ellipsoid;
+              double correction = ((xvt.clkdrift + xvt.relcorr)) * (ellipsoid.c());
 
               if ( abs(antXvt.x[0]) < 1 || antXvt.x.elvAngle(xvt.x) < 0 )
                 {
@@ -238,7 +240,7 @@ int main(int argc, char *argv[])
                        << " "  << setw(8) << antXvt.x.azAngle(xvt.x)
                        << " "  << setw(8) << antXvt.x.elvAngle(xvt.x)
                        << " "  << setw(15) 
-                       << xvt.preciseRho(antXvt.x, geoid, correction) << endl;
+                       << xvt.preciseRho(antXvt.x, ellipsoid, correction) << endl;
                 }
             }
           catch(...)

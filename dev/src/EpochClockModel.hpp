@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -62,7 +62,7 @@ namespace gpstk
                       SvMode mode = ALWAYS)
          : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
 
-      virtual double getOffset(const gpstk::DayTime& t) const
+      virtual double getOffset(const gpstk::CommonTime& t) const
          throw(gpstk::InvalidArgumentException) 
       {
          if (t!=time)
@@ -73,7 +73,7 @@ namespace gpstk
          return clkc;
       };
 
-      virtual bool isOffsetValid(const gpstk::DayTime& t) const 
+      virtual bool isOffsetValid(const gpstk::CommonTime& t) const 
          throw(gpstk::InvalidArgumentException)
       {
          if (t!=time) 
@@ -102,7 +102,7 @@ namespace gpstk
       }
 
    private:
-      gpstk::DayTime time;   ///< The time of this offset
+      gpstk::CommonTime time;   ///< The time of this offset
       double clkc;           ///< clock bias value (same units as residuals)
       bool valid;            ///< flag indicating clock bias statistical validity
    };

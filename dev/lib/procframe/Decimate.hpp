@@ -5,8 +5,8 @@
  * This class decimates GNSS Data Structures data given a sampling interval,
  * a tolerance, and a starting epoch.
  */
-#ifndef DECIMATE_HPP
-#define DECIMATE_HPP
+#ifndef GPSTK_DECIMATE_HPP
+#define GPSTK_DECIMATE_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
 //============================================================================
 
@@ -151,8 +151,9 @@ namespace gpstk
 
          /// Default constructor
       Decimate()
-         : sampling(30.0),tolerance(0.5),lastEpoch(DayTime::BEGINNING_OF_TIME)
-      { setIndex(); };
+         : sampling(30.0), tolerance(0.5),
+           lastEpoch(CommonTime::BEGINNING_OF_TIME)
+      { };
 
 
          /** Common constructor.
@@ -163,9 +164,9 @@ namespace gpstk
           */
       Decimate( const double sampleInterval,
                 const double tol,
-                const DayTime& initialEpoch )
+                const CommonTime& initialEpoch )
          : sampling(sampleInterval), tolerance(tol), lastEpoch(initialEpoch)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -174,7 +175,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(DecimateEpoch);
 
@@ -227,12 +228,8 @@ namespace gpstk
           *
           * @param initialEpoch        Epoch to start decimation.
           */
-      virtual Decimate& setInitialEpoch(const DayTime& initialEpoch)
+      virtual Decimate& setInitialEpoch(const CommonTime& initialEpoch)
       { lastEpoch = initialEpoch; return (*this); };
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -253,22 +250,12 @@ namespace gpstk
       double tolerance;
 
          /// Last processed epoch
-      DayTime lastEpoch;
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
+      CommonTime lastEpoch;
 
    }; // End of class 'Decimate'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // DECIMATE_HPP
+
+#endif   // GPSTK_DECIMATE_HPP

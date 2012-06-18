@@ -19,8 +19,8 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -38,24 +38,24 @@
 namespace gpstk
 {
 
-//using namespace std; 
+//using namespace std;
 
 RACRotation::RACRotation( const gpstk::Triple& SVPositionVector,
                           const gpstk::Triple& SVVelocityVector)
                           : gpstk::Matrix<double>(3,3)
 {
-   compute( SVPositionVector, SVVelocityVector ); 
+   compute( SVPositionVector, SVVelocityVector );
 }
 
 RACRotation::RACRotation(const gpstk::Xvt& xvt)
                          : gpstk::Matrix<double>(3,3)
 {
-   compute( xvt.x, xvt.v ); 
-}         
+   compute( xvt.x, xvt.v );
+}
 
 //
-//  Given the SV position vector and the SV velocity vector, 
-//  compute a rotation from ECEF XYZ to ECEF Radial, 
+//  Given the SV position vector and the SV velocity vector,
+//  compute a rotation from ECEF XYZ to ECEF Radial,
 //  Along-Track, Cross-Track (RAC).
 //
 //  Let the SV position vector be represented by R
@@ -63,7 +63,7 @@ RACRotation::RACRotation(const gpstk::Xvt& xvt)
 //  1.) Form the unit vector R^ = R / |R|.
 //  2.) Compute vector C = R^ cross V and unit vector C^ = C / |C|.  C^ is
 //      perpendiculat to the RV plane
-//  3.) Compute A^ = C^ corss R^. 
+//  3.) Compute A^ = C^ corss R^.
 //  4.) [R^, A^, C^] is an orthonormal triad and the rotation matrix between
 //      XYZ and RAC is the matrix where R^, C^, and A^ are each a row of the
 //      matrix.
@@ -76,7 +76,7 @@ void RACRotation::compute( const gpstk::Triple& SVPositionVector,
    gpstk::Triple C = unitR.cross(SVVelocityVector);
    gpstk::Triple unitC = C.unitVector();
    gpstk::Triple unitA = unitC.cross(unitR);
-   
+
    (*this) (0,0) = unitR[0];
    (*this) (0,1) = unitR[1];
    (*this) (0,2) = unitR[2];
@@ -87,7 +87,7 @@ void RACRotation::compute( const gpstk::Triple& SVPositionVector,
    (*this) (2,1) = unitC[1];
    (*this) (2,2) = unitC[2];
 }
-      
+
 gpstk::Vector<double> RACRotation::convertToRAC( const gpstk::Vector<double>& inV )
 {
    gpstk::Vector<double> outV(3);
@@ -95,7 +95,7 @@ gpstk::Vector<double> RACRotation::convertToRAC( const gpstk::Vector<double>& in
    /*
       My goal was to use the following statement.
    outV =  this * inV;
-      However, for some reason, gcc refuses to recognize RACRotation as a 
+      However, for some reason, gcc refuses to recognize RACRotation as a
       Matrix subclass.  Therefore, I've incorporated the matrix multiply
       as a temporary kludge.
    */
@@ -105,7 +105,7 @@ gpstk::Vector<double> RACRotation::convertToRAC( const gpstk::Vector<double>& in
       GPSTK_THROW(e);
    }
    size_t i, j;
-   for (i = 0; i < 3; i++) 
+   for (i = 0; i < 3; i++)
    {
       outV[i] = 0;
       for (j = 0; j < 3; j++)
@@ -117,24 +117,25 @@ gpstk::Vector<double> RACRotation::convertToRAC( const gpstk::Vector<double>& in
    /* end kludge */
    return(outV);
 }
-   
+
 gpstk::Triple RACRotation::convertToRAC( const gpstk::Triple& inVec )
 {
-   gpstk::Vector<double> v(3); 
+   gpstk::Vector<double> v(3);
    v[0] = inVec[0];
    v[1] = inVec[1];
    v[2] = inVec[2];
-   
+
    gpstk::Vector<double> vOut = convertToRAC( v );
    gpstk::Triple outVec( vOut[0], vOut[1], vOut[2] );
    return(outVec);
 }
-   
+
 gpstk::Xvt RACRotation::convertToRAC( const gpstk::Xvt& in )
 {
    gpstk::Xvt out;
-   out.dtime = in.dtime;
-   out.ddtime = in.ddtime;
+   out.clkbias = in.clkbias;
+   out.relcorr = in.relcorr;
+   out.clkdrift = in.clkdrift;
    out.x = convertToRAC( in.x );
    out.v = convertToRAC( in.v );
    return(out);

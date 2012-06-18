@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2006, The University of Texas at Austin
 //
@@ -47,8 +47,8 @@ public:
            eTimeOption('e', "end-time", "End of time range to compare"
                        " (default = \"end of time\")"),
            inputFileOption("An input " + type + " file.", true),
-           startTime(gpstk::DayTime::BEGINNING_OF_TIME),
-           endTime(gpstk::DayTime::END_OF_TIME)
+           startTime(gpstk::CommonTime::BEGINNING_OF_TIME),
+           endTime(gpstk::CommonTime::END_OF_TIME)
    {
       inputFileOption.setMaxCount(2);
       timeOption.setMaxCount(1);
@@ -99,7 +99,7 @@ protected:
    gpstk::CommandOptionGroupOr timeOptions;
    gpstk::CommandOptionRest inputFileOption;
 
-   gpstk::DayTime startTime, endTime;
+   gpstk::CommonTime startTime, endTime;
 };
 
 

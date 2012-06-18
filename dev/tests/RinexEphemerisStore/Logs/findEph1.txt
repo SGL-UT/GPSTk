@@ -1,20 +1,20 @@
 ****************************************************************************
-Broadcast Ephemeris (Engineering Units)
+Broadcast Ephemeris (Engineering Units) -FIC
 
 PRN :  1
 
               Week(10bt)     SOW     DOW   UTD     SOD   MM/DD/YYYY   HH:MM:SS
 Clock Epoch:  1360( 336)  215984   Tue-2    31   43184   01/31/2006   11:59:44
 Eph Epoch:    1360( 336)  215984   Tue-2    31   43184   01/31/2006   11:59:44
-Transmit Week:1360
+Transmit Time:1360( 336)  208800   Tue-2    31   36000   01/31/2006   10:00:00
 Fit interval flag :  0
 
           SUBFRAME OVERHEAD
 
                SOW    DOW:HH:MM:SS     IOD    ALERT   A-S
-SF1 HOW:    208806  Tue-2:10:00:06   0x174      0     off
-SF2 HOW:    208806  Tue-2:10:00:06    0x74      0     off
-SF3 HOW:    208806  Tue-2:10:00:06    0x74      0     off
+SF1 HOW:    208806  Tue-2:10:00:06   0x174      0      on
+SF2 HOW:    208806  Tue-2:10:00:06    0x74      0      on
+SF3 HOW:    208806  Tue-2:10:00:06    0x74      0      on
 
            CLOCK
 
@@ -42,5 +42,4 @@ In-track      Sine:   5.29363751E-06 rad  Cosine:   5.78165054E-06 rad
            SV STATUS
 
 Health bits:   0x00      URA index:    0
-Code on L2:    P only      L2 P Nav data:          on
-
+Code on L2:    P only    L2 P Nav data:          on

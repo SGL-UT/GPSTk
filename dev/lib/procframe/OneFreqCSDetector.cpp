@@ -22,9 +22,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int OneFreqCSDetector::classIndex = 3000000;
-
-
-      // Returns an index identifying this object.
-   int OneFreqCSDetector::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string OneFreqCSDetector::getClassName() const
@@ -117,8 +108,6 @@ namespace gpstk
             resultType  = TypeID::CSL1;
       };
 
-      setIndex();
-
    }  // End of constructor 'OneFreqCSDetector::OneFreqCSDetector()'
 
 
@@ -130,7 +119,7 @@ namespace gpstk
        * @param gData     Data object holding the data.
        * @param epochflag Epoch flag.
        */
-   satTypeValueMap& OneFreqCSDetector::Process( const DayTime& epoch,
+   satTypeValueMap& OneFreqCSDetector::Process( const CommonTime& epoch,
                                                 satTypeValueMap& gData,
                                                 const short& epochflag )
       throw(ProcessingException)
@@ -190,7 +179,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -244,14 +232,13 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
 
       }
 
-   }
+   }  //End of method 'OneFreqCSDetector::Process(gnssRinex& gData)'
 
 
       /* Returns a satTypeValueMap object, adding the new data generated
@@ -264,7 +251,7 @@ namespace gpstk
        * @param code      Current code observation value.
        * @param phase     Current phase observation value.
        */
-   double OneFreqCSDetector::getDetection( const DayTime& epoch,
+   double OneFreqCSDetector::getDetection( const CommonTime& epoch,
                                            const SatID& sat,
                                            typeValueMap& tvMap,
                                            const short& epochflag,
@@ -283,8 +270,7 @@ namespace gpstk
 
          // Get the difference between current epoch and former epoch,
          // in seconds
-      deltaT = ( epoch.MJDdate() - OneFreqData[sat].previousEpoch.MJDdate() )
-               * DayTime::SEC_DAY;
+      deltaT = ( epoch - OneFreqData[sat].previousEpoch );
 
          // Store current epoch as former epoch
       OneFreqData[sat].previousEpoch = epoch;

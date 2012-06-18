@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,6 +40,8 @@
 
 #include "OrdApp.hpp"
 #include "CommandOption.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -69,7 +71,7 @@ bool OrdApp::initialize(int argc, char *argv[]) throw()
                "Where to read the ord data. The default is stdin."),
       outputOpt('r', "output",
                "Where to write the output. The default is stdout."),
-      timeFormatOpt('t', "time-format", "Daytime format specifier used for "
+      timeFormatOpt('t', "time-format", "CommonTime format specifier used for "
                     "times in the output. "
                     "The default is \""+timeFormat + "\".");
 
@@ -146,7 +148,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
    s.setf(ios::fixed, ios::floatfield);
    s << setfill(' ') << right;
    
-   string time = ordEpoch.time.printf(timeFormat);
+   string time = printTime(ordEpoch.time,timeFormat);
    ORDEpoch::ORDMap::const_iterator pi;
    for (pi = ordEpoch.ords.begin(); pi != ordEpoch.ords.end(); pi++)
    {
@@ -171,7 +173,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
          wart = 1;
       double clk = ordEpoch.clockResidual;
       if (outputClockInNs)
-         clk *=  1e9/C_GPS_M;
+         clk *=  1e9/C_MPS;
       s << time << " " << setw(4) << type
         << " " << setprecision(5) << setw(24) << clk
         << setw(6) << wart << endl;
@@ -185,7 +187,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
          wart = 1;
       double clk = ordEpoch.clockOffset;
       if (outputClockInNs)
-         clk *= 1e9 / C_GPS_M;
+         clk *= 1e9 / C_MPS;
       s << time << " " << setw(4) << type
         << " " << setprecision(5) << setw(24) << clk
         << setw(6) << wart << endl;
@@ -195,7 +197,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 ORDEpoch OrdApp::read(std::ifstream& s) throw()
 {
    ORDEpoch ordEpoch;
-   ordEpoch.time = DayTime(DayTime::BEGINNING_OF_TIME);
+   ordEpoch.time = CommonTime(CommonTime::BEGINNING_OF_TIME);
    using namespace StringUtils;
    while (s)
    {      
@@ -220,8 +222,8 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
             continue;
          }         
 
-         DayTime time;
-         time.setToString(readBuffer.substr(0,19), timeFormat);
+         CommonTime time;
+         static_cast<Epoch>(time).scanf(readBuffer.substr(0,19), timeFormat);
 
          // This means that we have a complete epoch. Note that the most
          // recently read line is left in readBuffer

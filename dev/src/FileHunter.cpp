@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,6 +49,9 @@
  */
 
 #include "FileHunter.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -133,8 +136,8 @@ namespace gpstk
       }
    }
 
-   vector<string> FileHunter::find(const DayTime& start,
-                                   const DayTime& end,
+   vector<string> FileHunter::find(const CommonTime& start,
+                                   const CommonTime& end,
                                    const FileSpec::FileSpecSortType fsst,
                                    enum FileChunking chunk) const
       throw(FileHunterException)
@@ -149,30 +152,45 @@ namespace gpstk
 
          // move the start time back to a boundary defined by the file
          // chunking
-      DayTime exStart;
+      CommonTime exStart;
       switch(chunk)
       {
          case WEEK:
-            exStart = DayTime(start.GPSfullweek(), 0.0, start.GPSyear());
+            //exStart = CivilTime(static_cast<GPSWeekSecond>(start).week, 0.0, static_cast<CivilTime>(start).year);
+            exStart = GPSWeekSecond(static_cast<GPSWeekSecond>(start).week, 0.0);
             break;
          case DAY:
-            exStart = DayTime(start.DOYyear(), start.DOYday(), 0.0);
+            //exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
+            exStart = YDSTime(static_cast<YDSTime>(start).year, static_cast<YDSTime>(start).doy, 0.0);
             break;
          case HOUR:
-            exStart = DayTime(start.year(), start.month(),
-                              start.day(), start.hour(),
+            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
+                              static_cast<CivilTime>(start).day, static_cast<CivilTime>(start).hour,
                               0, 0.0);
             break;
          case MINUTE:
-            exStart = DayTime(start.year(), start.month(),
-                              start.day(), start.hour(),
-                              start.minute(), 0.0);
+            exStart = CivilTime(static_cast<YDSTime>(start).year, static_cast<CivilTime>(start).month,
+                              static_cast<CivilTime>(start).day, static_cast<CivilTime>(start).hour,
+                              static_cast<CivilTime>(start).minute, 0.0);
             break;
       }
       
       vector<string> toReturn;
          // seed the return vector with an empty string.  you'll see why later
       toReturn.push_back(string());
+
+         // debug
+         /*
+      printf("FileHunter.fileSpecList.size() = %d\n",(int)fileSpecList.size());
+      int dcount = 0;
+      vector<FileSpec>::const_iterator ditr;
+      for (ditr=fileSpecList.begin(); ditr!=fileSpecList.end(); ++ditr)
+      {
+         printf("%2d:''%s''\n",dcount,(*ditr).getSpecString().c_str());
+         dcount++;
+      }
+      printf("END OF LIST.\n");
+          */
 
       try
       {
@@ -200,32 +218,32 @@ namespace gpstk
          {
             vector<string> toReturnTemp;
             
-               // counting variables
-            vector<string>::size_type i,j;
-
-            for(i = 0; i < toReturn.size(); i++)
+               // counting variables            vector<string>::size_type i,j;
+            
+            for(int i = 0; i < toReturn.size(); i++)
             {
                   // search for the next entries
                   
          //Debug
-         //printf("In .find() before call to serachHelper()\n");
+         //printf("In .find() before call to searchHelper()\n");
          //string temp = (*itr).createSearchString();
          //printf(" toReturn[%d]:'%s', spec:'%s'\n",
          //         i,toReturn[i].c_str(),temp.c_str());
-         
+
                vector<string> newEntries = searchHelper(toReturn[i],*itr);
          //Debug
-         /*
+         /*         
          vector<string>::iterator itr1 = newEntries.begin();
          int j1 = 0;
          printf("In .find() after call to searchHelper\n");
+         printf("  newEntries.size() = %d\n",(int)newEntries.size() ); 
          while (itr1 != newEntries.end())
          {
-            printf("toReturn[%d],item %d,'%s'\n",i,j1,(*itr1).c_str());
+            printf("newEntries[%d],item %d,'%s'\n",i,j1,(*itr1).c_str());
             itr1++;
             j1++;
          }
-         printf("In .find().  end of list\n");
+         printf("In .find().  end of newEntries list\n");
          */
                   // after getting the potential entries, filter
                   // them based on the user criteria...
@@ -233,27 +251,29 @@ namespace gpstk
 
          //Debug
          /*
+         printf("In .find() after call to filterHelper\n");
+         
          vector<string>::iterator itr2 = newEntries.begin();
          int j2 = 0;
-         printf("In .find() after call to filterHelper\n");
          while (itr2 != newEntries.end())
          {
-            printf("toReturn[%d],item %d,'%s'\n",i,j2,(*itr2).c_str());
+            printf("newEntries[%d],item %d,'%s'\n",i,j2,(*itr2).c_str());
             itr2++;
             j2++;
          }
-         printf("In .find().  end of list\n");
+         printf("In .find().  end of newEntries list\n");
+         printf("newEntries.size() : %d.\n", (int) newEntries.size() ); 
          */
          
                   // for each new entry, check the time (if possible)
                   // then add it if it's in the correct time range.
                   // this is why we need to enter an empty string to 
                   // seed toReturn
-               for(j = 0; j < newEntries.size(); j++)
+               for(int j = 0; j < newEntries.size(); j++)
                {
                   try
                   {
-                     DayTime fileDT = (*itr).extractDayTime(newEntries[j]);
+                     CommonTime fileDT = (*itr).extractCommonTime(newEntries[j]);
                      if ( (fileDT >= exStart) && (fileDT <= end) )
                      {
 #ifdef _WIN32
@@ -273,9 +293,9 @@ namespace gpstk
 #endif
                      }
                   }
-                     // if you can't make a DayTime, just add it - 
+                     // if you can't make a CommonTime, just add it - 
                      // most likely, this is a field that you can't
-                     // make a DayTime out of
+                     // make a CommonTime out of
                   catch (FileSpecException &e)
                   {
 #ifdef _WIN32
@@ -296,11 +316,12 @@ namespace gpstk
                   }
                }
             }
+
             
             toReturn = toReturnTemp;
             
                // Debug
-         /*
+         /*         
          vector<string>::iterator itr3 = toReturn.begin();
          int j3 = 0;
          printf("In .find() just above toReturn empty check.\n");
@@ -336,6 +357,7 @@ namespace gpstk
    void FileHunter::init(const string& filespec)
       throw(FileHunterException)
    {
+         // debug
       try
       {
          fileSpecList.clear();
@@ -476,8 +498,8 @@ namespace gpstk
             FileSpec tempfs(fs.substr(0, slashpos));
 
                // debug
-            //printf(" fs, slashpos, tempfs = '%s', %d, '%s'.\n",
-            //   fs.c_str(),slashpos,tempfs.getSpecString().c_str());
+            //printf("FileHunter.init():  fs, slashpos, tempfs = '%s', %d, '%s'.\n",
+            //   fs.c_str(),(int)slashpos,tempfs.getSpecString().c_str());
 
             if (slashpos!=string::npos) fileSpecList.push_back(tempfs);
             fs.erase(0, slashpos);
@@ -695,4 +717,5 @@ namespace gpstk
    }
 
 } // namespace
+
 

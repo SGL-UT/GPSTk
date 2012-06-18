@@ -22,9 +22,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-
-      // Index initially assigned to this class
-   int ModelObs::classIndex = 4200000;
-
-
-      // Returns an index identifying this object.
-   int ModelObs::getIndex() const
-   { return index; }
 
 
       // Returns a string identifying this object.
@@ -79,7 +70,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -112,7 +102,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -145,7 +134,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -176,7 +164,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -206,7 +193,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -234,7 +220,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -262,7 +247,6 @@ namespace gpstk
       setDefaultObservable(dObservable);
       setDefaultEphemeris(dEphemeris);
       useTGD = usetgd;
-      setIndex();
 
    }  // End of 'ModelObs::ModelObs()'
 
@@ -281,7 +265,7 @@ namespace gpstk
        *  0 if OK
        *  -1 if problems arose
        */
-   int ModelObs::Prepare( const DayTime& Tr,
+   int ModelObs::Prepare( const CommonTime& Tr,
                           std::vector<SatID>& Satellite,
                           std::vector<double>& Pseudorange,
                           const XvtStore<SatID>& Eph )
@@ -290,7 +274,7 @@ namespace gpstk
       Matrix<double> SVP;
       Bancroft Ban;
       Vector<double> vPos;
-      PRSolution raimObj;
+      PRSolution2 raimObj;
 
       try
       {
@@ -314,14 +298,14 @@ namespace gpstk
       /* Method to set an a priori position of receiver using
        * Bancroft's method.
        *
-       * @param time      DayTime object for this epoch
+       * @param time      CommonTime object for this epoch
        * @param data      A satTypeValueMap data structure holding the data
        *
        * @return
        *  0 if OK
        *  -1 if problems arose
        */
-   int ModelObs::Prepare( const DayTime& time,
+   int ModelObs::Prepare( const CommonTime& time,
                           const satTypeValueMap& data )
    {
 
@@ -359,10 +343,11 @@ namespace gpstk
                           const double& bRx,
                           const double& cRx,
                           Position::CoordinateSystem s,
-                          GeoidModel *geoid )
+                          EllipsoidModel *ell,
+                          ReferenceFrame frame )
    {
 
-      int result = setInitialRxPosition(aRx, bRx, cRx, s, geoid);
+      int result = setInitialRxPosition(aRx, bRx, cRx, s, ell, frame);
 
          // If everything is OK, the model is prepared
       if( result ==0 )
@@ -413,7 +398,7 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ModelObs::Process( const DayTime& time,
+   satTypeValueMap& ModelObs::Process( const CommonTime& time,
                                        satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -436,7 +421,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -444,7 +428,6 @@ namespace gpstk
       }
 
    }   // End of method 'ModelObs::Process()'
-
 
 
 }  // End of namespace gpstk

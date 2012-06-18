@@ -34,7 +34,7 @@
 #include <vector>
 #include "AppOption.hpp"
 #include "Logger.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Exception.hpp"
 
 namespace gpstk
@@ -171,7 +171,7 @@ namespace gpstk
 
       int verboseLevel;
 
-      DayTime runTime;
+      CommonTime runTime;
 
    };   // End of class 'Application'
    

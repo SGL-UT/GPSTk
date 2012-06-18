@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -54,7 +54,7 @@
 #include <list>
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "RinexNavBase.hpp"
 #include "EngEphemeris.hpp"
@@ -79,7 +79,7 @@ namespace gpstk
           *  VALID BEFORE USING!!
           */
       RinexNavData(void)
-            : time(gpstk::DayTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
+            : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
          {}
 
          /// Initializes the nav data with an EngEphemeris
@@ -104,7 +104,7 @@ namespace gpstk
       operator EngEphemeris() const throw();
 
          /**
-          * Converts the (non-DayTime) data to a list for easy
+          * Converts the (non-CommonTime) data to a list for easy
           * comparison operators.
           */
       std::list<double> toList() const;
@@ -112,7 +112,7 @@ namespace gpstk
          /** @name Epochdata
           */
          //@{
-      DayTime time;        ///< Time according to the record.
+      CommonTime time;        ///< Time according to the record.
       short PRNID;         ///< SV PRN ID 
       long HOWtime;        ///< Time of subframe 1-3 (sec of week)
       short weeknum;       ///< GPS full week number that corresponds 

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -44,6 +44,8 @@
 #include "StringUtils.hpp"
 #include "SMODFData.hpp"
 #include "SMODFStream.hpp"
+#include "YDSTime.hpp"
+#include "TimeString.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -68,9 +70,9 @@ namespace gpstk
       
       if (strm.format == SMODFStream::icd211)
       {
-         line += rightJustify(asString<short>(time.DOYyear()),4);
-         line += rightJustify(asString<short>(time.DOYday()),3,'0');
-         line += rightJustify(asString(time.DOYsecond(),7),13);
+         line += rightJustify(asString<short>(static_cast<YDSTime>(time).year),4);
+         line += rightJustify(asString<short>(static_cast<YDSTime>(time).doy),3,'0');
+         line += rightJustify(asString(static_cast<YDSTime>(time).sod,7),13);
          line += rightJustify(asString<short>(PRNID),3);
          line += rightJustify(asString<long>(station),5);
          line += rightJustify(asString<short>(channel),2);
@@ -94,7 +96,7 @@ namespace gpstk
       }
       else if (strm.format == SMODFStream::legacy)
       {
-         line += time.printf("%02y%3j%12.6s");
+         line += printTime(time,"%02y%3j%12.6s");
          line += rightJustify(asString<short>(PRNID),3);
          line += rightJustify(asString<long>(station),5);
          line += rightJustify(asString<short>(channel),2);
@@ -242,7 +244,7 @@ namespace gpstk
 
          
             // set the time
-         time.setYDoySod(year, DOY, SOD);
+         time=YDSTime(year, DOY, SOD);
       }
       else if (strm.format == SMODFStream::legacy)
       {
@@ -291,7 +293,7 @@ namespace gpstk
             year += 2000;
          else 
             year += 1900;
-         time.setYDoySod(year, DOY, SOD);
+         time=YDSTime(year, DOY, SOD);
          
             /*
               Translate ODBIF (legacy) weather types to ICD-GPS-211 types

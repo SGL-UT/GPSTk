@@ -1,5 +1,9 @@
 #pragma ident "$Id$"
 
+/**
+ * @file IonoModelStore.cpp
+ * Store GPS Navigation Message based ionospheric models
+ */
 
 
 //============================================================================
@@ -18,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -39,47 +43,30 @@
 //=============================================================================
 
 
-
-
-
-
-/**
- * @file IonoModelStore.cpp
- * Store GPS Navigation Message based ionospheric models
- */
-
 #include "IonoModelStore.hpp"
 
 using namespace std;
 
 namespace gpstk
 {
-   bool IonoModelStore::addIonoModel(const DayTime& mt, const IonoModel& im)
-      throw()
-   {
-      if (!im.isValid())
-         return false;
-      
-      IonoModelMap::const_iterator i = ims.upper_bound(mt);
-      if (!ims.empty() && i != ims.begin())
-      {
-            // compare to previous stored model and if they have the
-            // the same alpha and beta parameters don't store it
-         i--;
-         if (im == i->second)
-            return false;
-      }
-      ims[mt] = im;
-      return true;
-   }
-      
-   double IonoModelStore::getCorrection(const DayTime& time,
-                                        const Geodetic& rxgeo,
+
+      /* Get the ionospheric correction value.
+       *
+       * \param time the time of the observation
+       * \param rxgeo the WGS84 geodetic position of the receiver
+       * \param svel the elevation angle between the rx and SV (degrees)
+       * \param svaz the azimuth angle between the rx and SV (degrees)
+       * \param freq the GPS frequency the observation was made from
+       * \return the ionospheric correction (meters)
+       */
+   double IonoModelStore::getCorrection(const CommonTime& time,
+                                        const Position& rxgeo,
                                         double svel,
                                         double svaz,
                                         IonoModel::Frequency freq) const
       throw(IonoModelStore::NoIonoModelFound)
    {
+
       IonoModelMap::const_iterator i = ims.upper_bound(time);
       if (!ims.empty() && i != ims.begin())
       {
@@ -91,5 +78,38 @@ namespace gpstk
          NoIonoModelFound e;
          GPSTK_THROW(e);
       }
-   }
-}
+
+   }  // End of method 'IonoModelStore::getCorrection()'
+
+
+      /* Add an IonoModel to this collection
+       *
+       * \param mt the time the model is valid from
+       * \param im the IonoModel to add
+       * \return true if the model was added, false otherwise
+       */
+   bool IonoModelStore::addIonoModel(const CommonTime& mt, const IonoModel& im)
+      throw()
+   {
+
+      if (!im.isValid())
+         return false;
+
+      IonoModelMap::const_iterator i = ims.upper_bound(mt);
+      if (!ims.empty() && i != ims.begin())
+      {
+            // compare to previous stored model and if they have the
+            // the same alpha and beta parameters don't store it
+         i--;
+         if (im == i->second)
+            return false;
+      }
+
+      ims[mt] = im;
+
+      return true;
+
+   }  // End of method 'IonoModelStore::addIonoModel()'
+
+
+}  // End of namespace gpstk

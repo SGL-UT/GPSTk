@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -33,6 +33,7 @@
 #include "SP3Data.hpp"
 #include "SP3Header.hpp"
 #include "ReferenceFrames.hpp"
+#include "CivilTime.hpp"
 #include <sstream>
 #include <iomanip>
 
@@ -59,13 +60,13 @@ namespace gpstk
          SP3Header header;
          strm >> header;
 
-         // If any file doesn't have the velocity data, clear the
-         // the flag indicating that there is any velocity data
-         if (tolower(header.pvFlag) != 'v')
+            // If any file doesn't have the velocity data, clear the
+            // the flag indicating that there is any velocity data
+         if( !header.containsVelocity )
          {
-            // There are no velocity data in the file
-            // It's not supported
-            Exception e("There are no velocity data in the file : "+filename);
+               // There are no velocity data in the file
+               // It's not supported
+            Exception e("There are no velocity data in the file : " + filename);
             GPSTK_THROW(e);
          }
 
@@ -93,9 +94,6 @@ namespace gpstk
                continue;
             }
 
-            // Ephemeris and clock are valid, then add them
-            rec.version = header.version;
-            
             if( pe.find(rec.sat) == pe.end())
             {
                ostringstream ss;
@@ -113,7 +111,7 @@ namespace gpstk
                eph = svEph.getPvt(rec.time);
             }
             
-            if(tolower(rec.flag)=='p')
+            if(tolower(rec.RecType)=='p')
             {
                eph.position[0] = rec.x[0] * 1000.0;
                eph.position[1] = rec.x[1] * 1000.0;
@@ -121,7 +119,7 @@ namespace gpstk
                eph.dtime = rec.clk * 1e-6;
 
             }
-            else if(tolower(rec.flag)=='v')
+            else if(tolower(rec.RecType)=='v')
             {
                eph.velocity[0] = rec.x[0] / 10.0;
                eph.velocity[1] = rec.x[1] / 10.0;
@@ -161,16 +159,16 @@ namespace gpstk
          }
          
         
-         // write header
+            // write header
          SP3Header header;
          
-         header.version =  sp3c ? 'c' : 'a';
-         header.pvFlag = 'V';
+         if( sp3c ) header.version = SP3Header::SP3c; else SP3Header::SP3a;
+         header.containsVelocity = true;
 
          header.timeSystem = SP3Header::timeGPS;
          header.coordSystem = "ITRF";
          
-         header.time = DayTime(2010,1,10,23,59,0.0);
+         header.time = CivilTime(2010,1,10,23,59,0.0);
          header.epochInterval = 60.0;
          header.numberOfEpochs = 1443;
          
@@ -219,18 +217,18 @@ namespace gpstk
             ostringstream ss;
             ss<<fixed;
             ss <<"*  "
-               <<setw(4)<<(*it).year()<<" "
-               <<setw(2)<<(*it).month()<<" "
-               <<setw(2)<<(*it).day()<<" "
-               <<setw(2)<<(*it).hour()<<" "
-               <<setw(2)<<(*it).minute()<<" "
-               <<setw(11)<<setprecision(8)<<(*it).second()<<endl;
+               <<setw(4)<<static_cast<CivilTime>(*it).year<<" "
+               <<setw(2)<<static_cast<CivilTime>(*it).month<<" "
+               <<setw(2)<<static_cast<CivilTime>(*it).day<<" "
+               <<setw(2)<<static_cast<CivilTime>(*it).hour<<" "
+               <<setw(2)<<static_cast<CivilTime>(*it).minute<<" "
+               <<setw(11)<<setprecision(8)<<static_cast<CivilTime>(*it).second<<endl;
 
             strm<<ss.str();
 
-            for(std::map<SatID,short>::iterator its = header.satList.begin();
-               its != header.satList.end();
-               ++its)
+            for(std::map<SP3SatID,short>::iterator its = header.satList.begin();
+                its != header.satList.end();
+                ++its)
             {
                PvtStore& svEph = pe[its->first];
                PvtStore::Pvt eph = svEph.getPvt(*it);
@@ -238,18 +236,17 @@ namespace gpstk
                SP3Data rec;
                rec.sat = its->first;
                rec.time = *it;
-               rec.version = header.version;
                rec.sig[0]=0; rec.sig[1]=0; rec.sig[2]=0; rec.sig[3]=0;
 
                SP3Data p(rec); 
-               p.flag =  'P'; 
+               p.RecType =  'P';
                p.x[0] = eph.position[0]/1000.0;
                p.x[1] = eph.position[1]/1000.0;
                p.x[2] = eph.position[2]/1000.0;
                p.clk = eph.dtime * 1e6;
 
                SP3Data v(rec);
-               v.flag =  'V';
+               v.RecType =  'V';
                v.x[0] = eph.velocity[0]*10.0;
                v.x[1] = eph.velocity[1]*10.0;
                v.x[2] = eph.velocity[2]*10.0;
@@ -291,7 +288,7 @@ namespace gpstk
 
          // read header section
 
-         DayTime refEpoch;
+         CommonTime refEpoch;
          double firstObsSec(0.0);
          double lastObsSec(0.0);
          string satelliteName = "GRACE ?";
@@ -345,7 +342,7 @@ namespace gpstk
                short min = StringUtils::asInt(data.substr(14,2));
                double sec = StringUtils::asDouble(data.substr(17,2));
 
-               refEpoch.setYMDHMS(yr,mo,day,hr,min,sec);
+               refEpoch=CivilTime(yr,mo,day,hr,min,sec);
             }
             else if(flag == "TIME FIRST OBS(SEC PAST EPOCH)")
             {
@@ -367,10 +364,10 @@ namespace gpstk
 
             if(StringUtils::strip(buf)=="END OF HEADER")
             {
-               DayTime firstEpoch = refEpoch;
+               CommonTime firstEpoch = refEpoch;
                firstEpoch += firstObsSec;
 
-               DayTime lastEpoch = refEpoch;
+               CommonTime lastEpoch = refEpoch;
                lastEpoch += lastObsSec;
 
                break;
@@ -401,7 +398,7 @@ namespace gpstk
                >> xpos >> ypos >> zpos >> temp >> temp >> temp
                >> xvel >> yvel >> zvel >> temp >> temp >> temp;
 
-            DayTime epoch = refEpoch;
+            CommonTime epoch = refEpoch;
             epoch += gps_time;
 
             
@@ -439,7 +436,7 @@ namespace gpstk
 
       // Get satellite state in specific reference frame
    PvtStore::Pvt SatOrbitStore::getPvt(const SatID sat,
-                                       const DayTime& t, 
+                                       const CommonTime& t, 
                                        bool j2k )
       throw(InvalidRequest)
    {
@@ -456,8 +453,9 @@ namespace gpstk
       
       if(j2k)     // if J2000 was wanted
       {
-         DayTime gpst(t),utc;
-         GPST2UTC(t,utc);
+         CommonTime gpst(t);
+	UTCTime utc;
+	 GPST2UTC(t,utc);
 
          Vector<double> ecefPosVel(6,0.0), j2kPosVel(6,0.0);
 

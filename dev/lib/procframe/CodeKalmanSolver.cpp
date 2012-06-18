@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int CodeKalmanSolver::classIndex = 9200000;
-
-
-      // Returns an index identifying this object.
-   int CodeKalmanSolver::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string CodeKalmanSolver::getClassName() const
@@ -75,9 +66,6 @@ namespace gpstk
       // Initializing method.
    void CodeKalmanSolver::Init()
    {
-
-         // Set the class index
-      setIndex();
 
       numUnknowns = defaultEqDef.body.size();
 
@@ -342,7 +330,6 @@ covariance matrix.");
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -457,7 +444,6 @@ covariance matrix.");
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -491,7 +477,6 @@ covariance matrix.");
       return (*this);
 
    }  // End of method 'CodeKalmanSolver::setCoordinatesModel()'
-
 
 
 }  // End of namespace gpstk

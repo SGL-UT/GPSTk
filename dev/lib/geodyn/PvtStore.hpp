@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -78,16 +78,16 @@ namespace gpstk
       virtual ~PvtStore() {}
       
          /// Add to the store directly
-      void addPvt(const DayTime& time,const Pvt& vd)
+      void addPvt(const CommonTime& time,const Pvt& vd)
          throw();
 
          /** Get the Pvt data at the given epoch and return it.
-          *  @param t DayTime at which to compute the Pvt.
+          *  @param t CommonTime at which to compute the Pvt.
           *  @return Pvt data at time t.
           *  @throw InvalidRequest if the epoch on either side of t
           *     cannot be found in the map.
           */
-      Pvt getPvt(const DayTime& t) const
+      Pvt getPvt(const CommonTime& t) const
          throw(InvalidRequest);
 
          /// Get a string 

@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
 //
@@ -202,7 +202,7 @@ namespace gpstk
 
          // Handling the ConstraintSystem
       imposeConstraints();
-      
+
       /*
       ofstream debugstrm("unknows.debug");
       debugstrm << StringUtils::asString(varUnknowns) << endl;
@@ -228,6 +228,7 @@ namespace gpstk
       debugstrm<<hMatrix<<endl;
       debugstrm.close();
       */
+
 
          // Set this object as "prepared"
       isPrepared = true;
@@ -797,7 +798,7 @@ namespace gpstk
    void EquationSystem::imposeConstraints()
    {
       if(!equationConstraints.hasConstraints()) return;
-      
+
       ConstraintList destList;
 
       ConstraintList tempList = equationConstraints.getConstraintList();
@@ -817,7 +818,7 @@ namespace gpstk
                ++itv )
             {
                bool isFound(false);
-               
+
                VariableSet::iterator itv2 = varUnknowns.find(itv->first);
                if(itv2!=varUnknowns.end())
                {
@@ -858,7 +859,7 @@ namespace gpstk
             // we discard all constraints
             return;
          }
-         
+
       }
          // Update the equation system
       equationConstraints.setConstraintList(destList);
@@ -870,10 +871,10 @@ namespace gpstk
          Vector<double> meas;
          Matrix<double> design;
          Matrix<double> cov;
-         
+
          equationConstraints.constraintMatrix(varUnknowns,
             meas, design, cov);
-         
+
          const int oldSize = measVector.size();
          const int newSize = oldSize + meas.size();
          const int colSize = hMatrix.cols();
@@ -881,9 +882,9 @@ namespace gpstk
          Vector<double> tempPrefit(newSize,0.0);
          Matrix<double> tempGeometry(newSize,colSize,0.0);
          Matrix<double> tempWeight(newSize,newSize,0.0);
-            
+
          for(int i=0; i< newSize; i++)
-         {  
+         {
                // prefit
             if(i<oldSize) tempPrefit(i) = measVector(i);
             else tempPrefit(i) = meas(i-oldSize);
@@ -894,11 +895,11 @@ namespace gpstk
                if(i<oldSize) tempGeometry(i,j) = hMatrix(i,j);
                else tempGeometry(i,j) = design(i-oldSize,j);
             }
-            
+
                // weight
             if(i<oldSize) tempWeight(i,i) = rMatrix(i,i);
             else tempWeight(i,i) = 1.0/cov(i-oldSize,i-oldSize);
-            
+
          }
             // Update these matrix
          measVector = tempPrefit;

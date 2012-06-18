@@ -1,7 +1,4 @@
 #pragma ident "$Id$"
-
-
-
 /**
  * @file GPSEllipsoid.hpp
  * The GPS Ellipsoid defined in ICD-GPS-200
@@ -26,14 +23,14 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 #include "WGS84Ellipsoid.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {
@@ -73,12 +70,12 @@ namespace gpstk
          /// defined in ICD-GPS-200C, 20.3.4.3
          /// @return Speed of light in m/s.
       virtual double c() const throw()
-      { return C_GPS_M; }
+      { return C_MPS; }
 
          /// derived from ICD-GPS-200C, 20.3.4.3
          /// @return Speed of light in km/s
       virtual double c_km() const throw()
-      { return (C_GPS_M / 1000); }
+      { return (C_MPS / 1000); }
 
    }; // class GPSEllipsoid
 

@@ -19,7 +19,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -99,6 +99,44 @@ namespace gpstk
 
       // operator=, copy constructor and destructor built by compiler
 
+      /// operator == for SP3SatID
+      bool operator==(const SP3SatID& right) const
+      {
+         return ((system == right.system) && (id == right.id));
+      }
+
+      /// operator != for SP3SatID
+      bool operator!=(const SP3SatID& right) const
+      {
+         return !(operator==(right));
+      }
+
+      /// operator < (less than) for SP3SatID : order by system, then number
+      bool operator<(const SP3SatID& right) const
+      {
+         if(system==right.system)
+            return (id < right.id);
+         return (system < right.system);
+      }
+
+      /// operator > (greater than) for SP3SatID
+      bool operator>(const SP3SatID& right) const
+      {
+         return (!operator<(right) && !operator==(right));
+      }
+
+      /// operator >= (greater than or equal) for SP3SatID
+      bool operator>=(const SP3SatID& right) const
+      {
+         return (!operator<(right));
+      }
+
+      /// operator <= (less than or equal) for SP3SatID
+      bool operator<=(const SP3SatID& right) const
+      {
+         return (!operator>(right));
+      }
+
       /// return a character based on the system
       /// return the single-character system descriptor
       /// @note return only SP3 types, for non-SP3 systems return '?'
@@ -126,7 +164,6 @@ namespace gpstk
             default:            return "Unknown";
          }
       };
-
 
       /// read from string
       /// @note GPS is default system (no or unknown system char)

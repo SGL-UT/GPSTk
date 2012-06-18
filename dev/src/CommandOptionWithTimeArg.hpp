@@ -4,7 +4,7 @@
 
 /**
  * @file CommandOptionWithTimeArg.hpp
- * Command line options with time (class DayTime) arguments
+ * Command line options with time (class CommonTime) arguments
  */
 
 #ifndef COMMANDOPTIONWITHTIMEARG_HPP
@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -52,7 +52,7 @@
 
 
 #include "CommandOption.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -64,7 +64,7 @@ namespace gpstk
        * This class is allows the programmer to add command-line
        * options to an application that can parse strings containing
        * representations of time. The programmer must specify the
-       * format to be accepted.  Refer to DayTime::printf() for
+       * format to be accepted.  Refer to CommonTime::printf() for
        * details on the formatting specifications. */
    class CommandOptionWithTimeArg : public gpstk::CommandOptionWithAnyArg
    {
@@ -74,8 +74,8 @@ namespace gpstk
           *    if unused.
           * @param loOpt The long command option.  Set to std::string() 
           *    if unused.
-          * @param timeFormat format for scanning argument into a DayTime
-          *    (\see DayTime::setToString() for details).
+          * @param timeFormat format for scanning argument into a CommonTime
+          *    (\see CommonTime::setToString() for details).
           * @param desc A string describing what this option does.
           * @param required Set to true if this is a required option.
           */
@@ -100,11 +100,11 @@ namespace gpstk
       virtual std::string checkArguments();
 
          /// Return the times scanned in from the command line.
-      std::vector<DayTime> getTime() const { return times; }
+      std::vector<CommonTime> getTime() const { return times; }
 
    protected:
          /// Collection of times scanned in from the command line.
-      std::vector<DayTime> times;
+      std::vector<CommonTime> times;
          /// Format used to scan times in.
       std::string timeSpec;
 

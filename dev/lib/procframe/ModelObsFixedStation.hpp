@@ -6,8 +6,8 @@
  * reference station (whose position is known), using GNSS data structures.
  */
 
-#ifndef MODELOBSFIXEDSTATION_HPP
-#define MODELOBSFIXEDSTATION_HPP
+#ifndef GPSTK_MODELOBSFIXEDSTATION_HPP
+#define GPSTK_MODELOBSFIXEDSTATION_HPP
 
 //============================================================================
 //
@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -105,7 +105,7 @@ namespace gpstk
          : minElev(10.0), useTGD(true), pDefaultIonoModel(NULL),
            pDefaultTropoModel(NULL), defaultObservable(TypeID::C1),
            pDefaultEphemeris(NULL)
-      { InitializeValues(); setIndex(); };
+      { InitializeValues(); };
 
 
          /** Explicit constructor taking as input reference
@@ -114,22 +114,21 @@ namespace gpstk
           * Those coordinates may be Cartesian (X, Y, Z in meters) or Geodetic
           * (Latitude, Longitude, Altitude), but defaults to Cartesian.
           *
-          * Also, a pointer to GeoidModel may be specified, but default is
-          * NULL (in which case WGS84 values will be used).
-          *
           * @param aRx   first coordinate [ X(m), or latitude (degrees N) ]
           * @param bRx   second coordinate [ Y(m), or longitude (degrees E) ]
           * @param cRx   third coordinate [ Z, height above ellipsoid or
           *              radius, in meters ]
           * @param s     coordinate system (default is Cartesian, may be set
           *              to Geodetic).
-          * @param geoid pointer to GeoidModel (default is null, implies WGS84)
+          * @param ell   pointer to EllipsoidModel.
+          * @param frame Reference frame associated with this position.
           */
       ModelObsFixedStation( const double& aRx,
                             const double& bRx,
                             const double& cRx,
                             Position::CoordinateSystem s = Position::Cartesian,
-                            GeoidModel *geoid = NULL );
+                            EllipsoidModel *ell = NULL,
+                            ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /// Explicit constructor, taking as input a Position object
@@ -222,7 +221,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -334,10 +333,6 @@ namespace gpstk
       Position rxPos;
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -367,7 +362,7 @@ namespace gpstk
           *
           * @sa TropModel.hpp, IonoModelStore.hpp.
           */
-      int Compute( const DayTime& Tr,
+      int Compute( const CommonTime& Tr,
                    Vector<SatID>& Satellite,
                    Vector<double>& Pseudorange,
                    const XvtStore<SatID>& Eph,
@@ -411,7 +406,8 @@ namespace gpstk
                                         const double& bRx,
                                         const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                                        GeoidModel *geoid = NULL );
+                                        EllipsoidModel *ell = NULL,
+                              ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /// Method to set the initial (a priori) position of receiver.
@@ -429,30 +425,16 @@ namespace gpstk
 
          /// Method to get the ionospheric corrections.
       virtual double getIonoCorrections( IonoModelStore *pIonoModel,
-                                         DayTime Tr,
-                                         Geodetic rxGeo,
+                                         CommonTime Tr,
+                                         Position rxGeo,
                                          double elevation,
                                          double azimuth );
 
 
          /// Method to get TGD corrections.
-      virtual double getTGDCorrections( DayTime Tr,
+      virtual double getTGDCorrections( CommonTime Tr,
                                         const XvtStore<SatID>& Eph,
                                         SatID sat );
-
-
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'ModelObsFixedStation'
@@ -460,4 +442,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // MODELOBSFIXEDSTATION_HPP
+
+#endif   // GPSTK_MODELOBSFIXEDSTATION_HPP

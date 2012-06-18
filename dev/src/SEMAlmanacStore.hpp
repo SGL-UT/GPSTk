@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -57,8 +57,8 @@ namespace gpstk
                            public GPSAlmanacStore
    {
    public:
-      SEMAlmanacStore(const gpstk::DayTime& dtInterest=
-                             gpstk::DayTime::BEGINNING_OF_TIME)
+      SEMAlmanacStore(const gpstk::CommonTime& dtInterest=
+                             gpstk::CommonTime::BEGINNING_OF_TIME)
       {
          timeOfInterest = dtInterest;
       }
@@ -66,7 +66,7 @@ namespace gpstk
       void loadFile(const std::string& filename) 
          throw(FileMissingException);
          
-      gpstk::DayTime timeOfInterest;
+      gpstk::CommonTime timeOfInterest;
    };
    //@}
 }

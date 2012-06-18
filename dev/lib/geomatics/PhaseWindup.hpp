@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -44,7 +44,7 @@
 #ifndef PHASE_WINDUP_INCLUDE
 #define PHASE_WINDUP_INCLUDE
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Position.hpp"
 #include "SolarSystem.hpp"
 #include "EarthOrientation.hpp"
@@ -64,7 +64,7 @@ namespace gpstk {
 /// plane; this is true as long as the SV points to Earth center; cf. Beyerle (2009)
 /// GPS Solutions 13, pp191-198; in practice differences are small (<1mm).
 /// @param double& prev         return value on previous call (zero initially) (input)
-/// @param DayTime& tt          the epoch of interest (input)
+/// @param CommonTime& tt          the epoch of interest (input)
 /// @param Position& SV         the satellite position (input)
 /// @param Position& Rx2Tx      unit vector from receiver to satellite (input)
 /// @param Position& YR         west unit vector at receiver (input)
@@ -73,7 +73,7 @@ namespace gpstk {
 /// @param EarthOrientation EO  Earth orientation parameters appropriate for time
 /// @param double& shadow       fraction of sun visible at satellite (output)
 double PhaseWindup(double& prev,
-                   DayTime& tt,
+                   CommonTime& tt,
                    Position& SV,
                    Position& Rx2Tx,
                    Position& RxW,
@@ -86,7 +86,7 @@ double PhaseWindup(double& prev,
 
 /// Version without SolarSystem ephemeris; uses a lower quality solar position routine
 double PhaseWindup(double& prev,
-                   DayTime& tt,
+                   CommonTime& tt,
                    Position& SV,
                    Position& Rx2Tx,
                    Position& RxW,

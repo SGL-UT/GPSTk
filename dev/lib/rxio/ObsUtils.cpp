@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,9 +40,10 @@
 
 #include "StringUtils.hpp"
 #include "RinexObsID.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "ObsUtils.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 
@@ -210,15 +211,15 @@ namespace gpstk
             case 25: rc = rcCodeless; break; //0x19
          }
 
-      float chipRate=PY_CHIP_FREQ;
+      float chipRate=PY_CHIP_FREQ_GPS;
       if (rc == rcCA)
-         chipRate = CA_CHIP_FREQ;
+         chipRate = CA_CHIP_FREQ_GPS;
 
       MDPObsEpoch::Observation obs;
       obs.carrier = cc;
       obs.range = rc;
       obs.snr = cb.snr(chipRate);
-      obs.pseudorange = cb.raw_range * C_GPS_M;
+      obs.pseudorange = cb.raw_range * C_MPS;
       obs.phase = cb.full_phase;
       obs.doppler = -cb.doppler; // yeah, the Ashtech sign is backwards
       obs.bw=1;
@@ -247,20 +248,20 @@ namespace gpstk
 
       // Get the full time from the hint and make the sow match the MBEN
       moe.time = hint.time;
-      double sow1 = moe.time.GPSsecond();
+      double sow1 = static_cast<GPSWeekSecond>(moe.time).sow;
       int sow2 = static_cast<int>(sow1/1800);
       double sow3 = static_cast<double>(sow2 * 1800);
       double sow_mben = 0.05 * mben.seq;
       double sow4 = sow3 + sow_mben;
-      long week = moe.time.GPSfullweek();
+      long week = static_cast<GPSWeekSecond>(moe.time).week;
       if (sow4 < sow1) // Assume that time only moves forward
          sow4 += 1800;
-      while (sow4 >= DayTime::FULLWEEK)
+      while (sow4 >= FULLWEEK)
       {
-         sow4 -= DayTime::FULLWEEK;
+         sow4 -= FULLWEEK;
          week += 1;
       }
-      moe.time.setGPS(week, sow4);
+      moe.time=GPSWeekSecond(week, sow4);
 
       moe.numSVs = hint.numSVs;
       moe.channel = mben.chid;
@@ -290,13 +291,13 @@ namespace gpstk
       pvt.x[0] = pben.navx;
       pvt.x[1] = pben.navy;
       pvt.x[2] = pben.navz;
-      pvt.dtime = pben.navt / C_GPS_M;
+      pvt.dtime = pben.navt / C_MPS;
       pvt.v[0] = pben.navxdot;
       pvt.v[1] = pben.navydot;
       pvt.v[2] = pben.navzdot;
-      pvt.ddtime = pben.navtdot / C_GPS_M;
+      pvt.ddtime = pben.navtdot / C_MPS;
 
-      pvt.time.setGPS(week, pben.sow);
+      pvt.time=GPSWeekSecond(week, pben.sow);
       pvt.timep = pvt.time + pvt.dtime;
 
       pvt.fom = pben.pdop;
@@ -311,20 +312,20 @@ namespace gpstk
    MDPEpoch makeMDPEpoch(const ATSData& ats, const MDPEpoch& hint) throw()
    {
       MDPEpoch me;
-      DayTime t0(DayTime::BEGINNING_OF_TIME);
+      CommonTime t0(CommonTime::BEGINNING_OF_TIME);
 
       for (int i=0; i < ats.channels.size(); i++)
       {
          const ATSData::ChannelBlock& cb = ats.channels[i];
-         short week = static_cast<short>(cb.absTime / DayTime::FULLWEEK);
+         short week = static_cast<short>(cb.absTime / FULLWEEK);
          // It appears that week 0 is output before a channel really starts
          // tracking.
          if (week==0)
             continue;
 
-         double sow = cb.absTime - week * DayTime::FULLWEEK;
-         DayTime t(week, sow);
-         if (i==0 || t0 == DayTime(DayTime::BEGINNING_OF_TIME))
+         double sow = cb.absTime - week * FULLWEEK;
+         CommonTime t(week, sow);
+         if (i==0 || t0 == CommonTime(CommonTime::BEGINNING_OF_TIME))
             t0 = t;
          else if (std::abs(t - t0) > 0.1)
          {

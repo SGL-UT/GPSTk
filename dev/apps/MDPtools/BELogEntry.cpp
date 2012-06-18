@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -39,8 +39,10 @@
 /**
  * @file BELogEntry.cpp
  */
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "BELogEntry.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -60,7 +62,7 @@ namespace gpstk
       
       long shortweek = (long) ee.getFullWeek();
       shortweek &= 0x0000001F;
-      long sixteenSecCount = long (Toe.GPSsow() / 16.0);
+      long sixteenSecCount = long (static_cast<GPSWeekSecond>(Toe).sow / 16.0);
       
          // The purpose of the key is to enable placing these objects
          // into SV-specific maps ordered by 
@@ -74,7 +76,7 @@ namespace gpstk
    }
    
    unsigned long BELogEntry::getKey() const { return(key); }
-   DayTime BELogEntry::getHOW() const { return(HOWSF1); }
+   CommonTime BELogEntry::getHOW() const { return(HOWSF1); }
    void BELogEntry::increment()    { count++; }
    
    std::string BELogEntry::getStr() const
@@ -83,8 +85,8 @@ namespace gpstk
       std::string timeFmt2 = "%02m/%02d/%02y %02H:%02M:%02S %03j %5.0s %04F %6.0g";
       char line[100];
       sprintf( line, " %02d %s ! %s 0x%03X %4d",
-         PRN_ID, HOWSF1.printf( timeFmt1 ).c_str(),
-                 Toe.printf(timeFmt2).c_str(),
+         PRN_ID, printTime(HOWSF1, timeFmt1 ).c_str(),
+                 printTime(Toe,timeFmt2).c_str(),
                  IODC,count);
       std::string retStr(line);
       return(retStr);

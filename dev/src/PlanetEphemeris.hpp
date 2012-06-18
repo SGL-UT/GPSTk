@@ -37,7 +37,7 @@
 #include <map>
 
 #include "Exception.hpp"
-#include "DayTime.hpp" 
+#include "CommonTime.hpp" 
 #include "Position.hpp"           
 
 namespace gpstk
@@ -211,12 +211,12 @@ namespace gpstk
       }
 
          /// Return the start time of the data
-      gpstk::DayTime startTime(void) const throw(gpstk::Exception)
-      { gpstk::DayTime t; t.setMJD(startJD - gpstk::DayTime::JD_TO_MJD); return t; }
+      gpstk::CommonTime startTime(void) const throw(gpstk::Exception)
+      { return gpstk::MJD(startJD - gpstk::MJD_TO_JD); }
 
          /// Return the end time of the data
-      gpstk::DayTime endTime(void) const throw(gpstk::Exception)
-      { gpstk::DayTime t; t.setMJD(endJD - gpstk::DayTime::JD_TO_MJD); return t; }
+      gpstk::CommonTime endTime(void) const throw(gpstk::Exception)
+      { return gpstk::MJD(endJD - gpstk::MJD_TO_JD); }
 
 
    private:

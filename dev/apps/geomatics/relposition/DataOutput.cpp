@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -56,6 +56,7 @@
 #include "DDBase.hpp"
 #include "CommandInput.hpp"
 #include "format.hpp"
+#include "TimeString.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -74,7 +75,7 @@ try {
    if(CI.OutputRawFile.empty()) return 0;
 
    int i;
-   DayTime tt;
+   CommonTime tt;
    map<string,Station>::const_iterator it;
    map<GSatID,RawData>::const_iterator jt;
    format f133(13,3),f52(5,2);
@@ -106,7 +107,7 @@ try {
             tt = FirstEpoch + jt->second.count[i]*CI.DataInterval;
 
             rawofs << "RAW " << it->first << " " << jt->first << " "
-               << tt.printf("%4F %10.3g")
+               << printTime(tt,"%4F %10.3g")
                << " " << setw(5) << jt->second.count[i]
                << " " << f133 << jt->second.L1[i]
                << " " << f133 << jt->second.L2[i]
@@ -174,7 +175,7 @@ try {
 
    int i;
    double wlb;
-   DayTime tt;
+   CommonTime tt;
    format f166(16,6);
 
       // loop over epochs
@@ -188,7 +189,7 @@ try {
                - wl1r * dddata.DDP1[i] 
                - wl2r * dddata.DDP2[i];
 
-      rddofs << "RDD " << ddid << " " << tt.printf("%4F %10.3g")
+      rddofs << "RDD " << ddid << " " << printTime(tt,"%4F %10.3g")
          << " " << setw(2) << mark[i]
          << " " << f166 << dddata.DDL1[i]
          << " " << f166 << dddata.DDL2[i]
@@ -201,7 +202,7 @@ try {
       if(TripleOut && i>0) {
          // wlb is a dummy here, = delta time for this triple diff
          wlb = (dddata.count[i]-dddata.count[i-1])*CI.DataInterval;
-         rddofs << "RTD " << ddid << " " << tt.printf("%4F %10.3g")
+         rddofs << "RTD " << ddid << " " << printTime(tt,"%4F %10.3g")
             << " " << setw(2) << 10*mark[i]+mark[i-1]
             << " " << f166 << (dddata.DDL1[i]-dddata.DDL1[i-1])/wlb
             << " " << f166 << (dddata.DDL2[i]-dddata.DDL2[i-1])/wlb
@@ -227,7 +228,7 @@ try {
 
    int i;
    double wlb;
-   DayTime tt;
+   CommonTime tt;
    map<DDid,DDData>::const_iterator it;
    format f166(16,6);
 
@@ -261,7 +262,7 @@ try {
                   - wl1r * it->second.DDP1[i] 
                   - wl2r * it->second.DDP2[i];
 
-         dddofs << "DDD " << it->first << " " << tt.printf("%4F %10.3g")
+         dddofs << "DDD " << it->first << " " << printTime(tt,"%4F %10.3g")
             << " " << f166 << it->second.DDL1[i]
             << " " << f166 << it->second.DDL2[i]
             << " " << f166 << it->second.DDER[i]
@@ -291,7 +292,7 @@ try {
    if(CI.OutputClkFile.empty()) return 0;
 
    int i;
-   DayTime tt;
+   CommonTime tt;
    map<string,Station>::const_iterator it;
    format f166(16,6),f92(9,2,2),f96(9,6);
 
@@ -317,7 +318,7 @@ try {
 
          tt = FirstEpoch + it->second.CountBuffer[i]*CI.DataInterval;
 
-         clkofs << "CLK " << it->first << " " << tt.printf("%4F %10.3g")
+         clkofs << "CLK " << it->first << " " << printTime(tt,"%4F %10.3g")
             << " " << f166 << it->second.ClockBuffer[i]
             << " " << f92 << it->second.ClkSigBuffer[i]
             // TD add clock polynomial Evaluate(tt)

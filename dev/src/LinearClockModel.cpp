@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -55,8 +55,8 @@ namespace gpstk
 
    void LinearClockModel::reset() throw()
    {
-      startTime == gpstk::DayTime::END_OF_TIME;
-      endTime == gpstk::DayTime::BEGINNING_OF_TIME;
+      startTime == gpstk::CommonTime::END_OF_TIME;
+      endTime == gpstk::CommonTime::BEGINNING_OF_TIME;
       clockObs.clear();
       prnStatus.clear();
       clockModel.Reset();
@@ -67,7 +67,7 @@ namespace gpstk
       throw(gpstk::InvalidValue)
    {
       ORDEpoch::ORDMap::const_iterator itr;
-      const gpstk::DayTime t=oe.time;
+      const gpstk::CommonTime t=oe.time;
       
       // Start off by getting an estimate of this epoch's clock
       // note that this also sets the prn status map
@@ -162,7 +162,7 @@ namespace gpstk
            << ", max sigma: " << sigmam
            << endl;
 
-         map<DayTime,SvStatusMap>::const_iterator e = prnStatus.find(endTime);
+         map<CommonTime,SvStatusMap>::const_iterator e = prnStatus.find(endTime);
          const SvStatusMap& statusMap = e->second;
          SvStatusMap::const_iterator i;
          for ( i=statusMap.begin(); i!= statusMap.end(); i++)

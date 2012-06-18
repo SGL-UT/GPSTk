@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -47,8 +47,8 @@
 #include "EngEphemeris.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "MiscMath.hpp"
-#include "icd_200_constants.hpp"
-
+#include "GNSSconstants.hpp"
+#include "TimeString.hpp"
 #include "ObsRngDev.hpp"
 
 namespace gpstk
@@ -63,34 +63,34 @@ namespace gpstk
    ObsRngDev::ObsRngDev(
       const double prange,
       const SatID& svid,
-      const DayTime& time,
-      const ECEF& rxpos,
+      const CommonTime& time,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       bool svTime)
       : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
-      Geodetic gx(rxpos, &gm);
-      NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
+      computeOrd(prange, rxpos, eph, em, svTime);
+      Position gx(rxpos, Position::Geodetic, &em);
+      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), static_cast<YDSTime>(time).doy);
       computeTrop(nb);
    }
 
    ObsRngDev::ObsRngDev(
       const double prange,
       const SatID& svid,
-      const DayTime& time,
-      const ECEF& rxpos,
+      const CommonTime& time,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
-      Geodetic gx(rxpos, &gm);
-      NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
+      computeOrd(prange, rxpos, eph, em, svTime);
+      Position gx(rxpos, Position::Geodetic, &em);
+      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), static_cast<YDSTime>(time).doy);
       computeTrop(nb);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
@@ -99,34 +99,34 @@ namespace gpstk
    ObsRngDev::ObsRngDev(
       const double prange,
       const SatID& svid,
-      const DayTime& time,
-      const ECEF& rxpos,
+      const CommonTime& time,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       const TropModel& tm,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
+      computeOrd(prange, rxpos, eph, em, svTime);
       computeTrop(tm);
    }
 
    ObsRngDev::ObsRngDev(
       const double prange,
       const SatID& svid,
-      const DayTime& time,
-      const ECEF& rxpos,
+      const CommonTime& time,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       const TropModel& tm,
       const IonoModelStore& ion,
       IonoModel::Frequency fq,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
-      computeOrd(prange, rxpos, eph, gm, svTime);
+      computeOrd(prange, rxpos, eph, em, svTime);
       computeTrop(tm);
-      Geodetic gx(rxpos, &gm);
+      Position gx(rxpos, Position::Geodetic, &em);
       iono = ion.getCorrection(time, gx, elevation, azimuth, fq);
       ord -= iono;
    }
@@ -136,10 +136,10 @@ namespace gpstk
       const double prange1,
       const double prange2,
       const SatID& svid,
-      const DayTime& time,
-      const ECEF& rxpos,
+      const CommonTime& time,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      GeoidModel& gm,
+      EllipsoidModel& em,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
@@ -147,9 +147,9 @@ namespace gpstk
       double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
       iono = prange1 - icpr;
 
-      computeOrd(icpr, rxpos, eph, gm, svTime);
-      Geodetic gx(rxpos, &gm);
-      NBTropModel nb(gx.getAltitude(), gx.getLatitude(), time.DOYday());
+      computeOrd(icpr, rxpos, eph, em, svTime);
+      Position gx(rxpos, Position::Geodetic, &em);
+      NBTropModel nb(gx.getAltitude(), gx.getGeodeticLatitude(), static_cast<YDSTime>(time).doy);
       computeTrop(nb);
    }
 
@@ -158,10 +158,10 @@ namespace gpstk
       const  double prange1,
       const double prange2,
       const SatID& svid,
-      const DayTime& time,
-      const ECEF& rxpos,
+      const CommonTime& time,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      const GeoidModel& gm,
+      const EllipsoidModel& em,
       const TropModel& tm,
       bool svTime)
          : obstime(time), svid(svid), ord(0), wonky(false)
@@ -170,16 +170,16 @@ namespace gpstk
       double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
       iono = prange1 - icpr;
 
-      computeOrd(icpr, rxpos, eph, gm, svTime);
+      computeOrd(icpr, rxpos, eph, em, svTime);
       computeTrop(tm);
    }
 
    // This should be used for obs in GPS (i.e. receiver) time.
    void ObsRngDev::computeOrdRx(
       const double obs,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      const GeoidModel& gm)
+      const EllipsoidModel& em)
    {
       CorrectedEphemerisRange cer;
       rho = cer.ComputeAtTransmitTime(obstime, obs, rxpos, svid, eph);
@@ -217,9 +217,9 @@ namespace gpstk
 // This should be used for obs tagged in SV time
    void ObsRngDev::computeOrdTx(
       double obs,
-      const ECEF& rxpos,
+      const Position& rxpos,
       const XvtStore<SatID>& eph,
-      const GeoidModel& gm)
+      const EllipsoidModel& em)
    {
       CorrectedEphemerisRange cer;
       rho = cer.ComputeAtTransmitSvTime(obstime, obs, rxpos, svid, eph);
@@ -241,8 +241,8 @@ namespace gpstk
                    << std::endl
                    << "  rx.x=" << rxpos
                    << std::setprecision(4) << std::scientific
-                   << ", sv bias=" << cer.svPosVel.dtime
-                   << ", sv drift=" << cer.svPosVel.ddtime
+                   << ", sv bias=" << cer.svPosVel.clkbias
+                   << ", sv drift=" << cer.svPosVel.clkdrift
                    << std::endl;
          std::cout.flags(oldFlags);
       }
@@ -258,7 +258,7 @@ namespace gpstk
       throw()
    {
       std::ios::fmtflags oldFlags = s.flags();
-      s << "t=" << ord.obstime.printf("%Y/%03j %02H:%02M:%04.1f")
+      s << "t=" << printTime(ord.obstime,"%Y/%03j %02H:%02M:%04.1f")
         << " prn=" << std::setw(2) << ord.svid.id
         << std::setprecision(4)
         << " az=" << std::setw(3) << ord.azimuth

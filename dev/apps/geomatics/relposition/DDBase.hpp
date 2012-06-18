@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -61,7 +61,7 @@
 //#define RANGECHECK // if defined, Vector and Matrix will throw on invalid index.
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "TropModel.hpp"
 #include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
@@ -71,6 +71,7 @@
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
+#include "Epoch.hpp"
 
 // DDBase
 #include "GSatID.hpp"             // this one first
@@ -93,7 +94,7 @@ int ClockModel(void) throw(gpstk::Exception);            // ClockModel.cpp
 int Synchronization(void) throw(gpstk::Exception);       // Synchronization.cpp
 int RecomputeFromEphemeris(void) throw(gpstk::Exception);// Synchronization.cpp
 int Timetable(void) throw(gpstk::Exception);             // Timetable.cpp
-int QueryTimeTable(gpstk::SDid& sdid, gpstk::DayTime& tt) throw(gpstk::Exception);
+int QueryTimeTable(gpstk::SDid& sdid, gpstk::CommonTime& tt) throw(gpstk::Exception);
 int QueryTimeTable(std::string bl, int& beg, int& end) throw(gpstk::Exception);
 int DoubleDifference(void) throw(gpstk::Exception);      // DoubleDifference.cpp
 int EditDDs(void) throw(gpstk::Exception);               // EditDDs.cpp
@@ -107,8 +108,8 @@ extern std::ofstream oflog;
 //extern CommandInput CI;   put in CommandInput.hpp
 extern std::vector<std::string> Baselines;
 
-extern gpstk::DayTime SolutionEpoch;
-extern gpstk::DayTime FirstEpoch,LastEpoch,MedianEpoch;
+extern gpstk::CommonTime SolutionEpoch;
+extern gpstk::CommonTime FirstEpoch,LastEpoch,MedianEpoch;
 extern int Count; 
 extern int maxCount;
 extern double wave;

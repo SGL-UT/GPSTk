@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -55,8 +55,10 @@
 //------------------------------------------------------------------------------------
 // GPSTk includes
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Matrix.hpp"
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
 
 //------------------------------------------------------------------------------------
 namespace gpstk
@@ -238,9 +240,9 @@ namespace gpstk
       //------------------------------------------------------------------------------
       /// Compute the 'coordinate transformation time', which is used throughout the
       /// class, and is essentially the time since J2000 in centuries.
-      /// @param t DayTime time of interest.
+      /// @param t CommonTime time of interest.
       /// @return coordinate transformation time at t.
-      static double CoordTransTime(DayTime t)
+      static double CoordTransTime(CommonTime t)
          throw();
 
       //------------------------------------------------------------------------------
@@ -343,13 +345,13 @@ namespace gpstk
       /// GMST0 = GMST at 0h UT1
       ///      = 6h 41m (50.54841+8640184.812866*T'+0.093104*T'^2-6.2E-6*T'^3)s
       ///
-      /// @param t DayTime time of interest.
+      /// @param t CommonTime time of interest.
       /// @param om, Omega(T), mean longitude of lunar ascending node, in degrees,
       /// @param eps, Obliquity(T), the obliquity of the ecliptic, in degrees,
       /// @param dpsi, nutation in longitude (counted in the ecliptic),
       ///                       in seconds of arc
       /// @param UT1mUTC,  UT1-UTC in seconds, as found in the IERS bulletin.
-      static double gast(DayTime t,
+      static double gast(CommonTime t,
                          double om,
                          double eps,
                          double dpsi,
@@ -384,11 +386,11 @@ namespace gpstk
       /// Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
       /// the mean vernal equinox (radians), given the coordinate time of interest,
       /// and UT1-UTC (sec), which comes from the IERS bulletin.
-      /// @param t DayTime epoch of the rotation.
+      /// @param t CommonTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
-      static double GMST(DayTime t,
+      static double GMST(CommonTime t,
                          double UT1mUTC,
                          bool reduced=false)
          throw();
@@ -397,11 +399,11 @@ namespace gpstk
       /// Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
       /// the true vernal equinox (radians), given the coordinate time of interest,
       /// and UT1-UTC (sec), which comes from the IERS bulletin.
-      /// @param t DayTime epoch of the rotation.
+      /// @param t CommonTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
-      static double GAST(DayTime t,
+      static double GAST(CommonTime t,
                          double UT1mUTC,
                          bool reduced=false)
          throw();
@@ -421,25 +423,25 @@ namespace gpstk
       /// at Greenwich hour angle of the true vernal equinox and which accounts for
       /// precession and nutation in right ascension, given the UT time of interest
       /// and the UT1-UTC correction (in sec), obtained from the IERS bulletin.
-      /// @param t DayTime epoch of the rotation.
+      /// @param t CommonTime epoch of the rotation.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @return 3x3 rotation matrix
-      static Matrix<double> PreciseEarthRotation(DayTime t,
+      static Matrix<double> PreciseEarthRotation(CommonTime t,
                                                  double UT1mUTC,
                                                  bool reduced=false)
          throw(InvalidRequest);
 
       //------------------------------------------------------------------------------
-      /// Generate an Earth Precession Matrix (3X3 rotation) at the given DayTime.
-      static Matrix<double> Precession(DayTime t)
+      /// Generate an Earth Precession Matrix (3X3 rotation) at the given CommonTime.
+      static Matrix<double> Precession(CommonTime t)
          throw(InvalidRequest)
          { return PrecessionMatrix(CoordTransTime(t)); }
 
       //------------------------------------------------------------------------------
-      /// Generate an Earth Nutation Matrix (3X3 rotation) at the given DayTime.
-      /// @param t DayTime epoch of the rotation.
+      /// Generate an Earth Nutation Matrix (3X3 rotation) at the given CommonTime.
+      /// @param t CommonTime epoch of the rotation.
       /// @return 3x3 rotation matrix
-      static Matrix<double> Nutation(DayTime t)
+      static Matrix<double> Nutation(CommonTime t)
          throw(InvalidRequest);
 
       //------------------------------------------------------------------------------
@@ -448,14 +450,14 @@ namespace gpstk
       /// the polar motion angles xp and yp (arcseconds), and UT1-UTC (seconds)
       /// (xp,yp and UT1-UTC are just as found in the IERS bulletin;
       /// see class EarthOrientation).
-      /// @param t DayTime epoch of the rotation.
+      /// @param t CommonTime epoch of the rotation.
       /// @param xp, Earth wobble in arcseconds, as found in the IERS bulletin.
       /// @param yp, Earth wobble in arcseconds, as found in the IERS bulletin.
       /// @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
       /// @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
       ///                 'no tides', as is the case with the NGA EOPs (default=F).
       /// @return 3x3 rotation matrix
-      static Matrix<double> ECEFtoInertial(DayTime t,
+      static Matrix<double> ECEFtoInertial(CommonTime t,
                                            double xp,
                                            double yp,
                                            double UT1mUTC,

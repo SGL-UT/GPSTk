@@ -5,8 +5,8 @@
  * This class computes the delay in the signal due to changes in gravity field.
  */
 
-#ifndef GRAVITATIONALDELAY_HPP
-#define GRAVITATIONALDELAY_HPP
+#ifndef GPSTK_GRAVITATIONALDELAY_HPP
+#define GPSTK_GRAVITATIONALDELAY_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
 //============================================================================
 
@@ -108,7 +108,7 @@ namespace gpstk
 
          /// Default constructor.
       GravitationalDelay() : nominalPos(0.0, 0.0, 0.0)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -116,7 +116,7 @@ namespace gpstk
           * @param stapos    Nominal position of receiver station.
           */
       GravitationalDelay(const Position& stapos) : nominalPos(stapos)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -125,7 +125,7 @@ namespace gpstk
           * @param epoch     Time of observations.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -161,10 +161,6 @@ namespace gpstk
         { nominalPos = stapos; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -180,20 +176,10 @@ namespace gpstk
       Position nominalPos;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'GravitationalDelay'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // GRAVITATIONALDELAY_HPP
+
+#endif   // GPSTK_GRAVITATIONALDELAY_HPP

@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -51,6 +51,8 @@
 
    // Project Headers
 #include "ConstellationSet.hpp"
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -115,12 +117,13 @@ ConstellationDefinition ConstellationSet::findCD( const gpstk::CommonTime dt ) c
          throw(NoConstellationFound)
 {
    CommonTime localDT = dt;
-   localDT=static_cast<YDSTime>((SEC_PER_DAY/2)).sod;   // Set to noon to match CDs
-   
+   //localDT=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;   // Set to noon to match CDs -- Not sure why this was here, commenting out removes error.
+
       // Best case (hopefully nominal) is that there is a definition
       // available for the date in question.
+
    CI ci = cdMap.find(localDT);
-   //cout << "Found in map: " << ci->first << endl;
+
    if (ci==cdMap.end())
    {
          // If no, first check to see whether date in question is later
@@ -231,7 +234,7 @@ gpstk::CommonTime ConstellationSet::parseDate(string date)
    {
       //cout << dateString << endl;
       static_cast<Epoch>(dt).scanf(dateString, "%d %b %Y");
-      dt=static_cast<YDSTime>(SEC_PER_DAY/2).sod;
+      dt=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;
       return dt;
    }
    catch(Exception exc)
@@ -263,6 +266,7 @@ list<string> ConstellationSet::parseNums(string data, string searching)
 int ConstellationSet::loadFileARL( const std::string filename )
 {
    FILE* inf = fopen(filename.c_str(),"rt");
+
    if (inf==0) return(0);
    
    std::string temp;
@@ -308,7 +312,7 @@ int ConstellationSet::loadFileARL( const std::string filename )
          {
             try
             {
-               tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+               tempDT = CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
                cd.setEffectiveTime( tempDT );
                inDefinition = true;
             }
@@ -376,10 +380,10 @@ int ConstellationSet::loadFileCSV( const std::string filename )
 {
    FILE* inf = fopen(filename.c_str(),"rt");
    if (inf==0) return(0);
-   
+
    std::string temp;
    CommonTime tempDT;
-   CommonTime testDT = CivilTime(2008,1,1,12,0,0.0);
+   CommonTime testDT = CivilTime(2011,1,1,12,0,0.0);
    string whiteSpace = " \t\n\r";
    char comma = ',';
    
@@ -392,7 +396,7 @@ int ConstellationSet::loadFileCSV( const std::string filename )
    {
       // Set a clear starting state
       cd.clearDefinition();
-      
+
       lineCount++;
          // Skip first two lines
       if (lineCount<4) continue;
@@ -410,9 +414,10 @@ int ConstellationSet::loadFileCSV( const std::string filename )
       int ntest = sscanf(dateString.c_str(),"%4d-%2d-%2d", &y, &m, &d);
       if (ntest==3) 
       {
+
          try
          {
-            tempDT=CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
+            tempDT = CivilTime( (short) y, (short)m, (short)d, 12,0,0.0);
             cd.setEffectiveTime( tempDT );
          }
          catch(Exception e)

@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -134,7 +134,7 @@ namespace gpstk
          /// missing in input data.
       DeltaOp()
          : deleteMissingSats(true), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); setIndex(); };
+      { diffTypes.insert(TypeID::prefitC); };
 
 
          /** Common constructor taking a satTypeValueMap as reference
@@ -154,7 +154,7 @@ namespace gpstk
       DeltaOp( const satTypeValueMap& gData,
                const bool& delSats = true )
          : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); setIndex(); };
+      { diffTypes.insert(TypeID::prefitC); };
 
 
          /** Common constructor taking a satTypeValueMap as reference
@@ -175,7 +175,7 @@ namespace gpstk
                const TypeID& difftype,
                const bool& delSats = true )
          : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(difftype); setIndex(); };
+      { diffTypes.insert(difftype); };
 
 
          /** Common constructor taking a satTypeValueMap as reference
@@ -197,7 +197,7 @@ namespace gpstk
                const bool& delSats = true )
          : refData(gData), deleteMissingSats(delSats), updateCSFlag(true),
            diffTypes(diffSet)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor taking a gnssSatTypeValue as reference
@@ -217,7 +217,7 @@ namespace gpstk
       DeltaOp( const gnssSatTypeValue& gData,
                const bool& delSats = true )
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); setIndex(); };
+      { diffTypes.insert(TypeID::prefitC); };
 
 
          /** Common constructor taking a gnssSatTypeValue as reference
@@ -238,7 +238,7 @@ namespace gpstk
                const TypeID& difftype,
                const bool& delSats = true )
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(difftype); setIndex(); };
+      { diffTypes.insert(difftype); };
 
 
          /** Common constructor taking a gnssSatTypeValue as reference
@@ -260,7 +260,7 @@ namespace gpstk
                const bool& delSats = true )
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
            diffTypes(diffSet)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor taking a gnssRinex as reference station data.
@@ -279,7 +279,7 @@ namespace gpstk
       DeltaOp( const gnssRinex& gData,
                const bool& delSats = true )
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); setIndex(); };
+      { diffTypes.insert(TypeID::prefitC); };
 
 
          /** Common constructor taking a gnssRinex as reference station data.
@@ -299,7 +299,7 @@ namespace gpstk
                const TypeID& difftype,
                const bool& delSats = true )
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(difftype); setIndex(); };
+      { diffTypes.insert(difftype); };
 
 
          /** Common constructor taking a gnssRinex as reference station data.
@@ -320,7 +320,7 @@ namespace gpstk
                const bool& delSats = true )
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
            diffTypes(diffSet)
-      { setIndex(); };
+      { };
 
 
          /** Method to set the satTypeValueMap data object holding reference
@@ -452,10 +452,6 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -485,20 +481,10 @@ namespace gpstk
       TypeIDSet diffTypes;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'DeltaOp'
 
       //@}
 
 }  // End of namespace gpstk
+
 #endif   // GPSTK_DELTAOP_HPP

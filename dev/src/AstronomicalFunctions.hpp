@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
@@ -34,9 +34,9 @@
 #include <cmath>
 #include <string>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 
 
 namespace gpstk
@@ -84,7 +84,7 @@ namespace gpstk
        * @return Triple in CTS(ECEF) coordinate system.
        */
    Triple CIS2CTS(const Triple posCIS,
-                  const DayTime& t);
+                  const CommonTime& t);
 
 
       /** Function to convert from UTC to sidereal time
@@ -92,7 +92,7 @@ namespace gpstk
        *
        * @return sidereal time in hours.
        */
-   double UTC2SID(const DayTime& t);
+   double UTC2SID(const CommonTime& t);
 
       //@}
 

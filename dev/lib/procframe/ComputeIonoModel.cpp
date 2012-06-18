@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -40,15 +40,6 @@ namespace gpstk
 
    using namespace std;
 
-      // Index initially assigned to this class
-   int ComputeIonoModel::classIndex = 5500000;
-
-
-      // Returns an index identifying this object.
-   int ComputeIonoModel::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string ComputeIonoModel::getClassName() const
    { return "ComputeIonoModel"; }
@@ -61,8 +52,8 @@ namespace gpstk
        * @param time      Epoch.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeIonoModel::Process( const DayTime& time,
-                                         satTypeValueMap& gData )
+   satTypeValueMap& ComputeIonoModel::Process( const CommonTime& time,
+                                               satTypeValueMap& gData )
       throw(ProcessingException)
    {
 
@@ -74,10 +65,6 @@ namespace gpstk
          Position rxPos(nominalPos[0],nominalPos[1],nominalPos[2],
             Position::Cartesian);
 
-         Geodetic rxGeo(rxPos.getGeodeticLatitude(),
-            rxPos.getLongitude(),
-            rxPos.getAltitude());
-                
             // Loop through all the satellites
          satTypeValueMap::iterator stv;
          for(stv = gData.begin(); stv != gData.end(); ++stv) 
@@ -135,11 +122,11 @@ namespace gpstk
             }
             else if(ionoType == Klobuchar)
             {
-               ionL1 = klbStore.getCorrection(time,rxGeo,elevation,azimuth);
+               ionL1 = klbStore.getCorrection(time,rxPos,elevation,azimuth);
             }
             else if(ionoType == DualFreq)
             {
-               const double gamma = (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
+               const double gamma = (L1_FREQ_GPS/L2_FREQ_GPS) * (L1_FREQ_GPS/L2_FREQ_GPS);
 
                double P1(0.0);
                if(stv->second.find(TypeID::P1)==stv->second.end())
@@ -166,8 +153,8 @@ namespace gpstk
                }
             }
 
-            double ionL2 = ionL1 * (L1_FREQ/L2_FREQ) * (L1_FREQ/L2_FREQ);
-            double ionL5 = ionL1 * (L1_FREQ/L5_FREQ) * (L1_FREQ/L5_FREQ);
+            double ionL2 = ionL1 * (L1_FREQ_GPS/L2_FREQ_GPS) * (L1_FREQ_GPS/L2_FREQ_GPS);
+            double ionL5 = ionL1 * (L1_FREQ_GPS/L5_FREQ_GPS) * (L1_FREQ_GPS/L5_FREQ_GPS);
             
                // TODO: more frequency later
 
@@ -188,7 +175,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -202,7 +188,7 @@ namespace gpstk
                                                          const double b[4])
    {
       IonoModel ionModel(a,b);
-      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME,ionModel);      
+      klbStore.addIonoModel(CommonTime::BEGINNING_OF_TIME,ionModel);
       ionoType = Klobuchar;
 
       return (*this);
@@ -210,7 +196,7 @@ namespace gpstk
 
    ComputeIonoModel& ComputeIonoModel::setKlobucharModel(const IonoModel& im)
    {
-      klbStore.addIonoModel(DayTime::BEGINNING_OF_TIME, im);
+      klbStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, im);
       ionoType = Klobuchar;
 
       return (*this);

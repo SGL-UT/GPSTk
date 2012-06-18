@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,8 +49,9 @@
  */
 
 #include <math.h>
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "IonoModel.hpp"
+#include "YDSTime.hpp"
 #include "geometry.hpp"
 
 namespace gpstk
@@ -86,8 +87,8 @@ namespace gpstk
    }
 
 
-   double IonoModel::getCorrection(const DayTime& time,
-                                   const Geodetic& rxgeo,
+   double IonoModel::getCorrection(const CommonTime& time,
+                                   const Position& rxgeo,
                                    double svel,
                                    double svaz,
                                    Frequency freq) const
@@ -107,7 +108,7 @@ namespace gpstk
       double azRad = svaz * DEG_TO_RAD;
       double svE = svel / 180.0;
 
-      double phi_u = rxgeo.getLatitude() / 180.0;
+      double phi_u = rxgeo.getGeodeticLatitude() / 180.0;
       double lambda_u = rxgeo.getLongitude() / 180.0;
 
       double psi = (0.0137 / (svE + 0.11)) - 0.022;
@@ -132,7 +133,7 @@ namespace gpstk
       if (iPER < 72000.0)
          iPER = 72000.0;
 
-      double t = 43200.0 * lambda_i + time.DOYsecond();
+      double t = 43200.0 * lambda_i + YDSTime(time).sod;
       if (t >= 86400.0)
          t -= 86400.0;
       if (t < 0)
@@ -154,7 +155,7 @@ namespace gpstk
          t_iono *= GAMMA_GPS;  //  GAMMA_GPS = (fL1 / fL2)^2
       }
 
-      double correction = t_iono * C_GPS_M;
+      double correction = t_iono * C_MPS;
 
       return correction;
    }

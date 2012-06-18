@@ -16,8 +16,8 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -44,6 +44,7 @@
 #include "StringUtils.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsStream.hpp"
+#include "CivilTime.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;
@@ -52,9 +53,9 @@ namespace gpstk
 {
 
       // Definition of static variable to be used across RinexObsData objects
-   DayTime gpstk::RinexObsData::previousTime;
-	
-   void RinexObsData::reallyPutRecord(FFStream& ffs) const 
+   CommonTime gpstk::RinexObsData::previousTime;
+
+   void RinexObsData::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
       // is there anything to write?
@@ -71,12 +72,13 @@ namespace gpstk
       line += string(2, ' ');
       line += rightJustify(asString<short>(epochFlag), 1);
       line += rightJustify(asString<short>(numSvs), 3);
-         
+
       // write satellite ids to 'line'
       const int maxPrnsPerLine = 12;
       int satsWritten = 0;
       RinexSatMap::const_iterator obsItr = obs.begin();
-      if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
+      if(epochFlag==0 || epochFlag==1 || epochFlag==6)
+      {
          while ((obsItr != obs.end()) && (satsWritten < maxPrnsPerLine))
          {
             RinexSatID prn((*obsItr).first);
@@ -86,11 +88,12 @@ namespace gpstk
          }
 
             // add clock offset
-         if(clockOffset != 0.0) {
+         if(clockOffset != 0.0)
+         {
             line += string(68 - line.size(), ' ');
             line += rightJustify(asString(clockOffset, 9), 12);
          }
-      
+
         // continuation lines
          while (satsWritten != obs.size())
          {
@@ -109,8 +112,8 @@ namespace gpstk
 
       // write the epoch line
       strm << line << endl;
-      strm.lineNumber++;         
-      
+      strm.lineNumber++;
+
       // write the auxiliary header records, if any
       if(epochFlag >= 2 && epochFlag <= 5)
       {
@@ -126,23 +129,23 @@ namespace gpstk
             GPSTK_RETHROW(e);
          }
       }
-      
+
       // write the obs data
       else if (!obs.empty())
       {
             // write out the observations themselves
          obsItr = obs.begin();
-         
+
          const int maxObsPerLine = 5;
-         
+
          while(obsItr != obs.end())
          {
-            vector<RinexObsHeader::RinexObsType>::iterator obsTypeItr = 
+            vector<RinexObsHeader::RinexObsType>::iterator obsTypeItr =
                strm.header.obsTypeList.begin();
-            
+
             line.erase();
             int obsWritten = 0;
-            
+
             while (obsTypeItr != strm.header.obsTypeList.end())
             {
                if (  ((obsWritten % maxObsPerLine) == 0) &&
@@ -172,25 +175,25 @@ namespace gpstk
             strm << line << endl;
             strm.lineNumber++;
             obsItr++;
-         }  
-      }      
+         }
+      }
    }   // end RinexObsData::reallyPutRecord
 
 
-   void RinexObsData::reallyGetRecord(FFStream& ffs) 
+   void RinexObsData::reallyGetRecord(FFStream& ffs)
       throw(exception, FFStreamError, gpstk::StringUtils::StringException)
    {
       RinexObsStream& strm = dynamic_cast<RinexObsStream&>(ffs);
-      
+
          // If the header hasn't been read, read it...
       if(!strm.headerRead) strm >> strm.header;
-      
+
          // Clear out this object
       RinexObsHeader& hdr = strm.header;
-      
+
       RinexObsData rod;
       *this=rod;
-      
+
       string line;
 
          // The following block handles Rinex2 observation files that have
@@ -211,10 +214,10 @@ namespace gpstk
             if( line.size()>80 ) isValidEpochLine = false;
 
                // Try to read the epoch
-            DayTime tempEpoch = parseTime(line, hdr);
+            CommonTime tempEpoch = parseTime(line, hdr);
 
                // We also have to check if the epoch is valid
-            if( tempEpoch == DayTime::BEGINNING_OF_TIME )
+            if( tempEpoch == CommonTime::BEGINNING_OF_TIME )
             {
                isValidEpochLine = false;
             }
@@ -230,7 +233,7 @@ namespace gpstk
          }
 
       }  // End of 'while( !isValidEpochLine )'
-      
+
          // process the epoch line, including SV list and clock bias
       epochFlag = asInt(line.substr(28,1));
       if ((epochFlag < 0) || (epochFlag > 6))
@@ -266,36 +269,41 @@ namespace gpstk
       }
 
       numSvs = asInt(line.substr(29,3));
-      
+
       if( line.size() > 68 )
          clockOffset = asDouble(line.substr(68, 12));
       else
          clockOffset = 0.0;
-      
+
          // Now read the observations ...
-      if(epochFlag==0 || epochFlag==1 || epochFlag==6) {
+      if(epochFlag==0 || epochFlag==1 || epochFlag==6)
+      {
          int isv, ndx, line_ndx;
          vector<SatID> satIndex(numSvs);
          int col=30;
-         for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++) {
-            if(! (isv % 13)) {
+         for (isv=1, ndx=0; ndx<numSvs; isv++, ndx++)
+         {
+            if(! (isv % 13))
+            {
                strm.formattedGetLine(line);
                isv = 1;
-               if(line.size() > 80) {
+               if(line.size() > 80)
+               {
                   FFStreamError err("Invalid line size:" + asString(line.size()));
                   GPSTK_THROW(err);
                }
             }
-            try {
+            try
+            {
                satIndex[ndx] = RinexSatID(line.substr(col+isv*3-1, 3));
             }
             catch (Exception& e)
-            { 
+            {
                FFStreamError ffse(e);
                GPSTK_THROW(ffse);
             }
          }
-      
+
          for (isv=0; isv < numSvs; isv++)
          {
             short numObs = hdr.obsTypeList.size();
@@ -313,9 +321,9 @@ namespace gpstk
                      GPSTK_THROW(err);
                   }
                }
-               
+
                line.resize(80, ' ');
-               
+
                obs[sat][obs_type].data = asDouble(line.substr(line_ndx*16,   14));
                obs[sat][obs_type].lli = asInt(    line.substr(line_ndx*16+14, 1));
                obs[sat][obs_type].ssi = asInt(    line.substr(line_ndx*16+15, 1));
@@ -323,12 +331,15 @@ namespace gpstk
          }
       }
          // ... or the auxiliary header information
-      else if(numSvs > 0) {
+      else if(numSvs > 0)
+      {
          auxHeader.clear();
-         for(int i=0; i<numSvs; i++) {
+         for(int i=0; i<numSvs; i++)
+         {
             strm.formattedGetLine(line);
             StringUtils::stripTrailing(line);
-            try {
+            try
+            {
                auxHeader.ParseHeaderRecord(line);
             }
             catch(FFStreamError& e)
@@ -343,11 +354,11 @@ namespace gpstk
       }
 
       return;
-      
+
    } // end of reallyGetRecord()
 
 
-   DayTime RinexObsData::parseTime(const string& line, 
+   CommonTime RinexObsData::parseTime(const string& line,
                                    const RinexObsHeader& hdr) const
       throw(FFStreamError)
    {
@@ -369,14 +380,14 @@ namespace gpstk
             // if there's no time, just return a bad time
          if (line.substr(0,26) == string(26, ' '))
          {
-            return DayTime(DayTime::BEGINNING_OF_TIME);
+            return CommonTime(CommonTime::BEGINNING_OF_TIME);
          }
 
          int year, month, day, hour, min;
          double sec;
-         int yy = hdr.firstObs.year()/100;
+         int yy = (static_cast<CivilTime>(hdr.firstObs)).year/100;
          yy *= 100;
-   
+
          year  = asInt(   line.substr(1,  2 ));
          month = asInt(   line.substr(4,  2 ));
          day   = asInt(   line.substr(7,  2 ));
@@ -387,10 +398,10 @@ namespace gpstk
          // Real Rinex has epochs 'yy mm dd hr 59 60.0' surprisingly often....
          double ds=0;
          if(sec >= 60.) { ds=sec; sec=0.0; }
-         DayTime rv(yy+year, month, day, hour, min, sec);
-         if(ds != 0) rv += ds;
+         CivilTime rv(yy+year, month, day, hour, min, sec, TimeSystem::GPS);
+         if(ds != 0) rv.second += ds;
 
-         return rv;
+         return rv.convertToCommonTime();
       }
          // string exceptions for substr are caught here
       catch (std::exception &e)
@@ -408,26 +419,27 @@ namespace gpstk
 
    }
 
-   string RinexObsData::writeTime(const DayTime& dt) const
+   string RinexObsData::writeTime(const CommonTime& dt) const
       throw(StringException)
    {
-      if (dt == DayTime::BEGINNING_OF_TIME)
+      if (dt == CommonTime::BEGINNING_OF_TIME)
       {
          return string(26, ' ');
       }
 
       string line;
+      CivilTime civTime(dt);
       line  = string(1, ' ');
-      line += rightJustify(asString<short>(dt.year()),2);
+      line += rightJustify(asString<short>(civTime.year),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.month()),2);
+      line += rightJustify(asString<short>(civTime.month),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.day()),2);
+      line += rightJustify(asString<short>(civTime.day),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.hour()),2);
+      line += rightJustify(asString<short>(civTime.hour),2);
       line += string(1, ' ');
-      line += rightJustify(asString<short>(dt.minute()),2);
-      line += rightJustify(asString(dt.second(), 7),11);
+      line += rightJustify(asString<short>(civTime.minute),2);
+      line += rightJustify(asString(civTime.second, 7),11);
 
       return line;
    }
@@ -440,16 +452,17 @@ namespace gpstk
 
       s << "Dump of RinexObsData - time: ";
       s << writeTime(time) << " epochFlag: "
-        << " " << epochFlag << " numSvs: " << numSvs 
+        << " " << epochFlag << " numSvs: " << numSvs
         << fixed << setprecision(6)
         << " clk offset: " << clockOffset << endl;
-      if(epochFlag == 0 || epochFlag == 1) 
+      if(epochFlag == 0 || epochFlag == 1)
       {
          RinexSatMap::const_iterator it;
-         for(it=obs.begin(); it!=obs.end(); it++) {
+         for(it=obs.begin(); it!=obs.end(); it++)
+         {
             s << "Sat " << setw(2) << RinexSatID(it->first);
             RinexObsTypeMap::const_iterator jt;
-            for(jt=it->second.begin(); jt!=it->second.end(); jt++) 
+            for(jt=it->second.begin(); jt!=it->second.end(); jt++)
             {
                s << " " << jt->first.type << ":" << fixed << setprecision(3)
                  << " " << setw(12) << jt->second.data
@@ -458,7 +471,8 @@ namespace gpstk
             s << endl;
          }
       }
-      else {
+      else
+      {
          s << "aux. header info:\n";
          auxHeader.dump(s);
       }

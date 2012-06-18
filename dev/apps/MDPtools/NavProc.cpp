@@ -21,13 +21,14 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2008, The University of Texas at Austin
 //
 //============================================================================
-
-#include "Geodetic.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
+#include "Position.hpp"
 #include "NavProc.hpp"
 
 #include "RinexConverters.hpp"
@@ -207,7 +208,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    {
       firstNav = false;
       if (verboseLevel)
-         out << msg.time.printf(timeFormat)
+         out << printTime( msg.time,timeFormat)
              << "  Received first Navigation Subframe message"
              << endl;
    }
@@ -222,7 +223,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
    MDPNavSubframe umsg = msg;
 
    ostringstream oss;
-   oss << umsg.time.printf(timeFormat)
+   oss << printTime(umsg.time,timeFormat)
        << "  PRN:" << setw(2) << umsg.prn
        << " " << asString(umsg.carrier)
        << ":" << setw(4) << left << asString(umsg.range)
@@ -291,7 +292,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
       }
 
       // Sanity check on the header time versus the HOW time
-      short week = umsg.time.GPSfullweek();
+      short week = static_cast<GPSWeekSecond>(umsg.time).week;
       if (sow <0 || sow>=604800)
       {
          if (verboseLevel>1)
@@ -299,7 +300,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
          return;
       }
       
-      DayTime howTime(week, umsg.getHOWTime());
+      CommonTime howTime(week, umsg.getHOWTime());
       if (howTime == umsg.time)
       {
          if (verboseLevel && ! (bugMask & 0x4))
@@ -309,7 +310,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
       {
          if (verboseLevel>1)
             out << msgPrefix << " HOW time != hdr time+6, HOW:"
-                << howTime.printf(timeFormat)
+                << printTime(howTime,timeFormat)
                 << endl;
          if (verboseLevel>3)
             umsg.dump(out);

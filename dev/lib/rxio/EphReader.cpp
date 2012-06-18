@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -41,6 +41,8 @@
 #include "GPSEphemerisStore.hpp"
 #include "YumaAlmanacStore.hpp"
 #include "SEMAlmanacStore.hpp"
+
+#include "SP3Stream.hpp"
 
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
@@ -234,9 +236,9 @@ namespace gpstk
                if (sfid > 3)
                   return;
 
-               short week = nav.time.GPSfullweek();
+               short week = static_cast<GPSWeekSecond>(nav.time).week;
                long sow = nav.getHOWTime();
-               if (sow > DayTime::FULLWEEK)
+               if (sow > FULLWEEK)
                {
                   if (verboseLevel>2)
                      cout << "Bad week" << endl;
@@ -246,7 +248,7 @@ namespace gpstk
                if (verboseLevel>3)
                   nav.dump(cout);
 
-               DayTime howTime(week, sow);
+               CommonTime howTime(week, sow);
 
                if (nav.range != rcCA || nav.carrier != ccL1)
                   return;
@@ -287,6 +289,9 @@ namespace gpstk
       if (verboseLevel>2)
          cout << "Reading " << fn << " as SP3 ephemeris."<< endl;
 
+      pe->loadSP3File(fn);
+
+   /*
       SP3Stream fs(fn.c_str(),ios::in);
       fs.exceptions(ifstream::failbit);
       
@@ -298,6 +303,7 @@ namespace gpstk
    
       while (fs >> data)
          pe->addEphemeris(data);
+   */
 
       if (verboseLevel>1)
          cout << "Read " << fn << " as SP3 ephemeris."<< endl;

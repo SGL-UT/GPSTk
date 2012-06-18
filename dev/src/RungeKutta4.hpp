@@ -1,5 +1,16 @@
 #pragma ident "$Id$"
 
+/**
+ * @file RungeKutta4.hpp
+ * RungeKutta4 class. Provides several versions of the Runge Kutta integration
+ * The algorithms are based on Ch.16 of "Numerical Recipes in C" but the
+ * implementation is entirely independent, i.e., this isn't the source
+ * distributed with the text.
+ */
+
+#ifndef GPSTK_RUNGEKUTTA4_HPP
+#define GPSTK_RUNGEKUTTA4_HPP
+
 
 
 //============================================================================
@@ -18,31 +29,20 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 
-/*
- * @file RungeKutta4.hpp
- * RungeKutta4 class. Provides several versions of the Runge Kutta integration
- * The algorithms are based on Ch.16 of "Numerical Recipes in C" but the
- * implementation is entirely independent, i.e., this isn't the source 
- * distributed with the text.
- */
-
-#ifndef GPSTK_RUNGEKUTTA4_H
-#define GPSTK_RUNGEKUTTA4_H
-
 #include "Matrix.hpp"
 
 namespace gpstk
 {
 
-   /** @addtogroup math */
-   //@{
+      /** @addtogroup math */
+      //@{
 
       /** The RungeKutta4 class provides a collection of integration routines
        * that work on a Matrix of doubles.  Integrations use a fixed step-size.
@@ -60,10 +60,10 @@ namespace gpstk
       RungeKutta4(const Matrix<double>& initialState,
                   double initialTime=0,
                   double timeEpsilon=1e-18)
-            : currentState(initialState), currentTime(initialTime), 
-              teps(timeEpsilon), M(initialState.rows()), N(initialState.cols()),
-              k1(M,N), k2(M,N), k3(M,N), k4(M,N), yn(M,N), tempy(M,N)
-         { }     
+         : currentTime(initialTime), currentState(initialState),
+           teps(timeEpsilon), M(initialState.rows()), N(initialState.cols()),
+           k1(M,N), k2(M,N), k3(M,N), k4(M,N), yn(M,N), tempy(M,N)
+      { }
 
          /** The classic Runge Kutta 4th Order Integration Algorithm.
           * This routine integrates using a Runge Kutta 4th order algorithm 
@@ -71,8 +71,8 @@ namespace gpstk
           * @param nextTime the time to integrate to
           * @param stepSize the amount time between internal integration steps
           */
-      void integrateTo (double nextTime, 
-                        double stepSize = 0);
+      virtual void integrateTo ( double nextTime,
+                                 double stepSize = 0 );
 
          /** The classic Runge Kutta 4th-5th Order Integration Algorithm.
           *  This function integrates by applying a 4th order Runge Kutta
@@ -84,9 +84,9 @@ namespace gpstk
           *  (one for each element)
           * @param stepSize the amount time between internal integration steps
           */
-      void integrateTo (double nextTime,
-                        Matrix<double>& error,
-                        double stepSize = 0);
+      virtual void integrateTo ( double nextTime,
+                                 Matrix<double>& error,
+                                 double stepSize = 0 );
 
          /** This is the function to be integrated. 
           * @param time the time at which to evaluate the derivative
@@ -94,10 +94,9 @@ namespace gpstk
           * @param inStateDot the derivative of /a inState evaluated at /a time.
           * @return a reference to /a inStateDot
           */
-      virtual gpstk::Matrix<double>& 
-      derivative(long double time,
-                 const gpstk::Matrix<double>& inState,
-                 gpstk::Matrix<double>& inStateDot) = 0;
+      virtual gpstk::Matrix<double>& derivative( long double time,
+                                       const gpstk::Matrix<double>& inState,
+                                       gpstk::Matrix<double>& inStateDot) = 0;
 
          /// Return the currnet time of the system.
       double getTime(void) 
@@ -107,8 +106,10 @@ namespace gpstk
       const Matrix<double>& getState(void) 
       { return currentState; }
 
+
    protected:
-      
+
+
          /// Current time of the system
       double currentTime;
 
@@ -119,26 +120,29 @@ namespace gpstk
       int M;         //< Number of rows in the state
       int N;         //< Number of columns in the state
 
+
    private:
 
+
          /// Disallow copy constructor
-         RungeKutta4(const RungeKutta4& cloneDonor);
+      RungeKutta4(const RungeKutta4& cloneDonor);
 
          /// Disallow the assignment operator
-         RungeKutta4& operator= (const RungeKutta4& right);
+      RungeKutta4& operator= (const RungeKutta4& right);
 
          /** These values are only used in the integrateTo method(s).
           *  Declaring them here keeps them from being constructed every
           *  time the integrateTo method(s) are called.
           */
-         Matrix<double> k1, k2, k3, k4, yn, tempy;
+      Matrix<double> k1, k2, k3, k4, yn, tempy;
 
-   }; // end class RungeKutta4
+
+   }; // End of class 'RungeKutta4'
 
    //@}
 
-} // end namespace gpstk
+}  // End of namespace gpstk
 
-#endif
+#endif   // GPSTK_RUNGEKUTTA4_HPP
 
 

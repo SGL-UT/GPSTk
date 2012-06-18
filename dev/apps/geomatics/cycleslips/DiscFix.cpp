@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,24 +46,33 @@
  * observation file; optionally smooth the pseudoranges and/or debias the phases.
  */
 
-#include "MathBase.hpp"
-#include "RinexObsBase.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsStream.hpp"
-#include "DayTime.hpp"
-#include "StringUtils.hpp"
-
 #include "SatPass.hpp"
 #include "DiscCorr.hpp"
 
 #include <ctime>
 #include <cstring>
+#include <time.h>
 #include <string>
 #include <vector>
 #include <iostream>
 #include <fstream>
 #include <algorithm>
+
+#include "TimeString.hpp"
+#include "DiscCorr.hpp"
+#include "MathBase.hpp"
+#include "RinexObsBase.hpp"
+#include "RinexObsData.hpp"
+#include "RinexObsHeader.hpp"
+#include "RinexObsStream.hpp"
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "SystemTime.hpp"
+#include "SatPass.hpp"
+#include "GloFreqIndex.hpp"
+#include "StringUtils.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -81,7 +90,7 @@ typedef struct configuration {
    vector<string> InputObsName;
       // data flow
    double ith;
-   DayTime begTime, endTime;
+   CommonTime begTime, endTime;
    double MaxGap;
    //int MinPts;
       // processing
@@ -102,7 +111,7 @@ typedef struct configuration {
    string HDMarker;
    string HDNumber;
    int NrecOut;
-   DayTime FirstEpoch,LastEpoch;
+   CommonTime FirstEpoch,LastEpoch;
    bool smoothPR,smoothPH,smooth;
    bool WriteASAP;  // If true, write to RINEX only after ALL data has been processed.
    //bool CAOut;
@@ -123,7 +132,7 @@ GDCconfiguration GDConfig;       // the discontinuity corrector configuration
 
 clock_t totaltime;
 string Title;
-DayTime CurrEpoch, PrgmEpoch;
+CommonTime CurrEpoch, PrgmEpoch;
 
 RinexObsStream irfstr, orfstr;      // input and output RINEX files
 RinexObsHeader rhead;
@@ -142,23 +151,46 @@ vector<string> obstypes;
 vector<unsigned int> SPIndexList;
 map<GSatID,int> SatToCurrentIndexMap;
 
+// Limits, etc.
+
+static const double dtTol = 0.25; // 1/4 sec tolerance used in epoch processing
+
 //------------------------------------------------------------------------------------
-// prototypes
-int ReadFile(int nfile) throw(Exception);
-int ProcessOneEntireEpoch(RinexObsData& ro) throw(Exception);
-int ProcessOneSatOneEpoch(GSatID, DayTime, unsigned short&,
-      vector<double>&, vector<unsigned short>&, vector<unsigned short>&)
+// Prototypes
+
+int ReadFile(int nfile)
    throw(Exception);
 
-void ProcessSatPass(int index) throw(Exception);
-int AfterReadingFiles(void) throw(Exception);
-void WriteToRINEXfile(void) throw(Exception);
-void WriteRINEXheader(void) throw(Exception);
-void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Exception);
+int ProcessOneEntireEpoch(RinexObsData& ro)
+   throw(Exception);
+
+int ProcessOneSatOneEpoch(GSatID, CommonTime, unsigned short&, vector<double>&,
+                          vector<unsigned short>&, vector<unsigned short>&)
+   throw(Exception);
+
+void ProcessSatPass(int index)
+   throw(Exception);
+
+int AfterReadingFiles(void)
+   throw(Exception);
+
+void WriteToRINEXfile(void)
+   throw(Exception);
+
+void WriteRINEXheader(void)
+   throw(Exception);
+
+void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime)
+   throw(Exception);
 
 void PrintSPList(ostream&, string, vector<SatPass>&, bool printTime);
-int GetCommandLine(int argc, char **argv) throw(Exception);
-void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception);
+
+int GetCommandLine(int argc, char **argv)
+   throw(Exception);
+
+void PreProcessArgs(const char *arg, vector<string>& Args)
+   throw(Exception);
+
 
 //------------------------------------------------------------------------------------
 int main(int argc, char **argv)
@@ -170,15 +202,15 @@ int main(int argc, char **argv)
          // Title and description
       //cout << "Name " << string(argv[0]) << endl;
       Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
-      PrgmEpoch.setLocalTime();
-      Title += PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+      static_cast<Epoch>(PrgmEpoch).setLocalTime();
+      Title += printTime(PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
       cout << Title;
 
          // set fill char in GSatID
       config.SVonly.setfill('0');
-      config.FirstEpoch = DayTime::BEGINNING_OF_TIME;
-      config.LastEpoch = DayTime::BEGINNING_OF_TIME;
-      CurrEpoch = DayTime::BEGINNING_OF_TIME;
+      config.FirstEpoch = CommonTime::BEGINNING_OF_TIME;
+      config.LastEpoch = CommonTime::BEGINNING_OF_TIME;
+      CurrEpoch = CommonTime::BEGINNING_OF_TIME;
 
          // get command line
       iret = GetCommandLine(argc, argv);
@@ -228,7 +260,8 @@ int main(int argc, char **argv)
          if(iret < 0) break;
       }   // end loop over input files
 
-      iret = AfterReadingFiles();
+      iret = AfterReadingFiles();  // All the action happens here.
+
 
          // clean up
       orfstr.close();
@@ -340,7 +373,8 @@ int ReadFile(int nfile) throw(Exception)
             config.oflog << "input RINEX stream is bad" << endl;
             break;
          }
-         iret = ProcessOneEntireEpoch(rodata);
+         iret = ProcessOneEntireEpoch(rodata);  // Processes each epoch as it's read.
+                                               // I.e., not split out by sat ID.
          if(iret < -1) break;
          if(iret == -1) { iret=0; break; }  // end of file
       }
@@ -389,9 +423,14 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
          // decimate data
          // if begTime is still undefined, set it to begin of week
       if(config.ith > 0.0) {
-         if(fabs(config.begTime-DayTime::BEGINNING_OF_TIME) < 1.e-8)
-            config.begTime =
-               config.begTime.setGPSfullweek(roe.time.GPSfullweek(),0.0);
+         if (fabs(config.begTime - CommonTime::BEGINNING_OF_TIME) < 1.e-8)
+         {
+            config.begTime =GPSWeekSecond(roe.time);
+            GPSWeekSecond tempTime1(roe.time);
+            GPSWeekSecond tempTime2(tempTime1.week,0.0);
+            config.begTime = tempTime2.convertToCommonTime();
+         }
+
          double dt=fabs(roe.time - config.begTime);
          dt -= config.ith*long(0.5+dt/config.ith);
          if(fabs(dt) > 0.25) return 3;            // TD set tolerance? clock bias?
@@ -405,7 +444,8 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 
             // Is this satellite excluded ?
          sat = it->first;
-         if(sat.system != SatID::systemGPS) continue; // ignore non-GPS satellites
+         if(sat.system != SatID::systemGPS ||
+             sat.system != SatID::systemGlonass) continue;; // ignore non-GPS satellites
          for(k=-1,i=0; i<config.ExSV.size(); i++)     // ignore input sat (--exSat)
             if(config.ExSV[i] == sat) { k = i; break; }
          if(k > -1) continue;
@@ -438,6 +478,25 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
             lli[3] = jt->second.lli;
             ssi[3] = jt->second.ssi;
          }
+         if ( (jt = otmap.find(rhead.obsTypeList[inL1])) != otmap.end())
+         {
+            //spd.L1 = jt->second.data;
+            //str[4] = (asString(jt->second.lli))[0];
+            //str[5] = (asString(jt->second.ssi))[0];
+            data[0] = jt->second.data;
+            lli[0] = jt->second.lli;
+            ssi[0] = jt->second.ssi;
+         }
+         if ( (jt = otmap.find(rhead.obsTypeList[inL2])) != otmap.end())
+         {
+            //spd.L2 = jt->second.data;
+            //str[6] = (asString(jt->second.lli))[0];
+            //str[7] = (asString(jt->second.ssi))[0];
+            data[1] = jt->second.data;
+            lli[1] = jt->second.lli;
+            ssi[1] = jt->second.ssi;
+         }
+         //spd.indicators = asUnsigned(str);
 
             // is it good?
          ok = true;
@@ -456,7 +515,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
       }  // end loop over sats
 
          // update LastEpoch and estimate of config.dt
-      if(config.LastEpoch > DayTime::BEGINNING_OF_TIME) {
+      if(config.LastEpoch > CommonTime::BEGINNING_OF_TIME) {
          double dt = CurrEpoch-config.LastEpoch;
          for(i=0; i<9; i++) {
             if(config.ndt[i] <=0 ) { config.estdt[i]=dt; config.ndt[i]=1; break; }
@@ -507,7 +566,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 //------------------------------------------------------------------------------------
 // return -2 if time tags are out of order,
 //         0 normal = data was added
-int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
+int ProcessOneSatOneEpoch(GSatID sat, CommonTime tt, unsigned short& flag,
       vector<double>& data, vector<unsigned short>& lli, vector<unsigned short>& ssi)
    throw(Exception)
 {
@@ -528,7 +587,7 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
       }
 
          // update the first epoch
-      if(config.FirstEpoch == DayTime::BEGINNING_OF_TIME)
+      if(config.FirstEpoch == CommonTime::BEGINNING_OF_TIME)
          config.FirstEpoch = CurrEpoch;
 
          // get the index of this SatPass in the SPList vector
@@ -538,6 +597,10 @@ int ProcessOneSatOneEpoch(GSatID sat, DayTime tt, unsigned short& flag,
       iret = SPList[index].addData(tt, obstypes, data, lli, ssi, flag);
       if(iret == -2) return -2;                 // time tags are out of order
       if(iret >= 0) return 0;                   // data was added successfully
+      // If the above passed, iret == -1 implied: gap in data.
+      // (See SatPass for gap criteria.)
+
+
 
          // --- need to create a new pass ---
 
@@ -576,11 +639,20 @@ void ProcessSatPass(int in) throw(Exception)
 {
    try {
       config.oflog << "Proc " << SPList[in]
-         << " at " << CurrEpoch.printf(config.format) << endl;
+         << " at " << printTime(CurrEpoch,config.format) << endl;
       //SPList[in].dump(config.oflog,"RAW");      // temp
 
       // remove this SatPass from the SatToCurrentIndexMap map
       SatToCurrentIndexMap.erase(SPList[in].getSat());
+
+      // If GLONASS, get the G1 & G2 wavelengths for this sat.
+      // Instantiate a GloFreqIndex object with the SatPass.
+      // That causes it to calculate the indexes right away, quietly.
+
+      if ((SPList[in].getSat()).systemChar() == 'R' )
+      {
+      }
+
 
       // --------- call DC on this pass -------------------
       string msg;
@@ -605,6 +677,7 @@ void ProcessSatPass(int in) throw(Exception)
 
       // --------- smooth pseudorange and debias phase ----
       if(config.smooth) {
+         string msg;
          SPList[in].smooth(config.smoothPR,config.smoothPH,msg);
          config.oflog << msg << endl;
          SPList[in].status() = 3;           // status == 3 means 'smoothed'.
@@ -671,8 +744,8 @@ void WriteToRINEXfile(void) throw(Exception)
    if(!orfstr) return;
    try {
       int in,n;
-      DayTime targetTime=DayTime::END_OF_TIME;
-      static DayTime WriteEpoch(DayTime::BEGINNING_OF_TIME);
+      CommonTime targetTime=CommonTime::END_OF_TIME;
+      static CommonTime WriteEpoch(CommonTime::BEGINNING_OF_TIME);
 
       // find all passes that have been newly processed (status > 1 but < 98)
       // mark these passes 'being written out' and initialize the iterator
@@ -690,8 +763,8 @@ void WriteToRINEXfile(void) throw(Exception)
       }
       // targetTime will == END_OF_TIME, when all passes have been processed
 
-      if(targetTime < DayTime::END_OF_TIME
-         && WriteEpoch == DayTime::BEGINNING_OF_TIME) {
+      if(targetTime < CommonTime::END_OF_TIME
+         && WriteEpoch == CommonTime::BEGINNING_OF_TIME) {
          WriteRINEXheader();
          WriteEpoch = config.FirstEpoch;
       }
@@ -715,7 +788,7 @@ void WriteRINEXheader(void) throw(Exception)
       RinexObsHeader rheadout;   
 
       config.oflog << "Write the output header at "
-         << CurrEpoch.printf(config.format) << endl;
+         << printTime(CurrEpoch,config.format) << endl;
 
          // copy input
       rheadout = rhead;
@@ -732,7 +805,7 @@ void WriteRINEXheader(void) throw(Exception)
       rheadout.obsTypeList.push_back(RinexObsHeader::P2);
 
          // fill records in output header
-      rheadout.date = PrgmEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+      rheadout.date = printTime(PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
       rheadout.fileProgram = PrgmName + string(" v.") + PrgmVers.substr(0,4)
          + string(",") + GDConfig.Version().substr(0,4);
       if(!config.HDRunby.empty()) rheadout.fileAgency = config.HDRunby;
@@ -775,7 +848,7 @@ void WriteRINEXheader(void) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Exception)
+void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(Exception)
 {
    try {
       bool first;
@@ -856,8 +929,8 @@ void WriteRINEXdata(DayTime& WriteEpoch, const DayTime targetTime) throw(Excepti
                	roe.obs[sat][RinexObsHeader::L2] = rd;
 
                	config.oflog << "Out "
-               	   << WriteEpoch.printf(config.format)
-               	   << " " << roe.time.printf(config.format)
+               	   << printTime(WriteEpoch,config.format)
+               	   << " " << printTime(roe.time,config.format)
                	   << " " << sat
                	   << " " << flag
                	   << " " << setw(3) << SPList[in].getCount(SPIndexList[in])
@@ -921,7 +994,7 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
          // n,gap,sat,length,ngood,firstTime,lastTime
       os << " " << setw(2) << i+1 << " " << setw(4) << gap << " " << v[i];
       if(printTime)
-         os << " at " << CurrEpoch.printf(config.format);
+         os << " at " << CurrEpoch.asString();
 //"%04Y/%02m/%02d %02H:%02M:%6.3f"
       os << endl;
    }
@@ -939,8 +1012,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    config.WriteASAP = true;   // this is not in the input...
    config.verbose = false;
    config.ith = 0.0;
-   config.begTime = DayTime::BEGINNING_OF_TIME;
-   config.endTime = DayTime::END_OF_TIME;
+   config.begTime = CommonTime::BEGINNING_OF_TIME;
+   config.endTime = CommonTime::END_OF_TIME;
    config.MaxGap = 600.0;
    //config.MinPts = 10;
 
@@ -1057,7 +1130,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    
    CommandOption dashFormat(CommandOption::hasArgument, CommandOption::stdType,
       0,"format"," --format \"<format>\" Output time format (cf. gpstk::"
-      "DayTime) (" + config.format + ")");
+      "CommonTime) (" + config.format + ")");
    dashFormat.setMaxCount(1);
 
    CommandOption dashRfile(CommandOption::hasArgument, CommandOption::stdType,
@@ -1208,16 +1281,19 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       field.clear();
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
-      if(field.size() == 2)
-         config.begTime.setToString(field[0]+","+field[1], "%F,%g");
+      if(field.size() == 2) {
+         static_cast<Epoch>(config.begTime).scanf(field[0]+","+field[1], "%F,%g");
+         GPSWeekSecond tempTime(asInt(field[0]),asDouble(field[1]));
+         config.begTime = tempTime.convertToCommonTime();
+	}
       else if(field.size() == 6)
-         config.begTime.setToString(field[0]+","+field[1]+","+field[2]+","
+         static_cast<Epoch>(config.begTime).scanf(field[0]+","+field[1]+","+field[2]+","
             +field[3]+","+field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cout << "Error: invalid --beginTime input: " << values[0] << endl;
       }
       if(help) cout << " Input: begin time " << values[0] << " = "
-         << config.begTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(config.begTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
    if(dashet.getCount()) {
       values = dashet.getValue();
@@ -1225,16 +1301,24 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       field.clear();
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
-      if(field.size() == 2)
-         config.endTime.setToString(field[0]+","+field[1], "%F,%g");
-      else if(field.size() == 6)
-         config.endTime.setToString(field[0]+","+field[1]+","+field[2]
+      if(field.size() == 2) {
+         static_cast<Epoch>(config.endTime).scanf(field[0]+","+field[1], "%F,%g");
+         GPSWeekSecond tempTime(asInt(field[0]),asDouble(field[1]));
+         config.endTime = tempTime.convertToCommonTime();
+      }
+
+      else if(field.size() == 6) {
+         static_cast<Epoch>(config.endTime).scanf(field[0]+","+field[1]+","+field[2]
             +","+field[3]+","+field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+         CivilTime tempTime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
+                            asInt(field[3]),asInt(field[4]),asDouble(field[5]));
+         config.endTime = tempTime.convertToCommonTime();
+	}
       else {
          cout << "Error: invalid --endTime input: " << values[0] << endl;
       }
       if(help) cout << " Input: end time " << values[0] << " = "
-         << config.endTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(config.endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
 
    if(dashCA.getCount()) {
@@ -1405,14 +1489,14 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    }
    config.oflog << " Input Directory is " << config.Directory << endl;
    config.oflog << " Ithing time interval is " << config.ith << endl;
-   if(config.begTime > DayTime::BEGINNING_OF_TIME)
+   if(config.begTime > CommonTime::BEGINNING_OF_TIME)
    config.oflog << " Begin time is "
-      << config.begTime.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-      << " = " << config.begTime.printf("%04F/%10.3g") << endl;
-   if(config.endTime < DayTime::END_OF_TIME)
+      << printTime(config.begTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
+      << " = " << printTime(config.begTime,"%04F/%10.3g") << endl;
+   if(config.endTime < CommonTime::END_OF_TIME)
       config.oflog << " End time is "
-         << config.endTime.printf("%04Y/%02m/%02d %02H:%02M:%.3f")
-         << " = " << config.endTime.printf("%04F/%10.3g") << endl;
+         << printTime(config.endTime,"%04Y/%02m/%02d %02H:%02M:%.3f")
+         << " = " << printTime(config.endTime,"%04F/%10.3g") << endl;
    if(config.UseCA) config.oflog << " 'Use the C/A pseudorange' flag is set" << endl;
    else config.oflog << " Do not use C/A code range (C1) unless P1 is absent" << endl;
    config.oflog << " dt is set to " << config.dt << " seconds." << endl;

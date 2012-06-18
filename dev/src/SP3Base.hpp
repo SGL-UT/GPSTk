@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file SP3Base.hpp
  * Base class for SP3 file data
@@ -26,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,11 +44,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "FFData.hpp"
 
 namespace gpstk
@@ -58,7 +51,7 @@ namespace gpstk
    /** @defgroup SP3ephem SP3 format file I/O */
    //@{
 
-  /// This class is here to make readable inheritance diagrams.
+   /// This class is here to make readable inheritance diagrams.
    class SP3Base : public FFData
    {
    public:
@@ -70,4 +63,4 @@ namespace gpstk
 
 }  // namespace
 
-#endif
+#endif   // GPSTK_SP3BASE_HPP

@@ -82,7 +82,7 @@ void PosMSC::process()
 {
    mscs.loadFile(mscFileOption.getValue().front());
 
-   DayTime time;
+   CommonTime time;
    if (timeOption.getCount())
       time = timeOption.getTime().front();
    

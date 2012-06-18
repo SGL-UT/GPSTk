@@ -1,7 +1,7 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: GeneralConstraint.cpp 2607 2011-05-19 05:31:37Z yanweignss $"
 
 /**
- * @file GeneralConstraint.hpp
+ * @file GeneralConstraint.cpp
  * GeneralConstraint
  */
 
@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2011
 //
@@ -29,7 +29,6 @@
 
 
 #include "GeneralConstraint.hpp"
-#include "SolverGeneral.hpp"
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -78,7 +77,7 @@ namespace gpstk
          solver.setEquationSystemConstraints(
                                           gEquPtr->getConstraintSystem(gRin) );
 
-         DayTime time(gRin.header.epoch);
+         CommonTime time(gRin.header.epoch);
          updateRefSat( time,
                        gEquPtr->getRefSatSourceMap(),
                        gEquPtr->getSourceRefSatMap() );
@@ -108,7 +107,7 @@ namespace gpstk
          solver.setEquationSystemConstraints(
                                          gEquPtr->getConstraintSystem(gdsMap) );
 
-         DayTime time( ( *gdsMap.begin() ).first );
+         CommonTime time( ( *gdsMap.begin() ).first );
          updateRefSat( time,
                        gEquPtr->getRefSatSourceMap(),
                        gEquPtr->getSourceRefSatMap() );

@@ -22,9 +22,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int LICSDetector2::classIndex = 3200000;
-
-
-      // Returns an index identifying this object.
-   int LICSDetector2::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string LICSDetector2::getClassName() const
@@ -70,7 +61,6 @@ namespace gpstk
       setDeltaTMax(dtMax);
       setSatThreshold(satThr);
       setTimeConst(tc);
-      setIndex();
    }
 
 
@@ -82,7 +72,7 @@ namespace gpstk
        * @param gData     Data object holding the data.
        * @param epochflag Epoch flag.
        */
-   satTypeValueMap& LICSDetector2::Process( const DayTime& epoch,
+   satTypeValueMap& LICSDetector2::Process( const CommonTime& epoch,
                                             satTypeValueMap& gData,
                                             const short& epochflag )
       throw(ProcessingException)
@@ -172,7 +162,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -300,7 +289,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -320,7 +308,7 @@ namespace gpstk
        * @param lli1      LLI1 index.
        * @param lli2      LLI2 index.
        */
-   double LICSDetector2::getDetection( const DayTime& epoch,
+   double LICSDetector2::getDetection( const CommonTime& epoch,
                                        const SatID& sat,
                                        typeValueMap& tvMap,
                                        const short& epochflag,
@@ -350,7 +338,7 @@ namespace gpstk
       else
       {
             // This will yield a very big value
-         currentDeltaT = ( epoch - DayTime::BEGINNING_OF_TIME );
+         currentDeltaT = ( epoch - CommonTime::BEGINNING_OF_TIME );
       }
 
 
@@ -404,7 +392,7 @@ namespace gpstk
             // We store here the OLDEST (or FIRST) epoch in buffer for future
             // reference. This is important because adjustment will be made
             // with respect to that first epoch
-         DayTime firstEpoch(LIData[sat].LIEpoch.front());
+         CommonTime firstEpoch(LIData[sat].LIEpoch.front());
 
             // Feed 'y' with data
          for(size_t i=0; i<s; i++)
@@ -538,7 +526,6 @@ namespace gpstk
       }
 
    }  // End of method 'LICSDetector2::getDetection()'
-
 
 
 }  // End of namespace gpstk

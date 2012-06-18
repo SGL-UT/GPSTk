@@ -5,8 +5,8 @@
  * This is a class to detect cycle slips using LI observables.
  */
 
-#ifndef LICSDETECTOR_HPP
-#define LICSDETECTOR_HPP
+#ifndef GPSTK_LICSDETECTOR_HPP
+#define GPSTK_LICSDETECTOR_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -109,7 +109,7 @@ namespace gpstk
                        lliType2(TypeID::LLI2), resultType1(TypeID::CSL1),
                        resultType2(TypeID::CSL2), deltaTMax(61.0),
                        minThreshold(0.04), LIDrift(0.002), useLLI(true)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -132,7 +132,7 @@ namespace gpstk
           * @param gData     Data object holding the data.
           * @param epochflag Epoch flag.
           */
-      virtual satTypeValueMap& Process( const DayTime& epoch,
+      virtual satTypeValueMap& Process( const CommonTime& epoch,
                                         satTypeValueMap& gData,
                                         const short& epochflag = 0 )
          throw(ProcessingException);
@@ -215,10 +215,6 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -272,12 +268,12 @@ namespace gpstk
       struct filterData
       {
             // Default constructor initializing the data in the structure
-         filterData() : formerEpoch(DayTime::BEGINNING_OF_TIME),
+         filterData() : formerEpoch(CommonTime::BEGINNING_OF_TIME),
                         windowSize(0), formerLI(0.0), formerBias(0.0),
                         formerDeltaT(1.0)
          {};
 
-         DayTime formerEpoch;    ///< The previous epoch time stamp.
+         CommonTime formerEpoch;    ///< The previous epoch time stamp.
          int windowSize;         ///< Size of current window, in samples.
          double formerLI;        ///< Value of the previous LI observable.
          double formerBias;      ///< Previous bias (LI_1 - LI_0).
@@ -299,7 +295,7 @@ namespace gpstk
           * @param lli1      LLI1 index.
           * @param lli2      LLI2 index.
           */
-      virtual double getDetection( const DayTime& epoch,
+      virtual double getDetection( const CommonTime& epoch,
                                    const SatID& sat,
                                    typeValueMap& tvMap,
                                    const short& epochflag,
@@ -308,22 +304,10 @@ namespace gpstk
                                    const double& lli2 );
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'LICSDetector'
 
       //@}
 
-}
-#endif   // LICSDETECTOR_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_LICSDETECTOR_HPP

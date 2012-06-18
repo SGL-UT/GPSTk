@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -134,7 +134,7 @@ void xRinexObs :: hardCodeTest (void)
 	}
 	RinexObsFiled.dump(dump);
 	RinexObsFileh.dump(dump);
-	CPPUNIT_ASSERT(fileEqualTest("Logs/RinexObsFile.06o","Logs/TestOutput2.06o"));
+	CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/RinexObsFile.06o",(char*)"Logs/TestOutput2.06o"));
 	}
 	catch (gpstk::Exception& e)
 	{

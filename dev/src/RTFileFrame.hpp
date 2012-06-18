@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -246,8 +246,8 @@ namespace gpstk
           * @throw Exception an error ocurred
           */
       RTFileFrame(const gpstk::FileSpec& fnFormat,
-                  const gpstk::DayTime& beginning = gpstk::DayTime(),
-                  const gpstk::DayTime& ending = gpstk::DayTime::END_OF_TIME, 
+                  const gpstk::CommonTime& beginning = gpstk::CommonTime(),
+                  const gpstk::CommonTime& ending = gpstk::CommonTime::END_OF_TIME, 
                   const FileReadingMode frm = AppendedData,
                   const GetRecordMode grm = Dumb)
          throw(gpstk::Exception);
@@ -311,7 +311,7 @@ namespace gpstk
       std::string getCurrentFile() const {return currentFileName;}
 
          /// returns the current time used for finding files
-      gpstk::DayTime getCurrentTime() const {return currentTime;}
+      gpstk::CommonTime getCurrentTime() const {return currentTime;}
 
          /// let the iterator see this class's insides
       friend class RTFileFrameIterator<FileStream, FileData>;
@@ -334,7 +334,7 @@ namespace gpstk
          /// the file spec for determining file names
       gpstk::FileSpec fs;
       
-      gpstk::DayTime startTime, ///< start time for file searching
+      gpstk::CommonTime startTime, ///< start time for file searching
          currentTime,            ///< time last used for finding a file
          endTime;                ///< end time for file searching
          /// the FileReadingMode for the reader
@@ -354,8 +354,8 @@ namespace gpstk
    template <class FileStream, class FileData>
    RTFileFrame<FileStream, FileData>::
    RTFileFrame<FileStream, FileData>(const gpstk::FileSpec& fnFormat,
-                                     const gpstk::DayTime& beginning,
-                                     const gpstk::DayTime& ending, 
+                                     const gpstk::CommonTime& beginning,
+                                     const gpstk::CommonTime& ending, 
                                      const RTFileFrameHelper::FileReadingMode frm,
                                      const RTFileFrameHelper::GetRecordMode grm)
       throw(gpstk::Exception)
@@ -363,9 +363,9 @@ namespace gpstk
            currentTime(beginning), endTime(ending), readMode(frm), getMode(grm)
    {
          // zero out seconds
-      startTime.setMJDdate(floor(startTime.MJDdate()));
-      endTime.setMJDdate(floor(endTime.MJDdate()));
-      currentTime.setMJDdate(floor(currentTime.MJDdate()));
+      startTime = MJD(floor(MJD(startTime).mjd));
+      endTime = MJD(floor(MJD(endTime).mjd));
+      currentTime = MJD(floor(MJD(curretnTime).mjd));
 
          // set up the stream
       openCurrentFile();
@@ -492,7 +492,7 @@ namespace gpstk
             if (!endOfDataSet())
             {
                   // still before today?
-               gpstk::DayTime today;
+               gpstk::CommonTime today;
                today.setYDoySod(today.year(), today.DOY(), 0);
                
                if (currentTime < today)
@@ -527,7 +527,7 @@ namespace gpstk
    RTFileFrame<FileStream, FileData>::openNextDay()
    {
          // open a new file for another day, if any.
-      currentTime += gpstk::DayTime::SEC_DAY;
+      currentTime += gpstk::CommonTime::SEC_DAY;
       if (!endOfDataSet())
          openCurrentFile();
    }

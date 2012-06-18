@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -45,7 +45,8 @@
 // system includes
 
 // GPSTk
-
+#include "Epoch.hpp"
+#include "YDSTime.hpp"
 // DDBase
 #include "DDBase.hpp"
 #include "RinexUtilities.hpp"
@@ -230,8 +231,8 @@ try {
    CI.pTropModel->setWeather(CI.DefaultTemp,CI.DefaultPress,CI.DefaultRHumid);
 
       // Define first and last epochs
-   FirstEpoch = DayTime::BEGINNING_OF_TIME;
-   LastEpoch = DayTime::END_OF_TIME;
+   FirstEpoch = CommonTime::BEGINNING_OF_TIME;
+   LastEpoch = CommonTime::END_OF_TIME;
 
    return 0;
 }
@@ -272,7 +273,7 @@ try {
          st.pTropModel->setWeather(st.temp,st.press,st.rhumid);
       st.pTropModel->setReceiverHeight(st.pos.getHeight());
       st.pTropModel->setReceiverLatitude(st.pos.getGeodeticLatitude());
-      st.pTropModel->setDayOfYear(int(FirstEpoch.DOYday()));
+      st.pTropModel->setDayOfYear(int(static_cast<YDSTime>(FirstEpoch).doy));
 
       oflog << "    Trop (model: " << st.TropType << fixed << ") zenith delays:"
          << " dry " << setprecision(6) << st.pTropModel->dry_zenith_delay();

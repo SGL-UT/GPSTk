@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -42,6 +42,7 @@
 #include "RinexObsID.hpp"
 
 #include "RinexConverters.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 
@@ -211,7 +212,7 @@ namespace gpstk
             sf4p1sow = sf4p1->second.getHOWTime();
       }
 
-      int week=sf4p18->second.time.GPSfullweek();
+int week=(static_cast<GPSWeekSecond>(sf4p18->second.time).week); 
       
       for (int p=1; p<=25; p++)
       {
@@ -270,7 +271,7 @@ namespace gpstk
          return false;
 
       int prn = sf[1]->second.prn;
-      int week = sf[1]->second.time.GPSfullweek();
+      int week = (static_cast<GPSWeekSecond>(sf[1]->second.time).week);
       long sfa[10];
       long long_sfa[10];
 

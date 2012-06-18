@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -33,7 +33,8 @@
 
 #include <StringUtils.hpp>
 #include <Stats.hpp>
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
+#include <TimeString.hpp>
 
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
@@ -64,7 +65,7 @@ public:
    std::ofstream& out;
    gpstk::MDPStream& in;
 
-   gpstk::DayTime startTime, stopTime;
+   gpstk::CommonTime startTime, stopTime;
    double timeSpan;
 
    unsigned long msgCount, fcErrorCount;
@@ -142,7 +143,7 @@ class MDPHeaderProcessor : public MDPProcessor
 
    void ohr(const gpstk::MDPHeader& h)
    {
-      out << h.time.printf(timeFormat)
+      out << printTime(h.time, timeFormat)
           << std::fixed
           << ", " << std::setw(3) << h.id
           << ", " << std::setw(10) << in.headerCount

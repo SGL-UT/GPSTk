@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
@@ -99,6 +99,9 @@
    // Class to synchronize two GNSS Data Structures data streams.
 #include "Synchronize.hpp"
 
+  // YDS Time-class
+#include "YDSTime.hpp"
+
 #include "geometry.hpp"                   // DEG_TO_RAD
 
 
@@ -138,7 +141,7 @@ int main(void)
    ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
       // Beware: In this case, the same model will be used for the
       // full data span
-   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
 
       // Storing the ephemeris in "bceStore"
    while (rnavin >> rNavData)
@@ -419,7 +422,9 @@ int main(void)
 
 
          // Let's output the time stamp (in seconds of day)
-      cout << gOriginal.header.epoch.DOYsecond() << "  ";   // Output field #1
+      YDSTime ydstime(gOriginal.header.epoch);
+
+      cout << ydstime.sod << "  ";                       // Output field #1
 
 
    //////////////////////////// CASE #1  ////////////////////////////
@@ -915,4 +920,4 @@ at epoch: " << gRef.header.epoch << endl;
 
    exit(0);
 
-}
+}  // End of 'main()'

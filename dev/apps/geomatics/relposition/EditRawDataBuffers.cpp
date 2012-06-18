@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -191,7 +191,7 @@ try {
    if(CI.Screen)
       cout << "Raw buffered data summary : n SITE sat npts span (count,gap size) (..)"
       << endl;
-   //DayTime tt;
+   //CommonTime tt;
    for(kt=Stations.begin(); kt != Stations.end(); kt++) {
       Station& st = kt->second;
       for(k=1,it=st.RawDataBuffers.begin(); it != st.RawDataBuffers.end(); it++,k++) {

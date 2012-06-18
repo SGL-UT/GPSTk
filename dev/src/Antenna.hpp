@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
 //
@@ -37,7 +37,7 @@
 #include <string>
 
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 
 
@@ -87,7 +87,7 @@ namespace gpstk
        *
        *      // Get antenna data and accentricity for L1 for satellite GPS-07
        *      // at a specific epoch
-       *   DayTime epoch(2008, 6, 15, 10, 21, 12654.0);
+       *   CommonTime epoch(2008, 6, 15, 10, 21, 12654.0);
        *   satGPS07 = antexread.getAntenna( "G07", epoch );
        *   cout << satGPS07.getAntennaPCOffset( Antenna::G01 ) << endl;
        *
@@ -314,7 +314,7 @@ namespace gpstk
 
 
          /// Get start of antenna validity period.
-      DayTime getAntennaValidFrom() const
+      CommonTime getAntennaValidFrom() const
       { return validFrom; };
 
 
@@ -322,12 +322,12 @@ namespace gpstk
           *
           * @param[in] valFrom       Start of validity period
           */
-      Antenna setAntennaValidFrom( const DayTime& valFrom )
+      Antenna setAntennaValidFrom( const CommonTime& valFrom )
       { validFrom = valFrom; return (*this); };
 
 
          /// Get end of antenna validity period.
-      DayTime getAntennaValidUntil() const
+      CommonTime getAntennaValidUntil() const
       { return validUntil; };
 
 
@@ -335,7 +335,7 @@ namespace gpstk
           *
           * @param[in] valUntil      End of validity period
           */
-      Antenna setAntennaValidUntil( const DayTime& valUntil )
+      Antenna setAntennaValidUntil( const CommonTime& valUntil )
       { validUntil = valUntil; return (*this); };
 
 
@@ -641,8 +641,8 @@ namespace gpstk
 
       int numFreq;                     ///< Number of frequencies
 
-      DayTime validFrom;               ///< Start of validity period
-      DayTime validUntil;              ///< End of validity period
+      CommonTime validFrom;               ///< Start of validity period
+      CommonTime validUntil;              ///< End of validity period
 
       std::vector<std::string> commentList;      ///< Comments
 

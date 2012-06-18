@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -36,6 +36,7 @@
 #include "StringUtils.hpp"
 #include "CommandOption.hpp"
 #include "FileFilterFrame.hpp"
+#include "Position.hpp"
 
 // rinex
 #include "RinexNavStream.hpp"
@@ -56,7 +57,7 @@
 
 // monitor station coordinates
 #include "MSCStore.hpp"
-#include "ECEF.hpp"
+#include "Position.hpp"
 
 // SP3
 #include "SP3Stream.hpp"
@@ -66,13 +67,13 @@
 
 namespace gpstk
 {
-   typedef std::map<std::string,gpstk::ECEF> StaPosList; 
+   typedef std::map<std::string,gpstk::Position> StaPosList; 
 
    namespace VisSupport
    {
       StaPosList  getStationCoordinates( 
                        const gpstk::CommandOptionWithAnyArg& mscFileName,
-                       const gpstk::DayTime&                 dt, 
+                       const gpstk::CommonTime&                 dt, 
                        const gpstk::CommandOptionWithAnyArg& includeStation,
                        const gpstk::CommandOptionWithAnyArg& excludeStation);
                        

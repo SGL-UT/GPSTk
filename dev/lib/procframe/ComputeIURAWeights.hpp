@@ -6,8 +6,8 @@
  * meant to be used with GNSS data structures.
  */
 
-#ifndef COMPUTEIURAWEIGHTS_HPP
-#define COMPUTEIURAWEIGHTS_HPP
+#ifndef GPSTK_COMPUTEIURAWEIGHTS_HPP
+#define GPSTK_COMPUTEIURAWEIGHTS_HPP
 
 //============================================================================
 //
@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -35,7 +35,7 @@
 
 #include "WeightBase.hpp"
 #include "EngEphemeris.hpp"
-#include "TabularEphemerisStore.hpp"
+#include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "ProcessingClass.hpp"
 
@@ -94,7 +94,7 @@ namespace gpstk
 
          /// Default constructor
       ComputeIURAWeights() : pBCEphemeris(NULL), pTabEphemeris(NULL)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -103,17 +103,17 @@ namespace gpstk
           */
       ComputeIURAWeights(GPSEphemerisStore& bcephem)
          : pBCEphemeris(&bcephem), pTabEphemeris(NULL)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
           *
-          * @param tabephem  TabularEphemerisStore object holding the
+          * @param tabephem  SP3EphemerisStore object holding the
           *                  ephemeris.
           */
-      ComputeIURAWeights(TabularEphemerisStore& tabephem)
+      ComputeIURAWeights(SP3EphemerisStore& tabephem)
          : pBCEphemeris(NULL), pTabEphemeris(&tabephem)
-      { setIndex(); };
+      { };
 
 
          /** Common constructor
@@ -121,7 +121,7 @@ namespace gpstk
           * @param ephem  XvtStore<SatID> object holding the ephemeris.
           */
       ComputeIURAWeights(XvtStore<SatID>& ephem)
-      { setDefaultEphemeris(ephem); setIndex(); };
+      { setDefaultEphemeris(ephem); };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -129,7 +129,7 @@ namespace gpstk
           *
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -174,15 +174,10 @@ namespace gpstk
          /** Method to set the default ephemeris to be used with GNSS
           *  data structures.
           *
-          * @param ephem     TabularEphemerisStore object to be used
+          * @param ephem     SP3EphemerisStore object to be used
           */
-      virtual ComputeIURAWeights& setDefaultEphemeris(
-                                             TabularEphemerisStore& ephem )
+      virtual ComputeIURAWeights& setDefaultEphemeris(SP3EphemerisStore& ephem)
       { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -201,7 +196,7 @@ namespace gpstk
 
 
          /// Pointer to default precise ephemeris to be used.
-      TabularEphemerisStore* pTabEphemeris;
+      SP3EphemerisStore* pTabEphemeris;
 
 
          /** Method to really get the weight of a given satellite.
@@ -211,8 +206,8 @@ namespace gpstk
           * @param preciseEph    Precise ephemerisStore object to be used
           */
       virtual double getWeight( const SatID& sat,
-                                const DayTime& time,
-                                const TabularEphemerisStore* preciseEph )
+                                const CommonTime& time,
+                                const SP3EphemerisStore* preciseEph )
          throw(InvalidWeights);
 
 
@@ -223,23 +218,9 @@ namespace gpstk
           * @param bcEph     Broadcast EphemerisStore object to be used
           */
       virtual double getWeight( const SatID& sat,
-                                const DayTime& time,
+                                const CommonTime& time,
                                 const GPSEphemerisStore* bcEph )
          throw(InvalidWeights);
-
-
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'ComputeIURAWeights'
@@ -247,4 +228,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif // COMPUTEIURAWEIGHTS_HPP
+
+#endif // GPSTK_COMPUTEIURAWEIGHTS_HPP

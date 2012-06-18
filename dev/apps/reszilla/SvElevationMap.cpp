@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include "SvElevationMap.hpp"
+#include "Position.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -49,12 +50,12 @@ SvElevationMap elevation_map(const ObsEpochMap& oem,
 {
    SvElevationMap pem;
 
-   ECEF rxpos(ap);
+   Position rxpos(ap);
 
    ObsEpochMap::const_iterator oem_itr;
    for (oem_itr=oem.begin(); oem_itr!=oem.end(); oem_itr++)
    {
-      const DayTime& t = oem_itr->first;
+      const CommonTime& t = oem_itr->first;
       const ObsEpoch& oe = oem_itr->second;
       ObsEpoch::const_iterator oe_itr;
       for (oe_itr=oe.begin(); oe_itr!=oe.end(); oe_itr++)

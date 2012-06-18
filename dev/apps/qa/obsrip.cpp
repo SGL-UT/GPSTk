@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include "LinearCombination.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -56,7 +57,7 @@ int main(int argc, char* argv[])
       {
           RinexObsData::RinexObsTypeMap otmap;
 
-          cout << rod.time.printf("%F %g ");
+          cout << printTime(rod.time,"%F %g ");
           cout << it->first << " ";
           cout << setprecision(5) << c[it->first];
           cout << endl;  

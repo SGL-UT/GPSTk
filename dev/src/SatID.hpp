@@ -19,7 +19,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -69,6 +69,7 @@ namespace gpstk
          systemGeosync,
          systemLEO,
          systemTransit,
+         systemCompass,
          systemMixed,
          systemUserDefined,
          systemUnknown
@@ -95,6 +96,7 @@ namespace gpstk
             case systemGeosync: return "Geostationary"; break;
             case systemLEO:     return "LEO";           break;
             case systemTransit: return "Transit";       break;
+            case systemCompass: return "Compass";       break;
             case systemMixed:   return "Mixed";         break;
             case systemUserDefined:   return "UserDefined";         break;
             case systemUnknown: return "Unknown";       break;

@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
@@ -37,12 +37,10 @@
 #include "Exception.hpp"
 #include "FFTextStream.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "Antenna.hpp"
 
-
-using namespace std;
 
 namespace gpstk
 {
@@ -93,7 +91,7 @@ namespace gpstk
        *
        *      // Get antenna data and eccentricity for L1 for satellite GPS-07
        *      // at a specific epoch
-       *   DayTime epoch(2008, 6, 15, 10, 21, 12654.0);
+       *   CommonTime epoch(2008, 6, 15, 10, 21, 12654.0);
        *   satGPS07 = antexread.getAntenna( "G07", epoch );
        *   cout << satGPS07.getAntennaPCOffset( Antenna::G01 ) << endl;
        *
@@ -182,7 +180,7 @@ namespace gpstk
           * @param fn   Antex data file to read
           *
           */
-      AntexReader(const string& fn)
+      AntexReader(const std::string& fn)
          : FFTextStream( fn.c_str(), std::ios::in )
       { fileName = fn; loadHeader(); };
 
@@ -192,7 +190,7 @@ namespace gpstk
 
 
          /// Method to open and load Antex file header data.
-      virtual void open(const string& fn);
+      virtual void open(const std::string& fn);
 
 
          /** Method to get antenna data from a given model. Just the model,
@@ -205,7 +203,7 @@ namespace gpstk
           * @warning The antenna returned will be the first one in the Antex
           * file that matches the condition.
           */
-      virtual Antenna getAntennaNoRadome(const string& model)
+      virtual Antenna getAntennaNoRadome(const std::string& model)
          throw(ObjectNotFound);
 
 
@@ -223,7 +221,7 @@ namespace gpstk
           * @warning If IGS model doesn't include radome, method
           * 'getAntennaNoRadome()' will be automatically called.
           */
-      virtual Antenna getAntenna(const string& model)
+      virtual Antenna getAntenna(const std::string& model)
          throw(ObjectNotFound);
 
 
@@ -239,8 +237,8 @@ namespace gpstk
           * @warning The antenna returned will be the first one in the Antex
           * file that matches the conditions.
           */
-      virtual Antenna getAntenna( const string& model,
-                                  const string& serial )
+      virtual Antenna getAntenna( const std::string& model,
+                                  const std::string& serial )
          throw(ObjectNotFound);
 
 
@@ -258,9 +256,9 @@ namespace gpstk
           * @warning The antenna returned will be the first one in the Antex
           * file that matches the conditions.
           */
-      virtual Antenna getAntenna( const string& model,
-                                  const string& serial,
-                                  const DayTime& epoch )
+      virtual Antenna getAntenna( const std::string& model,
+                                  const std::string& serial,
+                                  const CommonTime& epoch )
          throw(ObjectNotFound);
 
 
@@ -277,8 +275,8 @@ namespace gpstk
           * @warning The antenna returned will be the first one in the Antex
           * file that matches the conditions.
           */
-      virtual Antenna getAntenna( const string& serial,
-                                  const DayTime& epoch )
+      virtual Antenna getAntenna( const std::string& serial,
+                                  const CommonTime& epoch )
          throw(ObjectNotFound);
 
 
@@ -310,19 +308,19 @@ namespace gpstk
          // Handy antenna data types
 
          // Validity:Antennas
-      typedef std::map< DayTime, Antenna > ValAntMap;
+      typedef std::map< CommonTime, Antenna > ValAntMap;
 
          // Calibration:Validity:Antennas
-      typedef std::map< string, ValAntMap > CalValAntMap;
+      typedef std::map< std::string, ValAntMap > CalValAntMap;
 
          // Serial:Calibration:Validity:Antennas
-      typedef std::map< string, CalValAntMap > SerCalValAntMap;
+      typedef std::map< std::string, CalValAntMap > SerCalValAntMap;
 
          // Radome:Serial:Calibration:Validity:Antennas
-      typedef std::map< string, SerCalValAntMap > RSCalValAntMap;
+      typedef std::map< std::string, SerCalValAntMap > RSCalValAntMap;
 
          // Model:Radome:Serial:Calibration:Validity:Antennas
-      typedef std::map< string, RSCalValAntMap > AntennaDataMap;
+      typedef std::map< std::string, RSCalValAntMap > AntennaDataMap;
 
 
          /// Map holding antennas already serched for (Antenna buffer)
@@ -330,7 +328,7 @@ namespace gpstk
 
 
          /// Antex file name
-      string fileName;
+      std::string fileName;
 
          /// Antex file version
       double version;
@@ -355,7 +353,7 @@ namespace gpstk
 
 
          /// Parse a single header line. Returns label.
-      string parseHeaderLine( const std::string& line )
+      std::string parseHeaderLine( const std::string& line )
          throw(InvalidAntex);
 
 

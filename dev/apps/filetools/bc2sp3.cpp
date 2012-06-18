@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -41,9 +41,11 @@
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -68,15 +70,16 @@ int main(int argc, char *argv[])
    try
    {
       bool verbose=false;
-      char version_out='a';
+      //char version_out='a';
+      SP3Header::Version version_out(SP3Header::SP3a);
       int i,j,nrec,nfile;
       string fileout("sp3.out");
       vector<string> inputFiles;
       vector<string> comments;
       map<SatID,long> IODEmap;
-      DayTime begTime=DayTime::BEGINNING_OF_TIME;
-      DayTime endTime=DayTime::END_OF_TIME;
-      DayTime tt;
+      CommonTime begTime=CommonTime::BEGINNING_OF_TIME;
+      CommonTime endTime=CommonTime::END_OF_TIME;
+      CommonTime tt;
       GPSEphemerisStore BCEph;
       SP3Header sp3header;
       SP3Data sp3data;
@@ -85,7 +88,7 @@ int main(int argc, char *argv[])
          if(argv[i][0] == '-') {
             string arg(argv[i]);
             if(arg == string("--outputC")) {
-               version_out = 'c';
+               version_out = SP3Header::SP3c;   //'c';
                if(verbose) cout << " Output version c\n";
             }
             else if(arg == string("--in")) {
@@ -101,18 +104,18 @@ int main(int argc, char *argv[])
                arg = string(argv[++i]);
                int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
                double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
-               begTime.setGPSfullweek(wk,sow);
+               begTime=GPSWeekSecond(wk,sow);
                if(verbose) cout << " Begin time "
-                  << begTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
+                  << printTime(begTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                   << endl;
             }
             else if(arg == string("--te")) {
                arg = string(argv[++i]);
                int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
                double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
-               endTime.setGPSfullweek(wk,sow);
+               endTime=GPSWeekSecond(wk,sow);
                if(verbose) cout << " End time   "
-                  << endTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
+                  << printTime(endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                   << endl;
             }
             else if(arg == string("--msg")) {
@@ -170,28 +173,31 @@ int main(int argc, char *argv[])
       }
 
       // time limits, if not given by user
-      if(begTime == DayTime::BEGINNING_OF_TIME)
+      if(begTime == CommonTime::BEGINNING_OF_TIME)
          begTime = BCEph.getInitialTime();
-      if(endTime == DayTime::END_OF_TIME)
+      if(endTime == CommonTime::END_OF_TIME)
          endTime = BCEph.getFinalTime();
 
       // define the data version and the header info
-      if(version_out == 'c') {
+      if(version_out == SP3Header::SP3c) {
          // data and header must have the correct version
-         sp3data.version = sp3header.version = 'c';
+         //sp3data.version =
+         sp3header.version = SP3Header::SP3c;
 
          sp3header.system = SP3SatID();
-         sp3header.timeSystem = SP3Header::timeGPS;
+         sp3header.timeSystem = TimeSystem::GPS;
          sp3header.basePV = 0.0;
          sp3header.baseClk = 0.0;
       }
       else {
-         sp3data.version = sp3header.version = 'a';
+         //sp3data.version =
+         sp3header.version = SP3Header::SP3a; //'a';
       }
 
       // fill the header
-      sp3header.pvFlag = 'V';
-      sp3header.time = DayTime::END_OF_TIME;
+      //sp3header.pvFlag = 'V';
+      sp3header.containsVelocity = true;
+      sp3header.time = CommonTime::END_OF_TIME;
       sp3header.epochInterval = 900.0;          // hardcoded here only
       sp3header.dataUsed = "BCE";
       sp3header.coordSystem = "WGS84";
@@ -264,18 +270,18 @@ int main(int argc, char *argv[])
             // epoch
             if(!epochOut) {
                sp3data.time = tt;
-               sp3data.flag = '*';
+               sp3data.RecType = '*';
                outstrm << sp3data;
                if(verbose) sp3data.dump(cout);
                epochOut = true;
             }
 
             // Position
-            sp3data.flag = 'P';
+            sp3data.RecType = 'P';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.x[j]/1000.0;       // km
-            // must remove the relativity correction from Xvt::dtime
+            // must remove the relativity correction from Xvt::clkbias
             // see EngEphemeris::svXvt() - also convert to microsec
-            sp3data.clk = (xvt.dtime - ee.svRelativity(tt)) * 1000000.0;
+            sp3data.clk = (xvt.clkdrift - ee.svRelativity(tt)) * 1000000.0;
 
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
             iode = ee.getIODE();
@@ -290,9 +296,9 @@ int main(int argc, char *argv[])
             if(verbose) sp3data.dump(cout);
 
             // Velocity
-            sp3data.flag = 'V';
+            sp3data.RecType = 'V';
             for(j=0; j<3; j++) sp3data.x[j] = xvt.v[j]/10.0;         // dm/s
-            sp3data.clk = xvt.ddtime;                                // s/s
+            sp3data.clk = xvt.clkdrift;                                // s/s
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
 
             outstrm << sp3data;

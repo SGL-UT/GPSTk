@@ -23,7 +23,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -50,6 +50,9 @@
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
 #include "GPSEphemerisStore.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 // fic
 #include "FICStream.hpp"
@@ -297,7 +300,7 @@ void EphSum::process()
          for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
          {
             EngEphemeris ee = ci ->second;
-            DayTime xmit = ee.getTransmitTime();
+            CommonTime xmit = ee.getTransmitTime();
             eemapXmit.insert(make_pair(xmit,ee));
          } 
          
@@ -330,11 +333,11 @@ void EphSum::process()
 	     * to the most recent even two hour epoch and considered the beginning time
 	     * of effectivity for end of effectivity. 
 	    */
-         DayTime begEff = ee.getTransmitTime();
-	 DayTime epochTime = ee.getEphemerisEpoch();
+         Epoch begEff = ee.getTransmitTime();
+	 Epoch epochTime = ee.getEphemerisEpoch();
 	 long TWO_HOURS = 7200;
-         long epochRemainder = (long) epochTime.GPSsow() % TWO_HOURS;
-	 long  xmitRemainder = (long) begEff.GPSsow() % TWO_HOURS;
+         long epochRemainder = (long) static_cast<GPSWeekSecond>(epochTime).sow % TWO_HOURS;
+	 long  xmitRemainder = (long) static_cast<GPSWeekSecond>(begEff).sow % TWO_HOURS;
 	 if (epochRemainder != 0 && xmitRemainder != 0)
 	 {
 	    begEff = begEff - xmitRemainder;
@@ -342,13 +345,13 @@ void EphSum::process()
 
 	 short fitIntervalHours = ee.getFitInterval();
 	 short ONE_HOUR = 3600;
-	 DayTime endEff = begEff + ONE_HOUR * fitIntervalHours;
+	 CommonTime endEff = begEff + ONE_HOUR * fitIntervalHours;
 
          fprintf(logfp,"  %02d ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
                i,
-               ee.getTransmitTime().printf(tform).c_str(),
-               ee.getEphemerisEpoch().printf(tform).c_str(),
-               endEff.printf(tform).c_str(),
+               printTime(ee.getTransmitTime(),tform).c_str(),
+               printTime(ee.getEphemerisEpoch(),tform).c_str(),
+               printTime(endEff,tform).c_str(),
                ee.getIODC(),
                ee.getHealth(),
                ee.getHealth());

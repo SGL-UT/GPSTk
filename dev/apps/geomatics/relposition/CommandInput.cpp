@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -51,6 +51,8 @@
 // GPSTk
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
+#include "TimeString.hpp"
+#include "Epoch.hpp"
 #include "PRSolution.hpp"
 
 // DDBase
@@ -82,8 +84,8 @@ try {
    EOPPath = string("");
    EOPFileNames.clear();
       // time limits
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
       // process configuration
    Frequency = 1;
       // stochastic model
@@ -883,16 +885,16 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         BegTime.setToString(field[0]+","+field[1], "%F,%g");
+         static_cast<Epoch>(BegTime).scanf(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         BegTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         static_cast<Epoch>(BegTime).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cerr << "Error: invalid --BeginTime input: " << values[0] << endl;
          oflog << "Error: invalid --BeginTime input: " << values[0] << endl;
       }
       if(help) cout << " Input: begin time " << values[0] << " = "
-         << BegTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(BegTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
    if(dashet.getCount()) {
       values = dashet.getValue();
@@ -901,16 +903,16 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         EndTime.setToString(field[0]+","+field[1], "%F,%g");
+         static_cast<Epoch>(EndTime).scanf(field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         EndTime.setToString(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         static_cast<Epoch>(EndTime).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cerr << "Error: invalid --EndTime input: " << values[0] << endl;
          oflog << "Error: invalid --EndTime input: " << values[0] << endl;
       }
       if(help) cout << " Input: end time " << values[0] << " = "
-         << EndTime.printf("%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
+         << printTime(EndTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g") << endl;
    }
 
    // time table
@@ -1177,8 +1179,8 @@ try {
    //   ok = false;
    //}
 
-   if(BegTime > DayTime::BEGINNING_OF_TIME &&
-      EndTime < DayTime::END_OF_TIME &&
+   if(BegTime > CommonTime::BEGINNING_OF_TIME &&
+      EndTime < CommonTime::END_OF_TIME &&
       BegTime >= EndTime)
    {
       cerr << "Input ERROR: end time is at or before begin time. Abort.\n";
@@ -1414,10 +1416,10 @@ try {
    if(TimeTableFile.size() > 0)
       ofs << " Input time table file name " << TimeTableFile << endl;
    ofs << " Process L" << Frequency << " data." << endl;
-   if(BegTime > DayTime::BEGINNING_OF_TIME) ofs << " Begin time is "
-      << BegTime.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
-   if(EndTime < DayTime::END_OF_TIME) ofs << " End   time is "
-      << EndTime.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
+   if(BegTime > CommonTime::BEGINNING_OF_TIME) ofs << " Begin time is "
+      << printTime(BegTime,"%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
+   if(EndTime < CommonTime::END_OF_TIME) ofs << " End   time is "
+      << printTime(EndTime,"%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
    ofs << " Set satellite " << RefSat << " as the reference in DDs" << endl;
    if(noEstimate) ofs << " ** Estimation is turned OFF **" << endl;
    if(noRAIM) ofs << " ** Pseudorange solution is turned OFF **" << endl;

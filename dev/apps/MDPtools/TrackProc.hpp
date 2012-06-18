@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -51,7 +51,7 @@ public:
    // This is a list of what is being received for each channel
    typedef std::vector<ChanRec> ChanVector;
    ChanVector currCv, prevCv;
-   gpstk::DayTime currTime, prevTime;
+   gpstk::CommonTime currTime, prevTime;
 
    void printChanges();
 };

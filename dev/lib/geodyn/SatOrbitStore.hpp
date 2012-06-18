@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2010
 //
@@ -80,7 +80,7 @@ namespace gpstk
          /// if J2000 was wanted, you should have load earth orientation
          /// data globally.
       PvtStore::Pvt getPvt(const SatID sat,
-                           const DayTime& t, 
+                           const CommonTime& t, 
                            bool j2k = false )
          throw(InvalidRequest) ;
       

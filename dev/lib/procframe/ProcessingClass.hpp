@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -97,37 +97,9 @@ namespace gpstk
       virtual gnssRinex& Process(gnssRinex& gData) = 0;
 
 
-         /// Abstract method. It returns an unique index identifying the object.
-      virtual int getIndex(void) const = 0;
-
          /// Abstract method. It returns a string identifying the class the
          /// object belongs to.
       virtual std::string getClassName(void) const = 0;
-
-
-         /// operator == for ProcessingClass
-      bool operator==(const ProcessingClass& right) const
-      { return ( (*this).getIndex() == right.getIndex() ); }
-
-         /// operator != for ProcessingClass
-      bool operator!=(const ProcessingClass& right) const
-      { return !(operator==(right)); }
-
-         /// operator < for ProcessingClass
-      virtual bool operator<(const ProcessingClass& right) const
-      { return ( (*this).getIndex() < right.getIndex() ); }
-
-         /// operator > for ProcessingClass
-      bool operator>(const ProcessingClass& right) const
-      { return ( (*this).getIndex() > right.getIndex() ); }
-
-         /// operator <= for ProcessingClass
-      bool operator<=(const ProcessingClass& right) const
-      { return ( (*this).getIndex() <= right.getIndex() ); }
-
-         /// operator >= for SatID
-      bool operator>=(const ProcessingClass& right) const
-      { return ( (*this).getIndex() >= right.getIndex() ); }
 
 
          /// Destructor
@@ -153,4 +125,5 @@ namespace gpstk
    //@}
 
 }  // End of namespace gpstk
+
 #endif   // PROCESSINGCLASS_HPP

@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010
 //
@@ -32,6 +32,7 @@
 #include "IERS.hpp"
 #include "ReferenceFrames.hpp"
 #include "StringUtils.hpp"
+#include "Epoch.hpp"
 #include <map>
 
 namespace gpstk
@@ -753,7 +754,7 @@ namespace gpstk
       
       EarthBody body;
       UTCTime t;
-      t.setMJD(53157.5);
+      t=static_cast<Epoch>(CommonTime(53157.5)).MJD();      
 
       Spacecraft sc;
       sc.setDragArea(20.0);

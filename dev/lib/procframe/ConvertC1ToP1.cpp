@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -30,15 +30,10 @@
 
 #include "ConvertC1ToP1.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
-      // Index initially assigned to this class
-   int ConvertC1ToP1::classIndex = 4800000;
-
-      // Returns an index identifying this object.
-   int ConvertC1ToP1::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ConvertC1ToP1::getClassName() const
@@ -60,7 +55,7 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ConvertC1ToP1::Process( const DayTime& time,
+   satTypeValueMap& ConvertC1ToP1::Process( const CommonTime& time,
                                                 satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -115,7 +110,7 @@ namespace gpstk
                }
 
                it->second[TypeID::P1] = it->second[TypeID::C1] 
-                                       +Bp1c1*(C_GPS_M * 1.0e-9);
+                                       +Bp1c1*(C_MPS * 1.0e-9);
             }
 
          }  // End of 'for (it = gData.begin(); it != gData.end(); ++it)'
@@ -130,7 +125,6 @@ namespace gpstk
 
          // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-            + StringUtils::asString( getIndex() ) + ":"
             + u.what() );
 
          GPSTK_THROW(e);

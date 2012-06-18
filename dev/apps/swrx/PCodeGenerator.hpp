@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -27,8 +27,8 @@
 
 #include "SVPCodeGen.hpp"
 #include "CodeBuffer.hpp"
-#include "DayTime.hpp"
-
+#include "CommonTime.hpp"
+#include "Epoch.hpp"
 #include "CodeGenerator.hpp"
 
 /* If we're not using GNU C, elide __attribute__ */
@@ -43,7 +43,7 @@ namespace gpstk
    public:
       PCodeGenerator(const int prn)
          : CodeGenerator(ObsID::tcP, SatID(prn, SatID::systemGPS)),
-           cb(prn), svp(prn, gpstk::GPSZcount(0)), index(0)
+           cb(prn), svp(int(prn), CommonTime(0)), index(0)
       {
          svp.getCurrentSixSeconds(cb);
       }
@@ -56,7 +56,7 @@ namespace gpstk
       {
          unsigned long z = new_index / (15345000*4);
          z *= 4;
-         if (svp.getCurrentZCount().fullZcountFloor() != z)
+         if (static_cast<Epoch>(svp.getCurrentZCount()).GPSzcount32Floor() != z)
          {
             std::cerr << "Regen cb" << std::endl;
             svp.setCurrentZCount(z);
@@ -68,7 +68,7 @@ namespace gpstk
 
       CodeIndex getIndex() const
       {
-         unsigned long z = svp.getCurrentZCount().fullZcountFloor();
+         unsigned long z = static_cast<Epoch>(svp.getCurrentZCount()).GPSzcount32Floor();
          return index + z * 15345000;
       }
 

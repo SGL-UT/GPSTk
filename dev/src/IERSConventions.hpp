@@ -35,7 +35,7 @@
 #include <string>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "Matrix.hpp"
 #include "EOPDataStore.hpp"
@@ -80,27 +80,27 @@ namespace gpstk
    void LoadSTKFile(const std::string& fileName);
 
       /// Request EOP Data
-   EOPDataStore::EOPData EOPData(const DayTime& UTC)
+   EOPDataStore::EOPData EOPData(const CommonTime& UTC)
       throw(InvalidRequest);
    
       /// in arcsecond
-   double PolarMotionX(const DayTime& UTC);
+   double PolarMotionX(const CommonTime& UTC);
 
       /// in arcsecond
-   double PolarMotionY(const DayTime& UTC);
+   double PolarMotionY(const CommonTime& UTC);
 
       /// in second
-   double UT1mUTC(const DayTime& UTC);
+   double UT1mUTC(const CommonTime& UTC);
 
       /// in arcsecond
-   double NutationDPsi(const DayTime& UTC);
+   double NutationDPsi(const CommonTime& UTC);
 
       /// in arcsecond
-   double NutationDEps(const DayTime& UTC);
+   double NutationDEps(const CommonTime& UTC);
 
 
       /// ftp://maia.usno.navy.mil/ser7/leapsec.dat
-   int TAImUTC(DayTime UTC)
+   int TAImUTC(const CommonTime& UTC)
       throw(InvalidRequest);
 
 
@@ -112,7 +112,8 @@ namespace gpstk
 
    // Time System Handling
    //--------------------------------------------------------------------------
-   enum TimeSystem
+   // @TODO: This enum needs to be replaced in favor of the class in TimeSystem.hpp
+   enum TimeSystemEnum
    {
       TS_Unknown = 0,
       TS_UTC,
@@ -122,25 +123,25 @@ namespace gpstk
       TS_TT
    };
    
-   DayTime ConvertTimeSystem(const DayTime& time, TimeSystem from, TimeSystem to);
+   CommonTime ConvertTimeSystem(const CommonTime& time, TimeSystemEnum from, TimeSystemEnum to);
 
-   DayTime GPST2UTC(const DayTime& GPST);
-   DayTime UTC2GPST(const DayTime& UTC);
+   CommonTime GPST2UTC(const CommonTime& GPST);
+   CommonTime UTC2GPST(const CommonTime& UTC);
 
-   DayTime UT12UTC(const DayTime& UT1);
-   DayTime UTC2UT1(const DayTime& UTC);
+   CommonTime UT12UTC(const CommonTime& UT1);
+   CommonTime UTC2UT1(const CommonTime& UTC);
 
-   DayTime UT12UTC(const DayTime& UT1,double ut1mutc);
-   DayTime UTC2UT1(const DayTime& UTC,double ut1mutc);
+   CommonTime UT12UTC(const CommonTime& UT1,double ut1mutc);
+   CommonTime UTC2UT1(const CommonTime& UTC,double ut1mutc);
 
-   DayTime TT2UTC(const DayTime& TT);
-   DayTime UTC2TT(const DayTime& UTC);
+   CommonTime TT2UTC(const CommonTime& TT);
+   CommonTime UTC2TT(const CommonTime& UTC);
 
-   DayTime TAI2UTC(const DayTime& TAI);
-   DayTime UTC2TAI(const DayTime& UTC);
+   CommonTime TAI2UTC(const CommonTime& TAI);
+   CommonTime UTC2TAI(const CommonTime& UTC);
 
-   DayTime BDT2UTC(const DayTime& BDT);
-   DayTime UTC2BDT(const DayTime& UTC);
+   CommonTime BDT2UTC(const CommonTime& BDT);
+   CommonTime UTC2BDT(const CommonTime& UTC);
    
    // Reference System Handling
    //--------------------------------------------------------------------------
@@ -155,15 +156,15 @@ namespace gpstk
    Matrix<double> Rz(const double& angle);
 
    /// Precession matrix by IAU 1976 model
-   Matrix<double> iauPmat76(const DayTime& TT);
+   Matrix<double> iauPmat76(const CommonTime& TT);
 
 
-   static double iauNut80Args(const DayTime& TT,double& eps, double& dpsi,double& deps)
+   static double iauNut80Args(const CommonTime& TT,double& eps, double& dpsi,double& deps)
       throw(Exception);
 
 
    // IAU1976/1980 model (IERS conventions 1996)
-   void J2kToECEFMatrix(const DayTime& UTC, 
+   void J2kToECEFMatrix(const CommonTime& UTC, 
                         const EOPDataStore::EOPData& ERP,
                         Matrix<double>& POM, 
                         Matrix<double>& Theta, 
@@ -171,41 +172,41 @@ namespace gpstk
       throw(Exception);
 
       /// Convert position from J2000 to ECEF
-   Triple J2kPosToECEF(const Triple& j2kPos, const DayTime& time, TimeSystem sys = TS_GPST);
+   Triple J2kPosToECEF(const Triple& j2kPos, const CommonTime& time, TimeSystemEnum sys = TS_GPST);
 
       /// Convert position from ECEF to J2000
-   Triple ECEFPosToJ2k(const Triple& ecefPos, const DayTime& time, TimeSystem sys = TS_GPST);
+   Triple ECEFPosToJ2k(const Triple& ecefPos, const CommonTime& time, TimeSystemEnum sys = TS_GPST);
 
       /// ECI to ECF transform matrix, POM * Theta * NP 
-   Matrix<double> J2kToECEFMatrix(const DayTime& UTC,const EOPDataStore::EOPData& ERP);
+   Matrix<double> J2kToECEFMatrix(const CommonTime& UTC,const EOPDataStore::EOPData& ERP);
       
 
       /// Convert position from J2000 to ECEF.
-   Vector<double> J2kPosToECEF(const DayTime& UTC, const Vector<double>& j2kPos)
+   Vector<double> J2kPosToECEF(const CommonTime& UTC, const Vector<double>& j2kPos)
       throw(Exception);
 
 
       /// Convert position from ECEF to J2000.
-   Vector<double> ECEFPosToJ2k(const DayTime& UTC, const Vector<double>& ecefPos)
+   Vector<double> ECEFPosToJ2k(const CommonTime& UTC, const Vector<double>& ecefPos)
       throw(Exception);   
 
 
       /// Convert position and velocity from J2000 to ECEF.
-   Vector<double> J2kPosVelToECEF(const DayTime& UTC, const Vector<double>& j2kPosVel)
+   Vector<double> J2kPosVelToECEF(const CommonTime& UTC, const Vector<double>& j2kPosVel)
       throw(Exception);
 
 
       /// Convert position and velocity from ECEF to J2000.
-   Vector<double> ECEFPosVelToJ2k(const DayTime& UTC, const Vector<double>& ecefPosVel)
+   Vector<double> ECEFPosVelToJ2k(const CommonTime& UTC, const Vector<double>& ecefPosVel)
       throw(Exception);   
  
  
       /// sun position in J2000 
-   Vector<double> sunJ2kPosition(const DayTime& TT);
+   Vector<double> sunJ2kPosition(const CommonTime& TT);
       
 
       /// moon position in J2000
-   Vector<double> moonJ2kPosition(const DayTime& TT);
+   Vector<double> moonJ2kPosition(const CommonTime& TT);
 
       
    //////////////////////////////////////////////////////////////////////////
@@ -215,16 +216,16 @@ namespace gpstk
    
 
       /// Nutation angles by IAU 1980 model
-   void nutationAngles(DayTime TT, double& dpsi, double& deps);
+   void nutationAngles(const CommonTime& TT, double& dpsi, double& deps);
 
       /// Mean obliquity of the ecliptic by IAU 1980 model
-   double meanObliquity(DayTime TT);
+   double meanObliquity(const CommonTime& TT);
 
       /// Equation of the equinoxes by IAU 1994 model
-   double iauEqeq94(DayTime TT,double eps, double dPsi);
+   double iauEqeq94(const CommonTime& TT,double eps, double dPsi);
 
       /// Greenwich mean sidereal time by IAU 1982 model
-   double iauGmst82(DayTime UT1);
+   double iauGmst82(const CommonTime& UT1);
 
 
       /// Nutation matrix from nutation angles
@@ -233,13 +234,13 @@ namespace gpstk
                           const double& deps);
 
       /// earth rotation angle
-   double earthRotationAngle(DayTime UT1);
+   double earthRotationAngle(const CommonTime& UT1);
 
       /**Earth rotation angle first order rate.
        *  @param TT         Modified Julian Date in TT
        *  @return              d(GAST)/d(t) in [rad]
        */
-   double earthRotationAngleRate1(DayTime TT);
+   double earthRotationAngleRate1(const CommonTime& TT);
 
 
       //@}

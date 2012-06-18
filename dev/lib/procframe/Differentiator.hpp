@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2011
 //
@@ -79,13 +79,13 @@ namespace gpstk
        */
    class Differentiator : public ProcessingClass
    {
-      public:
+   public:
 
          /// Default constructor.
       Differentiator()
          : inputType(TypeID::L1), outputType(TypeID::L1dot),
            tolerance(0.005), useSatArcs(true), watchCSFlag(TypeID::CSL1)
-      { setSamplingPeriod(1.0); setIndex(); };
+      { setSamplingPeriod(1.0); };
 
 
          /** Common constructor.
@@ -237,10 +237,6 @@ namespace gpstk
          throw(ProcessingException);
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -257,11 +253,11 @@ namespace gpstk
       {
             // Default constructor initializing the data in the structure
          filterData() : arcNumber(0.0),
-                        previousEpoch(DayTime::BEGINNING_OF_TIME),
+                        previousEpoch(CommonTime::BEGINNING_OF_TIME),
                         filter(1.0) {};
 
          double arcNumber;                   ///< Current arc number
-         DayTime previousEpoch;              ///< Previous epoch
+         CommonTime previousEpoch;              ///< Previous epoch
          FIRDifferentiator5thOrder filter;   ///< Differentiator
 
          // NOTE: Change the former to obtain another differentiation
@@ -316,26 +312,10 @@ namespace gpstk
           * @param source    Source of the observations.
           * @param gData     Data object holding the data.
           */
-      void Compute( const DayTime& epoch,
+      void Compute( const CommonTime& epoch,
                     const SourceID& source,
                     const satTypeValueMap& gData )
          throw(ProcessingException);
-
-
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
 
    }; // End of class 'Differentiator'

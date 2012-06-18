@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -43,8 +43,8 @@
 
 #include "EphemerisRange.hpp"
 #include "MiscMath.hpp"
-#include "GPSGeoid.hpp"
-#include "icd_200_constants.hpp"
+#include "GPSEllipsoid.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 
 using namespace std;
@@ -58,15 +58,15 @@ namespace gpstk
    // routine does not intrinsicly account for the receiver clock error
    // like the ComputeAtTransmitTime routine does.
    double CorrectedEphemerisRange::ComputeAtReceiveTime(
-      const DayTime& tr_nom,
+      const CommonTime& tr_nom,
       const Position& Rx,
       const SatID sat,
-      const XvtStore<SatID>& Eph)
+      const XvtStore<SatID>& Eph) throw(Exception)
    {
       try {
          int nit;
          double tof,tof_old,wt,sx,sy;
-         GPSGeoid geoid;
+         GPSEllipsoid ellipsoid;
 
          nit = 0;
          tof = 0.07;       // initial guess 70ms
@@ -88,7 +88,7 @@ namespace gpstk
             rawrange = RSS(svPosVel.x[0]-Rx.X(),
                            svPosVel.x[1]-Rx.Y(),
                            svPosVel.x[2]-Rx.Z());
-            tof = rawrange/geoid.c();
+            tof = rawrange/ellipsoid.c();
 
          } while(ABS(tof-tof_old)>1.e-13 && ++nit<5);
 
@@ -107,18 +107,18 @@ namespace gpstk
       // given the nominal receive time tr_nom and an EphemerisStore, as well as
       // the raw measured pseudorange.
    double CorrectedEphemerisRange::ComputeAtTransmitTime(
-      const DayTime& tr_nom,
+      const CommonTime& tr_nom,
       const double& pr,
       const Position& Rx,
       const SatID sat,
-      const XvtStore<SatID>& Eph)
+      const XvtStore<SatID>& Eph) throw(Exception)
    {
       try {
-         DayTime tt;
+         CommonTime tt;
 
          // 0-th order estimate of transmit time = receiver - pseudorange/c
          transmit = tr_nom;
-         transmit -= pr/C_GPS_M;
+         transmit -= pr/C_MPS;
          tt = transmit;
 
          // correct for SV clock
@@ -131,7 +131,8 @@ namespace gpstk
                GPSTK_RETHROW(e);
             }
             tt = transmit;
-            tt -= svPosVel.dtime;      // clock and relativity
+            // remove clock bias and relativity correction
+            tt -= (svPosVel.clkbias + svPosVel.relcorr);
          }
 
          rotateEarth(Rx);
@@ -150,22 +151,29 @@ namespace gpstk
    }  // end CorrectedEphemerisRange::ComputeAtTransmitTime
 
 
-
    double CorrectedEphemerisRange::ComputeAtTransmitSvTime(
-      const DayTime& tt_nom,
+      const CommonTime& tt_nom,
       const double& pr,
       const Position& rx,
       const SatID sat,
       const XvtStore<SatID>& eph)
+      throw(Exception,InvalidRequest)
    {
       try {
          svPosVel = eph.getXvt(sat, tt_nom);
 
          // compute rotation angle in the time of signal transit
-         // While this is quite similiar to rotateEarth, its not the same and jcl doesn't
-         // know which is really correct
-         GPSGeoid gm;
-         double rotation_angle = -gm.angVelocity() * (pr/gm.c() - svPosVel.dtime);
+
+         // While this is quite similiar to rotateEarth, its not the same
+         // and jcl doesn't know which is really correct
+         // BWT this uses the measured pseudorange, corrected for SV clock and
+         // relativity, to compute the time of flight; rotateEarth uses the value
+         // computed from the receiver position and the ephemeris. They should be
+         // very nearly the same, and multiplying by angVel/c should make the angle
+         // of rotation very nearly identical.
+         GPSEllipsoid ell;
+         double range(pr/ell.c() - svPosVel.clkbias - svPosVel.relcorr);
+         double rotation_angle = -ell.angVelocity() * range;
          svPosVel.x[0] = svPosVel.x[0] - svPosVel.x[1] * rotation_angle;
          svPosVel.x[1] = svPosVel.x[1] + svPosVel.x[0] * rotation_angle;
          svPosVel.x[2] = svPosVel.x[2];
@@ -180,14 +188,13 @@ namespace gpstk
       }
    }
 
+
    void CorrectedEphemerisRange::updateCER(const Position& Rx)
    {
-      relativity = RelativityCorrection(svPosVel) * C_GPS_M;
-      // relativity correction is added to dtime by the
-      // EphemerisStore::getSatXvt routines...
+      relativity = svPosVel.computeRelativityCorrection() * C_MPS;
 
-      svclkbias = svPosVel.dtime*C_GPS_M - relativity;
-      svclkdrift = svPosVel.ddtime * C_GPS_M;
+      svclkbias = svPosVel.clkbias * C_MPS;
+      svclkdrift = svPosVel.clkdrift * C_MPS;
 
       cosines[0] = (Rx.X()-svPosVel.x[0])/rawrange;
       cosines[1] = (Rx.Y()-svPosVel.x[1])/rawrange;
@@ -203,11 +210,11 @@ namespace gpstk
 
    void CorrectedEphemerisRange::rotateEarth(const Position& Rx)
    {
-      GPSGeoid geoid;
+      GPSEllipsoid ellipsoid;
       double tof = RSS(svPosVel.x[0]-Rx.X(),
                        svPosVel.x[1]-Rx.Y(),
-                       svPosVel.x[2]-Rx.Z())/geoid.c();
-      double wt = geoid.angVelocity()*tof;
+                       svPosVel.x[2]-Rx.Z())/ellipsoid.c();
+      double wt = ellipsoid.angVelocity()*tof;
       double sx =  ::cos(wt)*svPosVel.x[0] + ::sin(wt)*svPosVel.x[1];
       double sy = -::sin(wt)*svPosVel.x[0] + ::cos(wt)*svPosVel.x[1];
       svPosVel.x[0] = sx;
@@ -221,13 +228,12 @@ namespace gpstk
 
    double RelativityCorrection(const Xvt& svPosVel)
    {
-      // relativity correction is added to dtime by the
-      // EphemerisStore::getSatXvt routines...
+      // relativity correction
       // dtr = -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
       // compute it separately here, in units seconds.
       double dtr = ( -2.0 *( svPosVel.x[0] * svPosVel.v[0]
                              + svPosVel.x[1] * svPosVel.v[1]
-                             + svPosVel.x[2] * svPosVel.v[2] ) / C_GPS_M ) / C_GPS_M;
+                             + svPosVel.x[2] * svPosVel.v[2] ) / C_MPS ) / C_MPS;
       return dtr;
    }
 

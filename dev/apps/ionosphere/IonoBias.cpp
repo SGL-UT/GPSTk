@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -33,12 +33,17 @@
 #include <cstring>
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
-
+#include "YDSTime.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
+#include "YDSTime.hpp"
+#include "MJD.hpp"
+#include "GPSWeekSecond.hpp"
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexObsStream.hpp"
@@ -47,8 +52,8 @@
 #include "Matrix.hpp"
 
 #include "Position.hpp"
-#include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"     // for TWO_PI
+#include "WGS84Ellipsoid.hpp"
+#include "GNSSconstants.hpp"     // for TWO_PI
 #include "geometry.hpp"              // for DEG_TO_RAD and RAD_TO_DEG
 
 #include "RinexUtilities.hpp"
@@ -98,9 +103,9 @@ XvtStore<SatID> *pEph;
    // obs types needed
 RinexObsHeader::RinexObsType ELot,LAot,LOot,SRot,SSot;
    // geoid
-WGS84Geoid WGS84;
+WGS84Ellipsoid WGS84;
    // Start and stop times
-DayTime BegTime,EndTime;
+CommonTime BegTime,EndTime;
 
    // processing
 int MinPoints;
@@ -183,15 +188,15 @@ int main(int argc, char **argv)
 try {
    int iret;
    clock_t totaltime=clock(); // timer
-   DayTime CurrEpoch;
+   CommonTime CurrEpoch;
 
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
 
       // Title description and run time
-   CurrEpoch.setLocalTime();
+   static_cast<Epoch>(CurrEpoch).setLocalTime();
    Title = "IonoBias, built on the GPSTK ToolKit, Ver 1.0 6/25/04, Run ";
-   Title += CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   Title += printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
       // set configuration and default values
@@ -578,22 +583,22 @@ try {
 
    if(dasheb.getCount()) {
       values = dasheb.getValue();
-      BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input BeginTime " << BegTime << endl;
    }
    if(dashee.getCount()) {
       values = dashee.getValue();
-      EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input EndTime " << EndTime << endl;
    }
    if(dashgb.getCount()) {
       values = dashgb.getValue();
-      BegTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%F,%g");
       if(help) cout << "Input BeginGPSTime " << BegTime << endl;
    }
    if(dashge.getCount()) {
       values = dashge.getValue();
-      EndTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%F,%g");
       if(help) cout << "Input EndGPSTime " << EndTime << endl;
    }
 
@@ -731,10 +736,10 @@ try {
          //<< DataInterval << endl;
       if(!ATFileName.empty()) oflog << " AT file name is "
          << ATFileName << endl;
-      if(BegTime > DayTime::BEGINNING_OF_TIME) oflog << " Begin time is "
-         << BegTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
-      if(EndTime < DayTime::END_OF_TIME) oflog << " End   time is "
-         << EndTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
+      if(BegTime > CommonTime::BEGINNING_OF_TIME) oflog << " Begin time is "
+         << printTime(BegTime,"%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
+      if(EndTime < CommonTime::END_OF_TIME) oflog << " End   time is "
+         << printTime(EndTime,"%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
       oflog << " Processing:\n";
       oflog << "   Use a " << Model << " ionospheric model" << endl;
       oflog << "   Minimum points per satellite = " << MinPoints << endl;
@@ -961,7 +966,7 @@ try {
       if(iret != 0) return iret;
 
       if(nfile==0) {
-         MJDNorm = header.firstObs.MJD();
+         MJDNorm = static_cast<Epoch>(header.firstObs).MJD();
          LonNorm = StationPosition[1]; //.getLongitude();
       }
 
@@ -1020,12 +1025,12 @@ try {
    StationPosition.transformTo(Position::Geocentric);
 
       // compute begin and end times
-   TimeLimits(StationPosition, head.firstObs.DOY(), TimeSector, begintime, endtime);
+   TimeLimits(StationPosition, static_cast<YDSTime>(head.firstObs).doy, TimeSector, begintime, endtime);
    if(begintime == -999 || endtime == -999) return -5;
 
       // save station info
    StationName = lowerCase(subString(head.markerName,0,4));
-   TotalSpan = head.lastObs.MJD()-head.firstObs.MJD();
+   TotalSpan = static_cast<Epoch>(head.lastObs).MJD()-static_cast<Epoch>(head.firstObs).MJD();
 
       // dump header information
    if(verbose) {
@@ -1045,16 +1050,16 @@ try {
          oflog << " " << RinexObsHeader::convertObsType(head.obsTypeList[i]);
       oflog << endl;
       oflog << "Time of first obs "
-         << head.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << printTime(head.firstObs,"%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (head.firstSystem.system==RinexSatID::systemGlonass?"GLO":
                    (head.firstSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
       oflog << "Time of  last obs "
-         << head.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << printTime(head.lastObs,"%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (head.lastSystem.system==RinexSatID::systemGlonass?"GLO":
                    (head.lastSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
-      oflog << "DOY = " << head.firstObs.DOY() << endl;
+      oflog << "DOY = " << static_cast<YDSTime>(head.firstObs).doy << endl;
       oflog << "Sunrise = " << setprecision(2) << sunrise;
       oflog << "  Sunset  = " << setprecision(2) << sunset << endl;
       oflog << "Begin time = " << setprecision(2) << begintime;
@@ -1104,7 +1109,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Compute the position (latitude and longitude, in degrees) of the sun
 // given the day of year and the hour of the day.
 // Adapted from sunpos by D. Coco 12/15/94
-//#include "icd_200_constants.hpp     // for TWO_PI
+//#include "icd_gps_constants.hpp     // for TWO_PI
 //#include "geometry.hpp"             // for DEG_TO_RAD and RAD_TO_DEG
 void SolarPosition(int doy, double hod, double& lat, double& lon) throw(Exception)
 {
@@ -1169,7 +1174,7 @@ try {
    int i,j,k,npts[MAXPRN+1];
    double EL,LA,LO,SR,hours,cr,ob;
    Position LLI;
-   DayTime begin[MAXPRN+1],end[MAXPRN+1];
+   CommonTime begin[MAXPRN+1],end[MAXPRN+1];
    RinexObsData robs;
    RinexSatID sat;
    //RinexObsData::RinexObsTypeMap otmap;
@@ -1210,9 +1215,9 @@ try {
       //if(verbose) oflog << " Read file " << filename
       //   << " epoch " << robs.time.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
 
-      hours = robs.time.secOfDay()/3600.0;          // hours of the day
+      hours = static_cast<YDSTime>(robs.time).sod/3600.0;          // hours of the day
          // compute co-rotating longitude CL = LO + cr
-      cr = (robs.time.MJD()-MJDNorm) * 360.0;
+      cr = (static_cast<Epoch>(robs.time).MJD()-MJDNorm) * 360.0;
       cr -= LonNorm + TotalSpan * 180.0;
 
          // loop over sat=it->first, ObsTypeMap=it->second
@@ -1260,7 +1265,7 @@ try {
          }
 
          LLI = Position(LA,LO,IonoHt*1000.0);     // 3rd entry is actually not used.
-         TimeLimits(LLI, robs.time.DOY(), TimeSector, begintime, endtime);
+         TimeLimits(LLI, static_cast<YDSTime>(robs.time).doy, TimeSector, begintime, endtime);
          if(endtime >= begintime) {
             if(hours < begintime || hours > endtime) continue;
          }
@@ -1272,8 +1277,8 @@ try {
          ob = obliquity(EL);
 
             // write out
-         fout <<        setw(4)                    << robs.time.GPSfullweek();
-         fout << " " << setw(8) << setprecision(1) << robs.time.GPSsow();
+         fout <<        setw(4)                    << static_cast<GPSWeekSecond>(robs.time).week;
+         fout << " " << setw(8) << setprecision(1) << static_cast<GPSWeekSecond>(robs.time).sow;
          fout << " " << setw(9) << setprecision(5) << LA; // latitude
          fout << " " << setw(10) << setprecision(5) << LO+cr; // co-rotating longitude
          fout << " " << setw(4) << setprecision(2) << ob; // 1/obliquity
@@ -1304,8 +1309,8 @@ try {
          if(verbose) oflog << "G" << setfill('0') << setw(2) << i << setfill(' ')
             << setw(6) << npts[i]
             << setw(10) << setprecision(2) << (end[i]-begin[i])/3600.0
-            << setw(10) << setprecision(2) << begin[i].secOfDay()/3600.0
-            << setw(10) << setprecision(2) << end[i].secOfDay()/3600.0;
+            << setw(10) << setprecision(2) << static_cast<YDSTime>(begin[i]).sod/3600.0
+            << setw(10) << setprecision(2) << static_cast<YDSTime>(end[i]).sod/3600.0;
          if((end[i]-begin[i] < MinTimeSpan*60.0 || npts[i] < MinPoints)){
             if(verbose) {
                oflog << " reject(";

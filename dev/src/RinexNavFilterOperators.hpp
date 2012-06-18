@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -51,9 +51,12 @@
 
 
 
+#include "GPSWeekSecond.hpp"
+
 #include "FileFilter.hpp"
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
+#include "GPSWeekSecond.hpp"
 
 #include <set>
 
@@ -71,10 +74,9 @@ namespace gpstk
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
          {
-                     gpstk::DayTime lXmitTime(0.L);
-            lXmitTime.setGPSfullweek(l.weeknum, (double)l.HOWtime);
-            gpstk::DayTime rXmitTime(0.L);
-            rXmitTime.setGPSfullweek(r.weeknum, (double)r.HOWtime);
+            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
+            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+
 
             if (lXmitTime < rXmitTime)
                return true;
@@ -156,10 +158,9 @@ namespace gpstk
       bool operator()(const gpstk::RinexNavData& l,
                       const gpstk::RinexNavData& r) const
          {
-            gpstk::DayTime lXmitTime(0.L);
-            lXmitTime.setGPSfullweek(l.weeknum, (double)l.HOWtime);
-            gpstk::DayTime rXmitTime(0.L);
-            rXmitTime.setGPSfullweek(r.weeknum, (double)r.HOWtime);
+            gpstk::GPSWeekSecond lXmitTime(l.weeknum, (double)l.HOWtime);
+            gpstk::GPSWeekSecond rXmitTime(r.weeknum, (double)r.HOWtime);
+
             if (lXmitTime < rXmitTime)
                return true;
             return false;

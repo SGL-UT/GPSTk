@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -51,9 +51,9 @@
  * Implementation of the ICD-GPS-200 Ionosphere model.
  */
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngAlmanac.hpp"
-#include "Geodetic.hpp"
+#include "Position.hpp"
 
 namespace gpstk
 {
@@ -135,8 +135,8 @@ namespace gpstk
           * \param freq the GPS frequency the observation was made from
           * \return the ionospheric correction (meters)
           */
-      double getCorrection(const DayTime& time,
-                           const Geodetic& rxgeo,
+      double getCorrection(const CommonTime& time,
+                           const Position& rxgeo,
                            double svel,
                            double svaz,
                            Frequency freq = L1) const

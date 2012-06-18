@@ -22,9 +22,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -35,15 +35,6 @@
 namespace gpstk
 {
 
-      // Index initially assigned to this class
-   int ComputeMelbourneWubbena::classIndex = 2200000;
-
-
-      // Returns an index identifying this object.
-   int ComputeMelbourneWubbena::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string ComputeMelbourneWubbena::getClassName() const
    { return "ComputeMelbourneWubbena"; }
@@ -51,13 +42,12 @@ namespace gpstk
 
       // Default constructor
    ComputeMelbourneWubbena::ComputeMelbourneWubbena()
-      : type3(TypeID::L1), type4(TypeID::L2), DEN1(L1_FREQ + L2_FREQ),
-        DEN2(L1_FREQ - L2_FREQ)
+      : type3(TypeID::L1), type4(TypeID::L2), DEN1(L1_FREQ_GPS + L2_FREQ_GPS),
+        DEN2(L1_FREQ_GPS - L2_FREQ_GPS)
    {
       type1 = TypeID::P1;
       type2 = TypeID::P2;
       resultType = TypeID::MWubbena;
-      setIndex();
    }
 
 
@@ -118,7 +108,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -136,11 +125,10 @@ namespace gpstk
                                                    const double& l2 )
    {
 
-      return (   ( L1_FREQ*l1 - L2_FREQ*l2 ) / ( DEN2 )
-               - ( L1_FREQ*p1 + L2_FREQ*p2 ) / ( DEN1 ) );
+      return (   ( L1_FREQ_GPS*l1 - L2_FREQ_GPS*l2 ) / ( DEN2 )
+               - ( L1_FREQ_GPS*p1 + L2_FREQ_GPS*p2 ) / ( DEN1 ) );
 
    }  // End of method 'ComputeMelbourneWubbena::getCombination()'
 
 
-
-} // End of namespace gpstk
+}  // End of namespace gpstk

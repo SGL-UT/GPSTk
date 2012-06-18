@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include "OrdEngine.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -65,10 +66,10 @@ OrdEngine::OrdEngine(
       exit(-1);
    }
 
-   ECEF ecef(antennaPos);
-   Geodetic geo(ecef, &gm);
-   tm.setReceiverHeight(geo.getAltitude());
-   tm.setReceiverLatitude(geo.getLatitude());
+   Position geo(antennaPos);
+   geo.setEllipsoidModel(&gm);
+   tm.setReceiverHeight(geo.getAltitude()); 
+   tm.setReceiverLatitude(geo.getGeodeticLatitude());		//Geodetic or Geocentric?
 }
 
 void OrdEngine::setMode(const ObsEpoch& obs)
@@ -212,7 +213,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    if (!oidSet)
       setMode(obs);
 
-   const DayTime& t = obs.time;
+   const CommonTime& t = obs.time;
    const ObsEpoch& obsEpoch = obs;
 
    ORDEpoch ordEpoch;
@@ -225,7 +226,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    {
       // Now set up our trop model for this epoch
       const WxObservation wx = wod.getMostRecent(t);
-      tm.setDayOfYear(t.DOYday());
+      tm.setDayOfYear(static_cast<YDSTime>(t).doy);
       if (wx.isAllValid())
       {
          if (debugLevel > 2)

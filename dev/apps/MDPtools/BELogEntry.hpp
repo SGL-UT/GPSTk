@@ -23,7 +23,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -60,14 +60,14 @@ namespace gpstk
       virtual ~BELogEntry() {}
 
       std::string getStr() const;
-      gpstk::DayTime getHOW() const;
+      gpstk::CommonTime getHOW() const;
       void increment();
       unsigned long getKey() const;
       static const std::string header;
       
       protected:
-         DayTime HOWSF1;
-         DayTime Toe;
+         CommonTime HOWSF1;
+         CommonTime Toe;
          int PRN_ID;
          int IODC;
          int count;

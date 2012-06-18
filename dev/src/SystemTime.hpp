@@ -21,13 +21,14 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 #include "UnixTime.hpp"
+#include <ctime>
 
 namespace gpstk
 {
@@ -51,12 +52,22 @@ namespace gpstk
       SystemTime()
          throw()
       {
+         setTimeSystem(TimeSystem::UTC);
          update();
       }
       
          /// Virtual Destructor.
       virtual ~SystemTime()
          throw()
+      {}
+      
+         /**
+          * Copy Constructor.
+          * @param right a reference to teh SystemTime object to copy.
+          */
+      SystemTime( const SystemTime& right )
+         throw()
+            : UnixTime( right )
       {}
          //@}
 
@@ -66,16 +77,6 @@ namespace gpstk
           */
       SystemTime& update()
          throw();
-
-   protected:
-         /** 
-          * Disallow Copy Constructor.
-          */
-      SystemTime( const SystemTime& right )
-         throw()
-            : UnixTime( right )
-      {}
-
    };
 
 }

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,8 +49,12 @@
 // system includes
 #include <fstream>
 // GPSTk
-#include "icd_200_constants.hpp"    // for TWO_PI
+#include "GNSSconstants.hpp"    // for TWO_PI
 #include "EarthOrientation.hpp"
+#include "GPSWeekSecond.cpp"
+#include "CivilTime.cpp"
+#include "YDSTime.cpp"
+#include "TimeString.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -160,28 +164,28 @@ namespace gpstk
    //---------------------------------------------------------------------------------
    // generate serial number (NGA files are named EOPP<sn>.txt) from epoch
    // SN = Year (1 digit) + week of year
-   int EOPPrediction::getSerialNumber(DayTime& t)
-      throw(DayTime::DayTimeException)
+   int EOPPrediction::getSerialNumber(CommonTime& t)
+      throw(Exception)
    {
-      int w2 = t.GPSfullweek()-1;            // the previous week
+      int w2 = static_cast<GPSWeekSecond>(t).week-1;            // the previous week
       if(w2 < 0) {
          using namespace StringUtils;
-	 DayTime::DayTimeException dte("Invalid week in EOPP file: "
+	 Exception dte("Invalid week in EOPP file: "
                + asString<short>(w2));
          GPSTK_THROW(dte);
       }
 
       int yr,w1;
       try {
-         DayTime ht;
-         ht.setGPSfullweek(w2,475200.0);     // Friday (noon) of previous week
-         yr = ht.year();                     // save the year for later
-         ht.setYMDHMS(yr,1,1,0,0,0.0);       // first day of that year
-         w1 = ht.GPSfullweek();
-         if(ht.dayOfWeek() == 6) w1++;       // GPS week of first Friday in the year
+         CommonTime ht;
+         ht=GPSWeekSecond(w2,475200.0);     // Friday (noon) of previous week
+         yr = static_cast<YDSTime>(ht).year;                     // save the year for later
+         ht=CivilTime(yr,1,1,0,0,0.0);       // first day of that year
+         w1 = static_cast<GPSWeekSecond>(ht).week;
+         if(static_cast<GPSWeekSecond>(ht).week == 6) w1++;       // GPS week of first Friday in the year
          yr = yr % 10;                       // last digit of the year
       }
-      catch(DayTime::DayTimeException& dte) {
+      catch(Exception& dte) {
          GPSTK_RETHROW(dte);
       }
       return (100*yr + w2-w1+1);             // SN = Year (1 digit) + week of year
@@ -191,11 +195,11 @@ namespace gpstk
    // Compute the Earth orientation parameters at the given epoch.
    // TD how to warn if input is outside limits of validity?
    EarthOrientation EOPPrediction::computeEOP(int& mjd) const
-      throw(DayTime::DayTimeException)
+      throw(Exception)
    {
-      DayTime t;
-      try { t.setMJD(double(mjd)); }
-      catch(DayTime::DayTimeException& dte) { GPSTK_RETHROW(dte); }
+      CommonTime t;
+      try { t=MJD(double(mjd)); }
+      catch(Exception& dte) { GPSTK_RETHROW(dte); }
       return computeEOP(t);
    }
 
@@ -212,13 +216,13 @@ namespace gpstk
    // UT1-UTC(t)= I+J(t-tb) + SUM(Km sin[2pi(t-tb)/Rm]) + SUM(Lm cos[2pi(t-tb)/Rm])
    //                         m=1                         m=1
    //---------------------------------------------------------------------------------
-   EarthOrientation EOPPrediction::computeEOP(DayTime& ep) const
+   EarthOrientation EOPPrediction::computeEOP(CommonTime& ep) const
       throw()
    {
       double t,dt,arg;
       EarthOrientation eo;
 
-      t = ep.MJD() + ep.secOfDay()/86400.0;
+      t = static_cast<Epoch>(ep).MJD() + static_cast<YDSTime>(ep).sod/86400.0;
       //if(t < tv || t > tv+7) // TD warn - outside valid range
       //
       dt = t - ta;
@@ -317,13 +321,13 @@ namespace gpstk
    // @param MJD integer MJD at which to add EOPs
    // @return non-0 if MJD is outside range
    int EOPStore::addEOP(int mjd, EOPPrediction& eopp)
-      throw(DayTime::DayTimeException)
+      throw(Exception)
    {
       EarthOrientation eo;
       try {
          eo = eopp.computeEOP(mjd);
       }
-      catch(DayTime::DayTimeException& dte)
+      catch(Exception& dte)
       {
          GPSTK_RETHROW(dte);
       }
@@ -479,13 +483,13 @@ namespace gpstk
    void EOPStore::dump(short detail, ostream& os) const
       throw()
    {
-      DayTime tt;
+      CommonTime tt;
       os << "EOPStore dump (" << mapMJD_EOP.size() << " entries):\n";
       os << " Time limits: [MJD " << begMJD << " - " << endMJD << "]";
-      tt.setMJD(double(begMJD));
-      os << " = [m/d/y " << tt.printf("%m/%d/%Y");
-      tt.setMJD(double(endMJD));
-      os << " - " << tt.printf("%m/%d/%Y") << "]" << endl;
+      tt=MJD(double(begMJD));
+      os << " = [m/d/y " << printTime(tt,"%m/%d/%Y");
+      tt=MJD(double(endMJD));
+      os << " - " << printTime(tt,"%m/%d/%Y") << "]" << endl;
       if(detail > 0) {
          int lastmjd=-1;
          map<int,EarthOrientation>::const_iterator it;
@@ -503,15 +507,15 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    // Get the EOP at the given epoch and return it.
-   // @param t DayTime at which to compute the EOPs.
+   // @param t CommonTime at which to compute the EOPs.
    // @return EarthOrientation EOPs at time t.
    // @throw InvalidRequest if the (int) MJDs on either side of t
    // cannot be found in the map.
-   EarthOrientation EOPStore::getEOP(DayTime& t) const
+   EarthOrientation EOPStore::getEOP(CommonTime& t) const
       throw(InvalidRequest)
    {
          // find the EOs before and after epoch
-      int loMJD = int(t.MJD());
+      int loMJD = int(static_cast<Epoch>(t).MJD());
       int hiMJD = loMJD + 1;
          // find these EOPs
       map<int,EarthOrientation>::const_iterator hit,lit;
@@ -526,7 +530,7 @@ namespace gpstk
       }
          // linearly interpolate to get EOP at the desired time
       EarthOrientation eo;
-      double dt=t.MJD()-double(loMJD);
+      double dt=static_cast<Epoch>(t).MJD()-double(loMJD);
       eo.xp = (1.0-dt) * lit->second.xp + dt * hit->second.xp;
       eo.yp = (1.0-dt) * lit->second.yp + dt * hit->second.yp;
       eo.UT1mUTC = (1.0-dt) * lit->second.UT1mUTC + dt * hit->second.UT1mUTC;

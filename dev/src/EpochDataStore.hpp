@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -36,7 +36,7 @@
 #include <string>
 #include <set>
 #include <map>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 
 namespace gpstk
@@ -53,20 +53,20 @@ namespace gpstk
    public:
 
          /// Handy type definition
-      typedef std::set<DayTime> EpochList;
-      typedef std::map<DayTime, std::vector<double> > EpochData;
+      typedef std::set<CommonTime> EpochList;
+      typedef std::map<CommonTime, std::vector<double> > EpochData;
       
 
          /// Default constructor
       EpochDataStore()
-         : initialTime(DayTime::END_OF_TIME),
-           finalTime(DayTime::BEGINNING_OF_TIME),
+         : initialTime(CommonTime::END_OF_TIME),
+           finalTime(CommonTime::BEGINNING_OF_TIME),
            interPoints(10)
       {}
 
       EpochDataStore(int interpolationPoints)
-         : initialTime(DayTime::END_OF_TIME),
-         finalTime(DayTime::BEGINNING_OF_TIME),
+         : initialTime(CommonTime::END_OF_TIME),
+         finalTime(CommonTime::BEGINNING_OF_TIME),
          interPoints(interpolationPoints)
       {}
 
@@ -77,7 +77,7 @@ namespace gpstk
          /// get epoch list stored in this object
       EpochList epochList();
 
-      bool isEpochExist(DayTime t)
+      bool isEpochExist(CommonTime t)
       { return (allData.find(t) != allData.end()) ? true : false ; }
       
          /// clear the all the data
@@ -90,8 +90,8 @@ namespace gpstk
           * @param[in] tmin defines the beginning of the time interval
           * @param[in] tmax defines the end of the time interval
           */
-      virtual void edit(DayTime tmin, 
-                        DayTime tmax = DayTime(DayTime::END_OF_TIME));
+      virtual void edit(CommonTime tmin,
+                        CommonTime tmax = CommonTime(CommonTime::END_OF_TIME));
 
          /// return the number of entries in the store
       size_t size(void)
@@ -102,7 +102,7 @@ namespace gpstk
           * @return The initial time
           *
           */
-      virtual DayTime getInitialTime()
+      virtual CommonTime getInitialTime()
       { return initialTime; };
 
 
@@ -111,7 +111,7 @@ namespace gpstk
           * @return The final time
           *
           */
-      virtual DayTime getFinalTime()
+      virtual CommonTime getFinalTime()
       { return finalTime; };
 
 
@@ -122,16 +122,16 @@ namespace gpstk
    protected:
 
          /// Add to the store directly
-      void addData(const DayTime& time,const std::vector<double>& data);
+      void addData(const CommonTime& time,const std::vector<double>& data);
 
 
          /** Get the Data at the given epoch and return it.
-          *  @param t DayTime at which to compute the EOPs.
+          *  @param t CommonTime at which to compute the EOPs.
           *  @return EarthOrientation EOPs at time t.
           *  @throw InvalidRequest if the epoch on either side of t
           *     cannot be found in the map.
           */
-      std::vector<double> getData(const DayTime& t) const
+      std::vector<double> getData(const CommonTime& t) const
          throw(InvalidRequest);
 
       
@@ -140,8 +140,8 @@ namespace gpstk
          
          /// These give the overall span of time for which this object
          ///  contains data.
-      DayTime initialTime;
-      DayTime finalTime;
+      CommonTime initialTime;
+      CommonTime finalTime;
       
          /// Number of points to do Lagrange Interpolation, default is 10
       int interPoints;

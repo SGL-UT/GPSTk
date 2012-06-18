@@ -22,11 +22,13 @@
 // ======================================================================
 
 //------------------------------------------------------------------------------------
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SolarSystem.hpp"
 #include "Matrix.hpp"            // only for WGS84Position()
 #include "GeodeticFrames.hpp"    // only for WGS84Position()
 #include "logstream.hpp"
+#include "TimeString.hpp"
+#include "MJD.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -201,15 +203,15 @@ try {
 
    // Mod the header labels to reflect the new time limits
    ostringstream oss;
-   DayTime tt;
-   tt.setMJD(startJD - DayTime::JD_TO_MJD);
+   CommonTime tt;
+   tt = MJD(startJD - MJD_TO_JD);
    oss << "Start Epoch: JED= " << fixed << setw(10) << setprecision(1) << startJD
-      << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
+      << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[1] = leftJustify(oss.str(),81);
    oss.seekp(ios_base::beg);
-   tt.setMJD(endJD - DayTime::JD_TO_MJD);
+   tt = MJD(endJD - MJD_TO_JD);
    oss << "Final Epoch: JED= " << fixed << setw(10) << setprecision(1) << endJD
-      << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
+      << printTime(tt," %4Y %b %2d %02H:%02M:%02S");
    label[2] = leftJustify(oss.str(),81);
 
    return 0;
@@ -682,14 +684,14 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // Return the geocentric (relative to Earth's center) position of the Sun at the
 // input time, in WGS84 coordinates.
-Position SolarSystem::WGS84Position(Planet body, const DayTime time,
+Position SolarSystem::WGS84Position(Planet body, const CommonTime time,
    const EarthOrientation& eo) throw(Exception)
 {
 try {
    int iret;
    double PV[6];
 
-   double JD = DayTime::JD_TO_MJD + time.MJD();
+   double JD = -MJD_TO_JD + static_cast<Epoch>(time).MJD();
    iret = computeState(JD, body, Earth, PV);          // result in km, km/day
 
    Matrix<double> Rot;

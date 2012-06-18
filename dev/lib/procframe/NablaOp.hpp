@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -141,7 +141,7 @@ namespace gpstk
           */
       NablaOp(const TypeID& difftype)
          : lookReferenceSat(true)
-      { setDiffType(difftype); setIndex(); };
+      { setDiffType(difftype); };
 
 
          /** Common constructor taking as input the type of data values
@@ -153,7 +153,7 @@ namespace gpstk
       NablaOp( const SatID& rSat,
                const TypeID& difftype )
          : refSat(rSat), lookReferenceSat(false)
-      { setDiffType(difftype); setIndex(); };
+      { setDiffType(difftype); };
 
 
          /** Common constructor taking as input a set of types of data values
@@ -165,7 +165,7 @@ namespace gpstk
       NablaOp( const SatID& rSat,
                const TypeIDSet& diffSet )
          : refSat(rSat), lookReferenceSat(false), diffTypes(diffSet)
-      { setIndex(); };
+      { };
 
 
          /** Method to set the reference satellite to be used. It is not
@@ -270,10 +270,6 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -295,20 +291,6 @@ namespace gpstk
 
          /// Set (TypeIDSet) containing the types of data to be differenced.
       TypeIDSet diffTypes;
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
 
 
    }; // End of class 'NablaOp'

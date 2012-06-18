@@ -6,6 +6,8 @@
 */
 
 #include "SubframeProc.hpp"
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -104,12 +106,12 @@ void MDPSubframeProcessor::process(const MDPNavSubframe& msg)
 
    RangeCarrierPair rcp(msg.range, msg.carrier);
    NavIndex ni(rcp, msg.prn);
-   unsigned long sow = msg.time.GPSsow();
+   unsigned long sow = static_cast<GPSWeekSecond>(msg.time).sow;
    int sfIndex = sow % 750;
    int sfNumber = 1 + (sow%30)/6;
 
    ostringstream oss;
-   oss << msg.time.printf(timeFormat)
+   oss << printTime(msg.time,timeFormat)
        << "  PRN:" << setw(2) << msg.prn
        << " " << asString(msg.carrier)
        << ":" << setw(2) << left << asString(msg.range)

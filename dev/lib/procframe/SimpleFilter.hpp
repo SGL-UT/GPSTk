@@ -5,8 +5,8 @@
  * This class filters out satellites with observations grossly out of bounds.
  */
 
-#ifndef SIMPLEFILTER_HPP
-#define SIMPLEFILTER_HPP
+#ifndef GPSTK_SIMPLEFILTER_HPP
+#define GPSTK_SIMPLEFILTER_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -93,7 +93,7 @@ namespace gpstk
 
          /// Default constructor. By default, filter C1.
       SimpleFilter() : minLimit(15000000.0), maxLimit(30000000.0)
-      { setFilteredType(TypeID::C1); setIndex(); };
+      { setFilteredType(TypeID::C1); };
 
 
          /** Explicit constructor
@@ -106,7 +106,7 @@ namespace gpstk
                     const double& min,
                     const double& max )
          : minLimit(min), maxLimit(max)
-      { setFilteredType(type); setIndex(); };
+      { setFilteredType(type); };
 
 
          /** Explicit constructor
@@ -115,7 +115,7 @@ namespace gpstk
           */
       SimpleFilter(const TypeID& type)
          : minLimit(15000000.0), maxLimit(30000000.0)
-      { setFilteredType(type); setIndex(); };
+      { setFilteredType(type); };
 
 
          /** Explicit constructor
@@ -128,7 +128,7 @@ namespace gpstk
                     const double& min,
                     const double& max )
          : filterTypeSet(typeSet), minLimit(min), maxLimit(max)
-      { setIndex(); };
+      { };
 
 
          /** Explicit constructor
@@ -137,7 +137,7 @@ namespace gpstk
           */
       SimpleFilter(const TypeIDSet& typeSet)
          : filterTypeSet(typeSet), minLimit(15000000.0), maxLimit(30000000.0)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, filtering the target
@@ -221,10 +221,6 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -256,22 +252,10 @@ namespace gpstk
       double maxLimit;
 
 
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
    }; // End of class 'SimpleFilter'
 
       //@}
 
-}
-#endif  // SIMPLEFILTER_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_SIMPLEFILTER_HPP

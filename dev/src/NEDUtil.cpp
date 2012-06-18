@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2007, The University of Texas at Austin
 //
@@ -94,8 +94,9 @@ gpstk::Triple NEDUtil::convertToNED( const gpstk::Triple& inVec ) const
 gpstk::Xvt NEDUtil::convertToNED( const gpstk::Xvt& in ) const
 {
    gpstk::Xvt out;
-   out.dtime = in.dtime;
-   out.ddtime = in.ddtime;
+   out.clkbias = in.clkbias;
+   out.relcorr = in.relcorr;
+   out.clkdrift = in.clkdrift;
    out.x = convertToNED( in.x );
    out.v = convertToNED( in.v );
    return(out);

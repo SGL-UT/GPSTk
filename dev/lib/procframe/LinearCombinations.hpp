@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
 //
@@ -33,7 +33,7 @@
 
 
 #include "DataStructures.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 
 
 
@@ -214,17 +214,16 @@ namespace gpstk
    public:
       
          /// Return the frequency of the combination in cycles: i * L1 + j * L2 
-      static double freqOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      static double freqOfLC(int i, int j, double f1 = L1_FREQ_GPS, double f2 = L2_FREQ_GPS);
       
          /// Return the wavelength of the combination in cycles: i * L1 + j * L2 
-      static double wavelengthOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      static double wavelengthOfLC(int i, int j, double f1 = L1_FREQ_GPS, double f2 = L2_FREQ_GPS);
       
          /// Return the f1 factor of the combination in cycles: i * L1 + j * L2 
-      static double firstFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ);
+      static double firstFactorOfLC(int i, int j, double f1 = L1_FREQ_GPS, double f2 = L2_FREQ_GPS);
       
          /// Return the f2 factor of the combination in cycles: i * L1 + j * L2 
-      static double secondFactorOfLC(int i, int j, double f1 = L1_FREQ, double f2 = L2_FREQ); 
-
+      static double secondFactorOfLC(int i, int j, double f1 = L1_FREQ_GPS, double f2 = L2_FREQ_GPS); 
 
    }; // End of class 'LinearCombinations'
 

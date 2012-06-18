@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -206,7 +206,7 @@ namespace gpstk
             // be 1277 characters long (taking into account all the possible
             // types of observations available, plus the end of line
             // characters), so this constant was conservatively set to
-            // 1500 characters. Dagoberto Salazar.
+            // 1500 characteres. Dagoberto Salazar.
          const int MAX_LINE_LENGTH = 1500;
          char templine[MAX_LINE_LENGTH + 1];
          getline(templine, MAX_LINE_LENGTH);

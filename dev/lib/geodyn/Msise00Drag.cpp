@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010
 //
@@ -37,6 +37,7 @@
 #include "ReferenceFrames.hpp"
 #include "IERS.hpp"
 #include "ASConstant.hpp"
+#include "YDSTime.hpp"
 
 namespace gpstk
 {
@@ -342,9 +343,9 @@ namespace gpstk
          flags.switches[i] = 1;
       }
 
-      input.doy = utc.DOYday();
+      input.doy = static_cast<YDSTime>(utc).doy;
       input.year = 2004;         // without effect 
-      input.sec = utc.DOYsecond();
+      input.sec = static_cast<YDSTime>(utc).sod;
       input.alt= alt;
       input.g_lat = geoidPos.getGeodeticLatitude();
       input.g_long = geoidPos.getLongitude();

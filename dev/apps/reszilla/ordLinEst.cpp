@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,6 +40,9 @@
 
 #include "OrdApp.hpp"
 #include "RobustLinearEstimator.hpp"
+#include "TimeString.hpp"
+#include "Epoch.hpp"
+#include "MJD.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -70,13 +73,13 @@ struct BigRateOperator :
 
 struct ClockSegment: public RobustLinearEstimator
 {
-   DayTime startTime, endTime;
+   CommonTime startTime, endTime;
 };
 
 
 struct ClockSegmentList : public list<ClockSegment>
 {
-   vdouble eval(const DayTime& t)
+   vdouble eval(const CommonTime& t)
    {
       vdouble offset;
       for (const_iterator k=begin(); k != end(); k++)
@@ -84,7 +87,7 @@ struct ClockSegmentList : public list<ClockSegment>
          const ClockSegment& cs = *k;
          if ((t - cs.startTime) > -0.01 && (cs.endTime - t) > -0.01)
          {
-            double mjd = t.MJDdate();
+            double mjd = static_cast<Epoch>(t).MJD();
             if (cs.valid)
                offset = cs.eval(mjd);
             break;
@@ -103,17 +106,17 @@ struct ClockSegmentList : public list<ClockSegment>
       {
          output << "#  t0                   t1                   t0 offset(ns)"
                 << "  t1 offset(ns)  slope(ns/d)  abdev(ns)" << endl;
-         scale = 1e9/C_GPS_M;
+         scale = 1e9/C_MPS;
       }
       output << "#  -------------------  -------------------  "
              << "------------  ------------  ----------  --------" << endl;
       for (const_iterator k=begin(); k != end(); k++)
       {
          const ClockSegment& cs = *k;
-         double t0 = cs.startTime.MJDdate();
-         double tf = cs.endTime.MJDdate();
-         output << ">c " << cs.startTime.printf(timeFormat)
-                << "  " << cs.endTime.printf(timeFormat)
+         double t0 = static_cast<Epoch>(cs.startTime).MJD();
+         double tf = static_cast<Epoch>(cs.endTime).MJD();
+         output << ">c " << printTime(cs.startTime,timeFormat)
+                << "  " << printTime(cs.endTime,timeFormat)
                 << fixed
                 << " " << setprecision(3) << setw(12) << cs.eval(t0) * scale
                 << " " << setprecision(3) << setw(12) << cs.eval(tf) * scale
@@ -169,7 +172,7 @@ void OrdLinEst::process()
    ORDEpochMap::const_iterator ei;
    for (ei = oem.begin(); ei != oem.end(); ei++)
    {
-      double mjd = ei->first.MJDdate();
+      double mjd = static_cast<Epoch>(ei->first).MJD();
       vdouble clk = ei->second.clockOffset;
       if (!clk.is_valid() || std::abs(clk) < 1e-6)
          continue;
@@ -189,11 +192,11 @@ void OrdLinEst::process()
       j = adjacent_find( i, clocks.end(), bro);
       ClockSegment seg;
       seg.debugLevel = debugLevel;
-      seg.startTime = DayTime(i->first+1e-9);
+      seg.startTime = CommonTime(i->first+1e-9);
       if (j != clocks.end())
-         seg.endTime = DayTime(j->first+1e-9);
+         seg.endTime = CommonTime(j->first+1e-9);
       else
-         seg.endTime = DayTime(clocks.rbegin()->first+1e-9);
+         seg.endTime = CommonTime(clocks.rbegin()->first+1e-9);
 
       seg.process(i, j);
       csl.push_back(seg);
@@ -207,7 +210,7 @@ void OrdLinEst::process()
    ORDEpochMap::iterator l;
    for (l=oem.begin(); l != oem.end(); l++)
    {
-      const DayTime& t = l->first;
+      const CommonTime& t = l->first;
       ORDEpoch& ord = l->second;
       vdouble offset = csl.eval(t);
       if (offset.is_valid() && ord.clockOffset.is_valid())

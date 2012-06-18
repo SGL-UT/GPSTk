@@ -250,6 +250,7 @@ int main(int argc, char **argv)
       double d,xd;
       string stuff;
       vector<double> data,wts,xdata;
+      Stats<double> S;
       Stats<double> cstats;
       TwoSampleStats<double> TSS;
       ostringstream oss;
@@ -275,12 +276,17 @@ int main(int argc, char **argv)
          d = asDouble(stuff);
          if(domin && d <= min) continue;
          if(domax && d >= max) continue;
+         data.push_back(d);
+         S.Add(d);
+
 
          // do the same for xcol
          if(xcol > -1) {
             if(numWords(line) < xcol)
                { data.pop_back(); nxd++; continue; }
             stuff = word(line,xcol-1);
+            if(dobeg && xd <= beg) continue;
+            if(doend && xd >= end) continue;
             if(!(isScientificString(stuff)))
                { data.pop_back(); nxd++; continue; }
             xd = asDouble(stuff);
@@ -430,6 +436,12 @@ int main(int argc, char **argv)
       mad = Robust::MedianAbsoluteDeviation(&data[0],data.size(),median);
       wts.resize(data.size());
       mest = Robust::MEstimate(&data[0], data.size(), median, mad, &wts[0]);
+      cout << "Conventional statistics:\n"
+         << fixed << setprecision(8) << S << endl;
+
+      if(xcol > -1)
+         cout << "Two-sample statistics:\n" << setprecision(8) << TSS << endl;
+
 
       cout << fixed << setprecision(prec);
 

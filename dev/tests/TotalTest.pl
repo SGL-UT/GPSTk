@@ -4,7 +4,6 @@
 use strict;
 use warnings;
 
-
 my $dirn = $ENV{PATH_TO_CURRENT};
 
 print "\n\n\n\n\n\n\nPLEASE WAIT THIS MAY TAKE SOME TIME\n\n\n\n\n\n\n\n";
@@ -14,9 +13,9 @@ system("rm $dirn/CovResults.log");			#Gcov results
 open (DATA,">>CovResults.log");                         #Open file to which the output will go
 chdir "$dirn";
 #system("jam clean");
-print ("Jamming!\n\n");
+#print ("Jamming!\n\n");
 
-system("jam");
+#system("jam");
 dirz("$dirn","Nothing");        			#Start Subroutine
 chdir "$dirn";
 system("rm GcovStuff");

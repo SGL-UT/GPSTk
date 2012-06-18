@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -238,72 +238,14 @@ namespace gpstk
             return me;
          }
 
-// this macro expansion technique has 2 major faults: 1. there can be no RANGECHECK,
-// 2. since there is no range checking, one can have a mis-match in dimensions in the
-// l-value vs the r-value, which makes no sense.
-/*
-#define MatBaseArrayAssignMacro(func) \
-   BaseClass& me = static_cast<BaseClass&>(*this); \
-   size_t i,j; \
-   for (i=0; i < me.rows(); i++) \
-      for (j=0; j < me.cols(); j++) \
-         me(i,j) func x(i,j); \
-   return me;
-*/              
-/*
-#define MatBaseArrayAssignMacroVecSource(func) \
-   BaseClass& me = static_cast<BaseClass&>(*this); \
-   size_t i,j; \
-   for (i=0; i < me.rows(); i++) \
-      for (j=0; j < me.cols(); j++) \
-         me(i,j) func x[i*me.cols()+j]; \
-   return me; 
-*/
-/*
-#define MatBaseAtomicAssignMacro(func) \
-   BaseClass& me = static_cast<BaseClass&>(*this); \
-   size_t i,j; \
-   for (i=0; i < me.rows(); i++) \
-      for (j=0; j < me.cols(); j++) \
-         me(i,j) func x; \
-   return me;
-*/
-/*
-//#define MatBaseNewAssignOperator(funcName, op) \
-*/
 
-
-///** performs op on each element of this matrix with each element of x */ 
-/*
-//   template <class E> BaseClass& funcName(const ConstMatrixBase<T, E>& x) 
-//      { MatBaseArrayAssignMacro(op); } \
-*/
-///** performs op on each element of this matrix with each element of x */ 
-/*
-//   template <class E> BaseClass& funcName(const ConstVectorBase<T, E>& x) 
-//      { MatBaseArrayAssignMacroVecSource(op); } \
-*/
-///** performs op on each element of this matrix with each element of x */ 
-/*
-//   BaseClass& funcName(const std::valarray<T>& x) \
-//      { MatBaseArrayAssignMacroVecSource(op); } \
-*/
-///** performs op on each element of this matrix with each element of x */ 
-/*
-//   BaseClass& funcName(const T* x) \
-//      { MatBaseArrayAssignMacroVecSource(op); } \
-*/
-///** performs op on each element of this matrix with x */ 
-/*
-//   BaseClass& funcName(T x) \
-//      { MatBaseAtomicAssignMacro(op); }
-*/              
+              
          /// remember that operator= isn't inherited.  use assignFrom in
          /// derived classes' copy constructors and operator=.
       //MatBaseNewAssignOperator(assignFrom, =);
       //MatBaseNewAssignOperator(operator+=, +=);
       //MatBaseNewAssignOperator(operator-=, -=);
-//--------------------------------------------------------------------------
+//-----------------------------------------------------------------------
 //      MatBaseNewAssignOperator(assignFrom, =);
 /** performs = on each element of this matrix with each element of x */
    template <class E> BaseClass& assignFrom(const ConstMatrixBase<T, E>& x)
@@ -565,25 +507,17 @@ namespace gpstk
             return me;
          }
 
-         // unary minus: multiplies each element in this matrix by -1.
-      //BaseClass& operator-()
-      //   {
-      //      const T x=T(-1);
-      //      MatBaseAtomicAssignMacro(*=);
-      //   }
-      // unary minus must not return an l-value
-
          /// unary minus: multiplies each element in this matrix by -1.
-      const BaseClass operator-() const
-      {
-         const T x=T(-1);
-         BaseClass me = static_cast<BaseClass>(*this); \
-         size_t i,j;
-         for (i=0; i < me.rows(); i++)
-            for (j=0; j < me.cols(); j++)
-               me(i,j) *= x;
-         return me;
-      }
+      const BaseClass operator-()
+         {
+            const T x=T(-1);
+            BaseClass me = static_cast<BaseClass>(*this);
+            size_t i,j;
+            for (i=0; i < me.rows(); i++)
+               for (j=0; j < me.cols(); j++)
+                  me(i,j) *= x;
+            return me;
+         }
 
          /// swaps rows row1 and row2 in this matrix.
       BaseClass& swapRows(size_t row1, size_t row2) 

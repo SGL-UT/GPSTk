@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2009
 //
@@ -47,7 +47,7 @@ namespace gpstk
       int row(0);
 
          // We will store here the station name
-      string nameString("");
+      std::string nameString("");
 
          // Declare structure to store tide harmonics data
       BLQDataReader::tideData data;
@@ -125,7 +125,7 @@ namespace gpstk
                {
                   for(int col=0; col<11; col++)
                   {
-                     string value(StringUtils::stripFirstWord(line));
+                     std::string value(StringUtils::stripFirstWord(line));
                      data.harmonics((row-1),col) = StringUtils::asDouble(value);
                   }
                   ++row;
@@ -177,7 +177,7 @@ namespace gpstk
 
       // Method to open AND load ocean tide harmonics data file. It doesn't
       // clear data previously loaded.
-   void BLQDataReader::open(const string& fn)
+   void BLQDataReader::open(const std::string& fn)
    {
 
          // We need to be sure current data stream is closed
@@ -203,7 +203,7 @@ namespace gpstk
        * phases (radial, west, south, in degrees). If station is
        * not found, this method will return a matrix full of zeros.
        */
-   Matrix<double> BLQDataReader::getTideHarmonics(const string& station)
+   Matrix<double> BLQDataReader::getTideHarmonics(const std::string& station)
    {
 
          // First, look if such station exist in data map

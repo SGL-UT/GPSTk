@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
 //
@@ -39,8 +39,6 @@
 #include "StringUtils.hpp"
 #include "Matrix.hpp"
 
-
-using namespace std;
 
 namespace gpstk
 {
@@ -182,7 +180,7 @@ namespace gpstk
           * @param file    Configuration data file to read
           *
           */
-      ConfDataReader(const string& file)
+      ConfDataReader(const std::string& file)
          : FFTextStream(file.c_str(), std::ios::in), issueException(true),
            fallback2Default(false)
       { loadData(); };
@@ -193,7 +191,7 @@ namespace gpstk
 
 
          /// Method to open AND load configuration data file.
-      virtual void open(const string& fn)
+      virtual void open(const std::string& fn)
       { open( fn.c_str() ); };
 
 
@@ -203,9 +201,9 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual string getValue( string variable,
-                               string section = "DEFAULT",
-                               string defaultVal = "")
+      virtual std::string getValue( std::string variable,
+                                    std::string section = "DEFAULT",
+                                    std::string defaultVal = "")
          throw(ConfigurationException);
 
 
@@ -215,8 +213,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual double getValueAsDouble( string variable,
-                                       string section = "DEFAULT",
+      virtual double getValueAsDouble( std::string variable,
+                                       std::string section = "DEFAULT",
                                        double defaultVal = 0.0)
          throw(ConfigurationException)
       { 
@@ -231,8 +229,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual int getValueAsInt( string variable,
-                                 string section = "DEFAULT",
+      virtual int getValueAsInt( std::string variable,
+                                 std::string section = "DEFAULT",
                                  int    defaultVal = 0 )
          throw(ConfigurationException)
       { 
@@ -247,8 +245,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual bool getValueAsBoolean( string variable,
-                                      string section = "DEFAULT", 
+      virtual bool getValueAsBoolean( std::string variable,
+                                      std::string section = "DEFAULT", 
                                       bool   defaultVal = false )
          throw(ConfigurationException);
 
@@ -265,9 +263,9 @@ namespace gpstk
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           */
-      virtual string fetchListValue( string variableList,
-                                     string section = "DEFAULT",
-                                     string defaultVal = "" )
+      virtual std::string fetchListValue( std::string variableList,
+                                          std::string section = "DEFAULT",
+                                          std::string defaultVal = "" )
          throw(ConfigurationException);
 
 
@@ -283,8 +281,8 @@ namespace gpstk
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           */
-      virtual double fetchListValueAsDouble( string variableList,
-                                             string section = "DEFAULT",
+      virtual double fetchListValueAsDouble( std::string variableList,
+                                             std::string section = "DEFAULT",
                                              double defaultVal = 0.0 )
          throw(ConfigurationException)
       { 
@@ -305,8 +303,8 @@ namespace gpstk
           * \warning This method will MODIFY the original content of
           * 'variableList'.
           */
-      virtual int fetchListValueAsInt( string variableList,
-                                       string section = "DEFAULT",
+      virtual int fetchListValueAsInt( std::string variableList,
+                                       std::string section = "DEFAULT",
                                        int    defaultVal = 0 )
          throw(ConfigurationException)
       { 
@@ -329,8 +327,8 @@ namespace gpstk
           *
           * \warning If variable list is empty, it will return FALSE.
           */
-      virtual bool fetchListValueAsBoolean( string variableList,
-                                            string section = "DEFAULT",
+      virtual bool fetchListValueAsBoolean( std::string variableList,
+                                            std::string section = "DEFAULT",
                                             bool   defaultVal = false)
          throw(ConfigurationException);
 
@@ -344,8 +342,8 @@ namespace gpstk
           * @param section        Section the variable list belongs to.
           *
           */
-      virtual int getNumItem( string variableList,
-                              string section = "DEFAULT" )
+      virtual int getNumItem( std::string variableList,
+                              std::string section = "DEFAULT" )
          throw(ConfigurationException)
       { return StringUtils::numWords( getValue( variableList, section ) ); };
 
@@ -356,8 +354,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual string getVariableDescription( string variable,
-                                             string section = "DEFAULT" )
+      virtual std::string getVariableDescription( std::string variable,
+                                                  std::string section = "DEFAULT" )
          throw(ConfigurationException);
 
 
@@ -367,8 +365,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual string getValueDescription( string variable,
-                                          string section = "DEFAULT" )
+      virtual std::string getValueDescription( std::string variable,
+                                               std::string section = "DEFAULT" )
          throw(ConfigurationException);
 
 
@@ -412,7 +410,7 @@ namespace gpstk
 
 
          /// Method to get the name of each section in order.
-      virtual string getEachSection(void);
+      virtual std::string getEachSection(void);
 
 
          /// Method to reset the iterator traversing section names. This method
@@ -427,8 +425,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual bool ifExist( string variable,
-                            string section = "DEFAULT" )
+      virtual bool ifExist( std::string variable,
+                            std::string section = "DEFAULT" )
          throw(ConfigurationException);
 
 
@@ -438,8 +436,8 @@ namespace gpstk
           * @param section    Section the variable belongs to.
           *
           */
-      virtual string operator()( string variable,
-                                 string section = "DEFAULT" )
+      virtual std::string operator()( std::string variable,
+                                      std::string section = "DEFAULT" )
          throw(ConfigurationException)
       { return getValue(variable, section); };
 
@@ -467,17 +465,17 @@ namespace gpstk
             // Default constructor initializing the data in the structure
          variableData() : varComment(""), value(""), valueComment("") {};
 
-         string varComment;      ///< Variable comment
-         string value;           ///< Value of variable
-         string valueComment;    ///< Value comment
+         std::string varComment;      ///< Variable comment
+         std::string value;           ///< Value of variable
+         std::string valueComment;    ///< Value comment
       };
 
 
          /// Define 'variableMap' type
-      typedef std::map<string, variableData> variableMap;
+      typedef std::map<std::string, variableData> variableMap;
 
          /// Define 'confMap' type
-      typedef std::map<string, variableMap> confMap;
+      typedef std::map<std::string, variableMap> confMap;
 
 
 
@@ -493,7 +491,7 @@ namespace gpstk
           *
           * @param name    Name to the checked.
           */
-      virtual bool checkName(string name);
+      virtual bool checkName(std::string name);
 
 
          /// Method to store conf data in this class' data map

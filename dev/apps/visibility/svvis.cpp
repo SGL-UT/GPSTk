@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -53,15 +53,19 @@
 
 #include "FFIdentifier.hpp"
 
+#include "GPSWeekSecond.hpp"
+#include "TimeString.hpp"
+#include "YDSTime.hpp"
+
 using namespace std;
 using namespace gpstk;
 
 class TrackData
 {
 public:
-   TrackData(const SatID& s, const DayTime& u, const DayTime& d, float el)
+   TrackData(const SatID& s, const CommonTime& u, const CommonTime& d, float el)
          :sat(s), up(u), down(d), maxEl(el) {}
-   TrackData& update(const DayTime& t, float el)
+   TrackData& update(const CommonTime& t, float el)
    { down = t; maxEl = (maxEl > el ? maxEl : el); return *this; }
    bool operator<(const TrackData& otr) const;
    bool operator==(const TrackData& otr) const
@@ -69,8 +73,8 @@ public:
 
 
    SatID sat;
-   DayTime up;
-   DayTime down;
+   CommonTime up;
+   CommonTime down;
    float maxEl;
 };
 
@@ -103,7 +107,7 @@ protected:
 private:
    EphReader ephReader;
    double minElev;
-   DayTime startTime, stopTime;
+   CommonTime startTime, stopTime;
    Triple rxPos;
    double timeStep;
    bool printElev;
@@ -186,10 +190,10 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 
    if (recentDataOpt.getCount())
    {
-      DayTime t;
+      CommonTime t;
       if (startTimeOpt.getCount())
          t = startTimeOpt.getTime()[0];
-      EphReader::modify10bitWeeks(t.GPSfullweek());
+      EphReader::modify10bitWeeks(static_cast<GPSWeekSecond>(t).week);
    }
 
    // get the minimum elevation
@@ -253,9 +257,9 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    else
    {
       startTime = ephReader.eph->getInitialTime();
-      long sow = static_cast<long>(startTime.GPSsow());
+      long sow = static_cast<long>(static_cast<GPSWeekSecond>(startTime).sow);
       sow -= sow % static_cast<long>(timeStep);
-      startTime.setGPS(startTime.GPSfullweek(), static_cast<double>(sow));
+      startTime = GPSWeekSecond(static_cast<GPSWeekSecond>(startTime).week, static_cast<double>(sow));
       startTime += timeStep;
    }
 
@@ -299,7 +303,7 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
 void SVVis::process()
 {
    gpstk::XvtStore<SatID>& ephStore = *ephReader.eph;
-   DayTime t = startTime;
+   CommonTime t = startTime;
 
    Xvt rxXvt;
    rxXvt.x = rxPos;
@@ -327,7 +331,7 @@ void SVVis::process()
 
    string up, prev_up, el;
    int n_up;
-   for (DayTime t=startTime; t < stopTime; t+=1)
+   for (CommonTime t=startTime; t < stopTime; t+=1)
    {
       thisTrack.clear();
       up = "";
@@ -401,7 +405,7 @@ void SVVis::process()
       }
       else
       {
-         long sod=static_cast<long>(t.DOYsecond());
+         long sod=static_cast<long>(static_cast<YDSTime>(t).sod);
          if (up != prev_up || (graphElev && (sod % graphElev==0)) )
          {
             cout << t << " " << setw(2) << n_up << ": ";
@@ -423,15 +427,15 @@ void SVVis::process()
          cout << setw(2) << left << prn;
          const RiseSetList& rsl = prs[prn];
          for (rsli = rsl.begin(); rsli != rsl.end(); rsli++)
-            cout << " (" << rsli->up.printf(timeFormat) 
-                 << ", " << rsli->down.printf(timeFormat) << ")";
+            cout << " (" << printTime(rsli->up,timeFormat) 
+                 << ", " << printTime(rsli->down,timeFormat) << ")";
          cout << endl;
       }
    }
    else if (tabular)
    {
-      cout << "SEARCH_INTERVAL: " << startTime.printf(timeFormat)
-           << " to " << stopTime.printf(timeFormat)
+      cout << "SEARCH_INTERVAL: " << printTime(startTime,timeFormat)
+           << " to " << printTime(stopTime,timeFormat)
            << endl
            << "ELEVATION_CUTOFF: " << setprecision(3) << fixed << minElev 
            << endl
@@ -442,8 +446,8 @@ void SVVis::process()
       for (tdsi = passes.begin(); tdsi != passes.end(); tdsi++)
       {
          cout << "PASS: "
-              << tdsi->up.printf(timeFormat) << " "
-              << tdsi->down.printf(timeFormat) << " "
+              << printTime(tdsi->up,timeFormat) << " "
+              << printTime(tdsi->down,timeFormat) << " "
               << setfill('0') << right << setw(2)
               << static_cast<int>(tdsi->maxEl) << " "
               << setfill(' ') << left << setw(13) 

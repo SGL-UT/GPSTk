@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -45,11 +45,12 @@
 #include <cstring>
 #include "BinUtils.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "NovatelData.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk::BinUtils;
@@ -61,9 +62,9 @@ namespace gpstk
 {
 
    // --------------------------------------------------------------------------------
-   const double CFF=C_GPS_M/OSC_FREQ;
-   const double wl1=CFF/L1_MULT;
-   const double wl2=CFF/L2_MULT;
+   const double CFF=C_MPS/OSC_FREQ_GPS;
+   const double wl1=CFF/L1_MULT_GPS;
+   const double wl2=CFF/L2_MULT_GPS;
    const double PhaseRollover=8388608;
 
    // --------------------------------------------------------------------------------
@@ -630,8 +631,8 @@ namespace gpstk
 
          // be sure week is defined
          if(gpsWeek == -1) {
-            DayTime sysTime;
-            gpsWeek = long(sysTime.GPSfullweek());
+            CommonTime sysTime;
+            gpsWeek = long(static_cast<GPSWeekSecond>(sysTime).week);
          }
 
             // convert the 3 subframes and create EngEphemeris
@@ -709,8 +710,8 @@ namespace gpstk
 
             // resolve the week number ambiguity
          if(gpsWeek == -1) {
-            DayTime sysTime;
-            gpsWeek = long(sysTime.GPSfullweek());
+            CommonTime sysTime;
+            gpsWeek = long(static_cast<GPSWeekSecond>(sysTime).week);
          }
          gpsWeek = long(temps) + 1024*(gpsWeek/1024);
 
@@ -726,7 +727,7 @@ namespace gpstk
             // put timetag into rod
          if (debug)
             cout << "gpsWeek:" << gpsWeek << " sow:" << gpsSOW/100.0 << endl;
-         rod.time = DayTime(gpsWeek,gpsSOW/100.);
+         rod.time = CommonTime(gpsWeek,gpsSOW/100.);
          rod.epochFlag = 0;
          rod.clockOffset = 0.0;     // don't have it ?
          rod.numSvs = 0;
@@ -884,7 +885,7 @@ namespace gpstk
          std::memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
 
             // put timetag into rod
-         rod.time = DayTime(week,double(msecOfWeek)/1000.);
+         rod.time = CommonTime(week,double(msecOfWeek)/1000.);
          rod.epochFlag = 0;
          rod.clockOffset = 0.0;     // don't have it ?
 

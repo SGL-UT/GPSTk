@@ -6,8 +6,8 @@
  * and is meant to be used with GNSS data structures.
  */
 
-#ifndef COMPUTEMOPSWEIGHTS_HPP
-#define COMPUTEMOPSWEIGHTS_HPP
+#ifndef GPSTK_COMPUTEMOPSWEIGHTS_HPP
+#define GPSTK_COMPUTEMOPSWEIGHTS_HPP
 
 //============================================================================
 //
@@ -25,19 +25,19 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2010
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008,
+//                      2010, 2011
 //
 //============================================================================
 
 
-
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "DataStructures.hpp"
 #include "WeightBase.hpp"
 #include "EngEphemeris.hpp"
-#include "TabularEphemerisStore.hpp"
+#include "SP3EphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "ComputeIURAWeights.hpp"
 #include "TropModel.hpp"
@@ -72,7 +72,7 @@ namespace gpstk
        *   IonoModel ioModel;
        *   rnavin >> rNavHeader;
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
-       *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+       *   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
        *
        *   Position nominalPos(4833520.2269, 41537.00768, 4147461.489);
        *
@@ -124,7 +124,7 @@ namespace gpstk
 
          /// Default constructor. Generates an invalid object.
       ComputeMOPSWeights() : receiverClass(2), defaultIono(TypeID::ionoL1)
-      { pBCEphemeris = NULL; pTabEphemeris = NULL; setIndex(); }
+      { pBCEphemeris = NULL; pTabEphemeris = NULL; }
 
 
          /** Common constructor
@@ -137,21 +137,21 @@ namespace gpstk
                           GPSEphemerisStore& bcephem,
                           int rxClass = 2 )
          : receiverClass(rxClass), nominalPos(pos), defaultIono(TypeID::ionoL1)
-      { setDefaultEphemeris(bcephem); setIndex(); };
+      { setDefaultEphemeris(bcephem); };
 
 
          /** Common constructor
           *
           * @param pos       Reference position.
-          * @param tabephem  TabularEphemerisStore object holding the
+          * @param tabephem  SP3EphemerisStore object holding the
           *                  ephemeris.
           * @param rxClass   Receiver class. By default, it is 2.
           */
       ComputeMOPSWeights( const Position& pos,
-                          TabularEphemerisStore& tabephem,
+                          SP3EphemerisStore& tabephem,
                           int rxClass = 2 )
          : receiverClass(rxClass), nominalPos(pos), defaultIono(TypeID::ionoL1)
-      { setDefaultEphemeris(tabephem); setIndex(); };
+      { setDefaultEphemeris(tabephem); };
 
 
          /** Returns a satTypeValueMap object, adding the new data
@@ -160,7 +160,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -186,7 +186,7 @@ namespace gpstk
          /** Method to set the default ephemeris to be used with
           *  GNSS data structures.
           *
-          * @param ephem     TabularEphemerisStore object to be used
+          * @param ephem     SP3EphemerisStore object to be used
           */
       virtual ComputeMOPSWeights& setPosition(const Position& pos)
       { nominalPos = pos; return (*this); };
@@ -212,10 +212,9 @@ namespace gpstk
          /** Method to set the default ephemeris to be used with GNSS
           *  data structures.
           *
-          * @param ephem     TabularEphemerisStore object to be used
+          * @param ephem     SP3EphemerisStore object to be used
           */
-      virtual ComputeMOPSWeights& setDefaultEphemeris(
-                                             TabularEphemerisStore& ephem )
+      virtual ComputeMOPSWeights& setDefaultEphemeris(SP3EphemerisStore& ephem)
       { pBCEphemeris = NULL; pTabEphemeris = &ephem; return (*this); };
 
 
@@ -230,10 +229,6 @@ namespace gpstk
           */
       virtual ComputeMOPSWeights& setDefaultIono(const TypeID& type)
       { defaultIono = type; return (*this); };
-
-
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
 
 
          /// Returns a string identifying this object.
@@ -278,20 +273,10 @@ namespace gpstk
          throw(InvalidWeights);
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputeMOPSWeights'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   // COMPUTEMOPSWEIGHTS_HPP
+
+#endif   // GPSTK_COMPUTEMOPSWEIGHTS_HPP

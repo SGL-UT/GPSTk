@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
@@ -37,9 +37,9 @@
 #include "Triple.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "BLQDataReader.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 
 
@@ -57,7 +57,7 @@ namespace gpstk
        *
        * @code
        *      // Create a time object
-       *   DayTime time(2004, 25, 0.0);
+       *   CommonTime time(2004, 25, 0.0);
        *
        *      // Object to store results
        *   Triple tides;
@@ -89,7 +89,7 @@ namespace gpstk
           * @warning If filename is not given, this class will look for
           * a file named "oceanloading.blq" in the current directory.
           */
-      OceanLoading(string filename="oceanloading.blq")
+      OceanLoading(std::string filename="oceanloading.blq")
          : blqData(filename), fileData(filename) {};
 
 
@@ -106,13 +106,13 @@ namespace gpstk
           * reason, this is thrown. The text may have additional information
           * about the reason the request failed.
           */
-      Triple getOceanLoading( const string& name,
-                              const DayTime& t )
+      Triple getOceanLoading( const std::string& name,
+                              const CommonTime& t )
          throw(InvalidRequest);
 
 
          /// Returns the name of BLQ file containing ocean tides harmonics data.
-      virtual string getFilename(void) const
+      virtual std::string getFilename(void) const
       { return fileData; };
 
 
@@ -120,7 +120,7 @@ namespace gpstk
           *
           * @param name      Name of BLQ tides harmonics data file.
           */
-      virtual OceanLoading& setFilename(const string& name);
+      virtual OceanLoading& setFilename(const std::string& name);
 
 
          /// Destructor
@@ -135,7 +135,7 @@ namespace gpstk
 
 
          /// Name of BLQ file containing ocean tides harmonics data.
-      string fileData;
+      std::string fileData;
 
 
          /** Compute the value of the corresponding astronomical arguments,
@@ -146,7 +146,7 @@ namespace gpstk
           * @return A Vector<double> of 11 elements with the corresponding
           * astronomical arguments to be used in ocean loading model.
           */
-      virtual Vector<double> getArg(const DayTime& time);
+      virtual Vector<double> getArg(const CommonTime& time);
 
 
    }; // End of class 'OceanLoading'

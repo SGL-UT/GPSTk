@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,7 +48,7 @@
 
 
    // Library headers
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
    // Project headers
 #include "PCodeConst.hpp"
@@ -64,7 +64,7 @@ namespace gpstk
        *  CodeBuffer is a helper class designed to store P-code information.
        *  Six seconds of code for a particular satellite is stored in each
        *  object.  The satellite is identified by PRNID and the beginning
-       *  time is specified in a DayTime object.  The code is stored in an
+       *  time is specified in a CommonTime object.  The code is stored in an
        *  array of unsigned long (assumed 32-bit) integers.  The time order 
        *  started with the MSB of first word of the buffer ([0]) and runs 
        *  through the LSB of the last word of the buffer.
@@ -96,7 +96,7 @@ namespace gpstk
              * Update the time associated with the buffer and the designation
              * of the data contained in the buffer as P-code or Y-code.
              */
-         void updateBufferStatus( const gpstk::DayTime& dt, 
+         void updateBufferStatus( const gpstk::CommonTime& dt, 
                                   const codeType PYFlag );
 
             /**
@@ -108,7 +108,7 @@ namespace gpstk
          void updateBufferStatus( const codeType PYFlag ) { POrYCode = PYFlag; }
          
             /// Accessor returning the current time.
-         const gpstk::DayTime& getCurrentTime( ) { return(currentTime); }
+         const gpstk::CommonTime& getCurrentTime( ) { return(currentTime); }
          
             /// Accessor returning the type of code in the buffer (P or Y)
          codeType getPYFlag( ) { return(POrYCode); } 
@@ -135,7 +135,7 @@ namespace gpstk
          CodeBuffer( const CodeBuffer& c );
          unsigned long * buffer;
          int PRNID;
-         gpstk::DayTime currentTime;
+         gpstk::CommonTime currentTime;
          codeType POrYCode;
    };
 

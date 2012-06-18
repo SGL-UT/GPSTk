@@ -28,7 +28,9 @@
 //============================================================================
 
 #include "PlanetEphemeris.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "MJD.hpp"
+#include "TimeString.hpp"
 #include "Matrix.hpp"
 #include "Logger.hpp"
 #include "DebugUtils.hpp"
@@ -236,15 +238,12 @@ namespace gpstk
 
          // Mod the header labels to reflect the new time limits
          ostringstream oss;
-         DayTime tt;
-         tt.setMJD(startJD - DayTime::JD_TO_MJD);
          oss << "Start Epoch: JED= " << fixed << setw(10) << setprecision(1) << startJD
-            << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
+             << printTime(MJD(startJD - MJD_TO_JD), " %4Y %b %2d %02H:%02M:%02S");
          label[1] = leftJustify(oss.str(),81);
          oss.seekp(ios_base::beg);
-         tt.setMJD(endJD - DayTime::JD_TO_MJD);
          oss << "Final Epoch: JED= " << fixed << setw(10) << setprecision(1) << endJD
-            << tt.printf(" %4Y %b %2d %02H:%02M:%02S");
+             << printTime(MJD(endJD - MJD_TO_JD), " %4Y %b %2d %02H:%02M:%02S");
          label[2] = leftJustify(oss.str(),81);
 
          return 0;

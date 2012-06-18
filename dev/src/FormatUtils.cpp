@@ -149,10 +149,10 @@ namespace gpstk
          str << AnyCast<long>(any);
       else if (any.type() == typeid(unsigned long))
          str << AnyCast<unsigned long>(any);
-      else if (any.type() == typeid(Int64))
-         str << AnyCast<Int64>(any);
-      else if (any.type() == typeid(UInt64))
-         str << AnyCast<UInt64>(any);
+      else if (any.type() == typeid(int64_t))
+         str << AnyCast<int64_t>(any);
+      else if (any.type() == typeid(uint64_t))
+         str << AnyCast<uint64_t>(any);
       else if (any.type() == typeid(bool))
          str << AnyCast<bool>(any);
    }
@@ -182,7 +182,7 @@ namespace gpstk
             switch (mod)
             {
             case 'l': str << AnyCast<long>(*itVal++); break;
-            case 'L': str << AnyCast<Int64>(*itVal++); break;
+            case 'L': str << AnyCast<int64_t>(*itVal++); break;
             case 'h': str << AnyCast<short>(*itVal++); break;
             case '?': writeAnyInt(str, *itVal++); break;
             default:  str << AnyCast<int>(*itVal++); break;
@@ -195,7 +195,7 @@ namespace gpstk
             switch (mod)
             {
             case 'l': str << AnyCast<unsigned long>(*itVal++); break;
-            case 'L': str << AnyCast<UInt64>(*itVal++); break;
+            case 'L': str << AnyCast<uint64_t>(*itVal++); break;
             case 'h': str << AnyCast<unsigned short>(*itVal++); break;
             case '?': writeAnyInt(str, *itVal++); break;
             default:  str << AnyCast<unsigned>(*itVal++); break;

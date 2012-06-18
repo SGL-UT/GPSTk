@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2008, The University of Texas at Austin
 //
@@ -26,6 +26,7 @@
 #define MDPSUMMARY_HPP
 
 #include "MDPProcessors.hpp"
+#include "NavProc.hpp"
 
 //-----------------------------------------------------------------------------
 class MDPSummaryProcessor : public MDPProcessor
@@ -62,22 +63,22 @@ public:
    unsigned long svCountErrorCount;
 
    // the time of the first epoch processed and the last epoch processed
-   gpstk::DayTime firstObsTime, lastObsTime;
-   gpstk::DayTime firstPvtTime, lastPvtTime;
-   gpstk::DayTime firstNavTime, lastNavTime;
+   gpstk::CommonTime firstObsTime, lastObsTime;
+   gpstk::CommonTime firstPvtTime, lastPvtTime;
+   gpstk::CommonTime firstNavTime, lastNavTime;
 
    bool firstObs, firstPvt, firstNav, firstSelftest;
    double obsRateEst, pvtRateEst;
-   gpstk::DayTime prevEpochTime;
+   gpstk::CommonTime prevEpochTime;
 
    static const int maxChannel=12;
 
    // First time is of the first missed epoch, second time is the last missed epoch
    // (i.e. first = previous + obsRateEst, second=current-ObsRateEst
-   typedef std::pair<gpstk::DayTime, gpstk::DayTime> DayTimePair;
-   typedef std::list<DayTimePair> DayTimePairList;
-   DayTimePairList epochGapList;
-   std::vector<DayTimePairList> chanGapList;
+   typedef std::pair<gpstk::CommonTime, gpstk::CommonTime> CommonTimePair;
+   typedef std::list<CommonTimePair> CommonTimePairList;
+   CommonTimePairList epochGapList;
+   std::vector<CommonTimePairList> chanGapList;
 
    // This is used to record the previous obs on each channel
    typedef std::vector<gpstk::MDPObsEpoch> ObsEpochVector;

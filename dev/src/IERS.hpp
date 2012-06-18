@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2010
 //
@@ -33,6 +33,7 @@
 #include <string>
 #include "IERSConventions.hpp"
 #include "PlanetEphemeris.hpp"
+#include "MJD.hpp"
 
 namespace gpstk
 {
@@ -75,54 +76,54 @@ namespace gpstk
 
          /// Request EOP Data
       static EOPDataStore::EOPData eopData(const double& mjdUTC)
-         throw(InvalidRequest){return gpstk::EOPData( DayTime(mjdUTC) );}
+         throw(InvalidRequest){return gpstk::EOPData( gpstk::MJD(mjdUTC) );}
 
-      static EOPDataStore::EOPData eopData(const DayTime& UTC)
+      static EOPDataStore::EOPData eopData(const CommonTime& UTC)
          throw(InvalidRequest){return gpstk::EOPData(UTC);}
         
          /// Pole coordinate [arcseconds]
          /// @param  Modified Julidate in UTC
          /// @return Pole coordinate x in arcseconds
       static double xPole(const double& mjdUTC)
-         throw (InvalidRequest){return gpstk::PolarMotionX( DayTime(mjdUTC) );}
+         throw (InvalidRequest){return gpstk::PolarMotionX( gpstk::MJD(mjdUTC) );}
 
-      static double xPole(const DayTime& UTC)
+      static double xPole(const CommonTime& UTC)
          throw (InvalidRequest){return gpstk::PolarMotionX(UTC);}
       
          /// Pole coordinate [arcseconds]
          /// @param  Modified Julidate in UTC
          /// @return Pole coordinate x in arcseconds
       static double yPole(const double& mjdUTC)
-         throw (InvalidRequest){ return gpstk::PolarMotionY( DayTime(mjdUTC) );}
+         throw (InvalidRequest){ return gpstk::PolarMotionY( gpstk::MJD(mjdUTC) );}
 
-      static double yPole(const DayTime& UTC)
+      static double yPole(const CommonTime& UTC)
          throw (InvalidRequest){ return gpstk::PolarMotionY(UTC);}
 
          /// UT1-UTC time difference [seconds]
          /// @param  Modified Julidate in UTC
          /// @return UT1-UTC time difference in seconds
       static double UT1mUTC(const double& mjdUTC)
-         throw (InvalidRequest) { return gpstk::UT1mUTC( DayTime(mjdUTC) ); } 
+         throw (InvalidRequest) { return gpstk::UT1mUTC( gpstk::MJD(mjdUTC) ); } 
 
-      static double UT1mUTC(const DayTime& UTC)
+      static double UT1mUTC(const CommonTime& UTC)
          throw (InvalidRequest) { return gpstk::UT1mUTC(UTC); } 
      
          /// Nutation dPsi [arcseconds]
          /// @param  Modified Julidate in UTC
          /// @return dPsi in arcseconds
       static double dPsi(const double& mjdUTC)
-         throw (InvalidRequest){return gpstk::NutationDPsi( DayTime(mjdUTC) );}
+         throw (InvalidRequest){return gpstk::NutationDPsi( gpstk::MJD(mjdUTC) );}
 
-      static double dPsi(const DayTime& UTC)
+      static double dPsi(const CommonTime& UTC)
          throw (InvalidRequest){return gpstk::NutationDPsi(UTC);}
 
          /// Nutation dEps [arcseconds]
          /// @param  Modified Julidate in UTC
          /// @return dEps in arcseconds
       static double dEps(const double& mjdUTC)
-         throw (InvalidRequest){return gpstk::NutationDEps( DayTime(mjdUTC) );}
+         throw (InvalidRequest){return gpstk::NutationDEps( gpstk::MJD(mjdUTC) );}
 
-      static double dEps(const DayTime& UTC)
+      static double dEps(const CommonTime& UTC)
          throw (InvalidRequest){return gpstk::NutationDEps(UTC);}
 
          /** Return the difference between TAI and UTC (known as leap seconds).
@@ -135,9 +136,9 @@ namespace gpstk
           * @return      number of leaps seconds.
          */
       static int TAImUTC(const double& mjdUTC)
-         throw(InvalidRequest){return gpstk::TAImUTC( DayTime(mjdUTC) ); }
+         throw(InvalidRequest){return gpstk::TAImUTC( gpstk::MJD(mjdUTC) ); }
 
-      static int TAImUTC(const DayTime& UTC)
+      static int TAImUTC(const CommonTime& UTC)
          throw(InvalidRequest){return gpstk::TAImUTC(UTC); }
 
 
@@ -164,33 +165,33 @@ namespace gpstk
       //========================================================================
 
          /// Transform time between GPST and UTC
-      static DayTime GPST2UTC(const DayTime& GPST){return gpstk::GPST2UTC(GPST);}
-      static DayTime UTC2GPST(const DayTime& UTC){return gpstk::UTC2GPST(UTC);}
+      static CommonTime GPST2UTC(const CommonTime& GPST){return gpstk::GPST2UTC(GPST);}
+      static CommonTime UTC2GPST(const CommonTime& UTC){return gpstk::UTC2GPST(UTC);}
    
          /// Transform time between UT1 and UTC
-      static DayTime UT12UTC(const DayTime& UT1){return gpstk::UT12UTC(UT1);}
-      static DayTime UTC2UT1(const DayTime& UTC){return gpstk::UTC2UT1(UTC);}
+      static CommonTime UT12UTC(const CommonTime& UT1){return gpstk::UT12UTC(UT1);}
+      static CommonTime UTC2UT1(const CommonTime& UTC){return gpstk::UTC2UT1(UTC);}
 
-      static DayTime UT12UTC(const DayTime& UT1,double ut1mutc)
+      static CommonTime UT12UTC(const CommonTime& UT1,double ut1mutc)
       {return gpstk::UT12UTC(UT1,ut1mutc);}
       
-      static DayTime UTC2UT1(const DayTime& UTC,double ut1mutc)
+      static CommonTime UTC2UT1(const CommonTime& UTC,double ut1mutc)
       {return gpstk::UTC2UT1(UTC,ut1mutc);}
 
          /// Transform time between TT and UTC
-      static DayTime TT2UTC(const DayTime& TT){return gpstk::TT2UTC(TT);}
-      static DayTime UTC2TT(const DayTime& UTC){return gpstk::UTC2TT(UTC);}
+      static CommonTime TT2UTC(const CommonTime& TT){return gpstk::TT2UTC(TT);}
+      static CommonTime UTC2TT(const CommonTime& UTC){return gpstk::UTC2TT(UTC);}
 
          /// Transform time between TAI and UTC
-      static DayTime TAI2UTC(const DayTime& TAI){return gpstk::TAI2UTC(TAI);}
-      static DayTime UTC2TAI(const DayTime& UTC){return gpstk::UTC2TAI(UTC);}
+      static CommonTime TAI2UTC(const CommonTime& TAI){return gpstk::TAI2UTC(TAI);}
+      static CommonTime UTC2TAI(const CommonTime& UTC){return gpstk::UTC2TAI(UTC);}
 
          /// Transform time between BDT(Compass Time) and UTC
-      static DayTime BDT2UTC(const DayTime& BDT){return gpstk::BDT2UTC(BDT);}
-      static DayTime UTC2BDT(const DayTime& UTC){return gpstk::UTC2BDT(UTC);}
+      static CommonTime BDT2UTC(const CommonTime& BDT){return gpstk::BDT2UTC(BDT);}
+      static CommonTime UTC2BDT(const CommonTime& UTC){return gpstk::UTC2BDT(UTC);}
 
          /// A rather general way to transfrom time
-      static DayTime ConvertTimeSystem(const DayTime& time,TimeSystem from,TimeSystem to)
+      static CommonTime ConvertTimeSystem(const CommonTime& time,TimeSystemEnum from,TimeSystemEnum to)
       {return gpstk::ConvertTimeSystem(time,from,to);}
 
 
@@ -201,24 +202,24 @@ namespace gpstk
          //
       
          /// ECI to ECEF transform matrix, POM * Theta * NP 
-      static Matrix<double> J2kToECEFMatrix(const DayTime& UTC,const EOPDataStore::EOPData& ERP)
+      static Matrix<double> J2kToECEFMatrix(const CommonTime& UTC,const EOPDataStore::EOPData& ERP)
          throw(Exception) { return gpstk::J2kToECEFMatrix(UTC,ERP); }
 
          /// Convert position from J2000 to ECEF.
-      static Vector<double> J2kPosToECEF(const DayTime& UTC, const Vector<double>& j2kPos)
+      static Vector<double> J2kPosToECEF(const CommonTime& UTC, const Vector<double>& j2kPos)
          throw(Exception) {return gpstk::J2kPosToECEF(UTC,j2kPos);}
 
          /// Convert position from ECEF to J2000.
-      static Vector<double> ECEFPosToJ2k(const DayTime& UTC, const Vector<double>& ecefPos)
+      static Vector<double> ECEFPosToJ2k(const CommonTime& UTC, const Vector<double>& ecefPos)
          throw(Exception){return gpstk::ECEFPosToJ2k(UTC,ecefPos);}
 
          /// Convert position and velocity from J2000 to ECEF.
-      static Vector<double> J2kPosVelToECEF(const DayTime& UTC, const Vector<double>& j2kPosVel)
+      static Vector<double> J2kPosVelToECEF(const CommonTime& UTC, const Vector<double>& j2kPosVel)
          throw(Exception){return gpstk::J2kPosVelToECEF(UTC,j2kPosVel);}
 
 
          /// Convert position and velocity from ECEF to J2000.
-      static Vector<double> ECEFPosVelToJ2k(const DayTime& UTC, const Vector<double>& ecefPosVel)
+      static Vector<double> ECEFPosVelToJ2k(const CommonTime& UTC, const Vector<double>& ecefPosVel)
          throw(Exception){return gpstk::ECEFPosVelToJ2k(UTC,ecefPosVel);}
 
       
@@ -239,30 +240,29 @@ namespace gpstk
           * @param center     relative to whick the result apply
           * @return           The position and velocity of the planet in m and m/s
           */
-      static Vector<double> planetJ2kPosVel( const DayTime&      TT, 
+      static Vector<double> planetJ2kPosVel( const CommonTime&      TT, 
                                              PlanetEphemeris::Planet entity,
                                              PlanetEphemeris::Planet center 
-                                                      = PlanetEphemeris::Earth)
-         throw(Exception);
+                                                      = PlanetEphemeris::Earth);
 
          /// Return J2000 position of sun in m
-      static Vector<double> sunJ2kPosition(const DayTime& TT);
-      static Vector<double> sunJ2kPosition(const DayTime& time,TimeSystem sys)
+      static Vector<double> sunJ2kPosition(const CommonTime& TT);
+      static Vector<double> sunJ2kPosition(const CommonTime& time,TimeSystemEnum sys)
       { return sunJ2kPosition(ConvertTimeSystem(time,sys,TS_TT));}
 
          /// Return J2000 position of moon in m
-      static Vector<double> moonJ2kPosition(const DayTime& TT);
-      static Vector<double> moonJ2kPosition(const DayTime& time,TimeSystem sys)
+      static Vector<double> moonJ2kPosition(const CommonTime& TT);
+      static Vector<double> moonJ2kPosition(const CommonTime& time,TimeSystemEnum sys)
       { return moonJ2kPosition(ConvertTimeSystem(time,sys,TS_TT));}
 
          /// Return ECEF position of sun in m
-      static Vector<double> sunECEFPosition(const DayTime& TT);
-      static Vector<double> sunECEFPosition(const DayTime& time,TimeSystem sys)
+      static Vector<double> sunECEFPosition(const CommonTime& TT);
+      static Vector<double> sunECEFPosition(const CommonTime& time,TimeSystemEnum sys)
       { return sunECEFPosition(ConvertTimeSystem(time,sys,TS_TT));}
 
          /// Return ECEF position of moon in m
-      static Vector<double> moonECEFPosition(const DayTime& TT);
-      static Vector<double> moonECEFPosition(const DayTime& time,TimeSystem sys)
+      static Vector<double> moonECEFPosition(const CommonTime& TT);
+      static Vector<double> moonECEFPosition(const CommonTime& time,TimeSystemEnum sys)
       { return moonECEFPosition(ConvertTimeSystem(time,sys,TS_TT));}
 
    protected:

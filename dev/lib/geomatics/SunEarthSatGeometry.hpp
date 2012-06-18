@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,7 +46,7 @@
 #ifndef SUN_EARTH_SATTELITE_INCLUDE
 #define SUN_EARTH_SATTELITE_INCLUDE
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Matrix.hpp"
 #include "Position.hpp"
 #include "SolarSystem.hpp"
@@ -100,14 +100,14 @@ namespace gpstk
    /// Also, R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
    /// Also return the shadow factor, which is the fraction of the sun's area not
    /// visible to satellite; thus sf == 1 means the satellite is in eclipse.
-   /// @param DayTime tt           Time of interest
+   /// @param CommonTime tt           Time of interest
    /// @param Position SV          Satellite position
    /// @param SolarSystem SSEph    Solar system ephemeris
    /// @param EarthOrientation EO  Earth orientation parameters appropriate for time
    /// @param double sf            Shadow factor: 0 <= sf <= 1 fraction of sun visible
    /// @return Matrix<double>(3,3) Rotation matrix from XYZ to Satellite body frame.
    /// @throw if SolarSystem is invalid.
-   Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
+   Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV,
                                     const SolarSystem& SSEph,
                                     const EarthOrientation& EO,
                                     double& sf)
@@ -126,11 +126,11 @@ namespace gpstk
    /// Also, R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
    /// Also return the shadow factor, which is the fraction of the sun's area not
    /// visible to satellite; thus sf == 1 means the satellite is in eclipse.
-   /// @param DayTime tt           Time of interest
+   /// @param CommonTime tt           Time of interest
    /// @param Position SV          Satellite position
    /// @param double sf            Shadow factor: 0 <= sf <= 1 fraction of sun visible
    /// @return Matrix<double>(3,3) Rotation matrix from XYZ to Satellite body frame.
-   Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& sf)
+   Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV, double& sf)
       throw(Exception);
 
    /// Compute the azimuth and nadir angle, in the satellite body frame,

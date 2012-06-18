@@ -16,14 +16,15 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2006, The University of Texas at Austin
 //
 //============================================================================
 
 #include "CheckFrame.hpp"
-
+#include <iostream>
+#include <fstream>
 #include "FICAStream.hpp"
 #include "FICData.hpp"
 
@@ -34,15 +35,25 @@ int main(int argc, char* argv[])
 {
    try
    {
-      CheckFrame<FICAStream, FICData> cf(argv[0],
-                                         std::string("FIC ASCII"));
-      
+      CheckFrame<FICAStream, FICData> cf(argv[0], std::string("FIC ASCII"));
+      ofstream out;
+      out.open ("out.txt");
       if (!cf.initialize(argc, argv))
-         return 0;
+      {       
+	out << "here 1" << endl;
+	return 0;
+      }
+
+      out << "here 2" << endl;
+
       if (!cf.run())
-         return 1;
+      {
+	out << "here 3" << endl;
+	return 1;
+      } 
       
       return 0;   
+      out.close();
    }
    catch(gpstk::Exception& e)
    {

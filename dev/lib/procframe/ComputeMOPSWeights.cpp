@@ -22,9 +22,10 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2010
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008,
+//                      2010, 2011
 //
 //============================================================================
 
@@ -34,15 +35,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ComputeMOPSWeights::classIndex = 6100000;
-
-
-      // Returns an index identifying this object.
-   int ComputeMOPSWeights::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ComputeMOPSWeights::getClassName() const
@@ -56,7 +48,7 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeMOPSWeights::Process( const DayTime& time,
+   satTypeValueMap& ComputeMOPSWeights::Process( const CommonTime& time,
                                                  satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -106,7 +98,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -138,7 +129,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -170,7 +160,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -199,7 +188,7 @@ namespace gpstk
       else
       {
          pBCEphemeris = NULL;
-         pTabEphemeris = dynamic_cast<TabularEphemerisStore*>(&ephem);
+         pTabEphemeris = dynamic_cast<SP3EphemerisStore*>(&ephem);
       }
 
       return (*this);
@@ -366,7 +355,6 @@ call a modeler class?." );
       return sigma2uire;
 
    }  // End of method 'ComputeMOPSWeightsWeights::sigma2iono()'
-
 
 
 }  // End of namespace gpstk

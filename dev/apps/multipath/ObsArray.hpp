@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2008, The University of Texas at Austin
 //
@@ -38,11 +38,13 @@
 #include<iostream>
 
 #include "ValarrayUtils.hpp"
-#include "DayTime.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "CommonTime.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include "Exception.hpp" 
 #include "Expression.hpp"
 #include "RinexObsHeader.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 #include "SatID.hpp"
 
 namespace gpstk
@@ -132,7 +134,7 @@ namespace gpstk
       double& operator() (size_t r, size_t c)
       {  return observation[r*numObsTypes + c]; }
 
-      std::valarray<DayTime>  epoch;
+      std::valarray<CommonTime>  epoch;
       std::valarray<SatID>    satellite;
       std::valarray<double>   observation;
       std::valarray<bool>     lli;
@@ -172,7 +174,7 @@ namespace gpstk
 
 
 
-      RinexEphemerisStore ephStore;
+      Rinex3EphemerisStore ephStore;
        
    }; // End class ObsArray
    

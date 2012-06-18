@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -472,7 +472,6 @@ namespace gpstk
       { qMatrix = pMatrix; return (*this); };
 
 
-
           /** Set the positioning mode, kinematic or static.
            */
       virtual SolverPPP& setKinematic( bool kinematicMode = true,
@@ -610,6 +609,7 @@ namespace gpstk
       PhaseAmbiguityModel biasModel;
 
 
+         // Some methods that we want to hide
          /// Initial index assigned to this class.
       static int classIndex;
 
@@ -621,7 +621,6 @@ namespace gpstk
       { index = classIndex++; };
 
 
-         // Some methods that we want to hide
       virtual int Compute( const Vector<double>& prefitResiduals,
                            const Matrix<double>& designMatrix )
          throw(InvalidSolver)
@@ -639,4 +638,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
+
 #endif   // GPSTK_SOLVERPPP_HPP

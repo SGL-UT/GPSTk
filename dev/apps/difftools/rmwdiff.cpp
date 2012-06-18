@@ -17,7 +17,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,6 +49,7 @@
 #include "RinexMetFilterOperators.hpp"
 
 #include "DiffFrame.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -129,9 +130,9 @@ void RMWDiff::process()
          {
             if (firstitr->time == seconditr->time)
             {
-               cout << setw(3) << firstitr->time.DOYday() << ' ' 
+               cout << setw(3) << static_cast<YDSTime>(firstitr->time) << ' ' 
                     << setw(10) << setprecision(0)
-                    << firstitr->time.DOYsecond() << ' ' 
+                    << static_cast<YDSTime>(firstitr->time) << ' ' 
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' ';
 

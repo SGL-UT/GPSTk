@@ -2,11 +2,11 @@
 
 /**
  * @file ExtractPC.hpp
- * This class eases PC combination data extraction from a RinexObsData object.
+ * This class eases PC combination data extraction from a Rinex3ObsData object.
  */
 
-#ifndef ExtractPC_GPSTK
-#define ExtractPC_GPSTK
+#ifndef GPSTK_EXTRACTPC_HPP
+#define GPSTK_EXTRACTPC_HPP
 
 //============================================================================
 //
@@ -24,75 +24,88 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE. 2006
+//  Dagoberto Salazar - gAGE. 2006, 2012
 //
 //============================================================================
 
 
-
 #include "ExtractCombinationData.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
+
 
 namespace gpstk
 {
 
-    /** @addtogroup RinexObs */
-    //@{
+      /** @addtogroup RinexObs */
+      //@{
 
 
-    /// This class eases PC combination data extraction from a RinexObsData object.
-    class ExtractPC : public ExtractCombinationData
-    {
-    public:
+      /// This class eases PC combination data extraction from
+      /// a Rinex3ObsData object.
+   class ExtractPC : public ExtractCombinationData
+   {
+   public:
 
-        /// Default constructor
-        ExtractPC() throw(InvalidData) : typeObs1(RinexObsHeader::P1), typeObs2(RinexObsHeader::P2)
-        {
-            valid = false;
-            checkData = true;
-        };
-
-
-        /** Compute the PC observation from a RinexObsData object
-         * @param rinexData     The Rinex data set holding the observations
-         *
-         * @return
-         *  Number of satellites with PC combination data available
-         */
-        virtual int getData(const RinexObsData& rinexData) throw(InvalidData)
-        {
-            return ExtractCombinationData::getData(rinexData, typeObs1, typeObs2);
-        };  // end ExtractPC::getData()
+         /// Default constructor
+      ExtractPC()
+         : typeObs1("P1"), typeObs2("P2")
+      { valid = false; checkData = true; };
 
 
-        /// Some Rinex data files provide C1 instead of P1. Use this method in those cases.
-        void useC1() { typeObs1 = RinexObsHeader::C1; };
+         /** Compute the PC observation from a Rinex3ObsData object.
+          *
+          * @param rinexData  The Rinex data set holding the observations.
+          * @param hdr        RINEX Observation Header for current RINEX file.
+          *
+          * @return
+          *  Number of satellites with PC combination data available
+          */
+      virtual int getData( const Rinex3ObsData& rinexData,
+                           const Rinex3ObsHeader& hdr )
+         throw(InvalidRequest)
+      {
+
+         return ExtractCombinationData::getData( rinexData,
+                                                 typeObs1,
+                                                 typeObs2,
+                                                 hdr );
+
+      }; // End of method 'ExtractPC::getData()'
 
 
-        /// Destructor
-        virtual ~ExtractPC() {};
+         /// Some Rinex data files provide C1 instead of P1. Use this method
+         /// in those cases.
+      virtual ExtractPC& useC1()
+      { typeObs1 = "C1"; return (*this); };
 
 
-    protected:
-        // Compute the combination of observables.
-        virtual double getCombination(double obs1, double obs2) throw(InvalidData)
-        {
-            return ( (GAMMA_GPS*obs1 - obs2)/(GAMMA_GPS - 1.0) );
-        };
+         /// Destructor
+      virtual ~ExtractPC() {};
 
 
-    private:
-        RinexObsHeader::RinexObsType typeObs1;
-        RinexObsHeader::RinexObsType typeObs2;
+   protected:
 
 
-   }; // end class ExtractPC
+         /// Compute the combination of observables.
+      virtual double getCombination( double obs1, double obs2 )
+         throw(InvalidRequest)
+      {
+         return ( (GAMMA_GPS*obs1 - obs2)/(GAMMA_GPS - 1.0) );
+      };
+
+   private:
+
+      std::string typeObs1;
+      std::string typeObs2;
 
 
-   //@}
+   }; // End of class 'ExtractPC'
 
-}
 
-#endif
+      //@}
+
+}  // End of namespace gpstk
+
+#endif   // GPSTK_EXTRACTPC_HPP

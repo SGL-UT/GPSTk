@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -83,7 +83,7 @@ namespace gpstk
          /** Sets name of file containing DCBs data.
           * @param name      Name of the file containing DCB(P1-C1)
           */
-      virtual ConvertC1ToP1& setDCBFile(const string& fileP1C1);
+      virtual ConvertC1ToP1& setDCBFile(const std::string& fileP1C1);
 
          /** Returns a satTypeValueMap object, adding the new data generated
           *  when calling this object.
@@ -91,7 +91,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -116,27 +116,15 @@ namespace gpstk
       { Process(gData.header.epoch, gData.body); return gData; };
 
    
-         /// Returns an index identifying this object.
-      virtual int getIndex() const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName() const;
 
+
    protected:
+
          /// Object to access DCB data from CODE
       DCBDataReader dcbP1C1;
 
-   private:  
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
 
    }; // End of class 'ConvertC1ToP1'
    

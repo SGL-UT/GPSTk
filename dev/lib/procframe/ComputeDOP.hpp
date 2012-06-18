@@ -5,8 +5,8 @@
  * This class computes the usual DOP values: GDOP, PDOP, TDOP, HDOP and VDOP.
  */
 
-#ifndef COMPUTEDOP_HPP
-#define COMPUTEDOP_HPP
+#ifndef GPSTK_COMPUTEDOP_HPP
+#define GPSTK_COMPUTEDOP_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2011
 //
 //============================================================================
 
@@ -99,7 +99,7 @@ namespace gpstk
          /// Default constructor
       ComputeDOP()
          : gdop(-1.0), pdop(-1.0), tdop(-1.0), hdop(-1.0), vdop(-1.0)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -108,7 +108,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -158,10 +158,6 @@ namespace gpstk
       { return vdop; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -188,20 +184,10 @@ namespace gpstk
          /// Vertical Dilution of Precision
       double vdop;
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputeDOP'
 
       //@}
 
 }  // End of namespace gpstk
-#endif // COMPUTEDOP_HPP
+
+#endif   // GPSTK_COMPUTEDOP_HPP

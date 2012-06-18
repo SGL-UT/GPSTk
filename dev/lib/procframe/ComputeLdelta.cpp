@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -34,15 +34,6 @@
 namespace gpstk
 {
 
-      // Index initially assigned to this class
-   int ComputeLdelta::classIndex = 2100000;
-
-
-      // Returns an index identifying this object.
-   int ComputeLdelta::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string ComputeLdelta::getClassName() const
    { return "ComputeLdelta"; }
@@ -50,15 +41,12 @@ namespace gpstk
 
       // Default constructor
    ComputeLdelta::ComputeLdelta()
-      : DEN(L1_FREQ - L2_FREQ)
+      : DEN(L1_FREQ_GPS - L2_FREQ_GPS)
    {
       type1 = TypeID::L1;
       type2 = TypeID::L2;
       resultType = TypeID::Ldelta;
-      setIndex();
    }
 
 
-
-
-} // end of namespace gpstk
+}  // End of namespace gpstk

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -63,7 +63,7 @@ void PhaseCleaner::addData(const ObsEpochMap& rx1,
    // Now loop over all the epochs, pulling the data into the arcs
    for (ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
-      const DayTime& t = ei1->first;
+      const CommonTime& t = ei1->first;
       const ObsEpoch& rod1 = ei1->second;
       ObsEpochMap::const_iterator ei2 = rx2.find(t);
 
@@ -95,8 +95,8 @@ void PhaseCleaner::addData(const ObsEpochMap& rx1,
          if (d == rotm1.end())
             continue;
 
-         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ : L1_FREQ;
-         rangeRate[prn][t] = d->second * C_GPS_M/freq;
+         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ_GPS : L1_FREQ_GPS;
+         rangeRate[prn][t] = d->second * C_MPS/freq;
 
          SvObsEpoch::const_iterator phase1;
          for (phase1 = rotm1.begin(); phase1 != rotm1.end(); phase1++)
@@ -164,7 +164,7 @@ void PhaseCleaner::selectMasters(
    {
       for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
       {
-         const DayTime& t = i->first;
+         const CommonTime& t = i->first;
          Obs& obs = i->second;
 
          SvElevationMap::iterator j = pem.find(t);
@@ -265,7 +265,7 @@ void PhaseCleaner::doubleDifference(
 
       for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
       {
-         const DayTime& t = i->first;
+         const CommonTime& t = i->first;
          Obs& obs = i->second;
 
          Arc::const_iterator k;
@@ -346,7 +346,7 @@ void PhaseCleaner::getPhaseDD(DDEpochMap& ddem) const
 
             for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
-               const DayTime& t = l->first;
+               const CommonTime& t = l->first;
                const Obs& obs = l->second;
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
@@ -413,8 +413,8 @@ void PhaseCleaner::getSlips(
                continue;
             }
 
-            const DayTime& t1Begin = arc1.begin()->first;
-            const DayTime& t0End   = arc0.rbegin()->first;
+            const CommonTime& t1Begin = arc1.begin()->first;
+            const CommonTime& t0End   = arc0.rbegin()->first;
             
             if (std::abs(t1Begin-t0End) > maxGapTime)
                continue;
@@ -492,7 +492,7 @@ void PhaseCleaner::dump(std::ostream& s) const
 
             for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
-               const DayTime& t = l->first;
+               const CommonTime& t = l->first;
                const Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
@@ -533,7 +533,7 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
    // Now loop over all the epochs, pulling the data into the arcs
    for (ObsEpochMap::const_iterator ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
-      const DayTime& t = ei1->first;
+      const CommonTime& t = ei1->first;
       const ObsEpoch& oe1 = ei1->second;
       ObsEpochMap::const_iterator ei2 = rx2.find(t);
 
@@ -562,8 +562,8 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
          if (d == soe.end())
             continue;
 
-         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ : L1_FREQ;
-         rangeRate[sv] = d->second * C_GPS_M/freq;
+         double freq = d->first.band == ObsID::cbL2 ? L2_FREQ_GPS : L1_FREQ_GPS;
+         rangeRate[sv] = d->second * C_MPS/freq;
       }
 
       // Loop over all SVs in track on reciever #1
@@ -659,9 +659,9 @@ void PhaseCleanerA::addData(const ObsEpochMap& rx1,
 
                double lamdaInv;
                if (rot.band == ObsID::cbL1)
-                  lamdaInv = L1_FREQ/C_GPS_M;
+                  lamdaInv = L1_FREQ_GPS/C_MPS;
                else if (rot.band == ObsID::cbL2)
-                  lamdaInv = L2_FREQ/C_GPS_M;
+                  lamdaInv = L2_FREQ_GPS/C_MPS;
                else
                   continue;
 
@@ -726,9 +726,9 @@ void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
 
       double lamda;
       if (rot.band == ObsID::cbL1)
-         lamda = C_GPS_M/L1_FREQ;
+         lamda = C_MPS/L1_FREQ_GPS;
       else if (rot.band == ObsID::cbL2)
-         lamda = C_GPS_M/L2_FREQ;
+         lamda = C_MPS/L2_FREQ_GPS;
       else
          continue;
 
@@ -743,7 +743,7 @@ void PhaseCleanerA::getPhaseDD(DDEpochMap& ddem) const
 
             for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
-               const DayTime& t = l->first;
+               const CommonTime& t = l->first;
                const Obs& obs = l->second;
 
                // Whew! thats deep. Now to stuff the dd back in to the ddem
@@ -772,9 +772,9 @@ void PhaseCleanerA::dump(std::ostream& s) const
  
       double lamda;
       if (rot.band == ObsID::cbL1)
-         lamda = C_GPS_M/L1_FREQ;
+         lamda = C_MPS/L1_FREQ_GPS;
       else if (rot.band == ObsID::cbL2)
-         lamda = C_GPS_M/L2_FREQ;
+         lamda = C_MPS/L2_FREQ_GPS;
       else
          continue;
 
@@ -789,7 +789,7 @@ void PhaseCleanerA::dump(std::ostream& s) const
 
             for (Arc::const_iterator l = arc.begin(); l != arc.end(); l++)
             {
-               const DayTime& t = l->first;
+               const CommonTime& t = l->first;
                const Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
@@ -866,8 +866,8 @@ void PhaseCleanerA::getSlips(
                continue;
             }
 
-            const DayTime& t1Begin = arc1.begin()->first;
-            const DayTime& t0End   = arc0.rbegin()->first;
+            const CommonTime& t1Begin = arc1.begin()->first;
+            const CommonTime& t0End   = arc0.rbegin()->first;
             
             if (std::abs(t1Begin-t0End) > maxGapTime)
                continue;

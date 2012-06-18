@@ -17,7 +17,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -34,7 +34,7 @@ using namespace gpstk;
 
 StaPosList  VisSupport::getStationCoordinates(
                  const CommandOptionWithAnyArg& mscFileName,
-                 const DayTime& dt, 
+                 const CommonTime& dt, 
                  const CommandOptionWithAnyArg& includeStation,
                  const CommandOptionWithAnyArg& excludeStation)
 {
@@ -65,7 +65,7 @@ StaPosList  VisSupport::getStationCoordinates(
       }
       
          // In the second case, the user has provided a specific list of 
-         // staitons that are to be excluded from the list provided in 
+         // stations that are to be excluded from the list provided in 
          // the station coordinates file. 
       else if (excludeStation.getCount()>0)
       {
@@ -102,7 +102,7 @@ StaPosList  VisSupport::getStationCoordinates(
       
          // Since the nominal SPS constellation has an epoch of 1993, coerce
          // the station coordinate search time to a later time if necessary.
-      DayTime xdt = mscStore.getInitialTime();
+      CommonTime xdt = mscStore.getInitialTime();
       if (dt>xdt) xdt = dt; 
 
          // We're not going to worry about propagating drift, especically
@@ -111,7 +111,7 @@ StaPosList  VisSupport::getStationCoordinates(
       for (vci=IDList.begin();vci!=IDList.end();++vci)
       {
          const MSCData& mscd = mscStore.findMSC( (string) *vci, xdt );
-         pair<string,ECEF> node( *vci, mscd.coordinates );
+         pair<string,Position> node( *vci, mscd.coordinates );
          staPosList.insert( node );
       }
    }

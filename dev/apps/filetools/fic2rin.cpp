@@ -20,7 +20,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,6 +48,7 @@
 #include "FICFilterOperators.hpp"
 #include "RinexNavFilterOperators.hpp"
 #include "FileFilterFrame.hpp"
+#include "GPSWeekSecond.hpp"
 #include <string>
 
 using namespace std;
@@ -84,7 +85,7 @@ int main(int argc, char* argv[])
       rnh.fileProgram = "fic2rin";
       rnh.fileAgency = "";
       ostringstream ostr;
-      ostr << DayTime();
+      ostr << CommonTime();
       rnh.date = ostr.str();
       rnh.version = 2.1;
       rnh.valid |= RinexNavHeader::versionValid;
@@ -134,11 +135,11 @@ int main(int argc, char* argv[])
       while (itr != ficList.end())
       {
             // use TOE and transmit week number to determine time
-         DayTime time;
+         CommonTime time;
          if( (*itr).blockNum == 9 ) // block 9
-            time.setGPSfullweek(short((*itr).f[5]), (double)(*itr).f[33]);
+            time=GPSWeekSecond(short((*itr).f[5]), (double)(*itr).f[33]);
          else // block 109
-            time.setGPSfullweek(short((*itr).i[0]), (double)(((*itr).i[21] & 0x3FFFFFFFL)>>14)*16);
+            time=GPSWeekSecond(short((*itr).i[0]), (double)(((*itr).i[21] & 0x3FFFFFFFL)>>14)*16);
             // this station number is bogus, but it's unused so it should be ok
          EngEphemeris ee(*itr);
          rndList.push_back(RinexNavData(ee));

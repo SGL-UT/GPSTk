@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2009, 2011
 //
 //============================================================================
 
@@ -126,7 +126,7 @@ namespace gpstk
 
       // Explicit constructor
    sourceEpochRinexHeader::sourceEpochRinexHeader( const sourceHeader& sh,
-                                                   const DayTime& time,
+                                                   const CommonTime& time,
                                                    const std::string& antType,
                                                    const Triple& antPos,
                                                    const short& flag )
@@ -369,7 +369,6 @@ namespace gpstk
       return s;
 
    }  // End of 'operator<<' for sourceEpochTypeHeader
-
 
 
 }  // End of namespace gpstk

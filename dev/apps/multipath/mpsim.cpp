@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2010, The University of Texas at Austin
 //
@@ -28,7 +28,7 @@
 // GPSTk main library includes
 #include "BasicFramework.hpp"
 #include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "IonoModel.hpp"
 
 // From GPSTk's rxio
@@ -59,7 +59,7 @@ protected:
    string logFileName;
    string epochFormat;
 
-   DayTime startTime;
+   CommonTime startTime;
 
    CommandOptionWithAnyArg navOption;
    CommandOptionWithAnyArg logfileOption;
@@ -88,7 +88,7 @@ MPSim::MPSim(char *arg0)
 
 MPSim::~MPSim()
 {
-   DayTime endTime;
+   CommonTime endTime;
    logStream << "Execution end at: " << endTime.printf(epochFormat) << endl;
    logStream << "Total execution time: " << endTime - startTime << " seconds"
 	     << endl;

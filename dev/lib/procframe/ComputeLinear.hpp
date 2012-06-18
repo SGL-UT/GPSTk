@@ -5,8 +5,8 @@
  * This class computes linear combinations of GDS data.
  */
 
-#ifndef COMPUTELINEAR_HPP
-#define COMPUTELINEAR_HPP
+#ifndef GPSTK_COMPUTELINEAR_HPP
+#define GPSTK_COMPUTELINEAR_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -134,7 +134,7 @@ namespace gpstk
 
          /// Default constructor
       ComputeLinear()
-      { setIndex(); clearAll(); };
+      { clearAll(); };
 
 
          /** Common constructor
@@ -142,7 +142,7 @@ namespace gpstk
           * @param linearComb   Linear combination to be computed.
           */
       ComputeLinear( const gnssLinearCombination& linearComb )
-      { setIndex(); linearList.push_back(linearComb); };
+      { linearList.push_back(linearComb); };
 
 
          /** Common constructor
@@ -151,7 +151,7 @@ namespace gpstk
           */
       ComputeLinear(const LinearCombList& list)
          : linearList(list)
-      { setIndex(); };
+      { };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -160,7 +160,7 @@ namespace gpstk
           * @param time      Epoch corresponding to the data.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -224,10 +224,6 @@ namespace gpstk
       { linearList.push_back(linear); return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -243,21 +239,10 @@ namespace gpstk
       LinearCombList linearList;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
-   }; // end class ComputeLinear
-
+   }; // End class ComputeLinear
 
       //@}
 
-}
-#endif // COMPUTELINEAR_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_COMPUTELINEAR_HPP

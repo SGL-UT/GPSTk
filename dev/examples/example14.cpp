@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright Dagoberto Salazar - gAGE ( http://www.gage.es ). 2010
 //
@@ -65,6 +65,7 @@
 
    // Class to store satellite precise navigation data
 #include "SP3EphemerisStore.hpp"
+#include "TabularEphemerisStore.hpp"
 
    // Class to store a list of processing objects
 #include "ProcessingList.hpp"
@@ -253,7 +254,7 @@ void example14::printModel( ofstream& modelfile,
    modelfile << fixed << setprecision( precision );
 
       // Get epoch out of GDS
-   DayTime time(gData.header.epoch);
+   CommonTime time(gData.header.epoch);
 
       // Iterate through the GNSS Data Structure
    for ( satTypeValueMap::const_iterator it = gData.body.begin();
@@ -262,9 +263,9 @@ void example14::printModel( ofstream& modelfile,
    {
 
          // Print epoch
-      modelfile << time.year()         << "  ";    // Year           #1
-      modelfile << time.DOY()          << "  ";    // DayOfYear      #2
-      modelfile << time.DOYsecond()    << "  ";    // SecondsOfDay   #3
+      modelfile << static_cast<YDSTime>(time).year         << "  ";    // Year           #1
+      modelfile << static_cast<YDSTime>(time).doy          << "  ";    // DayOfYear      #2
+      modelfile << static_cast<YDSTime>(time).sod    << "  ";    // SecondsOfDay   #3
 
          // Print satellite information (Satellite system and ID number)
       modelfile << (*it).first << " ";             // System         #4
@@ -374,21 +375,24 @@ void example14::process()
    SP3EphList.rejectBadPositions(true);
    SP3EphList.rejectBadClocks(true);
 
-      // Read if we should check for data gaps.
-   if ( confReader.getValueAsBoolean( "checkGaps", "DEFAULT" ) )
-   {
-      SP3EphList.enableDataGapCheck();
-      SP3EphList.setGapInterval(
-                  confReader.getValueAsDouble("SP3GapInterval", "DEFAULT" ) );
-   }
 
-      // Read if we should check for too wide interpolation intervals
-   if ( confReader.getValueAsBoolean( "checkInterval", "DEFAULT" ) )
-   {
-      SP3EphList.enableIntervalCheck();
-      SP3EphList.setMaxInterval(
-                  confReader.getValueAsDouble("maxSP3Interval", "DEFAULT" ) );
-   }
+// CNQ - enableDataGapCheck, setGapInterval, enableIntervalCheck, and setMaxInterval 
+//       are not SP3EphemerisStore member functions.
+//      // Read if we should check for data gaps.
+//   if ( confReader.getValueAsBoolean( "checkGaps", "DEFAULT" ) )
+//   {
+//      SP3EphList.enableDataGapCheck();
+//      SP3EphList.setGapInterval(
+//                  confReader.getValueAsDouble("SP3GapInterval", "DEFAULT" ) );
+//   }
+//
+//      // Read if we should check for too wide interpolation intervals
+//   if ( confReader.getValueAsBoolean( "checkInterval", "DEFAULT" ) )
+//   {
+//      SP3EphList.enableIntervalCheck();
+//      SP3EphList.setMaxInterval(
+//                  confReader.getValueAsDouble("maxSP3Interval", "DEFAULT" ) );
+//   }
 
 
       // Load all the SP3 ephemerides files from variable list
@@ -812,7 +816,7 @@ void example14::process()
       {
 
             // Store current epoch
-         DayTime time(gRin.header.epoch);
+         CommonTime time(gRin.header.epoch);
 
             // Compute solid, oceanic and pole tides effects at this epoch
          Triple tides( solid.getSolidTide( time, nominalPos )  +
@@ -1090,7 +1094,7 @@ void example14::shutDown()
       gdsMap.pop_front_epoch();
 
          // Extract current epoch
-      DayTime workEpoch( (*gds.begin()).first );
+      CommonTime workEpoch( (*gds.begin()).first );
 
 
          // Compute the solution. This is it!!!
@@ -1100,7 +1104,7 @@ void example14::shutDown()
          // Let's print
       try
       {
-         cout << workEpoch.DOYsecond() << " "                           // #1
+         cout << static_cast<YDSTime>(workEpoch).sod << " "                           // #1
               << solverGen.getSolution( TypeID::dLat, rover ) << " "    // #2
               << solverGen.getSolution( TypeID::dLon, rover ) << " "    // #3
               << solverGen.getSolution( TypeID::dH,   rover ) << " "    // #4
@@ -1110,7 +1114,7 @@ void example14::shutDown()
       catch(...)
       {
          cerr << "Exception for receiver '" << rover <<
-                 " at epoch: " << workEpoch.DOYsecond() << endl;
+                 " at epoch: " << static_cast<YDSTime>(workEpoch).sod << endl;
 
          continue;
       }

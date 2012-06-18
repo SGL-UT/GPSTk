@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,21 +49,21 @@
 
 namespace gpstk
 {
-   Xvt GPSAlmanacStore::getXvt(const SatID sat, const DayTime& t)
+   Xvt GPSAlmanacStore::getXvt(const SatID& sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);
       return a.svXvt(t);
    }
 
-   Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const DayTime& t) 
+   Xvt GPSAlmanacStore::getXvtMostRecentXmit(const SatID sat, const CommonTime& t) 
          const throw(InvalidRequest)
    {
       AlmOrbit a = findMostRecentAlmanac(sat, t);
       return a.svXvt(t);
    }
    
-   short GPSAlmanacStore::getSatHealth(const SatID sat, const DayTime& t)
+   short GPSAlmanacStore::getSatHealth(const SatID sat, const CommonTime& t)
       const throw(InvalidRequest)
    {
       AlmOrbit a = findAlmanac(sat, t);
@@ -75,10 +75,10 @@ namespace gpstk
       if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN))
       {
          SatID sat(alm.getPRNID(),SatID::systemGPS);
-         DayTime toa = alm.getToaTime();
+         CommonTime toa = alm.getToaTime();
          uba[sat][toa] = alm;
-         DayTime tmin(toa - DayTime::HALFWEEK);
-         DayTime tmax(toa + DayTime::HALFWEEK);
+         CommonTime tmin(toa - gpstk::HALFWEEK);
+         CommonTime tmax(toa + gpstk::HALFWEEK);
          if (tmin < initialTime)
             initialTime = tmin;
          if (tmax > finalTime)
@@ -100,7 +100,7 @@ namespace gpstk
 
    /// gets the closest almanac for the given time and satellite,
    /// closest being in the past or future.
-   AlmOrbit GPSAlmanacStore::findAlmanac(const SatID sat, const DayTime& t) 
+   AlmOrbit GPSAlmanacStore::findAlmanac(const SatID sat, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       UBAMap::const_iterator satItr = uba.find(sat);
@@ -114,39 +114,39 @@ namespace gpstk
       const EngAlmMap& eam = satItr->second;
 
       // find the closest almanac BEFORE t, if any.
-      EngAlmMap::const_iterator nextItr = eam.begin(), almItr = eam.end();
+      EngAlmMap::const_iterator neXvtItr = eam.begin(), almItr = eam.end();
          
-      while ( (nextItr != eam.end()) &&
-              (nextItr->first < t) )
+      while ( (neXvtItr != eam.end()) &&
+              (neXvtItr->first < t) )
       {
-         almItr = nextItr;
-         nextItr++;
+         almItr = neXvtItr;
+         neXvtItr++;
       }
 
       if (almItr == eam.end())
       {
-         if (nextItr == eam.end()) 
+         if (neXvtItr == eam.end()) 
          {
             InvalidRequest e("No almanacs for time " + t.asString());
             GPSTK_THROW(e);
          }
          else
          {
-            almItr = nextItr;
+            almItr = neXvtItr;
          }
       }
 
-      // check the next almanac (the first one after t's time)
+      // check the neXvt almanac (the first one after t's time)
       // to see if it's closer than the one before t
-      if (nextItr != eam.end())
+      if (neXvtItr != eam.end())
       {
-         if ( (nextItr->first - t) < (t - almItr->first))
-            almItr = nextItr;
+         if ( (neXvtItr->first - t) < (t - almItr->first))
+            almItr = neXvtItr;
       }
       return (*almItr).second;
    }
 
-   AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const DayTime& t) 
+   AlmOrbit GPSAlmanacStore::findMostRecentAlmanac(const SatID sat, const CommonTime& t) 
          const throw(InvalidRequest)
    {
       UBAMap::const_iterator satItr = uba.find(sat);
@@ -160,31 +160,31 @@ namespace gpstk
       const EngAlmMap& eam = satItr->second;
 
       // find the closest almanac BEFORE t, if any.
-      EngAlmMap::const_iterator nextItr = eam.begin(), almItr = eam.end();
+      EngAlmMap::const_iterator neXvtItr = eam.begin(), almItr = eam.end();
          
-      while ( (nextItr != eam.end()) &&
-              (nextItr->second.getTransmitTime() < t) )
+      while ( (neXvtItr != eam.end()) &&
+              (neXvtItr->second.getTransmitTime() < t) )
       {
-         almItr = nextItr;
-         nextItr++;
+         almItr = neXvtItr;
+         neXvtItr++;
       }
 
       if (almItr == eam.end())
       {
-         if (nextItr == eam.end()) 
+         if (neXvtItr == eam.end()) 
          {
             InvalidRequest e("No almanacs for time " + t.asString());
             GPSTK_THROW(e);
          }
          else
          {
-            almItr = nextItr;
+            almItr = neXvtItr;
          }
       }
       return (*almItr).second;     
    }
 
-   AlmOrbits GPSAlmanacStore::findAlmanacs(const DayTime& t) 
+   AlmOrbits GPSAlmanacStore::findAlmanacs(const CommonTime& t) 
       const throw(InvalidRequest)
    {
       AlmOrbits ao;
@@ -207,7 +207,7 @@ namespace gpstk
    }
 
 
-   void GPSAlmanacStore::edit(const DayTime& tmin, const DayTime& tmax)
+   void GPSAlmanacStore::edit(const CommonTime& tmin, const CommonTime& tmax)
       throw()
    {
       std::cout << "Not yet implimented" << std::endl;

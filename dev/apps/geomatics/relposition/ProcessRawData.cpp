@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -51,6 +51,7 @@
 
 // GPSTk
 #include "EphemerisRange.hpp"
+#include "TimeString.hpp"
 
 // DDBase
 //#include "PreciseRange.hpp"
@@ -70,17 +71,17 @@ static vector<SatID> Sats;     // used by RAIM, bad ones come back marked (id < 
 //------------------------------------------------------------------------------------
 // prototypes -- this module only
    // ComputeRAIMSolution.cpp :
-int ComputeRAIMSolution(ObsFile& of,DayTime& tt,vector<SatID>& Sats,ofstream *pofs)
+int ComputeRAIMSolution(ObsFile& of,CommonTime& tt,vector<SatID>& Sats,ofstream *pofs)
    throw(Exception);
 void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception);
    // those defined here
 void FillRawData(ObsFile& of) throw(Exception);
-void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag) throw(Exception);
+void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag) throw(Exception);
 void EditRawData(ObsFile& of) throw(Exception);
 int BufferRawData(ObsFile& of) throw(Exception);
 
 //------------------------------------------------------------------------------------
-int ProcessRawData(ObsFile& obsfile, DayTime& timetag, ofstream *pofs)
+int ProcessRawData(ObsFile& obsfile, CommonTime& timetag, ofstream *pofs)
    throw(Exception)
 {
 try {
@@ -103,7 +104,7 @@ try {
       if(CI.Verbose) oflog
          << " Warning - ProcessRawData for station " << obsfile.label
          << ", at time "
-         << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g,")
+         << printTime(timetag,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g,")
          << " failed with code " << iret
          << (iret ==  2 ? " (large RMS residual)" :
             (iret ==  1 ? " (large slope)" :
@@ -129,7 +130,7 @@ try {
       st.PRSZstats.Add(st.PRS.Solution(2));
    }
 
-      // if user wants PRSolution as a priori, update it here so that the
+      // if user wants PRSolution2 as a priori, update it here so that the
       // elevation can be computed - this serves to eliminate the low-elevation
       // data from the raw data buffers and simplifies processing.
       // it does not seem to affect the final estimation processing at all...
@@ -141,7 +142,7 @@ try {
       st.pos = prs;
 
       if(CI.Debug) oflog << "Update apriori=PR solution for " << obsfile.label
-         << " at " << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+         << " at " << printTime(timetag,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
          << fixed << setprecision(5)
          << " " << setw(15) << st.PRSXstats.Average()
          << " " << setw(15) << st.PRSYstats.Average()
@@ -248,7 +249,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end FillRawData()
 
 //------------------------------------------------------------------------------------
-void GetEphemerisRange(ObsFile& obsfile, DayTime& timetag) throw(Exception)
+void GetEphemerisRange(ObsFile& obsfile, CommonTime& timetag) throw(Exception)
 {
 try {
    CorrectedEphemerisRange CER;        // temp
@@ -260,11 +261,11 @@ try {
    for(it=st.RawDataMap.begin(); it != st.RawDataMap.end(); it++) {
 
       // ER cannot be used until the a priori positions are computed --
-      // because user may want the PRSolution as the a priori, we must wait.
+      // because user may want the PRSolution2 as the a priori, we must wait.
       // This will be updated in RecomputeFromEphemeris(), after Synchronization()
       it->second.ER = 0.0;
 
-      // this will happen when user has chosen to use the PRSolution as the a priori
+      // this will happen when user has chosen to use the PRSolution2 as the a priori
       // and the st.pos has not yet been updated
       if(st.pos.getCoordinateSystem() == Position::Unknown) {
          it->second.elev = 90.0;       // include it in the PRS
@@ -283,7 +284,7 @@ try {
       catch(InvalidRequest& e) {
          if(CI.Verbose)
             oflog << "No ephemeris found for sat " << it->first << " at time "
-                  << timetag.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+                  << printTime(timetag,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
          //it->second.ER = 0.0;
          it->second.elev = -90.0;         // do not include it in the PRS
          it->second.az = 0.0;

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -39,13 +39,14 @@
 
 #include <iostream>
 #include "SVPCodeGen.hpp"
+#include "Epoch.hpp"
 
 using namespace std;
 namespace gpstk
 {
    const long LAST_6SEC_ZCOUNT_OF_WEEK = 403200 - 4;
 
-   SVPCodeGen::SVPCodeGen( const int SVPRNID, const gpstk::DayTime& dt )
+   SVPCodeGen::SVPCodeGen( const int SVPRNID, const gpstk::CommonTime& dt )
    {
       if (SVPRNID < 1 || SVPRNID > 210)
       {
@@ -60,7 +61,7 @@ namespace gpstk
    {
          // Compute appropriate X2A offset
       long X2count;
-      long X1count = currentZTime.GPSzcount();
+      long X1count = static_cast<Epoch>(currentZTime).GPSzcount();
       int dayAdvance;
       int EffPRNID;
    
@@ -119,6 +120,6 @@ namespace gpstk
    void SVPCodeGen::setCurrentZCount(const gpstk::GPSZcount& z)
    {
       GPSZcount z2 = z - z%4;
-      currentZTime = z2;
+      static_cast<Epoch>(currentZTime) = z2;
    }
 }     // end of namespace

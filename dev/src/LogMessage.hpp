@@ -31,7 +31,8 @@
 //============================================================================
 
 #include <string>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "SystemTime.hpp"
 #include "DebugUtils.hpp"
 
 namespace gpstk
@@ -85,7 +86,7 @@ namespace gpstk
       LogMessage( std::string source,
                   std::string text,
                   LogLevel level,
-                  DayTime time = DayTime(),
+                  CommonTime time = SystemTime(),
                   std::string file = "",
                   std::string function = "",
                   int line = 0)
@@ -107,7 +108,7 @@ namespace gpstk
       std::string source;
       std::string text;
       LogLevel    level;
-      DayTime     time;
+      CommonTime  time;
       std::string file;
       std::string function;
       int         line;

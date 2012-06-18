@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -55,7 +55,7 @@
 
 #include <map>
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 /**
  * This is a abstract base class for a clock model
@@ -68,9 +68,9 @@ namespace gpstk
    public:
       ClockModel() throw() {};
 
-      virtual double getOffset(const gpstk::DayTime& t) const = 0;
+      virtual double getOffset(const gpstk::CommonTime& t) const = 0;
 
-      virtual bool isOffsetValid(const gpstk::DayTime& t) const = 0;
+      virtual bool isOffsetValid(const gpstk::CommonTime& t) const = 0;
 
    };
 }

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -52,6 +52,7 @@
 // includes
 // system
 #include <deque>
+#include "TimeString.hpp"
 // GPSTk
 #include "geometry.hpp"             // DEG_TO_RAD
 #include "PolyFit.hpp"
@@ -209,7 +210,7 @@ try {
                + sat.toString()
                + string(" at count ") + StringUtils::asString(rawdat.count[nc])
                + string(" = time ")
-               + (FirstEpoch + rawdat.count[nc]*CI.DataInterval).printf(
+               + printTime((FirstEpoch + rawdat.count[nc]*CI.DataInterval),
                   "%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g"));
             GPSTK_THROW(e);
          }
@@ -265,7 +266,7 @@ try {
       j = index(statn.CountBuffer,rawdat.count[nc]);
          // time difference due to receiver clock, in units of count
       dx =  statn.RxTimeOffset[j]/CI.DataInterval
-         + (statn.ClockBuffer[j]/C_GPS_M)/CI.DataInterval;
+         + (statn.ClockBuffer[j]/C_MPS)/CI.DataInterval;
          // change in phase between nominal and true time
       dph = PF.Evaluate(x-x0) - PF.Evaluate(x-dx-x0);
       if(freq == 1) {
@@ -282,7 +283,7 @@ try {
       //   << fixed << setprecision(6)
       //   << " " << x-x0 << " " << dx
       //   << " " << statn.RxTimeOffset[nc]
-      //   << " " << statn.ClockBuffer[nc]/C_GPS_M
+      //   << " " << statn.ClockBuffer[nc]/C_MPS
       //   << " " << dph << " eval" << endl;
 
          // -------------------------------------------------------------
@@ -317,7 +318,8 @@ try {
 
    int nc;
    double angle,pwu,prevpwu,shadow;
-   DayTime tt;
+   double prevwindup = 0.0;
+   CommonTime tt;
    GSatID sat;
    Position SV;
    Position West,North,Rx2Tx;
@@ -394,7 +396,7 @@ try {
                // these should have been caught and removed before...
                oflog << "Warning - No ephemeris found for sat " << sat
                      << " at time "
-                     << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+                     << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
                      << " in RecomputeFromEphemeris()" << endl;
                rawdat.ER[nc] = 0.0;
                rawdat.elev[nc] = -90.0;

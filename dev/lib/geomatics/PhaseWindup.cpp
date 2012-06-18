@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,10 +46,11 @@
 // GPSTk includes
 #include "Matrix.hpp"
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // TWO_PI
+#include "GNSSconstants.hpp"    // TWO_PI
 // geomatics
 #include "PhaseWindup.hpp"
 #include "SunEarthSatGeometry.hpp"
+#include <math.h>
 
 using namespace std;
 
@@ -63,7 +64,7 @@ namespace gpstk
 // shadow is the fraction of the sun's area not visible at the satellite.
 // Previous value is needed to ensure continuity and prevent 1-cycle ambiguities.
 double PhaseWindup(double& prev,         // previous return value
-                   DayTime& tt,          // epoch of interest
+                   CommonTime& tt,          // epoch of interest
                    Position& SV,         // satellite position
                    Position& Rx2Tx,      // unit vector from receiver to satellite
                    Position& YR,         // west unit vector at receiver
@@ -89,7 +90,8 @@ try {
    // NB. Block IIR has X (ie the effective dipole orientation) in the -XT direction.
    // Ref. Kouba(2009) GPS Solutions 13, pp1-12.
    // In fact it should be a rotation by pi about Z, producing a constant offset.
-   //if(isBlockR) {
+   //if(isBlockR)
+   //{
    //   XT = Position(-Att(0,0),-Att(0,1),-Att(0,2));
    //   YT = Position(-Att(1,0),-Att(1,1),-Att(1,2));
    //}
@@ -101,18 +103,18 @@ try {
    DT = XT - TR * TR.dot(XT) - Position(TR.cross(YT));
 
    // normalize
-   d = 1.0/DR.mag();
+   d  = 1.0/DR.mag();
    DR = d * DR;
-   d = 1.0/DT.mag();
+   d  = 1.0/DT.mag();
    DT = d * DT;
 
    windup = ::acos(DT.dot(DR)) / TWO_PI;             // cycles
-   if(TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
+   if (TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
 
    // adjust by 2pi if necessary
    d = windup-prev;
    windup -= int(d + (d < 0.0 ? -0.5 : 0.5));
-
+ 
    return windup;
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -127,13 +129,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // YR is the West unit vector, XR is the North unit vector, at the receiver.
 // shadow is the fraction of the sun's area not visible at the satellite.
 double PhaseWindup(double& prev,       // previous return value
-                   DayTime& tt,        // epoch of interest
+                   CommonTime& tt,        // epoch of interest
                    Position& SV,       // satellite position
                    Position& Rx2Tx,    // unit vector from receiver to satellite
                    Position& YR,       // west unit vector at receiver
                    Position& XR,       // north unit vector at receiver
                    double& shadow,     // fraction of sun not visible at satellite
-                   bool isBlockR)        // true for Block IIR satellites
+                   bool isBlockR)      // true for Block IIR satellites
    throw(Exception)
 {
 try {
@@ -159,13 +161,13 @@ try {
    DT = XT - TR * TR.dot(XT) - Position(TR.cross(YT));
 
    // normalize
-   d = 1.0/DR.mag();
+   d  = 1.0/DR.mag();
    DR = d * DR;
-   d = 1.0/DT.mag();
+   d  = 1.0/DT.mag();
    DT = d * DT;
 
    windup = ::acos(DT.dot(DR)) / TWO_PI;
-   if(TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
+   if (TR.dot(DR.cross(DT)) < 0.) windup *= -1.0;
 
    // adjust by 2pi if necessary
    d = windup-prev;
@@ -177,6 +179,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }
+
 
 } // end namespace gpstk
 //------------------------------------------------------------------------------------

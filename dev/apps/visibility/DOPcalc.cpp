@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -52,8 +52,9 @@
 #include "MSCData.hpp"
 #include "MSCStream.hpp"
 #include "TropModel.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "DOP.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -115,7 +116,7 @@ private:
                            mscFileOpt, msidOpt;
    EphReader ephReader;
    double minElev;
-   DayTime startTime, stopTime;
+   CommonTime startTime, stopTime;
    Triple rxPos;
    Xvt rxXvt;
    unsigned msid;
@@ -239,7 +240,7 @@ void DOPCalc::process()
         oemIter!=obsEpochMap.end(); 
         oemIter++)
    {
-      DayTime tempTime  = oemIter->first;
+      CommonTime tempTime  = oemIter->first;
       ObsEpoch obsEpoch = oemIter->second;
       
          // for each epoch, we need a vector of the visible satellites
@@ -320,7 +321,7 @@ void DOPCalc::process()
          if (rangeL1 && rangeL2)
          {
             double ionoCorrection = 0;
-            const double gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
+            const double gamma = (L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS);
             ionoCorrection = 1./(1.-gamma)*(rangeL1-rangeL2);
 
                // store the SatID and corresponding range for the valid SV
@@ -345,7 +346,7 @@ void DOPCalc::process()
       TropModel *tropPtr = &noTropModel;
          
          // use PRSolution class to get the covariance matrix
-      PRSolution prSolution;
+      PRSolution2 prSolution;
       prSolution.RAIMCompute(tempTime, satIDVec, rangeVec, ephStore, tropPtr);
          
          // use DOP class to compute DOPs
@@ -353,7 +354,7 @@ void DOPCalc::process()
       dop.Compute(prSolution.Covariance);
         
          // output data
-      cout << tempTime.printf("%4Y/%03j/%02H:%02M:%04.1f") 
+      cout << printTime(tempTime,"%4Y/%03j/%02H:%02M:%04.1f") 
            << fixed << right << setprecision(2)
            << " " << setw(3) << satIDVec.size()
            << " " << setw(8) << dop.GDOP

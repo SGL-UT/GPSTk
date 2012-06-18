@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -45,6 +45,8 @@
 //------------------------------------------------------------------------------------
 // includes
 // system
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 // GPSTk
 // Geomatics
@@ -112,7 +114,7 @@ bool decreasingMetricSort(const TTSegment& left, const TTSegment& right);
 // the time tt. Set the satellite in sdid to the reference satellite, and set the
 // time tt to the time (in the future) when the reference will change again.
 // return 0 on success, 1 on failure.
-int QueryTimeTable(SDid& sdid, DayTime& tt) throw(Exception)
+int QueryTimeTable(SDid& sdid, CommonTime& tt) throw(Exception)
 {
 try {
    int ntt(0.5+(tt-FirstEpoch)/CI.DataInterval);
@@ -202,7 +204,7 @@ try {
    if(iret == 0) {
       // write out timetable to log
       // REF site site sat week use_start use_stop data_start data_stop
-      DayTime tt;
+      CommonTime tt;
       GSatID sat;
       oflog << "Here is the time table (" << TimeTable.size() << ")" << endl;
       if(CI.Screen)
@@ -216,21 +218,21 @@ try {
          if(CI.Screen)
             cout << "REF " << ttit->site1 << " " << ttit->site2 << " " << ttit->sat;
          tt = FirstEpoch + CI.DataInterval * ttit->usestart;
-         oflog << tt.printf(" %4F %10.3g");        // TD week rollover!
+         oflog << printTime(tt," %4F %10.3g");        // TD week rollover!
          if(CI.Screen)
-            cout << tt.printf(" %4F %10.3g");        // TD week rollover!
+            cout << printTime(tt," %4F %10.3g");        // TD week rollover!
          tt = FirstEpoch + CI.DataInterval * ttit->usestop;
-         oflog << tt.printf(" %10.3g");
+         oflog << printTime(tt," %10.3g");
          if(CI.Screen)
-            cout << tt.printf(" %10.3g");
+            cout << printTime(tt," %10.3g");
          tt = FirstEpoch + CI.DataInterval * ttit->start;
-         oflog << tt.printf(" %10.3g");
+         oflog << printTime(tt," %10.3g");
          if(CI.Screen)
-            cout << tt.printf(" %10.3g");
+            cout << printTime(tt," %10.3g");
          tt = FirstEpoch + CI.DataInterval * ttit->stop;
-         oflog << tt.printf(" %10.3g");
+         oflog << printTime(tt," %10.3g");
          if(CI.Screen)
-            cout << tt.printf(" %10.3g");
+            cout << printTime(tt," %10.3g");
          // TD? ttit->minelev, ttit->maxelev, ttit->length, ttit->metric()
          oflog << " " << fixed << setw(4) << setprecision(1) << ttit->minelev;
          if(CI.Screen)
@@ -271,7 +273,7 @@ try {
    int week;
    double sow;
    string line;
-   DayTime tt;
+   CommonTime tt;
 
    // open an input file for all timetables
    if(CI.Debug) oflog << "Try to open time table file " << CI.TimeTableFile << endl;
@@ -298,19 +300,19 @@ try {
 
       week = asInt(words(line,4,1));
       sow = asInt(words(line,5,1));
-      tt.setGPSfullweek(week,sow);           // TD handle week rollover
+      tt=GPSWeekSecond(week,sow);           // TD handle week rollover
       ts.usestart = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,6,1));
-      tt.setGPSfullweek(week,sow);
+      tt=GPSWeekSecond(week,sow);
       ts.usestop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,7,1));
-      tt.setGPSfullweek(week,sow);
+      tt=GPSWeekSecond(week,sow);
       ts.start = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       sow = asInt(words(line,8,1));
-      tt.setGPSfullweek(week,sow);
+      tt=GPSWeekSecond(week,sow);
       ts.stop = int(0.5+(tt-FirstEpoch)/CI.DataInterval);
 
       //ts.minelev = ts.maxelev = 0.0;

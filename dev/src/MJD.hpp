@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 #ifndef GPSTK_MJD_HPP
 #define GPSTK_MJD_HPP
 
@@ -21,13 +19,28 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "TimeTag.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -46,10 +59,11 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      MJD( long double m = 0. )
+      MJD( long double m = 0.,
+           TimeSystem ts = TimeSystem::Unknown )
          throw()
             : mjd( m )
-      {}
+      { timeSystem = ts; }
       
          /** 
           * Copy Constructor.
@@ -58,7 +72,7 @@ namespace gpstk
       MJD( const MJD& right )
          throw()
             : mjd( right.mjd )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -68,7 +82,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       MJD( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
+         throw( InvalidRequest )
       { 
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
@@ -102,7 +116,7 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -110,12 +124,12 @@ namespace gpstk
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+         throw( StringUtils::StringException );
 
          /// This function works similarly to printf.  Instead of filling
          /// the format with data, it fills with error messages.
       virtual std::string printError( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+         throw( StringUtils::StringException );
 
          /**
           * Set this object using the information provided in \a info.
@@ -131,14 +145,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Q";
+         return "QP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%.9Q";
+         return "%.9Q %P";
       }
 
       virtual bool isValid() const
@@ -160,13 +174,13 @@ namespace gpstk
       bool operator!=( const MJD& right ) const
          throw();
       bool operator<( const MJD& right ) const
-         throw();
+         throw( InvalidRequest );
       bool operator>( const MJD& right ) const
-         throw();
+         throw( InvalidRequest );
       bool operator<=( const MJD& right ) const
-         throw();
+         throw( InvalidRequest );
       bool operator>=( const MJD& right ) const
-         throw();
+         throw( InvalidRequest );
          //@}
 
       long double mjd;

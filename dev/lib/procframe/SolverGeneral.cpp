@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009
 //
@@ -177,7 +177,6 @@ namespace gpstk
 
             // Store data after computing
          postCompute(gdsMap);
-
 
       }
       catch(Exception& u)
@@ -894,7 +893,6 @@ covariance matrix.");
    {
          // Declare an iterator for 'stateMap' and go to the first element
       VariableDataMap::const_iterator it = stateMap.begin();
-
          // Look for a variable with the same type and source
       while( !( (*it).first.getType()   == type &&
          (*it).first.getSource() == source ) &&

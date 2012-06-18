@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
@@ -34,10 +34,10 @@
 #include <cmath>
 #include <string>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "Position.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "AstronomicalFunctions.hpp"
 #include "SunPosition.hpp"
 #include "MoonPosition.hpp"
@@ -84,8 +84,8 @@ namespace gpstk
           * reason, this is thrown. The text may have additional information
           * as to why the request failed.
           */
-         Triple getSolidTide(const DayTime& t,
-                            const Position& p) const
+         Triple getSolidTide(const CommonTime& t, 
+                            const Position& p) const 
             throw(InvalidRequest);
 
 

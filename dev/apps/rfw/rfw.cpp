@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -172,7 +172,7 @@ protected:
    virtual void process()
    {
       const int sendSize=sendString.size();
-      vector<DayTime> lastSendTime(sendSize);
+      vector<CommonTime> lastSendTime(sendSize);
 
       bool use_stdout = output.getFilespec() == "<stdout>";
       const size_t max_len=512;
@@ -219,7 +219,7 @@ protected:
             output.flush();
          }
 
-         DayTime now;
+         CommonTime now;
          for (int i=0; i<sendSize; i++)
          {
             if (now - lastSendTime[i] > sendPeriod[i])

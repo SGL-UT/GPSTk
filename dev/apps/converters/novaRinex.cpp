@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,8 +49,9 @@
 #include <map>
 
 // GPSTk
+#include "TimeString.hpp"
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
@@ -60,6 +61,8 @@
 #include "RinexNavStream.hpp"
 #include "RinexObsHeader.hpp"
 #include "Triple.hpp"
+#include "GPSWeekSecond.hpp"
+#include "Epoch.hpp"
 //#include "RinexBinex.hpp"
 
 using namespace std;
@@ -85,13 +88,13 @@ string Vers("v2.1 9/07");                 // version - keep to 10 char
 int ndt[9];
 double bestdt[9];
 // epochs
-DayTime CurrEpoch,PrevEpoch,FirstEpoch;
+CommonTime CurrEpoch,PrevEpoch,FirstEpoch;
 // table of PRN/#obs
 map<SatID,vector<int> > table;
 vector<int> totals;
 // Command line input
 bool help,Debug,verbose;
-DayTime BegTime,EndTime;
+CommonTime BegTime,EndTime;
 string NovatelFile, RinexObsFile, RinexNavFile; //, BinexFile;
 string InputDirectory;
 // header fields
@@ -149,7 +152,7 @@ int main(int argc, char **argv)
       struct tm *tblock;
       timer = time(NULL);
       tblock = localtime(&timer);
-      CurrEpoch.setLocalTime();
+      static_cast<Epoch>(CurrEpoch).setLocalTime();
 
       i = GetCommandInput(argc, argv);
       if(i) return 0;
@@ -178,7 +181,7 @@ int main(int argc, char **argv)
       rnstr << rnh;
 
       // prep for the I/O loop
-      FirstEpoch = DayTime::BEGINNING_OF_TIME;
+      FirstEpoch = CommonTime::BEGINNING_OF_TIME;
       for(i=0; i<9; i++) ndt[i] = -1;
 
       // show a counter
@@ -323,7 +326,7 @@ try {
    roh.system = RinexSatID(-1, RinexSatID::systemGPS);
    // use same format as writer in RinexObsHeader.cpp uses
       // old "%04Y/%02m/%02d %02H:%02M:%02S");
-   roh.date = CurrEpoch.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+   roh.date = printTime(CurrEpoch,"%02m/%02d/%04Y %02H:%02M:%02S");
    roh.antennaPosition = Triple(0.0,0.0,0.0);
    roh.antennaOffset = Triple(0.0,0.0,0.0);
    roh.wavelengthFactor[0] = 1;
@@ -353,7 +356,7 @@ try {
    roh.firstSystem = RinexSatID();
    roh.lastObs = CurrEpoch; // defined later by data
    roh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
-      + CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
+      + printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S"));
    for(i=0; i<HDcomments.size(); i++)
       roh.commentList.push_back(HDcomments[i]);
 
@@ -365,9 +368,9 @@ try {
    rnh.fileType = "Observation";
    rnh.fileProgram = roh.fileProgram;
    rnh.fileAgency = roh.fileAgency;
-   rnh.date = CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S");
+   rnh.date = printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
    rnh.commentList.push_back("Created by GPSTK program " + Prgm + " " + Vers
-      + CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S"));
+      + printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S"));
    for(i=0; i<HDcomments.size(); i++)
       rnh.commentList.push_back(HDcomments[i]);
 
@@ -387,10 +390,10 @@ try {
    double dt;
    SatID sat;
 
-   if(fabs(FirstEpoch - DayTime::BEGINNING_OF_TIME) < 1)  {
+   if(fabs(FirstEpoch - CommonTime::BEGINNING_OF_TIME) < 1)  {
       PrevEpoch = FirstEpoch = rod.time;
       if(verbose) cout << "Set First Epoch to "
-         << rod.time.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
+         << printTime(rod.time,"%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
    }
    else
       PrevEpoch = CurrEpoch;
@@ -414,7 +417,7 @@ try {
    }
    else if(dt < 0.0)
       cout << "Warning! observation records out of time order (previous > current) : "
-         << PrevEpoch.printf("%F %.3g") << " > " << CurrEpoch.printf("%F %.3g")
+         << printTime(PrevEpoch,"%F %.3g") << " > " << printTime(CurrEpoch,"%F %.3g")
          << endl;
 
    RinexObsData::RinexSatMap::iterator jt;
@@ -647,8 +650,8 @@ try {
    // --------------------------------------------------------------------------------
    // set all the defaults
    Debug = help = verbose = false;
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
    //NovatelFile,
    RinexObsFile = string("RnovaRinex.obs");
    RinexNavFile = string("RnovaRinex.nav");
@@ -989,27 +992,27 @@ try {
    }
    if(dasheb.getCount()) {
       values = dasheb.getValue();
-      BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << " Input begin time " << values[0] << " = " << BegTime << endl;
-      if(gpsWeek == -1) gpsWeek = BegTime.GPSfullweek();
+      if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(BegTime).week;
    }
    if(dashgb.getCount()) {
       values = dashgb.getValue();
-      BegTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%F,%g");
       if(help) cout << " Input begin time " << values[0] << " = " << BegTime << endl;
-      if(gpsWeek == -1) gpsWeek = BegTime.GPSfullweek();
+      if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(BegTime).week;
    }
    if(dashee.getCount()) {
       values = dashee.getValue();
-      EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << " Input end time " << values[0] << " = " << EndTime << endl;
-      if(gpsWeek == -1) gpsWeek = EndTime.GPSfullweek();
+      if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(EndTime).week;
    }
    if(dashge.getCount()) {
       values = dashge.getValue();
-      EndTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%F,%g");
       if(help) cout << " Input end time " << values[0] << " = " << EndTime << endl;
-      if(gpsWeek == -1) gpsWeek = EndTime.GPSfullweek();
+      if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(EndTime).week;
    }
    if(dashweek.getCount()) {
       values = dashweek.getValue();
@@ -1030,7 +1033,7 @@ try {
 
 
    // process input
-   if(gpsWeek == -1) gpsWeek = CurrEpoch.GPSfullweek();
+   if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(CurrEpoch).week;
    if(OutputTypes.size() == 0) {                     // fill with the standard types
       OutputTypes.push_back(RinexObsHeader::C1);
       OutputTypes.push_back(RinexObsHeader::P1);
@@ -1150,10 +1153,10 @@ try {
    for(i=0; i<OutputTypes.size(); i++)
       ofs << " " << RinexObsHeader::convertObsType(OutputTypes[i]);
    ofs << endl;
-   if(BegTime > DayTime::BEGINNING_OF_TIME) ofs << " Begin time is "
-      << BegTime.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
-   if(EndTime < DayTime::END_OF_TIME) ofs << " End   time is "
-      << EndTime.printf("%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
+   if(BegTime > CommonTime::BEGINNING_OF_TIME) ofs << " Begin time is "
+      << printTime(BegTime,"%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
+   if(EndTime < CommonTime::END_OF_TIME) ofs << " End   time is "
+      << printTime(EndTime,"%Y/%m/%d %H:%02M:%6.3f = %F/%10.3g") << endl;
    ofs << " Debiasing of phase is turned " << (debias ? "on" : "off") << endl;
 
    ofs << "End of command line input summary." << endl;

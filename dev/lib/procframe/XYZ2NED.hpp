@@ -6,8 +6,8 @@
  * North-East-Down (NED).
  */
 
-#ifndef XYZ2NED_HPP
-#define XYZ2NED_HPP
+#ifndef GPSTK_XYZ2NED_HPP
+#define GPSTK_XYZ2NED_HPP
 
 //============================================================================
 //
@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -126,7 +126,7 @@ namespace gpstk
          /// Default constructor.
       XYZ2NED()
          : refLat(0.0), refLon(0.0)
-      { init(); setIndex(); };
+      { init(); };
 
 
          /** Common constructor taking reference point latitude and longitude
@@ -136,7 +136,7 @@ namespace gpstk
           */
       XYZ2NED( const double& lat,
                const double& lon )
-      { setLatLon(lat, lon); setIndex(); }
+      { setLatLon(lat, lon); }
 
 
          /** Common constructor taking reference point Position object
@@ -218,10 +218,6 @@ namespace gpstk
       { Process(gData.body); return gData; };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -262,20 +258,10 @@ namespace gpstk
       virtual void init();
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'XYZ2NED'
 
       //@}
 
 }  // End of namespace gpstk
-#endif   //XYZ2NED_HPP
+
+#endif   // GPSTK_XYZ2NED_HPP

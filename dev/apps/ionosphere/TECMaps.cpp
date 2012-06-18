@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -33,19 +33,21 @@
 #include <cstring>
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "RinexSatID.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionWithTimeArg.hpp"
 #include "CommandOptionParser.hpp"
-
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "SP3EphemerisStore.hpp"
-#include "WGS84Geoid.hpp"
+#include "WGS84Ellipsoid.hpp"
 #include "Position.hpp"
-
+#include "Epoch.hpp"
 #include "VTECMap.hpp"
 #include "RinexUtilities.hpp"
+#include "Position.hpp"
 
 #include <time.h>
 #include <iostream>
@@ -88,12 +90,12 @@ XvtStore<SatID> *pEph;         // is this used?
 RinexObsHeader::RinexObsType ELot,AZot,VRot,SRot,TPot;
 RinexObsHeader::RinexObsType LAot,LOot;
    // geoid
-WGS84Geoid WGS84;
+WGS84Ellipsoid WGS84;
    // Start and stop times
-DayTime BegTime,EndTime;
+CommonTime BegTime,EndTime;
    // processing
 double IonoHt,overallBias;
-DayTime EarliestTime;
+CommonTime EarliestTime;
 VTECMap vtecmap;
 MUFMap mufmap;
 F0F2Map f0f2map;
@@ -112,7 +114,7 @@ int Initialize(void) throw(Exception);
 int ProcessStations(void) throw(Exception);
 void ProcessObsAndComputeMap(void) throw(Exception);
 void OutputGridToFile(VTECMap& vmap, string filename) throw(Exception);
-void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n)
+void OutputMapToFile(VTECMap& vtmap, string filename, CommonTime t, int n)
    throw(Exception);
 void AddStation(string& filename) throw(Exception);
 int ProcessHeader(Station& S) throw(Exception);
@@ -126,15 +128,15 @@ int main(int argc, char **argv)
 try {
    int iret;
    clock_t totaltime=clock(); // timer
-   DayTime CurrEpoch;
+   CommonTime CurrEpoch;
 
-   BegTime = DayTime::BEGINNING_OF_TIME;
-   EndTime = DayTime::END_OF_TIME;
+   BegTime = CommonTime::BEGINNING_OF_TIME;
+   EndTime = CommonTime::END_OF_TIME;
 
       // Title description and run time
-   CurrEpoch.setLocalTime();
+   static_cast<Epoch>(CurrEpoch).setLocalTime();
    Title = "TECMaps, built on the GPSTK ToolKit, Ver 1.2 9/21/07, Run ";
-   Title += CurrEpoch.printf("%04Y/%02m/%02d %02H:%02M:%02S\n");
+   Title += printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
 
       // define extended types
@@ -547,7 +549,7 @@ try {
    }
 
    if(KnownPos != string("")) {
-      ECEF e;
+      Position e;
       string::size_type pos;
       values.clear();
       while(KnownPos.size() > 0) {
@@ -602,22 +604,22 @@ try {
 
    if(dasheb.getCount()) {
       values = dasheb.getValue();
-      BegTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input BeginTime " << BegTime << endl;
    }
    if(dashee.getCount()) {
       values = dashee.getValue();
-      EndTime.setToString(values[0], "%Y,%m,%d,%H,%M,%S");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input EndTime " << EndTime << endl;
    }
    if(dashgb.getCount()) {
       values = dashgb.getValue();
-      BegTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(BegTime).scanf(values[0], "%F,%g");
       if(help) cout << "Input BeginGPSTime " << BegTime << endl;
    }
    if(dashge.getCount()) {
       values = dashge.getValue();
-      EndTime.setToString(values[0], "%F,%g");
+      static_cast<Epoch>(EndTime).scanf(values[0], "%F,%g");
       if(help) cout << "Input EndGPSTime " << EndTime << endl;
    }
       // processing
@@ -780,10 +782,10 @@ try {
          for(i=0; i<NavFiles.size(); i++)
             oflog << "   " << NavFiles[i] << endl;
       }
-      if(BegTime > DayTime::BEGINNING_OF_TIME) oflog << " Begin time is "
-         << BegTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
-      if(EndTime < DayTime::END_OF_TIME) oflog << " End   time is "
-         << EndTime.printf("%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
+      if(BegTime > CommonTime::BEGINNING_OF_TIME) oflog << " Begin time is "
+         << printTime(BegTime,"%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
+      if(EndTime < CommonTime::END_OF_TIME) oflog << " End   time is "
+         << printTime(EndTime,"%Y/%m/%d_%H:%M:%6.3f=%F/%10.3g") << endl;
       oflog << " Processing:\n";
       oflog << "  Primary Title is " << Title1 << endl;
       oflog << "  Secondary Title is " << Title2 << endl;
@@ -1087,7 +1089,7 @@ try {
       // loop over all epochs in all files
    do {
          // read the data for the next (earliest in future) observation epoch
-      EarliestTime = DayTime(DayTime::END_OF_TIME);
+      EarliestTime = CommonTime(CommonTime::END_OF_TIME);
       for(nfile=0; nfile<Stations.size(); nfile++) {
          iret = ReadNextObs(Stations[nfile]);
          if(iret < 0) {            // set file 'inactive'
@@ -1100,23 +1102,23 @@ try {
       }
 
          // if no more data available, EarliestTime will never get set
-      if(EarliestTime == DayTime(DayTime::END_OF_TIME)) break;
+      if(EarliestTime == CommonTime(CommonTime::END_OF_TIME)) break;
 
          // time limits
       if(EarliestTime < BegTime) {
          oflog << "Before begin time : "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
          continue;
       }
       if(EarliestTime > EndTime) {
          oflog << "After end time (quit) : "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
          break;
       }
 
          // process at EarliestTime
       oflog << "Process at time = "
-         << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
+         << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g\n");
       AllObs.clear();
       for(ngood=0,nfile=0; nfile<Stations.size(); nfile++) {
             // if this data time == EarliestTime, process and set flag to read again
@@ -1132,7 +1134,7 @@ try {
       nepochs++;
       if(ngood > 0) {
          oflog << ngood << " data at epoch "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
             << ", epoch #" << nepochs << "." << endl;
             // compute the map(s)
          if(doVTECmap) {
@@ -1149,7 +1151,7 @@ try {
          }
       }
       else oflog << "0 data at epoch "
-            << EarliestTime.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
+            << printTime(EarliestTime,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
             << ", file #" << nepochs << "." << endl;
 
    } while(1);
@@ -1187,7 +1189,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 
 //------------------------------------------------------------------------------------
 // output map
-void OutputMapToFile(VTECMap& vtmap, string filename, DayTime t, int n) throw(Exception)
+void OutputMapToFile(VTECMap& vtmap, string filename, CommonTime t, int n) throw(Exception)
 {
 try {
       // make this a function, pass it the name MUF etc, map and time
@@ -1197,13 +1199,13 @@ try {
    ofstream ofs(fn.c_str());
    if(!ofs) {
       cerr << "Failed to open map output file " << fn << " at epoch "
-         << t.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(t,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
       oflog << "Failed to open map output file " << fn << " at epoch "
-         << t.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
+         << printTime(t,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g") << endl;
    }
    else {
       oflog << "Output map at epoch "
-         << t.printf("%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
+         << printTime(t,"%Y/%m/%d %H:%M:%6.3f=%F/%10.3g")
          << " to file " << fn << endl;
       vtmap.OutputMap(ofs,GnuplotFormat);
       ofs.close();
@@ -1222,7 +1224,7 @@ try {
    s.filename = name;
    for(int i=1; i<33; i++) {
       RinexSatID p(i,SatID::systemGPS);
-      s.InitTime[p] = DayTime::BEGINNING_OF_TIME;
+      s.InitTime[p] = CommonTime::BEGINNING_OF_TIME;
    }
    Stations.push_back(s);
 }
@@ -1281,12 +1283,12 @@ try {
          oflog << " " << RinexObsHeader::convertObsType(S.header.obsTypeList[i]);
       oflog << endl;
       oflog << "Time of first obs "
-         << S.header.firstObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << printTime(S.header.firstObs,"%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (S.header.firstSystem.system==RinexSatID::systemGlonass?"GLO":
                    (S.header.firstSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
       oflog << "Time of  last obs "
-         << S.header.lastObs.printf("%04Y/%02m/%02d %02H:%02M:%010.7f")
+         << printTime(S.header.lastObs,"%04Y/%02m/%02d %02H:%02M:%010.7f")
          << " " << (S.header.lastSystem.system==RinexSatID::systemGlonass?"GLO":
                    (S.header.lastSystem.system==RinexSatID::systemGalileo?"GAL":"GPS"))
          << endl;
@@ -1386,7 +1388,7 @@ try {
       }
    
          // save first time
-      if(S.InitTime[sat] == DayTime::BEGINNING_OF_TIME) {
+      if(S.InitTime[sat] == CommonTime::BEGINNING_OF_TIME) {
          S.InitTime[sat] = S.robs.time;
       }
       
@@ -1494,8 +1496,8 @@ try {
       obsvec.push_back(od);
 
          // write out
-      oflog <<        setw(4) << S.robs.time.GPSfullweek();
-      oflog << " " << setw(8) << setprecision(1) << S.robs.time.GPSsow();
+      oflog <<        setw(4) << static_cast<GPSWeekSecond>(S.robs.time).week;
+      oflog << " " << setw(8) << setprecision(1) << static_cast<GPSWeekSecond>(S.robs.time).sow;
       oflog << " " << setw(2) << n;
       oflog << " " << setw(9) << setprecision(5) << LA; // latitude
       oflog << " " << setw(10) << setprecision(5)<< LO; // longitude

@@ -5,8 +5,8 @@
  * Class to compute modeled pseudoranges of a mobile receiver
  */
 
-#ifndef MODELEDPR_HPP
-#define MODELEDPR_HPP
+#ifndef GPSTK_MODELEDPR_HPP
+#define GPSTK_MODELEDPR_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -35,7 +35,7 @@
 #include "ModeledReferencePR.hpp"
 #include "Matrix.hpp"
 #include "Bancroft.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "DataStructures.hpp"
 
 
@@ -75,7 +75,7 @@ namespace gpstk
        *   IonoModel ioModel;
        *   rnavin >> rNavHeader;    // Read navigation RINEX header
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
-       *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+       *   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
        *
        *      // EBRE station nominal position
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
@@ -303,7 +303,7 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Prepare( const DayTime& Tr,
+      virtual int Prepare( const CommonTime& Tr,
                            std::vector<SatID>& Satellite,
                            std::vector<double>& Pseudorange,
                            const XvtStore<SatID>& Eph );
@@ -322,7 +322,7 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Prepare( const DayTime& Tr,
+      virtual int Prepare( const CommonTime& Tr,
                            const Vector<SatID>& Satellite,
                            const Vector<double>& Pseudorange,
                            const XvtStore<SatID>& Eph );
@@ -331,7 +331,7 @@ namespace gpstk
          /** Method to set an a priori position of receiver using Bancroft's
           *  method. Intended to be used with GNSS data structures.
           *
-          * @param time      DayTime object for this epoch
+          * @param time      CommonTime object for this epoch
           * @param data      satTypeValueMap data structure holding
           *                  the data.
           *
@@ -339,7 +339,7 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Prepare( const DayTime& time,
+      virtual int Prepare( const CommonTime& time,
                            const satTypeValueMap& data );
 
 
@@ -366,7 +366,8 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s=Position::Cartesian,
-                           GeoidModel *geoid = NULL );
+                           EllipsoidModel *ell = NULL,
+                           ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /** Method to set the initial (a priori) position of receiver before
@@ -384,7 +385,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& processModel( const DayTime& time,
+      virtual satTypeValueMap& processModel( const CommonTime& time,
                                              satTypeValueMap& gData )
          throw(Exception);
 
@@ -418,4 +419,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // MODELEDPR_HPP
+
+#endif   // GPSTK_MODELEDPR_HPP

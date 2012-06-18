@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -38,13 +38,16 @@
 #ifndef CYCLESLIPLIST_HPP
 #define CYCLESLIPLIST_HPP
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <ObsID.hpp>
 #include <SatID.hpp>
+#include <StringUtils.hpp>
+
+using namespace std; 
 
 struct CycleSlipRecord
 {
-   gpstk::DayTime t;
+   gpstk::CommonTime t;
    double cycles;
    gpstk::SatID sv1,sv2;
    gpstk::ObsID oid;

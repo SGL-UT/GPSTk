@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -36,10 +36,10 @@
 //
 //=============================================================================
 
-#include "Geodetic.hpp"
-#include "GPSGeoid.hpp"
+#include "Position.hpp"
+#include "GPSEllipsoid.hpp"
 #include "StringUtils.hpp"
-
+#include "TimeString.hpp"
 #include "ScreenProc.hpp"
 #include "RinexConverters.hpp"
 
@@ -225,10 +225,10 @@ void writeAt(WINDOW* win, int row, int col, const string s)
 
 void MDPScreenProcessor::redraw()
 {
-   gpstk::DayTime now;
+   gpstk::CommonTime now;
    if (now - lastUpdateTime > updateRate)
    {
-      string time=currentPvt.time.printf(" %02H:%02M:%02S %2m/%d/%02y");
+      string time=printTime(currentPvt.time," %02H:%02M:%02S %2m/%d/%02y");
       writeAt(win, 0, COLS-time.length()-5, time.c_str());
       lastUpdateTime = now;
 
@@ -250,10 +250,10 @@ void MDPScreenProcessor::redraw()
 
 void MDPScreenProcessor::drawSTS()
 {
-   string firstTime=currentSts.firstPVTTime.printf("%02H:%02M %m/%d/%2Y  ");
+   string firstTime=printTime(currentSts.firstPVTTime,"%02H:%02M %m/%d/%2Y  ");
    writeAt(win, stsRow, stsTimeCol, firstTime.c_str());
 
-   string testTime=currentSts.selfTestTime.printf("%02H:%02M %m/%d/%2Y  ");
+   string testTime=printTime(currentSts.selfTestTime,"%02H:%02M %m/%d/%2Y  ");
    writeAt(win, stsRow+1, stsTimeCol, testTime.c_str());
 
    if (currentSts.extFreqStatus)
@@ -280,13 +280,13 @@ void MDPScreenProcessor::drawPVT()
    string s=rightJustify(asString(pvtRate,1), 3) + " s";
    writeAt(win, pvtRow+1 , prateCol, s.c_str());
 
-   string time=currentPvt.time.printf("%02H:%02M:%04.1f");
+   string time=printTime(currentPvt.time,"%02H:%02M:%04.1f");
    writeAt(win, pvtRow, tCol, time.c_str());
    string off=rightJustify(asString(currentPvt.dtime*1e9, 1), 9) + " ns";
    writeAt(win, pvtRow, offCol, off.c_str());
 
-   gpstk::GPSGeoid gm;
-   gpstk::Geodetic llh(currentPvt.x, &gm);
+   gpstk::GPSEllipsoid gm;
+   gpstk::Position llh(currentPvt.x, &gm);
 
    string lat, lon, alt;
    if (llh[0] > 0)

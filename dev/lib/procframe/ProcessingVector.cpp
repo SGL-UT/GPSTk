@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -33,15 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ProcessingVector::classIndex = 10500000;
-
-
-      // Returns an index identifying this object.
-   int ProcessingVector::getIndex(void) const
-   { return (*this).index; }
-
 
       // Returns a string identifying this object.
    std::string ProcessingVector::getClassName(void) const
@@ -111,7 +102,6 @@ namespace gpstk
       }
 
    }  // End of method 'ProcessingVector::Process()'
-
 
 
 }  // End of namespace gpstk

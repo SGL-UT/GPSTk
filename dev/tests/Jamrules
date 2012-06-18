@@ -1,6 +1,6 @@
-#PATH_TO_CURRENT = /home/user/Cpptests/GoodTests  ; #Current directory; Main testing directory
-#CPPUNIT_LIB = /home/user/lib ; #Directory which holds the CppUnit Libraries
-#CPPUNIT_INC = /home/user/include ; #Directory which holds the CppUnit 
+PATH_TO_CURRENT = /home/cummins/svn/dev4merge2/dev/tests  ; #Current directory; Main testing directory
+CPPUNIT_LIB = /usr/local/lib ; #Directory which holds the CppUnit Libraries
+CPPUNIT_INC = /usr/local/include/cppunit ; #Directory which holds the CppUnit include files 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,7 +40,7 @@
 #include <StringUtils.hpp>
 #include <StringUtils.hpp>
 #include <BinUtils.hpp>
-#include <gps_constants.hpp>
+#include <GNSSconstants.hpp>
 
 #include "MDPObsEpoch.hpp"
 #include "MDPStream.hpp"
@@ -234,7 +234,7 @@ namespace gpstk
    {
       MDPStream& mdps = dynamic_cast<MDPStream&>(s);
       MDPObsEpoch moe;
-      DayTime t;
+      CommonTime t;
 
       while (mdps >> moe)
       {

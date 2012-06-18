@@ -22,14 +22,15 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2007, The University of Texas at Austin
 //
 //============================================================================
 
-#include "Geodetic.hpp"
+#include "Position.hpp"
 #include "TrackProc.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -119,7 +120,7 @@ void MDPTrackProcessor::printChanges()
          {
             if (prevCv[i].prn == -1 && currCv[i].prn == -1)
                continue;
-            out << currTime.printf(timeFormat) << "  Ch:" << setw(2) <<  i;
+            out << printTime(currTime,timeFormat) << "  Ch:" << setw(2) <<  i;
             if (currCv[i].prn >0)
             {
                out << "  Prn: " << setw(2) << currCv[i].prn
@@ -144,11 +145,13 @@ void MDPTrackProcessor::printChanges()
       bool change=false;
       for (int i = 1; i < currCv.size() && change==false; i++)
          change = (currCv[i].obs != prevCv[i].obs ||
-                   currCv[i].prn != prevCv[i].prn);
+                   currCv[i].prn != prevCv[i].prn) &&
+            (prevCv[i].prn != -1 || currCv[i].prn != -1);
+
 
       if (change || currCv.size() == 0)
       {
-         out << currTime.printf(timeFormat);
+         out << printTime(currTime,timeFormat);
          for (int i = 1; i < currCv.size(); i++)
          {
             if (currCv[i].prn > 0)

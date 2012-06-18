@@ -5,8 +5,8 @@
  * This class eases computing Pdelta combination for GNSS data structures.
  */
 
-#ifndef COMPUTEPDELTA_HPP
-#define COMPUTEPDELTA_HPP
+#ifndef GPSTK_COMPUTEPDELTA_HPP
+#define GPSTK_COMPUTEPDELTA_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -105,10 +105,6 @@ namespace gpstk
       { type1 = TypeID::C1; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -123,7 +119,7 @@ namespace gpstk
          /// Compute the combination of observables.
       virtual double getCombination( const double& obs1,
                                      const double& obs2 )
-      { return ( ( L1_FREQ*obs1 + L2_FREQ*obs2 ) / ( DEN ) ); };
+      { return ( ( L1_FREQ_GPS*obs1 + L2_FREQ_GPS*obs2 ) / ( DEN ) ); };
 
 
    private:
@@ -132,20 +128,10 @@ namespace gpstk
       const double DEN;       // DEN = L1_FREQ + L2_FREQ
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-         /// Index belonging to this object.
-      int index;
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputePdelta'
 
       //@}
 
-}
-#endif   // COMPUTEPDELTA_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_COMPUTEPDELTA_HPP

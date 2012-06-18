@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2008, The University of Texas at Austin
 //
@@ -36,9 +36,9 @@
 #include <cmath>
 
 #include "ValarrayUtils.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "IonoModel.hpp"
-
+#include "Epoch.hpp"
 #include "ExtractPC.hpp"
 
 #include "RinexObsStream.hpp"
@@ -125,18 +125,22 @@ namespace gpstk
             if (antennaPos.mag()<1) // A reported antenna position near the
                                     // center of the Earth. REcompute.
 	    {
-	       PRSolution prSolver;
+	       PRSolution2 prSolver;
                prSolver.RMSLimit = 400;
                GGTropModel ggTropModel; 
 	       ggTropModel.setWeather(20., 1000., 50.); // A default model for sea level.
 
+          // NOTE: The following section is partially adapted to Rinex3, but
+          //       more work is needed here
                RinexObsStream tempObsStream(obsList[i]);
-               RinexObsData   tempObsData;
+               Rinex3ObsData   tempObsData;
+               Rinex3ObsHeader tempObsHeader;
                 
+               tempObsStream >> tempObsHeader;
                tempObsStream >> tempObsData;
 
                ExtractPC ifObs;
-               ifObs.getData(tempObsData);
+               ifObs.getData(tempObsData, tempObsHeader);
 
 	       std::vector<SatID> vsats(ifObs.availableSV.size());
                for (size_t ii=0; ii<ifObs.availableSV.size(); ++ii)
@@ -191,8 +195,8 @@ namespace gpstk
       validAzEl = true;
       long satEpochIdx = 0; // size_t satEpochIdx=0;
          
-      std::map<SatID, DayTime> lastObsTime;
-      std::map<SatID, DayTime>::const_iterator it2;
+      std::map<SatID, CommonTime> lastObsTime;
+      std::map<SatID, CommonTime>::const_iterator it2;
       std::map<SatID, long> currPass;
      
       long highestPass = 0;
@@ -332,7 +336,7 @@ namespace gpstk
 
       valarray<bool> keepList = !strikeList;
 
-      valarray<DayTime> newEpoch = epoch[keepList];
+      valarray<CommonTime> newEpoch = epoch[keepList];
       size_t newObsEpochCount = newEpoch.size();
       
       epoch.resize(newObsEpochCount);
@@ -387,7 +391,7 @@ namespace gpstk
       using namespace std;
       
       valarray<bool> ptest = (pass==passNo);
-      valarray<DayTime> pepochs = epoch[ptest];
+      valarray<CommonTime> pepochs = epoch[ptest];
       double length =  pepochs[pepochs.size()-1] - pepochs[0];
       return length;
    }

@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -52,7 +52,9 @@
 #include "FICData.hpp"
 #include "FICStream.hpp"
 #include "FICAStream.hpp"
-
+#include "YDSTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
 #include <cmath>
 
 #include "gpstkplatform.h"
@@ -207,7 +209,7 @@ namespace gpstk
       }
    }
 
-   bool FICData::getTransmitTime(DayTime& dt) const
+   bool FICData::getTransmitTime(CommonTime& dt) const
    {
       short week;
       double SOW;
@@ -233,7 +235,7 @@ namespace gpstk
             return false;
             break;
       }
-      dt.setGPSfullweek(week, SOW);
+      dt=GPSWeekSecond(week, SOW);
       return true;
    }
 
@@ -262,14 +264,14 @@ namespace gpstk
       epochTime = f[12];
       xmitTime = f[2];
       diff = -1 * (epochTime - xmitTime);
-      if (diff > DayTime::HALFWEEK) epochWeek = (short) f[5] + 1;
+      if (diff > HALFWEEK) epochWeek = (short) f[5] + 1;
       else epochWeek = (short) f[5];
       timeDisplay( os, "Clock Epoch:", epochWeek, f[12], 1 );
 
       epochTime = f[33];
       xmitTime = f[22];
       diff = -1 * (epochTime - xmitTime);
-      if (diff > DayTime::HALFWEEK) epochWeek = (short) f[5] + 1;
+      if (diff > HALFWEEK) epochWeek = (short) f[5] + 1;
       else epochWeek = (short) f[5];
       timeDisplay( os, "Eph Epoch:",   epochWeek, f[33], 0 );
 
@@ -492,6 +494,7 @@ namespace gpstk
       short rotate;
       char  ochar;
       short almType;
+      unsigned long word3;
 
       os << "**************************************";
       os << "**************************************\n";
@@ -560,8 +563,10 @@ namespace gpstk
       {
             // Hexadecimal dump
          os << "\n";
-         os << "Hexadecimal dump of non-parity bits of words 3-10\n";
-//    os << "     **This feature under construction.**\n";
+         os << "Hexadecimal dump of reserved bits of words 3-9\n";
+         os << " In terms of a 300 bit subframe the words are as follows:\n";
+         os << "     3:069-084    4:091-114    5:121-144    6:151-174\n";
+         os << "     7:181-204    8:211-234    9:241-247   10:249-264\n";
          os.setf(ios::uppercase);
          for (k=2;k<10;k++)
          {
@@ -622,33 +627,71 @@ namespace gpstk
             break;
 
          case 52:
+               // Hexadecimal dump
+            os << "\n";
+            os << "Page Type: Subframe 4 Page 13, Navigation Message Correction Table\n";
+            os << "Hexadecimal dump of non-parity bits of words 3-10\n";
+            os << " For historical reasons, the preceding statement\n";
+            os << " NOT QUITE TRUE.  The actual bits (given in terms\n";
+            os << " of a 300 bit subframe) are as follows:\n";
+            os << "     3:069-084    4:091-114    5:121-144    6:151-174\n";
+            os << "     7:181-204    8:211-234    9:241-247   10:249-264\n";
+
+               // Word 3 is index 2 and there's a five item offset
+            word3 = (unsigned long) f[2+5];
+            word3 >>= 14;
+            word3 &= 0x00000003L;
+            os << "\nAvailability Indicator (AI): " << word3 << ", "; 
+            if (word3==0)       os << "NMCT Unencrypted"; 
+             else if (word3==1) os << "NMCT Encrypted";
+             else if (word3==2) os << "NMCT Unavailable"; 
+             else               os << "RESERVED (NMCT status not stated)"; 
+            os << "\n";
+            
+            os.setf(ios::uppercase);
+            for (k=2;k<10;k++)
+            {
+               if (k==2 || k==6 ) os << "\n";
+               os << "    ";
+               os.width(2);
+               os << (k+1) << ":";
+               os.width(6);      // 'stead 6
+               os.fill('0');
+               aword = (unsigned long) f[k+5];
+                  // during subframe conversion.
+               os << hex << aword << dec;
+               os.fill(' ');
+            }
+            break; 
+
+         
          case 53:
          case 54:
             os << "\n";
-            if (almType==52) os << "Page Type: Subframe 4 Page 13, Reserved Bits\n";
             if (almType==53) os << "Page Type: Subframe 4 Page 14, Reserved Bits\n";
             if (almType==54) os << "Page Type: Subframe 4 Page 15, Reserved Bits\n";
                // Hexadecimal dump
             os << "Hexadecimal dump of non-parity bits of words 3-10\n";
-            os << "     **This feature under construction.**\n";
-            os << "     **This page is decoded incorrectly in the ";
-            os << "subframe converter.**\n";
-/*       os.setf(ios::uppercase);
-         for (j=2;j<10;j++)
-         {
-                        if (j==2 || j==6 ) os << "\n";
-                        os << "    ";
-                        os.width(2);
-                        os << (j+1) << ":";
-                        os.width(6);
-                        os.fill('0');
-                        aword = i[j+2];
-                        aword >>= 6;
-                        os << hex << aword << dec;
-                        os.fill(' ');
-         }
-*/
-            break;
+            os << " For historical reasons, the preceding statement\n";
+            os << " NOT QUITE TRUE.  The actual bits (given in terms\n";
+            os << " of a 300 bit subframe) are as follows:\n";
+            os << "     3:069-084    4:091-114    5:121-144    6:151-174\n";
+            os << "     7:181-204    8:211-234    9:241-247   10:249-264\n";
+            os.setf(ios::uppercase);
+            for (k=2;k<10;k++)
+            {
+               if (k==2 || k==6 ) os << "\n";
+               os << "    ";
+               os.width(2);
+               os << (k+1) << ":";
+               os.width(6);      // 'stead 6
+               os.fill('0');
+               aword = (unsigned long) f[k+5];
+                  // during subframe conversion.
+               os << hex << aword << dec;
+               os.fill(' ');
+            }
+            break; 
 
          case 55:
             os << "\n";
@@ -841,8 +884,8 @@ namespace gpstk
       short SOH;
 
       SOW = (long) HOW;
-      DOW = (short) (SOW / DayTime::SEC_DAY);
-      SOD = SOW - DOW * long(DayTime::SEC_DAY);
+      DOW = (short) (SOW / SEC_PER_DAY);
+      SOD = SOW - DOW * long(SEC_PER_DAY);
       hour = (short) (SOD/3600);
 
       SOH = (short) (SOD - (hour*3600));
@@ -880,7 +923,7 @@ namespace gpstk
                               const short week, const double SOW, 
                               const short headerFlag ) const
    {
-      DayTime dt;
+      CommonTime dt;
       short slen;
       short j;
 
@@ -890,17 +933,17 @@ namespace gpstk
       slen = std::strlen(legend);
       for (j=1;j<(15-slen);j++) os << " ";
 
-         // Convert to daytime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      dt.setGPSfullweek(week, SOW);
-
+         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
+      dt=GPSWeekSecond(week, SOW);
+      int weekbit10= week& 0x3FF;
       os.width(4);
-      os << dt.GPSfullweek() << "(";
+      os << static_cast<GPSWeekSecond>(dt).week << "(";
       os.width(4);
-      os << dt.GPS10bitweek() << ")  ";
+      os << weekbit10 << ")  ";
       os.width(6);
-      os << dt.GPSsecond() << "   ";
+      os << static_cast<GPSWeekSecond>(dt).sow<< "   ";
 
-      switch (dt.GPSday())
+      switch (static_cast<YDSTime>(dt).doy)
       {
          case 0: os << "Sun-0"; break;
          case 1: os << "Mon-1"; break;
@@ -914,21 +957,21 @@ namespace gpstk
       os << "   ";
       os.fill('0');
       os.width(3);
-      os << dt.DOYday() << "   ";
+      os << static_cast<YDSTime>(dt).doy << "   ";
       os.width(5);
-      os << dt.DOYsecond() << "   ";
+      os << static_cast<YDSTime>(dt).sod << "   ";
       os.width(2);
-      os << dt.month() << "/";
+      os << static_cast<CivilTime>(dt).month << "/";
       os.width(2);
-      os << dt.day() << "/";
+      os << static_cast<CivilTime>(dt).day << "/";
       os.width(4);
-      os << dt.year() << "   ";
+      os << static_cast<CivilTime>(dt).year << "   ";
       os.width(2);
-      os << dt.hour() << ":";
+      os << static_cast<CivilTime>(dt).hour << ":";
       os.width(2);
-      os << dt.minute() << ":";
+      os << static_cast<CivilTime>(dt).minute << ":";
       os.width(2);
-      os << static_cast<short>(dt.second()) << "\n";
+      os << static_cast<short>(static_cast<CivilTime>(dt).second) << "\n";
       os.fill(' ');
    }
 
@@ -1134,7 +1177,7 @@ namespace gpstk
       throw(WrongBlockNumber, WrongBlockFormat)
    {
       std::ostringstream out;
-      DayTime transmitTime(0.L), howTime(0.L);
+      CommonTime transmitTime(0.L), howTime(0.L);
       WrongBlockNumber wbn( "Block number should be 9, 109, or 62, was "+
                             asString(blockNum) );
 
@@ -1166,8 +1209,8 @@ namespace gpstk
             break;
 
          case 62:
-            transmitTime.setGPSfullweek(i[5], (double)i[1]);
-            howTime.setGPSfullweek(i[5], f[2]);
+            transmitTime=GPSWeekSecond(i[5], (double)i[1]);
+            howTime=GPSWeekSecond(i[5], f[2]);
 
                // we only have toa in this format message.. yay.
                // FIX magic number.. I'm a bit apprehensive about
@@ -1177,11 +1220,11 @@ namespace gpstk
             {
                out << "A" << ' '
                    << ((short)f[6]) << ' '               // page id
-                   << transmitTime.GPSday() << ' '
-                   << transmitTime.GPSfullweek() << ' '
+                   << static_cast<YDSTime>(transmitTime).doy << ' '
+                   << static_cast<GPSWeekSecond>(transmitTime).week << ' '
                    << ((long)f[8]) << ' '                // toa
-                   << howTime.DOYday() << ' '
-                   << howTime.DOYyear();
+                   << static_cast<YDSTime>(howTime).doy << ' '
+                   << static_cast<YDSTime>(howTime).year;
             }
             else
             {
@@ -1412,4 +1455,5 @@ namespace gpstk
       return label;
    }
 } // namespace gpstk
+
 

@@ -31,13 +31,14 @@
 #include "EOPDataStore.hpp"
 #include "MiscMath.hpp"
 #include <fstream>
+#include "MJD.hpp"
 
 namespace gpstk
 {
    using namespace std;
   
       // Add to the store directly
-   void EOPDataStore::addEOPData(const DayTime& utc,
+   void EOPDataStore::addEOPData(const CommonTime& utc,
                                   const EOPDataStore::EOPData& d)
       throw()
    {
@@ -55,7 +56,7 @@ namespace gpstk
    }  // End of 'EOPDataStore::addEOPData()'
 
    
-   EOPDataStore::EOPData EOPDataStore::getEOPData(const DayTime& utc) const
+   EOPDataStore::EOPData EOPDataStore::getEOPData(const CommonTime& utc) const
          throw(InvalidRequest)
    {
       std::vector<double> data = getData(utc);
@@ -102,7 +103,7 @@ namespace gpstk
             dEps = StringUtils::asDouble(line.substr(175,10))/1000.0;   // 
          }
          
-         addEOPData(DayTime(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+         addEOPData(MJD(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
       };
       inpf.close();
 
@@ -169,7 +170,7 @@ namespace gpstk
          dPsi *= 1e-6;
          dEps *= 1e-6;
 
-         addEOPData(DayTime(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+         addEOPData(MJD(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
       };
       inpf.close();
 
@@ -233,7 +234,7 @@ namespace gpstk
             double dPsi = 0.0;
             double dEps = 0.0;
 
-            addEOPData(DayTime(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+            addEOPData(MJD(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
          }
 
       }  // End of 'while'

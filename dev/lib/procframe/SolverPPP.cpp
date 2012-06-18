@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
@@ -37,7 +37,6 @@ namespace gpstk
 
       // Index initially assigned to this class
    int SolverPPP::classIndex = 9300000;
-
 
       // Returns an index identifying this object.
    int SolverPPP::getIndex() const
@@ -60,9 +59,6 @@ namespace gpstk
 
          // Set the equation system structure
       setNEU(useNEU);
-
-         // Set the class index
-      setIndex();
 
          // Call initializing method
       Init();
@@ -310,7 +306,6 @@ covariance matrix.");
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -710,7 +705,6 @@ covariance matrix.");
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -784,7 +778,6 @@ covariance matrix.");
    }  // End of method 'SolverPPP::setCoordinatesModel()'
 
 
-   
        /** Set the positioning mode, kinematic or static.
         */
    SolverPPP& SolverPPP::setKinematic( bool kinematicMode,

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -35,6 +35,7 @@
 #include <set>
 
 #include "ObsID.hpp"
+#include "RinexObsID.hpp"
 #include "Exception.hpp"
 
 
@@ -45,18 +46,18 @@ int main(int argc, char *argv[])
 
    map< ObsID, string> i2s;
 
-   i2s["C1C"] = "C1C";
-   i2s["L1C"] = "L1C";
-   i2s["D1C"] = "D1C";
-   i2s["S1C"] = "S1C";
-   i2s["L1W"] = "L1W";
-   i2s["D2Z"] = "D2Z";
-   i2s["S1X"] = "S1X";
-   i2s["L5Q"] = "L5Q";
-   i2s["EL5Q"] = "EL5Q";
-   i2s["EC1C"] = "EC1C";
-   i2s["C4x"] = "C4x";  // Note that you can just start using custom id's
-   i2s["C4y"] = "C4y";
+   i2s[ObsID("C1C")] = "C1C";
+   i2s[ObsID("L1C")] = "L1C";
+   i2s[ObsID("D1C")] = "D1C";
+   i2s[ObsID("S1C")] = "S1C";
+   i2s[ObsID("L1W")] = "L1W";
+   i2s[ObsID("D2Z")] = "D2Z";
+   i2s[ObsID("S1X")] = "S1X";
+   i2s[ObsID("L5Q")] = "L5Q";
+   i2s[ObsID("EL5Q")] = "EL5Q";
+   i2s[ObsID("EC1C")] = "EC1C";
+   i2s[ObsID("C4x")] = "C4x";  // Note that you can just start using custom id's
+   i2s[ObsID("C4y")] = "C4y";
 
    // You can also explicitly create one so it can have a good description
    ObsID dfif = ObsID::newID("C3 ", "Ionosphere-free pseudorange");
@@ -70,12 +71,12 @@ int main(int argc, char *argv[])
    ObsID l1lc(ObsID::otTrackLen, ObsID::cbL1, ObsID::tcY);
    i2s[l1lc] = "cust";
 
-   i2s["C1 "] = "C1 ";
+   i2s[ObsID("C1 ")] = "C1 ";
 
    try
    {
       ObsID garbage = ObsID::newID("C1C", "this should fail");
-      cout << "Error:" << garbage.asRinex3ID() << " didn't fail " << garbage << endl;
+      cout << "Error:" << StringUtils::asString(garbage) << " didn't fail " << garbage << endl;
    }
    catch (Exception& e)
    { cout << e << endl; }
@@ -83,7 +84,7 @@ int main(int argc, char *argv[])
    // Dump the map of obs ids
    cout << "Rinex   Ctor   Description" << endl;
    for (map<ObsID,string>::const_iterator i=i2s.begin(); i != i2s.end(); i++)
-      cout << left << setw(7) << i->first.asRinex3ID()
+      cout << left << setw(7) << RinexObsID(i->first).asString()
            << " " << setw(7) << i->second
            << " " << i->first << endl;
 }

@@ -23,7 +23,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -58,7 +58,7 @@
 #include "FICBase.hpp"
 #include "EngEphemeris.hpp"
 #include "AlmOrbit.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 
 namespace gpstk
 {
@@ -119,10 +119,10 @@ namespace gpstk
 
          /**
           * Sets the transmit time of the current block of data.
-          * @param dt (output) a daytime object containing the transmit time
+          * @param dt (output) a CommonTime object containing the transmit time
           * @return if the process was sucessful, return true, else false
           */
-      bool getTransmitTime(DayTime& dt) const;
+      bool getTransmitTime(CommonTime& dt) const;
 
          /**  
           * Cast *this to an Engineering Ephemeiris Object.

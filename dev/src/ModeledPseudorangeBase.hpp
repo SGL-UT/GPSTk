@@ -5,8 +5,8 @@
  * Abstract base class for modeled pseudoranges
  */
 
-#ifndef MODELEDPSEUDORANGEBASE_HPP
-#define MODELEDPSEUDORANGEBASE_HPP
+#ifndef GPSTK_MODELEDPSEUDORANGEBASE_HPP
+#define GPSTK_MODELEDPSEUDORANGEBASE_HPP
 
 //============================================================================
 //
@@ -24,9 +24,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE. 2006, 2008
+//  Dagoberto Salazar - gAGE. 2006, 2008, 2011
 //
 //============================================================================
 
@@ -69,7 +69,7 @@ namespace gpstk
       Vector<Xvt> svXvt;
 
          /// Epoch when the signal left the satellite (Transmission time)
-      Vector<DayTime> svTxTime;
+      Vector<CommonTime> svTxTime;
 
          /// Total Group Delay (TGD) of satellites, in meters
       Vector<double> svTGD;
@@ -138,4 +138,5 @@ namespace gpstk
       //@}
 
 }  // End of namespace gpstk
-#endif   // MODELEDPSEUDORANGEBASE_HPP
+
+#endif   // GPSTK_MODELEDPSEUDORANGEBASE_HPP

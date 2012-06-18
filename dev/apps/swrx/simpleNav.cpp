@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -30,7 +30,7 @@ tries to estimate the pseudoranges from the correlation delays.
 
 #include <iostream>
 
-#include <DayTime.hpp>
+#include <CommonTime.hpp>
 #include <CommandOption.hpp>
 #include <CommandOptionWithTimeArg.hpp>
 #include <CommandOptionParser.hpp>
@@ -40,8 +40,10 @@ tries to estimate the pseudoranges from the correlation delays.
 #include <RinexNavData.hpp>
 #include <TropModel.hpp>
 #include <IonoModel.hpp>
-#include <GPSGeoid.hpp>
-#include <PRSolution.hpp>
+#include <GPSEllipsoid.hpp>
+#include <PRSolution2.hpp>
+#include <Position.hpp>
+#include "Xvt.hpp"
 
 using namespace gpstk;
 using namespace std;
@@ -126,7 +128,7 @@ int main(int argc, char *argv[])
       cout << "Have ephemeris data from " << bce.getInitialTime() 
            << " through " << bce.getFinalTime() << endl;
 
-   DayTime time = timeOption.getTime()[0];
+   CommonTime time = timeOption.getTime()[0];
    if (verbosity)
       cout << "Initial time estimate: " << time << endl;
 
@@ -134,8 +136,8 @@ int main(int argc, char *argv[])
       cout << "Warning: Initial time does not appear to be within the provided ephemeris data." << endl;
 
 
-   GPSGeoid gm;
-   ECEF ecef(antennaPos);
+   GPSEllipsoid gm;
+   Position ecef(antennaPos);
    map<SatID, double> range;
    vector<SatID> svVec;
    vector<double> expVec, ionoVec;
@@ -166,7 +168,7 @@ int main(int argc, char *argv[])
    {
       GGTropModel gg;
       gg.setWeather(20., 1000., 50.);    
-      PRSolution prSolver;
+      PRSolution2 prSolver;
       prSolver.RMSLimit = 400;
       prSolver.RAIMCompute(time, svVec, obsVec, bce, &gg);
       Vector<double> sol = prSolver.Solution;

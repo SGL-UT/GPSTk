@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
@@ -30,6 +30,8 @@
 
 
 #include "SunPosition.hpp"
+#include "CivilTime.hpp"
+#include "YDSTime.hpp"
 
 
 namespace gpstk
@@ -37,10 +39,10 @@ namespace gpstk
 
 
       // Time of the first valid time
-   const DayTime SunPosition::initialTime(1900, 3, 1, 0, 0, 0.0);
+   const CommonTime SunPosition::initialTime = CivilTime(1900, 3, 1, 0, 0, 0.0);
 
       // Time of the last valid time
-   const DayTime SunPosition::finalTime(2100, 2, 28, 0, 0, 0.0);
+   const CommonTime SunPosition::finalTime = CivilTime(2100, 2, 28, 0, 0, 0.0);
 
 
       // Returns the position of Sun ECEF coordinates (meters) at the 
@@ -50,7 +52,7 @@ namespace gpstk
       // @throw InvalidRequest If the request can not be completed for any
       //    reason, this is thrown. The text may have additional
       //    information as to why the request failed.
-   Triple SunPosition::getPosition(const DayTime& t) const
+   Triple SunPosition::getPosition(const CommonTime& t) const
       throw(InvalidRequest)
    {
 
@@ -77,7 +79,7 @@ namespace gpstk
        * in meters)
        * @param t Epoch
        */
-   Triple SunPosition::getPositionCIS(const DayTime& t) const
+   Triple SunPosition::getPositionCIS(const CommonTime& t) const
       throw(InvalidRequest)
    {
 
@@ -90,9 +92,9 @@ namespace gpstk
       }
 
          // Compute the years, and fraction of year, pased since J1900.0
-      int y(t.year());    // Current year
-      int doy(t.DOY());   // Day of current year
-      double fd( (t.secOfDay()/86400.0 ) );   // Fraction of day
+      int y(static_cast<YDSTime>(t).year);    // Current year
+      int doy(static_cast<YDSTime>(t).doy);   // Day of current year
+      double fd( (static_cast<YDSTime>(t).sod/86400.0 ) );   // Fraction of day
       int years( (y - 1900) );    // Integer number of years since J1900.0
       int iy4( ( ((y%4)+4)%4 ) ); // Is it a leap year?
 

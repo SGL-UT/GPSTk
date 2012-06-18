@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -60,7 +60,7 @@ namespace gpstk
       LinearClockModel(double sigma = 2, double elmask = 0, SvMode mode = ALWAYS)
          :ObsClockModel(sigma, elmask, mode) {reset();};
 
-      virtual double getOffset(const gpstk::DayTime& t) const 
+      virtual double getOffset(const gpstk::CommonTime& t) const 
          throw()
       {
          if (!isOffsetValid(t))
@@ -69,7 +69,7 @@ namespace gpstk
             return clockModel.Slope()*(t-baseTime) + clockModel.Intercept();
       };
 
-      virtual bool isOffsetValid(const gpstk::DayTime& t) const throw()
+      virtual bool isOffsetValid(const gpstk::CommonTime& t) const throw()
       {return t >= startTime && t <= endTime && clockModel.N() > 1;};
 
       /// Add in the given ord to the clock model
@@ -87,13 +87,13 @@ namespace gpstk
       // x is time y is clock offset
       gpstk::TwoSampleStats<double> clockModel;
 
-      gpstk::DayTime startTime, endTime, baseTime;
+      gpstk::CommonTime startTime, endTime, baseTime;
 
       unsigned long tossCount;
    
       // This is were we store what SVs were used to compute the individual
       // clock observations
-      std::map<gpstk::DayTime, SvStatusMap> prnStatus;
+      std::map<gpstk::CommonTime, SvStatusMap> prnStatus;
 
       // This is a store of the clock observations that were added into the
       // clockModel object

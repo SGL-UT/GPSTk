@@ -18,12 +18,27 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+#include <cmath>
 #include "ANSITime.hpp"
 #include "TimeConstants.hpp"
 
@@ -33,17 +48,19 @@ namespace gpstk
       throw()
    {
       time = right.time;
+      timeSystem = right.timeSystem;
       return *this;
    }
    
    CommonTime ANSITime::convertToCommonTime() const
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
       try
       {
          return CommonTime( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
                             ( time % SEC_PER_DAY ),
-                            0 );
+                            0.,
+                            timeSystem );
       }
       catch (InvalidParameter& ip)
       {
@@ -53,13 +70,13 @@ namespace gpstk
    }
    
    void ANSITime::convertFromCommonTime( const CommonTime& ct )
-      throw(InvalidRequest)
+      throw( InvalidRequest )
    {
          /// This is the earliest CommonTime for which ANSITimes are valid.
-      static const CommonTime MIN_CT = ANSITime(0);
+      static const CommonTime MIN_CT = ANSITime(0, TimeSystem::Any);
          /// This is the latest CommonTime for which ANSITimes are valid.
          /// 2^31 - 1 seconds
-      static const CommonTime MAX_CT = ANSITime(2147483647);
+      static const CommonTime MAX_CT = ANSITime(2147483647, TimeSystem::Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
       {
@@ -69,43 +86,47 @@ namespace gpstk
 
       long jday, sod;
       double fsod;
-      ct.get( jday, sod, fsod );
+      ct.get( jday, sod, fsod, timeSystem );
       
       time = 
          static_cast<time_t>((jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod);
    }
    
    std::string ANSITime::printf( const std::string& fmt) const
-      throw( gpstk::StringUtils::StringException )
+      throw( StringUtils::StringException )
    {
       try
       {
-         using gpstk::StringUtils::formattedPrint;
+         using StringUtils::formattedPrint;
          std::string rv( fmt );
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
                               "Klu", time );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", timeSystem.asString().c_str() );
          return rv;         
       }
-      catch( gpstk::StringUtils::StringException& se )
+      catch( StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
    }
    
    std::string ANSITime::printError( const std::string& fmt) const
-      throw( gpstk::StringUtils::StringException )
+      throw( StringUtils::StringException )
    {
       try
       {
-         using gpstk::StringUtils::formattedPrint;
+         using StringUtils::formattedPrint;
          std::string rv( fmt );
          
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
                               "Ks", getError().c_str() );
+         rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                              "Ps", getError().c_str() );
          return rv;         
       }
-      catch( gpstk::StringUtils::StringException& se )
+      catch( StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
@@ -114,14 +135,26 @@ namespace gpstk
    bool ANSITime::setFromInfo( const IdToValue& info )
       throw()
    {
-      using namespace gpstk::StringUtils;
+      using namespace StringUtils;
       
-      IdToValue::const_iterator i = info.find('K');
-      if( i != info.end() )
+      for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
-         time = asInt( i->second );
-      }
+         switch( i->first )
+         {
+            case 'K':
+               time = asInt( i->second );
+               break;
 
+            case 'P':
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               break;
+
+            default:
+                  // do nothing
+               break;
+         };
+      }
+      
       return true;
    }
    
@@ -141,12 +174,19 @@ namespace gpstk
       throw()
    {
       time = 0;
+      timeSystem = TimeSystem::Unknown;
    }
 
    bool ANSITime::operator==( const ANSITime& right ) const
       throw()
    {
-      if( time == right.time )
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+     if ((timeSystem != TimeSystem::Any &&
+          right.timeSystem != TimeSystem::Any) &&
+	 timeSystem != right.timeSystem)
+         return false;
+
+      if( fabs(double(time - right.time)) < CommonTime::eps )
       {
          return true;
       }
@@ -160,26 +200,35 @@ namespace gpstk
    }
 
    bool ANSITime::operator<( const ANSITime& right ) const
-      throw()
+      throw( InvalidRequest )
    {
+     /// Any (wildcard) type exception allowed, otherwise must be same time systems
+     if ((timeSystem != TimeSystem::Any &&
+          right.timeSystem != TimeSystem::Any) &&
+         timeSystem != right.timeSystem)
+      {
+         InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         GPSTK_THROW(ir);
+      }
+
       return ( time < right.time );
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
-      throw()
+      throw( InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool ANSITime::operator<=( const ANSITime& right ) const
-      throw()
+      throw( InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool ANSITime::operator>=( const ANSITime& right ) const
-      throw()
+      throw( InvalidRequest )
    {
       return ( !operator<( right ) );
    }

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -31,7 +31,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 #include "StringUtils.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 
 #include "complex_math.h"
 #include "SimpleCorrelator.hpp"
@@ -218,11 +218,11 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
    {
       case 'c':
          codeGenPtr = new CACodeGenerator(prn);
-         chipFreq = CA_CHIP_FREQ;
+         chipFreq = CA_CHIP_FREQ_GPS;
          break;
       case 'p':
          codeGenPtr = new PCodeGenerator(prn);
-         chipFreq = PY_CHIP_FREQ;
+         chipFreq = PY_CHIP_FREQ_GPS;
          break;
       default:
          cout << "Unsupported code: " << code << endl;

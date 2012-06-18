@@ -24,15 +24,18 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010
 //
 //============================================================================
 
 
-#include "DayTime.hpp"
-
+#include "CommonTime.hpp"
+#include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "Epoch.hpp"
+#include "TimeSystem.hpp"
 namespace gpstk
 {
       /** @addtogroup GeoDynamics */
@@ -52,44 +55,46 @@ namespace gpstk
        *                      T |                                         
        *           -(UT1-TAI) | |    -leap seconds                          
        *   UT1 ---------------| |--------------------> UTC                
-       *    |                                                              
+       * 
        *    |   earth rotation                                            
        *    ---------------------> GAST                                   
        *                                                                    
        */
-   class UTCTime : public DayTime
+   class UTCTime : public CommonTime
    {
    public:
 
          /// Default constructor
-      UTCTime(){ setTimeFrame(UTC);};
+      UTCTime(){TimeSystem(UTC);}
 
-      UTCTime(DayTime& utc) : DayTime(utc)
-      { setTimeFrame(DayTime::UTC); }
+      UTCTime(CommonTime& utc) : CommonTime(utc)
+      {TimeSystem(UTC); }
 
       UTCTime(int year,int month,int day,int hour,int minute,double second)
-         : DayTime(year, month, day, hour, minute, second, DayTime::UTC)
-      {}
+          {CivilTime(year, month, day, hour, minute, second);}
+      
 
       UTCTime(int year,int doy,double sod)
-         : DayTime(year, doy, sod, DayTime::UTC)
-      {}
+          {YDSTime(year, doy, sod);}
+      
 
       UTCTime(double mjdUTC)
-         :DayTime(mjdUTC, DayTime::UTC)
-      {}     
+         {set(mjdUTC, 0,TimeSystem::UTC);}
+           
 
          /// Default deconstructor
-      virtual ~UTCTime() { };
+      virtual ~UTCTime()
+	throw()
+	 { };
 
 
          // MJD formats
 
-      double mjdUT1(){ return this->asUT1().MJD(); };
+      double mjdUT1(){ return this->asUT1().MJD(); }
 
-      double mjdUTC(){ return this->MJD(); };
-      
-      double mjdTT(){ return this->asTT().MJD(); };
+      double mjdUTC(){ return this->asUTC().MJD(); };
+
+      double mjdTT() { return this->asTT().MJD(); };
       
       double mjdTDB(){ return this->asTDB().MJD(); };
        
@@ -103,38 +108,38 @@ namespace gpstk
       double jdUT1(){ return this->asUT1().JD(); };
       
       double jdUTC(){ return this->asUTC().JD(); };
+
+      double jdTT() { return this->asTT().JD(); };
       
-      double jdTT(){ return this->asTT().JD(); };
+      double jdTDB(){ return this->asTDB().JD(); };
       
-      double jdTDB(){ return asTDB().JD(); };
+      double jdTAI(){ return this->asTAI().JD(); };
       
-      double jdTAI(){ return asTAI().JD(); };
-      
-      double jdGPST(){ return asGPST().JD(); };
+      double jdGPST(){ return this->asGPST().JD(); };
 
 
          // convert to different time system
 
          /// Return UT1 Time
-      DayTime asUT1();
+      Epoch asUT1();
          
          /// Return UTC Time
-      DayTime asUTC();
+      Epoch asUTC();
          
-         /// Return TT Time
-      DayTime asTT();
-      
-         /// Return TDB Time
-      DayTime asTDB();
+	/// Return TT Time
+	Epoch asTT();      
+
+        /// Return TDB Time
+      Epoch asTDB();
          
          /// Return TAI Time
-      DayTime asTAI();
+      Epoch asTAI();
          
          /// Return GPS Time
-      DayTime asGPST();
+      Epoch asGPST();
          
          /// Return BD(Compass) Time
-      DayTime asBDT();
+      Epoch asBDT();
       
          // EOP data
 
@@ -189,53 +194,53 @@ namespace gpstk
       /// GPS time to UTC time
       /// @param gpst    GPST as input 
       /// @param utc     UTC as output 
-   void GPST2UTC(const DayTime& gpst, DayTime& utc);
+   void GPST2UTC(const CommonTime& gpst, UTCTime& utc);
       
       /// UTC time to GPS time 
       /// @param utc    UTC as input 
       /// @param gpst   GPST as output 
-   void UTC2GPST(const DayTime& utc, DayTime& gpst);
+   void UTC2GPST(const UTCTime& utc, CommonTime& gpst);
 
       /// UT1 time to UTC time
       /// @param ut1     UT1 as input 
       /// @param utc     UTC as output 
-   void UT12UTC(const DayTime& ut1, DayTime& utc);
+   void UT12UTC(const UTCTime& ut1, UTCTime& utc);
 
       /// UTC time to UT1 time
       /// @param utc     UTC as input 
       /// @param ut1     UT1 as output 
-   void UTC2UT1(const DayTime& utc, DayTime& ut1);
+   void UTC2UT1(const UTCTime& utc, UTCTime& ut1);
 
       /// TT time to UTC time
       /// @param tt      TT as input 
       /// @param utc     UTC as output 
-   void TT2UTC(const DayTime& tt, DayTime& utc);
+   void TT2UTC(const CommonTime& tt, UTCTime& utc);
 
       /// UTC time to TT time
       /// @param UTC     UTC as input 
       /// @param tt      TT as output 
-   void UTC2TT(const DayTime& utc, DayTime& tt);
+   void UTC2TT(const UTCTime& utc, CommonTime& tt);
 
       /// TAI time to UTC time
       /// @param tai     TAI as input 
       /// @param utc     UTC as output 
-   void TAI2UTC(const DayTime& tai, DayTime& utc);
+   void TAI2UTC(const CommonTime& tai, UTCTime& utc);
 
       /// UTC time to TAI time
       /// @param utc     UTC as input 
       /// @param tai     TAI as output 
-   void UTC2TAI(const DayTime& utc, DayTime& tai);
+   void UTC2TAI(const UTCTime& utc, CommonTime& tai);
 
 
       /// BDT time to UTC time
       /// @param bdt     BDT as input 
       /// @param utc     UTC as output 
-   void BDT2UTC(const DayTime& bdt, DayTime& utc);
+   void BDT2UTC(const CommonTime& bdt, UTCTime& utc);
 
       /// UTC time to BDT time
       /// @param utc     UTC as input 
       /// @param bdt     BDT as output 
-   void UTC2BDT(const DayTime& utc, DayTime& bdt);
+   void UTC2BDT(const UTCTime& utc, CommonTime& bdt);
 
 
    // @}

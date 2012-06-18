@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -24,9 +24,8 @@
 
 #include "xRinexNav.hpp"
 #include "Exception.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include <string>
-#include "StringUtils.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexNav);
 
@@ -67,7 +66,7 @@ void xRinexNav :: hardCodeTest (void)
 		vector<string>::const_iterator itr1 = RinexNavHeader.commentList.begin();
 		CPPUNIT_ASSERT_EQUAL((string)"THIS IS ONE COMMENT",(*itr1));
 	
-		CPPUNIT_ASSERT(fileEqualTest("Logs/RinexNavExample.99n","Logs/TestOutput.99n"));
+		CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/RinexNavExample.99n",(char*)"Logs/TestOutput.99n"));
 		
 		gpstk::RinexNavStream RinexNavStream2("Logs/TestOutput.99n");
 		gpstk::RinexNavStream out2("Logs/TestOutput2.99n",ios::out);
@@ -94,7 +93,7 @@ void xRinexNav :: hardCodeTest (void)
 		}
 		RinexNavHeader.dump(dmp);
 		RinexNavData.dump(dmp);
-		CPPUNIT_ASSERT(fileEqualTest("Logs/RinexNavExample.99n","Logs/TestOutput3.99n"));
+		CPPUNIT_ASSERT(fileEqualTest((char*)"Logs/RinexNavExample.99n",(char*)"Logs/TestOutput3.99n"));
 	}
 	catch (gpstk::Exception& e)
 	{
@@ -158,10 +157,21 @@ void xRinexNav :: dataTest (void)
 
 	try
 	{
-		gpstk::RinexEphemerisStore Store;
-		gpstk::DayTime Time(1999,9,2,17,51,44);
-		Store.loadFile("Logs/RinexNavExample.99n");
-		const gpstk::EngEphemeris& Eph6 = Store.findUserEphemeris(sid6, Time);
+		gpstk::Rinex3EphemerisStore Store;
+                Store.loadFile("Logs/RinexNavExample.99n");
+
+		gpstk::CivilTime Time(1999,9,2,17,51,44,TimeSystem::GPS);
+
+//Load data into GPSEphemerisStore object so can invoke findUserEphemeris on it
+
+                std::list<gpstk::Rinex3NavData> R3NList;
+                gpstk::GPSEphemerisStore GStore;
+                std::list<gpstk::Rinex3NavData>::const_iterator it;
+                Store.addToList(R3NList);
+                for (it=R3NList.begin(); it != R3NList.end(); ++it)
+                  GStore.addEphemeris(gpstk::EngEphemeris(*it));
+
+		const gpstk::EngEphemeris& Eph6 = GStore.findUserEphemeris(sid6, Time);
 		gpstk::RinexNavData Data(Eph6);
 		list<double> NavDataList = Data.toList();
 	

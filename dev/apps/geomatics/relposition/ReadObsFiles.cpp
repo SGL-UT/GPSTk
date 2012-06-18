@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -43,8 +43,11 @@
 
 //------------------------------------------------------------------------------------
 // system includes
+#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 // GPSTk
+#include "Epoch.hpp"
 
 // DDBase
 #include "DDBase.hpp"
@@ -74,7 +77,7 @@ try {
       ObsFileList[i].ins.clear();
       ObsFileList[i].nread = -1;
       ObsFileList[i].dt = -1.0;
-      ObsFileList[i].firstTime = DayTime::BEGINNING_OF_TIME;
+      ObsFileList[i].firstTime = CommonTime::BEGINNING_OF_TIME;
       ObsFileList[i].valid = false;
 
          // filename
@@ -122,7 +125,6 @@ try {
          // if this is the second reading, quit
       if(k==1) break;
 
-         // check that file contains C1/P1,P2,L1,L2,S1,S2
       ObsFileList[i].inC1 = ObsFileList[i].inP1 = ObsFileList[i].inP2 = -1;
       ObsFileList[i].inL1 = ObsFileList[i].inL2 = -1;
       ObsFileList[i].inD1 = ObsFileList[i].inD2 = -1;
@@ -137,6 +139,7 @@ try {
       RinexObsHeader::RinexObsType otD2(RinexObsHeader::convertObsType("D2"));
       RinexObsHeader::RinexObsType otS1(RinexObsHeader::convertObsType("S1"));
       RinexObsHeader::RinexObsType otS2(RinexObsHeader::convertObsType("S2"));
+
       for(j=0; j<ObsFileList[i].Rhead.obsTypeList.size(); j++) {
          if(ObsFileList[i].Rhead.obsTypeList[j]==otC1) ObsFileList[i].inC1 = j;
          if(ObsFileList[i].Rhead.obsTypeList[j]==otL1) ObsFileList[i].inL1 = j;
@@ -148,6 +151,7 @@ try {
          if(ObsFileList[i].Rhead.obsTypeList[j]==otS1) ObsFileList[i].inS1 = j;
          if(ObsFileList[i].Rhead.obsTypeList[j]==otS2) ObsFileList[i].inS2 = j;
       }
+
 
       ObsFileList[i].nread = 0;
       ObsFileList[i].valid = true;
@@ -177,7 +181,7 @@ try {
       {
          int jj,kk,nleast,nepochs=0,ndt[9]={-1,-1,-1, -1,-1,-1, -1,-1,-1};
          double dt,bestdt[9];
-         DayTime prev=DayTime::END_OF_TIME;
+         CommonTime prev=CommonTime::END_OF_TIME;
          while(1) {
             try { ObsFileList[i].ins >> ObsFileList[i].Robs; }
             catch(Exception& e) { break; }   // simply quit if meet failure
@@ -206,7 +210,7 @@ try {
          ObsFileList[i].dt = bestdt[kk];
          if(CI.Verbose) oflog
          << "Found interval " << ObsFileList[i].dt << ", and first epoch " 
-         << ObsFileList[i].firstTime.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+         << printTime(ObsFileList[i].firstTime,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
          << endl;
       }
 
@@ -268,11 +272,11 @@ try {
       //}
 
       // is the timetag an even multiple of DataInterval?
-      double sow = of.Robs.time.GPSsecond();
+      double sow = static_cast<GPSWeekSecond>(of.Robs.time).sow;
       double frac = sow - CI.DataInterval*double(int(sow/CI.DataInterval + 0.5));
       if(fabs(frac) < 0.5) break;
       else if(CI.Debug) oflog << "skip epoch "
-         << of.Robs.time.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+         << printTime((of.Robs.time),"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
    }
 
    of.nread++;                               // success

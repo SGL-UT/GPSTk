@@ -21,11 +21,25 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include "TimeTag.hpp"
 
@@ -46,10 +60,10 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      JulianDate( long double j = 0. )
+      JulianDate( long double j = 0., TimeSystem ts = TimeSystem::Unknown )
          throw()
             : jd( j )
-      {}
+      { timeSystem = ts; }
       
          /** 
           * Copy Constructor.
@@ -58,7 +72,7 @@ namespace gpstk
       JulianDate( const JulianDate& right )
          throw()
             : jd( right.jd )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -68,7 +82,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       JulianDate( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
+         throw()
       { 
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
@@ -81,7 +95,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       JulianDate( const CommonTime& right )
-         throw( )
+         throw()
       {
          convertFromCommonTime( right );
       }
@@ -102,7 +116,7 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw( InvalidRequest );
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -131,14 +145,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "J";
+         return "JP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%J";
+         return "%J %P";
       }
 
       virtual bool isValid() const
@@ -160,13 +174,13 @@ namespace gpstk
       bool operator!=( const JulianDate& right ) const
          throw();
       bool operator<( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const JulianDate& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       long double jd;

@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2009, 2011
 //
@@ -29,6 +29,7 @@
 
 
 #include "AntexReader.hpp"
+#include "CivilTime.hpp"
 
 
 using namespace std;
@@ -226,7 +227,7 @@ namespace gpstk
          if( label == validFrom )
          {
                // Get validity as Year, Month, Day, Hour, Min, Sec
-            DayTime valFrom( asInt( strip( line.substr(0,6) ) ),
+            CivilTime valFrom( asInt( strip( line.substr(0,6) ) ),
                             asInt( strip( line.substr(6,6) ) ),
                             asInt( strip( line.substr(12,6) ) ),
                             asInt( strip( line.substr(18,6) ) ),
@@ -243,7 +244,7 @@ namespace gpstk
          if( label == validUntil )
          {
                // Get validity as Year, Month, Day, Hour, Min, Sec
-            DayTime valUntil( asInt( strip( line.substr(0,6) ) ),
+            CivilTime valUntil( asInt( strip( line.substr(0,6) ) ),
                              asInt( strip( line.substr(6,6) ) ),
                              asInt( strip( line.substr(12,6) ) ),
                              asInt( strip( line.substr(18,6) ) ),
@@ -487,15 +488,15 @@ namespace gpstk
          // Take care of "Valid From" field if it wasn't present
       if( !validFromPresent )
       {
-            // Set as "DayTime::BEGINNING_OF_TIME"
-         antenna.setAntennaValidFrom( DayTime::BEGINNING_OF_TIME );
+            // Set as "CommonTime::BEGINNING_OF_TIME"
+         antenna.setAntennaValidFrom( CommonTime::BEGINNING_OF_TIME );
       }
 
          // Take care of "Valid Until" field if it wasn't present
       if( !validUntilPresent )
       {
-            // Set as "DayTime::END_OF_TIME"
-         antenna.setAntennaValidUntil( DayTime::END_OF_TIME );
+            // Set as "CommonTime::END_OF_TIME"
+         antenna.setAntennaValidUntil( CommonTime::END_OF_TIME );
       }
 
       return antenna;
@@ -1026,7 +1027,7 @@ namespace gpstk
        */
    Antenna AntexReader::getAntenna( const string& model,
                                     const string& serial,
-                                    const DayTime& epoch )
+                                    const CommonTime& epoch )
       throw(ObjectNotFound)
    {
 
@@ -1230,7 +1231,7 @@ namespace gpstk
        * file that matches the conditions.
        */
    Antenna AntexReader::getAntenna( const string& serial,
-                                    const DayTime& epoch )
+                                    const CommonTime& epoch )
       throw(ObjectNotFound)
    {
 

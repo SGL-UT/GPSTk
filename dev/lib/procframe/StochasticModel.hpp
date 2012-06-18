@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
@@ -33,7 +33,7 @@
 
 
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "DataStructures.hpp"
 
 
@@ -117,11 +117,11 @@ namespace gpstk
    {
    public:
 
-         /// Default constructor. By default sets a very high Qprime and
-         /// both previousTime and currentTime are DayTime::BEGINNING_OF_TIME.
+         /// Default constructor. By default sets a very high Qprime and both
+         /// previousTime and currentTime are CommonTime::BEGINNING_OF_TIME.
       RandomWalkModel()
-         : qprime(90000000000.0), previousTime(DayTime::BEGINNING_OF_TIME),
-           currentTime(DayTime::BEGINNING_OF_TIME) {};
+         : qprime(90000000000.0), previousTime(CommonTime::BEGINNING_OF_TIME),
+           currentTime(CommonTime::BEGINNING_OF_TIME) {};
 
 
          /** Common constructor
@@ -137,8 +137,8 @@ namespace gpstk
           *
           */
       RandomWalkModel( double qp,
-                       const DayTime& prevTime=DayTime::BEGINNING_OF_TIME,
-                       const DayTime& currentTime=DayTime::BEGINNING_OF_TIME )
+                  const CommonTime& prevTime=CommonTime::BEGINNING_OF_TIME,
+                  const CommonTime& currentTime=CommonTime::BEGINNING_OF_TIME )
          : qprime(qp), previousTime(prevTime), currentTime(prevTime) {};
 
 
@@ -147,7 +147,7 @@ namespace gpstk
           * @param prevTime   Value of previous epoch
           *
           */
-      virtual RandomWalkModel& setPreviousTime(const DayTime& prevTime)
+      virtual RandomWalkModel& setPreviousTime(const CommonTime& prevTime)
       { previousTime = prevTime; return (*this); }
 
 
@@ -156,7 +156,7 @@ namespace gpstk
           * @param currTime   Value of current epoch
           *
           */
-      virtual RandomWalkModel& setCurrentTime(const DayTime& currTime)
+      virtual RandomWalkModel& setCurrentTime(const CommonTime& currTime)
       { currentTime = currTime; return (*this); }
 
 
@@ -213,11 +213,11 @@ namespace gpstk
 
 
          /// Epoch of previous measurement
-      DayTime previousTime;
+      CommonTime previousTime;
 
 
          /// Epoch of current measurement
-      DayTime currentTime;
+      CommonTime currentTime;
 
 
    }; // End of class 'RandomWalkModel'
@@ -433,7 +433,7 @@ namespace gpstk
           *
           */
       virtual TropoRandomWalkModel& setPreviousTime( const SourceID& source,
-                                                     const DayTime& prevTime )
+                                                   const CommonTime& prevTime )
       { tmData[source].previousTime = prevTime; return (*this); };
 
 
@@ -444,7 +444,7 @@ namespace gpstk
           *
           */
       virtual TropoRandomWalkModel& setCurrentTime( const SourceID& source,
-                                                    const DayTime& currTime )
+                                                   const CommonTime& currTime )
       { tmData[source].currentTime = currTime; return (*this); };
 
 
@@ -536,11 +536,11 @@ namespace gpstk
       {
             // Default constructor initializing the data in the structure
          tropModelData() : qprime(3e-8),
-                           previousTime(DayTime::BEGINNING_OF_TIME) {};
+                           previousTime(CommonTime::BEGINNING_OF_TIME) {};
 
          double qprime;          ///< Process spectral density
-         DayTime previousTime;   ///< Epoch of previous measurement
-         DayTime currentTime;    ///< Epoch of current measurement
+         CommonTime previousTime;   ///< Epoch of previous measurement
+         CommonTime currentTime;    ///< Epoch of current measurement
 
       }; // End of struct 'tropModelData'
 

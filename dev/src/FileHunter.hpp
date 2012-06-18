@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -76,7 +76,7 @@ namespace gpstk
        *  match the initial specification.
        * 2. Start and end times.  If you simply call find(), FileHunter will
        *  return all files that match the specification.  You can specify
-       *  DayTimes to only return files whose dates (according to the file
+       *  CommonTimes to only return files whose dates (according to the file
        *  name) fall between those times.  Note that you can tell find() to
        *  return the list of files ascending, descending, or unsorted
        *  (unsorted will return them in disk order).
@@ -178,8 +178,8 @@ namespace gpstk
           * @throw FileHunterException when there's a problem searching.
           */
       std::vector<std::string> 
-      find(const gpstk::DayTime& start = gpstk::DayTime::BEGINNING_OF_TIME,
-           const gpstk::DayTime& end = gpstk::DayTime::END_OF_TIME,
+      find(const gpstk::CommonTime& start = gpstk::CommonTime::BEGINNING_OF_TIME,
+           const gpstk::CommonTime& end = gpstk::CommonTime::END_OF_TIME,
            const FileSpec::FileSpecSortType fsst = FileSpec::ascending,
            enum FileChunking chunk = DAY) const
          throw(FileHunterException);

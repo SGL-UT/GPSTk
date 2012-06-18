@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
@@ -56,7 +56,7 @@ namespace gpstk
        * reason, this is thrown. The text may have additional information
        * as to why the request failed.
        */
-   Triple SolidTides::getSolidTide(const DayTime& t,
+   Triple SolidTides::getSolidTide(const CommonTime& t,
                                    const Position& p) const
       throw(InvalidRequest)
    {

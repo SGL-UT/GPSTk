@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010
 //
@@ -449,8 +449,8 @@ namespace gpstk
    }   // End of method 'Spacecraft::test()'
 
 
-      // Stream output for DayTime objects.  Typically used for debugging.
-      // @param s stream to append formatted DayTime to.
+      // Stream output for CommonTime objects.  Typically used for debugging.
+      // @param s stream to append formatted CommonTime to.
       // @param t Spacecraft to append to stream \c s.
       // @return reference to \c s.
    ostream& operator<<( ostream& s, 

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -150,7 +150,7 @@ namespace gpstk
                lli[numSatEpochs] = thislli;
 
 
-               map<SatID, DayTime>::const_iterator it2 = lastObsTime.find(svid);
+               map<SatID, CommonTime>::const_iterator it2 = lastObsTime.find(svid);
                if (it2==lastObsTime.end() || thislli ||  
                    (oe.time-lastObsTime[svid]) > 1.1*interval )
                {
@@ -230,7 +230,7 @@ namespace gpstk
 
       valarray<bool> keepList = !strikeList;
 
-      valarray<DayTime> newEpoch = epoch[keepList];
+      valarray<CommonTime> newEpoch = epoch[keepList];
       size_t newObsEpochCount = newEpoch.size();
       
       epoch.resize(newObsEpochCount);
@@ -285,7 +285,7 @@ namespace gpstk
       using namespace std;
       
       valarray<bool> ptest = (pass==passNo);
-      valarray<DayTime> pepochs = epoch[ptest];
+      valarray<CommonTime> pepochs = epoch[ptest];
       double length =  pepochs[pepochs.size()-1] - pepochs[0];
       return length;
    }

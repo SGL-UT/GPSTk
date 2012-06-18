@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -47,7 +47,7 @@
 
 //------------------------------------------------------------------------------------
 // system includes
-
+#include "TimeString.hpp"
 // GPSTk
 
 // DDBase
@@ -259,7 +259,7 @@ try {
    int i,j,k,indx,count = 0,ddsign;
    long nn1,nn2;
    double ddL1,ddL2,ddER,ddP1,ddP2,dd,db1,db2;
-   DayTime tt,ttnext;   // ttnext is the time of the next reference satellite switch
+   CommonTime tt,ttnext;   // ttnext is the time of the next reference satellite switch
    //SDid sid,ref;        // SDid of the current satellite and reference satellite
    map<SDid,int> Inext; // index in count (all) buffers which is to be processed next
    map<SDid,RawData>::const_iterator it;
@@ -282,7 +282,7 @@ try {
    SDid ref = SDmap.begin()->first;        // ref.sat is TBD by timetable
 
       // loop over epochs in the SDs
-   ttnext = DayTime::BEGINNING_OF_TIME;
+   ttnext = CommonTime::BEGINNING_OF_TIME;
    while(1) {
          // time at this count
       tt = FirstEpoch + count * CI.DataInterval;
@@ -292,19 +292,19 @@ try {
          ttnext = tt;
          if(QueryTimeTable(ref, ttnext)) {         // error - timetable failed
             oflog << "DD: Error - failed to find reference from timetable at "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << " count "
+               << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << " count "
                << count << " for baseline " << ref.site1 << "-" << ref.site2 << endl;
             return 1;
          }
          if(CI.Verbose) oflog << "DD: reference is set to " << ref << " at "
-            << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
+            << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
             << " count " << count << endl;
       }
 
          // does reference satellite have data at this count?
       if(SDmap[ref].count[Inext[ref]] != count) {
          oflog << "Error - failed to find reference data " << ref << " at "
-            << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
+            << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g") << endl;
             // TD return here, or just skip the epoch?
             // question is do we allow 'holes' in ref sat's data?
          return 1;
@@ -347,7 +347,7 @@ try {
             tddb.L2bias = wl2 * nn2;
             oflog << " Phase bias (initial) on " << ddid
                << " at " << setw(4) << count << " "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
+               << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
             if(CI.Frequency != 2) oflog << " L1: " << setw(10) << nn1;
             if(CI.Frequency != 1) oflog << " L2: " << setw(10) << nn2;
             oflog << endl;
@@ -373,7 +373,7 @@ try {
             long ndb2 = long(db2 + (db2 > 0 ? 0.5 : -0.5));
             oflog << " Phase bias (reset  ) on " << ddid
                << " at " << setw(4) << count << " "
-               << tt.printf("%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
+               << printTime(tt,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g");
             if(CI.Frequency != 2) oflog << " L1: " << setw(10) << ndb1;
             if(CI.Frequency != 1) oflog << " L2: " << setw(10) << ndb2;
             oflog << endl;

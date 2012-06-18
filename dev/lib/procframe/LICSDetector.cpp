@@ -21,9 +21,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -33,15 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int LICSDetector::classIndex = 3100000;
-
-
-      // Returns an index identifying this object.
-   int LICSDetector::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string LICSDetector::getClassName() const
@@ -65,7 +56,6 @@ namespace gpstk
       setDeltaTMax(dtMax);
       setMinThreshold(mThr);
       setLIDrift(drift);
-      setIndex();
    }
 
 
@@ -76,7 +66,7 @@ namespace gpstk
        * @param gData     Data object holding the data.
        * @param epochflag Epoch flag.
        */
-   satTypeValueMap& LICSDetector::Process( const DayTime& epoch,
+   satTypeValueMap& LICSDetector::Process( const CommonTime& epoch,
                                            satTypeValueMap& gData,
                                            const short& epochflag )
       throw(ProcessingException)
@@ -166,7 +156,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -267,7 +256,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -287,7 +275,7 @@ namespace gpstk
        * @param lli1      LLI1 index.
        * @param lli2      LLI2 index.
        */
-   double LICSDetector::getDetection( const DayTime& epoch,
+   double LICSDetector::getDetection( const CommonTime& epoch,
                                       const SatID& sat,
                                       typeValueMap& tvMap,
                                       const short& epochflag,

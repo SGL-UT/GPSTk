@@ -7,8 +7,8 @@
  * Miscellaneous mathematical algorithms
  */
 
-#ifndef GPSTK_MISCMATH_HPP
-#define GPSTK_MISCMATH_HPP
+#ifndef GPSTK_MISC_MATH_HPP
+#define GPSTK_MISC_MATH_HPP
 
 //============================================================================
 //
@@ -26,7 +26,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -208,7 +208,7 @@ namespace gpstk
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& y, T& dydx)
    {
-      size_t i,j,k,N=X.size(),M;
+      std::size_t i,j,k,N=X.size(),M;
       M = (N*(N+1))/2;
       std::vector<T> P(N,T(1)),Q(M,T(1)),D(N,T(1));
       for(i=0; i<N; i++) {

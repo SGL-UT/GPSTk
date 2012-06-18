@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ConstraintSystem.cpp 2607 2011-05-19 05:31:37Z yanweignss $"
 
 /**
  * @file ConstraintSystem.cpp
@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2011
 //

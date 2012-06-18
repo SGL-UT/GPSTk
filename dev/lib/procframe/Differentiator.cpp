@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2011
 //
@@ -33,16 +33,6 @@
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int Differentiator::classIndex = 9900000;
-
-
-      // Returns an index identifying this object.
-   int Differentiator::getIndex() const
-   { return index; }
-
-
 
       // Returns a string identifying this object.
    std::string Differentiator::getClassName() const
@@ -69,7 +59,6 @@ namespace gpstk
 
       setSamplingPeriod(samplingPeriod);
       setTolerance(tol);
-      setIndex();
 
    }  // End of 'Differentiator::Differentiator()'
 
@@ -170,7 +159,7 @@ namespace gpstk
        * @param source    Source of the observations.
        * @param gData     Data object holding the data.
        */
-   void Differentiator::Compute( const DayTime& epoch,
+   void Differentiator::Compute( const CommonTime& epoch,
                                  const SourceID& source,
                                  const satTypeValueMap& gData )
       throw(ProcessingException)
@@ -327,7 +316,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -359,7 +347,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -391,7 +378,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -421,7 +407,7 @@ namespace gpstk
          {
 
                // Get epoch
-            DayTime workEpoch( (*itGdata).first );
+            CommonTime workEpoch( (*itGdata).first );
 
                // Get a set with the SourceID in current data element
             SourceIDSet sourceSet( (*itGdata).second.getSourceIDSet() );
@@ -479,7 +465,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -487,7 +472,6 @@ namespace gpstk
       }
 
    }  // End of method 'Differentiator::Process()'
-
 
 
 }  // End of namespace gpstk

@@ -158,8 +158,8 @@
 #include "ModelObs.hpp"
 #include "ComputeMOPSWeights.hpp"
 #include "SolverWMS.hpp"
-
-
+#include "CivilTime.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -234,7 +234,7 @@ private:
    gnssDataMap gdsMap;
 
       // Map to store ROVER nominal positions
-   std::map<DayTime, Position> nominalPosMap;
+   std::map<CommonTime, Position> nominalPosMap;
 
 
 }; // End of 'example17' class declaration
@@ -288,7 +288,7 @@ void example17::printModel( ofstream& modelfile,
    modelfile << fixed << setprecision( precision );
 
       // Get epoch out of GDS
-   DayTime time(gData.header.epoch);
+   CommonTime time(gData.header.epoch);
 
       // Iterate through the GNSS Data Structure
    for ( satTypeValueMap::const_iterator it = gData.body.begin();
@@ -297,9 +297,10 @@ void example17::printModel( ofstream& modelfile,
    {
 
          // Print epoch
-      modelfile << time.year()         << "  ";    // Year           #1
-      modelfile << time.DOY()          << "  ";    // DayOfYear      #2
-      modelfile << time.DOYsecond()    << "  ";    // SecondsOfDay   #3
+      YDSTime yds(time);
+      modelfile << yds.year         << "  ";    // Year           #1
+      modelfile << yds.doy          << "  ";    // DayOfYear      #2
+      modelfile << yds.sod          << "  ";    // SecondsOfDay   #3
 
          // Print satellite information (Satellite system and ID number)
       modelfile << (*it).first << " ";             // System         #4
@@ -883,7 +884,7 @@ void example17::process()
       {
 
             // Store current epoch
-         DayTime time(gRin.header.epoch);
+         CommonTime time(gRin.header.epoch);
 
          if( isRover )
          {
@@ -903,13 +904,13 @@ void example17::process()
             catch(Exception& e)
             {
                cerr << "Exception preprocessing ROVER receiver at epoch: "
-                    << time << "; " << e << endl;
+                    << CivilTime(time) << "; " << e << endl;
                continue;
             }
             catch(...)
             {
                cerr << "Unknown exception preprocessing ROVER receiver"
-                    << " at epoch: " << time << endl;
+                    << " at epoch: " << CivilTime(time) << endl;
                continue;
             }
 
@@ -1361,7 +1362,7 @@ void example17::shutDown()
 
       gnssDataMap::const_iterator it( gds.begin() );
 
-      DayTime workEpoch( (*it).first );
+      CommonTime workEpoch( (*it).first );
 
          // We will need the data from the rover
       gnssRinex gRover( gds.getGnssRinex( rover ) );
@@ -1522,7 +1523,7 @@ void example17::shutDown()
             double roverLon( nomPos.getLongitude() );
 
                // Print nominal positions to their file
-            nomPosFile << workEpoch.DOYsecond()       << " "         // #1
+            nomPosFile << YDSTime(workEpoch).sod      << " "         // #1
                        << nomPos.X()                  << " "         // #2
                        << nomPos.Y()                  << " "         // #3
                        << nomPos.Z()                  << " "         // #4
@@ -1536,7 +1537,7 @@ void example17::shutDown()
             Triple aECEF(ax, ay, az);
             Triple aUEN( (aECEF.R3(roverLon)).R2(-roverLat) );
 
-            cout << workEpoch.DOYsecond()             << " "  // seconds - #1
+            cout << YDSTime(workEpoch).sod            << " "  // seconds - #1
                  << vUEN[0]                           << " "  // vUp     - #2
                  << vUEN[1]                           << " "  // vEast   - #3
                  << vUEN[2]                           << " "  // vNorth  - #4

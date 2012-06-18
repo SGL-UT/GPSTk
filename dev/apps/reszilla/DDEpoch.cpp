@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -39,7 +39,7 @@
 #include <limits>
 #include <set>
 #include <list>
-
+#include "TimeString.hpp"
 #include <StringUtils.hpp>
 #include <Stats.hpp>
 #include <PowerSum.hpp>
@@ -93,9 +93,9 @@ OIDM DDEpoch::singleDifference(
       if (oid.type == ObsID::otPhase || oid.type == ObsID::otDoppler)
       {
          if (oid.band == ObsID::cbL1)
-            diff[oid] *=  C_GPS_M/L1_FREQ;
+            diff[oid] *=  C_MPS/L1_FREQ_GPS;
          else
-            diff[oid] *=  C_GPS_M/L2_FREQ;
+            diff[oid] *=  C_MPS/L2_FREQ_GPS;
       }
       // Then pull off the clock correction
       diff[oid] -= coc;
@@ -304,7 +304,7 @@ void DDEpochMap::compute(
    for (ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
       // first make sure we have data from the other receiver for this epoch...
-      DayTime t = ei1->first;
+      CommonTime t = ei1->first;
       ObsEpochMap::const_iterator ei2 = rx2.find(t);
       if (ei2 == rx2.end())
       {
@@ -329,7 +329,7 @@ void DDEpochMap::compute(
             if (j->first.type == ObsID::otDoppler && 
                 j->first.band == ObsID::cbL1)
             {
-               curr.rangeRate[prn] = j->second * C_GPS_M/L1_FREQ;
+               curr.rangeRate[prn] = j->second * C_MPS/L1_FREQ_GPS;
                break;
             }
          curr.elevation[prn] = pem[t][prn];
@@ -382,10 +382,10 @@ void DDEpochMap::dump(std::ostream& s) const
    DDEpochMap::const_iterator ei;
    for (ei = ddem.begin(); ei != ddem.end(); ei++)
    {
-      const DayTime& t = ei->first;
+      const CommonTime& t = ei->first;
       const DDEpoch& dde = ei->second;
 
-      string time=t.printf("%4Y %3j %02H:%02M:%04.1f");
+      string time=printTime(t,"%4Y %3j %02H:%02M:%04.1f");
       
       if (useMasterSV)
       {
@@ -668,15 +668,15 @@ void DDEpochMap::outputAverages(ostream& s) const
    gpstk::Stats<double> l1CArange,l1Prange,l1Phase,l1Doppler;
    gpstk::Stats<double> l2Prange,l2Phase,l2Doppler;
 
-   gpstk::DayTime windowTempDT;
+   gpstk::CommonTime windowTempDT;
    
    const_iterator ei = begin();
-   const gpstk::DayTime& dataStartDT = ei->first;
-   gpstk::DayTime windowEndDT = dataStartDT + windowLength;
+   const gpstk::CommonTime& dataStartDT = ei->first;
+   gpstk::CommonTime windowEndDT = dataStartDT + windowLength;
    
    for (const_iterator ei = begin(); ei != end(); ei++)
    {
-      const gpstk::DayTime& t = ei->first;
+      const gpstk::CommonTime& t = ei->first;
       const DDEpoch& dde = ei->second;
 
       // the time for this DDEpoch
@@ -725,7 +725,7 @@ void DDEpochMap::outputAverages(ostream& s) const
          windowEndDT = windowTempDT + windowLength;
          
          // compute and output stats for previous window
-         string time = windowTempDT.printf("%4Y %3j %02H:%02M:%04.1f");
+         string time = printTime(windowTempDT,"%4Y %3j %02H:%02M:%04.1f");
          
          s << ">a " << left << setw(20) << time 
            << setfill(' ') << setprecision(2) << " " << setw(16) 

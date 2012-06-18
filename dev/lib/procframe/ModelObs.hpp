@@ -6,8 +6,8 @@
  * receiver using GNSS data structures.
  */
 
-#ifndef MODELOBS_HPP
-#define MODELOBS_HPP
+#ifndef GPSTK_MODELOBS_HPP
+#define GPSTK_MODELOBS_HPP
 
 //============================================================================
 //
@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2006, 2007, 2008, 2011
 //
 //============================================================================
 
@@ -35,7 +35,7 @@
 
 #include "ModelObsFixedStation.hpp"
 #include "Bancroft.hpp"
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 
 namespace gpstk
 {
@@ -69,7 +69,7 @@ namespace gpstk
        *   IonoModel ioModel;
        *   rnavin >> rNavHeader;    // Read navigation RINEX header
        *   ioModel.setModel(rNavHeader.ionAlpha, rNavHeader.ionBeta);
-       *   ionoStore.addIonoModel(DayTime::BEGINNING_OF_TIME, ioModel);
+       *   ionoStore.addIonoModel(CommonTime::BEGINNING_OF_TIME, ioModel);
        *
        *      // EBRE station nominal position
        *   Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);
@@ -119,7 +119,7 @@ namespace gpstk
 
          /// Implicit constructor
       ModelObs() : modelPrepared(false)
-      { setIndex(); };
+      { };
 
 
          /** Explicit constructor, taking as input initial receiver
@@ -264,7 +264,7 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
-      virtual int Prepare( const DayTime& Tr,
+      virtual int Prepare( const CommonTime& Tr,
                            std::vector<SatID>& Satellite,
                            std::vector<double>& Pseudorange,
                            const XvtStore<SatID>& Eph );
@@ -273,14 +273,14 @@ namespace gpstk
          /** Method to set an a priori position of receiver using
           *  Bancroft's method.
           *
-         * @param time      DayTime object for this epoch
+         * @param time      CommonTime object for this epoch
          * @param data      A satTypeValueMap data structure holding the data
          *
          * @return
          *  0 if OK
          *  -1 if problems arose
          */
-      virtual int Prepare( const DayTime& time,
+      virtual int Prepare( const CommonTime& time,
                            const satTypeValueMap& data );
 
 
@@ -307,7 +307,8 @@ namespace gpstk
                            const double& bRx,
                            const double& cRx,
                            Position::CoordinateSystem s = Position::Cartesian,
-                           GeoidModel *geoid = NULL );
+                           EllipsoidModel *ell = NULL,
+                           ReferenceFrame frame = ReferenceFrame::Unknown );
 
 
          /** Method to set the initial (a priori) position of receiver before
@@ -325,7 +326,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -344,10 +345,6 @@ namespace gpstk
       { modelPrepared = prepare; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -362,25 +359,10 @@ namespace gpstk
       bool modelPrepared;
 
 
-   private:
-
-
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ModelObs'
 
       //@}
 
 }  // End of namespace gpstk
-#endif // MODELOBS_HPP
+
+#endif   // GPSTK_MODELOBS_HPP

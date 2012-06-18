@@ -39,7 +39,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -60,11 +60,13 @@
 //=============================================================================
 // System
 #include <stdio.h>
+#include <iostream>
 
 // Library
 #include "BasicFramework.hpp"
-#include "DayTime.hpp"
-#include "icd_200_constants.hpp"
+#include "YDSTime.hpp"
+#include "CommonTime.hpp"
+#include "GNSSconstants.hpp"
 
 // Project
 #include "ConstellationSet.hpp"
@@ -180,11 +182,12 @@ void ConstellationList::process()
    if (year<100) year += 1900;
 
    int DOY = StringUtils::asInt( DOYOption.getValue().front() );
-
-   DayTime dt = DayTime( (short) year, (short) DOY, (DayTime::SEC_DAY / 2));
+ 
+   YDSTime yt((short) year, (short) DOY, (SEC_PER_DAY / 2));
+   CommonTime dt = yt;
 
       // Try some samples
-   ConstellationDefinition cd = cs.findCD( dt );
+   ConstellationDefinition cd = cs.findCD( yt );
 
       // Test each PRN ID in order and
       // output a comma separated list of those match the selected criteriaz

@@ -29,6 +29,7 @@
 
 #include "Application.hpp"
 #include "SysInfo.hpp"
+#include "SystemTime.hpp"
 
 namespace gpstk
 {
@@ -226,7 +227,7 @@ namespace gpstk
       {
          try
          {
-            runTime.update();
+            runTime = SystemTime();
             process(args);
          }
          catch(Exception& e)
@@ -299,7 +300,7 @@ namespace gpstk
 
    double Application::toltalMilliseconds()
    {
-      return runTime.elapsed()*1000.0;
+      return (SystemTime().convertToCommonTime() - runTime) * 1000.0;
    }
 
    Application& Application::appInfo(const std::string& author,

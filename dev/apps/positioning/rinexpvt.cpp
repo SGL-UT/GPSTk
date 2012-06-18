@@ -16,27 +16,28 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
 //============================================================================
 
 #include "rinexpvt.hpp"
-#include "WGS84Geoid.hpp"
-#include "icd_200_constants.hpp"
+#include "WGS84Ellipsoid.hpp"
+#include "CivilTime.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
 
 double carrierPhaseSmooth(SatID sat, double range, double phase,
-			  DayTime t, double maxAge=86400,
+			  CommonTime t, double maxAge=86400,
 			  double datarate=30)
 {
     static map<SatID,double> smoothedRange;
-    static map<SatID,DayTime> lastEpoch;
+    static map<SatID,CommonTime> lastEpoch;
     static map<SatID,double> lastPhase;
-    static map<SatID,DayTime> firstEpoch;
+    static map<SatID,CommonTime> firstEpoch;
 
     bool debug = true;
     const double teps = .1; // fudge factor for missed epochs
@@ -94,8 +95,8 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
     if (debug)
     {
        static ofstream debugStream("smootherdebug.txt");
-       debugStream << t.printf("%F %g ");
-       //debugStream << t.printf("%Y %m %d %02H %02M %f ");
+       debugStream << printTime(t,"%F %g ");
+       //debugStream << prinTime(t,"%Y %m %d %02H %02M %f ");
        debugStream << sat.id << " ";
        debugStream << setprecision(12) << smoothedRange[sat] << " ";
        debugStream << range << " " << phase << " ";
@@ -226,8 +227,8 @@ bool RINEXPVTSolution::initialize(int argc, char *argv[])
        {
           logfileOn = true;
           logStream << "! rinexpvt log file" << endl;
-          DayTime nowTime;
-          logStream << "! Executed at: " << nowTime.printf(epochFormat) << endl;
+          CommonTime nowTime;
+          logStream << "! Executed at: " << printTime(nowTime,epochFormat) << endl;
           logStream << "! Obs file name: " << obsFileName << endl;
           logStream << "! Met file name: ";
           if (gotMet) logStream << metFileName << endl;
@@ -347,7 +348,7 @@ void RINEXPVTSolution::process()
 
     if ((!aprioriPositionDefined) && (roh.valid & RinexObsHeader::antennaPositionValid) )
     {
-       WGS84Geoid WGS84;
+       WGS84Ellipsoid WGS84;
        double AEarth = WGS84.a();
        double eccSquared = WGS84.eccSquared();
        Position target(roh.antennaPosition);
@@ -398,7 +399,7 @@ void RINEXPVTSolution::process()
        exit(-1);
     }
 
-        // Tweaking the PRSolution object
+        // Tweaking the PRSolution2 object
     prSolver.RMSLimit = 400;
     //prSolver.Debug    = true;
 
@@ -482,7 +483,7 @@ void RINEXPVTSolution::process()
 
                       if ((useSmoother) && (itL1 != otmap.end()))
 		                {
-                         double phase = ((*itL1).second.data)*C_GPS_M / L1_FREQ
+                         double phase = ((*itL1).second.data)*C_MPS / L1_FREQ_GPS
                                     + ionocorr;
                          range = carrierPhaseSmooth( (*it).first, range, phase,
                                                  rod.time, 300.0, obsInterval);
@@ -511,8 +512,8 @@ void RINEXPVTSolution::process()
 
                          if ( (useSmoother) && (itL1!=otmap.end()) && (itL2!=otmap.end()) )
                          {
-                             double ionocorrPhase = -1./(1.-gamma)*((*itL1).second.data*C_GPS_M / L1_FREQ-(*itL2).second.data*C_GPS_M / L2_FREQ);
-                             double phase = (*itL1).second.data * C_GPS_M / L1_FREQ - ionocorrPhase;
+                             double ionocorrPhase = -1./(1.-gamma)*((*itL1).second.data*C_MPS / L1_FREQ_GPS-(*itL2).second.data*C_MPS / L2_FREQ_GPS);
+                             double phase = (*itL1).second.data * C_MPS / L1_FREQ_GPS - ionocorrPhase;
 			                    range = carrierPhaseSmooth( (*it).first, range, phase,
                                                           rod.time, 86400.0, obsInterval);
 		                   }
@@ -528,7 +529,8 @@ void RINEXPVTSolution::process()
                 //  epoch time #Obs : <list of PRN IDs> : #GoodSVs [V}NV]
              if (logfileOn)
              {
-                logStream << rod.time.printf(epochFormat) << " ";
+                CivilTime ct = rod.time;
+                logStream << printTime(ct,epochFormat) << " ";
                 logStream << rod.obs.size() << " ! ";
                 RinexObsData::RinexSatMap::const_iterator it;
                 vector<SatID>::const_iterator itSol;
@@ -569,8 +571,9 @@ void RINEXPVTSolution::process()
 
 	       if (prSolver.isValid())
           {
+             CivilTime ct = rod.time;
                 // Output epoch tag
-             cout << rod.time.printf(epochFormat) << " ";
+             cout << printTime(ct,epochFormat) << " ";
 
              if (!transformENU)
              {
@@ -599,7 +602,7 @@ void RINEXPVTSolution::process()
                 aprioriPositionXYZ = Triple(prSolver.Solution[0],
                                          prSolver.Solution[1],
                                          prSolver.Solution[2]);
-                WGS84Geoid WGS84;
+                WGS84Ellipsoid WGS84;
                 double AEarth = WGS84.a();
                 double eccSquared = WGS84.eccSquared();
                 Position target(aprioriPositionXYZ);
@@ -615,7 +618,7 @@ void RINEXPVTSolution::process()
     } // End loop through each epoch
 }
 
-const double RINEXPVTSolution::gamma = (L1_FREQ / L2_FREQ)*(L1_FREQ / L2_FREQ);
+const double RINEXPVTSolution::gamma = (L1_FREQ_GPS / L2_FREQ_GPS)*(L1_FREQ_GPS / L2_FREQ_GPS);
 const double RINEXPVTSolution::maxIonoDelay = 1000;
 
 int main(int argc, char *argv[])

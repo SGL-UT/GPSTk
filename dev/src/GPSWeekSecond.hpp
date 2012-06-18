@@ -21,14 +21,29 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "GPSWeek.hpp"
 #include "TimeConstants.hpp"
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -49,10 +64,11 @@ namespace gpstk
           * All elements are initialized to zero.
           */
       GPSWeekSecond( unsigned int w = 0,
-                     double s = 0. )
+                     double s = 0.,
+                     TimeSystem ts = TimeSystem::Unknown )
          throw()
             : GPSWeek(w), sow(s)
-      {}
+      { timeSystem = ts; }
       
          /**
           * Copy Constructor.
@@ -61,7 +77,7 @@ namespace gpstk
       GPSWeekSecond( const GPSWeekSecond& right )
          throw()
             : GPSWeek( right ), sow( right.sow )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -84,7 +100,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       GPSWeekSecond( const CommonTime& right )
-         throw( InvalidRequest )
+         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -105,10 +121,10 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
@@ -141,7 +157,7 @@ namespace gpstk
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return GPSWeek::getDefaultFormat() + " %010.3g";
+         return GPSWeek::getDefaultFormat() + " %010.3g %P";
       }
 
       virtual bool isValid() const

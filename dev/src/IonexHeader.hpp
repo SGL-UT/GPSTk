@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008
 //
@@ -35,7 +35,7 @@
 #include <vector>
 #include <map>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "SatID.hpp"
 #include "IonexBase.hpp"
 
@@ -181,8 +181,8 @@ namespace gpstk
       std::vector<std::string> descriptionList;///< Descriptions in header (opt)
       std::vector<std::string> commentList;    ///< Comments in header(optional)
 
-      DayTime firstEpoch;           ///< Epoch of first map
-      DayTime lastEpoch;            ///< Epoch of last map
+      CommonTime firstEpoch;           ///< Epoch of first map
+      CommonTime lastEpoch;            ///< Epoch of last map
 
       int interval;                 ///< Time interval between maps (seconds)
       size_t numMaps;               ///< Total number of TEC/RMS/HGT maps
@@ -290,17 +290,17 @@ namespace gpstk
 
 
    private:
-         /** Converts the daytime \a dt into a Ionex Obs time
+         /** Converts the CommonTime \a dt into a Ionex Obs time
           * string for the header
           */
-      std::string writeTime(const DayTime& dt) const;
+      std::string writeTime(const CommonTime& dt) const;
 
 
          /** This function sets the time for this header.
           *
           * It looks at \a line to obtain the needed information.
           */
-      DayTime parseTime(const std::string& line) const;
+      CommonTime parseTime(const std::string& line) const;
 
 
 

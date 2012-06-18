@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -72,13 +72,13 @@ using namespace gpstk::StringUtils;
 
       virtual double correction(const Position& RX,
                                 const Position& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
       { return 0.0; }
 
       virtual double correction(const Xvt& RX,
                                 const Xvt& SV,
-                                const DayTime& tt)
+                                const CommonTime& tt)
          throw(InvalidTropModel)
       { return 0.0; }
 
@@ -205,9 +205,9 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
       string mscfn = (mscFileOption.getValue())[0];
       MSCStream msc(mscfn.c_str(), ios::in);
       MSCData mscd;
-      // This is mostly brain dead in that it takes the last entry in the file and doesn't even
-      // consider times
-      while (msc >> mscd)
+      while (msc >> mscd && mscd.station != msid)
+         ;
+
          if (mscd.station == msid)
             antennaPos = mscd.coordinates;
    }

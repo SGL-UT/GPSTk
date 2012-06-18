@@ -2,7 +2,7 @@
 
 /**
  * @file RinexMetData.hpp
- * Encapsulate RINEX meteorological file data, including I/O
+ * Encapsulates RINEX 2 & 3 Met file data, including I/O.
  */
 
 #ifndef GPSTK_RINEXMETDATA_HPP
@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,102 +46,105 @@
 
 #include <map>
 
-#include "DayTime.hpp"
-
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "RinexMetBase.hpp"
 #include "RinexMetHeader.hpp"
 
 namespace gpstk
 {
-   /** @addtogroup RinexMet */
-   //@{
+  /** @addtogroup RinexMet */
+  //@{
 
-      /** 
-       * This class stores, reads, and writes RINEX MET records. 
-       * @warning When writing a RinexMetData, the RinexMetStream::headerData
-       * must have the correct observation types set or else no data will
-       * be written.
-       *
-       * @sa rinex_met_read_write.cpp for an example.
-       * @sa rinex_met_test.cpp for an example.
-       * @sa RinexMetStream.
-       * @sa RinexMetHeader for information on writing RINEX met files.
-       */
-   class RinexMetData : public RinexMetBase
-   {
+  /** 
+   * This class stores, reads, and writes RINEX 2 & 3 Met records. 
+   * @warning When writing a RinexMetData, the RinexMetStream::headerData
+   * must have the correct observation types set or else no data will
+   * be written.
+   *
+   * @sa rinex_met_read_write.cpp for an example.
+   * @sa rinex_met_test.cpp for an example.
+   * @sa RinexMetStream.
+   * @sa RinexMetHeader for information on writing RINEX 2 & 3 Met files.
+   */
 
-   public:
-      RinexMetData()
-            : time(gpstk::DayTime::BEGINNING_OF_TIME)
-         {}
+  class RinexMetData : public RinexMetBase
+  {
 
-         /// The next four lines is our common interface
-         /// RinexMetData is "data" so this function always returns true.
-      virtual bool isData(void) const {return true;}
-     
-         /**
-          * A debug output function.
-          */ 
-      virtual void dump(std::ostream& s) const;
+  public:
 
-         /// less than operator, for use with STL sort()
-      bool operator<(const RinexMetData& right) const
-         { return (time < right.time); }
+    RinexMetData()
+      : time(gpstk::CommonTime::BEGINNING_OF_TIME)
+    {}
 
-         /// A map for storing one line of observations, mapping
-         /// the observation type to its value.
-      typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
+    /// RinexMetData is "data" so this function always returns true.
+    virtual bool isData(void) const { return true; }
 
-         /** @name Rinex weather data
-          */
-         //@{
-      DayTime time;      ///< The time this data was recorded.
-      RinexMetMap data;  ///< The data itself in map form.
-         //@}
+    /**
+     * A debug output function.
+     */
+    virtual void dump(std::ostream& s) const;
 
-         /// The maximum number of obs per line before you need a new line
-      static const int maxObsPerLine;
-         /// The max number of obs per continuation line before you need
-         /// a new line.
-      static const int maxObsPerContinuationLine;
-      
-   protected:
-         /// Writes the met data to the file stream formatted correctly.
-      void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError, 
-               gpstk::StringUtils::StringException);     
+    /// less-than operator, for use with STL sort()
+    bool operator<(const RinexMetData& right) const
+    { return (time < right.time); }
 
-         /** 
-          * This function retrieves a RINEX MET record from the given FFStream.
-          * If an error is encountered in reading from the stream, the stream
-          * is returned to its original position and its fail-bit is set.
-          * @throws StringException when a StringUtils function fails
-          * @throws FFStreamError when exceptions(failbit) is set and
-          *  a read or formatting error occurs.  This also resets the
-          *  stream to its pre-read position.
-          */
-      virtual void reallyGetRecord(FFStream& s) 
-         throw(std::exception, FFStreamError,
-               gpstk::StringUtils::StringException);
+    /// A map for storing one line of observations,
+    /// mapping the observation type to its value.
+    typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 
-   private:
-         /// Parses string \a line to get time and met data
-      void processFirstLine(const std::string& line,
-                            const RinexMetHeader& hdr)
-         throw(FFStreamError);
+    /** @name Rinex weather data
+     */
+    //@{
+    CommonTime time;   ///< The time this data was recorded, in GPS time system.
+    RinexMetMap data;  ///< The data itself in map form.
+    //@}
 
-         /// Parses string \a line to get data on continuation lines.
-      void processContinuationLine(const std::string& line,
-                                   const RinexMetHeader& hdr)      
-         throw(FFStreamError);
+    /// The maximum number of obs per line before you need a new line
+    static const int maxObsPerLine;
+    /// The max number of obs per continuation line before you need
+    /// a new line.
+    static const int maxObsPerContinuationLine;
 
-         /// Parses the time portion of a line into a DayTime object.
-      DayTime parseTime(const std::string& line) const 
-         throw(FFStreamError);
-   };  // class RinexMetData
+  protected:
 
-   //@}
+    /// Writes the met data to the file stream formatted correctly.
+    void reallyPutRecord(FFStream& s) const
+      throw(std::exception, FFStreamError, 
+            gpstk::StringUtils::StringException);     
+
+    /** 
+     * This function retrieves a RINEX 2 or 3 Met record from the given FFStream.
+     * If an error is encountered reading from the stream, the stream is returned
+     * to its original position and its fail-bit is set.
+     * @throws StringException when a StringUtils function fails
+     * @throws FFStreamError when exceptions(failbit) is set and a
+     *         read or formatting error occurs.  This also resets the
+     *         stream to its pre-read position.
+     */
+    virtual void reallyGetRecord(FFStream& s) 
+      throw(std::exception, FFStreamError,
+            gpstk::StringUtils::StringException);
+
+  private:
+
+    /// Parses string \a line to get time and met data
+    void processFirstLine(const std::string& line,
+                          const RinexMetHeader& hdr)
+      throw(FFStreamError);
+
+    /// Parses string \a line to get data on continuation lines.
+    void processContinuationLine(const std::string& line,
+                                 const RinexMetHeader& hdr)
+      throw(FFStreamError);
+
+    /// Parses the time portion of a line into a CommonTime object.
+    CommonTime parseTime(const std::string& line) const 
+      throw(FFStreamError);
+
+  };  // class RinexMetData
+
+  //@}
 
 } // namespace
 

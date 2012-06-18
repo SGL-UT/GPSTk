@@ -21,11 +21,25 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 namespace gpstk
 {
@@ -33,9 +47,9 @@ namespace gpstk
    const double MJD_TO_JD = 2400000.5;
       /// 'Julian day' offset from MJD
    const long MJD_JDAY = 2400001L;
-      /// 'Julian day' of GPS epoch (Jan. 1, 1980).
+      /// 'Julian day' of GPS epoch (Jan. 6, 1980).
    const long GPS_EPOCH_JDAY = 2444245L;
-      /// Modified Julian Date of GPS epoch (Jan. 1, 1980).
+      /// Modified Julian Date of GPS epoch (Jan. 6, 1980).
    const long GPS_EPOCH_MJD = 44244L;
       /// Modified Julian Date of UNIX epoch (Jan. 1, 1970).
    const long UNIX_MJD = 40587L;

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -50,6 +50,7 @@
 
 //------------------------------------------------------------------------------------
 // system includes
+#include "TimeString.hpp"
 
 // GPSTk
 #include "Vector.hpp"
@@ -771,7 +772,7 @@ try {
          LabelledVector LD(DataNL,Data);
          LD.setw(20).setprecision(6);
          oflog << "At count " << count
-            << " found time " << SolutionEpoch.printf("%F %10.3g")
+            << " found time " << printTime(SolutionEpoch,"%F %10.3g")
             << " and Data\n" << LD << endl;
       }
    }
@@ -1445,7 +1446,7 @@ try {
          for(i=0; i<M; i++) {
             DecomposeName(DataNL.getName(i), site1, site2, sat1, sat2);
             ddrofs << "RES " << site1 << " " << site2 << " " << sat1 << " " << sat2
-                  << " " << SolutionEpoch.printf("%4F %10.3g")
+                  << " " << printTime(SolutionEpoch,"%4F %10.3g")
                   << " " << setw(5) << cnt
                   << " " << f166 << Data[i]
                   << " " << f166 << f[i]

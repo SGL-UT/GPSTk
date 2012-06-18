@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009, 2010, 2011
 //
@@ -38,15 +38,6 @@ namespace gpstk
 
    using namespace std;
 
-      // Index initially assigned to this class
-   int ProblemSatFilter::classIndex = 1100000;
-
-
-      // Returns an index identifying this object.
-   int ProblemSatFilter::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string ProblemSatFilter::getClassName() const
    { return "ProblemSatFilter"; }
@@ -58,7 +49,7 @@ namespace gpstk
        * @param epoch     Time of observations.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ProblemSatFilter::Process( const DayTime& epoch,
+   satTypeValueMap& ProblemSatFilter::Process( const CommonTime& epoch,
                                                 satTypeValueMap& gData )
       throw(ProcessingException)
    {
@@ -85,7 +76,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -116,7 +106,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -154,12 +143,16 @@ namespace gpstk
          int s[6]={0.0};
          for(int i=0;i<6;i++) ss >> s[i];
 
-         DayTime startEpoch(s[0],s[1],s[2],s[3],s[4],double(s[5]));
-         DayTime endEpoch(startEpoch);
+         CivilTime tempEpoch(s[0],s[1],s[2],s[3],s[4],double(s[5]));
+         CommonTime startEpoch( tempEpoch.convertToCommonTime() );
+         CommonTime endEpoch(startEpoch);
+
          if( data.length()>70 )
          {
             for(int i=0;i<6;i++) ss >> s[i];
-            endEpoch.setYMDHMS(s[0],s[1],s[2],s[3],s[4],double(s[5]));
+            
+            CivilTime tempEpoch2(s[0],s[1],s[2],s[3],s[4],double(s[5]));
+            endEpoch = tempEpoch2.convertToCommonTime();
          }
          
          int spiltFlag = 0;
@@ -200,7 +193,7 @@ namespace gpstk
       return 0;
    }
 
-   bool ProblemSatFilter::isBadSat(const DayTime& time,const SatID& sat)
+   bool ProblemSatFilter::isBadSat(const CommonTime& time,const SatID& sat)
    {
       SatDataMap::iterator it = satDataMap.find(sat);
       if( it == satDataMap.end() ) return false;
@@ -224,6 +217,7 @@ namespace gpstk
 
       return false;
 
-   }  // End of method 'ProblemSatFilter::isBadSat('
+   }  // End of method 'ProblemSatFilter::isBadSat()'
+
 
 } // End of namespace gpstk

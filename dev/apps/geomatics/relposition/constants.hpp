@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,12 +46,12 @@
 
 //------------------------------------------------------------------------------------
 // GPSTk
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 
 //------------------------------------------------------------------------------------
-const double CFF=gpstk::C_GPS_M/gpstk::OSC_FREQ;
-const double F1=gpstk::L1_MULT;   // 154.0;
-const double F2=gpstk::L2_MULT;   // 120.0;
+const double CFF=gpstk::C_MPS/gpstk::OSC_FREQ_GPS;
+const double F1=gpstk::L1_MULT_GPS;   // 154.0;
+const double F2=gpstk::L2_MULT_GPS;   // 120.0;
 const double f12=F1*F1;
 const double f22=F2*F2;
 /// wavelength L1

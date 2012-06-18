@@ -48,7 +48,7 @@ namespace gpstk
    {
    public:
      
-      struct EOPData
+      typedef struct EOPData
       {
          double xp;        /// arcseconds
          double yp;        /// arcseconds
@@ -62,7 +62,7 @@ namespace gpstk
          EOPData(double x, double y, double ut1_utc, double dpsi = 0.0, double deps = 0.0) 
             : xp(x), yp(y), UT1mUTC(ut1_utc), dPsi(dpsi), dEps(deps)
          {}
-      };
+      } EOPData;
 
          /// Default constructor
       EOPDataStore() : EpochDataStore(2)
@@ -72,11 +72,11 @@ namespace gpstk
       virtual ~EOPDataStore() {}
       
          /// Add to the store directly
-      void addEOPData(const DayTime& utc,const EOPData& data)
+      void addEOPData(const CommonTime& utc,const EOPData& data)
          throw();
 
          /// Get the data at the given epoch and return it.
-      EOPData getEOPData(const DayTime& utc) const
+      EOPData getEOPData(const CommonTime& utc) const
          throw(InvalidRequest);
 
 

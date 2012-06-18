@@ -1,14 +1,12 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file Xvt.hpp
- * Position, velocity, and clock representation as ECEF, Triple and double
+ * Position and velocity as Triples, clock bias and drift as doubles.
  */
 
-#ifndef GPSTK_XVT_HPP
-#define GPSTK_XVT_HPP
+#ifndef GPSTK_XVT_INCLUDE
+#define GPSTK_XVT_INCLUDE
 
 //============================================================================
 //
@@ -26,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -47,57 +45,87 @@
 //=============================================================================
 
 
-
-
-
-
 #include <iostream>
 #include "Triple.hpp"
-#include "ECEF.hpp"
-#include "GeoidModel.hpp"
+#include "EllipsoidModel.hpp"
+#include "ReferenceFrame.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {
-    /** @addtogroup geodeticgroup */
-    //@{
+   /** @addtogroup geodeticgroup */
+   //@{
 
-      /// An Earth-Centered, Earth-Fixed position/velocity/clock representation
+   /// Earth-Centered, Earth-Fixed Cartesian position, velocity, clock bias and drift
    class Xvt
    {
    public:
-         /// Default constructor
-      Xvt() { }
 
-      ECEF x;         ///< SV position (x,y,z). Earth-fixed. meters
-      Triple v;       ///< SV velocity. Earth-fixed, including rotation. meters/sec
-      double dtime;   ///< SV clock correction in seconds
-      double ddtime;  ///< SV clock drift in sec/sec
+      /// Default constructor
+      Xvt() : x(0.,0.,0.), v(0.,0.,0.),
+              clkbias(0.), clkdrift(0.),
+              relcorr(0.), frame(ReferenceFrame::Unknown)
+         {};
 
-         /**
-          * Given the position of a ground location, compute the range
-          * to the spacecraft position.
-          * @param rxPos ground position at broadcast time in ECEF.
-          * @param geoid geodetic parameters.
-          * @param correction offset in meters (include any factors other
-          * than the SV clock correction).
-          * @return Range in meters
-          */
-      double preciseRho(const ECEF& rxPos, 
-                        const GeoidModel& geoid,
-                        double correction = 0) const
-         throw();
-   }; 
+      /// Destructor.
+      virtual ~Xvt()
+         {}
+
+      /// access the position, ECEF Cartesian in meters
+      Triple getPos() throw()
+         { return x; }
+
+      /// access the velocity in m/s
+      Triple getVel() throw()
+         { return v; }
+
+      /// access the clock bias, in second
+      double getClockBias() throw()
+         { return clkbias; }
+
+      /// access the clock drift, in second/second
+      double getClockDrift() throw()
+         { return clkdrift; }
+
+      /// access the relativity correction, in seconds
+      double getRelativityCorr() throw()
+         { return relcorr; }
+
+      /// Compute and return the relativity correction (-2R dot V/c^2) in seconds
+      /// NB -2*dot(R,V)/(c*c) = -4.4428e-10(s/sqrt(m)) * ecc * sqrt(A(m)) * sinE
+      double computeRelativityCorrection(void);
+
+      /// Given the position of a ground location, compute the range
+      /// to the spacecraft position.
+      /// @param rxPos ground position at broadcast time in ECEF.
+      /// @param ellipsoid geodetic parameters.
+      /// @param correction offset in meters (include any factors other
+      /// than the SV clock correction and the relativity correction).
+      /// @return Range in meters
+      double preciseRho(const Triple& rxPos, 
+                        const EllipsoidModel& ellipsoid,
+                        double correction = 0) const throw();
+
+      // member data
+
+      Triple x;        ///< Sat position ECEF Cartesian (X,Y,Z) meters
+      Triple v;        ///< satellite velocity in ECEF Cartesian, meters/second
+      double clkbias;  ///< Sat clock correction in seconds
+      double clkdrift; ///< satellite clock drift in seconds/second
+      double relcorr;  ///< relativity correction (standard 2R.V/c^2 term), seconds
+      ReferenceFrame frame;   ///< reference frame of this data
+
+   }; // end class Xvt
 
    //@}
 
-}
+}  // end namespace gpstk
 
 /**
  * Output operator for Xvt
- * @param s output stream to which \c xvt is sent
- * @param xvt Xvt that is sent to \c s
+ * @param os output stream to which \c xvt is sent
+ * @param xvt Xvt that is sent to \c os
  */
-std::ostream& operator<<( std::ostream& s, 
-                          const gpstk::Xvt& xvt );
+std::ostream& operator<<(std::ostream& os, const gpstk::Xvt& xvt) throw();
 
-#endif
+#endif // GPSTK_XVT_INCLUDE

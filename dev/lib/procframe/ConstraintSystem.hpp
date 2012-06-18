@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ConstraintSystem.hpp 2607 2011-05-19 05:31:37Z yanweignss $"
 
 /**
  * @file ConstraintSystem.hpp
@@ -24,11 +24,12 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2011
 //
 //============================================================================
+
 
 #include "Variable.hpp"
 #include "Vector.hpp"
@@ -55,15 +56,9 @@ namespace gpstk
          /// Default constructor.
       Constraint() {};
 
-
-         /// Common constructor.
-      Constraint( const constraintHeader& h)
-      { header = h; }
-
-
          /// Common constructor.
       Constraint( const constraintHeader& h,
-                  const VariableDataMap& b )
+         const VariableDataMap& b )
       {
          header = h;
          body   = b;
@@ -137,12 +132,10 @@ namespace gpstk
       { return (constraintList.size()>0)?true:false; }
 
 
-         /// Return the current constraints
       virtual ConstraintList getConstraintList() const
       { return constraintList; };
 
-         
-         /// Build up the constraint system with a constraint list
+
       virtual ConstraintSystem& setConstraintList(
                                          const ConstraintList& equationList )
       { constraintList = equationList; return (*this); };

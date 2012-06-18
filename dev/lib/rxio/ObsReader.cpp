@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -201,7 +201,7 @@ namespace gpstk
       obsIntervalConfidence = 0;
       obsInterval = 0;
       ObsEpoch oe = getObsEpoch();
-      DayTime t0 = oe.time;
+      CommonTime t0 = oe.time;
       double dt;
    
          // We need 10 consecutive epochs with the same interval to get an

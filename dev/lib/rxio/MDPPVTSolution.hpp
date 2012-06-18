@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,7 +40,6 @@
 #define MDPPVTSOLUTION_HPP
 
 #include "Xvt.hpp"
-
 #include "MDPHeader.hpp"
 
 namespace gpstk
@@ -71,11 +70,11 @@ namespace gpstk
        */
       void dump(std::ostream& out) const throw();
 
-      gpstk::ECEF x;              ///< receiver position (x,y,z), earth fixed, in meters
+      gpstk::Triple x;            ///< receiver position (x,y,z), earth fixed, in meters
       gpstk::Triple v;            ///< receiver velocity, Earth-fixed, including rotation, in meters/sec
       double dtime;               ///< receiver clock offset from GPS in sec
       double ddtime;              ///< receiver clock drift rate in sec/sec
-      gpstk::DayTime timep;       ///< PVT time: dtime = timep - time.
+      gpstk::CommonTime timep;       ///< PVT time: dtime = timep - time.
       unsigned char numSVs;       ///< Number of SVs in track.
       unsigned char fom;          ///< Figure of Merit (receiver dependent).
       unsigned char pvtMode;      ///< Type of PVT solution (receiver dependent).

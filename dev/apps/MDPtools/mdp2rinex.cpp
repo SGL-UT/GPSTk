@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,12 +40,12 @@
 
 #include "StringUtils.hpp"
 #include "InOutFramework.hpp"
-
+#include "GPSWeekSecond.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
-
+#include "YDSTime.hpp"
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
 #include "MDPObsEpoch.hpp"
@@ -211,9 +211,9 @@ protected:
       //BWT process all subframes
       //if (sfid > 3) return;
 
-      short week = nav.time.GPSfullweek();
+      short week = static_cast<GPSWeekSecond>(nav.time).week;
       long sow = nav.getHOWTime();
-      if (sow > DayTime::FULLWEEK)
+      if (sow > FULLWEEK)
       {
          if (debugLevel)
             cout << "Bad week" << endl;
@@ -222,6 +222,7 @@ protected:
 
       //BWT if (debugLevel>1)
          nav.dump(cout);
+      CommonTime howTime(week, sow);
 
       //BWT not used DayTime howTime(week, sow);
 
@@ -245,7 +246,7 @@ protected:
    virtual void process(MDPObsEpoch& obs)
    {
 
-      const DayTime& t=epoch.begin()->second.time;
+      const CommonTime& t=epoch.begin()->second.time;
 
       if (!firstObs && t<prevTime)
       {
@@ -256,7 +257,7 @@ protected:
 
       if (epoch.size() > 0 && t != obs.time)
       {
-         if (!thin || (static_cast<int>(t.DOYsecond()) % thinning) == 0)
+         if (!thin || (static_cast<int>(static_cast<YDSTime>(t).sod) % thinning) == 0)
          {
             if (firstObs)
             {
@@ -372,7 +373,7 @@ private:
    bool fixHalf;
    int thinning;
    bool firstObs, firstEph;
-   DayTime prevTime;
+   CommonTime prevTime;
    Triple antPos;
 };
 

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -241,8 +241,8 @@ namespace gpstk
             }
             else
             {
-               short week = static_cast<short>(cb.absTime / DayTime::FULLWEEK);
-               double sow = cb.absTime - week * DayTime::FULLWEEK;
+               short week = static_cast<short>(cb.absTime / FULLWEEK);
+               double sow = cb.absTime - week * FULLWEEK;
                oss << left << setw(4) << week << right << setprecision(9)
                    << " " << setw(7) << sow
                    << "    " << setw(5) << cb.svid.id

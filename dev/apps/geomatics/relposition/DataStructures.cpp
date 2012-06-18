@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -76,7 +76,7 @@ Station::Station(void) throw()
 {
    fixed = usePRS = false;
    temp = press = rhumid = 0.0;
-   time = DayTime::BEGINNING_OF_TIME;
+   time = CommonTime::BEGINNING_OF_TIME;
    pTropModel = NULL;
    TropType = "Saas";
    ant_azimuth = 0.0;

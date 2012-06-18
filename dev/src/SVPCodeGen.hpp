@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -40,11 +40,12 @@
 #ifndef SVPCODEGEN_HPP
 #define SVPCODEGEN_HPP
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "PCodeConst.hpp"
 #include "CodeBuffer.hpp"
 #include "X1Sequence.hpp"
 #include "X2Sequence.hpp"
+#include "GPSZcount.hpp"
 
 namespace gpstk 
 {
@@ -96,13 +97,13 @@ namespace gpstk
    {
    public:
       /**
-       *  SVPCodeGen::SVPCodeGen( const int PRNID, const DayTime ) - 
+       *  SVPCodeGen::SVPCodeGen( const int PRNID, const CommonTime ) - 
        *  Instantiate and initialize a SVPCodeGen object.  Based on the
        *  PRNID and the ZCount, determine the appropriate starting 
        *  location in the X2 sequence and set it up.  Set the current 
        *  time. 
        */
-      SVPCodeGen( const int SVPRNID, const gpstk::DayTime& dt );
+      SVPCodeGen( const int SVPRNID, const gpstk::CommonTime& dt );
       ~SVPCodeGen( ) {};
          
       /**
@@ -130,7 +131,7 @@ namespace gpstk
       /**
        * Returns the current time to the calling method.  
        */
-      const gpstk::DayTime& getCurrentZCount() const {return currentZTime;}
+      const gpstk::CommonTime& getCurrentZCount() const {return currentZTime;}
 
       /** Allows the user to set the current time. While a any time may
           be specified, this routine will take the Z % 4 for the actuall 
@@ -141,7 +142,7 @@ namespace gpstk
    private:
       gpstk::X1Sequence X1Seq;
       gpstk::X2Sequence X2Seq;
-      gpstk::DayTime currentZTime;
+      gpstk::CommonTime currentZTime;
       int PRNID;
    };
    //@}

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -42,7 +42,9 @@
 #include <list>
 #include <map>
 
-#include "DayTime.hpp"
+#include "TimeString.hpp"
+#include "Epoch.hpp"
+#include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
@@ -185,6 +187,7 @@ protected:
             {
                time.sow = pben.sow;
                continue;
+               continue;
             }
 
             knowSOW = true;
@@ -209,7 +212,7 @@ protected:
 
             if (debugLevel)
                cout << "PVT time: "
-                    << DayTime(time.week, time.sow).printf("%03j %02H:%02M:%04.1f")
+                    << printTime(GPSWeekSecond(time.week, time.sow),"%03j %02H:%02M:%04.1f")
                     << endl;
 
             MDPPVTSolution pvt = makeMDPPVTSolution(pben, time.week);
@@ -227,7 +230,7 @@ protected:
 
             if (knowSOW && knowWeek)
             {
-               hint[mben.svprn].time = DayTime(time.week, time.sow);
+               hint[mben.svprn].time = GPSWeekSecond(time.week, time.sow);
                hint[mben.svprn].numSVs = svCount;
                MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
                moe.freshnessCount = fc++;
@@ -254,16 +257,23 @@ protected:
                EngEphemeris engEph;
                if (makeEngEphemeris(engEph, ephPageStore))
                {
+                  
                   int week10 = 0x3ff & engEph.getFullWeek();
-                  DayTime now;
-                  time.week = (now.GPSfullweek() & ~0x3ff) | week10;
+                  //CommonTime now;
+                  Epoch now;
+                  now.setLocalTime();
+                  GPSWeekSecond gs(now);
+                  //time.week = (now.GPSfullweek() & ~0x3ff) | week10;
+                  time.week = (gs.week & ~0x3ff) | week10;
                   if (debugLevel)
                      cout << "week is " << time.week << endl;
-                  knowWeek=true;
+                  knowWeek=true; 
                }
                else
                   continue;
             }
+
+
 
             sf.carrier = ccL1;
             sf.range = rcCA;
@@ -276,7 +286,7 @@ protected:
                long sow = sf.getHOWTime();
                if (sow>FULLWEEK || sow<0)
                   continue;
-               DayTime t = DayTime(time.week, sf.getHOWTime()) - 6;
+		CommonTime t = CommonTime(time.week, sf.getHOWTime()) - 6;
                sf.freshnessCount = fc++;
                sf.time = t;
                output << sf << flush;

@@ -21,14 +21,28 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "TimeTag.hpp"
-#include <time.h>     // for time_t
+#include "TimeSystem.hpp"
 
 namespace gpstk
 {
@@ -49,11 +63,10 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      ANSITime( time_t t = 0 )
+     ANSITime( time_t t = 0, TimeSystem ts = TimeSystem::Unknown )
          throw()
-      {
-         time = t;
-      }
+        : time(t)
+      { timeSystem = ts; }
 
          /** 
           * Copy Constructor.
@@ -61,8 +74,8 @@ namespace gpstk
           */
       ANSITime( const ANSITime& right )
          throw()
-            : time( right.time )
-      {}
+	: time( right.time )
+      { timeSystem = right.timeSystem; }
       
          /**
           * Alternate Copy Constructor.
@@ -85,7 +98,7 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       ANSITime( const CommonTime& right )
-         throw( InvalidRequest )
+         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -106,10 +119,10 @@ namespace gpstk
 
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
@@ -135,14 +148,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "K";
+         return "KP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%K";
+         return "%K %P";
       }
 
       virtual bool isValid() const
@@ -164,13 +177,13 @@ namespace gpstk
       bool operator!=( const ANSITime& right ) const
          throw();
       bool operator<( const ANSITime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>( const ANSITime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const ANSITime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const ANSITime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       time_t time;

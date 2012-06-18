@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -52,7 +52,7 @@
 // GPSTk includes
 #include "StringUtils.hpp"
 #include "geometry.hpp"             // for DEG_TO_RAD
-#include "icd_200_constants.hpp"    // for PI and TWO_PI
+#include "GNSSconstants.hpp"    // for PI and TWO_PI
 #include "GeodeticFrames.hpp"
 
 using namespace std;
@@ -74,10 +74,10 @@ namespace gpstk
    // epoch J2000 = January 1 2000 12h UT = 2451545.0JD, divided by 36525 days.
    // This quantity is used throughout the terrestrial / inertial coordinate
    // transformations.
-   double GeodeticFrames::CoordTransTime(DayTime t)
+   double GeodeticFrames::CoordTransTime(CommonTime t)
       throw()
    {
-      return (t.JD()-double(JulianEpoch))/36525.0;
+      return (static_cast<Epoch>(t).JD()-double(JulianEpoch))/36525.0;
    }
 
    //---------------------------------------------------------------------------------
@@ -1463,7 +1463,7 @@ namespace gpstk
    //      = 6h 41min (50.54841+8640184.812866*T'+0.093104*T'^2-6.2E-6*T'^3)sec
    //
    // see pg 21 of the Reference (IERS 1996).
-   double GeodeticFrames::gast(DayTime t,
+   double GeodeticFrames::gast(CommonTime t,
                                double om,
                                double eps,
                                double dpsi,
@@ -1541,17 +1541,17 @@ namespace gpstk
    // Compute Greenwich Mean Sidereal Time, or the Greenwich hour angle of
    // the mean vernal equinox (radians), given the coordinate time of interest,
    // and UT1-UTC (sec), which comes from the IERS bulletin.
-   // @param t DayTime epoch of the rotation.
+   // @param t CommonTime epoch of the rotation.
    // @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
    // @param reduced, bool true when UT1mUTC is 'reduced', meaning assumes
    //                 'no tides', as is the case with the NGA EOPs (default=F).
-   double GeodeticFrames::GMST(DayTime t,
+   double GeodeticFrames::GMST(CommonTime t,
                                double UT1mUTC,
                                bool reduced)
          throw()
    {
       // days since epoch
-      double days = t.JD() - JulianEpoch;                         // days
+      double days = static_cast<Epoch>(t).JD() - JulianEpoch;                         // days
       if(days <= 0.0) days -= 1.0;
       double Tp = days/36525.0;                                   // dim-less
 
@@ -1570,7 +1570,7 @@ namespace gpstk
          UT1mUTC = UT1mUT1R-UT1mUTC;
       }
 
-      G += (UT1mUTC + t.secOfDay())/86400.0;                      // days
+      G += (UT1mUTC + static_cast<YDSTime>(t).sod)/86400.0;                      // days
 
       // put answer between 0 and 2pi
       G = fmod(G,1.0);
@@ -1584,9 +1584,9 @@ namespace gpstk
    // Compute Greenwich Apparent Sidereal Time, or the Greenwich hour angle of
    // the true vernal equinox (radians), given the coordinate time of interest,
    // and UT1-UTC (sec), which comes from the IERS bulletin.
-   // @param t DayTime epoch of the rotation.
+   // @param t CommonTime epoch of the rotation.
    // @param UT1mUTC, UT1-UTC in seconds, as found in the IERS bulletin.
-   double GeodeticFrames::GAST(DayTime t,
+   double GeodeticFrames::GAST(CommonTime t,
                                double UT1mUTC,
                                bool reduced)
       throw()
@@ -1631,7 +1631,7 @@ namespace gpstk
    // at Greenwich hour angle of the true vernal equinox and which accounts for
    // precession and nutation in right ascension, given the UT time of interest
    // and the UT1-UTC correction (in sec), obtained from the IERS bulletin.
-   Matrix<double> GeodeticFrames::PreciseEarthRotation(DayTime t,
+   Matrix<double> GeodeticFrames::PreciseEarthRotation(CommonTime t,
                                                        double UT1mUTC,
                                                        bool reduced)
       throw(InvalidRequest)
@@ -1645,9 +1645,9 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------------
-   // Generate an Earth Nutation Matrix (3X3 rotation) at the given DayTime.
-   // @param t DayTime epoch of the rotation.
-   Matrix<double> GeodeticFrames::Nutation(DayTime t)
+   // Generate an Earth Nutation Matrix (3X3 rotation) at the given CommonTime.
+   // @param t CommonTime epoch of the rotation.
+   Matrix<double> GeodeticFrames::Nutation(CommonTime t)
       throw(InvalidRequest)
    {
       try {
@@ -1670,7 +1670,7 @@ namespace gpstk
    // throw(); Input is the time of interest,
    // the polar motion angles xp and yp (arcseconds), and UT1-UTC (seconds)
    // (xp,yp and UT1-UTC are just as found in the IERS bulletin).
-   Matrix<double> GeodeticFrames::ECEFtoInertial(DayTime t,
+   Matrix<double> GeodeticFrames::ECEFtoInertial(CommonTime t,
                                                  double xp,
                                                  double yp,
                                                  double UT1mUTC,

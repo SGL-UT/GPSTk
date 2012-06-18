@@ -1,7 +1,4 @@
-
 #pragma ident "$Id$"
-
-
 
 //============================================================================
 //
@@ -19,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -39,18 +36,15 @@
 //
 //=============================================================================
 
-
-
-
-
-
 /**
  * @file RinexNavHeader.cpp
  * Encapsulate header of Rinex navigation file
  */
 
 #include "StringUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
+#include "CivilTime.hpp"
+#include "SystemTime.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexNavStream.hpp"
 
@@ -111,9 +105,8 @@ namespace gpstk
       {
          line  = leftJustify(fileProgram,20);
          line += leftJustify(fileAgency,20);
-         DayTime dt;
-         dt.setLocalTime();
-         string dat = dt.printf("%02m/%02d/%04Y %02H:%02M:%02S");
+         SystemTime dt;
+         string dat = (static_cast<CivilTime>(dt)).printf("%02m/%02d/%04Y %02H:%02M:%02S");
          line += leftJustify(dat, 20);
          line += runByString;
          strm << line << endl;

@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2009
 //
@@ -31,7 +31,9 @@
 
 
 #include "SatDataReader.hpp"
+#include "Epoch.hpp"
 
+using namespace std;
 
 namespace gpstk
 {
@@ -123,14 +125,14 @@ namespace gpstk
             if(ldate[0] != '0')
             {
                 ldate = StringUtils::translate(ldate, "-", " ");
-                data.launchDate.setToString(ldate, "%Y %m %d");
+                static_cast<Epoch>(data.launchDate).scanf(ldate, "%Y %m %d");
             }
 
                // Get deactivation date in a proper format
             if(ddate[0] != '0')
             {
                 ddate = StringUtils::translate(ddate, "-", " ");
-                data.deactivationDate.setToString(ddate, "%Y %m %d");
+                static_cast<Epoch>(data.deactivationDate).scanf(ddate, "%Y %m %d");
             }
 
 
@@ -206,7 +208,7 @@ namespace gpstk
        * this method will return an empty string.
        */
    string SatDataReader::getBlock(const SatID& sat,
-                                  const DayTime& epoch) const
+                                  const CommonTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
@@ -256,7 +258,7 @@ namespace gpstk
        * this method will return -1.
        */
    int SatDataReader::getGPSNumber(const SatID& sat,
-                                   const DayTime& epoch) const
+                                   const CommonTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
@@ -301,30 +303,30 @@ namespace gpstk
        * @param sat   Satellite ID.
        * @param epoch Epoch of interest.
        *
-       * @return DayTime object containing satellite's launch date. If
+       * @return CommonTime object containing satellite's launch date. If
        * satellite is not found or epoch is out of proper launch/deactivation
-       * bounds, this method will return DayTime::END_OF_TIME.
+       * bounds, this method will return CommonTime::END_OF_TIME.
        */
-   DayTime SatDataReader::getLaunchDate(const SatID& sat,
-                                        const DayTime& epoch) const
+   CommonTime SatDataReader::getLaunchDate(const SatID& sat,
+                                        const CommonTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
       pair<satDataIt, satDataIt> range = SatelliteData.equal_range(sat);
 
-         // If SatID is not found, DayTime::END_OF_TIME is returned
+         // If SatID is not found, CommonTime::END_OF_TIME is returned
       if(range.first == range.second)
       {
-         return DayTime::END_OF_TIME;
+         return CommonTime::END_OF_TIME;
       }
 
          // Declare an iterator to travel in this range
       satDataIt iter(range.first);
 
-         // If this epoch is before launch date, return DayTime::END_OF_TIME
+         // If this epoch is before launch date, return CommonTime::END_OF_TIME
       if( (*iter).second.launchDate > epoch )
       {
-         return DayTime::END_OF_TIME;
+         return CommonTime::END_OF_TIME;
       }
 
          // Increment iterator "iter" if we are not yet at proper epoch range
@@ -336,7 +338,7 @@ namespace gpstk
          // Test if epoch is after corresponding launch date
       if( (*iter).second.launchDate > epoch )
       {
-         return DayTime::END_OF_TIME;
+         return CommonTime::END_OF_TIME;
       }
 
       return ((*iter).second.launchDate);
@@ -350,22 +352,22 @@ namespace gpstk
        * @param sat   Satellite ID.
        * @param epoch Epoch of interest.
        *
-       * @return DayTime object containing satellite's deactivation date. If
+       * @return CommonTime object containing satellite's deactivation date. If
        * satellite is not found, epoch is out of proper launch/deactivation
        * bounds or satellite is still active, this method will return
-       * DayTime::BEGINNING_OF_TIME.
+       * CommonTime::BEGINNING_OF_TIME.
        */
-   DayTime SatDataReader::getDeactivationDate(const SatID& sat,
-                                              const DayTime& epoch) const
+   CommonTime SatDataReader::getDeactivationDate(const SatID& sat,
+                                              const CommonTime& epoch) const
    {
 
          // Create a pair of range belonging to this SatID
       pair<satDataIt, satDataIt> range = SatelliteData.equal_range(sat);
 
-         // If SatID is not found, DayTime::BEGINNING_OF_TIME is returned
+         // If SatID is not found, CommonTime::BEGINNING_OF_TIME is returned
       if(range.first == range.second)
       {
-         return DayTime::BEGINNING_OF_TIME;
+         return CommonTime::BEGINNING_OF_TIME;
       }
 
          // Declare an iterator to travel in this range
@@ -374,7 +376,7 @@ namespace gpstk
          // If this epoch is before launch date, return BEGINNING_OF_TIME
       if( (*iter).second.launchDate > epoch )
       {
-         return DayTime::BEGINNING_OF_TIME;
+         return CommonTime::BEGINNING_OF_TIME;
       }
 
          // Increment iterator "iter" if we are not yet at proper epoch range
@@ -386,7 +388,7 @@ namespace gpstk
          // Test if epoch is after corresponding launch date
       if( (*iter).second.launchDate > epoch )
       {
-         return DayTime::BEGINNING_OF_TIME;
+         return CommonTime::BEGINNING_OF_TIME;
       }
 
       return ((*iter).second.deactivationDate);

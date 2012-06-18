@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -47,6 +47,7 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "StringUtils.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -75,7 +76,7 @@ int main(int argc, char* argv[])
    for (i=0;(i < fileOption.getCount());i++)
    {
       RinexObsStream ros(fileOption.getValue()[i].c_str());
-      DayTime nextTime;
+      CommonTime nextTime;
       bool firstRecord=true;
 
       RinexObsData data;
@@ -94,7 +95,7 @@ int main(int argc, char* argv[])
       {
          rcount++;
 
-	 if ( fmod(data.time.secOfDay(),drate) <= ttolerance )
+	 if ( fmod(static_cast<YDSTime>(data.time).sod,drate) <= ttolerance )
          {
  
           // First obs? Then update and output the header.

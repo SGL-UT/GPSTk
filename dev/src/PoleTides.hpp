@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
 //
@@ -36,8 +36,8 @@
 
 #include "Triple.hpp"
 #include "Position.hpp"
-#include "DayTime.hpp"
-#include "icd_200_constants.hpp"
+#include "CommonTime.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"
 
 
@@ -110,7 +110,7 @@ namespace gpstk
           *    set the current pole displacement parameters.
           *
           */
-      Triple getPoleTide( const DayTime& t,
+      Triple getPoleTide( const CommonTime& t,
                           const Position& p )
          throw(InvalidRequest);
 
@@ -129,7 +129,7 @@ namespace gpstk
           *    any reason, this is thrown. The text may have additional
           *    information about the reason the request failed.
           */
-      Triple getPoleTide( const DayTime& t,
+      Triple getPoleTide( const CommonTime& t,
                           const Position& p,
                           const double& x,
                           const double& y )

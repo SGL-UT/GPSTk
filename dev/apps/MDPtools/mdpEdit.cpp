@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -43,13 +43,13 @@
 #include <map>
 #include <set>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-
+#include "Epoch.hpp"
 #include "StringUtils.hpp"
 #include "InOutFramework.hpp"
 #include "ObsUtils.hpp"
@@ -111,6 +111,19 @@ public:
             prnSetToToss.erase(prn);
          else
             prnSetToToss.insert(-prn);
+	 if ((prn < 1)||(prn > gpstk::MAX_PRN))
+         {
+            cout << "\n You entered an invalid PRN."
+                 << "\n Exiting.\n\n";
+            return false;
+         }
+         else 
+         {
+            prnSetToToss.insert(prn);
+            if (debugLevel || verboseLevel)
+               cout << "Throwing out data from PRN " << prn << endl;
+         }
+
       }
       if (prnSetToToss.size() && debugLevel)
       {
@@ -123,27 +136,27 @@ public:
       // get any time limits
       if (startOpt.getCount())
       {
-         tStart.setToString(startOpt.getValue().front().c_str(),
+         static_cast<Epoch>(tStart).scanf(startOpt.getValue().front().c_str(),
                             "%Y %j %H:%M:%S");
          if (debugLevel)
             cout << "Throwing out data before " << tStart << endl;
       }
       else
       {
-         tStart = DayTime::BEGINNING_OF_TIME;
+         tStart = CommonTime::BEGINNING_OF_TIME;
          if (debugLevel || verboseLevel)
             cout << "No start time given.\n";
       }
 
       if (endOpt.getCount())
       {
-         tEnd.setToString(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+         static_cast<Epoch>(tEnd).scanf(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
          if (debugLevel || verboseLevel)
             cout << "Throwing out data after " << tEnd << endl;
       }
       else
       {
-         tEnd = DayTime::END_OF_TIME;
+         tEnd = CommonTime::END_OF_TIME;
          if (debugLevel || verboseLevel)
             cout << "No end time given.\n";
       }
@@ -212,7 +225,7 @@ protected:
 
       die = false;
 
-      DayTime currEpoch;
+      CommonTime currEpoch;
       MDPEpoch oe;
       uint16_t fc=0; 
       
@@ -427,7 +440,7 @@ protected:
      
 private:
    bool noObs, noNav, noPvt, noSts, die; 
-   DayTime tStart, tEnd;
+   CommonTime tStart, tEnd;
    set<int> prnSetToToss;
    unsigned int recordStart, recordEnd;
    unsigned long msgCount, fcErrorCount;

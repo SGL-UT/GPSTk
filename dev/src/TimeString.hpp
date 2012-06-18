@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -32,6 +32,63 @@
 
 namespace gpstk
 {
+      /**
+       * The TimeTag classes are the "interface" for CommonTime, so
+       * when printing a CommonTime object, each of the TimeTag printf()
+       * functions are called to handle the print identifiers that it 
+       * recognizes.  The following is a list of these identifiers and 
+       * the meaning for each:
+       *
+       * - ANSITime:
+       *   - K     integer seconds since Unix Epoch (00:00, Jan 1, 1970 UTC)
+       *
+       * - CivilTime:
+       *   - Y     integer 4-digit year
+       *   - y     integer 2-digit year
+       *   - m     integer month
+       *   - b     abbreviated month name string (e.g. "Jan")
+       *   - B     full month name string (e.g. "January")
+       *   - d     integer day-of-month
+       *   - H     integer hour-of-day
+       *   - M     integer minute-of-hour
+       *   - S     integer second-of-minute
+       *   - f     float second-of-minute
+       *
+       * - GPSWeek:
+       *   - E     integer GPS Epoch
+       *   - F     integer full (13-bit) GPS Week
+       *   - G     integer 10-bit GPS Week
+       * 
+       * - GPSWeekSecond:
+       *   - w     integer GPS day-of-week
+       *   - g     float GPS second-of-week
+       *
+       * - GPSWeekZcount:
+       *   - w     integer GPS day-of-week
+       *   - z     integer GPS Z-count
+       *   - Z     integer GPS Z-count
+       *   - c     integer 29-bit Z-count
+       *   - C     integer 32-bit Z-count
+       *
+       * - JulianDate:
+       *   - J     float Julian Date
+       *
+       * - MJD:
+       *   - Q     float Modified Julian Date
+       *
+       * - UnixTime:
+       *   - U     integer seconds since Unix Epoch (00:00, Jan 1, 1970 UTC)
+       *   - u     integer microseconds
+       *
+       * - YDSTime:
+       *   - Y     integer 4-digit year
+       *   - y     integer 2-digit year
+       *   - j     integer day-of-year
+       *   - s     integer second-of-day
+       *
+       * - Common Identifiers:
+       *   - P     Print the object's TimeSystem as a string.
+       */
    std::string printTime( const CommonTime& t,
                           const std::string& fmt )
       throw( gpstk::StringUtils::StringException );

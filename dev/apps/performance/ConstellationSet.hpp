@@ -15,7 +15,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -54,8 +54,11 @@
 
    // Library Headers
 #include "ConstellationDefinition.hpp"
+#include "StringUtils.hpp"
 
    // Project Headers
+
+using namespace std;
 
 namespace gpstk
 {
@@ -96,7 +99,8 @@ class ConstellationSet
 
       gpstk::CommonTime parseDate(std::string date)
         throw(InvalidDateString);
-      std::list<std::string> parseNums(std::string data, std::string searching);
+      //std::list<std::basic_string<char>> 
+      list<std::basic_string<char> > parseNums(std::string data, std::string searching);
       int loadFileARL( const std::string filename );
       int loadFileOpAdvisory( const std::string filename )
          throw(InvalidDateString, MismatchSize);

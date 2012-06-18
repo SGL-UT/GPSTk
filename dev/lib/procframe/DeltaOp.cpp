@@ -22,9 +22,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -35,19 +35,9 @@
 namespace gpstk
 {
 
-      // Index initially assigned to this class
-   int DeltaOp::classIndex = 7000000;
-
-
-      // Returns an index identifying this object.
-   int DeltaOp::getIndex() const
-   { return index; }
-
-
       // Returns a string identifying this object.
    std::string DeltaOp::getClassName() const
    { return "DeltaOp"; }
-
 
 
       /* Method to add a set of data value types to be differenced.
@@ -177,7 +167,6 @@ namespace gpstk
       {
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -185,7 +174,6 @@ namespace gpstk
       }
 
    }  // End of method 'DeltaOp::Process()'
-
 
 
 }  // End of namespace gpstk

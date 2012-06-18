@@ -23,7 +23,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -46,7 +46,7 @@
 // GPSTk includes
 #include "StringUtils.hpp"          // asString
 #include "geometry.hpp"             // DEG_TO_RAD
-#include "icd_200_constants.hpp"    // TWO_PI
+#include "GNSSconstants.hpp"    // TWO_PI
 // geomatics
 #include "SunEarthSatGeometry.hpp"
 #include "SolarPosition.hpp"
@@ -238,7 +238,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 // Thus this rotation matrix R * (ECEF XYZ vector) = components in body frame, and
 // R.transpose() * (sat. body. frame vector) = ECEF XYZ components.
 // Also return the shadow factor = fraction of sun's area not visible to satellite.
-Matrix<double> doSatAtt(const DayTime& tt, const Position& SV,
+Matrix<double> doSatAtt(const CommonTime& tt, const Position& SV,
                         const SolarSystem& SSEph, const EarthOrientation& EO,
                         double& sf)
    throw(Exception)
@@ -317,7 +317,7 @@ Matrix<double> doSatAtt(const DayTime& tt, const Position& SV,
 
 // -----------------------------------------------------------------------------------
 // Version without JPL SolarSystem ephemeris - uses SolarPosition
-Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& sf)
+Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV, double& sf)
    throw(Exception)
 {
    SolarSystem ssdummy;
@@ -327,7 +327,7 @@ Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV, double& 
 
 // -----------------------------------------------------------------------------------
 // Version with JPL SolarSystem ephemeris. Throw if the SolarSystem is not valid
-Matrix<double> SatelliteAttitude(const DayTime& tt, const Position& SV,
+Matrix<double> SatelliteAttitude(const CommonTime& tt, const Position& SV,
                                  const SolarSystem& SSEph, const EarthOrientation& EO,
                                  double& sf)
    throw(Exception)

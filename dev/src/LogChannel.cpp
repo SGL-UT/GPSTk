@@ -29,6 +29,7 @@
 
 #include "LogChannel.hpp"
 #include "NumberFormatter.hpp"
+#include "CivilTime.hpp"
 
 namespace gpstk
 {
@@ -39,7 +40,7 @@ namespace gpstk
    {
       string text;
 
-      DayTime time = msg.time;
+      CivilTime time = msg.time;
       
       string::const_iterator it = pattern.begin();
       string::const_iterator end = pattern.end();
@@ -58,17 +59,17 @@ namespace gpstk
                case 'q': text += LogLevelName(msg.level).at(0); break;
                case 'U': text.append(msg.file); break;
                case 'u': NumberFormatter::append(text, msg.line); break;
-               case 'd': NumberFormatter::append0(text, time.day(), 2); break;
-               case 'e': NumberFormatter::append(text, time.day()); break;
-               case 'f': NumberFormatter::append(text, time.day(), 2); break;
-               case 'm': NumberFormatter::append0(text, time.month(), 2); break;
-               case 'n': NumberFormatter::append(text, time.month()); break;
-               case 'o': NumberFormatter::append(text, time.month(), 2); break;
-               case 'y': NumberFormatter::append0(text, time.year() % 100, 2); break;
-               case 'Y': NumberFormatter::append0(text, time.year(), 4); break;
-               case 'H': NumberFormatter::append0(text, time.hour(), 2); break;
-               case 'M': NumberFormatter::append0(text, time.minute(), 2); break;
-               case 'S': NumberFormatter::append0(text, (int)time.second(), 2); break;
+               case 'd': NumberFormatter::append0(text, time.day, 2); break;
+               case 'e': NumberFormatter::append(text, time.day); break;
+               case 'f': NumberFormatter::append(text, time.day, 2); break;
+               case 'm': NumberFormatter::append0(text, time.month, 2); break;
+               case 'n': NumberFormatter::append(text, time.month); break;
+               case 'o': NumberFormatter::append(text, time.month, 2); break;
+               case 'y': NumberFormatter::append0(text, time.year % 100, 2); break;
+               case 'Y': NumberFormatter::append0(text, time.year, 4); break;
+               case 'H': NumberFormatter::append0(text, time.hour, 2); break;
+               case 'M': NumberFormatter::append0(text, time.minute, 2); break;
+               case 'S': NumberFormatter::append0(text, (int)time.second, 2); break;
                default: text += *it;
                }
                ++it;

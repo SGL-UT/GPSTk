@@ -20,7 +20,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -48,9 +48,10 @@
 #include "FICData.hpp"
 #include "FICStream.hpp"
 #include "FICFilterOperators.hpp"
-#include "DayTime.hpp"
-
+#include "CommonTime.hpp"
+#include "TimeString.hpp"
 #include "gps_constants.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -68,10 +69,10 @@ protected:
 
 private:
    void printCurrentFilter();
-   void getNewTime(DayTime& dt);
+   void getNewTime(CommonTime& dt);
    void getFICBlocks();
    void getSVs();
-   gpstk::DayTime buildXMitTime(const uint32_t word2, const int week );
+   gpstk::CommonTime buildXMitTime(const uint32_t word2, const int week );
    void printSummary( ofstream& out );
    void printAltSummary( ofstream& out );
 
@@ -92,7 +93,7 @@ private:
       /// command option to use an alternate output format
    CommandOptionNoArg formatOption;
 
-   DayTime startTime, endTime;
+   CommonTime startTime, endTime;
    list<long> prnFilterList;
    list<long> blockFilterList;
    
@@ -130,7 +131,7 @@ NavSum::NavSum(char* arg0)
                        " default values for record filtration"),
 	formatOption('f',"use-alternate-format","Use alternate output format"),
         startTime(0,0.0),
-        endTime(DayTime::END_OF_TIME)
+        endTime(CommonTime::END_OF_TIME)
 {
    seTimeOptions.addOption(&timeOption);
    seTimeOptions.addOption(&eTimeOption);   
@@ -332,7 +333,7 @@ void NavSum::getSVs()
       }
 }
 
-void NavSum::getNewTime(DayTime& dt)
+void NavSum::getNewTime(CommonTime& dt)
 {
    short week = -1;
    double SOW;
@@ -364,7 +365,7 @@ void NavSum::getNewTime(DayTime& dt)
       else 
          cout << " Error entering SOW.  Please try again." << endl;
    }
-   dt.setGPSfullweek(week, SOW);
+   dt=GPSWeekSecond(week, SOW);
 }
 
 void NavSum::process()
@@ -393,8 +394,8 @@ void NavSum::process()
    out << "in set Type   SVID   mm/dd/yy DOY hh:mm:ss Week    SOW ! mm/dd/yy DOY HH:MM:SS" << endl;
    std::string xmitFmt("%02m/%02d/%02y %03j %02H:%02M:%02S %4F %6.0g");
    std::string epochFmt("%02m/%02d/%02y %03j %02H:%02M:%02S");
-   DayTime XMitT;
-   DayTime EpochT;
+   CommonTime XMitT;
+   CommonTime EpochT;
    uint32_t temp;
    int PRNID; 
    int xmitPRN;
@@ -429,14 +430,14 @@ void NavSum::process()
 				fit = (int) r.f[34];
 				EpochWeek = xMitWeek;
 				diff = Toe - HOW;
-				if (diff < -1.0 * (double) DayTime::HALFWEEK) EpochWeek++;
-				if (diff > (double) DayTime::HALFWEEK) xMitWeek--;
-				XMitT = DayTime( xMitWeek, HOW-6.0 );
-				EpochT = DayTime( EpochWeek, Toe );
+				if (diff < -1.0 * (double) HALFWEEK) EpochWeek++;
+				if (diff > (double) HALFWEEK) xMitWeek--;
+				XMitT = CommonTime( xMitWeek, HOW-6.0 );
+				EpochT = CommonTime( EpochWeek, Toe );
 				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03lX %1d",
 					count,blockType,PRNID,
-					XMitT.printf(xmitFmt).c_str(),
-					EpochT.printf(epochFmt).c_str(),
+					printTime(XMitT,xmitFmt).c_str(),
+					printTime(EpochT,epochFmt).c_str(),
 					IODC,
 					fit);
 				linestr = string(line);
@@ -452,7 +453,7 @@ void NavSum::process()
 				XMitT = buildXMitTime( temp, xMitWeek );
 				sprintf(line," %5d  %3d    %02d    %s !",
 					count,blockType,PRNID,
-					XMitT.printf(xmitFmt).c_str() );
+					printTime(XMitT,xmitFmt).c_str() );
 				linestr = string(line);
 				out << linestr << endl;
 				totalsByBlock[BLK109]++;
@@ -466,24 +467,24 @@ void NavSum::process()
 				iMitSOW = r.i[1];
 				if (iMitSOW<0)
 				{
-					iMitSOW += gpstk::DayTime::FULLWEEK;
+					iMitSOW += FULLWEEK;
 					xMitWeek--;
 				}
 				xMitSOW = (double) iMitSOW;
-				XMitT = DayTime( xMitWeek, xMitSOW );
+				XMitT = CommonTime( xMitWeek, xMitSOW );
 				if (PRNID>0 && PRNID<33)
 				{
-					EpochT = DayTime( EpochWeek, r.f[8] );
+					EpochT = CommonTime( EpochWeek, r.f[8] );
 					sprintf(line," %5d  %3d    %02d    %s ! %s",
 						count,blockType,PRNID,
-						XMitT.printf(xmitFmt).c_str(),
-						EpochT.printf(epochFmt).c_str() );
+						printTime(XMitT,xmitFmt).c_str(),
+						printTime(EpochT,epochFmt).c_str() );
 				}
 				else
 				{
 					sprintf(line," %5d  %3d    %02d    %s !",
 						count,blockType,PRNID,
-						XMitT.printf(xmitFmt).c_str() );
+						printTime(EpochT,xmitFmt).c_str() );
 				}
 				linestr = string(line);
 				out << linestr << endl;
@@ -500,7 +501,7 @@ void NavSum::process()
 				XMitT = buildXMitTime( temp, xMitWeek );
 				sprintf(line," %5d  %3d    %02d    %s !                        %02d",
 					count,blockType,PRNID,
-					XMitT.printf(xmitFmt).c_str(),
+					printTime(XMitT,xmitFmt).c_str(),
 					xmitPRN);
 				linestr = string(line);
 				out << linestr << endl;
@@ -700,7 +701,7 @@ void NavSum::printAltSummary( ofstream& out )
 
 }
 
-gpstk::DayTime NavSum::buildXMitTime(const uint32_t word2, const int week )
+gpstk::CommonTime NavSum::buildXMitTime(const uint32_t word2, const int week )
 {
    int useweek = week;
    uint32_t temp = word2;
@@ -708,11 +709,11 @@ gpstk::DayTime NavSum::buildXMitTime(const uint32_t word2, const int week )
    long SOW = (long) (temp * 6) - 6;
    if (SOW<0) 
    {
-      SOW += gpstk::DayTime::FULLWEEK;
+      SOW += FULLWEEK;
       useweek--;
    }
    double XmitSOW = (double) SOW;
-   return ( DayTime( useweek, XmitSOW) ); 
+   return ( CommonTime( useweek, XmitSOW) ); 
 }
 
 

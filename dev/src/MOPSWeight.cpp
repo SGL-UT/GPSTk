@@ -2,7 +2,8 @@
 
 /**
  * @file MOPSWeight.cpp
- * Class for assign weights to satellites based on the Appendix J of MOPS C.
+ * Class to assign weights to satellites based on the Appendix J of MOPS
+ * document RTCA DO-229D.
  */
 
 
@@ -22,9 +23,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE. 2006, 2008
+//  Dagoberto Salazar - gAGE. 2006, 2008, 2011
 //
 //============================================================================
 
@@ -60,7 +61,7 @@ namespace gpstk
        * a valid weight. Also, its PRN will be set to a negative value.
        *
        */
-   int MOPSWeight::getWeights( DayTime& time,
+   int MOPSWeight::getWeights( CommonTime& time,
                                Vector<SatID>& Satellites,
                                GPSEphemerisStore& bcEph,
                                Vector<double>& ionoCorrections,
@@ -139,9 +140,9 @@ compute weights.");
        * a valid weight. Also, its PRN will be set to a negative value.
        *
        */
-   int MOPSWeight::getWeights( DayTime& time,
+   int MOPSWeight::getWeights( CommonTime& time,
                                Vector<SatID>& Satellites,
-                               TabularEphemerisStore& preciseEph,
+                               TabularSatStore<Xvt>& preciseEph,
                                Vector<double>& ionoCorrections,
                                Vector<double>& elevationVector,
                                Vector<double>& azimuthVector,
@@ -280,7 +281,7 @@ compute weights.");
                                        std::exp(-elevationVector(i)/10.0) );
                // The former expression in DO-229D document is for sigma,
                // not for sigma^2. Thanks to Everett Wang for the fix.
-            sigma2multipath *= sigma2multipath;                                      
+            sigma2multipath *= sigma2multipath;
             sigma2trop = mopsTrop.MOPSsigma2(elevationVector(i+offset));
             sigma2uire = sigma2iono( ionoCorrections(i+offset),
                                      elevationVector(i+offset),

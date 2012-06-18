@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
@@ -35,9 +35,9 @@
 #include <cmath>
 #include <string>
 
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "AstronomicalFunctions.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
@@ -93,7 +93,7 @@ namespace gpstk
           *    that pole movement is not taken into account, neither
           *    precession nor nutation.
           */
-      Triple getPosition(const DayTime& t) const
+      Triple getPosition(const CommonTime& t) const
          throw(InvalidRequest);
 
 
@@ -102,7 +102,7 @@ namespace gpstk
           *
           * @param t Epoch
           */
-      Triple getPositionCIS(const DayTime& t) const
+      Triple getPositionCIS(const CommonTime& t) const
          throw(InvalidRequest);
 
 
@@ -113,7 +113,7 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      DayTime getInitialTime() const throw(InvalidRequest)
+      CommonTime getInitialTime() const throw(InvalidRequest)
       { return initialTime; }
 
 
@@ -124,17 +124,17 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      DayTime getFinalTime() const throw(InvalidRequest)
+      CommonTime getFinalTime() const throw(InvalidRequest)
       { return finalTime; }
 
 
    private:
 
          /// Time of the first valid time
-      static const DayTime initialTime;
+      static const CommonTime initialTime;
 
          /// Time of the last valid time
-      static const DayTime finalTime;
+      static const CommonTime finalTime;
 
          // Coefficients for fundamental arguments
          // Units are degrees for position and Julian centuries for time

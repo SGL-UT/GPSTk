@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: GeneralConstraint.hpp 2607 2011-05-19 05:31:37Z yanweignss $"
 
 /**
  * @file GeneralConstraint.hpp
@@ -24,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2011
 //
@@ -87,7 +87,7 @@ namespace gpstk
 
          /// The method is used to update the solver state when the reference 
          /// satellite changed.
-      virtual void updateRefSat( const DayTime& time, 
+      virtual void updateRefSat( const CommonTime& time, 
                                  const SatSourceMap& refsatSource,
                                  const SourceSatMap& sourceRefsat )
       { /* Do nothing by default */ }
@@ -101,7 +101,7 @@ namespace gpstk
 
 
       Matrix<double> convertMatrix(size_t n, size_t oi, size_t ni,
-         std::vector<int> iv);
+                                   std::vector<int> iv);
 
 
          // Methods to parsing data from SolverGeneral
@@ -175,7 +175,6 @@ namespace gpstk
          /// Get covariance of the interesting variables
       Matrix<double> getCovariance(const VariableSet& varSet);
 
-
          /// Method of updating the solution of the variable
       GeneralConstraint& setSolution( const Variable& variable,
                                       const double& val )
@@ -218,7 +217,9 @@ namespace gpstk
          /// Check if the satellite is a reference satellite.
       bool isRefSat(const SatID& sat);
 
+
    protected:
+
 
          /// The partner solver it work with
       SolverGeneral& solver;
@@ -234,5 +235,4 @@ namespace gpstk
 
 }  // End of namespace gpstk
 
-
-#endif   // GPSTK_SOLVERCONSTRAINT_HPP
+#endif   // GPSTK_GENERALCONSTRAINT_HPP

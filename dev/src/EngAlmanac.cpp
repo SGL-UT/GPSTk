@@ -18,7 +18,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -49,7 +49,7 @@
  */
 
 #include "gps_constants.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "EngAlmanac.hpp"
 
 using namespace std;
@@ -422,7 +422,7 @@ namespace gpstk
       return (*i).second;
    }
 
-   Xvt EngAlmanac::svXvt(SatID sat, const DayTime& t) const
+   Xvt EngAlmanac::svXvt(SatID sat, const CommonTime& t) const
       throw(EngAlmanac::SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);

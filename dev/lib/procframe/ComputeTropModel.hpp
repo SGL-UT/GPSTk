@@ -6,8 +6,8 @@
  * GNSS tropospheric model.
  */
 
-#ifndef COMPUTETROPMODEL_HPP
-#define COMPUTETROPMODEL_HPP
+#ifndef GPSTK_COMPUTETROPMODEL_HPP
+#define GPSTK_COMPUTETROPMODEL_HPP
 
 //============================================================================
 //
@@ -25,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007, 2008, 2011
 //
 //============================================================================
 
@@ -101,7 +101,7 @@ namespace gpstk
          /// Default constructor.
       ComputeTropModel()
          : pTropModel(NULL)
-      { setIndex(); };
+      { };
 
 
          /** Explicit constructor.
@@ -114,7 +114,7 @@ namespace gpstk
           *
           */
       ComputeTropModel(TropModel& tropoModel)
-      { pTropModel = &tropoModel; setIndex(); };
+      { pTropModel = &tropoModel; };
 
 
          /** Returns a satTypeValueMap object, adding the new data generated
@@ -123,7 +123,7 @@ namespace gpstk
           * @param time      Epoch.
           * @param gData     Data object holding the data.
           */
-      virtual satTypeValueMap& Process( const DayTime& time,
+      virtual satTypeValueMap& Process( const CommonTime& time,
                                         satTypeValueMap& gData )
          throw(ProcessingException);
 
@@ -163,10 +163,6 @@ namespace gpstk
       { pTropModel = &tropoModel; return (*this); };
 
 
-         /// Returns an index identifying this object.
-      virtual int getIndex(void) const;
-
-
          /// Returns a string identifying this object.
       virtual std::string getClassName(void) const;
 
@@ -183,22 +179,10 @@ namespace gpstk
       TropModel *pTropModel;
 
 
-         /// Initial index assigned to this class.
-      static int classIndex;
-
-
-         /// Index belonging to this object.
-      int index;
-
-
-         /// Sets the index and increment classIndex.
-      void setIndex(void)
-      { index = classIndex++; };
-
-
    }; // End of class 'ComputeTropModel'
 
       //@}
 
-} // End of namespace gpstk
-#endif   // COMPUTETROPMODEL_HPP
+}  // End of namespace gpstk
+
+#endif   // GPSTK_COMPUTETROPMODEL_HPP

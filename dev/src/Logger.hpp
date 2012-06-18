@@ -24,17 +24,18 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009~2015
 //
 //============================================================================
 
 #include <iostream>
+#include <sstream>
 #include <map>
 #include <string>
 #include <cstdarg>
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Exception.hpp"
 #include "Matrix.hpp"
 #include "LogMessage.hpp"
@@ -51,6 +52,7 @@ namespace gpstk
    class Logger
    {
    public:
+         /// Copy constructor
       Logger(const Logger& right);
 
       Logger& operator = (const Logger& right);
@@ -206,7 +208,8 @@ namespace gpstk
    inline std::string mat2str(const Vector<T>& vec, size_t width, size_t digit,
                               std::string desc="")
    {
-      std::ostringstream ss;
+      //std::ostringstream ss;
+      std::stringstream ss;
       ss << std::fixed;
       ss << "["<< vec.size() << "x1]: " << desc << std::endl;
       for(int i=0;i<vec.size();i++)
@@ -221,8 +224,9 @@ namespace gpstk
    inline std::string mat2str(const Matrix<T>& mat, size_t width, size_t digit,
                               std::string desc="")
    {
-      std::ostringstream ss;
-      ss << std::fixed;
+      //std::ostringstream ss;
+      std::stringstream ss;
+      ss << (std::fixed);
       ss << "["<< mat.rows()<<"x"<<mat.cols() <<"]: "<< desc << std::endl;
       ss << std::setw(width) << std::setprecision(digit) << mat;
       return ss.str();
@@ -248,7 +252,6 @@ namespace gpstk
 
 #define GPSTK_LOGGER_LEVEL(name,level) \
    Logger::get(name).setLevel(name,level)
-
 
 #define GPSTK_FATAL(name, msg) \
    if (Logger::get(name).fatal()) Logger::get(name).log(msg, LEVEL_FATAL, FILE_LOCATION); else (void) 0
@@ -421,6 +424,7 @@ namespace gpstk
 #endif   // #if defined(_DEBUG)
 
 
+
 //////////////////////////////////////////////////////////////////////////
 
    /// This class implements a streambuf interface to a Logger.
@@ -460,7 +464,6 @@ private:
    std::string       _message;
 };
 
-
 class LogStream : public std::ostream
 {
 public:
@@ -479,47 +482,56 @@ public:
    {
       _buf.setLogger(right._buf.logger());
       _buf.setLevel(right._buf.getLevel());
+      return *this;
    }
 
-   LogStream& fatal(){ return setLevel(LEVEL_FATAL);}
+   LogStream& fatal()
+   { return setLevel(LEVEL_FATAL); }
 
    LogStream& fatal(const std::string& message)
-   { _buf.logger().log(message,LEVEL_FATAL); }
+   { _buf.logger().log(message, LEVEL_FATAL); return *this; }
 
-   LogStream& critical(){ return setLevel(LEVEL_CRITICAL);}
+   LogStream& critical()
+   { return setLevel(LEVEL_CRITICAL); }
 
    LogStream& critical(const std::string& message)
-   { _buf.logger().log(message,LEVEL_CRITICAL); }
+   { _buf.logger().log(message, LEVEL_CRITICAL); return *this; }
 
-   LogStream& error(){ return setLevel(LEVEL_ERROR);}
+   LogStream& error()
+   { return setLevel(LEVEL_ERROR); return *this; }
 
    LogStream& error(const std::string& message)
-   { _buf.logger().log(message,LEVEL_ERROR); }
+   { _buf.logger().log(message, LEVEL_ERROR); return *this; }
 
-   LogStream& warning(){ return setLevel(LEVEL_WARNING);}
+   LogStream& warning()
+   { return setLevel(LEVEL_WARNING); return *this; }
 
    LogStream& warning(const std::string& message)
-   { _buf.logger().log(message,LEVEL_WARNING); }
+   { _buf.logger().log(message, LEVEL_WARNING); return *this; }
 
-   LogStream& notice(){ return setLevel(LEVEL_NOTICE);}
+   LogStream& notice()
+   { return setLevel(LEVEL_NOTICE); return *this; }
 
    LogStream& notice(const std::string& message)
-   { _buf.logger().log(message,LEVEL_NOTICE); }
+   { _buf.logger().log(message, LEVEL_NOTICE); return *this;}
 
-   LogStream& information(){ return setLevel(LEVEL_INFORMATION);}
+   LogStream& information()
+   { return setLevel(LEVEL_INFORMATION);}
 
    LogStream& information(const std::string& message)
-   { _buf.logger().log(message,LEVEL_INFORMATION); }
+   { _buf.logger().log(message, LEVEL_INFORMATION); return *this; }
 
-   LogStream& debug(){ return setLevel(LEVEL_DEBUG);}
+   LogStream& debug()
+   { return setLevel(LEVEL_DEBUG); return *this; }
 
    LogStream& debug(const std::string& message)
-   { _buf.logger().log(message,LEVEL_DEBUG); }
+   { _buf.logger().log(message, LEVEL_DEBUG); return *this; }
 
-   LogStream& trace(){ return setLevel(LEVEL_TRACE);}
+   LogStream& trace()
+   { return setLevel(LEVEL_TRACE); }
 
    LogStream& trace(const std::string& message)
-   { _buf.logger().log(message,LEVEL_TRACE); }
+   { _buf.logger().log(message, LEVEL_TRACE); return *this; }
 
    LogStream& setLevel(LogLevel level)
    { _buf.setLevel(level); return (*this); }

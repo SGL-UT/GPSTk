@@ -1,5 +1,9 @@
 #pragma ident "$Id$"
 
+/**
+ * @file RungeKutta4.hpp
+ * Implementation of a Runge Kutta integrator.
+ */
 
 
 //============================================================================
@@ -18,72 +22,81 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-//  
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+
 #include "RungeKutta4.hpp"
 
-/*
- * @file RungeKutta4.hpp
- * Implementation of a Runge Kutta integrator.
- */
 
-void gpstk::RungeKutta4::integrateTo (double nextTime, 
-                                      double stepSize) 
+void gpstk::RungeKutta4::integrateTo ( double nextTime,
+                                       double stepSize )
 {
-   if (stepSize == 0) 
+   if ( stepSize == 0.0 )
       stepSize = nextTime - currentTime;
 
    bool done = false;
-   
+
    while (!done)
    {
-      // Time steps
-      double ctPlusDeltaT = currentTime + stepSize;
-      double ctPlusHalfDeltaT = currentTime + (stepSize * .5);
 
-      // k1
+         // Time steps
+      double ctPlusDeltaT = currentTime + stepSize;
+      double ctPlusHalfDeltaT = currentTime + (stepSize * 0.5);
+
+         // k1
       k1 = stepSize * derivative(currentTime, currentState, k1);
-      tempy = currentState + (.5 * k1);
-   
-      // k2
+      tempy = currentState + (0.5 * k1);
+
+         // k2
       k2 = stepSize * derivative(ctPlusHalfDeltaT, tempy, k2);
-      tempy = currentState + (.5 * k2);
-   
-      // k3
+      tempy = currentState + (0.5 * k2);
+
+         // k3
       k3 = stepSize * derivative(ctPlusHalfDeltaT, tempy, k3);
 
-      // k4
+         // k4
       k4 = stepSize * derivative(ctPlusDeltaT, tempy, k4);
-      currentState += (k1 + 2. * (k2 + k3) + k4) / 6. ;
+      currentState += (k1 + 2.0 * (k2 + k3) + k4) / 6.0;
 
-      // If we are within teps of the goal time, we are done.
-      if (fabs(currentTime + stepSize - nextTime) < teps) 
+         // If we are within teps of the goal time, we are done.
+      if (fabs(currentTime + stepSize - nextTime) < teps)
          done = true;
- 
-      // If we are about to overstep, change the stepsize appropriately
-      // to hit our target final time; 
-      if ((currentTime + stepSize) > nextTime) 
-         stepSize = (nextTime - currentTime);
 
+         // If we are about to overstep, change the stepsize appropriately
+         // to hit our target final time.
+      if( stepSize > 0.0 )
+      {
+         if( (currentTime + stepSize) > nextTime )
+            stepSize = (nextTime - currentTime);
+      }
+      else
+      {
+         if ( (currentTime + stepSize) < nextTime )
+            stepSize = (nextTime - currentTime);
+      }
+      
       currentTime += stepSize;
    }
 
    currentTime = nextTime;
-}
 
-void gpstk::RungeKutta4::integrateTo (double nextTime,
-                                      Matrix<double>& error,
-                                      double stepSize) 
+}  // End of method 'gpstk::RungeKutta4::integrateTo( nextTime, stepSize )'
+
+
+void gpstk::RungeKutta4::integrateTo ( double nextTime,
+                                       Matrix<double>& error,
+                                       double stepSize )
 {
+
    double deltaT = nextTime - currentTime;
-   
+
       // Save the current state and time for the second step.
    double savedTime = currentTime;
-   gpstk::Matrix<double> savedState = currentState; 
+   gpstk::Matrix<double> savedState = currentState;
 
       // First, take the integration using two steps.
    integrateTo(currentTime + (deltaT * 0.5), stepSize);
@@ -95,26 +108,14 @@ void gpstk::RungeKutta4::integrateTo (double nextTime,
       // Restore the original state.
    currentTime = savedTime;
    currentState = savedState;
-   
+
       // Now, take the integration using only one step.
    integrateTo(nextTime, stepSize);
    gpstk::Matrix<double> oneStepState = currentState;
 
    error = oneStepState - twoStepState;
-   
+
    currentState = twoStepState + (twoStepState - oneStepState) / 15.0;
 
-}
-
-
-
-
-
-
-
-
-
-
-
-
+}  // End of method 'gpstk::RungeKutta4::integrateTo(nextTime, error, stepSize)'
 

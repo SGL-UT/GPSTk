@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -35,7 +35,7 @@
 #include <algorithm>
 // gpstk
 #include "SatPass.hpp"
-#include "icd_200_constants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
+#include "GNSSconstants.hpp"    // OSC_FREQ,L1_MULT,L2_MULT
 #include "Stats.hpp"
 #include "StringUtils.hpp"
 #include "RinexObsHeader.hpp"
@@ -82,8 +82,8 @@ void SatPass::init(GSatID insat, double indt, vector<string> obstypes) throw()
 {
    sat = insat;
    dt = indt;
-   //firstTime = DayTime::BEGINNING_OF_TIME;
-   //lastTime = DayTime::END_OF_TIME;
+   //firstTime = CommonTime::BEGINNING_OF_TIME;
+   //lastTime = CommonTime::END_OF_TIME;
    ngood = 0;
    Status = 0;
 
@@ -112,7 +112,7 @@ SatPass& SatPass::operator=(const SatPass& right) throw()
    return *this;
 }
 
-int SatPass::addData(const DayTime tt, vector<string>& ots, vector<double>& data)
+int SatPass::addData(const CommonTime tt, vector<string>& ots, vector<double>& data)
    throw(Exception)
 {
    vector<unsigned short> lli(data.size(),0),ssi(data.size(),0);
@@ -123,7 +123,7 @@ int SatPass::addData(const DayTime tt, vector<string>& ots, vector<double>& data
 // return -2 time tag out of order, data not added
 //        -1 gap is larger than MaxGap, data not added
 //       >=0 (success) index of the added data
-int SatPass::addData(const DayTime tt,
+int SatPass::addData(const CommonTime tt,
                          vector<string>& obstypes,
                          vector<double>& data,
                          vector<unsigned short>& lli,
@@ -216,12 +216,12 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
    }
    if(indexForLabel.find("P1") == indexForLabel.end()) useC1=true;
 
-   //static const double CFF=C_GPS_M/OSC_FREQ;
-   static const double F1=L1_MULT;   // 154.0;
-   static const double F2=L2_MULT;   // 120.0;
+   //static const double CFF=C_MPS/OSC_FREQ;
+   static const double F1=L1_MULT_GPS;   // 154.0;
+   static const double F2=L2_MULT_GPS;   // 120.0;
    // wavelengths
-   static const double wl1=L1_WAVELENGTH; //CFF/F1;                        // 19.0cm
-   static const double wl2=L2_WAVELENGTH; //CFF/F2;                        // 24.4cm
+   static const double wl1=L1_WAVELENGTH_GPS; //CFF/F1;                        // 19.0cm
+   static const double wl2=L2_WAVELENGTH_GPS; //CFF/F2;                        // 24.4cm
    // ionospheric constant
    static const double alpha = ((F1/F2)*(F1/F2) - 1.0);
 
@@ -262,8 +262,8 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
    ostringstream oss;
    oss << "SMT" << fixed << setprecision(2)
        << " " << sat
-       << " " << getFirstGoodTime().printf(outFormat)
-       << " " << getLastGoodTime().printf(outFormat)
+       << " " << printTime(getFirstGoodTime(),outFormat)
+       << " " << printTime(getLastGoodTime(),outFormat)
        << " " << setw(5)  << PB1.N()
        << " " << setw(12) << PB1.Average()+dbL1
        << " " << setw(5)  << PB1.StdDev()
@@ -389,19 +389,19 @@ unsigned int SatPass::getCount(unsigned int i) const throw(Exception)
 
 // ---------------------------------- utils -----------------------------------
 // return the time corresponding to the given index in the data array
-DayTime SatPass::time(unsigned int i) const throw(Exception)
+CommonTime SatPass::time(unsigned int i) const throw(Exception)
 {
    if(i > spdvector.size()) {
       Exception e("invalid in time() " + asString(i));
       GPSTK_THROW(e);
    }
-   // computing toff first is necessary to avoid a rare bug in DayTime..
+   // computing toff first is necessary to avoid a rare bug in CommonTime..
    double toff = spdvector[i].ndt * dt + spdvector[i].toffset;
    return (firstTime + toff);
 }
 
 // return true if the input time could lie within the pass
-bool SatPass::includesTime(const DayTime& tt) const throw()
+bool SatPass::includesTime(const CommonTime& tt) const throw()
 {
    if(tt < firstTime) {
       if((firstTime-tt) > maxGap) return false;
@@ -418,7 +418,7 @@ bool SatPass::includesTime(const DayTime& tt) const throw()
 bool SatPass::split(int N, SatPass &newSP) {
 try {
    int i,j,n,oldgood,ilast;
-   DayTime tt;
+   CommonTime tt;
 
    newSP = SatPass(sat, dt);                       // create new SatPass
    newSP.Status = Status;
@@ -455,12 +455,12 @@ try {
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }
 
-void SatPass::decimate(const int N, DayTime refTime) throw(Exception)
+void SatPass::decimate(const int N, CommonTime refTime) throw(Exception)
 {
 try {
    if(N <= 1) return;
    if(spdvector.size() < N) { dt = N*dt; return; }
-   if(refTime == DayTime::BEGINNING_OF_TIME) refTime = firstTime;
+   if(refTime == CommonTime::BEGINNING_OF_TIME) refTime = firstTime;
 
    // find new firstTime = time(nstart)
    int i,j,nstart=int(0.5+(firstTime-refTime)/dt);
@@ -470,7 +470,7 @@ try {
 
    // decimate
    ngood = 0;
-   DayTime newfirstTime, tt;
+   CommonTime newfirstTime, tt;
    for(j=0,i=0; i<spdvector.size(); i++) {
       if(spdvector[i].ndt % N != nstart) continue;
       lastTime = time(i);
@@ -501,7 +501,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 void SatPass::dump(ostream& os, string msg1, string msg2) throw()
 {
    int i,j,last;
-   DayTime tt;
+   CommonTime tt;
    os << '#' << msg1 << " " << *this << " " << msg2 << endl;
    os << '#' << msg1 << "  n Sat cnt flg     time      ";
    for(j=0; j<indexForLabel.size(); j++)
@@ -516,7 +516,7 @@ void SatPass::dump(ostream& os, string msg1, string msg2) throw()
          << " " << sat
          << " " << setw(3) << spdvector[i].ndt
          << " " << setw(2) << spdvector[i].flag
-         << " " << tt.printf(SatPass::outFormat)
+         << " " << printTime(tt,SatPass::outFormat)
          << fixed << setprecision(6)
          << " " << setw(9) << spdvector[i].toffset
          << setprecision(3);
@@ -538,8 +538,8 @@ ostream& operator<<(ostream& os, SatPass& sp )
       << " " << sp.sat
       << " " << setw(4) << sp.ngood
       << " " << setw(2) << sp.Status
-      << " " << sp.firstTime.printf(SatPass::outFormat)
-      << " " << sp.lastTime.printf(SatPass::outFormat)
+      << " " << printTime(sp.firstTime,SatPass::outFormat)
+      << " " << printTime(sp.lastTime,SatPass::outFormat)
       << " " << fixed << setprecision(1) << sp.dt;
    for(int i=0; i<sp.labelForIndex.size(); i++) os << " " << sp.labelForIndex[i];
 
@@ -549,7 +549,7 @@ ostream& operator<<(ostream& os, SatPass& sp )
 // ---------------------------- private SatPassData functions --------------------
 // add data to the arrays at timetag tt (private)
 // return >=0 ok (index of added data), -1 gap, -2 timetag out of order
-int SatPass::push_back(const DayTime tt, SatPassData& spd) throw()
+int SatPass::push_back(const CommonTime tt, SatPassData& spd) throw()
 {
    unsigned int n;
       // if this is the first point, save first time
@@ -810,8 +810,8 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                           vector<string>& obstypes,
                           double dt,
                           vector<SatPass>& SPList,
-                          DayTime beginTime,
-                          DayTime endTime)
+                          CommonTime beginTime,
+                          CommonTime endTime)
    throw(Exception)
 {
    if(filenames.size() == 0) return -1;
@@ -920,8 +920,8 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                   }
                   else if(i == -2) {   // time tag out of order
                      Exception e("Time tags out of order in the RINEX file "
-                           + filename + " at time "
-                           + obsdata.time.printf("%4F %10.3g"));
+                           + filename);
+                         //+ " at time " + obsdata.time.printf("%4F %10.3g"));
                      GPSTK_THROW(e);
                   }
                   //else if(i == -3) {   // sat not found (RinexObsData form only)

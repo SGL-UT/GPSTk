@@ -21,27 +21,19 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009
+//  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2008, 2009, 2011
 //
 //============================================================================
 
 
 #include "ComputeSatPCenter.hpp"
 
+using namespace std;
 
 namespace gpstk
 {
-
-      // Index initially assigned to this class
-   int ComputeSatPCenter::classIndex = 4600000;
-
-
-      // Returns an index identifying this object.
-   int ComputeSatPCenter::getIndex() const
-   { return index; }
-
 
       // Returns a string identifying this object.
    std::string ComputeSatPCenter::getClassName() const
@@ -54,7 +46,7 @@ namespace gpstk
        * @param time      Epoch corresponding to the data.
        * @param gData     Data object holding the data.
        */
-   satTypeValueMap& ComputeSatPCenter::Process(const DayTime& time,
+   satTypeValueMap& ComputeSatPCenter::Process(const CommonTime& time,
                                            satTypeValueMap& gData)
       throw(ProcessingException)
    {
@@ -149,7 +141,6 @@ namespace gpstk
 
             // Throw an exception if something unexpected happens
          ProcessingException e( getClassName() + ":"
-                                + StringUtils::asString( getIndex() ) + ":"
                                 + u.what() );
 
          GPSTK_THROW(e);
@@ -184,7 +175,7 @@ namespace gpstk
        * @return Satellite antenna phase correction, in meters.
        */
    double ComputeSatPCenter::getSatPCenter( const SatID& satid,
-                                            const DayTime& time,
+                                            const CommonTime& time,
                                             const Triple& satpos,
                                             const Triple& sunPosition )
    {

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -44,7 +44,7 @@
 #include "DDEpoch.hpp"
 #include "PhaseResidual.hpp"
 
-typedef std::map<gpstk::DayTime, double> TimeDoubleMap;
+typedef std::map<gpstk::CommonTime, double> TimeDoubleMap;
 
 class PhaseCleaner
 {
@@ -52,8 +52,8 @@ public:
    PhaseCleaner(long al, double at, double gt, double nt)
       : minArcLen(al), minArcTime(at), maxGapTime(gt), noiseThreshold(nt)
    {
-      lamda[gpstk::ObsID::cbL1] = gpstk::C_GPS_M/gpstk::L1_FREQ;
-      lamda[gpstk::ObsID::cbL2] = gpstk::C_GPS_M/gpstk::L2_FREQ;
+      lamda[gpstk::ObsID::cbL1] = gpstk::C_MPS/gpstk::L1_FREQ_GPS;
+      lamda[gpstk::ObsID::cbL2] = gpstk::C_MPS/gpstk::L2_FREQ_GPS;
    }
 
    void addData(
@@ -104,20 +104,20 @@ public:
 
    static unsigned debugLevel;
 
-   typedef std::map<gpstk::DayTime, gpstk::SatID> TimePrnMap;
+   typedef std::map<gpstk::CommonTime, gpstk::SatID> TimePrnMap;
 
    class goodMaster
    {
    public:
       goodMaster(double v,
                  const gpstk::SatID& p, 
-                 const gpstk::DayTime& t,
+                 const gpstk::CommonTime& t,
                  PrnTimeDoubleMap& rr)
          : minVal(v), prn(p), time(t), rangeRate(rr){};
 
       const double minVal; // Above this elevation
       const gpstk::SatID& prn;  // Not this prn
-      const gpstk::DayTime& time;  // time to evaluate range rate
+      const gpstk::CommonTime& time;  // time to evaluate range rate
       PrnTimeDoubleMap& rangeRate;
 
       double bestElev;

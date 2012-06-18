@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2008, The University of Texas at Austin
 //
@@ -27,12 +27,13 @@
 #include <valarray>
 
 #include "Exception.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "CommandOptionParser.hpp"
 #include "StringUtils.hpp"
 #include "ValarrayUtils.hpp"
 #include "ObsArray.hpp"
-
+#include "YDSTime.hpp"
+#include "GPSWeekSecond.hpp"
 #include "Matrix.hpp"
 #include "MatrixFunctors.hpp"
 #include "MatrixOperators.hpp"
@@ -56,6 +57,11 @@
 // Special to this application
 #include "SparseBinnedStats.hpp"
 #include "DenseBinnedStats.hpp"
+
+void dumpRaw(std::ostream& ostr, const gpstk::ObsArray& oa, bool numeric);
+void writeStats(std::ostream& ostr, 
+                const gpstk::SparseBinnedStats<double>& sbs, 
+                bool numeric, bool elevation=true);
 
 using namespace std;
 using namespace gpstk;
@@ -162,7 +168,7 @@ int main(int argc, char *argv[])
          return 0;
       }
 
-      DayTime now;
+      CommonTime now;
 
       bool verbose=(verboseOption.getCount()>0);
       bool numeric=(numericOption.getCount()>0);
@@ -189,6 +195,7 @@ int main(int argc, char *argv[])
       }
 
       oa.add(mp_formula);
+      oa.load(obsFileOption.getValue(),navFileOption.getValue());
 
       if (uzOption.getCount()>0)
       {
@@ -220,10 +227,10 @@ int main(int argc, char *argv[])
             int endDOY = StringUtils::asInt(endingDay);
             int endY = StringUtils::asInt(endingYear);
 
-            DayTime firstDay = DayTime::BEGINNING_OF_TIME;
-            DayTime lastDay = DayTime::END_OF_TIME;
-            firstDay.setYDoy(beginY, beginDOY);
-            lastDay.setYDoy(endY, endDOY);
+            CommonTime firstDay = CommonTime::BEGINNING_OF_TIME;
+            CommonTime lastDay = CommonTime::END_OF_TIME;
+            firstDay=YDSTime(beginY, beginDOY);
+            lastDay=YDSTime(endY, endDOY);
 
             // The program won't run without an obsFileOption , don't need to check
             if (obsFileOption.getCount()>0)
@@ -301,6 +308,8 @@ int main(int argc, char *argv[])
          }
 
          oa.edit(removePts);
+      allpasses = unique(oa.pass); // TODO: ObsArray should maintain its own pass list.
+
 
          // Now only long passes remain.
          // Next use robust stats to remove cycle slips\
@@ -393,6 +402,7 @@ int main(int argc, char *argv[])
          {
             if (verbose)
             {
+            cout <<"Using this combination for multipath: " <<mp_formula<<endl;
                cout << "Data collection interval is " << setprecision(3)
                   << oa.interval << " seconds";
                if (oa.intervalInferred)
@@ -506,7 +516,7 @@ int main(int argc, char *argv[])
 
       if ( (verbose) && (!numeric))
       {
-         DayTime then;
+         CommonTime then;
          cout << "Processing complete in " << then - now << " seconds." << endl;
       }
 
@@ -552,8 +562,8 @@ void dumpRaw(std::ostream& ostr, const ObsArray& oa, bool numeric)
       {
          if (oa.validAzEl[i])
          {
-            ostr << setprecision(4) << oa.epoch[i].GPSfullweek() << " ";
-            ostr << setprecision(9) << oa.epoch[i].GPSsow() << " ";
+            ostr << setprecision(4) << static_cast<GPSWeekSecond>(oa.epoch[i]).week << " ";
+            ostr << setprecision(9) << static_cast<GPSWeekSecond>(oa.epoch[i]).sow << " ";
             ostr << oa.satellite[i].id << " ";
             ostr << (int) oa.satellite[i].system << " ";
             ostr << oa.pass[i] << " ";

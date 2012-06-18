@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -44,9 +44,13 @@
 
 //------------------------------------------------------------------------------------
 // system includes
+#include "TimeString.hpp"
+#include <CivilTime.hpp>
+#include <time.h>
 
 // GPSTk
 //#define RANGECHECK // throw on invalid ranges in Vector and Matrix
+#include "Epoch.hpp"
 
 // DDBase
 #include "DDBase.hpp"
@@ -117,9 +121,9 @@ CommandInput CI;              // all command line input .. see CommandInput.hpp
 
 std::vector<std::string> Baselines;  // *computed* Baselines, (those to output in CI)
 
-DayTime SolutionEpoch;        // current solution epoch
-DayTime FirstEpoch,LastEpoch; // first and last solution epoch seen
-DayTime MedianEpoch;          // median of first and last, computed in Configure(3)
+CommonTime SolutionEpoch;        // current solution epoch
+CommonTime FirstEpoch,LastEpoch; // first and last solution epoch seen
+CommonTime MedianEpoch;          // median of first and last, computed in Configure(3)
 int Count;                    // current number of data intervals since first epoch
 int minCount,maxCount;        // minimum and maximum timetag count seen
 int begcount,endcount;        // first and last counts of *good* data in buffers
@@ -149,7 +153,7 @@ try {
       // START
    totaltime = clock();
    int iret;
-   DayTime CurrEpoch;
+   Epoch CurrEpoch;
 
       // Title title and version
    Title = PrgmName + ", ARL:UT DD phase estimation processor, Ver " + Version;
@@ -173,8 +177,14 @@ try {
 
       // get current time
    CurrEpoch.setLocalTime();
+   time_t timer;
+   struct tm *tblock;
+   timer = time(NULL);
+   tblock = localtime(&timer);
+   CurrEpoch=CivilTime(1900+tblock->tm_year,1+tblock->tm_mon,
+               tblock->tm_mday,tblock->tm_hour,tblock->tm_min,tblock->tm_sec);
       // print title and current time to screen
-   Title += CurrEpoch.printf(", Run %04Y/%02m/%02d %02H:%02M:%02S");
+   Title += printTime(CurrEpoch,", Run %04Y/%02m/%02d %02H:%02M:%02S");
    cout << Title << endl;
 
    for(;;) {      // a convenience

@@ -23,7 +23,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -129,14 +129,14 @@ namespace gpstk
       public std::unary_function<gpstk::FICData, bool>
    {
    public:
-      FICDataFilterStartTime(const gpstk::DayTime start)
+      FICDataFilterStartTime(const gpstk::CommonTime start)
          : stime(start)
          {}
 
       /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
-            DayTime dt(0,0.0);
+            CommonTime dt(0,0.0);
             if(l.getTransmitTime(dt)) //if valid trasmit time
               return dt <= stime;
             else
@@ -144,21 +144,21 @@ namespace gpstk
          }
 
    private:
-      gpstk::DayTime stime;
+      gpstk::CommonTime stime;
    };
 
    struct FICDataFilterEndTime :
       public std::unary_function<gpstk::FICData, bool>
    {
    public:
-      FICDataFilterEndTime(const gpstk::DayTime end)
+      FICDataFilterEndTime(const gpstk::CommonTime end)
          : etime(end)
          {}
 
       /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
-            DayTime dt(0,0.0);
+            CommonTime dt(0,0.0);
             if(l.getTransmitTime(dt)) //if valid trasmit time
               return dt >= etime;
             else
@@ -166,7 +166,7 @@ namespace gpstk
          }
 
    private:
-      gpstk::DayTime etime;
+      gpstk::CommonTime etime;
    };
 
       /// Finds all data that matches the given block numbers

@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -483,7 +483,7 @@ void DDGen::readObsFile(
 
    // Set up a simple epoch clock model.
    EpochClockModel cm(1.5, 10, ObsClockModel::HEALTHY);
-   const GPSGeoid gm;
+   const GPSEllipsoid gm;
 
    // Walk through each obs file, reading and computing ords along the way.
    for (int i=0; i<obsFileOption.getCount(); i++)
@@ -532,7 +532,7 @@ void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
 
    for (oemIter=oem.begin(); oemIter!=oem.end(); oemIter++)
    {
-      const DayTime& t = oemIter->first;
+      const CommonTime& t = oemIter->first;
       ObsEpoch& obsEpoch = oemIter->second;
       if (removeUnhealthy)
          try

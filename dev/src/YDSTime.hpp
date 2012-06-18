@@ -21,13 +21,31 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
 #include "TimeTag.hpp"
+#include "Exception.hpp"
+#include "TimeConstants.hpp"
+#include "TimeSystem.hpp"
+
 
 namespace gpstk
 {
@@ -39,6 +57,18 @@ namespace gpstk
    {
    public:
          /**
+          * @defgroup ydstc YDSTime Time Constants
+          * YDSTime-structured Constants
+          */
+         //@{
+         /**
+          * YDSTime constant corresponding to CommonTime::BEGINNING_OF_TIME
+          */
+
+      static const YDSTime BEGIN_TIME;
+
+         //@}
+         /**
           * @defgroup ydstbo YDSTime Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
@@ -49,10 +79,11 @@ namespace gpstk
           */
       YDSTime( long y = 0, 
                long d = 0, 
-               double s = 0.)
+               double s = 0.,
+               TimeSystem ts = TimeSystem::Unknown )
          throw()
             : year(y), doy(d), sod(s) 
-      {}
+      { timeSystem = ts; }
       
          /** Copy Constructor.
           * @param right a const reference to the YDSTime object to copy
@@ -60,7 +91,7 @@ namespace gpstk
       YDSTime( const YDSTime& right )
          throw()
             : year( right.year ), doy( right.doy ), sod( right.sod )
-      {}
+      { timeSystem = right.timeSystem; }
       
          /** 
           * Alternate Copy Constructor.
@@ -70,8 +101,8 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       YDSTime( const TimeTag& right )
-         throw( InvalidRequest )
-      { 
+         throw( gpstk::InvalidRequest )
+      {
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
       
@@ -104,7 +135,7 @@ namespace gpstk
       
          // The following functions are required by TimeTag.
       virtual CommonTime convertToCommonTime() const
-         throw(InvalidRequest);
+         throw( gpstk::InvalidRequest );
       
       virtual void convertFromCommonTime( const CommonTime& ct )
          throw();
@@ -133,14 +164,14 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "Yyjs";
+         return "YyjsP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%04Y/%03j %s";
+         return "%04Y/%03j %s %P";
       }
 
       virtual bool isValid() const
@@ -162,19 +193,30 @@ namespace gpstk
       bool operator!=( const YDSTime& right ) const
          throw();
       bool operator<( const YDSTime& right ) const
-         throw();
+	      throw( gpstk::InvalidRequest );
       bool operator>( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator<=( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
       bool operator>=( const YDSTime& right ) const
-         throw();
+         throw( gpstk::InvalidRequest );
          //@}
 
       int year;
       int doy; 
       double sod;
    };
+
+      // -----------YDSTime operator<< -----------
+      //
+      /**
+       * Stream output for YDSTime objects.  Typically used for debugging.
+       * @param s stream to append formatted YDSTime to.
+       * @param yt YDSTime to append to stream \c s.
+       * @return reference to \c s.
+       */
+   std::ostream& operator<<( std::ostream& s,
+                             const gpstk::YDSTime& yt );
    
 } // namespace
 

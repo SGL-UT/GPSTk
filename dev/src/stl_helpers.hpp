@@ -1,7 +1,5 @@
 #pragma ident "$Id$"
 
-
-
 /**
  * @file stl_helpers.hpp
  * Useful functions that take advantage of STL containers
@@ -26,7 +24,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -45,11 +43,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-
-
-
-
 
 #include <cmath>
 #include <algorithm>
@@ -120,6 +113,16 @@ namespace gpstk
       s.sigma = sqrt(sumsq/(s.n-1));
 
       return s;
+   }
+
+      /// find the index of the first element of a vector with a given value
+      /// return -1 if not found
+   template <class T> int vectorindex(const std::vector<T>& vec, const T& value) 
+   {
+      typename std::vector<T>::const_iterator it;
+      it = find(vec.begin(), vec.end(), value);
+      if(it == vec.end()) return -1;
+      return int(it - vec.begin());
    }
 
       //@}

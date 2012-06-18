@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -50,7 +50,7 @@
 #include <vector>
 
 // GPSTk
-#include "PRSolution.hpp"
+#include "PRSolution2.hpp"
 #include "Stats.hpp"
 
 // DDBase
@@ -115,7 +115,7 @@ public:
    bool fixed;                      // if true, hold position fixed, else solve for it
    bool usePRS;                     // if true, use ave. PR solution as position
    gpstk::Position pos;             // either known or solution or apriori
-   gpstk::PRSolution PRS;           // pseudorange solution, includes clock bias
+   gpstk::PRSolution2 PRS;           // pseudorange solution, includes clock bias
    gpstk::Stats<double> PRSXstats;  // stats on pseudorange solution
    gpstk::Stats<double> PRSYstats;  // stats on pseudorange solution
    gpstk::Stats<double> PRSZstats;  // stats on pseudorange solution
@@ -124,7 +124,7 @@ public:
 
    std::map<gpstk::GSatID,DataStruct> RawDataMap;
                                     // cleaned, raw data at current epoch
-   gpstk::DayTime time;             // timetag (SolutionEpoch) of RawDataMap
+   gpstk::CommonTime time;             // timetag (SolutionEpoch) of RawDataMap
 
       // these buffers must remain parallel
    std::map<gpstk::GSatID,RawData> RawDataBuffers;
@@ -160,7 +160,7 @@ public:
    gpstk::RinexObsData Robs;   // RINEX observation record (for reading)
 
    double dt;                  // nominal time step <= reading past header
-   gpstk::DayTime firstTime;   // first good epoch
+   gpstk::CommonTime firstTime;   // first good epoch
 
    int nread;                  // number of records read (-1=unopened, 0=header read)
    bool valid;                 // set false if unopened or at EOF

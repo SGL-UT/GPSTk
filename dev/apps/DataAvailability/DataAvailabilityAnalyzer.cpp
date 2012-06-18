@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -67,9 +67,9 @@
 
 #include "StringUtils.hpp"
 #include "ObsID.hpp"
-
+#include "TimeString.hpp"
 #include "DataAvailabilityAnalyzer.hpp"
-
+#include "TimeString.hpp"
 #include "EphReader.hpp"
 #include "ObsReader.hpp"
 #include "GPSEphemerisStore.hpp"
@@ -107,7 +107,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
                 EphReader::formatsUnderstood() + ".", true),
      
      rxPosOpt('p', "position",
-              "Receiver antenna position in ECEF (x,y,z) coordinates.  Format "
+              "Receiver antenna position in Position (x,y,z) coordinates.  Format "
               "as a string: \"X Y Z\"."),
      
      ignorePrnOpt('\0', "ignore-prn",
@@ -119,7 +119,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      msidOpt('m', "msid", "Station to process data for. Used to select "
                 "a station position from the msc file."),
      
-     timeFmtOpt('t', "time-format", "Daytime format specifier used for "
+     timeFmtOpt('t', "time-format", "CommonTime format specifier used for "
                    "times in the output. The default is \"" 
                    + timeFormat + "\"."),
      
@@ -217,12 +217,12 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    if (startTimeOpt.getCount())
       startTime = startTimeOpt.getTime()[0];
    else
-      startTime = DayTime::BEGINNING_OF_TIME;
+      startTime = CommonTime::BEGINNING_OF_TIME;
 
    if (stopTimeOpt.getCount())
       stopTime = stopTimeOpt.getTime()[0];
    else
-      stopTime = DayTime::END_OF_TIME;
+      stopTime = CommonTime::END_OF_TIME;
 
    if (timeSpanOpt.getCount())
       timeSpan = StringUtils::asDouble(timeSpanOpt.getValue()[0]);
@@ -320,8 +320,8 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
       if (haveAntennaPos)
          output << "Antenna position: " << antennaPos << " m ecef" << endl;
       output << "Ignoring data with SNR < " << snrThreshold << " dB-Hz" << endl
-             << "Start time is " << startTime.printf(timeFormat) << endl
-             << "Stop time is " << stopTime.printf(timeFormat) << endl
+             << "Start time is " << printTime(startTime,timeFormat) << endl
+             << "Stop time is " << printTime(stopTime,timeFormat) << endl
              << "Time span is " << timeSpan << " seconds" << endl;
       
       if (smashAdjacent)
@@ -341,6 +341,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
               ostream_iterator<int>(output, " "));
          output << endl;
       }
+      MDPHeader::debugLevel = debugLevel;
    }
 
    return true;
@@ -515,6 +516,8 @@ DataAvailabilityAnalyzer::MissingList DataAvailabilityAnalyzer::processList(
             prev.epochCount = curr.epochCount;
             prev.numAboveMaskAngle = 
                max(curr.numAboveMaskAngle, prev.numAboveMaskAngle);
+            prev.numAboveTrackAngle = 
+               max(curr.numAboveTrackAngle, prev.numAboveTrackAngle);
             prev.receivedCount = curr.receivedCount;
             prev.expectedCount = curr.expectedCount;
          }
@@ -581,7 +584,7 @@ void DataAvailabilityAnalyzer::process()
          firstEpochTime = oe.time;
          if (verboseLevel)
             output << "First observation is at " 
-                   << firstEpochTime.printf(timeFormat) << endl;
+                   << printTime(firstEpochTime,timeFormat) << endl;
          
             // Record as missing any epochs from startTime to firstEpochTime.
          if (startTimeOpt.getCount() && startTime < firstEpochTime)
@@ -602,7 +605,7 @@ void DataAvailabilityAnalyzer::process()
    if (epochCounter > 0)
    {
       if (verboseLevel)
-         output << "Last observation is at " << lastEpochTime.printf(timeFormat) 
+         output << "Last observation is at " << printTime(lastEpochTime,timeFormat) 
                 << endl;
          
          // record as missing any epochs from lastEpochTime to stopTime
@@ -651,7 +654,7 @@ ObsEpoch DataAvailabilityAnalyzer::removeBadObs(const ObsEpoch& oe)
             if (snr_itr != soe.end() && snr_itr->second < snrThreshold)
             {
                if (verboseLevel>2)
-                  output << oe.time.printf(timeFormat)
+                  output << printTime(oe.time,timeFormat)
                          << " Ignoring " << soe.svid
                          << " " << oid
                          << " SNR:" << snr_itr->second << endl;
@@ -673,9 +676,9 @@ void DataAvailabilityAnalyzer::processEpoch(
    const ObsEpoch& oe,
    const ObsEpoch& prev_oe)
 {
-   ECEF rxpos(ap);
+   Position rxpos(ap);
    
-   for (DayTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
+   for (CommonTime t = prev_oe.time + epochRate; t <= oe.time; t += epochRate)
    {
       // Update the SV positions and compute how many are above the tracking
       // elevation, above the mask elevation, and are expected to to be
@@ -695,7 +698,7 @@ void DataAvailabilityAnalyzer::processEpoch(
       n_exp = std::min(n_exp, 12);
 
       if (verboseLevel>3)
-         output << t.printf(timeFormat) << "  SVs in view: ";
+         output << printTime(t,timeFormat) << "  SVs in view: ";
 
       for (int prn=1; prn<=MAX_PRN; prn++)
       {
@@ -805,7 +808,7 @@ void DataAvailabilityAnalyzer::processEpoch(
                if (!iv.obsGained.empty() || !iv.obsLost.empty())
                {
                   if (verboseLevel>2)
-                     output << t.printf(timeFormat) << " prn:" << svid.id
+                     output << printTime(t,timeFormat) << " prn:" << svid.id
                             << " gained:" << iv.obsGained
                             << " lost:" << iv.obsLost << endl;
                   missingList.push_back(iv);
@@ -813,7 +816,7 @@ void DataAvailabilityAnalyzer::processEpoch(
             } // else
          }    // else      
       }       // for (int prn=1; prn<=MAX_PRN; prn++)
-   }          // for (DayTime t=prev_oe.time+epochRate;t<=oe.time;t+= epochRate)
+   }          // for (CommonTime t=prev_oe.time+epochRate;t<=oe.time;t+= epochRate)
 }             // void DataAvailabilityAnalyzer::processEpoch()
 
 
@@ -837,10 +840,10 @@ void DataAvailabilityAnalyzer::shutDown()
 //------------------------------------------------------------------------------
 void DataAvailabilityAnalyzer::InView::update(
    short prn,
-   const DayTime& time,
-   const ECEF& rxpos,
+   const CommonTime& time,
+   const Position& rxpos,
    const EphemerisStore& eph,
-   GeoidModel& gm,
+   EllipsoidModel& gm,
    float maskAngle,
    float trackAngle)
 {
@@ -909,7 +912,7 @@ void DataAvailabilityAnalyzer::InView::update(
 void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
    const
 {
-   DayTime t0 = time - span;
+   CommonTime t0 = time - span;
    double timeUp     = t0 - firstEpoch;
    double timeUpMask = t0 - firstEpochAboveMask;
    char dir;
@@ -918,9 +921,9 @@ void DataAvailabilityAnalyzer::InView::dump(ostream& s, const string fmt)
    else
       dir = ' ';
 
-   s << left << t0.printf(fmt);
+   s << left << printTime(t0,fmt);
    if (smashCount)
-      s << " - " << time.printf("%02H:%02M:%04.1f");
+      s << " - " << printTime(time,"%02H:%02M:%04.1f");
    else
       s << "   " << "          ";
    s << " " << setw(5) << smashCount+1
@@ -988,11 +991,11 @@ void DataAvailabilityAnalyzer::outputSummary()
           << endl
           << "Analysis span: ";
 
-   if (startTime !=  DayTime::BEGINNING_OF_TIME)
+   if (startTime !=  CommonTime::BEGINNING_OF_TIME)
       output << startTime << " through ";
    else
       output << firstEpochTime << " through ";
-   if (stopTime != DayTime::END_OF_TIME)
+   if (stopTime != CommonTime::END_OF_TIME)
       output << stopTime << endl;
    else
       output << lastEpochTime << endl;
@@ -1033,8 +1036,8 @@ void DataAvailabilityAnalyzer::outputSummary()
    }
 }
 
-void DataAvailabilityAnalyzer::fillMissingList(const DayTime& from,
-                                               const DayTime& to)
+void DataAvailabilityAnalyzer::fillMissingList(const CommonTime& from,
+                                               const CommonTime& to)
 {
    if (verboseLevel > 1)
       cout << "Filling missing epochs: "<< from
@@ -1042,7 +1045,7 @@ void DataAvailabilityAnalyzer::fillMissingList(const DayTime& from,
       /// @todo The math controlling this for loop bugs me in a 
       ///  floating-point-error kind of way.  It's the same math that's
       ///  used in processEpoch(), so I'm going to ignore it for now.
-   for (DayTime t = from; t < to; t += epochRate)
+   for (CommonTime t = from; t < to; t += epochRate)
    {
       InView iv;
       iv.prn = 0;

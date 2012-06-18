@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -53,7 +53,7 @@ namespace gpstk
 {
 
    static const unsigned long SEC_YEAR = 
-   static_cast<unsigned long>(365.25 * gpstk::DayTime::SEC_DAY);
+   static_cast<unsigned long>(365.25 * gpstk::SEC_PER_DAY);
 
    void MSCData::reallyPutRecord(gpstk::FFStream & ffs) const
       throw(std::exception, gpstk::FFStreamError, StringException)
@@ -62,40 +62,40 @@ namespace gpstk
       
       string line;
 
-      if ( time == DayTime::BEGINNING_OF_TIME )
+      if ( time == YDSTime::BEGIN_TIME )
       {
          line += string(7, ' ');
       }
       else
       {
-         line += rightJustify(asString<short>(time.DOYyear()), 4);
-         line += rightJustify(asString<short>(time.DOYday()), 3 , '0');
+         line += rightJustify(asString<long>(time.year), 4);
+         line += rightJustify(asString<long>(time.doy), 3 , '0');
       }
       line += rightJustify(asString<long>(station), 5);
       line += leftJustify(mnemonic, 7);
-      if ( refepoch == DayTime::BEGINNING_OF_TIME )
+      if ( refepoch == YDSTime::BEGIN_TIME )
       {
          line += string(14, ' ');
       }
       else
       {
-         line += rightJustify(asString<short>(refepoch.DOYyear()), 4);
+         line += rightJustify(asString<long>(refepoch.year), 4);
          line += " ";
-         line += rightJustify(asString<short>(refepoch.DOYday()), 3, '0');
+         line += rightJustify(asString<long>(refepoch.doy), 3, '0');
          line += " ";
-         line += rightJustify(asString<long>(refepoch.DOYsecond()), 5, '0');
+         line += rightJustify(asString<double>(refepoch.sod), 5, '0');
       }
-      if ( effepoch == DayTime::BEGINNING_OF_TIME )
+      if ( effepoch == YDSTime::BEGIN_TIME )
       {
          line += string(14, ' ');
       }
       else
       {
-         line += rightJustify(asString<short>(effepoch.DOYyear()), 4);
+         line += rightJustify(asString<long>(effepoch.year), 4);
          line += " ";
-         line += rightJustify(asString<short>(effepoch.DOYday()), 3, '0');
+         line += rightJustify(asString<long>(effepoch.doy), 3, '0');
          line += " ";
-         line += rightJustify(asString<long>(effepoch.DOYsecond()), 5, '0');
+         line += rightJustify(asString<double>(effepoch.sod), 5, '0');
       }
       line += rightJustify(asString(coordinates[0], 3), 12);
       line += rightJustify(asString(coordinates[1], 3), 12);
@@ -115,33 +115,37 @@ namespace gpstk
       MSCStream& strm = dynamic_cast<MSCStream&>(ffs);
 
       string currentLine;
-      
+
+      // YDSTime version of BEGINNING_OF_TIME
+  
       strm.formattedGetLine(currentLine, true);
       int len = currentLine.length(); //90 for old; 104 for new
 
       if(len == 90) //old format
       {
-         short year = asInt(currentLine.substr(0, 4));
-         short day =  asInt(currentLine.substr(4, 3));
-         time.setYDoySod(year, day, 0.0);
+         long year = asInt(currentLine.substr(0, 4));
+         long day =  asInt(currentLine.substr(4, 3));
+         time.year = year;
+         time.doy = day;
+         time.sod = 0.0;
 
          station = asInt(currentLine.substr(7, 5));
          mnemonic = currentLine.substr(12, 7);
 
          double epoch, intg, frac, sod;
-         short doy;
+         long doyy;
          // can't have DOY 0, so use doy + 1 when generating times
          epoch = asDouble(currentLine.substr(19, 7));
          frac = modf(epoch, &intg);
-         doy = (short)(frac * SEC_YEAR / gpstk::DayTime::SEC_DAY);
-         sod = (frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY);
-         refepoch = gpstk::DayTime((short)intg, doy+1, sod);
+         doyy = (long)(frac * SEC_YEAR / gpstk::SEC_PER_DAY);
+         sod = (frac * SEC_YEAR) - (doyy * gpstk::SEC_PER_DAY);
+         refepoch = gpstk::YDSTime((long)intg, doyy+1, sod);
          
          epoch = asDouble(currentLine.substr(26, 7));
          frac = modf(epoch, &intg);
-         doy = (short)(frac * SEC_YEAR / gpstk::DayTime::SEC_DAY);
-         sod = (frac * SEC_YEAR) - (doy * gpstk::DayTime::SEC_DAY);
-         effepoch = gpstk::DayTime((short)intg, doy+1, sod);
+         doyy = (long)(frac * SEC_YEAR / gpstk::SEC_PER_DAY);
+         sod = (frac * SEC_YEAR) - (doyy * gpstk::SEC_PER_DAY);
+         effepoch = gpstk::YDSTime((long)intg, doyy+1, sod);
          
          coordinates[0] = asDouble(currentLine.substr(33, 12));
          coordinates[1] = asDouble(currentLine.substr(45, 12));
@@ -158,12 +162,12 @@ namespace gpstk
                ( asInt(currentLine.substr(0, 4)) == 0 )       ||
                ( asInt(currentLine.substr(4, 3)) == 0 ) )
          {
-            time = DayTime::BEGINNING_OF_TIME;
+            time = YDSTime::BEGIN_TIME;
          }
          else
          {
-            time = DayTime( (short)asInt(currentLine.substr(0, 4)),
-                            (short)asInt(currentLine.substr(4, 3)),
+            time = YDSTime( (long)asInt(currentLine.substr(0, 4)),
+                            (long)asInt(currentLine.substr(4, 3)),
                             (double)0.0 );
          }
          
@@ -175,12 +179,12 @@ namespace gpstk
               ( asInt(currentLine.substr(19, 4)) == 0 )       ||
               ( asInt(currentLine.substr(24, 3)) == 0 ) )
          {
-            refepoch = DayTime::BEGINNING_OF_TIME;
+            refepoch = YDSTime::BEGIN_TIME;
          }
          else
          {
-            refepoch = DayTime( (short)asInt(currentLine.substr(19, 4)),
-                                (short)asInt(currentLine.substr(24, 3)),
+            refepoch = YDSTime( (long)asInt(currentLine.substr(19, 4)),
+                                (long)asInt(currentLine.substr(24, 3)),
                                 asDouble(currentLine.substr(28,5)) );
          }
          if ( ( currentLine.substr(33, 4) == string(' ', 4) ) ||
@@ -188,12 +192,12 @@ namespace gpstk
               ( asInt(currentLine.substr(33, 4)) == 0 )       ||
               ( asInt(currentLine.substr(38, 3)) == 0 ) )
          {
-            effepoch = DayTime::BEGINNING_OF_TIME;
+            effepoch = YDSTime::BEGIN_TIME;
          }
          else
          {
-            effepoch = DayTime( (short)asInt(currentLine.substr(33, 4)),
-                                (short)asInt(currentLine.substr(38, 3)),
+            effepoch = YDSTime( (long)asInt(currentLine.substr(33, 4)),
+                                (long)asInt(currentLine.substr(38, 3)),
                                 asDouble(currentLine.substr(42,5)) );
          }
 
@@ -210,7 +214,7 @@ namespace gpstk
       }
    }
 
-   Xvt MSCData::getXvt(const DayTime& t)
+   Xvt MSCData::getXvt(const YDSTime& t)
       const throw(InvalidRequest)
    {
       try
@@ -219,12 +223,13 @@ namespace gpstk
          // Calculate the elapsed time between the reference time
          // and the time of interest in order to determine the 
          // total station drift.
-         double dt = (t - refepoch) / SEC_YEAR;
+         double dt = (t.convertToCommonTime() - refepoch.convertToCommonTime()) / SEC_YEAR;
          Xvt xvt;
          xvt.x = coordinates;
          xvt.v = velocities;
-         xvt.dtime = 0.0;
-         xvt.ddtime = 0.0;
+         xvt.clkbias = 0.0;
+         xvt.relcorr = 0.0;
+         xvt.clkdrift = 0.0;
          const Triple& drift = velocities;
       
             // compute the position given the total drift vectors

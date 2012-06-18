@@ -17,7 +17,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2009, The University of Texas at Austin
 //
@@ -29,8 +29,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "RinexEphemerisStore.hpp"
-#include "SatID.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include <fstream>
 
 
@@ -57,7 +56,7 @@ class xRinexEphemerisStore: public CPPUNIT_NS :: TestFixture
 	CPPUNIT_TEST_SUITE_END ();
 
 	public:
-		void setUp (void); //Sets up test enviornment
+		void setUp (void); //Sets up test environment
 		
 	protected:
 		

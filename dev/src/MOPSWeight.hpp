@@ -2,11 +2,12 @@
 
 /**
  * @file MOPSWeight.hpp
- * Class to assign weights to satellites based on the Appendix J of MOPS C.
+ * Class to assign weights to satellites based on the Appendix J of MOPS
+ * document RTCA DO-229D.
  */
 
-#ifndef GPSTK_MOPSWEIGHT
-#define GPSTK_MOPSWEIGHT
+#ifndef GPSTK_MOPSWEIGHT_HPP
+#define GPSTK_MOPSWEIGHT_HPP
 
 //============================================================================
 //
@@ -24,9 +25,9 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
-//  Dagoberto Salazar - gAGE. 2006, 2008, 2010
+//  Dagoberto Salazar - gAGE. 2006, 2008, 2010, 2011
 //
 //============================================================================
 
@@ -35,13 +36,13 @@
 #include "WeightBase.hpp"
 #include "XvtStore.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "TabularEphemerisStore.hpp"
+#include "TabularSatStore.hpp"
 #include "EngEphemeris.hpp"
 #include "RinexObsHeader.hpp"
 #include "Position.hpp"
 #include "SimpleIURAWeight.hpp"
 #include "TropModel.hpp"
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "geometry.hpp"                   // DEG_TO_RAD
 #include <cmath>
 #include <vector>
@@ -54,11 +55,11 @@ namespace gpstk
       //@{
 
       /** Class to assign weights to satellites based on the Appendix J
-       *  of MOPS C.
+       *  of MOPS document RTCA DO-229D.
        *
        * This class implements an algorithm to assign weights to satellites
        * based on the RTCA "Minimum Operational Performance Standards" (MOPS),
-       * version C (RTCA/DO-229C), sections J.2.3. "Variance of Ionospheric
+       * version C (RTCA/DO-229D), sections J.2.3. "Variance of Ionospheric
        * Delay", J.2.4. "Variance of Airborne Receiver Errors" and J.2.5.
        * "Variance of Tropospheric errors".
        *
@@ -96,7 +97,7 @@ namespace gpstk
           * a valid weight. Also, its PRN will be set to a negative value.
           *
           */
-      virtual int getWeights( DayTime& time,
+      virtual int getWeights( CommonTime& time,
                               Vector<SatID>& Satellites,
                               GPSEphemerisStore& bcEph,
                               Vector<double>& ionoCorrections,
@@ -128,9 +129,9 @@ namespace gpstk
           * a valid weight. Also, its PRN will be set to a negative value.
           *
           */
-      virtual int getWeights( DayTime& time,
+      virtual int getWeights( CommonTime& time,
                               Vector<SatID>& Satellites,
-                              TabularEphemerisStore& preciseEph,
+                              TabularSatStore<Xvt>& preciseEph,
                               Vector<double>& ionoCorrections,
                               Vector<double>& elevationVector,
                               Vector<double>& azimuthVector,
@@ -188,5 +189,6 @@ namespace gpstk
       //@}
 
 
-}
-#endif   // GPSTK_MOPSWEIGHT
+}  // End of namespace gpstk
+
+#endif   // GPSTK_MOPSWEIGHT_HPP

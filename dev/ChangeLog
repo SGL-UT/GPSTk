@@ -1,3 +1,1764 @@
+Version 2.0   Thursday, 24 May, 2012
+
+   General modifications
+   ---------------------
+
+   - Version 2.0 was branched from dev/ on revision 2537.
+
+   Library modifications
+   ---------------------
+
+   - Added to src
+
+       PZ90Ellipsoid.hpp 
+       OrbElemStore.hpp       
+       GloEphemerisStore.cpp
+       GloEphemerisStore.hpp
+       GloFreqIndex.cpp
+       GloFreqIndex.hpp
+       GloRecord.cpp
+       GloRecord.hpp
+       HelmertTransform.cpp
+       HelmertTransform.hpp
+       GalEphemeris.cpp
+       GalEphemeris.hpp
+       GalEphemerisStore.cpp
+       GalEphemerisStore.hpp
+       GPSAlmanacStore.cpp
+       GPSAlmanacStore.hpp
+       ReferenceFrame.cpp
+       ReferenceFrame.hpp
+       Rinex3ClockBase.hpp
+       Rinex3ClockData.cpp
+       Rinex3ClockData.hpp
+       Rinex3ClockHeader.cpp
+       Rinex3ClockHeader.hpp
+       Rinex3ClockStream.hpp
+       Rinex3EphemerisStore.cpp
+       Rinex3EphemerisStore.hpp
+	   Added handling of time transformations in mixed system processing.
+
+       Rinex3NavBase.hpp
+       Rinex3NavData.cpp
+       Rinex3NavData.hpp
+       Rinex3NavFilterOperators.hpp
+       Rinex3NavHeader.cpp
+       Rinex3NavHeader.hpp
+	  Added handling of time transformations in mixed system processing.
+
+       Rinex3NavStream.hpp
+       Rinex3ObsBase.hpp
+       Rinex3ObsData.cpp
+       Rinex3ObsData.hpp
+	   The new 'Rinex3ObsData' method was modified and renamed to improve consistency 	     with the former GPSTk version, and a new method was added. 
+
+       Rinex3ObsFilterOperators.hpp
+       Rinex3ObsHeader.cpp
+       Rinex3ObsHeader.hpp
+       Rinex3ObsStream.hpp
+       RinexConverter.cpp
+       RinexConverter.hpp
+       TimeSystem.cpp
+       TimeSystem.hpp
+       TimeSystemCorr.hpp
+	   Move TimeSystem correction out of Rinex3NavHeader and into its own class, 		   preparatory to implementing time system conversions and doing real mixed-system 		   applications.
+
+       TypeID.cpp
+       TypeID.hpp
+	   Added all RINEX 3.01 observable types.
+
+       SVNumXRef.cpp
+           Updated PRN-SVN numbers through 2011 abd added TimeSystem definition.
+
+       Xt.cpp
+       Xt.hpp
+       icd_glo_constants.hpp
+       icd_glo_freqindex.hpp
+       icd_gps_constants.hpp
+       MSCStore.cpp
+       PRSolution.cpp
+       RinexNavFilterOperators.hpp
+           Hand-merged src/ directories of the trunk and Rinex-3 branch.
+
+       RinexGloNavData.[h|c]pp
+          Added Rinex-2 GLONASS Navigation files data parsers with 
+	  documentation.
+
+       RK4VehicleModel.[h|c]pp
+	  Added a class that implements a simple model of a vehicle based on 
+	  the Runge-Kutta-4 numerical integration algorithm.
+
+      GlonassSatelliteModel.[h|c]pp
+	  Added a class that implements a simple model of a GLONASS satellite,
+	  inheriting from the 'RK4VehicleModel' class.
+
+      GloBrcEphemerisStore.[h|c]pp
+	  Added working version of a class to compute GLONASS satellite 
+	  positions based on broadcast ephemeris.
+
+      FIRDifferentiator5thOrder.[h|c]pp
+      FilterBase.hpp
+	  Added FIR differentiator classes to RC2.0.
+
+      ARBase.[h|c]pp
+      ARLambda.[h|c]pp
+      ARMLambda.[h|c]pp
+      ARSimple.[h|c]pp
+	  Ambiguity resolution classes added.
+
+      BRCClockCorrection.[h|c]pp
+      BrcKeplerOrbit.[h|c]pp
+      Xv.hpp
+      EngEphemeris.[h|c]pp
+	  Added legacy navigation message classes and modified CNAV/CNAV2
+	  classes.
+
+      CNAV2EphClock.[h|c]pp
+      CNAVClock.[h|c]pp
+      CNAVEphemeris.[h|c]pp
+      PackedNavBits.[h|c]pp
+	  Added new classes for CNAV and CNAV2 navigation messages.
+
+      GNSSconstants.hpp
+	  Condenses constants from all GNSS including GPS, GALILEO, and COMPASS.
+
+   - Modified in src
+       
+       ANSITime.cpp
+       ANSITime.hpp
+       AlmOrbit.cpp
+       AstronomicalFunctions.hpp
+       CivilTime.cpp
+       CivilTime.hpp
+       CommandOptionParser.hpp
+       CommonTime.cpp
+       CommonTime.hpp
+       DayTime.cpp
+       DayTime.hpp
+       ECEF.cpp
+       ECEF.hpp
+       EngEphemeris.cpp
+       EngEphemeris.hpp
+       EngNav.cpp
+       EphemerisRange.cpp 
+       EphemerisRange.hpp
+       Exception.hpp
+       Expression.cpp
+       ExtractLC.hpp
+       ExtractPC.hpp
+       FICData109.cpp
+       FICData162.cpp
+       FICData62.cpp
+       FICData9.cpp
+       GPSEllipsoid.hpp
+       GPSEphemerisStore.cpp
+       GPSEphemerisStore.hpp
+       GPSGeoid.hpp
+       GPSWeek.cpp
+       GPSWeek.hpp
+       GPSWeekSecond.cpp
+       GPSWeekSecond.hpp
+       GPSWeekZcount.cpp
+       GPSWeekZcount.hpp
+       Geodetic.cpp
+       Geodetic.hpp
+       IonexData.cpp
+       IonexData.hpp
+       IonexStore.hpp
+       IonoModel.cpp
+       IonoModel.hpp
+       JulianDate.cpp
+       JulianDate.hpp
+       MJD.cpp
+       MJD.hpp
+       MOPSWeight.cpp
+       MOPSWeight.hpp
+       MSCData.[h|c]pp
+       MSCStore.cpp
+       MSCStore.hpp
+       MatrixBase.hpp
+       MoonPosition.hpp
+       ObsRngDev.cpp
+       ObsRngDev.hpp
+       OceanLoading.hpp
+       PRSolution.cpp
+       PRSolution.hpp
+       PoleTides.hpp
+       Position.cpp
+       Position.hpp
+       RACRotation.cpp
+       RinexEphemerisStore.cpp
+       RinexEphemerisStore.hpp
+       RinexMetBase.hpp
+       RinexMetData.cpp
+       RinexMetData.hpp
+       RinexMetFilterOperators.hpp
+       RinexMetHeader.cpp
+       RinexMetHeader.hpp
+       RinexMetStream.hpp
+       RinexNavData.cpp
+       RinexNavData.hpp
+       RinexNavFilterOperators.hpp
+       RinexNavHeader.cpp
+       RinexObsData.cpp
+       RinexObsData.hpp
+       RinexObsHeader.cpp
+       RinexObsHeader.hpp
+       RinexUtilities.cpp
+       RinexUtilities.hpp
+       RungeKutta4.cpp
+       SEMData.cpp
+       SEMHeader.cpp
+       SP3Base.hpp
+       SP3Data.cpp
+       SP3Data.hpp
+       SP3EphemerisStore.cpp
+       SP3EphemerisStore.hpp
+       SP3Header.cpp
+       SP3Header.hpp
+       SP3SatID.hpp
+       SP3Stream.hpp
+       SimpleIURAWeight.cpp
+       SimpleIURAWeight.hpp
+       SimpleKalmanFilter.cpp
+       SimpleKalmanFilter.hpp
+	  Removed the SuperKalmanFilter class and combined the features into 		   		  SimpleKalmanFilter.
+
+       SolidTides.hpp
+       SpecialFunctions.hpp
+       SunPosition.hpp
+       SystemTime.cpp
+       SystemTime.hpp
+       TabularEphemerisStore.cpp
+       TabularEphemerisStore.hpp
+       TimeConstants.hpp
+       TimeTag.cpp
+       TimeTag.hpp
+       TropModel.cpp
+       TropModel.hpp
+       UnixTime.cpp
+       UnixTime.hpp 
+       Xvt.cpp 
+       Xvt.hpp 
+       XvtStore.hpp
+       YDSTime.cpp
+       YDSTime.hpp
+       YumaAlmanacStore.cpp
+       YumaAlmanacStore.hpp
+       YumaData.cpp
+       convhelp.hpp
+          Hand-merged src/ directories of the trunk and Rinex-3 branch.
+
+       FFTextStream.hpp
+       RinexGloNavHeader.cpp
+       RinexGloNavHeader.hpp
+       RinexGloNavStream.hpp
+          Propagating some of Dagoberto's changes/additions in /src.
+
+       GPSAlmanacStore.[h|c]pp
+          Adjusted some functions in GPSAlmanacStore so that it and 
+	  YumaAlmanacStore aren't abstract classes.
+
+       RinexGlonavHeader.[h|c]pp
+          'RinexGloNavHeader' is now CommonTime-based, plus minor improvements.
+
+       PZ90Ellipsoid.hpp
+          Minor updates to the last GLONASS ICD v5.1 (defined in table 3.2)
+	  to update it to PZ90.02 ellipsoid.
+          Improvements in the documentation, and the addition of the 
+	  J20 parameter.
+
+       RinexGloNavData.cpp
+	  Corrected errors when reading the 3rd line of a GLONASS
+	  broadcast data record.
+
+       RungeKutta4.cpp
+	  Changes made in order to make 'RungeKutta4' handle negative steps.
+
+       SP3Header.hpp
+       SP3Stream.hpp
+	  Minor modifications to silence compiler warnings.
+
+       ObsID.hpp
+       Rinex3ObsHeader.[h|c]pp
+       RinexSatID.hpp
+       SatID.hpp
+	  Partial update to RINEX 3.01. 
+	  Cf. http://igscb.jpl.nasa.gov/igscb/data/format/rinex301.pdf, 
+	  particularly section 9. Updated the Obs header for new records. 
+	  Added Compass to RinexSatID and SatID; someone needs to update 
+	  ObsID based on Table 5.Did not implement 9.1 in ObsData, 
+	  nor attempt to implement 9.2, 9.4, 9.6-8.
+
+       SP3EphemerisStore.[h|c]pp
+	  Modified SP3EphemerisStore to use either the SP3 clocks or
+	  Rinex clock files.  Added classes for Rinex clock files RinexClock*;
+	  these are very similar to, and will replace Rinex3Clock* classes.
+
+       FileStore.hpp
+       GPSEphemerisStore.hpp
+       GloBrcEphemerisStore.cpp
+       GloEphemerisStore.cpp
+	  Modified FileStore to stand alone, and modify the ephemeris store
+	  classes to contain FileStore(s) rather than inherit FileStore.
+	  Redesign the tabular ephemeris store classes based on 
+	  TabularSatStore; eventually TabularEphemerisStore will be deleted. 
+	  Add classes ClockSatStore and PositionSatStore, which are 
+	  standalone functional stores, derived from TabularSatStore, 
+	  which are not associated with any file type.Added 'findEphemeris()' methods to 		  'GloEphemerisStore' in order to keep consistency with 'GPSEphemerisStore' and 	  'GalEphemerisStore' classes.
+
+       AlmOrbit.cpp
+       ENUUtil.cpp
+       EngEphemeris.cpp
+       EngEphemeris.hpp
+          Removed protection on EngEphemeris variables to make it easier to convert from 		  Rinex3NavData to EngEphemeris objects.
+
+       EphemerisRange.cpp
+       EphemerisRange.hpp
+       GPSAlmanacStore.hpp
+       GalEphemeris.cpp
+       GloRecord.cpp
+       GloRecord.hpp
+       IonoModel.cpp
+       MSCData.cpp
+       MSCData.hpp
+       NEDUtil.cpp
+       ObsRngDev.cpp
+       ObsRngDev.hpp
+       OrbElemStore.hpp
+       PRSolution.cpp
+       RACRotation.cpp
+       Rinex3ObsHeader.cpp
+       RinexNavFilterOperators.hpp
+       RinexUtilities.cpp
+       RinexUtilities.hpp
+       SP3EphemerisStore.cpp
+       SP3EphemerisStore.hpp
+       StringUtils.hpp
+       TropModel.cpp
+       Xt.cpp
+       Xt.hpp
+       Xvt.cpp
+       Xvt.hpp
+       XvtStore.hpp
+	  Change slightly XvtStore.hpp; this affects the interface of all 
+	  ephemeris store class.  Modify Xvt to separate 
+	  the relativity correction from the clock bias, and rename dtime 
+	  clkbias, and ddtime clkdrift; modify all of src and some apps to 
+	  account for this change.
+
+       ClockSatStore.cpp
+       ClockSatStore.hpp
+       PositionSatStore.cpp
+       PositionSatStore.hpp
+       RinexClockBase.hpp
+       RinexClockData.cpp
+       RinexClockData.hpp
+       RinexClockHeader.cpp
+       RinexClockHeader.hpp
+       RinexClockStore.hpp
+       RinexClockStream.hpp
+       TabularSatStore.hpp
+	  Redesign the tabular ephemeris store
+          classes based on TabularSatStore; eventually TabularEphemerisStore
+          will be deleted. Add classes ClockSatStore and PositionSatStore,
+          which are standalone functional stores, derived from TabularSatStore,
+          which are not associated with any file type.  
+
+       IonoModel.hpp
+       IonoModelStore.[h|c]pp
+	  Converted from Geodetic (deprecated) to Position, and adapted to
+	  CommonTime.
+
+       ObsID.[h|c]pp
+       Rinex3ObsHeader.cpp
+       ModeledPseudorangeBase.hpp
+	  Files adapted to new classes from obsoleted classes in RC2.0.
+
+       GloFreqIndex.[h|c]pp
+       RinexConverter.cpp
+       SP3EphemerisStore.hpp
+       SystemTime.hpp
+	  Windows fixes.
+
+       AntexReader.[h|c]pp
+	  Silence some warnings issued by MS compilers regarding the length
+	  of map names.
+
+       Rinex3ObsHeader.cpp
+       SP3EphemerisStore.[h|c]pp
+       TabularSatStore.hpp
+	  Added a flag to reject predicted ephemeris data (ultrarapid IGS);
+	  fixed error omitting system character from obsid, and other minor
+	  improvements.
+
+       StringUtils.hpp
+	  Added split() function, fixed warnings related to comparisons
+	  between signed and unsigned integer expressions.
+
+       icd_gps_constants.hpp
+	  Added L5_MULT constant.
+
+       Rinex3NavData.[h|c]pp
+	  MFtime must be an int, short is too short.
+
+       Rinex3NavHeader.[h|c]pp
+	  Add CORR TO TIME SYS record and support for version 3.01.
+
+       Rinex3ObsData.[h|c]pp
+	  Add dump() that uses the header.
+	 
+       RinexClockStore.hpp
+       ClockSatStore.hpp
+       SP3EphemerisStore.[h|c]pp
+       TabularSatStore.hpp
+	  Remove nominal time step as member data, replacing with a 'compute
+	  timestep (sat)' function.
+
+       TabularEphemerisStore.hpp
+	  Fixed dummy methods which were not returning the expected types.
+
+      PreciseRange.[h|c]pp
+	  Fix for new definitions in Xvt; remove functions here to 
+	  compute rel. corr.
+
+      MatrixBase.hpp
+	  Removed macros that were commented out and forgotten.
+
+      RinexNavData.cpp
+      SP3Data.hpp
+      SP3Stream.hpp
+	  Removed unused 'headerRead' from SP3Stream.  
+
+      SP3Header.cpp
+	  SP3Header was not saving the header to stream in reallyPutRecord'.
+
+      BrcClockCorrection.[h|c]pp
+      BrcKeplerOrbit.[h|c]pp
+      EngEphemeris.[h|c]pp
+      ObsID.hpp
+	  Added modified navigation message classes.
+
+      Epoch.[h|c]pp
+      MJD.hpp
+	  Templates must be defined in .hpp.
+
+       MSCStore.[h|c]pp
+          'getXvt' and 'getXt' require reference in calling arguments to match
+          XvtStore interface.
+
+       ObsID.cpp
+	  Added a description for otNavMsg.
+
+       AlmOrbit.[h|c]pp
+       Antenna.hpp
+       AntexReader.[h|c]pp
+       AstronomicalFunctions.[h|c]pp
+       BinexData.cpp
+       ClockModel.hpp
+       ClockSatStore.[h|c]pp
+       CodeBuffer.[h|c]pp
+       CommandOptionWithPositionArg.cpp
+       CommandOptionWithTimeArg.[h|c]pp
+       DCBDataReader.hpp
+       EngAlmanac.[h|c]pp
+       EngEphemeris.cpp
+       Epoch.hpp
+       EpochClockModel.hpp
+       EpochDataStore.[h|c]pp
+       FICData.[h|c]pp
+       FICData.hpp
+       FICData109.cpp
+       FICData162.cpp
+       FICData62.cpp
+       FICFilterOperators.hpp
+       FileFilterFrame.hpp
+       FileFilterFrameWithHeader.hpp
+       FileHunter.[h|c]pp
+       FileSpec.[h|c]pp
+       GalEphemeris.cpp
+       IonexData.[h|c]pp
+       IonexHeader.[h|c]pp
+       IonexStore.[h|c]pp
+       IonoModel.hpp
+       LinearClockModel.[h|c]pp
+       Logger.[h|c]pp
+       MSCData.[h|c]pp
+       MSCData.hpp
+       MoonPosition.[h|c]pp
+       ORDEpoch.hpp
+       ObsEpochMap.hpp
+       ObsRngDev.[h|c]pp
+       OceanLoading.[h|c]pp
+       OceanLoading.hpp
+       PoleTides.[h|c]pp
+       Position.[h|c]pp
+       PositionSatStore.[h|c]pp
+       RTFileFrame.hpp
+       RinexClockData.[h|c]pp
+       RinexClockHeader.cpp
+       RinexClockStore.hpp
+       RinexUtilities.cpp
+       SEMAlmanacStore.[h|c]pp
+       SEMAlmanacStore.hpp
+       SMODFData.[h|c]pp
+       SVExclusionList.[h|c]pp
+       SVNumXRef.[h|c]pp
+       SVPCodeGen.[h|c]pp
+       SatDataReader.[h|c]pp
+       SatDataReader.hpp
+       SolidTides.[h|c]pp
+       StringUtils.hpp
+       SunPosition.[h|c]pp
+       TabularSatStore.hpp
+       TimeNamedFileStream.hpp
+       WxObsMap.[h|c]pp
+       EngEphemeris.[h|c]pp
+       GPSAlmanacStore.[h|c]pp
+       GPSEphemerisStore.[h|c]pp
+       GalEphemeris.[h|c]pp
+       GalEphemerisStore.[h|c]pp
+       GloEphemerisStore.[h|c]pp
+       HelmertTransform.[h|c]pp
+       MSCStore.[h|c]pp
+       OrbElemStore.hpp
+       ReferenceFrame.hpp
+       SP3EphemerisStore.[h|c]pp
+       TabularEphemerisStore.hpp
+       Xvt.hpp
+       XvtStore.hpp
+	  Removed dependence of src directory from any instances of Xt.
+
+       GloEphemerisStore.[h|c]pp
+	  Updated and corrected GloEphemerisStore.
+
+       EngEphemeris.cpp
+	  Added modifications (Mendiola).
+
+       BrcKeplerOrbit.[h|c]pp
+       icd_gps_constants.hpp
+	  Added modifications to navigation message classes.
+
+       RinexObsHeader.cpp
+	  Commented out a debugging line.
+
+       Xvt.[h|c]pp
+	  Added preciseRho function which was originally in the now 
+	  obsoleted class, Xt.
+
+       Rinex3NAVData.cpp
+	  Added Geosync or SBAS system.
+
+       RinexGloNavData.[h|c]pp
+       RinexGloNavHeader.[h|c]pp
+       GloEphemerisStore.[h|c]pp
+       RK4VehicleModel.[h|c]pp
+	  Fixed ID expansion.
+
+       AlmOrbit.cpp
+       AstronomicalFunctions.hpp
+       BrcClockCorrection.cpp
+       BrcKeplerOrbit.cpp
+       CNAV2EphClk.cpp
+       CNAVClock.cpp
+       CNAVEphemeris.cpp
+       EngEphemeris.cpp
+       EngNav.cpp
+       EphemerisRange.cpp
+       Expression.cpp
+       ExtractLC.hpp
+       ExtractPC.hpp
+       FICData109.cpp
+       FICData162.cpp
+       FICData62.cpp
+       FICData9.cpp
+       GPSEllipsoid.hpp
+       GPSGeoid.hpp
+       GalEphemeris.cpp
+       IonexStore.hpp
+       IonoModel.cpp
+       MOPSWeight.hpp
+       MoonPosition.hpp
+       ObsRngDev.cpp
+       OceanLoading.hpp
+       PRSolution.[h|c]pp
+       PackedNavBits.cpp
+       PoleTides.hpp
+       Position.cpp
+       Rinex3NavData.cpp
+       RinexEphemerisStore.cpp
+       RinexNavData.cpp
+       SEMData.cpp
+       SEMHeader.cpp
+       SimpleIURAWeight.hpp
+       SolidTides.hpp
+       SpecialFunctions.hpp
+       SunPosition.hpp
+       TabularEphemerisStore.hpp
+       TropModel.[h|c]pp
+       Xvt.[h|c]pp
+       YumaData.cpp
+       icd_glo_freqindex.hpp
+       BrcClockCorrection.hpp
+       BrcKeplerOrbit.hpp
+       GloFreqIndex.cpp
+	  Changed constants found within source files to match new constants
+	  in GNSSconstants.hpp.
+
+       Xvt.[h|c]pp
+	  Moved constants (GNSSconstants.hpp) from Xvt.hpp to Xvt.cpp and
+	  updated this class.
+
+       GalEphemerisStore.hpp
+	  Implemented two small pure virtual functions.
+
+       BrcClockCorrection.cpp
+       EphemerisRange.cpp
+       Expression.cpp
+       GNSSconstants.hpp
+       GPSEllipsoid.hpp
+       GPSGeoid.hpp
+       IonoModel.cpp
+       PRSolution.cpp
+       Rinex3ClockData.hpp
+       Rinex3ClockHeader.cpp
+       Xvt.hpp
+	  Changed 'C_GPS_MPS' instances to 'C_MPS'.
+
+       ANSITime.[h|c]pp
+       ARBase.[h|c]pp
+       ARLambda.[h|c]pp
+       ARMLambda.[h|c]pp
+       ARSimple.[h|c]pp
+       AlmOrbit.[h|c]pp
+       Antenna.[h|c]pp
+       AntexReader.[h|c]pp
+       AstronomicalFunctions.[h|c]pp
+       BLQDataReader.hpp
+       Bancroft.[h|c]pp
+       BaseDistribution.hpp
+       BasicFramework.[h|c]pp
+       BinUtils.[h|c]pp
+       BinexData.[h|c]pp
+       BinexFilterOperators.hpp
+       BinexStream.hpp
+       BivarStats.hpp
+       BrcClockCorrection.[h|c]pp
+       BrcKeplerOrbit.[h|c]pp
+       CNAV2EphClk.[h|c]pp
+       CNAVClock.[h|c]pp
+       CNAVEphemeris.[h|c]pp
+       CheckPRData.hpp
+       Chi2Distribution.[h|c]pp
+       CivilTime.[h|c]pp
+       ClockModel.hpp
+       CodeBuffer.[h|c]pp
+       CommandOption.[h|c]pp
+       CommandOptionParser.[h|c]pp
+       CommandOptionWithCommonTimeArg.[h|c]pp
+       CommandOptionWithPositionArg.[h|c]pp
+       CommandOptionWithTimeArg.[h|c]pp
+       CommonTime.[h|c]pp
+       ConfDataReader.[h|c]pp
+       DCBDataReader.[h|c]pp
+       DOP.[h|c]pp
+       DayTime.[h|c]pp
+       ENUUtil.[h|c]pp
+       EllipsoidModel.hpp
+       EngAlmanac.[h|c]pp
+       EngEphemeris.[h|c]pp
+       EngNav.[h|c]pp
+       EphemerisRange.[h|c]pp
+       Epoch.[h|c]pp
+       EpochClockModel.hpp
+       EpochDataStore.[h|c]pp
+       Exception.[h|c]pp
+       Expression.[h|c]pp
+       ExtractC1.hpp
+       ExtractCombinationData.hpp
+       ExtractD1.hpp
+       ExtractD2.hpp
+       ExtractData.hpp
+       ExtractL1.hpp
+       ExtractL2.hpp
+       ExtractLC.hpp
+       ExtractP1.hpp
+       ExtractP2.hpp
+       ExtractPC.hpp
+       FFBinaryStream.hpp
+       FFData.[h|c]pp
+       FFStream.[h|c]pp
+       FFStreamError.hpp
+       FFTextStream.hpp
+       FICAStream.hpp
+       FICBase.hpp
+       FICData.[h|c]pp
+       FICData109.[h|c]pp
+       FICData162.[h|c]pp
+       FICData62.[h|c]pp
+       FICData62.hpp
+       FICData9.[h|c]pp
+       FICFilterOperators.hpp
+       FICHeader.[h|c]pp
+       FICStream.hpp
+       FICStreamBase.hpp
+       FIRDifferentiator5thOrder.[h|c]pp
+       FileFilter.hpp
+       FileFilterFrame.hpp
+       FileFilterFrameWithHeader.hpp
+       FileHunter.[h|c]pp
+       FileSpec.[h|c]pp
+       FileStore.hpp
+       FileUtils.hpp
+       FilterBase.hpp
+       GNSSconstants.hpp
+       GPSAlmanacStore.[h|c]pp
+       GPSEllipsoid.hpp
+       GPSEphemerisStore.[h|c]pp
+       GPSGeoid.hpp
+       GPSWeek.[h|c]pp
+       GPSWeekSecond.[h|c]pp
+       GPSWeekZcount.[h|c]pp
+       GPSZcount.[h|c]pp
+       GalEphemeris.[h|c]pp
+       GalEphemerisStore.[h|c]pp
+       GaussianDistribution.[h|c]pp
+       GenXSequence.[h|c]pp
+       GeoidModel.hpp
+       GloEphemerisStore.[h|c]pp
+       GloFreqIndex.[h|c]pp
+       HelmertTransform.[h|c]pp
+       IonexData.[h|c]pp
+       IonexStore.hpp
+       IonexStream.hpp
+       IonoModel.[h|c]pp
+       IonoModelStore.[h|c]pp
+       JulianDate.[h|c]pp
+       LinearClockModel.[h|c]pp
+       Logger.hpp
+       LoopedFramework.[h|c]pp
+       MJD.[h|c]pp
+       MOPSWeight.[h|c]pp
+       MSCData.[h|c]pp
+       MSCStore.[h|c]pp
+       MSCStream.hpp
+       MainAdapter.hpp
+       MathBase.hpp
+       Matrix.hpp
+       MatrixBase.hpp
+       MatrixBaseOperators.hpp
+       MatrixFunctors.hpp
+       MatrixImplementation.hpp
+       MatrixOperators.hpp
+       MiscMath.hpp
+       ModeledPseudorangeBase.hpp
+       MoonPosition.hpp
+       NEDUtil.[h|c]pp
+       ORDEpoch.hpp
+       ObsClockModel.[h|c]pp
+       ObsEpochMap.[h|c]pp
+       ObsID.[h|c]pp
+       ObsRngDev.[h|c]pp
+       OceanLoading.[h|c]pp
+       OrbElemStore.hpp
+       PCodeConst.hpp
+       PRSolution.[h|c]pp
+       PZ90Ellipsoid.hpp
+       PackedNavBits.[h|c]pp
+       PoleTides.hpp
+       PolyFit.hpp
+       Position.[h|c]pp
+       RACRotation.[h|c]pp
+       RK4VehicleModel.[h|c]pp
+       RTFileFrame.hpp
+       ReferenceFrame.[h|c]pp
+       Rinex3ClockBase.[h|c]pp
+       Rinex3ClockData.[h|c]pp
+       Rinex3ClockHeader.[h|c]pp
+       Rinex3ClockStream.hpp
+       Rinex3NavBase.hpp
+       Rinex3NavData.[h|c]pp
+       Rinex3NavFilterOperators.hpp
+       Rinex3NavHeader.[h|c]pp
+       Rinex3NavStream.hpp
+       Rinex3ObsBase.hpp
+       Rinex3ObsData.[h|c]pp
+       Rinex3ObsFilterOperators.hpp
+       Rinex3ObsHeader.[h|c]pp
+       Rinex3ObsStream.hpp
+       RinexConverter.[h|c]pp
+       RinexEphemerisStore.[h|c]pp
+       RinexGloNavData.[h|c]pp
+       RinexGloNavHeader.[h|c]pp
+       RinexGloNavHeader.hpp
+       RinexGloNavStream.hpp
+       RinexMetBase.hpp
+       RinexMetData.[h|c]pp
+       RinexMetFilterOperators.hpp
+       RinexMetHeader.[h|c]pp
+       RinexMetStream.hpp
+       RinexNavBase.[h|c]pp
+       RinexNavData.[h|c]pp
+       RinexNavFilterOperators.hpp
+       RinexNavHeader.[h|c]pp
+       RinexNavStream.hpp
+       RinexObsBase.hpp
+       RinexObsData.[h|c]pp
+       RinexObsFilterOperators.hpp
+       RinexObsHeader.[h|c]pp
+       RinexObsID.[h|c]pp
+       RinexObsStream.hpp
+       RinexSatID.[h|c]pp
+       RinexUtilities.[h|c]pp
+       RungeKutta4.[h|c]pp
+       SMODFData.[h|c]pp
+       SMODFStream.hpp
+       SP3Base.hpp
+       SP3Data.[h|c]pp
+       SP3EphemerisStore.[h|c]pp
+       SP3Header.[h|c]pp
+       SP3SatID.[h|c]pp
+       SP3Stream.hpp
+       SVExclusionList.[h|c]pp
+       SVNumXRef.[h|c]pp
+       SVPCodeGen.[h|c]pp
+       SatDataReader.[h|c]pp
+       SatID.hpp
+       SimpleIURAWeight.[h|c]pp
+       SimpleKalmanFilter.hpp
+       SolidTides.hpp
+       SolverBase.hpp
+       SourceID.hpp
+       SpecialFunctions.[h|c]pp
+       Stats.hpp
+       StringUtils.hpp
+       StudentDistribution.[h|c]pp
+       SunPosition.[h|c]pp
+       SuperKalmanFilter.[h|c]pp
+       SystemTime.[h|c]pp
+       TabularEphemerisStore.hpp
+       TimeConstants.hpp
+       TimeConverters.[h|c]pp
+       TimeNamedFileStream.hpp
+       TimeString.[h|c]pp
+       TimeSystem.[h|c]pp
+       TimeTag.[h|c]pp
+       Triple.[h|c]pp
+       TropModel.[h|c]pp
+       TypeID.[h|c]pp
+       UnixTime.[h|c]pp
+       ValidType.hpp
+       Vector.hpp
+       VectorBase.[h|c]pp
+       VectorBaseOperators.hpp
+       VectorOperators.hpp
+       WGS84Ellipsoid.hpp
+       WGS84Geoid.hpp
+       WeightBase.hpp
+       WxObsMap.[h|c]pp
+       X1Sequence.[h|c]pp
+       X2Sequence.[h|c]pp
+       Xt.[h|c]pp
+       Xv.hpp
+       Xvt.[h|c]pp
+       XvtStore.hpp
+       YDSTime.[h|c]pp
+       YumaAlmanacStore.[h|c]pp
+       convhelp.hpp
+       geometry.hpp
+       gps_constants.hpp
+       icd_200_constants.hpp
+       icd_glo_constants.hpp
+       icd_glo_freqindex.hpp
+       icd_gps_constants.hpp
+       stl_helpers.hpp
+	  Ran svn propset for ID and for eol-style on all files.
+
+   - Deleted from src
+
+       TabularEphemerisStore.cpp
+         This class now obsoleted; functions reimplemented in new Ephemeris 
+	 Store classes (SP3).
+
+       ECEF.[h|c]pp
+       Geodetic.[h|c]pp
+	  Removed ECEF and Geodetic (which are deprecated), and 
+	  modified code to use Position instead.
+
+       EngEphemeris.cpp
+	  Added modifications (Mendiola).
+
+   - Added to lib
+
+       /geomatics/AntennaStore.hpp
+       /geomatics/KalmanFilter.hpp
+       /geomatics/OceanLoading.cpp
+       /geomatics/OceanLoading.hpp
+       /geomatics/SolidEarthTides.cpp
+       /geomatics/SolidEarthTides.hpp
+       /geomatics/SpecialFunctions.hpp
+       /geomatics/singleton.hpp
+          Added new files to lib/geomatics from Rinex-3 branch.
+
+       /procframe/ConstraintSystem.[h|c]pp
+       /procframe/Variable.[h|c]pp
+	  Added 'ConstraintSystem' class to RC2.0, as well as the appropriate
+	  changes in 'Variable' class.
+
+       /procframe/GeneralEquations.[h|c]pp
+	  Added class 'GeneralEquations' to RC2.0.  The original 
+	  version had very long inline methods, which are not recommended; 
+	  therefore, a 'GeneralEquations.cpp' file was added.
+
+       /procframe/Differentiator.[h|c]pp
+	  Added 'Differentiator' class to RC2.0.
+
+       /procframe/EquationSystem.[h|c]pp
+       /procframe/GeneralConstraint.[h|c]pp
+       /procframe/SolverGeneral.[h|c]pp
+	  Added 'GeneralConstraint' class, as well as additions to related 
+	  classes.
+
+   - Modified in lib
+
+       /geomatics/SunEarthSatGeometry.cpp
+       /geomatics/PhaseWindup.cpp
+       /geomatics/PreciseRange.cpp
+       /geomatics/SatPass.cpp
+       /geomatics/SolarPosition.cpp
+       /geomatics/DiscCorr.cpp
+       /geomatics/EarthOrientation.cpp
+       /geomatics/GeodeticFrames.cpp
+       /rxio/AshtechMBEN.cpp
+       /rxio/EphReader.cpp
+       /rxio/FFIdentifier.cpp
+       /rxio/MDPPVTSolution.hpp
+       /rxio/NovatelData.cpp
+       /rxio/ObsUtils.cpp
+          Merged the trunk and Rinex-3 version of lib/rxoi and lib/geomatics.
+
+       /geodyn/IERS.cpp
+       /geomatics/PhaseWindup.cpp
+       /geomatics/PreciseRange.cpp
+       /procframe/CorrectCodeBiases.cpp
+       /procframe/DataStructures.hpp
+       /procframe/IonexModel.cpp
+       /procframe/LinearCombinations.hpp
+       /procframe/ModeledReferencePR.hpp
+         Renaming some instances of icd_gps_constants.
+
+       /rxio/EphReader.cpp
+       /rxio/FFIdentifier.cpp
+       /rxio/MDPPVTSolution.hpp
+	  Modified library to reflect more meaningful constants' names in 
+	  XvtStore.
+
+       /procframe/DataHeaders.[h|c]pp
+       /procframe/DataStructures.[h|c]pp
+	  Changed to CommonTime.
+
+       /procframe/ProcessingClass.hpp
+          The 'getIndex()' method and its associated operators were deleted 
+	  from 'ProcessingClass'. This feature made developing more complex, 
+	  it potentially limited the compilation on parallel machines, and 
+	  it seems that no one was using it.
+
+       /procframe/BasicModel.cpp
+       /procframe/BasicModel.hpp
+       /procframe/ComputeDOP.cpp
+       /procframe/ComputeDOP.hpp
+       /procframe/CodeKalmanSolver.cpp
+       /procframe/CodeKalmanSolver.hpp
+       /procframe/CodeSmoother.cpp
+       /procframe/CodeSmoother.hpp
+       /procframe/DataHeaders.cpp
+       /procframe/DataHeaders.hpp
+       /procframe/DataStructures.cpp
+       /procframe/DataStructures.hpp
+       /procframe/ComputeCombination.cpp
+       /procframe/ComputeCombination.hpp
+       /procframe/ComputeIURAWeights.cpp
+       /procframe/ComputeIURAWeights.hpp
+       /procframe/ComputeIonoModel.cpp
+       /procframe/ComputeIonoModel.hpp
+       /procframe/ComputeLC.cpp
+       /procframe/ComputeLC.hpp
+       /procframe/ComputeLI.cpp
+       /procframe/ComputeLI.hpp
+       /procframe/ComputeLdelta.cpp
+       /procframe/ComputeLdelta.hpp
+       /procframe/ComputeLinear.cpp
+       /procframe/ComputeLinear.hpp
+       /procframe/ComputeMelbourneWubbena.cpp
+       /procframe/ComputeMelbourneWubbena.hpp
+       /procframe/ComputeIonoModel.cpp
+       /procframe/ComputeIonoModel.hpp
+       /procframe/ComputeMOPSWeights.cpp
+       /procframe/ComputeMOPSWeights.hpp
+       /procframe/ComputeSimpleWeights.[h|c]pp
+       /procframe/ComputePC.cpp
+       /procframe/ComputePC.hpp
+       /procframe/ComputePI.cpp
+       /procframe/ComputePI.hpp
+       /procframe/ComputePdelta.cpp
+       /procframe/ComputePdelta.hpp
+       /procframe/ComputeSatPCenter.cpp
+       /procframe/ComputeSatPCenter.hpp
+       /procframe/ComputeTropModel.cpp
+       /procframe/ComputeTropModel.hpp
+       /procframe/ComputeWindUp.cpp
+       /procframe/ComputeWindUp.hpp
+       /procframe/ConvertC1ToP1.cpp
+       /procframe/ConvertC1ToP1.hpp
+       /procframe/CorrectCodeBiases.cpp
+       /procframe/CorrectCodeBiases.hpp
+       /procframe/CorrectObservables.cpp
+       /procframe/CorrectObservables.hpp
+       /procframe/Decimate.cpp
+       /procframe/Decimate.hpp
+       /procframe/DeltaOp.cpp
+       /procframe/DeltaOp.hpp
+       /procframe/DoubleOp.cpp
+       /procframe/DoubleOp.hpp
+       /procframe/Dumper.cpp
+       /procframe/Dumper.hpp
+       /procframe/EclipsedSatFilter.cpp
+       /procframe/EclipsedSatFilter.hpp
+       /procframe/Equation.cpp
+       /procframe/Equation.hpp
+       /procframe/GravitationalDelay.cpp
+       /procframe/GravitationalDelay.hpp
+       /procframe/BasicModel.hpp
+       /procframe/IonexModel.cpp
+       /procframe/IonexModel.hpp
+       /procframe/Keeper.cpp
+       /procframe/Keeper.hpp
+       /procframe/LICSDetector.cpp
+       /procframe/LICSDetector.hpp
+       /procframe/LICSDetector2.cpp
+       /procframe/LICSDetector2.hpp
+       /procframe/ModeledPR.cpp
+       /procframe/ModeledPR.hpp
+       /procframe/ModeledReferencePR.cpp
+       /procframe/ModeledReferencePR.hpp
+       /procframe/MWCSDetector.cpp
+       /procframe/MWCSDetector.hpp
+       /procframe/ModelObs.cpp
+       /procframe/ModelObs.hpp
+       /procframe/ModelObsFixedStation.cpp
+       /procframe/ModelObsFixedStation.hpp
+       /procframe/NablaOp.cpp
+       /procframe/NablaOp.hpp
+       /procframe/OneFreqCSDetector.cpp
+       /procframe/OneFreqCSDetector.hpp
+       /procframe/PCSmoother.cpp
+       /procframe/PCSmoother.hpp
+       /procframe/PhaseCodeAlignment.cpp
+       /procframe/PhaseCodeAlignment.hpp
+       /procframe/ProblemSatFilter.cpp
+       /procframe/ProblemSatFilter.hpp
+       /procframe/ProcessingList.cpp
+       /procframe/ProcessingList.hpp
+       /procframe/ProcessingVector.cpp
+       /procframe/ProcessingVector.hpp
+       /procframe/Pruner.cpp
+       /procframe/Pruner.hpp
+       /procframe/RequireObservables.cpp
+       /procframe/RequireObservables.hpp
+       /procframe/SatArcMarker.cpp
+       /procframe/SatArcMarker.hpp
+       /procframe/SimpleFilter.cpp
+       /procframe/SimpleFilter.hpp
+       /procframe/SolverGeneral.cpp
+       /procframe/SolverGeneral.hpp
+       /procframe/SolverLMS.cpp
+       /procframe/SolverLMS.hpp
+       /procframe/SolverPPP.cpp
+       /procframe/SolverPPP.hpp
+       /procframe/SolverPPPFB.cpp
+       /procframe/SolverPPPFB.hpp
+       /procframe/SolverWMS.cpp
+       /procframe/SolverWMS.hpp
+       /procframe/Variable.cpp
+       /procframe/Variable.hpp
+       /procframe/XYZ2NED.cpp
+       /procframe/XYZ2NED.hpp
+       /procframe/XYZ2NEU.cpp
+       /procframe/XYZ2NEU.hpp
+       /procframe/ModeledReferencedPR.[h|c]pp
+       /procframe/Synchronize.[h|c]pp
+	  Procframe library adapted to new RC2.0 from obsoleted classes.
+
+       /rxio/AshtechData.hpp
+       /rxio/AshtechMBEN.hpp
+       /rxio/ATSData.cpp
+       /rxio/ATSData.hpp
+       /rxio/ObsUtils.cpp
+       /rxio/EphReader.cpp
+       /rxio/EphReader.hpp
+       /rxio/Jamfile
+       /rxio/MDPHeader.cpp
+       /rxio/MDPHeader.hpp
+       /rxio/MDPObsEpoch.cpp
+       /rxio/MDPPVTSolution.cpp
+       /rxio/MDPPVTSolution.hpp
+       /rxio/MDPSelftestStatus.cpp
+       /rxio/MDPSelftestStatus.hpp
+       /rxio/NovatelData.cpp
+       /rxio/ObsReader.cpp
+       /rxio/ObsUtils.cpp
+       /rxio/RinexConverters.cpp
+	  Converted rxio library from obsoleted DayTime class, and resolved
+	  consequential compile errors.
+
+       /geomatics/AntexData.cpp
+       /geomatics/DiscCorr.cpp
+       /geomatics/SatPass.cpp
+       /geomatics/EarthOrientation.cpp
+       /geomatics/GeodeticFrames.[h|c]pp
+       /geomatics/PhaseWindup.[h|c]pp
+       /geomatics/PreciseRange.[h|c]pp
+       /geomatics/SolarPosition.[h|c]pp
+       /geomatics/SolarSystem.[h|c]pp
+       /geomatics/SolidEarthTides.[h|c]pp
+       /geomatics/SunEarthSatGeometry.[h|c]pp	  
+	  Converted geomatics library from obsoleted DayTime class, and resolved
+	  consequential compile errors.
+
+       /geomatics/SolarSystem.[h|c]pp
+	  MJD_TO_JD in TimeConstants is the same (same sign) as 
+	  DayTime::JD_TO_MJD.
+
+       /rxio/EphReader.cpp
+	  Updated reader for new SP3EphemerisStore.
+
+      /geomatics/GSatID.hpp
+	  Added COMPASS.
+
+       /geodyn/ForceModel.hpp
+       /geodyn/IERS.cpp
+       /geodyn/IERS.hpp
+       /geodyn/PvtStore.cpp
+       /geodyn/PvtStore.hpp
+       /geodyn/ReferenceFrames.cpp
+       /geodyn/ReferenceFrames.hpp
+       /geodyn/SatOrbitPropagator.cpp
+       /geodyn/SatOrbitPropagator.hpp
+       /geodyn/SatOrbitStore.cpp
+       /geodyn/SatOrbitStore.hpp
+       /geodyn/Spacecraft.cpp
+       /geodyn/Spacecraft.hpp
+       /geodyn/SunForce.cpp
+       /geodyn/EarthOceanTide.cpp
+       /geodyn/HarrisPriesterDrag.cpp
+       /geodyn/Msise00Drag.cpp
+       /geodyn/SatOrbitStore.cpp
+       /geodyn/SphericalHarmonicGravity.cpp
+       /geodyn/UTCTime.cpp
+       /geodyn/UTCTime.hpp
+          Converted geomatics library from obsoleted DayTime class, and 
+	  resolved consequential compile errors.
+
+       /geodyn/IERS.cpp
+       /geomatics/DiscCorr.cpp
+       /geomatics/EarthOrientation.cpp
+       /geomatics/GeodeticFrames.cpp
+       /geomatics/PhaseWindup.cpp
+       /geomatics/PreciseRange.cpp
+       /geomatics/SatPass.cpp
+       /geomatics/SolarPosition.cpp
+       /geomatics/SunEarthSatGeometry.cpp
+       /procframe/BasicModel.cpp
+       /procframe/ComputeIonoModel.cpp
+       /procframe/ComputeLdelta.cpp
+       /procframe/ComputeLdelta.hpp
+       /procframe/ComputeMelbourneWubbena.cpp
+       /procframe/ComputePdelta.cpp
+       /procframe/ComputePdelta.hpp
+       /procframe/ConvertC1ToP1.cpp
+       /procframe/CorrectCodeBiases.cpp
+       /procframe/DataStructures.cpp
+       /procframe/DataStructures.hpp
+       /procframe/IonexModel.cpp
+       /procframe/LinearCombinations.cpp
+       /procframe/LinearCombinations.hpp
+       /procframe/ModelObsFixedStation.cpp
+       /procframe/ModeledReferencePR.cpp
+       /procframe/ModeledReferencePR.hpp
+       /rxio/AshtechMBEN.cpp
+       /rxio/MDPNavSubframe.cpp
+       /rxio/MDPObsEpoch.cpp
+       /rxio/NovatelData.cpp
+       /rxio/ObsUtils.cpp
+           Adapting apps from icd_gps_constants.hpp and icd_glo_constants.hpp to
+           include constants specified by GNSS tags in GNSSconstants.hpp.
+
+       /geomatics/DiscCorr.cpp
+       /geomatics/PreciseRange.cpp
+       /geomatics/SatPass.cpp
+       /procframe/BasicModel.cpp
+       /procframe/ConstraintSystem.hpp
+       /procframe/ConvertC1ToP1.cpp
+       /procframe/CorrectCodeBiases.cpp
+       /procframe/IonexModel.cpp
+       /procframe/LinearCombinations.cpp
+       /procframe/ModelObsFixedStation.cpp
+       /procframe/ModeledReferencePR.cpp
+       /rxio/NovatelData.cpp
+       /rxio/ObsUtils.cpp
+	  Changed instances of 'C_GPS_MPS' to 'C_MPS'.
+
+       /geodyn/SatOrbitStore.cpp
+	  Adapting library to CommonTime methods from obsoleted DayTime.
+   Applications modifications
+   -------------------------
+
+   - Added to apps
+
+       /Rinextools/Rin3Sum.cpp
+       /Rinextools/Rinex3Dump.cpp
+       /converters/RinexConvert.cpp
+       /converters/RinexConvert.hpp
+       /positioning/PRSolveR3.cpp
+         Added apps from Rinex-3 branch that are hand-merged with trunk.
+
+       /geomatics/JPLeph/JPL
+       /geomatics/JPLeph/JPL/ascp1950.403
+       /geomatics/JPLeph/JPL/ascp1975.403
+       /geomatics/JPLeph/JPL/ascp2000.403
+       /geomatics/JPLeph/JPL/ascp2025.403
+       /geomatics/JPLeph/JPL/header.403
+       /geomatics/JPLeph/JPL/testpo.403
+	  Added JPL data for 403 solar system ephemeris.
+
+   - Modified in apps
+
+       /Rinextools/EditRinex.cpp
+       /Rinextools/NavMerge.cpp
+       /Rinextools/ResCor.cpp
+       /Rinextools/RinexDump.cpp
+       /Rinextools/RinexEditor.cpp
+       /Rinextools/RinexEditor.hpp
+       /Rinextools/RinNav.cpp
+       /Rinextools/RinSum.cpp
+	   Added visibility plot and table to RinSum output
+       /converters/ash2xyz.cpp
+       /DataAvailability/DataAvailabilityAnalyzer.cpp
+       /differential/vecsol.cpp
+       /geomatics/relposition/Synchronization.cpp
+       /geomatics/relposition/constants.hpp
+       /ionosphere/IonoBias.cpp
+       /ionosphere/VTECMap.cpp
+       /ionosphere/VTECMap.hpp
+       /positioning/posInterp.cpp
+       /positioning/rinexpvt.cpp
+       /positioning/rinexpvt.hpp
+       /positioning/PRSolve.cpp
+       /receiver/AshtechMessage.cpp
+       /reszilla/DDEpoch.hpp
+       /reszilla/ordStats.cpp
+       /swrx/CCReplica.hpp
+       /swrx/EMLTracker.hpp
+       /swrx/RX.cpp
+       /swrx/codeDump.cpp
+       /swrx/corltr.cpp
+       /swrx/gpsSim.cpp
+       /swrx/position.cpp
+       /swrx/tracker.cpp
+       /swrx/trackerMT.cpp
+       /visibility/WhereSat.cpp
+       /visibility/compSatVis.cpp
+       /visibility/compStaVis.cpp
+       /visibility/compSatVis.cpp
+       /visibility/compStaVis.cpp
+       /visibility/CalcDOPs.cpp
+       /visibility/findMoreThan12.cpp
+       /swrx/simpleNav.cpp
+       /multipath/mpsolve.cpp
+          Hand-merging the trunk and Rinex-3 branch applications.
+
+       /reszilla/OrdEngine.[h|c]pp
+       /reszilla/ddGen.cpp
+       /reszilla/ordGen.cpp
+	  Changing 'GPSGeoid.hpp' to 'GPSEllipsoid.hpp'.
+
+       /MDPtools/MDPProcessors.[h|c]pp
+       /MDPtools/SummaryProc.cpp
+       /MDPtools/TrackProc.cpp
+       /MDPtools/mdpEdit.cpp
+       /reszilla/SvElevationMap.[h|c]pp
+       /reszilla/ordStats.cpp
+       /receiver/rtAshtech.cpp
+       /MDPtools/NavProc.cpp
+       /multipath/mpsim.cpp
+       /ionosphere/TECMaps.cpp
+       /checktools/CheckFrame.hpp
+       /converters/ash2mdp.cpp
+       /DataAvailability/DataAvailabilityAnalyzer.[h|c]pp
+       /filetools/bc2sp3.cpp
+       /filetools/EphSum.cpp
+       /filetools/RinexThin.cpp
+       /filetools/fic2rin.cpp
+       /filetools/navdmp.cpp
+       /filetools/navsum.cpp
+       /filetools/sp32bc.cpp
+       /filetools/sp3version.cpp
+       /geomatics/cycleslips/DiscFix.cpp
+       /geomatics/JPLeph/convertSSEph.cpp
+       /geomatics/JPLeph/testSSEph.cpp
+       /performance/ConstellationDefinition.cpp
+       /performance/ConstellationDefinition.hpp
+       /performance/ConstellationList.cpp
+       /performance/ConstellationSet.[h|c]pp
+	   Changed Daytime objects to CommonTime and YDSTime objects.
+
+       /geomatics/relposition/ComputeRAIMSolution.cpp
+       /geomatics/relposition/Configure.cpp
+       /geomatics/relposition/DDBase.[h|c]pp
+       /geomatics/relposition/DataStructures.cpp
+       /geomatics/relposition/DoubleDifference.cpp
+       /geomatics/relposition/EditDDs.cpp
+       /geomatics/relposition/EditRawDataBuffers.cpp
+       /geomatics/relposition/EphemerisImprovement.cpp
+       /geomatics/relposition/Estimation.cpp
+       /geomatics/relposition/ProcessRawData.cpp
+       /geomatics/relposition/ReadObsFiles.cpp
+       /geomatics/relposition/ReadRawData.cpp
+       /geomatics/relposition/Synchronization.cpp
+       /geomatics/relposition/Timetable.cpp
+       /geomatics/relposition/ddmerge.cpp
+       /geomatics/robust/rstats.cpp
+       /geomatics/relposition/ClockModel.cpp
+       /geomatics/relposition/ComputeRAIMSolution.cpp
+       /geomatics/relposition/DDBase.cpp
+       /geomatics/relposition/DoubleDifference.cpp
+       /geomatics/relposition/EditDDs.cpp
+       /geomatics/relposition/Estimation.cpp
+       /geomatics/relposition/ProcessRawData.cpp
+       /geomatics/relposition/ReadObsFiles.cpp
+       /geomatics/relposition/ReadRawData.cpp
+       /geomatics/relposition/Synchronization.cpp
+       /geomatics/relposition/Timetable.cpp
+       /MDPtools/NavProc.cpp
+       /qa/obsrip.cpp
+       /geomatics/JPLeph/convertSSEph.cpp
+       /geomatics/JPLeph/testSSEph.cpp
+       /converters/ash2mdp.cpp
+       /converters/novaRinex.cpp
+       /geomatics/relposition/Configure.cpp
+       /geomatics/relposition/DDBase.cpp
+       /geomatics/relposition/DDBase.hpp
+       /geomatics/relposition/ReadObsFiles.cpp
+       /geomatics/relposition/ReadRawData.cpp
+       /geomatics/relposition/Timetable.cpp
+       /geomatics/relposition/ddmerge.cpp
+       /swrx/RX.cpp
+       /swrx/position.cpp
+       /swrx/simpleNav.cpp
+       /positioning/PRSolve.cpp
+       /Rinextools/EditRinex.cpp
+       /Rinextools/ResCor.cpp
+       /Rinextools/Rin3Sum.cpp
+       /Rinextools/RinSum.cpp
+       /rfw/rfw.cpp
+       /positioning/PRSolve.cpp
+       /positioning/posInterp.cpp
+       /positioning/rinexpvt.[h|c]pp
+       /positioning/posInterp.cpp
+       /differential/vecsol.cpp
+       /difftools/rmwdiff.cpp
+       /difftools/rnwdiff.cpp
+       /difftools/rowdiff.cpp
+       /filetools/EphSum.cpp
+       /filetools/RinexThin.cpp
+       /filetools/bc2sp3.cpp
+       /filetools/fic2rin.cpp
+       /filetools/navdmp.cpp
+       /filetools/navsum.cpp
+       /filetools/sp32bc.cpp
+       /geomatics/cycleslips/DiscFix.cpp
+       /geomatics/relposition/Configure.cpp
+       /geomatics/relposition/DDBase.cpp
+       /geomatics/relposition/Estimation.cpp
+       /geomatics/relposition/ReadObsFiles.cpp
+       /geomatics/relposition/ReadRawData.cpp
+	  Adapting apps directory to CommonTime methods from obsoleted DayTime.
+
+       /MDPtools/NavProc.cpp
+       /Rinextools/EditRinex.cpp
+       /Rinextools/Rin3Sum.cpp
+       /visibility/VisSupport.cpp
+       /visibility/VisSupport.hpp
+       /visibility/compSatVis.cpp
+       /visibility/compStaVis.cpp
+       /visibility/findMoreThan12
+          Modified library to reflect more meaningful constants' names in 
+	  XvtStore.
+
+      /filetools/bc2sp3.cpp
+      /filetools/sp3version.cpp
+	  Updated for new SP3 design.
+
+      /DataAvailability/DataAvailabilityAnalyzer.cpp
+      /difftools/DiffFrame.hpp
+      /geomatics/relposition/CommandInput.[h|c]pp
+      /geomatics/relposition/DataOutput.cpp
+      /geomatics/relposition/DataStructures.hpp
+      /geomatics/relposition/ReadObsFiles.cpp 
+      /geomatics/relposition/Estimation.cpp
+      /ionosphere/IonoBias.cpp
+      /ionosphere/TECMaps.cpp
+      /ionosphere/VTECMap.[h|c]pp
+      /MDPtools/BELogEntry.[h|c]pp
+      /MDPtools/MDPProcessors.cpp
+      /MDPtools/NavProc.cpp
+      /MDPtools/ScreenProc.cpp
+      /MDPtools/SubframeProc.cpp
+      /MDPtoos/SummaryProc.cpp
+      /MDPtools/TrackProc.[h|c]pp
+      /MDPtools/mdp2rinex.cpp
+      /MDPtools/UniqueAlmStore.[h|c]pp
+      /MDPtools/mdp2fic.cpp
+      /MDPtools/mdp2rinex.cpp
+      /MDPtools/mdpEdit.cpp
+      /converters/ash2mdp.cpp
+      /converters/ash2xyz.cpp
+      /converters/ats2mdp.cpp
+      /converters/novaRinex.cpp
+      /performance/ConstellationDefinition.cpp
+      /performance/ConstellationList.cpp
+      /performance/ConstellationList.[h|c]pp
+      /Rinextools/ResCor.cpp
+      /Rinextools/RinexDump.cpp
+      /receiver/rtAshtech.cpp
+      /reszilla/OrdEngine.[h|c]pp
+      /reszilla/DDEpoch.cpp
+      /reszilla/OrdApp.cpp
+      /reszilla/OrdEngine.cpp
+      /reszilla/ordGen.cpp
+      /reszilla/ordLinEst.cpp
+      /reszilla/PhaseCleaner.cpp
+      /reszilla/PhaseResidual.[h|c]pp
+      /reszilla/SvElevationMap.cpp
+      /reszilla/ddGen.cpp
+      /reszilla/ordClock.cpp
+      /reszilla/ordEdit.cpp
+      /reszilla/ordLinEst.cpp
+      /reszilla/ordStats.cpp
+      /reszilla/RobustLinearEstimator.[h|c]pp
+      /mergetools/mergeRinMet.cpp
+      /mergetools/mergeRinNav.cpp
+      /mergetools/mergeRinObs.cpp
+      /multipath/ObsArray.cpp
+      /multipath/mpsolve.cpp
+      /multipath/testObsArray.cpp
+      /ObsArrayEvaluator/ObsArray.[h|c]pp
+      /ObsArrayEvaluator/oae.cpp
+      /positioning/PRSolve.cpp
+      /positiong/rinexpvt.cpp
+      /receiver/AshtechMessage.[h|c]pp
+      /performance/ConstellationDefinition.cpp
+      /performance/ConstellationList.cpp
+      /performance/ConstellationSet.[h|c]ppi
+      /swrx/PCodeGenerator.hpp
+      /swrx/simpleNav.cpp
+      /visibility/CalcDOPs.cpp
+      /visibility/DOPcalc.cpp
+      /visibility/VisSupport.[h|c]pp
+      /visibility/WhereSat.cpp
+      /visibility/compSatVis.cpp
+      /visibility/compStaVis.cpp
+      /visibility/findMoreThan12.cpp
+      /visibility/svvis.cpp
+	  Converting apps from obsoleted DayTime class, and resolving
+	  consequential compile errors.
+
+      /reszilla/CycleSlipList.[h|c]pp
+	  Added StringUtils.hpp.
+
+      /swrx/PCodeGenerator.hpp
+	  Changed GPSZcount and GPSZcountFloor calls from DayTime to
+	  Epoch member functions.
+
+      /MDPtools/mdp2fic.cpp
+	  Added RinexConverters header to mdp2fic.cpp.
+
+       /Rinextools/ResCor.cpp
+       /Rinextools/Rin3Sum.cpp
+       /Rinextools/RinSum.cpp
+       /converters/ash2xyz.cpp
+       /differential/vecsol.cpp
+       /geomatics/relposition/Synchronization.cpp
+       /geomatics/relposition/constants.hpp
+       /ionosphere/IonoBias.cpp
+       /ionosphere/VTECMap.cpp
+       /ionosphere/VTECMap.hpp
+       /multipath/mpsim.cpp
+       /performance/ConstellationDefinition.cpp
+       /performance/ConstellationList.cpp
+       /positioning/PRSolve.cpp
+       /positioning/PRSolveR3.cpp
+       /positioning/posInterp.cpp
+       /positioning/rinexpvt.cpp
+       /positioning/rinexpvt.hpp
+       /receiver/AshtechMessage.cpp
+       /reszilla/DDEpoch.cpp
+       /reszilla/DDEpoch.hpp
+       /reszilla/OrdApp.cpp
+       /reszilla/PhaseCleaner.cpp
+       /reszilla/PhaseCleaner.hpp
+       /reszilla/ordLinEst.cpp
+       /reszilla/ordStats.cpp
+       /swrx/CCReplica.hpp
+       /swrx/EMLTracker.hpp
+       /swrx/RX.cpp
+       /swrx/SVSource.hpp
+       /swrx/acquire.cpp
+       /swrx/codeDump.cpp
+       /swrx/corltr.cpp
+       /swrx/gpsSim.cpp
+       /swrx/position.cpp
+       /swrx/tracker.cpp
+       /swrx/trackerMT.cpp
+       /visibility/CalcDOPs.cpp
+       /visibility/DOPcalc.cpp
+       /visibility/compSatVis.cpp
+       /visibility/compStaVis.cpp
+	  Adapting apps from icd_gps_constants.hpp and icd_glo_constants.hpp to
+	  include constants specified by GNSS tags in GNSSconstants.hpp.
+
+       /Rinextools/ResCor.cpp
+       /Rinextools/Rin3Sum.cpp
+       /Rinextools/RinSum.cpp
+       /Rinextools/Rinex3Dump.cpp
+       /converters/ash2xyz.cpp
+       /differential/vecsol.cpp
+       /geomatics/relposition/Synchronization.cpp
+       /geomatics/relposition/constants.hpp
+       /positioning/PRSolve.cpp
+       /positioning/PRSolveR3.cpp
+       /positioning/rinexpvt.cpp
+       /receiver/AshtechMessage.cpp
+       /reszilla/DDEpoch.cpp
+       /reszilla/OrdApp.cpp
+       /reszilla/PhaseCleaner.[h|c]pp
+       /reszilla/ordLinEst.cpp
+       /reszilla/ordStats.cpp
+       /swrx/RX.cpp
+       /swrx/position.cpp
+	  Changed instances of 'C_GPS_MPS' to 'C_MPS'.
+
+   - Deleted from apps
+
+       /RinexPlot/
+	  Removed obsoleted app.
+
+   Test modifications
+   ------------------
+
+   - Added to tests
+
+       /gpsNavMsg/makefile
+       /gpsNavMsg/xBrcClockCorrection.cpp
+       /gpsNavMsg/xBrcKeplerOrbit.cpp
+	  Test code for legacy navigation messages added.
+
+       /HelmertTransform/HelmertTransform.[h|c]pp
+       /HelmertTransform/xHelmertTransform.[h|c]pp
+       /HelmertTransform/xHelmertTransformM.cpp
+       /ReferenceFrame/ReferenceFrame.[h|c]pp
+       /ReferenceFrame/xReferenceFrame.[h|c]pp
+       /ReferenceFrame/xReferenceFrameM.cpp
+       /SP3EphemerisStore/SP3EphemerisStore.[h|c]pp
+	  Added new tests from UnitTests in Rinex-3 branch to tests 
+	  directory in RC2.0.
+
+       /RinexNav/xRinexTest.cpp
+	  Added new tests for the EngEphemeris cast operator, found in 	
+	  src/Rinex3NavData.cpp
+
+       /gpsNavMsg/xCNAV2EphClk.cpp
+       /gpsNavMsg/xCNAV2EphClockPNB.cpp
+       /gpsNavMsg/xCNAVClock.cpp
+       /gpsNavMsg/xCNAVClockPNB.cpp
+       /gpsNavMsg/xCNAVEphemeris.cpp
+       /gpsNavMsg/xCNAVEphemerisPNB.cpp
+       /gpsNavMsg/xPackedNavBits.cpp
+	  Added test cases for new CNAV classes.
+
+       /gpsNavMsg/Checks/AfterHalfweekchange.txt
+       /gpsNavMsg/Checks/BeforeHalfweekchange.txt
+       /gpsNavMsg/Checks/BrcClockCorrection_Test_June_16_2011_4pm.txt
+       /gpsNavMsg/Checks/BrcKeplerOrbit_Test_June_16_2011_4pm.txt
+       /gpsNavMsg/Checks/ClockCorrTest.txt
+       /gpsNavMsg/Checks/OrbTest.txt
+       /gpsNavMsg/Checks/PackedNavBits_Output.txt
+       /gpsNavMsg/Checks/xBrcClkCorr_output_01.txt
+       /gpsNavMsg/Checks/xBrcKeplerOrbit_withsetFrame.out.txt
+       /gpsNavMsg/Checks/xCEC.txt
+       /gpsNavMsg/Checks/xCNAVClock_Output.txt
+       /gpsNavMsg/Checks/xCNAVEphemeris_Output.txt
+       /gpsNavMsg/Checks/xPackedNavBits_Output.txt
+       /gpsNavMsg/Logs/BrcClkCorr_Output
+       /gpsNavMsg/Logs/BrcClkCorr_Truth
+       /gpsNavMsg/Logs/BrcKeplerOrbit_Output
+       /gpsNavMsg/Logs/BrcKeplerOrbit_Truth
+       /gpsNavMsg/Logs/CNAV2PNB_Output
+       /gpsNavMsg/Logs/CNAV2PNB_Truth
+       /gpsNavMsg/Logs/CNAVClockPNB_Output
+       /gpsNavMsg/Logs/CNAVClockPNB_Truth
+       /gpsNavMsg/Logs/CNAVClock_Output
+       /gpsNavMsg/Logs/CNAVClock_Truth
+       /gpsNavMsg/Logs/CNAVEphemerisPNB_Output
+       /gpsNavMsg/Logs/CNAVEphemerisPNB_Truth
+       /gpsNavMsg/Logs/CNAVEphemeris_Output
+       /gpsNavMsg/Logs/CNAVEphemeris_Truth
+       /gpsNavMsg/Logs/EngEphemeris_Output
+       /gpsNavMsg/Logs/EngEphemeris_Truth
+       /gpsNavMsg/Logs/Output
+       /gpsNavMsg/Logs/PackedNavBits_Output
+       /gpsNavMsg/Logs/PackedNavBits_Truth
+       /gpsNavMsg/Logs/Truth
+       /gpsNavMsg/xBrcClockCorrectiongpsNavMsg.cpp
+       /gpsNavMsg/xBrcClockCorrectiongpsNavMsg.hpp
+       /gpsNavMsg/xBrcKeplerOrbitgpsNavMsg.cpp
+       /gpsNavMsg/xBrcKeplerOrbitgpsNavMsg.hpp
+       /gpsNavMsg/xCNAV2PNBgpsNavMsg.cpp
+       /gpsNavMsg/xCNAV2PNBgpsNavMsg.hpp
+       /gpsNavMsg/xCNAV2gpsNavMsg.cpp
+       /gpsNavMsg/xCNAV2gpsNavMsg.hpp
+       /gpsNavMsg/xCNAVClockPNBgpsNavMsg.cpp
+       /gpsNavMsg/xCNAVClockPNBgpsNavMsg.hpp
+       /gpsNavMsg/xCNAVClockgpsNavMsg.cpp
+       /gpsNavMsg/xCNAVClockgpsNavMsg.hpp
+       /gpsNavMsg/xCNAVEphemerisPNBgpsNavMsg.cpp
+       /gpsNavMsg/xCNAVEphemerisPNBgpsNavMsg.hpp
+       /gpsNavMsg/xCNAVEphemerisgpsNavMsg.cpp
+       /gpsNavMsg/xCNAVEphemerisgpsNavMsg.hpp
+       /gpsNavMsg/xEngEphemerisgpsNavMsg.cpp
+       /gpsNavMsg/xEngEphemerisgpsNavMsg.hpp
+       /gpsNavMsg/xPackedNavBitsgpsNavMsg.cpp
+       /gpsNavMsg/xPackedNavBitsgpsNavMsg.hpp
+       /gpsNavMsg/xgpsNavMsgM.cpp
+	  Added test programs for CNAV/CNAV2 classes utilizing the cppunit
+	  test module.
+
+
+	/SP3EphemerisStore/Checks
+   	/SP3EphemerisStore/Checks/findXvt1.txt
+   	/SP3EphemerisStore/Checks/findXvt15.txt
+   	/SP3EphemerisStore/Checks/findXvt31.txt
+   	/SP3EphemerisStore/DumpData.txt
+   	/SP3EphemerisStore/Logs
+   	/SP3EphemerisStore/Logs/DumpData.txt
+   	/SP3EphemerisStore/Logs/findXvt1.txt
+   	/SP3EphemerisStore/Logs/findXvt15.txt
+   	/SP3EphemerisStore/Logs/findXvt31.txt
+   	/SP3EphemerisStore/SP3
+   	/SP3EphemerisStore/SP3/apc01000
+   	/SP3EphemerisStore/SP3/igs09000.sp3
+   	/SP3EphemerisStore/igs09000.sp3
+   	/SP3EphemerisStore/xSP3EphemerisStore.cpp
+   	/SP3EphemerisStore/xSP3EphemerisStore.hpp
+   
+   - Modified in tests
+
+       /ANSITime/xANSITime.[h|c]pp
+       /CivilTime/xCivilTime.[h|c]pp
+       /CommonTime/xCommonTime.cpp
+       /JulianDate/xJulianDate.[h|c]pp
+       /MJD/xMJD.[h|c]pp
+       /UnixTime/xUnixTime.[h|c]pp
+       /YDSTime/xYDSTime.[h|c]pp
+       /SEM/SEMData.cpp
+       /SEM/SEMHeader.[h|c]pp
+       /SEM/SEMStream.hpp
+       /SEM/StringUtils.hpp
+       /Yuma/YumaData.cpp
+       /Yuma/YumaData.cpp
+	  Merged UnitTests modifications from Rinex-3 into tests directory of RC2.0.
+
+       /RinexEphemerisStore/xRinexEphemerisStore.cpp
+	  Adapting test suite to CommonTime methods from obsoleted DayTime.
+
+       /IonoModel/xIonoModel.cpp
+       /MSC/xMSC.cpp
+       /RACRotation/xRACRotation.cpp
+       /RinexEphemerisStore/xRinexEphemerisStore.cpp
+       /RinexMet/xRinexMet.cpp
+       /RinexNav/Logs/RinexDump
+       /RinexNav/xRinexNav.cpp
+       /RinexObs/xRinexObs.cpp
+       /UnixTime/xUnixTime.cpp
+       /Yuma/YumaData.cpp
+	  Resolved compile errors in /tests directory.
+
+        DayTime/xDayTimeInc.hpp
+        gpsNavMsg/xCNAV2EphClockPNB.cpp
+        gpsNavMsg/xCNAVClockPNB.cpp
+        gpsNavMsg/xCNAVEphemerisPNB.cpp
+        gpsNavMsg/xPackedNavBits.cpp
+        gpsNavMsg/xPackedNavBitsgpsNavMsg.cpp
+        SEM/SEMBase.hpp
+        SEM/SEMData.[h|c]pp
+        SEM/SEMHeader.[h|c]pp
+        SEM/SEMStream.hpp
+        SEM/StringUtils.hpp
+        Yuma/YumaBase.hpp
+        Yuma/YumaData.[h|c]pp
+        Yuma/YumaStream.hpp
+           Adapting test suite to new GNSSconstants.hpp.
+
+	
+	   
+
+      /RACRotation/xRACRotation.cpp
+      /SEM/SEMData.cpp
+      /SEM/SEMHeader.cpp
+      /Yuma/YumaData.cpp
+      /oldtests/DayTimeIncrementTest.cpp
+      /oldtests/DayTimeIncrememntTest2.cpp
+	  Changed instances icd_200 constants to adaptations in 
+	  GNSSconstants.hpp.
+
+   Examples modifications
+   ----------------------
+
+   - Modified in examples
+
+       example1.cpp
+       example2.cpp
+       example3.cpp
+       example4.cpp
+	  Converted examples which completely relied on DayTime class.
+
+       example3.cpp
+       example4.cpp
+	  Changed instances of icd_200 constants to adaptations in GNSSconstants.hpp
+
+       example3.cpp
+	  Changed C_GPS_MPS to C_MPS.
+
+       example10.cpp
+       example14.cpp
+       example4.cpp
+       example5.cpp
+       example6.cpp
+       example7.cpp
+       example8.cpp
+       example9.cpp
+	  The examples directory has been modified to reflect obsoletion of 
+	  DayTime class and the consolidation of GNSSconstants.  Expect changes 
+	  to examples 8,9, and 14 which instantiate non-existent SP3EphemerisStore 
+	  member functions to quality-check the precise ephemeris data for data 
+	  gaps and too wide intervals.
+
+       example3.cpp
+       example4.cpp
+	  Changed 'C_GPS_MPS' to 'C_MPS'.
+        #################################################
+
+
 Version 1.7   Friday, 8 October, 2010
 
    General modifications

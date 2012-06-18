@@ -25,7 +25,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -114,7 +114,7 @@ namespace gpstk
       ObsType getType(void) const {return msgType;}
       
          /// Access the epoch associated with the message
-      DayTime getEpoch(const DayTime& priorEpoch) const;
+      CommonTime getEpoch(const CommonTime& priorEpoch) const;
 
         /// Access the sequence number (if applicable)      
       int getSequence(void) const;
@@ -152,12 +152,12 @@ namespace gpstk
       static RinexObsData 
          convertToRinexObsData(
                const std::list<AshtechMessage> obsMsgs, 
-               const DayTime& recentEpoch)
+               const CommonTime& recentEpoch)
          throw(gpstk::Exception);
 
-      static int calculateSequenceNumber(const DayTime& t);
+      static int calculateSequenceNumber(const CommonTime& t);
 
-      static RinexNavData convertToRinexNavData(const AshtechMessage& msg, const DayTime& epoch=DayTime());
+      static RinexNavData convertToRinexNavData(const AshtechMessage& msg, const CommonTime& epoch=CommonTime());
 
       static void updateNavHeader(const AshtechMessage& ionMsg, RinexNavHeader& hdr);
       /**
@@ -180,7 +180,7 @@ namespace gpstk
       ObsType   msgType;            ///< What kind of observations are in this message?
 
          /// Epoch time - may need to be set by the user
-      DayTime time;
+      CommonTime time;
 
       static float engSNR(short cnt, float nominalbw);
 

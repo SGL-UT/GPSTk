@@ -21,7 +21,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //
 //  Wei Yan - Chinese Academy of Sciences . 2009~2015
 //
@@ -29,6 +29,8 @@
 
 #include "Logger.hpp"
 #include "StringUtils.hpp"
+#include "Epoch.hpp"
+#include "TimeString.hpp"
 #include "MemoryUtils.hpp"
 #include "String.hpp"
 
@@ -72,7 +74,7 @@ namespace gpstk
 
    void Logger::log(const std::string& text, LogLevel level, ExceptionLocation location)
    {
-      DayTime now; now.setLocalTime();
+      CommonTime now; static_cast<Epoch>(now).setLocalTime();
       LogMessage msg(name, text, level, now,
                      location.getFileName(),
                      location.getFunctionName(),
@@ -120,7 +122,7 @@ namespace gpstk
       Logger* pLogger = find(logname);
       if(pLogger)
       {
-         pLogger->setChannel(pChannel);
+         return pLogger->setChannel(pChannel);
       }
       else
       {
@@ -140,7 +142,7 @@ namespace gpstk
       Logger* pLogger = find(logname);
       if(pLogger)
       {
-         pLogger->setChannel(pChannel);
+         return pLogger->setChannel(pChannel);
       }
       else
       {
@@ -159,7 +161,7 @@ namespace gpstk
       Logger* pLogger = find(logname);
       if(pLogger)
       {
-         pLogger->setChannel(pChannel);
+         return pLogger->setChannel(pChannel);
       }
       else
       {

@@ -22,7 +22,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Dagoberto Salazar - gAGE ( http://www.gage.es ). 2007
 //
@@ -30,6 +30,9 @@
 
 
 #include "MoonPosition.hpp"
+#include "Epoch.hpp"
+#include "CivilTime.hpp"
+#include "EpochDataStore.hpp"
 
 
 namespace gpstk
@@ -37,10 +40,10 @@ namespace gpstk
 
 
       // Time of the first valid time
-   const DayTime MoonPosition::initialTime(1900, 3, 1, 0, 0, 0.0);
+   const CommonTime MoonPosition::initialTime = CivilTime(1900, 3, 1, 0, 0, 0.0);
 
       // Time of the last valid time
-   const DayTime MoonPosition::finalTime(2100, 2, 28, 0, 0, 0.0);
+   const CommonTime MoonPosition::finalTime = CivilTime(2100, 2, 28, 0, 0, 0.0);
 
 
       // Coefficients for fundamental arguments
@@ -134,7 +137,7 @@ namespace gpstk
       // @throw InvalidRequest If the request can not be completed for 
       // any reason, this is thrown. The text may have additional
       // information as to why the request failed.
-   Triple MoonPosition::getPosition(const DayTime& t) const
+   Triple MoonPosition::getPosition(const CommonTime& t) const
       throw(InvalidRequest)
    {
 
@@ -159,12 +162,12 @@ namespace gpstk
 
 
 
-      /* Function to compute Moon position in CIS system (coordinates 
+      /* Function to compute Moon position in CIS system (coordinates MJD
        * in meters)
        *
        * @param t Epoch
        */
-   Triple MoonPosition::getPositionCIS(const DayTime& t) const
+   Triple MoonPosition::getPositionCIS(const CommonTime& t) const
       throw(InvalidRequest)
    {
 
@@ -449,7 +452,7 @@ namespace gpstk
 
 
          // Centuries since J1900
-      double tt((t.MJD()-15019.5)/36525.0);
+      double tt((static_cast<Epoch>(t).MJD()-15019.5)/36525.0);
 
 
          // Fundamental arguments (radians) and derivatives (radians per
@@ -651,7 +654,7 @@ namespace gpstk
 
 
          // Julian centuries since J2000
-      tt=(t.MJD()-51544.5)/36525.0;
+      tt=(static_cast<Epoch>(t).MJD()-51544.5)/36525.0;
 
          // Fricke equinox correction
       double EPJ(2000.0+tt*100.0);

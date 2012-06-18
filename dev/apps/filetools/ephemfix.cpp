@@ -163,8 +163,8 @@ void FICFixer::spinUp()
       almanacStore.dump(cout);
    }
 
-   if ((almanacStore.getInitialTime() == DayTime::BEGINNING_OF_TIME) ||
-       (almanacStore.getFinalTime() == DayTime::BEGINNING_OF_TIME))
+   if ((almanacStore.getInitialTime() == CommonTime::BEGINNING_OF_TIME) ||
+       (almanacStore.getFinalTime() == CommonTime::BEGINNING_OF_TIME))
    {
       cout << "No almanac data found. Exiting." << endl;
       exit(-1);
@@ -228,7 +228,7 @@ void FICFixer::scanFIC(const string& fn)
       double magnitude = 0.0;
       EngEphemeris engEph;      
       short prn, iodc, iode;
-      DayTime ephEpoch;
+      CommonTime ephEpoch;
       Xvt xvtEph, xvtAlm;
          
       if (ficData.blockNum == 9)
@@ -336,9 +336,9 @@ void FICFixer::scanFIC(const string& fn)
                continue;
                
             // time must be within 20 minutes
-            DayTime tempTime = engEphTemp.getEphemerisEpoch();
-            DayTime plus20min = ephEpoch + (60*20);
-            DayTime less20min = ephEpoch - (60*20);
+            CommonTime tempTime = engEphTemp.getEphemerisEpoch();
+            CommonTime plus20min = ephEpoch + (60*20);
+            CommonTime less20min = ephEpoch - (60*20);
             if (tempTime > plus20min)
                continue;
             else if (tempTime < less20min)
@@ -386,9 +386,9 @@ void FICFixer::scanFIC(const string& fn)
                                    prnTemp, trackTemp);
                
             // time must be within 20 minutes
-            DayTime tempTime = engEphTemp.getEphemerisEpoch();
-            DayTime plus20min = ephEpoch + (60*20);
-            DayTime less20min = ephEpoch - (60*20);
+            CommonTime tempTime = engEphTemp.getEphemerisEpoch();
+            CommonTime plus20min = ephEpoch + (60*20);
+            CommonTime less20min = ephEpoch - (60*20);
             if (tempTime > plus20min)
                continue;
             else if (tempTime < less20min)
@@ -465,7 +465,7 @@ void FICFixer::scanRIN(const string& fn)
      double magnitude = 0.0;
      EngEphemeris engEph;      
      short prn, iodc, iode;
-     DayTime ephEpoch;
+     CommonTime ephEpoch;
      Xvt xvtEph, xvtAlm;
       
      engEph = EngEphemeris(rinNavData);
@@ -526,9 +526,9 @@ void FICFixer::scanRIN(const string& fn)
                continue;
                
         // time must be within 20 minutes
-        DayTime tempTime = engEphTemp.getEphemerisEpoch();
-        DayTime plus20min = ephEpoch + (60*20);
-        DayTime less20min = ephEpoch - (60*20);
+        CommonTime tempTime = engEphTemp.getEphemerisEpoch();
+        CommonTime plus20min = ephEpoch + (60*20);
+        CommonTime less20min = ephEpoch - (60*20);
         if (tempTime > plus20min)
            continue;
         else if (tempTime < less20min)

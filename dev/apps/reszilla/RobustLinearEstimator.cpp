@@ -16,7 +16,7 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
 //  Copyright 2004, The University of Texas at Austin
 //
@@ -62,8 +62,8 @@ double medTail(vector<double>& vec, double f)
    size_t N=vec.size();
    size_t M=std::max(static_cast<int>(N*(1-f)), 0);
    double med = median(vec);
-   double ml = std::abs(vec[M]-med);
-   double mh = std::abs(vec[N-M]-med);
+   double ml = abs(int(vec[M]-med));
+   double mh = abs(int(vec[N-M]-med));
    return std::max(ml, mh);
 }
 
@@ -97,7 +97,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
    // As a first guess for a and b, find the least-squares fit
    for (DDVci i=d.begin(); i!=d.end(); i++)
    {
-      if (std::abs(i->second - medianY) > stripY)
+      if (std::abs(int(i->second - medianY)) > stripY)
          continue;
 
       double x = i->first-baseX;
@@ -129,7 +129,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
 
    // The standard deviation will give some idea of how big an iteration
    // step to take.
-   double sig_b = std::sqrt(chisq/del);
+   double sig_b = sqrt(chisq/del);
    double b1 = b;
 
    if (debugLevel>1)
@@ -163,7 +163,7 @@ void RobustLinearEstimator::process(const DoubleDoubleVec& d)
    sig_b *= 0.01;
 
    // Refine until the error is a negligible number of standard deviations
-   while (std::abs(b2-b1) > sig_b)
+   while (std::abs(int(b2-b1)) > sig_b)
    {
       b = b1 + 0.5 * (b2-b1);
       if (b == b1 || b == b2) 
@@ -207,7 +207,7 @@ double RobustLinearEstimator::rofunc(const double b_est)
       double x=i->first;
       double y=i->second;
       double d = y - (b_est * x + a);
-      abdev += std::abs(d);
+      abdev += std::abs(int(d));
       sum += d >= 0 ? x : -x;
    }
 
