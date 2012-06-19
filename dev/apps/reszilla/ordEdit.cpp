@@ -43,10 +43,9 @@
 #include <set>
 #include "gps_constants.hpp"
 #include "OrdApp.hpp"
-#include "OrdApp.cpp"
 #include "EphReader.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "Epoch.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -220,10 +219,10 @@ void OrdEdit::process()
    
    //-- if a time span was specified, get it
    if (startOpt.getCount())
-      static_cast<Epoch>(tStart).scanf(startOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+      scanTime(tStart, startOpt.getValue().front().c_str(), "%Y %j %H:%M:%S");
 
    if (endOpt.getCount())
-      static_cast<Epoch>(tEnd).scanf(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+      scanTime(tEnd, endOpt.getValue().front().c_str(), "%Y %j %H:%M:%S");
    
    //-- too lazy?
    if (verboseLevel || debugLevel)
@@ -240,11 +239,11 @@ void OrdEdit::process()
       else
          cout << "# Keeping data for all SVs above the horizon. \n";
       if (startOpt.getCount())
-         cout << "# Tossing data before " << tStart << endl;
+         cout << "# Tossing data before " << YDSTime(tStart) << endl;
       else
          cout << "# Start time is beginning of file. \n";
       if (endOpt.getCount())
-         cout << "# Tossing data after " << tEnd << endl;
+         cout << "# Tossing data after " << YDSTime(tEnd) << endl;
       else
          cout << "# End time is end of file. \n";
       if (prnSet.size())

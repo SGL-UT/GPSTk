@@ -40,7 +40,6 @@
 
 #include "OrdApp.hpp"
 #include "CommandOption.hpp"
-#include "Epoch.hpp"
 #include "TimeString.hpp"
 
 using namespace std;
@@ -223,7 +222,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          }         
 
          CommonTime time;
-         static_cast<Epoch>(time).scanf(readBuffer.substr(0,19), timeFormat);
+         scanTime(time, readBuffer.substr(0,19), timeFormat);
 
          // This means that we have a complete epoch. Note that the most
          // recently read line is left in readBuffer

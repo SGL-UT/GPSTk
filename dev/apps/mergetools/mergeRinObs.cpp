@@ -50,6 +50,8 @@
 #include "RinexObsData.hpp"
 #include "RinexObsFilterOperators.hpp"
 #include "FileFilterFrameWithHeader.hpp"
+#include "SystemTime.hpp"
+#include "CivilTime.hpp"
 
 #include "MergeFrame.hpp"
 
@@ -92,7 +94,7 @@ void MergeRinObs::process()
       // set the pgm/runby/date field
    merged.theHeader.fileProgram = std::string("mergeRinObs");
    merged.theHeader.fileAgency = std::string("gpstk");
-   merged.theHeader.date = CommonTime().asString();
+   merged.theHeader.date = CivilTime(SystemTime()).asString();
 
       // write the file
    std::string outputFile = outputFileOption.getValue().front();

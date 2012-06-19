@@ -44,8 +44,6 @@
 #include <iostream>
 #include <iomanip>
 
-#include <CommonTime.hpp>
-
 typedef std::pair<double, double> DoubleDouble;
 typedef std::vector< DoubleDouble > DoubleDoubleVec;
 

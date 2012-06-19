@@ -41,7 +41,6 @@
 #include "OrdApp.hpp"
 #include "RobustLinearEstimator.hpp"
 #include "TimeString.hpp"
-#include "Epoch.hpp"
 #include "MJD.hpp"
 
 using namespace std;
@@ -87,7 +86,7 @@ struct ClockSegmentList : public list<ClockSegment>
          const ClockSegment& cs = *k;
          if ((t - cs.startTime) > -0.01 && (cs.endTime - t) > -0.01)
          {
-            double mjd = static_cast<Epoch>(t).MJD();
+            double mjd = MJD(t).mjd;
             if (cs.valid)
                offset = cs.eval(mjd);
             break;
@@ -113,8 +112,8 @@ struct ClockSegmentList : public list<ClockSegment>
       for (const_iterator k=begin(); k != end(); k++)
       {
          const ClockSegment& cs = *k;
-         double t0 = static_cast<Epoch>(cs.startTime).MJD();
-         double tf = static_cast<Epoch>(cs.endTime).MJD();
+         double t0 = MJD(cs.startTime).mjd;
+         double tf = MJD(cs.endTime).mjd;
          output << ">c " << printTime(cs.startTime,timeFormat)
                 << "  " << printTime(cs.endTime,timeFormat)
                 << fixed
@@ -172,7 +171,7 @@ void OrdLinEst::process()
    ORDEpochMap::const_iterator ei;
    for (ei = oem.begin(); ei != oem.end(); ei++)
    {
-      double mjd = static_cast<Epoch>(ei->first).MJD();
+      double mjd = MJD(ei->first).mjd;
       vdouble clk = ei->second.clockOffset;
       if (!clk.is_valid() || std::abs(clk) < 1e-6)
          continue;

@@ -39,6 +39,7 @@
 #include <algorithm>
 
 #include "ObsID.hpp"
+#include "CivilTime.hpp"
 
 #include "PhaseCleaner.hpp"
 
@@ -170,7 +171,7 @@ void PhaseCleaner::selectMasters(
          SvElevationMap::iterator j = pem.find(t);
          if (j == pem.end())
          {
-            cout << "No elevation available. Returning." << t << endl;
+            cout << "No elevation available. Returning." << CivilTime(t) << endl;
             return;
          }
          SvDoubleMap& pdm = j->second;
@@ -198,7 +199,7 @@ void PhaseCleaner::selectMasters(
                {
                   cout << "Could not find a suitable master for prn " << prn.id
                        << " " << rot.type
-                       << " at " << t
+                       << " at " << CivilTime(t)
 
                        << endl;
                   SvDoubleMap::const_iterator e;
@@ -215,12 +216,12 @@ void PhaseCleaner::selectMasters(
             if (!pot[rot][newMaster].findObs(t, k))
             {
                if (debugLevel)
-                  cout << t << " Selected an invalid master: " << newMaster.id << endl;
+                  cout << CivilTime(t) << " Selected an invalid master: " << newMaster.id << endl;
                return;
             }
 
             if (debugLevel>1)
-               cout << t << " prn " << newMaster.id << " as master." << endl;
+               cout << CivilTime(t) << " prn " << newMaster.id << " as master." << endl;
             
             if (arc->sv1.id < 1)
             {
@@ -496,7 +497,7 @@ void PhaseCleaner::dump(std::ostream& s) const
                const Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
-               s << left << setw(20) << t << right
+               s << left << setw(20) << CivilTime(t) << right
                  << setfill(' ')
                  << " " << setw(2) << prn.id
                  << " " << ObsID::cbDesc[rot.band]
@@ -793,7 +794,7 @@ void PhaseCleanerA::dump(std::ostream& s) const
                const Obs& obs = l->second;
 
                s.setf(ios::fixed, ios::floatfield);
-               s << left << setw(20) << t << right
+               s << left << setw(20) << CivilTime(t) << right
                  << setfill(' ')
                  << " " << setw(2) << svPair.first.id
                  << " " << setw(2) << svPair.second.id

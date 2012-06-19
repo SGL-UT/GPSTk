@@ -50,6 +50,8 @@
 #include "RinexMetData.hpp"
 #include "RinexMetFilterOperators.hpp"
 #include "FileFilterFrameWithHeader.hpp"
+#include "CivilTime.hpp"
+#include "SystemTime.hpp"
 
 #include "MergeFrame.hpp"
 
@@ -89,7 +91,7 @@ void MergeRinMet::process()
       // set the pgm/runby/date field
    merged.theHeader.fileProgram = std::string("mergeRinMet");
    merged.theHeader.fileAgency = std::string("gpstk");
-   merged.theHeader.date = CommonTime().asString();
+   merged.theHeader.date = CivilTime(SystemTime()).asString();
 
       // write the header
    std::string outputFile = outputFileOption.getValue().front();
