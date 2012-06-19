@@ -433,7 +433,7 @@ void NavSum::process()
 				if (diff < -1.0 * (double) HALFWEEK) EpochWeek++;
 				if (diff > (double) HALFWEEK) xMitWeek--;
 				XMitT = CommonTime( xMitWeek, HOW-6.0 );
-				EpochT = CommonTime( EpochWeek, Toe );
+				EpochT = GPSWeekSecond( EpochWeek, Toe );
 				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03lX %1d",
 					count,blockType,PRNID,
 					printTime(XMitT,xmitFmt).c_str(),
@@ -471,10 +471,10 @@ void NavSum::process()
 					xMitWeek--;
 				}
 				xMitSOW = (double) iMitSOW;
-				XMitT = CommonTime( xMitWeek, xMitSOW );
+				XMitT = GPSWeekSecond( xMitWeek, xMitSOW );
 				if (PRNID>0 && PRNID<33)
 				{
-					EpochT = CommonTime( EpochWeek, r.f[8] );
+                                        EpochT = GPSWeekSecond( EpochWeek, r.f[8] );
 					sprintf(line," %5d  %3d    %02d    %s ! %s",
 						count,blockType,PRNID,
 						printTime(XMitT,xmitFmt).c_str(),
@@ -713,7 +713,7 @@ gpstk::CommonTime NavSum::buildXMitTime(const uint32_t word2, const int week )
       useweek--;
    }
    double XmitSOW = (double) SOW;
-   return ( CommonTime( useweek, XmitSOW) ); 
+   return ( GPSWeekSecond( useweek, XmitSOW) ); 
 }
 
 

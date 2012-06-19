@@ -219,7 +219,7 @@ protected:
             output.flush();
          }
 
-         CommonTime now;
+         CommonTime now = SystemTime();
          for (int i=0; i<sendSize; i++)
          {
             if (now - lastSendTime[i] > sendPeriod[i])

@@ -1375,7 +1375,7 @@ try
    if (n < 4)
    {
       lofs << "Inadequate visibility: grid " << Rx.printf("%5.1AN %5.1LE")
-           << " time " << tt << endl;
+           << " time " << CivilTime(tt) << endl;
       return;
    }
    DC = Matrix<double>(DC,0,0,n,4);       // trim the unnecessary zeros

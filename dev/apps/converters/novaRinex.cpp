@@ -62,7 +62,7 @@
 #include "RinexObsHeader.hpp"
 #include "Triple.hpp"
 #include "GPSWeekSecond.hpp"
-#include "Epoch.hpp"
+#include "SystemTime.hpp"
 //#include "RinexBinex.hpp"
 
 using namespace std;
@@ -152,7 +152,7 @@ int main(int argc, char **argv)
       struct tm *tblock;
       timer = time(NULL);
       tblock = localtime(&timer);
-      static_cast<Epoch>(CurrEpoch).setLocalTime();
+      CurrEpoch = SystemTime();
 
       i = GetCommandInput(argc, argv);
       if(i) return 0;
@@ -992,25 +992,25 @@ try {
    }
    if(dasheb.getCount()) {
       values = dasheb.getValue();
-      static_cast<Epoch>(BegTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
+      scanTime(BegTime, values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << " Input begin time " << values[0] << " = " << BegTime << endl;
       if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(BegTime).week;
    }
    if(dashgb.getCount()) {
       values = dashgb.getValue();
-      static_cast<Epoch>(BegTime).scanf(values[0], "%F,%g");
+      scanTime(BegTime, values[0], "%F,%g");
       if(help) cout << " Input begin time " << values[0] << " = " << BegTime << endl;
       if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(BegTime).week;
    }
    if(dashee.getCount()) {
       values = dashee.getValue();
-      static_cast<Epoch>(EndTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
+      scanTime(EndTime, values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << " Input end time " << values[0] << " = " << EndTime << endl;
       if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(EndTime).week;
    }
    if(dashge.getCount()) {
       values = dashge.getValue();
-      static_cast<Epoch>(EndTime).scanf(values[0], "%F,%g");
+      scanTime(EndTime, values[0], "%F,%g");
       if(help) cout << " Input end time " << values[0] << " = " << EndTime << endl;
       if(gpsWeek == -1) gpsWeek = static_cast<GPSWeekSecond>(EndTime).week;
    }

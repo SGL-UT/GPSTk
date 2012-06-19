@@ -42,8 +42,6 @@
 #include <list>
 #include <map>
 
-#include "CommonTime.hpp"
-#include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"

@@ -49,6 +49,8 @@
 #include "RinexNavFilterOperators.hpp"
 #include "FileFilterFrame.hpp"
 #include "GPSWeekSecond.hpp"
+#include "SystemTime.hpp"
+#include "CivilTime.hpp"
 #include <string>
 
 using namespace std;
@@ -85,7 +87,7 @@ int main(int argc, char* argv[])
       rnh.fileProgram = "fic2rin";
       rnh.fileAgency = "";
       ostringstream ostr;
-      ostr << CommonTime();
+      ostr << CivilTime(SystemTime());
       rnh.date = ostr.str();
       rnh.version = 2.1;
       rnh.valid |= RinexNavHeader::versionValid;

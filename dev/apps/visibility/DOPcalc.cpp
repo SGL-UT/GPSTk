@@ -54,6 +54,7 @@
 #include "TropModel.hpp"
 #include "PRSolution2.hpp"
 #include "DOP.hpp"
+#include "CivilTime.hpp"
 #include "TimeString.hpp"
 
 using namespace std;
@@ -275,7 +276,7 @@ void DOPCalc::process()
 
             // output some info if in super-debug mode
          if (debugLevel > 3)
-            cout  << "  " << tempTime << "  " << satID 
+            cout  << "  " << CivilTime(tempTime) << "  " << satID 
                   << " Elev: " << elev << " Azim: " 
                   << rxXvt.x.azAngle(svXvt.x) << endl;
          
@@ -329,7 +330,7 @@ void DOPCalc::process()
             rangeVec.push_back(rangeL1 - ionoCorrection);
               
             if (debugLevel > 2)
-               cout << tempTime << " " << satID << " dual freq iono correction: "
+               cout << CivilTime(tempTime) << " " << satID << " dual freq iono correction: "
                     << ionoCorrection  << "m , range: " << rangeL1 
                     << " corrected range: " << (rangeL1 - ionoCorrection) 
                     << endl;

@@ -42,6 +42,7 @@
 #include <vector>
 #include "TimeString.hpp"
 #include "CommonTime.hpp"
+#include "SystemTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
 #include "Exception.hpp"
@@ -138,7 +139,7 @@ public:
       }      
       
       // week option (otherwise assume data is from this week)
-      CommonTime now;
+      SystemTime now;
       time.week = static_cast<GPSWeekSecond>(now).week;
       time.sow = static_cast<GPSWeekSecond>(now).sow;
       if (weekOpt.getCount())
@@ -258,9 +259,9 @@ protected:
             	continue;
             	
             // use the time set in the PBEN as a hint, resolve time exactly
-            CommonTime hintTime = CommonTime(time.week, time.sow);
-            CommonTime tempTime = hintTime;
-   	   	double  sow1     = static_cast<GPSWeekSecond>(tempTime).sow;
+            CommonTime hintTime = GPSWeekSecond(time.week, time.sow);
+            GPSWeekSecond tempTime(hintTime);
+   	   	double  sow1     = tempTime.sow;
             int     sow2     = static_cast<int>(sow1/1800);
             double  sow3     = static_cast<double>(sow2 * 1800);
       		double  sow_mben = 0.05 * mben.seq;
@@ -270,7 +271,7 @@ protected:
  		        sow4 += 1800;
  		     	
  		     	// this is the time for this epoch
- 		     	tempTime=GPSWeekSecond(static_cast<GPSWeekSecond>(tempTime).week, sow4);
+ 		     	tempTime.sow = sow4;
 
 				// this is the satellite ID for this PRN
 				SatID satID(mben.svprn,SatID::systemGPS);
@@ -399,7 +400,7 @@ protected:
 					PhasePair lastPPair = lastTPPair.second;
 					double dL1 = phaseL1 - lastPPair.first;             // cycles
 					double dL2 = phaseL2 - lastPPair.second;            // cycles
-					double dt  = static_cast<GPSWeekSecond>(tempTime).sow - static_cast<GPSWeekSecond>(lastTime).sow; // sec
+					double dt  = tempTime.sow - static_cast<GPSWeekSecond>(lastTime).sow; // sec
 					
 					double x1 = (dL1/dt) * gpstk::L1_WAVELENGTH_GPS;        // m/s
             	double x2 = (dL2/dt) * gpstk::L2_WAVELENGTH_GPS;        // m/s
@@ -488,11 +489,11 @@ protected:
 
 				// if we have gotten eph data for this SV and time, we can 
 				// find the position. If so, then output results for this epoch
-				CommonTime xvtTime = tempTime + offsetSec;
+                                CommonTime xvtTime = CommonTime(tempTime) + offsetSec;
 				try
 				{	
 					// get poisition of SV, possibly at offset time
-            	CommonTime xvtTime = tempTime + offsetSec;
+               CommonTime xvtTime = CommonTime(tempTime) + offsetSec;
                Xvt xvt = gpsEphStore.getXvt(satID,xvtTime);
  					
 					// ouput data
@@ -519,7 +520,7 @@ protected:
             {
             	if (debugLevel > 1)
                	cout << "---\nCould not output data for " 
-                       << satID << " at " << xvtTime << endl;
+                     << satID << " at " << GPSWeekSecond(xvtTime) << endl;
 				}          
 		 	}       // else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          else if (epb.checkId(hdr.id) && (input >> epb) && epb)
@@ -542,7 +543,7 @@ protected:
                if (sow>FULLWEEK || sow<0)
                   continue;
                
-               CommonTime t = CommonTime(time.week, nav.getHOWTime()) - 6;
+               CommonTime t = CommonTime(GPSWeekSecond(time.week, nav.getHOWTime())) - 6;
                nav.freshnessCount = fc++;
                nav.time = t;
                 				

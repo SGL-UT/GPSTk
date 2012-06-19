@@ -286,7 +286,7 @@ protected:
                long sow = sf.getHOWTime();
                if (sow>FULLWEEK || sow<0)
                   continue;
-		CommonTime t = CommonTime(time.week, sf.getHOWTime()) - 6;
+               CommonTime t = CommonTime(GPSWeekSecond(time.week, sf.getHOWTime())) - 6;
                sf.freshnessCount = fc++;
                sf.time = t;
                output << sf << flush;

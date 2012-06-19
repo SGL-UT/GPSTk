@@ -293,8 +293,8 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
            << "rxPos: " << rxPos << endl
            << "minElev: " << minElev << endl
            << "graphElev: " << graphElev << endl
-           << "startTime: " << startTime << endl
-           << "stopTime: " << stopTime << endl;
+           << "startTime: " << printTime(startTime, timeFormat) << endl
+           << "stopTime: " << printTime(stopTime, timeFormat) << endl;
   
    return true;
 }

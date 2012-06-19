@@ -505,7 +505,7 @@ void FICFixer::scanRIN(const string& fn)
      // output info
      cout.fill(' ');
      cout << "File: " << fn << " : " << endl
-          << ", Epoch: " << ephEpoch << ", PRN " << setw(2) << prn
+          << ", Epoch: " << CivilTime(ephEpoch) << ", PRN " << setw(2) << prn
           << ", IODC: 0x" << hex << setw(3) << setfill('0') << iodc 
           << ", IODE: 0x" << setw(3) << setfill('0') << iode << dec
           << ", diff = " << magnitude << " m" << endl;
