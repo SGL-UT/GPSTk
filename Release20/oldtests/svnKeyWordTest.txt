@@ -1,8 +1,0 @@
-This is meaningless text.
-$LastChangedDate$
-$LastChangedRevision$
-$LastChangedBy$
-$HeadURL$
-$Id$
-This is more meaningless text.
-This text was added after the above line and should form revision 66.
