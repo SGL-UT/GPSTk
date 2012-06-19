@@ -125,7 +125,7 @@ namespace gpstk
       /// specifications for the codes are released, this list may need to be
       /// adjusted. Specifically, this lists assumes that the same I & Q codes will be
       /// used on all three of the Galileo carriers. If that is not true, more
-      /// identifers need to be allocated
+      /// identifiers need to be allocated
       enum TrackingCode
       {
          tcUnknown,
