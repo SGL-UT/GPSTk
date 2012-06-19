@@ -65,7 +65,7 @@
 *  means of determining is the specified information is available prior to
 *  making a "get" call.  This is useful if you want to avoid writing 
 *  "try/catch" blocks. 
-*     bool PRNIDavailable( const int NAVSTARID, const gpstk::DayTme dt ) const;
+*     bool PRNIDavailable( const int NAVSTARID, const gpstk::CommonTime dt ) const;
 *     bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt ) const;
 *
 *
@@ -84,6 +84,7 @@
 
    // Library Headers
 #include "CommonTime.hpp"
+#include "SystemTime.hpp"
 #include "gps_constants.hpp"
 #include "Exception.hpp"
 
@@ -134,12 +135,12 @@ class SVNumXRef
       ~SVNumXRef() {}
       BlockType getBlockType( const int NAVSTARID ) const;
       std::string getBlockTypeString( const int NAVSTARID ) const;
-      int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt = gpstk::CommonTime() ) const;
-      int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt = gpstk::CommonTime() ) const;
-      bool PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt = gpstk::CommonTime() ) const;
-      bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = gpstk::CommonTime() ) const;
+      int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
+      int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
+      bool PRNIDAvailable( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
+      bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
       bool BlockTypeAvailable( const int NAVSTARID ) const;
-      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = gpstk::CommonTime() ) const;
+      bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
       
    protected:
       std::multimap<int,XRefNode> NtoPMap;

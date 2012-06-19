@@ -934,16 +934,18 @@ namespace gpstk
       for (j=1;j<(15-slen);j++) os << " ";
 
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
-      dt=GPSWeekSecond(week, SOW);
+      dt = GPSWeekSecond(week, SOW);
       int weekbit10= week& 0x3FF;
       os.width(4);
-      os << static_cast<GPSWeekSecond>(dt).week << "(";
+      os << week << "(";
       os.width(4);
       os << weekbit10 << ")  ";
       os.width(6);
-      os << static_cast<GPSWeekSecond>(dt).sow<< "   ";
+      os << SOW << "   ";
 
-      switch (static_cast<YDSTime>(dt).doy)
+      YDSTime yds(dt);
+      CivilTime ct(dt);
+      switch (yds.doy)
       {
          case 0: os << "Sun-0"; break;
          case 1: os << "Mon-1"; break;
@@ -957,21 +959,21 @@ namespace gpstk
       os << "   ";
       os.fill('0');
       os.width(3);
-      os << static_cast<YDSTime>(dt).doy << "   ";
+      os << yds.doy << "   ";
       os.width(5);
-      os << static_cast<YDSTime>(dt).sod << "   ";
+      os << yds.sod << "   ";
       os.width(2);
-      os << static_cast<CivilTime>(dt).month << "/";
+      os << ct.month << "/";
       os.width(2);
-      os << static_cast<CivilTime>(dt).day << "/";
+      os << ct.day << "/";
       os.width(4);
-      os << static_cast<CivilTime>(dt).year << "   ";
+      os << ct.year << "   ";
       os.width(2);
-      os << static_cast<CivilTime>(dt).hour << ":";
+      os << ct.hour << ":";
       os.width(2);
-      os << static_cast<CivilTime>(dt).minute << ":";
+      os << ct.minute << ":";
       os.width(2);
-      os << static_cast<short>(static_cast<CivilTime>(dt).second) << "\n";
+      os << static_cast<short>(ct.second) << "\n";
       os.fill(' ');
    }
 

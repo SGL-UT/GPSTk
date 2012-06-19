@@ -33,7 +33,7 @@
 #include <stdio.h>
 // gpstk
 #include "SVExclusionList.hpp"
-#include "Epoch.hpp"
+#include "CommonTime.hpp"
 #include "TimeString.hpp"
 
 
@@ -162,9 +162,9 @@ namespace gpstk
                try
                {
                   //cout << "Input start string: '" << temps << "'." << endl;
-                  static_cast<Epoch>(tempDTs).scanf( temps, timeSpecString );
+                  scanTime(tempDTs, temps, timeSpecString );
                   //cout << "Input   end string: '" << tempe << "'." << endl;
-                  static_cast<Epoch>(tempDTe).scanf( tempe, timeSpecString );
+                  scanTime(tempDTe, tempe, timeSpecString );
                   if (tempDTs<=tempDTe)
                   {
                      SVExclusion svEx( tempDTs, tempDTe, PRNID, comment );
@@ -184,20 +184,11 @@ namespace gpstk
                      readFailList.push_back( failString );
                   }
                }
-               catch (Epoch::EpochException& dte)
+               catch (InvalidRequest& ir)
                {
                   readFailCount++;
                   string failString = buildFailString(
-                     dte.getText(),
-                     lineCount,
-                     filename);
-                  readFailList.push_back( failString );
-               }
-               catch (Epoch::FormatException& fe)
-               {
-                  readFailCount++;
-                  string failString = buildFailString(
-                     fe.getText(),
+                     ir.getText(),
                      lineCount,
                      filename);
                   readFailList.push_back( failString );

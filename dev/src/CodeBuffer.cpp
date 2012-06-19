@@ -37,6 +37,7 @@
 //=============================================================================
 
 #include "CodeBuffer.hpp"
+#include "SystemTime.hpp"
 
 namespace gpstk
 {
@@ -44,7 +45,7 @@ namespace gpstk
    {
       PRNID = SVPRNID;
       POrYCode = P_CODE;
-      currentTime = gpstk::CommonTime();
+      currentTime = SystemTime();
       buffer = new unsigned long[NUM_6SEC_WORDS];
    }
 

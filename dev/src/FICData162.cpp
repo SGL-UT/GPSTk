@@ -49,7 +49,6 @@
  */
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
-#include "CommonTime.hpp"
 #include "FICData162.hpp"
 
 #include <cmath>

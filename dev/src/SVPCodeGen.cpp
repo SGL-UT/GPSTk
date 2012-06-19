@@ -39,7 +39,7 @@
 
 #include <iostream>
 #include "SVPCodeGen.hpp"
-#include "Epoch.hpp"
+#include "GPSWeekZcount.hpp"
 
 using namespace std;
 namespace gpstk
@@ -61,7 +61,7 @@ namespace gpstk
    {
          // Compute appropriate X2A offset
       long X2count;
-      long X1count = static_cast<Epoch>(currentZTime).GPSzcount();
+      long X1count = GPSWeekZcount(currentZTime).zcount;
       int dayAdvance;
       int EffPRNID;
    
@@ -120,6 +120,6 @@ namespace gpstk
    void SVPCodeGen::setCurrentZCount(const gpstk::GPSZcount& z)
    {
       GPSZcount z2 = z - z%4;
-      static_cast<Epoch>(currentZTime) = z2;
+      currentZTime = GPSWeekZcount(z2.getWeek(), z2.getZcount());
    }
 }     // end of namespace

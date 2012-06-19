@@ -32,6 +32,7 @@
 #include <cmath>
 #include "Logger.hpp"
 #include "MJD.hpp"
+#include "JulianDate.hpp"
 
 namespace gpstk
 {

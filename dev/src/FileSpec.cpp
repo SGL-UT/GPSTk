@@ -51,7 +51,6 @@
 #include <algorithm>
 
 #include "FileSpec.hpp"
-#include "Epoch.hpp"
 #include "TimeString.hpp"
 #include "StringUtils.hpp"
 
@@ -260,7 +259,7 @@ namespace gpstk
       try
       {
          CommonTime dt(0.L);
-         static_cast<Epoch>(dt).scanf(filename, fileSpecString);
+         mixedScanTime(dt, filename, fileSpecString);
          return dt;
       }
       catch(Exception& exc)

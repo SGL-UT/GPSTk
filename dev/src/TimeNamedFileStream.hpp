@@ -48,6 +48,7 @@
 
 #include "Exception.hpp"
 #include "CommonTime.hpp"
+#include "SystemTime.hpp"
 #include "FFStream.hpp"
 #include "TimeString.hpp"
 
@@ -102,7 +103,7 @@ namespace gpstk
 
 
       // Update the file name, returns true if the file name changed
-      bool updateFileName(const CommonTime& t=CommonTime())
+      bool updateFileName(const CommonTime& t=SystemTime())
       {
          bool openedNewFile = false;
          const std::string newFilename=printTime(t,filespec);

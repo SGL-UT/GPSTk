@@ -31,7 +31,7 @@
 
 
 #include "SatDataReader.hpp"
-#include "Epoch.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 
@@ -125,14 +125,14 @@ namespace gpstk
             if(ldate[0] != '0')
             {
                 ldate = StringUtils::translate(ldate, "-", " ");
-                static_cast<Epoch>(data.launchDate).scanf(ldate, "%Y %m %d");
+                scanTime(data.launchDate, ldate, "%Y %m %d");
             }
 
                // Get deactivation date in a proper format
             if(ddate[0] != '0')
             {
                 ddate = StringUtils::translate(ddate, "-", " ");
-                static_cast<Epoch>(data.deactivationDate).scanf(ddate, "%Y %m %d");
+                scanTime(data.deactivationDate, ddate, "%Y %m %d");
             }
 
 

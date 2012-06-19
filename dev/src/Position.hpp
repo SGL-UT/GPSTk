@@ -38,12 +38,10 @@
 
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-#include "CommonTime.hpp"  // for FormatException
 #include "Triple.hpp"
 #include "EllipsoidModel.hpp"
 #include "ReferenceFrame.hpp"
 #include "Xvt.hpp"
-#include "Epoch.hpp"
 
 namespace gpstk
 {
@@ -620,7 +618,6 @@ namespace gpstk
           * @param fmt format to use to parse \c str.
           * @throw GeometryException if \c fmt is an incomplete or invalid
           *    specification
-          * @throw FormatException if unable to scan \c str.
           * @throw StringException if an error occurs manipulating the
           * \c str or \c fmt strings.
           * @return a reference to this object.
@@ -628,7 +625,6 @@ namespace gpstk
       Position& setToString(const std::string& str,
                             const std::string& fmt)
          throw(GeometryException,
-               Epoch::FormatException,
                StringUtils::StringException);
 
 

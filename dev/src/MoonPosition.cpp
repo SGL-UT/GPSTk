@@ -30,7 +30,7 @@
 
 
 #include "MoonPosition.hpp"
-#include "Epoch.hpp"
+#include "MJD.hpp"
 #include "CivilTime.hpp"
 #include "EpochDataStore.hpp"
 
@@ -452,7 +452,7 @@ namespace gpstk
 
 
          // Centuries since J1900
-      double tt((static_cast<Epoch>(t).MJD()-15019.5)/36525.0);
+      double tt((MJD(t).mjd-15019.5)/36525.0);
 
 
          // Fundamental arguments (radians) and derivatives (radians per
@@ -654,7 +654,7 @@ namespace gpstk
 
 
          // Julian centuries since J2000
-      tt=(static_cast<Epoch>(t).MJD()-51544.5)/36525.0;
+      tt=(MJD(t).mjd-51544.5)/36525.0;
 
          // Fricke equinox correction
       double EPJ(2000.0+tt*100.0);

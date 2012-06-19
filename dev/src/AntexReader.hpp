@@ -91,7 +91,7 @@ namespace gpstk
        *
        *      // Get antenna data and eccentricity for L1 for satellite GPS-07
        *      // at a specific epoch
-       *   CommonTime epoch(2008, 6, 15, 10, 21, 12654.0);
+       *   CivilTime epoch(2008, 6, 15, 10, 21, 12654.0);
        *   satGPS07 = antexread.getAntenna( "G07", epoch );
        *   cout << satGPS07.getAntennaPCOffset( Antenna::G01 ) << endl;
        *

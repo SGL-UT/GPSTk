@@ -29,7 +29,7 @@
 
 #include "Logger.hpp"
 #include "StringUtils.hpp"
-#include "Epoch.hpp"
+#include "SystemTime.hpp"
 #include "TimeString.hpp"
 #include "MemoryUtils.hpp"
 #include "String.hpp"
@@ -74,8 +74,7 @@ namespace gpstk
 
    void Logger::log(const std::string& text, LogLevel level, ExceptionLocation location)
    {
-      CommonTime now; static_cast<Epoch>(now).setLocalTime();
-      LogMessage msg(name, text, level, now,
+      LogMessage msg(name, text, level, SystemTime(),
                      location.getFileName(),
                      location.getFunctionName(),
                      location.getLineNumber());

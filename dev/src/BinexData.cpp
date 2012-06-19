@@ -29,7 +29,6 @@
 
 #include <cstring>
  
-#include "CommonTime.hpp"
 #include "BinexData.hpp"
 #include "BinexStream.hpp"
 

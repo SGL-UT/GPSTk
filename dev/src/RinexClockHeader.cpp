@@ -7,10 +7,10 @@
 
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
+#include "SystemTime.hpp"
 #include "RinexClockStream.hpp"
 #include "RinexClockHeader.hpp"
 #include "TimeString.hpp"
-#include "Epoch.hpp"
 
 #define debug 0
 
@@ -242,8 +242,7 @@ namespace gpstk
 
          line = leftJustify(program,20);
          line += leftJustify(runby,20);
-         CommonTime dt;
-         static_cast<Epoch>(dt).setLocalTime();
+         CommonTime dt = SystemTime();
          string dat = printTime(dt,"%02m/%02d/%04Y %02H:%02M:%02S");
          line += leftJustify(dat, 20);
          line += runByString;           // "PGM / RUN BY / DATE"

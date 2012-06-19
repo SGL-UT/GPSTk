@@ -30,7 +30,7 @@
 
 #include "PoleTides.hpp"
 #include "CivilTime.hpp"
-#include "Epoch.hpp"
+#include "MJD.hpp"
 
 
 namespace gpstk
@@ -75,7 +75,7 @@ namespace gpstk
             // Compute appropriate running averages
             // Get time difference between current epoch and
             // J2000.0, in years
-         double timedif((static_cast<Epoch>(t).MJD() - static_cast<Epoch>(j2000).MJD())/365.25);
+         double timedif((MJD(t).mjd - MJD(j2000).mjd)/365.25);
 
          double xpbar(0.054 + timedif*0.00083);
          double ypbar(0.357 + timedif*0.00395);

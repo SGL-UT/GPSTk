@@ -50,7 +50,6 @@
 
 #include "StringUtils.hpp"
 #include "CommandOptionWithPositionArg.hpp"
-#include "Epoch.hpp"
 
 using namespace std;
 

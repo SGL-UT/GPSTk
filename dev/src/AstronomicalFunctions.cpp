@@ -30,7 +30,7 @@
 
 #include "AstronomicalFunctions.hpp"
 #include "YDSTime.hpp"
-#include "Epoch.hpp"
+#include "JulianDate.hpp"
 
 
 namespace gpstk
@@ -71,19 +71,20 @@ namespace gpstk
        */
    double UTC2SID(const CommonTime& t)
    {
+      YDSTime yds(t);
 
-      double y(static_cast<YDSTime>(t).year-1.0);
+      double y(yds.year-1.0);
       double m(13.0);
-      double d(static_cast<YDSTime>(t).doy);
+      double d(yds.doy);
 
          // Hours of day (decimal)
-      double h(static_cast<YDSTime>(t).sod/3600.0);
+      double h(yds.sod/3600.0);
 
          // Fraction of day
-      double frofday (static_cast<YDSTime>(t).sod/86400.0);
+      double frofday (yds.sod/86400.0);
 
          // Compute Julian Day, including decimals
-      double jd(static_cast<Epoch>(t).JD());
+      double jd(JulianDate(t).jd);
 
          // Temporal value, in centuries
       double tt( (jd - 2451545.0)/36525.0 );

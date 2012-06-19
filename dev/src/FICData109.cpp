@@ -50,7 +50,6 @@
 
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
-#include "CommonTime.hpp"
 #include "FICData109.hpp"
 
 #include <cmath>

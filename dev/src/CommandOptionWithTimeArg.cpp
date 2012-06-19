@@ -49,8 +49,8 @@
  */
 
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
 #include "CommandOptionWithTimeArg.hpp"
-#include "Epoch.hpp"
 
 using namespace std;
 
@@ -70,9 +70,9 @@ namespace gpstk
          if (thisTimeSpec != string())
          {
             try {
-               CommonTime dt;
-               static_cast<Epoch>(dt).scanf(value[vecindex], thisTimeSpec);
-               times.push_back(dt);
+               CommonTime t;
+               scanTime(t, value[vecindex], thisTimeSpec);
+               times.push_back(t);
             }
             catch (...)
             {
