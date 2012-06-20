@@ -1,0 +1,9 @@
+
+SubDir TOP apps mergetools ;
+
+GPSLinkLibraries mergeRinNav mergeRinObs mergeRinMet mergeFIC : gpstk ;
+
+GPSMain mergeRinObs : mergeRinObs.cpp ;
+GPSMain mergeRinNav : mergeRinNav.cpp ;
+GPSMain mergeRinMet : mergeRinMet.cpp ;
+GPSMain mergeFIC : mergeFIC.cpp ;

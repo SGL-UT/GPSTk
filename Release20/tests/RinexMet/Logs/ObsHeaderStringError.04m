@@ -1,0 +1,27 @@
+     2.10           Meteorological                          RINEX VERSION / TYPE
+GFW - RMW           NIMA                04/18/2004 23:58:50 PGM / RUN BY / DATE
+Some weather data may have corrected values                 COMMENT
+85408                                                       MARKER NAME
+85408                                                       MARKER NUMBER
+    10    PR    TD    HR    ZW    ZD    ZT    WD    WS    RI# / TYPES OF OBSERV
+       zzzHIzzz                                             # / TYPES OF OBSERV
+Vaisala             PTB220                        0.1    PR SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    TD SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    HR SENSOR MOD/TYPE/ACC
+Vaisala             PTB220                        0.1    ZW SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    ZD SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    ZT SENSOR MOD/TYPE/ACC
+Vaisala             PTB220                        0.1    WD SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    WS SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    RI SENSOR MOD/TYPE/ACC
+Vaisala             HMP230                        0.1    HI SENSOR MOD/TYPE/ACC
+  -740289.8363 -5457071.7414  3207245.6207        0.0000 PR SENSOR POS XYZ/H
+  -740289.8363 -5457071.7414  3207245.6207        0.0000 TD SENSOR POS XYZ/H
+                                                            END OF HEADER
+ 04  4 19  0  0  0  992.6   23.9   59.7   50.0   40.0   30.0   20.0   15.0
+       10.0   27.7
+ 04  4 19  0 15  0  992.8   23.6   61.6   50.0   40.0   30.0   20.0   15.0
+       10.0   27.3
+ 04  4 19  0 30  0  992.8   23.4   60.9   50.0   40.0   30.0   20.0   15.0
+       10.0   27.3
+

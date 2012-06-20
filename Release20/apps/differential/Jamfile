@@ -1,0 +1,7 @@
+SubDir TOP apps differential ;
+
+GPSLinkLibraries vecsol : gpstk ;
+BonkForte ; # bleah.
+
+GPSMain vecsol : vecsol.cpp ;
+

@@ -1,0 +1,120 @@
+#!/usr/bin/env python
+
+import string, time, datetime
+
+from sys import exit, stdin
+
+from pylab import *
+
+from optparse import OptionParser
+parser = OptionParser(usage="usage: %prog [options]\nA program to plot the "
+                      "output of the Obs Array Evaluator using matplotlib.")
+parser.set_description
+parser.add_option("-d", "--debug", default=0, dest="debug", action="count",
+                  help="Increase the debug level.")
+
+parser.add_option("-i", "--input", dest="inputFile", type="string",
+                  action="store", 
+                  help="Input data file, defaults to stdin.")
+
+parser.add_option("-t", "--title", dest="title", type="string", action="store",
+                  help="Specify a title for the plot. Default is the name "
+                  "of the input.")
+
+parser.add_option("-s", "--save-figure", dest="save", action="store",
+                  type="string", help="Save the figure to the indicated file.")
+
+(options, args) = parser.parse_args()
+
+if len(args) and options.inputFile == None:
+    options.inputFile = args[0]
+
+inputFile = stdin
+if (options.inputFile):
+    inputFile = open(options.inputFile)
+
+if options.title == None:
+    options.title = inputFile.name
+
+if options.debug:
+    print options
+
+
+import re
+#mdyhms_re = re.compile("(\d{1,2})/(\d{1,2})/(\d{2,4}) (\d{1,2}):(\d\d):(\d\d)")
+mdyhms_re = re.compile("(?P<month>\d{1,2})/"
+                       "(?P<day>\d{1,2})/"
+                       "(?P<year>\d{2,4}) "
+                       "(?P<hour>\d{1,2}):"
+                       "(?P<min>\d\d):"
+                       "(?P<sec>\d\d) ")
+
+oae_re = re.compile("GPS (?P<prn>\d+) "
+                    "Pass (?P<pass>\d+) "
+                    "(?P<val>-?\d+\.\d+) "
+                    "Az (?P<az>\d+\.\d+) "
+                    "El (?P<el>\d+\.\d+)")
+
+data =[]
+labels=[]
+
+for line in inputFile:
+    if len(line)==0: continue
+    if line[0] == '#': continue
+    
+    omo = oae_re.search(line)
+    tmo = mdyhms_re.search(line)
+    if not omo or not tmo:
+        if options.debug>1: print "Couldn't parse:", line
+        continue
+
+    dtime = datetime.datetime(
+        int(tmo.group('year')), int(tmo.group('month')), int(tmo.group('day')),
+        int(tmo.group('hour')), int(tmo.group('min')), int(tmo.group('sec')))
+
+    t = matplotlib.dates.date2num(dtime)
+
+    row = [t, int(omo.group('prn')), int(omo.group('pass')), float(omo.group('val'))]
+    data.append(row)
+
+data = array(data)
+
+if options.debug>2:
+    print "data:",data
+    exit()
+
+ax=subplot(111)
+
+(rows,cols) = data.shape;
+if len(labels)<cols:
+    labels =['time']
+    labels += ['%d'%c for c in xrange(1,cols)]
+
+plot_date(data[:,0], data[:,3], ',')
+
+#for c in xrange(1,1):
+#    pdata = data[data[:,1]==c]
+#    if pdata.size == 0: continue
+#    print pdata
+#    plot_date(pdata[:,0], pdata[:,3], '.')
+    
+legend()
+xlabel(labels[0])
+
+xMajorFmt=DateFormatter("%H:%M")
+xMajorLoc=matplotlib.dates.DayLocator()
+xMinorLoc=matplotlib.dates.HourLocator()
+ax.xaxis.set_major_formatter(xMajorFmt)
+
+labels = ax.get_xticklabels()
+setp(labels, 'rotation', 45, fontsize=9)
+
+#ax.autoscale_view()
+#ylim((-5,5))
+
+grid()
+
+if (options.save == None):
+    show()
+else:
+   savefig(options.save)

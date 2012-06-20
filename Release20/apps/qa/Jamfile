@@ -1,0 +1,8 @@
+SubDir TOP apps qa ;
+
+GPSLinkLibraries obsrip testexpr : gpstk ;
+BonkForte ; # bleah.
+
+GPSMain obsrip : obsrip.cpp LinearCombination.cpp ;
+GPSMain testexpr : testExpression.cpp Expression.cpp ;
+

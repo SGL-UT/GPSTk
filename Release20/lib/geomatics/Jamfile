@@ -1,0 +1,44 @@
+# $Id$
+
+SubDir TOP lib geomatics ;
+
+if $(PREPROCESSING)
+{
+  GPSSetupLibrary geomatics : gpstk ;
+}
+else
+{
+   GPSBuildLibrary geomatics : 
+	AntexData.cpp
+	AntexHeader.cpp
+	DDid.cpp 
+	DiscCorr.cpp 
+	EarthOrientation.cpp 
+	format.cpp
+	GeodeticFrames.cpp 
+	GSatID.cpp 
+	Namelist.cpp
+	PhaseWindup.cpp 
+	PreciseRange.cpp 
+	random.cpp
+	RobustStats.cpp 
+	SatPass.cpp 
+	SolarPosition.cpp 
+	SolarSystem.cpp
+	SolidEarthTides.cpp
+	SRI.cpp 
+	SRIFilter.cpp 
+	SRIleastSquares.cpp
+	SunEarthSatGeometry.cpp
+      ;
+
+   InstallFile $(INCDIR) :
+      AntexBase.hpp AntexData.hpp AntexHeader.hpp AntexStream.hpp
+      DDid.hpp DiscCorr.hpp EarthOrientation.hpp format.hpp
+      GeodeticFrames.hpp GSatID.hpp index.hpp logstream.hpp
+      Namelist.hpp PhaseWindup.hpp PreciseRange.hpp
+      random.hpp RobustStats.hpp SatPass.hpp SolarPosition.hpp
+      SRI.hpp SRIFilter.hpp SRIleastSquares.hpp SRIMatrix.hpp
+      SolarSystem.hpp SunEarthSatGeometry.hpp
+      ;
+}

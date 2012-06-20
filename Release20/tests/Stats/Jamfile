@@ -1,0 +1,3 @@
+SubDir TOP Stats ;
+
+TestMain Stats/xStats.tst : Stats/xStatsM.cpp Stats/xStats.cpp Stats/Stats.cpp ;

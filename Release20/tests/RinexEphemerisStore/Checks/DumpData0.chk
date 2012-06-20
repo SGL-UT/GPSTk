@@ -1,0 +1,11 @@
+Dump Rinex3EphemerisStore:
+Dump of FileStore
+ File  1: TestRinex06.031
+End dump of FileStore
+Dump of GPSEphemerisStore:
+ Span is 1360 172800.000 = 2006/01/31 00:00:00 GPS to 1360 266400.000 = 2006/02/01 02:00:00 GPS with 41 entries.
+Dump of GloEphemerisStore:
+ Span is End_time to Begin_time with 0 entries.
+Dump of GalEphemerisStore:
+ Span is End_time to Begin_time with 0 entries.
+End dump Rinex3EphemerisStore.
