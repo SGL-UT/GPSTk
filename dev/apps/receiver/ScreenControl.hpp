@@ -30,8 +30,6 @@
  * Clearing, updating and printing to a display.
  */
 
-#include "DayTime.hpp"
-
 namespace gpstk 
 {
    void clearScreen(void);

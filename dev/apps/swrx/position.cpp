@@ -37,6 +37,7 @@ We then solve for position.
 #include "Position.hpp"
 #include <iostream>
 #include <CommonTime.hpp>
+#include <GPSWeekZcount.hpp>
 #include <GPSEphemerisStore.hpp>
 #include <RinexNavStream.hpp>
 #include <RinexNavData.hpp>
@@ -116,8 +117,7 @@ bool P::initialize(int argc, char *argv[]) throw()
          zCount = asDouble(zCountOpt.getValue().front());
          // zCount is the time of transmission of the next subframe.
          zCount -= 6.0; 
-         CommonTime t(gpsWeek,zCount);
-         time = t;
+         time = GPSWeekZcount(gpsWeek,zCount);
    }
  
    for (int i=0; i < ephFileOption.getCount(); i++)
@@ -143,7 +143,7 @@ bool P::initialize(int argc, char *argv[]) throw()
            << " through " << bce.getFinalTime() << endl;
 
    if (verboseLevel)
-      cout << "Initial time estimate: " << time << endl;
+      cout << "Initial time estimate: " << GPSWeekZcount(time) << endl;
 
    if (time < bce.getInitialTime() || time > bce.getFinalTime())
       cout << "Warning: Initial time does not appear to be within the provided ephemeris data." << endl;

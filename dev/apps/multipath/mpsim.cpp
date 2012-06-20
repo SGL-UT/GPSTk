@@ -30,6 +30,8 @@
 #include "WGS84Geoid.hpp"
 #include "GNSSconstants.hpp"
 #include "IonoModel.hpp"
+#include "SystemTime.hpp"
+#include "TimeString.hpp"
 
 // From GPSTk's rxio
 #include "EphReader.hpp"
@@ -80,6 +82,8 @@ MPSim::MPSim(char *arg0)
     rateOption.setMaxCount(1);
     logfileOption.setMaxCount(1);
 
+    startTime = SystemTime();
+
     logFileName = "logfile";
     epochFormat="%02m/%02d/%04Y %02H:%02M:%03.1f";
 
@@ -88,7 +92,7 @@ MPSim::MPSim(char *arg0)
 
 MPSim::~MPSim()
 {
-   CommonTime endTime;
+   CommonTime endTime = SystemTime();
    logStream << "Execution end at: " << endTime.printf(epochFormat) << endl;
    logStream << "Total execution time: " << endTime - startTime << " seconds"
 	     << endl;
@@ -108,7 +112,7 @@ bool MPSim::initialize(int argc, char *argv[])
     logStream.open( logFileName.c_str() );
 
     logStream << "mpsim log file" << endl;
-    logStream << "Execution started at: " << startTime.printf(epochFormat) << endl;
+    logStream << "Execution started at: " << printString(startTime, epochFormat) << endl;
 
     return true;
   }

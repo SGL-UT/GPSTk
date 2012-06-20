@@ -163,8 +163,6 @@ protected:
       if ( sow >604800)
          return;
 
-      CommonTime howTime(week, sow);
-
       NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       
       AlmMap::iterator a;

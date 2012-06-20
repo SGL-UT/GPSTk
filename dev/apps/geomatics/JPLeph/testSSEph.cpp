@@ -31,6 +31,7 @@
 #include "Exception.hpp"
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"
+#include "SystemTime.hpp"
 #include "SolarSystem.hpp"
 #include "logstream.hpp"
 
@@ -64,7 +65,7 @@ try {
 
    // locals
    int i,iret=0;
-   CommonTime CurrEpoch;         // defaults to current local time
+   CommonTime CurrEpoch = SystemTime();
    SolarSystem SSEphemeris;
 
    // program name, title and version

@@ -529,8 +529,7 @@ void RINEXPVTSolution::process()
                 //  epoch time #Obs : <list of PRN IDs> : #GoodSVs [V}NV]
              if (logfileOn)
              {
-                CivilTime ct = rod.time;
-                logStream << printTime(ct,epochFormat) << " ";
+                logStream << printTime(rod.time, epochFormat) << " ";
                 logStream << rod.obs.size() << " ! ";
                 RinexObsData::RinexSatMap::const_iterator it;
                 vector<SatID>::const_iterator itSol;
@@ -571,9 +570,8 @@ void RINEXPVTSolution::process()
 
 	       if (prSolver.isValid())
           {
-             CivilTime ct = rod.time;
                 // Output epoch tag
-             cout << printTime(ct,epochFormat) << " ";
+             cout << printTime(rod.time, epochFormat) << " ";
 
              if (!transformENU)
              {

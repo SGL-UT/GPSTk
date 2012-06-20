@@ -452,8 +452,7 @@ void RxSim::process()
             vector<double> ionoVec;
             Triple antennaPos;
 
-            CommonTime t(gpsWeek,zCount);
-            time = t; 
+            time = GPSWeekZcount(gpsWeek, zCount);
 
             RinexNavStream rns(ephFile.c_str(), ios::in);
             rns.exceptions(ifstream::failbit);

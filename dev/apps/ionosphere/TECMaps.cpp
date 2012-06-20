@@ -128,13 +128,12 @@ int main(int argc, char **argv)
 try {
    int iret;
    clock_t totaltime=clock(); // timer
-   CommonTime CurrEpoch;
+   CommonTime CurrEpoch = SystemTime();
 
    BegTime = CommonTime::BEGINNING_OF_TIME;
    EndTime = CommonTime::END_OF_TIME;
 
       // Title description and run time
-   static_cast<Epoch>(CurrEpoch).setLocalTime();
    Title = "TECMaps, built on the GPSTK ToolKit, Ver 1.2 9/21/07, Run ";
    Title += printTime(CurrEpoch,"%04Y/%02m/%02d %02H:%02M:%02S\n");
    cout << Title;
@@ -604,22 +603,22 @@ try {
 
    if(dasheb.getCount()) {
       values = dasheb.getValue();
-      static_cast<Epoch>(BegTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
+      scanTime(BegTime, values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input BeginTime " << BegTime << endl;
    }
    if(dashee.getCount()) {
       values = dashee.getValue();
-      static_cast<Epoch>(EndTime).scanf(values[0], "%Y,%m,%d,%H,%M,%S");
+      scanTime(EndTime, values[0], "%Y,%m,%d,%H,%M,%S");
       if(help) cout << "Input EndTime " << EndTime << endl;
    }
    if(dashgb.getCount()) {
       values = dashgb.getValue();
-      static_cast<Epoch>(BegTime).scanf(values[0], "%F,%g");
+      scanTime(BegTime, values[0], "%F,%g");
       if(help) cout << "Input BeginGPSTime " << BegTime << endl;
    }
    if(dashge.getCount()) {
       values = dashge.getValue();
-      static_cast<Epoch>(EndTime).scanf(values[0], "%F,%g");
+      scanTime(EndTime, values[0], "%F,%g");
       if(help) cout << "Input EndGPSTime " << EndTime << endl;
    }
       // processing

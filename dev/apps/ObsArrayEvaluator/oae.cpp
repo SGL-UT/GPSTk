@@ -117,7 +117,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
       
    initialize(argc, argv);
 
-   CommonTime now;
+   CommonTime now(SystemTime());
 
    bool numeric = numericOption.getCount()>0;
          
@@ -253,7 +253,7 @@ void ObsArrayEvaluator::run(int argc, char *argv[])
    }
       
 
-   CommonTime then;
+   CommonTime then(SystemTime());
 
    if ( (verboseLevel) && (!numeric))
       output << "Processing complete in " << then - now << " seconds." << endl;

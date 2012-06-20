@@ -72,7 +72,7 @@
 #include "SatPass.hpp"
 #include "GloFreqIndex.hpp"
 #include "StringUtils.hpp"
-#include "Epoch.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -202,7 +202,7 @@ int main(int argc, char **argv)
          // Title and description
       //cout << "Name " << string(argv[0]) << endl;
       Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
-      static_cast<Epoch>(PrgmEpoch).setLocalTime();
+      PrgmEpoch = SystemTime();
       Title += printTime(PrgmEpoch,"%04Y/%02m/%02d %02H:%02M:%02S");
       cout << Title;
 
@@ -968,7 +968,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
 }
 
 //------------------------------------------------------------------------------------
-void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
+void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool doPrintTime)
 {
    int i,j,gap;
    GSatID sat;
@@ -993,9 +993,8 @@ void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool printTime)
       lastSP[sat] = i;
          // n,gap,sat,length,ngood,firstTime,lastTime
       os << " " << setw(2) << i+1 << " " << setw(4) << gap << " " << v[i];
-      if(printTime)
-         os << " at " << CurrEpoch.asString();
-//"%04Y/%02m/%02d %02H:%02M:%6.3f"
+      if(doPrintTime)
+         os << " at " << printTime(CurrEpoch, "%04Y/%02m/%02d %02H:%02M:%6.3f");
       os << endl;
    }
 }
@@ -1282,13 +1281,11 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2) {
-         static_cast<Epoch>(config.begTime).scanf(field[0]+","+field[1], "%F,%g");
-         GPSWeekSecond tempTime(asInt(field[0]),asDouble(field[1]));
-         config.begTime = tempTime.convertToCommonTime();
+         config.begTime = GPSWeekSecond(asInt(field[0]),asDouble(field[1]));
 	}
       else if(field.size() == 6)
-         static_cast<Epoch>(config.begTime).scanf(field[0]+","+field[1]+","+field[2]+","
-            +field[3]+","+field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
+         config.begTime = CivilTime(asInt(field[0]), asInt(field[1]), asInt(field[2]),
+                                    asInt(field[3]), asInt(field[4]), asInt(field[5]));
       else {
          cout << "Error: invalid --beginTime input: " << values[0] << endl;
       }
@@ -1302,17 +1299,12 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2) {
-         static_cast<Epoch>(config.endTime).scanf(field[0]+","+field[1], "%F,%g");
-         GPSWeekSecond tempTime(asInt(field[0]),asDouble(field[1]));
-         config.endTime = tempTime.convertToCommonTime();
+         config.endTime = GPSWeekSecond(asInt(field[0]),asDouble(field[1]));
       }
 
       else if(field.size() == 6) {
-         static_cast<Epoch>(config.endTime).scanf(field[0]+","+field[1]+","+field[2]
-            +","+field[3]+","+field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
-         CivilTime tempTime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
-                            asInt(field[3]),asInt(field[4]),asDouble(field[5]));
-         config.endTime = tempTime.convertToCommonTime();
+         config.endTime = CivilTime(asInt(field[0]),asInt(field[1]),asInt(field[2]),
+                                    asInt(field[3]),asInt(field[4]),asDouble(field[5]));
 	}
       else {
          cout << "Error: invalid --endTime input: " << values[0] << endl;

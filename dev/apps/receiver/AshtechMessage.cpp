@@ -156,7 +156,7 @@ namespace gpstk
          if ((newsow+6*SEC_PER_DAY)<oldsow)
             newweek++;
 
-         thisTime = CommonTime(newweek, newsow);
+         thisTime = GPSWeekSecond(newweek, newsow);
       }
 
       if ((msgType == MPC)&&(msgFormat == ASCII))
@@ -167,7 +167,7 @@ namespace gpstk
          while (seqDiff > (1800*50/2))
 		seqDiff -= 1800*50;
 
-         static_cast<Epoch>(thisTime).addMilliSeconds(50 * seqDiff);
+         thisTime.addMilliseconds(50 * seqDiff);
       }
 
       return thisTime;

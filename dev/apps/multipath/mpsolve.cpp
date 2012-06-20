@@ -34,6 +34,7 @@
 #include "ObsArray.hpp"
 #include "YDSTime.hpp"
 #include "GPSWeekSecond.hpp"
+#include "SystemTime.hpp"
 #include "Matrix.hpp"
 #include "MatrixFunctors.hpp"
 #include "MatrixOperators.hpp"
@@ -168,7 +169,7 @@ int main(int argc, char *argv[])
          return 0;
       }
 
-      CommonTime now;
+      CommonTime now = SystemTime();
 
       bool verbose=(verboseOption.getCount()>0);
       bool numeric=(numericOption.getCount()>0);
@@ -516,7 +517,7 @@ int main(int argc, char *argv[])
 
       if ( (verbose) && (!numeric))
       {
-         CommonTime then;
+         CommonTime then = SystemTime();
          cout << "Processing complete in " << then - now << " seconds." << endl;
       }
 

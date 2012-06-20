@@ -43,16 +43,13 @@
    // Language Headers
 #include <stdio.h>
 #include <string>
-#include "Epoch.hpp"
-#include "YDSTime.hpp"
-#include "CivilTime.hpp"
-#include "TimeConstants.hpp"
-
 
    // Project Headers
 #include "ConstellationSet.hpp"
-#include "Epoch.hpp"
 #include "YDSTime.hpp"
+#include "CivilTime.hpp"
+#include "TimeConstants.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -233,9 +230,10 @@ gpstk::CommonTime ConstellationSet::parseDate(string date)
    try
    {
       //cout << dateString << endl;
-      static_cast<Epoch>(dt).scanf(dateString, "%d %b %Y");
-      dt=static_cast<YDSTime>(  (SEC_PER_DAY/2) ).sod;
-      return dt;
+      scanTime(dt, dateString, "%d %b %Y");
+      YDSTime yds(dt);
+      yds.sod = SEC_PER_DAY / 2;
+      return yds;
    }
    catch(Exception exc)
    {

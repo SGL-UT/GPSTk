@@ -52,7 +52,6 @@
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
 #include "TimeString.hpp"
-#include "Epoch.hpp"
 #include "PRSolution.hpp"
 
 // DDBase
@@ -885,9 +884,9 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         static_cast<Epoch>(BegTime).scanf(field[0]+","+field[1], "%F,%g");
+         scanTime(BegTime, field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         static_cast<Epoch>(BegTime).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         scanTime(BegTime, field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cerr << "Error: invalid --BeginTime input: " << values[0] << endl;
@@ -903,9 +902,9 @@ try {
       while(msg.size() > 0)
          field.push_back(stripFirstWord(msg,','));
       if(field.size() == 2)
-         static_cast<Epoch>(EndTime).scanf(field[0]+","+field[1], "%F,%g");
+         scanTime(EndTime, field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         static_cast<Epoch>(EndTime).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         scanTime(EndTime, field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cerr << "Error: invalid --EndTime input: " << values[0] << endl;

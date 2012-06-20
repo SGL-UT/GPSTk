@@ -222,9 +222,6 @@ protected:
 
       //BWT if (debugLevel>1)
          nav.dump(cout);
-      CommonTime howTime(week, sow);
-
-      //BWT not used DayTime howTime(week, sow);
 
       //BWT if (!anyNav && (nav.range != rcCA || nav.carrier != ccL1))
          //BWT return;
