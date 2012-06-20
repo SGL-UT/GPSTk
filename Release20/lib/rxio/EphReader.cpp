@@ -248,8 +248,6 @@ namespace gpstk
                if (verboseLevel>3)
                   nav.dump(cout);
 
-               CommonTime howTime(week, sow);
-
                if (nav.range != rcCA || nav.carrier != ccL1)
                   return;
 

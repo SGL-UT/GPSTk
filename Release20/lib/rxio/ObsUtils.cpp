@@ -324,7 +324,7 @@ namespace gpstk
             continue;
 
          double sow = cb.absTime - week * FULLWEEK;
-         CommonTime t(week, sow);
+         CommonTime t(GPSWeekSecond(week, sow));
          if (i==0 || t0 == CommonTime(CommonTime::BEGINNING_OF_TIME))
             t0 = t;
          else if (std::abs(t - t0) > 0.1)

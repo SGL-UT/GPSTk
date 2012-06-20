@@ -182,7 +182,7 @@ namespace gpstk
          yr = static_cast<YDSTime>(ht).year;                     // save the year for later
          ht=CivilTime(yr,1,1,0,0,0.0);       // first day of that year
          w1 = static_cast<GPSWeekSecond>(ht).week;
-         if(static_cast<GPSWeekSecond>(ht).week == 6) w1++;       // GPS week of first Friday in the year
+         if(static_cast<GPSWeekSecond>(ht).getDayOfWeek() == 6) w1++; // GPS week of first Friday in the year
          yr = yr % 10;                       // last digit of the year
       }
       catch(Exception& dte) {
@@ -222,7 +222,7 @@ namespace gpstk
       double t,dt,arg;
       EarthOrientation eo;
 
-      t = static_cast<Epoch>(ep).MJD() + static_cast<YDSTime>(ep).sod/86400.0;
+      t = static_cast<MJD>(ep).mjd + static_cast<YDSTime>(ep).sod/86400.0;
       //if(t < tv || t > tv+7) // TD warn - outside valid range
       //
       dt = t - ta;
@@ -515,7 +515,7 @@ namespace gpstk
       throw(InvalidRequest)
    {
          // find the EOs before and after epoch
-      int loMJD = int(static_cast<Epoch>(t).MJD());
+      int loMJD = int(static_cast<MJD>(t).mjd);
       int hiMJD = loMJD + 1;
          // find these EOPs
       map<int,EarthOrientation>::const_iterator hit,lit;
@@ -530,7 +530,7 @@ namespace gpstk
       }
          // linearly interpolate to get EOP at the desired time
       EarthOrientation eo;
-      double dt=static_cast<Epoch>(t).MJD()-double(loMJD);
+      double dt=static_cast<MJD>(t).mjd-double(loMJD);
       eo.xp = (1.0-dt) * lit->second.xp + dt * hit->second.xp;
       eo.yp = (1.0-dt) * lit->second.yp + dt * hit->second.yp;
       eo.UT1mUTC = (1.0-dt) * lit->second.UT1mUTC + dt * hit->second.UT1mUTC;

@@ -22,9 +22,10 @@
 #include "Position.hpp"
 #include "GNSSconstants.hpp"       // TWO_PI
 #include "geometry.hpp"                // DEG_TO_RAD
-#include "Epoch.hpp"
 #include "SolarPosition.hpp"
 #include "YDSTime.hpp"
+#include "JulianDate.hpp"
+
 namespace gpstk {
 using namespace std;
 
@@ -35,7 +36,7 @@ static double GMST(gpstk::CommonTime t)
 
    static const long JulianEpoch=2451545;
    // days since epoch
-   double days =( static_cast<Epoch>(t).JD() - JulianEpoch);                         // days
+   double days =( static_cast<JulianDate>(t).jd - JulianEpoch);                         // days
    if(days <= 0.0) days -= 1.0;
    double Tp = days/36525.0;                                   // dim-less
 
@@ -79,7 +80,7 @@ Position SolarPosition(CommonTime t, double& AR) throw()
    double DEC;   // sun's declination (deg)
    //double AR;  // sun's apparent angular radius as seen at Earth (deg)
 
-   D = static_cast<Epoch>(t).JD() - 2451545.0;
+   D = static_cast<JulianDate>(t).jd - 2451545.0;
    g = (357.529 + 0.98560028 * D) * DEG_TO_RAD;
    // AA 1990 has g = (357.528 + 0.9856003 * D) * DEG_TO_RAD;
    q = 280.459 + 0.98564736 * D;
@@ -201,7 +202,7 @@ double shadowFactor(double Rearth, double Rsun, double dES) throw()
 Position LunarPosition(CommonTime t, double& AR) throw()
 {
    // days since J2000
-   double N = static_cast<Epoch>(t).JD()-2451545.0;
+   double N = static_cast<JulianDate>(t).jd-2451545.0;
    // centuries since J2000
    double T = N/36525.0;
    // ecliptic longitude

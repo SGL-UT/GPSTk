@@ -45,6 +45,8 @@
 #include "PolyFit.hpp"
 #include "GNSSconstants.hpp"    // PI,C_MPS,OSC_FREQ_GPS,L1_MULT,L2_MULT
 #include "RobustStats.hpp"
+#include "SystemTime.hpp"
+#include "CivilTime.hpp"
 
 #include "DiscCorr.hpp"
 
@@ -725,12 +727,10 @@ try {
    list<Segment>::iterator it;
 
    if(cfg(Debug) >= 2) {
-      CommonTime CurrentTime;
-      //CurrentTime.setLocalTime();
       log << "======== Beg GPSTK Discontinuity Corrector " << GDCUnique
           << " ================================================" << endl;
       log << "GPSTK Discontinuity Corrector Ver. " << GDCVersion << " Run "
-          << CurrentTime << endl;
+          << CivilTime(SystemTime()) << endl;
    }
 
       // check input

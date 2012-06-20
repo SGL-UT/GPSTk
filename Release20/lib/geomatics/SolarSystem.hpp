@@ -36,8 +36,7 @@
 
 // GPSTk
 #include "Exception.hpp"
-#include "MJD.hpp"
-#include "Epoch.hpp"
+#include "JulianDate.hpp"
 #include "CommonTime.hpp"             // only for WGS84SolarSystemPosition()
 #include "Position.hpp"            // only for WGS84SolarSystemPosition()
 #include "EarthOrientation.hpp"    // only for WGS84SolarSystemPosition()
@@ -231,11 +230,11 @@ public:
 
    /// Return the start time of the data
    gpstk::CommonTime startTime(void) const throw(gpstk::Exception)
-      { gpstk::CommonTime t; t=MJD(startJD - gpstk::MJD_TO_JD); return t; }
+   { return JulianDate(startJD); }
 
    /// Return the end time of the data
    gpstk::CommonTime endTime(void) const throw(gpstk::Exception)
-      { gpstk::CommonTime t; t=MJD(endJD - gpstk::MJD_TO_JD); return t; }
+   { return JulianDate(endJD); }
 
    /// Return the geocentric (relative to Earth's center) position of a Solar System
    /// body at the input time, in WGS84 coordinates with units meters.

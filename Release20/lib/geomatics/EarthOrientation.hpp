@@ -56,7 +56,6 @@
 #include <map>
 // GPSTk
 #include "MJD.hpp"
-#include "Epoch.hpp"
 
 //------------------------------------------------------------------------------------
 namespace gpstk {
@@ -243,7 +242,7 @@ namespace gpstk {
       void edit(const CommonTime& tmin,
                 const CommonTime& tmax)
          throw()
-         { edit(int(static_cast<Epoch>(tmin).MJD()+0.5),int(static_cast<Epoch>(tmax).MJD()+1.5)); }
+         { edit(int(MJD(tmin).mjd+0.5),int(MJD(tmax).mjd+1.5)); }
 
       /// return the number of entries in the store
       int size(void)

@@ -34,12 +34,10 @@
 #ifndef GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 #define GPSTK_DISCONTINUITY_CORRECTOR_INCLUDE
 
-#include "CommonTime.hpp"
 #include "GSatID.hpp"
 #include "RinexObsHeader.hpp"
 #include "SatPass.hpp"
 #include "Exception.hpp"
-#include "TimeString.hpp"
 
 #include <iostream>
 #include <fstream>

@@ -370,7 +370,7 @@ try {
       3., 0., 0., 1., 0., 0.0,  0.01,  0.0,  0.0 };
 
    double fhr,t,s,tau,pr,h,p,zns,ps;
-   double fmjd = static_cast<Epoch>(time).MJD()+51.184/86400.0;
+   double fmjd = static_cast<MJD>(time).mjd+51.184/86400.0;
    t = (fmjd-51545.0)/36525.0;
    fhr = (fmjd-int(fmjd))*24.0;
    computeArgs(t, fhr, s, tau, pr, h, p, zns, ps);
