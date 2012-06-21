@@ -239,6 +239,7 @@ else
       CommandOptionWithPositionArg.hpp
       CommandOptionWithTimeArg.hpp
       CommonTime.hpp
+      compass_constants.hpp
       ConfData.hpp
       ConfDataItem.hpp
       ConfDataReader.hpp
