@@ -917,17 +917,18 @@ namespace gpstk
       // --YYYY----MM----DD----HH----MMsssss.sssssss-----------------
       // 012345678901234567890123456789012345678901234567890123456789
       string line;
+      CivilTime civ(dt);
       line  = string(2,' ');
-      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).year),4);
+      line += rightJustify(asString<short>(civ.year),4);
       line += string(4,' ');
-      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).month),2);
+      line += rightJustify(asString<short>(civ.month),2);
       line += string(4,' ');
-      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).day),2);
+      line += rightJustify(asString<short>(civ.day),2);
       line += string(4,' ');
-      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).hour),2);
+      line += rightJustify(asString<short>(civ.hour),2);
       line += string(4,' ');
-      line += rightJustify(asString<short>(static_cast<CivilTime>(dt).minute),2);
-      line += rightJustify(asString(static_cast<CivilTime>(dt).second,7),13);
+      line += rightJustify(asString<short>(civ.minute),2);
+      line += rightJustify(asString(civ.second,7),13);
 
       return line;
    }

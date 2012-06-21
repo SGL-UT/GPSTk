@@ -54,6 +54,7 @@
 #include "geometry.hpp"             // for DEG_TO_RAD
 #include "GNSSconstants.hpp"    // for PI and TWO_PI
 #include "GeodeticFrames.hpp"
+#include "JulianDate.hpp"
 
 using namespace std;
 
@@ -77,7 +78,7 @@ namespace gpstk
    double GeodeticFrames::CoordTransTime(CommonTime t)
       throw()
    {
-      return (static_cast<Epoch>(t).JD()-double(JulianEpoch))/36525.0;
+      return (static_cast<JulianDate>(t).jd-double(JulianEpoch))/36525.0;
    }
 
    //---------------------------------------------------------------------------------
@@ -1551,7 +1552,7 @@ namespace gpstk
          throw()
    {
       // days since epoch
-      double days = static_cast<Epoch>(t).JD() - JulianEpoch;                         // days
+      double days = static_cast<JulianDate>(t).jd - JulianEpoch;                         // days
       if(days <= 0.0) days -= 1.0;
       double Tp = days/36525.0;                                   // dim-less
 

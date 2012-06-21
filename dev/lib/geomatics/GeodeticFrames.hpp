@@ -57,7 +57,6 @@
 #include "Exception.hpp"
 #include "CommonTime.hpp"
 #include "Matrix.hpp"
-#include "Epoch.hpp"
 #include "YDSTime.hpp"
 
 //------------------------------------------------------------------------------------

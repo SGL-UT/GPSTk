@@ -51,6 +51,7 @@
 #include "GNSSconstants.hpp"
 #include "NovatelData.hpp"
 #include "GPSWeekSecond.hpp"
+#include "SystemTime.hpp"
 
 using namespace std;
 using namespace gpstk::BinUtils;
@@ -631,7 +632,7 @@ namespace gpstk
 
          // be sure week is defined
          if(gpsWeek == -1) {
-            CommonTime sysTime;
+            SystemTime sysTime;
             gpsWeek = long(static_cast<GPSWeekSecond>(sysTime).week);
          }
 
@@ -710,7 +711,7 @@ namespace gpstk
 
             // resolve the week number ambiguity
          if(gpsWeek == -1) {
-            CommonTime sysTime;
+            SystemTime sysTime;
             gpsWeek = long(static_cast<GPSWeekSecond>(sysTime).week);
          }
          gpsWeek = long(temps) + 1024*(gpsWeek/1024);
@@ -727,7 +728,7 @@ namespace gpstk
             // put timetag into rod
          if (debug)
             cout << "gpsWeek:" << gpsWeek << " sow:" << gpsSOW/100.0 << endl;
-         rod.time = CommonTime(gpsWeek,gpsSOW/100.);
+         rod.time = GPSWeekSecond(gpsWeek,gpsSOW/100.);
          rod.epochFlag = 0;
          rod.clockOffset = 0.0;     // don't have it ?
          rod.numSvs = 0;
@@ -885,7 +886,7 @@ namespace gpstk
          std::memmove(&rxSWVersion, &(buffer[26]), 2);  intelToHost(rxSWVersion);
 
             // put timetag into rod
-         rod.time = CommonTime(week,double(msecOfWeek)/1000.);
+         rod.time = GPSWeekSecond(week,double(msecOfWeek)/1000.);
          rod.epochFlag = 0;
          rod.clockOffset = 0.0;     // don't have it ?
 
