@@ -261,7 +261,7 @@ namespace gpstk
       /// COM L2 carrier wavelength in meters.
    const double L2_WAVELENGTH_COM  = 0.192039486310276;
       /// COM L6 carrier wavelength in meters.
-   const double L6_WAVELENGTH_COM  = 0.236332246460442;
+   const double L6_WAVELENGTH_COM  = 0.236332464604421;
       /// COM L7 carrier wavelength in meters.
    const double L7_WAVELENGTH_COM  = L7_WAVELENGTH_GAL;
 
