@@ -62,6 +62,7 @@ namespace gpstk
          GPS,         ///< GPS system time
          GLO,         ///< GLONASS system time
          GAL,         ///< Galileo system time
+         COM,         ///< Compass system time(BeiDou Time, BDT)
          UTC,         ///< Coordinated Universal Time (e.g., from NTP)
          TAI,         ///< International Atomic Time
          // count MUST BE LAST
