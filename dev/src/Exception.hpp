@@ -477,6 +477,10 @@ namespace gpstk
       /// @ingroup exceptiongroup
    NEW_EXCEPTION_CLASS(NullPointerException, Exception);
 
+      /// Attempted to access a unimplemented function
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(UnimplementedException, Exception);
+
 } // namespace gpstk
 #endif
 
