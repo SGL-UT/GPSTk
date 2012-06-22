@@ -1302,7 +1302,7 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
-   void EngEphemeris :: dumpTerse(ostream& s) const
+    void EngEphemeris :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
    {
      
@@ -1333,7 +1333,7 @@ namespace gpstk
       }
       catch(SVNumXRef::NoNAVSTARNumberFound)
       { 
-	s << "XX  ";
+	s << "  XX  ";
       }
 
       s << setw(2) << PRNID << " ! ";
@@ -1348,12 +1348,13 @@ namespace gpstk
       s << "0x" << setfill('0') << hex << setw(3) << IODC << " ! ";
       s << "0x" << setfill('0')  << setw(2) << health;
       s << setfill(' ') << dec;
-      s << "    " << health << " ! ";
+      s << "   " << setw(2) << health << " ! ";
 
       s << endl;
       s.flags(oldFlags);
 
     } // end of SF123::dumpTerse()
+
 
 
    void EngEphemeris :: dump(ostream& s) const
