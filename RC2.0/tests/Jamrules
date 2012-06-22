@@ -1,6 +1,6 @@
-PATH_TO_CURRENT = /home/cummins/svn/r2/NewRC2/RC2.0/tests  ; #Current directory; Main testing directory
+PATH_TO_CURRENT = /home/cummins/svn/r2/RC2.0/tests  ; #Current directory; Main testing directory
 CPPUNIT_LIB = /usr/local/lib ; #Directory which holds the CppUnit Libraries
-CPPUNIT_INC = /usr/local/include/cppunit ; #Directory which holds the CppUnit include files 
+CPPUNIT_INC = /usr/local/include/cppunit ; #Directory which holds the CppUnit 
 
 STD_LINK_LIBS = -ldl -lstdc++ ; 
 LINKFLAGS = -fprofile-arcs -ftest-coverage ; #Gcov required flags
