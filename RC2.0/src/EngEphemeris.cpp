@@ -1333,7 +1333,7 @@ namespace gpstk
       }
       catch(SVNumXRef::NoNAVSTARNumberFound)
       { 
-	s << "XX  ";
+	s << "  XX  ";
       }
 
       s << setw(2) << PRNID << " ! ";
