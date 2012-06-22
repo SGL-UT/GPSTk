@@ -1348,7 +1348,7 @@ namespace gpstk
       s << "0x" << setfill('0') << hex << setw(3) << IODC << " ! ";
       s << "0x" << setfill('0')  << setw(2) << health;
       s << setfill(' ') << dec;
-      s << "    " << health << " ! ";
+      s << "   " << setw(2) << health << " ! ";
 
       s << endl;
       s.flags(oldFlags);
