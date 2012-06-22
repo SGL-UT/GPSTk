@@ -80,6 +80,7 @@ namespace gpstk
             case systemGeosync:
             case systemTransit:
             case systemCompass:           // 3.01
+            case systemMixed:
                break;
             // Invalidate anything non-RINEX.
             default:
