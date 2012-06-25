@@ -123,6 +123,8 @@ else
       ObsID.cpp
       ObsRngDev.cpp
       OceanLoading.cpp
+      OrbElem.cpp
+      OrbElemFIC9.cpp
       PackedNavBits.cpp
       PlanetEphemeris.cpp
       PoleTides.cpp
@@ -353,6 +355,8 @@ else
       ObsID.hpp	
       ObsRngDev.hpp	
       OceanLoading.hpp	
+      OrbElem.hpp
+      OrbElemFIC9.hpp
       OrbElemStore.hpp	
       ORDEpoch.hpp
       PackedNavBits.hpp	
