@@ -25,12 +25,12 @@ else
       ANSITime.cpp
       Antenna.cpp
       AntexReader.cpp
-      Application.cpp
+#      Application.cpp
       ARBase.cpp
       ARLambda.cpp
       ARMLambda.cpp
       ARSimple.cpp
-      Ascii.cpp
+#      Ascii.cpp
       AstronomicalFunctions.cpp
       Bancroft.cpp
       BasicFramework.cpp
@@ -82,7 +82,7 @@ else
       FileHunter.cpp
       FileSpec.cpp
       FIRDifferentiator5thOrder.cpp
-      FormatUtils.cpp
+#      FormatUtils.cpp
       GalEphemeris.cpp
       GalEphemerisStore.cpp
       GaussianDistribution.cpp
@@ -97,8 +97,8 @@ else
       GPSWeekZcount.cpp
       GPSZcount.cpp
       HelmertTransform.cpp
-      IERS.cpp
-      IERSConventions.cpp
+#      IERS.cpp
+#      IERSConventions.cpp
       IonexData.cpp
       IonexHeader.cpp
       IonexStore.cpp
@@ -116,8 +116,8 @@ else
       MSCStore.cpp
       Namelist.cpp
       NEDUtil.cpp
-      NumberFormatter.cpp
-      NumberParser.cpp
+#      NumberFormatter.cpp
+#      NumberParser.cpp
       ObsClockModel.cpp
       ObsEpochMap.cpp
       ObsID.cpp
@@ -133,7 +133,7 @@ else
       PRSolution2.cpp
       RACRotation.cpp
       ReferenceFrame.cpp
-      RegExp.cpp
+#      RegExp.cpp
       Rinex3ClockData.cpp
       Rinex3ClockHeader.cpp
       Rinex3EphemerisStore.cpp
@@ -174,7 +174,7 @@ else
       SVExclusionList.cpp
       SVNumXRef.cpp
       SVPCodeGen.cpp
-      SysInfo.cpp
+#      SysInfo.cpp
       SystemTime.cpp
       TimeConverters.cpp
       TimeString.cpp
@@ -202,14 +202,14 @@ else
       ANSITime.hpp
       Antenna.hpp
       AntexReader.hpp
-      Any.hpp
-      Application.hpp
-      AppOption.hpp
+#      Any.hpp
+#      Application.hpp
+#      AppOption.hpp
       ARBase.hpp
       ARLambda.hpp
       ARMLambda.hpp
       ARSimple.hpp
-      Ascii.hpp
+#      Ascii.hpp
       AstronomicalFunctions.hpp
       Bancroft.hpp
       BaseDistribution.hpp
@@ -239,11 +239,11 @@ else
       CommandOptionWithPositionArg.hpp
       CommandOptionWithTimeArg.hpp
       CommonTime.hpp
-      ConfData.hpp
-      ConfDataItem.hpp
+#      ConfData.hpp
+#      ConfDataItem.hpp
       ConfDataReader.hpp
-      ConfDataSection.hpp
-      ConfDataStructures.hpp
+#      ConfDataSection.hpp
+#      ConfDataStructures.hpp
       ConfDataWriter.hpp
       DCBDataReader.hpp
       DebugUtils.hpp
@@ -290,7 +290,7 @@ else
       FileUtils.hpp
       FilterBase.hpp
       FIRDifferentiator5thOrder.hpp
-      FormatUtils.hpp
+#      FormatUtils.hpp
       GalEphemeris.hpp
       GalEphemerisStore.hpp
       GaussianDistribution.hpp
@@ -307,8 +307,8 @@ else
       GPSWeekZcount.hpp	
       GPSZcount.hpp	
       HelmertTransform.hpp	
-      IERS.hpp
-      IERSConventions.hpp
+#      IERS.hpp
+#      IERSConventions.hpp
       InOutFramework.hpp	
       IonexBase.hpp	
       IonexData.hpp	
@@ -345,8 +345,8 @@ else
       MSCStream.hpp	
       Namelist.hpp
       NEDUtil.hpp
-      NumberFormatter.hpp
-      NumberParser.hpp	
+#      NumberFormatter.hpp
+#      NumberParser.hpp	
       ObsClockModel.hpp	
       ObsEpochMap.hpp	
       ObsID.hpp	
@@ -367,7 +367,7 @@ else
       PZ90Ellipsoid.hpp	
       RACRotation.hpp	
       ReferenceFrame.hpp	
-      RegExp.hpp
+#      RegExp.hpp
       Rinex3ClockBase.hpp	
       Rinex3ClockData.hpp	
       Rinex3ClockHeader.hpp	
@@ -434,14 +434,14 @@ else
       SpecialFunctions.hpp	
       Stats.hpp	
       StreamBuf.hpp
-      String.hpp
+ #     String.hpp
       StringUtils.hpp	
       StudentDistribution.hpp	
       SunPosition.hpp	
       SVExclusionList.hpp	
       SVNumXRef.hpp	
       SVPCodeGen.hpp	
-      SysInfo.hpp
+#      SysInfo.hpp
       SystemTime.hpp	
       TabularSatStore.hpp	
       TimeConstants.hpp	
