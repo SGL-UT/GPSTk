@@ -55,6 +55,40 @@ namespace gpstk
 {
    using namespace std;
 
+   static void shortcut(ostream & os, const long HOW )
+   {
+      short DOW, hour, min, sec;
+      long SOD, SOW;
+      short SOH;
+
+      SOW = static_cast<long>( HOW );
+      DOW = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
+      hour = static_cast<short>( SOD/3600 );
+
+      SOH = static_cast<short>( SOD - (hour*3600) );
+      min = SOH/60;
+
+      sec = SOH - min * 60;
+      switch (DOW)
+      {
+         case 0: os << "Sun-0"; break;
+         case 1: os << "Mon-1"; break;
+         case 2: os << "Tue-2"; break;
+         case 3: os << "Wed-3"; break;
+         case 4: os << "Thu-4"; break;
+         case 5: os << "Fri-5"; break;
+         case 6: os << "Sat-6"; break;
+         default: break;
+      }
+
+      os << ":" << setfill('0')
+         << setw(2) << hour
+         << ":" << setw(2) << min
+         << ":" << setw(2) << sec
+         << setfill(' ');
+   }
+
    OrbElemFIC9::OrbElemFIC9()
    {
       dataLoaded = false;     
@@ -68,6 +102,8 @@ namespace gpstk
      
       fitint = 0;
    }
+
+  
 
    OrbElemFIC9::OrbElemFIC9( const FICData& fic9 )
       throw( InvalidParameter )
@@ -134,13 +170,14 @@ namespace gpstk
       // - - - Now work on the things that need to be calculated - - -
 
 	 // The system is assumed (legacy navigation message is from GPS)
-      short PRNID = static_cast<short>( fic9.f[19] );
-      SatID satID( PRNID, SatID::systemGPS );
+      satID.id = static_cast<short>( fic9.f[19] );
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
-      ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
+      obsID.type = ObsID::otNavMsg;
+      obsID.band = ObsID::cbUndefined;
+      obsID.code = ObsID::tcUndefined;
 
 	 // Beginning of Validity
          // New concept.  Admit the following.
@@ -190,8 +227,8 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-      ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
       ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
+      ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
 
 	 // End of Validity.  
 	 // The end of validity is calculated from the fit interval
@@ -310,12 +347,116 @@ namespace gpstk
    void OrbElemFIC9 :: dump(ostream& s) const
       throw( InvalidRequest )
    {
+      
+
       ios::fmtflags oldFlags = s.flags();
       
-         // NEED TO ADD THE BLOCK 9-SPECIFIC DUMP THEN CALL OrbElem.dump( )
-      // Calls OrbElem.dump()
-      orbElem->dump();
+      SVNumXRef svNumXRef; 
+      int NAVSTARNum = 0; 
+
+      s << "****************************************************************"
+        << "************" << endl
+        << "Broadcast Ephemeris (Engineering Units)";
       s << endl;
+
+      s << "Source : FIC Block 9" << endl;
+ 
+      s << endl << endl;
+      s << "PRN : " << setw(2) << satID.id << " / "
+        << "SVN : " << setw(2);
+      try
+      {
+	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+        s << NAVSTARNum << "  ";
+      }
+      catch(SVNumXRef::NoNAVSTARNumberFound)
+      { 
+	s << "XX";
+      }
+         
+
+      s << endl
+      	<< "          SUBFRAME OVERHEAD"
+      	<< endl
+      	<< endl
+      	<< "               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S\n";
+      for (int i=0;i<3;i++)
+     	 {
+            s << "SF" << setw(1) << (i+1)
+              << " HOW:   " << setw(7) << HOWtime[i]
+              << "  ";
+
+       	    shortcut( s, HOWtime[i]);
+            if (i==0)
+        	s << "   ";
+            else
+        	s << "    ";
+
+            s << "0x" << setfill('0') << hex;
+
+            if (i==0)
+          	s << setw(3) << IODC;
+            else
+        	s << setw(2) << IODE;
+	
+            s << dec << "      " << setfill(' ');
+
+            if (ASalert[i] & 0x0002)    // "Alert" bit handling
+        	s << "1     ";
+            else
+        	s << "0     ";
+
+            if (ASalert[i] & 0x0001)     // A-S flag handling
+        	s << " on";
+            else
+        	s << "off";
+            s << endl;
+         } 
+
+      s << endl
+        << "           SV STATUS"
+        << endl
+        << endl
+        << "Health bits:   0x" << setfill('0')  << setw(2) << health
+        << "   Fit interval flag : " << fitint << "      URA index: " << setfill(' ')
+        << setw(4) << accFlag << endl
+        << "Code on L2:   ";
+
+      switch (codeflags)
+      {
+         case 0:
+            s << "reserved ";
+            break;
+
+         case 1:
+            s << " P only  ";
+            break;
+
+         case 2:
+            s << " C/A only";
+            break;
+
+         case 3:
+            s << " P & C/A ";
+            break;
+
+         default:
+            break;
+
+      }
+      s << "  L2 P Nav data:          ";
+      if (L2Pdata!=0)
+        s << "off";
+      else
+         s << "on";
+
+      s << endl; 
+           
+         
+      
+      // NEED TO ADD THE BLOCK 9-SPECIFIC DUMP THEN CALL OrbElem.dump( )
+      // Calls OrbElem.dump()
+      OrbElem::dump(s);
       s.flags(oldFlags);
 
    } // end of dump()

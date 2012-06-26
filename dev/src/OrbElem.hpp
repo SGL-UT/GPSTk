@@ -75,7 +75,7 @@ namespace gpstk
    public:
          /// Constructors
 	      /// Default constuctor
-      OrbElem( ) throw();
+      OrbElem( );
 
       
          /// Add other constructors for other navigation message formats here....

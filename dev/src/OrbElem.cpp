@@ -53,6 +53,10 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
+   OrbElem::OrbElem()
+   { 
+     dataLoaded = false;
+   }
 
    CommonTime OrbElem::getEphEpoch() const
       throw(InvalidRequest)
@@ -347,6 +351,7 @@ namespace gpstk
    void OrbElem::dump(ostream& s) const
       throw( InvalidRequest )
    {
+     
       ios::fmtflags oldFlags = s.flags();
 
       s.setf(ios::fixed, ios::floatfield);
@@ -354,24 +359,22 @@ namespace gpstk
       s.setf(ios::uppercase);
       s.precision(0);
       s.fill(' ');
-
-      s << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
-
-      s << endl << endl;
-      s << "PRN : " << setw(2) << satID.id << endl;
+ 
       s << endl;
-
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
         << "   MM/DD/YYYY   HH:MM:SS\n"; 
       s << "Clock Epoch:  ";
-
-      timeDisplay(s, getClockEpoch());
+      timeDisplay(s, ctToc);
       s << endl;
       s << "Eph Epoch:    ";
-      timeDisplay(s, getEphEpoch());
+      timeDisplay(s, ctToe);
+       
+      s.setf(ios::scientific, ios::floatfield);
+      s.precision(8);
+      s.fill(' ');
+
       s << endl
+        << endl
         << "           CLOCK"
         << endl
         << endl
@@ -405,7 +408,7 @@ namespace gpstk
         << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
         << setw(16) << Cuc << " rad" << endl;    
 
-
+       
    }
 
 } // namespace

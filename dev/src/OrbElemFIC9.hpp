@@ -120,9 +120,7 @@ namespace gpstk
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElemFIC9& eph);
 
-    private:
-     
-      OrbElem* orbElem;
+    
        
 
    }; // class OrbElemFIC9
