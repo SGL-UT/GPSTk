@@ -1,3 +1,0 @@
-SubDir TOP Vector ;
-
-TestMain Vector/xVector.tst : Vector/xVectorM.cpp Vector/xVector.cpp ;
