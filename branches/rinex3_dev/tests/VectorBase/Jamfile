@@ -1,3 +1,0 @@
-SubDir TOP VectorBase ;
-
-TestMain VectorBase/xVectorBase : VectorBase/xVectorBase.cpp ;

@@ -1,5 +1,0 @@
-SubDir TOP tests GalEphemeris ;
-
-GPSMain GalEphemerisTest : GalEphemerisTest.cpp ;
-ObjectHdrs GalEphemerisTest GalEphemerisTest.cpp : ../../src ;
-LinkLibraries GalEphemerisTest : ../../src/libgpstk-R3.a ;

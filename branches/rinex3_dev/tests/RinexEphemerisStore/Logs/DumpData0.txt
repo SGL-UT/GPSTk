@@ -1,4 +1,0 @@
-Dump of RinexEphemerisStore:
-TestRinex06.031
-Dump of BCEphemerisStore:
- Span is 01/31/2006 00:00:00 to 01/31/2006 22:00:00 with 41 entries.
