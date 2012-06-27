@@ -12,7 +12,8 @@ else
          AtmosphericDrag.cpp CiraExponentialDrag.cpp EarthBody.cpp EarthOceanTide.cpp EarthPoleTide.cpp EarthSolidTide.cpp EGM96GravityModel.cpp ForceModelList.cpp 
          HarrisPriesterDrag.cpp  JGM3GravityModel.cpp KeplerOrbit.cpp LEOSatOrbit.cpp Msise00Drag.cpp MoonForce.cpp NavSatOrbit.cpp PvtStore.cpp
          ReferenceFrames.cpp RelativityEffect.cpp RungeKuttaFehlberg.cpp 
-         SatOrbit.cpp SatOrbitPropagator.cpp SatOrbitStore.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
+#         SatOrbit.cpp SatOrbitPropagator.cpp SatOrbitStore.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
+         SatOrbit.cpp SatOrbitPropagator.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
       ;
 
    InstallFile $(INCDIR) :
