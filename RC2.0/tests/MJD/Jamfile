@@ -1,2 +1,0 @@
-SubDir TOP MJD ;
-TestMain MJD/xMJD.tst : MJD/xMJDM.cpp MJD/xMJD.cpp MJD/MJD.cpp ;
