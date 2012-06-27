@@ -1,4 +1,4 @@
-PATH_TO_CURRENT = /home/cummins/svn/dev4merge2/dev/tests  ; #Current directory; Main testing directory
+PATH_TO_CURRENT = /home/cummins/svn/r2/Release20/Release20/tests  ; #Current directory; Main testing directory
 CPPUNIT_LIB = /usr/local/lib ; #Directory which holds the CppUnit Libraries
 CPPUNIT_INC = /usr/local/include/cppunit ; #Directory which holds the CppUnit include files 
 
