@@ -103,7 +103,7 @@ namespace gpstk
           * All numerical elements default to zero, "Unknown" for time frame.
           * @see CommonTime::set()
           */
-      CommonTime(TimeSystem timeSystem = TimeSystem::Unknown )
+      explicit CommonTime(TimeSystem timeSystem = TimeSystem::Unknown )
          throw( InvalidParameter )
       { set( 0, 0, 0.0, timeSystem ); }
 

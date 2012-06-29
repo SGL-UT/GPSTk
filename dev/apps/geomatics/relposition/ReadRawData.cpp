@@ -289,7 +289,7 @@ int FindEarliestTime(void) throw(Exception)
 try {
    int iret,nfile;
 
-   EarliestTime = CommonTime(CommonTime::END_OF_TIME);
+   EarliestTime = CommonTime::END_OF_TIME;
 
       // loop over all (open) obs files
    for(nfile=0; nfile<ObsFileList.size(); nfile++) {
@@ -309,7 +309,7 @@ try {
    }  // end loop over all obs files
 
       // if no more data is available, EarliestTime will never get set
-   if(EarliestTime == CommonTime(CommonTime::END_OF_TIME)) return 1;
+   if(EarliestTime == CommonTime::END_OF_TIME) return 1;
 
       // if past end time, quit
    if(EarliestTime > CI.EndTime) return 2;

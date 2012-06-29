@@ -406,7 +406,7 @@ namespace gpstk
 
             // if there's no time, just use a bad time
             if(line.substr(0,26) == string(26, ' '))
-               rod.time = CommonTime(CommonTime::BEGINNING_OF_TIME);
+               rod.time = CommonTime::BEGINNING_OF_TIME;
                //rod.time = previousTime; ??
             else {
                int year, month, day, hour, min;
@@ -676,7 +676,7 @@ namespace gpstk
 
       // if there's no time, just return a bad time
       if(line.substr(2,27) == string(27, ' '))
-         return CommonTime(CommonTime::BEGINNING_OF_TIME);
+         return CommonTime::BEGINNING_OF_TIME;
 
       int year, month, day, hour, min;
       double sec;

@@ -43,7 +43,7 @@ namespace gpstk
    public:
       PCodeGenerator(const int prn)
          : CodeGenerator(ObsID::tcP, SatID(prn, SatID::systemGPS)),
-           cb(prn), svp(int(prn), CommonTime(0)), index(0)
+           cb(prn), svp(int(prn), CommonTime()), index(0)
       {
          svp.getCurrentSixSeconds(cb);
       }

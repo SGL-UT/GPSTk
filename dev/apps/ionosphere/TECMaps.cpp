@@ -1088,7 +1088,7 @@ try {
       // loop over all epochs in all files
    do {
          // read the data for the next (earliest in future) observation epoch
-      EarliestTime = CommonTime(CommonTime::END_OF_TIME);
+      EarliestTime = CommonTime::END_OF_TIME;
       for(nfile=0; nfile<Stations.size(); nfile++) {
          iret = ReadNextObs(Stations[nfile]);
          if(iret < 0) {            // set file 'inactive'
@@ -1101,7 +1101,7 @@ try {
       }
 
          // if no more data available, EarliestTime will never get set
-      if(EarliestTime == CommonTime(CommonTime::END_OF_TIME)) break;
+      if(EarliestTime == CommonTime::END_OF_TIME) break;
 
          // time limits
       if(EarliestTime < BegTime) {

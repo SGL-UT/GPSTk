@@ -101,14 +101,14 @@ void MDPProcessor::process()
          continue;
       }
       
-      if (startTime == CommonTime(CommonTime::BEGINNING_OF_TIME) && timeSpan>0)
+      if (startTime == CommonTime::BEGINNING_OF_TIME && timeSpan>0)
       {
          startTime = header.time;
          if (debugLevel)
             out << "startTime: " << startTime << endl;
       }
       
-      if (stopTime == CommonTime(CommonTime::END_OF_TIME) && timeSpan>0)
+      if (stopTime == CommonTime::END_OF_TIME && timeSpan>0)
       {
          stopTime = startTime + timeSpan;
          if (debugLevel)

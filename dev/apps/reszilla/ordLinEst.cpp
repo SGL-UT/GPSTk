@@ -191,11 +191,11 @@ void OrdLinEst::process()
       j = adjacent_find( i, clocks.end(), bro);
       ClockSegment seg;
       seg.debugLevel = debugLevel;
-      seg.startTime = CommonTime(i->first+1e-9);
+      seg.startTime = MJD(i->first + 1e-9);
       if (j != clocks.end())
-         seg.endTime = CommonTime(j->first+1e-9);
+         seg.endTime = MJD(j->first + 1e-9);
       else
-         seg.endTime = CommonTime(clocks.rbegin()->first+1e-9);
+         seg.endTime = MJD(clocks.rbegin()->first + 1e-9);
 
       seg.process(i, j);
       csl.push_back(seg);

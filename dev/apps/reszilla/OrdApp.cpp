@@ -196,7 +196,7 @@ void OrdApp::write(ofstream& s, const ORDEpoch& ordEpoch) throw()
 ORDEpoch OrdApp::read(std::ifstream& s) throw()
 {
    ORDEpoch ordEpoch;
-   ordEpoch.time = CommonTime(CommonTime::BEGINNING_OF_TIME);
+   ordEpoch.time = CommonTime::BEGINNING_OF_TIME;
    using namespace StringUtils;
    while (s)
    {      

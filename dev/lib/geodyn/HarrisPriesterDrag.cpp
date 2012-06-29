@@ -753,8 +753,7 @@ namespace gpstk
       v(2) = -6.018232;
       
       EarthBody body;
-      UTCTime t;
-      t=static_cast<Epoch>(CommonTime(53157.5)).MJD();      
+      UTCTime t(53157.5);
 
       Spacecraft sc;
       sc.setDragArea(20.0);

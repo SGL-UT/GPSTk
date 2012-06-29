@@ -91,7 +91,7 @@ namespace gpstk
           * @param[in] tmax defines the end of the time interval
           */
       virtual void edit(CommonTime tmin,
-                        CommonTime tmax = CommonTime(CommonTime::END_OF_TIME));
+                        CommonTime tmax = CommonTime::END_OF_TIME);
 
          /// return the number of entries in the store
       size_t size(void)

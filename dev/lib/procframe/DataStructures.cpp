@@ -3481,7 +3481,7 @@ in matrix and number of types do not match") );
             // if there's no time, just return a bad time
          if (line.substr(0,26) == std::string(26, ' '))
          {
-            return CommonTime(CommonTime::BEGINNING_OF_TIME);
+            return CommonTime::BEGINNING_OF_TIME;
          }
 
          int year, month, day, hour, min;

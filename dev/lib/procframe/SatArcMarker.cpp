@@ -99,7 +99,7 @@ namespace gpstk
       }
       else
       {
-         return CommonTime(CommonTime::BEGINNING_OF_TIME);
+         return CommonTime::BEGINNING_OF_TIME;
       }
 
    }  // End of method 'SatArcMarker::getArcChangedEpoch()'
