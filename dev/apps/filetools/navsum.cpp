@@ -130,7 +130,6 @@ NavSum::NavSum(char* arg0)
         defaultsOption('a', "all-records", "Use"
                        " default values for record filtration"),
 	formatOption('f',"use-alternate-format","Use alternate output format"),
-        startTime(0,0.0),
         endTime(CommonTime::END_OF_TIME)
 {
    seTimeOptions.addOption(&timeOption);
@@ -432,8 +431,8 @@ void NavSum::process()
 				diff = Toe - HOW;
 				if (diff < -1.0 * (double) HALFWEEK) EpochWeek++;
 				if (diff > (double) HALFWEEK) xMitWeek--;
-				XMitT = CommonTime( xMitWeek, HOW-6.0 );
-				EpochT = GPSWeekSecond( EpochWeek, Toe );
+				XMitT = GPSWeekSecond(xMitWeek, HOW-6.0, TimeSystem::GPS);
+				EpochT = GPSWeekSecond(EpochWeek, Toe, TimeSystem::GPS);
 				sprintf(line," %5d  %3d    %02d    %s ! %s 0x%03lX %1d",
 					count,blockType,PRNID,
 					printTime(XMitT,xmitFmt).c_str(),

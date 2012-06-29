@@ -65,7 +65,8 @@ namespace gpstk
       try
       {
          long jday = convertCalendarToJD( year, 1, 1 ) + doy - 1;
-         return CommonTime( jday, sod, timeSystem );
+         CommonTime ct;
+         return ct.set( jday, sod, timeSystem );
       }
       catch ( InvalidParameter& ip )
       {

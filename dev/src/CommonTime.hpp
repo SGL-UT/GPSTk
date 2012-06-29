@@ -103,33 +103,10 @@ namespace gpstk
           * All numerical elements default to zero, "Unknown" for time frame.
           * @see CommonTime::set()
           */
-      CommonTime( long day = 0, 
-                  long sod = 0,
-                  double fsod = 0.0,
-                  TimeSystem timeSystem = TimeSystem::Unknown )
+      CommonTime(TimeSystem timeSystem = TimeSystem::Unknown )
          throw( InvalidParameter )
-      { set( day, sod, fsod, timeSystem ); }
+      { set( 0, 0, 0.0, timeSystem ); }
 
-         /**
-          * Constructor that accepts days and second of day.
-          * All elements default to zero and Unknown.
-          */
-      CommonTime( long day,
-                  double sod,
-                  TimeSystem timeSystem )
-         throw( InvalidParameter )
-      { set( day, sod, timeSystem ); }
-     
-
-         /** 
-          * Constructor that accepts days only.
-          * All elements default to zero and Unknown.
-          */
-      CommonTime( double day,
-                  TimeSystem timeSystem )
-         throw( InvalidParameter )
-      { set( day, timeSystem ); }
-      
          /**
           * Copy Constructor.
           * @param right a const reference to the CommonTime object to copy.
@@ -408,6 +385,13 @@ namespace gpstk
          throw();
 
    protected:
+      
+      CommonTime( long day, 
+                  long sod,
+                  double fsod,
+                  TimeSystem timeSystem = TimeSystem::Unknown )
+         throw( InvalidParameter )
+      { set( day, sod, fsod, timeSystem ); }
       
          /**
           * Add the following quantities to this CommonTime object.

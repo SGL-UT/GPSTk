@@ -144,7 +144,7 @@ namespace gpstk
    /// @param os The output stream
    /// @param ts The TimeSystem to be written
    /// @return reference to the output stream
-   std::ostream& operator<<(std::ostream os, const TimeSystem& ts);
+   std::ostream& operator<<(std::ostream& os, const TimeSystem& ts);
 
 }   // end namespace
 

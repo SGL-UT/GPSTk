@@ -200,7 +200,7 @@ namespace gpstk
       else if (timeDiff > HALFWEEK) epochWeek--;
 
       double accuracy1 = gpstk::ura2CNAVaccuracy(URAoe);
-      double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, TOWCount, Top);
+      double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, GPSWeekSecond(epochWeek, TOWCount, TimeSystem::GPS), GPSWeekSecond(epochWeek, Top, TimeSystem::GPS));
 
       long beginFitSOW = ((TOWCount)/7200)*7200;
       long endFitSOW   = beginFitSOW + 10800;
@@ -223,7 +223,7 @@ namespace gpstk
                       healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
                       dn, dndot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot );
 
-      bcClock.loadData( satSys, obsID, PRNID, ToeCT, Top, URAoc, 
+      bcClock.loadData( satSys, obsID, PRNID, ToeCT, TopCT, URAoc, 
                         URAoc1, URAoc2, healthy, af0, af1, af2); 
       dataLoaded  = true;   
    }

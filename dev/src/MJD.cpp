@@ -69,10 +69,11 @@ namespace gpstk
             // problems in the conversion to CommonTime.
          double dTmp( static_cast<double>( tmp ) );
       
-         return CommonTime( jday,
-                            static_cast<long>( dTmp ),
-                            dTmp - static_cast<long>( dTmp ),
-                            timeSystem );
+         CommonTime ct;
+         return ct.set( jday,
+                        static_cast<long>( dTmp ),
+                        dTmp - static_cast<long>( dTmp ),
+                        timeSystem );
       }
       catch (InvalidParameter& ip)
       {

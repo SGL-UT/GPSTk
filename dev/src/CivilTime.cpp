@@ -82,9 +82,10 @@ namespace gpstk
          double sod = convertTimeToSOD( hour, minute, second );
             // make a CommonTime with jd, whole sod, and 
             // fractional second of day
-         return CommonTime(  jday, static_cast<long>(sod) ,
-                            (sod - static_cast<long>(sod)),
-                            timeSystem );
+         CommonTime ct;
+         return ct.set(  jday, static_cast<long>(sod) ,
+                         (sod - static_cast<long>(sod)),
+                         timeSystem );
       }
       catch (InvalidParameter& ip)
       {

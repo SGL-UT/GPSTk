@@ -57,10 +57,11 @@ namespace gpstk
    {
       try
       {
-         return CommonTime( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
-                            ( time % SEC_PER_DAY ),
-                            0.,
-                            timeSystem );
+         CommonTime ct;
+         return ct.set( ( MJD_JDAY + UNIX_MJD + time / SEC_PER_DAY ),
+                        ( time % SEC_PER_DAY ),
+                        0.,
+                        timeSystem );
       }
       catch (InvalidParameter& ip)
       {

@@ -64,7 +64,7 @@ namespace gpstk
  
       URAoc = -16;
       URAoc1 = URAoc2 = 0;
-      Toc = af0 = af1 = af2 = 0.0;
+      af0 = af1 = af2 = 0.0;
    }
 
    BrcClockCorrection::BrcClockCorrection(const std::string satSysArg, const ObsID obsIDArg,

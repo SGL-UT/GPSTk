@@ -51,6 +51,7 @@
 #include "RinexNavData.hpp"
 #include "RinexNavHeader.hpp"
 #include "RinexObsData.hpp"
+#include "SystemTime.hpp"
 
 namespace gpstk
 {
@@ -157,7 +158,8 @@ namespace gpstk
 
       static int calculateSequenceNumber(const CommonTime& t);
 
-      static RinexNavData convertToRinexNavData(const AshtechMessage& msg, const CommonTime& epoch=CommonTime());
+      static RinexNavData convertToRinexNavData(const AshtechMessage& msg,
+                                                const CommonTime& epoch=SystemTime());
 
       static void updateNavHeader(const AshtechMessage& ionMsg, RinexNavHeader& hdr);
       /**

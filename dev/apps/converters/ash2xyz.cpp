@@ -139,9 +139,7 @@ public:
       }      
       
       // week option (otherwise assume data is from this week)
-      SystemTime now;
-      time.week = static_cast<GPSWeekSecond>(now).week;
-      time.sow = static_cast<GPSWeekSecond>(now).sow;
+      time = SystemTime();
       if (weekOpt.getCount())
       {
          time.week = StringUtils::asInt(weekOpt.getValue()[0]);
@@ -594,7 +592,7 @@ protected:
       			if (debugLevel>2)
          			nav.dump(cout);
          		
-      			CommonTime howTime(week, sow);
+      			CommonTime howTime = GPSWeekSecond(week, sow, TimeSystem::GPS);
       			NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       			ephData[ni] = nav;
 	      		ephPageStore[ni][sfid] = nav;

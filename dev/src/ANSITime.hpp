@@ -63,7 +63,8 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-     ANSITime( time_t t = 0, TimeSystem ts = TimeSystem::Unknown )
+     ANSITime( time_t t = 0,
+               TimeSystem ts = TimeSystem::Unknown )
          throw()
         : time(t)
       { timeSystem = ts; }

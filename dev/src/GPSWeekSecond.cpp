@@ -61,10 +61,11 @@ namespace gpstk
          int dow = static_cast<int>( sow / SEC_PER_DAY );
          int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
          double sod(  sow - SEC_PER_DAY * dow );
-         return CommonTime( jday, 
-                            static_cast<long>( sod ),
-                            sod - static_cast<long>( sod ),
-                            timeSystem );
+         CommonTime ct;
+         return ct.set( jday, 
+                        static_cast<long>( sod ),
+                        sod - static_cast<long>( sod ),
+                        timeSystem );
       }
       catch (InvalidParameter& ip)
       {

@@ -136,7 +136,7 @@ namespace gpstk
       /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
-            CommonTime dt(0,0.0);
+            CommonTime dt;
             if(l.getTransmitTime(dt)) //if valid trasmit time
               return dt <= stime;
             else
@@ -158,7 +158,7 @@ namespace gpstk
       /// This should return true when the data is to be erased.
       bool operator() (const gpstk::FICData& l) const
          {
-            CommonTime dt(0,0.0);
+            CommonTime dt;
             if(l.getTransmitTime(dt)) //if valid trasmit time
               return dt >= etime;
             else

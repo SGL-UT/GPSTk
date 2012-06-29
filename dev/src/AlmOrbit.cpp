@@ -196,9 +196,7 @@ namespace gpstk
 
    CommonTime AlmOrbit::getTransmitTime() const throw()
    {
-      CommonTime transmitTime(0.L);
-      transmitTime=GPSWeekSecond(getFullWeek(), (double)xmit_time);
-      return transmitTime;
+      return GPSWeekSecond(getFullWeek(), xmit_time);
    }
 
    short AlmOrbit::getFullWeek() const throw()
@@ -216,9 +214,7 @@ namespace gpstk
 
    CommonTime AlmOrbit::getToaTime() const throw()
    {
-      CommonTime toaTime(0.L);
-      toaTime=GPSWeekSecond(week, (double)Toa);
-      return toaTime;
+      return GPSWeekSecond(week, Toa);
    }
 
    void AlmOrbit::dump(std::ostream& s, int verbosity) const

@@ -383,7 +383,7 @@ void NavDump::process()
          data.filter(FICDataFilterBlock(blockFilterList));
       if (!prnFilterList.empty()) // prn filter
          data.filter(FICDataFilterPRN(prnFilterList));
-      if (startTime > CommonTime(0,0.0)) // start time filter
+      if (startTime > CommonTime::BEGINNING_OF_TIME) // start time filter
          data.filter(FICDataFilterStartTime(startTime));
       if (endTime < CommonTime::END_OF_TIME) // end time filter
          data.filter(FICDataFilterEndTime(endTime));

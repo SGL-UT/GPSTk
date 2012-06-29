@@ -300,7 +300,7 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
          return;
       }
       
-      CommonTime howTime(week, umsg.getHOWTime());
+      CommonTime howTime = GPSWeekSecond(week, umsg.getHOWTime());
       if (howTime == umsg.time)
       {
          if (verboseLevel && ! (bugMask & 0x4))

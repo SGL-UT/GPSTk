@@ -60,10 +60,11 @@ namespace gpstk
          int dow = zcount / ZCOUNT_PER_DAY;
          int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
          double sod = static_cast<double>( zcount % ZCOUNT_PER_DAY ) * 1.5;
-         return CommonTime( jday,
-                            static_cast<long>( sod ),
-                            sod - static_cast<long>( sod ),
-                            timeSystem );
+         CommonTime ct;
+         return ct.set( jday,
+                        static_cast<long>( sod ),
+                        sod - static_cast<long>( sod ),
+                        timeSystem );
       }
       catch (InvalidParameter& ip)
       {

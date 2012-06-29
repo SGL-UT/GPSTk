@@ -62,10 +62,11 @@ namespace gpstk
          long double sod = 
             ( temp_jd - static_cast<long double>( jday ) ) * SEC_PER_DAY;
          
-         return CommonTime( jday, 
-                            static_cast<long>( sod ),
-                            static_cast<double>( sod - static_cast<long>( sod ) ),
-                            timeSystem );
+         CommonTime ct;
+         return ct.set( jday, 
+                        static_cast<long>( sod ),
+                        static_cast<double>( sod - static_cast<long>( sod ) ),
+                        timeSystem );
       }
       catch (InvalidParameter& ip)
       {

@@ -175,8 +175,7 @@ namespace gpstk
       throw()
    {
       bool rc = false;
-      CommonTime t(0,0,0.0,TimeSystem::GPS);  // use GPS for default
-      t =  eph.getEphemerisEpoch();
+      CommonTime t = eph.getEphemerisEpoch();
 
       // N.B. Galileo Nav Data does not define a fit interval.
       //      What should we replace this with?
@@ -193,7 +192,6 @@ namespace gpstk
       {
          // Store the new eph only if it has a later transmit time
          GalEphemeris& current = sfi->second;
-         CommonTime ephTot, currentTot;
 
          if (eph.getTransmitTime() > current.getTransmitTime())
          {
@@ -270,8 +268,7 @@ namespace gpstk
       }
 
       const GalEphMap& em = prn_i->second;
-      CommonTime t1(0,0,0.0,TimeSystem::GPS), t2(0,0,0.0,TimeSystem::GPS),
-                 Tot = CommonTime::BEGINNING_OF_TIME;
+      CommonTime t1, t2, Tot = CommonTime::BEGINNING_OF_TIME;
       GalEphMap::const_iterator it = em.end();
 
       // Find eph with (Toe-(fitint/2)) > t - 4 hours
