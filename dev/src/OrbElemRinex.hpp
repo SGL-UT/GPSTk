@@ -10,8 +10,8 @@
 *
 */
 
-#ifndef GPSTK_ORBELEMFIC9_HPP
-#define GPSTK_ORBELEMFIC9_HPP
+#ifndef GPSTK_ORBELEMRINEX9_HPP
+#define GPSTK_ORBELEMRINEX9_HPP
 
 //============================================================================
 //
@@ -53,7 +53,7 @@
 #include <iostream>
 
 #include "OrbElem.hpp"
-#include "FICData.hpp"
+#include "RinexNavData.hpp"
 
 
 namespace gpstk
@@ -65,20 +65,20 @@ namespace gpstk
        * Ephemeris information for a single SF 1/2/3.  This class
        * encapsulates the ephemeris navigation message (subframes 1-3)
        */
-   class OrbElemFIC9 : public OrbElem
+   class OrbElemRinex : public OrbElem
    {
    public:
          /// Default constructor
-      OrbElemFIC9();
+      OrbElemRinex();
 
-      OrbElemFIC9( const FICData& fic9 )
+      OrbElemRinex( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
          /// Destructor
-      virtual ~OrbElemFIC9() {}
+      virtual ~OrbElemRinex() {}
 
          /// Load a FIC 9 into an existing object
-      void loadData( const FICData& fic9 )
+      void loadData( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
          /// Query presence of data in this object.
@@ -101,29 +101,26 @@ namespace gpstk
      
          /// Ephemeris overhead information
          //@{
-      long  HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
-      short ASalert[3];     /**< A-S and "alert" flags for each subframe. 
-			        2 bit quantity with A-S flag the high
-                                order bit and the alert flag low order bit */
+      
       CommonTime transmitTime; /** Estimated beginning time of this sample */
 
       short  codeflags;     /**< L2 codes */
-      short  accFlag;       /**< User Range Accuracy flag */ 
+      double accuracyValue; /**< User Range Accuracy (meters) */ 
       short  health;        /**< SV health */
       short  L2Pdata;       /**< L2 P data flag */
       short  IODC;          /**< Index of data-clock  */
-      short  IODE;          /**< Index of data-eph    */
-      short  fitint;        /**< Fit interval flag */
+      short  fitDuration;   /**< Fit duration (hours) */
       double Tgd;           /**< L1 and L2 correction term */
+      long   HOWtime;        /**< Handover Word time */
          //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElemFIC9& eph);
+                                      const OrbElemRinex& eph);
 
     
        
 
-   }; // class OrbElemFIC9
+   }; // class OrbElemRinex
 
    //@}
 

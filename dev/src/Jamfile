@@ -125,6 +125,7 @@ else
       OceanLoading.cpp
       OrbElem.cpp
       OrbElemFIC9.cpp
+      OrbElemRinex.cpp
       PackedNavBits.cpp
       PlanetEphemeris.cpp
       PoleTides.cpp
@@ -355,7 +356,8 @@ else
       OceanLoading.hpp	
       OrbElem.hpp
       OrbElemFIC9.hpp
-      OrbElemStore.hpp	
+      OrbElemStore.hpp
+      OrbElemRinex.hpp	
       ORDEpoch.hpp
       PackedNavBits.hpp	
       PCodeConst.hpp	

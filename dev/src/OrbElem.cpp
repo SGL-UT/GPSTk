@@ -361,13 +361,21 @@ namespace gpstk
       s.fill(' ');
  
       s << endl;
+      s << "           TIMES OF INTEREST"
+        << endl << endl;
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
         << "   MM/DD/YYYY   HH:MM:SS\n"; 
+      s << "Begin Valid:  ";
+      timeDisplay(s, beginValid);
+      s << endl;
       s << "Clock Epoch:  ";
       timeDisplay(s, ctToc);
       s << endl;
       s << "Eph Epoch:    ";
       timeDisplay(s, ctToe);
+      s << endl;
+      s << "End Valid:    ";
+      timeDisplay(s, endValid);
        
       s.setf(ios::scientific, ios::floatfield);
       s.precision(8);
@@ -375,7 +383,7 @@ namespace gpstk
 
       s << endl
         << endl
-        << "           CLOCK"
+        << "           CLOCK PARAMETERS"
         << endl
         << endl
         << "Bias T0:     " << setw(16) << af0 << " sec" << endl

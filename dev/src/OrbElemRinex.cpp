@@ -37,13 +37,13 @@
 //=============================================================================
 
 /**
- * @file OrbElemFIC9.cpp
+ * @file OrbElemRinex.cpp
  * Ephemeris data encapsulated in engineering terms
  */
 #include <iomanip>
 #include <cmath>
 
-#include "OrbElemFIC9.hpp"
+#include "OrbElemRinex.hpp"
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
 #include "GPS_URA.hpp"
@@ -54,89 +54,75 @@
 namespace gpstk
 {
    using namespace std;
-
-   OrbElemFIC9::OrbElemFIC9()
+  
+   OrbElemRinex::OrbElemRinex()
    {
       dataLoaded = false;     
-      ASalert[0] = ASalert[1] = ASalert[2]  =
-	   codeflags = health = L2Pdata = 0;
+      codeflags = health = L2Pdata = 0;
 
-      HOWtime[0] = HOWtime[1] = HOWtime[2] = 0;
+      accuracyValue = 0.0;
 
-      IODC = IODE = 0;
+      IODC = 0;
       Tgd = 0.0;
      
-      fitint = 0;
+      fitDuration = 0;
    }
 
   
 
-   OrbElemFIC9::OrbElemFIC9( const FICData& fic9 )
+   OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
-      loadData( fic9 );
+      loadData( rinNav );
    }
 
-   void OrbElemFIC9::loadData( const FICData& fic9 )
+   void OrbElemRinex::loadData( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
-      if (fic9.blockNum!=9)
-      {
-         InvalidParameter exc("Invalid FIC Block: "+StringUtils::asString(fic9.blockNum));
-         GPSTK_THROW(exc);
-      }
-
       // Fill in the variables unique to OrbElemFIC9
-      HOWtime[0] = static_cast<long>( fic9.f[2] );
-      ASalert[0] = static_cast<short>( fic9.f[3] );
-      codeflags  = static_cast<short>( fic9.f[6] );
-      accFlag    = static_cast<short>( fic9.f[7] ); 
-      health     = static_cast<short>( fic9.f[8] );
-      IODC       = static_cast<short>( ldexp( fic9.f[9], -11 ) );
-      L2Pdata    = static_cast<short>( fic9.f[10] );
-      Tgd        = fic9.f[11];
+      codeflags        = rinNav.codeflgs;
+      accuracyValue    = rinNav.accuracy; 
+      health           = rinNav.health;
+      IODC             = rinNav.IODC;
+      L2Pdata          = rinNav.L2Pdata;
+      Tgd              = rinNav.Tgd;
 
-      HOWtime[1]     = static_cast<long>( fic9.f[22] );
-      ASalert[1]     = static_cast<short>( fic9.f[23] );
-      IODE           = static_cast<short>( ldexp( fic9.f[25], -11 ) );
-      fitint         = static_cast<short>( fic9.f[34] );
+      HOWtime        = rinNav.HOWtime;
+      fitDuration    = rinNav.fitint;
 
-      HOWtime[2]       = static_cast<long>( fic9.f[42] );
-      ASalert[2]       = static_cast<short>( fic9.f[43] );
-
-      short fullXmitWeekNum    = static_cast<short>( fic9.f[5] );
+      short fullXmitWeekNum    = rinNav.weeknum;
 
          // Fill in the variables in the OrbElem parent
 	 // - - - First the simple copies - - -
-      double Toc     = fic9.f[12];       // OrbElem only stores fully qualified times
+      double Toc     = rinNav.Toc;       // OrbElem only stores fully qualified times
                                          // see notes below.
-      af2            = fic9.f[13];
-      af1            = fic9.f[14];
-      af0            = fic9.f[15];
+      af0            = rinNav.af0;
+      af1            = rinNav.af1;
+      af2            = rinNav.af2;
 
-      Crs            = fic9.f[26];
-      dn             = fic9.f[27];
-      M0             = fic9.f[28];
-      Cuc            = fic9.f[29];
-      ecc            = fic9.f[30];
-      Cus            = fic9.f[31];
-      double AHalf   = fic9.f[32];       // Not a member of OrbElem.  See notes below.
-      double Toe     = fic9.f[33];       // OrbElem only stores fully qualified times
-                                         // see notes below.
-
-      Cic            = fic9.f[45];
-      OMEGA0         = fic9.f[46];
-      Cis            = fic9.f[47];
-      i0             = fic9.f[48];
-      Crc            = fic9.f[49];
-      w              = fic9.f[50];
-      OMEGAdot       = fic9.f[51];
-      idot           = fic9.f[53];
+      Cuc            = rinNav.Cuc;
+      Cus            = rinNav.Cus;
+      Crc            = rinNav.Crc;
+      Crs            = rinNav.Crs;
+      Cic            = rinNav.Cic;
+      Cis            = rinNav.Cis;
+      
+                                         
+      double Toe     = rinNav.Toe;       // Not a member of OrbElem.  See notes below.
+      M0             = rinNav.M0;       // OrbElem only stores fully qualified times
+      dn             = rinNav.dn;       // see notes below.
+      ecc            = rinNav.ecc;
+      double AHalf   = rinNav.Ahalf;
+      OMEGA0         = rinNav.OMEGA0;
+      i0             = rinNav.i0;
+      w              = rinNav.w;
+      OMEGAdot       = rinNav.OMEGAdot;
+      idot           = rinNav.idot;
 
       // - - - Now work on the things that need to be calculated - - -
 
 	 // The system is assumed (legacy navigation message is from GPS)
-      satID.id = static_cast<short>( fic9.f[19] );
+      satID.id = static_cast<short>( rinNav.PRNID );
 
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
@@ -170,26 +156,20 @@ namespace gpstk
       double XmitSOW = 0.0; 
       if ( (longToc % 7200) != 0)     // NOT an even two hour change
       {
-         long leastHOW = HOWtime[0];
-         if (HOWtime[1]<leastHOW) leastHOW = HOWtime[1];
-         if (HOWtime[2]<leastHOW) leastHOW = HOWtime[2];	 
-         long Xmit = leastHOW - (leastHOW % 30);
+         long Xmit = HOWtime - (HOWtime % 30);
 	 XmitSOW = (double) Xmit;
       }
       else
       {
-         long Xmit = HOWtime[0] - HOWtime[0] % 7200;
+         long Xmit = HOWtime - HOWtime % 7200;
 	 XmitSOW = (double) Xmit; 
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW ); 
 
       // Determine Transmit Time
       // Transmit time is the actual time this
-      // SF 1/2/3 sample was collected
-      long leastHOW = HOWtime[0];
-      if (HOWtime[1]<leastHOW) leastHOW = HOWtime[1];
-      if (HOWtime[2]<leastHOW) leastHOW = HOWtime[2];	 
-      long Xmit = leastHOW - (leastHOW % 30);
+      // SF 1/2/3 sample was collected	 
+      long Xmit = HOWtime - (HOWtime % 30);
       transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit );
 
          // Fully qualified Toe and Toc
@@ -210,7 +190,7 @@ namespace gpstk
 	 // and the Toe.  The fit interval is either trivial
 	 // (if fit interval flag==0, fit interval is 4 hours) 
 	 // or a look-up table based on the IODC. 
-      short fitHours = getLegacyFitInterval(IODC, fitint);
+      short fitHours = getLegacyFitInterval(IODC, fitDuration);
       long endFitSOW = Toe + (fitHours/2)*3600;
       short endFitWk = epochWeek;
       if (endFitSOW >= FULLWEEK)
@@ -248,13 +228,13 @@ namespace gpstk
       return;
    }
 
-   bool OrbElemFIC9::hasData( ) const
+   bool OrbElemRinex::hasData( ) const
       { return( dataLoaded ); }
 
-   CommonTime OrbElemFIC9::getTransmitTime( ) const
+   CommonTime OrbElemRinex::getTransmitTime( ) const
       { return( transmitTime ); }
 
-   double OrbElemFIC9::getAccuracy()  const
+   double OrbElemRinex::getAccuracy()  const
       throw(InvalidRequest)
    {
       if (!dataLoaded)
@@ -262,11 +242,10 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      double accuracy = ura2accuracy( accFlag );
-      return accuracy;
+      return ( accuracyValue );
    }   
 
-   void OrbElemFIC9 :: dumpTerse(ostream& s) const
+   void OrbElemRinex :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
    {
      
@@ -318,8 +297,7 @@ namespace gpstk
       s.flags(oldFlags);
 
     } // end of dumpTerse()
-
-   
+  
    static void shortcut(ostream & os, const long HOW )
    {
       short DOW, hour, min, sec;
@@ -352,9 +330,11 @@ namespace gpstk
          << ":" << setw(2) << min
          << ":" << setw(2) << sec
          << setfill(' ');
-   }
+   } 
+   
+ 
 
-   void OrbElemFIC9 :: dump(ostream& s) const
+   void OrbElemRinex :: dump(ostream& s) const
       throw( InvalidRequest )
    {
       
@@ -369,7 +349,7 @@ namespace gpstk
         << "Broadcast Ephemeris (Engineering Units)";
       s << endl;
 
-      s << "Source : FIC Block 9" << endl;
+      s << "Source : Rinex Navigation Message File" << endl;
  
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
@@ -390,39 +370,23 @@ namespace gpstk
       	<< "           SUBFRAME OVERHEAD"
       	<< endl
       	<< endl
-      	<< "               SOW    DOW:HH:MM:SS     IOD    ALERT   A-S\n";
-      for (int i=0;i<3;i++)
-     	 {
-            s << "SF" << setw(1) << (i+1)
-              << " HOW:   " << setw(7) << HOWtime[i]
-              << "  ";
+      	<< "               SOW    DOW:HH:MM:SS     IOD\n";
+   
+      s << "   "
+        << " HOW:   " << setw(7) << HOWtime
+        << "  ";
 
-       	    shortcut( s, HOWtime[i]);
-            if (i==0)
-        	s << "   ";
-            else
-        	s << "    ";
+      shortcut( s, HOWtime);
+      s << "   ";
+     
+      s << "0x" << setfill('0') << hex;
 
-            s << "0x" << setfill('0') << hex;
+      s << setw(3) << IODC;
+      	
+      s << dec << "      " << setfill(' ');
 
-            if (i==0)
-          	s << setw(3) << IODC;
-            else
-        	s << setw(2) << IODE;
-	
-            s << dec << "      " << setfill(' ');
-
-            if (ASalert[i] & 0x0002)    // "Alert" bit handling
-        	s << "1     ";
-            else
-        	s << "0     ";
-
-            if (ASalert[i] & 0x0001)     // A-S flag handling
-        	s << " on";
-            else
-        	s << "off";
-            s << endl;
-         } 
+      s << endl;
+          
 
       s << endl
         << "           SV STATUS"
@@ -430,10 +394,10 @@ namespace gpstk
         << endl
         << "Health bits         :      0x" << setfill('0')  << setw(2) << health;
       s << endl
-        << "Fit interval flag   :         " << setw(1) << fitint;
+        << "Fit duration (Hrs)  :         " << setw(1) << fitDuration << " hrs";
       s << endl   
-        << "URA index           :      " << setfill(' ')
-        << setw(4) << accFlag << endl
+        << "Accuracy(m)         :      " << setfill(' ')
+        << setw(4) << accuracyValue << " m" << endl
         << "Code on L2          :   "; 
 
       switch (codeflags)
@@ -469,15 +433,15 @@ namespace gpstk
       s << endl;
       s << "Tgd                 : " << setw(13) << setprecision(6) << scientific << Tgd << " sec"; 
       s << endl; 
-         
-      
-    
+           
       OrbElem::dump(s);
       s.flags(oldFlags);
 
    } // end of dump()
 
-   ostream& operator<<(ostream& s, const OrbElemFIC9& eph)
+  
+
+   ostream& operator<<(ostream& s, const OrbElemRinex& eph)
    {
       try
       {
@@ -495,5 +459,3 @@ namespace gpstk
   
 
 } // namespace
-
-
