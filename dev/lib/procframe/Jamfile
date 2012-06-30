@@ -103,6 +103,10 @@ else
       ComputeSimpleWeights.hpp
       ComputeTropModel.hpp
       ComputeWindUp.hpp
+      ConfData.hpp
+      ConfDataItem.hpp
+      ConfDataSection.hpp
+      ConfDataStructures.hpp
       ConstraintSystem.hpp
       ConvertC1ToP1.hpp
       CorrectCodeBiases.hpp

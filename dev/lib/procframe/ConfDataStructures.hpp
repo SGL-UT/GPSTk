@@ -32,7 +32,7 @@
 
 #include "DataStructures.hpp"
 #include "MemoryUtils.hpp"
-#include "DayTime.hpp"
+#include "CommonTime.hpp"
 #include "Triple.hpp"
 #include "ConfData.hpp"
 
