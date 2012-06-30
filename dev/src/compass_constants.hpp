@@ -1,14 +1,12 @@
-#pragma ident "$Id: gps_constants.hpp 3140 2012-06-18 15:03:02Z susancummins $"
-
-
-
-#ifndef GPSTK_COMPASS_CONSTANTS_HPP
-#define GPSTK_COMPASS_CONSTANTS_HPP
+#pragma ident "$Id: compass_constants.hpp 3140 2012-06-18 15:03:02Z susancummins $"
 
 /**
  * @file gps_constants.hpp
- * Miscellaneous constants for GPS.
+ * Miscellaneous constants for Compass.
  */
+
+#ifndef GPSTK_COMPASS_CONSTANTS_HPP
+#define GPSTK_COMPASS_CONSTANTS_HPP
 
 //============================================================================
 //
@@ -26,29 +24,11 @@
 //
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
-//  Copyright 2004, The University of Texas at Austin
+//  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+//
+//  Wei Yan - R & D Center, TJISM. 2012
 //
 //============================================================================
-
-//============================================================================
-//
-//This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
-//Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
-//
-//Pursuant to DoD Directive 523024 
-//
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
-//                           release, distribution is unlimited.
-//
-//=============================================================================
-
-
-
-
 
 
 namespace gpstk
@@ -56,17 +36,17 @@ namespace gpstk
    /** @addtogroup ephemcalc */
    //@{
 
-      /** The maximum number of active satellites in the GPS
+      /** The maximum number of active satellites in the Compass
        * constellation. */
    const long MAX_PRN_COM     = 30;
 
    // ---------------- COMPASS ----------------------------------
-      /// COM B1 carrier frequency in Hz.
-   const double B1_FREQ_COM   = 1561.098e6;     
-      /// COM B2 carrier frequency in Hz.
-   const double B2_FREQ_COM   = 1207.140e6;    
-      /// COM B3 carrier frequency in Hz.
-   const double B3_FREQ_COM   = 1268.52e6;
+      /// COM B1 carrier frequency in Hz.   
+   const double B1_FREQ_COM   = 1561.098e6;  // B1-E2-L2
+      /// COM B2 carrier frequency in Hz.   
+   const double B2_FREQ_COM   = 1207.140e6;  // B2-E5b-L7
+      /// COM B3 carrier frequency in Hz.   
+   const double B3_FREQ_COM   = 1268.520e6;  // B3-E6-L6
       
       /// COM B1 carrier wavelength in meters
    const double B1_WAVELENGTH_COM  = 0.192039486310276;
