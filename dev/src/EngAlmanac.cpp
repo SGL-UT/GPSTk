@@ -117,7 +117,7 @@ namespace gpstk
          case 4:
                /* Page with Orbital Elements */
                /*check PRN */
-            if ((ficked[19] < 0) || (ficked[19] > MAX_PRN))
+            if ((ficked[19] < 0) || (ficked[19] > MAX_PRN_GPS))
             {
                InvalidParameter exc("EngAlmanac::addSubframe, PRN out of range "
                                     + StringUtils::asString(ficked[19]));
@@ -172,10 +172,10 @@ namespace gpstk
             break;
 
          case 9:  /* Page with Health for 25-32 and AS/SV config */
-            for (int i=1; i<=MAX_PRN; i++)
+            for (int i=1; i<=MAX_PRN_GPS; i++)
                SV_config[i] = static_cast<char>( ficked[6 + i] );
 
-            for (int i=25; i<=MAX_PRN; i++)
+            for (int i=25; i<=MAX_PRN_GPS; i++)
                health[i] = static_cast<char>( ficked[14 + i] );
             break;
 

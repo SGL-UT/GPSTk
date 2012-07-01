@@ -72,7 +72,7 @@ namespace gpstk
 
    bool GPSAlmanacStore::addAlmanac(const AlmOrbit& alm) throw()
    {
-      if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN))
+      if ((alm.getPRNID() >= 1) && (alm.getPRNID() <= MAX_PRN_GPS))
       {
          SatID sat(alm.getPRNID(),SatID::systemGPS);
          CommonTime toa = alm.getToaTime();
