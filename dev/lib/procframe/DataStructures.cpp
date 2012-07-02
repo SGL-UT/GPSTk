@@ -3137,7 +3137,8 @@ in matrix and number of types do not match") );
 
                while (obsTypeItr != strm.header.obsTypeList.end())
                {
-                  TypeID type( RinexType2TypeID( *obsTypeItr ) );
+                  TypeID type = ConvertToTypeID( *obsTypeItr,
+                     RinexSatID(itSat->id,itSat->system));
                   
                   RinexObsData::RinexDatum data;
                   data.data = f.body[*itSat][type];
@@ -3300,7 +3301,7 @@ in matrix and number of types do not match") );
 
       // Convenience function to fill a typeValueMap with data
       // from RinexObsTypeMap.
-   typeValueMap FilltypeValueMapwithRinexObsTypeMap(
+   typeValueMap FilltypeValueMapwithRinexObsTypeMap(const SatID& sat,
                                  const RinexObsData::RinexObsTypeMap& otmap )
    {
 
@@ -3316,47 +3317,53 @@ in matrix and number of types do not match") );
            ++itObs )
       {
 
-         TypeID type( RinexType2TypeID( (*itObs).first ) );
-         tvMap[ type ] = (*itObs).second.data;
+         RinexSatID rsat(sat.id,sat.system);
 
-            // If this is a phase measurement, let's store corresponding
-            // LLI and SSI for this SV and frequency
-            // Also, the values for phase measurements will be given in meters
-         if( type == TypeID::L1 )
+         TypeID type = ConvertToTypeID( itObs->first, rsat);
+
+         const bool isPhase = IsCarrierPhase(itObs->first);
+         const int n = GetCarrierBand(itObs->first);
+         
+         if(isPhase)
          {
-            tvMap[TypeID::LLI1] = (*itObs).second.lli;
-            tvMap[TypeID::SSI1] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L1_WAVELENGTH_GPS;
+            // TODO:: handle glonass data later(yanweigps)
+            tvMap[ type ] = (*itObs).second.data*getWavelength(rsat,n);
+
+            // n=1 2 5 6 7 8
+            if(n==1)
+            {
+               tvMap[TypeID::LLI1] = (*itObs).second.lli;
+               tvMap[TypeID::SSI1] = (*itObs).second.ssi;
+            }
+            else if(n==2)
+            {
+               tvMap[TypeID::LLI2] = (*itObs).second.lli;
+               tvMap[TypeID::SSI2] = (*itObs).second.ssi;
+            }
+            else if(n==5)
+            {
+               tvMap[TypeID::LLI5] = (*itObs).second.lli;
+               tvMap[TypeID::SSI5] = (*itObs).second.ssi;
+            }
+            else if(n==6)
+            {
+               tvMap[TypeID::LLI6] = (*itObs).second.lli;
+               tvMap[TypeID::SSI6] = (*itObs).second.ssi;
+            }
+            else if(n==7)
+            {
+               tvMap[TypeID::LLI7] = (*itObs).second.lli;
+               tvMap[TypeID::SSI7] = (*itObs).second.ssi;
+            }
+            else if(n==8)
+            {
+               tvMap[TypeID::LLI8] = (*itObs).second.lli;
+               tvMap[TypeID::SSI8] = (*itObs).second.ssi;
+            }
          }
-         if( type == TypeID::L2 )
+         else
          {
-            tvMap[TypeID::LLI2] = (*itObs).second.lli;
-            tvMap[TypeID::SSI2] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L2_WAVELENGTH_GPS;
-         }
-         if( type == TypeID::L5 )
-         {
-            tvMap[TypeID::LLI5] = (*itObs).second.lli;
-            tvMap[TypeID::SSI5] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L5_WAVELENGTH_GAL;
-         }
-         if( type == TypeID::L6 )
-         {
-            tvMap[TypeID::LLI6] = (*itObs).second.lli;
-            tvMap[TypeID::SSI6] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L6_WAVELENGTH_GAL;
-         }
-         if( type == TypeID::L7 )
-         {
-            tvMap[TypeID::LLI7] = (*itObs).second.lli;
-            tvMap[TypeID::SSI7] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L7_WAVELENGTH_GAL;
-         }
-         if( type == TypeID::L8 )
-         {
-            tvMap[TypeID::LLI8] = (*itObs).second.lli;
-            tvMap[TypeID::SSI8] = (*itObs).second.ssi;
-            tvMap[ type ] = tvMap[ type ] * L8_WAVELENGTH_GAL;
+            tvMap[ type ] = (*itObs).second.data;
          }
 
       }  // End of "for( itObs = otmap.begin(); ..."
@@ -3388,8 +3395,9 @@ in matrix and number of types do not match") );
             // The "second" field of a RinexSatMap (it) is a
             // RinexObsTypeMap (otmap)
          RinexObsData::RinexObsTypeMap otmap = (*it).second;
+         SatID sat = (*it).first;
 
-         theMap[(*it).first] = FilltypeValueMapwithRinexObsTypeMap(otmap);
+         theMap[sat] = FilltypeValueMapwithRinexObsTypeMap(sat,otmap);
 
       }
 

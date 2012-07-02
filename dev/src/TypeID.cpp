@@ -408,42 +408,154 @@ namespace gpstk
    }
 
 
-      // Conversion from RinexObsType to TypeID
-   TypeID::ValueType RinexType2TypeID(const RinexObsHeader::RinexObsType& rot)
+   bool IsCarrierPhase(const RinexObsHeader::RinexObsType& rot)
    {
-        if (rot == RinexObsHeader::UN) return TypeID::Unknown;
-        if (rot == RinexObsHeader::C1) return TypeID::C1;
-        if (rot == RinexObsHeader::C2) return TypeID::C2;
-        if (rot == RinexObsHeader::P1) return TypeID::P1;
-        if (rot == RinexObsHeader::P2) return TypeID::P2;
-        if (rot == RinexObsHeader::L1) return TypeID::L1;
-        if (rot == RinexObsHeader::L2) return TypeID::L2;
-        if (rot == RinexObsHeader::D1) return TypeID::D1;
-        if (rot == RinexObsHeader::D2) return TypeID::D2;
-        if (rot == RinexObsHeader::S1) return TypeID::S1;
-        if (rot == RinexObsHeader::S2) return TypeID::S2;
-        // v 2.11
-        if (rot == RinexObsHeader::C5) return TypeID::C5;
-        if (rot == RinexObsHeader::L5) return TypeID::L5;
-        if (rot == RinexObsHeader::D5) return TypeID::D5;
-        if (rot == RinexObsHeader::S5) return TypeID::S5;
-        // Galileo-related
-        if (rot == RinexObsHeader::C6) return TypeID::C6;
-        if (rot == RinexObsHeader::L6) return TypeID::L6;
-        if (rot == RinexObsHeader::D6) return TypeID::D6;
-        if (rot == RinexObsHeader::S6) return TypeID::S6;
-        if (rot == RinexObsHeader::C7) return TypeID::C7;
-        if (rot == RinexObsHeader::L7) return TypeID::L7;
-        if (rot == RinexObsHeader::D7) return TypeID::D7;
-        if (rot == RinexObsHeader::S7) return TypeID::S7;
-        if (rot == RinexObsHeader::C8) return TypeID::C8;
-        if (rot == RinexObsHeader::L8) return TypeID::L8;
-        if (rot == RinexObsHeader::D8) return TypeID::D8;
-        if (rot == RinexObsHeader::S8) return TypeID::S8;
-
-        // Just in case, but it should never get this far
-        return TypeID::Unknown;
+      return (rot.type[0]=='L') ? true : false;
    }
+
+
+   int GetCarrierBand(const RinexObsHeader::RinexObsType& rot)
+   {
+      // 1 2 5 6 7 8
+      try
+      {
+         return StringUtils::asInt( rot.type.substr(1,1) );
+      }
+      catch(...)
+      {
+         return -1;
+      }
+
+   }
+
+
+   TypeID::ValueType ConvertToTypeID(const RinexObsHeader::RinexObsType& rot,
+                                     const RinexSatID& sat)
+   {
+      if (rot == RinexObsHeader::UN) 
+      {
+         return TypeID::Unknown;
+      }
+      else if(sat.system==SatID::systemGPS)
+      {
+         //GPS     L1         1575.42     C1,P1       L1         D1         S1  
+         //        L2         1227.60     C2,P2       L2         D2         S2  
+         //        L5         1176.45      C5         L5         D5         S5  
+
+         // For L1: C1 P1 L1 D1 S1
+         if(rot == RinexObsHeader::C1) return TypeID::C1;
+         if(rot == RinexObsHeader::P1) return TypeID::P1;
+         if(rot == RinexObsHeader::L1) return TypeID::L1;
+         if(rot == RinexObsHeader::D1) return TypeID::D1;
+         if(rot == RinexObsHeader::S1) return TypeID::S1;
+         // For L2: C2 P2 L2 D2 S2 
+         if(rot == RinexObsHeader::C2) return TypeID::C2;
+         if(rot == RinexObsHeader::P2) return TypeID::P2;
+         if(rot == RinexObsHeader::L2) return TypeID::L2;
+         if(rot == RinexObsHeader::D2) return TypeID::D2;
+         if(rot == RinexObsHeader::S2) return TypeID::S2;
+         // For L5: C5 L5 D5 S5
+         if(rot == RinexObsHeader::C5) return TypeID::C5;
+         if(rot == RinexObsHeader::L5) return TypeID::L5;
+         if(rot == RinexObsHeader::D5) return TypeID::D5;
+         if(rot == RinexObsHeader::S5) return TypeID::S5;
+      }
+      else if(sat.system==SatID::systemGlonass)
+      {
+         // Glonass G1         1602+k*9/16 C1,P1       L1         D1         S1 
+         //         G2         1246+k*7/16 C2,P2       L2         D2         S2 
+
+         // For L1: C1 P1 L1 D1 S1
+         if(rot == RinexObsHeader::C1) return TypeID::C1;
+         if(rot == RinexObsHeader::P1) return TypeID::P1;
+         if(rot == RinexObsHeader::L1) return TypeID::L1;
+         if(rot == RinexObsHeader::D1) return TypeID::D1;
+         if(rot == RinexObsHeader::S1) return TypeID::S1;
+         // For L2: C2 P2 L2 D2 S2 
+         if(rot == RinexObsHeader::C2) return TypeID::C2;
+         if(rot == RinexObsHeader::P2) return TypeID::P2;
+         if(rot == RinexObsHeader::L2) return TypeID::L2;
+         if(rot == RinexObsHeader::D2) return TypeID::D2;
+         if(rot == RinexObsHeader::S2) return TypeID::S2;
+      }
+      else if(sat.system==SatID::systemGalileo)
+      {
+         // Galileo E2-L1-E1   1575.42      C1         L1         D1         S1 
+         //         E5a        1176.45      C5         L5         D5         S5 
+         //         E5b        1207.140     C7         L7         D7         S7 
+         //         E5a+b      1191.795     C8         L8         D8         S8 
+         //         E6         1278.75      C6         L6         D6         S6 
+         // E2-L1-E1
+         if(rot == RinexObsHeader::C1) return TypeID::C1;
+         if(rot == RinexObsHeader::L1) return TypeID::L1;
+         if(rot == RinexObsHeader::D1) return TypeID::D1;
+         if(rot == RinexObsHeader::S1) return TypeID::S1;
+         // E5a
+         if(rot == RinexObsHeader::C5) return TypeID::C5;
+         if(rot == RinexObsHeader::L5) return TypeID::L5;
+         if(rot == RinexObsHeader::D5) return TypeID::D5;
+         if(rot == RinexObsHeader::S5) return TypeID::S5;
+         // E5b
+         if(rot == RinexObsHeader::C7) return TypeID::C7;
+         if(rot == RinexObsHeader::L7) return TypeID::L7;
+         if(rot == RinexObsHeader::D7) return TypeID::D7;
+         if(rot == RinexObsHeader::S7) return TypeID::S7;
+         // E5a+b
+         if(rot == RinexObsHeader::C8) return TypeID::C8;
+         if(rot == RinexObsHeader::L8) return TypeID::L8;
+         if(rot == RinexObsHeader::D8) return TypeID::D8;
+         if(rot == RinexObsHeader::S8) return TypeID::S8;
+         // E6
+         if(rot == RinexObsHeader::C6) return TypeID::C6;
+         if(rot == RinexObsHeader::L6) return TypeID::L6;
+         if(rot == RinexObsHeader::D6) return TypeID::D6;
+         if(rot == RinexObsHeader::S6) return TypeID::S6;
+      }
+      else if(sat.system==SatID::systemCompass)
+      {
+         // Compass E2   I/Q                 C2         L2         D2         S2 
+         //         E5b  I/Q                 C7         L7         D7         S7
+         //         E6   I/Q                 C6         L6         D6         S6
+
+         // For E2-B1
+         if(rot == RinexObsHeader::C2) return TypeID::C2;
+         if(rot == RinexObsHeader::L2) return TypeID::L2;
+         if(rot == RinexObsHeader::D2) return TypeID::D2;
+         if(rot == RinexObsHeader::S2) return TypeID::S2;
+         // For E5b-B2
+         if(rot == RinexObsHeader::C7) return TypeID::C7;
+         if(rot == RinexObsHeader::L7) return TypeID::L7;
+         if(rot == RinexObsHeader::D7) return TypeID::D7;
+         if(rot == RinexObsHeader::S7) return TypeID::S7;
+         // For E6-B3
+         if(rot == RinexObsHeader::C6) return TypeID::C6;
+         if(rot == RinexObsHeader::L6) return TypeID::L6;
+         if(rot == RinexObsHeader::D6) return TypeID::D6;
+         if(rot == RinexObsHeader::S6) return TypeID::S6;
+      }
+      else if(sat.system==SatID::systemGeosync)
+      {
+         // SBAS    L1         1575.42      C1         L1         D1         S1 
+         //         L5         1176.45      C5         L5         D5         S5   
+
+         // L1
+         if(rot == RinexObsHeader::C1) return TypeID::C1;
+         if(rot == RinexObsHeader::L1) return TypeID::L1;
+         if(rot == RinexObsHeader::D1) return TypeID::D1;
+         if(rot == RinexObsHeader::S1) return TypeID::S1;
+         // L5
+         if(rot == RinexObsHeader::C5) return TypeID::C5;
+         if(rot == RinexObsHeader::L5) return TypeID::L5;
+         if(rot == RinexObsHeader::D5) return TypeID::D5;
+         if(rot == RinexObsHeader::S5) return TypeID::S5;
+      }
+      else
+      {
+         // TODO: 
+         return TypeID::Unknown;
+      }
+   }
+
 
 
       /// Static method to register new TypeID by a RegTypeID class
@@ -552,5 +664,3 @@ namespace gpstk
    } // End of 'TypeID TypeID::byName(std::string name)'
 
 } // End of namespace gpstk
-
-

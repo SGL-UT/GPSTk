@@ -41,7 +41,8 @@
 #include <string>
 #include <map>
 #include "RinexObsHeader.hpp"
-
+#include "Rinex3ObsHeader.hpp"
+#include "RinexObsID.hpp"
 
 namespace gpstk
 {
@@ -538,11 +539,12 @@ namespace gpstk
    std::ostream& operator<<(std::ostream& s, const TypeID& p);
 
 
+   bool IsCarrierPhase(const RinexObsHeader::RinexObsType& rot);
+   
+   int GetCarrierBand(const RinexObsHeader::RinexObsType& rot);
 
-      /// Conversion from RinexObsType to TypeID
-   TypeID::ValueType RinexType2TypeID(const RinexObsHeader::RinexObsType& rot);
-
-
+   TypeID::ValueType ConvertToTypeID(const RinexObsHeader::RinexObsType& rot,
+                                     const RinexSatID& sat);
 
 }  // End of namespace gpstk
 

@@ -1569,7 +1569,7 @@ namespace gpstk
 
       /// Convenience function to fill a typeValueMap with data
       /// from RinexObsTypeMap.
-   typeValueMap FilltypeValueMapwithRinexObsTypeMap(
+   typeValueMap FilltypeValueMapwithRinexObsTypeMap( const SatID& sat,
                                  const RinexObsData::RinexObsTypeMap& otmap );
 
 
