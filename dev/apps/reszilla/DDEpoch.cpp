@@ -375,8 +375,8 @@ void DDEpochMap::dump(std::ostream& s) const
    const DDEpochMap& ddem=*this;
 
    s.setf(ios::fixed, ios::floatfield);
-   s << "# time               obs type       SV1 SV2   EL1     EL2"
-     << "           ddr(m)  h1h2"
+   s << "# time               obs type               SV1 SV2   EL1     EL2"
+     << "          ddr(m)  h1h2"
      << endl;
 
    DDEpochMap::const_iterator ei;
@@ -407,7 +407,7 @@ void DDEpochMap::dump(std::ostream& s) const
                {
                   s << left << setw(20) << time << right
                     << setfill(' ') << setprecision(2)
-                    << " " << left << setw(14) << rot << right
+                    << " " << left << setw(21) << rot << right
                     << " " << setw(3) << masterPrn.id
                     << " " << setw(3) << prn.id
                     << "   " << setw(5) << dde.elevation[masterPrn] << "  "
@@ -562,7 +562,7 @@ string DDEpochMap::computeStats(
 
    ostringstream oss;
    oss << ">s " 
-       << setw(17) << left << asString(oid) 
+       << setw(22) << left << asString(oid)
        << right << fixed
        << setw(2) << (int)minElevation << "-" << setw(2) << (int)maxElevation
        << "   " << setprecision(7) << setw(11) << mad/2
@@ -622,8 +622,8 @@ void DDEpochMap::outputStats(
    }
 
    s << endl
-     << ">s  ObsID           elev      noise(mad)    median      # DDE     # SVE    kurt   jumps" << endl
-     << ">s -------------    -----     ----------  ----------   -------   -------  ------  -----"
+     << ">s  ObsID                elev      noise(mad)    median      # DDE     # SVE    kurt   jumps" << endl
+     << ">s -----------------     -----     ----------  ----------   -------   -------  ------  -----"
      << endl;
 
    // For convience, group these into L1

@@ -276,11 +276,11 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    }
    else
    {
-      elr.push_back( ElevationRange( 0.f, 10.f) );
-      elr.push_back( ElevationRange(10.f, 20.f) );
-      elr.push_back( ElevationRange(20.f, 60.f) );
-      elr.push_back( ElevationRange(60.f, 90.f) );
-      elr.push_back( ElevationRange(10.f, 90.f) );
+      elr.push_back( ElevationRange( 0, 10) );
+      elr.push_back( ElevationRange(10, 20) );
+      elr.push_back( ElevationRange(20, 60) );
+      elr.push_back( ElevationRange(60, 90) );
+      elr.push_back( ElevationRange(10, 90) );
    }
    
    if (ephHealthSource.getCount())
@@ -376,11 +376,10 @@ void DDGen::process()
    // The debug level is lowered for the first part since other programs (i.e.
    // ordGen) are better at debugging those algorithms
    int prevDebugLevel = debugLevel;
-   if (debugLevel>4)
-      debugLevel = 1;
+   debugLevel = max(0,debugLevel-3);
 
    EphReader ephReader;
-   ephReader.verboseLevel = verboseLevel;
+   ephReader.verboseLevel = debugLevel;
    for (int i=0; i<ephFileOption.getCount(); i++)
       ephReader.read(ephFileOption.getValue()[i]);
    gpstk::XvtStore<SatID>& eph = *ephReader.eph;
@@ -394,15 +393,16 @@ void DDGen::process()
    ObsEpochMap oem1, oem2;
 
    if (debugLevel || verboseLevel)
-      cout << "# Reading obs from Rx1" << endl;
+      cout << "# Reading obs for Rx1" << endl;
    readObsFile(obs1FileOption, *ephReader.eph, oem1);   
    filterObs(*healthSrcER.eph, oem1);
 
    if (debugLevel || verboseLevel)
-      cout << "# Reading obs from Rx2" << endl;
+      cout << "# Reading obs for Rx2" << endl;
    readObsFile(obs2FileOption, *ephReader.eph, oem2);
    filterObs(*healthSrcER.eph, oem2);
 
+   debugLevel = prevDebugLevel;
    SvElevationMap pem = elevation_map(oem1, antennaPos, *ephReader.eph);
    DDEpochMap ddem;
    ddem.debugLevel = debugLevel;
@@ -489,7 +489,7 @@ void DDGen::readObsFile(
    for (int i=0; i<obsFileOption.getCount(); i++)
    {
       string fn = (obsFileOption.getValue())[i];
-      ObsReader obsReader(fn, verboseLevel);
+      ObsReader obsReader(fn, debugLevel);
       obsReader.msid = msid;
 
       while (obsReader)
