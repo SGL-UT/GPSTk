@@ -286,13 +286,12 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
                if (k->first.type == ObsID::otLLI && k->second == 1)
                   ord.wonky |= 0x0002;
 
-            // Make sure we have a valid C/A pseudorange unless we are a mixed
-            // frequency 
+            // Make sure C/A pseudorange is valid unless we are a dual frequency
             if (oid1.band != ObsID::cbL1L2)
             {
                const ObsID C1(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
                k = svObsEpoch.find(C1);
-               if (k == svObsEpoch.end() || k->second < rhoMin)
+               if (k != svObsEpoch.end() && k->second < rhoMin)
                   ord.wonky |= 0x0004;
             }
 

@@ -203,7 +203,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       return false;
    }
    
-   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])<= 0 ))
+   if ((SNRoption.getCount() && asDouble(SNRoption.getValue()[0])< 0 ))
    {
       cerr << "\n\n Please enter a SNR value >= 0 dB.\n "
            << "Exiting....\n\n";
@@ -243,7 +243,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    else
    {
       string fn = (obs1FileOption.getValue())[0];
-      ObsReader obsReader(fn, verboseLevel);
+      ObsReader obsReader(fn);
       if (obsReader.inputType == FFIdentifier::tRinexObs)
          antennaPos = obsReader.roh.antennaPosition;
    }
@@ -512,7 +512,7 @@ void DDGen::readObsFile(
          {
             if (verboseLevel>2)
                cout << "# Could not estimate clock for epoch at " << obs.time 
-                    << endl;
+                    << ", ORDEpoch:" << oe << endl;
          }
       }
    }
