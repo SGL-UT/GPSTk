@@ -213,7 +213,8 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
    if (!oidSet)
       setMode(obs);
 
-   const CommonTime& t = obs.time;
+   CommonTime t = obs.time;
+   t.setTimeSystem(TimeSystem::Any);
    const ObsEpoch& obsEpoch = obs;
 
    ORDEpoch ordEpoch;
