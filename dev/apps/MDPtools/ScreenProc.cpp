@@ -285,8 +285,7 @@ void MDPScreenProcessor::drawPVT()
    string off=rightJustify(asString(currentPvt.dtime*1e9, 1), 9) + " ns";
    writeAt(win, pvtRow, offCol, off.c_str());
 
-   gpstk::GPSEllipsoid gm;
-   gpstk::Position llh(currentPvt.x, &gm);
+   gpstk::Position llh(currentPvt.x);
 
    string lat, lon, alt;
    if (llh[0] > 0)
