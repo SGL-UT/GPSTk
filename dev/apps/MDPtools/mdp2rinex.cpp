@@ -108,7 +108,8 @@ public:
       //if (fixHalfOpt.getCount())
       //   fixHalf = true;
 
-      roh.valid |= RinexObsHeader::allValid21;
+      roh.valid = RinexObsHeader::allValid21;
+      roh.version = 2.1;
       roh.fileType = "Observation";
       roh.fileProgram = "mdp2rinex";
       roh.markerName = "Unknown";
@@ -122,6 +123,7 @@ public:
       roh.recNo = "1";
       roh.antType = "Unknown";
       roh.antNo = "1";
+      roh.system.system = RinexSatID::systemGPS;
       roh.obsTypeList.push_back(RinexObsHeader::C1);
       roh.obsTypeList.push_back(RinexObsHeader::P1);
       roh.obsTypeList.push_back(RinexObsHeader::L1);
