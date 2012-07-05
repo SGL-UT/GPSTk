@@ -57,6 +57,9 @@
 #include "gps_constants.hpp"
 #include "TimeString.hpp"
 #include "EngEphemeris.hpp"
+#include "OrbElemFIC9.hpp"
+#include "OrbElemRinex.hpp"
+
 
 
 using namespace std;
@@ -78,7 +81,7 @@ private:
    void getNewTime(CommonTime& dt);
    void getFICBlocks();
    void getSVs();
-   void printTerseHeader(ostream& s, const EngEphemeris ee);
+   void printTerseHeader(ostream& s, const CommonTime ct);
 
    CommandOptionWithAnyArg inputFileOption;
    CommandOptionWithAnyArg outputFileOption;
@@ -396,18 +399,20 @@ void NavDump::process()
 	 FICData& f = *itr;
 	 if(f.blockNum == 9)
 	{
-	  EngEphemeris ee(f);
+	  OrbElemFIC9 oe(f);
 	  if(isTerse)
           {
             if(isFirst)
             {
-              printTerseHeader(out, ee);
+              printTerseHeader(out, oe.ctToc);
               isFirst = false;
             }
-            ee.dumpTerse(out);
+            oe.dumpTerse(out);
           } 
           else
-            ee.dump(out);
+          { 
+            oe.dump(out);
+          }
 	}
 	else
 	{ 
@@ -429,12 +434,12 @@ void NavDump::process()
       while (itr!=rnavlist.end())
       {
          RinexNavData& r = *itr;
-         EngEphemeris ee(r);
+         OrbElemRinex ee(r);
          if(isTerse)
          {
 	    if(isFirst)
             {
-              printTerseHeader(out, ee);
+              printTerseHeader(out, ee.ctToc);
               isFirst = false;
             }
             ee.dumpTerse(out);
@@ -446,7 +451,7 @@ void NavDump::process()
    }
 }
 
-void NavDump::printTerseHeader(ostream& out, const EngEphemeris ee)
+void NavDump::printTerseHeader(ostream& out, const CommonTime ct)
 {
    std::cout.setf(std::ios::fixed);
    std::cout.precision(0);
@@ -458,7 +463,7 @@ void NavDump::printTerseHeader(ostream& out, const EngEphemeris ee)
    else
       out << " -RINEX" << endl;
    out << "Week(10bt)     SOW  UTD    SOD  MM/DD/YYYY  HH:MM:SS" << endl;
-   out << printTime(ee.getEpochTime(), tform);
+   out << printTime(ct, tform);
    out << endl << endl;
    out << "         !     Xmit     !      Toe     !  End of Eff. ! URA(m) !  IODC !   Health  !" << endl;
    out << " SVN PRN ! DOY hh:mm:ss ! DOY hh:mm:ss ! DOY hh:mm:ss !   dec  !   hex !  hex  dec !" << endl;
