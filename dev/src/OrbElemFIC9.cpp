@@ -51,9 +51,11 @@
 #include "SVNumXRef.hpp"
 #include "TimeString.hpp"
 
+
 namespace gpstk
 {
    using namespace std;
+  
 
    OrbElemFIC9::OrbElemFIC9()
    {
@@ -247,6 +249,7 @@ namespace gpstk
 
       return;
    }
+  
 
    bool OrbElemFIC9::hasData( ) const
       { return( dataLoaded ); }
@@ -264,7 +267,7 @@ namespace gpstk
       }
       double accuracy = ura2accuracy( accFlag );
       return accuracy;
-   }   
+   }
 
    void OrbElemFIC9 :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
@@ -353,24 +356,22 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
+ 
 
    void OrbElemFIC9 :: dumpFIC9(ostream& s) const
       throw( InvalidRequest )
    {
-      
 
       ios::fmtflags oldFlags = s.flags();
       
       SVNumXRef svNumXRef; 
       int NAVSTARNum = 0; 
 
-      s << "****************************************************************"
+     /* s << "****************************************************************"
         << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
+        << "Broadcast Ephemeris (Engineering Units)"; 
       s << endl;
-
-      s << "Source : FIC Block 9" << endl;
- 
+      s << "Source : FIC Block 9" << endl; */
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
         << "SVN : " << setw(2);
@@ -471,12 +472,19 @@ namespace gpstk
       s << endl; 
       
       s.flags(oldFlags);
-   } // end of dumpFIC9()     
+   } // end of dumpFIC9()    
+
+  
       
    void OrbElemFIC9 :: dump(ostream& s) const
       throw( InvalidRequest )
    { 
       ios::fmtflags oldFlags = s.flags(); 
+      s << "****************************************************************"
+        << "************" << endl
+        << "Broadcast Ephemeris (Engineering Units)";
+      s << endl;
+      s << "Source : FIC Block 9" << endl;
       dumpFIC9(s);
       OrbElem::dump(s);
       s.flags(oldFlags);

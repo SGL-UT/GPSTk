@@ -308,6 +308,11 @@ namespace gpstk
       throw( InvalidRequest )
    {
       ios::fmtflags oldFlags = s.flags();
+      s << "****************************************************************"
+        << "************" << endl
+        << "Broadcast Ephemeris (Engineering Units)";
+      s << endl;
+      s << "Source : FIC Block 109" << endl;
       OrbElemFIC9::dumpFIC9(s);
       s << "AODO                :     " << setw(5) << fixed << AODO << " sec" << endl;
       OrbElem::dump(s);

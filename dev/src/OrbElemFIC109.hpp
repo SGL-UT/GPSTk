@@ -99,9 +99,11 @@ namespace gpstk
          throw( InvalidRequest );    
      
          /// Ephemeris overhead information
-         //@{
-      long  AODO;    
+         //@{ 
          //@}
+
+      
+
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElemFIC109& eph);

@@ -83,7 +83,8 @@ namespace gpstk
 
          /// Query presence of data in this object.
       bool hasData( ) const;
-  
+    
+    
 
          /// Returns the transmit time
       CommonTime getTransmitTime() const;
@@ -99,6 +100,8 @@ namespace gpstk
          throw( InvalidRequest );    
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
+
+     
 
      
          /// Ephemeris overhead information
@@ -117,6 +120,7 @@ namespace gpstk
       short  IODE;          /**< Index of data-eph    */
       short  fitint;        /**< Fit interval flag */
       double Tgd;           /**< L1 and L2 correction term */
+      long AODO;
          //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
