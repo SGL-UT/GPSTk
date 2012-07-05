@@ -46,6 +46,7 @@
 
 
 #include <sys/types.h>
+#include <ostream>
 
 #include "gpstkplatform.h"
 #include "BinUtils.hpp"
@@ -250,6 +251,8 @@ namespace gpstk
          throw();
       static short getSubframePattern(const uint32_t input[10])
          throw();
+      static void dump(std::ostream& s = std::cout);
+      
 
    private:
 

@@ -354,7 +354,7 @@ namespace gpstk
          << setfill(' ');
    }
 
-   void OrbElemFIC9 :: dump(ostream& s) const
+   void OrbElemFIC9 :: dumpFIC9(ostream& s) const
       throw( InvalidRequest )
    {
       
@@ -469,9 +469,15 @@ namespace gpstk
       s << endl;
       s << "Tgd                 : " << setw(13) << setprecision(6) << scientific << Tgd << " sec"; 
       s << endl; 
-         
       
-    
+      s.flags(oldFlags);
+   } // end of dumpFIC9()     
+      
+   void OrbElemFIC9 :: dump(ostream& s) const
+      throw( InvalidRequest )
+   { 
+      ios::fmtflags oldFlags = s.flags(); 
+      dumpFIC9(s);
       OrbElem::dump(s);
       s.flags(oldFlags);
 

@@ -683,5 +683,64 @@ namespace gpstk
       dval = LDEXP(dval,p->pow2);         // Scale by power of 2
       output[p->outIndex] = dval;         // Store result in output array
    }
+ 
+   void EngNav :: dump(std::ostream& s)
+   {
+      struct DecodeQuant *p = NULL;
+      for(short pattern = 1; pattern <= 10; pattern++)
+      {
+         s.setf(std::ios::fixed, std::ios::floatfield);
+         s.setf(std::ios::right, std::ios::adjustfield);
+         s.precision(0);
+         s.fill(' ');
+         int n = 0;
+         p = subframeList[pattern];
+         s << "****************************************"
+           << "*****************************************"
+           << std::endl
+           << "Pattern  :  " << pattern
+           << std::endl << std::endl
+           << "                                                         First         Second"
+           << std::endl
+           << " n   OutIndex   pow2    powPI     Scale   Signq   Start  #bits   Start  #bits"
+           << std::endl;           
+        bool done = false;
+        while(!done)
+        {
+          /* s.setf(std::ios::fixed, std::ios::floatfield);
+           s.setf(std::ios::right, std::ios::adjustfield);
+           s.precision(0);
+           s.fill(' '); */
+
+            s << std::dec << std::setw(2) << n << "        " << std::setw(3) << p->outIndex
+             << "    " << std::setw(3) << p->pow2
+             << "      " << std::setw(3) << p->powPI
+             << "       " << std::setw(3) << p->scale 
+             << "     " << std::setw(3) << p->signq
+             << "     " << std::setw(3) << p->fmt[0].startBit
+             << "    " << std::setw(3) << p->fmt[0].numBits
+             << "     " << std::setw(3) << p->fmt[1].startBit
+             << "    " << std::setw(3) << p->fmt[1].numBits
+             << std::endl;
+
+           n++;
+           p = p->nxtq;
+           if(p==NULL) done = true;
+            
+        }
+        s << std::endl;
+      }
+      s << std::endl;
+      s << "Index    Power           Value\n";
+      int x = -3;
+      for(int i = 0; i < 7; i++)
+      {
+        s << "    " << i << "       " << std::setw(2) << x << "        " << std::setw(8) << std::setprecision(5) << PItab[i] << std::endl;
+        x++;  
+      }
+ 
+
+   }
+
 
 } // namespace
