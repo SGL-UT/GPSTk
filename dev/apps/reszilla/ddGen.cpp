@@ -157,7 +157,6 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       stripOption('\0',"strip","Factor used in stripping data prior to computing "
                   "descriptive statistics. The default value is "
                   + asString(strip,1) + "."),
-      phaseOption('\0',"phase","Only compute phase double differences."), 
       SNRoption('S',"SNR","Only included observables with a raw signal strength, "
                 "or SNR, of at least this value, in dB. The default is 20 dB.");
 

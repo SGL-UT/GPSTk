@@ -55,7 +55,8 @@ SvElevationMap elevation_map(const ObsEpochMap& oem,
    ObsEpochMap::const_iterator oem_itr;
    for (oem_itr=oem.begin(); oem_itr!=oem.end(); oem_itr++)
    {
-      const CommonTime& t = oem_itr->first;
+      CommonTime t = oem_itr->first;
+      t.setTimeSystem(TimeSystem::Any);
       const ObsEpoch& oe = oem_itr->second;
       ObsEpoch::const_iterator oe_itr;
       for (oe_itr=oe.begin(); oe_itr!=oe.end(); oe_itr++)
@@ -67,6 +68,7 @@ SvElevationMap elevation_map(const ObsEpochMap& oem,
          }
          catch (InvalidRequest& e)
          {
+            cout << e << endl;
          }
    }
    return pem;

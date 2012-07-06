@@ -89,7 +89,6 @@ struct DDEpoch
    void selectMasterPrn(
       const gpstk::ObsEpoch& rx1,
       const gpstk::ObsEpoch& rx2);
-
 };
 
 

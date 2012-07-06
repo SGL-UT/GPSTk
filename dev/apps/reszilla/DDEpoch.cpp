@@ -299,7 +299,7 @@ void DDEpochMap::compute(
            << ", " << rx2.size() << " epochs)" << endl;
 
    // We use the data from rx1 walk us through the data
-   // loop over all epochs for this station
+   // loop over all epochs for this receiver
    ObsEpochMap::const_iterator ei1;
    for (ei1=rx1.begin(); ei1!=rx1.end(); ei1++)
    {
@@ -319,8 +319,7 @@ void DDEpochMap::compute(
 
       // We need to have a range rate but it doesn't really matter where from.
       // So here we find a doppler for each of the SVs
-      // Also we fill in the elevation while we are walking through
-      // the SVs.
+      // Also we fill in the elevation while we are walking through the SVs.
       for (ObsEpoch::const_iterator i=e1.begin(); i != e1.end(); i++)
       {
          const SatID& prn = i->first;
