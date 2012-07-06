@@ -34,15 +34,15 @@ def read_ddGen_ddr(args):
 
     for line in args.input_file:
         line = line.strip()
-        if args.debug>1:
+        if args.debug>2:
             print line
         if len(line)==0 or line[0] =='#': continue
 
         c = ddr_re.match(line)
         if c:
-            if args.debug>1: print c.groupdict()
+            if args.debug>2: print c.groupdict()
             if (c.group('hh') != "00" and (not args.plot_unhealthy)):
-                if debug: print "ignoring:",line
+                if debug>1: print "ignoring:",line
                 continue
             t = s2pt(c.group('time'),  "%Y %j %H:%M:%S") + float(c.group('fsec'))/86400.0
             ddr = float(c.group('ddr'))
@@ -76,10 +76,11 @@ def read_ddGen_ddr(args):
 
 
 def parse_args():
+    import sys
     import argparse
     parser = argparse.ArgumentParser(description="Plots the output of ddGen.")
 
-    parser.add_argument("-i", dest="input_file",
+    parser.add_argument("input_file", metavar='fn', nargs='?', type=argparse.FileType('r'), default=sys.stdin,
                         help="Input data file, defaults to stdin.",)
 
     parser.add_argument("--type", dest="type", default="phase",
@@ -116,12 +117,6 @@ def parse_args():
                       help="Fix the y range on the plot to be (%(dest)s,-%(dest)s).")
 
     args = parser.parse_args()
-
-    if (args.input_file):
-        args.input_file = open(args.input_file)
-    else:
-        import sys
-        args.input_file = sys.stdin
 
     if (args.title == None):
         args.title = args.input_file.name
