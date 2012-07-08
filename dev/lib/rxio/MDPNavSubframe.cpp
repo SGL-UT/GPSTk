@@ -265,18 +265,19 @@ namespace gpstk
 
       short page = getSFID() > 3 ? ((getHOWTime()-6) / 30) % 25 + 1 : 0;
 
+      oss << setfill('0');
       oss << getName() << 0 <<":"
-          << " PRN:" << prn
+          << " PRN:" << setw(2) << prn
           << " CC:" << static_cast<int>(carrier)
           << " RC:" << static_cast<int>(range)
           << " NC:" << static_cast<int>(nav)
           << " SF:" << getSFID()
-          << " PG:" << page
+          << " PG:" << setw(2) << page
           << " I:" << inverted
           << " C:" << cooked
           << endl;
 
-      oss << setfill('0') << hex;
+      oss << hex;
       for(int i = 1; i < subframe.size(); i++)
       {
          if ((i % 5) == 1)
