@@ -101,7 +101,7 @@ def parse_args():
     parser.add_argument("-u","--no-unhlthy", dest="no_unhealthy", action="store_true",
                       help="Do not plot data from unhealthy SVs.")
 
-    parser.add_argument("--sv", dest="sv", action="append",
+    parser.add_argument("--sv", dest="sv", action="append", type=int,
                       help="What sv to plot. The default is to plot all.")
 
     parser.add_argument("--elev", dest="elev", default=0,
@@ -154,7 +154,7 @@ if __name__ == "__main__":
                 if cc != req_cc: continue
                 time = ddr_map[sv][ot][cc][:,0]
                 ddr = ddr_map[sv][ot][cc][:,1]
-                ax1.plot_date(time, ddr, ".", label="{} {} {}".format(sv,cc,type))
+                ax1.plot_date(time, ddr, ".", label="{} {} {}".format(sv,cc,ot))
 
     if args.legend:
         ax1.legend(numpoints=2, pad=0.1, labelsep = 0, handlelen=0.005, handletextsep=0.01, axespad=0.0, loc=(1,0))
@@ -178,9 +178,11 @@ if __name__ == "__main__":
         ylim((-args.ylim,args.ylim))
 
     ax1.set_title(args.title)
+    if args.sv:  sv='all'
+    else:            sv=args.sv
     figtext(0.05, 0.01, "{0} {1} {2} SV:{3}".format(
-        args.carrier, args.code, args.type, args.sv))
-
+        args.carrier, args.code, args.type, sv))
+        
     if (args.saveFig == None):
         show()
     else:
