@@ -89,7 +89,7 @@ namespace gpstk
                VectorException e("Vector<T>(size_t, const T) failed to allocate");
                GPSTK_THROW(e);
             }
-            assignFrom(defaultValue);
+            this->assignFrom(defaultValue);
          }
          /**
           * Copy constructor from a ConstVectorBase type.
@@ -103,7 +103,7 @@ namespace gpstk
                VectorException e("Vector<T>(ConstVectorBase) failed to allocate");
                GPSTK_THROW(e);
             }
-            assignFrom(r);
+            this->assignFrom(r);
          }
          /**
           * Copy constructor.
@@ -116,7 +116,7 @@ namespace gpstk
                VectorException e("Vector(Vector) failed to allocate");
                GPSTK_THROW(e);
             }
-            assignFrom(r);
+            this->assignFrom(r);
          }
          /**
           * Valarray constructor
@@ -129,7 +129,7 @@ namespace gpstk
                VectorException e("Vector(valarray) failed to allocate");
                GPSTK_THROW(e);
             }
-            assignFrom(r);
+            this->assignFrom(r);
          }
 
          /// subvector constructor
@@ -199,22 +199,22 @@ namespace gpstk
 
          /// *this will be resized if it isn't as large as x.
       Vector& operator=(const Vector& x)
-         { resize(x.s); return assignFrom(x); }
+         { resize(x.s); return this->assignFrom(x); }
 
          /// *this will be resized if it isn't as large as x.
       template <class E>
       Vector& operator=(const ConstVectorBase<T, E>& x)
-         { resize(x.size()); return assignFrom(x); }
+         { resize(x.size()); return this->assignFrom(x); }
 
          /// *this will be resized if it isn't as large as x.
       Vector& operator=(const std::valarray<T>& x)
-         { resize(x.size()); return assignFrom(x); }
+         { resize(x.size()); return this->assignFrom(x); }
          /// Only (*this).size() elements will be assigned.
       Vector& operator=(const T x)
-         { return assignFrom(x); }
+         { return this->assignFrom(x); }
          /// Only (*this).size() elements will be assigned.
       Vector& operator=(const T* x)
-         { return assignFrom(x); }
+         { return this->assignFrom(x); }
 
       /// *this will be cleared and resized as necessary
       inline Vector& operator=(const std::vector<T>& x)
@@ -348,19 +348,19 @@ namespace gpstk
          /// Assign the elements of this slice from another vector.
       template <class V>
       VectorSlice& operator=(const ConstVectorBase<T, V>& x)
-         { return assignFrom(x); }
+         { return this->assignFrom(x); }
 
          /// Assign the elements of this slice from a valarray.
       VectorSlice& operator=(const std::valarray<T>& x)
-         { return assignFrom(x); }
+         { return this->assignFrom(x); }
 
          /// Assign all the elements of this slice to x.
       VectorSlice& operator=(const T x)
-         { return assignFrom(x); }
+         { return this->assignFrom(x); }
 
          /// Assign (*this).size() elements from x to (*this).
       VectorSlice& operator=(const T* x)
-         { return assignFrom(x); }
+         { return this->assignFrom(x); }
 
          /// Returns the modifiable i'th element of the slice.
       T& operator[] (size_t i) 

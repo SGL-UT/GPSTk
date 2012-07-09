@@ -326,7 +326,7 @@ namespace gpstk
          
             while (s >> data)
             {
-               addData(data);
+               this->addData(data);
             }
          }
       }
