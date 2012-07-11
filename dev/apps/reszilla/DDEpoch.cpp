@@ -122,7 +122,7 @@ void DDEpoch::doubleDifference(
    if (DDEpochMap::useMasterSV && (masterPrn.id < 0))
    {
       if (debugLevel>1)
-         cout << "# " << rx1.time
+         cout << printTime(rx1.time, "%02m/%02d/%04Y %02H:%02M:%04.1f")
               << " No master SV selected. Skipping epoch." << endl;
       return;
    }
@@ -135,7 +135,7 @@ void DDEpoch::doubleDifference(
        std::abs(c1) < eps || std::abs(c2) < eps)
    {
       if (debugLevel)
-         cout << "# " << rx1.time
+         cout << printTime(rx1.time, "%02m/%02d/%04Y %02H:%02M:%04.1f")
               << " Insane clock offset (" << 1e3*clockOffset
               << " ms). Skipping epoch." << endl;
       return;
@@ -157,7 +157,7 @@ void DDEpoch::doubleDifference(
       if (masterDiff.size() == 0)
       {
          if (debugLevel)
-            cout << "# No masterDiff" << endl;
+            cout << printTime(rx1.time, "%02m/%02d/%04Y %02H:%02M:%04.1f") << " No masterDiff." << endl;
          return;
       }
 
@@ -185,9 +185,9 @@ void DDEpoch::doubleDifference(
             i_otherDiff = otherDiff.find(oid1);
             if (i_otherDiff == otherDiff.end())
             {
-               if (debugLevel>1)
-                  cout << "# DDEpoch::doubleDifferece(): no obs from other RX"
-                       << endl;
+               if (debugLevel>2)
+                  cout << printTime(rx1.time, "%02m/%02d/%04Y %02H:%02M:%04.1f")
+                       << " " << prn << " no obs from other RX" << endl;
                continue;
             }
             ObsID oid2  = i_otherDiff->first;
@@ -213,7 +213,7 @@ void DDEpoch::doubleDifference(
          if (d1.size() == 0)
          {
             if (debugLevel>1)
-               cout << "# DDEpoch::doubleDifferece(): empty d1" << endl;
+               cout << "DDEpoch::doubleDifferece(): empty d1" << endl;
             continue;
          }
 
@@ -295,7 +295,7 @@ void DDEpochMap::compute(
    DDEpoch::debugLevel = debugLevel;
 
    if (debugLevel)
-      cout << "# DDEpochMap::compute(" << rx1.size()
+      cout << "DDEpochMap::compute(" << rx1.size()
            << ", " << rx2.size() << " epochs)" << endl;
 
    // We use the data from rx1 walk us through the data
@@ -309,7 +309,7 @@ void DDEpochMap::compute(
       if (ei2 == rx2.end())
       {
          if (debugLevel>1)
-            cout << "# Epoch with no data from rx 2" << endl;
+            cout << "Epoch with no data from rx 2" << endl;
          continue;
       }
       const ObsEpoch& e1 = ei1->second;
@@ -351,7 +351,7 @@ void DDEpochMap::compute(
          prev = curr;
       }
       else if (debugLevel)
-         cout << "# Invalid DDEpoch" << endl;
+         cout << "Invalid DDEpoch" << endl;
    } // end of looping over all epochs in the first set.
 
    if (useMasterSV)
@@ -420,7 +420,7 @@ void DDEpochMap::dump(std::ostream& s) const
                }
                
                if (debugLevel && (dde.health[masterPrn] || dde.health[prn]))
-                    cout << "# Unhealthy SV. Master/SV2: " << hex << setw(2) 
+                    cout << "Unhealthy SV. Master/SV2: " << hex << setw(2) 
                          << dde.health[masterPrn] << dde.health[prn] << dec 
                          << endl;    
             }
@@ -592,7 +592,7 @@ void DDEpochMap::outputStats(
 {
    // First figure out what obs types we have to work with
    if (debugLevel)
-      cout << "# Computing obsSet" << endl;
+      cout << "Computing obsSet" << endl;
 
    set<ObsID> obsSet;
    for (const_iterator ei = begin(); ei != end(); ei++)
@@ -659,7 +659,7 @@ void DDEpochMap::outputStats(
 void DDEpochMap::outputAverages(ostream& s) const
 {
    if (debugLevel)
-      cout << "# Computing averages\n";
+      cout << "Computing averages" << endl;
       
    s << "# window end time        obs type    # points    mean ddr(m)\n";
       

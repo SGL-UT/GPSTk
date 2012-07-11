@@ -64,20 +64,18 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void Arc::computeTD(void)
    {
-      if (debugLevel>1)
+      if (debugLevel>2)
          cout << "Computing Triple difference for "
               << sv1 << " - " << sv2 << " " << obsID << endl;
       iterator i = begin();
       while (i != end())
       {
          Obs& prev = i->second;
-         const gpstk::CommonTime& t0 = i->first;
          i++;
          if (i == end())
             break;
          Obs& curr = i->second;
-         const gpstk::CommonTime t1 = i->first;
-         curr.td = (curr.dd - prev.dd)/(t1 - t0);
+         curr.td = curr.dd - prev.dd;
       }
    }
 
@@ -164,11 +162,6 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void ArcList::splitOnGaps(double gapSize)
    {
-      if (debugLevel>1)
-         cout << "Splitting on gaps " 
-              << begin()->sv1 << " - " << begin()->sv2
-              << " " << begin()->obsID << endl;
-
       for (iterator arc = begin(); arc != end(); arc++)
       {
          Arc::iterator i = 
@@ -176,6 +169,11 @@ namespace PhaseResidual
 
          if (i == arc->end())
             continue;
+
+         if (debugLevel>1)
+            cout << printTime(i->first,"%02m/%02d/%04Y %02H:%02M:%04.1f") << " Gap found in "
+                 << begin()->sv2 << " data for " << begin()->obsID
+                 << ". Splitting track." << endl;
 
          // Make a new empty arc immedietly after the current arc and
          // move all the data from the break to the end of the current 
@@ -208,50 +206,56 @@ namespace PhaseResidual
 //------------------------------------------------------------------------------
    void ArcList::splitOnTD(double threshold)
    {
-      if (debugLevel>1)
-         cout << "Splitting on TD " 
-              << begin()->sv1 << " - " << begin()->sv2
-              << " " << begin()->obsID << endl;
-
       for (iterator arc = begin(); arc != end(); arc++)
       {
          for (Arc::iterator i = arc->begin(); i != arc->end(); i++)
          {
             Obs& pr = i->second;
-            bool jump = std::abs(pr.td) > threshold;
-
-            if (!jump)
+            if (std::abs(pr.td) < threshold)
                continue;
 
             // If the double difference returns to a similiar value
             // withing several epochs, treat this as noise, not a real jump.
             Arc::iterator j = i; j++;
-            for (int n=0; n<4 && jump && j != arc->end(); n++)
+            bool blip = false;
+            for (int n=0; n<4 && !blip && j != arc->end(); n++)
             {
                double quad = std::abs(pr.td + j->second.td);
                if (quad < threshold)
-                  jump = false;
+                  blip = true;
             }
-            
-            if (jump)
-            {
-               // Make a new empty arc immedietly after the current arc and
-               // move all the data from here to the end of the current arc into
-               // the new arc.
-               pr.td = 0;
-               iterator nextArc = arc;
-               nextArc++;
-               nextArc = insert(nextArc, Arc());
 
-               nextArc->sv1 = arc->sv1;
-               nextArc->sv2 = arc->sv2;
-               nextArc->obsID = arc->obsID;
-               nextArc->ddBias = arc->ddBias;
-               nextArc->insert(i, arc->end());
-               arc->erase(i, arc->end());
-               arc = nextArc;
-               i = arc->begin();
+            if (blip)
+            {
+               if (debugLevel>2)
+                  cout << printTime(i->first,"%02m/%02d/%04Y %02H:%02M:%04.1f")
+                       << " TD blip found between " << arc->sv1 << " - " << arc->sv2
+                       << " on " << arc->obsID << endl;
+               continue;
             }
+
+            if (debugLevel>1)
+               cout << printTime(i->first,"%02m/%02d/%04Y %02H:%02M:%04.1f")
+                    << " TD jump found between " << arc->sv1 << " - " << arc->sv2
+                    << " on " << arc->obsID << ". Splitting track." << endl;
+
+
+            // Make a new empty arc immedietly after the current arc and
+            // move all the data from here to the end of the current arc into
+            // the new arc.
+            pr.td = 0;
+            iterator nextArc = arc;
+            nextArc++;
+            nextArc = insert(nextArc, Arc());
+
+            nextArc->sv1 = arc->sv1;
+            nextArc->sv2 = arc->sv2;
+            nextArc->obsID = arc->obsID;
+            nextArc->ddBias = arc->ddBias;
+            nextArc->insert(i, arc->end());
+            arc->erase(i, arc->end());
+            arc = nextArc;
+            i = arc->begin();
          }
       }
    }
@@ -289,9 +293,8 @@ namespace PhaseResidual
       double gapTime,
       double threshold)
    {
-      if (debugLevel>1)
-         cout << "Merging arcs " 
-              << begin()->sv1 << " - " << begin()->sv2
+      if (debugLevel>2)
+         cout << "Merging arcs " << begin()->sv1 << " - " << begin()->sv2
               << " " << begin()->obsID << endl;
 
       for(iterator i = begin(); i != end(); )
@@ -325,6 +328,10 @@ namespace PhaseResidual
          // And the biases need to be close, relative to the stddev
          if (std::abs(curr.ddBias - prev.ddBias) > 2 * curr_std)
             continue;
+
+         if (debugLevel>1)
+            cout << "Merging arcs " << curr.sv1 << " - " << curr.sv2
+                 << " " << curr.obsID << endl;
 
          // Now the arcs can be merged..
          // First make the biases exactly the same
