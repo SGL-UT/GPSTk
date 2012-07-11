@@ -444,7 +444,7 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 
             // Is this satellite excluded ?
          sat = it->first;
-         if(sat.system != SatID::systemGPS ||
+         if (sat.system != SatID::systemGPS &&
              sat.system != SatID::systemGlonass) continue;; // ignore non-GPS satellites
          for(k=-1,i=0; i<config.ExSV.size(); i++)     // ignore input sat (--exSat)
             if(config.ExSV[i] == sat) { k = i; break; }
