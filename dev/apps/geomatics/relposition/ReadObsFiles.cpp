@@ -46,9 +46,6 @@
 #include "TimeString.hpp"
 #include "GPSWeekSecond.hpp"
 
-// GPSTk
-#include "Epoch.hpp"
-
 // DDBase
 #include "DDBase.hpp"
 

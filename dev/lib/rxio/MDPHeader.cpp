@@ -42,7 +42,6 @@
 #include "BinUtils.hpp"
 #include "TimeString.hpp"
 #include "GPSWeekSecond.hpp"
-#include "Epoch.hpp"
 #include "MDPHeader.hpp"
 #include "MDPStream.hpp"
 

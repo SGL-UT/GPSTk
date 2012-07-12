@@ -50,7 +50,6 @@
 #include "geometry.hpp"
 #include "TimeString.hpp"
 #include "CivilTime.hpp"
-#include "Epoch.hpp"
 
 using namespace gpstk::StringUtils;
 using namespace std;

@@ -46,7 +46,6 @@
 #include <iostream>
 #include <iomanip>
 #include <string.h>
-#include "Epoch.hpp"
 #include "BinUtils.hpp"
 #include "StringUtils.hpp"
 #include "CommonTime.hpp"

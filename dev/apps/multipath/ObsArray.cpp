@@ -38,7 +38,6 @@
 #include "ValarrayUtils.hpp"
 #include "PRSolution2.hpp"
 #include "IonoModel.hpp"
-#include "Epoch.hpp"
 #include "ExtractPC.hpp"
 
 #include "RinexObsStream.hpp"

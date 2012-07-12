@@ -50,7 +50,7 @@
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "Epoch.hpp"
+#include "CommonTime.hpp"
 #include "TimeString.hpp"
 #include "GPSWeekSecond.hpp"
 
@@ -333,8 +333,8 @@ void EphSum::process()
 	     * to the most recent even two hour epoch and considered the beginning time
 	     * of effectivity for end of effectivity. 
 	    */
-         Epoch begEff = ee.getTransmitTime();
-	 Epoch epochTime = ee.getEphemerisEpoch();
+         CommonTime begEff = ee.getTransmitTime();
+	 CommonTime epochTime = ee.getEphemerisEpoch();
 	 long TWO_HOURS = 7200;
          long epochRemainder = (long) static_cast<GPSWeekSecond>(epochTime).sow % TWO_HOURS;
 	 long  xmitRemainder = (long) static_cast<GPSWeekSecond>(begEff).sow % TWO_HOURS;

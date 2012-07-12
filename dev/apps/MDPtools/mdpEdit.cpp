@@ -46,10 +46,10 @@
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "TimeConstants.hpp"
+#include "TimeString.hpp"
 #include "Exception.hpp"
 #include "CommandOption.hpp"
 #include "CommandOptionParser.hpp"
-#include "Epoch.hpp"
 #include "StringUtils.hpp"
 #include "InOutFramework.hpp"
 #include "ObsUtils.hpp"
@@ -136,7 +136,7 @@ public:
       // get any time limits
       if (startOpt.getCount())
       {
-         static_cast<Epoch>(tStart).scanf(startOpt.getValue().front().c_str(),
+         scanTime(tStart, startOpt.getValue().front().c_str(),
                             "%Y %j %H:%M:%S");
          if (debugLevel)
             cout << "Throwing out data before " << tStart << endl;
@@ -150,7 +150,7 @@ public:
 
       if (endOpt.getCount())
       {
-         static_cast<Epoch>(tEnd).scanf(endOpt.getValue().front().c_str(),"%Y %j %H:%M:%S");
+         scanTime(tEnd, endOpt.getValue().front().c_str(), "%Y %j %H:%M:%S");
          if (debugLevel || verboseLevel)
             cout << "Throwing out data after " << tEnd << endl;
       }

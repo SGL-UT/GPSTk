@@ -927,9 +927,9 @@ try {
       while(values[0].size() > 0)
          field.push_back(StringUtils::stripFirstWord(values[0],','));
       if(field.size() == 2)
-         (static_cast<Epoch>(PIC.Tbeg)).scanf(field[0]+","+field[1], "%F,%g");
+         scanTime(PIC.Tbeg, field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         (static_cast<Epoch>(PIC.Tbeg)).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         scanTime(PIC.Tbeg, field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cout << "Error: invalid --BeginTime input: " << values[0] << endl;
@@ -943,9 +943,9 @@ try {
       while(values[0].size() > 0)
          field.push_back(StringUtils::stripFirstWord(values[0],','));
       if(field.size() == 2)
-         (static_cast<Epoch>(PIC.Tend)).scanf(field[0]+","+field[1], "%F,%g");
+         scanTime(PIC.Tend, field[0]+","+field[1], "%F,%g");
       else if(field.size() == 6)
-         (static_cast<Epoch>(PIC.Tend)).scanf(field[0]+","+field[1]+","+field[2]+","+field[3]+","
+         scanTime(PIC.Tend, field[0]+","+field[1]+","+field[2]+","+field[3]+","
             +field[4]+","+field[5], "%Y,%m,%d,%H,%M,%S");
       else {
          cout << "Error: invalid --EndTime input: " << values[0] << endl;
