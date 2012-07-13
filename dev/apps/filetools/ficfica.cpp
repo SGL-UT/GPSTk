@@ -71,6 +71,14 @@ int main(int argc, char* argv[])
       return 0;
    }
 
+   //Checks for existing input file
+   ifstream ifile(argv[1]);
+   if (!ifile) 
+   {
+	cout << "Input FIC file not found" << endl;
+	return 1;
+   }
+
    FICStream fics(argv[1]);
    FICHeader header;
    header.getRecord(fics);
@@ -85,6 +93,8 @@ int main(int argc, char* argv[])
    list<FICData> alist = input.getData();
    output.addData(alist);
    output.writeFile(argv[2], true);
+   
+   cout << "Output FICA file written to "<< argv[2] << "." << endl;   
 
    return 0;
 }
