@@ -33,7 +33,7 @@
 #include "RinexUtilities.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavHeader.hpp"
-#include "Logger.hpp"
+//#include "Logger.hpp"
 
 namespace gpstk
 {

@@ -84,7 +84,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       IonoModelStore.cpp \
       JulianDate.cpp \
       LinearClockModel.cpp \
-      Logger.cpp \
+#      Logger.cpp \
       LoopedFramework.cpp \
       MJD.cpp \
       MoonPosition.cpp \
@@ -279,7 +279,7 @@ incl_HEADERS = AllanDeviation.hpp \
       IonoModelStore.hpp \
       JulianDate.hpp \
       LinearClockModel.hpp \
-      Logger.hpp \
+#      Logger.hpp \
       logstream.hpp \
       LoopedFramework.hpp \
       MainAdapter.hpp \

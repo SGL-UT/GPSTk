@@ -32,7 +32,7 @@
 #include "MJD.hpp"
 #include "TimeString.hpp"
 #include "Matrix.hpp"
-#include "Logger.hpp"
+//#include "Logger.hpp"
 #include "DebugUtils.hpp"
 
 namespace gpstk
@@ -930,8 +930,8 @@ namespace gpstk
          }
          else 
          {
-            GPSTK_WARNING_F2("","DENUM (%lf) does not equal the array value(%lf)",
-                                denum, constants["DENUM"]);
+            cout << "DENUM (" << denum << ") does not equal the array value ("
+               << constants["DENUM"] << ")"<<endl;
          }
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }

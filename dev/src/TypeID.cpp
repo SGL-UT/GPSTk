@@ -554,6 +554,8 @@ namespace gpstk
          // TODO: 
          return TypeID::Unknown;
       }
+
+      return TypeID::Unknown;
    }
 
 

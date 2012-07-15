@@ -25,12 +25,10 @@ else
       ANSITime.cpp
       Antenna.cpp
       AntexReader.cpp
-#      Application.cpp
       ARBase.cpp
       ARLambda.cpp
       ARMLambda.cpp
       ARSimple.cpp
-#      Ascii.cpp
       AstronomicalFunctions.cpp
       Bancroft.cpp
       BasicFramework.cpp
@@ -82,7 +80,6 @@ else
       FileHunter.cpp
       FileSpec.cpp
       FIRDifferentiator5thOrder.cpp
-#      FormatUtils.cpp
       GalEphemeris.cpp
       GalEphemerisStore.cpp
       GaussianDistribution.cpp
@@ -106,8 +103,6 @@ else
       IonoModelStore.cpp
       JulianDate.cpp
       LinearClockModel.cpp
-      Logger.cpp
-      LogChannel.cpp
       LoopedFramework.cpp
       MJD.cpp
       MoonPosition.cpp
@@ -116,8 +111,6 @@ else
       MSCStore.cpp
       Namelist.cpp
       NEDUtil.cpp
-#      NumberFormatter.cpp
-#      NumberParser.cpp
       ObsClockModel.cpp
       ObsEpochMap.cpp
       ObsID.cpp
@@ -177,7 +170,6 @@ else
       SVExclusionList.cpp
       SVNumXRef.cpp
       SVPCodeGen.cpp
-#      SysInfo.cpp
       SystemTime.cpp
       TimeConverters.cpp
       TimeString.cpp
@@ -205,14 +197,10 @@ else
       ANSITime.hpp
       Antenna.hpp
       AntexReader.hpp
-#      Any.hpp
-#      Application.hpp
-#      AppOption.hpp
       ARBase.hpp
       ARLambda.hpp
       ARMLambda.hpp
       ARSimple.hpp
-#      Ascii.hpp
       AstronomicalFunctions.hpp
       Bancroft.hpp
       BaseDistribution.hpp
@@ -290,7 +278,6 @@ else
       FileUtils.hpp
       FilterBase.hpp
       FIRDifferentiator5thOrder.hpp
-#      FormatUtils.hpp
       GalEphemeris.hpp
       GalEphemerisStore.hpp
       GaussianDistribution.hpp
@@ -319,9 +306,6 @@ else
       IonoModelStore.hpp	
       JulianDate.hpp	
       LinearClockModel.hpp	
-      LogChannel.hpp
-      Logger.hpp	
-      LogMessage.hpp
       logstream.hpp
       LoopedFramework.hpp	
       MainAdapter.hpp	
@@ -345,8 +329,6 @@ else
       MSCStream.hpp	
       Namelist.hpp
       NEDUtil.hpp
-#      NumberFormatter.hpp
-#      NumberParser.hpp	
       ObsClockModel.hpp	
       ObsEpochMap.hpp	
       ObsID.hpp	
@@ -437,14 +419,12 @@ else
       SpecialFunctions.hpp	
       Stats.hpp	
       StreamBuf.hpp
- #     String.hpp
       StringUtils.hpp	
       StudentDistribution.hpp	
       SunPosition.hpp	
       SVExclusionList.hpp	
       SVNumXRef.hpp	
       SVPCodeGen.hpp	
-#      SysInfo.hpp
       SystemTime.hpp	
       TabularSatStore.hpp	
       TimeConstants.hpp	

@@ -29,7 +29,7 @@
 
 
 #include "IERSConventions.hpp"
-#include "Logger.hpp"
+//#include "Logger.hpp"
 #include "CommonTime.hpp"
 #include "YDSTime.hpp"
 #include "MJD.hpp"
@@ -142,7 +142,7 @@ namespace gpstk
       try { eopDataTable.loadIERSFile(fileName); }
       catch(...)
       {
-         GPSTK_WARNING_F1("","Failed to load the IERS ERP File '%s'.", fileName );
+         GPSTK_THROW(Exception("Failed to load the IERS ERP File "+fileName));
       }
    }
 
@@ -153,7 +153,7 @@ namespace gpstk
       try { eopDataTable.loadIGSFile(fileName); }
       catch(...)
       {
-         GPSTK_WARNING_F1("","Failed to load the IGS ERP File '%s'.", fileName );
+         GPSTK_THROW(Exception("Failed to load the IGS ERP File "+fileName));
       }
    }
 
@@ -164,7 +164,7 @@ namespace gpstk
       try { eopDataTable.loadSTKFile(fileName); }
       catch(...)
       {
-         GPSTK_WARNING_F1("","Failed to load the STK ERP File '%s'.", fileName );
+         GPSTK_THROW(Exception("Failed to load the STK ERP File "+fileName));
       }
    }
 
@@ -182,8 +182,7 @@ namespace gpstk
       try { return EOPData(UTC).xp; }
       catch(...) 
       { 
-         GPSTK_WARNING_F1("","Failed to get EOP data on %s, and xp = 0.0 is returned.",
-                          UTC.asString());
+         GPSTK_THROW(Exception("Failed to get EOP data on" + CivilTime(UTC).asString()));
 
          return 0.0;
       }
@@ -195,8 +194,7 @@ namespace gpstk
       try { return EOPData(UTC).yp; }
       catch(...) 
       {
-         GPSTK_WARNING_F1("","Failed to get EOP data on %s, and yp = 0.0 is returned.",
-                          UTC.asString());
+         GPSTK_THROW(Exception("Failed to get EOP data on " + CivilTime(UTC).asString()));
 
          return 0.0;
       }
@@ -208,8 +206,7 @@ namespace gpstk
       try { return EOPData(UTC).UT1mUTC; }
       catch(...) 
       { 
-         GPSTK_WARNING_F1("","Failed to get EOP data on %s, and UT1mUTC = 0.0 is returned.",
-                          UTC.asString());
+         GPSTK_THROW(Exception("Failed to get EOP data on " + CivilTime(UTC).asString()));
 
          return 0.0;
       }
@@ -221,8 +218,7 @@ namespace gpstk
       try { return EOPData(UTC).dPsi; }
       catch(...) 
       {
-         GPSTK_WARNING_F1("","Failed to get EOP data on %s, and dPsi = 0.0 is returned.",
-                          UTC.asString());
+         GPSTK_THROW(Exception("Failed to get EOP data on "+CivilTime(UTC).asString()));
 
          return 0.0;
       }
@@ -234,8 +230,7 @@ namespace gpstk
       try { return EOPData(UTC).dEps; }
       catch(...) 
       {
-         GPSTK_WARNING_F1("","Failed to get EOP data on %s, and dEps = 0.0 is returned.",
-                          UTC.asString());
+         GPSTK_THROW(Exception("Failed to get EOP data on "+CivilTime(UTC).asString()));
 
          return 0.0;
       }
