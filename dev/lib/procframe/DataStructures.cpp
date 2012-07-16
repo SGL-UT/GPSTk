@@ -2911,195 +2911,70 @@ in matrix and number of types do not match") );
    }  // End of 'operator<<'
 
 
-
-      // Input for gnssSatTypeValue from RinexObsHeader
-   gnssSatTypeValue& operator>>( const RinexObsHeader& roh,
-                                 gnssSatTypeValue& f )
-   {
-
-         // First, select the right system the data came from
-      f.header.source.type = SatIDsystem2SourceIDtype(roh.system);
-
-         // Set the proper name for the receiver
-      f.header.source.sourceName = roh.markerName;
-
-      return f;
-
-   }  // End of 'operator>>'
-
-
-
-      // Input for gnssRinex from RinexObsHeader
-   gnssRinex& operator>>( const RinexObsHeader& roh,
-                          gnssRinex& f )
-   {
-
-         // First, select the right system the data came from
-      f.header.source.type = SatIDsystem2SourceIDtype(roh.system);
-
-         // Set the proper name for the receiver
-      f.header.source.sourceName = roh.markerName;
-
-         // Set the proper antenna type for the receiver
-      f.header.antennaType = roh.antType;
-
-         // Set the proper antenna position
-      f.header.antennaPosition = roh.antennaPosition;
-
-      return f;
-
-   }  // End of 'operator>>'
-
-
-
-      // Input for gnssSatTypeValue from RinexObsData
-   gnssSatTypeValue& operator>>( const RinexObsData& rod,
-                                 gnssSatTypeValue& f )
-   {
-
-         // Fill header epoch with the proper value
-      f.header.epoch = rod.time;
-
-         // Extract the observations map and store it in the body
-      f.body = FillsatTypeValueMapwithRinexObsData(rod);
-
-      return f;
-
-   }  // End of 'operator>>'
-
-
-
-      // Input for gnssRinex from RinexObsData
-   gnssRinex& operator>>( const RinexObsData& rod,
-                          gnssRinex& f )
-   {
-
-         // Fill header epoch with the proper value
-      f.header.epoch = rod.time;
-
-         // Fill header epoch with the proper value
-      f.header.epochFlag = rod.epochFlag;
-
-         // Extract the observations map and store it in the body
-      f.body = FillsatTypeValueMapwithRinexObsData(rod);
-
-      return f;
-
-   }  // End of 'operator>>'
-
-
-
-      // Stream input for gnssSatTypeValue
-   std::istream& operator>>( std::istream& i,
-                             gnssSatTypeValue& f )
-      throw(FFStreamError, gpstk::StringUtils::StringException)
-   {
-
-      FFStream* ffs = dynamic_cast<FFStream*>(&i);
-      if(ffs)
-      {
-         try
-         {
-            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
-
-               // If the header hasn't been read, read it...
-            if(!strm.headerRead) strm >> strm.header;
-
-               // Clear out this object
-            RinexObsHeader& hdr = strm.header;
-            hdr >> f;
-
-            RinexObsData rod;
-            strm >> rod;
-
-            f.header.epoch = rod.time;
-            
-            f.body = FillsatTypeValueMapwithRinexObsData(rod);
-
-            return i;
-
-         }  // End of "try" block
-         ////
-         //// ATENTION: This part is VERY UGLY
-         ////   Help from the guy who wrote 
-         ////        FFStream::tryFFStreamGet(FFData& rec)
-         ////   will be very appreciated
-         ////
-         // EOF - do nothing - eof causes fail() to be set which
-         // is handled by std::fstream
-         catch (EndOfFile& e)
-         {
-            return i;
-         }
-         catch (...)
-         {
-            return i;
-         }
-
-      }  // End of block: "if(ffs) ..."
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
-      }
-
-   }  // End of stream input for gnssSatTypeValue
-
-
-
       // Stream input for gnssRinex
-   std::istream& operator>>( std::istream& i,
-                             gnssRinex& f )
-      throw(FFStreamError, gpstk::StringUtils::StringException)
+   std::istream& operator>>( std::istream& i, gnssRinex& f )
+      throw()
    {
 
-      FFStream* ffs = dynamic_cast<FFStream*>(&i);
-      if(ffs)
+      if( RinexObsStream::IsRinexObsStream(i) )    // Rinex2
       {
          try
          {
-            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(*ffs);
+            RinexObsStream& strm = dynamic_cast<RinexObsStream&>(i);
 
-               // If the header hasn't been read, read it...
+            // If the header hasn't been read, read it...
             if(!strm.headerRead) strm >> strm.header;
 
-               // Clear out this object
-            RinexObsHeader& hdr = strm.header;
-            hdr >> f;
+            // Clear out this object
+            RinexObsHeader& roh = strm.header;
 
             RinexObsData rod;
             strm >> rod;
-            
+
+            // Fill data
+            f.header.source.type = SatIDsystem2SourceIDtype(roh.system);
+            f.header.source.sourceName = roh.markerName;
+            f.header.antennaType = roh.antType;
+            f.header.antennaPosition = roh.antennaPosition;
             f.header.epochFlag = rod.epochFlag;
             f.header.epoch = rod.time;
 
-            f.body = FillsatTypeValueMapwithRinexObsData(rod);
+            f.body = satTypeValueMapFromRinexObsData(roh, rod);
 
             return i;
-         }  // End of "try" block
-         ////
-         //// ATENTION: This part is VERY UGLY
-         ////   Help from the guy who wrote
-         ////        FFStream::tryFFStreamGet(FFData& rec)
-         ////   will be very appreciated
-         ////
-         // EOF - do nothing - eof causes fail() to be set which
-         // is handled by std::fstream
-         catch (EndOfFile& e)
-         {
-            return i;
-         }
+         }  
          catch (...)
          {
             return i;
          }
-
-      }  // End of block: "if (ffs)..."
-      else
-      {
-         FFStreamError e("operator<< stream argument must be an FFStream");
-         GPSTK_THROW(e);
       }
+      if( Rinex3ObsStream::IsRinex3ObsStream(i) )     // Rinex3
+      {
+         Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(i);
+
+         // If the header hasn't been read, read it...
+         if(!strm.headerRead) strm >> strm.header;
+
+         // Clear out this object
+         Rinex3ObsHeader& roh = strm.header;
+
+         Rinex3ObsData rod;
+         strm >> rod;
+
+         // Fill data
+         f.header.source.type = SatIDsystem2SourceIDtype(roh.fileSysSat);
+         f.header.source.sourceName = roh.markerName;
+         f.header.antennaType = roh.antType;
+         f.header.antennaPosition = roh.antennaPosition;
+         f.header.epochFlag = rod.epochFlag;
+         f.header.epoch = rod.time;
+
+         f.body = satTypeValueMapFromRinex3ObsData(roh, rod);
+
+         return i;
+      }
+      
+      return i;
 
    }  // End of stream input for gnssRinex
 
@@ -3299,85 +3174,12 @@ in matrix and number of types do not match") );
 
 
 
-      // Convenience function to fill a typeValueMap with data
-      // from RinexObsTypeMap.
-   typeValueMap FilltypeValueMapwithRinexObsTypeMap(const SatID& sat,
-                                 const RinexObsData::RinexObsTypeMap& otmap )
-   {
-
-         // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
-         //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
-
-         // We will need a typeValueMap
-      typeValueMap tvMap;
-
-         // Let's visit the RinexObsTypeMap (RinexObsType -> RinexDatum)
-      for( RinexObsData::RinexObsTypeMap::const_iterator itObs = otmap.begin();
-           itObs!= otmap.end();
-           ++itObs )
-      {
-
-         RinexSatID rsat(sat.id,sat.system);
-
-         TypeID type = ConvertToTypeID( itObs->first, rsat);
-
-         const bool isPhase = IsCarrierPhase(itObs->first);
-         const int n = GetCarrierBand(itObs->first);
-         
-         if(isPhase)
-         {
-            // TODO:: handle glonass data later(yanweigps)
-            tvMap[ type ] = (*itObs).second.data*getWavelength(rsat,n);
-
-            // n=1 2 5 6 7 8
-            if(n==1)
-            {
-               tvMap[TypeID::LLI1] = (*itObs).second.lli;
-               tvMap[TypeID::SSI1] = (*itObs).second.ssi;
-            }
-            else if(n==2)
-            {
-               tvMap[TypeID::LLI2] = (*itObs).second.lli;
-               tvMap[TypeID::SSI2] = (*itObs).second.ssi;
-            }
-            else if(n==5)
-            {
-               tvMap[TypeID::LLI5] = (*itObs).second.lli;
-               tvMap[TypeID::SSI5] = (*itObs).second.ssi;
-            }
-            else if(n==6)
-            {
-               tvMap[TypeID::LLI6] = (*itObs).second.lli;
-               tvMap[TypeID::SSI6] = (*itObs).second.ssi;
-            }
-            else if(n==7)
-            {
-               tvMap[TypeID::LLI7] = (*itObs).second.lli;
-               tvMap[TypeID::SSI7] = (*itObs).second.ssi;
-            }
-            else if(n==8)
-            {
-               tvMap[TypeID::LLI8] = (*itObs).second.lli;
-               tvMap[TypeID::SSI8] = (*itObs).second.ssi;
-            }
-         }
-         else
-         {
-            tvMap[ type ] = (*itObs).second.data;
-         }
-
-      }  // End of "for( itObs = otmap.begin(); ..."
-
-      return tvMap;
-
-   } // End FilltypeValueMapwithRinexObsTypeMap()
-
-
-
       // Convenience function to fill a satTypeValueMap with data
       // from RinexObsData.
+      /// @param roh RinexObsHeader holding the data
       // @param rod RinexObsData holding the data.
-   satTypeValueMap FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
+   satTypeValueMap satTypeValueMapFromRinexObsData(
+                            const RinexObsHeader& roh, const RinexObsData& rod)
    {
 
          // We need to declare a satTypeValueMap
@@ -3397,8 +3199,66 @@ in matrix and number of types do not match") );
          RinexObsData::RinexObsTypeMap otmap = (*it).second;
          SatID sat = (*it).first;
 
-         theMap[sat] = FilltypeValueMapwithRinexObsTypeMap(sat,otmap);
+         typeValueMap tvMap;
 
+         // Let's visit the RinexObsTypeMap (RinexObsType -> RinexDatum)
+         for( RinexObsData::RinexObsTypeMap::const_iterator itObs = otmap.begin();
+            itObs!= otmap.end();
+            ++itObs )
+         {
+
+            RinexSatID rsat(sat.id,sat.system);
+
+            TypeID type = ConvertToTypeID( itObs->first, rsat);
+
+            const bool isPhase = IsCarrierPhase(itObs->first);
+            const int n = GetCarrierBand(itObs->first);
+
+            if(isPhase)
+            {
+               // TODO:: handle glonass data later(yanweigps)
+               tvMap[ type ] = (*itObs).second.data*getWavelength(rsat,n);
+
+               // n=1 2 5 6 7 8
+               if(n==1)
+               {
+                  tvMap[TypeID::LLI1] = (*itObs).second.lli;
+                  tvMap[TypeID::SSI1] = (*itObs).second.ssi;
+               }
+               else if(n==2)
+               {
+                  tvMap[TypeID::LLI2] = (*itObs).second.lli;
+                  tvMap[TypeID::SSI2] = (*itObs).second.ssi;
+               }
+               else if(n==5)
+               {
+                  tvMap[TypeID::LLI5] = (*itObs).second.lli;
+                  tvMap[TypeID::SSI5] = (*itObs).second.ssi;
+               }
+               else if(n==6)
+               {
+                  tvMap[TypeID::LLI6] = (*itObs).second.lli;
+                  tvMap[TypeID::SSI6] = (*itObs).second.ssi;
+               }
+               else if(n==7)
+               {
+                  tvMap[TypeID::LLI7] = (*itObs).second.lli;
+                  tvMap[TypeID::SSI7] = (*itObs).second.ssi;
+               }
+               else if(n==8)
+               {
+                  tvMap[TypeID::LLI8] = (*itObs).second.lli;
+                  tvMap[TypeID::SSI8] = (*itObs).second.ssi;
+               }
+            }
+            else
+            {
+               tvMap[ type ] = (*itObs).second.data;
+            }
+
+         }  // End of "for( itObs = otmap.
+
+         theMap[sat] = tvMap;
       }
 
       return theMap;
@@ -3406,86 +3266,78 @@ in matrix and number of types do not match") );
    } // End FillsatTypeValueMapwithRinexObsData(const RinexObsData& rod)
 
 
-
-      /* This function constructs a CommonTime object from the given parameters.
-       *
-       * @param line    the encoded time string found in the RINEX record.
-       * @param hdr     the RINEX Observation Header object for the current
-       *                RINEX file.
-       */
-   CommonTime parseTime( const std::string& line,
-                         const RinexObsHeader& hdr )
-      throw(FFStreamError)
+      // Convenience function to fill a satTypeValueMap with data
+      // from Rinex3ObsData.
+      // @param roh Rinex3ObsHeader holding the data
+      // @param rod Rinex3ObsData holding the data.
+   satTypeValueMap satTypeValueMapFromRinex3ObsData(
+                         const Rinex3ObsHeader& roh, const Rinex3ObsData& rod )
    {
+      // We need to declare a satTypeValueMap
+      satTypeValueMap theMap;
 
-      try
+      Rinex3ObsData::DataMap::const_iterator it;
+      for(it=rod.obs.begin(); it != rod.obs.end(); it++) 
       {
-            // check if the spaces are in the right place - an easy
-            // way to check if there's corruption in the file
-         if ( (line[0] != ' ')  ||
-              (line[3] != ' ')  ||
-              (line[6] != ' ')  ||
-              (line[9] != ' ')  ||
-              (line[12] != ' ') ||
-              (line[15] != ' ') )
+         RinexSatID sat(it->first);
+ 
+         typeValueMap tvMap;
+
+         map<std::string,std::vector<RinexObsID> > mapObsTypes(roh.mapObsTypes);
+         const vector<RinexObsID> types = mapObsTypes[sat.toString().substr(0,1)];
+         for(int i=0; i<types.size(); i++)
          {
-            FFStreamError e("Invalid time format");
-            GPSTK_THROW(e);
+            TypeID type = ConvertToTypeID(types[i],sat);
+
+            const int n = GetCarrierBand(types[i]);
+
+            if(types[i].type==ObsID::otPhase)   // Phase
+            {
+               // TODO:: handle glonass data later(yanweigps)
+               tvMap[type] = it->second[i].data*getWavelength(sat,n);
+
+               // n=1 2 5 6 7 8
+               if(n==1)
+               {
+                  tvMap[TypeID::LLI1] = it->second[i].lli;
+                  tvMap[TypeID::SSI1] = it->second[i].ssi;
+               }
+               else if(n==2)
+               {
+                  tvMap[TypeID::LLI2] = it->second[i].lli;
+                  tvMap[TypeID::SSI2] = it->second[i].ssi;
+               }
+               else if(n==5)
+               {
+                  tvMap[TypeID::LLI5] = it->second[i].lli;
+                  tvMap[TypeID::SSI5] = it->second[i].ssi;
+               }
+               else if(n==6)
+               {
+                  tvMap[TypeID::LLI6] = it->second[i].lli;
+                  tvMap[TypeID::SSI6] = it->second[i].ssi;
+               }
+               else if(n==7)
+               {
+                  tvMap[TypeID::LLI7] = it->second[i].lli;
+                  tvMap[TypeID::SSI7] = it->second[i].ssi;
+               }
+               else if(n==8)
+               {
+                  tvMap[TypeID::LLI8] = it->second[i].lli;
+                  tvMap[TypeID::SSI8] = it->second[i].ssi;
+               }
+            }
+            else
+            {
+               tvMap[ type ] = it->second[i].data;
+            }
          }
 
-            // if there's no time, just return a bad time
-         if (line.substr(0,26) == std::string(26, ' '))
-         {
-            return CommonTime::BEGINNING_OF_TIME;
-         }
+         theMap[sat] = tvMap;
+      }   // End loop over all the satellite
 
-         int year, month, day, hour, min;
-         double sec;
-
-            // We need a 'YDSTime' object here to get the year
-         YDSTime time( hdr.firstObs );
-         int yy( time.year/100 );
-         yy *= 100;
-
-         year  = StringUtils::asInt(   line.substr(1,  2 ));
-         month = StringUtils::asInt(   line.substr(4,  2 ));
-         day   = StringUtils::asInt(   line.substr(7,  2 ));
-         hour  = StringUtils::asInt(   line.substr(10, 2 ));
-         min   = StringUtils::asInt(   line.substr(13, 2 ));
-         sec   = StringUtils::asDouble(line.substr(15, 11));
-
-            // Real Rinex has epochs 'yy mm dd hr 59 60.0'
-            // surprisingly often....
-         double ds=0;
-         if(sec >= 60.) { ds=sec; sec=0.0; }
-         CivilTime cTime( yy+year, month, day, hour, min, sec,
-                          hdr.firstObs.getTimeSystem() );
-         CommonTime rv(cTime);
-
-            // Please note that the 'TimeSystem' is set to 'Any'. This implies
-            // that the 'TimeSystem' information is decided depending on the
-            // satellite system and the process at hand.
-         rv.setTimeSystem(TimeSystem::Any);
-
-         if(ds != 0) rv += ds;
-
-         return rv;
-      }
-         // string exceptions for substr are caught here
-      catch (std::exception &e)
-      {
-         FFStreamError err("std::exception: " + std::string(e.what()));
-         GPSTK_THROW(err);
-      }
-      catch (gpstk::Exception& e)
-      {
-         std::string text;
-         for(int i=0; i<(int)e.getTextCount(); i++) text += e.getText(i);
-         FFStreamError err("gpstk::Exception in parseTime(): " + text);
-         GPSTK_THROW(err);
-      }
-
-   }  // End of parseTime()
-
+      return theMap;
+   }
 
 }  // End of namespace gpstk

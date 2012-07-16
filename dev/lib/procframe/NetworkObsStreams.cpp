@@ -62,11 +62,9 @@ namespace gpstk
          RinexObsHeader obsHeader;
          (*oData.pObsStream) >> obsHeader;
 
-            // Try to get the SourceID of the receiver 
-         gnssRinex gRin;
-         obsHeader >> gRin;
 
-         oData.obsSource = gRin.header.source;
+         oData.obsSource.type = SatIDsystem2SourceIDtype(obsHeader.system);
+         oData.obsSource.sourceName = obsHeader.markerName;
 
          oData.pSynchro->setReferenceSource(*oData.pObsStream);
 
@@ -76,7 +74,7 @@ namespace gpstk
          mapSourceStream[oData.obsSource] = oData.pObsStream;
          mapSourceSynchro[oData.obsSource] = oData.pSynchro;
 
-         referenceSource = gRin.header.source;
+         referenceSource = oData.obsSource;
 
          return true;
       }

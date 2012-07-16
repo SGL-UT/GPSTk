@@ -210,6 +210,21 @@ namespace gpstk
 
       };
 
+         /// Check if the input stream is the kind of RinexObsStream
+      static bool IsFFStream(std::istream& i)
+      {
+         try
+         { 
+            FFStream& r = dynamic_cast<FFStream&>(i);
+         }
+         catch(...) 
+         {
+            return false;
+         }
+
+         return true;
+      }
+
 
          ///@name Data members
          ///@{

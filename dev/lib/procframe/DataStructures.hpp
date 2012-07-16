@@ -41,6 +41,8 @@
 #include "FFData.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsData.hpp"
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
@@ -1525,59 +1527,26 @@ namespace gpstk
    typedef std::list<gnssLinearCombination> LinearCombList;
 
 
-
-      /// Stream input for gnssSatTypeValue.
-      /// @param i Input stream.
-      /// @param f gnssSatTypeValue receiving the data.
-   std::istream& operator>>( std::istream& i,
-                             gnssSatTypeValue& f )
-      throw(FFStreamError, gpstk::StringUtils::StringException);
-
-
-      /// Input for gnssSatTypeValue from RinexObsHeader.
-      /// @param roh RinexObsHeader holding the data.
-      /// @param f gnssSatTypeValue receiving the data.
-   gnssSatTypeValue& operator>>( const RinexObsHeader& roh,
-                                 gnssSatTypeValue& f );
-
-
-      /// Input for gnssSatTypeValue from RinexObsData.
-      /// @param rod RinexObsData holding the data.
-      /// @param f gnssSatTypeValue receiving the data.
-   gnssSatTypeValue& operator>>( const RinexObsData& rod,
-                                 gnssSatTypeValue& f );
-
-
-      /// Input for gnssRinex from RinexObsHeader.
-      /// @param roh RinexObsHeader holding the data.
-      /// @param f gnssRinex receiving the data.
-   gnssRinex& operator>>( const RinexObsHeader& roh,
-                          gnssRinex& f );
-
-
-      /// Input for gnssRinex from RinexObsData.
-      /// @param rod RinexObsData holding the data.
-      /// @param f gnssRinex receiving the data.
-   gnssRinex& operator>>( const RinexObsData& rod,
-                          gnssRinex& f );
-
-
       /// Convenience function to convert from SatID system to SourceID type.
       /// @param sid Satellite ID.
    SourceID::SourceType SatIDsystem2SourceIDtype(const SatID& sid);
 
 
-      /// Convenience function to fill a typeValueMap with data
-      /// from RinexObsTypeMap.
-   typeValueMap FilltypeValueMapwithRinexObsTypeMap( const SatID& sat,
-                                 const RinexObsData::RinexObsTypeMap& otmap );
-
 
       /// Convenience function to fill a satTypeValueMap with data
       /// from RinexObsData.
+      /// @param roh RinexObsHeader holding the data
       /// @param rod RinexObsData holding the data.
-   satTypeValueMap FillsatTypeValueMapwithRinexObsData(
-                                                   const RinexObsData& rod );
+   satTypeValueMap satTypeValueMapFromRinexObsData(
+                           const RinexObsHeader& roh, const RinexObsData& rod );
+
+
+      /// Convenience function to fill a satTypeValueMap with data
+      /// from Rinex3ObsData.
+      /// @param roh Rinex3ObsHeader holding the data
+      /// @param rod Rinex3ObsData holding the data.
+   satTypeValueMap satTypeValueMapFromRinex3ObsData(
+                         const Rinex3ObsHeader& roh, const Rinex3ObsData& rod );
 
 
       /** Stream input for gnssRinex.
@@ -1601,9 +1570,7 @@ namespace gpstk
        *   }
        * @endcode
        */
-   std::istream& operator>>( std::istream& i,
-                             gnssRinex& f )
-      throw(FFStreamError, gpstk::StringUtils::StringException);
+   std::istream& operator>>( std::istream& i, gnssRinex& f );
 
 
 	   /** Stream output for gnssRinex.
@@ -1640,17 +1607,6 @@ namespace gpstk
    std::ostream& operator<<( std::ostream& s,
                              gnssRinex& f )
       throw(FFStreamError, gpstk::StringUtils::StringException);
-
-
-      /** This function constructs a CommonTime object from the given parameters.
-       * 
-       * @param line    the encoded time string found in the RINEX record.
-       * @param hdr     the RINEX Observation Header object for the current
-       *                RINEX file.
-       */
-   CommonTime parseTime( const std::string& line,
-                      const RinexObsHeader& hdr )
-      throw(FFStreamError);
 
 
       //@}

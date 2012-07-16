@@ -126,6 +126,22 @@ namespace gpstk
       /// The header for this file.
       Rinex3ObsHeader header;
 
+
+      /// Check if the input stream is the kind of Rinex3ObsStream
+      static bool IsRinex3ObsStream(std::istream& i)
+      {
+         try
+         {
+            Rinex3ObsStream& r = dynamic_cast<Rinex3ObsStream&>(i);
+         }
+         catch(...)
+         {
+            return false;
+         }
+
+         return true;
+      }
+
    }; // class 'Rinex3ObsStream'
 
    //@} doxygen code block

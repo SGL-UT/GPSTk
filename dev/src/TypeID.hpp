@@ -543,7 +543,12 @@ namespace gpstk
    
    int GetCarrierBand(const RinexObsHeader::RinexObsType& rot);
 
+   int GetCarrierBand(const RinexObsID& roi);
+
    TypeID::ValueType ConvertToTypeID(const RinexObsHeader::RinexObsType& rot,
+                                     const RinexSatID& sat);
+
+   TypeID::ValueType ConvertToTypeID(const RinexObsID& roi,
                                      const RinexSatID& sat);
 
 }  // End of namespace gpstk
