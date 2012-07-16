@@ -2913,7 +2913,6 @@ in matrix and number of types do not match") );
 
       // Stream input for gnssRinex
    std::istream& operator>>( std::istream& i, gnssRinex& f )
-      throw()
    {
 
       if( RinexObsStream::IsRinexObsStream(i) )    // Rinex2
