@@ -255,9 +255,9 @@ protected:
 				// if we don't have a PBEN message, we can't resolve time
             if (firstPBEN != true)
             	continue;
-            	
+
             // use the time set in the PBEN as a hint, resolve time exactly
-            CommonTime hintTime = GPSWeekSecond(time.week, time.sow);
+            CommonTime hintTime = GPSWeekSecond(time.week, time.sow, TimeSystem::GPS);
             GPSWeekSecond tempTime(hintTime);
    	   	double  sow1     = tempTime.sow;
             int     sow2     = static_cast<int>(sow1/1800);
@@ -323,7 +323,7 @@ protected:
 					continue;
 				}
 				
-				// if we have enough phase points, run filter for phase rate
+                               // if we have enough phase points, run filter for phase rate
 				map<gpstk::SatID, TimePhaseVec>::iterator iter1;
 				iter1 = phaseMap.find(satID);
 				if ((*iter1).second.size() == (numPoints+1))
@@ -390,15 +390,15 @@ protected:
 				{
 					map<gpstk::SatID, TimePhaseVec>::iterator iter;
 					iter = phaseMap.find(satID);
-					
+
 					// use the previous phase values to computer iono error rate
 					int lastIndex = (*iter).second.size() - 1;				
 					TimePhasePair lastTPPair = (*iter).second[lastIndex];
-					CommonTime lastTime = lastTPPair.first;
+                                        CommonTime lastTime = lastTPPair.first;
 					PhasePair lastPPair = lastTPPair.second;
 					double dL1 = phaseL1 - lastPPair.first;             // cycles
 					double dL2 = phaseL2 - lastPPair.second;            // cycles
-					double dt  = tempTime.sow - static_cast<GPSWeekSecond>(lastTime).sow; // sec
+                                        double dt  = tempTime.sow - static_cast<GPSWeekSecond>(lastTime).sow; // sec
 					
 					double x1 = (dL1/dt) * gpstk::L1_WAVELENGTH_GPS;        // m/s
             	double x2 = (dL2/dt) * gpstk::L2_WAVELENGTH_GPS;        // m/s
@@ -414,7 +414,7 @@ protected:
 					else
 					{
 						(*iter).second.clear();
-						
+						phaseMap.erase(iter);
 						if (debugLevel)
 							cout << "Rate(mm/s) = " << ionoErrorRate 
 							     << "\tRejecting phase values(L1,L2): " 
@@ -522,6 +522,7 @@ protected:
 				}          
 		 	}       // else if (mben.checkId(hdr.id) && (input >> mben) && mben)
          else if (epb.checkId(hdr.id) && (input >> epb) && epb)
+
 			{
 				// using functionality from MDP classes
             if (debugLevel > 2)
