@@ -517,7 +517,7 @@ void compSatVis::process()
 
 void compSatVis::generateHeader( gpstk::CommonTime currT )
 {
-   SystemTime sysTime;
+   CommonTime sysTime = SystemTime();
    string tform = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w";
    fprintf(logfp,"compSatVis output file.  Generated at %s\n",
            printTime(sysTime,"%02H:%02M on %02m/%02d/%02y").c_str() );
