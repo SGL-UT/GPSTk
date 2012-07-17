@@ -157,6 +157,7 @@ int main(int argc, char *argv[])
     }
   XvtStore<SatID>& ephStore = *ephReader.eph;
 
+  CivilTime tS, tE;
   CommonTime tStart,tEnd;
   if (startTimeOpt.getCount())
     {
@@ -164,9 +165,9 @@ int main(int argc, char *argv[])
       int mm,dd,yy,hh,minu; 
       sscanf(startTimeOpt.getValue().front().c_str(), 
              "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
-      tStart=CivilTime((short)yy, (short)mm, (short)dd, (short)hh, 
-                       (short)minu, (double)ss);
-      cout << tStart << endl;
+      tS=CivilTime((short)yy, (short)mm, (short)dd, (short)hh, 
+                       (short)minu, (double)ss, TimeSystem::GPS);
+      cout << tS << endl;
     }
   else
     {
@@ -179,7 +180,8 @@ int main(int argc, char *argv[])
       short hour = static_cast<CivilTime>(tFile).hour;
       short minute = static_cast<CivilTime>(tFile).minute;
       double ss = static_cast<CivilTime>(tFile).second;
-      tStart = CivilTime(year,month,day,hour,minute,ss);
+      tS = CivilTime(year,month,day,hour,minute,ss, TimeSystem::GPS);
+      tStart = tS.convertToCommonTime();
       cout << tStart << endl;
     }
 
@@ -189,8 +191,9 @@ int main(int argc, char *argv[])
       int mm,dd,yy,hh,minu; 
       sscanf(endTimeOpt.getValue().front().c_str(), 
              "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
-      tEnd = CivilTime((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, 
-                     (double)ss);
+      tE = CivilTime((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, 
+                     (double)ss, TimeSystem::GPS);
+      tEnd = tE.convertToCommonTime();
       cout << tEnd << endl;
     }
   else
@@ -203,7 +206,8 @@ int main(int argc, char *argv[])
       short hour = static_cast<CivilTime>(tFile).hour;
       short minute = static_cast<CivilTime>(tFile).minute;
       double ss = static_cast<CivilTime>(tFile).second;
-      tEnd = CivilTime(year,month,day,hour,minute,ss);
+      tE = CivilTime(year,month,day,hour,minute,ss, TimeSystem::GPS);
+      tEnd = tE.convertToCommonTime();
       cout << tEnd << endl;
     }
 
