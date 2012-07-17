@@ -232,14 +232,14 @@ namespace gpstk{
       
       private:
       /**
-       * Set's up the static names map.
+       * Sets up the static names map.
        * 
-       * This method uses a function static boolean variable to ensure that the
-       * initialization code is only run once. When run, the code adds the
-       * default map values to the names map.
+       * This method adds the default map values to the names map. It should 
+       * not be run directly.
        */
-      void initialize();
-      
+      static bool initialize();
+      static bool initFlag;
+
       /**
        * The FramesEnum value of this ReferenceFrame.
        * 

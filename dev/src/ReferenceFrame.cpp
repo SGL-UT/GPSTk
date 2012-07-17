@@ -28,27 +28,27 @@ namespace gpstk
 {
       //this is needed to remove undefined reference errors caused by class static members.
    std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
+
+      // Force the execution of the initialize() method.
+   bool ReferenceFrame::initFlag = ReferenceFrame::initialize();
    
-   ReferenceFrame::ReferenceFrame(FramesEnum e){
-      initialize();
+   ReferenceFrame::ReferenceFrame(FramesEnum e)
+   {
       setReferenceFrame((int)e);
    }
    
    ReferenceFrame::ReferenceFrame(int index)
    {
-      initialize();
       setReferenceFrame(index);
    }
    
    ReferenceFrame::ReferenceFrame(const std::string str)
    {
-      initialize();
       setReferenceFrame(str);
    }
    
    ReferenceFrame::ReferenceFrame(const char str[])
    {
-      initialize();
       setReferenceFrame(str);
    }
    
@@ -153,18 +153,12 @@ namespace gpstk
       return (frame <= right.frame);
    }
    
-   void ReferenceFrame::initialize()
+   bool ReferenceFrame::initialize()
    {
-         //Use this to make sure it is only initialized once
-      static bool initialized = false;
-      if(initialized)
-         return;
-      
       names[Unknown] = "Unknown";
       names[WGS84] = "WGS84";
       names[PZ90] = "PZ90";
-      
-      initialized = true;
+      return true;
    }
    
       //Prints the name of the reference frame to the specified
