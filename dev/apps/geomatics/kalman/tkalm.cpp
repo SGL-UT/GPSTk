@@ -39,7 +39,7 @@
 #include <string>
 #include <map>
 // gpstk
-#include "icd_200_constants.hpp"
+#include "GNSSconstants.hpp"
 #include "StringUtils.hpp"
 #include "Matrix.hpp"
 // geomatics
@@ -79,10 +79,10 @@ try {
       //     << endl;
    //}
 
-   const double wl1=L1_WAVELENGTH;
-   const double wl2=L2_WAVELENGTH;
-   const double F1=L1_MULT;
-   const double F2=L2_MULT;
+   const double wl1=L1_WAVELENGTH_GPS;
+   const double wl2=L2_WAVELENGTH_GPS;
+   const double F1=L1_MULT_GPS;
+   const double F2=L2_MULT_GPS;
    const double F1F2=(F1/F2)*(F1/F2);
    const double alpha=(F1F2 - 1.0);
    double big,small;
