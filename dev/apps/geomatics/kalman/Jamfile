@@ -2,6 +2,7 @@
 
 SubDir TOP apps geomatics kalman ;
 
-GPSLinkLibraries mergeSRI : gpstk geomatics ;
+GPSLinkLibraries mergeSRI tkalm : gpstk geomatics ;
 
 GPSMain mergeSRI : mergeSRI.cpp ;
+GPSMain tkalm : tkalm.cpp ;

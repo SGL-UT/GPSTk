@@ -1,0 +1,82 @@
+# run test kalman filter-smoother and plot results using gnuplot
+#
+./tkalm > tkalm.out
+#
+# MU solution ---------------------------------------------------------------------
+perl -nl -e '/^KMU\b/ and print;' tkalm.out > tkalmMU.dat
+#
+echo set title \'Kalman MU Solution\' > tkalmMUS.gp
+echo set xlabel \'Count\' >> tkalmMUS.gp
+echo set ylabel \'Ionospheric Delay Solution\' >> tkalmMUS.gp
+echo set autoscale y2 >> tkalmMUS.gp
+echo set ytics nomirror >> tkalmMUS.gp
+echo set y2tics >> tkalmMUS.gp
+echo set y2label \'Bias solutions\' >> tkalmMUS.gp
+echo set term wxt enhanced size 600,330 title \'tkalmMUS MU Solution\' >> tkalmMUS.gp
+echo set mouse >> tkalmMUS.gp
+echo set grid >> tkalmMUS.gp
+echo set key center center >> tkalmMUS.gp
+echo set xrange [-50:750] >> tkalmMUS.gp
+echo plot \'tkalmMU.dat\' using 2:4 t \'Iono\' with linespoints ps 0.5, \'\' using 2:5 axes x1y2 t \'B1\' with linespoints ps 0.5, \'\' using 2:6 axes x1y2 t \'B2\' with linespoints ps 0.5 >> tkalmMUS.gp
+#
+gnuplot -persist tkalmMUS.gp
+#
+#
+# SU solution ---------------------------------------------------------------------
+perl -nl -e '/^KSU\b/ and print;' tkalm.out > tkalmSU.dat
+#
+echo set title \'Kalman Smoother Solution\' > tkalmSUS.gp
+echo set xlabel \'Count\' >> tkalmSUS.gp
+echo set ylabel \'Ionospheric Delay Solution\' >> tkalmSUS.gp
+echo set autoscale y2 >> tkalmSUS.gp
+echo set ytics nomirror >> tkalmSUS.gp
+echo set y2tics >> tkalmSUS.gp
+echo set y2label \'Bias solutions\' >> tkalmSUS.gp
+echo set term wxt enhanced size 600,330 title \'tkalm SU Solution\' >> tkalmSUS.gp
+echo set mouse >> tkalmSUS.gp
+echo set grid >> tkalmSUS.gp
+echo set key center center >> tkalmSUS.gp
+echo set xrange [-50:750] >> tkalmSUS.gp
+echo plot \'tkalmSU.dat\' using 2:4 t \'Iono\' with linespoints ps 0.5, \'\' using 2:5 axes x1y2 t \'B1\' with linespoints ps 0.5, \'\' using 2:6 axes x1y2 t \'B2\' with linespoints ps 0.5 >> tkalmSUS.gp
+#
+gnuplot -persist tkalmSUS.gp
+#
+#
+# MU covariance -------------------------------------------------------------------
+echo set title \'Kalman MU Sigmas\' > tkalmMUC.gp
+echo set xlabel \'Count\' >> tkalmMUC.gp
+echo set ylabel \'Ionospheric Delay Sigma\' >> tkalmMUC.gp
+echo set autoscale y2 >> tkalmMUC.gp
+echo set ytics nomirror >> tkalmMUC.gp
+echo set y2tics >> tkalmMUC.gp
+echo set y2label \'Bias Sigmas\' >> tkalmMUC.gp
+echo set term wxt enhanced size 600,330 title \'tkalm MU Covariance\' >> tkalmMUC.gp
+echo set mouse >> tkalmMUC.gp
+echo set grid >> tkalmMUC.gp
+echo set key center center >> tkalmMUC.gp
+echo set xrange [-50:750] >> tkalmMUC.gp
+echo plot \'tkalmMU.dat\' using 2:7 t \'Iono\' with linespoints ps 0.5, \'\' using 2:8 axes x1y2 t \'B1\' with linespoints ps 0.5, \'\' using 2:9 axes x1y2 t \'B2\' with linespoints ps 0.5 >> tkalmMUC.gp
+#
+gnuplot -persist tkalmMUC.gp
+#
+#
+# MU residuals --------------------------------------------------------------------
+echo set title \'Kalman MU Residuals\' > tkalmMUR.gp
+echo set xlabel \'Count\' >> tkalmMUR.gp
+echo set ylabel \'Ionospheric Delay Residual\' >> tkalmMUR.gp
+echo set autoscale y2 >> tkalmMUR.gp
+echo set ytics nomirror >> tkalmMUR.gp
+echo set y2tics >> tkalmMUR.gp
+echo set y2label \'Bias Residuals\' >> tkalmMUR.gp
+echo set term wxt enhanced size 600,330 title \'tkalm MU Residuals\' >> tkalmMUR.gp
+echo set mouse >> tkalmMUR.gp
+echo set grid >> tkalmMUR.gp
+echo set key top center >> tkalmMUR.gp
+echo set yrange [-0.0002:0.0002] >> tkalmMUR.gp
+echo set xrange [-50:750] >> tkalmMUR.gp
+echo plot \'tkalmMU.dat\' using 2:10 t \'Iono\' with linespoints ps 0.5, \'\' using 2:11 axes x1y2 t \'B1\' with linespoints ps 0.5, \'\' using 2:12 axes x1y2 t \'B2\' with linespoints ps 0.5 >> tkalmMUR.gp
+#
+gnuplot -persist tkalmMUR.gp
+#
+#
+rm tkalm.out tkalm*.gp tkalm*.dat
