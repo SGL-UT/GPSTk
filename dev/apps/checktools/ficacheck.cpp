@@ -36,24 +36,13 @@ int main(int argc, char* argv[])
    try
    {
       CheckFrame<FICAStream, FICData> cf(argv[0], std::string("FIC ASCII"));
-      ofstream out;
-      out.open ("out.txt");
       if (!cf.initialize(argc, argv))
-      {       
-	out << "here 1" << endl;
-	return 0;
-      }
-
-      out << "here 2" << endl;
+         return 0;
 
       if (!cf.run())
-      {
-	out << "here 3" << endl;
 	return 1;
-      } 
       
       return 0;   
-      out.close();
    }
    catch(gpstk::Exception& e)
    {

@@ -95,9 +95,6 @@ public:
 protected:
    virtual void process()
    {
-      std::ofstream op;
-      op.open ("op.txt");
- 
       unsigned errors = 0;
       std::vector<std::string> inputFiles = inputFileOption.getValue();
       std::vector<std::string>::iterator itr = inputFiles.begin();
@@ -117,11 +114,9 @@ protected:
             FileData temp;
             while (f >> temp)
             {
-                op << f << std::endl;
-		if (!timeFilt(temp))
+               if (!timeFilt(temp))
                   recCount++;
             }
-            op << "here 6" << std::endl;
             std::cout << "Read " << recCount << " records." 
                       << std::endl << std::endl;
          }
@@ -149,7 +144,7 @@ protected:
          
          itr++;
       }
-      op << "here 7" << std::endl;
+
       if (errors > 0)
       {
             // Throw an exception so the app returns 1 on any errors.
@@ -158,7 +153,6 @@ protected:
                               " error(s).");
          GPSTK_THROW(exc);
       }
-      op.close();
    }
    
       /// Quit on first error.
