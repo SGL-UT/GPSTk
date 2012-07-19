@@ -196,7 +196,6 @@ int main(int argc, char *argv[])
       }
 
       oa.add(mp_formula);
-      oa.load(obsFileOption.getValue(),navFileOption.getValue());
 
       if (uzOption.getCount()>0)
       {
