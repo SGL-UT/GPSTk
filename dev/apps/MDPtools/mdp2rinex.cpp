@@ -45,6 +45,7 @@
 #include "RinexObsData.hpp"
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"
+#include "TimeString.hpp"
 #include "YDSTime.hpp"
 #include "MDPStream.hpp"
 #include "MDPNavSubframe.hpp"
@@ -54,7 +55,6 @@
 
 using namespace std;
 using namespace gpstk;
-
 
 class MDP2Rinex : public InOutFramework<MDPStream, RinexObsStream>
 {
@@ -66,287 +66,12 @@ public:
         anyNav(false), fixHalf(true)
    {}
 
-   bool initialize(int argc, char *argv[]) throw()
-   {
-      CommandOptionWithAnyArg 
-         navFileOpt('n', "nav",
-                    "Filename to write RINEX nav data to."),
-         antPosOpt('p',"pos",
-                   "Antenna position to write into obs file header. "
-                   "Format as string: \"X Y Z\"."),
-         thinningOpt('t', "thinning", 
-                     "A thinning factor for the data, specified in seconds "
-                     "between points. Default: none.");
-      CommandOptionNoArg
-         c2Opt('c', "l2c",
-               "Enable output of L2C data in C2"),
-         anyNavOpt('a',"any-nav-source", 
-                "Accept subframes from any code/carrier");
-         //fixHalfOpt('f',"fix-half-cycle","Apply half-cycle corrections to phase");
-
-      if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
-         return false;
-
-      if (navFileOpt.getCount())
-         rinexNavOutput.open(navFileOpt.getValue()[0].c_str(), ios::out);
-      else
-         rinexNavOutput.clear(ios::badbit);
-
-      if (thinningOpt.getCount())
-      {
-         thin = true;
-         thinning = StringUtils::asInt(thinningOpt.getValue()[0]);
-         if (debugLevel)
-            cout << "Thinning data modulo " << thinning << " seconds." << endl;
-      }
-      else
-         thin = false;
-
-      if (anyNavOpt.getCount())
-         anyNav = true;
-
-      //if (fixHalfOpt.getCount())
-      //   fixHalf = true;
-
-      roh.valid = RinexObsHeader::allValid21;
-      roh.version = 2.1;
-      roh.fileType = "Observation";
-      roh.fileProgram = "mdp2rinex";
-      roh.markerName = "Unknown";
-      roh.observer = "Unknown";
-      roh.agency = "Unknown";
-      roh.antennaOffset = Triple(0,0,0);
-      roh.wavelengthFactor[0] = 1;
-      roh.wavelengthFactor[1] = 1;
-      roh.recType = "Unknown MDP";
-      roh.recVers = "Unknown";
-      roh.recNo = "1";
-      roh.antType = "Unknown";
-      roh.antNo = "1";
-      roh.system.system = RinexSatID::systemGPS;
-      roh.obsTypeList.push_back(RinexObsHeader::C1);
-      roh.obsTypeList.push_back(RinexObsHeader::P1);
-      roh.obsTypeList.push_back(RinexObsHeader::L1);
-      roh.obsTypeList.push_back(RinexObsHeader::D1);
-      roh.obsTypeList.push_back(RinexObsHeader::S1);
-      roh.obsTypeList.push_back(RinexObsHeader::P2);
-      roh.obsTypeList.push_back(RinexObsHeader::L2);
-      roh.obsTypeList.push_back(RinexObsHeader::D2);
-      roh.obsTypeList.push_back(RinexObsHeader::S2);
-        
-      if (antPosOpt.getCount())
-      {
-        double x, y, z;
-        sscanf(antPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
-        antPos = Triple(x,y,z);
-      }
-      else
-        antPos = Triple(0,0,0);
-
-      roh.antennaPosition = antPos;
-
-      if (c2Opt.getCount())
-         roh.obsTypeList.push_back(RinexObsHeader::C2);
-        
-      rnh.valid = RinexNavHeader::allValid21;
-      rnh.fileType = "Navigation";
-      rnh.fileProgram = "mdp2rinex";
-      rnh.fileAgency = "Unknown";
-      rnh.version = 2.1;
-
-
-      firstObs = true;;
-      firstEph = true;
-
-      if (debugLevel>2)
-         MDPHeader::debugLevel = debugLevel-2;
-      MDPHeader::hexDump = debugLevel>3;
-
-      if (!input)
-      {
-         cout << "Error: could not open input." << endl;
-         return false;
-      }
-
-      if (!output)
-      {
-         cout << "Error: could not open output." << endl;
-         return false;
-      }
-
-      return true;
-   } // MDP2Rinex::initialize()
+   bool initialize(int argc, char *argv[]) throw();
    
 protected:
-   virtual void spinUp()
-   {}
 
-   virtual void process(MDPNavSubframe& nav)
-   {
-      if (!rinexNavOutput)
-         return;
+   virtual void process();
 
-      if (firstEph)
-      {
-         rinexNavOutput << rnh;
-         if (debugLevel)
-         	cout << "Got first nav SF" << endl;
-      }
-
-      nav.cookSubframe();
-      if (debugLevel > 1)
-      {
-         if (nav.neededCooking)
-            cout << "Subframe required cooking" << endl;
-         if (nav.inverted)
-            cout << "Subframe " << nav.getSFID() << " was inverted" << endl;
-         if (!nav.parityGood)
-            cout << "Parity error" << endl;
-      }
-
-      firstEph=false;
-
-      if (!nav.parityGood)
-         return;
-
-      short sfid = nav.getSFID();
-      //BWT process all subframes
-      //if (sfid > 3) return;
-
-      short week = static_cast<GPSWeekSecond>(nav.time).week;
-      long sow = nav.getHOWTime();
-      if (sow > FULLWEEK)
-      {
-         if (debugLevel)
-            cout << "Bad week" << endl;
-         return;
-      }
-
-      //BWT if (debugLevel>1)
-         nav.dump(cout);
-
-      //BWT if (!anyNav && (nav.range != rcCA || nav.carrier != ccL1))
-         //BWT return;
-
-      NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
-      ephData[ni] = nav;
-
-      ephPageStore[ni][sfid] = nav;
-      EngEphemeris engEph;
-      if (makeEngEphemeris(engEph, ephPageStore[ni]))
-      {
-         RinexNavData rnd(engEph);
-         rinexNavOutput << rnd;
-         ephPageStore[ni].clear();
-      }
-   } // MDP2Rinex::process(MDPNavSubframe)
-
-
-   virtual void process(MDPObsEpoch& obs)
-   {
-
-      const CommonTime& t=epoch.begin()->second.time;
-
-      if (!firstObs && t<prevTime)
-      {
-         if (debugLevel)
-            cout << "Out of order data at " << t << endl;
-         return;
-      }
-
-      if (epoch.size() > 0 && t != obs.time)
-      {
-         if (!thin || (static_cast<int>(static_cast<YDSTime>(t).sod) % thinning) == 0)
-         {
-            if (firstObs)
-            {
-               roh.firstObs = t;
-               output << roh;
-               firstObs=false;
-               if (debugLevel)
-               	cout << "Got first obs" << endl;
-            }
-
-            RinexObsData rod;
-            rod = makeRinexObsData(epoch);
-            output << rod;
-         }
-         epoch.clear();
-         prevTime = t;
-      }
-
-      //cout << "Before correction\n"; obs.dump(cout);
-      if(fixHalf) correctHalfCycle(obs);
-      //cout << "After correction\n"; obs.dump(cout);
-
-      epoch.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
-
-   } // MDP2Rinex::process(MDPObsEpoch)
-
-   void correctHalfCycle(MDPObsEpoch& epoch)
-   {
-      int prn(epoch.prn);
-      MDPObsEpoch::ObsMap& obsmap(epoch.obs);
-      MDPObsEpoch::ObsMap::iterator jt;
-      for(jt = obsmap.begin(); jt != obsmap.end(); ++jt) {
-         CarrierCode cc(jt->first.first);
-         RangeCode rc(jt->first.second);
-
-         NavIndex ni(RangeCarrierPair(rc, cc), prn);
-         if(ephData.find(ni) == ephData.end())        // no nav - can't fix
-            continue;
-
-         MDPNavSubframe& nav(ephData[ni]);
-         //if(debugLevel)
-         //cout << "halfcycle inversion prn " << prn
-            //<< " L" << cc << " " << (rc==rcCA ? "CA":"Y")
-            //<< " " << (nav.inverted ? "-1":"+1") << endl;
-         if(!nav.inverted)                            // not inverted - no fix needed
-            continue;
-
-         // fix the phase data
-         jt->second.phase += 0.5;
-         //if(debugLevel)
-         //cout << "correct phase prn " << prn << " L" << cc
-         //   << " " << (rc==rcCA ? "CA":"Y") << endl;
-         //jt->second.dump(cout); cout << endl;
-      }
-   }
-
-   virtual void process()
-   {
-      static MDPHeader header;
-      MDPNavSubframe nav;
-      MDPObsEpoch obs;
-
-      input >> header;
-      
-      switch (header.id)
-      {
-         case MDPNavSubframe::myId :
-            input >> nav;
-            if (!nav)
-            {
-               if (input && debugLevel)
-                  cout << "Error decoding nav " << endl;
-            }
-            else
-               process(nav);
-            break;
-            
-         case MDPObsEpoch::myId :
-            input >> obs;
-            if (!obs)
-            {
-               if (input && debugLevel)
-                  cout << "Error decoding obs " << endl;
-            }
-            else
-               process(obs);
-            break;
-      }
-      timeToDie |= !input;
-   } // MDP2Rinex::process()
 
    virtual void shutDown()
    {
@@ -360,8 +85,7 @@ private:
    RinexNavStream rinexNavOutput;
    MDPEpoch epoch;
 
-   typedef pair<RangeCode, CarrierCode> RangeCarrierPair;
-   typedef pair<RangeCarrierPair, short> NavIndex;
+   typedef pair<MDPObsEpoch::ObsKey, short> NavIndex;
    typedef map<NavIndex, MDPNavSubframe> NavMap;
    NavMap ephData;
    map<NavIndex, EphemerisPages> ephPageStore;
@@ -374,6 +98,10 @@ private:
    bool firstObs, firstEph;
    CommonTime prevTime;
    Triple antPos;
+
+   void correctPhase(MDPEpoch& epoch, NavMap& ephData);
+   virtual void process(MDPNavSubframe& nav);
+   virtual void process(MDPObsEpoch& obs);
 };
 
 
@@ -385,4 +113,276 @@ int main(int argc, char *argv[])
       exit(0);
 
    crap.run();
+}
+
+bool MDP2Rinex::initialize(int argc, char *argv[]) throw()
+{
+   CommandOptionWithAnyArg 
+      navFileOpt('n', "nav",
+                 "Filename to write RINEX nav data to."),
+      antPosOpt('p',"pos",
+                "Antenna position to write into obs file header. "
+                "Format as string: \"X Y Z\"."),
+      thinningOpt('t', "thinning", 
+                  "A thinning factor for the data, specified in seconds "
+                  "between points. Default: none.");
+   CommandOptionNoArg
+      c2Opt('c', "l2c",
+            "Enable output of L2C data in C2"),
+      anyNavOpt('a',"any-nav-source", 
+                "Accept subframes from any code/carrier"),
+      noFixHalfOpt('\0',"no-fix-half","Do not apply half-cycle corrections to phase.");
+
+   if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
+      return false;
+
+   if (navFileOpt.getCount())
+      rinexNavOutput.open(navFileOpt.getValue()[0].c_str(), ios::out);
+   else
+      rinexNavOutput.clear(ios::badbit);
+
+   if (thinningOpt.getCount())
+   {
+      thin = true;
+      thinning = StringUtils::asInt(thinningOpt.getValue()[0]);
+      if (debugLevel)
+         cout << "Thinning data modulo " << thinning << " seconds." << endl;
+   }
+   else
+      thin = false;
+
+   if (anyNavOpt.getCount())
+      anyNav = true;
+
+   if (noFixHalfOpt.getCount())
+      fixHalf = false;
+
+   roh.valid = RinexObsHeader::allValid21;
+   roh.version = 2.1;
+   roh.fileType = "Observation";
+   roh.fileProgram = "mdp2rinex";
+   roh.markerName = "Unknown";
+   roh.observer = "Unknown";
+   roh.agency = "Unknown";
+   roh.antennaOffset = Triple(0,0,0);
+   roh.wavelengthFactor[0] = 1;
+   roh.wavelengthFactor[1] = 1;
+   roh.recType = "Unknown MDP";
+   roh.recVers = "Unknown";
+   roh.recNo = "1";
+   roh.antType = "Unknown";
+   roh.antNo = "1";
+   roh.system.system = RinexSatID::systemGPS;
+   roh.obsTypeList.push_back(RinexObsHeader::C1);
+   roh.obsTypeList.push_back(RinexObsHeader::P1);
+   roh.obsTypeList.push_back(RinexObsHeader::L1);
+   roh.obsTypeList.push_back(RinexObsHeader::D1);
+   roh.obsTypeList.push_back(RinexObsHeader::S1);
+   roh.obsTypeList.push_back(RinexObsHeader::P2);
+   roh.obsTypeList.push_back(RinexObsHeader::L2);
+   roh.obsTypeList.push_back(RinexObsHeader::D2);
+   roh.obsTypeList.push_back(RinexObsHeader::S2);
+        
+   if (antPosOpt.getCount())
+   {
+      double x, y, z;
+      sscanf(antPosOpt.getValue().front().c_str(),"%lf %lf %lf", &x, &y, &z);
+      antPos = Triple(x,y,z);
+   }
+   else
+      antPos = Triple(0,0,0);
+
+   roh.antennaPosition = antPos;
+
+   if (c2Opt.getCount())
+      roh.obsTypeList.push_back(RinexObsHeader::C2);
+        
+   rnh.valid = RinexNavHeader::allValid21;
+   rnh.fileType = "Navigation";
+   rnh.fileProgram = "mdp2rinex";
+   rnh.fileAgency = "Unknown";
+   rnh.version = 2.1;
+
+
+   firstObs = true;;
+   firstEph = true;
+
+   if (debugLevel>2)
+      MDPHeader::debugLevel = debugLevel-2;
+   MDPHeader::hexDump = debugLevel>3;
+
+   if (!input)
+   {
+      cout << "Error: could not open input." << endl;
+      return false;
+   }
+
+   if (!output)
+   {
+      cout << "Error: could not open output." << endl;
+      return false;
+   }
+
+   return true;
+} // MDP2Rinex::initialize()
+
+
+void MDP2Rinex::process()
+{
+   static MDPHeader header;
+   MDPNavSubframe nav;
+   MDPObsEpoch obs;
+
+   input >> header;
+      
+   switch (header.id)
+   {
+      case MDPNavSubframe::myId :
+         input >> nav;
+         if (!nav)
+         {
+            if (input && debugLevel)
+               cout << "Error decoding nav " << endl;
+         }
+         else
+            process(nav);
+         break;
+            
+      case MDPObsEpoch::myId :
+         input >> obs;
+         if (!obs)
+         {
+            if (input && debugLevel)
+               cout << "Error decoding obs " << endl;
+         }
+         else
+            process(obs);
+         break;
+   }
+   timeToDie |= !input;
+} // MDP2Rinex::process()
+
+void MDP2Rinex::process(MDPNavSubframe& nav)
+{
+   if (!rinexNavOutput && !fixHalf)
+      return;
+
+   nav.cookSubframe();
+   if (debugLevel>2)
+      nav.dump(cout);
+
+   if (!nav.parityGood)
+      return;
+
+   if (firstEph)
+   {
+      rinexNavOutput << rnh;
+      if (debugLevel)
+         cout << "Got first good nav subframe" << endl;
+   }
+   firstEph=false;
+
+   short sfid = nav.getSFID();
+
+   short week = static_cast<GPSWeekSecond>(nav.time).week;
+   long sow = nav.getHOWTime();
+   if (sow > FULLWEEK)
+   {
+      if (debugLevel)
+         cout << "Bad week" << endl;
+      return;
+   }
+
+   NavIndex ni(MDPObsEpoch::ObsKey( nav.carrier, nav.range), nav.prn);
+   ephData[ni] = nav;
+
+   ephPageStore[ni][sfid] = nav;
+   EngEphemeris engEph;
+   if (makeEngEphemeris(engEph, ephPageStore[ni]))
+   {
+      RinexNavData rnd(engEph);
+      rinexNavOutput << rnd;
+      ephPageStore[ni].clear();
+   }
+}
+
+
+
+void MDP2Rinex::process(MDPObsEpoch& obs)
+{
+   obs.time.setTimeSystem(TimeSystem::GPS);
+   CommonTime t=epoch.begin()->second.time;
+
+   if (!firstObs && t<prevTime)
+   {
+      if (debugLevel)
+         cout << "Out of order data at " << t << endl;
+      return;
+   }
+
+   if (epoch.size() > 0 && t != obs.time)
+   {
+      if (!thin || (static_cast<int>(static_cast<YDSTime>(t).sod) % thinning) == 0)
+      {
+         if (firstObs)
+         {
+            roh.firstObs = t;
+            output << roh;
+            firstObs=false;
+            if (debugLevel)
+               cout << "Got first obs" << endl;
+         }
+
+         if (fixHalf)
+            correctPhase(epoch, ephData);
+         RinexObsData rod;
+         rod = makeRinexObsData(epoch);
+         output << rod;
+      }
+      epoch.clear();
+      prevTime = t;
+   }
+
+   epoch.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
+}
+
+
+void MDP2Rinex::correctPhase(MDPEpoch& epoch, NavMap& ephData)
+{
+   CommonTime t=epoch.begin()->second.time;
+   if (debugLevel>1)
+      cout << printTime(t, "%02d/%02m/%02y %02H:%02M:%05.2f");
+
+   MDPEpoch::iterator i;
+   for (i=epoch.begin(); i != epoch.end(); i++)
+   {
+      int prn = i->first;
+      if (debugLevel>2)
+         cout << ", PRN:" << prn << "(";
+      else if (debugLevel>1)
+         cout << ", " << prn << "(";
+      
+      MDPObsEpoch::ObsMap& obsmap = i->second.obs;
+      MDPObsEpoch::ObsMap::iterator j;
+      for (j=obsmap.begin(); j != obsmap.end(); j++)
+      {
+         CarrierCode cc(j->first.first);
+         RangeCode rc(j->first.second);
+
+         NavIndex ni(j->first, prn);
+         MDPNavSubframe& nav(ephData[ni]);
+         if (nav.inverted)
+         {
+            j->second.phase += 0.5; // set the phase upright
+            if (debugLevel>2)
+               cout << " " << StringUtils::asString(cc) << " " << StringUtils::asString(rc) << ", ";
+            else if (debugLevel>1)
+               cout << " " << cc << ":" << rc;
+         }
+      }
+      if (debugLevel>1)
+         cout << ")";
+   }
+   if (debugLevel>1)
+      cout << endl;
 }
