@@ -465,7 +465,7 @@ void NavDump::printTerseHeader(ostream& out, const CommonTime ct)
    out << "Week(10bt)     SOW  UTD    SOD  MM/DD/YYYY  HH:MM:SS" << endl;
    out << printTime(ct, tform);
    out << endl << endl;
-   out << "         !     Xmit     !      Toe     !  End of Eff. ! URA(m) !  IODC !   Health  !" << endl;
+   out << "         ! Begin Valid  !      Toe     ! End Valid    ! URA(m) !  IODC !   Health  !" << endl;
    out << " SVN PRN ! DOY hh:mm:ss ! DOY hh:mm:ss ! DOY hh:mm:ss !   dec  !   hex !  hex  dec !" << endl;
 }
 
