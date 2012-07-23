@@ -67,7 +67,7 @@ namespace gpstk
 
       IODC = IODE = 0;
       Tgd = 0.0;
-     
+      type = OrbElem::OrbElemFIC9;
       fitint = 0;
    }
 
@@ -76,6 +76,7 @@ namespace gpstk
    OrbElemFIC9::OrbElemFIC9( const FICData& fic9 )
       throw( InvalidParameter )
    {
+      type = OrbElem::OrbElemFIC9;
       loadData( fic9 );
    }
 
@@ -183,7 +184,7 @@ namespace gpstk
          long Xmit = HOWtime[0] - HOWtime[0] % 7200;
 	 XmitSOW = (double) Xmit; 
       }
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW ); 
+      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 
 
       // Determine Transmit Time
       // Transmit time is the actual time this
@@ -239,6 +240,7 @@ namespace gpstk
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
       healthy = true;
       if (health!=0) healthy = false;
+
 
          // URA Handling
       

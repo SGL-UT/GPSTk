@@ -64,7 +64,7 @@ namespace gpstk
 
       IODC = 0;
       Tgd = 0.0;
-     
+      type = OrbElem::OrbElemRinex;
       fitDuration = 0;
    }
 
@@ -73,6 +73,7 @@ namespace gpstk
    OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
+      type = OrbElem::OrbElemRinex;
       loadData( rinNav );
    }
 
@@ -164,7 +165,7 @@ namespace gpstk
          long Xmit = HOWtime - HOWtime % 7200;
 	 XmitSOW = (double) Xmit; 
       }
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW ); 
+      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 
 
       // Determine Transmit Time
       // Transmit time is the actual time this

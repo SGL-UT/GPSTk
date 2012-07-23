@@ -89,6 +89,7 @@ else
       GloFreqIndex.cpp
       GPSAlmanacStore.cpp
       GPSEphemerisStore.cpp
+      GPSOrbElemStore.cpp
       GPSWeek.cpp
       GPSWeekSecond.cpp
       GPSWeekZcount.cpp
@@ -287,7 +288,8 @@ else
       GloFreqIndex.hpp
       GPSAlmanacStore.hpp
       GPSEllipsoid.hpp	
-      GPSEphemerisStore.hpp	
+      GPSEphemerisStore.hpp
+      GPSOrbElemStore.hpp	
       GPS_URA.hpp
       GPSWeek.hpp	
       GPSWeekSecond.hpp	

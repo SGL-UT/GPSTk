@@ -77,34 +77,15 @@ namespace gpstk
 	      /// Default constuctor
       OrbElem( );
 
-      
-         /// Add other constructors for other navigation message formats here....
 
          /// Destructor
       virtual ~OrbElem() {}
-
-         /** 
-          * Returns the epoch time (time of ephemeris) from this ephemeris, correcting
-          * for half weeks and HOW time. */
-      CommonTime getEphEpoch() const throw(InvalidRequest);
-      
-      CommonTime getClockEpoch() const throw(InvalidRequest);
-         /** Returns the time at the beginning of the fit interval. */
-      CommonTime getBeginningOfValidity() const throw(InvalidRequest);
-
-         /** Returns the time at the end of the fit interval. */
-      CommonTime getEndOfValidity() const throw(InvalidRequest);
 
       bool isValid(const CommonTime& ct) const throw(InvalidRequest);
 
 	      /** Return true if orbit data has been loaded */
       bool hasData( ) const;
-
-         /** Return satellite ID */
-     SatID getSatID() const throw(gpstk::InvalidRequest);
-
-     ObsID getObsID() const throw(gpstk::InvalidRequest);
-
+      
          /** This function returns the health status of the SV. */
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
@@ -136,9 +117,17 @@ namespace gpstk
       double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
       
          /** Output the contents of this orbit data to the given stream. */
-      void dump(std::ostream& s = std::cout) const 
+      virtual void dump(std::ostream& s = std::cout) const 
 	 throw( InvalidRequest );
 
+         // Enumeration of descendents of OrbElem
+      enum OrbElemType
+      {
+         OrbElemFIC9,
+         OrbElemFIC109,
+         OrbElemRinex,
+         Unknown
+      };
    
          /// Overhead information
          //@{
@@ -188,10 +177,13 @@ namespace gpstk
       CommonTime endValid;      /**< Time at end of fit validity */
          //@}
          //Comparison methods
-      bool operator==(const OrbElem& a);
-      bool operator<(const OrbElem& a);
+     // bool operator==(const OrbElem& a) const;
+     // bool operator<(const OrbElem& a) const;
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElem& eph);
+         // Type of this OrbElem object
+      OrbElemType type;
+  
 
    }; // class OrbElem
 

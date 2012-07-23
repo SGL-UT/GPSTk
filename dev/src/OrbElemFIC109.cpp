@@ -59,6 +59,7 @@ namespace gpstk
    OrbElemFIC109::OrbElemFIC109()
    {
       AODO = 0;
+      type = OrbElem::OrbElemFIC109;
    }
 
    OrbElemFIC109::OrbElemFIC109( const long SF1[10],
@@ -68,12 +69,14 @@ namespace gpstk
                                  const short XmitGPSWeek )
       throw( InvalidParameter ) 
    {
+      type = OrbElem::OrbElemFIC109;
       loadData(SF1, SF3, SF3, PRNID, XmitGPSWeek); 
    }
   
    OrbElemFIC109::OrbElemFIC109( const FICData& fic109 )
       throw( InvalidParameter )
    {
+      type = OrbElem::OrbElemFIC109;
       loadData( fic109 );
    }
    
@@ -237,7 +240,7 @@ namespace gpstk
          long Xmit = HOWtime[0] - HOWtime[0] % 7200;
 	 XmitSOW = (double) Xmit; 
       }
-      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW ); 
+      beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 
 
       // Determine Transmit Time
       // Transmit time is the actual time this

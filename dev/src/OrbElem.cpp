@@ -35,7 +35,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
 /**
  * @file OrbElem.cpp
  * Ephemeris data encapsulated in engineering terms
@@ -48,6 +47,8 @@
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
 #include "TimeString.hpp"
+#include "MathBase.hpp"
+
 
 namespace gpstk
 {
@@ -56,41 +57,9 @@ namespace gpstk
    OrbElem::OrbElem()
    { 
      dataLoaded = false;
+     type = Unknown;
    }
 
-   CommonTime OrbElem::getEphEpoch() const
-      throw(InvalidRequest)
-   {
-      return ctToe;
-   }
-
-   CommonTime OrbElem::getClockEpoch() const
-      throw(InvalidRequest)
-   {
-      return ctToc;
-   }
-
-   CommonTime OrbElem::getBeginningOfValidity() const
-      throw(InvalidRequest)
-   {
-      if (!dataLoaded)
-      {   
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      }
-      return beginValid;
-   }
-
-    CommonTime OrbElem::getEndOfValidity() const
-      throw(InvalidRequest)
-   {
-      if (!dataLoaded)
-      {   
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      }
-      return endValid;
-   }
 
     bool OrbElem::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
@@ -109,7 +78,7 @@ namespace gpstk
    {
       return(dataLoaded);
    }
-
+ 
    bool OrbElem::isHealthy() const
       throw(InvalidRequest)
    {
@@ -351,7 +320,6 @@ namespace gpstk
    void OrbElem::dump(ostream& s) const
       throw( InvalidRequest )
    {
-     
       ios::fmtflags oldFlags = s.flags();
 
       s.setf(ios::fixed, ios::floatfield);
@@ -419,6 +387,15 @@ namespace gpstk
        
    }
 
+ /*  bool OrbElem::operator==(const OrbElem& a) const
+   {
+      //if(IODC != a.IODC) return (false);
+      if(satID != a.satID) return (false);
+      double diff = std::abs( ctToe - a.ctToe );
+      if(diff > FULLWEEK) return (false);
+      return true;
+   }
+ */
 } // namespace
 
 
