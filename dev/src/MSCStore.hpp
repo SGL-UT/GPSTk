@@ -78,9 +78,16 @@ namespace gpstk
       virtual ~MSCStore()
       {}
 
+      /// Returns the position, velocity, and clock offset of the indicated
+      /// station in ECEF coordinates (meters) at the indicated time.
+      /// @param[in] stationID id string
+      /// @param[in] t the time to look up
+      /// @return the Xvt of the station at time
+      /// @throw InvalidRequest If the request can not be completed for any
+      ///    reason, this is thrown. The teXvt may have additional
+      ///    information as to why the request failed.
       Xvt getXvt(const std::string& stationID, const CommonTime& t)
-        const throw( gpstk::InvalidRequest )
-         { Xvt dummy; return dummy; }
+         const throw( gpstk::InvalidRequest );
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// station in ECEF coordinates (meters) at the indicated time.
@@ -168,7 +175,7 @@ namespace gpstk
       /// Note: There may be more than one MSCData object for a given
       /// station.  If so, findMSC( ) returns the MSCData object with the
       /// latest epoch time that is prior to t. 
-      const MSCData& findMSC(const std::string stationID, const CommonTime& t)
+      const MSCData& findMSC(const std::string& stationID, const CommonTime& t)
          const throw( gpstk::InvalidRequest );
       const MSCData& findMSC(const unsigned long stationID, const CommonTime& t) 
          const throw( gpstk::InvalidRequest );

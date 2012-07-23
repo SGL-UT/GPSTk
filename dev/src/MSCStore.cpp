@@ -49,6 +49,25 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
 
+   Xvt MSCStore::getXvt(const std::string& stationID, const CommonTime& t)
+      const throw( gpstk::InvalidRequest )
+   {
+      try
+      {
+            // Find an appropriate MSCData object.  
+         const MSCData& msc = findMSC( stationID, t ); 
+
+         return( msc.getXvt(t) );
+      }
+      catch(InvalidRequest& ir)
+      {
+         GPSTK_RETHROW(ir);
+      }
+   } // end of MSCStore::getXvt()
+
+   //--------------------------------------------------------------------------
+   //--------------------------------------------------------------------------
+
    Xvt MSCStore::getXvt(unsigned long& stationIDno, const CommonTime& t)
       const throw(InvalidRequest)
    {
@@ -231,7 +250,7 @@ namespace gpstk
    //--------------------------------------------------------------------------
    //--------------------------------------------------------------------------
    const MSCData&
-   MSCStore::findMSC(const string stationID, const CommonTime& t) 
+   MSCStore::findMSC(const string& stationID, const CommonTime& t) 
       const throw(InvalidRequest)
    {
       try

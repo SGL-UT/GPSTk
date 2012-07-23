@@ -4,6 +4,7 @@
 #include "MSCStore.hpp"
 #include "Position.hpp"
 #include "CommandOptionWithTimeArg.hpp"
+#include "SystemTime.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -82,10 +83,14 @@ void PosMSC::process()
 {
    mscs.loadFile(mscFileOption.getValue().front());
 
-   CommonTime time;
+   CommonTime time = SystemTime();
    if (timeOption.getCount())
       time = timeOption.getTime().front();
    
+      // Change the TimeSystem of time to "Any" because the difference between
+      // the time systems doesn't matter much for this application.
+   time.setTimeSystem(TimeSystem::Any);
+
    Position pos( mscs.getXvt(stationOption.getValue().front(), time) );
    
    if (outputFormatOption.getCount())
