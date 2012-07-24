@@ -157,6 +157,7 @@ TimCvt::TimCvt(char* arg0)
 void TimCvt::process()
 {
    CommonTime ct;
+   ct.setTimeSystem(TimeSystem::GPS);
    CommandOption *whichOpt = mutexOption.whichOne();
 
    if (whichOpt)
@@ -166,17 +167,20 @@ void TimCvt::process()
       if (cta)
       {
          ct = cta->getTime().front();
+         ct.setTimeSystem(TimeSystem::GPS);
       }
       else // whichOpt == &inputFormatAndTimeOption
       {
          mixedScanTime( ct, 
                         inputTimeOption.getValue().front(),
                         inputFormatOption.getValue().front() );
+         ct.setTimeSystem(TimeSystem::GPS);
       }
    }
    else
    {
-      ct = SystemTime(); 
+      ct = SystemTime();
+      ct.setTimeSystem(TimeSystem::GPS); 
    }
 
    int i;
