@@ -256,9 +256,6 @@ namespace gpstk
    bool OrbElemFIC9::hasData( ) const
       { return( dataLoaded ); }
 
-   CommonTime OrbElemFIC9::getTransmitTime( ) const
-      { return( transmitTime ); }
-
    double OrbElemFIC9::getAccuracy()  const
       throw(InvalidRequest)
    {
@@ -361,7 +358,6 @@ namespace gpstk
  
 
    void OrbElemFIC9 :: dumpFIC9(ostream& s) const
-      throw( InvalidRequest )
    {
 
       ios::fmtflags oldFlags = s.flags();
@@ -481,6 +477,14 @@ namespace gpstk
    void OrbElemFIC9 :: dump(ostream& s) const
       throw( InvalidRequest )
    { 
+      // Check if the subframes have been loaded before attempting
+      // to dump them.
+      if (!dataLoaded)
+      {
+         InvalidRequest exc("No data in the object");
+         GPSTK_THROW(exc);
+      }
+
       ios::fmtflags oldFlags = s.flags(); 
       s << "****************************************************************"
         << "************" << endl

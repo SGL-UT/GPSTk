@@ -58,46 +58,45 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
-
-      /**
-       * Ephemeris information for a single SF 1/2/3.  This class
-       * encapsulates the ephemeris navigation message (subframes 1-3)
-       */
    class OrbElemFIC9 : public OrbElem
    {
    public:
          /// Default constructor
       OrbElemFIC9();
-
+        
+        /**
+         *Construct an object from an existing FIC 9 data record
+         * @throw InvalidParameter if FICData object is not a Block 9 record.
+         */ 
       OrbElemFIC9( const FICData& fic9 )
 	 throw( InvalidParameter); 
 
          /// Destructor
       virtual ~OrbElemFIC9() {}
 
-         /// Load a FIC 9 into an existing object
+        /**
+         * Load the data FIC 9 data record into an existing object.
+         * All data already present are replaced.
+         * @throw InvalidParameter if FICData object is not a Block 9 record.
+         */
       void loadData( const FICData& fic9 )
 	 throw( InvalidParameter); 
 
          /// Query presence of data in this object.
       bool hasData( ) const;
-    
-    
 
-         /// Returns the transmit time
-      CommonTime getTransmitTime() const;
-
-         /// Returns the upper bound of the URA range
+        /* Returns the upper bound of the URA range
+         * @throw Invalid Request if the required data has not been stored
+         */
       double getAccuracy()  const
          throw( InvalidRequest );
 
-         /// Output the contents of this ephemeris to the given stream.
+        /* Output the contents of this ephemeris to the given stream.
+         * @throw Invalid Request if the required data has not been stored
+         */
       void dump(std::ostream& s = std::cout) const
          throw( InvalidRequest );  
-      void dumpFIC9(std::ostream& s = std::cout) const
-         throw( InvalidRequest );    
+        //@throw Invalid Request if the required data has not been stored   
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
@@ -120,12 +119,17 @@ namespace gpstk
       short  IODE;          /**< Index of data-eph    */
       short  fitint;        /**< Fit interval flag */
       double Tgd;           /**< L1 and L2 correction term */
-      long AODO;
+      long   AODO;          /**< Age of Data offset from subframe 2.  Note: This field may not be present
+                                 in older FIC data records.  A valid value will be greater than zero.  
+                                 A value  of zero indicates the AODO is not available in this record. */ 
          //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElemFIC9& eph);
-
+   protected:
+   
+      void dumpFIC9(std::ostream& s = std::cout) const;
+        
     
        
 

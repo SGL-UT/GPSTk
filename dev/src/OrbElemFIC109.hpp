@@ -2,11 +2,12 @@
 
 /**
  * @file OrbElemFIC109.hpp
- */
-
-/**
-*
-*/
+ *  Contains orbit and clock information for a single set of GPS legacy navigation
+ *  subframe 1/2/3 derived from an FIC Block 109.   The Block 109 contains the
+ *  "as transmitted" binary navigation message data.   OrbElemFIC109 inherits
+ *  from OrbElemFIC9 and adds the capability to "crack" the binary data into
+ *  the engineering unit representation.
+ */ 
 
 #ifndef GPSTK_ORBELEMFIC109_HPP
 #define GPSTK_ORBELEMFIC109_HPP
@@ -57,19 +58,24 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
-
-      /**
-       * Ephemeris information for a single SF 1/2/3.  This class
-       * encapsulates the ephemeris navigation message (subframes 1-3)
-       */
    class OrbElemFIC109 : public OrbElemFIC9
    {
    public:
          /// Default constructor
       OrbElemFIC109();
-
+   
+         /**  Create an object based on the three subframes of navigation
+          *   message data, the PRNID, and the week the data were transmitted.
+          *   The SF1, SF2, and SF3 arrays hold the data collected from
+          *   subframe 1, subframe 2, and subframe 3 respectively).  Each
+          *   30-bit word of the navigation message is stored right-justificed
+          *   in a single member of SF1, SF2, or SF3.   For example, Subframe 1,
+          *   bits 1-30 are stored in the 30 lsb of SF1[0].
+          *   XmitGPSWeek - The full GPS week the data were transmitted. This is  
+          *   required in order to correctly set the GPS 1024-week "epoch"
+          *   and correctly derive the complete epoch times.
+          *   @throw InvalidParameter if the input data are inconsistent.
+          */ 
       OrbElemFIC109( const long SF1[10],
                      const long SF2[10],
                      const long SF3[10],
@@ -77,9 +83,19 @@ namespace gpstk
                      const short XmitGPSWeek ) 
          throw( InvalidParameter);
 
+         /** Create an object based on the contents of a FICData
+          *  block 109.
+          *  @throw InvalidParameter if the FICData object does not contain an FIC Block 109.
+          */ 
       OrbElemFIC109( const FICData& fic109 )
 	 throw( InvalidParameter); 
 
+         /** Load the object from the navigation message data contained in the
+          *  arguments. Any existing data in the object is overwritten with the
+          *  new data.
+          *  See the corresponding constructor for a description of the arguments.
+          *  @throw InvalidParameter if the input data are inconsistent.
+          */ 
       void loadData( const long SF1[10],
                      const long SF2[10],
                      const long SF3[10],

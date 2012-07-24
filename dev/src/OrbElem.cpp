@@ -93,6 +93,11 @@ namespace gpstk
    double OrbElem::svClockBias(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
       double dtc,elaptc;
       elaptc = t - ctToc;
       dtc = af0 + elaptc * ( af1 + elaptc * af2 );
@@ -102,6 +107,11 @@ namespace gpstk
     double OrbElem::svClockBiasM(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      } 
       double ret = svClockBias(t);
       ret = ret*C_MPS;
       return (ret);
@@ -110,6 +120,11 @@ namespace gpstk
    double OrbElem::svClockDrift(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
       double drift,elaptc;
       elaptc = t - ctToc;
       drift = af1 + elaptc * af2;
@@ -119,6 +134,11 @@ namespace gpstk
    Xvt OrbElem::svXvt(const CommonTime& t) const
       throw(InvalidRequest)
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
       Xvt sv;
 
       GPSWeekSecond gpsws = (ctToe);
@@ -267,6 +287,11 @@ namespace gpstk
      double OrbElem::svRelativity(const CommonTime& t) const
       throw( InvalidRequest )
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
       GPSEllipsoid ell;
       double twoPI  = 2.0e0 * PI;
       double sqrtgm = SQRT(ell.gm());
@@ -320,6 +345,11 @@ namespace gpstk
    void OrbElem::dump(ostream& s) const
       throw( InvalidRequest )
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
       ios::fmtflags oldFlags = s.flags();
 
       s.setf(ios::fixed, ios::floatfield);
@@ -387,15 +417,6 @@ namespace gpstk
        
    }
 
- /*  bool OrbElem::operator==(const OrbElem& a) const
-   {
-      //if(IODC != a.IODC) return (false);
-      if(satID != a.satID) return (false);
-      double diff = std::abs( ctToe - a.ctToe );
-      if(diff > FULLWEEK) return (false);
-      return true;
-   }
- */
 } // namespace
 
 

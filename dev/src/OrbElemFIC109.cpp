@@ -310,6 +310,11 @@ namespace gpstk
    void OrbElemFIC109 :: dump(ostream& s) const
       throw( InvalidRequest )
    {
+      if (!dataLoaded)
+      {   
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      } 
       ios::fmtflags oldFlags = s.flags();
       s << "****************************************************************"
         << "************" << endl

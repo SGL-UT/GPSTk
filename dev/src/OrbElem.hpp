@@ -2,10 +2,17 @@
 
 /**
  * @file OrbElem.hpp
- * Orbital element data (including clock corrections) broadcast by a GNSS in pseudo-Keplerian elements 
- * encapsulated in engineering terms
- * BrcKeplerOrbit is designed to address all the GNSS navigation message
- * formats that are based on pseudo-Keplerian elements. 
+ *  This class encapsulates the "least common denominator"
+ *  orbit parameters defined in the GPS signal interface specifications.
+ *  That is to say, the clock correction coefficients, the pseudo-
+ *  Keplerian orbit parameters, the harmonic perturbations, and
+ *  the associated times.
+ *
+ *  Generally, the user will want to instantiate a descendent of this
+ *  class as opposed to instantiating this class directly.  The
+ *  descendent classes provide the functionality to load the
+ *  coefficients from various navigation message formats
+ *  and types.
  */
 
 #ifndef GPSTK_ORBELEM_HPP
@@ -60,16 +67,6 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
-
-      /**
-       * This class encapsulates the orbit parameters in any of several
-       * navigation message formats (basically those that use 
-       * Keplerian elements), provides functions to decode the
-       * as-broadcast bit-encodings, and generate SV positions 
-       * as a function of time.
-       */
    class OrbElem
    {
    public:
@@ -81,42 +78,54 @@ namespace gpstk
          /// Destructor
       virtual ~OrbElem() {}
 
+         /**
+          * Returns true if the time, ct, is within the period of validity of this OrbElem object.
+          * @throw Invalid Request if the required data has not been stored.
+          */ 
       bool isValid(const CommonTime& ct) const throw(InvalidRequest);
 
-	      /** Return true if orbit data has been loaded */
+	 /**
+          *   Return true if orbit data have been loaded.
+          *   Returns false if the object has been instantiated,
+          *   but no data have been loaded.
+          */ 
       bool hasData( ) const;
       
-         /** This function returns the health status of the SV. */
+         /** This function returns the health status of the SV.
+          * @throw Invalid Request if the required data has not been stored.
+          */
       bool isHealthy() const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock bias (sec) at the given time
-          * @throw InvalidRequest if a required data has not been stored.
+          *  @throw Invalid Request if the required data has not been stored.
           */
       double svClockBias(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock bias (meters) at the given time
-          * @throw InvalidRequest if a required data has not been stored.
+          *  @throw Invalid Request if the required data has not been stored.
           */
       double svClockBiasM(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute the satellite clock drift (sec/sec) at the given time
-          * @throw InvalidRequest if a required data has not been stored.
+          *  @throw Invalid Request if the required data has not been stored.
           */
       double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
       
          /** Compute satellite position at the given time
           * using this orbit data.
-          * @throw InvalidRequest if a required data has not been stored.
+          * @throw Invalid Request if the required data has not been stored.
           */
       Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute satellite relativity correction (sec) at the given time
-          * @throw InvalidRequest if a required data has not been stored.
+          *  @throw Invalid Request if the required data has not been stored.
           */
       double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
       
-         /** Output the contents of this orbit data to the given stream. */
+         /** Output the contents of this orbit data to the given stream. 
+          * @throw Invalid Request if the required data has not been stored.
+          */
       virtual void dump(std::ostream& s = std::cout) const 
 	 throw( InvalidRequest );
 
@@ -175,10 +184,7 @@ namespace gpstk
          //@{
       CommonTime beginValid;    /**< Time at beginning of validity */
       CommonTime endValid;      /**< Time at end of fit validity */
-         //@}
-         //Comparison methods
-     // bool operator==(const OrbElem& a) const;
-     // bool operator<(const OrbElem& a) const;
+         
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElem& eph);
          // Type of this OrbElem object

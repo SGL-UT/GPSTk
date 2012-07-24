@@ -232,9 +232,6 @@ namespace gpstk
    bool OrbElemRinex::hasData( ) const
       { return( dataLoaded ); }
 
-   CommonTime OrbElemRinex::getTransmitTime( ) const
-      { return( transmitTime ); }
-
    double OrbElemRinex::getAccuracy()  const
       throw(InvalidRequest)
    {
@@ -337,9 +334,12 @@ namespace gpstk
 
    void OrbElemRinex :: dump(ostream& s) const
       throw( InvalidRequest )
-   {
-      
-
+   {     
+      if (!dataLoaded)
+      {
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
+      }
       ios::fmtflags oldFlags = s.flags();
       
       SVNumXRef svNumXRef; 

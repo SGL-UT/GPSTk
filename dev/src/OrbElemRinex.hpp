@@ -1,17 +1,17 @@
 #pragma ident "$Id:$"
 
 /**
- * @file OrbElemFIC9.hpp
- * SF 1/2/3 data from an FIC Block 9 encapsulated in engineering terms.
- * Class inherits from OrbElem and adds those items unique to and FIC Block 9
- */
+  *  @file OrbElemRinex.hpp
+  *  Contains the "engineering units" contents of a set of subframe 1/2/3 GPS
+  *  navigation message data as created from a record in a Rinex navigation
+  *  message file.
+  *  This class inherits from the OrbElem class and provides both the capability
+  *  to load an OrbElem from a set of Rinex data and storage for the Rinex-specific
+  *  parts of the Rinex file.
+  */ 
 
-/**
-*
-*/
-
-#ifndef GPSTK_ORBELEMRINEX9_HPP
-#define GPSTK_ORBELEMRINEX9_HPP
+#ifndef GPSTK_ORBELEMRINEX_HPP
+#define GPSTK_ORBELEMRINEX_HPP
 
 //============================================================================
 //
@@ -58,13 +58,6 @@
 
 namespace gpstk
 {
-   /** @addtogroup ephemcalc */
-   //@{
-
-      /**
-       * Ephemeris information for a single SF 1/2/3.  This class
-       * encapsulates the ephemeris navigation message (subframes 1-3)
-       */
    class OrbElemRinex : public OrbElem
    {
    public:
@@ -77,24 +70,30 @@ namespace gpstk
          /// Destructor
       virtual ~OrbElemRinex() {}
 
-         /// Load a FIC 9 into an existing object
+         /** Load an existing object from a RinexNavData object.
+          *  @throw InvalidParameter if the data are not consistent.
+          */ 
       void loadData( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
          /// Query presence of data in this object.
       bool hasData( ) const;
        
-
-         /// Returns the transmit time
-      CommonTime getTransmitTime() const;
-
          /// Returns the upper bound of the URA range
       double getAccuracy()  const
          throw( InvalidRequest );
 
-         /// Output the contents of this ephemeris to the given stream.
+         /** Generate a formatted human-readable output of the entire contents of
+          *  this object and send it to the designated output stream (default to cout).
+          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          */
       void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );    
+         throw( InvalidRequest );  
+         /** Generate a formatted human-readable one-line output that summarizes
+          *  the critical times associated with this object and send it to the
+          *  designated output stream (default to cout).
+          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          */   
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
