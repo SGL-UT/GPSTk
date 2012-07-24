@@ -171,7 +171,7 @@ namespace gpstk
       // Transmit time is the actual time this
       // SF 1/2/3 sample was collected	 
       long Xmit = HOWtime - (HOWtime % 30);
-      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit );
+      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
 
          // Fully qualified Toe and Toc
 	 // As broadcast, Toe and Toc are in GPS SOW and do not include

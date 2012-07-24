@@ -91,12 +91,17 @@ namespace gpstk
       double getAccuracy()  const
          throw( InvalidRequest );
 
-        /* Output the contents of this ephemeris to the given stream.
-         * @throw Invalid Request if the required data has not been stored
+        /** Generate a formatted human-readable output of the entire contents of
+         *  this object and send it to the designated output stream (default to cout).
+         *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
          */
       void dump(std::ostream& s = std::cout) const
          throw( InvalidRequest );  
-        //@throw Invalid Request if the required data has not been stored   
+        /** Generate a formatted human-readable one-line output that summarizes
+          *  the critical times associated with this object and send it to the
+          *  designated output stream (default to cout).
+          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          */   
       void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
@@ -107,8 +112,8 @@ namespace gpstk
          //@{
       long  HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
       short ASalert[3];     /**< A-S and "alert" flags for each subframe. 
-			        2 bit quantity with A-S flag the high
-                                order bit and the alert flag low order bit */
+			        2 bit quantity with Alert flag the high
+                                order bit and the A-S flag low order bit */
       CommonTime transmitTime; /** Estimated beginning time of this sample */
 
       short  codeflags;     /**< L2 codes */

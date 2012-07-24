@@ -260,6 +260,8 @@ namespace gpstk
            cout << "PRN = " << eph.satID.id << endl;
            cout << " beginValid = " << printTime(eph.beginValid,ts) << endl;          
            cout << " Toe = " << printTime(eph.ctToe,ts) << endl;
+           cout << "oe.ctToe = " << oe.ctToe << endl;
+           cout << "oe.transmitTime = " << oe.beginValid << endl;   
            exit(1); 
         }
      }

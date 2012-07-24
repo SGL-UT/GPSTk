@@ -37,7 +37,7 @@
 //=============================================================================
 /**
  * @file OrbElem.cpp
- * Ephemeris data encapsulated in engineering terms
+ * OrbElem data encapsulated in engineering terms
  */
 
 #include "OrbElem.hpp"

@@ -96,15 +96,16 @@ namespace gpstk
           *  See the corresponding constructor for a description of the arguments.
           *  @throw InvalidParameter if the input data are inconsistent.
           */ 
+
+         /// Destructor
+      virtual ~OrbElemFIC109() {}
+
       void loadData( const long SF1[10],
                      const long SF2[10],
                      const long SF3[10],
                      const short PRNID,
                      const short XmitGPSWeek ) 
          throw( InvalidParameter);
-
-         /// Destructor
-      virtual ~OrbElemFIC109() {}
 
          /// Load a FIC 9 into an existing object
       void loadData( const FICData& fic109 )
@@ -113,13 +114,6 @@ namespace gpstk
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
          throw( InvalidRequest );    
-     
-         /// Ephemeris overhead information
-         //@{ 
-         //@}
-
-      
-
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElemFIC109& eph);
