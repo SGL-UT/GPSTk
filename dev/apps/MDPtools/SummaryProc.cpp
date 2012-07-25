@@ -4,17 +4,6 @@
   This intended to perform a quick summary/analysis of the data in a MDP file
   or stream. The idea is teqc +meta or +mds with a little bit of +qc thrown
   in for good measure.
-
-  Mainly driven by the needs of the receiver test cases. The following are
-  some of the test cases that this class is to support.
-
-  RS-13  | needs to report data gaps |
-  RS-16  | needs to report data gaps (based upon presense of data, not sv visibility) |
-  RS-31  | Needs to report jumps in the clock offset reported in the PVT messages |
-  RS-32  | "" |
-  RS-58  | Analyze the changes in lock count over tracking anomolies |
-  RS-72  | |
-  RS-133  | Heh, need to run this for 90 days... |
 */
 
 //============================================================================
@@ -220,7 +209,6 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
    if (firstObs)
    {
       firstObsTime = msg.time;
-      firstObs = false;
       if (verboseLevel)
          out << printTime(msg.time,timeFormat)
              << "  Received first Observation Epoch message"
@@ -351,7 +339,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
 
    // Keep track of the number of epochs we have processed and check the
    // numSVs field.
-   if (prevEpochTime != msg.time)
+   if (!firstObs && prevEpochTime != msg.time)
    {
       numEpochs++;
 
@@ -372,10 +360,11 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
          if (! (bugMask & 0x01))
             out << printTime(prevEpochTime,timeFormat)
                 << "  Epoch claimed " << prevReported
-                << " SVs but only received " << prevActual << endl;
+                << " SVs but received " << prevActual << endl;
       }
    }
 
+   firstObs = false;
    prevObs[chan] = msg;
    prevEpochTime = msg.time;
    numObsEpochMsg++;
