@@ -384,7 +384,8 @@ namespace gpstk
            right.m_timeSystem != TimeSystem::Any) &&
           m_timeSystem != right.m_timeSystem)
       {
-         InvalidRequest ir("CommonTime objects not in same time system, cannot be compared");
+         InvalidRequest ir("CommonTime objects not in same time system, cannot be compared: " +
+                           m_timeSystem.asString() + " != " + right.m_timeSystem.asString());
          GPSTK_THROW( ir );
       }
 
