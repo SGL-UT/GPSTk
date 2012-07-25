@@ -120,6 +120,7 @@ private:
 
 bool SVVis::initialize(int argc, char *argv[]) throw()
 {
+   
    CommandOptionWithAnyArg 
       minElevOpt(
          '\0', "elevation-mask",
@@ -191,6 +192,7 @@ bool SVVis::initialize(int argc, char *argv[]) throw()
    if (recentDataOpt.getCount())
    {
       CommonTime t;
+      t.setTimeSystem(TimeSystem::GPS);
       if (startTimeOpt.getCount())
          t = startTimeOpt.getTime()[0];
       EphReader::modify10bitWeeks(static_cast<GPSWeekSecond>(t).week);
@@ -304,10 +306,9 @@ void SVVis::process()
 {
    gpstk::XvtStore<SatID>& ephStore = *ephReader.eph;
    CommonTime t = startTime;
-
+   t.setTimeSystem(TimeSystem::GPS);
    Xvt rxXvt;
    rxXvt.x = rxPos;
-
    typedef map<int, TrackData> TrackDataMap;
    TrackDataMap lastTrack, thisTrack;
    typedef set<TrackData> TrackDataSet;
@@ -331,6 +332,8 @@ void SVVis::process()
 
    string up, prev_up, el;
    int n_up;
+   startTime.setTimeSystem(TimeSystem::GPS);
+   stopTime.setTimeSystem(TimeSystem::GPS); 
    for (CommonTime t=startTime; t < stopTime; t+=1)
    {
       thisTrack.clear();
@@ -382,7 +385,7 @@ void SVVis::process()
                cout << e << endl;
          }
       }
-      
+
       if (riseSet)
       {
             // Move the objects left in lastTrack to the track collection.
