@@ -71,14 +71,18 @@ namespace gpstk
       fitint = 0;
    }
 
-  
-
    OrbElemFIC9::OrbElemFIC9( const FICData& fic9 )
       throw( InvalidParameter )
    {
       type = OrbElem::OrbElemFIC9;
       loadData( fic9 );
    }
+
+   OrbElemFIC9* OrbElemFIC9::clone() const
+   {
+      return new OrbElemFIC9 (*this); 
+   }
+
 
    void OrbElemFIC9::loadData( const FICData& fic9 )
       throw( InvalidParameter )

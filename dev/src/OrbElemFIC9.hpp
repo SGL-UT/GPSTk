@@ -74,6 +74,9 @@ namespace gpstk
          /// Destructor
       virtual ~OrbElemFIC9() {}
 
+         /// Clone function
+      virtual OrbElemFIC9* clone() const;
+
         /**
          * Load the data FIC 9 data record into an existing object.
          * All data already present are replaced.

@@ -78,6 +78,16 @@ namespace gpstk
          /// Destructor
       virtual ~OrbElem() {}
 
+         /// Clone method.
+	 /// Return pointer to new copy of this type.
+	 /// Implication of the "= 0" at this end is that this is a 
+	 /// "pure virtual" method and that makes OrbElem an abstract 
+	 /// class.  That is to say no objects of type OrbElem may
+	 /// be constructed.   This is a good thing since OrbElem
+	 /// doesn't even provide methods to load its' members.  
+	 /// Only its' descendents may be instantiated.
+      virtual OrbElem* clone() const = 0;
+
          /**
           * Returns true if the time, ct, is within the period of validity of this OrbElem object.
           * @throw Invalid Request if the required data has not been stored.
