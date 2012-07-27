@@ -70,6 +70,9 @@ namespace gpstk
          /// Destructor
       virtual ~OrbElemRinex() {}
 
+        /// Clone method
+      virtual OrbElemRinex* clone() const;
+
          /** Load an existing object from a RinexNavData object.
           *  @throw InvalidParameter if the data are not consistent.
           */ 
