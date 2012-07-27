@@ -77,6 +77,12 @@ namespace gpstk
       loadData( rinNav );
    }
 
+     /// Clone method
+   OrbElemRinex* OrbElemRinex::clone() const
+   {
+      return new OrbElemRinex (*this);
+   } 
+
    void OrbElemRinex::loadData( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
