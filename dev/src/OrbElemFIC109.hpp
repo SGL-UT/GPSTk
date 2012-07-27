@@ -100,6 +100,10 @@ namespace gpstk
          /// Destructor
       virtual ~OrbElemFIC109() {}
 
+        /// Clone function
+      virtual OrbElemFIC109* clone() const;
+
+
       void loadData( const long SF1[10],
                      const long SF2[10],
                      const long SF3[10],
