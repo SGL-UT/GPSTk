@@ -79,6 +79,7 @@ public:
    RinexSatID sat;   // satellite
    RinexObsID obs;   // observation type
    CommonTime ttag;  // associated time tag
+   
    int sign;         // sign +1,0,-1
    int idata;        // integer e.g. SSI or LLI
    double data;      // data e.g. bias value
@@ -211,7 +212,7 @@ int main(int argc, char **argv)
 {
    // get the (single) instance of the configuration
    Configuration& C(Configuration::Instance());
-
+   
 try {
    int iret;
    clock_t totaltime(clock());
@@ -580,21 +581,21 @@ int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
       int iret(0);
       RinexSatID sat;
       CommonTime now(Rdata.time);         // TD what if its aux data w/o an epoch?
-
+      now.setTimeSystem(TimeSystem::Any); // Defined "Any" timesystem for comparison
       // if aux header data, either output or skip
       if(RDout.epochFlag > 1) {           // aux header data
          if(C.HDda) return 1;
          return 0;
       }
-
       else {                              // regular data
          vector<EditCmd>::iterator it, jt;
 
          // for cmds with ttag <= now either execute and delete, or move to current
          it = C.vecCmds.begin();
+	 
          while(it != C.vecCmds.end()) {
             if(it->ttag <= now || ::fabs(it->ttag - now) < C.timetol) {
-               // execute command;
+	       // execute command;
                // delete one-time cmds, move others to curr and delete
                iret = ExecuteEditCmd(it, RHout, RDout);
                if(iret < 0) return iret;
@@ -1165,6 +1166,7 @@ EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
 
       type = INVALID;                                 // defaults
       ttag = CommonTime::BEGINNING_OF_TIME;
+      
       sign = idata = 0;
       data = 0.0;
 
