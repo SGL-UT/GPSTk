@@ -139,12 +139,13 @@ namespace gpstk
       virtual void dump(std::ostream& s = std::cout) const 
 	 throw( InvalidRequest );
 
-         // Enumeration of descendents of OrbElem
+         /// Enumeration of descendents of OrbElem
       enum OrbElemType
       {
          OrbElemFIC9,
          OrbElemFIC109,
          OrbElemRinex,
+         OrbElemLNav,
          Unknown
       };
    
@@ -201,10 +202,10 @@ namespace gpstk
       OrbElemType type;
   
 
-   }; // class OrbElem
+   }; // end class OrbElem
 
    //@}
 
-} // namespace
+} // end namespace
 
-#endif
+#endif // GPSTK_ORBELEM_HPP
