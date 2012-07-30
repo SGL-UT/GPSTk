@@ -1,16 +1,16 @@
 #pragma ident "$Id:$"
 
 /**
- * @file OrbElemFIC109.hpp
+ * @file OrbElemLNav.hpp
  *  Contains orbit and clock information for a single set of GPS legacy navigation
  *  subframe 1/2/3 derived from an FIC Block 109.   The Block 109 contains the
- *  "as transmitted" binary navigation message data.   OrbElemFIC109 inherits
+ *  "as transmitted" binary navigation message data.   OrbElemLNav inherits
  *  from OrbElemFIC9 and adds the capability to "crack" the binary data into
  *  the engineering unit representation.
  */ 
 
-#ifndef GPSTK_ORBELEMFIC109_HPP
-#define GPSTK_ORBELEMFIC109_HPP
+#ifndef GPSTK_OrbElemLNav_HPP
+#define GPSTK_OrbElemLNav_HPP
 
 //============================================================================
 //
@@ -51,22 +51,37 @@
 #include <string>
 #include <iostream>
 
-#include "OrbElemLNav.hpp"
+#include "OrbElemFIC9.hpp"
+#include "FICData.hpp"
+
+
 
 namespace gpstk
 {
-   class OrbElemFIC109 : public OrbElemLNav
+   class OrbElemLNav : public OrbElemFIC9
    {
    public:
          /// Default constructor
-      OrbElemFIC109();
-
-         /** Create an object based on the contents of a FICData
-          *  block 109.
-          *  @throw InvalidParameter if the FICData object does not contain an FIC Block 109.
+      OrbElemLNav();
+   
+         /**  Create an object based on the three subframes of navigation
+          *   message data, the PRNID, and the week the data were transmitted.
+          *   The SF1, SF2, and SF3 arrays hold the data collected from
+          *   subframe 1, subframe 2, and subframe 3 respectively).  Each
+          *   30-bit word of the navigation message is stored right-justificed
+          *   in a single member of SF1, SF2, or SF3.   For example, Subframe 1,
+          *   bits 1-30 are stored in the 30 lsb of SF1[0].
+          *   XmitGPSWeek - The full GPS week the data were transmitted. This is  
+          *   required in order to correctly set the GPS 1024-week "epoch"
+          *   and correctly derive the complete epoch times.
+          *   @throw InvalidParameter if the input data are inconsistent.
           */ 
-      OrbElemFIC109( const FICData& fic109 )
-	 throw( InvalidParameter); 
+      OrbElemLNav( const long SF1[10],
+                     const long SF2[10],
+                     const long SF3[10],
+                     const short PRNID,
+                     const short XmitGPSWeek ) 
+         throw( InvalidParameter);
 
          /** Load the object from the navigation message data contained in the
           *  arguments. Any existing data in the object is overwritten with the
@@ -76,29 +91,33 @@ namespace gpstk
           */ 
 
          /// Destructor
-      virtual ~OrbElemFIC109() {}
+      virtual ~OrbElemLNav() {}
 
         /// Clone function
-      virtual OrbElemFIC109* clone() const;
+      virtual OrbElemLNav* clone() const;
 
-         /// Load a FIC 9 into an existing object
-      void loadData( const FICData& fic109 )
-	 throw( InvalidParameter); 
+
+      void loadData( const long SF1[10],
+                     const long SF2[10],
+                     const long SF3[10],
+                     const short PRNID,
+                     const short XmitGPSWeek ) 
+         throw( InvalidParameter);
 
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
          throw( InvalidRequest );    
 
       friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElemFIC109& eph);
+                                      const OrbElemLNav& eph);
 
     
        
 
-   }; // end class OrbElemFIC109
+   }; // end class OrbElemLNav
 
    //@}
 
 } // end namespace
 
-#endif // GPSTK_ORBELEMFIC109_HPP
+#endif // GPSTK_OrbElemLNav_HPP
