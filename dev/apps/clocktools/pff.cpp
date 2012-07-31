@@ -39,8 +39,17 @@
 
 using namespace std;
 
-int main()
+int main(int argv, char **argc)
 {
+	if(argc[1])
+	{
+		string str = argc[1];
+		if((str == "-h") || (str == "--help"))
+		{
+	  	cout << "pff: Converts phase data to fractional frequency data from the standard input." << endl;
+	  	return 1;
+		}
+	}
 	double dataA[2];
 	double dataB[2];
 	unsigned long int i = 0;

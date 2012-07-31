@@ -44,6 +44,17 @@ using namespace std;
 
 int main(int argv, char **argc)
 {
+ 	//Check to display help dialog
+        if(argc[1])
+	{	
+		string str = argc[1];
+		if((str == "-h") || (str == "--help"))
+		{
+	  	cout << "dallandev: Computes the dynamic Allan deviation from time tag & phase 			data sent to the standard input." << endl;
+	  	return 1;
+		}
+	}
+
 	vector <double> timeArray;
 	vector <double> phaseArray;
 	long double time, phase;

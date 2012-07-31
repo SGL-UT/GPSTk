@@ -41,8 +41,17 @@
 
 using namespace std;
 
-int main()
+int main(int argv, char **argc)
 {
+	if(argc[1])
+	{
+		string str = argc[1];
+		if((str == "-h") || (str == "--help"))
+		{
+	  	cout << "rmoutlier: Removes outliers within phase data from the standard input." << endl;
+	  	return 1;
+		}
+	}
 	double data[2];
 	
 	vector <double> timetags;

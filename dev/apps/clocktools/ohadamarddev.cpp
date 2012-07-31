@@ -42,8 +42,17 @@
 
 using namespace std;
 
-int main()
+int main(int argv, char **argc)
 {
+	if(argc[1])
+	{
+		string str = argc[1];
+		if((str == "-h") || (str == "--help"))
+		{
+	  	cout << "ohadamarddev: Computes the overlapping Hadamard deviation from the standard input." << endl;
+	  	return 1;
+		}
+	}
 	// Structures used to store time and clock phase information
 	vector <double> timeArray;
 	vector <double> phaseArray;

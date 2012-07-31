@@ -38,8 +38,17 @@
 
 using namespace std;
 
-int main()
+int main(int argv, char **argc)
 {
+	if(argc[1])
+	{
+		string str = argc[1];
+		if((str == "-h") || (str == "--help"))
+		{
+	  	cout << "scale: Scales kalman phase data for use with the Clock Tools." << endl;
+	  	return 1;
+		}
+	}
 	double data[2];
 	
 	// input data from the standard input
