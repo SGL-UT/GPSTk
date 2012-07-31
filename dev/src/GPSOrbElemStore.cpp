@@ -97,8 +97,9 @@ namespace gpstk
       {
          validSatSystem(sat);
 
-       //  return strictMethod ? findUserOrbElem(sat, t) : findNearOrbElem(sat, t);
-           return findUserOrbElem(sat, t);
+           return strictMethod ? findUserOrbElem(sat, t) : findNearOrbElem(sat, t);
+          //  return strictMethod ? findNearOrbElem(sat, t) : findUserOrbElem(sat, t);
+          //  return findNearOrbElem(sat, t);
       }
       catch(InvalidRequest& ir)
       {
@@ -413,7 +414,8 @@ namespace gpstk
    GPSOrbElemStore::findUserOrbElem(const SatID& sat, const CommonTime& t) const
       throw( InvalidRequest )
    {
-	  // Check to see that there exists a map of orbital elements
+	  cout << "findUserOrbElem is called" << endl;
+          // Check to see that there exists a map of orbital elements
 	  // relevant to this SV.
       UBEMap::const_iterator prn_i = ube.find(sat);
       if (prn_i == ube.end())
@@ -499,80 +501,68 @@ namespace gpstk
  
    
 
-  /* const OrbElem*
-   GPSOrbElemStore::findUserOrbElem(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
+ 
+//-----------------------------------------------------------------------------
+ 
+     const OrbElem*
+   GPSOrbElemStore::findNearOrbElem(const SatID& sat, const CommonTime& t) const
+      throw( InvalidRequest)
    {
-      validSatSystem(sat);
-
+        cout << "findNearOrbElem() is called" << endl;
+        // Check for any OrbElem for this SV            
       UBEMap::const_iterator prn_i = ube.find(sat);
       if (prn_i == ube.end())
       {
          InvalidRequest e("No OrbElem for satellite " + asString(sat));
          GPSTK_THROW(e);
       }
-
-      const OrbElemMap& em = prn_i->second;
-      CommonTime t1, t2, Tot = CommonTime::BEGINNING_OF_TIME;
-      OrbElemMap::const_iterator it = em.end();
-
-      // Find eph with (Toe-(fitint/2)) > t - 4 hours
-      // Use 4 hours b/c it's the default fit interval.
-      // Backup one OrbElem to make sure you get the
-      // correct one in case of fit intervals greater 
-      // than 4 hours.
-      OrbElemMap::const_iterator ei = em.upper_bound(t - 4 * 3600); 
-      if (!em.empty() && ei != em.begin() )
+   
+      try
       {
-         ei--;
+         const OrbElem* oep = findUserOrbElem(sat, t);
+         return(oep);
+      }      
+        // No OrbElem in store for requested sat time  
+      catch(InvalidRequest)
+      {
+           // Create references to map for this satellite
+         const OrbElemMap& em = prn_i->second;
+           /*
+              Three Cases: 
+                1. t is within a gap within the store
+                2. t is before all OrbElem in the store
+                3. t is after all OrbElem in the store
+           */
+
+           // Attempt to find nect in store after t
+         OrbElemMap::const_iterator itNext = em.lower_bound(t);
+           // Test for case 2
+         if(itNext==em.begin())
+         {
+            return(itNext->second);
+         }
+           // Test for case 3
+         if(itNext==em.end())
+         {
+            OrbElemMap::const_reverse_iterator rit = em.rbegin();
+            return(rit->second);
+         }
+           // Handle case 1
+           // Know that itNext is not the beginning, so safe to decrement
+         CommonTime nextBeginValid = itNext->first;
+         OrbElemMap::const_iterator itPrior = itNext;
+         itPrior--;
+         CommonTime lastEndValid = itPrior->second->endValid;
+         double diffToNext = nextBeginValid-t;
+         double diffFromLast = t - lastEndValid;
+         if(diffToNext>diffFromLast)
+         {
+            return(itPrior->second);
+         }
+         return(itNext->second);
       }
+   }
       
-      for (; ei != em.end(); ei++)
-      {
-         const OrbElem& current = ei->second;
-         // t1 = beginning of validity
-         t1 = ei->first;
-         // t2 = HOW time
-         t2 = current.beginValid;
-
-         // Ephemerides are ordered by fit interval.  
-         // If the start of the fit interval is in the future, 
-         // this and any more ephemerides are not the one you are
-         // looking for.
-         if( t1 > t ) 
-         {
-            break;
-         }
-         
-         double dt1 = t - t1;
-         double dt2 = t - t2;
-         double fitDuration = current.endValid - current.beginValid;
-//cout << "time t " << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
-//cout << "time t1 " << (static_cast<CivilTime>(t1)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
-//cout << "time t2 " << (static_cast<CivilTime>(t2)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
-//cout << "dt1 " << fixed << setprecision(3) << dt1 << " and dt2 " << dt2 << endl;
-         if (dt1 >= 0 &&                           // t is after start of fit interval
-             dt1 < fitDuration &&  // t is within the fit interval
-             dt2 >= 0 &&                           // t is after Tot
-             t2 > Tot )                            // this eph has the latest Tot
-         {
-            it = ei;
-            Tot = t2;
-         }
-      }
-
-      if (it == em.end())
-      {
-         string mess = "No eph found for satellite " + asString(sat) + " at "
-            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
-         InvalidRequest e(mess);
-         GPSTK_THROW(e);
-      }
-
-      return it->second;
-   } */
-
-//-----------------------------------------------------------------------------
 
  /*  const OrbElem*
    GPSOrbElemStore::findNearOrbElem(const SatID& sat, const CommonTime& t) const
