@@ -78,6 +78,16 @@ namespace gpstk
       severity = sever;
    }
 
+   Exception::Exception(const char* errorText, 
+      const unsigned long& errId,
+      const Severity& sever)
+      throw()
+   {
+      text.push_back(string(errorText));
+      errorId = errId;
+      severity = sever;
+   }
+
    Exception::Exception(const Exception& e)
       throw()
          : errorId(e.errorId),

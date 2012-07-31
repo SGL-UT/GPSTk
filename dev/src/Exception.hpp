@@ -179,9 +179,25 @@ namespace gpstk
                 const unsigned long& errorId = 0,
                 const Severity& severity = unrecoverable)
          throw();
+
+
+         /**
+          * Full constructor for exception.
+          * @param errorText text message detailing exception.
+          * @param errorId error code related to exception e.g. MQ result
+          * code.
+          * @param severity severity of error.
+          */
+      Exception(const char* errorText, 
+                const unsigned long& errorId = 0,
+                const Severity& severity = unrecoverable)
+         throw();
+
+
          /// Copy constructor.
       Exception(const Exception& exception) 
          throw();
+
          /// Destructor.
       ~Exception() 
          throw() 
@@ -402,10 +418,21 @@ public: \
        * @param b error code (default none) \
        * @param c severity of exception (default unrecoverable) \
        */ \
-   child(std::string a, unsigned long b = 0,\
+   child(const std::string& a, unsigned long b = 0,\
          gpstk::Exception::Severity c = gpstk::Exception::unrecoverable) \
          throw() \
          : parent(a, b, c) \
+   {};\
+      /** \
+       * Common use constructor. \
+       * @param a text description of exception condition. \
+       * @param b error code (default none) \
+       * @param c severity of exception (default unrecoverable) \
+       */ \
+   child(const char* a, unsigned long b = 0,\
+   gpstk::Exception::Severity c = gpstk::Exception::unrecoverable) \
+   throw() \
+   : parent(a, b, c) \
    {};\
       /** Destructor. */ \
    ~child() throw() {} \
