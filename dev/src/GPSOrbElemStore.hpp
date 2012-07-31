@@ -81,7 +81,7 @@ namespace gpstk
 
 
       virtual ~GPSOrbElemStore()
-      {}
+      { clear();}
 
       /// Returns the position, velocity, and clock offset of the indicated
       /// satellite in ECEF coordinates (meters) at the indicated time.
@@ -102,7 +102,7 @@ namespace gpstk
        * @param ref a place to return the IODC for future reference.
        * @return the Xvt of the SV at time t
        */
-      virtual Xvt getXvt( const SatID& sat, const CommonTime& t, OrbElem& ref ) const
+      virtual Xvt getXvt( const SatID& sat, const CommonTime& t, OrbElem* ref ) const
          throw( InvalidRequest );
 
 
@@ -189,21 +189,25 @@ namespace gpstk
       void clear()
          throw()
       {
-        ube.clear();
+        /*ube.clear();
         initialTime = gpstk::CommonTime::END_OF_TIME;
         finalTime = gpstk::CommonTime::BEGINNING_OF_TIME;
         initialTime.setTimeSystem(TimeSystem::GPS);
-        finalTime.setTimeSystem(TimeSystem::GPS);
-      }
+        finalTime.setTimeSystem(TimeSystem::GPS); */
+        for( UBEMap::iterator ui = ube.begin(); ui != ube.end(); ui++)
+        {
+           OrbElemMap& oem = ui->second;
+           for (OrbElemMap::iterator oi = oem.begin(); oi != oem.end(); oi++)
+           {
+              delete oi->second;
+           }
+        } 
+       }
 
       /// Get the number of OrbElem objects in this collection.
       /// @return the number of OrbElem records in the map
-      unsigned ubeSize() const
-         throw();
-
       unsigned size() const
-         throw()
-      { return ubeSize(); };
+         throw();
 
       /// Find an OrbElem based upon the search method configured
       /// by SearchNear/SearchPast
@@ -211,7 +215,7 @@ namespace gpstk
       /// @param t time with which to search for OrbElem
       /// @return a reference to the desired OrbElem
       /// @throw InvalidRequest object thrown when no OrbElem is found
-      const OrbElem& findOrbElem( const SatID& sat, const CommonTime& t )
+      const OrbElem* findOrbElem( const SatID& sat, const CommonTime& t )
          const throw( InvalidRequest );
 
       /// Find an OrbElem for the indicated satellite at time t. The OrbElem
@@ -222,7 +226,7 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to the desired OrbElem
       /// @throw InvalidRequest object thrown when no OrbElem is found
-      const OrbElem& findUserOrbElem( const SatID& sat, const CommonTime& t )
+      const OrbElem* findUserOrbElem( const SatID& sat, const CommonTime& t )
          const throw( InvalidRequest );
 
       /// Find an OrbElem for the indicated satellite at time t. The OrbElem
@@ -232,12 +236,12 @@ namespace gpstk
       /// @param t the time of interest
       /// @return a reference to desired OrbElem
       /// @throw InvalidRequest object thrown when no OrbElem is found
-      const OrbElem& findNearOrbElem( const SatID& sat, const CommonTime& t )
+      const OrbElem* findNearOrbElem( const SatID& sat, const CommonTime& t )
          const throw( InvalidRequest );
 
       /// Add all ephemerides to an existing list<OrbElem>.
       /// @return the number of ephemerides added.
-      int addToList( std::list<OrbElem>& v ) const
+      int addToList( std::list<OrbElem*>& v ) const
          throw();
 
       /// use findNearOrbElem() in the getSat...() routines
@@ -250,9 +254,9 @@ namespace gpstk
          throw()
       { strictMethod = true; }
 
-      /// This is intended to just store sets of unique EngEphemerides
-      /// for a single SV.  The key is the Toe - 1/2 the fit interval.
-      typedef std::map<CommonTime, OrbElem> OrbElemMap;
+      /// This is intended to store sets of unique orbital elements for a single SV.
+      /// The key is the beginning of the period of validity for each set of elements. 
+      typedef std::map<CommonTime, OrbElem*> OrbElemMap;
 
       /// Returns a map of the ephemerides available for the specified
       /// satellite.  Note that the return is specifically chosen as a
@@ -262,7 +266,7 @@ namespace gpstk
          throw( InvalidRequest );
 
       protected:
-      void validSatSystem(const SatID sat)
+      void validSatSystem(const SatID& sat)
           const throw(InvalidRequest)
       {
           InvalidRequest ire( std::string("Try to get NON-GPS sat position ")
@@ -285,7 +289,7 @@ namespace gpstk
       bool strictMethod;
 
       // Here are a couple of inline methods to simplify the .cpp
-       inline void updateInitialFinal(const OrbElem& eph)
+      void updateInitialFinal(const OrbElem& eph)
       {
         if (eph.beginValid<initialTime)       
           initialTime = eph.beginValid;
@@ -293,13 +297,7 @@ namespace gpstk
         if (eph.endValid>finalTime)               
           finalTime = eph.endValid;
       }
-      inline void eraseAndAdd(OrbElemMap& oem, OrbElemMap::iterator it, const OrbElem& eph)
-      {
-         oem.erase(it);
-         oem[eph.beginValid] = eph;
-         updateInitialFinal(eph);
-      }
-   
+      
      // virtual void dumpOnePRN( std::ostream& s = std::cout, OrbElemMap& em) const
      //    throw();
 
