@@ -99,7 +99,7 @@ namespace gpstk
        * (units m, s, m/s, s/s) at the indicated time.
        * @param sat the satellite's SatID
        * @param t the time to look up
-       * @param ref a place to return the IODC for future reference.
+       * @param ref a place to return a pointer to the relevant OrbElem.
        * @return the Xvt of the SV at time t
        */
       virtual Xvt getXvt( const SatID& sat, const CommonTime& t, OrbElem* ref ) const
@@ -114,8 +114,9 @@ namespace gpstk
          throw();
 
       /// Edit the dataset, removing data outside the indicated time interval
-      /// @param tmin defines the beginning of the time interval
-      /// @param tmax defines the end of the time interval
+      /// @param tmin defines the beginning of the time interval, included
+      /// @param tmax defines the end of the time interval. not included
+      /// [tmin, tmax)
       virtual void edit( const CommonTime& tmin, 
                          const CommonTime& tmax = CommonTime::END_OF_TIME )
          throw();
@@ -177,31 +178,23 @@ namespace gpstk
       bool addOrbElem( const OrbElem& eph )
          throw();
 
-     
-
-      /// Remove OrbElem objects older than t.
-      /// @param t remove OrbElem objects older than this
-      void wiper( const CommonTime& t )
-         throw()
-      { edit(t); }
-
       /// Remove all data from this collection.
       void clear()
          throw()
       {
-        /*ube.clear();
+         for( UBEMap::iterator ui = ube.begin(); ui != ube.end(); ui++)
+         {
+            OrbElemMap& oem = ui->second;
+            for (OrbElemMap::iterator oi = oem.begin(); oi != oem.end(); oi++)
+            {
+               delete oi->second;
+            }
+         } 
+        ube.clear();
         initialTime = gpstk::CommonTime::END_OF_TIME;
         finalTime = gpstk::CommonTime::BEGINNING_OF_TIME;
         initialTime.setTimeSystem(TimeSystem::GPS);
-        finalTime.setTimeSystem(TimeSystem::GPS); */
-        for( UBEMap::iterator ui = ube.begin(); ui != ube.end(); ui++)
-        {
-           OrbElemMap& oem = ui->second;
-           for (OrbElemMap::iterator oi = oem.begin(); oi != oem.end(); oi++)
-           {
-              delete oi->second;
-           }
-        } 
+        finalTime.setTimeSystem(TimeSystem::GPS); 
        }
 
       /// Get the number of OrbElem objects in this collection.
@@ -250,7 +243,7 @@ namespace gpstk
       { strictMethod = false; }
 
       /// use findUserOrbElem() in the getSat...() routines (the default)
-      void SearchPast(void)
+      void SearchUser(void)
          throw()
       { strictMethod = true; }
 
@@ -266,14 +259,7 @@ namespace gpstk
          throw( InvalidRequest );
 
       protected:
-      void validSatSystem(const SatID& sat)
-          const throw(InvalidRequest)
-      {
-          InvalidRequest ire( std::string("Try to get NON-GPS sat position ")
-              + std::string("from GPSOrbElemStore, and it's forbidden!") );
-          if(sat.system!=SatID::systemGPS) GPSTK_THROW(ire);
-      }
-
+     
       /// This is intended to hold all unique EngEphemerides for each SV
       /// The key is the prn of the SV.
       typedef std::map<SatID, OrbElemMap> UBEMap;

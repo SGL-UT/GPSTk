@@ -87,6 +87,17 @@ namespace gpstk
       }
    }
 
+//------------------------------------------------------------------------------
+
+   void validSatSystem(const SatID& sat)
+      throw( InvalidRequest )
+   {
+      InvalidRequest ire( std::string("Try to get NON-GPS sat position ")
+          + std::string("from GPSOrbElemStore, and it's forbidden!") );
+      if(sat.system!=SatID::systemGPS) GPSTK_THROW(ire);
+   }
+
+
 //--------------------------------------------------------------------------
 
    const OrbElem*
@@ -198,6 +209,10 @@ namespace gpstk
       } //end else-block
 
    } // end GPSOrbElemStore::dump
+
+//------------------------------------------------------------------------------------
+
+
 
 //------------------------------------------------------------------------------------
 // Keeps only one OrbElem for a given SVN and Toe.
