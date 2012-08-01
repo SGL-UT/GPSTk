@@ -1,4 +1,4 @@
-#pragma ident "$Id: GPSOrbElemStore.hpp 3140 2012-06-18 15:03:02Z susancummins $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
