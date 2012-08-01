@@ -2,12 +2,9 @@
 
 /**
  * @file OrbElemFIC109.hpp
- *  Contains orbit and clock information for a single set of GPS legacy navigation
- *  subframe 1/2/3 derived from an FIC Block 109.   The Block 109 contains the
- *  "as transmitted" binary navigation message data.   OrbElemFIC109 inherits
- *  from OrbElemFIC9 and adds the capability to "crack" the binary data into
- *  the engineering unit representation.
- */ 
+ *  Designed to accomodate loading GPS legacy navigation message 
+ *  data stored in block 109s in the FIC data format.
+ */
 
 #ifndef GPSTK_ORBELEMFIC109_HPP
 #define GPSTK_ORBELEMFIC109_HPP

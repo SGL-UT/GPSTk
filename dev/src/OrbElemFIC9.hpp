@@ -52,13 +52,13 @@
 #include <string>
 #include <iostream>
 
-#include "OrbElem.hpp"
+#include "OrbElemLNav.hpp"
 #include "FICData.hpp"
 
 
 namespace gpstk
 {
-   class OrbElemFIC9 : public OrbElem
+   class OrbElemFIC9 : public OrbElemLNav
    {
    public:
          /// Default constructor
@@ -88,12 +88,6 @@ namespace gpstk
          /// Query presence of data in this object.
       bool hasData( ) const;
 
-        /* Returns the upper bound of the URA range
-         * @throw Invalid Request if the required data has not been stored
-         */
-      double getAccuracy()  const
-         throw( InvalidRequest );
-
         /** Generate a formatted human-readable output of the entire contents of
          *  this object and send it to the designated output stream (default to cout).
          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
@@ -105,46 +99,15 @@ namespace gpstk
           *  designated output stream (default to cout).
           *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
           */   
-      void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
-
-     
-
-     
-         /// Ephemeris overhead information
-         //@{
-      long  HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
-      short ASalert[3];     /**< A-S and "alert" flags for each subframe. 
-			        2 bit quantity with Alert flag the high
-                                order bit and the A-S flag low order bit */
-      CommonTime transmitTime; /** Estimated beginning time of this sample */
-
-      short  codeflags;     /**< L2 codes */
-      short  accFlag;       /**< User Range Accuracy flag */ 
-      short  health;        /**< SV health */
-      short  L2Pdata;       /**< L2 P data flag */
-      short  IODC;          /**< Index of data-clock  */
-      short  IODE;          /**< Index of data-eph    */
-      short  fitint;        /**< Fit interval flag */
-      double Tgd;           /**< L1 and L2 correction term */
-      long   AODO;          /**< Age of Data offset from subframe 2.  Note: This field may not be present
-                                 in older FIC data records.  A valid value will be greater than zero.  
-                                 A value  of zero indicates the AODO is not available in this record. */ 
-         //@}
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElemFIC9& eph);
-   protected:
-   
-      void dumpFIC9(std::ostream& s = std::cout) const;
-        
-    
-       
+         
 
-   }; // class OrbElemFIC9
+   }; // end class OrbElemFIC9
 
    //@}
 
-} // namespace
+} // end namespace
 
-#endif
+#endif // GPSTK_ORBELEMFIC9_HPP

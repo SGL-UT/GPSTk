@@ -2,11 +2,8 @@
 
 /**
  * @file OrbElemLNav.hpp
- *  Contains orbit and clock information for a single set of GPS legacy navigation
- *  subframe 1/2/3 derived from an FIC Block 109.   The Block 109 contains the
- *  "as transmitted" binary navigation message data.   OrbElemLNav inherits
- *  from OrbElemFIC9 and adds the capability to "crack" the binary data into
- *  the engineering unit representation.
+ * designed to support loading GPS legacy navigation message 
+ * data that is in the original format of three 300-bit subframes.
  */ 
 
 #ifndef GPSTK_OrbElemLNav_HPP
@@ -51,14 +48,14 @@
 #include <string>
 #include <iostream>
 
-#include "OrbElemFIC9.hpp"
+#include "OrbElem.hpp"
 #include "FICData.hpp"
 
 
 
 namespace gpstk
 {
-   class OrbElemLNav : public OrbElemFIC9
+   class OrbElemLNav : public OrbElem
    {
    public:
          /// Default constructor
@@ -103,13 +100,53 @@ namespace gpstk
                      const short PRNID,
                      const short XmitGPSWeek ) 
          throw( InvalidParameter);
+      
+        /* Returns the upper bound of the URA range
+         * @throw Invalid Request if the required data has not been stored
+         */
+      double getAccuracy()  const
+         throw( InvalidRequest );
 
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );    
+         throw( InvalidRequest ); 
+
+        /** Generate a formatted human-readable one-line output that summarizes
+          *  the critical times associated with this object and send it to the
+          *  designated output stream (default to cout).
+          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
+          */   
+      void dumpTerse(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
+
+
+       /// Ephemeris overhead information
+         //@{
+      long  HOWtime[3];     /**< Time of subframe 1-3 (sec of week) */
+      short ASalert[3];     /**< A-S and "alert" flags for each subframe. 
+			        2 bit quantity with Alert flag the high
+                                order bit and the A-S flag low order bit */
+      CommonTime transmitTime; /** Estimated beginning time of this sample */
+
+      short  codeflags;     /**< L2 codes */
+      short  accFlag;       /**< User Range Accuracy flag */ 
+      short  health;        /**< SV health */
+      short  L2Pdata;       /**< L2 P data flag */
+      short  IODC;          /**< Index of data-clock  */
+      short  IODE;          /**< Index of data-eph    */
+      short  fitint;        /**< Fit interval flag */
+      double Tgd;           /**< L1 and L2 correction term */
+      long   AODO;          /**< Age of Data offset from subframe 2.  Note: This field may not be present
+                                 in older FIC data records.  A valid value will be greater than zero.  
+                                 A value  of zero indicates the AODO is not available in this record. */ 
+         //@}   
 
       friend std::ostream& operator<<(std::ostream& s, 
                                       const OrbElemLNav& eph);
+   protected:
+       
+       void dumpLNav(std::ostream& s = std::cout) const;
+     
 
     
        

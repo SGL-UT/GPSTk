@@ -38,7 +38,7 @@
 
 /**
  * @file OrbElemRinex.cpp
- * Ephemeris data encapsulated in engineering terms
+ * OrbElemRinex data encapsulated in engineering terms
  */
 #include <iomanip>
 #include <cmath>

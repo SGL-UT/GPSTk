@@ -122,10 +122,10 @@ namespace gpstk
     
        
 
-   }; // class OrbElemRinex
+   }; // end class OrbElemRinex
 
    //@}
 
-} // namespace
+} // end namespace 
 
-#endif
+#endif // GPSTK_ORBELEMRINEX_HPP

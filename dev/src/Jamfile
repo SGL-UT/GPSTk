@@ -120,6 +120,7 @@ else
       OrbElem.cpp
       OrbElemFIC109.cpp
       OrbElemFIC9.cpp
+      OrbElemLNav.cpp
       OrbElemRinex.cpp
       PackedNavBits.cpp
       PlanetEphemeris.cpp
@@ -339,6 +340,7 @@ else
       OrbElem.hpp
       OrbElemFIC109.hpp
       OrbElemFIC9.hpp
+      OrbElemLNav.hpp
       OrbElemStore.hpp
       OrbElemRinex.hpp	
       ORDEpoch.hpp
