@@ -55,26 +55,27 @@ namespace gpstk
    using namespace std;
 
    PackedNavBits::PackedNavBits()
-                 :bits(900)
+                 :bits(900),
+                  transmitTime(CommonTime::BEGINNING_OF_TIME)
    {
-      bits_used = 0;
+      transmitTime.setTimeSystem(TimeSystem::GPS);
    }
 
-   void PackedNavBits::setSatID(const SatID satSysArg)
+   void PackedNavBits::setSatID(const SatID& satSysArg)
    {
       satSys = satSysArg;
       return;
    }
 
-   void PackedNavBits::setObsID(const ObsID obsIDArg)
+   void PackedNavBits::setObsID(const ObsID& obsIDArg)
    {
       obsID = obsIDArg;
       return;
    }
 
-   void PackedNavBits::setTime(const CommonTime TransmitTimeArg)
+   void PackedNavBits::setTime(const CommonTime& TransmitTimeArg)
    {
-      TransmitTime = TransmitTimeArg;
+      transmitTime = TransmitTimeArg;
       return;
    }
 
@@ -90,7 +91,7 @@ namespace gpstk
 
    CommonTime PackedNavBits::getTransmitTime() const
    {
-      return(TransmitTime);
+      return(transmitTime);
    }
 
    size_t PackedNavBits::getNumBits() const
@@ -98,6 +99,7 @@ namespace gpstk
       return(bits_used);
    }
 
+         /***    UNPACKING FUNCTIONS *********************************/
    uint64_t PackedNavBits::asUint64_t(const int startBit, 
                                       const int numBits ) const
       throw(InvalidParameter)                                    
@@ -179,6 +181,7 @@ namespace gpstk
       return(out);
    }
 
+         /***    PACKING FUNCTIONS *********************************/
    void PackedNavBits::addUnsignedLong( const unsigned long value, 
                                         const int numBits,
                                         const int scale ) 
@@ -469,12 +472,13 @@ namespace gpstk
       s.setf(ios::fixed, ios::floatfield);
       s.precision(3);
    } // end of PackedNavBits::dump()
-   
-   ostream& operator<<(ostream& s, const PackedNavBits& eph)
+
+   ostream& operator<<(ostream& s, const PackedNavBits& pnb)
    {
-      eph.dump(s);
+      pnb.dump(s);
       return s;
 
    } // end of operator<<
+  
    
 } // namespace

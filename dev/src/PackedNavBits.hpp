@@ -66,11 +66,13 @@ namespace gpstk
       PackedNavBits();
 
       /// explicit constructor
-      PackedNavBits(SatID satSys, ObsID obsID, CommonTime TransmitTime);
+      PackedNavBits(const SatID& satSysArg, 
+                    const ObsID& obsIDArg,
+                    const CommonTime& transmitTimeArg);
 
-      void setSatID(const SatID satSysArg);
-      void setObsID(const ObsID obsIDArg);
-      void setTime(const CommonTime TransmitTimeArg);
+      void setSatID(const SatID& satSysArg);
+      void setObsID(const ObsID& obsIDArg);
+      void setTime(const CommonTime& transmitTimeArg);
 
          /* Returnst the satellite system ID for a particular SV */
       SatID getsatSys() const;
@@ -86,45 +88,66 @@ namespace gpstk
 
          /* Output the contents of this class to the given stream. */
       void dump(std::ostream& s = std::cout) const throw();
-
+      
+         /***    UNPACKING FUNCTIONS *********************************/
          /* Unpack an unsigned long integer */
       unsigned long asUnsignedLong(const int startBit, 
                                    const int numBits, 
                                    const int scale ) const;
 
          /* Unpack a signed long integer */
-      long asLong(const int startBit, const int numBits, const int scale ) const;
+      long asLong(const int startBit, 
+                  const int numBits, 
+                  const int scale ) const;
 
          /* Unpack an unsigned double */
-      double asUnsignedDouble( const int startBit, const int numBits, const int power2) const;
+      double asUnsignedDouble( const int startBit, 
+                               const int numBits, 
+                               const int power2) const;
 
          /* Unpack a signed double */
-      double asSignedDouble( const int startBit, const int numBits, const int power2) const;
+      double asSignedDouble( const int startBit, 
+                             const int numBits, 
+                             const int power2) const;
 
          /* Unpack a double with units of semicircles */
-      double asDoubleSemiCircles( const int startBit, const int numBits, const int power2) const;
+      double asDoubleSemiCircles( const int startBit, 
+                                  const int numBits, 
+                                  const int power2) const;
      
          /* Unpack a string */
-      std::string asString(const int startBit, const int numChars) const;
+      std::string asString(const int startBit, 
+                           const int numChars) const;
 
+         /***    PACKING FUNCTIONS *********************************/
          /* Pack an unsigned long integer */
-      void addUnsignedLong( const unsigned long value, const int numBits, const int scale ) 
+      void addUnsignedLong( const unsigned long value, 
+                            const int numBits,  
+                            const int scale ) 
          throw(InvalidParameter);
         
          /* Pack a signed long integer */                     
-      void addLong( const long value, const int numBits, const int scale )
+      void addLong( const long value, 
+                    const int numBits, 
+                    const int scale )
          throw(InvalidParameter);
 
          /* Pack an unsigned double */
-      void addUnsignedDouble( const double value, const int numBits, const int power2)
+      void addUnsignedDouble( const double value, 
+                              const int numBits, 
+                              const int power2)
          throw(InvalidParameter);
 
          /* Pack a signed double */
-      void addSignedDouble( const double value, const int numBits, const int power2)
+      void addSignedDouble( const double value, 
+                            const int numBits, 
+                            const int power2)
          throw(InvalidParameter);
 
          /* Pack a double with units of semicircles */
-      void addDoubleSemiCircles( const double Radians, const int numBits, const int power2)
+      void addDoubleSemiCircles( const double radians, 
+                                 const int numBits, 
+                                 const int power2)
          throw(InvalidParameter);
 
          /**
@@ -133,7 +156,8 @@ namespace gpstk
           * numChars represents number of chars (8 bits each) to add to PackedBits.
           * If numChars < length of String only, chars 1..numChars will be added.
           * If numChars > length of String, blanks will be added at the end. */
-      void addString(const std::string String, const int numChars)
+      void addString(const std::string String, 
+                     const int numChars)
          throw(InvalidParameter);
    
          /* Resize the vector holding the packed data. */
@@ -142,7 +166,7 @@ namespace gpstk
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */
-      CommonTime TransmitTime; /**< Time nav message is trasnmitted */
+      CommonTime transmitTime; /**< Time nav message is trasnmitted */
       std::vector<bool> bits;  /**< Holds the packed data */
       int bits_used;
 
@@ -159,11 +183,10 @@ namespace gpstk
          /** Scales doubles by their corresponding scale factor */
       double ScaleValue( const double value, const int power2) const;
 
-   protected:
-      friend std::ostream& operator<<(std::ostream& s, const PackedNavBits& eph);
    }; // class PackedNavBits
 
    //@}
+   std::ostream& operator<<(std::ostream& s, const PackedNavBits& pnb);
 
 } // namespace
 
