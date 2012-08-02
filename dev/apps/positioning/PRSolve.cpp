@@ -2091,7 +2091,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    string currf3,f3,sys,fre;                 // current first 3 characters
    vector<string> tempot;
    for(j=0; j<=obstypes.size()+1; j++) {     // note one more than obstypes.size()
-      if(j==obstypes.size())
+      if(j>=obstypes.size())
          f3 = string("END");                 // this will -> finish up
       else
          f3 = obstypes[j].substr(0,3);       // first three char. - already sorted
