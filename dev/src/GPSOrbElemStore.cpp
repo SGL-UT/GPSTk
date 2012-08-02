@@ -175,26 +175,7 @@ namespace gpstk
                     << " TOC " << fixed << setw(10) << setprecision(3)
                     << oe->ctToe
                     << " KEY " << printTime(ei->first,fmt);
-                  switch(oe->type)
-                  {
-                     case OrbElem::OrbElemFIC9:
-                     {
-                        s << " FIC9";
-                        break;
-                     }
-                     case OrbElem::OrbElemFIC109:
-                     {
-                        s << " FIC109";
-                        break;
-                     }
-                     case OrbElem::OrbElemRinex:
-                     {
-                        s << " Rinex";
-                        break;
-                     }
-                     default:
-                        s << " Unknown";
-                  }   
+                 
                   s << std::endl;
                }
                else
