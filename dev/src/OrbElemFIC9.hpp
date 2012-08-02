@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 /**
  * @file OrbElemFIC9.hpp
@@ -85,25 +85,16 @@ namespace gpstk
       void loadData( const FICData& fic9 )
 	 throw( InvalidParameter); 
 
-         /// Query presence of data in this object.
-      bool hasData( ) const;
+       virtual std::string getName() const
+       {
+          return "OrbElemFIC9";
+       }
 
-        /** Generate a formatted human-readable output of the entire contents of
-         *  this object and send it to the designated output stream (default to cout).
-         *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
-         */
-      void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );  
-        /** Generate a formatted human-readable one-line output that summarizes
-          *  the critical times associated with this object and send it to the
-          *  designated output stream (default to cout).
-          *  @throw Invalid Parameter if the object has been instantiated, but not loaded.
-          */   
-
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElemFIC9& eph);
-         
-
+       virtual std::string getNameLong() const
+       {
+          return "FIC Block 9";
+       }
+      
    }; // end class OrbElemFIC9
 
    //@}

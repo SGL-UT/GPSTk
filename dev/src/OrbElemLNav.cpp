@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -57,10 +57,9 @@ namespace gpstk
    using namespace std;
 
    OrbElemLNav::OrbElemLNav()
-   {
-      AODO = 0;
-      type = OrbElem::OrbElemLNav;
-   }
+      :OrbElem(),
+       AODO(0)
+   {}
 
    OrbElemLNav::OrbElemLNav(     const long SF1[10],
                                  const long SF2[10],
@@ -69,7 +68,6 @@ namespace gpstk
                                  const short XmitGPSWeek )
       throw( InvalidParameter ) 
    {
-      type = OrbElem::OrbElemLNav;
       loadData(SF1, SF3, SF3, PRNID, XmitGPSWeek); 
    }
 
@@ -267,15 +265,14 @@ namespace gpstk
          // OrbElemLNav stores the full 8 bits health from the legacy
 	 // navigation message.  OrElemn only stores the true/false, 
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = true;
-      if (health!=0) healthy = false;
+      healthy = (healthy==0);
 
          // URA Handling
       
 
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used). 
-      dataLoaded = true; 
+      dataLoadedFlag = true; 
 
       return;
    }
@@ -283,7 +280,7 @@ namespace gpstk
    double OrbElemLNav::getAccuracy()  const
       throw(InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -292,44 +289,19 @@ namespace gpstk
       return accuracy;
    }
 
-   static void shortcut(ostream & os, const long HOW )
+   void OrbElemLNav::dumpHeader(ostream& s) const
+      throw( InvalidRequest )
    {
-      short DOW, hour, min, sec;
-      long SOD, SOW;
-      short SOH;
-
-      SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / SEC_PER_DAY );
-      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
-      hour = static_cast<short>( SOD/3600 );
-
-      SOH = static_cast<short>( SOD - (hour*3600) );
-      min = SOH/60;
-
-      sec = SOH - min * 60;
-      switch (DOW)
+      if (!dataLoaded())
       {
-         case 0: os << "Sun-0"; break;
-         case 1: os << "Mon-1"; break;
-         case 2: os << "Tue-2"; break;
-         case 3: os << "Wed-3"; break;
-         case 4: os << "Thu-4"; break;
-         case 5: os << "Fri-5"; break;
-         case 6: os << "Sat-6"; break;
-         default: break;
+         InvalidRequest exc("Required data not stored.");
+         GPSTK_THROW(exc);
       }
-
-      os << ":" << setfill('0')
-         << setw(2) << hour
-         << ":" << setw(2) << min
-         << ":" << setw(2) << sec
-         << setfill(' ');
-   }
-
-   void OrbElemLNav :: dumpLNav(ostream& s) const
-   {
-
+      
       ios::fmtflags oldFlags = s.flags();
+     
+      OrbElem::dumpHeader(s);
+      s << "Source : " << getNameLong() << endl;
       
       SVNumXRef svNumXRef; 
       int NAVSTARNum = 0; 
@@ -431,10 +403,11 @@ namespace gpstk
       s.setf(ios::uppercase);
       s << endl;
       s << "Tgd                 : " << setw(13) << setprecision(6) << scientific << Tgd << " sec"; 
+      if(AODO!=0)
+          s << endl << "AODO                :     " << setw(5) << fixed << AODO << " sec" << endl;
       s << endl; 
-      
-      s.flags(oldFlags);
-   } // end of dumpLNav()    
+      s.flags(oldFlags);   
+   } // end of dumpHeader()
 
    void OrbElemLNav :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
@@ -442,7 +415,7 @@ namespace gpstk
      
        // Check if the subframes have been loaded before attempting
        // to dump them.
-      if (!dataLoaded)
+      if (!dataLoaded())
       {
          InvalidRequest exc("No data in the object");
          GPSTK_THROW(exc);
@@ -489,27 +462,6 @@ namespace gpstk
 
    } // end of dumpTerse() 
 
-
-   void OrbElemLNav :: dump(ostream& s) const
-      throw( InvalidRequest )
-   {
-      if (!dataLoaded)
-      {   
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      } 
-      ios::fmtflags oldFlags = s.flags();
-      s << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
-      s << endl;
-      s << "Source : 300 bit Subframe Data" << endl;
-      dumpLNav(s);
-      s << "AODO                :     " << setw(5) << fixed << AODO << " sec" << endl;
-      OrbElem::dump(s);
-      s.flags(oldFlags);
-   }    
-
    ostream& operator<<(ostream& s, const OrbElemLNav& eph)
    {
       try
@@ -518,7 +470,6 @@ namespace gpstk
       }
       catch(gpstk::Exception& ex)
       {
-         ex.addLocation(FILE_LOCATION);
          GPSTK_RETHROW(ex);
       }
       return s;

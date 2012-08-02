@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -55,16 +55,14 @@ namespace gpstk
    using namespace std;
    using namespace gpstk;
    OrbElem::OrbElem()
-   { 
-     dataLoaded = false;
-     type = Unknown;
-   }
+      :dataLoadedFlag(false)
+   {}
 
 
     bool OrbElem::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -74,15 +72,15 @@ namespace gpstk
    }
 
    
-   bool OrbElem::hasData() const
+   bool OrbElem::dataLoaded() const
    {
-      return(dataLoaded);
+      return(dataLoadedFlag);
    }
  
    bool OrbElem::isHealthy() const
       throw(InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -93,7 +91,7 @@ namespace gpstk
    double OrbElem::svClockBias(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -107,7 +105,7 @@ namespace gpstk
     double OrbElem::svClockBiasM(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -120,7 +118,7 @@ namespace gpstk
    double OrbElem::svClockDrift(const CommonTime& t) const
       throw(gpstk::InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -134,7 +132,7 @@ namespace gpstk
    Xvt OrbElem::svXvt(const CommonTime& t) const
       throw(InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -287,7 +285,7 @@ namespace gpstk
      double OrbElem::svRelativity(const CommonTime& t) const
       throw( InvalidRequest )
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -296,7 +294,7 @@ namespace gpstk
       double twoPI  = 2.0e0 * PI;
       double sqrtgm = SQRT(ell.gm());
       double elapte = t - ctToe;
-      /** Need to determine A at time elapte **/
+      /** Need to determine A at time t **/
       double Ahalf = SQRT(A);
       double amm    = (sqrtgm / (A*Ahalf)) + dn;
       double meana,F,G,delea;
@@ -316,6 +314,41 @@ namespace gpstk
       double dtr = REL_CONST * ecc * Ahalf * ::sin(ea);
       return dtr;
    }
+
+   void OrbElem::shortcut(ostream & os, const long HOW )
+   {
+      short DOW, hour, min, sec;
+      long SOD, SOW;
+      short SOH;
+
+      SOW = static_cast<long>( HOW );
+      DOW = static_cast<short>( SOW / SEC_PER_DAY );
+      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
+      hour = static_cast<short>( SOD/3600 );
+
+      SOH = static_cast<short>( SOD - (hour*3600) );
+      min = SOH/60;
+
+      sec = SOH - min * 60;
+      switch (DOW)
+      {
+         case 0: os << "Sun-0"; break;
+         case 1: os << "Mon-1"; break;
+         case 2: os << "Tue-2"; break;
+         case 3: os << "Wed-3"; break;
+         case 4: os << "Thu-4"; break;
+         case 5: os << "Fri-5"; break;
+         case 6: os << "Sat-6"; break;
+         default: break;
+      }
+
+      os << ":" << setfill('0')
+         << setw(2) << hour
+         << ":" << setw(2) << min
+         << ":" << setw(2) << sec
+         << setfill(' ');
+   } 
+   
 
    static void timeDisplay( ostream & os, const CommonTime& t )
    {
@@ -341,11 +374,10 @@ namespace gpstk
          << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
-
-   void OrbElem::dump(ostream& s) const
+   void OrbElem::dumpBody(ostream& s) const
       throw( InvalidRequest )
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
@@ -412,11 +444,30 @@ namespace gpstk
         << "Inclination   Sine: " << setw(16) << Cis << " rad  Cosine: "
         << setw(16) << Cic << " rad" << endl
         << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
-        << setw(16) << Cuc << " rad" << endl;    
+        << setw(16) << Cuc << " rad" << endl;        
+   } // end of dumpBody()
 
-       
+   void OrbElem::dumpHeader(ostream& s) const
+      throw( InvalidRequest )
+   {
+      s << "****************************************************************"
+        << "************" << endl
+        << "Broadcast Ephemeris (Engineering Units)";
+      s << endl;
+   } 
+
+   void OrbElem::dumpFooter(ostream& s) const
+      throw( InvalidRequest )
+   {}
+
+   void OrbElem::dump(ostream& s) const
+      throw( InvalidRequest )
+   {
+      dumpHeader(s);
+      dumpBody(s);
+      dumpFooter(s);
    }
-
+    
 } // namespace
 
 

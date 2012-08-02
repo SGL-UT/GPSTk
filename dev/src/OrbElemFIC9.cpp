@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -58,8 +58,8 @@ namespace gpstk
   
 
    OrbElemFIC9::OrbElemFIC9()
+      :OrbElemLNav()
    {
-      dataLoaded = false;     
       ASalert[0] = ASalert[1] = ASalert[2]  =
 	   codeflags = health = L2Pdata = 0;
 
@@ -67,14 +67,12 @@ namespace gpstk
 
       IODC = IODE = 0;
       Tgd = 0.0;
-      type = OrbElem::OrbElemFIC9;
       fitint = 0;
    }
 
    OrbElemFIC9::OrbElemFIC9( const FICData& fic9 )
       throw( InvalidParameter )
    {
-      type = OrbElem::OrbElemFIC9;
       loadData( fic9 );
    }
 
@@ -242,8 +240,7 @@ namespace gpstk
          // OrbElemFIC9 stores the full 8 bits health from the legacy
 	 // navigation message.  OrElemn only stores the true/false, 
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = true;
-      if (health!=0) healthy = false;
+      healthy = (healthy==0);
 
 
          // URA Handling
@@ -251,56 +248,11 @@ namespace gpstk
 
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used). 
-      dataLoaded = true; 
+      dataLoadedFlag = true; 
 
       return;
    }
   
-
-   bool OrbElemFIC9::hasData( ) const
-      { return( dataLoaded ); }
-
-      
-   void OrbElemFIC9 :: dump(ostream& s) const
-      throw( InvalidRequest )
-   { 
-      // Check if the subframes have been loaded before attempting
-      // to dump them.
-      if (!dataLoaded)
-      {
-         InvalidRequest exc("No data in the object");
-         GPSTK_THROW(exc);
-      }
-
-      ios::fmtflags oldFlags = s.flags(); 
-      s << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
-      s << endl;
-      s << "Source : FIC Block 9" << endl;
-      OrbElemLNav::dumpLNav(s);
-      OrbElem::dump(s);
-      s.flags(oldFlags);
-
-   } // end of dump()
-
-   ostream& operator<<(ostream& s, const OrbElemFIC9& eph)
-   {
-      try
-      {
-         eph.dump(s);
-      }
-      catch(gpstk::Exception& ex)
-      {
-         ex.addLocation(FILE_LOCATION);
-         GPSTK_RETHROW(ex);
-      }
-      return s;
-
-   } // end of operator<<
-
-  
-
 } // namespace
 
 

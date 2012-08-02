@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -57,15 +57,12 @@ namespace gpstk
    using namespace std;
 
    OrbElemFIC109::OrbElemFIC109()
-   {
-      AODO = 0;
-      type = OrbElem::OrbElemFIC109;
-   }
+      :OrbElemLNav()
+   {}
 
    OrbElemFIC109::OrbElemFIC109( const FICData& fic109 )
       throw( InvalidParameter )
    {
-      type = OrbElem::OrbElemFIC109;
       loadData( fic109 );
    }
 
@@ -98,43 +95,6 @@ namespace gpstk
                              PRNID,
                              XmitGPSWeek );
    }
-
-   void OrbElemFIC109 :: dump(ostream& s) const
-      throw( InvalidRequest )
-   {
-      if (!dataLoaded)
-      {   
-         InvalidRequest exc("Required data not stored.");
-         GPSTK_THROW(exc);
-      } 
-      ios::fmtflags oldFlags = s.flags();
-      s << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
-      s << endl;
-      s << "Source : FIC Block 109" << endl;
-      OrbElemLNav::dumpLNav(s);
-      s << "AODO                :     " << setw(5) << fixed << AODO << " sec" << endl;
-      OrbElem::dump(s);
-      s.flags(oldFlags);
-   }    
-
-   ostream& operator<<(ostream& s, const OrbElemFIC109& eph)
-   {
-      try
-      {
-         eph.dump(s);
-      }
-      catch(gpstk::Exception& ex)
-      {
-         ex.addLocation(FILE_LOCATION);
-         GPSTK_RETHROW(ex);
-      }
-      return s;
-
-   } // end of operator<<
-
-  
 
 } // namespace
 

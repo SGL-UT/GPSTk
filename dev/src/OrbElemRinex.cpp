@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -56,24 +56,20 @@ namespace gpstk
    using namespace std;
   
    OrbElemRinex::OrbElemRinex()
-   {
-      dataLoaded = false;     
-      codeflags = health = L2Pdata = 0;
-
-      accuracyValue = 0.0;
-
-      IODC = 0;
-      Tgd = 0.0;
-      type = OrbElem::OrbElemRinex;
-      fitDuration = 0;
-   }
+        :OrbElem(),
+         codeflags(0), health(0), L2Pdata(0),
+         accuracyValue(0.0),
+         IODC(0),
+         Tgd(0.0),
+         fitDuration(0) 
+   {}  
+    
 
   
 
    OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {
-      type = OrbElem::OrbElemRinex;
       loadData( rinNav );
    }
 
@@ -222,141 +218,38 @@ namespace gpstk
          // OrbElemFIC9 stores the full 8 bits health from the legacy
 	 // navigation message.  OrElemn only stores the true/false, 
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = true;
-      if (health!=0) healthy = false;
-
-         // URA Handling
-      
+      healthy = (healthy==0);
 
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used). 
-      dataLoaded = true; 
-
-      return;
+      dataLoadedFlag = true;    
    }
-
-   bool OrbElemRinex::hasData( ) const
-      { return( dataLoaded ); }
 
    double OrbElemRinex::getAccuracy()  const
       throw(InvalidRequest)
    {
-      if (!dataLoaded)
+      if (!dataLoaded())
       {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
       return ( accuracyValue );
-   }   
+   }
 
-   void OrbElemRinex :: dumpTerse(ostream& s) const
-      throw(InvalidRequest )
-   {
-     
-       // Check if the subframes have been loaded before attempting
-       // to dump them.
-      if (!dataLoaded)
-      {
-         InvalidRequest exc("No data in the object");
-         GPSTK_THROW(exc);
-      }
-
-      ios::fmtflags oldFlags = s.flags();
-
-      s.setf(ios::fixed, ios::floatfield);
-      s.setf(ios::right, ios::adjustfield);
-      s.setf(ios::uppercase);
-      s.precision(0);
-      s.fill(' ');
-
-      SVNumXRef svNumXRef; 
-      int NAVSTARNum = 0;
-      try
-      {
-	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-        
-     
-        s << setw(2) << " " << NAVSTARNum << "  ";
-      }
-      catch(SVNumXRef::NoNAVSTARNumberFound)
-      { 
-	s << "  XX  ";
-      }
-
-      s << setw(2) << satID.id << " ! ";
-      
-      string tform = "%3j %02H:%02M:%02S";
-
-      s << printTime(beginValid, tform) << " ! ";
-      s << printTime(ctToe, tform) << " ! ";
-      s << printTime(endValid, tform) << " !  ";
-
-      s << setw(4) << setprecision(1) << getAccuracy() << "  ! ";
-      s << "0x" << setfill('0') << hex << setw(3) << IODC << " ! ";
-      s << "0x" << setfill('0')  << setw(2) << health;
-      s << setfill(' ') << dec;
-      s << "   " << setw(2) << health << " ! ";
-
-      s << endl;
-      s.flags(oldFlags);
-
-    } // end of dumpTerse()
-  
-   static void shortcut(ostream & os, const long HOW )
-   {
-      short DOW, hour, min, sec;
-      long SOD, SOW;
-      short SOH;
-
-      SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / SEC_PER_DAY );
-      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
-      hour = static_cast<short>( SOD/3600 );
-
-      SOH = static_cast<short>( SOD - (hour*3600) );
-      min = SOH/60;
-
-      sec = SOH - min * 60;
-      switch (DOW)
-      {
-         case 0: os << "Sun-0"; break;
-         case 1: os << "Mon-1"; break;
-         case 2: os << "Tue-2"; break;
-         case 3: os << "Wed-3"; break;
-         case 4: os << "Thu-4"; break;
-         case 5: os << "Fri-5"; break;
-         case 6: os << "Sat-6"; break;
-         default: break;
-      }
-
-      os << ":" << setfill('0')
-         << setw(2) << hour
-         << ":" << setw(2) << min
-         << ":" << setw(2) << sec
-         << setfill(' ');
-   } 
-   
- 
-
-   void OrbElemRinex :: dump(ostream& s) const
+   void OrbElemRinex::dumpHeader(ostream& s) const
       throw( InvalidRequest )
-   {     
-      if (!dataLoaded)
+   {
+      if (!dataLoaded())
       {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      ios::fmtflags oldFlags = s.flags();
-      
+     
+      OrbElem::dumpHeader(s);
+      s << "Source : " << getNameLong() << endl;
+
       SVNumXRef svNumXRef; 
       int NAVSTARNum = 0; 
-
-      s << "****************************************************************"
-        << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
-      s << endl;
-
-      s << "Source : Rinex Navigation Message File" << endl;
  
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
@@ -440,8 +333,68 @@ namespace gpstk
       s << endl;
       s << "Tgd                 : " << setw(13) << setprecision(6) << scientific << Tgd << " sec"; 
       s << endl; 
-           
-      OrbElem::dump(s);
+   } // end of dumpHeader()   
+
+   void OrbElemRinex :: dumpTerse(ostream& s) const
+      throw(InvalidRequest )
+   {
+     
+       // Check if the subframes have been loaded before attempting
+       // to dump them.
+      if (!dataLoaded())
+      {
+         InvalidRequest exc("No data in the object");
+         GPSTK_THROW(exc);
+      }
+
+      ios::fmtflags oldFlags = s.flags();
+
+      s.setf(ios::fixed, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.setf(ios::uppercase);
+      s.precision(0);
+      s.fill(' ');
+
+      SVNumXRef svNumXRef; 
+      int NAVSTARNum = 0;
+      try
+      {
+	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+        
+     
+        s << setw(2) << " " << NAVSTARNum << "  ";
+      }
+      catch(SVNumXRef::NoNAVSTARNumberFound)
+      { 
+	s << "  XX  ";
+      }
+
+      s << setw(2) << satID.id << " ! ";
+      
+      string tform = "%3j %02H:%02M:%02S";
+
+      s << printTime(beginValid, tform) << " ! ";
+      s << printTime(ctToe, tform) << " ! ";
+      s << printTime(endValid, tform) << " !  ";
+
+      s << setw(4) << setprecision(1) << getAccuracy() << "  ! ";
+      s << "0x" << setfill('0') << hex << setw(3) << IODC << " ! ";
+      s << "0x" << setfill('0')  << setw(2) << health;
+      s << setfill(' ') << dec;
+      s << "   " << setw(2) << health << " ! ";
+
+      s << endl;
+      s.flags(oldFlags);
+
+    } // end of dumpTerse()
+  
+
+   void OrbElemRinex :: dump(ostream& s) const
+      throw( InvalidRequest )
+   {     
+      ios::fmtflags oldFlags = s.flags(); 
+      dumpHeader(s);          
+      dumpBody(s);
       s.flags(oldFlags);
 
    } // end of dump()
@@ -456,7 +409,6 @@ namespace gpstk
       }
       catch(gpstk::Exception& ex)
       {
-         ex.addLocation(FILE_LOCATION);
          GPSTK_RETHROW(ex);
       }
       return s;

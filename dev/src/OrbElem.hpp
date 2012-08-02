@@ -1,4 +1,4 @@
-#pragma ident "$Id: $"
+#pragma ident "$Id$"
 
 /**
  * @file OrbElem.hpp
@@ -64,6 +64,7 @@
 #include "ObsID.hpp"
 #include "MathBase.hpp"
 #include "GPSWeekSecond.hpp"
+#include "SVNumXRef.hpp"
 
 namespace gpstk
 {
@@ -92,14 +93,18 @@ namespace gpstk
           * Returns true if the time, ct, is within the period of validity of this OrbElem object.
           * @throw Invalid Request if the required data has not been stored.
           */ 
-      bool isValid(const CommonTime& ct) const throw(InvalidRequest);
+      virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
 
 	 /**
           *   Return true if orbit data have been loaded.
           *   Returns false if the object has been instantiated,
           *   but no data have been loaded.
           */ 
-      bool hasData( ) const;
+      virtual bool dataLoaded( ) const;
+
+      virtual std::string getName() const = 0;
+
+      virtual std::string getNameLong() const = 0;
       
          /** This function returns the health status of the SV.
           * @throw Invalid Request if the required data has not been stored.
@@ -136,26 +141,31 @@ namespace gpstk
          /** Output the contents of this orbit data to the given stream. 
           * @throw Invalid Request if the required data has not been stored.
           */
+
+      static void shortcut(std::ostream & os, const long HOW );
+
+      virtual void dumpTerse(std::ostream& s = std::cout) const
+         throw( InvalidRequest ) = 0;
+
+      virtual void dumpHeader(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
+
+      virtual void dumpBody(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
+
+      virtual void dumpFooter(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
+     
       virtual void dump(std::ostream& s = std::cout) const 
 	 throw( InvalidRequest );
-
-         /// Enumeration of descendents of OrbElem
-      enum OrbElemType
-      {
-         OrbElemFIC9,
-         OrbElemFIC109,
-         OrbElemRinex,
-         OrbElemLNav,
-         Unknown
-      };
-   
+     
          /// Overhead information
          //@{
-      bool    dataLoaded;     /**< True if data is present, False otherwise */
-      SatID   satID;	      /**< Define satellite system and specific SV */
-      ObsID   obsID;          /**< Defines carrier and tracking code */
-      CommonTime ctToe;         /**< Orbit epoch */
-      bool    healthy;        /**< SV health (healthy=true, other=false */
+      bool    dataLoadedFlag;  /**< True if data is present, False otherwise */
+      SatID   satID;	       /**< Define satellite system and specific SV */
+      ObsID   obsID;           /**< Defines carrier and tracking code */
+      CommonTime ctToe;        /**< Orbit epoch in commontime format */
+      bool    healthy;         /**< SV health (healthy=true, other=false */
               //@}
 
 	 /// Harmonic perturbations
@@ -185,26 +195,38 @@ namespace gpstk
           
          /// Clock information
          //@{
-      CommonTime ctToc;	    /**< Clock Epoch */
+      CommonTime ctToc;	    /**< Clock Epoch in commontime format */
       double af0;           /**< SV clock error (sec) */
       double af1;           /**< SV clock drift (sec/sec) */
       double af2;           /**< SV clock drift rate (sec/sec**2) */
          //@}
 
-         /// Fit Interval Definition
+         // Fit Interval Definition
+         // The beginning and end of validity are derived quantities that specify
+         // the bounds between which the data in OrbElem are valid.
+         // IS-GPS-200, 705, and -800 are not specific regarding the
+         // inclusion of the boundary conditions, but it is recommended
+         // that algorithms that consider validity should treat the
+         // bounds as (beginValid, endValid]. This is because beginValid
+         // is tied to the beginning of the first transmission of the data
+         // and the data will require some seconds (at least 18 seconds
+         // in the case of legacy GPS navigation message data)  to be
+         // transmitted. (See the appropriate loadData( ) function in
+         // the relevant OrbElem descendents for details on how beginValid
+         // and endValid are derived. 
+           
          //@{
       CommonTime beginValid;    /**< Time at beginning of validity */
       CommonTime endValid;      /**< Time at end of fit validity */
-         
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElem& eph);
-         // Type of this OrbElem object
-      OrbElemType type;
-  
 
+   
+         
    }; // end class OrbElem
 
    //@}
+   
+   std::ostream& operator<<(std::ostream& s, 
+                                      const OrbElem& eph);
 
 } // end namespace
 

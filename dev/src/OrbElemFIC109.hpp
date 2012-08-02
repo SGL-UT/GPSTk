@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 /**
  * @file OrbElemFIC109.hpp
@@ -82,15 +82,15 @@ namespace gpstk
       void loadData( const FICData& fic109 )
 	 throw( InvalidParameter); 
 
-         /// Output the contents of this ephemeris to the given stream.
-      void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest );    
+      virtual std::string getName() const
+      {
+         return "OrbElemFIC109";
+      }
 
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElemFIC109& eph);
-
-    
-       
+      virtual std::string getNameLong() const
+      {
+         return "FIC Block 109";
+      }
 
    }; // end class OrbElemFIC109
 

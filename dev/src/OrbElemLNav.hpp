@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 /**
  * @file OrbElemLNav.hpp
@@ -100,6 +100,16 @@ namespace gpstk
                      const short PRNID,
                      const short XmitGPSWeek ) 
          throw( InvalidParameter);
+
+      virtual std::string getName() const
+      {
+         return "OrbElemLNav";
+      }
+
+      virtual std::string getNameLong() const
+      {
+         return "LNav SF 1/2/3";
+      }
       
         /* Returns the upper bound of the URA range
          * @throw Invalid Request if the required data has not been stored
@@ -107,9 +117,8 @@ namespace gpstk
       double getAccuracy()  const
          throw( InvalidRequest );
 
-         /// Output the contents of this ephemeris to the given stream.
-      void dump(std::ostream& s = std::cout) const
-         throw( InvalidRequest ); 
+      virtual void dumpHeader(std::ostream& s = std::cout) const
+         throw( InvalidRequest );
 
         /** Generate a formatted human-readable one-line output that summarizes
           *  the critical times associated with this object and send it to the
@@ -141,19 +150,12 @@ namespace gpstk
                                  A value  of zero indicates the AODO is not available in this record. */ 
          //@}   
 
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElemLNav& eph);
-   protected:
-       
-       void dumpLNav(std::ostream& s = std::cout) const;
-     
-
-    
-       
-
    }; // end class OrbElemLNav
 
    //@}
+
+   std::ostream& operator<<(std::ostream& s, 
+                                     const OrbElemLNav& eph);
 
 } // end namespace
 

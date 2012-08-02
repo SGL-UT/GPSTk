@@ -1,4 +1,4 @@
-#pragma ident "$Id:$"
+#pragma ident "$Id$"
 
 /**
   *  @file OrbElemRinex.hpp
@@ -79,11 +79,21 @@ namespace gpstk
       void loadData( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
-         /// Query presence of data in this object.
-      bool hasData( ) const;
-       
+      virtual std::string getName() const
+      {
+         return "OrbElemRinex";
+      }
+ 
+      virtual std::string getNameLong() const
+      {
+         return "Rinex Navigation Message File";
+      }
+      
          /// Returns the upper bound of the URA range
       double getAccuracy()  const
+         throw( InvalidRequest );
+
+      virtual void dumpHeader(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
          /** Generate a formatted human-readable output of the entire contents of
@@ -116,15 +126,12 @@ namespace gpstk
       long   HOWtime;        /**< Handover Word time */
          //@}
 
-      friend std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElemRinex& eph);
-
-    
-       
-
    }; // end class OrbElemRinex
 
    //@}
+
+   std::ostream& operator<<(std::ostream& s, 
+                                     const OrbElemRinex& eph);
 
 } // end namespace 
 
