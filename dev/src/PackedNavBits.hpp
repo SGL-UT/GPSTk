@@ -163,6 +163,21 @@ namespace gpstk
          /* Resize the vector holding the packed data. */
       void trimsize();
 
+         /**
+          * Raw bit input
+          * This function is intended as a test-support function.
+          * It assumes a string of the form
+          *    ###  0xABCDABCD 0xABCDABCD 0xABCDABCD
+          * where
+          *    ### is the number of bits to expect in the remainder
+          *        of the line.
+          *    0xABCDABCD are each 32-bit unsigned hex numbers, left 
+          *        justified.  The number of bits needs to match or
+          *        exceed ###
+          * The function returns false if the read is not succeessful.
+          * Othewise,the  */
+       bool rawBitInput(const std::string inString );       
+
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */
       ObsID obsID;             /**< Defines carrier and code tracked */

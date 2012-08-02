@@ -46,8 +46,9 @@
 
 #include "PackedNavBits.hpp"
 #include "GPSWeekSecond.hpp"
-#include "CivilTime.hpp"
-#include "YDSTime.hpp"
+#include "TimeString.hpp"
+//#include "CivilTime.hpp"
+//#include "YDSTime.hpp"
 #include "GNSSconstants.hpp"
 
 namespace gpstk
@@ -56,9 +57,21 @@ namespace gpstk
 
    PackedNavBits::PackedNavBits()
                  :bits(900),
+                  bits_used(0),
                   transmitTime(CommonTime::BEGINNING_OF_TIME)
    {
       transmitTime.setTimeSystem(TimeSystem::GPS);
+   }
+
+   PackedNavBits::PackedNavBits(const SatID& satSysArg, 
+                                const ObsID& obsIDArg,
+                                const CommonTime& transmitTimeArg)
+                                :bits(900),
+                                 bits_used(0)
+   {
+      satSys = satSysArg;
+      obsID = obsIDArg;
+      transmitTime = transmitTimeArg;
    }
 
    void PackedNavBits::setSatID(const SatID& satSysArg)
@@ -358,67 +371,7 @@ namespace gpstk
       else temp -= 0.5;
       return ( temp );
    }
-
-   static void timeDisplay( ostream & os, const CommonTime& t )
-      {
-         // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
-         GPSWeekSecond dummyTime;
-         dummyTime = GPSWeekSecond(t);
-         os << dec;
-         os << setw(4) << dummyTime.week << "(";
-         os << setw(4) << (dummyTime.week & 0x03FF) << ")  ";
-         os << setw(6) << setfill(' ') << dummyTime.sow << "   ";
-
-         switch (dummyTime.getDayOfWeek())
-         {
-            case 0: os << "Sun-0"; break;
-            case 1: os << "Mon-1"; break;
-            case 2: os << "Tue-2"; break;
-            case 3: os << "Wed-3"; break;
-            case 4: os << "Thu-4"; break;
-            case 5: os << "Fri-5"; break;
-            case 6: os << "Sat-6"; break;
-            default: break;
-         }
-         os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
-            << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
-      }
-
-   static void shortcut(ostream & os, const long HOW )
-   {
-      short DOW, hour, min, sec;
-      long SOD, SOW;
-      short SOH;
-      
-      SOW = static_cast<long>( HOW );
-      DOW = static_cast<short>( SOW / SEC_PER_DAY );
-      SOD = SOW - static_cast<long>( DOW * SEC_PER_DAY );
-      hour = static_cast<short>( SOD/3600 );
-
-      SOH = static_cast<short>( SOD - (hour*3600) );
-      min = SOH/60;
-
-
-      sec = SOH - min * 60;
-      switch (DOW)
-      {
-         case 0: os << "Sun-0"; break;
-         case 1: os << "Mon-1"; break;
-         case 2: os << "Tue-2"; break;
-         case 3: os << "Wed-3"; break;
-         case 4: os << "Thu-4"; break;
-         case 5: os << "Fri-5"; break;
-         case 6: os << "Sat-6"; break;
-         default: break;
-      }
-
-      os << ":" << setfill('0')
-         << setw(2) << hour
-         << ":" << setw(2) << min
-         << ":" << setw(2) << sec
-         << setfill(' ');
-   }
-
+ 
    void PackedNavBits::dump(ostream& s) const
       throw()
    {
@@ -441,11 +394,11 @@ namespace gpstk
         << "Number Of Bits: " << dec << getNumBits() << endl
         << endl;
   
-      s << "              Week(10bt)     SOW     DOW   UTD     SOD"
+      s << "              Week(10bt)     SOW      UTD     SOD"
         << "  MM/DD/YYYY   HH:MM:SS\n";
       s << "Clock Epoch:  ";
 
-      timeDisplay(s, getTransmitTime());
+      s << printTime( transmitTime, "      %4F  %6.0g      %3j   %5.0s  %02m/%02d/%04Y   %02H:%02M:%02S");
       s << endl;     
 
       s << endl << "Packed Bits, Left Justified, 32 Bits Long:\n";
@@ -472,6 +425,28 @@ namespace gpstk
       s.setf(ios::fixed, ios::floatfield);
       s.precision(3);
    } // end of PackedNavBits::dump()
+
+      
+   bool PackedNavBits::rawBitInput(const std::string inString )
+   {
+      //  Find first non-white space string.   Should translate as a decimal value.
+      //  If so, assume this is the number of bits that follow, but do not 
+      //  store it until success.
+
+      //  Find successive 32 bits quantities stored as hex strings.  
+      //  That is to say, each should be of the format 0xAAAAAAAA
+      //  There should be sufficient to cover the number of input 
+      //  bits plus padding to the next even 32 bit word boundary.  
+      //  That is to say, []# of 32 bits words] = ((inBits-1)/32) + 1;
+
+         // For each word, convert the string to a value, then add it
+         // to the packed bit storage. 
+
+
+      // Now trim the string and store the final size. 
+      
+   }
+
 
    ostream& operator<<(ostream& s, const PackedNavBits& pnb)
    {
