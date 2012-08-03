@@ -155,7 +155,7 @@ void CycleSlipList::dump(std::ostream& s) const
       s << ">c " << left << setw(20) << time
         << "  " << right << setw(2) << cs.sv1.id
         << "  " << right << setw(2) << cs.sv2.id
-        << " " << left << setw(14) << StringUtils::asString(cs.oid) << right
+        << " " << left << setw(24) << StringUtils::asString(cs.oid) << right
         << " " << setprecision(3) << setw(14) << cs.cycles
         << "  " << std::setprecision(2) << setw(5) << cs.el1
         << "  " << std::setprecision(2) << setw(5) << cs.el2
