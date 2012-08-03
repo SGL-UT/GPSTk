@@ -75,7 +75,7 @@ namespace gpstk
          throw()
          : initialTime(CommonTime::END_OF_TIME), 
            finalTime(CommonTime::BEGINNING_OF_TIME),
-           strictMethod(true)
+           strictMethod(true), onlyHealthy(false)
       {}
 
 
@@ -246,6 +246,14 @@ namespace gpstk
          throw()
       { strictMethod = true; }
 
+      /// Get flag that causes unhealthy ephemerides to be excluded
+      bool getOnlyHealthyFlag(void) const
+      { return onlyHealthy; }
+
+      /// Set flag that causes unhealthy ephemerides to be excluded
+      void setOnlyHealthyFlag(bool flag)
+      { onlyHealthy = flag; }
+
       /// This is intended to just store sets of unique EngEphemerides
       /// for a single SV.  The key is the Toe - 1/2 the fit interval.
       typedef std::map<CommonTime, GalEphemeris> GalEphMap;
@@ -272,6 +280,9 @@ namespace gpstk
       /// flag indicating search method (find...Eph) to use in getSatXvt 
       ///  and getSatHealth
       bool strictMethod;
+
+      /// flag indicating ephemerides should be excluded if unhealthy; default false.
+      bool onlyHealthy;
 
    }; // end class
 

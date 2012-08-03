@@ -89,17 +89,9 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("4.2 3/13/12"));
-// TD
-// Trop. test all trop models, w and w/o --ref
-// Why does Neill triple the total time !? is this b/c of bad at elev 0?
-// Replace descriptor tracking codes with those actually in header
-// Add option to fix (remove) millisecond clock jumps - make portable
-// Test met
-// Does --wt work?
-// Implement Rx PCOs, and add input switches to turn off sat/rx pco correction
+string Version(string("4.3 8/3/12"));
 
-// forward declarations
+// forward declaration
 class SolutionObject;
 
 //------------------------------------------------------------------------------------
@@ -582,7 +574,8 @@ try {
             os << "Exception: " << e.what() << endl; isValid = false; continue; }
          catch(exception& e) {
             os << "exception: " << e.what(); isValid = false; continue; }
-         startNameMap.insert(multimap<CommonTime, string>::value_type(header.time, C.InputSP3Files[nfile]));
+         startNameMap.insert(multimap<CommonTime,string>::value_type(
+               header.time,C.InputSP3Files[nfile]));
       }
 
       ossE << os.str();
@@ -651,7 +644,8 @@ try {
                            && sats[i].system == RinexSatID::systemGlonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
-               C.GLOfreqChannel.insert(map<RinexSatID, int>::value_type(sats[i], 0)); // set it to zero
+               // set it to zero
+               C.GLOfreqChannel.insert(map<RinexSatID, int>::value_type(sats[i], 0));
                it = C.GLOfreqChannel.find(sats[i]);
             }
             C.msg = string(" frch ") + rightJustify(asString(it->second),2);
@@ -678,6 +672,9 @@ try {
    // NB Nav files may set GLOfreqChannel
    if(C.InputNavFiles.size() > 0) {
       try {
+         // configure - input?
+         C.RinEphStore.setOnlyHealthyFlag(true);   // keep only healthy ephemerides
+
          for(nrec=0,nread=0,nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
             string filename(C.InputNavFiles[nfile]);
             int n(C.RinEphStore.loadFile(filename,(C.debug > -1),LOGstrm));
@@ -851,7 +848,7 @@ try {
                LOG(WARNING) << "Warning : satellite " << sat
                   << " is duplicated in P1-C1 bias file(s)";
             else {
-               C.P1C1bias.insert(make_pair(sat,bias));
+               C.P1C1bias.insert(map<RinexSatID,double>::value_type(sat,bias));
                LOG(DEBUG) << " Found P1-C1 bias for sat " << sat
                   << " = " << setw(6) << word << " ns = "
                   << fixed << setprecision(3) << setw(6) << bias
@@ -1006,7 +1003,7 @@ try {
             for(i=0; i<sit->second.size(); i++) {
                if(asString(sit->second[i]) == string("C1C")) {
                   DCBcorr = true;
-                  mapDCBindex.insert(make_pair(sit->first,i));
+                  mapDCBindex.insert(map<string,int>::value_type(sit->first,i));
                   LOG(DEBUG) << "Correct for DCB: found " << asString(sit->second[i])
                      << " for system " << sit->first << " at index " << i;
                   break;
@@ -1354,11 +1351,16 @@ void Configuration::SetDefaults(void) throw()
 
    //map<string,string> defMapSysCodes;   // map of system, default codes e.g. GLO/PC
    // TD shouldn't these come from ObsID?
-   defMapSysCodes.insert(make_pair(string("GPS"),string("PYWLMIQSXCN")));
-   defMapSysCodes.insert(make_pair(string("GLO"),string("PC")));
-   defMapSysCodes.insert(make_pair(string("GAL"),string("ABCIQXZ")));
-   defMapSysCodes.insert(make_pair(string("GEO"),string("IQXC")));
-   defMapSysCodes.insert(make_pair(string("COM"),string("IQX")));
+   defMapSysCodes.insert(map<string,string>::value_type(
+      string("GPS"),string("PYWLMIQSXCN")));
+   defMapSysCodes.insert(map<string,string>::value_type(
+      string("GLO"),string("PC")));
+   defMapSysCodes.insert(map<string,string>::value_type(
+      string("GAL"),string("ABCIQXZ")));
+   defMapSysCodes.insert(map<string,string>::value_type(
+      string("GEO"),string("IQXC")));
+   defMapSysCodes.insert(map<string,string>::value_type(
+      string("COM"),string("IQX")));
 
    map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
    map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
@@ -2008,16 +2010,18 @@ void SolutionObject::ParseDescriptor(void) throw()
    vector<string> code(split(flds[2],'+'));  // code ~ vec<str> parallel to syss
    syscodes.clear();
    for(i=0; i<syss.size(); i++)              // build a little map [G]=PWXC
-      syscodes.insert(make_pair(syss[i],code[i]));
+      syscodes.insert(map<string,string>::value_type(syss[i],code[i]));
 
    // build empty mapSysFreqObsIDs   e.g. map[G][1] = vector<ObsIDs>
    mapSysFreqObsIDs.clear();
    for(i=0; i<syss.size(); i++) {            // loop over systems
       map<string, vector<string> > sysmap;
-      mapSysFreqObsIDs.insert(make_pair(syss[i],sysmap));
+      mapSysFreqObsIDs.insert(
+         map<string,map<string,vector<string> > >::value_type(syss[i],sysmap));
       for(j=0; j<ufreqs.size(); j++) {       // loop over unique frequencies
          vector<string> vec;
-         mapSysFreqObsIDs[syss[i]].insert(make_pair(ufreqs.substr(j,1),vec));
+         mapSysFreqObsIDs[syss[i]].insert(
+            map<string,vector<string> >::value_type(ufreqs.substr(j,1),vec));
          LOG(DEBUG) << "Build mapSysFreqObsIDs[" << syss[i]
                      << "][" << ufreqs.substr(j,1) << "]";
       }
@@ -2270,7 +2274,8 @@ void SolutionObject::CollectData(const RinexSatID& sat,
       double PR,RI(0),Rone(0),Rtwo(0);
       if(freqs[i].size() == 1) {
          PR = RawPRs[freqs[i]];
-         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used[freqs[i]]));
+         UsedObsIDs.insert(
+            multimap<RinexSatID,string>::value_type(sat,used[freqs[i]]));
          ok = (used[freqs[i]] != freqs[i]+"-");
       }
       else if(freqs[i] == "12" || freqs[i] == "21") {
@@ -2278,7 +2283,8 @@ void SolutionObject::CollectData(const RinexSatID& sat,
          RI = (RawPRs["1"]-RawPRs["2"])*b12[sys];
          Rone = RawPRs["1"];
          Rtwo = RawPRs["2"];
-         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used["1"]+used["2"]));
+         UsedObsIDs.insert(
+            multimap<RinexSatID,string>::value_type(sat,used["1"]+used["2"]));
          ok = (used["1"] != "1-" && used["2"] != "2-");
       }
       else if(freqs[i] == "15" || freqs[i] == "51") {
@@ -2286,7 +2292,8 @@ void SolutionObject::CollectData(const RinexSatID& sat,
          RI = (RawPRs["1"]-RawPRs["5"])*b15[sys];
          Rone = RawPRs["1"];
          Rtwo = RawPRs["5"];
-         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used["1"]+used["5"]));
+         UsedObsIDs.insert(
+            multimap<RinexSatID,string>::value_type(sat,used["1"]+used["5"]));
          ok = (used["1"] != "1-" && used["5"] != "5-");
       }
       else if(freqs[i] == "25" || freqs[i] == "52") {
@@ -2294,7 +2301,8 @@ void SolutionObject::CollectData(const RinexSatID& sat,
          RI = (RawPRs["2"]-RawPRs["5"])*b25[sys];
          Rone = RawPRs["2"];
          Rtwo = RawPRs["5"];
-         UsedObsIDs.insert(multimap<RinexSatID, string>::value_type(sat,used["2"]+used["5"]));
+         UsedObsIDs.insert(
+            multimap<RinexSatID,string>::value_type(sat,used["2"]+used["5"]));
          ok = (used["2"] != "2-" && used["5"] != "5-");
       }
       // TD else three-freq ?

@@ -113,7 +113,11 @@ namespace gpstk
    // member functions:
 
       Rinex3EphemerisStore() throw()
-      { }
+      {
+         bool flag = GPSstore.getOnlyHealthyFlag();    // default is GPS default
+         GLOstore.setCheckHealthFlag(flag);
+         GALstore.setOnlyHealthyFlag(flag);
+      }
 
       /// destructor
       virtual ~Rinex3EphemerisStore()
@@ -390,6 +394,40 @@ namespace gpstk
          }
 
          return n;
+      }
+
+      /// Get integration step for GLONASS Runge-Kutta algorithm (seconds)
+      double getGLOStep(void) const
+         { return GLOstore.getIntegrationStep(); }
+
+      /// Set integration step for GLONASS Runge-Kutta algorithm (seconds)
+      void setGLOStep(double step)
+         { GLOstore.setIntegrationStep(step); }
+
+      /// Get flag that causes unhealthy ephemerides to be excluded (GPS/GLO/GAL)
+      bool getOnlyHealthyFlag(void) const
+         { return GPSstore.getOnlyHealthyFlag(); }
+
+      /// Set flag that causes unhealthy ephemerides to be excluded (GPS/GLO/GAL)
+      void setOnlyHealthyFlag(bool flag)
+      {
+         GPSstore.setOnlyHealthyFlag(flag);
+         GLOstore.setCheckHealthFlag(flag);
+         GALstore.setOnlyHealthyFlag(flag);
+      }
+
+      /// use findNearEphemeris() in the getSat...() routines (GPS/GAL)
+      void SearchNear(void) throw()
+      {
+         GPSstore.SearchNear();
+         GALstore.SearchNear();
+      }
+
+      /// use findEphemeris() in the getSat...() routines (the default) (GPS/GAL)
+      void SearchPast(void) throw()
+      {
+         GPSstore.SearchPast();
+         GALstore.SearchPast();
       }
 
    }; // end class Rinex3EphemerisStore

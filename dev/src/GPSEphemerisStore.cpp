@@ -181,6 +181,10 @@ namespace gpstk
    bool GPSEphemerisStore::addEphemeris(const EngEphemeris& eph)
       throw()
    {
+      // if not healthy and taking only healthy, skip this one
+      if(eph.getHealth() != 0 && onlyHealthy)
+         return false;
+
       bool rc = false;
       CommonTime t = eph.getEphemerisEpoch();
       t -= 0.5*3600.0*eph.getFitInterval();

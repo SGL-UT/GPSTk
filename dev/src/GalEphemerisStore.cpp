@@ -174,6 +174,10 @@ namespace gpstk
    bool GalEphemerisStore::addEphemeris(const GalEphemeris& eph)
       throw()
    {
+      // if not healthy and taking only healthy, skip this one
+      if(eph.getHealth() != 0 && onlyHealthy)
+         return false;
+
       bool rc = false;
       CommonTime t = eph.getEphemerisEpoch();
 
