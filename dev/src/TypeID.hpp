@@ -46,18 +46,6 @@
 
 namespace gpstk
 {
-      /** This class register TypeIDs by a name string, then you can access it
-       *  globally.
-       */
-   class RegTypeID
-   {
-   public:
-         /// Override it to register your TypeIDs by string name 
-      virtual void regAll()
-      {
-         // TypeID t = TypeID::registerTypeID("prefitP1","prefitResidualP1");
-      }
-   };
 
       /** This class creates an index able to represent any type of observation,
        *  correction, model parameter or other data value of interest for GNSS
@@ -484,15 +472,6 @@ namespace gpstk
       static Initializer TypeIDsingleton;
 
    public:
-
-         /** Static method to register new TypeID by a RegTypeID class
-          * @param reg      it do the register worker
-          * @param bAdd     add the the user defined TypeIDs or replace it
-          *                 by default, we'll delete all user defined TypeIds
-          *                 and before register those new TypeIDs. 
-          */
-      static void regTypeIDs(RegTypeID* pReg, bool bAdd = false);
-    
 
          /** Static method to get the user registered TypeID by name string
           * @param name      Identifying string for the new TypeID

@@ -735,21 +735,6 @@ namespace gpstk
    }
 
 
-      /// Static method to register new TypeID by a RegTypeID class
-   void TypeID::regTypeIDs(RegTypeID* pReg, bool bAdd)
-   {
-      //
-      if(!bAdd && bUserTypeIDRegistered)
-      {
-         unregAll();
-      }
-         
-      pReg->regAll();
-
-      bUserTypeIDRegistered = true;
-
-   }
-
       // Return the new TypeID
    TypeID TypeID::regByName(std::string name,std::string desc)
    {

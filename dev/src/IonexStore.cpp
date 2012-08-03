@@ -545,7 +545,7 @@ namespace gpstk
    {
 
          // map
-      double map(1.0);
+      double imap(1.0);
          // Earth's radius in KM
       double Re = 6371.0;
          // zenith angle
@@ -563,7 +563,7 @@ namespace gpstk
          double sinzipp  = Re / (Re + ionoHeight) * std::sin(z0*DEG_TO_RAD);
          double zipprad  = std::asin(sinzipp);
 
-         map      = 1.0/std::cos(zipprad);
+         imap      = 1.0/std::cos(zipprad);
 
       }
       else if( ionoMapType == "MSLM" )
@@ -579,7 +579,7 @@ namespace gpstk
                * std::sin(alfa * z0 * DEG_TO_RAD);
            double zipprad = std::asin(sinzipp);
 
-           map = 1.0/std::cos(zipprad);
+           imap = 1.0/std::cos(zipprad);
          }
 
       }
@@ -593,7 +593,7 @@ namespace gpstk
       }
 
 
-      return map;
+      return imap;
 
    }  // End of method 'IonexStore::iono_mapping_function()'
 
