@@ -174,9 +174,10 @@ namespace gpstk
           *    0xABCDABCD are each 32-bit unsigned hex numbers, left 
           *        justified.  The number of bits needs to match or
           *        exceed ###
-          * The function returns false if the read is not succeessful.
-          * Othewise,the  */
-       bool rawBitInput(const std::string inString );       
+          * The function returns if the read is succeessful.
+          * Otherwise,the function throws an exception */
+       void rawBitInput(const std::string inString )
+          throw(InvalidParameter);       
 
    private:
       SatID satSys;            /**< System ID (based on RINEX defintions */

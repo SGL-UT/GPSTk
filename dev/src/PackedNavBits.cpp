@@ -427,24 +427,69 @@ namespace gpstk
    } // end of PackedNavBits::dump()
 
       
-   bool PackedNavBits::rawBitInput(const std::string inString )
+   void PackedNavBits::rawBitInput(const std::string inString )
+      throw(InvalidParameter)
    {
-      //  Find first non-white space string.   Should translate as a decimal value.
-      //  If so, assume this is the number of bits that follow, but do not 
-      //  store it until success.
+         //  Find first non-white space string.   
+         //  Should translate as a decimal value.
+         //  If so, assume this is the number of bits that follow, but do not 
+         //  store it until success.
+         //  For out purposes, treat space, tab, and comma as white space
+         //  (the inclusion of comma allows CSV files to be read).
+      string whiteSpace=" \t,";
+      string::size_type begin = inString.find_first_not_of(whiteSpace);
+      if (begin==string::npos)
+      {
+         InvalidParameter exc("Did not find #bits at beginning of input string.");
+         GPSTK_THROW(exc);
+      }
+      string::size_type end = inString.find_first_of(whiteSpace,begin);
+      if (end==string::npos)
+      {
+         InvalidParameter exc("Did not find space after #bits at beginning of input string.");
+         GPSTK_THROW(exc);
+      }
+      string textBitCount = inString.substr(begin,end);
+      int bitsExpected = StringUtils::asInt(textBitCount); 
 
-      //  Find successive 32 bits quantities stored as hex strings.  
-      //  That is to say, each should be of the format 0xAAAAAAAA
-      //  There should be sufficient to cover the number of input 
-      //  bits plus padding to the next even 32 bit word boundary.  
-      //  That is to say, []# of 32 bits words] = ((inBits-1)/32) + 1;
+         //  Find successive 32 bits quantities stored as hex strings.  
+         //  That is to say, each should be of the format 0xAAAAAAAA
+         //  There should be sufficient to cover the number of input 
+         //  bits plus padding to the next even 32 bit word boundary.  
+         //  That is to say, []# of 32 bits words] = ((inBits-1)/32) + 1;
+      int numWordsExpected = (( bitsExpected-1)/32) + 1; 
+      int bitsRead = 0;
+      for (int i = 0; i<numWordsExpected; ++i)
+      {
+            // For each word, convert the string to a value, then add it
+            // to the packed bit storage. 
+         begin = inString.find_first_not_of(whiteSpace,end+1);
+         if (begin==string::npos)
+         {
+            InvalidParameter exc("Did not find expected number of hex words.");
+            GPSTK_THROW(exc);
+         }
+         end = inString.find_first_of(whiteSpace,begin); 
+         if (end==string::npos)
+         {
+            InvalidParameter exc("Did not find end of new word in input string.");
+            GPSTK_THROW(exc);
+         }
+         string hexWord = inString.substr(begin,end);
+         unsigned long dataWord = StringUtils::asUnsigned(hexWord);   // Note does this assume a 0x
+                                                       // or does that need to be removed?
+         int numBitsToAdd = bitsExpected - bitsRead;
+         if (numBitsToAdd>32) numBitsToAdd = 32;
+         addUnsignedLong( dataWord, numBitsToAdd, 1.0); 
 
-         // For each word, convert the string to a value, then add it
-         // to the packed bit storage. 
+         bitsRead += numBitsToAdd; 
 
-
+      }
       // Now trim the string and store the final size. 
-      
+      bits_used = bitsRead;
+      trimsize();  
+
+      return;
    }
 
 
