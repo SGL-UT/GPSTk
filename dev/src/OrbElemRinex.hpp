@@ -54,6 +54,7 @@
 
 #include "OrbElem.hpp"
 #include "RinexNavData.hpp"
+#include "Rinex3NavData.hpp"
 
 
 namespace gpstk
@@ -65,7 +66,10 @@ namespace gpstk
       OrbElemRinex();
 
       OrbElemRinex( const RinexNavData& rinNav )
-	 throw( InvalidParameter); 
+         throw( InvalidParameter );
+
+      OrbElemRinex( const Rinex3NavData& rinNav )
+	 throw( InvalidParameter ); 
 
          /// Destructor
       virtual ~OrbElemRinex() {}
