@@ -30,7 +30,6 @@
 #ifndef GPSTK_BINEXFILTEROPERATORS_HPP
 #define GPSTK_BINEXFILTEROPERATORS_HPP
 
-#include "DayTime.hpp"
 #include "FileFilter.hpp"
 #include "BinexData.hpp"
 
