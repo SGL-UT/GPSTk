@@ -53,6 +53,7 @@ namespace gpstk
        string("GPS"),
        string("GLO"),
        string("GAL"),
+       string("COM"),
        string("UTC"),
        string("TAI")
      };
