@@ -83,6 +83,12 @@ namespace gpstk
       void loadData( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
+         /** Load an existing object from a Rinex3NavData object.
+          *  @throw InvalidParameter if the data are not consistent.
+          */ 
+      void loadData( const Rinex3NavData& rinNav )
+	 throw( InvalidParameter); 
+
       virtual std::string getName() const
       {
          return "OrbElemRinex";
