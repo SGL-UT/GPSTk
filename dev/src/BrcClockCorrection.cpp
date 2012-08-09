@@ -237,7 +237,9 @@ namespace gpstk
       //if (obsID.code == "tcCA" ) // L1 C/A
          accuracy = ura2accuracy(URAoc);
       //else
-         accuracy = uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, t, Top);
+         
+     // deleted because algorithms in -705 and -800 changed
+     //     accuracy = uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, t, Top);
       return accuracy;
    }   
 

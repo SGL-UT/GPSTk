@@ -200,7 +200,9 @@ namespace gpstk
       else if (timeDiff > HALFWEEK) epochWeek--;
 
       double accuracy1 = gpstk::ura2CNAVaccuracy(URAoe);
-      double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, GPSWeekSecond(epochWeek, TOWCount, TimeSystem::GPS), GPSWeekSecond(epochWeek, Top, TimeSystem::GPS));
+     
+     // deleted because algorithms in -705 and -800 have changed
+     // double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, GPSWeekSecond(epochWeek, TOWCount, TimeSystem::GPS), GPSWeekSecond(epochWeek, Top, TimeSystem::GPS));
 
       long beginFitSOW = ((TOWCount)/7200)*7200;
       long endFitSOW   = beginFitSOW + 10800;
