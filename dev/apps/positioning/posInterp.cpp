@@ -500,8 +500,8 @@ try {
 
       // create the aux header
       // use data from the begin time
-      CommonTime CurrEpoch(static_cast<CivilTime>(CurrEpoch));
-      RinexPositionComments(psdata,CurrEpoch,
+      CommonTime ctCurrEpoch(static_cast<CivilTime>(CurrEpoch));
+      RinexPositionComments(psdata,ctCurrEpoch,
          itb->second.N,
          itb->second.X,
          itb->second.Y,
