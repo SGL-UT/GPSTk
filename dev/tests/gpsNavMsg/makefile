@@ -41,6 +41,9 @@ PackedNavBits: PackedNavBits.cpp PackedNavBits.hpp
 xPackedNavBits: xPackedNavBits.cpp 
 	gcc $(CCARGS) xPackedNavBits.cpp $(LLARGS) -o xPackedNavBits
 
+xReadICETestData: xReadICETestData.cpp
+	gcc $(CCARGS) xReadICETestData.cpp $(LLARGS) -o xReadICETestData
+ 	
 xCNAVEphemerisPNB: xCNAVEphemerisPNB.cpp PackedNavBits CNAVEphemeris
 	gcc $(CCARGS) xCNAVEphemerisPNB.cpp PackedNavBits.o CNAVEphemeris.o $(LLARGS) -o xCNAVEphemerisPNB
 
@@ -52,4 +55,7 @@ xCNAV2EphClockPNB: xCNAV2EphClockPNB.cpp
 
 EngEphemeris: EngEphemeris.cpp EngEphemeris.hpp
 	gcc -c $(CCARGS) EngEphemeris.cpp
+
+GenSyntheticCNAVData: GenSyntheticCNAVData.cpp 
+	gcc $(CCARGS) GenSyntheticCNAVData.cpp $(LLARGS) -o GenSyntheticCNAVData
 
