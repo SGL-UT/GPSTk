@@ -2,7 +2,7 @@
 
 /**
  * @file OrbElemLNav.hpp
- * designed to support loading GPS legacy navigation message 
+ * Designed to support loading GPS legacy navigation message 
  * data that is in the original format of three 300-bit subframes.
  */ 
 
@@ -51,8 +51,6 @@
 #include "OrbElem.hpp"
 #include "FICData.hpp"
 
-
-
 namespace gpstk
 {
    class OrbElemLNav : public OrbElem
@@ -73,7 +71,7 @@ namespace gpstk
           *   and correctly derive the complete epoch times.
           *   @throw InvalidParameter if the input data are inconsistent.
           */ 
-      OrbElemLNav( const long SF1[10],
+      OrbElemLNav(   const long SF1[10],
                      const long SF2[10],
                      const long SF3[10],
                      const short PRNID,

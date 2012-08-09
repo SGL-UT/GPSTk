@@ -118,8 +118,10 @@ else
       ObsRngDev.cpp
       OceanLoading.cpp
       OrbElem.cpp
+      OrbElemCNAV2.cpp
       OrbElemFIC109.cpp
       OrbElemFIC9.cpp
+      OrbElemICE.cpp
       OrbElemLNav.cpp
       OrbElemRinex.cpp
       PackedNavBits.cpp
@@ -338,8 +340,10 @@ else
       ObsRngDev.hpp	
       OceanLoading.hpp	
       OrbElem.hpp
+      OrbElemCNAV2.hpp
       OrbElemFIC109.hpp
       OrbElemFIC9.hpp
+      OrbElemICE.hpp
       OrbElemLNav.hpp
       OrbElemStore.hpp
       OrbElemRinex.hpp	

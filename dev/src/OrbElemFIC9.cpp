@@ -195,7 +195,7 @@ namespace gpstk
       if (HOWtime[1]<leastHOW) leastHOW = HOWtime[1];
       if (HOWtime[2]<leastHOW) leastHOW = HOWtime[2];	 
       long Xmit = leastHOW - (leastHOW % 30);
-      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit );
+      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
 
          // Fully qualified Toe and Toc
 	 // As broadcast, Toe and Toc are in GPS SOW and do not include

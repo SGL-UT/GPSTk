@@ -55,8 +55,17 @@ namespace gpstk
    using namespace std;
    using namespace gpstk;
    OrbElem::OrbElem()
-      :dataLoadedFlag(false)
-   {}
+      :dataLoadedFlag(false),
+       ctToe(CommonTime::BEGINNING_OF_TIME),
+       ctToc(CommonTime::BEGINNING_OF_TIME),
+       beginValid(CommonTime::BEGINNING_OF_TIME),
+       endValid(CommonTime::BEGINNING_OF_TIME)
+   {
+      ctToe.setTimeSystem(TimeSystem::GPS);
+      ctToc.setTimeSystem(TimeSystem::GPS);
+      beginValid.setTimeSystem(TimeSystem::GPS);
+      endValid.setTimeSystem(TimeSystem::GPS);
+   }
 
 
     bool OrbElem::isValid(const CommonTime& ct) const
@@ -109,7 +118,7 @@ namespace gpstk
       {   
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
-      } 
+      }
       double ret = svClockBias(t);
       ret = ret*C_MPS;
       return (ret);
@@ -350,7 +359,7 @@ namespace gpstk
    } 
    
 
-   static void timeDisplay( ostream & os, const CommonTime& t )
+   void OrbElem::timeDisplay( ostream & os, const CommonTime& t )
    {
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       GPSWeekSecond dummyTime;

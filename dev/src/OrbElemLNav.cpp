@@ -58,15 +58,18 @@ namespace gpstk
 
    OrbElemLNav::OrbElemLNav()
       :OrbElem(),
+       codeflags(0), health(0), L2Pdata(0),
+       accFlag(0), IODC(0), IODE(0),
+       Tgd(0.0), fitint(0), 
        AODO(0)
    {}
 
-   OrbElemLNav::OrbElemLNav(     const long SF1[10],
-                                 const long SF2[10],
-                                 const long SF3[10],
-                                 const short PRNID,
-                                 const short XmitGPSWeek )
-      throw( InvalidParameter ) 
+   OrbElemLNav::OrbElemLNav(  const long SF1[10],
+                              const long SF2[10],
+                              const long SF3[10],
+                              const short PRNID,
+                              const short XmitGPSWeek )
+      throw(InvalidParameter) 
    {
       loadData(SF1, SF3, SF3, PRNID, XmitGPSWeek); 
    }
@@ -76,12 +79,12 @@ namespace gpstk
       return new OrbElemLNav (*this); 
    }
 
-   void OrbElemLNav::loadData(   const long SF1[10],
-                                 const long SF2[10],
-                                 const long SF3[10],
-                                 const short PRNID,
-                                 const short XmitGPSWeek )
-      throw( InvalidParameter)
+   void OrbElemLNav::loadData(  const long SF1[10],
+                                const long SF2[10],
+                                const long SF3[10],
+                                const short PRNID,
+                                const short XmitGPSWeek )
+      throw( InvalidParameter )
    {
       double ficOut[60];
       double ficTemp[60];
@@ -220,7 +223,7 @@ namespace gpstk
       if (HOWtime[1]<leastHOW) leastHOW = HOWtime[1];
       if (HOWtime[2]<leastHOW) leastHOW = HOWtime[2];	 
       long Xmit = leastHOW - (leastHOW % 30);
-      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit );
+      transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
 
          // Fully qualified Toe and Toc
 	 // As broadcast, Toe and Toc are in GPS SOW and do not include
@@ -475,8 +478,6 @@ namespace gpstk
       return s;
 
    } // end of operator<<
-
-  
 
 } // namespace
 

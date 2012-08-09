@@ -142,7 +142,9 @@ namespace gpstk
           * @throw Invalid Request if the required data has not been stored.
           */
 
-      static void shortcut(std::ostream & os, const long HOW );
+      static void shortcut(std::ostream & os, const long HOW);
+
+      static void timeDisplay(std::ostream & os, const CommonTime& t);
 
       virtual void dumpTerse(std::ostream& s = std::cout) const
          throw( InvalidRequest ) = 0;
