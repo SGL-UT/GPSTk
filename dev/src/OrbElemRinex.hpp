@@ -65,11 +65,11 @@ namespace gpstk
          /// Default constructor
       OrbElemRinex();
 
-      OrbElemRinex( const RinexNavData& rinNav )
+      OrbElemRinex( const Rinex3NavData& rinNav )
          throw( InvalidParameter );
 
-      OrbElemRinex( const Rinex3NavData& rinNav )
-	 throw( InvalidParameter ); 
+      OrbElemRinex( const RinexNavData& rinNav )
+	 throw( InvalidParameter); 
 
          /// Destructor
       virtual ~OrbElemRinex() {}
@@ -77,17 +77,17 @@ namespace gpstk
         /// Clone method
       virtual OrbElemRinex* clone() const;
 
-         /** Load an existing object from a RinexNavData object.
-          *  @throw InvalidParameter if the data are not consistent.
-          */ 
+         /**  Load an existing object from a RinexNavData object.
+           *  @throw InvalidParameter if the data are not consistent.
+           */ 
       void loadData( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
-         /** Load an existing object from a Rinex3NavData object.
-          *  @throw InvalidParameter if the data are not consistent.
-          */ 
+         /** Load an existing object from a Rinex3NavData object. 
+           * @throw InvalidParameter if the data are not consistent.
+           */
       void loadData( const Rinex3NavData& rinNav )
-	 throw( InvalidParameter); 
+         throw( InvalidParameter );
 
       virtual std::string getName() const
       {
@@ -96,7 +96,7 @@ namespace gpstk
  
       virtual std::string getNameLong() const
       {
-         return "Rinex Navigation Message File";
+         return "Rinex Navigation Message";
       }
       
          /// Returns the upper bound of the URA range
