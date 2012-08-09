@@ -424,12 +424,47 @@ namespace gpstk
       if (numBitInWord > 0 ) s << "  0x" << setw(8) << setfill('0') << hex << word;
       s.setf(ios::fixed, ios::floatfield);
       s.precision(3);
+      s.flags(oldFlags);      // Reset whatever conditions pertained on entry
+
    } // end of PackedNavBits::dump()
 
+      /*
+      */
+   void PackedNavBits::outputPackedBits(std::ostream& s) const
+   {
+      ios::fmtflags oldFlags = s.flags();
+
+      int numBitInWord = 0;
+      int word_count   = 0;
+      uint32_t word    = 0;
+      for(int i = 0; i < bits.size(); ++i)
+      {
+         word <<= 1;
+         if (bits[i]) word++;
+       
+         numBitInWord++;
+         if (numBitInWord >= 32)
+         {
+            s << "  0x" << setw(8) << setfill('0') << hex << word;
+            numBitInWord = 0;
+            word_count++;
+            //Print four words per line 
+            if (word_count %5 == 0) s << endl;        
+         }
+      }
+         // Need to check if there is a partial word in the buffer
+      if (numBitInWord>0)
+      {
+         s << "  0x" << setw(8) << setfill('0') << hex << word;
+      }
+      s.flags(oldFlags);      // Reset whatever conditions pertained on entry
+   }
       
    void PackedNavBits::rawBitInput(const std::string inString )
       throw(InvalidParameter)
    {
+         // Debug
+      //cout << " ENTERING rawBitInput( )-------------------------------------------------" << endl;
          //  Find first non-white space string.   
          //  Should translate as a decimal value.
          //  If so, assume this is the number of bits that follow, but do not 
@@ -459,6 +494,8 @@ namespace gpstk
          //  That is to say, []# of 32 bits words] = ((inBits-1)/32) + 1;
       int numWordsExpected = (( bitsExpected-1)/32) + 1; 
       int bitsRead = 0;
+         // debug
+      //cout << "bitsExpected, numWordsExpected : " << bitsExpected << ", " << numWordsExpected << endl; 
       for (int i = 0; i<numWordsExpected; ++i)
       {
             // For each word, convert the string to a value, then add it
@@ -469,18 +506,32 @@ namespace gpstk
             InvalidParameter exc("Did not find expected number of hex words.");
             GPSTK_THROW(exc);
          }
-         end = inString.find_first_of(whiteSpace,begin); 
-         if (end==string::npos)
+         end = inString.find_first_of(whiteSpace,begin);
+         string::size_type length = end - begin; 
+         string hexWord = inString.substr(begin,length);
+            // Debug
+         //   cout << "hexWord (string) : '" << hexWord << "'" << endl;
+         if (hexWord.substr(0,2)!="0x" &&
+             hexWord.substr(0,2)!="0X" )
          {
-            InvalidParameter exc("Did not find end of new word in input string.");
-            GPSTK_THROW(exc);
+            InvalidParameter exc("Expected hex data did not being with '0x'");
+            GPSTK_THROW(exc); 
          }
-         string hexWord = inString.substr(begin,end);
-         unsigned long dataWord = StringUtils::asUnsigned(hexWord);   // Note does this assume a 0x
-                                                       // or does that need to be removed?
+            
+         unsigned long dataWord = StringUtils::x2int(hexWord);
+
+            // NOTE: Since the input is always in terms of complete left-
+            // justified 32-bit words, the "numberBits" argument to 
+            // addUnsignedLong() is always 32.  However, we need to keep
+            // track of how many bits are actually being stored in the
+            // PackedNavBits object.  The only word that is not 32-bits
+            // "full" is the last word. 
          int numBitsToAdd = bitsExpected - bitsRead;
          if (numBitsToAdd>32) numBitsToAdd = 32;
-         addUnsignedLong( dataWord, numBitsToAdd, 1.0); 
+             // Debug
+         //    cout << " dataWord (dec) : " << dataWord << endl;
+         //    cout << " numBitsToAdd : " << numBitsToAdd << endl;
+         addUnsignedLong( dataWord, 32, 1); 
 
          bitsRead += numBitsToAdd; 
 

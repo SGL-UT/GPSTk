@@ -160,6 +160,13 @@ namespace gpstk
                      const int numChars)
          throw(InvalidParameter);
    
+         /*
+          * Output the packed bits as a set of 32 bit
+          * hex values, four per line, without any
+          * additional information. 
+          */
+      void outputPackedBits(std::ostream& s = std::cout) const;
+      
          /* Resize the vector holding the packed data. */
       void trimsize();
 

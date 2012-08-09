@@ -1854,7 +1854,7 @@ namespace gpstk
                // make the stringstream, get the integer, and 
                // remove it from the string
             std::istringstream strstr(t);
-            int i;
+            unsigned int i;
             strstr >> std::hex >> i;
             return i;
          }
