@@ -365,6 +365,7 @@ namespace gpstk
          recJ2kAZ,  ///< Receiver acceleration in J2000, Z component
          sigma,     ///< Standard deviation
          iura,      ///< Index User Range Accuracy
+         Action,    ///< Flag for quality control
             // Handy dummy types for non-standard processing
          dummy0,    ///< Generic, undefined type #0
          dummy1,    ///< Generic, undefined type #1

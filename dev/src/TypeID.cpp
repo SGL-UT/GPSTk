@@ -331,6 +331,7 @@ namespace gpstk
       tStrings[recJ2kAZ]   = "RxJ2kAccelerationZ";
       tStrings[sigma]      = "sigma";
       tStrings[iura]       = "iura";
+      tStrings[Action]     = "Action";
       tStrings[dummy0]     = "dummy0";
       tStrings[dummy1]     = "dummy1";
       tStrings[dummy2]     = "dummy2";
