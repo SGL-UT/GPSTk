@@ -61,9 +61,9 @@ namespace gpstk
    {}
 
    OrbElemCNAV2::OrbElemCNAV2( const ObsID& obsIDArg,
-                 const short PRNIDArg,
-                 const int subframe1,
-                 const PackedNavBits& subframe2) 
+                               const short PRNIDArg,
+                               const int subframe1,
+                               const PackedNavBits& subframe2) 
       throw( InvalidParameter)
    {
       loadData( obsIDArg, PRNIDArg, subframe1, subframe2 );
@@ -137,8 +137,20 @@ namespace gpstk
       long beginFitSOW = TOWCount;
       short beginFitWk = TOWWeek;
 
-      beginValid = GPSWeekSecond(TOWWeek, TOWCount, TimeSystem::GPS);
       transmitTime = GPSWeekSecond(TOWWeek, TOWCount, TimeSystem::GPS);
+
+      long longToe = (long) Toe;
+      long Xmit = 0;
+      long leastSOW = (static_cast<GPSWeekSecond>(transmitTime)).sow;
+      if((longToe % 7200) != 0)
+      {
+         Xmit = leastSOW - (leastSOW % 30);
+      }
+      else
+      {
+         Xmit = leastSOW - (leastSOW % 7200); 
+      }
+      beginValid = GPSWeekSecond(TOWWeek, Xmit, TimeSystem::GPS ); 
 
       ctTop = GPSWeekSecond(TopWeek, Top, TimeSystem::GPS);
       ctToe = GPSWeekSecond(TopWeek, Toe, TimeSystem::GPS); 
@@ -160,7 +172,7 @@ namespace gpstk
       }
 
       ios::fmtflags oldFlags = s.flags();
-    
+
       OrbElem::dumpHeader(s);
       s << "Source : " << getNameLong() << endl;
   
@@ -179,6 +191,20 @@ namespace gpstk
         << ISCP << " sec" << endl
         << "ISCD                           : " << setw(13) << setprecision(6) << scientific
         << ISCD << " sec" << endl;
+
+      s.setf(ios::fixed, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.setf(ios::uppercase);
+      s.precision(0);
+      s.fill(' ');
+
+      s << endl
+        << endl;
+      s << "                Week(10bt)  SOW      DOW     UTD   SOD"
+        << "     MM/DD/YYYY   HH:MM:SS\n"; 
+      s << "Transmit Time:  ";
+      timeDisplay(s, transmitTime);
+      s << endl;
       s.flags(oldFlags);                
    } // end of dumpHeader()   
 

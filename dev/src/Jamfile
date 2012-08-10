@@ -118,6 +118,7 @@ else
       ObsRngDev.cpp
       OceanLoading.cpp
       OrbElem.cpp
+      OrbElemCNAV.cpp
       OrbElemCNAV2.cpp
       OrbElemFIC109.cpp
       OrbElemFIC9.cpp
@@ -340,6 +341,7 @@ else
       ObsRngDev.hpp	
       OceanLoading.hpp	
       OrbElem.hpp
+      OrbElemCNAV.hpp
       OrbElemCNAV2.hpp
       OrbElemFIC109.hpp
       OrbElemFIC9.hpp

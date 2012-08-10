@@ -361,6 +361,7 @@ namespace gpstk
 
    void OrbElem::timeDisplay( ostream & os, const CommonTime& t )
    {
+      os.setf(ios::dec, ios::basefield); 
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       GPSWeekSecond dummyTime;
       dummyTime = GPSWeekSecond(t);
@@ -404,7 +405,7 @@ namespace gpstk
         << endl << endl;
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
         << "   MM/DD/YYYY   HH:MM:SS\n"; 
-      s << "Begin Valid:  ";
+      s << "Begin Valid:  ";        
       timeDisplay(s, beginValid);
       s << endl;
       s << "Clock Epoch:  ";
@@ -415,9 +416,9 @@ namespace gpstk
       s << endl;
       s << "End Valid:    ";
       timeDisplay(s, endValid);
-       
+     
       s.setf(ios::scientific, ios::floatfield);
-      s.precision(8);
+      s.precision(8); 
       s.fill(' ');
 
       s << endl

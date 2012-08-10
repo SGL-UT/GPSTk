@@ -159,7 +159,7 @@ namespace gpstk
       catch(SVNumXRef::NoNAVSTARNumberFound)
       { 
 	s << "XX";
-      } 
+      }  
        
       s << endl
         << endl
@@ -175,21 +175,19 @@ namespace gpstk
         << "NED accuracy change rate index :      " << setfill(' ')
         << setw(4) << dec << URAned2;
      
+    
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
       s.precision(0);
       s.fill(' ');
-     
+ 
       s << endl
         << endl;
-      s << "                         Week(10bt)  SOW      DOW     UTD   SOD"
+      s << "                          Week(10bt)  SOW      DOW     UTD   SOD"
         << "     MM/DD/YYYY   HH:MM:SS\n"; 
-      s << "Predicted Time of Week:  ";
+      s << "Time of Prediction(Top):  ";
       timeDisplay(s, ctTop);
-      s << endl
-        << "TrasmitTime:             ";
-      timeDisplay(s, transmitTime);
       s << endl;
       s.flags(oldFlags);                
    } // end of dumpHeader()   
