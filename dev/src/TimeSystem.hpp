@@ -64,7 +64,10 @@ namespace gpstk
          GAL,         ///< Galileo system time
          COM,         ///< Compass system time(BeiDou Time, BDT)
          UTC,         ///< Coordinated Universal Time (e.g., from NTP)
+         UT1,         ///< UT0 corrected for polar wandering 
          TAI,         ///< International Atomic Time
+         TT,          ///< Terrestial Time
+         
          // count MUST BE LAST
          count        ///< the number of systems - not a system
       };

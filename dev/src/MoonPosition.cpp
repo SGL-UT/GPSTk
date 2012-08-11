@@ -40,10 +40,10 @@ namespace gpstk
 
 
       // Time of the first valid time
-   const CommonTime MoonPosition::initialTime = CivilTime(1900, 3, 1, 0, 0, 0.0);
+   const CommonTime MoonPosition::initialTime = CivilTime(1900, 3, 1, 0, 0, 0.0,TimeSystem::Any);
 
       // Time of the last valid time
-   const CommonTime MoonPosition::finalTime = CivilTime(2100, 2, 28, 0, 0, 0.0);
+   const CommonTime MoonPosition::finalTime = CivilTime(2100, 2, 28, 0, 0, 0.0,TimeSystem::Any);
 
 
       // Coefficients for fundamental arguments
@@ -137,9 +137,12 @@ namespace gpstk
       // @throw InvalidRequest If the request can not be completed for 
       // any reason, this is thrown. The text may have additional
       // information as to why the request failed.
-   Triple MoonPosition::getPosition(const CommonTime& t) const
+   Triple MoonPosition::getPosition(const CommonTime& t2) const
       throw(InvalidRequest)
    {
+       // Maybe it's not good way, but let's get it to work temporarily!
+       CommonTime t(t2);
+       t.setTimeSystem(TimeSystem::Any);
 
          // Test if the time interval is correct
       if ( (t < MoonPosition::initialTime) ||
@@ -167,9 +170,12 @@ namespace gpstk
        *
        * @param t Epoch
        */
-   Triple MoonPosition::getPositionCIS(const CommonTime& t) const
+   Triple MoonPosition::getPositionCIS(const CommonTime& t2) const
       throw(InvalidRequest)
    {
+       // Maybe it's not good way, but let's get it to work temporarily!
+       CommonTime t(t2);
+       t.setTimeSystem(TimeSystem::Any);
 
          // Test if the time interval is correct
       if ( (t < MoonPosition::initialTime) ||

@@ -39,10 +39,10 @@ namespace gpstk
 
 
       // Time of the first valid time
-   const CommonTime SunPosition::initialTime = CivilTime(1900, 3, 1, 0, 0, 0.0);
+   const CommonTime SunPosition::initialTime = CivilTime(1900, 3, 1, 0, 0, 0.0,TimeSystem::Any);
 
       // Time of the last valid time
-   const CommonTime SunPosition::finalTime = CivilTime(2100, 2, 28, 0, 0, 0.0);
+   const CommonTime SunPosition::finalTime = CivilTime(2100, 2, 28, 0, 0, 0.0,TimeSystem::Any);
 
 
       // Returns the position of Sun ECEF coordinates (meters) at the 
@@ -52,9 +52,12 @@ namespace gpstk
       // @throw InvalidRequest If the request can not be completed for any
       //    reason, this is thrown. The text may have additional
       //    information as to why the request failed.
-   Triple SunPosition::getPosition(const CommonTime& t) const
+   Triple SunPosition::getPosition(const CommonTime& t2) const
       throw(InvalidRequest)
    {
+      // Maybe it's not good way, but let's get it to work temporarily!
+       CommonTime t(t2);
+       t.setTimeSystem(TimeSystem::Any);
 
          // Test if the time interval is correct
       if ( (t < SunPosition::initialTime) ||
@@ -79,9 +82,13 @@ namespace gpstk
        * in meters)
        * @param t Epoch
        */
-   Triple SunPosition::getPositionCIS(const CommonTime& t) const
+   Triple SunPosition::getPositionCIS(const CommonTime& t2) const
       throw(InvalidRequest)
    {
+
+       // Maybe it's not good way, but let's get it to work temporarily!
+       CommonTime t(t2);
+       t.setTimeSystem(TimeSystem::Any);
 
          // Test if the time interval is correct
       if ( (t < SunPosition::initialTime) ||

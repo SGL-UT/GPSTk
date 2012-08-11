@@ -55,7 +55,9 @@ namespace gpstk
        string("GAL"),
        string("COM"),
        string("UTC"),
-       string("TAI")
+       string("UT1"),
+       string("TAI"),
+       string("TT")
      };
 
    void TimeSystem::setTimeSystem(const Systems& sys)
