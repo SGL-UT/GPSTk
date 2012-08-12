@@ -135,6 +135,9 @@ namespace gpstk
                 scanTime(data.deactivationDate, ddate, "%Y %m %d");
             }
 
+            // It's not a good way!!! 
+            data.launchDate.setTimeSystem(TimeSystem::Any);
+            data.deactivationDate.setTimeSystem(TimeSystem::Any);
 
                // Insert data in data map
             setData(sat, data);

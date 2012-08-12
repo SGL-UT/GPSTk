@@ -283,7 +283,10 @@ namespace gpstk
 
          // Find out if satellite belongs to block "IIR", because
          // satellites of block IIR have a 180 phase shift
-      if(satData.getBlock( satid, time ) == "IIR")
+      CommonTime time2(time);
+      time2.setTimeSystem(TimeSystem::Any);
+      	
+      if(satData.getBlock( satid, time2 ) == "IIR")
       {
          wind_up = PI;
       }
