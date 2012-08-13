@@ -32,6 +32,7 @@
 #include "MiscMath.hpp"
 #include <fstream>
 #include "MJD.hpp"
+#include "DebugUtils.hpp"
 
 namespace gpstk
 {
@@ -42,6 +43,8 @@ namespace gpstk
                                   const EOPDataStore::EOPData& d)
       throw()
    {
+      GPSTK_ASSERT(utc.getTimeSystem()==TimeSystem::UTC);
+
       std::vector<double> data(5,0.0);
       
       data[0] = d.xp;
@@ -59,6 +62,8 @@ namespace gpstk
    EOPDataStore::EOPData EOPDataStore::getEOPData(const CommonTime& utc) const
          throw(InvalidRequest)
    {
+       GPSTK_ASSERT(utc.getTimeSystem()==TimeSystem::UTC);
+
       std::vector<double> data = getData(utc);
 
       return EOPData(data[0],data[1],data[2],data[3],data[4]);
@@ -103,7 +108,7 @@ namespace gpstk
             dEps = StringUtils::asDouble(line.substr(175,10))/1000.0;   // 
          }
          
-         addEOPData(MJD(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+         addEOPData(MJD(mjd,TimeSystem::UTC), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
       };
       inpf.close();
 
@@ -170,7 +175,7 @@ namespace gpstk
          dPsi *= 1e-6;
          dEps *= 1e-6;
 
-         addEOPData(MJD(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+         addEOPData(MJD(mjd,TimeSystem::UTC), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
       };
       inpf.close();
 
@@ -234,7 +239,7 @@ namespace gpstk
             double dPsi = 0.0;
             double dEps = 0.0;
 
-            addEOPData(MJD(mjd), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
+            addEOPData(MJD(mjd,TimeSystem::UTC), EOPData(xp,yp,UT1mUTC,dPsi,dEps));
          }
 
       }  // End of 'while'
