@@ -63,7 +63,13 @@ namespace gpstk
       virtual ~OrbElemICE() {}
 
          /// Clone method
-      virtual OrbElemICE* clone() const;
+         /// Implication of the "= 0" at this end is that this is a 
+         /// "pure virtual" method and that makes OrbElemICE an abstract 
+         /// class.  That is to say no objects of type OrbElemICE may
+         /// be constructed.   This is a good thing since OrbElemICE
+         /// doesn't even provide methods to load its' members.  
+         /// Only its' descendents may be instantiated.         
+      virtual OrbElemICE* clone() const = 0;
 
       virtual std::string getName() const
       {
@@ -98,7 +104,8 @@ namespace gpstk
    
       double getAdjIAURAed(const double elevation) const
          throw( InvalidRequest );
-         /** Compute none-elevative dependent URA values
+         
+         /** Compute non-elevative dependent URA values
            * See IS-GPS-800 3.5.3
            */
       double getIAURAned(const CommonTime& t) const

@@ -67,11 +67,6 @@ namespace gpstk
      transmitTime.setTimeSystem(TimeSystem::GPS);    
    }
 
-   OrbElemICE* OrbElemICE::clone() const
-   {
-      return new OrbElemICE (*this); 
-   }
-
       // See IS-GPS-200 30.3.3.1.1.4
       //     IS-GPS-705 20.3.3.1.1.4
       //     IS-GPS-800 3.5.3.5
