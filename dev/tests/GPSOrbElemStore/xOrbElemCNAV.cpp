@@ -376,10 +376,10 @@ int main( int argc, char * argv[] )
    Xvt  xvt = cec.svXvt( dt ); 
    double ClkCorr = cec.svClockBias( dt );
    double ClkDrift = cec.svClockDrift( dt ); 
+   cout.precision(11);
    cout << "Position cec:    " << xvt.x<< endl;
    cout << "Velocity cec:    " << xvt.v << endl;
    cout.setf(ios::scientific, ios::floatfield);
-   cout.precision(11);
    cout << "RelCorr cec:     "        << cec.svRelativity(dt) << endl;
    cout << "Clock Bias cec:  "        << ClkCorr << endl;
    cout << "Clock Drift cec: "        << ClkDrift << endl; 
