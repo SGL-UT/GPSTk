@@ -10,7 +10,8 @@ else
 {
    GPSBuildLibrary geodyn : 
          AtmosphericDrag.cpp CiraExponentialDrag.cpp EarthBody.cpp EarthOceanTide.cpp EarthPoleTide.cpp EarthSolidTide.cpp EGM96GravityModel.cpp ForceModelList.cpp 
-         HarrisPriesterDrag.cpp  JGM3GravityModel.cpp KeplerOrbit.cpp LEOSatOrbit.cpp Msise00Drag.cpp MoonForce.cpp NavSatOrbit.cpp PvtStore.cpp
+         HarrisPriesterDrag.cpp IERS.cpp IERSConventions.cpp 
+         JGM3GravityModel.cpp KeplerOrbit.cpp LEOSatOrbit.cpp Msise00Drag.cpp MoonForce.cpp NavSatOrbit.cpp PvtStore.cpp
          ReferenceFrames.cpp RelativityEffect.cpp RungeKuttaFehlberg.cpp 
 #         SatOrbit.cpp SatOrbitPropagator.cpp SatOrbitStore.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
          SatOrbit.cpp SatOrbitPropagator.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
@@ -18,7 +19,8 @@ else
 
    InstallFile $(INCDIR) :
          ASConstant.hpp AtmosphericDrag.hpp CiraExponentialDrag.hpp EarthBody.hpp EarthOceanTide.hpp EarthPoleTide.hpp EarthSolidTide.hpp EGM96GravityModel.hpp EquationOfMotion.hpp 
-         ForceModel.hpp ForceModelList.hpp HarrisPriesterDrag.hpp LEOSatOrbit.hpp Msise00Drag.hpp NavSatOrbit.hpp PvtStore.hpp
+         ForceModel.hpp ForceModelList.hpp HarrisPriesterDrag.hpp
+         IERS.hpp IERSConventions.hpp LEOSatOrbit.hpp Msise00Drag.hpp NavSatOrbit.hpp PvtStore.hpp
          SphericalHarmonicGravity.hpp Integrator.hpp JGM3GravityModel.hpp
          KeplerOrbit.hpp MoonForce.hpp ReferenceFrames.hpp RelativityEffect.hpp RungeKuttaFehlberg.hpp SatOrbit.hpp SatOrbitPropagator.hpp SatOrbitStore.hpp SolarRadiationPressure.hpp
          Spacecraft.hpp SunForce.hpp UTCTime.hpp

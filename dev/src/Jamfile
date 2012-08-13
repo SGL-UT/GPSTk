@@ -95,8 +95,6 @@ else
       GPSWeekZcount.cpp
       GPSZcount.cpp
       HelmertTransform.cpp
-#      IERS.cpp
-#      IERSConventions.cpp
       IonexData.cpp
       IonexHeader.cpp
       IonexStore.cpp
@@ -300,8 +298,6 @@ else
       GPSWeekZcount.hpp	
       GPSZcount.hpp	
       HelmertTransform.hpp	
-#      IERS.hpp
-#      IERSConventions.hpp
       InOutFramework.hpp	
       IonexBase.hpp	
       IonexData.hpp	

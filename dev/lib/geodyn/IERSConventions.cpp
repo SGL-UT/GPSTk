@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: IERSConventions.cpp 3203 2012-07-15 10:38:44Z yanweignss $"
 
 /**
  * @file IERSConventions2003.cpp
