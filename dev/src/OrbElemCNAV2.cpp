@@ -184,7 +184,7 @@ namespace gpstk
         << endl
         << "Health bits                    :      0x" << setfill('0')  << setw(2) << L1CHealth;
       s.setf(ios::uppercase);
-      s << endl;
+      s << setfill(' ') << endl;
       s << "Tgd                            : " << setw(13) << setprecision(6) << scientific
         << Tgd << " sec" << endl
         << "ISCP                           : " << setw(13) << setprecision(6) << scientific
