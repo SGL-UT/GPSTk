@@ -46,7 +46,7 @@
 
 #include <vector>
 #include <cstddef>
-#include <stdint.h>
+#include "gpstkplatform.h" //#include <stdint.h>
 #include <string>
 
 #include "ObsID.hpp"

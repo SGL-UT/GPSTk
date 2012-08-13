@@ -36,25 +36,9 @@ namespace gpstk
    /** @addtogroup ephemcalc */
    //@{
 
-      /** The maximum number of active satellites in the Compass
-       * constellation. */
+      /// The maximum number of active satellites in the Compass
+      /// constellation. 
    const long MAX_PRN_COM     = 30;
-
-   // ---------------- COMPASS ----------------------------------
-      /// COM B1 carrier frequency in Hz.   
-   const double B1_FREQ_COM   = 1561.098e6;  // B1-E2-L2
-      /// COM B2 carrier frequency in Hz.   
-   const double B2_FREQ_COM   = 1207.140e6;  // B2-E5b-L7
-      /// COM B3 carrier frequency in Hz.   
-   const double B3_FREQ_COM   = 1268.520e6;  // B3-E6-L6
-      
-      /// COM B1 carrier wavelength in meters
-   const double B1_WAVELENGTH_COM  = 0.192039486310276;
-      /// COM B2 carrier wavelength in meters.
-   const double B2_WAVELENGTH_COM  = 0.248349369584307; //0.24834937;
-      /// COM B3 carrier wavelength in meters.
-   const double B3_WAVELENGTH_COM  = 0.236332464604421; //0.236332246460442;
-
 
    //@}
 

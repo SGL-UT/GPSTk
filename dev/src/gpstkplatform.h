@@ -41,42 +41,41 @@
 #define HAVE_STRING_H 1
 #define STDC_HEADERS  1
 
-// commented out - problems with doubly-defined types on Windows
-
-//typedef __int8  int8_t;
-//typedef __int16 int16_t;
-//typedef __int32 int32_t;
-//typedef __int64 int64_t;
-//typedef unsigned __int8  uint8_t;
-//typedef unsigned __int16 uint16_t;
-//typedef unsigned __int32 uint32_t;
-//typedef unsigned __int64 uint64_t;
-
+// To get rid of 'stdint.h' for Microsoft visual studio
+#if (_MSC_VER < 1300)
+    typedef signed char       int8_t;
+    typedef signed short      int16_t;
+    typedef signed int        int32_t;
+    typedef unsigned char     uint8_t;
+    typedef unsigned short    uint16_t;
+    typedef unsigned int      uint32_t;
+    typedef signed __int64    int64_t;
+    typedef unsigned __int64  uint64_t;
+#elif(_MSC_VER <= 1500)
+    typedef signed __int8     int8_t;
+    typedef signed __int16    int16_t;
+    typedef signed __int32    int32_t;
+    typedef unsigned __int8   uint8_t;
+    typedef unsigned __int16  uint16_t;
+    typedef unsigned __int32  uint32_t;
+    typedef signed __int64    int64_t;
+    typedef unsigned __int64  uint64_t;
+#else        
+    #include <stdint.h>
+#endif
 
 //#include <sys/types.h>
 #include <sys/timeb.h>
-#include <stdint.h>
-
 
 #elif defined __SUNPRO_CC
 
 #include <sys/types.h>
 #include <sys/timeb.h>
 
-#else
+#else   
 
 #include <stdint.h>
 
-#endif
+#endif  // _MSC_VER
 
-typedef int8_t  Int8;
-typedef int16_t Int16;
-typedef int32_t Int32;
-typedef int64_t Int64;
-
-typedef uint8_t  UInt8;
-typedef uint16_t UInt16;
-typedef uint32_t UInt32;
-typedef uint64_t UInt64;
-
-#endif
+#endif  // GPSTK_GPSTKPLATFORM_H

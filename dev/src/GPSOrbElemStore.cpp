@@ -64,7 +64,7 @@ namespace gpstk
    Xvt GPSOrbElemStore::getXvt(const SatID& sat, const CommonTime& t) const
       throw( InvalidRequest )
    {
-      OrbElem* ref;
+      OrbElem* ref = 0;
       return getXvt(sat, t, ref);
    } 
 
