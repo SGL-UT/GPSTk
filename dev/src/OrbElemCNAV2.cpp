@@ -137,26 +137,32 @@ namespace gpstk
       long beginFitSOW = TOWCount;
       short beginFitWk = TOWWeek;
 
-      transmitTime = GPSWeekSecond(TOWWeek, TOWCount, TimeSystem::GPS);
+         // NOTE: TOWCount actually points to the beginning time of
+         // the next 18 second frame.  Therefore, to obtain the
+         // transmit time of the beginning of THIS message, we subtract 18 sec.
+      transmitTime = GPSWeekSecond(TOWWeek, TOWCount-18, TimeSystem::GPS);
 
+         // If the Toe is an even-hour, then it may be assumed that this is
+         // NOT a fresh upload (IS-GPS-200, 20.3.4.5).  Therefore, the 
+         // transmission SHOULD have started on an even two-hour boundary 
+         // and that is what will be assumed for purposes of the beginning
+         // time of validity.
       long longToe = (long) Toe;
-      long Xmit = 0;
       long leastSOW = (static_cast<GPSWeekSecond>(transmitTime)).sow;
-      if((longToe % 7200) != 0)
+      long adjXmit = leastSOW;
+      if((longToe % 3600) == 0)
       {
-         Xmit = leastSOW - (leastSOW % 30);
+         adjXmit = leastSOW - (leastSOW % 3600); 
       }
-      else
-      {
-         Xmit = leastSOW - (leastSOW % 7200); 
-      }
-      beginValid = GPSWeekSecond(TOWWeek, Xmit, TimeSystem::GPS ); 
+      beginValid = GPSWeekSecond(TOWWeek, adjXmit, TimeSystem::GPS ); 
 
       ctTop = GPSWeekSecond(TopWeek, Top, TimeSystem::GPS);
-      ctToe = GPSWeekSecond(TopWeek, Toe, TimeSystem::GPS); 
+      ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS); 
       ctToc = ctToe;
       
-         // Speculation at this point. Need confirmation
+         // Speculation at this point. Need confirmation in form of
+         // upated IS-GPS-200 Table 20-XIII that includes a 3 hour
+         // fit interval. 
       endValid = ctToe + 3600;  
 
       dataLoadedFlag = true;   
@@ -185,11 +191,11 @@ namespace gpstk
         << "Health bits                    :      0x" << setfill('0')  << setw(2) << L1CHealth;
       s.setf(ios::uppercase);
       s << setfill(' ') << endl;
-      s << "Tgd                            : " << setw(13) << setprecision(6) << scientific
+      s << "Tgd                            : " << setw(15) << setprecision(8) << scientific
         << Tgd << " sec" << endl
-        << "ISCP                           : " << setw(13) << setprecision(6) << scientific
+        << "ISCP                           : " << setw(15) << setprecision(8) << scientific
         << ISCP << " sec" << endl
-        << "ISCD                           : " << setw(13) << setprecision(6) << scientific
+        << "ISCD                           : " << setw(15) << setprecision(8) << scientific
         << ISCD << " sec" << endl;
 
       s.setf(ios::fixed, ios::floatfield);
@@ -200,9 +206,9 @@ namespace gpstk
 
       s << endl
         << endl;
-      s << "                Week(10bt)  SOW      DOW     UTD   SOD"
+      s << "              Week(10bt)  SOW      DOW     UTD   SOD"
         << "     MM/DD/YYYY   HH:MM:SS\n"; 
-      s << "Transmit Time:  ";
+      s << "Transmit   :  ";
       timeDisplay(s, transmitTime);
       s << endl;
       s.flags(oldFlags);                

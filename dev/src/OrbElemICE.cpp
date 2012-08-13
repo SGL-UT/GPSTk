@@ -179,9 +179,9 @@ namespace gpstk
  
       s << endl
         << endl;
-      s << "                          Week(10bt)  SOW      DOW     UTD   SOD"
+      s << "              Week(10bt)  SOW      DOW     UTD   SOD"
         << "     MM/DD/YYYY   HH:MM:SS\n"; 
-      s << "Time of Prediction(Top):  ";
+      s << "Predict    :  ";
       timeDisplay(s, ctTop);
       s << endl;
       s.flags(oldFlags);                
