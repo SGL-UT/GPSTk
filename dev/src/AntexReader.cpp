@@ -232,7 +232,7 @@ namespace gpstk
                             asInt( strip( line.substr(12,6) ) ),
                             asInt( strip( line.substr(18,6) ) ),
                             asInt( strip( line.substr(24,6) ) ),
-                            asDouble( strip( line.substr(30,13) ) ) );
+                            asDouble( strip( line.substr(30,13) ) ),TimeSystem::Any );
 
             antenna.setAntennaValidFrom( valFrom );
 
@@ -249,7 +249,7 @@ namespace gpstk
                              asInt( strip( line.substr(12,6) ) ),
                              asInt( strip( line.substr(18,6) ) ),
                              asInt( strip( line.substr(24,6) ) ),
-                             asDouble( strip( line.substr(30,13) ) ) );
+                             asDouble( strip( line.substr(30,13) ) ),TimeSystem::Any );
 
             antenna.setAntennaValidUntil( valUntil );
 
