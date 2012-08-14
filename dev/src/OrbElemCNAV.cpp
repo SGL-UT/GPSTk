@@ -95,7 +95,7 @@ namespace gpstk
       satID     = satIDArg;
 
            // Message Type 10 data
-      unsigned long TOWCount10  = message10.asUnsignedLong(20, 17, 300);
+      unsigned long TOWCount10  = message10.asUnsignedLong(20, 17, 6);
       short TOWWeek             = message10.asUnsignedLong(38, 13, 1);
       L1Health                  = message10.asUnsignedLong(51, 1, 1);
       L2Health                  = message10.asUnsignedLong(52, 1, 1);
@@ -112,7 +112,7 @@ namespace gpstk
       w                         = message10.asDoubleSemiCircles(238, 33, -32);
       
          // Message Type 11 data
-      unsigned long TOWCount11  = message11.asUnsignedLong(20, 17, 300);
+      unsigned long TOWCount11  = message11.asUnsignedLong(20, 17, 6);
       OMEGA0                    = message11.asDoubleSemiCircles(49, 33, -32);
       i0                        = message11.asDoubleSemiCircles(82, 33, -32);
       double deltaOMEGAdot      = message11.asDoubleSemiCircles(115, 17, -44);
@@ -125,7 +125,7 @@ namespace gpstk
       Cuc                       = message11.asSignedDouble(248, 21, -30);
 
          // Message Type Clock data
-      unsigned long TOWCountClk = messageClk.asUnsignedLong(20, 17, 300);
+      unsigned long TOWCountClk = messageClk.asUnsignedLong(20, 17, 6);
       URAned0                   = messageClk.asLong(49, 5, 1);
       URAned1                   = messageClk.asUnsignedLong(54, 3, 1);
       URAned2                   = messageClk.asUnsignedLong(57, 3, 1);
@@ -163,21 +163,23 @@ namespace gpstk
          endFitWk++;
       }
 
-      ctMsg10 =    GPSWeekSecond(TOWWeek, TOWCount10, TimeSystem::GPS);
-      ctMsg11 =    GPSWeekSecond(TOWWeek, TOWCount11, TimeSystem::GPS);
-      ctMsgClk =    GPSWeekSecond(TOWWeek, TOWCountClk, TimeSystem::GPS);
+         // Note that TOW times are referenced to the beginning of 
+         // the next message.  Therefore, the transmit time is TOW - 6 sec
+      ctMsg10 =    GPSWeekSecond(TOWWeek, TOWCount10-6, TimeSystem::GPS);
+      ctMsg11 =    GPSWeekSecond(TOWWeek, TOWCount11-6, TimeSystem::GPS);
+      ctMsgClk =    GPSWeekSecond(TOWWeek, TOWCountClk-6, TimeSystem::GPS);
 
       long testSOW1 = (static_cast<GPSWeekSecond>(ctMsg10)).sow;
       long testSOW2 = (static_cast<GPSWeekSecond>(ctMsg11)).sow;
       long testSOW3 = (static_cast<GPSWeekSecond>(ctMsgClk)).sow;
       long longToe = (long) Toe;
       long Xmit = 0;
-      if((longToe % 7200)!=0)  // Not Even two hour change
+      if((longToe % 7200)!=0)  // Not even two hour change
       {
          long leastSOW = testSOW1;
          if(testSOW2<leastSOW) leastSOW = testSOW2;
          if(testSOW3<leastSOW) leastSOW = testSOW3;
-         Xmit = leastSOW - (leastSOW % 30); 
+         Xmit = leastSOW - (leastSOW % 24);    // See -705B Table 20-XII
       }
       else
       {
@@ -195,8 +197,8 @@ namespace gpstk
       if(Top>testSOW) TopWeek--;
 
       ctTop = GPSWeekSecond(TopWeek, Top, TimeSystem::GPS);
-      ctToe = GPSWeekSecond(TopWeek, Toe, TimeSystem::GPS);
-      ctToc = GPSWeekSecond(TopWeek, Toc, TimeSystem::GPS);
+      ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
+      ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
        
          
          // Speculation at this point. Need confirmation
@@ -225,12 +227,8 @@ namespace gpstk
         << "           SV STATUS"
         << endl
         << endl
-        << "Health L1 bit                  :      " << setfill('0') << setw(1) << L1Health
-        << endl
-        << "Health L2 bit                  :      " << setfill('0') << setw(1) << L2Health
-        << endl
-        << "Health L5 bit                  :      " << setfill('0') << setw(1) << L5Health;
-
+        << "Health bits  L1, L2, L5        :     " << setfill('0') << setw(1)
+        << L1Health << ",  " << L2Health << ",  " << L5Health; 
      
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
@@ -252,7 +250,7 @@ namespace gpstk
       s << endl;
       s << "Clock:        ";
       timeDisplay(s, ctMsgClk);
-      s << endl << endl;
+      s << endl;
  //     s.flags(oldFlags);                
    } // end of dumpHeader()   
 

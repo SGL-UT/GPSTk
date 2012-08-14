@@ -161,15 +161,12 @@ namespace gpstk
         << "           ACCURACY PARAMETERS"
         << endl
         << endl    
-        << "ED accuracy index              :      " << setfill(' ')
+        << "ED accuracy index              :  " << setfill(' ')
         << setw(4) << dec << URAed << endl
-        << "NED accuracy index             :      " << setfill(' ')
-        << setw(4) << dec << URAned0 << endl
-        << "NED accuracy change index      :      " << setfill(' ')
-        << setw(4) << dec << URAned1 << endl
-        << "NED accuracy change rate index :      " << setfill(' ')
+        << "NED accuracy indices  0, 1, 2  :  " << setfill(' ')
+        << setw(4) << dec << URAned0 << ", "  
+        << setw(4) << dec << URAned1 << ", " 
         << setw(4) << dec << URAned2;
-     
     
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
@@ -179,8 +176,8 @@ namespace gpstk
  
       s << endl
         << endl;
-      s << "              Week(10bt)  SOW      DOW     UTD   SOD"
-        << "     MM/DD/YYYY   HH:MM:SS\n"; 
+      s << "              Week(10bt)     SOW     DOW   UTD     SOD"
+        << "   MM/DD/YYYY   HH:MM:SS\n"; 
       s << "Predict    :  ";
       timeDisplay(s, ctTop);
       s << endl;

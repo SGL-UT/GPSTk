@@ -150,9 +150,9 @@ namespace gpstk
       long longToe = (long) Toe;
       long leastSOW = (static_cast<GPSWeekSecond>(transmitTime)).sow;
       long adjXmit = leastSOW;
-      if((longToe % 3600) == 0)
+      if((longToe % 7200) == 0)
       {
-         adjXmit = leastSOW - (leastSOW % 3600); 
+         adjXmit = leastSOW - (leastSOW % 7200); 
       }
       beginValid = GPSWeekSecond(TOWWeek, adjXmit, TimeSystem::GPS ); 
 
