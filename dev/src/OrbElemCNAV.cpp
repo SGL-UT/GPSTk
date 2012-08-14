@@ -251,12 +251,7 @@ namespace gpstk
       s << "Clock:        ";
       timeDisplay(s, ctMsgClk);
       s << endl;
- //     s.flags(oldFlags);                
    } // end of dumpHeader()   
-
-   void OrbElemCNAV::dumpTerse(ostream& s) const
-      throw(InvalidRequest )
-   {} // end of dumpTerse() 
 
    ostream& operator<<(ostream& s, const OrbElemCNAV& eph)
    {

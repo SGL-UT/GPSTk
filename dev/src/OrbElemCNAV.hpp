@@ -102,17 +102,9 @@ namespace gpstk
       virtual void dumpHeader(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 
-         /** Generate a formatted human-readable one-line output that summarizes
-           * the critical times associated with this object and send it to the
-           * designated output stream (default to cout).
-           * @throw Invalid Parameter if the object has been instantiated, but not loaded.
-           */   
-      void dumpTerse(std::ostream& s = std::cout) const
-         throw( InvalidRequest );
-
-      CommonTime ctMsg10;
-      CommonTime ctMsg11;
-      CommonTime ctMsgClk;
+      CommonTime ctMsg10;          /**< Message 10 transmit time */
+      CommonTime ctMsg11;          /**< Message 11 transmit time */
+      CommonTime ctMsgClk;         /**< Message 30-37 transmit time */
   
       short  L1Health;             /**< SV L1 health */
       short  L2Health;             /**< SV L2 health */

@@ -140,24 +140,6 @@ namespace gpstk
    {
       ios::fmtflags oldFlags = s.flags();
        
-/*      SVNumXRef svNumXRef; 
-      int NAVSTARNum = 0; 
-
-      s << endl;
-      s << "PRN : " << setw(2) << satID.id << " / "
-        << "SVN : " << setw(2);
-      try
-      {
-	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-        s << NAVSTARNum << "  ";
-      }
-      catch(SVNumXRef::NoNAVSTARNumberFound)
-      { 
-	s << "XX";
-      }  
-       
-      s << endl
-        << endl*/
       s << "           ACCURACY PARAMETERS"
         << endl
         << endl    
@@ -186,7 +168,54 @@ namespace gpstk
 
    void OrbElemICE::dumpTerse(ostream& s) const
       throw(InvalidRequest )
-   {} // end of dumpTerse() 
+   {
+     
+       // Check if the subframes have been loaded before attempting
+       // to dump them.
+      if (!dataLoaded())
+      {
+         InvalidRequest exc("No data in the object");
+         GPSTK_THROW(exc);
+      }
+
+      ios::fmtflags oldFlags = s.flags();
+
+      s.setf(ios::fixed, ios::floatfield);
+      s.setf(ios::right, ios::adjustfield);
+      s.setf(ios::uppercase);
+      s.precision(0);
+      s.fill(' ');
+
+      SVNumXRef svNumXRef; 
+      int NAVSTARNum = 0;
+      try
+      {
+         NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+         s << setw(2) << " " << NAVSTARNum << "  ";
+      }
+      catch(SVNumXRef::NoNAVSTARNumberFound)
+      { 
+         s << "  XX  ";
+      }
+
+      s << setw(2) << satID.id << " ! ";
+      
+      string tform = "%3j %02H:%02M:%02S";
+
+      s << printTime(beginValid, tform) << " ! ";
+      s << printTime(ctToe, tform) << " ! ";
+      s << printTime(endValid, tform) << " !  ";
+
+      int tempHealth = 1;
+      if (healthy) tempHealth = 0;
+      s << "      ! ";                  // URA space
+      s << "      !    ";      // IODC space
+      if (healthy) s << "     0 ! ";
+       else        s << "     1 ! ";
+      s << endl;
+      
+      s.flags(oldFlags);
+   } // end of dumpTerse() 
 
    ostream& operator<<(ostream& s, const OrbElemICE& eph)
    {

@@ -436,14 +436,12 @@ namespace gpstk
       int NAVSTARNum = 0;
       try
       {
-	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-        
-     
-        s << setw(2) << " " << NAVSTARNum << "  ";
+         NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+         s << setw(2) << " " << NAVSTARNum << "  ";
       }
       catch(SVNumXRef::NoNAVSTARNumberFound)
       { 
-	s << "  XX  ";
+         s << "  XX  ";
       }
 
       s << setw(2) << satID.id << " ! ";

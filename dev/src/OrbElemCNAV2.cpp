@@ -214,10 +214,6 @@ namespace gpstk
       s.flags(oldFlags);                
    } // end of dumpHeader()   
 
-   void OrbElemCNAV2::dumpTerse(ostream& s) const
-      throw(InvalidRequest )
-   {} // end of dumpTerse() 
-
    ostream& operator<<(ostream& s, const OrbElemCNAV2& eph)
    {
       try
