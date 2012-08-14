@@ -393,7 +393,7 @@ namespace gpstk
       }
      
       OrbElem::dumpHeader(s);
-      s << "Source : " << getNameLong() << endl;
+   /*   s << "Source : " << getNameLong() << endl;
 
       SVNumXRef svNumXRef; 
       int NAVSTARNum = 0; 
@@ -413,8 +413,8 @@ namespace gpstk
          
 
       s << endl
-        << endl
-      	<< "           SUBFRAME OVERHEAD"
+        << endl */
+      s	<< "           SUBFRAME OVERHEAD"
       	<< endl
       	<< endl
       	<< "               SOW    DOW:HH:MM:SS     IOD\n";

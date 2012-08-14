@@ -140,7 +140,7 @@ namespace gpstk
    {
       ios::fmtflags oldFlags = s.flags();
        
-      SVNumXRef svNumXRef; 
+/*      SVNumXRef svNumXRef; 
       int NAVSTARNum = 0; 
 
       s << endl;
@@ -157,8 +157,8 @@ namespace gpstk
       }  
        
       s << endl
-        << endl
-        << "           ACCURACY PARAMETERS"
+        << endl*/
+      s << "           ACCURACY PARAMETERS"
         << endl
         << endl    
         << "ED accuracy index              :  " << setfill(' ')

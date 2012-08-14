@@ -180,7 +180,7 @@ namespace gpstk
       ios::fmtflags oldFlags = s.flags();
 
       OrbElem::dumpHeader(s);
-      s << "Source : " << getNameLong() << endl;
+      //s << "Source : " << getNameLong() << endl;
   
       OrbElemICE::dumpHeader(s);
     

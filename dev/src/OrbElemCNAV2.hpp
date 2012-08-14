@@ -94,7 +94,7 @@ namespace gpstk
 
       virtual std::string getNameLong() const
       {
-         return "L1C Navigation Message";
+         return "L1C Navigation Message (CNAV-2)";
       }
       
       virtual void dumpHeader(std::ostream& s = std::cout) const

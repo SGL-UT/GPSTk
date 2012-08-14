@@ -462,8 +462,26 @@ namespace gpstk
    {
       s << "****************************************************************"
         << "************" << endl
-        << "Broadcast Ephemeris (Engineering Units)";
+        << "Broadcast Ephemeris (Engineering Units) - " << getNameLong();
       s << endl;
+      
+      SVNumXRef svNumXRef; 
+      int NAVSTARNum = 0; 
+
+      s << endl;
+      s << "PRN : " << setw(2) << satID.id << " / "
+        << "SVN : " << setw(2);
+      try
+      {
+         NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
+         s << NAVSTARNum << "  ";
+      }
+      catch(SVNumXRef::NoNAVSTARNumberFound)
+      { 
+         s << "XX";
+      }
+      s << endl
+        << endl;
    } 
 
    void OrbElem::dumpFooter(ostream& s) const
