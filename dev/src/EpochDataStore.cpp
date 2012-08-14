@@ -244,11 +244,10 @@ namespace gpstk
       std::vector<double> vd(N, 0.0);
 
       double dt = t - its->first;
-      double err(0.0);
       
       for(int i = 0; i < N; i++)
       {
-         vd[i] = LagrangeInterpolation(times,datas[i],dt,err);
+         vd[i] = LagrangeInterpolation(times,datas[i],dt);
       }
 
       return vd;

@@ -49,11 +49,45 @@
 #include <cstring>   // for size_t
 #include <vector>
 #include "MathBase.hpp"
+#include "DebugUtils.hpp"
 
 namespace gpstk
 {
    /** @defgroup math Mathematical algorithms */
    //@{
+
+    /// This is a straightforward version of Lagrange Interpolation, and it is
+    /// here for the following existing LagrangeInterpolation is buggy
+    /// (corrupt when input data size is 2).
+    ///
+    /// template <class T>
+    /// T LagrangeInterpolation(const std::vector<T>& X, 
+    ///                         const std::vector<T>& Y, const T& x, T& err);
+    ///
+    /// Please DO KEEP THIS function unless you fix the existing bug.(Wei Yan)
+    ///
+    template <class T>
+    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, T x)
+    {
+        GPSTK_ASSERT(X.size()==Y.size());
+
+        T Yx(0.0);
+        for(size_t i=0;i<X.size();i++)
+        {
+            if(x==X[i]) return Y[i];
+
+            T Li(1.0);
+            for(size_t j=0;j<X.size();j++)
+            {
+                if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
+            }
+            Yx += Li*Y[i];
+        }
+
+        return Yx;
+
+    }  // end T LagrangeInterpolation(vector, vector, const T)
+
 
    /** Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
     * returning the value of Y(x). Also return an estimate of the estimation error in 'err'.
