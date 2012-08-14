@@ -21,7 +21,7 @@
 #include "PackedNavBits.hpp"
 #include "SatID.hpp"
 #include "ObsID.hpp"
-//#include "OrbElemCNAV.hpp"
+#include "OrbElemCNAV.hpp"
 #include "OrbElemCNAV2.hpp"
 #include "TimeString.hpp"
 #include "TimeConstants.hpp"
@@ -225,6 +225,128 @@ void ReadSynthneticCNAVData::process()
          }
              
       }   // End of if (CNAV2Record)
+
+
+         // Code for reading a CNAV record
+      else
+      {
+            // Set ObsID.  CNAV, so may be L2C or L5
+         ObsID obsID(ObsID::otNavMsg, ObsID::cbL5, ObsID::tcI5);
+         if (sigCode.find("L2")!=string::npos)
+         {
+            obsID.band = ObsID::cbL2;
+            obsID.code = ObsID::tcC2LM;
+         }
+
+            // Message 10
+            // Build input string for PackedNavBits.  Start with the
+            // number of characters in the record (fixed) then append
+            // the next two lines of data
+         string msg10String = "300 "; 
+         for (int i=0; i<2; ++i)
+         {
+            recordCount++;
+            if (! (in.getline(inputLine,100)) )
+            {
+               cerr << "Unexpected end of input file at line " << recordCount << endl; 
+               exit(1);
+            }
+            msg10String += inputLine; 
+         }
+
+            // Debug
+         cout << "msg10 input Strings: '" << msg10String << "'" << endl;
+         
+         PackedNavBits pnb10( satID, obsID, xMitTime );
+         try
+         {
+            pnb10.rawBitInput( msg10String ); 
+         }
+         catch(InvalidParameter exc)
+         {
+            cerr << "Conversion to PackedNavBits failed.  Message 10:" << endl;
+            cerr << exc.getText( ) << endl;
+            exit(1);
+         }
+         
+            // Message 11
+         string msg11String = "300 "; 
+         for (int i=0; i<2; ++i)
+         {
+            recordCount++;
+            if (! (in.getline(inputLine,100)) )
+            {
+               cerr << "Unexpected end of input file at line " << recordCount << endl; 
+               exit(1);
+            }
+            msg11String += inputLine; 
+         }
+
+            // Debug
+         cout << "msg11 input Strings: '" << msg11String << "'" << endl;
+         
+         PackedNavBits pnb11( satID, obsID, xMitTime );
+         try
+         {
+            pnb11.rawBitInput( msg11String ); 
+         }
+         catch(InvalidParameter exc)
+         {
+            cerr << "Conversion to PackedNavBits failed.  Message 11:" << endl;
+            cerr << exc.getText( ) << endl;
+            exit(1);
+         }
+         
+            // Message Clock
+         string msgClkString = "300 "; 
+         for (int i=0; i<2; ++i)
+         {
+            recordCount++;
+            if (! (in.getline(inputLine,100)) )
+            {
+               cerr << "Unexpected end of input file at line " << recordCount << endl; 
+               exit(1);
+            }
+            msgClkString += inputLine; 
+         }
+
+            // Debug
+         cout << "msgClk input Strings: '" << msgClkString << "'" << endl;
+         
+         PackedNavBits pnbClk( satID, obsID, xMitTime );
+         try
+         {
+            pnbClk.rawBitInput( msgClkString ); 
+         }
+         catch(InvalidParameter exc)
+         {
+            cerr << "Conversion to PackedNavBits failed.  Message Clk:" << endl;
+            cerr << exc.getText( ) << endl;
+            exit(1);
+         }
+         
+             // Convert the PackedNavBits into an OrbElemCNAV2 object
+         try
+         {
+            OrbElemCNAV oe( obsID, satID, pnb10, pnb11, pnbClk );
+               // Output a terse (one-line) summary of the object 
+            //oe.dumpTerse(out);
+            out << oe << endl;
+         }
+         catch(InvalidParameter exc)
+         {
+            cerr << "Conversion of PackedNavBit to OrbElemCNAV failed.  Message:" << endl;
+            cerr << exc.getText( )  << endl;
+            exit(1);
+         }
+         catch(InvalidRequest exc2)
+         {
+            cerr << "Output of OrbElemCNAV object failed.  Message:" << endl;
+            cerr << exc2.getText( )  << endl;
+            exit(1);
+         }
+             
+      }   // End of else
       
    }  // End of read loop
 
