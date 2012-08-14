@@ -336,19 +336,41 @@ void GenSyntheticCNAVData::convertCNAV(ofstream& out, const OrbElemFIC109& oe)
    int n_TOWWeek               = 13;
    int s_TOWWeek               = 1;
 
+      // debug
+   //if (oe.satID.id==1)
+   //{
+   //   if (oe.healthy) cout << "OrbElemFIC109  shows healthy.";
+   //    else          cout << "OrbElemFIC109  shows UNhealthy.";
+   //   cout << endl;
+   //}
+   /*
    unsigned long healthTrans   = 0;
    if (!oe.healthy) healthTrans = 1;
+
    unsigned long L1Health      = healthTrans;
    int n_L1Health              = 1;
    int s_L1Health              = 1;
 
-   unsigned long L2Health      = 0;
+   if (oe.satID.id==1)
+   {
+      cout << "healthTrans = "  << healthTrans << endl;
+      cout << "L1Health = " << L1Health << endl;
+   }
+   
+
+   unsigned long L2Health      = healthTrans;
    int n_L2Health              = 1;
    int s_L2Health              = 1;
 
-   unsigned long L5Health      = 0;
+   unsigned long L5Health      = healthTrans;
    int n_L5Health              = 1;
    int s_L5Health              = 1;
+   */
+   
+   unsigned long healthBits    = 0;
+   if (!oe.healthy) healthBits = 7;
+   int n_healthBits            = 3;
+   int s_healthBits            = 1;   
    
       // Form estimate of Top based on Toe and AODO
    double dTop                 = (static_cast<GPSWeekSecond>(oe.ctToe)).sow;
@@ -567,9 +589,10 @@ void GenSyntheticCNAVData::convertCNAV(ofstream& out, const OrbElemFIC109& oe)
    pnb10.addUnsignedLong(TOWMsg10, n_TOWMsg10, s_TOWMsg10);
    pnb10.addUnsignedLong(AlertMsg10, n_AlertMsg10, s_AlertMsg10);
    pnb10.addUnsignedLong(TOWWeek, n_TOWWeek, s_TOWWeek);
-   pnb10.addUnsignedLong(L1Health, n_L1Health, s_L1Health);
-   pnb10.addUnsignedLong(L2Health, n_L2Health, s_L2Health);
-   pnb10.addUnsignedLong(L5Health, n_L5Health, s_L5Health);
+   //pnb10.addUnsignedLong(L1Health, n_L1Health, s_L1Health);
+   //pnb10.addUnsignedLong(L2Health, n_L2Health, s_L2Health);
+   //pnb10.addUnsignedLong(L5Health, n_L5Health, s_L5Health);
+   pnb10.addUnsignedLong(healthBits, n_healthBits, s_healthBits);
    pnb10.addUnsignedLong(Top, n_Top, s_Top);
    pnb10.addLong(URAed, n_URAed, s_URAed);
    pnb10.addUnsignedLong(rToeMsg10, n_rToeMsg10, s_rToeMsg10);

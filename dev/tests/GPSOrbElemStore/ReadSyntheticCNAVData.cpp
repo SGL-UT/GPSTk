@@ -44,6 +44,7 @@ protected:
    virtual void process();
    gpstk::CommandOptionWithAnyArg inputOption;
    gpstk::CommandOptionWithAnyArg outputOption;
+   gpstk::CommandOptionNoArg      terseOption;
 };
 
 int main( int argc, char*argv[] )
@@ -71,10 +72,12 @@ ReadSynthneticCNAVData::ReadSynthneticCNAVData(const std::string& applName,
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the Synthetic CNAV data file to be read.", true),
-           outputOption('o', "output-file", "The name of the output file to write.", true)
+           outputOption('o', "output-file", "The name of the output file to write.", true),
+           terseOption('t', "terse output", "Test one-line-per-set output.", false)
 {
    inputOption.setMaxCount(1); 
    outputOption.setMaxCount(1);
+   terseOption.setMaxCount(1);
 }
 
 bool ReadSynthneticCNAVData::initialize(int argc, char *argv[])
@@ -101,6 +104,12 @@ void ReadSynthneticCNAVData::process()
    {
       cerr << "Failed to open output file. Exiting." << endl;
       exit(1);
+   }
+
+   if (terseOption.getCount()>0)
+   {
+      out << "         ! Begin Valid  !      Toe     ! End Valid    ! URA(m) !  IODC !   Health  !" << endl;
+      out << " SVN PRN ! DOY hh:mm:ss ! DOY hh:mm:ss ! DOY hh:mm:ss !   dec  !   hex !  hex  dec !" << endl;
    }
  
    string fn = inputOption.getValue().front();
@@ -208,8 +217,8 @@ void ReadSynthneticCNAVData::process()
          {
             OrbElemCNAV2 oe( obsID, satID.id, SF1value, pnb );
                // Output a terse (one-line) summary of the object 
-            //oe.dumpTerse(out);
-            out << oe << endl;
+            if (terseOption.getCount()>0) oe.dumpTerse(out);
+             else out << oe << endl;
          }
          catch(InvalidParameter exc)
          {
@@ -330,8 +339,8 @@ void ReadSynthneticCNAVData::process()
          {
             OrbElemCNAV oe( obsID, satID, pnb10, pnb11, pnbClk );
                // Output a terse (one-line) summary of the object 
-            //oe.dumpTerse(out);
-            out << oe << endl;
+            if (terseOption.getCount()>0) oe.dumpTerse(out);
+             else out << oe << endl;
          }
          catch(InvalidParameter exc)
          {
