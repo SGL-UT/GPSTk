@@ -125,20 +125,20 @@ void ReadSynthneticCNAVData::process()
       string input(inputLine);
       
          // Debug
-      cout << input << endl;  
+      //cout << input << endl;  
 
          // Should be the first line of a record.
          // Determine if record is CNAV or CNAV-2
       string sigCode = input.substr(4,3);
 
          //Debug
-      cout << " sigCode = '" << sigCode << "'" << endl;
+      //cout << " sigCode = '" << sigCode << "'" << endl;
       if (sigCode.compare("L1C")==0) CNAV2Record = true;
        else CNAV2Record = false;
 
          // Debug
-      if (CNAV2Record) cout << "CNAV2Record = true" << endl; 
-       else cout << "CNAV2Record = false" << endl; 
+      //if (CNAV2Record) cout << "CNAV2Record = true" << endl; 
+      // else cout << "CNAV2Record = false" << endl; 
 
          // Capture SV ID, Obs ID
       string SVID = input.substr(1,2);
@@ -189,7 +189,7 @@ void ReadSynthneticCNAVData::process()
          }
 
             // Debug
-         cout << "Input String: '" << sf2String << "'" << endl;
+         //cout << "Input String: '" << sf2String << "'" << endl;
          
          PackedNavBits pnb( satID, obsID, xMitTime );
          try
@@ -255,7 +255,7 @@ void ReadSynthneticCNAVData::process()
          }
 
             // Debug
-         cout << "msg10 input Strings: '" << msg10String << "'" << endl;
+         //cout << "msg10 input Strings: '" << msg10String << "'" << endl;
          
          PackedNavBits pnb10( satID, obsID, xMitTime );
          try
@@ -283,7 +283,7 @@ void ReadSynthneticCNAVData::process()
          }
 
             // Debug
-         cout << "msg11 input Strings: '" << msg11String << "'" << endl;
+         //cout << "msg11 input Strings: '" << msg11String << "'" << endl;
          
          PackedNavBits pnb11( satID, obsID, xMitTime );
          try
@@ -311,7 +311,7 @@ void ReadSynthneticCNAVData::process()
          }
 
             // Debug
-         cout << "msgClk input Strings: '" << msgClkString << "'" << endl;
+         //cout << "msgClk input Strings: '" << msgClkString << "'" << endl;
          
          PackedNavBits pnbClk( satID, obsID, xMitTime );
          try
