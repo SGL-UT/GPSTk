@@ -143,7 +143,7 @@ namespace gpstk
        GPSTK_THROW(exc);    
       } 
 
-      bool healthy = false;
+      healthy = false;
       if (obsIDArg.band == ObsID::cbL2 && L2Health == 0) healthy = true;
       if (obsIDArg.band == ObsID::cbL5 && L5Health == 0) healthy = true;
 

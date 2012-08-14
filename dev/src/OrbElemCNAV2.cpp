@@ -123,7 +123,7 @@ namespace gpstk
       A        = A_REF_GPS + deltaA;
       OMEGAdot = OMEGADOT_REF_GPS + deltaOMEGAdot;
 
-      bool healthy = (L1CHealth==0);
+      healthy = (L1CHealth==0);
       double timeDiff = Toe - TOWCount;
       short epochWeek = TOWWeek;
       if (timeDiff < -HALFWEEK) epochWeek++;

@@ -266,9 +266,9 @@ namespace gpstk
 
          // Health
          // OrbElemLNav stores the full 8 bits health from the legacy
-	 // navigation message.  OrElemn only stores the true/false, 
+	 // navigation message.  OrElem only stores the true/false, 
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = (healthy==0);
+      healthy = (health==0);
 
          // URA Handling
       
