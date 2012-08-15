@@ -55,6 +55,7 @@
 #include "YDSTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "CivilTime.hpp"
+#include "TimeString.hpp"
 #include <cmath>
 
 #include "gpstkplatform.h"
@@ -935,16 +936,9 @@ namespace gpstk
 
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       dt = GPSWeekSecond(week, SOW);
-      int weekbit10= week& 0x3FF;
-      os.width(4);
-      os << week << "(";
-      os.width(4);
-      os << weekbit10 << ")  ";
-      os.width(6);
-      os << SOW << "   ";
+      os << printTime(dt,"%4F(%4G)  %6.0g   ");
 
       YDSTime yds(dt);
-      CivilTime ct(dt);
       switch (yds.doy)
       {
          case 0: os << "Sun-0"; break;
@@ -956,24 +950,8 @@ namespace gpstk
          case 6: os << "Sat-6"; break;
          default: break;
       }
-      os << "   ";
-      os.fill('0');
-      os.width(3);
-      os << yds.doy << "   ";
-      os.width(5);
-      os << yds.sod << "   ";
-      os.width(2);
-      os << ct.month << "/";
-      os.width(2);
-      os << ct.day << "/";
-      os.width(4);
-      os << ct.year << "   ";
-      os.width(2);
-      os << ct.hour << ":";
-      os.width(2);
-      os << ct.minute << ":";
-      os.width(2);
-      os << static_cast<short>(ct.second) << "\n";
+      os << printTime(dt,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
+      os << endl;
       os.fill(' ');
    }
 

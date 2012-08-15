@@ -64,14 +64,14 @@ namespace gpstk
        AODO(0)
    {}
 
-   OrbElemLNav::OrbElemLNav(  const long SF1[10],
-                              const long SF2[10],
-                              const long SF3[10],
-                              const short PRNID,
+   OrbElemLNav::OrbElemLNav(  const long  SF1[10],
+                              const long  SF2[10],
+                              const long  SF3[10],
+                              const SatID satIDArg,
                               const short XmitGPSWeek )
       throw(InvalidParameter) 
    {
-      loadData(SF1, SF3, SF3, PRNID, XmitGPSWeek); 
+      loadData(SF1, SF3, SF3, satIDArg, XmitGPSWeek); 
    }
 
    OrbElemLNav* OrbElemLNav::clone() const
@@ -79,10 +79,10 @@ namespace gpstk
       return new OrbElemLNav (*this); 
    }
 
-   void OrbElemLNav::loadData(  const long SF1[10],
-                                const long SF2[10],
-                                const long SF3[10],
-                                const short PRNID,
+   void OrbElemLNav::loadData(  const long  SF1[10],
+                                const long  SF2[10],
+                                const long  SF3[10],
+                                const SatID satIDArg,
                                 const short XmitGPSWeek )
       throw( InvalidParameter )
    {
@@ -116,7 +116,7 @@ namespace gpstk
       {
          ficOut[i+40] = ficTemp[i];
       }
-      ficOut[19] = PRNID;
+      //ficOut[19] = PRNID;
    
       // Fill in the variables unique to OrbElemLNav
       HOWtime[0] = static_cast<long>( ficOut[2] );
@@ -166,11 +166,10 @@ namespace gpstk
       OMEGAdot       = ficOut[51];
       idot           = ficOut[53];
      
+         // Store the satellite ID
+      satID = satIDArg;
+
       // - - - Now work on the things that need to be calculated - - -
-
-	 // The system is assumed (legacy navigation message is from GPS)
-      satID.id = static_cast<short>( ficOut[19] );
-
          // The observation ID has a type of navigation, but the
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
@@ -207,12 +206,12 @@ namespace gpstk
          if (HOWtime[1]<leastHOW) leastHOW = HOWtime[1];
          if (HOWtime[2]<leastHOW) leastHOW = HOWtime[2];	 
          long Xmit = leastHOW - (leastHOW % 30);
-	 XmitSOW = (double) Xmit;
+         XmitSOW = (double) Xmit;
       }
       else
       {
          long Xmit = HOWtime[0] - HOWtime[0] % 7200;
-	 XmitSOW = (double) Xmit; 
+         XmitSOW = (double) Xmit; 
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 
 
@@ -304,27 +303,7 @@ namespace gpstk
       ios::fmtflags oldFlags = s.flags();
      
       OrbElem::dumpHeader(s);
-/*      s << "Source : " << getNameLong() << endl;
-      
-      SVNumXRef svNumXRef; 
-      int NAVSTARNum = 0; 
 
-      s << endl;
-      s << "PRN : " << setw(2) << satID.id << " / "
-        << "SVN : " << setw(2);
-      try
-      {
-	NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
-        s << NAVSTARNum << "  ";
-      }
-      catch(SVNumXRef::NoNAVSTARNumberFound)
-      { 
-	s << "XX";
-      }
-         
-
-      s << endl
-        << endl */
       s  << "           SUBFRAME OVERHEAD"
       	<< endl
       	<< endl

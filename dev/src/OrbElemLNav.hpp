@@ -71,10 +71,10 @@ namespace gpstk
           *   and correctly derive the complete epoch times.
           *   @throw InvalidParameter if the input data are inconsistent.
           */ 
-      OrbElemLNav(   const long SF1[10],
-                     const long SF2[10],
-                     const long SF3[10],
-                     const short PRNID,
+      OrbElemLNav(   const long  SF1[10],
+                     const long  SF2[10],
+                     const long  SF3[10],
+                     const SatID satIDArg,
                      const short XmitGPSWeek ) 
          throw( InvalidParameter);
 
@@ -92,10 +92,10 @@ namespace gpstk
       virtual OrbElemLNav* clone() const;
 
 
-      void loadData( const long SF1[10],
-                     const long SF2[10],
-                     const long SF3[10],
-                     const short PRNID,
+      void loadData( const long  SF1[10],
+                     const long  SF2[10],
+                     const long  SF3[10],
+                     const SatID satIDArg,
                      const short XmitGPSWeek ) 
          throw( InvalidParameter);
 

@@ -89,10 +89,13 @@ namespace gpstk
          SF3[i] = fic109.i[22+i];
       }
 
+         // FIC only stores GPS data, so the system is well-defined.
+      SatID sid(PRNID, SatID::systemGPS);
+
       OrbElemLNav::loadData( SF1,
                              SF2,
                              SF3,
-                             PRNID,
+                             sid,
                              XmitGPSWeek );
    }
 

@@ -381,8 +381,7 @@ namespace gpstk
          case 6: os << "Sat-6"; break;
          default: break;
       }
-      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s   ") 
-         << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
+      os << printTime(t,"   %3j   %5.0s   %02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
    void OrbElem::dumpBody(ostream& s) const
