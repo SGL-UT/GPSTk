@@ -518,7 +518,7 @@ namespace gpstk
             GPSTK_THROW(exc); 
          }
             
-         unsigned long dataWord = StringUtils::x2int(hexWord);
+         unsigned long dataWord = StringUtils::x2uint(hexWord);
 
             // NOTE: Since the input is always in terms of complete left-
             // justified 32-bit words, the "numberBits" argument to 

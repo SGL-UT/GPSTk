@@ -853,14 +853,13 @@ namespace gpstk
       { std::string t(s);  return c2x(t); }
 
          /**
-          * Convert a hexadecimal string to an int.
+          * Convert a hexadecimal string to an unsigned int.
           * Only the first hex number encountered is converted.
           * @param s string containing a hex integer.
           * @return a long holding the value of \a s.
           */
-      inline unsigned int x2int(const std::string& s)
+      inline unsigned int x2uint(const std::string& s)
          throw(StringException);
-
 
          /**
           * Convert an int to a string.
@@ -1832,31 +1831,17 @@ namespace gpstk
 
          /// @todo Need to find a way to combine this with x2d.
           // hex to a long.
-      inline unsigned int x2int(const std::string& s)
+      inline unsigned int x2uint(const std::string& s)
          throw (StringException)
       {
          try
          {
-            std::string t(s);
-               // remove the "0x" part, leading zeros and spaces from the 
-               // string
-               // ex. ' 0x003' -> '3'
-            stripLeading(t);
-            stripLeading(t, "0x", 1);
-            stripLeading(t, "0");
-            
-               // if it's empty, it was 0
-            if (t.empty())
-            {
-               return 0;
-            }
-
                // make the stringstream, get the integer, and 
                // remove it from the string
-            std::istringstream strstr(t);
-            unsigned int i;
-            strstr >> std::hex >> i;
-            return i;
+            std::istringstream iss(s);
+            unsigned int ui;
+            iss >> std::hex >> ui;
+            return ui;
          }
          catch(StringException &e)
          {
