@@ -2,7 +2,7 @@
 /**
 *
 *  This program reads a synthetic CNAV data file generated
-*  by ReadSynthneticCNAVData.   As each data block is read, 
+*  by ReadSyntheticCNAVData.   As each data block is read, 
 *  generate an OrbElemCNAV or OrbElemCNAV2 (as appropriate)
 *  and then "dump" the resulting block to an output file
 *  for verification.
@@ -32,12 +32,12 @@
 using namespace std;
 using namespace gpstk;
 
-class ReadSynthneticCNAVData : public gpstk::BasicFramework
+class ReadSyntheticCNAVData : public gpstk::BasicFramework
 {
 public:
-   ReadSynthneticCNAVData(const std::string& applName,
+   ReadSyntheticCNAVData(const std::string& applName,
               const std::string& applDesc) throw();
-   ~ReadSynthneticCNAVData() {}
+   ~ReadSyntheticCNAVData() {}
    virtual bool initialize(int argc, char *argv[]) throw();
    
 protected:
@@ -51,7 +51,7 @@ int main( int argc, char*argv[] )
 {
    try
    {
-      ReadSynthneticCNAVData fc("ReadSynthneticCNAVData", "");
+      ReadSyntheticCNAVData fc("ReadSyntheticCNAVData", "");
       if (!fc.initialize(argc, argv)) return(false);
       fc.run();
    }
@@ -68,7 +68,7 @@ int main( int argc, char*argv[] )
    return 0;
 }
 
-ReadSynthneticCNAVData::ReadSynthneticCNAVData(const std::string& applName, 
+ReadSyntheticCNAVData::ReadSyntheticCNAVData(const std::string& applName, 
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
            inputOption('i', "input-file", "The name of the Synthetic CNAV data file to be read.", true),
@@ -80,7 +80,7 @@ ReadSynthneticCNAVData::ReadSynthneticCNAVData(const std::string& applName,
    terseOption.setMaxCount(1);
 }
 
-bool ReadSynthneticCNAVData::initialize(int argc, char *argv[])
+bool ReadSyntheticCNAVData::initialize(int argc, char *argv[])
    throw()
 {
    if (!BasicFramework::initialize(argc, argv)) return false;
@@ -93,7 +93,7 @@ bool ReadSynthneticCNAVData::initialize(int argc, char *argv[])
    return true;   
 }
 
-void ReadSynthneticCNAVData::process()
+void ReadSyntheticCNAVData::process()
 {
 
       // Open the output stream
@@ -180,7 +180,7 @@ void ReadSynthneticCNAVData::process()
          string::size_type n = input.find_last_of( separators );
          string::size_type len = input.size() - n;
          string sf1 = input.substr(n, len);
-         int SF1value = StringUtils::x2int( sf1 );
+         int SF1value = StringUtils::x2uint( sf1 );
             
             // Build input string for PackedNavBits.  Start with the
             // number of characters in the record (fixed) then append
