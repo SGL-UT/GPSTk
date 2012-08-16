@@ -44,12 +44,16 @@
 #include "TimeTag.hpp"
 
 #ifdef _MSC_VER
+#ifndef _WINSOCKAPI_
+#ifndef timeval
 // timeval is defined in winsock.h, which we don't want to include
 // because it breaks lots of this code
 struct timeval {
   long    tv_sec;         /* seconds */
   long    tv_usec;        /* and microseconds */
 };
+#endif  // #ifndef timeval
+#endif  // #ifndef _WINSOCKAPI_
 #else
 #include <sys/time.h>     // for struct timeval
 #endif
