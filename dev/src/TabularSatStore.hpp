@@ -16,6 +16,7 @@
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
 #include "Xvt.hpp"
+#include "CivilTime.hpp"     
 
 namespace gpstk
 {
@@ -75,6 +76,12 @@ namespace gpstk
       /// be (10-1)*900s+1= 8101s.
       double maxInterval;
 
+      /// Flag to allow pick more epochs if one side without enough data(default false)
+      /// Enable this option, we can process daily data with loading a single sp3 file
+      /// but not three, that will save both memory and loading time especially when
+      /// we use 5 seconds clock data from CODE.
+      bool smartMode;
+
       typedef typename DataTable::const_iterator DataTableIterator;
 
    // member functions
@@ -85,6 +92,7 @@ namespace gpstk
          : havePosition(false), haveVelocity(false),
            haveClockBias(false), haveClockDrift(false),
            checkDataGap(false), checkInterval(false),
+           smartMode(false),
            storeTimeSystem(TimeSystem::Any)
       {}
 
@@ -137,7 +145,7 @@ namespace gpstk
       /// @throw the satellite is not found in the tables, or there is inadequate data
       /// @throw GapInterval is set and there is a data gap larger than the max
       /// @throw MaxInterval is set and the interval is too wide
-      virtual bool getTableInterval(const SatID& sat,
+      virtual bool getTableInterval_old(const SatID& sat,
                                     const CommonTime& ttag,
                                     const int& nhalf,
                                     typename DataTable::const_iterator& it1,
@@ -171,6 +179,9 @@ namespace gpstk
          
          // lower_bound points to the first element with key >= ttag
          it1 = dtable.lower_bound(ttag);
+         
+         // Attention:
+         // The following piece of code with logic problem and take care!(Wei Yan)
 
          // at table begin && exact match && interval of only 2: shift up
          if(it1 == dtable.begin() && exactMatch && nhalf==1) {
@@ -236,6 +247,160 @@ namespace gpstk
       }
       catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
       }
+
+      /// Locate the given time in the DataTable for the given satellite.
+      /// Return two const iterators it1 and it2 (it1 < it2) giving the range of
+      /// 2*nhalf points.
+      /// Note that a range is returned even if the input time exactly matches one
+      /// of the times in the table; in this 'exact match' case the matching time
+      /// will be at either it1->first (if input parameter exactReturn is true) or
+      /// (it1+nhalf-1) or (it1+nhalf) (if exactReturn is false).
+      /// This routine is used to select data from the table for interpolation;
+      /// note that DataTable is a map<CommonTime, DataRecord>.
+      /// @param[in] sat satellite of interest
+      /// @param[in] ttag time of interest, e.g. where interpolation will be conducted
+      /// @param[in] nhalf number of table points desired on each side of ttag
+      /// @param it1 const reference to const_iterator, points to the interval begin
+      /// @param it2 const reference to const_iterator, points to the interval end
+      /// @param[in] exactReturn if true and exact match is found, return immediately,
+      ///     with the matching time at it1 (== it1->first) [default is true].
+      /// @return bool: true if ttag matches a time in the table and exactReturn was
+      ///     true, then the matching time is at it1 (it2 is undefined);
+      ///     if exactReturn was false, then the range (it1,it2) is valid and the
+      ///     matching time is at either (it1+nhalf-1) or (it1+nhalf).
+      /// @throw the satellite is not found in the tables, or there is inadequate data
+      /// @throw GapInterval is set and there is a data gap larger than the max
+      /// @throw MaxInterval is set and the interval is too wide
+      virtual bool getTableInterval(const SatID& sat,
+                                    const CommonTime& ttag,
+                                    const int& nhalf,
+                                    typename DataTable::const_iterator& it1,
+                                    typename DataTable::const_iterator& it2,
+                                    bool exactReturn=true)
+          const throw(InvalidRequest)
+      {
+          try {
+              // find the DataTable for this sat
+              typename std::map<SatID, DataTable>::const_iterator satit;
+              satit = tables.find(sat);
+              if(satit == tables.end()) {
+                  InvalidRequest ir("Satellite " + gpstk::StringUtils::asString(sat)
+                      + " not found.");
+                  GPSTK_THROW(ir);
+              }
+
+              // this is the data table for the sat
+              const DataTable& dtable(satit->second);
+              static const char *fmt=" at time %4Y/%02m/%02d %2H:%02M:%02S";
+
+              // find the timetag in this table
+              // NB. throw here if time systems do not match and are not "Any"
+              it1 = dtable.find(ttag);
+              // is it an exact match?
+              bool exactMatch(it1 != dtable.end());
+
+              // user must decide whether to return with exact value; e.g. without
+              // velocity data, user needs the interval to compute v from x data
+              if(exactMatch && exactReturn) return true;
+
+              // lower_bound points to the first element with key >= ttag
+              it1 = it2 = dtable.lower_bound(ttag);
+
+              // Should we allow to predict data?
+              if(it1 == dtable.end()) {
+                  InvalidRequest ir("No data for the requested time of satellite "
+                      + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
+                  GPSTK_THROW(ir);  
+              }
+              
+              if(dtable.size() < 2*nhalf){
+                  InvalidRequest ir("Inadequate data for satellite "
+                      + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
+                  GPSTK_THROW(ir); 
+              }
+
+              // check for gap only when exactMatch==false
+              if(!exactMatch && checkDataGap){
+                typename DataTable::const_iterator lit,rit;
+                lit = rit = it2;
+               
+                if(rit!=dtable.begin()){
+                    lit--;
+                    if((rit->first-lit->first) > gapInterval) {
+                        InvalidRequest ir("Gap at interpolation time for satellite "
+                            + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
+                        GPSTK_THROW(ir);
+                    }
+                }
+                else{
+                    if((rit->first - ttag) > gapInterval){
+                        InvalidRequest ir("It may lead to bad interpolation precision for satellite "
+                            + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
+                        GPSTK_THROW(ir);
+                    }
+                }
+              }
+              
+              // try to get the beginning of the window
+              int ileft(nhalf);
+              for(int i = 0; i < nhalf; i++){
+                  if(it1 == dtable.begin()) break;
+                  it1--;
+                  ileft--;
+              }
+
+              // try to get the ending of the window
+              int iright = nhalf - 1 + ileft;
+              for(int i = 0; i < (nhalf-1+ileft); i++){
+                  it2++;
+                  if(it2 == dtable.end()){
+                      it2--;
+                      break;
+                  }
+
+                  iright--;
+              }
+
+              // adjust the beginning of the window again
+              int ileft2 = iright; 
+              for(int i = 0; i < iright; i++){
+                  if(it1 == dtable.begin()) break;
+                  it1--;
+                  ileft2--;
+              }
+              
+              // We have checked that there are enough data, so ileft2 should
+              // always be zero.
+              if(ileft2 > 0){
+                  InvalidRequest ir("My god, it should never go here!!!");
+                  GPSTK_THROW(ir);
+              }
+
+              if(!smartMode) {
+                  if(ileft>0){
+                    GPSTK_THROW(
+                        InvalidRequest("Inadequate data before requested time for satellite"
+                            + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt)));
+                  }
+                  if(iright>0){
+                    GPSTK_THROW(
+                        InvalidRequest("Inadequate data after requested time for satellite"
+                            + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt)));
+                  }
+              }
+
+              // check that the interval is not too large
+              if(checkInterval && (it2->first - it1->first) > maxInterval) {
+                  InvalidRequest ir("Interpolation interval too large for satellite "
+                      + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
+                  GPSTK_THROW(ir);
+              }
+
+              return exactMatch;
+          }
+          catch(InvalidRequest& ir) { GPSTK_RETHROW(ir); }
+      }
+
 
    // interface like that of XvtStore
 
@@ -573,6 +738,12 @@ namespace gpstk
 
       /// set the store's time system
       void setTimeSystem(const TimeSystem& ts) throw() { storeTimeSystem = ts; }
+
+      /// get the smartMode flag to select data from the table for interpolation
+      bool getSmartMode(){ return smartMode; }
+
+      /// set the smartMode flag to select data from the table for interpolation
+      void setSmartMode(bool smart = true){ smartMode = smart; }
       
    };
 
