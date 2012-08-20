@@ -150,7 +150,7 @@ protected:
       unsigned short fc=0;
       vector<MDPObsEpoch> hint(33);
       short svCount = 0;
-      double dt = 0;
+      double dt = 0;  // Used to keep track of the _expected_ time between pvt messages
       long pben_count = 0;
 
       while (input >> hdr)
@@ -187,7 +187,6 @@ protected:
             {
                time.sow = pben.sow;
                continue;
-               continue;
             }
 
             knowSOW = true;
@@ -197,13 +196,14 @@ protected:
 
             if (dt==0 && this_dt>0)
                dt = this_dt;
-            else if (this_dt <= 0)
+            else if (this_dt <= 0 && -this_dt < HALFWEEK)
             {
+               // It looks like something is garbled
                dt = 0;
                knowSOW = false;
                continue;
             }
-            else if (dt>0 && std::abs(this_dt) > HALFWEEK)
+            else if (dt>0 && -this_dt > HALFWEEK)
             {
                time.week++;
                if (debugLevel)
