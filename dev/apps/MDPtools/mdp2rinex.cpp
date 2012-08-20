@@ -63,7 +63,7 @@ public:
       throw()
       : InOutFramework<MDPStream, RinexObsStream>(
          applName, "Converts an MDP stream to RINEX."),
-        anyNav(false), fixHalf(true)
+        anyNav(false)
    {}
 
    bool initialize(int argc, char *argv[]) throw();
@@ -93,13 +93,11 @@ private:
 
    bool thin;
    bool anyNav;
-   bool fixHalf;
    int thinning;
    bool firstObs, firstEph;
    CommonTime prevTime;
    Triple antPos;
 
-   void correctPhase(MDPEpoch& epoch, NavMap& ephData);
    virtual void process(MDPNavSubframe& nav);
    virtual void process(MDPObsEpoch& obs);
 };
@@ -130,8 +128,7 @@ bool MDP2Rinex::initialize(int argc, char *argv[]) throw()
       c2Opt('c', "l2c",
             "Enable output of L2C data in C2"),
       anyNavOpt('a',"any-nav-source", 
-                "Accept subframes from any code/carrier"),
-      noFixHalfOpt('\0',"no-fix-half","Do not apply half-cycle corrections to phase.");
+                "Accept subframes from any code/carrier");
 
    if (!InOutFramework<MDPStream, RinexObsStream>::initialize(argc,argv))
       return false;
@@ -153,9 +150,6 @@ bool MDP2Rinex::initialize(int argc, char *argv[]) throw()
 
    if (anyNavOpt.getCount())
       anyNav = true;
-
-   if (noFixHalfOpt.getCount())
-      fixHalf = false;
 
    roh.valid = RinexObsHeader::allValid21;
    roh.version = 2.1;
@@ -264,7 +258,7 @@ void MDP2Rinex::process()
 
 void MDP2Rinex::process(MDPNavSubframe& nav)
 {
-   if (!rinexNavOutput && !fixHalf)
+   if (!rinexNavOutput)
       return;
 
    nav.cookSubframe();
@@ -333,8 +327,6 @@ void MDP2Rinex::process(MDPObsEpoch& obs)
                cout << "Got first obs" << endl;
          }
 
-         if (fixHalf)
-            correctPhase(epoch, ephData);
          RinexObsData rod;
          rod = makeRinexObsData(epoch);
          output << rod;
@@ -344,45 +336,4 @@ void MDP2Rinex::process(MDPObsEpoch& obs)
    }
 
    epoch.insert(pair<const int, MDPObsEpoch>(obs.prn, obs));
-}
-
-
-void MDP2Rinex::correctPhase(MDPEpoch& epoch, NavMap& ephData)
-{
-   CommonTime t=epoch.begin()->second.time;
-   if (debugLevel>1)
-      cout << printTime(t, "%02d/%02m/%02y %02H:%02M:%05.2f");
-
-   MDPEpoch::iterator i;
-   for (i=epoch.begin(); i != epoch.end(); i++)
-   {
-      int prn = i->first;
-      if (debugLevel>2)
-         cout << ", PRN:" << prn << "(";
-      else if (debugLevel>1)
-         cout << ", " << prn << "(";
-      
-      MDPObsEpoch::ObsMap& obsmap = i->second.obs;
-      MDPObsEpoch::ObsMap::iterator j;
-      for (j=obsmap.begin(); j != obsmap.end(); j++)
-      {
-         CarrierCode cc(j->first.first);
-         RangeCode rc(j->first.second);
-
-         NavIndex ni(j->first, prn);
-         MDPNavSubframe& nav(ephData[ni]);
-         if (nav.inverted)
-         {
-            j->second.phase += 0.5; // set the phase upright
-            if (debugLevel>2)
-               cout << " " << StringUtils::asString(cc) << " " << StringUtils::asString(rc) << ", ";
-            else if (debugLevel>1)
-               cout << " " << cc << ":" << rc;
-         }
-      }
-      if (debugLevel>1)
-         cout << ")";
-   }
-   if (debugLevel>1)
-      cout << endl;
 }

@@ -106,6 +106,7 @@ protected:
    typedef pair<MDPObsEpoch::ObsKey, short> NavIndex;
    typedef map<NavIndex, MDPNavSubframe> NavMap;
    NavMap ephData;
+   map<NavIndex, bool> prevObsInv;
 
    MDPEpoch epoch;  // Where we accumulate all the SVs for a single epoch
 
@@ -223,7 +224,7 @@ void MDPScrubber::processObs()
       if (sf.nav!=ncICD_200_2)
       {
          cout << printTime(obs.time, "%02d/%02m/%02y %02H:%02M:%05.2f") << " "
-              << obs.prn << " el:" << obs.elevation << " " << cc << ":" << rc
+              << obs.prn << " " << cc << ":" << rc << " el:" << obs.elevation << " "
               << " Don't know how to handle this nav data. Dropping obs." << endl;
          continue;
       }
@@ -239,15 +240,25 @@ void MDPScrubber::processObs()
       {
          if (dt < 900 && debugLevel>1) // if the subframe is more than 15 minutes old, we are probably on a new pass
             cout << printTime(obs.time, "%02d/%02m/%02y %02H:%02M:%04.1f") << " "
-                 << obs.prn << " el:" << obs.elevation << " " << cc << ":" << rc
+                 << obs.prn << " " << cc << ":" << rc << " el:" << obs.elevation << " "
                  << " dt:" << dt << " Dropping obs." << endl;
          continue;
       }
 
       newObs.obs[ok] = j->second;
 
+      if (prevObsInv[ni] && !sf.inverted && debugLevel)
+         cout << printTime(obs.time, "%02d/%02m/%02y %02H:%02M:%04.1f") << " "
+              << obs.prn << " " << cc << ":" << rc << " el:" << obs.elevation << " "
+              << " Inversion change." << endl;
+
       if (sf.inverted)
+      {
          newObs.obs[ok].phase += 0.5;
+         prevObsInv[ni] = true;
+      }
+      else
+         prevObsInv[ni] = false;
    }
 
    // Only output obs with at least C/A, Y1, and Y2
@@ -289,7 +300,7 @@ void MDPScrubber::processNav()
    NavIndex ni(MDPObsEpoch::ObsKey(nav.carrier, nav.range), nav.prn);
    ephData[ni] = nav;
 
-   // remember to make this the upright nav
+   // set the nav upright
    if (nav.inverted)
       for (int i=1; i<=10; i++)
          unmolested.subframe[i] ^= 0x3fffffff;

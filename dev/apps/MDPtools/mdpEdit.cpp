@@ -103,27 +103,25 @@ public:
       for (int index = 0; index < prnOpt.getCount(); index++ )
       {
          int prn = asInt(prnOpt.getValue()[index]);
-
          if (prn>0 && prnSetToToss.size()==0)
-            for (int prn=1; prn <= gpstk::MAX_PRN; prn++)
-               prnSetToToss.insert(prn);
+            for (int i=1; i <= gpstk::MAX_PRN; i++)
+               prnSetToToss.insert(i);
          if (prn>0)
             prnSetToToss.erase(prn);
          else
             prnSetToToss.insert(-prn);
-	 if ((prn < 1)||(prn > gpstk::MAX_PRN))
+         if (prn == 0 || ::abs(prn) > gpstk::MAX_PRN)
          {
             cout << "\n You entered an invalid PRN."
                  << "\n Exiting.\n\n";
             return false;
          }
-         else 
+         else if (prn < 0)
          {
             prnSetToToss.insert(prn);
             if (debugLevel || verboseLevel)
                cout << "Throwing out data from PRN " << prn << endl;
          }
-
       }
       if (prnSetToToss.size() && debugLevel)
       {
