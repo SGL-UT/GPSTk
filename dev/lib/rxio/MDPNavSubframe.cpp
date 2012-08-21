@@ -273,8 +273,10 @@ namespace gpstk
           << " NC:" << static_cast<int>(nav)
           << " SF:" << getSFID()
           << " PG:" << setw(2) << page
+          << " PE:" << !parityGood
           << " I:" << inverted
           << " C:" << cooked
+          << " CR:" << neededCooking
           << endl;
 
       oss << hex;
