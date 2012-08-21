@@ -553,6 +553,7 @@ namespace gpstk
          bool begin = true;
          double previousOffset = 0.0;
          bool previousIsOffset = false; 
+         bool currentIsOffset = false;
 
             // Scan the map for this SV looking for 
             // uploads.  Uploads are identifed by 
@@ -565,29 +566,11 @@ namespace gpstk
             long Toe = (long) (static_cast<GPSWeekSecond> (oe->ctToe)).sow;
             if ( (Toe % 3600)!=0) 
             {
+               currentIsOffset = true; 
                double currentOffset = Toe % 3600;
             
-                  // If the previous set is not offset, then 
-                  // we've found an upload
-               if (!previousIsOffset)
-               {
-                     // Set the "offset found" flag and record the offset
-                  previousIsOffset = true;
-                  previousOffset = Toe % 3600;
-
-                     // Adjust the ending time of validity to match
-                     // the beginning validity of the upload.  
-                     // That beginning validity value should already be
-                     // set to the transmit time (or earliest transmit
-                     // time found) by OrbElem and GPSOrbElemStore.addOrbElem( )
-                     // This adjustment is consistent with the IS-GPS-XXX 
-                     // rules that a new upload invalidates previous elements.
-                  if (!begin)
-                  {
-                     oePrev->endValid = oe->beginValid;
-                  }
-               }
-                  // If previous set is offset, then this is the SECOND
+                  // If this set is offset AND the previous set is offset AND
+                  // the two offsets are the same, then this is the SECOND
                   // set of elements in an upload.  In that case the OrbElem
                   // load routines have conservatively set the beginning time
                   // of validity to the transmit time because there was no
@@ -602,16 +585,38 @@ namespace gpstk
                   // of validity.  However, we can't do it in this
                   // loop without destroying the integrity of the
                   // iterator.  See notes on the second loop, below. 
-               else if (previousIsOffset && currentOffset==previousOffset)
+               if (previousIsOffset && currentOffset==previousOffset)
                {
                  oe->adjustBeginningValidity();
-                 previousIsOffset = false;  // Should never be more than two. 
+               }
+               
+                  // If the previous set is not offset, then 
+                  // we've found an upload
+                  // For that matter, if previous IS offest, but 
+                  // the current offset is different than the
+                  // previous, then it is an upload.
+               if (!previousIsOffset ||
+                   (previousIsOffset && (currentOffset!=previousOffset) ) )
+               {
+                     // Record the offset for later reference
+                  previousOffset = Toe % 3600;
+
+                     // Adjust the ending time of validity to match
+                     // the beginning validity of the upload.  
+                     // That beginning validity value should already be
+                     // set to the transmit time (or earliest transmit
+                     // time found) by OrbElem and GPSOrbElemStore.addOrbElem( )
+                     // This adjustment is consistent with the IS-GPS-XXX 
+                     // rules that a new upload invalidates previous elements.
+                  if (!begin)
+                  {
+                     oePrev->endValid = oe->beginValid;
+                  }
                }
             }
-            else
-            {
-               previousIsOffset = false;
-            }
+            
+               // Update condition flags for next loop
+            previousIsOffset = currentIsOffset;
             oePrev = oe;           // May need this for next loop.
             begin = false; 
          } //end inner for-loop 
