@@ -307,12 +307,12 @@ namespace gpstk
       if ( (longToc % 7200) != 0)     // NOT an even two hour change
       {
          long Xmit = HOWtime - (HOWtime % 30);
-	 XmitSOW = (double) Xmit;
+         XmitSOW = (double) Xmit;
       }
       else
       {
          long Xmit = HOWtime - HOWtime % 7200;
-	 XmitSOW = (double) Xmit; 
+         XmitSOW = (double) Xmit; 
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 
 
@@ -389,7 +389,26 @@ namespace gpstk
          // the fit interval and the Toe.  In RINEX the fit duration
          // in hours is stored in the file. 
       long  oneHalfInterval = ((long)fitDuration/2) * 3600; 
-      endValid = ctToe - oneHalfInterval; 
+
+         // If we assume this is the SECOND set of elements in a set
+         // (which is an assumption of this function - see the .hpp) then
+         // the "small offset in Toe" will actually push the Toe-oneHalfInterval
+         // too early. For example, consider the following case.
+         //         Toe : 19:59:44  (really near 20:00:00)
+         //  first xMit : 18:00:00  (nominal)
+         // Blindly setting beginValid top Toe - 1/2 fit interval will
+         // result in 17:59:44.  But 18:00:00 actually is the right answer
+         // because the -16 second offset is an artifact.   
+         //
+         // Therefore, we are FIRST going to remove that offset,
+         // THEN determine beginValid.    
+      long sow = (long) (static_cast<GPSWeekSecond>(ctToe)).sow;
+      short week = (static_cast<GPSWeekSecond>(ctToe)).week;
+      sow = sow + (3600 - (sow%3600)); 
+      CommonTime adjustedToe = GPSWeekSecond(week, (double) sow);
+      adjustedToe.setTimeSystem(TimeSystem::GPS);
+      
+      beginValid = adjustedToe - oneHalfInterval; 
       return;
    }
 

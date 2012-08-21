@@ -187,7 +187,7 @@ namespace gpstk
 	 //  (e.) Cutovers can be detected by non-even Toc.
 	 //  (f.) Even uploads will cutover on a frame (30s) boundary.
          // Therefore,
-	 //   1.) If Toc is NOT even two hour interval, pick lowest HOW time,
+	 //   1.) If Toc is NOT even hour interval, pick lowest HOW time,
 	 //   round back to even 30s.  That's the earliest Xmit time we can prove.
 	 //   NOTE: For the case where this is the SECOND SF 1/2/3 after an upload, 
 	 //   this may yield a later time as such a SF 1/2/3 will be on a even 
@@ -200,7 +200,7 @@ namespace gpstk
 	 //   determine earliest transmission time. 
       long longToc = (long) Toc;
       double XmitSOW = 0.0; 
-      if ( (longToc % 7200) != 0)     // NOT an even two hour change
+      if ( (longToc % 3600) != 0)     // NOT an even two hour change
       {
          long leastHOW = HOWtime[0];
          if (HOWtime[1]<leastHOW) leastHOW = HOWtime[1];
@@ -210,7 +210,10 @@ namespace gpstk
       }
       else
       {
-         long Xmit = HOWtime[0] - HOWtime[0] % 7200;    /// This is NOT correct for extended OPS - FIX IT
+            // This assumes the data are collected sometime in the
+            // first two hours of transmission.  For extended ops
+            // that might not be true.  Think about this. 
+         long Xmit = HOWtime[0] - HOWtime[0] % 7200; 
          XmitSOW = (double) Xmit; 
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 

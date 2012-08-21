@@ -139,9 +139,28 @@ namespace gpstk
    {
       if (!dataLoaded()) return;
      
+         // If we assume this is the SECOND set of elements in a set
+         // (which is an assumption of this function - see the .hpp) then
+         // the "small offset in Toe" will actually push the Toe-oneHalfInterval
+         // too early. For example, consider the following case.
+         //         Toe : 19:59:44  (really near 20:00:00)
+         //  first xMit : 18:00:00  (nominal)
+         // Blindly setting beginValid top Toe - 1/2 fit interval will
+         // result in 17:59:44.  But 18:00:00 actually is the right answer
+         // because the -16 second offset is an artifact.   
+         //
+         // Therefore, we are FIRST going to remove that offset,
+         // THEN determine beginValid.    
+      long sow = (long) (static_cast<GPSWeekSecond>(ctToe)).sow;
+      short week = (static_cast<GPSWeekSecond>(ctToe)).week;
+      sow = sow + (3600 - (sow%3600)); 
+      CommonTime adjustedToe = GPSWeekSecond(week, (double) sow);
+      adjustedToe.setTimeSystem(TimeSystem::GPS);
+      
          // For CNAV the nominal beginning of validity is two hours
          // prior to the Toe.
-      endValid = ctToe - 7200; 
+      beginValid = adjustedToe - 7200; 
+
       return;
    }
 
