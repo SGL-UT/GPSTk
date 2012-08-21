@@ -111,6 +111,10 @@ namespace gpstk
       double getIAURAned(const CommonTime& t) const
          throw( InvalidRequest );      
 
+        /* Should only be used by GPSOrbElemStore::rationalize()
+         */
+      void adjustBeginningValidity();
+
       CommonTime transmitTime;     /**< Estimated beginning time of this sample */
       CommonTime ctTop;		   /**< Predicted time of week */
   

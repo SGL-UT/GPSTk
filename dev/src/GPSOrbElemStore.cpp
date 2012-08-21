@@ -64,20 +64,19 @@ namespace gpstk
    Xvt GPSOrbElemStore::getXvt(const SatID& sat, const CommonTime& t) const
       throw( InvalidRequest )
    {
-      OrbElem* ref = 0;
-      return getXvt(sat, t, ref);
-   } 
-
-//--------------------------------------------------------------------------
-
-   Xvt GPSOrbElemStore::getXvt(const SatID& sat, const CommonTime& t, OrbElem* ref) const
-      throw( InvalidRequest )
-   {
       try
       {
          // test for GPS satellite system in sat?
          const OrbElem* eph = findOrbElem(sat,t);
-         ref = eph->clone();
+
+         // If the orbital elements are unhealthy, refuse to 
+         // calculate an SV position and throw.
+         if (!eph->healthy)
+         {
+            InvalidRequest exc( std::string("SV is transmitting unhealhty navigation ")
+                + std::string("message at time of interest.") );
+            GPSTK_THROW( exc );
+         }
          Xvt sv = eph->svXvt(t);
          return sv;
       }
@@ -95,27 +94,6 @@ namespace gpstk
       InvalidRequest ire( std::string("Try to get NON-GPS sat position ")
           + std::string("from GPSOrbElemStore, and it's forbidden!") );
       if(sat.system!=SatID::systemGPS) GPSTK_THROW(ire);
-   }
-
-
-//--------------------------------------------------------------------------
-
-   const OrbElem*
-   GPSOrbElemStore::findOrbElem(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      try
-      {
-         validSatSystem(sat);
-
-           return strictMethod ? findUserOrbElem(sat, t) : findNearOrbElem(sat, t);
-          //  return strictMethod ? findNearOrbElem(sat, t) : findUserOrbElem(sat, t);
-          //  return findNearOrbElem(sat, t);
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
    }
 
 //--------------------------------------------------------------------------
@@ -156,7 +134,7 @@ namespace gpstk
            << " with " << size() << " entries."
            << std::endl;
       } // end if-block
-      else
+      else if (detail==1)
       {
          for (it = ube.begin(); it != ube.end(); it++)
          {
@@ -168,19 +146,13 @@ namespace gpstk
             for (ei = em.begin(); ei != em.end(); ei++) 
             {
                const OrbElem* oe = ei->second;
-               if (detail==1)
-               {
-                  s << "PRN " << setw(2) << it->first
-                    << " TOE " << printTime(oe->ctToe,fmt)
-                    << " TOC " << fixed << setw(10) << setprecision(3)
-                    << oe->ctToe
-                    << " KEY " << printTime(ei->first,fmt);
-                 
-                  s << std::endl;
-               }
-               else
-                  oe->dump(s);
-
+               s << "PRN " << setw(2) << it->first
+                 << " TOE " << printTime(oe->ctToe,fmt)
+                 << " TOC " << fixed << setw(10) << setprecision(3)
+                 << oe->ctToe
+                 << " KEY " << printTime(ei->first,fmt);
+                
+               s << std::endl;
             } //end inner for-loop */
 
          } // end outer for-loop
@@ -189,6 +161,52 @@ namespace gpstk
 
       } //end else-block
 
+         // In this case the output is
+         // key, beginValid,  Toe,   endValid
+      else if (detail==2)
+      {
+         string tf1 = "%02m/%02d/%02y %02H:%02M:%02S";
+         string tf2 = "%02H:%02M:%02S";
+         
+         for (it = ube.begin(); it != ube.end(); it++)
+         {
+            const OrbElemMap& em = it->second;
+            s << "  Map for satellite " << it->first
+              << " has " << em.size() << " entries." << std::endl;
+            OrbElemMap::const_iterator ei;
+
+            s << "  PRN  MM/DD/YY      Key     Begin       Toe       Toc      End" << endl;
+
+            for (ei = em.begin(); ei != em.end(); ei++) 
+            {
+               const OrbElem* oe = ei->second;
+               s << it->first << "  " << printTime(ei->first,tf1)
+                              << "  " << printTime(oe->beginValid,tf2)
+                              << "  " << printTime(oe->ctToe,tf2)
+                              << "  " << printTime(oe->ctToc,tf2)
+                              << "  " << printTime(oe->endValid,tf2);
+               s << std::endl;
+
+            } //end inner for-loop */
+
+         } // end outer for-loop
+      }    // end of else-block
+      else
+      {
+         for (it = ube.begin(); it != ube.end(); it++)
+         {
+            const OrbElemMap& em = it->second;
+            s << "  Map for satellite " << it->first
+              << " has " << em.size() << " entries." << std::endl;
+            OrbElemMap::const_iterator ei;
+
+            for (ei = em.begin(); ei != em.end(); ei++) 
+            {
+               const OrbElem* oe = ei->second;
+               oe->dump(s);
+            }
+         }
+      }
    } // end GPSOrbElemStore::dump
 
 //------------------------------------------------------------------------------------
@@ -211,16 +229,10 @@ namespace gpstk
      string ts = "%02m/%02d/%02y %02H:%02M:%02S";
      int PRN = sid.id;
      int testPRN = 0;
-     if(PRN==testPRN)
-     {
-        cout << "****Testing PRN " << testPRN << " beginValid: " << printTime(eph.beginValid, ts)
-             << " Toe: " << printTime(eph.ctToe,ts) << endl;
-     }
+
        // if map is empty, load object and return
      if (oem.size()==0)
      {
-        if(PRN==testPRN)
-           cout << "First object load: " << printTime(eph.ctToe,ts) << endl;
         oem[eph.beginValid] = eph.clone();
         updateInitialFinal(eph);
         return (true);
@@ -229,41 +241,28 @@ namespace gpstk
        // If found candidate, should be same data
        // as already in table. Test this by comparing
        // Toe values.
-     if(PRN==testPRN)
-     {
-        cout << "Attempting to find key." << endl;
-        cout << "eph.beginValid = " << eph.beginValid << endl;
-     }
      OrbElemMap::iterator it = oem.find(eph.beginValid);
-     if(PRN==testPRN)
-        cout << "Returned from find operation." << endl;
      if(it!=oem.end())
      {
-        if(PRN==testPRN)
-           cout << "Found the key." << endl;
         const OrbElem* oe = it->second;
           // Found duplicate already in table
         if(oe->ctToe==eph.ctToe)
         {
-            if(PRN==testPRN)
-               cout << "Found duplicate: " << printTime(eph.ctToe,ts) << endl; 
             return (false);
         }
           // Found matching beginValid but different Toe - This shouldn't happen
         else
         {
-           if(PRN==testPRN)
-              cout << "Doing the impossible." << endl;
-           cout << "PRN = " << eph.satID.id << endl;
-           cout << " beginValid = " << printTime(eph.beginValid,ts) << endl;          
-           cout << " Toe = " << printTime(eph.ctToe,ts) << endl;
-           cout << "oe->ctToe = " << oe->ctToe << endl;
-           cout << "oe->transmitTime = " << oe->beginValid << endl;   
-           exit(1); 
+           string str = "Unexpectedly found matching beginValid times";
+           str += " but different Toe.   PRN= " + eph.satID.id;
+           str += ", beginValid= " + printTime(eph.beginValid,ts);
+           str += ", Toe(map)= " + printTime(eph.ctToe,ts);
+           str += ", Toe(candidate)= "+ printTime(oe->ctToe," %6.0g");
+           str += ". ";
+           InvalidParameter exc( str );
+           GPSTK_THROW(exc); 
         }
      }
-     if(PRN==testPRN)
-        cout << "Find failed." << endl;
         // Did not already find match to
         // beginValid in map
         // N.B:: lower_bound will reutrn element beyond key since there is no match
@@ -274,21 +273,15 @@ namespace gpstk
         const OrbElem* oe = it->second;
         if(oe->ctToe==eph.ctToe)
         {
-           if(PRN==testPRN)
-              cout << "Replacing beginning of map with earlier copy: " << printTime(eph.ctToe,ts) << endl;
            oem.erase(it);
            oem[eph.beginValid] = eph.clone();
            updateInitialFinal(eph);
            return (true);
         }
-        if(PRN==testPRN)
-          cout << "Append to beginning of map: " << printTime(eph.ctToe,ts) << endl;
         oem[eph.beginValid] = eph.clone();
         updateInitialFinal(eph);
         return (true);
      }
-        
-    // it = oem.lower_bound(eph.beginValid);
           // Case where candidate is after end of current map
      if(it==oem.end())
      {
@@ -297,14 +290,10 @@ namespace gpstk
         const OrbElem* oe = rit->second;
         if(oe->ctToe!=eph.ctToe)
         {
-           if(PRN==testPRN)
-              cout << "Adding to end of map." << printTime(eph.ctToe,ts) << endl;
            oem[eph.beginValid] = eph.clone();
            updateInitialFinal(eph);
            return (true);
         }
-        if(PRN==testPRN)
-           cout << "Found copy of existing end of map: " << printTime(eph.ctToe,ts) << endl; 
         return (false);
      }
         // case where candidate is "In the middle"
@@ -313,8 +302,6 @@ namespace gpstk
      const OrbElem* oe = it->second;
      if(oe->ctToe==eph.ctToe)
      {
-        if(PRN==testPRN)
-           cout << "Replacing existing object with earlier copy: " << printTime(eph.ctToe,ts) << endl;
         oem.erase(it);
         oem[eph.beginValid] = eph.clone();
         updateInitialFinal(eph);
@@ -322,7 +309,7 @@ namespace gpstk
      }
         // Two cases:
         //    (a.) Candidate is late transmit copy of
-        //         previous OrbElem in table - discard
+        //         previous OrbElem in table - discard (do nothing)
         //    (b.) Candidate OrbElem is not in table
  
         // Already checked for it==oem.beginValid() earlier
@@ -330,29 +317,16 @@ namespace gpstk
      const OrbElem* oe2 = it->second;
      if(oe2->ctToe!=eph.ctToe)
      {
-        if(PRN==testPRN)
-           cout << "Adding new object in middle of map: " << printTime(eph.ctToe,ts) << endl;
         oem[eph.beginValid] = eph.clone();
         updateInitialFinal(eph);
         return (true);
      }
-     if(PRN==testPRN)
-        cout << "Discarding later copy of existing object in middle of map: " << printTime(eph.ctToe,ts) << endl;
      return (false);
     
    }
-   
    catch(Exception& e)
    {
-      cout << "Caught a gpstk:exception" << endl;
-      cout << e.getText() << endl;
-      exit(1);
-   }
-   catch(...)
-   {
-      cout << "Caught unknown exception" << endl;
-    //  cout << e.getText() << endl;
-      exit(1);
+      GPSTK_RETHROW(e)
    }
  }
     
@@ -407,10 +381,9 @@ namespace gpstk
 //-----------------------------------------------------------------------------
 
    const OrbElem*
-   GPSOrbElemStore::findUserOrbElem(const SatID& sat, const CommonTime& t) const
+   GPSOrbElemStore::findOrbElem(const SatID& sat, const CommonTime& t) const
       throw( InvalidRequest )
    {
-	  cout << "findUserOrbElem is called" << endl;
           // Check to see that there exists a map of orbital elements
 	  // relevant to this SV.
       UBEMap::const_iterator prn_i = ube.find(sat);
@@ -491,7 +464,6 @@ namespace gpstk
          InvalidRequest e(mess);
          GPSTK_THROW(e);
       }
-
       return(it->second);
    } 
  
@@ -502,9 +474,8 @@ namespace gpstk
  
      const OrbElem*
    GPSOrbElemStore::findNearOrbElem(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest)
+      throw(InvalidRequest)
    {
-        cout << "findNearOrbElem() is called" << endl;
         // Check for any OrbElem for this SV            
       UBEMap::const_iterator prn_i = ube.find(sat);
       if (prn_i == ube.end())
@@ -513,12 +484,18 @@ namespace gpstk
          GPSTK_THROW(e);
       }
    
+         // FIRST, try to find the elements that were
+         // actually being broadcast at the time of 
+         // interest.  That will ALWAYS be the most
+         // correct response.   IF YOU REALLY THINK
+         // OTHERWISE CALL ME AND LET'S TALK ABOUT 
+         // IT - Brent Renfro
       try
       {
-         const OrbElem* oep = findUserOrbElem(sat, t);
+         const OrbElem* oep = findOrbElem(sat, t);
          return(oep);
       }      
-        // No OrbElem in store for requested sat time  
+         // No OrbElem in store for requested sat time  
       catch(InvalidRequest)
       {
            // Create references to map for this satellite
@@ -530,7 +507,7 @@ namespace gpstk
                 3. t is after all OrbElem in the store
            */
 
-           // Attempt to find nect in store after t
+           // Attempt to find next in store after t
          OrbElemMap::const_iterator itNext = em.lower_bound(t);
            // Test for case 2
          if(itNext==em.begin())
@@ -559,71 +536,138 @@ namespace gpstk
       }
    }
       
-
- /*  const OrbElem*
-   GPSOrbElemStore::findNearOrbElem(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
+// See notes in the .hpp.  This function is designed to be called 
+// AFTER all elements are loaded.  It can then make adjustments to
+// time relationships based on inter-comparisons between sets of 
+// elements that cannot be performed until the ordering has been
+// determined. 
+//-----------------------------------------------------------------------------
+   void GPSOrbElemStore::rationalize( )
    {
-      validSatSystem(sat);
-
-      UBEMap::const_iterator prn_i = ube.find(sat);
-      if (prn_i == ube.end())
+      UBEMap::iterator it;
+      for (it = ube.begin(); it != ube.end(); it++)
       {
-         InvalidRequest e("No OrbElem for satellite " + asString(sat));
-         GPSTK_THROW(e);
-      }
+         OrbElemMap& em = it->second;
+         OrbElemMap::iterator ei;
+	      OrbElemMap::iterator eiPrev;
+         bool begin = true;
+         double previousOffset = 0.0;
+         bool previousIsOffset = false; 
 
-      const OrbElemMap& em = prn_i->second;
-      double dt2min = -1;
-      CommonTime tstart, how;
-      OrbElemMap::const_iterator it = em.end();
-
-      // Find eph with (Toe-(fitint/2)) > t - 4 hours
-      // Use 4 hours b/c it's the default fit interval.
-      // Backup one OrbElem to make sure you get the
-      // correct one in case of fit intervals greater 
-      // than 4 hours.
-      OrbElemMap::const_iterator ei = em.upper_bound(t - 4 * 3600); 
-      if (!em.empty() && ei != em.begin() )
-      {
-         ei--;
-      }
-      
-      for (; ei != em.end(); ei++)
-      {
-         const OrbElem& current = ei->second;
-         // tstart = beginning of validity
-         tstart = ei->first;
-         // how = HOW time
-         how = current.beginValid;
-
-         // Ephemerides are ordered by time of start of fit interval.  
-         // If the start of the fit interval is in the future, 
-         // this and any more ephemerides are not the one you are
-         // looking for.
-         if( tstart > t ) break;
-         
-         double dt1 = t - tstart;
-         double dt2 = t - how;
-         double fitDuration = current.endValid - current.beginValid;
-         if (dt1 >= 0 &&                           // t is after start of fit interval
-             dt1 <= fitDuration &&  // t is within the fit interval
-             (dt2min == -1 || fabs(dt2) < dt2min))  // t is closest to HOW
+            // Scan the map for this SV looking for 
+            // uploads.  Uploads are identifed by 
+            // Toe values that are offset from 
+            // an even hour.  
+         OrbElem* oePrev = 0;
+         for (ei = em.begin(); ei != em.end(); ei++) 
          {
-            it = ei;
-            dt2min = fabs(dt2);
-         }
-      }
+            OrbElem* oe = ei->second;
+            long Toe = (long) (static_cast<GPSWeekSecond> (oe->ctToe)).sow;
+            if ( (Toe % 3600)!=0) 
+            {
+               double currentOffset = Toe % 3600;
+            
+                  // If the previous set is not offset, then 
+                  // we've found an upload
+               if (!previousIsOffset)
+               {
+                     // Set the "offset found" flag and record the offset
+                  previousIsOffset = true;
+                  previousOffset = Toe % 3600;
 
-      if (it == em.end())
-      {
-         string mess = "No eph found for satellite " + asString(sat) + " at "
-            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
-         InvalidRequest e(mess);
-         GPSTK_THROW(e);
-      }
-      return it->second;
-   } */
+                     // Adjust the ending time of validity to match
+                     // the beginning validity of the upload.  
+                     // That beginning validity value should already be
+                     // set to the transmit time (or earliest transmit
+                     // time found) by OrbElem and GPSOrbElemStore.addOrbElem( )
+                     // This adjustment is consistent with the IS-GPS-XXX 
+                     // rules that a new upload invalidates previous elements.
+                  if (!begin)
+                  {
+                     oePrev->endValid = oe->beginValid;
+                  }
+               }
+                  // If previous set is offset, then this is the SECOND
+                  // set of elements in an upload.  In that case the OrbElem
+                  // load routines have conservatively set the beginning time
+                  // of validity to the transmit time because there was no
+                  // way to prove this was the second data set.  Since we can
+                  // now prove its second by observing the ordering, we can
+                  // adjust the beginning of validity as needed.
+                  // Since the algorithm is dependent on the message
+                  // format, this must be done in OrbElem.
+                  // 
+                  // IMPORTANT NOTE:  We also need to adjust the 
+                  // key in the map, which is based on the beginning
+                  // of validity.  However, we can't do it in this
+                  // loop without destroying the integrity of the
+                  // iterator.  See notes on the second loop, below. 
+               else if (previousIsOffset && currentOffset==previousOffset)
+               {
+                 oe->adjustBeginningValidity();
+                 previousIsOffset = false;  // Should never be more than two. 
+               }
+            }
+            else
+            {
+               previousIsOffset = false;
+            }
+            oePrev = oe;           // May need this for next loop.
+            begin = false; 
+         } //end inner for-loop 
+
+            // The preceding process has left some elements in a condition
+            // when the beginValid value != the key in the map.  This 
+            // must be addressed, but the map key is a const (by definition).
+            // We have to search the map for these disagreements.  When found,
+            // the offending item need to be copied out of the map, the 
+            // existing entry deleted, the item re-entered with the new key.
+            // Since it is unsafe to modify a map while traversing the map, 
+            // each time this happens, we have to reset the loop process.
+            //
+            // NOTE: Simplisitically, we could restart the loop at the 
+            // beginning each time.  HOWEVER, we sometimes load a long
+            // period in a map (e.g. a year).  At one upload/day, that
+            // would mean ~365 times, each time one day deeper into the map.
+            // As an alternate, we use the variable loopStart to note how
+            // far we scanned prior to finding a problem and manipulating
+            // the map.  Then we can restart at that point. 
+         bool done = false; 
+         CommonTime loopStart = CommonTime::BEGINNING_OF_TIME;
+         while (!done)
+         {
+            ei = em.lower_bound(loopStart);
+            while (ei!=em.end())
+            {
+              OrbElem* oe = ei->second;
+              if (ei->first!=oe->beginValid)
+              {
+                 OrbElem* oeAdj= oe->clone();       // Adjustment was done in 
+                                                   // first loop above.
+                 delete ei->second;                // oe becomes invalid.
+                 em.erase(ei);                     // Remove the map entry.
+                 em[oeAdj->beginValid] = oeAdj->clone(); // Add back to map
+                 break;            // exit this while loop without finishing
+              }
+              loopStart = ei->first; // Scanned this far successfully, so
+                                     // save this as a potential restart point.
+              ei++;
+              if (ei==em.end()) done = true;   // Successfully completed 
+                                               // the loop w/o finding any 
+                                               // mismatches.  We're done. 
+            } 
+        }
+
+           // Well, not quite done.  We need to update the initial/final 
+           // times of the map.
+        const OrbElemMap::iterator Cei = em.begin( );
+        initialTime = Cei->second->beginValid;
+        const OrbElemMap::reverse_iterator rCei = em.rbegin();
+        finalTime   = rCei->second->endValid;
+
+      } // end outer for-loop
+   }
+
 
 //-----------------------------------------------------------------------------
 

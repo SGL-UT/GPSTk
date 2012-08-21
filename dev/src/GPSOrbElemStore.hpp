@@ -90,21 +90,18 @@ namespace gpstk
       /// @return the Xvt of the SV at time
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
-      ///    information as to why the request failed.
+      ///    information as to why the request failed.  Possible reasons
+      ///    include
+      ///       1. No orbital elements stored for the SV
+      ///       2. No orbital elements with time of validity covering time t
+      ///       3. Orbital elements appropriate for time t are unhealhty
+      ///  The purpose of getX is to be as SAFE as possible.  
+      ///  If you MUST obtain SV PVT in the failure conditions noted above,
+      ///  please consider calling findOrbElem( ) or findNearOrbElem( ) 
+      ///  directly to obtain elements, then use OrbElem.getXvt( ) 
+      ///  to obtain positions.  
       virtual Xvt getXvt( const SatID& sat, const CommonTime& t ) const
          throw( InvalidRequest );
-
-
-      /** This returns the pvt of the sv in ecef coordinates
-       * (units m, s, m/s, s/s) at the indicated time.
-       * @param sat the satellite's SatID
-       * @param t the time to look up
-       * @param ref a place to return a pointer to the relevant OrbElem.
-       * @return the Xvt of the SV at time t
-       */
-      virtual Xvt getXvt( const SatID& sat, const CommonTime& t, OrbElem* ref ) const
-         throw( InvalidRequest );
-
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
@@ -163,7 +160,7 @@ namespace gpstk
       // in the parent class)
       //---------------------------------------------------------------
 
-      /// Returns the health of an SV for a particular time
+      /// Returns the health of an SV for a particular time.
       /// @param sat the satellite's SatID
       /// @param t the time to look up
       /// @return the SV health bits
@@ -202,8 +199,33 @@ namespace gpstk
       unsigned size() const
          throw();
 
-      /// Find an OrbElem based upon the search method configured
-      /// by SearchNear/SearchPast
+      /*
+       *  Explanation of find( ) function for GPSOrbElemStore
+       *  
+       *  The findOrbElem( ) funtion
+       *  does the best possible job of emulating the choice
+       *  that would be made by a real-time user following the
+       *  selection crieteria and warnings defined in the
+       *  IS-GPS-200.  
+       *
+       *  It is strongly suggested that the user load ALL 
+       *  available set of orbital elements into the store, 
+       *  regardless of health status.  It is furthermore
+       *  suggested the user call rationalize( ) to adjust
+       *  the begin/end times of validity after loading 
+       *  all the elements and before using the store. 
+       *
+       *  There exists a second find fuction, findNearOrbElem( ).
+       *  This is provided for compatibility with past uses
+       *  of the GPSEphemerisStore class.  findNearOrbElem( ) MAY 
+       *  return elements that are outside the range of 
+       *  validity and therefore need to be used with caution.   
+       *  Therefore,if you wish
+       *  to use findNearOrbElem( ), you should do so directly, 
+       *  carefully examine the resulting set of orbital elements
+       *  and make an informed decision before using the 
+       *  OrbElem.get????( ) functions.  
+       */
       /// @param sat SatID of satellite of interest
       /// @param t time with which to search for OrbElem
       /// @return a reference to the desired OrbElem
@@ -211,16 +233,6 @@ namespace gpstk
       const OrbElem* findOrbElem( const SatID& sat, const CommonTime& t )
          const throw( InvalidRequest );
 
-      /// Find an OrbElem for the indicated satellite at time t. The OrbElem
-      /// is chosen to be the one that 1) is within the fit interval
-      /// for the given time of interest, and 2) is the last OrbElem
-      /// transmitted before the time of interest (i.e. min(toi - HOW time)).
-      /// @param sat the SV of interest
-      /// @param t the time of interest
-      /// @return a reference to the desired OrbElem
-      /// @throw InvalidRequest object thrown when no OrbElem is found
-      const OrbElem* findUserOrbElem( const SatID& sat, const CommonTime& t )
-         const throw( InvalidRequest );
 
       /// Find an OrbElem for the indicated satellite at time t. The OrbElem
       /// chosen is the one with HOW time closest to the time t, (i.e. with
@@ -258,6 +270,32 @@ namespace gpstk
       const OrbElemMap& getOrbElemMap( const SatID& sat ) const
          throw( InvalidRequest );
 
+      /*
+       *  Notes regarding the rationalize( ) function.
+       *  The timing relationships defined in IS-GPS-200 20.3.4.5 mean
+       *  (1.) The end of validity of a given set of orbital elements
+       *  may be determined by the beginning of transmission of a new
+       *  upload.   
+       *  (2.) The beginning of validity of the SECOND set of elements
+       *  following and upload should be Toe-(0.5 fit interval) but
+       *  it is not practical to differentiate between the first and
+
+       *  second set following an upload when only looking at a 
+       *  single set of elements.
+       *
+       *  The rationalize( ) function is a means of addressing these 
+       *  shortcomings.   The intention is to load all the navigation
+       *  message data in the store, then call rationalize( ).  The
+       *  function will sweep through the ordered set of elements and
+       *  make appropriate adjustments to beginning and end of 
+       *  validity values.  In general, the only changes will
+       *  occur in set of elements immediately before an upload,
+       *  the first set following the upload, and (perhaps) the
+       *  second set following the upload. 
+       * 
+       */ 
+      void rationalize( );
+
       protected:
      
       /// This is intended to hold all unique EngEphemerides for each SV
@@ -274,7 +312,7 @@ namespace gpstk
       ///  and getSatHealth
       bool strictMethod;
 
-      // Here are a couple of inline methods to simplify the .cpp
+      // Here are a couple of methods to simplify the .cpp
       void updateInitialFinal(const OrbElem& eph)
       {
         if (eph.beginValid<initialTime)       

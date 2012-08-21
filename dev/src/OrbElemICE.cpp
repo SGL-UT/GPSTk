@@ -135,6 +135,16 @@ namespace gpstk
       return value;
    }
 
+   void OrbElemICE::adjustBeginningValidity()
+   {
+      if (!dataLoaded()) return;
+     
+         // For CNAV the nominal beginning of validity is two hours
+         // prior to the Toe.
+      endValid = ctToe - 7200; 
+      return;
+   }
+
    void OrbElemICE::dumpHeader(ostream& s) const
       throw( InvalidRequest )
    {

@@ -115,6 +115,10 @@ namespace gpstk
       double getAccuracy()  const
          throw( InvalidRequest );
 
+        /* Should only be used by GPSOrbElemStore::rationalize()
+         */
+      void adjustBeginningValidity();
+
       virtual void dumpHeader(std::ostream& s = std::cout) const
          throw( InvalidRequest );
 

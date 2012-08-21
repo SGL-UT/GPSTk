@@ -210,7 +210,7 @@ namespace gpstk
       }
       else
       {
-         long Xmit = HOWtime[0] - HOWtime[0] % 7200;
+         long Xmit = HOWtime[0] - HOWtime[0] % 7200;    /// This is NOT correct for extended OPS - FIX IT
          XmitSOW = (double) Xmit; 
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS ); 
@@ -289,6 +289,39 @@ namespace gpstk
       }
       double accuracy = ura2accuracy( accFlag );
       return accuracy;
+   }
+
+   void OrbElemLNav::adjustBeginningValidity()
+   {
+      if (!dataLoaded()) return;
+
+         // The nominal beginning of validity is calculated from 
+         // the fit interval and the Toe.  The fit interval is 
+         //  either trivial (if fit interval flag==0, fit interval is 4 hours) 
+         // or a look-up table based on the IODC. 
+      short fitHours = getLegacyFitInterval(IODC, fitint);
+      long  oneHalfInterval = ((long)fitHours/2) * 3600; 
+
+         // If we assume this is the SECOND set of elements in a set
+         // (which is an assumption of this function - see the .hpp) then
+         // the "small offset in Toe" will actually push the Toe-oneHalfInterval
+         // too early. For example, consider the following case.
+         //         Toe : 19:59:44  (really near 20:00:00)
+         //  first xMit : 18:00:00  (nominal)
+         // Blindly setting beginValid top Toe - 1/2 fit interval will
+         // result in 17:59:44.  But 18:00:00 actually is the right answer
+         // because the -16 second offset is an artifact.   
+         //
+         // Therefore, we are FIRST going to remove that offset,
+         // THEN determine beginValid.    
+      long sow = (long) (static_cast<GPSWeekSecond>(ctToe)).sow;
+      short week = (static_cast<GPSWeekSecond>(ctToe)).week;
+      sow = sow + (3600 - (sow%3600)); 
+      CommonTime adjustedToe = GPSWeekSecond(week, (double) sow);
+      adjustedToe.setTimeSystem(TimeSystem::GPS);
+      
+      beginValid = adjustedToe - oneHalfInterval; 
+      return;
    }
 
    void OrbElemLNav::dumpHeader(ostream& s) const

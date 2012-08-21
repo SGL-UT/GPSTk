@@ -337,11 +337,9 @@ namespace gpstk
 
 	 // End of Validity.  
 	 // The end of validity is calculated from the fit interval
-	 // and the Toe.  The fit interval is either trivial
-	 // (if fit interval flag==0, fit interval is 4 hours) 
-	 // or a look-up table based on the IODC. 
-      short fitHours = getLegacyFitInterval(IODC, fitDuration);
-      long endFitSOW = Toe + (fitHours/2)*3600;
+	 // and the Toe.  In RINEX, the fit duration in hours is
+	 // stored in the file. 
+      long endFitSOW = Toe + fitDuration*3600;
       short endFitWk = epochWeek;
       if (endFitSOW >= FULLWEEK)
       {
@@ -381,6 +379,18 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       return ( accuracyValue );
+   }
+
+   void OrbElemRinex::adjustBeginningValidity()
+   {
+      if (!dataLoaded()) return;
+     
+         // The nominal beginning of validity is calculated from 
+         // the fit interval and the Toe.  In RINEX the fit duration
+         // in hours is stored in the file. 
+      long  oneHalfInterval = ((long)fitDuration/2) * 3600; 
+      endValid = ctToe - oneHalfInterval; 
+      return;
    }
 
    void OrbElemRinex::dumpHeader(ostream& s) const

@@ -137,6 +137,20 @@ namespace gpstk
           *  @throw Invalid Request if the required data has not been stored.
           */
       double svRelativity(const CommonTime& t) const throw( gpstk::InvalidRequest );
+
+
+         /** adjustBeginningValidity is provided to support
+          *  GPSOrbElemStore::rationalize( ).  It rounds the 
+          *  beginning time of validity back to the nominal
+          *  beginning time in the case of a set of elements that
+          *  are the second set following an upload.  It should not
+          *  be used other than by GPSOrbElemStore::rationalize().
+          *
+          *  Since the means of determining validity varies between
+          *  message format types, this function is pure virtual here
+          *  and implemented in descendents.
+          */
+      virtual void adjustBeginningValidity() = 0;
       
          /** Output the contents of this orbit data to the given stream. 
           * @throw Invalid Request if the required data has not been stored.
