@@ -188,21 +188,28 @@ namespace gpstk
          if (debugLevel>2)
             cout << "Trying " << fn << " as SP3 ephemeris."<< endl;
          SP3Stream s(fn.c_str(), ios::in);
-         
-         SP3Header header;
-         s >> header;
-         SP3Data data;
-         s >> data;
-         if (s)
-         {
-            fileType = tSP3;
-            return;
+         try {
+            SP3Header header;
+            s >> header;
+            if (debugLevel>2)
+               cout << "post head."<< endl;
+            SP3Data data;
+            s >> data;
+            if (debugLevel>2)
+               cout << "post data."<< endl;
+            if (s)
+            {
+               fileType = tSP3;
+               return;
+            }
          }
+         catch (...)
+         {}
       }
 
       {
          if (debugLevel>2)
-            cout << "Trying " << fn << " as Yuma elmanac."<< endl;
+            cout << "Trying " << fn << " as Yuma almanac."<< endl;
          YumaStream s(fn.c_str(), ios::in);
          
          YumaHeader header;
