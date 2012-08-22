@@ -50,16 +50,15 @@
 #include <iostream>
 #include <list>
 #include <vector>
-
-/// @todo Get rid of the stdio.h dependency if possible.
-#include <cstdio>
-//#ifdef _WIN32
-//#include "regex1.h"
-//#else
-#include <regex.h>
-//#endif
+#include <cstdio>   /// @todo Get rid of the stdio.h dependency if possible.
 #include <cctype>
 #include <limits>
+
+#include <regex.h>
+
+#ifdef _WIN32
+#pragma comment(lib, "regex.lib") 
+#endif
 
 #include "Exception.hpp"
 
