@@ -50,8 +50,8 @@ int main(int argc, char *argv[])
 {
    try {
       CommandOptionNoArg helpOption('h',"help","Display argument list.",false);
-      CommandOptionWithStringArg sp3input('p',"pe","Input precise ephemeris");
-      CommandOptionWithNumberArg rate('r', "output-rate", "Rate of broadcast ephemeris output (seconds)");
+     CommandOptionWithStringArg sp3input('p',"pe","Input precise ephemeris");
+     CommandOptionWithNumberArg rate('r', "output-rate", "Rate of broadcast ephemeris output (seconds)");
       CommandOptionParser cop("GPSTk SP3 to RINEX NAV Conversion");
       cop.parseOptions(argc, argv);
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
          return 1;
       }
 
-      if(!helpOption.getCount())
+      if(helpOption.getCount())
       {
          cop.displayUsage(cout);
          return 0;
