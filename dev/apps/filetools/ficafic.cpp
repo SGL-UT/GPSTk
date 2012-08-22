@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
            << "  converts an ASCII FIC file to a binary FIC file" << endl
            << endl
            << "usage:" << endl
-           << "    ficfica inputfile outputfile" << endl
+           << "    ficafic inputfile outputfile" << endl
            << endl
            << "where:" << endl
            << "    inputfile: an input ASCII FIC file name" << endl
