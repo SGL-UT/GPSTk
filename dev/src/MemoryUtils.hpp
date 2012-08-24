@@ -382,7 +382,8 @@ namespace gpstk
       {
          if(index<0 || index>=_size)
          {
-            GPSTK_THROW(Exception("The input index is out of range."));
+             Exception e("The input index is out of range.");
+             GPSTK_THROW(e);
          }
          
          return _ptr[index];
@@ -392,7 +393,8 @@ namespace gpstk
       {
          if(index<0 || index>=_size)
          {
-            GPSTK_THROW(Exception("The input index is out of range."));
+            Exception e("The input index is out of range.")
+            GPSTK_THROW(e);
          }
 
          return _ptr[index];

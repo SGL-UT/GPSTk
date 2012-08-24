@@ -541,10 +541,16 @@ int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
 		for(int i = 0; i < files.size(); i++)
 		{
 			if(files[i].empty())
-				throw Exception("File name is empty");
+            {
+                Exception e("File name is empty");
+				GPSTK_THROW(e);
+            }
 			RinexNavStream strm(files[i].c_str());
 			if(!strm)
-				throw Exception("Could not open file " + files[i]);
+            {
+                Exception e("Could not open file " + files[i]);
+				GPSTK_THROW(e);
+            }
 			strm.close();
 			if(isRinexNavFile(files[i]))
 			{
@@ -585,7 +591,10 @@ int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
 				nread++;
 			}
 			else
-				throw Exception("File " + files[i] + " is neither BCE nor PE file.");
+            {
+                Exception e("File " + files[i] + " is neither BCE nor PE file.");
+				GPSTK_THROW(e);
+            }
 		}
 		return nread;
 	}
