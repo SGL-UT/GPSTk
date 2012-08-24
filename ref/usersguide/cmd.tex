@@ -1,0 +1,60 @@
+\RecustomVerbatimEnvironment{Verbatim}{Verbatim}{frame=single}
+\definecolor{console}{rgb}{0.95,0.95,0.95}
+\lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{console}}
+
+\newcommand{\outputsize}{footnotesize}
+\newcommand{\application}[1]{\emph{#1}}
+\newcommand{\setconsole}{\lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{console}}}
+\newcommand{\setfileio}{\lstset{basicstyle=\ttfamily, columns=flexible, backgroundcolor=\color{console}}}
+
+\perlnewcommand{\getuse}[1]
+{
+        my $command = $_[0];
+        $command = $command." > temp 2>&1 |head -n 15";
+        system("$command");
+
+	my $counter = 0;
+	my $done = 0;
+	my $output = "";
+        open(input,"temp");
+
+        while(my $line = <input>)
+	{
+		if($done == 0)
+		{
+			$output = $output.$line if $counter < 15;
+			$output = $output." . . .\n" if $counter >= 15;
+			$done = 1 if $counter >= 15;
+		}
+
+		$counter = $counter + 1;
+	}
+
+        close(input);
+
+        return  "\\begin{\\outputsize}\n" . "\\begin{lstlisting}\n" .
+                "> ".$_[0]."\n\n" . $output .
+                "\\end{lstlisting}\n" . "\\end{\\outputsize}\n";
+}
+
+\perlnewcommand{\getrevision}[1]
+{
+	my $revision = $_[0];
+	$revision =~ m/\$LastChangedRevision: ([^\$]*)/;
+	return $1;
+}
+
+\perlnewcommand{\entry}[4]
+{
+	my $output = "$_[0] \& $_[1] \& \\multirow{$_[3]}{2.5in}{$_[2]} \\\\";
+
+	my $cnt = 0;
+	while($cnt < ($_[3]-1))
+	{
+		$output = $output." \& \& \\\\ ";
+		$cnt = $cnt + 1;
+	}
+	
+	return $output;
+}
+

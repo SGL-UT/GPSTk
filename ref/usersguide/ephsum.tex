@@ -13,12 +13,13 @@
 
 \section{\emph{ephsum}}
 \subsection{Overview}
-\application{ephsum} summarizes contents of a RINEX navigation message or FIC file and outputs to text file.  The summary contains the transmit time, time of effectivity, end of effectivity,IODC, and health as a one-line-per ephemeris summary. The number of ephemerides found per SV is also provided. The number of ephemerides per SV is also summarized at the end. The default is to summarize all SVs found. If a specific PRN ID is provided, only data for that PRN ID will be summarized.
+\application{ephsum} summarizes contents of a RINEX navigation message or FIC file and outputs to text file.  The summary contains the transmit time, time of effectivity, end of effectivity, IODC, and health as a one-line-per ephemeris summary. The number of ephemerides found per SV is also provided. The number of ephemerides per SV is also summarized at the end. The default is to summarize all SVs found. If a specific PRN ID is provided, only data for that PRN ID will be summarized.
 
 \subsection{Usage}
+\subsubsection{\emph{ephsum}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ephsum}} \\
+%\multicolumn{3}{c}{\application{ephsum}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-i}{--input-file=ARG}{Input file name(s).}{1}
@@ -37,60 +38,53 @@
 \subsection{Examples}
 \begin{\outputsize}
 \begin{verbatim}
-\begin{\outputsize}
+> ephsum -i nav/s121001a.01n -o ephsumOut.txt
+
 # Output file from EphSum
-# Processing input specification: anavfic06.120 - Success(FIC)
-# Processing input specification: anavfic06.121 - Success(FIC)
+# Processing input specification: nav/s121001a.01n - Success(RINEX)
 #
-#PRN: 01,  # of eph: 31
-#PRN !      Xmit       !    Toe/Toc      !   End of Eff    !  IODC   Health
-  01 ! 1373 146640 05/01/06 121 16:44:00 ! 1373 151184 05/01/06 121 17:59:44 !... 
-  01 ! 1373 151200 05/01/06 121 18:00:00 ! 1373 158384 05/01/06 121 19:59:44 !...
-  01 ! 1373 165570 05/01/06 121 21:59:30 ! 1373 165584 05/01/06 121 21:59:44 !...
-  01 ! 1373 158400 05/01/06 121 20:00:00 ! 1373 165600 05/01/06 121 22:00:00 !...
-  01 ! 1373 165600 05/01/06 121 22:00:00 ! 1373 172784 05/01/06 121 23:59:44 !...
-#
-       - - - PRN 2-30 omitted for brevity - - -
-#
-#PRN: 31,  # of eph: NONE
+#PRN: 01,  # of eph: 08
+#PRN !               Xmit                !             Toe/Toc               
+!            End of Eff             !  IODC   Health
+  01 ! 1095  86400 01/01/01 001 00:00:00 ! 1095  93600 01/01/01 001 02:00:00 
+! 1095 100800 01/01/01 001 04:00:00 ! 0x088  0x00 00 
+  01 ! 1095  93600 01/01/01 001 02:00:00 ! 1095 100800 01/01/01 001 04:00:00 
+! 1095 108000 01/01/01 001 06:00:00 ! 0x089  0x00 00 
+  01 ! 1095 107940 01/01/01 001 05:59:00 ! 1095 108000 01/01/01 001 06:00:00 
+! 1095 122340 01/01/01 001 09:59:00 ! 0x28A  0x00 00 
+  01 ! 1095 108000 01/01/01 001 06:00:00 ! 1095 115200 01/01/01 001 08:00:00 
+! 1095 122400 01/01/01 001 10:00:00 ! 0x18B  0x00 00 
+  01 ! 1095 115200 01/01/01 001 08:00:00 ! 1095 122400 01/01/01 001 10:00:00 
+! 1095 129600 01/01/01 001 12:00:00 ! 0x186  0x00 00 
+  01 ! 1095 160500 01/01/01 001 20:35:00 ! 1095 165600 01/01/01 001 22:00:00 
+! 1095 174900 01/02/01 002 00:35:00 ! 0x286  0x00 00 
+
+...
+
 #
 #PRN: 32,  # of eph: NONE
 #
 #Summary of Counts by PRN
 # PRN    Count
-#  01       31
-#  02       26
-#  03       27
-#  04       26
-#  05       26
-#  06       26
-#  07       26
-#  08       27
-#  09       27
-#  10       26
-#  11       26
+#  01        8
+#  02        5
+#  03        5
+#  04        6
+#  05        8
+#  06        7
+#  07        5
+#  08        7
+#  09        6
+#  10        5
+#  11        5
 #  12        0
-#  13       26
-#  14       27
-#  15       28
-#  16       26
-#  17       27
-#  18       26
-#  19       26
-#  20       26
-#  21       26
-#  22       26
-#  23       26
-#  24       26
-#  25       26
-#  26       26
-#  27       27
-#  28       26
-#  29       26
-#  30       26
-#  31        0
-#  32        0
-\end{outputsize}
+#  13        8
+#  14        5
+#  15        7
+#  16        0
+#  17        5
+#  18        0
+
 \end{verbatim}
 \end{\outputsize}
 %\end{document}

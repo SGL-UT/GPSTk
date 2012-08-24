@@ -1,0 +1,106 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+
+\index{CalcDOPs!application writeup}
+\section{\emph{CalcDOPs}}
+\subsection{Overview}
+This application reads SV almanac data (one file per day of observation) from a FIC, FICA or a RINEX navigation file, then computes and displays visibility information.
+Dilution of precision values from that data are calculated using standard methods.  See for example:
+\begin{itemize}
+\item AIAA GPS Theory and Applications vol. 1, Ed. Parkinson \& Spilker, pp. 414.
+\item GPS Signals, Measurements, and Performance, 2ed., Misra \& Enge, pp. 203.
+\end{itemize}
+
+\subsection{Usage}
+\subsubsection{\emph{CalcDOPs}}
+\begin{\outputsize}
+\begin{longtable}{lll}
+%\multicolumn{3}{c}{\application{CalcDOPs}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i$<$inputfile$>$}{}{Input file for day to be calculated.}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{-p $<$inputfile$>$}{}{Input file for previous day (ephemeris mode only).}{2}
+\entry{-o $<$outputfile$>$}{}{Grid output file (default DOPs.out).}{1}
+\entry{-sf $<$outputfile$>$}{}{Stats output file (default DOPs.stat).}{1}
+\entry{-tf $<$outputfile$>$}{}{Time steps output file (default DOPS.times).}{2}
+\entry{-l $<$outputfile$>$}{}{Log output file (default DOPS.log).}{1}
+\entry{-rs}{}{Read from stats file.}{1}
+\entry{-a}{}{Work in almanac mode (ephemeris mode is default).}{2}
+\entry{-w -s $<$week$>$ $<$sow$>$}{}{Starting time tag.}{1}
+\entry{-x $<$prn$>$}{}{Exclude satellite PRN.}{1}
+\entry{-t $<$dt$>$}{}{Time spacing.}{1}
+\entry{-na}{}{North America only.}{1}
+\entry{-d}{}{Dump grid results at each time step (time-intensive).}{2}
+\entry{-h}{--help}{Output options info and exit.}{1}
+\entry{-v}{}{Print version info and exit.}{1}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Notes}
+\begin{center}
+\begin{tabular}{|l|l|}
+\multicolumn{2}{c}{\textbf{Abort/failure codes given on return:}} \\
+\hline
+-1  &could not open input data file\\
+-2  &could not identify input data file type\\
+-3  &fewer than 4 satellite almanacs available\\
+-4  &could not allocate GridStats data types\\
+-5  &could not open input  stats file\\
+-6  &could not open output grid  file\\
+-7  &could not open output stats file\\
+-8  &could not open output log   file\\
+\hline
+\end{tabular}
+\end{center}
+
+
+\begin{center}
+\begin{tabular}{|l|l|} 
+\multicolumn{2}{c}{\textbf{Essential variables not documented below at declaration:}} \\
+\hline
+NtrofN &  number of cells/times with $<$ 5 SVs visible during the time period\\
+NpeakH &  number cells/times w/ HDOP $>$ 10\\
+NpeakP &  number cells/times w/ PDOP $>$ 10\\
+IworstN&  index in Grid[] of cell with worst nsvs (number of satellites)\\
+IworstH&  index in Grid[] of cell with worst HDOP\\
+IworstP&  index in Grid[] of cell with worst PDOP\\
+WorstN &  value of nsvs at IworstN\\
+WorstH &  value of HDOP at IworstH\\
+WorstP &  value of PDOP at IworstP\\
+TworstN&  time tag (CommonTime class) of WorstN\\
+TworstH&  time tag (CommonTime class) of WorstH\\
+TworstP&  time tag (CommonTime class) of WorstP\\
+\hline
+\end{tabular}
+\end{center}
+
+
+
+\begin{enumerate}
+\item GPS only, using PRNs hard-wired to SV numbers 1-32.
+\item Elevation limit is hard-wired to 5 degrees above horizon.
+\item ``North America" means the northern half-hemisphere: -180 to 0 deg long.,
+      0 to 90N latitude.
+\item Ephemeris mode is default, almanac mode is optional.  Ephemeris mode is
+      preferred, because it excludes unhealthy satellites for any time when they
+      transmitted an unhealthy flag.  Almanac mode will generally not exclude SVs
+      when they were unhealthy (typical), or may erroneously exclude them for an
+      entire day (rarely).
+\item If 2 input files are given, the default start time is midnight on the day
+      to be calculated.  A previous-day input file can be given only in ephemeris
+      mode, not almanac.
+\item The code uses geodetic coordinates for all calculations.
+\item The -d option is useful for (e.g.) making movies of DOPs throughout a day.
+\end{enumerate}
+%\end{document}
+

@@ -12,12 +12,13 @@
 
 \section{\emph{RinSum}}
 \subsection{Overview}
-The application reads a RINEX file and summarizes it content.
+The application reads a RINEX file and summarizes its content.
 
 \subsection{Usage}
+\subsubsection{\emph{RinSum}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{RinSum}} \\
+%\multicolumn{3}{c}{\application{RinSum}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-i}{--input}{Input file name(s).}{1}
@@ -39,63 +40,81 @@ The application reads a RINEX file and summarizes it content.
 \subsection{Examples}
 \begin{\outputsize}
 \begin{lstlisting}
-> RinSum -i data_set/s081213a.99o --EpochBeg 2006,08,1,12,0,0'
-
-+++++++++++++ RinSum summary of Rinex obs file data_set/s081213a.99o +++++++++++++
-Rinex header:
+>RinSum obs/s051001a.04o
+# RinSum, part of the GPS Toolkit, Ver 3.3 1/31/12, Run 2012/07/17 11:12:32
++++++++++++++ RinSum summary of Rinex obs file obs/s051001a.04o +++++++++++++
 ---------------------------------- REQUIRED ----------------------------------
 Rinex Version  2.10,  File type Observation,  System G (GPS).
-Prgm: RinexObsWriter,  Run: 11-14-01 10:04:27,  By: NIMA
-Marker name: 85408.
-Obs'r : Monitor Station,  Agency: NIMA
-Rec#: 1,  Type: ZY12,  Vers:
-Antenna # : 85408,  Type : AshTech Geodetic 3
-Position (XYZ,m) : (-740289.7851, -5457071.6555, 3207245.8294).
-Antenna offset (ENU,m) : (0.0000, 0.0000, 0.0000).
-Wavelength factors (default) L1:1, L2: 1.
-Observation types (7) :
- Type #0 = L1 L1 Carrier Phase (L1 cycles).
- Type #1 = L2 L2 Carrier Phase (L2 cycles).
- Type #2 = C1 C/A-code pseudorange (meters).
- Type #3 = P1 Pcode L1 pseudorange (meters).
- Type #4 = P2 Pcode L2 pseudorange (meters).
- Type #5 = D1 Doppler Frequency L1 (Hz).
- Type #6 = D2 Doppler Frequency L2 (Hz).
-Time of first obs 1999/08/01 00:00:00.0000000 GPS
-(This header is VALID 2.1 Rinex.)
+Prgm: GFW - ROW,  Run: 12/31/2003 23:59:53,  By: NIMA
+Marker name: 85405, Marker type: .
+Observer : Monitor Station,  Agency: NIMA
+Rec#: 1,  Type: ZY12,  Vers: 
+Antenna # : 85405,  Type : AshTech Geodetic 3
+Position      (XYZ,m) : (3633910.6680, 4425277.7563, 2799862.8708).
+Antenna Delta (HEN,m) : (0.0000, 0.0000, 0.0000).
+Wavelength factor L1: 1 L2: 1
+GPS Observation types (9):
+ Type #01 (L1P) L1 GPSP phase
+ Type #02 (L2P) L2 GPSP phase
+ Type #03 (C1C) L1 GPSC/A pseudorange
+ Type #04 (C1P) L1 GPSP pseudorange
+ Type #05 (C2P) L2 GPSP pseudorange
+ Type #06 (D1P) L1 GPSP doppler
+ Type #07 (D2P) L2 GPSP doppler
+ Type #08 (S1P) L1 GPSP snr
+ Type #09 (S2P) L2 GPSP snr
+Time of first obs 2004/01/01 00:00:00.000 Unknown
+(This header is VALID)
 ---------------------------------- OPTIONAL ----------------------------------
-Comments (3) :
-The AS bit flag is set if receiver is in Z mode
-Signal to Noise ratio information is omitted
-This file contains SMOOTHED obs data
--------------------------------- END OF HEADER -------------------------------
+Marker number : 85405
+Signal Strenth Unit = 
+Comments (1) :
+Data are thinned (not smoothed) 30s. observations
+-------------------------------- END OF HEADER --------------------------------
 
- WARNING: Computed first time does not agree with header
+Reading the observation data...
+Computed interval 30.00 seconds.
+Computed first epoch: 2004/01/01 00:00:00 = 1251 4 345600.000
+Computed last  epoch: 2004/01/01 23:59:30 = 1251 4 431970.000
+Computed time span: 23h 59m 30s = 86370 seconds.
+Computed file size: 3785956 bytes.
+There were 2880 epochs (100.00% of 2880 possible epochs in this timespan) and 0 inline header blocks.
 
- Computed interval is  0.00
- Computed first epoch is -4713/01/01 00:00:00.0000000
- Computed last epoch is 1999/08/01 23:59:30.0000000
- There were 0 epochs (-0.00% of -2147483647 possible epochs in this timespan) and 0 inline header blocks.
+      Summary of data available in this file: (Spans are based on times and interval)
+System G = GPS:
+ Sat\OT: L1P    L2P    C1C    C1P    C2P    D1P    D2P    S1P    S2P   Span             Begin time - End time
+ G01     945    945    942    945    945    945    945    945    945   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G02     911    906    889    911    906    911    906    911    906   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G03     872    869    855    872    869    872    869    872    869   2433  2004/01/01 00:42:00 - 2004/01/01 20:58:00
+ G04     914    908    884    914    908    914    908    914    908   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G05     785    785    781    785    785    785    785    785    785    860  2004/01/01 07:19:30 - 2004/01/01 14:29:00
+ G06     890    890    885    890    890    890    890    890    890    947  2004/01/01 09:31:00 - 2004/01/01 17:24:00
+ G07     735    735    735    735    735    735    735    735    735    735  2004/01/01 03:51:00 - 2004/01/01 09:58:00
+ G08     924    923    916    924    923    924    923    924    923    974  2004/01/01 00:17:00 - 2004/01/01 08:23:30
+ G09     665    665    659    665    665    665    665    665    665   1310  2004/01/01 06:34:30 - 2004/01/01 17:29:00
+ G10     947    943    937    947    943    947    943    947    943   1407  2004/01/01 02:44:00 - 2004/01/01 14:27:00
+ G11     699    696    657    699    696    699    696    699    696   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G13     890    888    875    890    888    890    888    890    888   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G14     700    700    698    700    700    700    700    700    699    702  2004/01/01 16:14:00 - 2004/01/01 22:04:30
+ G15     903    903    898    903    903    903    903    903    903    959  2004/01/01 13:08:00 - 2004/01/01 21:07:00
+ G16     982    982    969    982    982    982    982    982    982   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G17     738    738    737    738    738    738    738    738    738    766  2004/01/01 08:20:30 - 2004/01/01 14:43:00
+ G18     773    772    765    773    772    773    772    773    772    873  2004/01/01 12:43:30 - 2004/01/01 19:59:30
+ G20     789    789    771    789    789    789    789    789    789   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G21     930    930    921    930    930    930    930    930    930    966  2004/01/01 11:02:00 - 2004/01/01 19:04:30
+ G22     793    793    793    793    793    793    793    793    793    793  2004/01/01 15:15:30 - 2004/01/01 21:51:30
+ G23     877    877    888    877    877    877    877    877    877    904  2004/01/01 14:52:00 - 2004/01/01 22:23:30
+ G24     675    675    667    675    675    675    675    675    675   1394  2004/01/01 01:29:30 - 2004/01/01 13:06:00
+ G25     652    651    647    652    651    652    651    652    651   1412  2004/01/01 12:07:30 - 2004/01/01 23:53:00
+ G26     927    927    920    927    927    927    927    927    927   1411  2004/01/01 04:47:30 - 2004/01/01 16:32:30
+ G27     954    954    951    954    954    954    954    954    954   2880  2004/01/01 00:00:00 - 2004/01/01 23:59:30
+ G28     882    881    876    882    881    882    881    882    881    914  2004/01/01 01:41:30 - 2004/01/01 09:18:00
+ G29     885    884    870    885    884    885    884    885    884   1419  2004/01/01 03:57:30 - 2004/01/01 15:46:30
+ G30     701    701    700    701    701    701    701    701    701    749  2004/01/01 09:27:30 - 2004/01/01 15:41:30
+ G31     973    970    962    973    970    973    970    973    970   2541  2004/01/01 00:32:00 - 2004/01/01 21:42:00
+TOTAL  24311  24280  24048  24311  24280  24311  24280  24311  24279
 
-          Summary of data available in this file: (Totals are based on times and interval)
-PRN/OT:     L1    L2    C1    P1    P2    D1    D2 Total  Begin - End time
-TOTAL        0     0     0     0     0     0     0
 
- WARNING: ObsType L1 should be deleted from header.
-
- WARNING: ObsType L2 should be deleted from header.
-
- WARNING: ObsType C1 should be deleted from header.
-
- WARNING: ObsType P1 should be deleted from header.
-
- WARNING: ObsType P2 should be deleted from header.
-
- WARNING: ObsType D1 should be deleted from header.
-
- WARNING: ObsType D2 should be deleted from header.
-
-+++++++++++++ End of RinSum summary of data_set/s081213a.99o +++++++++++++
 \end{lstlisting}
 \end{\outputsize}
 

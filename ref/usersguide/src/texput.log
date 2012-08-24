@@ -1,0 +1,36 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=latex 2012.6.28)  2 JUL 2012 12:21
+entering extended mode
+ %&-line parsing enabled.
+**\makeatletter\def\plmac@tag{ZTGXJXXXRBKMOFJPCXTU}\def\plmac@tofile{texput.top
+l}\def\plmac@fromfile{texput.frpl}\def\plmac@toflag{texput.tfpl}\def\plmac@from
+flag{texput.ffpl}\def\plmac@doneflag{texput.dfpl}\def\plmac@pipe{texput.pipe}\m
+akeatother
+
+*q
+
+! LaTeX Error: Missing \begin{document}.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+<*> q
+     
+? q
+OK, entering \batchmode...
+Missing character: There is no q in font nullfont!
+! Emergency stop.
+<*> q
+     
+*** (job aborted, no legal \end found)
+
+ 
+Here is how much of TeX's memory you used:
+ 9 strings out of 495062
+ 186 string characters out of 1182644
+ 45108 words of memory out of 3000000
+ 3289 multiletter control sequences out of 15000+50000
+ 3640 words of font info for 14 fonts, out of 3000000 for 9000
+ 28 hyphenation exceptions out of 8191
+ 4i,0n,4p,5b,14s stack positions out of 5000i,500n,10000p,200000b,50000s
+No pages of output.

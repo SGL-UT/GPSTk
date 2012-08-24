@@ -1,0 +1,54 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{RinEdit!application writeup}
+
+\section{\emph{RinEdit}}
+\subsection{Overview}
+The application opens and reads RINEX observation files(s) (v2+), applies editing
+ commands, and write out the modified RINEX data to RINEX v3 file(s).
+
+\subsection{Usage}
+\subsubsection{\emph{RinEdit}}
+\begin{\outputsize}
+\begin{longtable}{lll}
+%\multicolumn{3}{c}{\application{RinEdit}} \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--IF $<$f$>$}{Input RINEX observation file names [repeat]}{1}
+\entry{}{--ID $<$p$>$}{Path of input RINEX observation file(s)}{1}
+\entry{}{--OF $<$fn$>$}{Output RINEX obs files [also see --OF $<$f,t$>$ below]}{2}
+\entry{}{--OD $<$p$>$}{Path of output RINEX observation file(s)}{1}
+\entry{}{--file $<$fn$>$}{Name of file containing more options [\#-$>$EOL = comment]}{2}
+\entry{}{--log $<$fn$>$}{Output log file name}{1}
+\entry{}{--ver2}{Write out RINEX version 2}{1}
+\entry{}{--verbose}{Print extra output information}{1}
+\entry{}{--debug}{Print debug output at level 0 [debug$<$n$>$ for level n=1-7]}{2}
+\entry{}{--help}{Print syntax and editing command page}{1}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{lstlisting}
+> RinEdit --IF acor1480.08o --IF areq015o.10o --OF out.12o --verbose
+
+# RinEdit, part of the GPS Toolkit, Ver 1.0 8/1/11, Run 2012/07/09 12:17:20
+ Edit cmd: OF_Output_File 0 SV:?-1 OT:    d:0.0000 i:0 t:BeginTime >out.12o<
+Reading header...
+Reading observations...
+ Opened output file out.12o at time 2008/05/27 00:00:00 = 1481 172800.000 GPS
+Reading header...
+Reading observations...
+
+\end{lstlisting}
+\end{\outputsize}
+
+%\end{document}

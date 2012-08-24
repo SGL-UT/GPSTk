@@ -18,9 +18,10 @@ The application reads one or more RINEX observation files, plus one or more
    the position solutions in auxiliary header blocks.
 
 \subsection{Usage}
+\subsubsection{PRSolve}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{PRSolve}}\\
+%\multicolumn{3}{c}{\application{PRSolve}}\\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-o}{--obs}{Input RINEX observation file(s).}{1}
@@ -41,7 +42,7 @@ The application reads one or more RINEX observation files, plus one or more
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments: Configuration}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{}{--Freq}{Frequency to process: 1, 2, or 3 for L1, L2, of iono-free combination.}{2}
+\entry{}{--Freq}{Frequency to process: 1, 2, or 3 for L1, L2, or iono-free combination.}{2}
 \entry{}{--MinElev}{Minimum elevation angle in degrees (only if --PosXYZ).}{2}
 \entry{}{--exSat}{Exclude this satellite.}{1}
 \entry{}{--Trop}{Trop model, one of ZR, BL, SA, NB, NL, GG, GGH (gpstk::TropModel), with optional weather T(c), P(mb),RH(\%).}{3}
@@ -108,18 +109,18 @@ Covariance of RAIM solution for file: arl2800.06o
 \item RPR  Final RAIM ECEF XYZ solution residuals [only if --PosXYZ given]
 \item RNE  Final RAIM North-East-Up solution residuals [only if --PosXYZ]
 \item  APS  Autonomous ECEF XYZ solution [only if --APSout given]
-\item APR  Autonomous ECEF XYZ solution residuals [only if both --APS & --Pos] 
-\item ANE  Autonomous North-East-Up solution residuals [only if --APS & --Pos]
+\item APR  Autonomous ECEF XYZ solution residuals [only if both --APS \& --Pos] 
+\item ANE  Autonomous North-East-Up solution residuals [only if --APS \& --Pos]
 \end{itemize}
 Where:\\
 \begin{itemize}
 \item Nrej = number of rejected sats
 \item (week,sow) = GPS time tag
-\item Nsat = # sats used
+\item Nsat = \# sats used
 \item XYZT = position+time solution(or residuals)
 \item RMS = RMS residual of fit
 \item slope = RAIM slope
-\item nit = # of iterations
+\item nit = \# of iterations
 \item conv = convergence factor
 \item `sat sat ...' lists all sat. PRNs (- : rejected)
 \item code = return value from PRSolution::RAIMCompute()

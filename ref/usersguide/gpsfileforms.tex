@@ -4,7 +4,7 @@ A variety of file formats are supported within the GPSTk.
 The file formats generally store GPS observation data or data related 
 to processing of GPS observables.  In this section, a summary of the 
 file formats supported within the GPSTk is presented along with a brief 
-rationale of why each format is supporting within the GPSTk and where to
+rationale of why each format is supported within the GPSTk and where to
 find additional information on the format.  
 
 \section{RINEX}
@@ -13,14 +13,14 @@ National Geodetic Survey (NGS) in the U.S. and the University of Berne
 in Switzerland.  RINEX is actually three format definitions that allow 
 storage of GPS observations, GPS navigation message information, 
 and meteorological data associated with GPS observations.  
-GPSTk contains classes to both read and write RINEX V2.1 data files 
+GPSTk contains classes to both read and write RINEX V2.1 and V3 data files 
 of all types (observation, navigation message, and meteorological). 
 RINEX has undergone a number of revisions since its inception. Each
 revision is defined using a standard \cite{rinex1format}, \cite{rinex2format},
 \cite{rinex211format}, \cite{rinex300format}.
 
 \section{FIC}
-The Floating, Integer, Charater (FIC) format was developed in the mid-80’s as
+The Floating, Integer, Character (FIC) format was developed in the mid-80’s as
 a relatively machine-independent way to store GPS observation and navigation
 message data while retaining receiver specific characteristics.  
 Over time, the RINEX format (see above) proved more popular with users

@@ -11,7 +11,7 @@
 \index{reszilla!application writeup}
 \section{\emph{reszilla}}
 \subsection{Overview}
-Reszilla is an application that computes various residuals from GPS
+Reszilla is a set of applications that compute various residuals from GPS
 pseudorange, phase, and doppler data. These data are often refered to
 as raw observations. The two types of residuals that are currently
 computed are an Observed Range Deviation (ORD), and a double
@@ -42,7 +42,7 @@ averaging the residuals of all SVs in track.
 \subsubsection{\emph{OrdApp}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{OrdApp}} \\
+%\multicolumn{3}{c}{\application{OrdApp}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-i}{--input}{Where to read the ord data. The default is stdin.}{2}
@@ -60,7 +60,7 @@ averaging the residuals of all SVs in track.
 
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ordClock}} \\
+%\multicolumn{3}{c}{\application{ordClock}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-d}{--debug}{Increase debug level.}{1}
@@ -79,6 +79,15 @@ averaging the residuals of all SVs in track.
 \entry{}{--ns}{Report the clock in ns, not meters.}{1}
 
 \end{longtable}
+\subsubsection{\emph{Examples}}
+\begin{verbatim}
+> ordClock -i ords.out
+# Time              Type PRN  Elev   Azimuth       ORD(m) wonky
+2004 162 00:00:00.0    0   0   0.00    0.00        0.95000    67
+2004 162 00:00:00.0    1                  0.95000     1
+
+\end{verbatim}
+
 \end{\outputsize}
 
 \index{ordEdit!application writeup}
@@ -88,7 +97,7 @@ averaging the residuals of all SVs in track.
 
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ordEdit}} \\
+%\multicolumn{3}{c}{\application{ordEdit}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-d}{--debug}{Increase debug level.}{1}
@@ -113,7 +122,7 @@ averaging the residuals of all SVs in track.
                         ddd HH:MM:SS".}{2}
 \entry{-s}{--size=ARG}{Remove clock residuals with absolute values greater than
                         this size (meters).}{2}
-\entry{-l}{--ord-limit=ARG}{Remove ords with absolute valies greater than this size
+\entry{-l}{--ord-limit=ARG}{Remove ords with absolute values greater than this size
                         (meters).}{2}
 \entry{-i}{--input=ARG}{Where to read the ord data. The default is stdin.}{2}
 \entry{-r}{--output=ARG}{Where to write the output. The default is stdout.}{2}
@@ -121,6 +130,15 @@ averaging the residuals of all SVs in track.
                         The default is "\%4Y \%3j \%02H:\%02M:\%04.1f".}{3}
 \entry{}{--ns}{Report the clock in ns, not meters.}{1}
 \end{longtable}
+
+\subsubsection{\emph{Examples}}
+\begin{verbatim}
+> ordEdit -i ords.out
+
+# Time              Type PRN  Elev   Azimuth       ORD(m) wonky
+2004 162 00:00:00.0    0   0   0.00    0.00        0.95000    67
+2004 162 00:00:00.0    1                  0.95000     0 
+\end{verbatim}
 \end{\outputsize}
 
 \index{ordGen!application writeup}
@@ -128,7 +146,7 @@ averaging the residuals of all SVs in track.
 \application{ordGen} generates observed range deviations.
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ordGen}} \\
+%\multicolumn{3}{c}{\application{ordGen}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-o}{--obs=ARG}{Where to get the obs data.}{1}
@@ -161,6 +179,29 @@ averaging the residuals of all SVs in track.
                         The default is "\%4Y \%3j \%02H:\%02M:\%04.1f".}{3}
 \entry{}{--ns}{Report the clock in ns, not meters.}{1}
 \end{longtable}
+
+\subsubsection{\emph{Examples}}
+\begin{verbatim}
+> ordGen -o obs/s121001a.09o -e nav/s121001a.09n -r ordGen.out
+
+-------------------------ordGen.out-----------------------------
+
+# Time              Type PRN  Elev   Azimuth       ORD(m) wonky
+2009   1 00:00:30.0    0   2  37.95  236.83   269828.15589     0
+2009   1 00:00:30.0    0   4  53.67  179.46   269828.54600     0
+2009   1 00:00:30.0    0   5   7.76  224.54   269829.73261     0
+2009   1 00:00:30.0    0  10  27.65  317.24   269828.24818     0
+2009   1 00:00:30.0    0  12  18.86  230.26   269825.94699     0
+2009   1 00:00:30.0    0  13  29.10   96.35   269827.83224     0
+2009   1 00:00:30.0    0  17  57.26   72.48   269827.82792     0
+2009   1 00:00:30.0    0  23  17.26  122.49   269826.61070     0
+2009   1 00:00:30.0    0  28  15.47    6.38   269823.93863     0
+2009   1 00:01:00.0    0   2  38.05  236.58   269826.49879     0
+...
+----------------------------------------------------------------
+
+\end{verbatim}
+
 \end{\outputsize}
 
 
@@ -170,7 +211,7 @@ averaging the residuals of all SVs in track.
 \application{ordLinEst} computes a linear clock estimate. \\
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ordLinEst}} \\
+%\multicolumn{3}{c}{\application{ordLinEst}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-d}{--debug}{Increase debug level.}{1}
@@ -183,6 +224,19 @@ averaging the residuals of all SVs in track.
                         The default is "\%4Y \%3j \%02H:\%02M:\%04.1f".}{3}
 \entry{}{--ns}{Report the clock in ns, not meters.}{1}
 \end{longtable}
+\subsubsection{\emph{Examples}}
+\begin{verbatim}
+> ordLinEst -i ords.out
+#  t0                   t1                   t0 offset(m)  t1 offset(m)  slope(m/d)  abdev(m)
+#  -------------------  -------------------  ------------  ------------  ----------  --------
+#
+# Time              Type PRN  Elev   Azimuth       ORD(m) wonky
+2004 162 00:00:00.0    0   0   0.00    0.00        0.95000    67
+2004 162 00:00:00.0    1                  0.95000     0
+
+\end{verbatim}
+
+
 \end{\outputsize}
 
 \index{ordStats!application writeup}
@@ -192,7 +246,7 @@ averaging the residuals of all SVs in track.
 
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ordStats}} \\
+%\multicolumn{3}{c}{\application{ordStats}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-d}{--debug}{Increase debug level.}{1}
@@ -222,7 +276,7 @@ averaging the residuals of all SVs in track.
 
 
 \subsection{Double Difference Residuals}
-While many double differences exist, reszilla computes an the first
+While many double differences exist, reszilla computes the first
 difference to a master SV and the second difference to a second
 receiver.  This double difference removes receiver clock error, iono,
 trop, and SV clock errors. When the two receivers are connected to a
@@ -233,20 +287,20 @@ basically receiver tracking noise and receiver tracking errors.
 One complicating factor in computing this DD is that while the clock
 errors in the receivers cancel out, there is still an error associated
 with the motion of the satellite during the interval between when the
-two receivers computing their observation. To remove this error, an
+two receivers are computing their observation. To remove this error, an
 estimate of the clock offset between the two receivers is
-need. Reszilla can get this estimate in one of two ways; estimates
+needed. Reszilla can get this estimate in one of two ways; estimate
 this by computing a clock estimate for each receiver as described
-under the ORD section or reading the estimates from the rinex obs data
+under the ORD section or read the estimates from the rinex obs data
 files. These two estimates are then differenced to get the offset
 between the two receivers.
 
 Another complicating factor is that the phase observations normally
 have an "integer ambiguity" associated with them. When the DD phase
 observation is computed, it will have the difference between the two
-receivers ambiguity. Often this number can be quite big. Removing this
+receivers' ambiguity. Often this number can be quite big. Removing this
 ambiguity is often referred to as debiasing the data. This process
-involves much black magic and slight of hand. Do not delve into this
+involves much black magic and sleight of hand. Do not delve into this
 or even look too closely at the details or you will be sullied.
 
 \subsection{Usage}
@@ -255,7 +309,7 @@ or even look too closely at the details or you will be sullied.
 \application{ddGen} computes double-difference residuals from raw observations.
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ddGen}} \\
+%\multicolumn{3}{c}{\application{ddGen}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-1}{--obs1=ARG}{Where to get the first receiver's obs data.}{1}
@@ -276,10 +330,10 @@ or even look too closely at the details or you will be sullied.
                            and smart. The default is smart.}{5}
 \entry{}{--min-arc-time=ARG}{The minimum length of time (in seconds) that a
                            sequence of observations must span to be considered
-                           as an arc. The default value is 60.0 seconds.}{3}
+                           as an arc. The default value is 60.0 seconds.}{4}
 \entry{}{--min-arc-gap=ARG}{The minimum length of time (in seconds) between two
                            arcs for them to be considered separate arcs. The
-                           default value is 60.0 seconds.}{4}
+                           default value is 60.0 seconds.}{3}
 \entry{}{--min-arc-length=ARG}{The minimum number of epochs that can be considered
                            an arc. The default value is 5 epochs.}{2}
 \entry{}{--noise=ARG}{The noise threshold used in finding discontinuitites.
@@ -296,7 +350,7 @@ or even look too closely at the details or you will be sullied.
 \entry{}{--strip=ARG}{Factor used in stripping data prior to computing
                            descriptive statistics. The default value is 3.2.}{2}
 \entry{}{--phase=ARG}{Only compute phase double differences.}{1}
-\entry{}{-S}{--SNR=ARG}{Only included observables with a raw signal strength,
+\entry{-S}{--SNR=ARG}{Only include observables with a raw signal strength,
                            or SNR, of at least this value, in dB. The default is
                            20 dB.}{3}
 \entry{-m}{--msid=NUM}{Station to process data for. Used to select a station
@@ -313,6 +367,29 @@ or even look too closely at the details or you will be sullied.
                            ephemeris.}{5}
 \entry{}{--zero-trop}{Disables trop corrections.}{1}
 \end{longtable}
+\subsubsection{Examples}
+\begin{verbatim}
+> ddGen -1 obs/s121001a.09o -2 obs/s121001a.09o -e nav/s121001a.09n 
+
+>s  ObsID                elev      noise(mad)    median      # DDE     # SVE    kurt   jumps
+>s -----------------     -----     ----------  ----------   -------   -------  ------  -----
+>s L1 GPSC/A pseudorange  0-10     0.0000000    0.000e+00      4476      4476    -nan    0
+>s L1 GPSP pseudorange    0-10     0.0000000    0.000e+00      4289      4476    -nan    0
+>s L1 GPSP phase          0-10     0.0000000    0.000e+00      4289      4476    -nan    0
+>s L1 GPSP doppler        0-10     0.0000000    0.000e+00      4289      4476    -nan    0
+
+>s L1 GPSC/A pseudorange 10-20     0.0000000    0.000e+00      5603      5752    -nan    0
+>s L1 GPSP pseudorange   10-20     0.0000000    0.000e+00      5584      5752    -nan    0
+>s L1 GPSP phase         10-20     0.0000000    0.000e+00      5584      5752    -nan    0
+>s L1 GPSP doppler       10-20     0.0000000    0.000e+00      5584      5752    -nan    0
+
+>s L1 GPSC/A pseudorange 20-60     0.0000000    0.000e+00     14499     16507    -nan    0
+>s L1 GPSP pseudorange   20-60     0.0000000    0.000e+00     14496     16507    -nan    0
+>s L1 GPSP phase         20-60     0.0000000    0.000e+00     14496     16507    -nan    0
+>s L1 GPSP doppler       20-60     0.0000000    0.000e+00     14496     16507    -nan    0
+
+\end{verbatim}
+
 \end{\outputsize}
 
 \subsection{Data Input}
@@ -332,7 +409,7 @@ statistical summaries and the raw residuals.  The mean, standard
 deviation, and maximum value of the residuals are calculated 
 as a function of specified elevation ranges and are output in a 
 statistics table. Looking at the results for each elevation bin 
-is useful as ORDs tend to be much a higher when satellites are 
+is useful as ORDs tend to be much higher when satellites are 
 lower on the horizon. For a more thorough analysis, the ORD or DD 
 residuals calculated by reszilla may be output in a matrix format 
 to a file with columns for time, PRN, elevation, ORD or clock residual, 
@@ -347,15 +424,6 @@ the dplot program will plot residuals and, if specified, receiver clock
 estimates versus time using gnuplot. A user may specify the time 
 range, stripping value, and PRN(s) to use in the plot, as well as a
 filename for saving the result. 
-
-%Examples:
-
- %  < to be added later >
- %  smodf with met and sp3
- %  rinex-30 with met and sp3
- %  rinex-30 without met with sp3
- %  rinex-30 with met and fic
- %  rinex-30 without met with fic
 
 \begin{\outputsize}
 \begin{verbatim}
@@ -374,8 +442,8 @@ Double difference types:
 
 \subsection{Notes}
 The criteria min-arc-time and min-arc-length are both required to be met
-for a arc to be valid in double difference mode.
-All output quantities (stddev, min, max, ord, clock, double differnce, ...)
+for an arc to be valid in double difference mode.
+All output quantities (stddev, min, max, ord, clock, double difference, ...)
 are in meters.
 
 %\end{document}

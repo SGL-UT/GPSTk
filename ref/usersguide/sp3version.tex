@@ -13,9 +13,10 @@
 \subsection{Overview}
 This application reads an SP3 file (either a or c format) and writes it to another file (also either in a or c format).
 \subsection{Usage}
+\subsubsection{\emph{sp3version}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{sp3version}} \\
+%\multicolumn{3}{c}{\application{sp3version}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{}{--in}{A file from which to take the input. The default is stdin.}{2}
@@ -25,5 +26,80 @@ This application reads an SP3 file (either a or c format) and writes it to anoth
 \entry{}{--verbose}{Output to screen: dump headers, data, etc.}{1}
 \end{longtable}
 \end{\outputsize}
+\subsection{Examples}
+\begin{verbatim}
+  sp3version --in sp3/igs13355.sp3 --verbose
+Reading file sp3/igs13355.sp3
+Input SP3 Header: version SP3a containing positions only.
+ Time tag : 2005/08/12  0:00:00
+ Timespacing is 900 sec, and the number of epochs is 96
+ Data used as input : ORBIT
+ Coordinate system : IGb00
+ Orbit estimate type : HLM
+ Agency :  IGS
+ List of satellite PRN/accuracy (29 total) :
+ G01/3 G02/4 G03/3 G04/3 G05/3 G06/3 G07/3 G08/3
+ G09/3 G10/3 G11/3 G13/3 G14/3 G15/3 G16/0 G18/3
+ G19/3 G20/3 G21/3 G22/3 G23/3 G24/3 G25/3 G26/3
+ G27/3 G28/3 G29/3 G30/3 G31/3
+ Comments:
+    FINAL ORBIT COMBINATION FROM WEIGHTED AVERAGE OF:        
+    cod emr esa gfz jpl mit ngs sio                          
+    REFERENCED TO IGS TIME AND TO WEIGHTED MEAN POLE:        
+    CLK ANT Z-OFFSET (M): II/IIA 1.023; IIR 0.000            
+End of SP3 header
+
+Output SP3 Header: version SP3c containing positions only.
+ Time tag : 2005/08/12  0:00:00
+ Timespacing is 900 sec, and the number of epochs is 96
+ Data used as input : ORBIT
+ Coordinate system : IGb00
+ Orbit estimate type : HLM
+ Agency :  IGS
+ File type: 'G' which is GPS
+ Time System: GPS
+ Base for Pos/Vel = 1.2500000
+ Base for Clk/Rate = 1.025000000
+ List of satellite PRN/accuracy (29 total) :
+ G01/3 G02/4 G03/3 G04/3 G05/3 G06/3 G07/3 G08/3
+ G09/3 G10/3 G11/3 G13/3 G14/3 G15/3 G16/0 G18/3
+ G19/3 G20/3 G21/3 G22/3 G23/3 G24/3 G25/3 G26/3
+ G27/3 G28/3 G29/3 G30/3 G31/3
+ Comments:
+    FINAL ORBIT COMBINATION FROM WEIGHTED AVERAGE OF:        
+    cod emr esa gfz jpl mit ngs sio                          
+    REFERENCED TO IGS TIME AND TO WEIGHTED MEAN POLE:        
+    CLK ANT Z-OFFSET (M): II/IIA 1.023; IIR 0.000            
+End of SP3 header
+
+Input:
+* G-1 2005/08/12  0:00:00.000 = 1335/432000.000
+Output sdev 1975 3351 7681 2777
+Output correl 55396995 47739704 62887091 36478446 51340090 95222971
+Output:
+* G-1 2005/08/12  0:00:00.000 = 1335/432000.000
+Input:
+P G01 2005/08/12  0:00:00.000 = 1335/432000.000 X=  15202.734861 Y=   1913.732043 Z= -21514.720553 
+C=      2.747556 sX= 0 sY= 0 sZ= 0 sC=  0 - - - -
+Output sdev 1566 4009 1297 1087
+Output correl 99892450 21825690 51293238 83911222 61263982 29603161
+Output:
+P G01 2005/08/12  0:00:00.000 = 1335/432000.000 X=  15202.734861 Y=   1913.732043 Z= -21514.720553 
+C=      2.747556 sX=90 sY=62 sZ=71 sC= 14 clockEvent - - -
+    and EP cXX=1566 cYY=4009 cZZ=1297 cCC=   1087 cXY=99892450 cXZ=21825690 cXC=51293238 cYZ=83911222 
+cYC=61263982 cZC=29603161
+Input:
+P G02 2005/08/12  0:00:00.000 = 1335/432000.000 X= -21564.807909 Y=  10266.659247 Z= -11746.805348 
+C=    -27.138828 sX= 0 sY= 0 sZ= 0 sC=  0 clockEvent - - -
+Output:
+P G02 2005/08/12  0:00:00.000 = 1335/432000.000 X= -21564.807909 Y=  10266.659247 Z= -11746.805348 
+C=    -27.138828 sX=63 sY=51 sZ=48 sC= 96 - clockPrediction orbitManeuver orbitPrediction
+Input:
+P G03 2005/08/12  0:00:00.000 = 1335/432000.000 X=  14716.409703 Y=  -5992.688052 Z=  21147.413124 
+C=     25.193262 sX= 0 sY= 0 sZ= 0 sC=  0 - clockPrediction orbitManeuver orbitPrediction
+Output:
+
+\end{verbatim}
+
 
 %\end{document}

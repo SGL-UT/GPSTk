@@ -3,7 +3,7 @@
 \chapter{Converting Coordinates \& Time}
 \section{Transformations}
 
-Let $\mathbf{i}_{x}$, $\mathbf{i}_{y}$, $\mathbf{i}_{z}$ and $\mathbf{i}_{\varepsilon}$, $\mathbf{i}_{\eta}$, $\mathbf{i}_{\zeta}$ be two sets of orthagonal unit vectors
+Let $\mathbf{i}_{x}$, $\mathbf{i}_{y}$, $\mathbf{i}_{z}$ and $\mathbf{i}_{\varepsilon}$, $\mathbf{i}_{\eta}$, $\mathbf{i}_{\zeta}$ be two sets of orthogonal unit vectors
 
 \[\mathbf{i}_{\xi}=l_{1}\mathbf{i}_{x}+m_{1}\mathbf{i}_{y}+n_{1}\mathbf{i}_{z}\]
 \[\mathbf{i}_{\eta}=l_{2}\mathbf{i}_{x}+m_{2}\mathbf{i}_{y}+n_{2}\mathbf{i}_{z}\]
@@ -28,20 +28,20 @@ Equations found  here~\cite[pp. 81-82]{battin:imma}
 
 \section{Time Systems}
 \subsection{Solar \& Sidereal Time}
-Since the  beginning time has been kept by counting the the days. An apparent solar day is the minimum time elapsed between the sun crossing a specified meridian and then recrossing the same meridian. This form of time keeping is problematic because no two apparent solar days are of the same duration due to Earth's rotation around the sun as well as around its axis (the Earth does a little more than one rotation per apparent solar day). Also, Earth's rotational speed is not constant and its axis of rotation is tilted $23.5^{\circ}$ to the orbital plane. These imperfections call for correction, and thus mean solar time was created. A day in mean solar time is defined as one revolution of a hypothetical sun that orbits at the equator, and is more commonly known as Greenwich Mean Time. Another solution is to base our day on the crossing of a star much farther away thus minimizing the effect of the Earth's orbital movement, this method of time keeping is known as sidereal time. A sidereal day is about 4 minutes shorter than a solar day, and is used heavily by astronomers. Sidereal time is not truly stable either so mean sidereal day was introduced, and is known as Greenwich Apparent Sidereal Time. Universal Time (UT) refers to any time scale based on the Earth's rotation. UT0 refers to the mean solar time at the prime meridian as obtained from astronomical observation, and UT1 is UT0 corrected for polar motion. Briefly ephemeris time was introduced to standardize the second, which was defined as 1/31556925.9747 of the year 1900. This was soon replaced by atomic time~\cite[pp. 84-86]{me:gsmp}.
+Since the  beginning time has been kept by counting the days. An apparent solar day is the minimum time elapsed between the sun crossing a specified meridian and then recrossing the same meridian. This form of time keeping is problematic because no two apparent solar days are of the same duration due to Earth's rotation around the sun as well as around its axis (the Earth does a little more than one rotation per apparent solar day). Also, Earth's rotational speed is not constant and its axis of rotation is tilted $23.5^{\circ}$ to the orbital plane. These imperfections call for correction, and thus mean solar time was created. A day in mean solar time is defined as one revolution of a hypothetical sun that orbits at the equator, and is more commonly known as Greenwich Mean Time. Another solution is to base our day on the crossing of a star much farther away thus minimizing the effect of the Earth's orbital movement, this method of time keeping is known as sidereal time. A sidereal day is about 4 minutes shorter than a solar day, and is used heavily by astronomers. Sidereal time is not truly stable either so mean sidereal day was introduced, and is known as Greenwich Apparent Sidereal Time. Universal Time (UT) refers to any time scale based on the Earth's rotation. UT0 refers to the mean solar time at the prime meridian as obtained from astronomical observation, and UT1 is UT0 corrected for polar motion. Briefly ephemeris time was introduced to standardize the second, which was defined as 1/31556925.9747 of the year 1900. This was soon replaced by atomic time~\cite[pp. 84-86]{me:gsmp}.
 \subsection{Atomic Time}
 The second is now defined by an atomic standard that is based on the resonance frequency of the cesium atom. To be precise, the second is defined as ``9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the cesium-133 atom,'' whose duration happens to exactly match the ephemeris second discussed in the previous section. The problem with detaching our time keeping method from the Earth is that as the Earth slows its rotation noon will move closer to midnight (over the duration of thousands of years, of course). Coordinated Universal Time (UTC) was introduced to prevent this. UTC is a compromise between the precision of atomic time and the groundedness of Earth based time keeping, it uses the atomic second but introduces leap seconds (positive or negative) when necessary to keep UTC within .9 seconds of UT1~\cite[pp. 86-87]{me:gsmp}.
 \subsection{Time Formats}
-We are used to dealing with months, days, years, hours, minutes, and seconds, but such a time format makes for difficult epoch calculations over long periods. To solve this problem Julian Date (JD) was introduced. JD consists of a day count (days since noon UT on January $1^{\mbox{st}}$ 4713 B.C.) and a fraction of the current day. This makes for easy time differencing, but the length of the date can become cumbersome and the fact that a new day starts at noon confusing. To make things even easier Modified Julian Date (MJD) was created whos origin is midnight November $17^{\mbox{th}}$, 1858.
+We are used to dealing with months, days, years, hours, minutes, and seconds, but such a time format makes for difficult epoch calculations over long periods. To solve this problem Julian Date (JD) was introduced. JD consists of a day count (days since noon UT on January $1^{\mbox{st}}$ 4713 B.C.) and a fraction of the current day. This makes for easy time differencing, but the length of the date can become cumbersome and the fact that a new day starts at noon confusing. To make things even easier Modified Julian Date (MJD) was created whose origin is midnight November $17^{\mbox{th}}$, 1858.
 \[ \mbox{MJD}=\mbox{JD}-2400000.5\]
 
-In order to make Julian Date useful we need an easy was to go between calendar dates and JD. \application{timeconvert}\index{timeconvert!theory} does this and more with ease. The equations to convert from calendar date to JD are
+In order to make Julian Date useful we need an easy way to go between calendar dates and JD. \application{timeconvert}\index{timeconvert!theory} does this and more with ease. The equations to convert from calendar date to JD are
 \[ \mbox{JD}=\mbox{INT}[365.25y]+\mbox{INT}[30.6001(m+1)]+D+\mbox{UT}/24+1720981.5\]
 \[ \begin{array}{lll}
 y=Y-1 & \mbox{and}~m=M+12 & \mbox{if}~M \leq2 \\
 y=Y & \mbox{and}~m=M & \mbox{if}~M > 2
 \end{array} \]
-where $M$ is the month, $D$ is the day, $Y$ is the year, and INT[$x$] returns just the integer part of the a number. To go from JD to calendar date
+where $M$ is the month, $D$ is the day, $Y$ is the year, and INT[$x$] returns just the integer part of the number. To go from JD to calendar date
 \[ a=\mbox{INT[JD}+0.5] \]
 \[ b=a+1537 \]
 \[ c=\mbox{INT}[(b-122.1)/365.25] \]
@@ -62,7 +62,7 @@ Other useful quantities such as Day of Week and  Second of Day can be found usin
 \[\mbox{SOD}=\mbox{modulo\{FRAC[JD}+0.5],7\}\times 86400\]
 where DOW=0 corresponds to Monday, DOW=1 corresponds to Tuesday, and so on.
 
-JD and GPS Week equations were found here~\cite[pp. 36-37]{hlc:gtp}, SOD derived from DOW equation
+JD and GPS Week equations were found here~\cite[pp. 36-37]{hlc:gtp}, SOD derived from DOW equation.
 \subsection{Z-Count}
 Satellites keep internal time with Z-count, whose epoch period is 1.5 seconds (a convenient unit for communications timing). The full Z-count is 29 bits, the 10 bit GPS week folloed by a 19 bit Time of Week (TOW) expressed in Z-counts (or 1.5 second units). The truncated Z-count has a 17 bit TOW that is expressed in units of 6 seconds, or the length of one subframe's transmission time. Simply multiply the truncated TOW by 4 to get the full TOW~\cite[pp. 86-88]{tsui:fgpsr}.
 \[ \mbox{TOW}=\mbox{FRAC[(JD}-2444244.5)/7]\times 403200 \]
@@ -78,10 +78,10 @@ N - applies nutation, from epoch 2000.0 to the current time;
 S - applies rotation to account for true sidereal time;
 W - applies polar motion;
 
-Equations found on page 85 of Fundamentals of Orbit Determination paper book
+Equations found on page 85 of Fundamentals of Orbit Determination paper book.
 
 \subsection{WGS-84}
-The World Geodetic System 1984 (WGS-84) is fixed physical model of Earth produced by the Department of Defense to which many different reference frames can be attached. WGS-84 consists of two parts, a model of Earth's gravitational field, and an ellipsoid describing the Earth's general shape. When dealing with locations on the Earth's surface the ellipsoid provides the foundation for the geodetic coordinate system used by GPS. The ellipsoid's cross-sections parallel to the equatorial plane are circular while those orthogonal are elliptical. The ellipses are parameterized by an eccentricity $e$, a flattening $f$, and sometimes a second eccentricity $e'$
+The World Geodetic System 1984 (WGS-84) is a fixed physical model of Earth produced by the Department of Defense to which many different reference frames can be attached. WGS-84 consists of two parts, a model of Earth's gravitational field, and an ellipsoid describing the Earth's general shape. When dealing with locations on the Earth's surface the ellipsoid provides the foundation for the geodetic coordinate system used by GPS. The ellipsoid's cross-sections parallel to the equatorial plane are circular while those orthogonal are elliptical. The ellipses are parameterized by an eccentricity $e$, a flattening $f$, and sometimes a second eccentricity $e'$
 \[e=\sqrt{1-\frac{b^{2}}{a^{2}}}\]
 \[f=1-\frac{b}{a}\]
 \[e'=\sqrt{\frac{a^{2}}{b^{2}}-1}=\frac{a}{b}e\]
@@ -147,7 +147,7 @@ where $\lambda$ and $\phi$ are geocentric longitude and latitude
 
 found on page 82 in the Fundamentals of Orbital Determination paper book
 
-\subsubsection{Spherical Coordinates}
+%\subsubsection{Spherical Coordinates}
 
 \subsubsection{Topocentric Coordinates}
 \[\mathbf{r}_{t}=T_{t}(\mathbf{r}-\mathbf{r}_{s})=T_{t}\rho\]

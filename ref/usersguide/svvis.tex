@@ -14,9 +14,10 @@
 This application computes when satellites are visible at a given point on the earth.
 
 \subsection{Usage}
+\subsubsection{\emph{svvis}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{svvis}} \\
+%\multicolumn{3}{c}{\application{svvis}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-e}{--eph=ARG}{Where to get the ephemeris data.  Can be RINEX, nav, FIC, MDP, SP3, YUMA, and SEM.}{3}
@@ -40,5 +41,26 @@ This application computes when satellites are visible at a given point on the ea
 \entry{}{--recent-eph}{Use this if the ephemeris data provided uses 10-bit GPS weeks and it should be converted to the current epoch or to the epoch current to the ``start-time", if specified.}{4}
 \end{longtable}
 \end{\outputsize}
+
+\subsection{Examples}
+\begin{verbatim}
+> svvis -e nav/s121001a.09n -p -3939182.6018,3467075.4175,-3613220.2782,402 --tabular
+
+SEARCH_INTERVAL: 2009 001 00:00:00 to 2009 002 02:00:00
+ELEVATION_CUTOFF: 0.000
+#     Rise (Yr DOY HMS) Set  (Yr DOY HMS) El Sys          Parameters
+PASS: 2009 001 00:12:55 2009 001 03:59:59 80 GPS          PRN=23
+PASS: 2009 001 01:23:30 2009 001 05:59:43 62 GPS          PRN=25
+PASS: 2009 001 01:37:18 2009 001 05:59:59 77 GPS          PRN=13
+PASS: 2009 001 02:33:15 2009 001 03:59:59 16 GPS          PRN=28
+PASS: 2009 001 02:41:00 2009 001 05:59:59 53 GPS          PRN=07
+PASS: 2009 001 03:48:56 2009 001 05:59:59 43 GPS          PRN=17
+PASS: 2009 001 04:14:43 2009 001 07:59:59 77 GPS          PRN=08
+PASS: 2009 001 04:41:56 2009 001 07:59:59 78 GPS          PRN=27
+PASS: 2009 001 05:26:57 2009 001 07:59:59 56 GPS          PRN=04
+PASS: 2009 001 07:00:06 2009 001 11:59:59 25 GPS          PRN=26
+PASS: 2009 001 07:16:58 2009 001 07:59:59 15 GPS          PRN=02
+...
+\end{verbatim}
 
 %\end{document}

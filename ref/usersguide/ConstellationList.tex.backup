@@ -1,0 +1,59 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{ConstellationList!application writeup}
+\section{\emph{ConstellationList}}
+\subsection{Overview}
+\application{ConstellationList} provides lists of the GPS SV PRN ID active/inactive on a given day.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{ConstellationList}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i}{--input-file=$<$arg$>$}{The name of the Constellation Definition file(s) to read.}{2}
+\entry{-y}{--year=$<$arg$>$}{Year of interest.}{1}
+\entry{-j}{--day-of-year=$<$arg$>$}{Day of year.}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-O}{--OpsAd}{Assume input file is Op Advisory format (CSV is default).}{2}
+\entry{-b}{--Base24}{List PRNs in Base 24 Constellation.}{1}
+\entry{-x}{--excessSVs}{List PRNs in use, but in excess of the Base 24 Constellation.}{2}
+\entry{-n}{--notBase24}{List PRNs NOT used in Base 24 Constellation.}{1}
+\entry{-s}{--SVN Output}{Output SVN in place of PRN (not valid for -O).}{1}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{verbatim}
+>ConstellationList -iSlot2008.csv -tC -y2008 -j001 -b
+2, 3, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 27, 28, 30, 31
+>ConstellationList -iSlot2008.csv -tC -y2008 -j001 -n
+1, 5, 7, 24, 25, 26, 29, 32
+>ConstellationList -iSlot2008.csv -tC -y2008 -j001 -n
+1, 5, 24, 25, 26
+>ConstellationList -iSlot2008.csv -tC -y2008 -j001 -b -s
+61, 33, 34, 36, 38, 39, 40, 46, 58, 43, 41, 55, 56, 53, 54, 59, 51, 45, 47, 60, 27, 44, 30, 52
+\end{verbatim}
+\end{\outputsize}
+
+\subsection{Notes}
+In particular, ConstellationList provides a means of determining which SVs are members of the ``Base 24" constellation and which are not. This is usually of no interest to the general user, but is important in cases where programs are evaluating GPS performance against a defined standard such at the Standard Positioning Service (SPS) Performance Standard (PS) which defines GPS performance in terms of the ``official" constellation as opposed to the superset which is normally available. The results are provided as a text list of comma separated values on a a single line, suitable for piping into another process.
+
+The complication in this process is that the information regarding the orbit plane/slot of each SV is not available from the broadcast message. It must be obtain ``external to the system". Once source of such information is the USCG Navigation Center website which store the Operational Advisories. These advisories provide the relationship between SVs and plane/slot assignments. ConstellationList is programmed to read the advisories as an input format, as long as the format of the advisories does not change.
+
+As an alternative to the Operational Advisories, ARL:UT has prepared files of the assignments for specific years as comma separated value files. Each line in these files represents the status on a given day and includes the mapping between the PRN IDs and the NAVSTAR numbers. These files have been hand-checked and are available in the GPSTk repository as Slot2007.csv and Slot2008.csv. 
+%\end{document}

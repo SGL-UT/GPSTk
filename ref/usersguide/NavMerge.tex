@@ -15,9 +15,10 @@
 The application merges RINEX navigation files into a single file.
 
 \subsection{Usage}
+\subsubsection{\emph{NavMerge}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{NavMerge}} \\
+%\multicolumn{3}{c}{\application{NavMerge}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-o}{}{Write all data to an output RINEX nav file. If omitted, a data summary is written to the screen.}{3}
@@ -51,7 +52,7 @@ Read  200 ephemerides from file s081213a.99n
 Read  197 ephemerides from file s081214a.99n
 Read  397 total ephemerides.
 \end{verbatim}
-\end{outputsize}
+\end{\outputsize}
 \subsection{Notes}
 NavMerge corrects data for output when the GPS full week number is inconsistent with the epoch time.
 %\end{document}

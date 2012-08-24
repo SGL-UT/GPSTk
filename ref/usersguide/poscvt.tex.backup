@@ -1,0 +1,52 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{poscvt!application writeup}
+\section{\emph{poscvt}}
+\subsection{Overview}
+This application allows the user to convert among different coordinate systems on 
+the command line. Coordinate systems handled include Cartesian, geocentric, and 
+geodetic.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{poscvt}} \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{}{--ecef=POSITION}{ECEF ``X Y Z'' in meters.}{1}
+\entry{}{--geodetic=POSITION}{Geodetic ``lat lon alt'' in deg, deg, meters.}{1}
+\entry{}{--geocentric=POSITION}{Geocentric ``lat lon radius'' in deg, deg, meters.}{1}
+\entry{}{--spherical=POSITION}{Spherical ``theta, pi, radius'' in deg, deg, meters.}{1}
+\entry{-l}{--list-formats}{List the available format codes for use by the input and output format options.}{2}
+\entry{-F}{--output-format=ARG}{Write the position with the given format.}{1}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{verbatim}
+> poscvt --ecef="4345070.59253 45619878.26297 803.598856837"
+
+    ECEF (x,y,z) in meters              4345070.5925 45619878.2630 803.5989
+    Geodetic (llh) in deg, deg, m       0.00100566 84.55926933 39448197.4795
+    Geocentric (llr) in deg, deg, m     0.00100472 84.55926933 45826334.4795
+    Spherical (tpr) in deg, deg, m      89.99899528 84.55926933 45826334.4795
+
+\end{verbatim}
+\end{\outputsize}
+\subsection{Notes}
+If no options are given \application{poscvt} assumes XYZ 0 0 0.
+
+%\end{document}
+

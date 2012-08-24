@@ -1,0 +1,96 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+
+\index{ephsum!application writeup}
+
+\section{\emph{ephsum}}
+\subsection{Overview}
+\application{ephsum} summarizes contents of a RINEX navigation message or FIC file and outputs to text file.  The summary contains the transmit time, time of effectivity, end of effectivity,IODC, and health as a one-line-per ephemeris summary. The number of ephemerides found per SV is also provided. The number of ephemerides per SV is also summarized at the end. The default is to summarize all SVs found. If a specific PRN ID is provided, only data for that PRN ID will be summarized.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{ephsum}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-i}{--input-file=ARG}{Input file name(s).}{1}
+\entry{-o}{--output-file=ARG}{Output file name.}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-d}{--debug}{Increase debug level.}{1}
+\entry{-v}{--verbose}{Increase verbosity.}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-p}{--PRNID=ARG}{The PRN ID of the SV to process (default is all SVs).}{2}
+\entry{-x}{--xmit}{List in order of transmission (default is TOE).}{1}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{verbatim}
+\begin{\outputsize}
+# Output file from EphSum
+# Processing input specification: anavfic06.120 - Success(FIC)
+# Processing input specification: anavfic06.121 - Success(FIC)
+#
+#PRN: 01,  # of eph: 31
+#PRN !      Xmit       !    Toe/Toc      !   End of Eff    !  IODC   Health
+  01 ! 1373 146640 05/01/06 121 16:44:00 ! 1373 151184 05/01/06 121 17:59:44 !... 
+  01 ! 1373 151200 05/01/06 121 18:00:00 ! 1373 158384 05/01/06 121 19:59:44 !...
+  01 ! 1373 165570 05/01/06 121 21:59:30 ! 1373 165584 05/01/06 121 21:59:44 !...
+  01 ! 1373 158400 05/01/06 121 20:00:00 ! 1373 165600 05/01/06 121 22:00:00 !...
+  01 ! 1373 165600 05/01/06 121 22:00:00 ! 1373 172784 05/01/06 121 23:59:44 !...
+#
+       - - - PRN 2-30 omitted for brevity - - -
+#
+#PRN: 31,  # of eph: NONE
+#
+#PRN: 32,  # of eph: NONE
+#
+#Summary of Counts by PRN
+# PRN    Count
+#  01       31
+#  02       26
+#  03       27
+#  04       26
+#  05       26
+#  06       26
+#  07       26
+#  08       27
+#  09       27
+#  10       26
+#  11       26
+#  12        0
+#  13       26
+#  14       27
+#  15       28
+#  16       26
+#  17       27
+#  18       26
+#  19       26
+#  20       26
+#  21       26
+#  22       26
+#  23       26
+#  24       26
+#  25       26
+#  26       26
+#  27       27
+#  28       26
+#  29       26
+#  30       26
+#  31        0
+#  32        0
+\end{outputsize}
+\end{verbatim}
+\end{\outputsize}
+%\end{document}

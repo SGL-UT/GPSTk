@@ -15,9 +15,10 @@
 The application performs various functions on a stream of MDP data.
 
 \subsection{Usage}
+\subsubsection{\emph{mdptool}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{mdptool}} \\
+%\multicolumn{3}{c}{\application{mdptool}} \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-d}{--debug}{Increase debug level.}{1}
@@ -51,7 +52,33 @@ The application performs various functions on a stream of MDP data.
 \entry{}{--time-format=ARG}{CommonTime format specifier used for times in the output.  The default is \%4Y \%3j \%02H:\%02M:\%04.1f.}{3}
 \end{longtable}
 \end{\outputsize}
+\subsection{Examples}
+\begin{verbatim}
+> mdptool -i mdp/85408-2012131-2u.mdp -a
+Done processing data.
+
+
+Header summary:
+  Processed 2685 headers.
+  First freshness count was d96a
+  Last freshness count was  e3e6
+  Encountered 0 breaks in the freshness count
+
+Observation Epoch message summary:
+No Observation Epoch messages processed.
+
+PVT Solution message summary:
+  Pvt data spans 2012/131/00:02:06.0 to 2012/131/17:57:51.0 (17:55:45.0)
+  PVT output rate is 1.5 sec.
+
+
+Navigation Subframe message summary:
+  No Navigation Subframe messages processed.
+
+\end{verbatim}
+
+
 \subsection{Notes}
-In the summary mode, the default is to only summarize the obsservation data above 10 degrees. Increasing the verbosity level will also summarize the data below 10 degrees.
+In the summary mode, the default is to only summarize the observation data above 10 degrees. Increasing the verbosity level will also summarize the data below 10 degrees.
 
 %\end{document}

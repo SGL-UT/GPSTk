@@ -1,9 +1,9 @@
 \listfiles
-\documentclass{src/manual}
+\documentclass{src/manual} % add [oneside] for no alternating margins
 \usepackage{makeidx}
 \usepackage{epsfig}
 \usepackage{graphics}
-\usepackage{src/bibunits}
+\usepackage[sectionbib]{src/bibunits}
 \usepackage{perltex}
 \usepackage{fancyvrb}
 \usepackage{multirow}
@@ -12,6 +12,9 @@
 \usepackage{xcolor}
 \usepackage{listings}
 \usepackage{longtable}
+\usepackage{chngpage}
+\usepackage{geometry}
+\geometry{bindingoffset=1cm}
 \input{src/cmd}
 
 \paperwidth = 8.5in
@@ -24,16 +27,18 @@
 \bibliographyunit[\chapter]
 \input{titlepg}
 \include{notices}
+%\input{blankpg}
 \tableofcontents
 \include{introduction}
 \part{Theory}
 \input{gpsnutshell}
 \input{gpsfileforms}
-% \input{convcoordtime} % this is just placeholder for important equations. needs text explanation
+\input{convcoordtime}
 \part{Usage, Examples \& Notes}
 \input{toolkitportrait}
+\input{toolkitportrait2}
 \input{sec2_2}
 \printindex
-
+%\bibliography{gpstk}
 \end{document}
 

@@ -1,0 +1,241 @@
+%%
+%% This is file `xcolor3.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% xcolor.dtx  (with options: `test3')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% Any modified versions of this file must be renamed
+%% with new filenames distinct from xcolor3.tex.
+%% 
+%% For distribution of the original source see the terms
+%% for copying and modification in the file xcolor.dtx.
+%% 
+%% This generated file may be distributed as long as the
+%% original source files, as listed above, are part of the
+%% same distribution. (The sources need not necessarily be
+%% in the same archive or directory.)
+%%
+\ProvidesFile{xcolor3}
+ [2005/12/21 v2.09 Color logging test (UK)]
+%%
+%% ----------------------------------------------------------------
+%% Copyright (C) 2003-2005 by Dr. Uwe Kern <xcolor at ukern dot de>
+%% ----------------------------------------------------------------
+%%
+\def\XCfileversion{v2.09}%
+\def\XCfiledate{2005/12/21}%
+\listfiles
+\documentclass[a4paper]{article}
+\usepackage[showerrors,table,dvipsnames*,hyperref]{xcolor}[2005/12/21]
+\usepackage[margin=2.25cm]{geometry}
+\usepackage
+ [\GinDriver,hyperindex=false,bookmarks,bookmarksopen,bookmarksopenlevel=1,%
+  pdftitle={xcolor3 \XCfileversion{} (\XCfiledate)},pdfauthor={Dr. Uwe Kern},%
+  pdfsubject={Color extensions for LaTeX and pdfLaTeX},%
+  pdfkeywords={xcolor,color,colour,model,tint,tone,shade,harmony,spot,latex,pdftex,dvips,%
+   conversion,blend,mix,mask,separation,rgb,cmy,cmyk,hsb,gray,html,wave,thsb,wheel}]{hyperref}
+
+\tracingcolors=4
+%%\tracingcolors=3
+%%\tracingcolors=2
+%%\tracingcolors=1
+%%\tracingcolors=0
+
+\parindent0pt
+\pagecolor{gray!25}
+
+\definecolors{JungleGreen,DarkOrchid}
+
+\begin{document}
+\title{Color extensions with the \textsf{xcolor} package --- various examples}
+\author{\href{mailto:xcolor@ukern.de}{\fboxrule0pt\fboxsep2pt\fbox{Dr. Uwe Kern}}}
+\date{\XCfileversion{} (\XCfiledate)
+\thanks{This file (\texttt{\jobname.tex}) is part of the \textsf{xcolor} distribution which can be downloaded from the CTAN mirrors \texttt{\href{http://www.ctan.org/tex-archive/macros/latex/contrib/xcolor/}{CTAN/macros/latex/contrib/xcolor/}} or the homepage \texttt{\href{http://www.ukern.de/tex/xcolor.html}{www.ukern.de/tex/xcolor.html}}. Please send error reports and suggestions for improvements to \texttt{\href{mailto:xcolor@ukern.de}{xcolor@ukern.de}}.}}
+\maketitle
+
+The purpose of this file is to demonstrate a variety of capabilities including the logging facilities of the \textsf{xcolor} package.
+By playing around with different values of \texttt{\string\tracingcolors}, one can observe the different behavior in the \texttt{log} file.
+
+\section{Predefined colors}
+
+\begingroup
+\small\sffamily
+\rowcolors1{}{}
+\begin{testcolors}[rgb,cmyk,hsb,HTML,gray]
+\testcolor{red}
+\testcolor{green}
+\testcolor{blue}
+\testcolor{cyan}
+\testcolor{magenta}
+\testcolor{yellow}
+\testcolor{orange}
+\testcolor{violet}
+\testcolor{purple}
+\testcolor{brown}
+\testcolor{pink}
+\testcolor{olive}
+\testcolor{black}
+\testcolor{darkgray}
+\testcolor{gray}
+\testcolor{lightgray}
+\testcolor{white}
+\noalign{\medskip}\hline\noalign{\medskip}
+\testcolor{-red}
+\testcolor{-green}
+\testcolor{-blue}
+\testcolor{-cyan}
+\testcolor{-magenta}
+\testcolor{-yellow}
+\testcolor{-orange}
+\testcolor{-violet}
+\testcolor{-purple}
+\testcolor{-brown}
+\testcolor{-pink}
+\testcolor{-olive}
+\testcolor{-black}
+\testcolor{-darkgray}
+\testcolor{-gray}
+\testcolor{-lightgray}
+\testcolor{-white}
+\noalign{\medskip}\hline\noalign{\medskip}
+\testcolor{JungleGreen}
+\testcolor{DarkOrchid}
+\noalign{\medskip}\hline\noalign{\medskip}
+\testcolor{-JungleGreen}
+\testcolor{-DarkOrchid}
+\end{testcolors}
+\endgroup
+
+\vfill
+
+\clearpage
+\pagecolor{white}
+
+\section{Color definition and application}
+
+\providecolor{dummy}{rgb}{.6,.5,.4}
+\definecolor{dummy}{rgb}{.6,.5,.4}
+\providecolor{dummy}{rgb}{.6,.5,.4}
+\hbox{\textcolor{dummy}{Test with \texttt{\string\definecolor}}}
+
+\bigskip
+
+Comma-separated and space-separated definitions:
+
+\definecolor{c1}{rgb}{.7,.6,.5}
+\definecolor{c2}{rgb}{.7 .6 .5}
+\colorlet{c1a}{c1}
+\colorlet{c2a}{c2}
+
+\textcolor{c1}{identical} =
+\textcolor{c2}{identical} =
+\textcolor{c1a}{identical} =
+\textcolor{c2a}{identical} =
+\textcolor[rgb]{.7,.6,.5}{identical} =
+\textcolor[rgb]{.7 .6 .5}{identical} =
+\textcolor{rgb,10:red,7;green,6;blue,5}{identical}
+\textcolor{rgb,15:red,10.5;green,9;blue,7.5}{identical}
+
+\medskip
+
+\begingroup
+\sffamily
+\begin{testcolors}
+\testcolor{c1}
+\testcolor{c2}
+\testcolor{c1a}
+\testcolor{c2a}
+\testcolor[rgb]{.7,.6,.5}
+\testcolor[rgb]{.7 .6 .5}
+\testcolor{rgb,10:red,7;green,6;blue,5}
+\testcolor{rgb,15:red,10.5;green,9;blue,7.5}
+\end{testcolors}
+\endgroup
+
+\bigskip
+
+\textcolor{rgb:red!50,4;green!25,2}{Another extended color expression (rgb:red!50,4;green!25,2)}.
+
+\bigskip
+
+\begingroup
+\color{black}
+Test with named colors:\par
+\color{blue}
+Test: \textcolor[named]{JungleGreen}{JungleGreen};
+Test: \textcolor{JungleGreen}{JungleGreen};
+Test: \textcolor{JungleGreen!50!DarkOrchid}{JungleGreen!50!DarkOrchid};
+Test: \textcolor{green!50!red}{green!50!red}.
+\endgroup
+
+\bigskip
+
+{\color[rgb]{.4,.5,.6}Test with \texttt{\string\color}}
+
+\bigskip
+Current color application:\par
+\def\test{current, \textcolor{.!50}{50\%}, \textcolor{-.}{complement},
+          \textcolor{yellow!50!.}{mix}}
+\textcolor{blue}{\test} and \textcolor{red}{\test},\par
+\def\Test{\color{.!80}Test}
+\textcolor{blue}{\Test\Test\Test\Test\Test} and
+\textcolor{red}{\Test\Test\Test\Test\Test}.
+
+\bigskip
+Current color test with \texttt{\string\definecolorseries}:\par
+\begingroup
+\color{blue}
+\definecolorseries{foo}{rgb}{last}{.}{-.}
+\resetcolorseries[5]{foo}
+\def\test{\hbox to 1em{{\color{foo!!+}\vrule width 1em height 1.5ex}}}
+Test\test\test\test\test\test\test Test
+
+\resetcolorseries[5]{foo}
+\def\test{\hbox to 1em{{\color{foo!!++}\vrule width 1em height 1.5ex}}}
+Test\test\test\test\test\test\test Test
+
+\resetcolorseries[5]{foo}
+\def\test{\hbox to 1em{{\color{foo!![2]}\vrule width 1em height 1.5ex}}}
+Test\test\test\test\test\test\test Test
+
+\endgroup
+
+\section{Color in tables}
+
+\rowcolors[\hline]{1}{green!25}{yellow!50}
+\begin{tabular}{ll}
+test & row \number\rownum\\
+test & row \number\rownum\\
+\rowcolor{blue!25}
+test & row \number\rownum\\
+test & row \number\rownum\\
+\hiderowcolors
+test & row \number\rownum\\
+test & row \number\rownum\\
+\showrowcolors
+test & row \number\rownum\\
+test & row \number\rownum\\
+\multicolumn{1}%
+ {>{\columncolor{red!12}}l}{test} & row \number\rownum\\
+\end{tabular}
+
+\section{Color information}
+
+Type test:
+\makeatletter
+\@namedef{\string\color@foo1}{foo1{}{}{}{}}\edef\tempa{\XC@type{foo1}}\tempa
+\@namedef{\string\color@foo2}{\xcolor@{foo2}{}{}{}}\edef\tempb{\XC@type{foo2}}\tempb
+\@namedef{\string\color@foo3}{\xcolor@{}{foo3}{}{}}\edef\tempc{\XC@type{foo3}}\tempc
+\@namedef{\string\color@foo4}{\xcolor@{}{}{foo4}{}}\edef\tempd{\XC@type{foo4}}\tempd
+\makeatother
+
+\end{document}
+\endinput
+%%
+%% End of file `xcolor3.tex'.

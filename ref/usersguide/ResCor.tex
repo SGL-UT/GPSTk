@@ -15,12 +15,17 @@ The application will open and read a single RINEX observation file, apply editin
    using the RinexEditor package, compute any of several residuals and corrections and
    register extended RINEX observation types for them, and then write the edited data,
    along with the new extended observation types, to an output RINEX observation file.
+\\
+\\
+\textbf{NOTE: ResCor is only available in GPSTK 1.x. It is only compatiable with Rinex versions 2.1 and earlier}
 
 \subsection{Usage}
+\subsubsection{\emph{ResCor}}
+
 \begin{\outputsize}
 
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{ResCor}} \\
+%\multicolumn{3}{c}{\application{ResCor}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-IF}{}{Input RINEX observation file.}{1}

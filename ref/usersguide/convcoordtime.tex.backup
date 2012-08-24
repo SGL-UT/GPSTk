@@ -1,0 +1,177 @@
+%\documentclass{book}
+%\begin{document}
+\chapter{Converting Coordinates \& Time}
+\section{Transformations}
+
+Let $\mathbf{i}_{x}$, $\mathbf{i}_{y}$, $\mathbf{i}_{z}$ and $\mathbf{i}_{\varepsilon}$, $\mathbf{i}_{\eta}$, $\mathbf{i}_{\zeta}$ be two sets of orthogonal unit vectors
+
+\[\mathbf{i}_{\xi}=l_{1}\mathbf{i}_{x}+m_{1}\mathbf{i}_{y}+n_{1}\mathbf{i}_{z}\]
+\[\mathbf{i}_{\eta}=l_{2}\mathbf{i}_{x}+m_{2}\mathbf{i}_{y}+n_{2}\mathbf{i}_{z}\]
+\[\mathbf{i}_{\zeta}=l_{3}\mathbf{i}_{x}+m_{3}\mathbf{i}_{y}+n_{3}\mathbf{i}_{z}\]
+
+\[ \left[ \begin{array}{c} x \\ y \\ z  \end{array} \right] = \mathbf{R}\left[ \begin{array}{c} \varepsilon \\ \eta \\ \zeta  \end{array} \right] \mbox{or}
+\left[ \begin{array}{c} \varepsilon \\ \eta \\ \zeta  \end{array} \right] = \mathbf{R^{T}}\left[ \begin{array}{c} x \\ y \\ z  \end{array} \right] \]
+
+\[\mathbf{R}=\left[ \begin{array}{ccc}
+\mathbf{i}_{x}\mathbf{\cdot}\mathbf{i}_{\varepsilon} & \mathbf{i}_{x}\mathbf{\cdot}\mathbf{i}_{\eta} & \mathbf{i}_{x}\mathbf{\cdot}\mathbf{i}_{\zeta} \\
+\mathbf{i}_{y}\mathbf{\cdot}\mathbf{i}_{\varepsilon} & \mathbf{i}_{y}\mathbf{\cdot}\mathbf{i}_{\eta} & \mathbf{i}_{y}\mathbf{\cdot}\mathbf{i}_{\zeta} \\
+\mathbf{i}_{z}\mathbf{\cdot}\mathbf{i}_{\varepsilon} & \mathbf{i}_{z}\mathbf{\cdot}\mathbf{i}_{\eta} & \mathbf{i}_{z}\mathbf{\cdot}\mathbf{i}_{\zeta}
+\end{array} \right] = \left[ \begin{array}{ccc}
+l_{1} & l_{2} & l_{3} \\
+m_{1} & m_{2} & m_{3} \\
+n_{1} & n_{2} & n_{3}
+\end{array} \right] \]
+
+\[ \mathbf{R^{T}}=\mathbf{R^{-1}} \]
+
+Equations found  here~\cite[pp. 81-82]{battin:imma}
+
+\section{Time Systems}
+\subsection{Solar \& Sidereal Time}
+Since the  beginning time has been kept by counting the days. An apparent solar day is the minimum time elapsed between the sun crossing a specified meridian and then recrossing the same meridian. This form of time keeping is problematic because no two apparent solar days are of the same duration due to Earth's rotation around the sun as well as around its axis (the Earth does a little more than one rotation per apparent solar day). Also, Earth's rotational speed is not constant and its axis of rotation is tilted $23.5^{\circ}$ to the orbital plane. These imperfections call for correction, and thus mean solar time was created. A day in mean solar time is defined as one revolution of a hypothetical sun that orbits at the equator, and is more commonly known as Greenwich Mean Time. Another solution is to base our day on the crossing of a star much farther away thus minimizing the effect of the Earth's orbital movement, this method of time keeping is known as sidereal time. A sidereal day is about 4 minutes shorter than a solar day, and is used heavily by astronomers. Sidereal time is not truly stable either so mean sidereal day was introduced, and is known as Greenwich Apparent Sidereal Time. Universal Time (UT) refers to any time scale based on the Earth's rotation. UT0 refers to the mean solar time at the prime meridian as obtained from astronomical observation, and UT1 is UT0 corrected for polar motion. Briefly ephemeris time was introduced to standardize the second, which was defined as 1/31556925.9747 of the year 1900. This was soon replaced by atomic time~\cite[pp. 84-86]{me:gsmp}.
+\subsection{Atomic Time}
+The second is now defined by an atomic standard that is based on the resonance frequency of the cesium atom. To be precise, the second is defined as ``9,192,631,770 periods of the radiation corresponding to the transition between the two hyperfine levels of the ground state of the cesium-133 atom,'' whose duration happens to exactly match the ephemeris second discussed in the previous section. The problem with detaching our time keeping method from the Earth is that as the Earth slows its rotation noon will move closer to midnight (over the duration of thousands of years, of course). Coordinated Universal Time (UTC) was introduced to prevent this. UTC is a compromise between the precision of atomic time and the groundedness of Earth based time keeping, it uses the atomic second but introduces leap seconds (positive or negative) when necessary to keep UTC within .9 seconds of UT1~\cite[pp. 86-87]{me:gsmp}.
+\subsection{Time Formats}
+We are used to dealing with months, days, years, hours, minutes, and seconds, but such a time format makes for difficult epoch calculations over long periods. To solve this problem Julian Date (JD) was introduced. JD consists of a day count (days since noon UT on January $1^{\mbox{st}}$ 4713 B.C.) and a fraction of the current day. This makes for easy time differencing, but the length of the date can become cumbersome and the fact that a new day starts at noon confusing. To make things even easier Modified Julian Date (MJD) was created whose origin is midnight November $17^{\mbox{th}}$, 1858.
+\[ \mbox{MJD}=\mbox{JD}-2400000.5\]
+
+In order to make Julian Date useful we need an easy way to go between calendar dates and JD. \application{timeconvert}\index{timeconvert!theory} does this and more with ease. The equations to convert from calendar date to JD are
+\[ \mbox{JD}=\mbox{INT}[365.25y]+\mbox{INT}[30.6001(m+1)]+D+\mbox{UT}/24+1720981.5\]
+\[ \begin{array}{lll}
+y=Y-1 & \mbox{and}~m=M+12 & \mbox{if}~M \leq2 \\
+y=Y & \mbox{and}~m=M & \mbox{if}~M > 2
+\end{array} \]
+where $M$ is the month, $D$ is the day, $Y$ is the year, and INT[$x$] returns just the integer part of the a number. To go from JD to calendar date
+\[ a=\mbox{INT[JD}+0.5] \]
+\[ b=a+1537 \]
+\[ c=\mbox{INT}[(b-122.1)/365.25] \]
+\[ d=\mbox{INT}[365.25c] \]
+\[ e=\mbox{INT}[(b-d)/30.6001] \]
+\[ D=b-d-\mbox{INT}[30.6001e]+\mbox{FRAC[JD}+0.5] \]
+\[ M=e-1-12\mbox{INT}[e/14] \]
+\[ Y=c-4715-\mbox{INT}[(7+M)/10] \]
+where FRAC[$x$] returns just the fractional part of a real number. MJD Conversion found here~\cite[p. 88]{me:gsmp}. All other date conversions were found here~\cite[pp. 36-37]{hlc:gtp}
+\subsection{GPS Time}
+GPS Time (GPST) is a continuously running composite time kept by cesium and rubidium frequency standards aboard the satellites and at monitor stations. While there are no leap seconds in GPST as there are in UTC, it is steered to stay within 1 $\mu$s of UTC, that is the difference between GPST and UTC is an integer number of seconds plus a fraction of a $\mu$s. GPST is formatted in terms of GPS weeks and the number of seconds into the current week. Finding these values is done easily if the Julian Date is known.
+\[ \mbox{GPS WEEK}=\mbox{INT[(JD}-2444244.5)/7] \]
+\[ \mbox{SOW}=\mbox{FRAC[(JD}-2444244.5)/7]\times 604800 \]
+where INT[$x$] returns the integer part of a real number, FRAC[$x$] returns the fractional part, and SOW stands for Second of Week.
+
+Other useful quantities such as Day of Week and  Second of Day can be found using \application{timeconvert}\index{timeconvert!theory} or the following equations.
+\[\mbox{DOW}=\mbox{modulo\{INT[JD}+0.5],7\}\]
+\[\mbox{SOD}=\mbox{modulo\{FRAC[JD}+0.5],7\}\times 86400\]
+where DOW=0 corresponds to Monday, DOW=1 corresponds to Tuesday, and so on.
+
+JD and GPS Week equations were found here~\cite[pp. 36-37]{hlc:gtp}, SOD derived from DOW equation
+\subsection{Z-Count}
+Satellites keep internal time with Z-count, whose epoch period is 1.5 seconds (a convenient unit for communications timing). The full Z-count is 29 bits, the 10 bit GPS week folloed by a 19 bit Time of Week (TOW) expressed in Z-counts (or 1.5 second units). The truncated Z-count has a 17 bit TOW that is expressed in units of 6 seconds, or the length of one subframe's transmission time. Simply multiply the truncated TOW by 4 to get the full TOW~\cite[pp. 86-88]{tsui:fgpsr}.
+\[ \mbox{TOW}=\mbox{FRAC[(JD}-2444244.5)/7]\times 403200 \]
+\[ \mbox{Truncated TOW}=\mbox{FRAC[(JD}-2444244.5)/7]\times 100800 \]
+Equations derived from SOW equation above
+\section{Earth Fixed Coordinates}
+\subsection{ECI to ECF}
+\[\left[\begin{array}{c} x \\ y \\ z \end{array}\right]_{ECF}=T_{XYZ}^{xyz}\left[\begin{array}{c} X \\ Y \\ Z \\ \end{array}\right]_{ECI}\]
+\[T_{XYZ}^{xyz}=WSNP\]
+
+P - applies precession, from epoch 2000.0 to the current time;
+N - applies nutation, from epoch 2000.0 to the current time;
+S - applies rotation to account for true sidereal time;
+W - applies polar motion;
+
+Equations found on page 85 of Fundamentals of Orbit Determination paper book
+
+\subsection{WGS-84}
+The World Geodetic System 1984 (WGS-84) is fixed physical model of Earth produced by the Department of Defense to which many different reference frames can be attached. WGS-84 consists of two parts, a model of Earth's gravitational field, and an ellipsoid describing the Earth's general shape. When dealing with locations on the Earth's surface the ellipsoid provides the foundation for the geodetic coordinate system used by GPS. The ellipsoid's cross-sections parallel to the equatorial plane are circular while those orthogonal are elliptical. The ellipses are parameterized by an eccentricity $e$, a flattening $f$, and sometimes a second eccentricity $e'$
+\[e=\sqrt{1-\frac{b^{2}}{a^{2}}}\]
+\[f=1-\frac{b}{a}\]
+\[e'=\sqrt{\frac{a^{2}}{b^{2}}-1}=\frac{a}{b}e\]
+where $a$, the semimajor axis, is the value of the mean equatorial radius of Earth (6,378.137 km) and $b$, the semiminor axis, is the value of the polar radius of Earth (6,356.7523142 km) \cite[pp. 25-26]{kaplan:ugpspa}.
+\subsection{Coordinate Systems}
+Now that WGS-84 is defined it is important to understand what coordinate systems can be attached to the ellipsoid and how to move between these different systems. The GPS Toolkit comes with \application{poscvt}\index{poscvt!theory}, an application that gives users the ability to easily convert coordinates in one reference frame to another. The coordinate 
+systems that \application{poscvt}\index{poscvt!theory} recognizes are Cartesian (or XYZ), geodetic, geocentric, and spherical coordinates. These systems and the formulas to convert between them are discussed below.
+\subsubsection{Cartesian (XYZ) Coordinates}
+The Earth Centered Earth Fixed (ECEF) Cartesian coordinate system is fixed to the WGS-84 ellipsoid and is the common ground that makes going between the Earth Centered Inertial (ECI) reference frame used by the satellites and the systems we are used to (such as latitude, longitude, and height) manageable. The equatorial plane makes the $xy$-plane with the $+x$-axis pointing toward $0^{\circ}$ longitude and the $+y$-axis pointing toward $90^{\circ}$ E longitude. The $z$-axis is normal to the equatorial plane and points to the geographical north pole. The conversion formulas presented in the next sections will convert to and from this Cartesian reference frame, and so to convert between two non-Cartesian coordinate systems the XYZ system will be used as an intermediary~\cite[p. 24]{kaplan:ugpspa}.
+\subsubsection{Geodetic Coordinates}
+The geodetic coordinate parameters are longitude $\lambda$, latitude $\phi$, and height $h$. Longitude is defined as the angle between the position and the $x$-axis in the equatorial plane, and is easily computed given a position in Cartesian coordinates. Let a user's position $\mathbf{U}=(x_{u},y_{u},z_{u})$, then
+\[ \lambda = \left \{ \begin{array}{ll}
+\arctan \left( \frac{y_{u}}{x_{u}} \right), & \mbox{$x_{u} \geq 0$} \\
+180^{\circ} + \arctan \left( \frac{y_{u}}{x_{u}} \right), & \mbox{$x_{u} < 0$ and $y_{u} \geq 0$} \\
+-180^{\circ} +\arctan \left( \frac{y_{u}}{x_{u}} \right), & \mbox{$x_{u} < 0$ and $y_{u} < 0$}
+\end{array}
+\right. \]
+where negative angles signal west longitude.
+
+Latitude and height are not so straight forward. Latitude is determined by drawing a vector normal to the ellipsoid, beginning somewhere on the equatorial plane and terminating at the users position, we will call this the user vector. The smallest angle between this vector and the equatorial plane is the user's latitude, it is a North latitude for positive angles and South for negative. Notice that unless the user is at a pole or on the equator the vector does not pass through the center of the Earth. The users height is found by taking the magnitude of the vector originating on and normal to the ellipsoid and terminating at the user's position. Latitude $\phi$ and height $h$ are found using the following equations
+\[ \phi = \arctan\left(\frac{z_{u}+e'^{2}z_{0}}{r}\right) \]
+\[ h = U \left(1-\frac{b^{2}}{aV}\right) \]
+
+where
+
+\[ r = \sqrt{x_{u}^{2}+y_{u}^{2}} \]
+\[ E^{2} = a^{2} - b^{2} \]
+\[ F = 54 b^{2} z_{u}^{2} \]
+\[ G = r^{2} + (1-e^{2}) z_{u}^{2} - e^{2} E^{2} \]
+\[ c = \frac{e^{4} F r^{2}}{G^{3}} \]
+\[ s = \sqrt[3]{1+c+\sqrt{c^{2} + 2c}}\]
+\[ P = \frac{F}{3 \left( s + \frac{1}{s} + 1  \right)^{2}G^{2} } \]
+\[ Q = \sqrt{1+2e^{4}P} \]
+\[ r_{0} = -\frac{Pe^{2}r}{1+Q}+\sqrt{\frac{1}{2}a^{2} \left(1+\frac{1}{Q}\right)-\frac{P(1-e^{2})z_{u}^{2}}{Q(1+Q)}-\frac{1}{2}Pr^{2}}\]
+\[ U = \sqrt{(r-e^{2}r_{0})^{2}+z_{u}^{2}}\]
+\[ V = \sqrt{(r-e^{2}r_{0})^{2}+(1-e^{2})z_{u}^{2}} \]
+\[ z_{0} = \frac{b^{2}z_{u}}{aV} \]
+
+
+%\[x=(N_{h}+h)\cos\phi'\cos\lambda\]
+%\[y=(N_{h}+h)\cos\phi'\sin\lambda\]
+%\[z=(N_{h}+h-\tilde{e}^{2}N_{h})\sin\phi'\]
+%\[\tilde{e}^{2}=\tilde{f}(2-\tilde{f})\]
+%\[N_{h}=\frac{R_{e}}{(1-\tilde{e}^{2}\sin^{2}\phi')^{1/2}}\]
+%\[\tilde{f}=\frac{R_{e}-R_{p}}{R_{e}}\]
+%\[x^{2}+y^{2}+\left(\frac{R_{e}}{R_{p}}\right)^{2}z^{2}=R_{e}^{2}\]
+
+Going back to Cartesian coordinates from the geodetic system ($\lambda$ $\phi$ $h$) can be done more compactly
+\[ \mathbf{u} = \left[  \begin{array}{c}
+\frac{a\cos\lambda}{\sqrt{1+(1-e^2)\tan^{2}\phi}}+h\cos\lambda\cos\phi \\
+\frac{a\sin\lambda}{\sqrt{1+(1-e^2)\tan^{2}\phi}}+h\sin\lambda\cos\phi \\
+\frac{a(1-e^{2})\sin\phi}{\sqrt{1-e^{2}\sin^{2}\phi}}+h\sin\phi
+\end{array}
+\right] \]
+where $\mathbf{u}$ is the user's position vector~\cite[pp. 26-28, p. 76]{kaplan:ugpspa,me:gsmp}.
+
+\subsubsection{Geocentric Coordinates}
+\[x=r\cos\phi\cos\lambda\]
+\[y=r\cos\phi\sin\lambda\]
+\[z=r\sin\phi\]
+
+where $\lambda$ and $\phi$ are geocentric longitude and latitude
+
+found on page 82 in the Fundamentals of Orbital Determination paper book
+
+\subsubsection{Spherical Coordinates}
+
+\subsubsection{Topocentric Coordinates}
+\[\mathbf{r}_{t}=T_{t}(\mathbf{r}-\mathbf{r}_{s})=T_{t}\rho\]
+
+$\mathbf{r}$ and $\mathbf{r}_{s}$ are the position vectors of the observer and satellite respectively in the Earth-fixed system
+
+\[T_{t}=\left[ \begin{array}{ccc}
+-\sin\lambda & \cos\lambda & 0 \\
+-\sin\phi\cos\lambda & -\sin\phi\sin\lambda & \cos\phi \\
+\cos\phi\cos\lambda & \cos\phi\sin\lambda & \sin\phi \end{array} \right] \]
+
+where $\lambda$ and $\phi$ are geocentric longitude and latitude
+
+found on page 84 in the Fundamentals of Orbital Determination paper book
+
+to find \emph{azimuth} (Az) and \emph{elivation} (El)
+
+\[ \begin{array}{ll}
+\sin\mbox{El}=\frac{z_{t}}{r_{t}} & -90^{\circ} \leq \mbox{El} \leq 90^{\circ} \\
+\sin\mbox{Az}=\frac{x_{t}}{r_{xy}} & \\
+\cos\mbox{Az}=\frac{y_{t}}{r_{xy}} & 0^{\circ} \leq \mbox{Az} \leq 360^{\circ}
+\end{array} \]
+
+Equations found on pages 84-85 in  Fundamentals of Orbit Determination paper book
+
+\putbib[gpstk]
+%\end{document}

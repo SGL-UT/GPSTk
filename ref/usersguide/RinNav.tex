@@ -1,0 +1,87 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{RinNav!application writeup}
+\section{\emph{RinNav}}
+\subsection{Overview}
+This application reads one or more RINEX (v.2+) navigation files and writes the merged navigation data to one or more output (ver 2 or 3) files. A summary of the ephemeris data may be written to the screen.
+\subsection{Usage}
+\subsubsection{\emph{RinNav}}
+\begin{verbatim}
+RinNav usage: RinNav [options] <file>  
+
+\end{verbatim}
+\begin{\outputsize}
+\begin{longtable}{lll}
+%\multicolumn{3}{c}{\application{RinNav}}\\
+\multicolumn{3}{l}{\textbf{Required Arguments}}\\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--file $<$fn$>$}{Name of file with more options [\#-$>$EOL = comment] [repeat]}{2}
+\entry{}{--nav $<$file$>$}{Input RINEX navigation file name [repeat]}{1}
+\entry{}{--navpath $<$p$>$}{ Path of input RINEX navigation file(s)}{2}
+& & \\
+
+\multicolumn{3}{l}{\textbf{Optional Arguments}}\\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--start $<$t[:f]$>$}{Start processing data at this epoch ([Beginning of dataset])}{2}
+\entry{}{--stop $<$t[:f]$>$}{Stop processing data at this epoch ([End of dataset])}{2}
+\entry{}{--exSat $<$sat$>$}{Exclude satellite [system] from output [e.g. G17,R] [repeat]}{2}
+\entry{}{--out $<$[sys,]fn$>$}{Output [system sys only] to RINEX ver. 3 file fn}{2}
+\entry{}{--out2 $<$[sys,]fn$>$}{Version 2 output [system sys only] to RINEX file fn}{2}
+\entry{}{--timefmt $<$fmt$>$}{Format for time tags (see GPSTK::Epoch::printf) in output (\%4F \%10.3g)}{2}
+\entry{}{--ver2}{Write out RINEX version 2}{1}
+\entry{}{--verbose}{Print extra output information}{1}
+\entry{}{--debug}{Print debug output at level 0 [debug<n> for level n=1-7]}{2}
+\entry{-h}{--help}{Print this and quit.}{1}
+\end{longtable}
+
+
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{verbatim}
+ RinNav nav/s121001a.02n nav/s121001a.03n
+# RinNav, part of the GPS Toolkit, Ver 1.1 2/2/12, Run 2012/07/23 14:36:05
+Dump Rinex3EphemerisStore:
+Dump of FileStore
+ File  1: nav/s121001a.02n (header for this file follows)
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.10,  File type NAVIGATION, System G: (GPS).
+Prgm: RinexNavWriter,  Run: 1-02-02  0:05:09,  By: NIMA
+(This header is VALID RINEX version 2).
+---------------------------------- OPTIONAL ----------------------------------
+ Leap seconds is NOT valid
+-------------------------------- END OF HEADER -------------------------------
+ File  2: nav/s121001a.03n (header for this file follows)
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.10,  File type NAVIGATION, System G: (GPS).
+Prgm: RinexNavWriter,  Run: 1-02-03  0:05:09,  By: NIMA
+(This header is VALID RINEX version 2).
+---------------------------------- OPTIONAL ----------------------------------
+ Leap seconds is NOT valid
+-------------------------------- END OF HEADER -------------------------------
+End dump of FileStore
+Dump of GPSEphemerisStore:
+  BCE map for satellite 1 has 16 entries.
+PRN  1 TOE 1147 180000.000 GPS TOC 180000.000 HOW 172806.000 KEY 1147 172800.000 GPS
+PRN  1 TOE 1147 194400.000 GPS TOC 194400.000 HOW 194346.000 KEY 1147 187200.000 GPS
+PRN  1 TOE 1147 201600.000 GPS TOC 201600.000 HOW 194406.000 KEY 1147 194400.000 GPS
+PRN  1 TOE 1147 208800.000 GPS TOC 208800.000 HOW 201606.000 KEY 1147 201600.000 GPS
+PRN  1 TOE 1147 244800.000 GPS TOC 244800.000 HOW 244086.000 KEY 1147 237600.000 GPS
+PRN  1 TOE 1147 251984.000 GPS TOC 251984.000 HOW 246216.000 KEY 1147 244784.000 GPS
+PRN  1 TOE 1147 252000.000 GPS TOC 252000.000 HOW 244806.000 KEY 1147 244800.000 GPS
+PRN  1 TOE 1147 259184.000 GPS TOC 259184.000 HOW 259146.000 KEY 1147 251984.000 GPS
+PRN  1 TOE 1199 266384.000 GPS TOC 266384.000 HOW 259206.000 KEY 1199 259184.000 GPS
+PRN  1 TOE 1199 273600.000 GPS TOC 273600.000 HOW 271296.000 KEY 1199 266400.000 GPS
+PRN  1 TOE 1199 280800.000 GPS TOC 280800.000 HOW 280746.000 KEY 1199 273600.000 GPS
+
+\end{verbatim}
+
+%\end{document}

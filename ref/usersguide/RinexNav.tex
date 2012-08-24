@@ -1,0 +1,63 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{RinDump!application writeup}
+\section{\emph{RinDump}}
+\subsection{Overview}
+The application reads a RINEX file and dumps the obervation types in columns.  Output is to the screen, with one time tag and one satellite per line.
+
+\subsection{Usage}
+\begin{\outputsize}
+\begin{longtable}{lll}
+\multicolumn{3}{c}{\application{RinexDump}}\\
+\multicolumn{3}{l}{\textbf{Optional Arguments}}\\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--pos}{Output only positions from aux headers; sat and obs are ignored.}{2}
+\entry{-n}{--num}{Make output purely numeric (no header, no system char on sats).}{2}
+\entry{}{--format $<$file$>$}{Output times in CommonTime format (Default: \%4F \%10.3g).}{2}
+\entry{}{--file $<$file$>$}{RINEX observation file; this option may be repeated.}{2}
+\entry{}{--obs $<$obs$>$}{RINEX observation type, found in file header.}{1}
+\entry{}{--sat $<$sat$>$}{RINEX satellite ID (e.g. G31 for GPS PRN 31).}{1}
+\entry{-h}{--help}{Print this and quit.}{1}
+\end{longtable}
+
+\begin{verbatim}
+RinexDump usage: RinexDump [-n] <rinex obs file> [<satellite(s)> <obstype(s)>] 
+
+The optional argument -n tells RinexDump its output should be purely numeric.
+\end{verbatim}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{lstlisting}
+> RinexDump algo1580.06o 3 4 5
+
+# Rinexdump file: algo1580.06o Satellites: G03 G04 G05 Observations: ALL
+# Week  GPS_sow Sat            L1 L S            L2 L S            C1 L S
+1378 259200.000 G03  -3843024.647 0 3  -2994560.443 0 1  23796436.087 0 0
+1378 259230.000 G03  -3954052.735 0 3  -3081075.654 0 2  23775308.750 0 0
+1378 259260.000 G03  -4064994.465 0 2  -3167523.561 0 3  23754197.617 0 0
+
+ . . .
+
+          P2 L S            P1 L S            S1 L S            S2 L S
+23796439.457 0 0  23796436.350 0 0        21.100 0 0        11.000 0 0
+23775311.168 0 0  23775308.182 0 0        22.100 0 0        17.800 0 0
+23754199.648 0 0  23754196.550 0 0        17.000 0 0        18.600 0 0
+
+ . . .
+\end{lstlisting}
+\end{\outputsize}
+
+\subsection{Notes}
+MATLAB and Octave can read the purely numeric output.
+
+%\end{document}

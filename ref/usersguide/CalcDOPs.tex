@@ -20,9 +20,10 @@ Dilution of precision values from that data are calculated using standard method
 \end{itemize}
 
 \subsection{Usage}
+\subsubsection{\emph{CalcDOPs}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{CalcDOPs}} \\
+%\multicolumn{3}{c}{\application{CalcDOPs}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-i$<$inputfile$>$}{}{Input file for day to be calculated.}{1}
@@ -87,7 +88,7 @@ TworstP&  time tag (CommonTime class) of WorstP\\
 
 \begin{enumerate}
 \item GPS only, using PRNs hard-wired to SV numbers 1-32.
-\item Elevation limit is hard-wired to 5 degrees above horizion.
+\item Elevation limit is hard-wired to 5 degrees above horizon.
 \item ``North America" means the northern half-hemisphere: -180 to 0 deg long.,
       0 to 90N latitude.
 \item Ephemeris mode is default, almanac mode is optional.  Ephemeris mode is
@@ -99,7 +100,29 @@ TworstP&  time tag (CommonTime class) of WorstP\\
       to be calculated.  A previous-day input file can be given only in ephemeris
       mode, not almanac.
 \item The code uses geodetic coordinates for all calculations.
-\item The -d option is useful for e.g. making movies of DOPs throughout a day.
+\item The -d option is useful for (e.g.) making movies of DOPs throughout a day.
 \end{enumerate}
+
+\subsection{Examples}
+\begin{verbatim}
+> CalcDOPs -i nav/s121001.02n -d
+
+-------------------------------DOPs.out file-------------------------------------
+
+  -180.000 -89.000   5.574   4.978   2.701   3.950   2.443  5.878  80.406  76.501  
+73.222  47.296  40.713  4.000 0.0937500 
+  -120.000 -89.000   5.489   4.899   2.664   3.879   2.410  5.882  81.008  77.069  
+73.745  47.482  41.165  4.000 0.1006944 
+  -60.000 -89.000   5.338   4.767   2.619   3.752   2.342  5.910  80.702  76.846  
+73.858  47.931  41.151  4.000 0.0868056 
+    0.000 -89.000   5.197   4.637   2.569   3.628   2.285  5.951  79.798  76.057  
+73.423  48.182  40.680  4.000 0.0833333 
+   60.000 -89.000   4.788   4.259   2.430   3.280   2.132  5.965  79.208  75.499  
+72.903  48.004  40.246  4.000 0.0763889 
+  120.000 -89.000   4.814   4.284   2.433   3.322   2.139  5.948  79.510  75.720  
+72.814  47.567  40.266  4.000 0.0798611 
+
+\end{verbatim}
+
 %\end{document}
 

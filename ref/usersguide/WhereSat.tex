@@ -15,13 +15,14 @@ This application uses input ephemeris to compute the predicted location of a
 satellite. The Earth-centered, Earth-fixed (ECEF) position of the satellite is 
 reported. Optionally, the topocentric coordinates--azimuth, elevation, and 
 range--can be generated. The user can specify the time interval between 
-successive predictions. Also the output can generated in a format easily
+successive predictions. Also the output can be generated in a format easily
 imported into numerical packages.
 
 \subsection{Usage}
+\subsubsection{\emph{WhereSat}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{WhereSat}} \\
+%\multicolumn{3}{c}{\application{WhereSat}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{-e}{--eph-files=ARG}{Ephemeris source file(s).  Can be RINEX nav, SP3, or FIC.}{1}
@@ -41,45 +42,27 @@ imported into numerical packages.
 \subsection{Examples}
 \begin{\outputsize}
 \begin{lstlisting}
-> WhereSat -b aira1720.06n -p 2 -u "918129.01 -4346070.45 803.18"
-  -s "06/21/2006 17:00:00" -e "06/21/2006 20:00:00" -t 1800
 
- Antenna Position:  918129  -4.34607e+06  803.18
- Navigation File:   aira1720.06n
- Start Time:        06/21/2006 17:00:00
- End Time:          06/21/2006 20:00:00
- PRN:               2
-
- Prn 2 Earth-fixed position and clock information:
-
- Date       Time(UTC)   X (meters)          Y (meters)          Z (meters)      
- ===============================================================================
- 06/21/2006 18:00:00  12758891.971859      18901201.616227      -14049016.596144
- 06/21/2006 18:30:00  12847888.097031      21541501.416411      -9315422.851798 
- 06/21/2006 19:00:00  12843576.989405      23087218.618683      -3957280.515764 
- 06/21/2006 19:30:00  12450313.769289      23516935.034029      1667186.089065  
-
-  . . .
-
-    Clock Correc (s)
-==================
-     0.000007
-     0.000007
-     0.000007
-     0.000007
-
- 
-
- Data for user reference frame:
-
- Date       Time(UTC)   Azimuth        Elevation      Range to SV (m)
- =====================================================================
- 06/21/2006 18:00:00  130.596202      -43.242769      29627531.177821
- 06/21/2006 18:30:00  118.680085      -49.681012      29983796.522429
- 06/21/2006 19:00:00  102.845663      -53.888528      30169796.433699
- 06/21/2006 19:30:00  84.400419       -55.459042      30197072.648367
-
- Calculated 4 increments for prn 2 .
+> wheresat -e nav/s121001a.08n
+Scanning over prnSet.
+Scan complete, size = 0
+Scanning over PRNs indices.
+Scan complete, size = 32
+Set timeFormat to %02m/%02d/%04Y %02H:%02M:%04.1f
+positionOpt has count = 0
+# time, PRN, X(m), Y(m), Z(m), Clock Correction(ms)
+File read by EphReader.
+2454466 86384000 0.000000000000000 GPS
+2454466 86384000 0.000000000000000 GPS
+2454468 07200000 0.000000000000000 GPS
+01/01/2008 00:14:44.0   2   21747436.312   -9257796.753  -11975305.200  -0.000019        -        -               -
+01/01/2008 00:14:44.0   4   18510072.147    1615384.170  -19198127.464   0.000013        -        -               -
+01/01/2008 00:14:44.0  10   22497303.175   -3072267.608   13925841.366  -0.000017        -        -               -
+01/01/2008 00:14:44.0  11   -8870210.278   23588157.454   -8007606.591   0.000015        -        -               -
+01/01/2008 00:14:44.0  12    5936939.408  -13991621.825  -21687667.199   0.000003        -        -               -
+01/01/2008 00:14:44.0  13    6207240.073   25803219.367    1294271.894  -0.000008        -        -               -
+01/01/2008 00:14:44.0  17   14616066.283   16715096.969  -14666158.339  -0.000006        -        -               -
+...
 
 
 \end{lstlisting}

@@ -1,0 +1,88 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{RinDump!application writeup}
+\section{\emph{RinDump}}
+\subsection{Overview}
+The application reads one or more RINEX (v.2+) observation files and dump the given observation IDs, linear combinations, satellite-dependent information or other things, to the screen, as a table, with one time and one satellite per line.
+
+\subsection{Usage}
+\subsubsection{\emph{RinDump}}
+
+\begin{\outputsize}
+\begin{longtable}{lll}
+%\multicolumn{3}{c}{\application{RinDump}}\\
+\multicolumn{3}{l}{\textbf{Required Arguments}}\\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--file \<fn\>}{Name of file with more options [\#->EOL = comment]}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}}\\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{}{--obs \<file\>}{Input RINEX observation file name [repeat]}{1}
+\entry{}{--sat \<sat\>}{sat is a RINEX satellite id (see above) [repeat]}{1}
+\entry{}{--dat \<data\>}{data (raw,combination, or other) to dump (see above) [repeat]).}{2}
+\entry{}{--combo \<spec\>}{RINEX observation file; this option may be repeated.}{1}
+\entry{}{--sys \<s\>}{System(s) (GNSSs) <s>=S[,S], where S=RINEX system [repeat] (GPS,GLO)RINEX systems are GPS,GLO,GAL,GEO or SBAS,COM
+}{2}
+\entry{}{--code \<s:c\>}{System \<s\> allowed tracking codes \<c\>, in order}{1}
+\entry{}{--freq \<f\>}{Frequencies to use in solution [e.g. 1, 12, 5, 15] [repeat]}{1}
+\entry{}{--eph \<fn\>}{Input Ephemeris+clock (SP3 format) file name(s) [repeat]}{1}
+\entry{}{--nav <fn>}{Input RINEX nav file name(s) [GLO Nav includes freq channel] [repeat]}{2}
+\entry{}{--obspath \<p\>}{Path of input RINEX observation file(s)}{1}
+\entry{}{--ephpath \<p\>}{Path of input RINEX ephemeris+clock file(s)}{1}
+\entry{}{--navpath \<p\>}{Path of input RINEX navigation file(s)}{1}
+\entry{}{--start \<t[:f]\>}{Start processing data at this epoch ([Beginning of dataset])}{2}
+\entry{}{--stop \<t[:f]\>}{Stop processing data at this epoch ([End of dataset])}{1}
+\entry{}{--decimate \<dt\>}{Decimate data to time interval dt (0: no decimation)}{1}
+\entry{}{--ref \<p[:f]\>}{Known position, default fmt f '\%x,\%y,\%z', for resids, elev, and ORDs}{2}
+\entry{}{--GLOfreq \<sat:n\>}{GLO satellite and frequency channel number, e.g. R09:-7}{2}
+\entry{}{--Trop \<m,T,P,H\>}{Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt with optional weather T(C),P(mb),RH(\%)]}{3}
+\entry{}{--timefmt \<fmt\>}{Format for time tags (see GPSTK::Epoch::printf) in output}{1}
+\entry{}{--headless}{Turn off printing of headers (# ...) in output}{1}
+\entry{}{--verbose}{Print extra output information}{1}
+\entry{}{--debug}{Print debug output at level 0 [debug\<n\> for level n=1-7]}{1}
+\entry{-h}{--help}{Print this syntax page, and quit}{1}
+\entry{}{--typehelp}{Print all valid RINEX obs IDs, and quit{1}
+\entry{}{--combohelp}{Print syntax for linear combination data tags, and quit}{1}
+\end{longtable}
+
+\begin{verbatim}
+RinexDump usage: RinDump [-n] <rinex obs file> [<satellite(s)> <obstype(s)>] 
+
+The optional argument -n tells RinexDump its output should be purely numeric.
+\end{verbatim}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{lstlisting}
+> RinDump algo1580.06o 3 4 5
+
+# Rinexdump file: algo1580.06o Satellites: G03 G04 G05 Observations: ALL
+# Week  GPS_sow Sat            L1 L S            L2 L S            C1 L S
+1378 259200.000 G03  -3843024.647 0 3  -2994560.443 0 1  23796436.087 0 0
+1378 259230.000 G03  -3954052.735 0 3  -3081075.654 0 2  23775308.750 0 0
+1378 259260.000 G03  -4064994.465 0 2  -3167523.561 0 3  23754197.617 0 0
+
+ . . .
+
+          P2 L S            P1 L S            S1 L S            S2 L S
+23796439.457 0 0  23796436.350 0 0        21.100 0 0        11.000 0 0
+23775311.168 0 0  23775308.182 0 0        22.100 0 0        17.800 0 0
+23754199.648 0 0  23754196.550 0 0        17.000 0 0        18.600 0 0
+
+ . . .
+\end{lstlisting}
+\end{\outputsize}
+
+\subsection{Notes}
+MATLAB and Octave can read the purely numeric output.
+
+%\end{document}

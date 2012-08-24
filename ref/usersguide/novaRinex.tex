@@ -17,17 +17,17 @@ The application will open and read a binary Novatel file
   (see below), and optional records are filled.
 
 \subsection{Usage}
-
+\subsubsection{\emph{novaRinex}}
 \begin{\outputsize}
 \begin{longtable}{lll}
-\multicolumn{3}{c}{\application{novaRinex}} \\
+%\multicolumn{3}{c}{\application{novaRinex}} \\
 \multicolumn{3}{l}{\textbf{Required Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
 \entry{}{--input}{Novatel binary input file.}{1}
 & & \\
 \multicolumn{3}{l}{\textbf{Optional Arguments}} \\
 \entry{Short Arg.}{Long Arg.}{Description}{1}
-\entry{-f}{}{Name of file containing more options (`\#' to EOL : comment).}{2}
+\entry{-f}{--file}{Name of file containing more options (ignores `\#' to EOL).}{2}
 \entry{}{--dir}{Directory in which to find input file (default ./).}{1}
 \entry{}{--obs}{RINEX observation output file (RnovaRINEX.obs).}{2}
 \entry{}{--nav}{RINEX navigation output file (RnovaRINEX.nav).}{2}

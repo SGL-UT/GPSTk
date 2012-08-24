@@ -25,6 +25,7 @@ is applied, or tropospheric parameters (zenith delays) may be estimated
 for the first station (vector mode) or both.
 
 \subsection{Usage}
+\subsubsection{\emph{vecsol}}
 \begin{\outputsize}
 vecsol usage: vecsol $<$RINEX Obs file 1$>$ $<$RINEX Obs file 2$>$
 \end{\outputsize}
@@ -51,7 +52,7 @@ code data). If 0 or 1, iterate on ionosphere-free vector (not L1 + L2).}{3}
 \entry{precise}{1/0}{If 1, use precise ephemeris, if 0, use broadcast ephemeris.}{2}
 \entry{iono}{1/0}{If 1, use the 8-parameter ionospheric model that comes with the broadcast ephemeris (.nav) files.}{2}
 \entry{tropo}{1/0}{If 1, estimate troposphere parameters (zenith delays relative to the standard value, which is always applied).}{3}
-\entry{vecmode}{1/0}{If 1, solve the vector, i.e. the three coordinate differences between the  baseline end points. If 0, solve for the absolute co-ordinates of both end points.}{4}
+\entry{vecmode}{1/0}{If 1, solve the vector, i.e. the three coordinate differences between the  baseline end points. If 0, solve for the absolute coordinates of both end points.}{4}
 \entry{debug}{1/0}{If 1, produce lots of gory debugging output. See the source for what it all means.}{2}
 \entry{refsat elev}{number}{Minimum elevation (degs) of the reference satellite used for computing inter-satellite differences.  Good initial choice: 30.0.}{3}
 \entry{cutoff elev}{number}{Cut-off elevation (degs). Good initial choice: 10.0 - 20.0.}{2}
@@ -67,6 +68,177 @@ The file vecsol.nav contains the names of the navigation RINEX files (``nav file
 The file vecsol.eph contains  the  names  of  the  precise ephemeris SP3 files (extension .sp3) to be used. These should cover the time span of the observations, with time to spare on both  ends. Note  that the date in the filenames of the SP3 files is given as GPS week + weekday, not year + day of year, as in the observation and nav files.
 
 In the .nav and .eph files, comment lines have \# in the first position.
+\subsection{Examples}
+\begin{verbatim}
+> vecsol bell0300.02o bell030a.02o
+
+Configuration data from vecsol.conf
+-----------------------------------
+Use carrier phases:             1
+Compute ionosphere-free:        1
+Use true correlations:          1
+Use precise ephemeris:          1
+Use broadcast iono model:       0
+Use tropospheric est.:          1
+Vector mode:                    1
+Debugging mode:                 1
+Ref sat elevation limit:        30
+Cut-off elevation:              20
+TD rej. limits (phase, code):   0.1 0.1
+Reduce out DD dependencies:     1
+
+Eph file: # skipped
+Eph file: igs12851.sp3
+Eph file: igs12852.sp3
+Eph file: igs12853.sp3
+Dump SP3EphemerisStore:
+ Reject bad positions.
+ Reject bad clocks.
+ Do not reject predicted positions.
+ Do not reject predicted clocks.
+Dump of FileStore
+ File  1: igs12851.sp3 (header for this file follows)
+SP3 Header: version SP3a containing positions only.
+ Time tag : 2004/08/23  0:00:00
+ Timespacing is 900 sec, and the number of epochs is 96
+ Data used as input : ORBIT
+ Coordinate system : IGb00
+ Orbit estimate type : HLM
+ Agency :  IGS
+ List of satellite PRN/accuracy (29 total) :
+ G01/3 G03/3 G04/3 G05/3 G06/3 G07/3 G08/3 G09/3
+ G10/3 G11/4 G13/4 G14/4 G15/3 G16/3 G17/3 G18/4
+ G19/4 G20/4 G21/3 G22/3 G23/4 G24/3 G25/3 G26/3
+ G27/3 G28/4 G29/3 G30/3 G31/3
+ Comments:
+    FINAL ORBIT COMBINATION FROM WEIGHTED AVERAGE OF:        
+    cod emr esa gfz jpl mit ngs sio                          
+    REFERENCED TO IGS TIME AND TO WEIGHTED MEAN POLE:        
+    CLK ANT Z-OFFSET (M): II/IIA 1.023; IIR 0.000            
+End of SP3 header
+ File  2: igs12852.sp3 (header for this file follows)
+SP3 Header: version SP3a containing positions only.
+ Time tag : 2004/08/24  0:00:00
+ Timespacing is 900 sec, and the number of epochs is 96
+ Data used as input : ORBIT
+ Coordinate system : IGb00
+ Orbit estimate type : HLM
+ Agency :  IGS
+ List of satellite PRN/accuracy (29 total) :
+ G01/3 G03/3 G04/3 G05/3 G06/3 G07/3 G08/3 G09/3
+ G10/3 G11/4 G13/4 G14/4 G15/3 G16/3 G17/3 G18/3
+ G19/4 G20/4 G21/3 G22/3 G23/4 G24/3 G25/3 G26/3
+ G27/3 G28/4 G29/3 G30/3 G31/3
+ Comments:
+    FINAL ORBIT COMBINATION FROM WEIGHTED AVERAGE OF:        
+    cod emr esa gfz jpl mit ngs sio                          
+    REFERENCED TO IGS TIME AND TO WEIGHTED MEAN POLE:        
+    CLK ANT Z-OFFSET (M): II/IIA 1.023; IIR 0.000            
+End of SP3 header
+ File  3: igs12853.sp3 (header for this file follows)
+SP3 Header: version SP3a containing positions only.
+ Time tag : 2004/08/25  0:00:00
+ Timespacing is 900 sec, and the number of epochs is 96
+ Data used as input : ORBIT
+ Coordinate system : IGb00
+ Orbit estimate type : HLM
+ Agency :  IGS
+ List of satellite PRN/accuracy (29 total) :
+ G01/3 G03/3 G04/3 G05/3 G06/3 G07/3 G08/3 G09/3
+ G10/3 G11/4 G13/3 G14/3 G15/3 G16/3 G17/3 G18/3
+ G19/3 G20/4 G21/3 G22/3 G23/4 G24/3 G25/3 G26/3
+ G27/3 G28/4 G29/3 G30/3 G31/3
+ Comments:
+    FINAL ORBIT COMBINATION FROM WEIGHTED AVERAGE OF:        
+    cod emr esa gfz jpl mit ngs sio                          
+    REFERENCED TO IGS TIME AND TO WEIGHTED MEAN POLE:        
+    CLK ANT Z-OFFSET (M): II/IIA 1.023; IIR 0.000            
+End of SP3 header
+End dump of FileStore
+Dump of PositionSatStore(1):
+ This store does not contain acceleration data.
+ Interpolation is Lagrange, of order 10 (5 points on each side)
+ Dump of TabularSatStore(1):
+  Data stored for 29 satellites
+  Time span of data:  FROM 1285 1  86400.000 2004/08/23  0:00:00 Any 
+		      TO 1285 3 344700.000 2004/08/25 23:45:00 Any
+  This store contains: position, not velocity, not clock bias, and not clock drift data.
+  Checking for data gaps? no
+  Checking data interval? no
+   Sat GPS 1 : 288 records.
+   Sat GPS 3 : 288 records.
+   Sat GPS 4 : 288 records.
+   Sat GPS 5 : 288 records.
+   Sat GPS 6 : 288 records.
+   Sat GPS 7 : 288 records.
+   Sat GPS 8 : 288 records.
+   Sat GPS 9 : 288 records.
+   Sat GPS 10 : 276 records.
+   Sat GPS 11 : 288 records.
+   Sat GPS 13 : 288 records.
+   Sat GPS 14 : 288 records.
+   Sat GPS 15 : 288 records.
+   Sat GPS 16 : 288 records.
+   Sat GPS 17 : 288 records.
+   Sat GPS 18 : 288 records.
+   Sat GPS 19 : 288 records.
+   Sat GPS 20 : 288 records.
+   Sat GPS 21 : 288 records.
+   Sat GPS 22 : 288 records.
+   Sat GPS 23 : 288 records.
+   Sat GPS 24 : 288 records.
+   Sat GPS 25 : 288 records.
+   Sat GPS 26 : 288 records.
+   Sat GPS 27 : 288 records.
+   Sat GPS 28 : 288 records.
+   Sat GPS 29 : 288 records.
+   Sat GPS 30 : 288 records.
+   Sat GPS 31 : 288 records.
+ End dump of TabularSatStore.
+End dump of PositionSatStore.
+Dump of ClockSatStore(1):
+ This store  does not contain clock acceleration data.
+ Interpolation is Lagrange, of order 10 (5 points on each side)
+ Dump of TabularSatStore(1):
+  Data stored for 29 satellites
+  Time span of data:  FROM 1285 1  86400.000 2004/08/23  0:00:00 Any 
+		      TO 1285 3 344700.000 2004/08/25 23:45:00 Any
+  This store contains: not position, not velocity, clock bias, and not clock drift data.
+  Checking for data gaps? no
+  Checking data interval? no
+   Sat GPS 1 : 288 records.
+   Sat GPS 3 : 288 records.
+   Sat GPS 4 : 288 records.
+   Sat GPS 5 : 288 records.
+   Sat GPS 6 : 288 records.
+   Sat GPS 7 : 288 records.
+   Sat GPS 8 : 288 records.
+   Sat GPS 9 : 288 records.
+   Sat GPS 10 : 276 records.
+   Sat GPS 11 : 288 records.
+   Sat GPS 13 : 288 records.
+   Sat GPS 14 : 288 records.
+   Sat GPS 15 : 288 records.
+   Sat GPS 16 : 288 records.
+   Sat GPS 17 : 288 records.
+   Sat GPS 18 : 288 records.
+   Sat GPS 19 : 288 records.
+   Sat GPS 20 : 288 records.
+   Sat GPS 21 : 288 records.
+   Sat GPS 22 : 288 records.
+   Sat GPS 23 : 288 records.
+   Sat GPS 24 : 288 records.
+   Sat GPS 25 : 288 records.
+   Sat GPS 26 : 288 records.
+   Sat GPS 27 : 288 records.
+   Sat GPS 28 : 288 records.
+   Sat GPS 29 : 288 records.
+   Sat GPS 30 : 288 records.
+   Sat GPS 31 : 288 records.
+ End dump of TabularSatStore.
+End dump of ClockSatStore.
+End dump SP3EphemerisStore.
+\end{verbatim}
 
 \subsection{Notes}
 Currently, vecsol does not recover from cycle slips, so the RINEX observation files used have to be fairly clean.

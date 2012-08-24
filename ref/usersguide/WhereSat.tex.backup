@@ -1,0 +1,91 @@
+%\documentclass{article}
+%\usepackage{fancyvrb}
+%\usepackage{perltex}
+%\usepackage{xcolor}
+%\usepackage{listings}
+%\usepackage{longtable}
+%\usepackage{multirow}
+%\input{src/cmd}
+%\begin{document}
+
+\index{WhereSat!application writeup}
+\section{\emph{WhereSat}}
+\subsection{Overview}
+This application uses input ephemeris to compute the predicted location of a 
+satellite. The Earth-centered, Earth-fixed (ECEF) position of the satellite is 
+reported. Optionally, the topocentric coordinates--azimuth, elevation, and 
+range--can be generated. The user can specify the time interval between 
+successive predictions. Also the output can be generated in a format easily
+imported into numerical packages.
+
+\subsection{Usage}
+\subsubsection{\emph{WhereSat}}
+\begin{\outputsize}
+\begin{longtable}{lll}
+%\multicolumn{3}{c}{\application{WhereSat}} \\
+\multicolumn{3}{l}{\textbf{Required Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-e}{--eph-files=ARG}{Ephemeris source file(s).  Can be RINEX nav, SP3, or FIC.}{1}
+& & \\
+\multicolumn{3}{l}{\textbf{Optional Arguments}} \\
+\entry{Short Arg.}{Long Arg.}{Description}{1}
+\entry{-h}{--help}{Print help usage.}{1}
+\entry{-u}{--position=ARG}{Antenna position in ECEF (x,y,z) coordinates.  Format as string: ``X Y Z".  used to give user-centered data (SV range, azimuth, and elevation) when SV is in view.}{4}
+\entry{}{--start=ARG}{Ignore data before this time.  Format as string: ``MO/DD/YYYY HH:MM:SS".}{2}
+\entry{}{--end=ARG}{Ignore data after this time.  Format as string: ``MO/DD/YYYY HH:MM:SS".}{2}
+\entry{-f}{--time-format=ARG}{CommonTime format specifier used for times in the output.  The default is ``\%4Y \%3j \%02H:\%02M:\%4.1f".}{3}
+\entry{-p}{--prn=NUM}{Which SVs to analyze.  Repeat option for multiple satellites.  If this option is not specified, all ephemeris data will be processed.}{3}
+\entry{-t}{--time=NUM}{Time increment in seconds for ephemeris calculation.  Default is 900 seconds (15 minutes).}{2}
+\end{longtable}
+\end{\outputsize}
+
+\subsection{Examples}
+\begin{\outputsize}
+\begin{lstlisting}
+> WhereSat -b aira1720.06n -p 2 -u "918129.01 -4346070.45 803.18"
+  -s "06/21/2006 17:00:00" -e "06/21/2006 20:00:00" -t 1800
+
+ Antenna Position:  918129  -4.34607e+06  803.18
+ Navigation File:   aira1720.06n
+ Start Time:        06/21/2006 17:00:00
+ End Time:          06/21/2006 20:00:00
+ PRN:               2
+
+ Prn 2 Earth-fixed position and clock information:
+
+ Date       Time(UTC)   X (meters)          Y (meters)          Z (meters)      
+ ===============================================================================
+ 06/21/2006 18:00:00  12758891.971859      18901201.616227      -14049016.596144
+ 06/21/2006 18:30:00  12847888.097031      21541501.416411      -9315422.851798 
+ 06/21/2006 19:00:00  12843576.989405      23087218.618683      -3957280.515764 
+ 06/21/2006 19:30:00  12450313.769289      23516935.034029      1667186.089065  
+
+  . . .
+
+    Clock Correc (s)
+==================
+     0.000007
+     0.000007
+     0.000007
+     0.000007
+
+ 
+
+ Data for user reference frame:
+
+ Date       Time(UTC)   Azimuth        Elevation      Range to SV (m)
+ =====================================================================
+ 06/21/2006 18:00:00  130.596202      -43.242769      29627531.177821
+ 06/21/2006 18:30:00  118.680085      -49.681012      29983796.522429
+ 06/21/2006 19:00:00  102.845663      -53.888528      30169796.433699
+ 06/21/2006 19:30:00  84.400419       -55.459042      30197072.648367
+
+ Calculated 4 increments for prn 2 .
+
+
+\end{lstlisting}
+\end{\outputsize}
+
+
+%\end{document}
+
