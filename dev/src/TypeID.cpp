@@ -133,6 +133,7 @@ namespace gpstk
       tStrings[LIdot2]     = "LIdot2";
       tStrings[Ldeltadot]  = "Ldeltadot";
       tStrings[Ldeltadot2] = "Ldeltadot2";
+      tStrings[transmit]   = "transmit";
       tStrings[rho]        = "rho";
       tStrings[rhodot]     = "rhodot";
       tStrings[rhodot2]    = "rhodot2";

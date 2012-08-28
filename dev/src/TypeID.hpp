@@ -167,6 +167,7 @@ namespace gpstk
          Ldeltadot, ///< Wide-lane combination 1st derivative
          Ldeltadot2,///< Wide-lane combination 2nd derivative
             // Model-related types
+         transmit,  ///< Transmit time of the signal
          rho,       ///< Geometric distance satellite-receiver
          rhodot,    ///< First derivative of geometric distance SV-RX
          rhodot2,   ///< Second derivative of geometric distance SV-RX
