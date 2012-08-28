@@ -215,8 +215,16 @@ namespace gpstk
 	 // and the Toe.  The fit interval is either trivial
 	 // (if fit interval flag==0, fit interval is 4 hours) 
 	 // or a look-up table based on the IODC. 
+	 // Round the Toe value to the hour to elminate confusion
+	 // due to possible "small offsets" indicating uploads
       short fitHours = getLegacyFitInterval(IODC, fitint);
-      long endFitSOW = Toe + (fitHours/2)*3600;
+      long  ToeOffset = (long) Toe % 3600;                
+      double adjToe = Toe;                  // Default case
+      if (ToeOffset) 
+      {
+         adjToe += 3600.0 - (double)ToeOffset;   // If offset, then adjust to remove it
+      }
+      long endFitSOW = adjToe + (fitHours/2)*3600;
       short endFitWk = epochWeek;
       if (endFitSOW >= FULLWEEK)
       {

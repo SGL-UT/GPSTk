@@ -245,8 +245,16 @@ namespace gpstk
 	 // and the Toe.  The fit interval is either trivial
 	 // (if fit interval flag==0, fit interval is 4 hours) 
 	 // or a look-up table based on the IODC. 
+	 // Round the Toe value to the hour to elminate confusion
+	 // due to possible "small offsets" indicating uploads
       short fitHours = getLegacyFitInterval(IODC, fitint);
-      long endFitSOW = Toe + (fitHours/2)*3600;
+      long  ToeOffset = (long) Toe % 3600;                
+      double adjToe = Toe;                  // Default case
+      if (ToeOffset) 
+      {
+         adjToe += 3600.0 - (double)ToeOffset;   // If offset, then adjust to remove it
+      }
+      long endFitSOW = adjToe + (fitHours/2)*3600;
       short endFitWk = epochWeek;
       if (endFitSOW >= FULLWEEK)
       {
@@ -268,12 +276,9 @@ namespace gpstk
 
          // Health
          // OrbElemLNav stores the full 8 bits health from the legacy
-	 // navigation message.  OrElem only stores the true/false, 
-	 // use/don't use based on whether the 8 bit health is 0 or non-zero
+         // navigation message.  OrElem only stores the true/false, 
+         // use/don't use based on whether the 8 bit health is 0 or non-zero
       healthy = (health==0);
-
-         // URA Handling
-      
 
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used). 
