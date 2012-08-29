@@ -351,8 +351,11 @@ namespace gpstk
       bool operator() (const gpstk::FICData& l,
                        const gpstk::FICData& r) const
          {
+            if ( (l.blockNum != 62) || (r.blockNum != 62) )
+               return false;
                // the unique criteria are:
                         // SV ID - dimensionless
+  
             return ( (l.i[3] == r.i[3]) &&
                         // transmit week
                      (l.i[5] == r.i[5]) &&
@@ -373,6 +376,8 @@ namespace gpstk
       bool operator() (const gpstk::FICData& l,
                        const gpstk::FICData& r) const
          {
+           if ( (l.blockNum != 162) || (r.blockNum != 162) )
+              return false;
                // the unique criteria are: 
                         // SV ID  - dimensionless
             return ( (l.i[0] == r.i[0]) &&

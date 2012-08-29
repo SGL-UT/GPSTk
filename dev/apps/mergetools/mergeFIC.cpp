@@ -71,10 +71,10 @@ protected:
 void MergeFIC::process()
 {
    std::vector<std::string> files = inputFileOption.getValue();
-
+  
       // FFF will sort and merge the FIC data using a simple time check
    FileFilterFrameWithHeader<FICStream, FICData, FICHeader> fff(files);
-      
+
       // sort and filter the data
    fff.sort(FICDataOperatorLessThanFull());
    fff.unique(FICDataUniqueBlock9());

@@ -164,7 +164,7 @@ namespace gpstk
 //      list<FileData>::iterator itr = 
 //         unique(dataVec.begin(), dataVec.end(), bp);
       filtered = 0;
-      
+     
       typename std::list<FileData>::iterator first = dataVec.begin();
       typename std::list<FileData>::iterator second= dataVec.begin();
       second++;
