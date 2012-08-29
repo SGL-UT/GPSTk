@@ -555,6 +555,8 @@ namespace gpstk
          bool previousIsOffset = false; 
          bool currentIsOffset = false;
 
+         //string tForm = "%02H:%02M:%02S";
+
             // Scan the map for this SV looking for 
             // uploads.  Uploads are identifed by 
             // Toe values that are offset from 
@@ -562,12 +564,22 @@ namespace gpstk
          OrbElem* oePrev = 0;
          for (ei = em.begin(); ei != em.end(); ei++) 
          {
+            currentIsOffset = false;      // start with this assumption
             OrbElem* oe = ei->second;
             long Toe = (long) (static_cast<GPSWeekSecond> (oe->ctToe)).sow;
-            if ( (Toe % 3600)!=0) 
+            double currentOffset = Toe % 3600;
+
+            //cout << "Top of For Loop.  oe->beginValid = " << printTime(oe->beginValid,tForm);
+            //cout << ", currentOffset =" << currentOffset << endl;
+            
+            if ( (currentOffset)!=0) 
             {
                currentIsOffset = true; 
-               double currentOffset = Toe % 3600;
+
+               //cout << "*** Found an offset" << endl;
+               //cout << " currentIsOffest: " << currentIsOffset; 
+               //cout << " previousIsOffest: " << previousIsOffset; 
+               //cout << " current, previous Offset = " << currentOffset << ", " << previousOffset << endl; 
             
                   // If this set is offset AND the previous set is offset AND
                   // the two offsets are the same, then this is the SECOND
@@ -584,33 +596,63 @@ namespace gpstk
                   // key in the map, which is based on the beginning
                   // of validity.  However, we can't do it in this
                   // loop without destroying the integrity of the
-                  // iterator.  See notes on the second loop, below. 
-               if (previousIsOffset && currentOffset==previousOffset)
+                  // iterator.  This is handled later in a second
+                  // loop.  See notes on the second loop, below. 
+               if (previousIsOffset &&
+                   currentIsOffset  &&
+                   currentOffset==previousOffset)
                {
+                 //cout << "*** Adjusting beginValid" << endl; 
                  oe->adjustBeginningValidity();
                }
                
                   // If the previous set is not offset, then 
                   // we've found an upload
-                  // For that matter, if previous IS offest, but 
+                  // For that matter, if previous IS offset, but 
                   // the current offset is different than the
                   // previous, then it is an upload.
                if (!previousIsOffset ||
                    (previousIsOffset && (currentOffset!=previousOffset) ) )
                {
                      // Record the offset for later reference
-                  previousOffset = Toe % 3600;
+                  previousOffset = currentOffset;
 
-                     // Adjust the ending time of validity to match
-                     // the beginning validity of the upload.  
+                     // Adjust the ending time of validity of any elements
+                     // broadcast BEFORE the new upload such that they
+                     // end at the beginning validity of the upload.  
                      // That beginning validity value should already be
                      // set to the transmit time (or earliest transmit
                      // time found) by OrbElem and GPSOrbElemStore.addOrbElem( )
                      // This adjustment is consistent with the IS-GPS-XXX 
                      // rules that a new upload invalidates previous elements.
+                     // Note that this may be necessary for more than one
+                     // preceding set of elements.
                   if (!begin)
                   {
-                     oePrev->endValid = oe->beginValid;
+                     //cout << "*** Adjusting endValid Times" << endl;
+                     OrbElemMap::iterator ri;
+                     ri = em.find(oePrev->beginValid);     // We KNOW it exists in the map
+                     bool done = false;
+                     while (!done)
+                     {
+                        OrbElem* oeRev = ri->second;
+                        //cout << "Testing Toe of " << printTime(oeRev->ctToe,"%02H:%02M:%02S");
+                        //cout << " with endValid of " << printTime(oeRev->endValid,"%02H:%02M:%02S") << endl;
+
+                           // If the current set of elements has an ending
+                           // validity prior to the upload, then do NOT
+                           // adjust the ending and set done to true.
+                        if (oeRev->endValid <= oe->beginValid) done = true;
+
+                           // Otherwise, adjust the ending validity to 
+                           // match the begin of the upload. 
+                         else oeRev->endValid = oe->beginValid;
+
+                           // If we've reached the beginning of the map, stop. 
+                           // Otherwise, decrement and test again.
+                        if (ri!=em.begin()) ri--;
+                         else done = true;
+                     }
                   }
                }
             }
@@ -619,6 +661,8 @@ namespace gpstk
             previousIsOffset = currentIsOffset;
             oePrev = oe;           // May need this for next loop.
             begin = false; 
+            //cout << "Bottom of For loop.  currentIsOffset: " << currentIsOffset <<
+            //        ", previousIsOffset: " << previousIsOffset << endl;
          } //end inner for-loop 
 
             // The preceding process has left some elements in a condition
