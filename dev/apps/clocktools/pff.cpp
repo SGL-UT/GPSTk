@@ -46,7 +46,7 @@ int main(int argv, char **argc)
 		string str = argc[1];
 		if((str == "-h") || (str == "--help"))
 		{
-	  	cout << "pff: Converts phase data to fractional frequency data from the standard input." << endl;
+	  	cout << "pff: Converts phase data to fractional frequency data from the standard input." << endl << "Input lines must be of the form 'Time phase'" << endl << endl << "Usage: cat phase.dat | pff > fracfreq.dat" << endl << endl;
 	  	return 1;
 		}
 	}
