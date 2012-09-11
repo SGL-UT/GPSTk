@@ -41,7 +41,7 @@
 #include <string>
 #include <map>
 #include "RinexObsHeader.hpp"
-#include "Rinex3ObsHeader.hpp"
+#include "RinexObsHeader.hpp"
 #include "RinexObsID.hpp"
 
 namespace gpstk

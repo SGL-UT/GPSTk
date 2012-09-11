@@ -29,7 +29,7 @@
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 
-#include "Rinex3EphemerisStore.hpp"
+#include "RinexEphemerisStore.hpp"
 #include <fstream>
 
 

@@ -2947,17 +2947,17 @@ in matrix and number of types do not match") );
             return i;
          }
       }
-      if( Rinex3ObsStream::IsRinex3ObsStream(i) )     // Rinex3
+      if( RinexObsStream::IsRinexObsStream(i) )     // Rinex
       {
-         Rinex3ObsStream& strm = dynamic_cast<Rinex3ObsStream&>(i);
+         RinexObsStream& strm = dynamic_cast<RinexObsStream&>(i);
 
          // If the header hasn't been read, read it...
          if(!strm.headerRead) strm >> strm.header;
 
          // Clear out this object
-         Rinex3ObsHeader& roh = strm.header;
+         RinexObsHeader& roh = strm.header;
 
-         Rinex3ObsData rod;
+         RinexObsData rod;
          strm >> rod;
 
          // Fill data
@@ -2968,7 +2968,7 @@ in matrix and number of types do not match") );
          f.header.epochFlag = rod.epochFlag;
          f.header.epoch = rod.time;
 
-         f.body = satTypeValueMapFromRinex3ObsData(roh, rod);
+         f.body = satTypeValueMapFromRinexObsData(roh, rod);
 
          return i;
       }
@@ -3266,16 +3266,16 @@ in matrix and number of types do not match") );
 
 
       // Convenience function to fill a satTypeValueMap with data
-      // from Rinex3ObsData.
-      // @param roh Rinex3ObsHeader holding the data
-      // @param rod Rinex3ObsData holding the data.
-   satTypeValueMap satTypeValueMapFromRinex3ObsData(
-                         const Rinex3ObsHeader& roh, const Rinex3ObsData& rod )
+      // from RinexObsData.
+      // @param roh RinexObsHeader holding the data
+      // @param rod RinexObsData holding the data.
+   satTypeValueMap satTypeValueMapFromRinexObsData(
+                         const RinexObsHeader& roh, const RinexObsData& rod )
    {
       // We need to declare a satTypeValueMap
       satTypeValueMap theMap;
 
-      Rinex3ObsData::DataMap::const_iterator it;
+      RinexObsData::DataMap::const_iterator it;
       for(it=rod.obs.begin(); it != rod.obs.end(); it++) 
       {
          RinexSatID sat(it->first);

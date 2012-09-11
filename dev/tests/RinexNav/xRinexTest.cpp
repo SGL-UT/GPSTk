@@ -1,5 +1,5 @@
 
-#include "Rinex3NavData.cpp"
+#include "RinexNavData.cpp"
 #include <iostream>
 
 using namespace std;
@@ -25,14 +25,14 @@ int main(int argc, char* argv[])
    
 
    //The dump from ee.dump() and ee_copy.dump() should be the same
-   //    an EngEphemeris object is created, then used to create a Rinex3NavData
+   //    an EngEphemeris object is created, then used to create a RinexNavData
    EngEphemeris ee;
    ee.addSubframe(subframe1, weeknum, 3, 1);
    ee.addSubframe(subframe2, weeknum, 3, 1);
    ee.addSubframe(subframe3, weeknum, 3, 1);
    ee.dump();
 
-   Rinex3NavData rnd = Rinex3NavData(ee); //constructor
+   RinexNavData rnd = RinexNavData(ee); //constructor
 
    EngEphemeris ee_copy;
    ee_copy = EngEphemeris(rnd);           //cast

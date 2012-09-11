@@ -1,4 +1,4 @@
-Dump Rinex3EphemerisStore:
+Dump RinexEphemerisStore:
 Dump of FileStore
 End dump of FileStore
 Dump of GPSEphemerisStore:
@@ -10,4 +10,4 @@ Dump of GloEphemerisStore:
 Dump of GalEphemerisStore:
   End of GalEphemerisStore data.
 
-End dump Rinex3EphemerisStore.
+End dump RinexEphemerisStore.

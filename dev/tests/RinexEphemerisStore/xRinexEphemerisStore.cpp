@@ -30,11 +30,11 @@
 #include "Exception.hpp"
 #include "CivilTime.hpp"
 #include "CommonTime.hpp"
-#include "Rinex3NavData.hpp"
+#include "RinexNavData.hpp"
 #include "EngEphemeris.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "SatID.hpp"
-#include "Rinex3NavStream.hpp"
+#include "RinexNavStream.hpp"
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexEphemerisStore);
 
@@ -44,7 +44,7 @@ void xRinexEphemerisStore :: setUp (void)
 }
 
 /*
-**** General test for the Rinex3EphemerisStore (RES) class
+**** General test for the RinexEphemerisStore (RES) class
 **** Test to assure the that RES throws its exceptions in the right place and
 **** that it loads the RINEX Nav file correctly
 
@@ -56,8 +56,8 @@ void xRinexEphemerisStore :: RESTest (void)
 	ofstream DumpData;
 	DumpData.open ("DumpData.txt");
 
-	CPPUNIT_ASSERT_NO_THROW(gpstk::Rinex3EphemerisStore Store);
-	gpstk::Rinex3EphemerisStore Store;
+	CPPUNIT_ASSERT_NO_THROW(gpstk::RinexEphemerisStore Store);
+	gpstk::RinexEphemerisStore Store;
 
 	try
 	{
@@ -79,7 +79,7 @@ void xRinexEphemerisStore :: RESTest (void)
 	try {Store.loadFile("TestRinex06.031");}
         catch (gpstk::Exception& e)
         {
-          cout << " Exception received from Rinex3EphemerisStore, e = " << e << endl;
+          cout << " Exception received from RinexEphemerisStore, e = " << e << endl;
         } 
 
 	Store.dump(DumpData,1);
@@ -108,12 +108,12 @@ void xRinexEphemerisStore :: BCESfindEphTest (void)
 	fPRN15.open ("Logs/findEph15.txt");
 	fPRN32.open ("Logs/findEph32.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        std::list<gpstk::Rinex3NavData>::const_iterator it;
+        std::list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -189,7 +189,7 @@ void xRinexEphemerisStore :: BCESgetXvtTest (void)
 	fPRN15.open ("Logs/getXvt15.txt");
 	fPRN32.open ("Logs/getXvt32.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	const short PRN0 = 0; // Zero PRN (Border test case)
@@ -254,13 +254,13 @@ void xRinexEphemerisStore :: BCESgetXvt2Test (void)
 	fPRN15.open ("Logs/getXvt2_15.txt");
 	fPRN32.open ("Logs/getXvt2_32.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
         int nr;
 	nr = Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        list<gpstk::Rinex3NavData>::const_iterator it;
+        list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -328,13 +328,13 @@ void xRinexEphemerisStore :: BCESgetSatHealthTest (void)
    gpstk::SatID sid32(PRN32,gpstk::SatID::systemGPS);
    gpstk::SatID sid33(PRN33,gpstk::SatID::systemGPS);
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
         int nr;
 	nr = Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        list<gpstk::Rinex3NavData>::const_iterator it;
+        list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -386,7 +386,7 @@ void xRinexEphemerisStore :: BCESdumpTest (void)
 	DumpData1.open ("Logs/DumpData1.txt");
 	DumpData2.open ("Logs/DumpData2.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	try
@@ -427,12 +427,12 @@ void xRinexEphemerisStore :: BCESaddEphemerisTest (void)
      //cout << " On construction, Blank.getInitialTime: " << Blank.getInitialTime() << endl;
      //cout << " On construction, Blank.getFinalTime:   " << Blank.getFinalTime() << endl;
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        std::list<gpstk::Rinex3NavData>::const_iterator it;
+        std::list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -498,7 +498,7 @@ void xRinexEphemerisStore :: BCESeditTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/editTest.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	gpstk::CivilTime TimeMax(2006,1,31,15,45,0,2);
@@ -547,13 +547,13 @@ void xRinexEphemerisStore :: BCESwiperTest (void)
 	DumpData2.open ("Logs/wiperTest2.txt");
 
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
         int nr;
 	nr = Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        list<gpstk::Rinex3NavData>::const_iterator it;
+        list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -606,7 +606,7 @@ void xRinexEphemerisStore :: BCESclearTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/clearTest.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
 	Store.loadFile("TestRinex06.031");
 
 	try
@@ -645,13 +645,13 @@ void xRinexEphemerisStore :: BCESfindUserTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/findUserTest.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
         int nr;
 	nr = Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        list<gpstk::Rinex3NavData>::const_iterator it;
+        list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -717,13 +717,13 @@ void xRinexEphemerisStore :: BCESfindNearTest (void)
 	ofstream DumpData;
 	DumpData.open ("Logs/findNearTest.txt");
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
         int nr;
 	nr = Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        list<gpstk::Rinex3NavData>::const_iterator it;
+        list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));
@@ -790,13 +790,13 @@ void xRinexEphemerisStore :: BCESaddToListTest (void)
 	DumpData.open ("Logs/addToListTest.txt");
 
 
-	gpstk::Rinex3EphemerisStore Store;
+	gpstk::RinexEphemerisStore Store;
         int nr;
 	nr = Store.loadFile("TestRinex06.031");
 
-        std::list<gpstk::Rinex3NavData> R3NList;
+        std::list<gpstk::RinexNavData> R3NList;
         gpstk::GPSEphemerisStore GStore;
-        list<gpstk::Rinex3NavData>::const_iterator it;
+        list<gpstk::RinexNavData>::const_iterator it;
         Store.addToList(R3NList);
         for (it = R3NList.begin(); it != R3NList.end(); ++it)
           GStore.addEphemeris(gpstk::EngEphemeris(*it));

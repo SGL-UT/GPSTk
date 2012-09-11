@@ -54,7 +54,7 @@
 
 #include "OrbElem.hpp"
 #include "RinexNavData.hpp"
-#include "Rinex3NavData.hpp"
+#include "RinexNavData.hpp"
 
 
 namespace gpstk
@@ -65,7 +65,7 @@ namespace gpstk
          /// Default constructor
       OrbElemRinex();
 
-      OrbElemRinex( const Rinex3NavData& rinNav )
+      OrbElemRinex( const RinexNavData& rinNav )
          throw( InvalidParameter );
 
       OrbElemRinex( const RinexNavData& rinNav )
@@ -83,10 +83,10 @@ namespace gpstk
       void loadData( const RinexNavData& rinNav )
 	 throw( InvalidParameter); 
 
-         /** Load an existing object from a Rinex3NavData object. 
+         /** Load an existing object from a RinexNavData object. 
            * @throw InvalidParameter if the data are not consistent.
            */
-      void loadData( const Rinex3NavData& rinNav )
+      void loadData( const RinexNavData& rinNav )
          throw( InvalidParameter );
 
       virtual std::string getName() const

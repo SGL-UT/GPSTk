@@ -40,8 +40,8 @@
 
 #include "RinexObsData.hpp"
 #include "RinexObsHeader.hpp"
-#include "Rinex3ObsData.hpp"
-#include "Rinex3ObsHeader.hpp"
+#include "RinexObsData.hpp"
+#include "RinexObsHeader.hpp"
 
 namespace gpstk
 {
@@ -63,7 +63,7 @@ class RinexConverter
    * 
    * @return If the conversion succeeded.
    */
-   static bool convertToRinex3(Rinex3ObsData& dest,
+   static bool convertToRinex(RinexObsData& dest,
                                const RinexObsData& src,
                                const RinexObsHeader& srcHead);
 
@@ -76,7 +76,7 @@ class RinexConverter
    * 
    * @return If the conversion succeeded.
    */
-   static bool convertToRinex3(Rinex3ObsHeader& dest,
+   static bool convertToRinex(RinexObsHeader& dest,
                                const RinexObsHeader& src);
   
   /**
@@ -89,9 +89,9 @@ class RinexConverter
    * 
    * @return If the conversion succeeded.
    */
-   static bool convertFromRinex3(RinexObsData& dest,
-                                 const Rinex3ObsData& src,
-                                 const Rinex3ObsHeader& srcHead);
+   static bool convertFromRinex(RinexObsData& dest,
+                                 const RinexObsData& src,
+                                 const RinexObsHeader& srcHead);
 
   /**
    * Takes data stored in the RINEX 3 observation header and stores it in
@@ -102,8 +102,8 @@ class RinexConverter
    * 
    * @return If the conversion succeeded.
    */
-   static bool convertFromRinex3(RinexObsHeader& dest,
-                                 const Rinex3ObsHeader& src);
+   static bool convertFromRinex(RinexObsHeader& dest,
+                                 const RinexObsHeader& src);
   
   /**
    * Resets the static options in this class to their defaults.
@@ -207,7 +207,7 @@ private:
     * 
     * @param header The RINEX 3.0 Obs Header to work on.
     */
-   static void sortRinex3ObsTypes(Rinex3ObsHeader& header);
+   static void sortRinexObsTypes(RinexObsHeader& header);
 
    /// If the initialize() method has been called yet in this class.
    static bool initialized;

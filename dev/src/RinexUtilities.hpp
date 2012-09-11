@@ -86,7 +86,7 @@ bool isRinexNavFile(const std::string& file);
     * @param file the filename
     * @return true if the file is a valid Rinex navigation file.
     */
-bool isRinex3NavFile(const std::string& file);
+bool isRinexNavFile(const std::string& file);
 
    /** Determine if the given file is a RINEX observation file.
     * Open the file, read the header, and test its validity.
@@ -100,7 +100,7 @@ bool isRinexObsFile(const std::string& file);
     * @param file the filename
     * @return true if the file is a valid Rinex observation file.
     */
-bool isRinex3ObsFile(const std::string& file);
+bool isRinexObsFile(const std::string& file);
 
    /** Sort a vector of RINEX obs file names on the time of the first observation
     * as found in the header. Return the sorted list in the calling argument.
@@ -118,7 +118,7 @@ std::string sortRinexObsFiles(std::vector<std::string>& files) throw(Exception);
     * @param files  vector<string> containing filenames, with path
     * @return string containing error messages, if any
     */
-std::string sortRinex3ObsFiles(std::vector<std::string>& files);
+std::string sortRinexObsFiles(std::vector<std::string>& files);
 
    /** Open the files and add to the appropriate EphemerisStore.
     * @param files vector of the filenames.

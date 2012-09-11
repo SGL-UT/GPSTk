@@ -152,7 +152,7 @@ namespace gpstk
 
       // The following definitions really should only describe the items that are
       // in the Rinex 3 specification. If an application needs additional ObsID
-      // types to be able to be translated to/from Rinex3, the additional types
+      // types to be able to be translated to/from Rinex, the additional types
       // must be added by the application.
       char2ot[' '] = otUnknown;
       char2ot['*'] = otAny;

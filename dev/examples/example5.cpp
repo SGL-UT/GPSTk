@@ -31,17 +31,17 @@
 #include <iostream>
 
    // Classes for handling observations RINEX files (data)
-#include "Rinex3ObsData.hpp"
-#include "Rinex3ObsStream.hpp"
+#include "RinexObsData.hpp"
+#include "RinexObsStream.hpp"
 
-   // Class to easily extract data from Rinex3ObsData objects
+   // Class to easily extract data from RinexObsData objects
 #include "ExtractData.hpp"
 
    // Classes for handling satellite navigation parameters RINEX files
    // (Broadcast ephemerides)
-#include "Rinex3NavHeader.hpp"
-#include "Rinex3NavData.hpp"
-#include "Rinex3NavStream.hpp"
+#include "RinexNavHeader.hpp"
+#include "RinexNavData.hpp"
+#include "RinexNavStream.hpp"
 
    // Class to store satellite broadcast navigation data
 #include "GPSEphemerisStore.hpp"
@@ -101,11 +101,11 @@ private:
 
       // If you want to share objects and variables among methods, you'd
       // better declare them here
-   Rinex3ObsStream rObsFile;     // Object to read Rinex observation data files
-   Rinex3ObsData rData;          // Object to store Rinex observation data
-   Rinex3NavStream rNavFile;     // Object to read Rinex navigation data files
-   Rinex3NavData rNavData;       // Object to store Rinex navigation data
-   Rinex3NavHeader rNavHeader;   // Object to read the header of Rinex
+   RinexObsStream rObsFile;     // Object to read Rinex observation data files
+   RinexObsData rData;          // Object to store Rinex observation data
+   RinexNavStream rNavFile;     // Object to read Rinex navigation data files
+   RinexNavData rNavData;       // Object to store Rinex navigation data
+   RinexNavHeader rNavHeader;   // Object to read the header of Rinex
                                  // navigation data files
    IonoModelStore ionoStore;     // Object to store ionospheric models
    GPSEphemerisStore bceStore;   // Object to store ephemeris
@@ -169,7 +169,7 @@ void example5::spinUp()
    }
 
       // We need to read the header of the observations file
-   Rinex3ObsHeader roh;
+   RinexObsHeader roh;
    rObsFile >> roh;
 
       // We need the index pointing to C1-type observations
@@ -208,7 +208,7 @@ void example5::spinUp()
       // Let's feed the ionospheric model (Klobuchar type) from data in the
       // navigation (ephemeris) file header. First, we must check if there are
       // valid ionospheric correction parameters in the header
-   if(rNavHeader.valid & Rinex3NavHeader::validIonoCorrGPS)
+   if(rNavHeader.valid & RinexNavHeader::validIonoCorrGPS)
    {
          // Extract the Alpha and Beta parameters from the header
       double* ionAlpha = rNavHeader.mapIonoCorr["GPSA"].param;

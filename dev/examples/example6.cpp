@@ -31,12 +31,12 @@
 #include <iomanip>
 
    // Class for handling satellite observation parameters RINEX files
-#include "Rinex3ObsStream.hpp"
+#include "RinexObsStream.hpp"
 
    // Classes for handling RINEX Broadcast ephemeris files 
-#include "Rinex3NavStream.hpp"
-#include "Rinex3NavHeader.hpp"
-#include "Rinex3NavData.hpp"
+#include "RinexNavStream.hpp"
+#include "RinexNavHeader.hpp"
+#include "RinexNavData.hpp"
 
    // Class in charge of the GPS signal modelling
 #include "ModelObs.hpp"
@@ -74,18 +74,18 @@ int main(void)
 
    cout << fixed << setprecision(8);   // Set a proper output format
 
-   Rinex3NavData rNavData;             // Object to store Rinex navigation data
+   RinexNavData rNavData;             // Object to store Rinex navigation data
    GPSEphemerisStore bceStore;         // Object to store satellites ephemeris
-   Rinex3NavHeader rNavHeader;         // Object to read the header of Rinex
+   RinexNavHeader rNavHeader;         // Object to read the header of Rinex
                                        // navigation data files
    IonoModelStore ionoStore;           // Object to store ionospheric models
    IonoModel ioModel;                  // Declare a Ionospheric Model object
 
       // Create the input observation file stream
-   Rinex3ObsStream rin("bahr1620.04o");
+   RinexObsStream rin("bahr1620.04o");
 
       // Create the input navigation file stream
-   Rinex3NavStream rnavin("bahr1620.04n");
+   RinexNavStream rnavin("bahr1620.04n");
 
       // We need to read ionospheric parameters (Klobuchar model) from header
    rnavin >> rNavHeader;
@@ -93,7 +93,7 @@ int main(void)
       // Let's feed the ionospheric model (Klobuchar type) from data in the
       // navigation (ephemeris) file header. First, we must check if there are
       // valid ionospheric correction parameters in the header
-   if(rNavHeader.valid & Rinex3NavHeader::validIonoCorrGPS)
+   if(rNavHeader.valid & RinexNavHeader::validIonoCorrGPS)
    {
          // Extract the Alpha and Beta parameters from the header
       double* ionAlpha = rNavHeader.mapIonoCorr["GPSA"].param;

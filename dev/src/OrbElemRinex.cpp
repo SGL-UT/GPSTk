@@ -68,7 +68,7 @@ namespace gpstk
       loadData( rinNav );
    }
 
-   OrbElemRinex::OrbElemRinex( const Rinex3NavData& rinNav )
+   OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
      throw( InvalidParameter )
    {
       loadData( rinNav );
@@ -234,7 +234,7 @@ namespace gpstk
       dataLoadedFlag = true;    
    }
 
-   void OrbElemRinex::loadData( const Rinex3NavData& rinNav )
+   void OrbElemRinex::loadData( const RinexNavData& rinNav )
      throw( InvalidParameter )
    {
       // Fill in the variables unique to OrbElemFIC9

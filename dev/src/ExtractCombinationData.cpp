@@ -3,7 +3,7 @@
 /**
  * @file ExtractCombinationData.cpp
  * This is the base class to ease extraction of a combination of data from
- * a Rinex3ObsData object.
+ * a RinexObsData object.
  */
 
 //============================================================================
@@ -36,7 +36,7 @@ using namespace std;
 namespace gpstk
 {
 
-      /* Get a combination of observations from a Rinex3ObsData object
+      /* Get a combination of observations from a RinexObsData object
        *
        * @param rinexData  The Rinex data set holding the observations
        * @param indexObs1  Index representing the observation type #1.
@@ -47,9 +47,9 @@ namespace gpstk
        *
        * @note
        *    The indexes are obtained from the RINEX Observation Header
-       *    using method 'Rinex3ObsHeader::getObsIndex()'.
+       *    using method 'RinexObsHeader::getObsIndex()'.
        */
-   int ExtractCombinationData::getData( const Rinex3ObsData& rinexData,
+   int ExtractCombinationData::getData( const RinexObsData& rinexData,
                                         int indexObs1,
                                         int indexObs2 )
       throw(InvalidRequest)
@@ -68,7 +68,7 @@ namespace gpstk
             // Let's define the "it" iterator to visit the observations PRN map
             // RinexSatMap is a map from SatID to RinexObsTypeMap:
             //      std::map<SatID, RinexObsTypeMap>
-         Rinex3ObsData::DataMap::const_iterator it;
+         RinexObsData::DataMap::const_iterator it;
          for ( it  = rinexData.obs.begin();
                it != rinexData.obs.end();
                it++ )
@@ -77,7 +77,7 @@ namespace gpstk
                // The satellites are stored in the first elements of the map...
             SatID sat(it->first);
                // .. and vectors of available obs are in the second elements
-            vector<Rinex3ObsData::RinexDatum> vecData(it->second);
+            vector<RinexObsData::RinexDatum> vecData(it->second);
 
                // Extract observation values
             double obsValue1( (vecData[indexObs1]).data );
@@ -101,7 +101,7 @@ namespace gpstk
       }
       catch(...)
       {
-         InvalidRequest e("Unable to compute combination from Rinex3ObsData object");
+         InvalidRequest e("Unable to compute combination from RinexObsData object");
          GPSTK_THROW(e);
       }
 
@@ -116,7 +116,7 @@ namespace gpstk
    };  // End of method 'ExtractCombinationData::getData()'
 
 
-      /** Get a combination of observations from a Rinex3ObsData object
+      /** Get a combination of observations from a RinexObsData object
           *
           * @param rinexData  The Rinex data set holding the observations.
           * @param type1      String representing observation type #1.
@@ -126,10 +126,10 @@ namespace gpstk
           * @return
           *    Number of SVs with this combination of observables available
           */
-   int ExtractCombinationData::getData( const Rinex3ObsData& rinexData,
+   int ExtractCombinationData::getData( const RinexObsData& rinexData,
                                         std::string type1,
                                         std::string type2,
-                                        const Rinex3ObsHeader& hdr )
+                                        const RinexObsHeader& hdr )
    throw(InvalidRequest)
    {
          // Get the indexes corresponding to these observation types

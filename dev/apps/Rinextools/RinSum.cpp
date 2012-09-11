@@ -50,9 +50,9 @@
 
 #include "RinexSatID.hpp"
 #include "RinexObsID.hpp"
-#include "Rinex3ObsStream.hpp"
-#include "Rinex3ObsHeader.hpp"
-#include "Rinex3ObsData.hpp"
+#include "RinexObsStream.hpp"
+#include "RinexObsHeader.hpp"
+#include "RinexObsData.hpp"
 #include "RinexUtilities.hpp"
 
 //------------------------------------------------------------------------------------
@@ -248,7 +248,7 @@ try {
 
    // sort input obs files on time
    if(C.InputObsFiles.size() > 1) {
-      C.msg = sortRinex3ObsFiles(C.InputObsFiles);
+      C.msg = sortRinexObsFiles(C.InputObsFiles);
       if(!C.msg.empty())
          LOG(ERROR) << C.msg;
    }
@@ -517,16 +517,16 @@ try {
    string tag;
    CommonTime lastObsTime, prevObsTime, firstObsTime;
    RinexSatID sat;
-   Rinex3ObsStream ostrm;
+   RinexObsStream ostrm;
    ostringstream oss;
    const int ndtmax=15;
    double dt, bestdt[ndtmax];
    int ndt[ndtmax];
 
    for(nfiles=0,nfile=0; nfile<C.InputObsFiles.size(); nfile++) {
-      Rinex3ObsStream istrm;
-      Rinex3ObsHeader Rhead, Rheadout;
-      Rinex3ObsData Rdata;
+      RinexObsStream istrm;
+      RinexObsHeader Rhead, Rheadout;
+      RinexObsData Rdata;
       string filename(C.InputObsFiles[nfile]);
 
       // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
@@ -689,7 +689,7 @@ try {
          }
 
          // loop over satellites -------------------------------------
-         Rinex3ObsData::DataMap::const_iterator it;
+         RinexObsData::DataMap::const_iterator it;
          for(it=Rdata.obs.begin(); it != Rdata.obs.end(); ++it) {
             const RinexSatID& sat(it->first);
             // is sat excluded?
@@ -699,7 +699,7 @@ try {
             else if(find(C.exSats.begin(), C.exSats.end(), RinexSatID(-1,sat.system))
                   != C.exSats.end()) continue;
 
-            const vector<Rinex3ObsData::RinexDatum>& vecData(it->second);
+            const vector<RinexObsData::RinexDatum>& vecData(it->second);
 
             // find this sat in the table; add it if necessary
             vector<TableData>::iterator ptab;
@@ -1178,7 +1178,7 @@ try {
       }
 
       // Warnings
-      if((Rhead.valid & Rinex3ObsHeader::validInterval)
+      if((Rhead.valid & RinexObsHeader::validInterval)
                                           && fabs(dt-Rhead.interval) > 1.e-3)
          LOG(INFO) << " Warning - Computed interval is " << setprecision(2)
                << dt << " sec, while input header has " << setprecision(2)
@@ -1187,7 +1187,7 @@ try {
       if(fabs(firstObsTime-Rhead.firstObs) > 1.e-8)
          LOG(INFO) << " Warning - Computed first time does not agree with header";
 
-      if((Rhead.valid & Rinex3ObsHeader::validLastTime)
+      if((Rhead.valid & RinexObsHeader::validLastTime)
                                           && fabs(lastObsTime-Rhead.lastObs) > 1.e-8)
          LOG(INFO) << " Warning - Computed last time does not agree with header";
 

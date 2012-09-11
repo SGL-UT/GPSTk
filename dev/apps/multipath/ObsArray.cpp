@@ -129,11 +129,11 @@ namespace gpstk
                GGTropModel ggTropModel; 
 	       ggTropModel.setWeather(20., 1000., 50.); // A default model for sea level.
 
-          // NOTE: The following section is partially adapted to Rinex3, but
+          // NOTE: The following section is partially adapted to Rinex, but
           //       more work is needed here
                RinexObsStream tempObsStream(obsList[i]);
-               Rinex3ObsData   tempObsData;
-               Rinex3ObsHeader tempObsHeader;
+               RinexObsData   tempObsData;
+               RinexObsHeader tempObsHeader;
                 
                tempObsStream >> tempObsHeader;
                tempObsStream >> tempObsData;

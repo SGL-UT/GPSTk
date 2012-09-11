@@ -32,8 +32,8 @@
 
 
 #include "Exception.hpp"
-#include "Rinex3ObsHeader.hpp"
-#include "Rinex3ObsData.hpp"
+#include "RinexObsHeader.hpp"
+#include "RinexObsData.hpp"
 #include "CheckPRData.hpp"
 #include "Vector.hpp"
 
@@ -74,29 +74,29 @@ namespace gpstk
       {};
 
 
-         /** Pull out the selected observation type from a Rinex3ObsData object
+         /** Pull out the selected observation type from a RinexObsData object
           *
           * @param rinexData  The Rinex data set holding the observations
           * @param index      Index representing the observation type. It is
           *                   obtained from corresponding RINEX Obs Header
-          *                   using method 'Rinex3ObsHeader::getObsIndex()'.
+          *                   using method 'RinexObsHeader::getObsIndex()'.
           *
           * @return
           *  Number of satellites with this kind of data available
           */
-      virtual int getData( const Rinex3ObsData& rinexData, int index )
+      virtual int getData( const RinexObsData& rinexData, int index )
          throw(InvalidRequest);
 
 
-         /** Pull out the selected observation type from a Rinex3ObsData object
+         /** Pull out the selected observation type from a RinexObsData object
           *
           * @param rinexData  The Rinex data set holding the observations
           * @param type       String representing the observation type.
           * @param hdr        RINEX Observation Header for current RINEX file.
           */
-      virtual int getData( const Rinex3ObsData& rinexData,
+      virtual int getData( const RinexObsData& rinexData,
                            std::string type,
-                           const Rinex3ObsHeader& hdr )
+                           const RinexObsHeader& hdr )
          throw(InvalidRequest);
 
 

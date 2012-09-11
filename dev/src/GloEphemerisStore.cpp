@@ -37,15 +37,15 @@ namespace gpstk
 {
 
 
-      // Add ephemeris information from a Rinex3NavData object.
-   bool GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
+      // Add ephemeris information from a RinexNavData object.
+   bool GloEphemerisStore::addEphemeris(const RinexNavData& data)
       throw()
    {
 
          // If enabled, check SV health before entering here (health = 0 -> OK)
       if( (data.health == 0) || (!checkHealthFlag) )
       {
-            // Get a GloEphemeris object from Rinex3NavData object
+            // Get a GloEphemeris object from RinexNavData object
          GloEphemeris gloEphem(data);
 
          CommonTime t( data.time);

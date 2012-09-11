@@ -25,10 +25,10 @@
 #include <iostream>
 #include <iomanip>
 
-#include "Rinex3ObsBase.hpp"
-#include "Rinex3ObsHeader.hpp"
-#include "Rinex3ObsData.hpp"
-#include "Rinex3ObsStream.hpp"
+#include "RinexObsBase.hpp"
+#include "RinexObsHeader.hpp"
+#include "RinexObsData.hpp"
+#include "RinexObsStream.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -37,19 +37,19 @@ int main(void)
 {
 
       // Create the input file stream
-   Rinex3ObsStream rin("bahr1620.04o");
+   RinexObsStream rin("bahr1620.04o");
 
       // Create the output file stream
-   Rinex3ObsStream rout("bahr1620.04o.new", ios::out|ios::trunc);
+   RinexObsStream rout("bahr1620.04o.new", ios::out|ios::trunc);
 
       // Read the RINEX header
-   Rinex3ObsHeader head;    //RINEX header object
+   RinexObsHeader head;    //RINEX header object
    rin >> head;
    rout.header = rin.header;
    rout << rout.header;
 
       // Loop over all data epochs
-   Rinex3ObsData data;   //RINEX data object
+   RinexObsData data;   //RINEX data object
    while (rin >> data)
    {
      rout << data;
