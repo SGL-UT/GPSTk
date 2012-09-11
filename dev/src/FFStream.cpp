@@ -52,15 +52,10 @@ namespace gpstk
        * Overrides fstream:open so derived classes can make appropriate
        * internal changes (line count, header info, etc).
        */
-   void FFStream::open( const char* fn,
-                        std::ios::openmode mode )
+   void FFStream::open( const char* fn, std::ios::openmode mode )
    {
-
-#ifdef _MSC_VER
-      fstream::open(fn, mode);
-#else
       std::fstream::open(fn, mode);
-#endif
+
       filename = std::string(fn);
       recordNumber = 0;
       clear();

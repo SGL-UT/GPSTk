@@ -54,12 +54,8 @@
 
 #include "FFStreamError.hpp"
 #include "FFData.hpp"
-
 #include "StringUtils.hpp"
 
-#ifdef _MSC_VER
-using namespace std;
-#endif
 
 namespace gpstk
 {
@@ -141,15 +137,8 @@ namespace gpstk
           * @param fn file name.
           * @param mode file open mode (std::ios)
           */
-      FFStream( const char* fn,
-                std::ios::openmode mode=std::ios::in )
-         :
-#ifdef _MSC_VER
-            fstream(fn, mode),
-#else
-            std::fstream(fn, mode),
-#endif
-            recordNumber(0), filename(fn)
+      FFStream( const char* fn, std::ios::openmode mode=std::ios::in )
+         : std::fstream(fn, mode), recordNumber(0), filename(fn)
       { clear(); }
 
 
@@ -158,15 +147,8 @@ namespace gpstk
           * @param fn file name.
           * @param mode file open mode (std::ios)
           */
-      FFStream( const std::string& fn,
-                std::ios::openmode mode=std::ios::in )
-         :
-#ifdef _MSC_VER
-            fstream(fn.c_str(), mode),
-#else
-            std::fstream(fn.c_str(), mode),
-#endif
-            recordNumber(0), filename(fn)
+      FFStream( const std::string& fn, std::ios::openmode mode=std::ios::in )
+         : std::fstream(fn.c_str(), mode), recordNumber(0), filename(fn)
       { clear(); };
 
 
@@ -174,16 +156,14 @@ namespace gpstk
           * Overrides fstream:open so derived classes can make appropriate
           * internal changes (line count, header info, etc).
           */
-      virtual void open( const char* fn,
-                         std::ios::openmode mode );
+      virtual void open( const char* fn, std::ios::openmode mode );
 
 
          /**
           * Overrides fstream:open so derived classes can make appropriate
           * internal changes (line count, header info, etc).
           */
-      virtual void open( const std::string& fn,
-                         std::ios::openmode mode )
+      virtual void open( const std::string& fn, std::ios::openmode mode )
       { open( fn.c_str(), mode ); };
 
 
