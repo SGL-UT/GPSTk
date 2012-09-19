@@ -31,15 +31,15 @@
 #include <vector>
 
    // Classes for handling observations RINEX files (data)
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsStream.hpp"
 
    // Classes for handling satellite navigation parameters RINEX
    // files (ephemerides)
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
 
    // Classes for handling RINEX files with meteorological parameters
 #include "RinexMetBase.hpp"
@@ -102,9 +102,9 @@ int main(int argc, char *argv[])
    {
 
          // Read nav file and store unique list of ephemerides
-      RinexNavStream rnffs(argv[2]);    // Open ephemerides data file
-      RinexNavData rne;
-      RinexNavHeader hdr;
+      Rinex3NavStream rnffs(argv[2]);    // Open ephemerides data file
+      Rinex3NavData rne;
+      Rinex3NavHeader hdr;
 
          // Let's read the header (may be skipped)
       rnffs >> hdr;
@@ -141,13 +141,13 @@ int main(int argc, char *argv[])
 
          // Open and read the observation file one epoch at a time.
          // For each epoch, compute and print a position solution
-      RinexObsStream roffs(argv[1]);    // Open observations data file
+      Rinex3ObsStream roffs(argv[1]);    // Open observations data file
 
          // In order to throw exceptions, it is necessary to set the failbit
       roffs.exceptions(ios::failbit);
 
-      RinexObsHeader roh;
-      RinexObsData rod;
+      Rinex3ObsHeader roh;
+      Rinex3ObsData rod;
 
          // Let's read the header
       roffs >> roh;
@@ -215,15 +215,15 @@ int main(int argc, char *argv[])
             vector<double> rangeVec;
 
                // Define the "it" iterator to visit the observations PRN map. 
-               // RinexObsData::DataMap is a map from RinexSatID to
+               // Rinex3ObsData::DataMap is a map from RinexSatID to
                // vector<RinexDatum>:
                //      std::map<RinexSatID, vector<RinexDatum> >
-            RinexObsData::DataMap::const_iterator it;
+            Rinex3ObsData::DataMap::const_iterator it;
 
                // This part gets the PRN numbers and ionosphere-corrected
                // pseudoranges for the current epoch. They are correspondly fed
                // into "prnVec" and "rangeVec"; "obs" is a public attribute of
-               // RinexObsData to get the map of observations
+               // Rinex3ObsData to get the map of observations
             for( it = rod.obs.begin(); it!= rod.obs.end(); it++ )
             {
 

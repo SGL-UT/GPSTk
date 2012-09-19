@@ -1,13 +1,14 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexNavStream.hpp
- * File stream for Rinex 3 navigation file data
+ * File stream for Rinex navigation file data
  */
 
-#ifndef GPSTK_RINEX3NAVSTREAM_HPP
-#define GPSTK_RINEX3NAVSTREAM_HPP
+#ifndef GPSTK_RINEXNAVSTREAM_HPP
+#define GPSTK_RINEXNAVSTREAM_HPP
 
 //============================================================================
 //
@@ -46,6 +47,10 @@
 //=============================================================================
 
 
+
+
+
+
 #include "FFTextStream.hpp"
 #include "RinexNavHeader.hpp"
 
@@ -55,16 +60,14 @@ namespace gpstk
    //@{
 
       /**
-       * This class performs file i/o on a RINEX 3 NAV file.
+       * This class performs file i/o on a RINEX NAV file.
        *
        * \sa rinex_nav_test.cpp and rinex_nav_read_write.cpp for examples.
        * \sa gpstk::RinexNavHeader and gpstk::RinexNavData classes.
        */
-
    class RinexNavStream : public FFTextStream
    {
    public:
-
          /// Default constructor
       RinexNavStream()
             : headerRead(false)
@@ -92,7 +95,6 @@ namespace gpstk
      
          /// Flag showing whether or not the header has been read.
       bool headerRead;
-
    };
 
    //@}

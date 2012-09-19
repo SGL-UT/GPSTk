@@ -2,7 +2,7 @@
 
 /**
  * @file ExtractLC.hpp
- * This class eases LC combination data extraction from a RinexObsData object.
+ * This class eases LC combination data extraction from a Rinex3ObsData object.
  */
 
 #ifndef GPSTK_EXTRACTLC_HPP
@@ -44,7 +44,7 @@ namespace gpstk
 
 
       /// This class eases LC combination data extraction from
-      /// a RinexObsData object.
+      /// a Rinex3ObsData object.
    class ExtractLC : public ExtractCombinationData
    {
    public:
@@ -55,7 +55,7 @@ namespace gpstk
       { valid = false; checkData = true; };
 
 
-         /** Compute the LC observation from a RinexObsData object.
+         /** Compute the LC observation from a Rinex3ObsData object.
           *
           * @param rinexData  The Rinex data set holding the observations.
           * @param hdr        RINEX Observation Header for current RINEX file.
@@ -63,8 +63,8 @@ namespace gpstk
           * @return
           *    Number of satellites with LC combination data available.
           */
-      virtual int getData( const RinexObsData& rinexData,
-                           const RinexObsHeader& hdr )
+      virtual int getData( const Rinex3ObsData& rinexData,
+                           const Rinex3ObsHeader& hdr )
          throw(InvalidRequest)
       {
 

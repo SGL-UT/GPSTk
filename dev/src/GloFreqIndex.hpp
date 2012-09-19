@@ -114,7 +114,7 @@ namespace gpstk
       ///   0 = no error
       ///   1 = existing entry disagrees with new data
 
-      int getFromRinexNav( const std::string& filename )
+      int getFromRinex3Nav( const std::string& filename )
          throw();
 
       /// Method to generate frequency index map from accumulated SatPass data.

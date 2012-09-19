@@ -2,7 +2,7 @@
 
 /**
  * @file ExtractData.cpp
- * This is the base class to ease data extraction from a RinexObsData object.
+ * This is the base class to ease data extraction from a Rinex3ObsData object.
  */
 
 //============================================================================
@@ -35,17 +35,17 @@ namespace gpstk
 {
 
 
-      /* Pull out the selected observation type from a RinexObsData object
+      /* Pull out the selected observation type from a Rinex3ObsData object
        *
        * @param rinexData     The Rinex data set holding the observations
        * @param index         Index representing the observation type. It is
        *                      obtained from corresponding RINEX Obs Header
-       *                      using method 'RinexObsHeader::getObsIndex()'.
+       *                      using method 'Rinex3ObsHeader::getObsIndex()'.
        *
        * @return
        *  Number of satellites with this kind of data available
        */
-   int ExtractData::getData( const RinexObsData& rinexData, int index )
+   int ExtractData::getData( const Rinex3ObsData& rinexData, int index )
       throw(InvalidRequest)
    {
 
@@ -62,7 +62,7 @@ namespace gpstk
             // Let's define the "it" iterator to visit the observations PRN map
             // RinexSatMap is a map from SatID to RinexObsTypeMap:
             //      std::map<SatID, RinexObsTypeMap>
-         RinexObsData::DataMap::const_iterator it;
+         Rinex3ObsData::DataMap::const_iterator it;
          for ( it  = rinexData.obs.begin();
                it != rinexData.obs.end();
                it++ )
@@ -71,7 +71,7 @@ namespace gpstk
                // The satellites are stored in the first elements of the map...
             SatID sat(it->first);
                // .. and vectors of available obs are in the second elements
-            std::vector<RinexObsData::RinexDatum> vecData(it->second);
+            std::vector<Rinex3ObsData::RinexDatum> vecData(it->second);
 
                // Extract observation value
             double obsValue( (vecData[index]).data );
@@ -92,7 +92,7 @@ namespace gpstk
       }
       catch(...)
       {
-         InvalidRequest e("Unable to get data from RinexObsData object");
+         InvalidRequest e("Unable to get data from Rinex3ObsData object");
          GPSTK_THROW(e);
       }
 
@@ -107,15 +107,15 @@ namespace gpstk
    }  // End of method 'ExtractData::getData()'
 
 
-      /* Pull out the selected observation type from a RinexObsData object
+      /* Pull out the selected observation type from a Rinex3ObsData object
        *
        * @param rinexData  The Rinex data set holding the observations
        * @param type       String representing the observation type.
        * @param hdr        RINEX Observation Header for current RINEX file
        */
-   int ExtractData::getData( const RinexObsData& rinexData,
+   int ExtractData::getData( const Rinex3ObsData& rinexData,
                              std::string type,
-                             const RinexObsHeader& hdr )
+                             const Rinex3ObsHeader& hdr )
       throw(InvalidRequest)
    {
          // Get the index corresponding to this observation type

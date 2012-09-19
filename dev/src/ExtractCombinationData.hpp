@@ -3,7 +3,7 @@
 /**
  * @file ExtractCombinationData.hpp
  * This is the base class to ease extraction of a combination of data from
- * a RinexObsData object.
+ * a Rinex3ObsData object.
  */
 
 
@@ -45,7 +45,7 @@ namespace gpstk
 
 
       /// This class eases the extraction of a combination of data from
-      /// a RinexObsData object.
+      /// a Rinex3ObsData object.
    class ExtractCombinationData : public ExtractData
    {
    public:
@@ -55,7 +55,7 @@ namespace gpstk
       { valid = false; checkData = true; };
 
 
-         /** Get a combination of observations from a RinexObsData object
+         /** Get a combination of observations from a Rinex3ObsData object
           *
           * @param rinexData  The Rinex data set holding the observations
           * @param indexObs1  Index representing the observation type #1.
@@ -66,15 +66,15 @@ namespace gpstk
           *
           * @note
           *    The indexes are obtained from the RINEX Observation Header
-          *    using method 'RinexObsHeader::getObsIndex()'.
+          *    using method 'Rinex3ObsHeader::getObsIndex()'.
           */
-      virtual int getData( const RinexObsData& rinexData,
+      virtual int getData( const Rinex3ObsData& rinexData,
                            int indexObs1,
                            int indexObs2 )
          throw(InvalidRequest);
 
 
-         /** Get a combination of observations from a RinexObsData object
+         /** Get a combination of observations from a Rinex3ObsData object
           *
           * @param rinexData  The Rinex data set holding the observations.
           * @param type1      String representing observation type #1.
@@ -84,10 +84,10 @@ namespace gpstk
           * @return
           *    Number of SVs with this combination of observables available
           */
-      virtual int getData( const RinexObsData& rinexData,
+      virtual int getData( const Rinex3ObsData& rinexData,
                            std::string type1,
                            std::string type2,
-                           const RinexObsHeader& hdr )
+                           const Rinex3ObsHeader& hdr )
          throw(InvalidRequest);
 
 

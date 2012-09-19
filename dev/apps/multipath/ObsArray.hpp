@@ -39,12 +39,12 @@
 
 #include "ValarrayUtils.hpp"
 #include "CommonTime.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include "Exception.hpp" 
 #include "Expression.hpp"
 #include "RinexObsHeader.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 #include "SatID.hpp"
 
 namespace gpstk
@@ -174,7 +174,7 @@ namespace gpstk
 
 
 
-      RinexEphemerisStore ephStore;
+      Rinex3EphemerisStore ephStore;
        
    }; // End class ObsArray
    

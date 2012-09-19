@@ -34,7 +34,7 @@
 #include <iostream>
 #include "XvtStore.hpp"
 #include "GloEphemeris.hpp"
-#include "RinexNavData.hpp"
+#include "Rinex3NavData.hpp"
 #include "PZ90Ellipsoid.hpp"
 #include "Vector.hpp"
 #include "YDSTime.hpp"
@@ -89,9 +89,9 @@ namespace gpstk
       virtual ~GloEphemerisStore() {};
 
 
-         /// Add ephemeris information from a RinexNavData object.
+         /// Add ephemeris information from a Rinex3NavData object.
          /// @return true unless the data was not added.
-      bool addEphemeris(const RinexNavData& data)
+      bool addEphemeris(const Rinex3NavData& data)
          throw();
 
 

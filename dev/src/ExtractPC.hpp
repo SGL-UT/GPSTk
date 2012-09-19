@@ -2,7 +2,7 @@
 
 /**
  * @file ExtractPC.hpp
- * This class eases PC combination data extraction from a RinexObsData object.
+ * This class eases PC combination data extraction from a Rinex3ObsData object.
  */
 
 #ifndef GPSTK_EXTRACTPC_HPP
@@ -43,7 +43,7 @@ namespace gpstk
 
 
       /// This class eases PC combination data extraction from
-      /// a RinexObsData object.
+      /// a Rinex3ObsData object.
    class ExtractPC : public ExtractCombinationData
    {
    public:
@@ -54,7 +54,7 @@ namespace gpstk
       { valid = false; checkData = true; };
 
 
-         /** Compute the PC observation from a RinexObsData object.
+         /** Compute the PC observation from a Rinex3ObsData object.
           *
           * @param rinexData  The Rinex data set holding the observations.
           * @param hdr        RINEX Observation Header for current RINEX file.
@@ -62,8 +62,8 @@ namespace gpstk
           * @return
           *  Number of satellites with PC combination data available
           */
-      virtual int getData( const RinexObsData& rinexData,
-                           const RinexObsHeader& hdr )
+      virtual int getData( const Rinex3ObsData& rinexData,
+                           const Rinex3ObsHeader& hdr )
          throw(InvalidRequest)
       {
 

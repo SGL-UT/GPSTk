@@ -52,14 +52,14 @@
 #include "RinexSatID.hpp"
 
 #include "RinexObsID.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 
-#include "RinexNavBase.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
+#include "Rinex3NavBase.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
 
 #include "SP3Header.hpp"
 #include "SP3Data.hpp"
@@ -110,8 +110,8 @@ public:
    bool ParseAndSave(const string& str, bool save=true) throw();
 
    /// compute the linear combination, given the satellite and RINEX data
-   double Compute(const RinexSatID sat, RinexObsHeader& Rhead,
-                  const vector<RinexObsData::RinexDatum>& vrdata) throw(Exception);
+   double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
+                  const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception);
 
 }; // end class LinCom
 
@@ -230,8 +230,8 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 // prototypes
 int Initialize(string& errors) throw(Exception);
 int ProcessFiles(void) throw(Exception);
-double getObsData(string tag, RinexSatID sat, RinexObsHeader& Rhead,
-                  const vector<RinexObsData::RinexDatum>& vrdata) throw(Exception);
+double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
+                  const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception);
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
    throw(Exception);
 
@@ -365,7 +365,7 @@ try {
    if(C.InputNavFiles.size() > 0) {
       try {
          for(int nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
-            RinexNavStream nstrm(C.InputNavFiles[nfile].c_str());
+            Rinex3NavStream nstrm(C.InputNavFiles[nfile].c_str());
             if(!nstrm.is_open()) {
                ossE << "Error : failed to open RINEX Nav file "
                   << C.InputNavFiles[nfile] << endl;
@@ -374,8 +374,8 @@ try {
             }
             nstrm.exceptions(ios_base::failbit);
 
-            RinexNavHeader nhead;
-            RinexNavData ndata;
+            Rinex3NavHeader nhead;
+            Rinex3NavData ndata;
 
             // read header
             try { nstrm >> nhead; }
@@ -1342,13 +1342,13 @@ try {
    int i,j,k,iret,nfile,nfiles;
    string tag;
    RinexSatID sat;
-   RinexObsStream ostrm;
+   Rinex3ObsStream ostrm;
    ostringstream oss;
 
    for(nfiles=0,nfile=0; nfile<C.InputObsFiles.size(); nfile++) {
-      RinexObsStream istrm;
-      RinexObsHeader Rhead, Rheadout;
-      RinexObsData Rdata;
+      Rinex3ObsStream istrm;
+      Rinex3ObsHeader Rhead, Rheadout;
+      Rinex3ObsData Rdata;
       string filename(C.InputObsFiles[nfile]);
 
       // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
@@ -1519,7 +1519,7 @@ try {
                if(C.haveNonObs) C.mapSatCER.clear();
 
                // loop over satellites -----------------------------
-               RinexObsData::DataMap::const_iterator it;
+               Rinex3ObsData::DataMap::const_iterator it;
                for(it=Rdata.obs.begin(); it!=Rdata.obs.end(); ++it) {
                   sat = it->first;
                   // output this sat?
@@ -1549,7 +1549,7 @@ try {
                   }
 
                   // access the data
-                  const vector<RinexObsData::RinexDatum>& vrdata(it->second);
+                  const vector<Rinex3ObsData::RinexDatum>& vrdata(it->second);
 
                   // output the sat ID
                   oss.str("");
@@ -1611,8 +1611,8 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end ProcessFiles()
 
 //------------------------------------------------------------------------------------
-double getObsData(string tag, RinexSatID sat, RinexObsHeader& Rhead,
-                   const vector<RinexObsData::RinexDatum>& vrdata) throw(Exception)
+double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
+                   const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception)
 {
    try {
       double data(0);
@@ -1998,8 +1998,8 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 }
 
 //------------------------------------------------------------------------------------
-double LinCom::Compute(const RinexSatID sat, RinexObsHeader& Rhead,
-                  const vector<RinexObsData::RinexDatum>& vrdata) throw(Exception)
+double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
+                  const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception)
 {
    Configuration& C(Configuration::Instance());
 

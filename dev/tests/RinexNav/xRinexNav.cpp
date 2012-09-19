@@ -24,7 +24,7 @@
 
 #include "xRinexNav.hpp"
 #include "Exception.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include <string>
 
 CPPUNIT_TEST_SUITE_REGISTRATION (xRinexNav);
@@ -157,16 +157,16 @@ void xRinexNav :: dataTest (void)
 
 	try
 	{
-		gpstk::RinexEphemerisStore Store;
+		gpstk::Rinex3EphemerisStore Store;
                 Store.loadFile("Logs/RinexNavExample.99n");
 
 		gpstk::CivilTime Time(1999,9,2,17,51,44,TimeSystem::GPS);
 
 //Load data into GPSEphemerisStore object so can invoke findUserEphemeris on it
 
-                std::list<gpstk::RinexNavData> R3NList;
+                std::list<gpstk::Rinex3NavData> R3NList;
                 gpstk::GPSEphemerisStore GStore;
-                std::list<gpstk::RinexNavData>::const_iterator it;
+                std::list<gpstk::Rinex3NavData>::const_iterator it;
                 Store.addToList(R3NList);
                 for (it=R3NList.begin(); it != R3NList.end(); ++it)
                   GStore.addEphemeris(gpstk::EngEphemeris(*it));

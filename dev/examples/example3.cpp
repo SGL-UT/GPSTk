@@ -22,10 +22,10 @@
 //
 //============================================================================
 
-#include "RinexObsBase.hpp"
-#include "RinexObsData.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsBase.hpp"
+#include "Rinex3ObsData.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsStream.hpp"
 #include "CivilTime.hpp"
 #include "GNSSconstants.hpp"
 #include <iostream>
@@ -59,13 +59,13 @@ int main(int argc, char *argv[])
 
          // Declare RINEX observation file streams and data objects
          // -------------------------------------------------------
-      RinexObsStream roffs(argv[1]);
+      Rinex3ObsStream roffs(argv[1]);
 
          // It is necessary to set the failbit in order to throw exceptions
       roffs.exceptions(ios::failbit);
-      RinexObsHeader roh;
-      RinexObsData roe;
-      RinexObsData::RinexDatum dataobj;
+      Rinex3ObsHeader roh;
+      Rinex3ObsData roe;
+      Rinex3ObsData::RinexDatum dataobj;
 
          // Read the RINEX header (don't skip this step)
          // --------------------------------------------
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
             // Check to see if your PRN is in view at this epoch (ie.
             // search for the PRN).
             // -----------------------------------------------------------
-         RinexObsData::DataMap::iterator pointer = roe.obs.find(prn);
+         Rinex3ObsData::DataMap::iterator pointer = roe.obs.find(prn);
          if( pointer == roe.obs.end() )
          {
             cout << "PRN " << myprn << " not in view " << endl;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 
                // The third method is also secure but it is the slowest.
                // On the other hand it has the advantage that it doesn't need
-               // a prior call to method 'RinexObsHeader::getObsIndex()'
+               // a prior call to method 'Rinex3ObsHeader::getObsIndex()'
                // -----------------------------------------------------------
             dataobj = roe.getObs(prn, "L1", roh);
             double L1 = dataobj.data;

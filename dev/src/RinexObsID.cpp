@@ -77,7 +77,7 @@ namespace gpstk
       else if (rot == RinexObsHeader::D2) {type=otDoppler; band=cbL2; code=tcP;}
    }
 
-   // Represent this object using the Rinex notation
+   // Represent this object using the Rinex3 notation
    std::string RinexObsID::asString() const
    {
       char buff[4];

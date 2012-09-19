@@ -1,4 +1,4 @@
-Dump RinexEphemerisStore:
+Dump Rinex3EphemerisStore:
 Dump of FileStore
  File  1: TestRinex06.031 (header for this file follows)
 ---------------------------------- REQUIRED ----------------------------------
@@ -62,4 +62,4 @@ Dump of GloEphemerisStore:
 Dump of GalEphemerisStore:
   End of GalEphemerisStore data.
 
-End dump RinexEphemerisStore.
+End dump Rinex3EphemerisStore.

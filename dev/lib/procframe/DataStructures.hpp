@@ -41,8 +41,8 @@
 #include "FFData.hpp"
 #include "RinexObsStream.hpp"
 #include "RinexObsData.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsData.hpp"
 #include "StringUtils.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
@@ -1542,11 +1542,11 @@ namespace gpstk
 
 
       /// Convenience function to fill a satTypeValueMap with data
-      /// from RinexObsData.
-      /// @param roh RinexObsHeader holding the data
-      /// @param rod RinexObsData holding the data.
-   satTypeValueMap satTypeValueMapFromRinexObsData(
-                         const RinexObsHeader& roh, const RinexObsData& rod );
+      /// from Rinex3ObsData.
+      /// @param roh Rinex3ObsHeader holding the data
+      /// @param rod Rinex3ObsData holding the data.
+   satTypeValueMap satTypeValueMapFromRinex3ObsData(
+                         const Rinex3ObsHeader& roh, const Rinex3ObsData& rod );
 
 
       /** Stream input for gnssRinex.

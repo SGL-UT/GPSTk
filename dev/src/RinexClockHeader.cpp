@@ -2,646 +2,471 @@
 
 /**
  * @file RinexClockHeader.cpp
- * Encapsulate header of RINEX3 clock file, including I/O
- * See more at: ftp://igscb.jpl.nasa.gov/pub/data/format/rinex_clock.txt
+ * Encapsulate header of RINEX Clock file header data, including I/O
  */
 
-//============================================================================
-//
-//  This file is part of GPSTk, the GPS Toolkit.
-//
-//  The GPSTk is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
-//  any later version.
-//
-//  The GPSTk is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
-//
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with GPSTk; if not, write to the Free Software Foundation,
-//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
-//  Octavian Andrei - FGI ( http://www.fgi.fi ). 2008-2010
-//
-//============================================================================
-
-//system
-#include<cmath>
-//GPSTk
-#include "CivilTime.hpp"
-#include "RinexClockHeader.hpp"
-#include "RinexClockStream.hpp"
 #include "StringUtils.hpp"
+#include "CommonTime.hpp"
+#include "SystemTime.hpp"
+#include "RinexClockStream.hpp"
+#include "RinexClockHeader.hpp"
+#include "TimeString.hpp"
+
+#define debug 0
 
 using namespace std;
-using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-   const string RinexClockHeader::versionString     =  "RINEX VERSION / TYPE";
-   const string RinexClockHeader::runByString       =  "PGM / RUN BY / DATE";
-   const string RinexClockHeader::commentString     =  "COMMENT";
-   const string RinexClockHeader::numObsString      =  "SYS / # / OBS TYPES";
-   const string RinexClockHeader::timeSystemString  =  "TIME SYSTEM ID";
-   const string RinexClockHeader::leapSecondsString =  "LEAP SECONDS";
-   const string RinexClockHeader::sysDCBString      =  "SYS / DCBS APPLIED";
-   const string RinexClockHeader::sysPCVString      =  "SYS / PCVS APPLIED";
-   const string RinexClockHeader::dataTypesString   =  "# / TYPES OF DATA";
-   const string RinexClockHeader::stationNameString =  "STATION NAME / NUM";
-   const string RinexClockHeader::calibrationClkString = "STATION CLK REF";
-   const string RinexClockHeader::acNameString      =   "ANALYSIS CENTER";
-   const string RinexClockHeader::numRefClkString   =  "# OF CLK REF";
-   const string RinexClockHeader::analysisClkRefString = "ANALYSIS CLK REF";
-   const string RinexClockHeader::numStationsString = "# OF SOLN STA / TRF";
-   const string RinexClockHeader::solnStaNameString =  "SOLN STA NAME / NUM";
-   const string RinexClockHeader::numSatsString     =  "# OF SOLN SATS";
-   const string RinexClockHeader::prnListString     =  "PRN LIST";
-   const string RinexClockHeader::endOfHeader       =  "END OF HEADER";
+   using namespace StringUtils;
 
+   const string RinexClockHeader::versionString =        "RINEX VERSION / TYPE";
+   const string RinexClockHeader::runByString =          "PGM / RUN BY / DATE";
+   const string RinexClockHeader::commentString =        "COMMENT";
+   const string RinexClockHeader::sysString =            "SYS / # / OBS TYPES";
+   const string RinexClockHeader::timeSystemString =     "TIME SYSTEM ID";
+   const string RinexClockHeader::leapSecondsString =    "LEAP SECONDS";
+   const string RinexClockHeader::sysDCBString =         "SYS / DCBS APPLIED";
+   const string RinexClockHeader::sysPCVString =         "SYS / PCVS APPLIED";
+   const string RinexClockHeader::numDataString =        "# / TYPES OF DATA";
+   const string RinexClockHeader::stationNameString =    "STATION NAME / NUM";
+   const string RinexClockHeader::stationClockRefString ="STATION CLK REF";
+   const string RinexClockHeader::analysisCenterString = "ANALYSIS CENTER";
+   const string RinexClockHeader::numClockRefString =    "# OF CLK REF";
+   const string RinexClockHeader::analysisClkRefrString ="ANALYSIS CLK REF";
+   const string RinexClockHeader::numReceiversString =   "# OF SOLN STA / TRF";
+   const string RinexClockHeader::solnStateString =      "SOLN STA NAME / NUM";
+   const string RinexClockHeader::numSolnSatsString =    "# OF SOLN SATS";
+   const string RinexClockHeader::prnListString =        "PRN LIST";
+   const string RinexClockHeader::endOfHeaderString =    "END OF HEADER";
 
-   const RinexClockHeader::RinexClkType 
-      RinexClockHeader::UN("UN", "Unknown or Invalid");
-   const RinexClockHeader::RinexClkType 
-      RinexClockHeader::AR("AR", "analysis data for receiver clocks");
-   const RinexClockHeader::RinexClkType 
-      RinexClockHeader::AS("AS", "analysis data for satellite clocks");
-   const RinexClockHeader::RinexClkType 
-      RinexClockHeader::CR("CR", "calibration data");
-   const RinexClockHeader::RinexClkType 
-      RinexClockHeader::DR("DR", "discontinuity data");
-   const RinexClockHeader::RinexClkType 
-      RinexClockHeader::MS("MS", "monitor data");
-
-      // Clear (empty out) header
-   void RinexClockHeader::clear(void)
-   {
-
-      version = 0.0;
-      valid = 0;
-      numObsTyp = 0;
-      numSta = 0;
-      numSVs = 0;
-      leapSeconds = 0;
-      ac = "";
-      acName = "";
-      fileProgram = "";
-      fileAgency = "";
-      date = "";
-      clk0Name = "";
-      calName = "";
-      trfName = "";
-      commentList.clear();
-      obsTypeList.clear();
-      dataTypeList.clear();
-      refClkList.clear();
-      clkNameList.clear();
-      staCoordList.clear();
-      timeFirst = CommonTime::BEGINNING_OF_TIME;
-
-      return;
-
-   }  // End of method 'RinexClockHeader::clear()'
-
-
-
-   void RinexClockHeader::reallyPutRecord(FFStream& ffs) const 
-      throw(std::exception, FFStreamError, StringException)
-   {
-      cout << "WARNING: There is no implementation for "
-           << "RinexClockHeader::reallyPutRecord()"
-           << endl;
-
-      return;
-
-   }  // End of method 'RinexClockHeader::reallyPutRecord()'
-
-
-
-      // This function parses the entire header from the given stream
+   // --------------------------------------------------------------------------------
    void RinexClockHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, 
-            StringUtils::StringException)
+      throw(exception, FFStreamError, StringException)
    {
-
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
+      
+      // if header is already read, just return
+      if(strm.headerRead) return;
 
-         // if already read, just return
-      if (strm.headerRead == true)
-         return;
-
-         // since we're reading a new header, we need to reinitialize
-         // all our list structures.  all the other objects should be ok.
-         // this also applies if we threw an exception the first time we read
-         // the header and are now re-reading it. some of these could be full
-         // and we need to empty them.
+      // clear the storage
       clear();
 
-         // one file line
       string line;
-
-      while ( !(valid & endValid) )
-      {
+      while(!(valid & endOfHeaderValid)) {
+         // get a line
          strm.formattedGetLine(line);
-         StringUtils::stripTrailing(line);
+         stripTrailing(line);
 
-         if ( line.length() == 0 )
-         {
-            FFStreamError ffse("No data read!");
-            GPSTK_THROW(ffse);
-         }
-         else if ( line.length() < 60 || line.length() > 80 )
-         {
-            FFStreamError ffse("Invalid line length");
-            GPSTK_THROW(ffse);
-         }
+         if(debug) cout << "RinexClock Header Line " << line << endl;
 
-         try
-         {
-            ParseHeaderRecord(line);
-         }
-         catch(FFStreamError& ffse)
-         {
-            GPSTK_RETHROW(ffse);
-         }
-         
-      }   // end while(not end of header)
-
-
-         // If we get here, we should have reached the end of header line
-      strm.header = *this;
-      strm.headerRead = true;
-
-      return;
-
-   }  // End of method 'RinexClockHeader::reallyGetRecord(FFStream& ffs)'
-
-
-
-      // this function parses a single header record
-   void RinexClockHeader::ParseHeaderRecord(string& line)
-      throw(FFStreamError)
-   {
-
-      string label(line, 60, 20);
-
-         // RINEX VERSION / TYPE
-      if ( label == versionString )
-      {
-
-         version  =  asDouble(line.substr(0,9));
-         fileType =  strip(line.substr(20, 20));
-
-            // check version 
-         if ( version <= 0.0 || 
-              version > 3.0 )
-         {
-            FFStreamError e( "This isn't an anticipated version number." + 
-                              asString(version) );
+         if(line.length() == 0) continue;
+         else if(line.length() < 60 || line.length() > 80) {
+            FFStreamError e("Invalid line length");
             GPSTK_THROW(e);
          }
 
-            // check type
-         if ( (fileType[0] != 'C') &&
-              (fileType[0] != 'c'))
-         {
-            FFStreamError e( "This isn't a Rinex Clock file type." );
-            GPSTK_THROW(e);
-         }
-
-            // get satellite system
-         string system_str = strip(line.substr(40, 20));
-         try
-         {
-            system.fromString(system_str);
-         }
-         catch (Exception& e)
-         {
-            FFStreamError ffse( "Input satellite system is unsupported: " 
-                                 + system_str + e.getText() );
-            GPSTK_THROW(ffse);
-         }
-
-         valid |= versionValid;
-
-      }
-         // PGM / RUN BY / DATE
-      else if ( label == runByString )
-      {
-
-         fileProgram =  strip(line.substr( 0, 20));
-         fileAgency  =  strip(line.substr(20, 20));
-         date        =  strip(line.substr(40, 20));
-         isPGM = true;
-
-         valid |= runByValid;
-
-      }
-         // COMMENT
-      else if ( label == commentString )
-      {
-
-         string s = strip(line.substr(0, 60));
-         commentList.push_back(s);
-
-         valid |= commentValid;
-
-      }
-         // SYS / # / OBS TYPES
-      else if ( label == numObsString )
-      {
-
-         numObsTyp   =  asInt( line.substr(3,3) );
-
-         // TODO: more work needed
-
-         valid |= numObsValid;
-
-      }
-         // TIME SYSTEM ID
-      else if ( label == timeSystemString )
-      {
-
-         timeSystem = line.substr(3,3);
-         valid |= timeSystemValid;
-
-      }
-         // LEAP SECONDS
-      else if ( label == leapSecondsString )
-      {
-
-         leapSeconds = asInt(line.substr(0,6));
-
-         valid |= leapSecondsValid;
-
-      }
-         // DCBS APPLIED
-      else if ( label == sysDCBString )
-      {
-
-         valid |= sysDCBsValid;
-
-      }
-         // PCVS APPLIED
-      else if ( label == sysPCVString )
-      {
-
-         valid |= sysPCVsValid;
-
-      }
-         // # / TYPES OF DATA
-      else if ( label == dataTypesString )
-      {
-
-            // number of clock data types
-         int nTyp = asInt(line.substr(0,6));
-            // allocate memory
-         dataTypeList.resize(nTyp);
-            // add clock data types
-         for( int iTyp = 0; iTyp < nTyp; iTyp++ )
-         {
-            dataTypeList[iTyp] = strip( line.substr(6*(iTyp+1),6) );
-         }
-
-         valid |= dataTypesValid;
-
-      }
-         // STATION NAME / NUM
-      else if ( label == stationNameString )
-      {
-
-         clk0Name = line.substr(0,4);
-
-         valid |= stationNameValid;
-
-      }
-         // STATION CLK REF
-      else if ( label == calibrationClkString )
-      {
-         calName = strip( line.substr(0,60) );
-
-         valid |= calibrationClkValid;
-
-      }
-         // ANALYSIS CENTER
-      else if ( label == acNameString )
-      {
-
-         ac       =  line.substr(0, 3);
-         acName   =  strip(line.substr(5,55));
-         isAC     =  true;
-
-         valid |= acNameValid;
-
-      }
-         // # OF CLK REF
-      else if ( label == numRefClkString )
-      {
-
-            // new reference clock record
-         RinexClockHeader::RefClkRecord ref;
-            // get the number of reference clocks for this record
-         ref.nRef = asInt( line.substr(0,6) );
-            // epoch
-         if( asInt(line.substr(7,4)) )
-         {
-            CommonTime T0 = parseTime( line.substr(7,26) );
-               // only one time
-            if( timeFirst == CommonTime::BEGINNING_OF_TIME )
-            {
-               timeFirst = T0;
+         // parse the line
+         try {
+            string label(line, 60, 20);
+            if(label == versionString) {
+               version = asDouble(line.substr(0,9));
+               if(line[20] != 'C') {
+                  FFStreamError e("Invalid file type: " + line.substr(20,1));
+                  GPSTK_THROW(e);
+               }
+               // TD system
+               valid |= versionValid;
             }
-               // left boundary
-            ref.refWin[0] = T0 - timeFirst;
-               // right boundary
-            T0 = parseTime( line.substr(34,26) );
-            ref.refWin[1] = T0 - timeFirst;
-
-               // time inconsistency 
-            if (T0 < timeFirst)
-            {
-               FFStreamError e( "Wrong epoch of file, expected epoch: " +
-                                 timeFirst.asString() + " detected epoch: " +
-                                 T0.asString() );
+            else if(label == runByString) {
+               program = strip(line.substr(0,20));
+               runby = strip(line.substr(20,20));
+               //date = strip(line.substr(40,20));
+               valid |= runByValid;
+            }
+            else if(label == commentString) {
+               commentList.push_back(strip(line.substr(0,60)));
+               valid |= commentValid;
+            }
+            else if(label == sysString) {
+               ; // TD ??
+               valid |= sysValid;
+            }
+            else if(label == timeSystemString) {
+               string ts(upperCase(line.substr(3,3)));
+               timeSystem.fromString(ts);
+               valid |= timeSystemValid;
+            }
+            else if(label == leapSecondsString) {
+               leapSeconds = asInt(line.substr(0,6));
+               valid |= leapSecondsValid;
+            }
+            else if(label == sysDCBString) {
+               //if(line[0] == 'G')
+               //   dcbSystem = RinexSatID(-1,RinexSatID::systemGPS);
+               //else if(line[0] == 'R')
+               //   dcbSystem = RinexSatID(-1,RinexSatID::systemGlonass);
+               //else {
+               //   FFStreamError e("Invalid dcb system : " + line.substr(0,1));
+               //   GPSTK_THROW(e);
+               //}
+               valid |= sysDCBValid;
+            }
+            else if(label == sysPCVString) {
+               if(line[0] == 'G')
+                  pcvsSystem = RinexSatID(-1,RinexSatID::systemGPS);
+               else if(line[0] == 'R')
+                  pcvsSystem = RinexSatID(-1,RinexSatID::systemGlonass);
+               else {
+                  FFStreamError e("Invalid pcvs system : " + line.substr(0,1));
+                  GPSTK_THROW(e);
+               }
+               pcvsProgram = strip(line.substr(1,17));
+               pcvsSource = strip(line.substr(20,40));
+               valid |= sysPCVValid;
+            }
+            else if(label == numDataString) {
+               int n(asInt(line.substr(0,6)));
+               for(int i=0; i<n; ++i)
+                  dataTypes.push_back(line.substr(10+i*6,2));
+               valid |= numDataValid;
+            }
+            else if(label == stationNameString) {
+               //string label(strip(line.substr(0,4)));
+               //stationID[label] = strip(line.substr(5,20));
+               valid |= stationNameValid;
+            }
+            else if(label == stationClockRefString) {
+               valid |= stationClockRefValid;
+            }
+            else if(label == analysisCenterString) {
+               analCenterDesignator = strip(line.substr(0,3));
+               analysisCenter = strip(line.substr(5,55));
+               valid |= analysisCenterValid;
+            }
+            else if(label == numClockRefString) {
+               valid |= numClockRefValid;
+            }
+            else if(label == analysisClkRefrString) {
+               valid |= analysisClkRefrValid;
+            }
+            else if(label == numReceiversString) {
+               numSolnStations = asInt(line.substr(0,6));
+               terrRefFrame = strip(line.substr(10,50));
+               valid |= numReceiversValid;
+            }
+            else if(label == solnStateString) {
+               string label(strip(line.substr(0,4)));
+               stationID[label] = strip(line.substr(5,20));
+               stationX[label] = strip(line.substr(25,11));
+               stationY[label] = strip(line.substr(37,11));
+               stationZ[label] = strip(line.substr(49,11));
+               valid |= solnStateValid;
+            }
+            else if(label == numSolnSatsString) {
+               numSolnSatellites = asInt(line.substr(0,6));
+               valid |= numSolnSatsValid;
+            }
+            else if(label == prnListString) {
+               int i,prn;
+               string label;
+               for(i=0; i<15; ++i) {
+                  label = line.substr(4*i,3);
+                  if(label == string("   ")) break;
+                  prn = asInt(line.substr(4*i+1,2));
+                  if(line[4*i] == 'G')
+                     satList.push_back(RinexSatID(prn,RinexSatID::systemGPS));
+                  else if(line[4*i] == 'R')
+                     satList.push_back(RinexSatID(prn,RinexSatID::systemGlonass));
+                  else {
+                     FFStreamError e("Invalid sat (PRN LIST): /" + label + "/");
+                     GPSTK_THROW(e);
+                  }
+               }
+               // TD how to check numSolnSatsValid == satList.size() ?
+               valid |= prnListValid;
+            }
+            else if(label == endOfHeaderString) {
+               valid |= endOfHeaderValid;
+            }
+            else {
+               FFStreamError e("Invalid line label: " + label);
                GPSTK_THROW(e);
             }
-         }
 
-            // add the ref clk record to the list
-         refClkList.push_back(ref);
+            if(debug) cout << "Valid is " << hex << valid << fixed << endl;
 
-         valid |= numRefClkValid;
+         }  // end parsing the line
+         catch(FFStreamError& e) { GPSTK_RETHROW(e); }
 
-      }
-         /// ANALYSIS CLK REF
-      else if ( label == analysisClkRefString )
-      {
+      }  // end while end-of-header not found
 
-            // get the previous reference clock record
-         std::list<RefClkRecord>::iterator iRef = refClkList.end();
-         --iRef;
+      if(debug) cout << "Header read; Valid is " << hex << valid << fixed << endl;
 
-            // how many ref clk have been stored
-         size_t nClks = iRef->clk.size();
-
-            // is there any inconsistency?
-         if ( nClks < iRef->nRef )
-         {
-
-            RinexClockHeader::RefClk refclk;
-               // reference clock info
-            refclk.name    =  line.substr(0,4);
-            refclk.sigma   =  asDouble( strip( line.substr(40,20) ) );
-            refclk.sigma   *= 1e6; // ms^2
-               // add into the list
-            iRef->clk.push_back(refclk);
-
-         }
-         else
-         {
-            FFStreamError e( string("Number of items found in header ") +
-                             "is inconsitent to the entry in header" );
-            GPSTK_THROW(e);
-         }
-
-         valid |= analysisClkRefValid;
-
-      }
-         /// # OF SOLN STA / TRF
-      else if ( label == numStationsString )
-      {
-
-         numSta   =  asInt(line.substr( 0,  6));
-         trfName  =  strip(line.substr(10, 50));
-
-         valid |= numStationsValid;
-
-      }
-         /// SOLN STA NAME / NUM
-      else if ( label == solnStaNameString )
-      {
-
-            // get 4-character station name
-         string name = line.substr(0,4);
-            // add it into the list
-         clkNameList.push_back( name );
-
-            // get integer & decimal part of the coordinates
-         int X    =  asInt( strip(line.substr(25,8)) );
-         int Xf   =  asInt( strip(line.substr(33,3)) );
-
-         int Y    =  asInt( strip(line.substr(37,8)) );
-         int Yf   =  asInt( strip(line.substr(45,3)) );
-
-         int Z    =  asInt( strip(line.substr(49,8)) );
-         int Zf   =  asInt( strip(line.substr(57,3)) );
-
-            // geocentric coordinates (be careful to the sign)
-         double x = X>0 ? X*1.0+Xf*1e-3 : X*1.0-Xf*1e-3;
-         double y = Y>0 ? Y*1.0+Yf*1e-3 : Y*1.0-Yf*1e-3;
-         double z = Z>0 ? Z*1.0+Zf*1e-3 : Z*1.0-Zf*1e-3;
-
-            // check the coordinates
-         double radius = std::sqrt(x*x+y*y+z*z);
-            // add them into the map
-         if (radius >= 5000.0e3 && radius < 12000.0e3)
-         {
-            staCoordList.push_back( Triple(X,Y,Z) );
-         }
-         else
-         {
-            staCoordList.push_back( Triple(0.0,0.0,0.0) );
-         }
-
-         valid |= solnStaNameValid;
-
-      }
-         // # OF SOLN SATS
-      else if ( label == numSatsString )
-      {
-
-         numSVs = asInt(line.substr(0,6));
-
-         valid |= numSatsValid;
-
-      }
-         // PRN LIST
-      else if ( label == prnListString )
-      {
-
-         string s    =  line.substr(0,60);
-         string word =  stripFirstWord(s);
-
-         while ( !word.empty() )
-         {
-            clkNameList.push_back( word.append(" ") );
-            word = stripFirstWord(s);
-         }
-
-         valid |= prnListValid;
-
-      }
-         // END OF HEADER
-      else if ( label == endOfHeader )
-      {
-
-         valid |= endValid;
-
-      }
-      else
-      {
-
-         FFStreamError e("Unidentified label: " + label);
+      // is this header valid?
+      if( (valid & allRequiredValid) != allRequiredValid) {
+         cout << "Header is invalid on input (valid is x" << hex << valid
+            << dec << ").\n";
+         dumpValid(cout);
+         FFStreamError e("Invalid header");
          GPSTK_THROW(e);
-
       }
 
-      return;
+      strm.headerRead  = true;
 
-   }   // End of method 'RinexClockHeader::ParseHeaderRecord(string& line)'
+   }  // end RinexClockHeader::reallyGetRecord()
 
 
-
-      /** This function sets the time for this header.
-       * It looks at \a line to obtain the needed information.
-       */
-   CommonTime RinexClockHeader::parseTime(const string& line) const
+   void RinexClockHeader::reallyPutRecord(FFStream& ffs) const
+      throw(exception, FFStreamError, StringException)
    {
+   try {
+      RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
 
-      int year, month, day, hour, min;
-      double sec;
-   
-      year  = asInt(   line.substr( 0, 4 ));
-      month = asInt(   line.substr( 4, 3 ));
-      day   = asInt(   line.substr( 7, 3 ));
-      hour  = asInt(   line.substr(10, 3 ));
-      min   = asInt(   line.substr(13, 3 ));
-      sec   = asDouble(line.substr(16, 10));
-
-      return CivilTime(year, month, day, hour, min, sec).convertToCommonTime();
-
-   }  // End of method 'RinexClockHeader::parseTime(const string& line)'
-
-
-      /// Converts the CommonTime \a dt into a Rinex Clock time
-      /// string for the header
-   string RinexClockHeader::writeTime(const CommonTime& dt) const
-   {
-
-      if (dt == CommonTime::BEGINNING_OF_TIME)
-      {
-         return string(36, ' ');
+      // is this header valid?
+      if( (valid & allRequiredValid) != allRequiredValid) {
+         FFStreamError e("Invalid header");
+         GPSTK_THROW(e);
       }
 
+      int i;
       string line;
-      CivilTime civTime(dt);
-      line  = rightJustify(asString<short>(civTime.year), 4);
-      line += rightJustify(asString<short>(civTime.month), 3);
-      line += rightJustify(asString<short>(civTime.day), 3);
-      line += rightJustify(asString<short>(civTime.hour), 3);
-      line += rightJustify(asString<short>(civTime.minute), 3);
-      line += rightJustify(asString(civTime.second, 6), 10);
+      try {
+         line = rightJustify(asString(version,2), 9);
+         line += string(11,' ');
+         line += string("CLOCK") + string(15,' ');
+         line += string("GPS") + string(17,' ');      // TD fix
+         line += versionString;         // "RINEX VERSION / TYPE"
+         strm << line << endl;
+         strm.lineNumber++;
 
-      return line;
+         line = leftJustify(program,20);
+         line += leftJustify(runby,20);
+         CommonTime dt = SystemTime();
+         string dat = printTime(dt,"%02m/%02d/%04Y %02H:%02M:%02S");
+         line += leftJustify(dat, 20);
+         line += runByString;           // "PGM / RUN BY / DATE"
+         strm << line << endl;
+         strm.lineNumber++;
 
-   }  // End of method 'RinexClockHeader::writeTime(const CommonTime& dt)'
-
-
-
-      // Debug output function.
-   void RinexClockHeader::dump(ostream& s) const
-   {
-      size_t i;
-      s << "---------------------------------- REQUIRED ----------------------------------\n";
-      string str;
-      str = system.systemChar();
-      str = str + " (" + system.systemString() + ")";
-      s << "Rinex Version " << fixed << setw(4) << setprecision(1) << version
-         << ",  File type " << fileType
-         << ",  System " << str
-         << endl;
-      s << "Prgm: " << fileProgram
-         << ",  Run: " << date
-         << ",  By: " << fileAgency
-        << endl;
-      s << "Clock data types (" << dataTypeList.size() << ") :" << endl;
-      for(i=0; i<dataTypeList.size(); i++) 
-         s << " Type #" << i << " = "
-            << " " << dataTypeList[i] << endl;
-      if(valid & acNameValid)
-         s << "Analysis Center: " << ac << " (" << acName << ")" << endl;
-      if(valid & numRefClkValid)
-         s << "Number of analysis clock references: " << refClkList.size() << endl;
-      if(valid & analysisClkRefValid) {
-         for(std::list<RefClkRecord>::const_iterator it = refClkList.begin();
-            it != refClkList.end();
-            it++)
-         {
-            s << "CLK REF  ";
-            for(std::list<RefClk>::const_iterator jt = it->clk.begin();
-            jt != it->clk.end();
-            jt++)
-            {
-               s << setw(5) << jt->name;
-               s << " from " << setw(7) << it->refWin[0] 
-                 << " to "   << setw(7) << it->refWin[1];
-            }
-            s << endl;
+         if(valid & sysValid) {
+            line = string(60,' ');  // TD
+            line += sysString;             // "SYS / # / OBS TYPES"
+            strm << line << endl;
+            strm.lineNumber++;
          }
-         s << endl;
+
+         if(valid & timeSystemValid) {
+            line = string(60,' ');  // TD
+            line += timeSystemString;      // "TIME SYSTEM ID"
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+
+         for(i=0; i<commentList.size(); ++i) {
+            line = leftJustify(commentList[i],60);
+            line += commentString;         // "COMMENT"
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+
+         if(valid & leapSecondsValid) {
+            line = rightJustify(asString(leapSeconds), 6);
+            line += string(54,' ');
+            line += leapSecondsString;     // "LEAP SECONDS"
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+
+         if(valid & sysDCBValid) {
+            line = string(60,' ');  // TD
+            line += sysDCBString;          // "SYS / DCBS APPLIED"
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+
+         if(valid & sysPCVValid) {
+            line = string("  ");
+            line[0] = pcvsSystem.systemChar();
+            line += leftJustify(pcvsProgram,17);
+            line += string(" ");
+            line += leftJustify(pcvsSource,40);
+            line += sysPCVString;          // "SYS / PCVS APPLIED"
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+
+         line = rightJustify(asString(dataTypes.size()), 6);
+         for(i=0; i<dataTypes.size(); ++i)
+            line += string(4,' ') + dataTypes[i];
+         line += string(60-line.size(),' ');
+         line += numDataString;         // "# / TYPES OF DATA"
+         strm << line << endl;
+         strm.lineNumber++;
+
+         //TD line += stationNameString;     // "STATION NAME / NUM"
+         //strm << line << endl;
+         //strm.lineNumber++;
+
+         //TD line += stationClockRefString; // "STATION CLK REF"
+         //strm << line << endl;
+         //strm.lineNumber++;
+
+         line = analCenterDesignator;
+         line += string(2,' ');
+         line += leftJustify(analysisCenter,55);
+         line += analysisCenterString;  // "ANALYSIS CENTER"
+         strm << line << endl;
+         strm.lineNumber++;
+
+         //line += numClockRefString;     // "# OF CLK REF"
+         //strm << line << endl;
+         //strm.lineNumber++;
+
+         //line += analysisClkRefrString; // "ANALYSIS CLK REF"
+         //strm << line << endl;
+         //strm.lineNumber++;
+
+         line = rightJustify(asString(numSolnStations), 6);
+         line += string(4,' ');
+         line += leftJustify(terrRefFrame,50);
+         line += numReceiversString;    // "# OF SOLN STA / TRF"
+         strm << line << endl;
+         strm.lineNumber++;
+
+         map<string,string>::const_iterator it, jt;
+         for(it=stationID.begin(); it != stationID.end(); ++it) {
+            string label(it->first),field;
+            line = label;
+            line += string(1,' ');
+            line += leftJustify(it->second,20);
+            jt = stationX.find(label);
+            field = jt->second;
+            line += rightJustify(field, 11);
+            line += string(1,' ');
+            jt = stationY.find(label);
+            field = jt->second;
+            line += rightJustify(field, 11);
+            line += string(1,' ');
+            jt = stationZ.find(label);
+            field = jt->second;
+            line += rightJustify(field, 11);
+            line += solnStateString;       // "SOLN STA NAME / NUM"
+            strm << line << endl;
+            strm.lineNumber++;
+         }
+
+         line = rightJustify(asString(numSolnSatellites), 6);
+         line += string(54,' ');
+         line += numSolnSatsString;     // "# OF SOLN SATS"
+         strm << line << endl;
+         strm.lineNumber++;
+
+         line = string();
+         for(i=0; i<satList.size(); ++i) {
+            string satstr(" ");
+            satstr[0] = satList[i].systemChar();
+            satstr += rightJustify(asString(satList[i].id), 2);
+            if(satstr[1] == ' ') satstr[1] = '0';
+            line += satstr + string(1,' ');
+            if(((i+1) % 15) == 0 || i==satList.size()-1) {
+               line += string(60-line.size(),' ');
+               line += prnListString;         // "PRN LIST"
+               strm << line << endl;
+               strm.lineNumber++;
+               line = string();
+            }
+         }
+
+         line = string(60,' ');
+         line += endOfHeaderString;     // "END OF HEADER"
+         strm << line << endl;
+         strm.lineNumber++;
       }
-      if(valid & numStationsValid)
-         s << "Number of Stations with data : " << numSta << endl;
-      if(valid & solnStaNameValid) {
-         s << "STA  ";
-         for(i=0; i < numSta; i++)
-            s << setw(5) << clkNameList[i];
-         s << endl;
+      catch(FFStreamError& e) { GPSTK_RETHROW(e); }
+      catch(StringException& e) { GPSTK_RETHROW(e); }
+
+   }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+      catch(exception& e) { Exception g(e.what()); GPSTK_THROW(g); }
+   }
+
+
+   void RinexClockHeader::dump(ostream& os, short detail) const throw()
+   {
+      int i;
+      os << "Dump RinexClock Header:\n";
+      os << " Version = " << fixed << setprecision(2) << version
+         << " Prgm /" << program << "/ Run By /" << runby << "/" << endl;
+      os << " There are " << dataTypes.size() << " data types, as follows:";
+      for(i=0; i<dataTypes.size(); ++i)
+         os << " " << dataTypes[i];
+      os << endl;
+      os << " Leap seconds is " << leapSeconds << endl;
+      os << " Analysis center: /" << analCenterDesignator
+         << "/ /" << analysisCenter << "/" << endl;
+      os << " Terrestrial Reference Frame " << terrRefFrame << endl;
+      os << " PCVs: " << pcvsSystem << " /" << pcvsProgram << "/ /"
+         << pcvsSource << "/" << endl;
+      os << " Comments:\n";
+      for(i=0; i<commentList.size(); ++i)
+         os << "    " << commentList[i] << endl;
+      os << " There are " << stationID.size() << " stations." << endl;
+      os << " There are " << satList.size() << " satellites." << endl;
+      if(detail > 0) {
+         os << " Stations:  identifier     X(mm)       Y(mm)       Z(mm)\n";
+         map<string,string>::const_iterator it, jt;
+         for(it=stationID.begin(); it!=stationID.end(); ++it) {
+            string label(it->first),field;
+            os << "     " << label << "   " << it->second;
+            jt = stationX.find(label);
+            field = jt->second;
+            os << rightJustify(field,12);
+            jt = stationY.find(label);
+            field = jt->second;
+            os << rightJustify(field,12);
+            jt = stationZ.find(label);
+            field = jt->second;
+            os << rightJustify(field,12) << endl;
+         }
+         os << " Sat list:\n";
+         for(i=0; i<satList.size(); ++i) {
+            os << " " << satList[i];
+            if(((i+1)%15) == 0 || i == satList.size()-1) os << endl;
+         }
+
+         if(detail >= 2) dumpValid(os);
       }
-      if(valid & numSatsValid)
-         s << "Number of Satellites with data : " << numSVs << endl;
-      if(valid & prnListValid) {
-         s << "SAT  ";
-         for(i=numSta; i<clkNameList.size(); i++)
-            s << setw(5) << clkNameList[i];
-         s << endl;
-      }
-      s << "(This header is ";
-      if(valid) 
-      { 
-         if (version == 3.0) s << "VALID 3.0";
-         if (version == 2.0) s << "VALID 2.0";
-      }
-      else s << "NOT VALID";
-      s << " Rinex Clock.)\n";
 
-      if(!(valid & versionValid)) s << " Version is NOT valid\n";
-      if(!(valid & runByValid)) s << " Run by is NOT valid\n";
-      if(!(valid & numObsValid)) s << " Observation type is NOT valid\n";
-      if(!(valid & timeSystemValid)) s << " Time system is NOT valid\n";
-      if(!(valid & sysDCBsValid)) s << " DCBs applied is NOT valid\n";
-      if(!(valid & sysPCVsValid)) s << " PCVs applied is NOT valid\n";
-      if(!(valid & stationNameValid)) s << " Station name is NOT valid\n";
-      if(!(valid & calibrationClkValid)) s << " External reference clock is NOT valid\n";
-      if(!(valid & acNameValid)) s << " Analysis Center is NOT valid\n";
-      if(!(valid & numRefClkValid)) s << " Number of analysis clock references is NOT valid\n";
-      if(!(valid & analysisClkRefValid)) s << " List of the analysis clock references is NOT valid\n";
-      if(!(valid & solnStaNameValid)) s << " Number of receivers is NOT valid\n";
-      if(!(valid & numSatsValid)) s << " Number of satellites is NOT valid\n";
-      if(!(valid & prnListValid)) s << " PRN list is NOT valid\n";
-      if(!(valid & endValid)) s << " End is NOT valid\n";
+      os << "End of RinexClock header dump." << endl;
 
-      s << "---------------------------------- OPTIONAL ----------------------------------\n";
-      if(valid & leapSecondsValid) s << "Leap seconds: " << leapSeconds << endl;
-      if(commentList.size() && !(valid & commentValid)) s << " Comment is NOT valid\n";
-      s << "Comments (" << commentList.size() << ") :\n";
-      for(i=0; i<commentList.size(); i++)
-         s << commentList[i] << endl;
-      s << "-------------------------------- END OF HEADER -------------------------------\n";
+   }  // end RinexClockHeader::dump()
 
-   }  // End of method 'RinexClockHeader::dump(ostream& s)'
+   void RinexClockHeader::dumpValid(ostream& os) const throw()
+   {
+      if( (valid & allValid) == allValid) return;
+      string tag("  Invalid or missing header line: ");
+      os << "Dump invalid or missing header records:\n";
+      if(!(valid & versionValid)) os << tag << versionString << endl;
+      if(!(valid & runByValid)) os << tag << runByString << endl;
+      if(!(valid & commentValid)) os << tag << commentString << endl;
+      if(!(valid & sysValid)) os << tag << sysString << endl;
+      if(!(valid & timeSystemValid)) os << tag << timeSystemString << endl;
+      if(!(valid & leapSecondsValid)) os << tag << leapSecondsString << endl;
+      if(!(valid & sysDCBValid)) os << tag << sysDCBString << endl;
+      if(!(valid & sysPCVValid)) os << tag << sysPCVString << endl;
+      if(!(valid & numDataValid)) os << tag << numDataString << endl;
+      if(!(valid & stationNameValid)) os << tag << stationNameString << endl;
+      if(!(valid & stationClockRefValid)) os << tag << stationClockRefString << endl;
+      if(!(valid & analysisCenterValid)) os << tag << analysisCenterString << endl;
+      if(!(valid & numClockRefValid)) os << tag << numClockRefString << endl;
+      if(!(valid & analysisClkRefrValid)) os << tag << analysisClkRefrString << endl;
+      if(!(valid & numReceiversValid)) os << tag << numReceiversString << endl;
+      if(!(valid & solnStateValid)) os << tag << solnStateString << endl;
+      if(!(valid & numSolnSatsValid)) os << tag << numSolnSatsString << endl;
+      if(!(valid & prnListValid)) os << tag << prnListString << endl;
+      if(!(valid & endOfHeaderValid)) os << tag << endOfHeaderString << endl;
+      os << "End of invalid or missing dump" << endl;
+   }
 
-
-}  // End of namespace gpstk
+}  // namespace

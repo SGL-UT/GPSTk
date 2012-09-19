@@ -33,16 +33,16 @@
 //----------------------------------------------------------------------------//
 //                                 Data Types                                 //
 #include "RinexObsBase.hpp"
-#include "RinexObsBase.hpp"
+#include "Rinex3ObsBase.hpp"
 
 #include "RinexObsStream.hpp"
-#include "RinexObsStream.hpp"
+#include "Rinex3ObsStream.hpp"
 
 #include "RinexObsHeader.hpp"
-#include "RinexObsHeader.hpp"
+#include "Rinex3ObsHeader.hpp"
 
 #include "RinexObsData.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsData.hpp"
 //----------------------------------------------------------------------------//
 //                                Other GPSTk                                 //
 #include "RinexConverter.hpp"
@@ -58,10 +58,10 @@ void printTitle(ostream* out);
 int parseCommandLine(int argc, char** argv);
 
 bool convertRinex2ObsFile(std::string& fileName, std::string& outFile);
-bool convertRinexObsFile(std::string& fileName, std::string& outFile);
+bool convertRinex3ObsFile(std::string& fileName, std::string& outFile);
 
 bool convertRinex2NavFile(std::string& fileName, std::string& outFile);
-bool convertRinexNavFile(std::string& fileName, std::string& outFile);
+bool convertRinex3NavFile(std::string& fileName, std::string& outFile);
 //============================================================================//
 //                                 Global Data                                //
 std::string programName("RinexConvert");

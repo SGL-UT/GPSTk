@@ -374,7 +374,6 @@ try {
    if(st.PRS.isValid()) {
       st.ClockBuffer.push_back(st.PRS.Solution(3));
       st.ClkSigBuffer.push_back(st.PRS.Covariance(3,3));
-      SolutionEpoch.setTimeSystem(TimeSystem::Any);
       st.RxTimeOffset.push_back(SolutionEpoch - obsfile.Robs.time);
    }
    else {

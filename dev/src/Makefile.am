@@ -106,13 +106,13 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       PRSolution2.cpp \
       RACRotation.cpp \
       ReferenceFrame.cpp \
-      RinexClockData.cpp \
-      RinexClockHeader.cpp \
-      RinexEphemerisStore.cpp \
-      RinexNavData.cpp \
-      RinexNavHeader.cpp \
-      RinexObsData.cpp \
-      RinexObsHeader.cpp \
+      Rinex3ClockData.cpp \
+      Rinex3ClockHeader.cpp \
+      Rinex3EphemerisStore.cpp \
+      Rinex3NavData.cpp \
+      Rinex3NavHeader.cpp \
+      Rinex3ObsData.cpp \
+      Rinex3ObsHeader.cpp \
       RinexClockData.cpp \
       RinexClockHeader.cpp \
       #RinexConverter.cpp \
@@ -319,21 +319,21 @@ incl_HEADERS = AllanDeviation.hpp \
       PZ90Ellipsoid.hpp \
       RACRotation.hpp \
       ReferenceFrame.hpp \
-      RinexClockBase.hpp \
-      RinexClockData.hpp \
-      RinexClockHeader.hpp \
-      RinexClockStream.hpp \
-      RinexEphemerisStore.hpp \
-      RinexNavBase.hpp \
-      RinexNavData.hpp \
-      RinexNavFilterOperators.hpp \
-      RinexNavHeader.hpp \
-      RinexNavStream.hpp \
-      RinexObsBase.hpp \
-      RinexObsData.hpp \
-      RinexObsFilterOperators.hpp \
-      RinexObsHeader.hpp \
-      RinexObsStream.hpp \
+      Rinex3ClockBase.hpp \
+      Rinex3ClockData.hpp \
+      Rinex3ClockHeader.hpp \
+      Rinex3ClockStream.hpp \
+      Rinex3EphemerisStore.hpp \
+      Rinex3NavBase.hpp \
+      Rinex3NavData.hpp \
+      Rinex3NavFilterOperators.hpp \
+      Rinex3NavHeader.hpp \
+      Rinex3NavStream.hpp \
+      Rinex3ObsBase.hpp \
+      Rinex3ObsData.hpp \
+      Rinex3ObsFilterOperators.hpp \
+      Rinex3ObsHeader.hpp \
+      Rinex3ObsStream.hpp \
       RinexClockBase.hpp \
       RinexClockData.hpp \
       RinexClockHeader.hpp \

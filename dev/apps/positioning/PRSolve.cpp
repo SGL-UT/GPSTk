@@ -53,14 +53,14 @@
 #include "RinexSatID.hpp"
 #include "RinexObsID.hpp"
 
-#include "RinexObsStream.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 
-#include "RinexNavBase.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
+#include "Rinex3NavBase.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
 
 #include "RinexMetHeader.hpp"
 #include "RinexMetData.hpp"
@@ -71,7 +71,7 @@
 #include "SP3Stream.hpp"
 
 #include "SP3EphemerisStore.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "Rinex3EphemerisStore.hpp"
 
 #include "Position.hpp"
 #include "TropModel.hpp"
@@ -189,7 +189,7 @@ public:
    // stores
    XvtStore<SatID> *pEph;
    SP3EphemerisStore SP3EphStore;
-   RinexEphemerisStore RinEphStore;
+   Rinex3EphemerisStore RinEphStore;
    //GPSEphemerisStore GPSEphStore;
    //GloEphemerisStore GLOEphStore;
    list<RinexMetData> MetStore;
@@ -320,7 +320,7 @@ public:
    // indicating whether there is sufficient good data.
    void CollectData(const RinexSatID& s,
                     const double& elev, const double& ER,
-                    const vector<RinexObsData::RinexDatum>& v) throw();
+                    const vector<Rinex3ObsData::RinexDatum>& v) throw();
 
    // Compute a solution for the given epoch; call after CollectData()
    // same return value as RAIMCompute()
@@ -493,14 +493,14 @@ try {
    if(C.InputObsFiles.size() > 0) {
       try {
          for(nread=0,nfile=0; nfile<C.InputObsFiles.size(); nfile++) {
-            RinexObsStream rostrm(C.InputObsFiles[nfile].c_str(), ios_base::in);
+            Rinex3ObsStream rostrm(C.InputObsFiles[nfile].c_str(), ios_base::in);
             if(!rostrm.is_open()) {
                ossE << "Error : failed to open RINEX obs file: "
                   << C.InputObsFiles[nfile] << endl;
                isValid = false;
                continue;
             }
-            RinexObsHeader rhead;
+            Rinex3ObsHeader rhead;
             rostrm >> rhead;
 
             typtime = rhead.firstObs.convertToCommonTime();
@@ -508,7 +508,7 @@ try {
 
             rostrm.close();
 
-            if(!isRinexObsFile(C.InputObsFiles[nfile])) {
+            if(!isRinex3ObsFile(C.InputObsFiles[nfile])) {
                ossE << "Error : File: " << C.InputObsFiles[nfile]
                   << " is not a valid RINEX file." << endl;
                isValid = false;
@@ -957,12 +957,12 @@ try {
    bool firstepoch(true);
    int i,j,k,iret,nfile,nfiles;
    Position PrevPos(C.knownPos);
-   RinexObsStream ostrm;
+   Rinex3ObsStream ostrm;
 
    for(nfiles=0,nfile=0; nfile<C.InputObsFiles.size(); nfile++) {
-      RinexObsStream istrm;
-      RinexObsHeader Rhead, Rheadout;
-      RinexObsData Rdata;
+      Rinex3ObsStream istrm;
+      Rinex3ObsHeader Rhead, Rheadout;
+      Rinex3ObsData Rdata;
       string filename(C.InputObsFiles[nfile]);
 
       // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
@@ -1135,10 +1135,10 @@ try {
 
          // loop over satellites -----------------------------
          RinexSatID sat;
-         RinexObsData::DataMap::iterator it;
+         Rinex3ObsData::DataMap::iterator it;
          for(it=Rdata.obs.begin(); it!=Rdata.obs.end(); ++it) {
             sat = it->first;
-            vector<RinexObsData::RinexDatum>& vrdata(it->second);
+            vector<Rinex3ObsData::RinexDatum>& vrdata(it->second);
             string sys(asString(sat.systemChar()));
 
             // is this system excluded?
@@ -1228,7 +1228,7 @@ try {
 
          // write to output RINEX ----------------------------
          if(!C.OutputObsFile.empty()) {
-            RinexObsData auxData;
+            Rinex3ObsData auxData;
             auxData.time = Rdata.time;
             auxData.clockOffset = Rdata.clockOffset;
             auxData.epochFlag = 4;
@@ -1265,7 +1265,7 @@ try {
                k++;
             }
             auxData.numSVs = k;            // number of lines to write
-            auxData.auxHeader.valid |= RinexObsHeader::validComment;
+            auxData.auxHeader.valid |= Rinex3ObsHeader::validComment;
             ostrm << auxData;
 
             ostrm << Rdata;
@@ -2231,7 +2231,7 @@ void SolutionObject::EpochReset(void) throw()
 //------------------------------------------------------------------------------------
 void SolutionObject::CollectData(const RinexSatID& sat,
                                  const double& elev, const double& ER,
-                                 const vector<RinexObsData::RinexDatum>& vrd)
+                                 const vector<Rinex3ObsData::RinexDatum>& vrd)
    throw()
 {
    if(!isValid) return;

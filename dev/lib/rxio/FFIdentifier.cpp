@@ -45,7 +45,7 @@
 #include "FFIdentifier.hpp"
 
 #include "SP3EphemerisStore.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "Rinex3EphemerisStore.hpp"
 #include "YumaAlmanacStore.hpp"
 #include "GPSEllipsoid.hpp"
 

@@ -1,13 +1,14 @@
 #pragma ident "$Id$"
 
 
+
 /**
  * @file RinexNavBase.hpp
  * Base class for RINEX Navigation data
  */
 
-#ifndef GPSTK_RINEX3NAVBASE_HPP
-#define GPSTK_RINEX3NAVBASE_HPP
+#ifndef GPSTK_RINEXNAVBASE_HPP
+#define GPSTK_RINEXNAVBASE_HPP
 
 //============================================================================
 //
@@ -46,22 +47,24 @@
 //=============================================================================
 
 
+
+
+
+
 #include "FFData.hpp"
 
 namespace gpstk
 {
-   /** @defgroup RinexNav RINEX 3 navigation files */
+   /** @defgroup RinexNav RINEX navigation files */
    //@{
 
   /**
    * This class serves no purpose other than to make readable diagrams.
    */
-
    class RinexNavBase : public FFData
    {
    public:
-
-      /// Destructor
+         /// in deference to our coding standards, this is declared virtual
       virtual ~RinexNavBase() {}
    };
 

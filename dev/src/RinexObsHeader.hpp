@@ -1,13 +1,5 @@
 #pragma ident "$Id$"
 
-/**
- * @file RinexObsHeader.hpp
- * Encapsulate header of Rinex observation file, including I/O
- */
-
-#ifndef GPSTK_RINEX3OBSHEADER_HPP
-#define GPSTK_RINEX3OBSHEADER_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -25,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,16 +25,24 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file RinexObsHeader.hpp
+ * Encapsulate header of Rinex observation file, including I/O
+ */
+
+#ifndef GPSTK_RINEXOBSHEADER_HPP
+#define GPSTK_RINEXOBSHEADER_HPP
 
 #include <vector>
 #include <list>
@@ -50,297 +50,325 @@
 #include <iostream>
 #include <iomanip>
 
-#include "CivilTime.hpp"
+#include "CommonTime.hpp"
 #include "FFStream.hpp"
 #include "RinexObsBase.hpp"
 #include "Triple.hpp"
 #include "RinexSatID.hpp"
-#include "RinexObsID.hpp"
 
 namespace gpstk
 {
-  /** @addtogroup RinexObs */
-  //@{
+   /** @addtogroup RinexObs */
+   //@{
 
-  /**
-   * This class models the header for a RINEX 3 Observation File.
-   * @sa gpstk::RinexObsData and gpstk::RinexObsStream.
-   * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
-   */
-
+      /**
+       * This class models the header for a RINEX Observation File.
+       * @sa gpstk::RinexObsData and gpstk::RinexObsStream.
+       * @sa rinex_obs_test.cpp and rinex_obs_read_write.cpp for examples.
+       */
    class RinexObsHeader : public RinexObsBase
    {
    public:
 
-      /// A Simple Constructor.
-      RinexObsHeader() : valid(0)
+         /// A Simple Constructor.
+//      RinexObsHeader() : version(), valid()
+      RinexObsHeader()
          {}
 
-      /// Clear (empty out) header
+         /// Clear (empty out) header
       inline void clear()
       {
+//         version = 2.11;
+         valid = 0;
          commentList.clear();
-         obsTypeList.clear();
-         numObsForSat.clear();
-         mapObsTypes.clear();
          wavelengthFactor[0] = wavelengthFactor[1] = 1;
          extraWaveFactList.clear();
-         valid  = 0;
+         obsTypeList.clear();
+         numObsForSat.clear();
          numObs = 0;
          lastPRN.id = -1;
       }
 
-      /// @name RinexObsHeaderFormatStrings
-      /// RINEX observation file header formatting strings
-      //@{
-      static const std::string stringVersion;           ///< "RINEX VERSION / TYPE"
-      static const std::string stringRunBy;             ///< "PGM / RUN BY / DATE"
-      static const std::string stringComment;           ///< "COMMENT"
-      static const std::string stringMarkerName;        ///< "MARKER NAME"
-      static const std::string stringMarkerNumber;      ///< "MARKER NUMBER"
-      static const std::string stringMarkerType;        ///< "MARKER TYPE"
-      static const std::string stringObserver;          ///< "OBSERVER / AGENCY"
-      static const std::string stringReceiver;          ///< "REC # / TYPE / VERS"
-      static const std::string stringAntennaType;       ///< "ANT # / TYPE"
-      static const std::string stringAntennaPosition;   ///< "APPROX POSITION XYZ"
-      static const std::string stringAntennaDeltaHEN;   ///< "ANTENNA: DELTA H/E/N"
-      static const std::string stringAntennaDeltaXYZ;   ///< "ANTENNA: DELTA X/Y/Z"
-      static const std::string stringAntennaPhaseCtr;   ///< "ANTENNA: PHASECENTER"
-      static const std::string stringAntennaBsightXYZ;  ///< "ANTENNA: B.SIGHT XYZ"
-      static const std::string stringAntennaZeroDirAzi; ///< "ANTENNA: ZERODIR AZI"
-      static const std::string stringAntennaZeroDirXYZ; ///< "ANTENNA: ZERODIR XYZ"
-      static const std::string stringCenterOfMass;      ///< "CENTER OF MASS: XYZ"
-      static const std::string stringNumObs;            ///< "# / TYPES OF OBSERV"   R2 only
-      static const std::string stringSystemNumObs;      ///< "SYS / # / OBS TYPES"
-      static const std::string stringWaveFact;          ///< "WAVELENGTH FACT L1/2"  R2 only
-      static const std::string stringSigStrengthUnit;   ///< "SIGNAL STRENGTH UNIT"
-      static const std::string stringInterval;          ///< "INTERVAL"
-      static const std::string stringFirstTime;         ///< "TIME OF FIRST OBS"
-      static const std::string stringLastTime;          ///< "TIME OF LAST OBS"
-      static const std::string stringReceiverOffset;    ///< "RCV CLOCK OFFS APPL"
-      static const std::string stringSystemDCBSapplied; ///< "SYS / DCBS APPLIED"
-      static const std::string stringSystemPCVSapplied; ///< "SYS / PCVS APPLIED"
-      static const std::string stringSystemScaleFac;    ///< "SYS / SCALE FACTOR"
-      static const std::string stringSystemPhaseShift;  ///< "SYS / PHASE SHIFTS"
-      static const std::string stringGlonassSlotFreqNo; ///< "GLONASS SLOT / FRQ #"
-      static const std::string stringLeapSeconds;       ///< "LEAP SECONDS"
-      static const std::string stringNumSats;           ///< "# OF SATELLITES"
-      static const std::string stringPrnObs;            ///< "PRN / # OF OBS"
-      static const std::string stringEoH;               ///< "END OF HEADER"
-      //@}
+         /**
+          * @name RinexObsHeaderFormatStrings
+          * RINEX Observation Header Formatting Strings
+          */
+         //@{
+      static const std::string versionString;         ///< "RINEX VERSION / TYPE"
+      static const std::string runByString;           ///< "PGM / RUN BY / DATE"
+      static const std::string commentString;         ///< "COMMENT"
+      static const std::string markerNameString;      ///< "MARKER NAME"
+      static const std::string markerNumberString;    ///< "MARKER NUMBER"
+      static const std::string observerString;        ///< "OBSERVER / AGENCY"
+      static const std::string receiverString;        ///< "REC # / TYPE / VERS"
+      static const std::string antennaTypeString;     ///< "ANT # / TYPE"
+      static const std::string antennaPositionString; ///< "APPROX POSITION XYZ"
+      static const std::string antennaOffsetString;   ///< "ANTENNA: DELTA H/E/N"
+      static const std::string waveFactString;        ///< "WAVELENGTH FACT L1/2"
+      static const std::string numObsString;          ///< "# / TYPES OF OBSERV"
+      static const std::string intervalString;        ///< "INTERVAL"
+      static const std::string firstTimeString;       ///< "TIME OF FIRST OBS"
+      static const std::string lastTimeString;        ///< "TIME OF LAST OBS"
+      static const std::string receiverOffsetString;  ///< "RCV CLOCK OFFS APPL"
+      static const std::string leapSecondsString;     ///< "LEAP SECONDS"
+      static const std::string numSatsString;         ///< "# OF SATELLITES"
+      static const std::string prnObsString;          ///< "PRN / # OF OBS"
+      static const std::string endOfHeader;           ///< "END OF HEADER"
+         //@}
 
-      /// Validity bits for the RINEX Observation Header - please keep ordered as strings above
+         /// Validity bits for the RINEX Observation Header
       enum validBits
       {
-         validVersion           =        0x1, ///< "RINEX VERSION / TYPE"
-         validRunBy             =        0x2, ///< "PGM / RUN BY / DATE"
-         validComment           =        0x4, ///< "COMMENT"               optional
-         validMarkerName        =        0x8, ///< "MARKER NAME"
-         validMarkerNumber      =       0x10, ///< "MARKER NUMBER"         optional
-         validMarkerType        =       0x20, ///< "MARKER TYPE"           optional R3
-         validObserver          =       0x40, ///< "OBSERVER / AGENCY"
-         validReceiver          =       0x80, ///< "REC # / TYPE / VERS"
-         validAntennaType       =      0x100, ///< "ANT # / TYPE"
-         validAntennaPosition   =      0x200, ///< "APPROX POSITION XYZ"   optional R3+moving
-         validAntennaDeltaHEN   =      0x400, ///< "ANTENNA: DELTA H/E/N"
-         validAntennaDeltaXYZ   =      0x800, ///< "ANTENNA: DELTA X/Y/Z"  optional R3
-         validAntennaPhaseCtr   =     0x1000, ///< "ANTENNA: PHASECENTER"  optional R3
-         validAntennaBsightXYZ  =     0x2000, ///< "ANTENNA: B.SIGHT XYZ"  optional R3
-         validAntennaZeroDirAzi =     0x4000, ///< "ANTENNA: ZERODIR AZI"  optional R3
-         validAntennaZeroDirXYZ =     0x8000, ///< "ANTENNA: ZERODIR XYZ"  optional R3
-         validCenterOfMass      =    0x10000, ///< "CENTER OF MASS: XYZ"   optional R3
-         validNumObs            =    0x20000, ///< "# / TYPES OF OBSERV"            R2 only
-         validSystemObsType     =    0x20000, ///< "SYS / # / OBS TYPES"            R3
-         validWaveFact          =    0x40000, ///< "WAVELENGTH FACT L1/2"           R2 only
-         validSigStrengthUnit   =    0x40000, ///< "SIGNAL STRENGTH UNIT"  optional R3
-         validInterval          =    0x80000, ///< "INTERVAL"              optional
-         validFirstTime         =   0x100000, ///< "TIME OF FIRST OBS"
-         validLastTime          =   0x200000, ///< "TIME OF LAST OBS"      optional
-         validReceiverOffset    =   0x400000, ///< "RCV CLOCK OFFS APPL"   optional
-         validSystemDCBSapplied =   0x800000, ///< "SYSTEM DCBS APPLIED"   optional R3
-         validSystemPCVSapplied =  0x1000000, ///< "SYSTEM PCVS APPLIED"   optional R3
-         validSystemScaleFac    =  0x2000000, ///< "SYSTEM SCALE FACTOR"   optional R3
-         validSystemPhaseShift  =  0x4000000, ///< "SYS / PHASE SHIFTS"             R3.01
-         validGlonassFreqNo     =  0x8000000, ///< "GLONASS SLOT / FRQ #"  optional R3.01
-         validLeapSeconds       = 0x10000000, ///< "LEAP SECONDS"          optional
-         validNumSats           = 0x20000000, ///< "# OF SATELLITES"       optional
-         validPrnObs            = 0x40000000, ///< "PRN / # OF OBS"        optional
-         validEoH               = 0x80000000, ///< "END OF HEADER"
-   
-         /// This mask is for all required valid fields
-         allValid2 = 0x801607CB,
-         //allValid30 = 0x801207CB,  // case for static receivers - AntennaPosition present
-         allValid30 = 0x801205CB,    // case for moving receivers -- make default
-         allValid301 = 0x841205CB
-      };
-   
-      /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
-      struct RinexCorrInfo
-      {
-         std::string satSys,  ///< 1-char SV system (G/R/E/S)
-                     name,    ///< program name used to apply corrections
-                     source;  ///< source of corrections (URL)
+         versionValid         = 0x01,      ///< "RINEX VERSION / TYPE"
+         runByValid           = 0x02,      ///< "PGM / RUN BY / DATE"
+         commentValid         = 0x04,      ///< "COMMENT"               (optional)
+         markerNameValid      = 0x08,      ///< "MARKER NAME"
+         markerNumberValid    = 0x010,     ///< "MARKER NUMBER"         (optional)
+         observerValid        = 0x020,     ///< "OBSERVER / AGENCY"
+         receiverValid        = 0x040,     ///< "REC # / TYPE / VERS"
+         antennaTypeValid     = 0x080,     ///< "ANT # / TYPE"
+         antennaPositionValid = 0x0100,    ///< "APPROX POSITION XYZ"
+         antennaOffsetValid   = 0x0200,    ///< "ANTENNA: DELTA H/E/N"
+         waveFactValid        = 0x0400,    ///< "WAVELENGTH FACT L1/2"
+         obsTypeValid         = 0x0800,    ///< "# / TYPES OF OBSERV"
+         intervalValid        = 0x01000,   ///< "INTERVAL"              (optional)
+         firstTimeValid       = 0x02000,   ///< "TIME OF FIRST OBS"
+         lastTimeValid        = 0x04000,   ///< "TIME OF LAST OBS"      (optional)
+         receiverOffsetValid  = 0x08000,   ///< "RCV CLOCK OFFS APPL"   (optional)
+         leapSecondsValid     = 0x0100000, ///< "LEAP SECONDS"          (optional)
+         numSatsValid         = 0x0200000, ///< "# OF SATELLITES"       (optional)
+         prnObsValid          = 0x0400000, ///< "PRN / # OF OBS"        (optional)
+
+         endValid = 0x080000000,        ///< "END OF HEADER"
+
+            /// This mask is for all required valid fields for RINEX 2.0
+         allValid20 = 0x080002FEB,
+            /// This mask is for all required valid fields for RINEX 2.1
+         allValid21 = 0x080002FEB,
+            /// This mask is for all required valid fields for RINEX 2.11
+         allValid211 = 0x080002FEB
       };
 
-      /// RINEX 2 extra "WAVELENGTH FACT" lines
+         /// RINEX Observation Types
+      struct RinexObsType
+      {
+         std::string type;          ///< 2- char type e.g. L1, P2
+         std::string description;   ///< 20- char description (optional) e.g. "L1 pseudorange"
+         std::string units;         ///< 10- char units (optional) e.g. "meters"
+         unsigned int depend;
+         RinexObsType() : type(std::string("UN")),description(std::string("Unknown or Invalid")),
+            units(std::string("")),depend(0) {}
+         RinexObsType(std::string t, std::string d, std::string u, unsigned int dep=0) :
+            type(t),description(d),units(u),depend(dep) {}
+         static const unsigned int C1depend;
+         static const unsigned int L1depend;
+         static const unsigned int L2depend;
+         static const unsigned int P1depend;
+         static const unsigned int P2depend;
+         static const unsigned int EPdepend;
+         static const unsigned int PSdepend;
+      };
+
+         /** @name Standard RINEX observation types
+          */
+         //@{
+      static const RinexObsType UN;
+      static const RinexObsType L1;
+      static const RinexObsType L2;
+      static const RinexObsType C1;
+      static const RinexObsType C2;
+      static const RinexObsType P1;
+      static const RinexObsType P2;
+      static const RinexObsType D1;
+      static const RinexObsType D2;
+      static const RinexObsType S1;
+      static const RinexObsType S2;
+      static const RinexObsType T1;
+      static const RinexObsType T2;
+      static const RinexObsType C5;
+      static const RinexObsType L5;
+      static const RinexObsType D5;
+      static const RinexObsType S5;
+      // Galileo only
+      static const RinexObsType C6;
+      static const RinexObsType L6;
+      static const RinexObsType D6;
+      static const RinexObsType S6;
+      static const RinexObsType C7;
+      static const RinexObsType L7;
+      static const RinexObsType D7;
+      static const RinexObsType S7;
+      static const RinexObsType C8;
+      static const RinexObsType L8;
+      static const RinexObsType D8;
+      static const RinexObsType S8;
+
+         //@}
+
+      static const std::vector<RinexObsType> StandardRinexObsTypes;
+      static std::vector<RinexObsType> RegisteredRinexObsTypes;
+
+         /// Holds the data for the extra Wavelength Factor lines
       struct ExtraWaveFact
       {
-         /// List of Sats with this wavelength factor
+            /// List of PRNs with this wavelength factor.
          std::vector<SatID> satList;
-         /// vector of wavelength factor values
+            /// The vector of wavelength factor values.
          short wavelengthFactor[2];
       };
 
-      /// Storage for R2 <-> R3 conversion of obstypes during reallyGet/Put
-      /// Vector of strings containing ver 2 obs types (e.g. "C1" "L2") defined in reallyGet;
-      /// also defined in PrepareVer2Write() from R3 ObsIDs
-      std::vector<std::string> R2ObsTypes;
-      /// map between RINEX ver 3 ObsIDs and ver 2 obstypes for each system: reallyPut
-      std::map<std::string, std::map<std::string, RinexObsID> > mapSysR2toR3ObsID;
+         /** @name RinexObsHeaderValues
+          */
+         //@{
+      double version;                        ///< RINEX VERSION & TYPE
+      std::string fileType;                  ///< RINEX FILETYPE (Observation Navigation etc)
+      //std::string system_str;              ///< The string (for file i/o) giving the RINEX system
+      RinexSatID system;                     ///< The RINEX satellite system
+      std::string fileProgram,               ///< The program used to generate this file
+         fileAgency,                         ///< Who ran the program.
+         date;                               ///< When the program was run.
+      std::vector<std::string> commentList;  ///< Comments in header (optional)
+      std::string markerName,                ///< MARKER NAME
+         markerNumber;                       ///< MARKER NUMBER (optional)
+      std::string observer,                  ///< OBSERVER : who collected the data
+         agency;                             ///< OBSERVER'S AGENCY
+      std::string recNo,                     ///< RECEIVER NUMBER
+         recType,                            ///< RECEIVER TYPE
+         recVers;                            ///< RECEIVER VERSION
+      std::string antNo,                     ///< ANTENNA NUMBER
+         antType;                            ///< ANTENNA TYPE
+      gpstk::Triple antennaPosition;         ///< APPROXIMATE POSITION XYZ
+      gpstk::Triple antennaOffset;           ///< ANTENNA: DELTA H/E/N
+      short wavelengthFactor[2];             ///< default WAVELENGTH FACTORS
+      std::vector<ExtraWaveFact> extraWaveFactList; ///< extra (per PRN) WAVELENGTH FACTORS
+      std::vector<RinexObsType> obsTypeList; ///< NUMBER & TYPES OF OBSERV
+      double interval;                       ///< INTERVAL (optional)
+      CommonTime firstObs ;                     ///< TIME OF FIRST OBS
+      RinexSatID firstSystem;                ///< RINEX satellite system of FIRST OBS timetag
+      CommonTime lastObs ;                      ///< TIME OF LAST OBS (optional)
+      RinexSatID lastSystem;                 ///< RINEX satellite system of LAST OBS timetag
+      int receiverOffset;                    ///< RCV CLOCK OFFS APPL (optional)
+      int leapSeconds;                       ///< LEAP SECONDS (optional)
+      short numSVs;                          ///< NUMBER OF SATELLITES in following map (optional)
+      std::map<SatID, std::vector<int> > numObsForSat; ///<  PRN / # OF OBS (optional)
+      unsigned long valid; ///< Bits set when individual header members are present and valid
+      int numObs; ///< used to save the number of obs on # / TYPES continuation lines.
+      RinexSatID lastPRN; ///< used to save the current PRN while reading PRN/OBS continuation lines.
+         //@}
 
-      /// Scale Factor corrections for observations
-      typedef std::map<RinexObsID,int> sfacMap; ///< scale factor map <ObsType, ScaleFactor>
-      std::map<std::string,sfacMap> sysSfacMap; ///< sat. system map of scale factor maps
-                                                ///< <(G/R/E/S), <RinexObsType, scalefactor>>
+         /// Destructor
+      virtual ~RinexObsHeader() {}
 
-      /// @name RinexObsHeaderValues
-      //@{
-      double version;                              ///< RINEX 3 version/type
-      std::string fileType,                        ///< RINEX 3 file type
-                  fileSys;                         ///< file sys char: RinexSatID system OR Mixed
-      SatID fileSysSat;                            ///< fileSys as a SatID
-      std::string fileProgram,                     ///< program used to generate file
-                  fileAgency,                      ///< who ran program
-                  date;                            ///< when program was run
-      std::vector<std::string> commentList;        ///< comments in header             (optional)
-      std::string markerName,                      ///< MARKER NAME
-                  markerNumber,                    ///< MARKER NUMBER                  (optional)
-                  markerType;                      ///< MARKER TYPE
-      std::string observer,                        ///< who collected the data
-                  agency;                          ///< observer's agency
-      std::string recNo,                           ///< receiver number
-                  recType,                         ///< receiver type
-                  recVers;                         ///< receiver version
-      std::string antNo,                           ///< antenna number
-                  antType;                         ///< antenna type
-      gpstk::Triple antennaPosition,               ///< APPROX POSITION XYZ  (optional if moving)
-                    antennaDeltaHEN,               ///< ANTENNA: DELTA H/E/N
-                    antennaDeltaXYZ;               ///< ANTENNA: DELTA X/Y/Z           (optional)
-      std::string antennaSatSys,                   ///< ANTENNA P.CTR BLOCK: SAT SYS   (optional)
-                  antennaObsCode;                  ///< ANTENNA P.CTR BLOCK: OBS CODE  (optional)
-      gpstk::Triple antennaPhaseCtr;               ///< ANTENNA P.CTR BLOCK: PCTR POS  (optional)
-      gpstk::Triple antennaBsightXYZ;              ///< ANTENNA B.SIGHT XYZ            (optional)
-      double        antennaZeroDirAzi;             ///< ANTENNA ZERODIR AZI            (optional)
-      gpstk::Triple antennaZeroDirXYZ;             ///< ANTENNA ZERODIR XYZ            (optional)
-      short wavelengthFactor[2];                   ///< default WAVELENGTH FACT        R2 only
-      std::vector<ExtraWaveFact> extraWaveFactList;///< extra (per sat) WAVELENGTH FACT R2 only
-      gpstk::Triple centerOfMass;                  ///< vehicle CENTER OF MASS: XYZ    (optional)
-      std::vector<RinexObsID> obsTypeList;         ///< number & types of observations R2 only
-      std::map<std::string,std::vector<RinexObsID> > mapObsTypes; ///< map <sys char, vec<ObsID> >;
-                                                        ///< NB defines data vec in ObsData
-      std::string sigStrengthUnit;                 ///< SIGNAL STRENGTH UNIT           (optional)
-      double interval;                             ///< INTERVAL                       (optional)
-      CivilTime firstObs,                          ///< TIME OF FIRST OBS
-                 lastObs;                          ///< TIME OF LAST OBS               (optional)
-      int receiverOffset;                          ///< RCV CLOCK OFFS APPL            (optional)
-      std::vector<RinexCorrInfo> infoDCBS;        ///< DCBS INFO                      (optional)
-      std::vector<RinexCorrInfo> infoPCVS;        ///< PCVS INFO                      (optional)
-      int factor, factorPrev;                      ///< scale factor (temp holders)
-      RinexObsID sysPhaseShiftObsID;               ///< save ObsID for cont. "PHASE SHIFT" R3.01
-      std::map<std::string, std::map<RinexObsID, std::map<RinexSatID,double> > > sysPhaseShift;
-      std::map<RinexSatID,int> GlonassFreqNo;      ///< "GLONASS SLOT / FRQ #"    (optional) R3.01
-      int leapSeconds;                             ///< LEAP SECONDS              (optional)
-      short numSVs;                                ///< # OF SATELLITES           (optional)
-      std::map<RinexSatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS         (optional)
-      unsigned long valid;                         ///< bits set when header rec.s present & valid
-      std::string satSysTemp,                      ///< save the syschar while reading ScaleFactor
-                  satSysPrev;                      ///< recall the prev sat. sys for cont. lines
-      int numObs,                                  ///< save OBS # / TYPES and Sys / SCALE FACTOR
-                                                   ///< for cont. lines
-            numObsPrev;                            ///< recall the prev # obs for cont. lines
-      RinexSatID lastPRN;                          ///< save PRN while reading PRN/OBS cont. lines
-      //@}
+         // The next four lines is our common interface
+         /// RinexObsHeader is a "header" so this function always returns true.
+      virtual bool isHeader() const {return true;}
 
-      /// Destructor
-      virtual ~RinexObsHeader()
-         {}
-
-      // The next four lines comprise our common interface.
-
-      /// RinexObsHeader is a "header" so this function always returns true.
-      virtual bool isHeader() const
-      { return true; }
-
-      /// This is a simple Debug output function.
-      /// It simply outputs the version, name and antenna number of this
-      /// RINEX header.
+         /**
+          * This is a simple Debug output function.
+          * It simply outputs the version, name and antenna number of this
+          * RINEX header.
+          */
       virtual void dump(std::ostream& s) const;
 
-
-         /** This method returns the numerical index of a given observation
-          *
-          * @param type String representing the observation type.
+         /**
+          * This function converts the string in \a oneObs to a RinexObsType.
           */
-      virtual int getObsIndex( std::string type ) const
-         throw(InvalidRequest);
+      static RinexObsType convertObsType(const std::string& oneObs)
+         throw(FFStreamError);
 
+         /**
+          * This function converts the RinexObsType in \a oneObs to a string.
+          */
+      static std::string convertObsType(const RinexObsType& oneObs)
+         throw(FFStreamError);
 
-      /// Parse a single header record, and modify valid accordingly.
-      /// Used by reallyGetRecord for both RinexObsHeader and RinexObsData.
+         /**
+          * Parse a single header record, and modify valid accordingly.
+          * Used by reallyGetRecord for both RinexObsHeader and RinexObsData.
+          */
       void ParseHeaderRecord(std::string& line)
          throw(FFStreamError);
 
-      /// Compute number of valid header records that WriteHeaderRecords() will write
+         /// Compute the number of valid header records which WriteHeaderRecords() will write
       int NumberHeaderRecordsToBeWritten(void) const throw();
 
-      /// Write all valid header records to the given stream.
-      /// Used by reallyPutRecord for both RinexObsHeader and RinexObsData.
+         /**
+          * Write all valid header records to the given stream.
+          * Used by reallyPutRecord for both RinexObsHeader and RinexObsData.
+          */
       void WriteHeaderRecords(FFStream& s) const
          throw(FFStreamError, gpstk::StringUtils::StringException);
 
-      /// Return boolean : is this a valid Rinex header?
-      bool isValid() const
-         { return ((valid & allValid30) == allValid30); }
-
-      /// Compute map of obs types for use in writing version 2 header and data
-      void PrepareVer2Write(void) throw();
-
+         /// Return boolean : is this a valid Rinex header?
+      bool isValid() const { return ((valid & allValid20) == allValid20); }
 
    protected:
-
-
-      /// outputs this record to the stream correctly formatted.
+         /**
+          * outputs this record to the stream correctly formatted.
+          */
       virtual void reallyPutRecord(FFStream& s) const
-         throw(std::exception, FFStreamError, gpstk::StringUtils::StringException);
+         throw(std::exception, FFStreamError,
+               gpstk::StringUtils::StringException);
 
-      /// This function retrieves the RINEX Header from the given FFStream.
-      /// If an stream error is encountered, the stream is reset to its
-      ///  original position and its fail-bit is set.
-      /// @throws StringException when a StringUtils function fails
-      /// @throws FFStreamError when exceptions(failbit) is set and
-      ///  a read or formatting error occurs.  This also resets the
-      ///  stream to its pre-read position.
+         /**
+          * This function retrieves the RINEX Header from the given FFStream.
+          * If an stream error is encountered, the stream is reset to its
+          *  original position and its fail-bit is set.
+          * @throws StringException when a StringUtils function fails
+          * @throws FFStreamError when exceptions(failbit) is set and
+          *  a read or formatting error occurs.  This also resets the
+          *  stream to its pre-read position.
+          */
       virtual void reallyGetRecord(FFStream& s)
-         throw(std::exception, FFStreamError, gpstk::StringUtils::StringException);
+         throw(std::exception, FFStreamError,
+               gpstk::StringUtils::StringException);
 
       friend class RinexObsData;
 
-
    private:
+         /// Converts the CommonTime \a dt into a Rinex Obs time
+         /// string for the header
+      std::string writeTime(const CommonTime& dt) const;
 
-      /// Converts the daytime \a dt into a Rinex Obs time
-      /// string for the header
-      std::string writeTime(const CivilTime& civtime) const;
-
-      /// This function sets the time for this header.
-      /// It looks at \a line to obtain the needed information.
-      CivilTime parseTime(const std::string& line) const;
-
+         /**
+          * This function sets the time for this header.
+          * It looks at \a line to obtain the needed information.
+          */
+      CommonTime parseTime(const std::string& line) const;
 
    }; // end class RinexObsHeader
+
+      /// operator == for RinexObsHeader::RinexObsType
+   inline bool operator==(const RinexObsHeader::RinexObsType& x,
+      const RinexObsHeader::RinexObsType& y) { return (x.type == y.type); }
+
+      /// operator < for RinexObsHeader::RinexObsType
+   inline bool operator<(const RinexObsHeader::RinexObsType& x,
+      const RinexObsHeader::RinexObsType& y) { return (x.type < y.type); }
+
+      /// operator << for RinexObsHeader::RinexObsType
+   inline std::ostream& operator<<(std::ostream& s,
+                                   const RinexObsHeader::RinexObsType rot)
+      {
+         return s << "Type=" << rot.type
+            << ", Description=" << rot.description
+            << ", Units=" << rot.units;
+      }
+
+      /// Function to allow user to define a new RINEX observation type
+   int RegisterExtendedRinexObsType(std::string t,
+                                    std::string d=std::string("(undefined)"),
+                                    std::string u=std::string("undefined"),
+                                    unsigned int dep=0);
+
+      /// Pretty print a list of standard Rinex observation types
+   void DisplayStandardRinexObsTypes(std::ostream& s);
+
+      /// Pretty print a list of registered extended Rinex observation types
+   void DisplayExtendedRinexObsTypes(std::ostream& s);
 
    //@}
 
 } // namespace
 
-#endif // GPSTK_RINEX3OBSHEADER_HPP
+#endif

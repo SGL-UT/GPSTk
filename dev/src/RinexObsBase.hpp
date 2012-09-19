@@ -1,12 +1,14 @@
 #pragma ident "$Id$"
 
+
+
 /**
  * @file RinexObsBase.hpp
  * Base class for RINEX observation file data
  */
 
-#ifndef GPSTK_RINEX3OBSBASE_HPP
-#define GPSTK_RINEX3OBSBASE_HPP
+#ifndef GPSTK_RINEXOBSBASE_HPP
+#define GPSTK_RINEXOBSBASE_HPP
 
 //============================================================================
 //
@@ -44,23 +46,26 @@
 //
 //=============================================================================
 
+
+
+
+
+
 #include "FFData.hpp"
 
 namespace gpstk
 {
-   /** @defgroup RinexObs RINEX 3 observation files */
+   /** @defgroup RinexObs RINEX observation files */
    //@{
 
   /** This level isn't serving any purpose other than to make
    * the class diagram look nice...
    */
-
    class RinexObsBase : public FFData
    {
    public:
-
-     /// Destructor
-     virtual ~RinexObsBase() {}
+         /// Destructor per the coding standards
+      virtual ~RinexObsBase() {}
    };
 
    //@}

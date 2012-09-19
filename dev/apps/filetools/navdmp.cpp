@@ -49,10 +49,10 @@
 #include "FICData.hpp"
 #include "FICStream.hpp"
 #include "FICFilterOperators.hpp"
-#include "RinexNavStream.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavFilterOperators.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavFilterOperators.hpp"
 #include "GPSWeekSecond.hpp"
 #include "gps_constants.hpp"
 #include "TimeString.hpp"
@@ -425,16 +425,16 @@ void NavDump::process()
    }
    else     // Rinex navigation message data
    {
-      FileFilterFrame<RinexNavStream, RinexNavData> 
+      FileFilterFrame<Rinex3NavStream, Rinex3NavData> 
                              data(inputFileOption.getValue()[0]);
       if (!prnFilterList.empty())
-         data.filter(RinexNavDataFilterPRN(prnFilterList));
+         data.filter(Rinex3NavDataFilterPRN(prnFilterList));
 
-      list<RinexNavData>& rnavlist = data.getData();
-      list<RinexNavData>::iterator itr = rnavlist.begin();
+      list<Rinex3NavData>& rnavlist = data.getData();
+      list<Rinex3NavData>::iterator itr = rnavlist.begin();
       while (itr!=rnavlist.end())
       {
-         RinexNavData& r = *itr;
+         Rinex3NavData& r = *itr;
          OrbElemRinex ee(r);
          if(isTerse)
          {

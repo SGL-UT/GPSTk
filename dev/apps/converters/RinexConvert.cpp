@@ -102,12 +102,12 @@ int main(int argc, char** argv)
                     << " to RINEX 3.0" << endl;
          }
       }
-      else if (isRinexObsFile(filePath)) // file is a RINEX 3.0 Obs file
+      else if (isRinex3ObsFile(filePath)) // file is a RINEX 3.0 Obs file
       {
          if (verbose)
             cout << inputFiles[index] << ": RINEX 3.0 Obs file" << endl;
 
-         if (convertRinexObsFile(filePath, output))
+         if (convertRinex3ObsFile(filePath, output))
          {
             numConverted++;
             if (verbose)
@@ -142,12 +142,12 @@ int main(int argc, char** argv)
                     << " to RINEX 3.0" << endl;
          }
       }
-      else if (isRinexNavFile(filePath)) // file is a RINEX 3.0 Nav file
+      else if (isRinex3NavFile(filePath)) // file is a RINEX 3.0 Nav file
       {
          if (verbose)
             cout << inputFiles[index] << ": RINEX 3.0 Nav file" << endl;
 
-         if (convertRinexNavFile(filePath, output))
+         if (convertRinex3NavFile(filePath, output))
          {
             numConverted++;
             if (verbose)
@@ -201,14 +201,14 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
       }
       
       if (debug) cout << "Trying to open output file: " << outFile << endl;
-      RinexObsStream obsOut(outFile.c_str(), ios::out);
+      Rinex3ObsStream obsOut(outFile.c_str(), ios::out);
       if (!obsOut) return false;
       else if (debug) cout << "...opened" << endl;
 
       // Declare the header and its converted version.
 
       RinexObsHeader robsHead;
-      RinexObsHeader convHead;
+      Rinex3ObsHeader convHead;
 
       // Read in the header data.
 
@@ -220,7 +220,7 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
       // If the header couldn't be converted return false.
 
       if (debug) cout << "Converting header..." << endl;
-      if (!RinexConverter::convertToRinex(convHead, robsHead)) return false;
+      if (!RinexConverter::convertToRinex3(convHead, robsHead)) return false;
       if (debug) cout << "...finished" << endl;
 
       // Write out the converted header data.
@@ -262,7 +262,7 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
       // A temporary data object for reading in from the stream.
       RinexObsData temp;
       // Converted data object.
-      RinexObsData convData;
+      Rinex3ObsData convData;
       // Last observed epoch
       CommonTime lastEpoch = CommonTime::BEGINNING_OF_TIME;
 
@@ -358,7 +358,7 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
 
       for (int i = 0; i < robsData.size(); ++i)
       {
-         RinexConverter::convertToRinex(convData, robsData[i], robsHead);
+         RinexConverter::convertToRinex3(convData, robsData[i], robsHead);
          obsOut << convData;
       }
 
@@ -384,7 +384,7 @@ bool convertRinex2ObsFile(std::string& fileName, std::string& outFile)
    }
 }
 
-bool convertRinexObsFile(std::string& fileName, std::string& outFile)
+bool convertRinex3ObsFile(std::string& fileName, std::string& outFile)
 {
    if (verbose)
    {
@@ -404,7 +404,7 @@ bool convertRinex2NavFile(std::string& fileName, std::string& outFile)
    return false;
 }
 
-bool convertRinexNavFile(std::string& fileName, std::string& outFile)
+bool convertRinex3NavFile(std::string& fileName, std::string& outFile)
 {
    if (verbose)
    {

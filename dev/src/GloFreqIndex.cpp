@@ -48,9 +48,9 @@
 #include "GloFreqIndex.hpp"
 #include "GNSSconstants.hpp"
 //#include "icd_glo_freqindex.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavStream.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavStream.hpp"
 #include "Stats.hpp"
 
 using namespace gpstk::StringUtils;
@@ -98,13 +98,13 @@ namespace gpstk
 
    /// Fills map with frequency index data from a RINEX 3 Nav data file.
 
-   int GloFreqIndex::getFromRinexNav( const std::string& filename )
+   int GloFreqIndex::getFromRinex3Nav( const std::string& filename )
       throw()
    {
-      RinexNavHeader header;
-      RinexNavData data;
+      Rinex3NavHeader header;
+      Rinex3NavData data;
 
-      RinexNavStream navfile(filename.c_str(), ios::in);
+      Rinex3NavStream navfile(filename.c_str(), ios::in);
       navfile.exceptions(ifstream::failbit);
 
       navfile >> header;      // Read the header to get past it.

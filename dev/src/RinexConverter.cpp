@@ -156,7 +156,7 @@ RinexConverter::Initializer::Initializer()
  * RINEX 2.11 -> 3.0 methods do not currently account for the WAVELENGTH FACT
  * lines in the RINEX 2.11 header.
  */
-bool RinexConverter::convertToRinex(RinexObsData& dest,
+bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
                                      const RinexObsData& src,
                                      const RinexObsHeader& srcHeader)
 {
@@ -170,7 +170,7 @@ bool RinexConverter::convertToRinex(RinexObsData& dest,
    // Convert the Aux Header, if one exists.
 
    if (src.epochFlag > 0 && src.epochFlag < 6)
-      convertToRinex(dest.auxHeader, src.auxHeader);
+      convertToRinex3(dest.auxHeader, src.auxHeader);
 
    /// Clear the Obs list in the R3 object passed.
 
@@ -187,8 +187,8 @@ bool RinexConverter::convertToRinex(RinexObsData& dest,
 
    /// The vector of observations to add to the destination header.
 
-   vector<RinexObsData::RinexDatum> vec;
-   RinexObsData::RinexDatum tempR3;
+   vector<Rinex3ObsData::RinexDatum> vec;
+   Rinex3ObsData::RinexDatum tempR3;
    RinexObsData::RinexDatum tempR2;
 
    /// Loop over the satellites in the data set.
@@ -245,7 +245,7 @@ bool RinexConverter::convertToRinex(RinexObsData& dest,
    return true;
 }
 
-bool RinexConverter::convertToRinex(RinexObsHeader& dest,
+bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
                                      const RinexObsHeader& src)
 {
    /// Transfer all items with a 1 to 1 correlation.
@@ -290,7 +290,7 @@ bool RinexConverter::convertToRinex(RinexObsHeader& dest,
 
 #ifdef DEBUG
    cout << endl;
-   cout << "RinexConverter:convertToRinex(header): destination header info" << endl;
+   cout << "RinexConverter:convertToRinex3(header): destination header info" << endl;
    cout << "       Member: " << endl;
    cout << "      Version: " << dest.version         << endl;
    cout << "    File Type: " << dest.fileType        << endl;
@@ -492,21 +492,21 @@ bool RinexConverter::convertToRinex(RinexObsHeader& dest,
 /// 2009-12-10 OA: This is a very basic implementation. Check after TODO
 ///                Use it with CAUTION!!!
 
-bool RinexConverter::convertFromRinex(RinexObsData& dest,
-                                       const RinexObsData& src,
-                                       const RinexObsHeader& srcHeader)
+bool RinexConverter::convertFromRinex3(RinexObsData& dest,
+                                       const Rinex3ObsData& src,
+                                       const Rinex3ObsHeader& srcHeader)
 {
    // Unsorted Obs! Obviously the header wasn't translated...
 
-   RinexObsHeader duplHeader = srcHeader;
+   Rinex3ObsHeader duplHeader = srcHeader;
    if (srcHeader.obsTypeList.size() == 0)
-      sortRinexObsTypes(duplHeader);
+      sortRinex3ObsTypes(duplHeader);
 
    dest.epochFlag   = src.epochFlag;
    dest.numSvs      = src.numSVs;   // Capitilization is (too) important here.
    dest.clockOffset = src.clockOffset;
    dest.time        = src.time;
-   convertFromRinex(dest.auxHeader, srcHeader);
+   convertFromRinex3(dest.auxHeader, srcHeader);
 
    ///TODO::Implement the translation between R3 and R2 maps here...
    /** Basic Steps
@@ -517,7 +517,7 @@ bool RinexConverter::convertFromRinex(RinexObsData& dest,
     * 2. Otherwise, get the index for this obs in the current satellite's system
     *      Get this by comparing the STRING values of the obs in the list
     *      to the obs code taken from the sorted list. MUST compare the string
-    *      returned by ObsID::asRinexID(); otherwise redundant codes can be
+    *      returned by ObsID::asRinex3ID(); otherwise redundant codes can be
     *      used.
     * 3. Found it? Move the data over to the correct spot from the R3 objec.
     *    Otherwise, search for a similar code in this system (same band/type)
@@ -526,7 +526,7 @@ bool RinexConverter::convertFromRinex(RinexObsData& dest,
     */
 
    /// OA implementation starts
-   RinexObsData::DataMap::const_iterator it;
+   Rinex3ObsData::DataMap::const_iterator it;
    for (it = src.obs.begin(); it != src.obs.end(); it++)
    {
 
@@ -537,7 +537,7 @@ bool RinexConverter::convertFromRinex(RinexObsData& dest,
       string satSysTemp = satid.toString().substr(0,1);
 
       //and its R3 data
-      vector<RinexObsData::RinexDatum> r3data= it->second;
+      vector<Rinex3ObsData::RinexDatum> r3data= it->second;
 
       // Now let's see what obs type are for this satellite system
       std::vector<ObsID> obsTypeList = srcHeader.mapObsTypes.find(satSysTemp)->second;
@@ -548,7 +548,7 @@ bool RinexConverter::convertFromRinex(RinexObsData& dest,
       {
 
          // R3 code as a three character string (see ObsId.hpp, line 204)
-         string currCode = obsTypeList[iObs].asRinexID();
+         string currCode = obsTypeList[iObs].asRinex3ID();
 
          // and its R2 corresponding
          string replacement;
@@ -592,8 +592,8 @@ bool RinexConverter::convertFromRinex(RinexObsData& dest,
    return true;
 }
 
-bool RinexConverter::convertFromRinex(RinexObsHeader& dest,
-                                       const RinexObsHeader& src)
+bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
+                                       const Rinex3ObsHeader& src)
 {
    dest.version         = 2.11;
    dest.fileType        = src.fileType;
@@ -613,8 +613,8 @@ bool RinexConverter::convertFromRinex(RinexObsHeader& dest,
    dest.antennaOffset   = src.antennaDeltaHEN;  //I hope...
    dest.firstObs        = src.firstObs;
 
-   RinexObsHeader duplHeader = src;
-   sortRinexObsTypes(duplHeader);
+   Rinex3ObsHeader duplHeader = src;
+   sortRinex3ObsTypes(duplHeader);
 
    // very basic convertion from R3 ObsTypeList to R2 ObsTypeList
    map<std::string,vector<ObsID> >::const_iterator itSys = src.mapObsTypes.begin();
@@ -627,7 +627,7 @@ bool RinexConverter::convertFromRinex(RinexObsHeader& dest,
       {
 
          // R3 obs as a three character string
-         string currCode = itObs->asRinexID();
+         string currCode = itObs->asRinex3ID();
 
          // and its R2 corresponding
          string replacement;
@@ -772,7 +772,7 @@ bool RinexConverter::validGEOcode(const RinexObsHeader::RinexObsType& code)
    return false;
 }
 
-void RinexConverter::sortRinexObsTypes(RinexObsHeader& header)
+void RinexConverter::sortRinex3ObsTypes(Rinex3ObsHeader& header)
 {
    /** Basic steps:
     * 1. Compile a set of existing codes, based on their STRING values.

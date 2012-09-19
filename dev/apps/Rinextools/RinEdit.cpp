@@ -50,9 +50,9 @@
 
 #include "RinexSatID.hpp"
 #include "RinexObsID.hpp"
-#include "RinexObsStream.hpp"
-#include "RinexObsHeader.hpp"
-#include "RinexObsData.hpp"
+#include "Rinex3ObsStream.hpp"
+#include "Rinex3ObsHeader.hpp"
+#include "Rinex3ObsData.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -185,7 +185,7 @@ public:
 
    // handle commands
    vector<EditCmd> vecCmds, currCmds;
-   RinexObsStream ostrm;        // RINEX output
+   Rinex3ObsStream ostrm;        // RINEX output
 
 }; // end class Configuration
 
@@ -201,10 +201,10 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt + " %P";
 int Initialize(string& errors) throw(Exception);
 void FixEditCmdList(void) throw();
 int ProcessFiles(void) throw(Exception);
-int ProcessOneEpoch(RinexObsHeader& Rhead, RinexObsHeader& RHout,
-                    RinexObsData& Rdata, RinexObsData& RDout) throw(Exception);
-int ExecuteEditCmd(const vector<EditCmd>::iterator& it, RinexObsHeader& Rhead,
-                                            RinexObsData& Rdata) throw(Exception);
+int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
+                    Rinex3ObsData& Rdata, Rinex3ObsData& RDout) throw(Exception);
+int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
+                                            Rinex3ObsData& Rdata) throw(Exception);
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -338,9 +338,9 @@ try {
    ostringstream oss;
 
    for(nfiles=0,nfile=0; nfile<C.IF.size(); nfile++) {
-      RinexObsStream istrm;
-      RinexObsHeader Rhead,RHout;  // use one header for input and output
-      RinexObsData Rdata,RDout;
+      Rinex3ObsStream istrm;
+      Rinex3ObsHeader Rhead,RHout;  // use one header for input and output
+      Rinex3ObsData Rdata,RDout;
       string filename(C.IF[nfile]);
 
       // iret is set to 0 ok, or could not: 1 open file, 2 read header, 3 read data
@@ -527,7 +527,7 @@ try {
          if(mungeData) {               // must edit RDout.obs
             RDout.obs.clear();
             // loop over satellites -----------------------------
-            RinexObsData::DataMap::const_iterator kt;
+            Rinex3ObsData::DataMap::const_iterator kt;
             for(kt=Rdata.obs.begin(); kt!=Rdata.obs.end(); ++kt) {
                sat = kt->first;
                string sys(string(1,sat.systemChar()));
@@ -573,8 +573,8 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 // return <0 fatal; >0 skip this epoch
-int ProcessOneEpoch(RinexObsHeader& Rhead, RinexObsHeader& RHout,
-                    RinexObsData& Rdata, RinexObsData& RDout) throw(Exception)
+int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
+                    Rinex3ObsData& Rdata, Rinex3ObsData& RDout) throw(Exception)
 {
    try {
       Configuration& C(Configuration::Instance());
@@ -632,15 +632,15 @@ int ProcessOneEpoch(RinexObsHeader& Rhead, RinexObsHeader& RHout,
 //------------------------------------------------------------------------------------
 // return >0 to put/keep the command on the 'current' queue
 // return <0 for fatal error
-int ExecuteEditCmd(const vector<EditCmd>::iterator& it, RinexObsHeader& Rhead,
-                                                        RinexObsData& Rdata)
+int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
+                                                        Rinex3ObsData& Rdata)
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
    int iret, i;
    string sys;
    vector<string> flds;
-   RinexObsData::DataMap::iterator kt;
+   Rinex3ObsData::DataMap::iterator kt;
    vector<RinexObsID>::iterator jt;
 
    try {
@@ -685,17 +685,17 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, RinexObsHeader& Rhead,
             }
             if(C.HDdc) {
                Rhead.commentList.clear();
-               Rhead.valid ^= RinexObsHeader::validComment;
+               Rhead.valid ^= Rinex3ObsHeader::validComment;
             }
             if(C.HDc.size() > 0) {
                for(i=0; i<C.HDc.size(); i++)
                   Rhead.commentList.push_back(C.HDc[i]);
-               Rhead.valid |= RinexObsHeader::validComment;
+               Rhead.valid |= Rinex3ObsHeader::validComment;
             }
          }
 
          Rhead.firstObs = Rdata.time;
-         Rhead.valid &= ~RinexObsHeader::validLastTime;    // turn off
+         Rhead.valid &= ~Rinex3ObsHeader::validLastTime;    // turn off
 
          // write the header
          C.ostrm << Rhead;

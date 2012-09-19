@@ -1,4 +1,4 @@
-Dump RinexEphemerisStore:
+Dump Rinex3EphemerisStore:
 Dump of FileStore
  File  1: TestRinex06.031
 End dump of FileStore
@@ -8,4 +8,4 @@ Dump of GloEphemerisStore:
  Span is End_time to Begin_time with 0 entries.
 Dump of GalEphemerisStore:
  Span is End_time to Begin_time with 0 entries.
-End dump RinexEphemerisStore.
+End dump Rinex3EphemerisStore.

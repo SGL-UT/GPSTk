@@ -51,11 +51,11 @@
 
 #include "RinexSatID.hpp"
 
-#include "RinexNavBase.hpp"
-#include "RinexNavHeader.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavStream.hpp"
-#include "RinexEphemerisStore.hpp"
+#include "Rinex3NavBase.hpp"
+#include "Rinex3NavHeader.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3EphemerisStore.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -126,7 +126,7 @@ public:
    map<string, string> mapSysOutput2File; // map< "G" , "test.nav"> version 2 output
 
    // Store all the nav data
-   RinexEphemerisStore NavStore;
+   Rinex3EphemerisStore NavStore;
 
    string msg;
    static const string calfmt,gpsfmt,longfmt;
@@ -506,7 +506,7 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    int i,nread,nfile,nfiles;
-   RinexNavHeader Rheadout,Rhead;
+   Rinex3NavHeader Rheadout,Rhead;
 
    for(nfiles=0,nfile=0; nfile<C.InputNavFiles.size(); nfile++) {
       
@@ -539,8 +539,8 @@ try {
 
       // loop over the nav records
       try {
-         RinexNavStream strm;
-         RinexNavData Rdata;
+         Rinex3NavStream strm;
+         Rinex3NavData Rdata;
          
          strm.open(filename.c_str(), ios::in);
          if(!strm.is_open()) {
@@ -611,22 +611,22 @@ try {
          {
             if(Rheadout.mapTimeCorr.find(tcit->first) == Rheadout.mapTimeCorr.end()) {
                Rheadout.mapTimeCorr[tcit->first] = tcit->second;
-               Rheadout.valid |= RinexNavHeader::validTimeSysCorr;
+               Rheadout.valid |= Rinex3NavHeader::validTimeSysCorr;
             }
          }
    
          // add Iono Correction records from Rhead to Rheadout
-         map<string,RinexNavHeader::IonoCorr>::iterator icit;
+         map<string,Rinex3NavHeader::IonoCorr>::iterator icit;
          for(icit=C.NavStore.Rhead.mapIonoCorr.begin();
                icit != C.NavStore.Rhead.mapIonoCorr.end(); ++icit)
          {
             if(Rheadout.mapIonoCorr.find(icit->first) == Rheadout.mapIonoCorr.end()) {
                Rheadout.mapIonoCorr[icit->first] = icit->second;
-               if(icit->second.type == RinexNavHeader::IonoCorr::GPSA
-                  || icit->second.type == RinexNavHeader::IonoCorr::GPSB)
-                     Rheadout.valid |= RinexNavHeader::validIonoCorrGPS;
+               if(icit->second.type == Rinex3NavHeader::IonoCorr::GPSA
+                  || icit->second.type == Rinex3NavHeader::IonoCorr::GPSB)
+                     Rheadout.valid |= Rinex3NavHeader::validIonoCorrGPS;
                else
-                  Rheadout.valid |= RinexNavHeader::validIonoCorrGal;
+                  Rheadout.valid |= Rinex3NavHeader::validIonoCorrGal;
             }
          }
       }
@@ -669,15 +669,15 @@ try {
    LOG(VERBOSE) << "Output (merged) header:";
    if(C.verbose) Rheadout.dump(LOGstrm);
 
-   // get full list of RinexNavData
-   list<RinexNavData> theList,theFullList;
+   // get full list of Rinex3NavData
+   list<Rinex3NavData> theList,theFullList;
    C.NavStore.addToList(theFullList);
    
    // N... is what was read; n... will be what is kept
    int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nCOM(0);
 
    // must edit out any excluded sats
-   list<RinexNavData>::const_iterator listit;
+   list<Rinex3NavData>::const_iterator listit;
    if(C.exclSat.size() > 0) {
       for(listit = theFullList.begin(); listit != theFullList.end(); ++listit) {
          // skip excluded sats/systems
@@ -722,7 +722,7 @@ try {
       string sys(it->first);
       string filename(it->second);
 
-      RinexNavStream ostrm;
+      Rinex3NavStream ostrm;
       ostrm.open(filename.c_str(),ios::out);
       if(!ostrm.is_open()) {
          LOG(ERROR) << "Error : could not open output file " << filename;
@@ -733,10 +733,10 @@ try {
       LOG(INFO) << " Opened output RINEX ver 3 file " << filename;
 
       // prepare header
-      RinexNavHeader rhead(Rheadout);
+      Rinex3NavHeader rhead(Rheadout);
       // set version; NB set the version before calling setFileSystem()
       if(rhead.version < 3.01)
-         rhead.version = 3.01;  // this necessary? shouldn't RinexNavHeader do it?
+         rhead.version = 3.01;  // this necessary? shouldn't Rinex3NavHeader do it?
 
       // reset the file system
       // set system to mixed if more than one store
@@ -775,7 +775,7 @@ try {
       string sys(it->first);
       string filename(it->second);
 
-      RinexNavStream ostrm;
+      Rinex3NavStream ostrm;
       ostrm.open(filename.c_str(),ios::out);
       if(!ostrm.is_open()) {
          LOG(ERROR) << "Error : could not open output file " << filename;
@@ -786,7 +786,7 @@ try {
       LOG(INFO) << "Opened output RINEX ver 2 file " << filename;
 
       // prepare header
-      RinexNavHeader rhead(Rheadout);
+      Rinex3NavHeader rhead(Rheadout);
       // set version; NB set the version before calling setFileSystem()
       rhead.version = 2.11;
 

@@ -28,40 +28,40 @@ Version 2.0   Thursday, 24 May, 2012
        GPSAlmanacStore.hpp
        ReferenceFrame.cpp
        ReferenceFrame.hpp
-       RinexClockBase.hpp
-       RinexClockData.cpp
-       RinexClockData.hpp
-       RinexClockHeader.cpp
-       RinexClockHeader.hpp
-       RinexClockStream.hpp
-       RinexEphemerisStore.cpp
-       RinexEphemerisStore.hpp
+       Rinex3ClockBase.hpp
+       Rinex3ClockData.cpp
+       Rinex3ClockData.hpp
+       Rinex3ClockHeader.cpp
+       Rinex3ClockHeader.hpp
+       Rinex3ClockStream.hpp
+       Rinex3EphemerisStore.cpp
+       Rinex3EphemerisStore.hpp
 	   Added handling of time transformations in mixed system processing.
 
-       RinexNavBase.hpp
-       RinexNavData.cpp
-       RinexNavData.hpp
-       RinexNavFilterOperators.hpp
-       RinexNavHeader.cpp
-       RinexNavHeader.hpp
+       Rinex3NavBase.hpp
+       Rinex3NavData.cpp
+       Rinex3NavData.hpp
+       Rinex3NavFilterOperators.hpp
+       Rinex3NavHeader.cpp
+       Rinex3NavHeader.hpp
 	  Added handling of time transformations in mixed system processing.
 
-       RinexNavStream.hpp
-       RinexObsBase.hpp
-       RinexObsData.cpp
-       RinexObsData.hpp
-	   The new 'RinexObsData' method was modified and renamed to improve consistency 	     with the former GPSTk version, and a new method was added. 
+       Rinex3NavStream.hpp
+       Rinex3ObsBase.hpp
+       Rinex3ObsData.cpp
+       Rinex3ObsData.hpp
+	   The new 'Rinex3ObsData' method was modified and renamed to improve consistency 	     with the former GPSTk version, and a new method was added. 
 
-       RinexObsFilterOperators.hpp
-       RinexObsHeader.cpp
-       RinexObsHeader.hpp
-       RinexObsStream.hpp
+       Rinex3ObsFilterOperators.hpp
+       Rinex3ObsHeader.cpp
+       Rinex3ObsHeader.hpp
+       Rinex3ObsStream.hpp
        RinexConverter.cpp
        RinexConverter.hpp
        TimeSystem.cpp
        TimeSystem.hpp
        TimeSystemCorr.hpp
-	   Move TimeSystem correction out of RinexNavHeader and into its own class, 		   preparatory to implementing time system conversions and doing real mixed-system 		   applications.
+	   Move TimeSystem correction out of Rinex3NavHeader and into its own class, 		   preparatory to implementing time system conversions and doing real mixed-system 		   applications.
 
        TypeID.cpp
        TypeID.hpp
@@ -280,7 +280,7 @@ Version 2.0   Thursday, 24 May, 2012
 	  Minor modifications to silence compiler warnings.
 
        ObsID.hpp
-       RinexObsHeader.[h|c]pp
+       Rinex3ObsHeader.[h|c]pp
        RinexSatID.hpp
        SatID.hpp
 	  Partial update to RINEX 3.01. 
@@ -293,7 +293,7 @@ Version 2.0   Thursday, 24 May, 2012
        SP3EphemerisStore.[h|c]pp
 	  Modified SP3EphemerisStore to use either the SP3 clocks or
 	  Rinex clock files.  Added classes for Rinex clock files RinexClock*;
-	  these are very similar to, and will replace RinexClock* classes.
+	  these are very similar to, and will replace Rinex3Clock* classes.
 
        FileStore.hpp
        GPSEphemerisStore.hpp
@@ -311,7 +311,7 @@ Version 2.0   Thursday, 24 May, 2012
        ENUUtil.cpp
        EngEphemeris.cpp
        EngEphemeris.hpp
-          Removed protection on EngEphemeris variables to make it easier to convert from 		  RinexNavData to EngEphemeris objects.
+          Removed protection on EngEphemeris variables to make it easier to convert from 		  Rinex3NavData to EngEphemeris objects.
 
        EphemerisRange.cpp
        EphemerisRange.hpp
@@ -328,7 +328,7 @@ Version 2.0   Thursday, 24 May, 2012
        OrbElemStore.hpp
        PRSolution.cpp
        RACRotation.cpp
-       RinexObsHeader.cpp
+       Rinex3ObsHeader.cpp
        RinexNavFilterOperators.hpp
        RinexUtilities.cpp
        RinexUtilities.hpp
@@ -371,7 +371,7 @@ Version 2.0   Thursday, 24 May, 2012
 	  CommonTime.
 
        ObsID.[h|c]pp
-       RinexObsHeader.cpp
+       Rinex3ObsHeader.cpp
        ModeledPseudorangeBase.hpp
 	  Files adapted to new classes from obsoleted classes in RC2.0.
 
@@ -385,7 +385,7 @@ Version 2.0   Thursday, 24 May, 2012
 	  Silence some warnings issued by MS compilers regarding the length
 	  of map names.
 
-       RinexObsHeader.cpp
+       Rinex3ObsHeader.cpp
        SP3EphemerisStore.[h|c]pp
        TabularSatStore.hpp
 	  Added a flag to reject predicted ephemeris data (ultrarapid IGS);
@@ -399,13 +399,13 @@ Version 2.0   Thursday, 24 May, 2012
        icd_gps_constants.hpp
 	  Added L5_MULT constant.
 
-       RinexNavData.[h|c]pp
+       Rinex3NavData.[h|c]pp
 	  MFtime must be an int, short is too short.
 
-       RinexNavHeader.[h|c]pp
+       Rinex3NavHeader.[h|c]pp
 	  Add CORR TO TIME SYS record and support for version 3.01.
 
-       RinexObsData.[h|c]pp
+       Rinex3ObsData.[h|c]pp
 	  Add dump() that uses the header.
 	 
        RinexClockStore.hpp
@@ -546,7 +546,7 @@ Version 2.0   Thursday, 24 May, 2012
 	  Added preciseRho function which was originally in the now 
 	  obsoleted class, Xt.
 
-       RinexNAVData.cpp
+       Rinex3NAVData.cpp
 	  Added Geosync or SBAS system.
 
        RinexGloNavData.[h|c]pp
@@ -585,7 +585,7 @@ Version 2.0   Thursday, 24 May, 2012
        PackedNavBits.cpp
        PoleTides.hpp
        Position.cpp
-       RinexNavData.cpp
+       Rinex3NavData.cpp
        RinexEphemerisStore.cpp
        RinexNavData.cpp
        SEMData.cpp
@@ -620,8 +620,8 @@ Version 2.0   Thursday, 24 May, 2012
        GPSGeoid.hpp
        IonoModel.cpp
        PRSolution.cpp
-       RinexClockData.hpp
-       RinexClockHeader.cpp
+       Rinex3ClockData.hpp
+       Rinex3ClockHeader.cpp
        Xvt.hpp
 	  Changed 'C_GPS_MPS' instances to 'C_MPS'.
 
@@ -772,20 +772,20 @@ Version 2.0   Thursday, 24 May, 2012
        RK4VehicleModel.[h|c]pp
        RTFileFrame.hpp
        ReferenceFrame.[h|c]pp
-       RinexClockBase.[h|c]pp
-       RinexClockData.[h|c]pp
-       RinexClockHeader.[h|c]pp
-       RinexClockStream.hpp
-       RinexNavBase.hpp
-       RinexNavData.[h|c]pp
-       RinexNavFilterOperators.hpp
-       RinexNavHeader.[h|c]pp
-       RinexNavStream.hpp
-       RinexObsBase.hpp
-       RinexObsData.[h|c]pp
-       RinexObsFilterOperators.hpp
-       RinexObsHeader.[h|c]pp
-       RinexObsStream.hpp
+       Rinex3ClockBase.[h|c]pp
+       Rinex3ClockData.[h|c]pp
+       Rinex3ClockHeader.[h|c]pp
+       Rinex3ClockStream.hpp
+       Rinex3NavBase.hpp
+       Rinex3NavData.[h|c]pp
+       Rinex3NavFilterOperators.hpp
+       Rinex3NavHeader.[h|c]pp
+       Rinex3NavStream.hpp
+       Rinex3ObsBase.hpp
+       Rinex3ObsData.[h|c]pp
+       Rinex3ObsFilterOperators.hpp
+       Rinex3ObsHeader.[h|c]pp
+       Rinex3ObsStream.hpp
        RinexConverter.[h|c]pp
        RinexEphemerisStore.[h|c]pp
        RinexGloNavData.[h|c]pp
@@ -1216,7 +1216,7 @@ Version 2.0   Thursday, 24 May, 2012
    - Added to apps
 
        /Rinextools/Rin3Sum.cpp
-       /Rinextools/RinexDump.cpp
+       /Rinextools/Rinex3Dump.cpp
        /converters/RinexConvert.cpp
        /converters/RinexConvert.hpp
        /positioning/PRSolveR3.cpp
@@ -1530,7 +1530,7 @@ Version 2.0   Thursday, 24 May, 2012
        /Rinextools/ResCor.cpp
        /Rinextools/Rin3Sum.cpp
        /Rinextools/RinSum.cpp
-       /Rinextools/RinexDump.cpp
+       /Rinextools/Rinex3Dump.cpp
        /converters/ash2xyz.cpp
        /differential/vecsol.cpp
        /geomatics/relposition/Synchronization.cpp
@@ -1575,7 +1575,7 @@ Version 2.0   Thursday, 24 May, 2012
 
        /RinexNav/xRinexTest.cpp
 	  Added new tests for the EngEphemeris cast operator, found in 	
-	  src/RinexNavData.cpp
+	  src/Rinex3NavData.cpp
 
        /gpsNavMsg/xCNAV2EphClk.cpp
        /gpsNavMsg/xCNAV2EphClockPNB.cpp
@@ -1939,7 +1939,7 @@ Version 1.7   Friday, 8 October, 2010
           Geomatics update.
 
        RinexSatID.[h|c]pp
-          Fixed minor formatting issue; identical to Rinex branch (.hpp only).
+          Fixed minor formatting issue; identical to Rinex3 branch (.hpp only).
           Also removed invalid mixed system type.
 
        CommandOption.hpp
@@ -2779,8 +2779,8 @@ Version 1.6   Tuesday, June 19, 2009
 
    - Majority of version 1.6 comprised of revision number 1962, branching
      took place under revision 1962 from dev/ to branches/RC1.6/
-   - There is now a Rinex development branch. This release does not include
-     support for Rinex but we hope to include it in the future.
+   - There is now a Rinex3 development branch. This release does not include
+     support for Rinex3 but we hope to include it in the future.
    - Major improvements in readability of code by adding new comments and
      rearraging a lot of code
    - Added the LGPL to serveral files from which it was missing.
