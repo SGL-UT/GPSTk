@@ -266,6 +266,31 @@ namespace gpstk
           return v;
       }
 
+   inline Vector& operator<<(const Vector& b)
+   {
+       size_t i;
+       size_t vs = this->size();
+       size_t bs = b.size();
+       size_t rows = vs + bs;
+       Vector<T> toReturn(rows);
+
+       for (i = 0; i < vs; i++)
+           toReturn[i] = (*this)[i];
+
+       for (i = 0; i < bs; i++)
+           toReturn[i+vs] = b[i];
+
+       (*this) = toReturn;
+
+       return (*this);
+   }
+
+   /// Returns the concatenation of this Vector and a scalar of type T
+   inline Vector& operator<<(const T &b) 
+   {
+       return (*this) << Vector(1,b);
+   }
+
     /// Returns the concatenation of this Vector and Vector b
     inline Vector operator&&(const Vector &b) 
     {

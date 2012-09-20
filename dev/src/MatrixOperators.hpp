@@ -215,6 +215,33 @@ namespace gpstk
       return toReturn;
    }
 
+   /** 
+ * Returns the left to right concatenation of Vector l and Vector r
+ * only if they have the same number of rows.
+ */
+   template <class T, class BaseClass1, class BaseClass2>
+   inline Matrix<T> operator||(const ConstVectorBase<T, BaseClass1>& l,
+                            const ConstVectorBase<T, BaseClass2>& r)
+      throw(MatrixException)
+   {
+      if (l.size() != r.size())
+      {
+         MatrixException e("Incompatible dimensions for Vector || Vector");
+         GPSTK_THROW(e);
+      }
+
+      size_t rows = r.size();
+      Matrix<T> toReturn(rows, 2);
+
+      for (rows = 0; rows < r.size(); rows++)
+      {
+        toReturn(rows, 0) = l(rows);
+        toReturn(rows, 1) = r(rows);
+      }
+
+      return toReturn;
+   }
+
 /** 
  * Returns the minor matrix of l at element (row, col).  A minor matrix is the
  * same matrix as \c l but with row \c row and col \c col removed.

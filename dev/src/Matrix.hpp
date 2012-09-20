@@ -81,8 +81,9 @@ namespace gpstk
          /// copies out the contents of vec to initialize the matrix
       template <class BaseClass>
       Matrix(size_t rows, size_t cols, const ConstVectorBase<T, BaseClass>& vec)
-         : v(vec), r(rows), c(cols), s(rows * cols)
-      {}
+         : v(rows*cols), r(rows), c(cols), s(rows * cols)
+      { assignFrom(vec); }
+
          /// constructor for a ConstMatrixBase object
       template <class BaseClass>
       Matrix(const ConstMatrixBase<T, BaseClass>& mat) 
