@@ -84,7 +84,9 @@ try {
    EOPFileNames.clear();
       // time limits
    BegTime = CommonTime::BEGINNING_OF_TIME;
+   BegTime.setTimeSystem(TimeSystem::Any);
    EndTime = CommonTime::END_OF_TIME;
+   EndTime.setTimeSystem(TimeSystem::Any);
       // process configuration
    Frequency = 1;
       // stochastic model
@@ -1178,6 +1180,9 @@ try {
    //   ok = false;
    //}
 
+
+   BegTime.setTimeSystem(TimeSystem::Any);
+   EndTime.setTimeSystem(TimeSystem::Any);
    if(BegTime > CommonTime::BEGINNING_OF_TIME &&
       EndTime < CommonTime::END_OF_TIME &&
       BegTime >= EndTime)
