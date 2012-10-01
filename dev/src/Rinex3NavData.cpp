@@ -47,6 +47,8 @@
 #include "GNSSconstants.hpp"
 
 #include "Rinex3NavData.hpp"
+#include "OrbElemRinex.hpp"
+
 
 namespace gpstk
 {
@@ -123,6 +125,78 @@ namespace gpstk
 //      BGDb = ee.getBGDb(); // Galileo only
 
    }  // End of 'Rinex3NavData::Rinex3NavData(const EngEphemeris& ee)'
+
+   Rinex3NavData::Rinex3NavData( OrbElem* oeb) // GPS only
+   {
+      // epoch info
+
+     
+      // This throws a bad_cast exception if oe isn't really a OrbElemRinex
+      OrbElemRinex* oe = dynamic_cast<OrbElemRinex*>(oeb);    
+      // Use oer to initialize *this
+
+      PRNID  = oe->satID.id;
+      sat    = RinexSatID(PRNID,SatID::systemGPS);
+      time   = oe->beginValid;
+      satSys = "G";
+
+      Toc     = (static_cast<GPSWeekSecond>(oe->ctToc)).sow;
+      HOWtime = long(oe->HOWtime);
+      weeknum = (static_cast<GPSWeekSecond>(oe->transmitTime)).week;
+
+      accuracy = oe->accuracyValue;
+      health   = oe->health;
+
+      // GPS or Galileo data
+
+      af0 = oe->af0; // GPS and Galileo only
+      af1 = oe->af1; // GPS and Galileo only
+      af2 = oe->af2; // GPS and Galileo only
+
+      Crs = oe->Crs; // GPS and Galileo only
+      dn  = oe->dn;  // GPS and Galileo only
+      M0  = oe->M0;  // GPS and Galileo only
+
+      Cuc   = oe->Cuc;   // GPS and Galileo only
+      ecc   = oe->ecc;   // GPS and Galileo only
+      Cus   = oe->Cus;   // GPS and Galileo only
+      Ahalf = SQRT(oe->A); // GPS and Galileo only
+
+      Toe    = (static_cast<GPSWeekSecond>(oe->ctToe)).sow;    // GPS and Galileo only
+      Cic    = oe->Cic;    // GPS and Galileo only
+      OMEGA0 = oe->OMEGA0; // GPS and Galileo only
+      Cis    = oe->Cis;    // GPS and Galileo only
+
+      i0       = oe->i0;       // GPS and Galileo only
+      Crc      = oe->Crc;      // GPS and Galileo only
+      w        = oe->w;        // GPS and Galileo only
+      OMEGAdot = oe->OMEGAdot; // GPS and Galileo only
+
+      idot = oe->idot; // GPS and Galileo only
+
+      // GPS-only data
+
+     // IODE = oe->getIODE(); // GPS only
+
+      codeflgs = oe->codeflags; // GPS only
+      L2Pdata  = oe->L2Pdata;   // GPS only
+
+      Tgd  = oe->Tgd;  // GPS only
+      IODC = oe->IODC; // GPS only
+
+      fitint = oe->fitDuration; // GPS only
+
+      // Galileo-only data
+
+//      IODnav = ee.getIODnav(); // Galileo only
+
+//      datasources = ee.getDatasources(); // Galileo only
+
+//      BGDa = ee.getBGDa(); // Galileo only
+//      BGDb = ee.getBGDb(); // Galileo only
+
+  }  // End of 'Rinex3NavData::Rinex3NavData(const OrbElemRinex* oe)'
+
 
 
       // This constructor initializes R3NavData with Galileo data.

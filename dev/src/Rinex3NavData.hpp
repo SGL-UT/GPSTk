@@ -56,6 +56,7 @@
 #include "GalEphemeris.hpp"
 #include "GloEphemeris.hpp"
 #include "RinexSatID.hpp"
+#include "OrbElem.hpp"
 
 namespace gpstk
 {
@@ -78,10 +79,13 @@ namespace gpstk
           * @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE
           *          USING!!!.
           */
+
       Rinex3NavData(void)
         : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
       {}
 
+         /// Initializes the nav data with an OrbElemRinex
+      Rinex3NavData(OrbElem* oeb);
 
          /// Initializes the nav data with an EngEphemeris
       Rinex3NavData(const EngEphemeris& ee);
