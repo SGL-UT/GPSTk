@@ -54,10 +54,18 @@
 #include <cctype>
 #include <limits>
 
-#include <regex.h>
-
 #ifdef _WIN32
-#pragma comment(lib, "regex.lib") 
+	#if _MSC_VER < 1700 
+        // For lower version of visual studio 2012 use gnu regex 
+		#include <regex.h>
+		#pragma comment(lib, "regex.lib") 
+	#else
+        // visual studio 2012 support c++ 0x, and we use std::regex
+		#include <regex>
+	#endif
+#else
+    // TODO: we should use std::regex for upper than g++ 4.6
+	#include <regex.h>			
 #endif
 
 #include "Exception.hpp"
@@ -2002,28 +2010,55 @@ namespace gpstk
                                  const char anyChar)
          throw(StringException)
       {
+		  std::string thisPattern(aPattern);
+		  std::string thisStr(s);
+
+		  // check if something other than the regex standard
+		  // characters (*,+,.) is used for those variables
+		  if (zeroOrMore != '*')
+		  {
+			  replaceAll(thisPattern, "*", "\\*");
+			  replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
+		  }
+		  if (oneOrMore != '+')
+		  {
+			  replaceAll(thisPattern, "+", "\\+");
+			  replaceAll(thisPattern, std::string(1, oneOrMore), "+");
+		  }
+		  if (anyChar != '.')
+		  {
+			  replaceAll(thisPattern, ".", "\\.");
+			  replaceAll(thisPattern, std::string(1, anyChar), ".");
+		  }
+
+#if defined(_WIN32) && _MSC_VER >= 1700
+		  try
+		  {
+			  std::regex reg (thisPattern);
+
+			  std::smatch sm;
+			  if(std::regex_search(thisStr,sm,reg,
+				  std::regex_constants::match_not_bol|
+				  std::regex_constants::match_not_eol))
+			  {
+				  return sm.str();
+			  }
+			  else
+			  {
+				  return std::string();
+			  }
+		  }
+		  catch(std::regex_error& e)
+		  {
+			  Exception E(std::string("std::regex_error: ") + e.what() );
+			  GPSTK_THROW(E);
+		  }
+		  
+#else
+
          const std::string::size_type regErrorBufSize = 512;
 
-         std::string thisPattern(aPattern);
-         std::string thisStr(s);
-
-            // check if something other than the regex standard
-            // characters (*,+,.) is used for those variables
-         if (zeroOrMore != '*')
-         {
-            replaceAll(thisPattern, "*", "\\*");
-            replaceAll(thisPattern, std::string(1, zeroOrMore), "*");
-         }
-         if (oneOrMore != '+')
-         {
-            replaceAll(thisPattern, "+", "\\+");
-            replaceAll(thisPattern, std::string(1, oneOrMore), "+");
-         }
-         if (anyChar != '.')
-         {
-            replaceAll(thisPattern, ".", "\\.");
-            replaceAll(thisPattern, std::string(1, anyChar), ".");
-         }
+         
          regmatch_t matches;
          regex_t regExp;
          char errorMsg[regErrorBufSize];
@@ -2051,6 +2086,7 @@ namespace gpstk
             return std::string();
          else
             return thisStr.substr(matches.rm_so, matches.rm_eo - matches.rm_so);
+#endif
       }
 
       template <class T>
@@ -2060,6 +2096,34 @@ namespace gpstk
                                         T to)
          throw(StringException)
       {
+#if defined(_WIN32) && _MSC_VER >= 1700
+        
+          std::string rv(fmt);
+
+        try
+        {
+	        std::regex reg(pat); 
+
+	        std::smatch m;
+	        while (std::regex_search (rv,m,reg)) 
+	        {
+		        std::string mac = m.str();
+		        mac = StringUtils::replaceAll(mac, rep.substr(0,1), rep.substr(1));
+
+		        char buffer[1024];
+		        sprintf(buffer, mac.c_str(), to);
+
+		        rv.replace(m.position(), m.length(), std::string(buffer));
+	        }
+        }
+        catch(std::regex_error& e)
+        {
+	        Exception E(std::string("std::regex_error:")+e.what());
+	        GPSTK_THROW(E);
+        }
+
+        return rv;
+#else
          regex_t re;
          const size_t bufferSize = 513;
          char buffer[bufferSize];
@@ -2087,6 +2151,7 @@ namespace gpstk
          
          regfree(&re);
          return rv;
+#endif
       }
       
       inline std::string subString(const std::string& s, 
