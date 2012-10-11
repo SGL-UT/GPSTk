@@ -126,13 +126,13 @@ namespace gpstk
 
    }  // End of 'Rinex3NavData::Rinex3NavData(const EngEphemeris& ee)'
 
-   Rinex3NavData::Rinex3NavData( OrbElem* oeb) // GPS only
+   Rinex3NavData::Rinex3NavData(const OrbElem* oeb) // GPS only
    {
       // epoch info
 
      
       // This throws a bad_cast exception if oe isn't really a OrbElemRinex
-      OrbElemRinex* oe = dynamic_cast<OrbElemRinex*>(oeb);    
+      const OrbElemRinex* oe = dynamic_cast<const OrbElemRinex*>(oeb);    
       // Use oer to initialize *this
 
       PRNID  = oe->satID.id;

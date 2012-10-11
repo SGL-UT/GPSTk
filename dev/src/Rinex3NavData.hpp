@@ -85,7 +85,7 @@ namespace gpstk
       {}
 
          /// Initializes the nav data with an OrbElemRinex
-      Rinex3NavData(OrbElem* oeb);
+      Rinex3NavData(const OrbElem* oeb);
 
          /// Initializes the nav data with an EngEphemeris
       Rinex3NavData(const EngEphemeris& ee);
