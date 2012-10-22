@@ -342,7 +342,7 @@ try {
    double dt;
 
       // round receiver epoch to even multiple of data interval, else even second
-   Epoch SolutionEpoch = EarliestTime;
+   SolutionEpoch = EarliestTime;
    sow = static_cast<GPSWeekSecond>(SolutionEpoch).sow;
    sow = CI.DataInterval * double(int(sow/CI.DataInterval + 0.5));
    SolutionEpoch += (sow - static_cast<GPSWeekSecond>(SolutionEpoch).sow);
