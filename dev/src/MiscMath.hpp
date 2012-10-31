@@ -72,12 +72,12 @@ namespace gpstk
         GPSTK_ASSERT(X.size()==Y.size());
 
         T Yx(0.0);
-        for(size_t i=0;i<X.size();i++)
+        for(std::size_t i=0;i<X.size();i++)
         {
             if(x==X[i]) return Y[i];
 
             T Li(1.0);
-            for(size_t j=0;j<X.size();j++)
+            for(std::size_t j=0;j<X.size();j++)
             {
                 if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
             }
@@ -96,7 +96,7 @@ namespace gpstk
    template <class T>
    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& err)
    {
-      size_t i,j,k;
+      std::size_t i,j,k;
       T y,del;
       std::vector<T> D,Q;
 
