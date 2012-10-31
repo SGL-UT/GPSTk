@@ -518,7 +518,7 @@ void compStaVis::process()
    {
       if (debugLevel)
       {
-         long sec = (long) static_cast<CivilTime>(currT).second;
+         long sec = (long) static_cast<YDSTime>(currT).sod;
          long newValue = sec / 3600;
          if (newValue!=lastValue)
          {
