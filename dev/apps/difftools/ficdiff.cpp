@@ -27,6 +27,8 @@
 #include <set>
 #include <algorithm>
 #include <iomanip>
+#include <fstream>
+#include <iostream>
 
 #include "FICFilterOperators.hpp"
 #include "FileFilterFrame.hpp"
@@ -86,9 +88,28 @@ void FICDiff::process()
    {
       string fname1 = inputFileOption.getValue()[0];
       string fname2 = inputFileOption.getValue()[1];
+      
+      //Check to make sure the files exist. Please replace code with something more efficient
+      const char* fn1 = fname1.c_str();
+      const char* fn2 = fname2.c_str();
 
+      FILE *fp1 = fopen(fn1,"r");
+      if( !(fp1) ) 
+      {
+         cout << "Input file(s) not found. Check file paths" << endl;
+         return;
+      }
+
+      FILE *fp2 = fopen(fn2,"r");
+      if( !(fp2) ) 
+      {
+         cout << "Input file(s) not found. Check file paths" << endl;
+         return;
+      }
+      
       FileFilterFrame<FICStream, FICData> ff1(fname1);
       FileFilterFrame<FICStream, FICData> ff2(fname2);
+      
 
       ff1.sort(FICDataOperatorLessThanFull());
       ff2.sort(FICDataOperatorLessThanFull());

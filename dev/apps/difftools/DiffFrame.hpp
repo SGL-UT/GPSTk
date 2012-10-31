@@ -28,6 +28,9 @@
 #include "CommandOptionWithTimeArg.hpp"
 #include "BasicFramework.hpp"
 
+using namespace std;
+using namespace gpstk;
+
 class DiffFrame : public gpstk::BasicFramework
 {
 public:
@@ -69,6 +72,11 @@ public:
          std::cerr << "This program requires two input files." << std::endl;
          return false;
       }
+      
+      string fname1 = inputFileOption.getValue()[0];
+      string fname2 = inputFileOption.getValue()[1];
+      
+      //
 
       if (timeOption.getCount())
       {
