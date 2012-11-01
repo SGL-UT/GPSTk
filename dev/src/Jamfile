@@ -288,6 +288,7 @@ else
       GloEphemeris.hpp
       GloEphemerisStore.hpp
       GloFreqIndex.hpp
+      GNSSconstants.hpp
       GPSAlmanacStore.hpp
       GPSEllipsoid.hpp	
       GPSEphemerisStore.hpp
