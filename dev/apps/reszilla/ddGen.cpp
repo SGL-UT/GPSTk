@@ -449,7 +449,7 @@ void DDGen::process()
       // this option was only allowed for the master SV method, i.e. !computeAll
       if (verboseLevel)
          cout << "# Computing averages for windows of " << window << " seconds.\n";
-      ddem.outputAverages(cout);   
+      ddem.outputAverages(cout);
    }
    
    ddem.outputStats(cout, elr, sl, strip);

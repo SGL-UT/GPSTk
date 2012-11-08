@@ -324,6 +324,11 @@ void OrdStats::process()
          }
       }
       
+      if (good.N() < 3)
+      {
+         output << "Insufficient data" << endl;
+         return;
+      }
       char b1[200];
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
       double max = std::max(std::abs(good.Maximum()),
