@@ -388,7 +388,7 @@ def main():
 
 
 def parse_time(words):
-    fsec = float(words[2][8:10])
+    fsec = float(words[2][8:])
     ydhms =  words[0]+" "+words[1]+" "+words[2][0:8]
     utime = time.strptime(ydhms, "%Y %j %H:%M:%S")
     dtime = datetime.datetime(utime[0], utime[1], utime[2],
