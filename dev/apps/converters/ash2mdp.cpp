@@ -94,6 +94,10 @@ public:
           "A string that specifies a section of the file to remove. Example: "
           "-c 123-456 will remove bytes starting with 123 through 456.");
 
+       CommandOptionNoArg unsmoothOption(
+          'u', "unsmooth",
+          "Remove the ashtech smoothing from the pseudorange");
+
        if (!InOutFramework<AshtechStream, MDPStream>::initialize(argc,argv))
          return false;
 
@@ -117,12 +121,16 @@ public:
          cutList.push_back( pair< unsigned long, unsigned long>(start, end) );
       }
 
+      removeSmoothing = unsmoothOption.getCount();
+
       if (debugLevel)
       {
          cout << "Removing bytes:";
          for (CutList::const_iterator i=cutList.begin(); i != cutList.end(); i++)
             cout << " " << i->first << "..." << i->second;
          cout << endl;
+         if (removeSmoothing)
+            cout << "Removing smoothing from pseudoranges" << endl;
       }
 
       return true;
@@ -232,7 +240,7 @@ protected:
             {
                hint[mben.svprn].time = GPSWeekSecond(time.week, time.sow);
                hint[mben.svprn].numSVs = svCount;
-               MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn]);
+               MDPObsEpoch moe = makeMDPObsEpoch(mben, hint[mben.svprn], removeSmoothing);
                moe.freshnessCount = fc++;
                hint[mben.svprn] = moe;
                output << moe << flush;
@@ -257,13 +265,11 @@ protected:
                EngEphemeris engEph;
                if (makeEngEphemeris(engEph, ephPageStore))
                {
-                  
                   int week10 = 0x3ff & engEph.getFullWeek();
-                  //CommonTime now;
-                  Epoch now;
-                  now.setLocalTime();
+                  SystemTime now;
+                  if (debugLevel)
+                     cout << now << endl;
                   GPSWeekSecond gs(now);
-                  //time.week = (now.GPSfullweek() & ~0x3ff) | week10;
                   time.week = (gs.week & ~0x3ff) | week10;
                   if (debugLevel)
                      cout << "week is " << time.week << endl;
@@ -308,6 +314,7 @@ protected:
    virtual void shutDown()
    {}
 
+   bool removeSmoothing;
    GPSWeekSecond time;
    int week;
    typedef  list< pair<unsigned long,unsigned long> >CutList;
