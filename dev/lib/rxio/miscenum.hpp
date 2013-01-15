@@ -55,8 +55,8 @@ namespace gpstk
       rcCodeless = 4,
       rcCM       = 5,
       rcCL       = 6,
-      rcMcode1   = 7,
-      rcMcode2   = 8, // This should not be used
+      rcI5       = 7,
+      rcQ5       = 8,
       rcCMCL     = 9,
       rcMax
    };
@@ -112,8 +112,8 @@ namespace gpstk
             case rcCodeless: return "Z";
             case rcCM:       return "CM";
             case rcCL:       return "CL";
-            case rcMcode1:   return "M1";
-            case rcMcode2:   return "M2";
+            case rcI5:       return "I5";
+            case rcQ5:       return "Q5";
             case rcCMCL:     return "CMCL";
          }
          return "BadRangeCode";

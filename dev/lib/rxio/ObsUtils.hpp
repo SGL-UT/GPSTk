@@ -82,14 +82,16 @@ namespace gpstk
    /// hint is used to provide the data that is not natively in the MBEN data
    MDPObsEpoch makeMDPObsEpoch(
       const AshtechMBEN& mben,
-      const MDPObsEpoch& hint) throw();
+      const MDPObsEpoch& hint,
+      bool removeSmoothing=false) throw();
 
    void addMDPObservation(
       MDPObsEpoch& moe,
       const AshtechMBEN::code_block& cb,
       CarrierCode cc,
       RangeCode rc,
-      const MDPObsEpoch& moe_hint) throw();
+      const MDPObsEpoch& moe_hint,
+      bool removeSmoothing) throw();
 
    MDPPVTSolution makeMDPPVTSolution(
       const AshtechPBEN& pben,

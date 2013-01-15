@@ -82,8 +82,8 @@ namespace gpstk
             case rcCodeless: tc = ObsID::tcW; break;
             case rcCM:       tc = ObsID::tcC2M; break;
             case rcCL:       tc = ObsID::tcC2L; break;
-            case rcMcode1:   tc = ObsID::tcM; break;
-            case rcMcode2:   tc = ObsID::tcM; break;
+            case rcI5:       tc = ObsID::tcI5; break;
+            case rcQ5:       tc = ObsID::tcQ5; break;
             case rcCMCL:     tc = ObsID::tcC2LM; break;
             default:         tc = ObsID::tcUnknown;
          }
@@ -200,7 +200,8 @@ namespace gpstk
                           const AshtechMBEN::code_block& cb,
                           CarrierCode cc,
                           RangeCode rc,
-                          const MDPObsEpoch& moe_hint) throw()
+                          const MDPObsEpoch& moe_hint,
+                          bool removeSmoothing) throw()
    {
       // fixup the range code to match what is indicated by the goodbad flag
       if (rc != rcCA)
@@ -224,6 +225,8 @@ namespace gpstk
       obs.doppler = -cb.doppler; // yeah, the Ashtech sign is backwards
       obs.bw=1;
       obs.lockCount = 0;
+      if (removeSmoothing)
+         obs.pseudorange -= cb.smoothing;
 
       if (moe_hint.haveObservation(cc, rc))
       {
@@ -242,7 +245,8 @@ namespace gpstk
    //---------------------------------------------------------------------------
    MDPObsEpoch makeMDPObsEpoch(
       const AshtechMBEN& mben,
-      const MDPObsEpoch& hint) throw()
+      const MDPObsEpoch& hint,
+      bool removeSmoothing) throw()
    {
       MDPObsEpoch moe;
 
@@ -270,12 +274,12 @@ namespace gpstk
       moe.elevation = mben.el;
       moe.azimuth = mben.az;
 
-      addMDPObservation(moe, mben.ca, ccL1, rcCA, hint);
+      addMDPObservation(moe, mben.ca, ccL1, rcCA, hint, removeSmoothing);
 
       if (mben.id == AshtechMBEN::mpcId)
       {
-         addMDPObservation(moe, mben.p1, ccL1, rcPcode, hint);
-         addMDPObservation(moe, mben.p2, ccL2, rcPcode, hint);
+         addMDPObservation(moe, mben.p1, ccL1, rcPcode, hint, removeSmoothing);
+         addMDPObservation(moe, mben.p2, ccL2, rcPcode, hint, removeSmoothing);
       }
       return moe;
    }
@@ -365,8 +369,8 @@ namespace gpstk
                case 0: obsKey = MDPObsEpoch::ObsKey(ccL1, rcCA);     break;
                case 1: obsKey = MDPObsEpoch::ObsKey(ccL1, rcYcode);  break;
                case 2: obsKey = MDPObsEpoch::ObsKey(ccL2, rcYcode);  break;
-               case 3: obsKey = MDPObsEpoch::ObsKey(ccL1, rcMcode1); break;
-               case 4: obsKey = MDPObsEpoch::ObsKey(ccL2, rcMcode1); break;
+                  //case 3: obsKey = MDPObsEpoch::ObsKey(ccL1, rcMcode1); break;
+                  //case 4: obsKey = MDPObsEpoch::ObsKey(ccL2, rcMcode1); break;
             }
 
             MDPObsEpoch::Observation obs;

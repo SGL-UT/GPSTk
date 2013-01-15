@@ -271,7 +271,12 @@ int week=(static_cast<GPSWeekSecond>(sf4p18->second.time).week);
          return false;
 
       int prn = sf[1]->second.prn;
-      int week = (static_cast<GPSWeekSecond>(sf[1]->second.time).week);
+      int week = 0;
+      try {
+         week = (static_cast<GPSWeekSecond>(sf[1]->second.time).week);
+      }
+      catch (...)
+      {}
       long sfa[10];
       long long_sfa[10];
 
