@@ -49,8 +49,8 @@ public:
    };
 
    // This is a list of what is being received for each channel
-   typedef std::vector<ChanRec> ChanVector;
-   ChanVector currCv, prevCv;
+   typedef std::map<int, ChanRec> ChanMap;
+   ChanMap currCv, prevCv;
    gpstk::CommonTime currTime, prevTime;
 
    void printChanges();

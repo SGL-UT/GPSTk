@@ -39,15 +39,9 @@ using namespace gpstk::StringUtils;
 
 //-----------------------------------------------------------------------------
 MDPTrackProcessor::MDPTrackProcessor(gpstk::MDPStream& in, std::ofstream& out)
-   : MDPProcessor(in, out),
-   currCv(13), prevCv(13)
+   : MDPProcessor(in, out)
 {
    timeFormat = "%02H:%02M:%04.1f";
-   for (int i=1; i<currCv.size(); i++)
-      currCv[i].prn=-1;
-   for (int i=1; i<prevCv.size(); i++)
-      prevCv[i].prn=-1;
-
    obsOut = true;
 }
 
@@ -57,47 +51,49 @@ MDPTrackProcessor::~MDPTrackProcessor()
 
 void MDPTrackProcessor::process(const gpstk::MDPObsEpoch& oe)
 {
+   ChanMap::const_iterator j;
    if (oe.time != currTime)
    {
       printChanges();
       prevTime = currTime;
       currTime = oe.time;
       prevCv = currCv;
-      for (int i=1; i<currCv.size(); i++)
-         currCv[i].prn=-1;
+      currCv.clear();
    }
 
    int prn=oe.prn;
    int chan=oe.channel;
 
-   if (chan<1 || chan >12)
-      cout << "This program can only handles channles 1...12" << endl, exit(-1);
-
    // make a set of the obs that this epoch has
    rc_set ccs;
-   currCv[chan].codes = "    ";
-   for (gpstk::MDPObsEpoch::ObsMap::const_iterator i = oe.obs.begin();
-        i != oe.obs.end(); i++)
+   currCv[chan].codes = "" ;
+   gpstk::MDPObsEpoch::ObsMap::const_iterator i;
+   for (i = oe.obs.begin(); i != oe.obs.end(); i++)
    {
       const gpstk::MDPObsEpoch::Observation& obs=i->second;
       rcpair rcPair(obs.range, obs.carrier);
       ccs.insert(rcPair);
       if (obs.carrier == ccL1)
       {
-         if      (obs.range == rcCA)       currCv[chan].codes[0] = 'c';
-         if      (obs.range == rcPcode)    currCv[chan].codes[1] = 'p';
-         else if (obs.range == rcYcode)    currCv[chan].codes[1] = 'y';
-         else if (obs.range == rcCodeless) currCv[chan].codes[1] = 'z';
+         if      (obs.range == rcCA)       currCv[chan].codes += 'c';
+         if      (obs.range == rcPcode)    currCv[chan].codes += 'p';
+         else if (obs.range == rcYcode)    currCv[chan].codes += 'y';
+         else if (obs.range == rcCodeless) currCv[chan].codes += 'z';
       }
       else if (obs.carrier == ccL2)
       {
-         if      (obs.range == rcCM)       currCv[chan].codes[2] = 'm';
-         else if (obs.range == rcCL)       currCv[chan].codes[2] = 'l';
-         else if (obs.range == rcCMCL)     currCv[chan].codes[2] = 'x';
-         else if (obs.range == rcCA)       currCv[chan].codes[2] = 'c';
-         if      (obs.range == rcPcode)    currCv[chan].codes[3] = 'p';
-         else if (obs.range == rcYcode)    currCv[chan].codes[3] = 'y';
-         else if (obs.range == rcCodeless) currCv[chan].codes[3] = 'z';
+         if      (obs.range == rcCM)       currCv[chan].codes += 'm';
+         else if (obs.range == rcCL)       currCv[chan].codes += 'l';
+         else if (obs.range == rcCMCL)     currCv[chan].codes += 'x';
+         else if (obs.range == rcCA)       currCv[chan].codes += 'c';
+         if      (obs.range == rcPcode)    currCv[chan].codes += 'p';
+         else if (obs.range == rcYcode)    currCv[chan].codes += 'y';
+         else if (obs.range == rcCodeless) currCv[chan].codes += 'z';
+      }
+      if (obs.carrier == ccL5)
+      {
+         if      (obs.range == rcI5)       currCv[chan].codes += 'i';
+         else if (obs.range == rcQ5)       currCv[chan].codes += 'q';
       }
    }
    currCv[chan].obs = ccs;
@@ -107,6 +103,24 @@ void MDPTrackProcessor::process(const gpstk::MDPObsEpoch& oe)
 
 void MDPTrackProcessor::printChanges()
 {
+   ChanMap::const_iterator i,j;
+   i = currCv.begin();
+   j = prevCv.begin();
+   bool changed = true;
+   while (i != currCv.end() && j != prevCv.end())
+   {
+      changed = i->first != j->first ||
+         i->second.prn != j->second.prn ||
+         i->second.codes != j->second.codes;
+      if (changed)
+         break;
+      i++;
+      j++;
+   }
+
+   if (!changed)
+      return;
+   
    if (verboseLevel)
    {
       // This is the one line per channel format.
@@ -142,24 +156,11 @@ void MDPTrackProcessor::printChanges()
    else
    {
       // This is the one line per epoch with changes
-      bool change=false;
-      for (int i = 1; i < currCv.size() && change==false; i++)
-         change = (currCv[i].obs != prevCv[i].obs ||
-                   currCv[i].prn != prevCv[i].prn) &&
-            (prevCv[i].prn != -1 || currCv[i].prn != -1);
-
-
-      if (change || currCv.size() == 0)
-      {
-         out << printTime(currTime,timeFormat);
-         for (int i = 1; i < currCv.size(); i++)
-         {
-            if (currCv[i].prn > 0)
-               out << setw(4) << currCv[i].prn << currCv[i].codes;
-            else
-               out << setw(4) << "  -" << "    ";
-         }
-         out << endl;
-      }
+      if (currCv.size() == 0)
+         return;
+      out << printTime(currTime,timeFormat) << "  ";
+      for (i = currCv.begin(); i != currCv.end(); i++)
+         out << setw(8) << i->second.prn << i->second.codes;
+      out << endl;
    }
 }

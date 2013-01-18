@@ -71,18 +71,18 @@ public:
    double obsRateEst, pvtRateEst;
    gpstk::CommonTime prevEpochTime;
 
-   static const int maxChannel=12;
+   //static const int maxChannel=12;
 
    // First time is of the first missed epoch, second time is the last missed epoch
    // (i.e. first = previous + obsRateEst, second=current-ObsRateEst
    typedef std::pair<gpstk::CommonTime, gpstk::CommonTime> CommonTimePair;
    typedef std::list<CommonTimePair> CommonTimePairList;
    CommonTimePairList epochGapList;
-   std::vector<CommonTimePairList> chanGapList;
+   std::map<int, CommonTimePairList> chanGapList;
 
    // This is used to record the previous obs on each channel
-   typedef std::vector<gpstk::MDPObsEpoch> ObsEpochVector;
-   ObsEpochVector prevObs;
+   typedef std::map<int, gpstk::MDPObsEpoch> ObsEpochMap;
+   ObsEpochMap prevObs;
 
    gpstk::MDPPVTSolution prevPvt;
    gpstk::MDPSelftestStatus prevSelftestStatus;

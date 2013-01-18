@@ -50,8 +50,6 @@ MDPSummaryProcessor::MDPSummaryProcessor(gpstk::MDPStream& in, std::ofstream& ou
      lastNavTime(gpstk::CommonTime::BEGINNING_OF_TIME),
      prevEpochTime(gpstk::CommonTime::BEGINNING_OF_TIME),
      obsRateEst(0), pvtRateEst(0),
-     prevObs(maxChannel+1),
-     chanGapList(maxChannel+1),
      svCountErrorCount(0),
      navSowErrors(0),
      navSowMiscompares(0),
@@ -260,7 +258,7 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
    int prn=msg.prn;
    int chan=msg.channel;
 
-   if (prevObs[chan].prn == 0 || prevObs[chan].prn != prn)
+   if (prevObs.count(chan) == 0 || prevObs[chan].prn != prn)
    {
       if (verboseLevel>1)
          out << printTime(msg.time,timeFormat)
@@ -345,13 +343,14 @@ void MDPSummaryProcessor::process(const gpstk::MDPObsEpoch& msg)
 
       int prevActual=0;
       int prevReported=0;
-      for (size_t i = 1; i<=maxChannel; i++)
+      ObsEpochMap::const_iterator i;
+      for (i = prevObs.begin(); i != prevObs.end(); i++)
       {
-         if (prevObs[i].time == prevEpochTime)
+         if (i->second.time == prevEpochTime)
          {
             prevActual++;
             if (prevReported==0)
-               prevReported = prevObs[i].numSVs;
+               prevReported = i->second.numSVs;
          }
       }
       if (prevActual != prevReported)
