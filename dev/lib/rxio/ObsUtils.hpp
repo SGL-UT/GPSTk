@@ -83,7 +83,7 @@ namespace gpstk
    MDPObsEpoch makeMDPObsEpoch(
       const AshtechMBEN& mben,
       const MDPObsEpoch& hint,
-      bool removeSmoothing=false) throw();
+      bool addSmoothing=false) throw();
 
    void addMDPObservation(
       MDPObsEpoch& moe,
@@ -91,7 +91,7 @@ namespace gpstk
       CarrierCode cc,
       RangeCode rc,
       const MDPObsEpoch& moe_hint,
-      bool removeSmoothing) throw();
+      bool addSmoothing) throw();
 
    MDPPVTSolution makeMDPPVTSolution(
       const AshtechPBEN& pben,

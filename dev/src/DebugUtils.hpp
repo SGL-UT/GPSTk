@@ -63,18 +63,18 @@ namespace gpstk
    //
 #if defined(_DEBUG)
 #define GPSTK_ASSERT_DBG(cond) \
-   if (!(cond)) DebugUtils::assertion(#cond, __FILE__, __LINE__); else (void) 0
+   if (!(cond)) gpstk::DebugUtils::assertion(#cond, __FILE__, __LINE__); else (void) 0
 #else
 #define GPSTK_ASSERT_DBG(cond)
 #endif
 
 
 #define GPSTK_ASSERT(cond) \
-   if (!(cond)) DebugUtils::assertion(#cond, __FILE__, __LINE__); else (void) 0
+   if (!(cond)) gpstk::DebugUtils::assertion(#cond, __FILE__, __LINE__); else (void) 0
 
 
 #define GPSTK_CHECK_PTR(ptr) \
-   if (!(ptr)) DebugUtils::nullPointer(#ptr, __FILE__, __LINE__); else (void) 0
+   if (!(ptr)) gpstk::DebugUtils::nullPointer(#ptr, __FILE__, __LINE__); else (void) 0
 
 
 #if defined(_DEBUG)

@@ -201,7 +201,7 @@ namespace gpstk
                           CarrierCode cc,
                           RangeCode rc,
                           const MDPObsEpoch& moe_hint,
-                          bool removeSmoothing) throw()
+                          bool addSmoothing) throw()
    {
       // fixup the range code to match what is indicated by the goodbad flag
       if (rc != rcCA)
@@ -225,7 +225,7 @@ namespace gpstk
       obs.doppler = -cb.doppler; // yeah, the Ashtech sign is backwards
       obs.bw=1;
       obs.lockCount = 0;
-      if (removeSmoothing)
+      if (addSmoothing)
          obs.pseudorange -= cb.smoothing;
 
       if (moe_hint.haveObservation(cc, rc))
@@ -246,7 +246,7 @@ namespace gpstk
    MDPObsEpoch makeMDPObsEpoch(
       const AshtechMBEN& mben,
       const MDPObsEpoch& hint,
-      bool removeSmoothing) throw()
+      bool addSmoothing) throw()
    {
       MDPObsEpoch moe;
 
@@ -274,12 +274,12 @@ namespace gpstk
       moe.elevation = mben.el;
       moe.azimuth = mben.az;
 
-      addMDPObservation(moe, mben.ca, ccL1, rcCA, hint, removeSmoothing);
+      addMDPObservation(moe, mben.ca, ccL1, rcCA, hint, addSmoothing);
 
       if (mben.id == AshtechMBEN::mpcId)
       {
-         addMDPObservation(moe, mben.p1, ccL1, rcPcode, hint, removeSmoothing);
-         addMDPObservation(moe, mben.p2, ccL2, rcPcode, hint, removeSmoothing);
+         addMDPObservation(moe, mben.p1, ccL1, rcPcode, hint, addSmoothing);
+         addMDPObservation(moe, mben.p2, ccL2, rcPcode, hint, addSmoothing);
       }
       return moe;
    }

@@ -94,9 +94,9 @@ public:
           "A string that specifies a section of the file to remove. Example: "
           "-c 123-456 will remove bytes starting with 123 through 456.");
 
-       CommandOptionNoArg unsmoothOption(
-          'u', "unsmooth",
-          "Remove the ashtech smoothing from the pseudorange");
+       CommandOptionNoArg smoothOption(
+          's', "smooth",
+          "Incorporate the ashtech smoothing for the pseudorange");
 
        if (!InOutFramework<AshtechStream, MDPStream>::initialize(argc,argv))
          return false;
@@ -121,7 +121,7 @@ public:
          cutList.push_back( pair< unsigned long, unsigned long>(start, end) );
       }
 
-      removeSmoothing = unsmoothOption.getCount();
+      removeSmoothing = smoothOption.getCount();
 
       if (debugLevel)
       {
