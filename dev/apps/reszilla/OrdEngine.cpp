@@ -142,6 +142,14 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
    }
+   else if (mode=="cm")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2M);
+   }
+   else if (mode=="cl")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2L);
+   }
    else if (mode=="p2")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
@@ -149,6 +157,14 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    else if (mode=="y2")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
+   }
+   else if (mode=="i5")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL5,   ObsID::tcI5);
+   }
+   else if (mode=="q5")
+   {
+      oid1 = ObsID(ObsID::otRange,   ObsID::cbL5,   ObsID::tcQ5);
    }
    else if (mode=="z2" || mode=="w2")
    {
