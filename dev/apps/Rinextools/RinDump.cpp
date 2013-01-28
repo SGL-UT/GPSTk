@@ -66,7 +66,7 @@
 #include "SP3Stream.hpp"
 
 #include "SP3EphemerisStore.hpp"
-//#include "GPSEphemerisStore.hpp"
+#include "GPSEphemerisStore.hpp"
 //#include "GLOEphemerisStore.hpp"
 
 #include "TropModel.hpp"
@@ -79,32 +79,37 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.1 1/31/12"));
+string Version(string("1.3 1/28/13"));
 // TD
-// Code selection is not implemented - where to replace C1* with C1W ?
-// option to use pos from PRSolve as ref
-// GPS nav and GLO nav
+// VI LAT LON not implemented
+// GLO nav not implemented
 // make R2 compatible - pos, ...
 // debiasing the output....
 //    combo only, phase SI VI IF GF WL NL + RP IR...explicit?
-//    initial value / resets (limit)
 //    always remove initial value for above combos, unless told not to --nozero
 //    incl option to reset bias when change exceeds limit --debias <lim>
+//   --need to rework this...find a good design
+//   still can't set bias on *:R and *:P separately
+// In the case of RINEX v.2, set some defaults, e.g. --freq 12 --code GPS:PC
 // END TD
 
 //------------------------------------------------------------------------------------
 // object to hold linear combination information
 class LinCom {
 public:
-   string label;              // straight from InputCombo
-   string f1,f2;              // frequencies: 1-char strings: 1,2,5
-   double value;              // sum (consts * ObsIDs)
+   string label;                    // straight from InputCombo
+   string f1,f2;                    // frequencies: 1-char strings: 1,2,5
+   double value;                    // sum (consts * ObsIDs)
+   double limit;                    // debias jumps limit - skip debiasing if 0.0
+   bool limit0;                     // initial debias
+   map<RinexSatID,double> biases;   // current bias per sat
+   map<RinexSatID,double> prev;     // previous value per sat
    // must be system dependent - <system(1-char),vector>
    map<string, vector<double> > sysConsts;    // vector of constants
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-   LinCom() throw() : value(0), label(string("Undef")) { }
+   LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
 
    /// parse input string
    bool ParseAndSave(const string& str, bool save=true) throw();
@@ -113,7 +118,13 @@ public:
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
                   const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception);
 
+   /// remove a bias if jump larger than limit occurs
+   bool removeBias(const RinexSatID& sat) throw();
+
 }; // end class LinCom
+
+/// dump the object to an output stream
+ostream& operator<<(ostream& os, LinCom& lc) throw();
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -170,6 +181,9 @@ public:
    string defaultstopStr,stopStr;
    CommonTime beginTime,endTime,decTime;
 
+   vector<string> typeLimit;  // type,limit pairs for debiasing input
+   vector<string> typeLimit0; // types for initial debiasing input
+
    string refPosStr;          // string used for input of --ref
    Position knownPos;         // receiver position
 
@@ -177,6 +191,7 @@ public:
    string LogFile;            // output log file (required)
    string userfmt;            // user's time format for output
    string TropStr;            // temp used to parse --trop
+   double IonoHt;             // ionospheric height
 
    // end of command line input
 
@@ -189,7 +204,7 @@ public:
    // stores
    XvtStore<SatID> *pEph;
    SP3EphemerisStore SP3EphStore;
-   //GPSEphemerisStore GPSNavStore;      // not used - yet
+   GPSEphemerisStore GPSNavStore;
    //GLOEphemerisStore GLONavStore;      // not used - yet
    map<RinexSatID,int> GLOfreqChan;    // either user input or Nav files
 
@@ -204,7 +219,7 @@ public:
    static const string calfmt,gpsfmt,longfmt;
 
    // stuff for computing
-   bool haveEph,haveRef,haveIHt;                // flags - what has been input
+   bool haveEph,haveRef;                        // flags - what has been input
    bool haveRCL,havePOS,haveObs,haveNonObs,haveCombo;
    // InputCodes -> map<sys,codes> in order eg. GLO:PC
    map<string,string> mapSysCodes;
@@ -215,6 +230,10 @@ public:
    map<RinexSatID, CorrectedEphemerisRange> mapSatCER;
    // parsed linear combos, used for computing
    vector<LinCom> Combos;
+
+   // limits for debiasing
+   map<string,double> debLimit;
+   map<string,bool> debLimit0;
 
 }; // end class Configuration
 
@@ -272,7 +291,7 @@ try {
       break;      // mandatory
    }
 
-   if(iret >= 0) {
+   if(iret >= 0 && !C.noHeader) {
       // print elapsed time
       totaltime = clock()-totaltime;
       Epoch wallclkend;
@@ -337,7 +356,8 @@ try {
          catch(exception& e) {
             os << "exception: " << e.what(); isValid = false; continue; }
 
-         startNameMap.insert(multimap<CommonTime, string>::value_type(header.time,C.InputSP3Files[i]));
+         startNameMap.insert(
+            multimap<CommonTime, string>::value_type(header.time,C.InputSP3Files[i]));
       }
 
       ossE << os.str();
@@ -348,8 +368,9 @@ try {
    }
 
    // read sorted ephemeris files and fill store
+   nread = 0;        // use for both SP3 and RINEXnav
    try {
-      if(isValid) for(nread=0,i=0; i<C.InputSP3Files.size(); i++) {
+      if(isValid) for(i=0; i<C.InputSP3Files.size(); i++) {
          LOG(DEBUG) << "Load SP3 file " << C.InputSP3Files[i];
          C.SP3EphStore.loadSP3File(C.InputSP3Files[i]);
          nread++; C.haveEph=true;
@@ -358,55 +379,6 @@ try {
    catch(Exception& e) {
       ossE << "Error : failed to read ephemeris files: " << e.getText(0) << endl;
       isValid = false;
-   }
-
-   // -------- Nav files --------------------------
-   // NB Nav files may set GLOfreqChan
-   if(C.InputNavFiles.size() > 0) {
-      try {
-         for(int nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
-            Rinex3NavStream nstrm(C.InputNavFiles[nfile].c_str());
-            if(!nstrm.is_open()) {
-               ossE << "Error : failed to open RINEX Nav file "
-                  << C.InputNavFiles[nfile] << endl;
-               isValid = false;
-               continue;
-            }
-            nstrm.exceptions(ios_base::failbit);
-
-            Rinex3NavHeader nhead;
-            Rinex3NavData ndata;
-
-            // read header
-            try { nstrm >> nhead; }
-            catch(Exception& e) {
-               ossE << "Warning : Failed to read header of nav file "
-                  << C.InputNavFiles[nfile] << ":\n  " << e.getText(0);
-               continue;
-            }
-
-            if(C.debug > -1) {
-               LOG(DEBUG) << "Read header of file " << C.InputNavFiles[nfile];
-               nhead.dump(LOGstrm);
-            }
-
-            while(nstrm >> ndata) {
-               if(C.debug > -1) ndata.dump(LOGstrm);
-               if(ndata.satSys == "R") {
-                  RinexSatID sat(ndata.PRNID,SatID::systemGlonass);
-                  C.GLOfreqChan.insert(map<RinexSatID, int>::value_type(sat, ndata.freqNum));
-               }
-               C.haveEph = true;
-            }
-
-            nstrm.close();
-         }
-
-      }
-      catch(Exception& e) {
-         ossE << "Error : failed to read RINEX nav files: " << e.what() << endl;
-         isValid = false;
-      }
    }
 
    // ------------- configure and dump SP3 and clock stores -----------------
@@ -450,7 +422,9 @@ try {
                                  && sats[i].system==RinexSatID::systemGlonass) {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
-               C.GLOfreqChan.insert(map<RinexSatID, int>::value_type(sats[i], 0)); // set it to zero
+
+               // set it to zero
+               C.GLOfreqChan.insert(map<RinexSatID,int>::value_type(sats[i],0));
                it = C.GLOfreqChan.find(sats[i]);
             }
             C.msg = string(" freq.chan. ") + rightJustify(asString(it->second),2);
@@ -473,8 +447,75 @@ try {
          << " are " << C.SP3EphStore.getPositionTimeStep(sat)
          << " (pos), and " << C.SP3EphStore.getClockTimeStep(sat) << " (clk)";
 
-      // assign pEph // TD add GPSNav later
+   }
+
+   // assign pEph // TD add GLONav later
+   if(C.SP3EphStore.size())
       C.pEph = &C.SP3EphStore;
+
+   // currently only have one type of ephemeris store - eph or nav
+   if(C.SP3EphStore.size() && C.InputNavFiles.size() > 0) {
+      LOG(WARNING) << "Warning - Only one type of satellite ephemeris input accepted;"
+            << " ignore RINEX navigation (--nav) input.";
+   }
+
+   // -------- Nav files --------------------------
+   // NB Nav files may set GLOfreqChan
+   if(C.SP3EphStore.size() == 0 && C.InputNavFiles.size() > 0) {
+      try {
+         for(int nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
+            Rinex3NavStream nstrm(C.InputNavFiles[nfile].c_str());
+            if(!nstrm.is_open()) {
+               ossE << "Error : failed to open RINEX Nav file "
+                  << C.InputNavFiles[nfile] << endl;
+               isValid = false;
+               continue;
+            }
+            nstrm.exceptions(ios_base::failbit);
+
+            Rinex3NavHeader nhead;
+            Rinex3NavData ndata;
+
+            // read header
+            try { nstrm >> nhead; }
+            catch(Exception& e) {
+               ossE << "Warning : Failed to read header of nav file "
+                  << C.InputNavFiles[nfile] << ":\n  " << e.getText(0);
+               continue;
+            }
+
+            if(C.debug > -1) {
+               LOG(DEBUG) << "Read header of file " << C.InputNavFiles[nfile];
+               nhead.dump(LOGstrm);
+            }
+
+            while(nstrm >> ndata) {
+               if(C.debug > -1) ndata.dump(LOGstrm);
+               if(ndata.satSys == "R") {
+                  RinexSatID sat(ndata.PRNID,SatID::systemGlonass);
+                  C.GLOfreqChan.insert(
+                     map<RinexSatID, int>::value_type(sat,ndata.freqNum));
+               }
+               C.haveEph = true;
+
+               C.GPSNavStore.addEphemeris(EngEphemeris(ndata));
+               nread++;
+            }
+
+            nstrm.close();
+
+            if(C.debug > -1) {
+               LOG(DEBUG) << "Dump GPSNavStore";
+               C.GPSNavStore.dump(LOGstrm, 1);
+            }
+         }
+
+         C.pEph = &C.GPSNavStore;
+      }
+      catch(Exception& e) {
+         ossE << "Error : failed to read RINEX nav files: " << e.what() << endl;
+         isValid = false;
+      }
    }
 
    // ------ compute and save a reference time for decimation
@@ -552,19 +593,18 @@ try {
          }
       }
    }
-   if(!C.haveIHt) {
-      for(i=0; i<C.InputTags.size(); i++) {
-         string tag(C.InputTags[i]);
-         if(tag == "LAT" || tag == "LON") {
-            ossE << "Error : Rx-dependent data " << tag << " requires --ref input\n";
-            isValid = false;
-         }
+
+   for(i=0; i<C.InputTags.size(); i++) {
+      string tag(C.InputTags[i]);
+      if(tag == "LAT" || tag == "LON") {
+         ossE << "Error : " << tag << " not implemented\n";
+         isValid = false;
       }
-      for(i=0; i<C.InputCombos.size(); i++) {
-         if(C.InputCombos[i].substr(0,2) == "VI") {
-            ossE << "Error : Combination data VI requires --IonoHt input\n";
-            isValid = false;
-         }
+   }
+   for(i=0; i<C.InputCombos.size(); i++) {
+      if(C.InputCombos[i].substr(0,2) == "VI") {
+         ossE << "Error : Combination data VI not implemented\n";
+         isValid = false;
       }
    }
 
@@ -631,24 +671,19 @@ try {
          LOG(INFO) << oss.str();  oss.str("");
       }
 
+      if(C.knownPos.getCoordinateSystem() != Position::Unknown) {
+         LOG(INFO) << "# Refpos "
+            << C.knownPos.printf("XYZ(m): %.3x %.3y %.3z = LLH: %.9A %.9L %.3h");
+      }
+
       if(C.Combos.size() > 0) {
          oss << "# Linear combinations";
          for(i=0; i<C.Combos.size(); i++) {
-            oss << " " << C.Combos[i].label << " (";
-            map<string,vector<double> >::const_iterator jt;
-            for(jt=C.Combos[i].sysConsts.begin();jt!=C.Combos[i].sysConsts.end();++jt)
-               oss << (jt==C.Combos[i].sysConsts.begin() ? "":" ")
-                  << C.map1to3Sys[jt->first];
-            oss << ")";
+            oss << " " << C.Combos[i].label; // Don't list systems
          }
          LOG(INFO) << oss.str();  oss.str("");
       }
    }
-
-   //if(!C.haveObs && !C.haveNonObs && !C.haveRCL && !C.haveCombo && !C.havePOS) {
-   //   ossE << "Error : No data has been specified for output.";
-   //   isValid = false;
-   //}
 
    if(C.InputObsFiles.size() == 0) {
       ossE << "Error : No valid input files have been specified.";
@@ -695,6 +730,7 @@ void Configuration::SetDefaults(void) throw()
    defaultHumid = 50.0;
    TropStr = TropType + string(",") + asString(defaultTemp,1) + string(",")
       + asString(defaultPress,1) + string(",") + asString(defaultHumid,1);
+   IonoHt = 400.0;
 
    userfmt = gpsfmt;
    help = verbose = noHeader = false;
@@ -718,17 +754,17 @@ void Configuration::SetDefaults(void) throw()
    AuxTags.push_back("POS");
    AuxTags.push_back("RCL");        // ... output with epoch, not aux
 
-   LinComTags.push_back("SI");
-   LinComTags.push_back("VI");
-   LinComTags.push_back("RP");
-   LinComTags.push_back("IF");
-   LinComTags.push_back("IR");
-   LinComTags.push_back("GF");
-   LinComTags.push_back("WL");
-   LinComTags.push_back("NL");
-   LinComTags.push_back("MW");
+   LinComTags.push_back("SI");  debLimit["SI"] = 10.;   debLimit0["SI"] = false;
+   LinComTags.push_back("VI");  debLimit["VI"] = 10.;   debLimit0["VI"] = false;
+   LinComTags.push_back("RP");  debLimit["RP"] = 100.;  debLimit0["RP"] = true;
+   LinComTags.push_back("IF");  debLimit["IF"] = 0.0;   debLimit0["IF"] = false;
+   LinComTags.push_back("IR");  debLimit["IR"] = 100.;  debLimit0["IR"] = true;
+   LinComTags.push_back("GF");  debLimit["GF"] = 10.;   debLimit0["GF"] = true;
+   LinComTags.push_back("WL");  debLimit["WL"] = 0.0;   debLimit0["WL"] = false;
+   LinComTags.push_back("NL");  debLimit["NL"] = 0.0;   debLimit0["NL"] = false;
+   LinComTags.push_back("MW");  debLimit["MW"] = 10.;   debLimit0["MW"] = true;
 
-   haveEph = haveRef = haveIHt = false;
+   haveEph = haveRef = false;
    haveCombo = haveRCL = havePOS = haveObs = haveNonObs = false;
 
    // NB. if vector is given a default, CommandLine will _add to_, not replace, this.
@@ -783,7 +819,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       //return 1; // return below
 
    if(combohelp) {
-      LOG(INFO) <<
+      LOG(INFO) << fixed << setprecision(1) <<
 "\n These additional <data> tags are supported by " << PrgmName << ":\n"
 "# Linear combinations, specified by a tag:type:frequency(ies), as follows:\n"
 "    > Type t must be either pseudorange (t=C or R) or phase (t=L or P)\n"
@@ -794,11 +830,11 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 "    > Phases are multiplied by wavelength, leaving everything in units meters\n"
 "  SI:t:ij   Slant ionospheric delay\n"
 "              e.g. SI:C:12 = (C1X - C2X)/alpha\n"
-"  VI:t:ij   Vertical ionospheric delay [requires --eph --ref --IonoHt]\n"
+"  VI:t:ij   Vertical ionospheric delay [requires --eph --ref --ionoht]\n"
 "              VI = SI * obliquity factor\n"
 "  RP:i      Pseudorange-minus-phase combinations (Note no type, only one freq)\n"
 "  RP:oi:oi  RP using explicit RINEX observation IDs [also see IR:ij below]\n"
-"              e.g. RP:1 = C1X-L1X\n or  RP:GC1C:GL1W (same, but GPS only)\n"
+"              e.g. RP:1 = C1X-L1X or  RP:GC1C:GL1W (same, but GPS only)\n"
 "  IF:t:ij   Ionosphere-free combinations\n"
 "              e.g. IF:C:12 = [(alpha+1)*C1X - C2X]/alpha\n"
 "  IR:ij     Ionosphere-free pseudorange-minus-phase\n"
@@ -1029,29 +1065,29 @@ string Configuration::BuildCommandLine(void) throw()
 "   <file> is the input RINEX observation file\n"
 "   <sat>  is the satellite(s) to output (e.g. G17 or R9); optional, default all\n"
 "   <data> is the quantity to be output, either raw data, satellite-dependent data\n"
-"          or other things, as given by one of the following tags:\n"
+"          or linear combinations, as given by one of the following tags:\n"
 "# Raw data:\n"
 "   <oi>  Any RINEX observation ID (3-char), optionally with system (4-char)\n"
 "           e.g. C1C GC1C L2* EL5X (see --typehelp below)\n"
 "# Satellite-dependent things [and their required input]:\n"
-"   RNG   Satellite range [--eph --ref]\n"
-"   TRP   Tropospheric correction [--eph --ref --trop]\n"
-"   REL   Satellite relativity correction [--eph]\n"
-"   SCL   Satellite clock [--eph]\n"
-"   ELE   Elevation angle [--eph --ref]\n"
-"   AZI   Azimuth angle [--eph --ref]\n"
-"   LAT   Latitude of ionospheric intercept [--eph --ref --ionoht]\n"
-"   LON   Longitude of ionospheric intercept [--eph --ref --ionoht]\n"
-"   SVX   Satellite ECEF X coordinate [--eph]\n"
-"   SVY   Satellite ECEF Y coordinate [--eph]\n"
-"   SVZ   Satellite ECEF Z coordinate [--eph]\n"
-"   SVA   Satellite ECEF latitude [--eph]\n"
-"   SVO   Satellite ECEF longitude [--eph]\n"
-"   SVH   Satellite ECEF height [--eph]\n"
+"   RNG   Satellite range in m [--eph --ref]\n"
+"   TRP   Tropospheric correction  in m [--eph --ref --trop]\n"
+"   REL   Satellite relativity correction  in m [--eph]\n"
+"   SCL   Satellite clock  in m [--eph]\n"
+"   ELE   Elevation angle in deg [--eph --ref]\n"
+"   AZI   Azimuth angle in deg [--eph --ref]\n"
+"   LAT   Latitude of ionospheric intercept in deg [--eph --ref --ionoht]\n"
+"   LON   Longitude of ionospheric intercept in deg [--eph --ref --ionoht]\n"
+"   SVX   Satellite ECEF X coordinate in m [--eph]\n"
+"   SVY   Satellite ECEF Y coordinate in m [--eph]\n"
+"   SVZ   Satellite ECEF Z coordinate in m [--eph]\n"
+"   SVA   Satellite ECEF latitude in deg [--eph]\n"
+"   SVO   Satellite ECEF longitude in deg [--eph]\n"
+"   SVH   Satellite ECEF height in m [--eph]\n"
+"# Linear combinations of the data: run with --combohelp\n"
 "# Other things:\n"
 "   POS   Receiver position solutions found in auxiliary comments (see PRSolve)\n"
-"   RCL   RINEX receiver clock offset\n"
-"# More...Options to output linear combinations of the data: run with --combohelp\n"
+"   RCL   RINEX receiver clock offset in m\n"
 "\n Options:";
    ;
 
@@ -1082,7 +1118,8 @@ string Configuration::BuildCommandLine(void) throw()
             "Defaults: GPS:PYMNIQSLXWCN, GLO:PC, GAL:ABCIQXZ, GEO:CIQX, COM:IQX",
             "Frequencies to use in solution [e.g. 1, 12, 5, 15]");
 
-   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,"# Other file input",
+   opts.Add(0, "eph", "fn", true, false, &InputSP3Files,
+            "# Other file input. NB currently accept only one type, default eph",
             "Input Ephemeris+clock (SP3 format) file name(s)");
    opts.Add(0, "nav", "fn", true, false, &InputNavFiles, "",
             "Input RINEX nav file name(s) [GLO Nav includes freq channel]");
@@ -1105,6 +1142,10 @@ string Configuration::BuildCommandLine(void) throw()
             "Stop processing data at this epoch");
    opts.Add(0, "decimate", "dt", false, false, &decimate, "",
             "Decimate data to time interval dt (0: no decimation)");
+   opts.Add(0, "debias", "type,lim", false, false, &typeLimit, "",
+            "Debias jumps in data larger than limit (0: no debias)");
+   opts.Add(0, "debias0", "type", false, false, &typeLimit0, "",
+            "Toggle initial debias of data ()");
 
    opts.Add(0, "ref", "p[:f]", false, false, &refPosStr, "# Other input",
             "Known position, default fmt f '%x,%y,%z', for resids, elev and ORDs");
@@ -1113,11 +1154,13 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "Trop", "m,T,P,H", false, false, &TropStr, "",
             "Trop model <m> [one of Zero,Black,Saas,NewB,Neill,GG,GGHt\n             "
             "         with optional weather T(C),P(mb),RH(%)]");
+   opts.Add(0,"ionoht", "ht", false, false, &IonoHt, "",
+            "Ionospheric height in kilometers [for VI, LAT, LON]");
 
    opts.Add(0, "timefmt", "fmt", false, false, &userfmt, "# Output:",
             "Format for time tags (see GPSTK::Epoch::printf) in output");
    opts.Add(0, "headless", "", false, false, &noHeader, "",
-            "Turn off printing of headers (# ...) in output");
+            "Turn off printing of headers and no-eph-warnings in output");
    opts.Add(0, "verbose", "", false, false, &verbose, "",
             "Print extra output information");
    opts.Add(0, "debug", "", false, false, &debug, "",
@@ -1131,6 +1174,7 @@ string Configuration::BuildCommandLine(void) throw()
 
    // deprecated (old,new)
    opts.Add_deprecated("--SP3","--eph");
+   opts.Add_deprecated("--refPos","--ref");
 
    return PrgmDesc;
 
@@ -1209,6 +1253,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          }
          catch(Exception& e) { ok = false; LOG(INFO) << "excep " << e.what(); }
       }
+      (i==0 ? beginTime : endTime).setTimeSystem(TimeSystem::Any);
 
       if(ok) {
          msg = printTime((i==0 ? beginTime : endTime),fmtGPS+" = "+fmtCAL);
@@ -1312,6 +1357,15 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       }
    }
 
+   // debiasing limits
+   for(i=0; i<typeLimit.size(); i++) {
+      fld = split(typeLimit[i],',');
+      debLimit[fld[0]] = asDouble(fld[1]);
+   }
+   for(i=0; i<typeLimit0.size(); i++) {
+      debLimit0[typeLimit0[i]] = !debLimit0[typeLimit0[i]];
+   }
+
    // open the log file (so warnings, configuration summary, etc can go there) -----
    //logstrm.open(LogFile.c_str(), ios::out);
    //if(!logstrm.is_open()) {
@@ -1387,6 +1441,12 @@ try {
          map<string,vector<RinexObsID> >::const_iterator kt;
          for(kt = Rhead.mapObsTypes.begin(); kt != Rhead.mapObsTypes.end(); kt++) {
             sat.fromString(kt->first);
+            // is this system found in the list of satellites?
+            bool ok=false;
+            for(i=0; i<C.InputSats.size(); i++)
+               if(C.InputSats[i].system == sat.system) { ok=true; break; }
+            if(!ok) continue;
+
             oss.str("");
             oss << "# Header ObsIDs " << sat.systemString3() //<< " " << kt->first
                << " (" << kt->second.size() << "):";
@@ -1426,7 +1486,7 @@ try {
 
       // check for no data here
       if(!C.haveObs && !C.haveNonObs && !C.haveRCL && !C.haveCombo && !C.havePOS) {
-         LOG(INFO) << "No data has been specified for output...skip this file.";
+         LOG(INFO) << "Warning - No data specified for output...skip this file.";
          continue;
       }
 
@@ -1492,13 +1552,45 @@ try {
             for(j=0; j<Rdata.auxHeader.commentList.size(); j++) {
                string com(Rdata.auxHeader.commentList[j]);
                vector<string> fld(split(com,' '));
-               if(fld[0] == string("XYZ"))
-                  oss << " " << fld[4]
-                      << " " << fld[1] << " " << fld[2] << " " << fld[3];
-               if(fld[0] == string("CLK"))
+               // NB keep R2 first in if-tree: DIAG looks like DIA
+               if(fld[0] == string("XYZT")) {                     // R2
+                  if(C.knownPos.getCoordinateSystem() != Position::Unknown) {
+                     oss << "    NA    " << fixed << setprecision(3)
+                         << " " << setw(8) << (asDouble(fld[1])-C.knownPos.X())
+                         << " " << setw(8) << (asDouble(fld[2])-C.knownPos.Y())
+                         << " " << setw(8) << (asDouble(fld[3])-C.knownPos.Z())
+                         << " GPS " << fld[4];
+                  }
+                  else {
+                     oss << "    NA    "
+                         << " " << fld[1] << " " << fld[2] << " " << fld[3]
+                         << " GPS " << fld[4];
+                  }
+               }
+               else if(fld[0] == string("DIAG")) {                // R2
                   for(k=1; k<fld.size()-1; k++)
                      oss << " " << fld[k];
-               if(fld[0].substr(0,3) == string("DIA")) {
+                  LOG(INFO) << line << " POS" << oss.str();
+                  oss.str("");
+               }
+               else if(fld[0] == string("XYZ")) {                 // R3
+                  if(C.knownPos.getCoordinateSystem() != Position::Unknown) {
+                     oss << " " << fld[4] << fixed << setprecision(3)
+                         << " " << setw(8) << (asDouble(fld[1])-C.knownPos.X())
+                         << " " << setw(8) << (asDouble(fld[2])-C.knownPos.Y())
+                         << " " << setw(8) << (asDouble(fld[3])-C.knownPos.Z())
+                         << " GPS " << fld[4];
+                  }
+                  else {
+                     oss << " " << fld[4]
+                         << " " << fld[1] << " " << fld[2] << " " << fld[3];
+                  }
+               }
+               else if(fld[0] == string("CLK")) {                 // R3
+                  for(k=1; k<fld.size()-1; k++)
+                     oss << " " << fld[k];
+               }
+               else if(fld[0].substr(0,3) == string("DIA")) {     // R3
                   oss << " " << fld[0].substr(3);
                   for(k=1; k<fld.size()-1; k++)
                      oss << " " << fld[k];
@@ -1522,14 +1614,17 @@ try {
                Rinex3ObsData::DataMap::const_iterator it;
                for(it=Rdata.obs.begin(); it!=Rdata.obs.end(); ++it) {
                   sat = it->first;
+
                   // output this sat?
                   if(C.InputSats.size() > 0 &&
-                     find(C.InputSats.begin(), C.InputSats.end(), sat)
-                                                              == C.InputSats.end()) {
+                        find(C.InputSats.begin(), C.InputSats.end(), sat)
+                           == C.InputSats.end())
+                  {
                      // check for all sats of this system
                      RinexSatID tsat(-1, sat.system);
                      if(find(C.InputSats.begin(), C.InputSats.end(), tsat)
-                                                           == C.InputSats.end()) {
+                           == C.InputSats.end())
+                     {
                         //LOG(INFO) << "Reject sat " << sat;
                         continue;
                      }
@@ -1575,9 +1670,18 @@ try {
                   }
 
                   // output linear combinations
-                  for(i=0; i<C.Combos.size(); i++)
-                     oss << " " << setw(width)
-                        << C.Combos[i].Compute(sat, Rhead, vrdata);
+                  vector<string> resets;     // check for reset of bias on any lc
+                  for(i=0; i<C.Combos.size(); i++) {
+                     C.Combos[i].Compute(sat, Rhead, vrdata);  // member value
+                     if(C.Combos[i].removeBias(sat))
+                        resets.push_back(C.Combos[i].label);
+                     oss << " " << setw(width) << C.Combos[i].value;
+                  }
+
+                  // output resets
+                  if(resets.size() > 0) oss << "  BR";
+                  for(i=0; i<resets.size(); i++)
+                     oss << " " << resets[i];
 
                   // output the complete line
                   LOG(INFO) << line << oss.str();
@@ -1658,7 +1762,8 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
             C.mapSatCER[sat] = CER;
          }
          catch(Exception& e) {
-            //LOG(WARNING) << "Warning - no ephemeris for sat " << sat;
+            if(!C.noHeader) LOG(WARNING) << "# Warning - no ephemeris for ("
+                  << tag << ") sat " << sat;
             return data;
          }
       }
@@ -1679,8 +1784,10 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
       else if(tag == string("AZI"))
          data = C.mapSatCER[sat].azimuthGeodetic;
       else if(tag == string("LAT")) {
+         // TD
       }
       else if(tag == string("LON")) {
+         // TD
       }
       else if(tag == string("SVX"))
          data = C.mapSatCER[sat].svPosVel.x[0];
@@ -1721,11 +1828,16 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
    LOG(DEBUG2) << "Parse label >" << lab << "<";
    label = lab;                              // save the label
+
    vector<string> fld(split(lab,':'));       // split into fields on :
 
    string tag(fld[0]);                       // LinCom tag ~ SI,VI,IF,GF,MW,etc
    if(find(C.LinComTags.begin(), C.LinComTags.end(), tag) == C.LinComTags.end())
       return false;                          // tag is not in the list
+
+   // set limit and limit0
+   limit = C.debLimit[tag];
+   limit0 = C.debLimit0[tag];
 
    sysConsts.clear();
    sysObsids.clear();
@@ -1873,6 +1985,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
          LOG(DEBUG2) << "Parse ok";
       
+         // TD VI LAT LON not implemented
          if(tag == string("SI") || tag == string("VI")) {         // iono delay
             double alpha(getAlpha(sat,n1,n2));
             //LOG(DEBUG2) << "Parse alpha is " << fixed << setprecision(4) << alpha;
@@ -2092,6 +2205,54 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
 }
 
 //------------------------------------------------------------------------------------
+// Reset bias when jump in value exceeds limit.
+// Set initial bias to 0 if initial value is < limit, otherwise to value.
+// Save previous value and debias value.
+bool LinCom::removeBias(const RinexSatID& sat) throw()
+{
+   bool reset(false);
+   if(!limit0 && limit == 0.0) return reset;
+
+   if(biases.find(sat) == biases.end()) {    // sat not found - initial point
+      if(limit0 || (limit > 0.0 && ::fabs(value) > limit)) {
+         biases[sat] = value;
+         reset = true;
+      }
+      else
+         biases[sat] = 0.0;
+   }
+   
+   // this is the test
+   if(limit > 0.0 && ::fabs(value-prev[sat]) > limit) {
+      biases[sat] = value;                   // this makes value-bias = 0
+      reset = true;
+   }
+
+   prev[sat] = value;
+   value -= biases[sat];
+   return reset;
+}
+
 //------------------------------------------------------------------------------------
+ostream& operator<<(ostream& os, LinCom& lc) throw()
+{
+   ostringstream oss;
+   oss << "Dump LC " << lc.label << " freq " << lc.f1 << "," << lc.f2
+      << " limit " << fixed << setprecision(3) << lc.limit
+      << " limit0 " << (lc.limit0 ? "T":"F");
+   map<string, vector<double> >::const_iterator it;
+   it = lc.sysConsts.begin();
+   while(it != lc.sysConsts.end()) {
+      string sys = it->first;
+      oss << "  Sys " << sys << ":";
+      for(int i=0; i<it->second.size(); ++i)
+         oss << (i==0 ? " " : " + ") << lc.sysConsts[sys][i]
+            << " * " << lc.sysObsids[sys][i];
+      ++it;
+   }
+   os << oss.str();
+   return os;
+}
+
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
