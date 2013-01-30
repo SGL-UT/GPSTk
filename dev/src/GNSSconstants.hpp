@@ -45,7 +45,7 @@
 //=============================================================================
 
 #include "Exception.hpp"
-#include "RinexSatID.hpp"
+#include "SatID.hpp"
 
 namespace gpstk
 {
@@ -271,7 +271,7 @@ namespace gpstk
    /// given RINEX frequency band n(=1,2,5,6,7,8). Return 0 if the frequency n is
    /// not valid for the system.
    /// Calls for system GLO must include the frequency channel number N (-7<=N<=7).
-   inline double getWavelength(const RinexSatID& sat, const int& n, const int N=0)
+   inline double getWavelength(const SatID& sat, const int& n, const int N=0)
       throw()
    {
       switch(sat.system) {
@@ -308,10 +308,11 @@ namespace gpstk
       return 0.0;
    }
 
+
    /// Compute beta(a,b), the ratio of 2 frequencies fa/fb for the given satellite
    /// system (sat.id is ignored). Return 0 if either of the input n's are not valid
    /// RINEX bands (n=1,2,5,6,7,or 8) for the system.
-   inline double getBeta(const RinexSatID& sat, const int& na, const int& nb) throw()
+   inline double getBeta(const SatID& sat, const int& na, const int& nb) throw()
    {
       static const double GPSbeta12=L1_MULT_GPS/L2_MULT_GPS;
       static const double GPSbeta21=L2_MULT_GPS/L1_MULT_GPS;
@@ -361,7 +362,7 @@ namespace gpstk
    /// for 2 frequencies fa,fb for the given satellite system (sat.id is ignored).
    /// Return 0 if either of the input n's are not valid RINEX bands (n=1,2,5,6,7,8)
    /// for the satellite system.
-   inline double getAlpha(const RinexSatID& sat, const int& na, const int& nb) throw()
+   inline double getAlpha(const SatID& sat, const int& na, const int& nb) throw()
    {
       double beta(getBeta(sat,na,nb));
       if(beta == 0.0) return 0.0;

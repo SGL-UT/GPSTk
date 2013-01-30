@@ -54,10 +54,6 @@
 namespace gpstk
 {
 
-   // these are the L1-L2 correction factors per ICD-GPS-200, sec. 20.3.3.3.3.2
-   static const double GAMMA = 1.64694444444444444; // (1575.42/1227.6)^2
-   static const double IGAMMA = 1-GAMMA;
-
    bool ObsRngDev::debug=false;
 
    ObsRngDev::ObsRngDev(
@@ -140,11 +136,12 @@ namespace gpstk
       const Position& rxpos,
       const XvtStore<SatID>& eph,
       EllipsoidModel& em,
-      bool svTime)
+      bool svTime,
+      double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
       // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
-      double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
+      double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 
       computeOrd(icpr, rxpos, eph, em, svTime);
@@ -163,11 +160,12 @@ namespace gpstk
       const XvtStore<SatID>& eph,
       const EllipsoidModel& em,
       const TropModel& tm,
-      bool svTime)
+      bool svTime,
+      double gamma)
          : obstime(time), svid(svid), ord(0), wonky(false)
    {
       // for dual frequency see ICD-GPS-211, section 20.3.3.3.3.3
-      double icpr = (prange2 - GAMMA * prange1)/IGAMMA;
+      double icpr = (prange2 - gamma * prange1)/(1-gamma);
       iono = prange1 - icpr;
 
       computeOrd(icpr, rxpos, eph, em, svTime);

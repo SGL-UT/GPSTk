@@ -55,6 +55,7 @@
 #include "TropModel.hpp"
 #include "ValidType.hpp"
 #include "SatID.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {
@@ -188,7 +189,8 @@ namespace gpstk
                 const Position& rxpos,
                 const XvtStore<SatID>& eph,
                 EllipsoidModel& em,
-                bool svTime = false);
+                bool svTime = false,
+                double gamma = GAMMA_GPS);
    
       /**
        * constructor.
@@ -211,7 +213,8 @@ namespace gpstk
                 const XvtStore<SatID>& eph,
                 const EllipsoidModel& em,
                 const TropModel& tm,
-                bool svTime = false);
+                bool svTime = false,
+                double gamma = GAMMA_GPS);
    
       /// destructor
       virtual ~ObsRngDev() throw() {}

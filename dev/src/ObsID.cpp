@@ -175,7 +175,7 @@ namespace gpstk
       char2tc[' '] = tcUnknown;
       char2tc['*'] = tcAny;
       char2tc['C'] = tcCA;
-      char2tc['P'] = tcP;  
+      char2tc['P'] = tcP;
       char2tc['W'] = tcW;
       char2tc['Y'] = tcY;
       char2tc['M'] = tcM;
