@@ -77,6 +77,7 @@ public:
 
 private:
    bool dualFreq;
+   double gamma;
    bool oidSet;
    gpstk::ObsID oid1, oid2;
    gpstk::GPSEllipsoid gm;

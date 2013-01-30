@@ -136,7 +136,7 @@ def main():
 
         ordType = int(words[3])
         if ordType == 0:
-            if len(words) < 7:
+            if len(words) < 9:
                 print "bad ord line"
                 continue
             

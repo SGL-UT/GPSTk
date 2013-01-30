@@ -38,6 +38,7 @@
 
 #include "OrdEngine.hpp"
 #include "YDSTime.hpp"
+#include "StringUtils.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -53,6 +54,7 @@ OrdEngine::OrdEngine(
    : eph(e), wod(w), antennaPos(p), tm(t), mode(mode),
      oidSet(false), forceSvTime(false),
      svTime(false), keepWarts(false), keepUnhealthy(false),
+     gamma(GAMMA_GPS),
      wartCount(0), verboseLevel(0), debugLevel(0), dualFreq(false)
 {
    if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
@@ -72,110 +74,61 @@ OrdEngine::OrdEngine(
    tm.setReceiverLatitude(geo.getGeodeticLatitude());		//Geodetic or Geocentric?
 }
 
+inline double getAlpha(const ObsID& a, const ObsID& b) throw()
+{
+   SatID system;
+   switch(a.code)
+   {
+      case ObsID::tcCA:
+      case ObsID::tcY:
+      case ObsID::tcP:
+      case ObsID::tcW:
+      case ObsID::tcN:
+      case ObsID::tcD:
+      case ObsID::tcM:
+      case ObsID::tcC2M:
+      case ObsID::tcC2L:
+      case ObsID::tcC2LM:
+      case ObsID::tcI5:
+      case ObsID::tcQ5:
+         system = SatID(-1, SatID::systemGPS);
+         break;
+
+      case ObsID::tcGCA:
+      case ObsID::tcGP:
+         system = SatID(-1, SatID::systemGlonass);
+         break;
+
+      case ObsID::tcA:
+      case ObsID::tcB:
+      case ObsID::tcC:
+      case ObsID::tcBC:
+      case ObsID::tcABC:
+      case ObsID::tcIE5:
+      case ObsID::tcQE5:
+      case ObsID::tcIQE5:
+         system = SatID(-1, SatID::systemGalileo);
+         break;
+   }
+   int na,nb;
+   if (a.band == ObsID::cbL1) na=1;
+   else if (a.band == ObsID::cbL2) na=2;
+   else if (a.band == ObsID::cbL5) na=5;
+   if (b.band == ObsID::cbL1) nb=1;
+   else if (b.band == ObsID::cbL2) nb=2;
+   else if (b.band == ObsID::cbL5) nb=5;
+   return getAlpha(system, na, nb);
+}
+
+
 void OrdEngine::setMode(const ObsEpoch& obs)
 {
-   if (mode=="p1p2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-      dualFreq = true;
-   }
-   if (mode=="z1z2" || mode=="w1w2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcW);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcW);
-      dualFreq = true;
-   }
-   else if (mode=="c1p2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-      dualFreq = true;
-   }
-   else if (mode=="c1z2" || mode=="c1w2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcW);
-      dualFreq = true;
-   }
-   else if (mode=="y1y2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcY);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
-      dualFreq = true;
-   }
-   else if (mode=="p1p2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-      dualFreq = true;
-   }
-   else if (mode=="c1y2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
-      dualFreq = true;
-   }
-   else if (mode=="c1c2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-      oid2 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
-      dualFreq = true;
-   }
-   else if (mode=="c1")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcCA);
-   }
-   else if (mode=="p1")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcP);
-   }
-   else if (mode=="y1")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcY);
-   }
-   else if (mode=="z1" || mode=="w1")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL1,   ObsID::tcW);
-   }
-   else if (mode=="c2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2LM);
-   }
-   else if (mode=="cm")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2M);
-   }
-   else if (mode=="cl")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcC2L);
-   }
-   else if (mode=="p2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcP);
-   }
-   else if (mode=="y2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcY);
-   }
-   else if (mode=="i5")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL5,   ObsID::tcI5);
-   }
-   else if (mode=="q5")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL5,   ObsID::tcQ5);
-   }
-   else if (mode=="z2" || mode=="w2")
-   {
-      oid1 = ObsID(ObsID::otRange,   ObsID::cbL2,   ObsID::tcW);
-   }
-   else if (mode=="smo")
+   if (mode == "smo")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1L2,   ObsID::tcP);
       svTime = true;
    }
-   else if (mode=="smart" || mode=="dynamic")
+   else if (mode == "smart" || mode == "dynamic")
    {
       const SvObsEpoch& soe = obs.begin()->second;
       SvObsEpoch::const_iterator itr;
@@ -202,9 +155,24 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    }
    else
    {
-      cerr << "Unknown ORD computation requested, mode=" << mode << endl;
-      exit(-1);
+      vector<string> words = StringUtils::split(mode, "+");
+      if (words.size() == 0 || words.size() > 2)
+      {
+         cerr << "Couldn't figure out ORD computation requested, mode=" << mode << endl;
+         exit(-1);
+      }
+
+      oid1 = ObsID(words[0]);
+
+      if (words.size() == 2)
+      {
+         dualFreq = true;
+         oid2 = ObsID(words[1]);
+      }
    }
+
+   if (dualFreq)
+      gamma = getAlpha(oid1, oid2) + 1;
 
    oidSet = true;
 
@@ -213,11 +181,12 @@ void OrdEngine::setMode(const ObsEpoch& obs)
 
    if (verboseLevel)
    {
-      cout << "# OrdEngine using " << mode << " mode" << endl;
       cout << "# OrdEngine using " << oid1;
       if (dualFreq)
          cout << " and " << oid2;
-      cout << endl;
+      cout << " for obs" << endl;
+      if (dualFreq)
+         cout << "# OrdEngine using gamma = " << gamma << endl;
       if (svTime)
          cout << "# OrdEngine using SV time" << endl;
    }
@@ -286,7 +255,7 @@ gpstk::ORDEpoch OrdEngine::operator()(const gpstk::ObsEpoch& obs)
          {
             if (dualFreq)
                ordEpoch.ords[svid] = ObsRngDev(
-                  obs1, obs2, svid, t, antennaPos, eph, gm, tm, svTime);
+                  obs1, obs2, svid, t, antennaPos, eph, gm, tm, svTime, gamma);
             else
                ordEpoch.ords[svid] = ObsRngDev(
                   obs1, svid, t, antennaPos, eph, gm, tm, svTime);

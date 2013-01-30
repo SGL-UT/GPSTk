@@ -151,8 +151,8 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
-                    "p1p2, z1z2, c1p2, c1c2, c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
-                    "z2, smo, dynamic, and smart. The default is " + ordMode),
+                    "c1, y1, y2, m2, l2, c1+y2,  "
+                    "smo, dynamic, and smart. The default is " + ordMode),
    
       tropModelOption('\0', "trop-model", "Specify the trop model to use. "
                       "Options are zero, simple, nb, and gg. The default is nb."),
@@ -177,7 +177,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    if (!OrdApp::initialize(argc,argv)) return false;
 
    if (ordModeOption.getCount())
-      ordMode = lowerCase(ordModeOption.getValue()[0]);
+      ordMode = ordModeOption.getValue()[0];
 
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
