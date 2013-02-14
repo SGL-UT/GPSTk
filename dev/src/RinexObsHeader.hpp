@@ -146,7 +146,7 @@ namespace gpstk
             /// This mask is for all required valid fields for RINEX 2.1
          allValid21 = 0x080002FEB,
             /// This mask is for all required valid fields for RINEX 2.11
-         allValid211 = 0x080002FEB
+         allValid211 = 0x080002BEB
       };
 
          /// RINEX Observation Types

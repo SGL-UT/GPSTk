@@ -168,7 +168,7 @@ namespace gpstk
          validEoH               = 0x80000000, ///< "END OF HEADER"
    
          /// This mask is for all required valid fields
-         allValid2 = 0x801607CB,
+         allValid2 = 0x801207CB,
          //allValid30 = 0x801207CB,  // case for static receivers - AntennaPosition present
          allValid30 = 0x801205CB,    // case for moving receivers -- make default
          allValid301 = 0x841205CB
