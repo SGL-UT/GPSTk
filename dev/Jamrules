@@ -89,10 +89,19 @@ else if $(NT)
 
    # Microsoft compilers define macro _MSC_VER = MMmm.mm MM=Major ver mm.mm=minor ver.
    #
+   # Added for MSVS 2012 (yanweigps)
+   #
+   # ------ MS VC++ 2012 : _MSC_VER >= 1700
+   if $(MSCVER) >= 1700 {
+      MSVCVersion = "VC++2012(VC11)" ;
+      LINKLIBS = ;
+      CCFLAGS  += -D_CRT_SECURE_NO_DEPRECATE -wd4274 -wd4503 ;
+      C++FLAGS += /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES /EHsc /GR -wd4274 -wd4503 ;
+   }
    # Added for MSVS 2010 (S. Cummins)
    #
    # ------ MS VC++ 2010 : _MSC_VER >= 1600
-   if $(MSCVER) >= 1600 {
+   else if $(MSCVER) >= 1600 {
       MSVCVersion = "VC++2010(VC10)" ;
       LINKLIBS = regex.lib ;
       CCFLAGS  += -D_CRT_SECURE_NO_DEPRECATE -wd4274 -wd4503 ;
