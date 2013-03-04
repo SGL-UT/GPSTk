@@ -217,6 +217,7 @@ namespace gpstk
 
                case 'f':
                   hsec = true;
+                  info['S'] = info['f'];  // a small hack to make fractional seconds work
                   break;
 
                case 'U':
