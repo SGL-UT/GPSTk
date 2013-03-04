@@ -222,7 +222,7 @@ ORDEpoch OrdApp::read(std::ifstream& s) throw()
          }         
 
          CommonTime time;
-         scanTime(time, readBuffer.substr(0,19), timeFormat);
+         scanTime(time, readBuffer.substr(0,20), timeFormat);
 
          // This means that we have a complete epoch. Note that the most
          // recently read line is left in readBuffer

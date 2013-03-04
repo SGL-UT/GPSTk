@@ -5,7 +5,7 @@
 # The above magic line works under osx 10.5 and ubuntu 7.10. Dunno if it is good
 # any further...
 
-import sys, string, time, datetime, numpy, matplotlib, pylab, math
+import sys, string, time, datetime, numpy, matplotlib, math
 
 def main():
     from optparse import OptionParser
@@ -85,6 +85,11 @@ def main():
         else:
             highlightPrns = [int(p) for p in options.prnHL]
 
+    import matplotlib
+    if options.saveFig:
+        matplotlib.use('Agg')
+    import pylab
+    
     if options.debugLevel:
         print "Processing: %s" % inputFile.name
         print "Debug level: %d" % options.debugLevel
@@ -132,6 +137,7 @@ def main():
             continue
 
         words=line.split()
+        if len(words) < 4: continue
         t = parse_time(words[0:3])
 
         ordType = int(words[3])
@@ -408,15 +414,17 @@ def strip_lim(y, limit, warts=numpy.array([])):
         fraction = float(limit[:-1])/100.0
         drop = int(numpy.floor(0.5 * (1-fraction) * len(d)))
         ds = numpy.sort(d)
-        lim = (ds[drop], ds[-(drop+1)])
+        lb = ds[drop]
+        ub = ds[-(drop+1)]
+        lim = (lb, ub)
     elif limit[-1] == "s":
         mult = float(limit[:-1])
         sigma = numpy.std(d) * mult        
         lim = (-sigma , sigma)
     else:
         lim = (-float(limit), float(limit))
-
-    return lim;
+    slop = (lim[1]-lim[0]) * 0.1
+    return (lim[0]-slop,lim[1]+slop);
 #
 
 

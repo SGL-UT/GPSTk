@@ -177,7 +177,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    if (!OrdApp::initialize(argc,argv)) return false;
 
    if (ordModeOption.getCount())
-      ordMode = ordModeOption.getValue()[0];
+      ordMode = upperCase(ordModeOption.getValue()[0]);
 
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
@@ -223,17 +223,6 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
    forceSvTime = forceSvTimeOption.getCount();
 
-   if (RSS(antennaPos[0], antennaPos[1], antennaPos[2]) < 1)
-   {
-      cerr << "Warning! The antenna appears to be within one meter of the" << endl
-           << "center of the geoid. This program is not capable of" << endl
-           << "accurately estimating the propigation of GNSS signals" << endl
-           << "through solids such as a planetary crust or magma. Also," << endl
-           << "if this location is correct, your antenna is probably" << endl
-           << "no longer in the best of operating condition." << endl;
-      return false;
-   }
-
    return true;
 }
 
@@ -246,8 +235,8 @@ void OrdGen::spinUp()
    if (verboseLevel)
    {
       if (msid)
-         cout << "# msid: " << msid << endl;
-      cout << "# Antenna Position: " << setprecision(8) << antennaPos << endl;
+         output << "# msid: " << msid << endl;
+      output << "# Antenna Position: " << setprecision(8) << antennaPos << endl;
    }
 }
 
@@ -305,6 +294,7 @@ void OrdGen::process()
    ORDEpochMap ordEpochMap;
 
    // Walk through each obs file, reading and computing ords along the way.
+   bool first=true;
    for (int i=0; i<obsFileOption.getCount(); i++)
    {
       string fn = (obsFileOption.getValue())[i];
@@ -319,6 +309,23 @@ void OrdGen::process()
             break;
 
          ORDEpoch oe = ordEngine(obs);
+
+         if (first)
+         {
+            first=false;
+            if (verboseLevel)
+            {
+               output << "# OrdEngine using " << ordEngine.oid1;
+               if (ordEngine.dualFreq)
+                  output << " and " << ordEngine.oid2;
+               output << " for obs" << endl;
+               if (ordEngine.dualFreq)
+                  output << "# OrdEngine using gamma = " << ordEngine.gamma << endl;
+               if (ordEngine.svTime)
+                  output << "# OrdEngine using SV time" << endl;
+               output << "# trop model:" << tropModel << endl;
+            }
+        }
 
          write(output, oe);
       }

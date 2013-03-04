@@ -179,17 +179,6 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    if (forceSvTime)
       svTime = true;
 
-   if (verboseLevel)
-   {
-      cout << "# OrdEngine using " << oid1;
-      if (dualFreq)
-         cout << " and " << oid2;
-      cout << " for obs" << endl;
-      if (dualFreq)
-         cout << "# OrdEngine using gamma = " << gamma << endl;
-      if (svTime)
-         cout << "# OrdEngine using SV time" << endl;
-   }
 }
 
 // ---------------------------------------------------------------------

@@ -75,7 +75,6 @@ public:
    int verboseLevel;
    int debugLevel;
 
-private:
    bool dualFreq;
    double gamma;
    bool oidSet;
