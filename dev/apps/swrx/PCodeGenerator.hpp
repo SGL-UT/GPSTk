@@ -28,6 +28,7 @@
 #include "SVPCodeGen.hpp"
 #include "CodeBuffer.hpp"
 #include "CommonTime.hpp"
+#include "GPSWeekZcount.hpp"
 #include "Epoch.hpp"
 #include "CodeGenerator.hpp"
 
@@ -43,7 +44,7 @@ namespace gpstk
    public:
       PCodeGenerator(const int prn)
          : CodeGenerator(ObsID::tcP, SatID(prn, SatID::systemGPS)),
-           cb(prn), svp(int(prn), CommonTime()), index(0)
+           cb(prn), svp(int(prn), GPSWeekZcount(0,0).convertToCommonTime()), index(0)
       {
          svp.getCurrentSixSeconds(cb);
       }
