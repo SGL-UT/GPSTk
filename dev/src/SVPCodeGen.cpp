@@ -60,10 +60,10 @@ namespace gpstk
    void SVPCodeGen::getCurrentSixSeconds( CodeBuffer& pcb )
    {
          // Compute appropriate X2A offset
+      int dayAdvance = (PRNID - 1) / 37;
+      int EffPRNID = PRNID - dayAdvance * 37;
+      long X1count = GPSWeekZcount(currentZTime + dayAdvance*86400.0).zcount;
       long X2count;
-      long X1count = GPSWeekZcount(currentZTime).zcount;
-      int dayAdvance;
-      int EffPRNID;
    
          /*
             Trivial, but special, case for beginning of week.  This
@@ -84,9 +84,7 @@ namespace gpstk
          */
       else
       {
-         dayAdvance = (PRNID - 1) / 37;
-         EffPRNID = PRNID - dayAdvance * 37;
-         long cumulativeX2Delay = X1count * X2A_EPOCH_DELAY + dayAdvance * X1_PER_DAY * X2A_EPOCH_DELAY + EffPRNID;
+         long cumulativeX2Delay = X1count * X2A_EPOCH_DELAY + EffPRNID;
          X2count = MAX_X2_TEST - cumulativeX2Delay;
          if (X2count<0) X2count += MAX_X2_TEST;
       }
