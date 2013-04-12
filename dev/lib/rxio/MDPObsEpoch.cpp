@@ -44,6 +44,7 @@
 
 #include "MDPObsEpoch.hpp"
 #include "MDPStream.hpp"
+#include "CivilTime.hpp"
 
 using gpstk::StringUtils::asString;
 using gpstk::BinUtils::hostToNet;
@@ -235,6 +236,7 @@ namespace gpstk
       MDPStream& mdps = dynamic_cast<MDPStream&>(s);
       MDPObsEpoch moe;
       CommonTime t;
+      me.clear();
 
       while (mdps >> moe)
       {
@@ -249,7 +251,6 @@ namespace gpstk
          }
          me.insert(pair<const int, MDPObsEpoch>(moe.prn,moe));
          t = moe.time;
-
          if (moe.numSVs == me.size())
             break;
       }
