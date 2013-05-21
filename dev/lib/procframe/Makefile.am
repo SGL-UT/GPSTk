@@ -79,7 +79,8 @@ incldir = $(includedir)/gpstk
 incl_HEADERS = BasicModel.hpp \
       CodeKalmanSolver.hpp \
       CodeSmoother.hpp \
-      ComputeCombination.hpp \
+      ConfDataSection.hpp \
+	  ComputeCombination.hpp \
       ComputeDOP.hpp \
       ComputeIonoModel.hpp \
       ComputeIURAWeights.hpp \
@@ -96,8 +97,11 @@ incl_HEADERS = BasicModel.hpp \
       ComputeSimpleWeights.hpp \
       ComputeTropModel.hpp \
       ComputeWindUp.hpp \
-      ConstraintSystem.hpp \
-      ConvertC1ToP1.hpp\
+      ConfData.hpp \
+	  ConfDataItem.hpp \
+	  ConfDataStructures.hpp \
+	  ConstraintSystem.hpp \
+      ConvertC1ToP1.hpp \
       CorrectCodeBiases.hpp \
       CorrectObservables.hpp \
       DataHeaders.hpp \
@@ -110,7 +114,8 @@ incl_HEADERS = BasicModel.hpp \
       EclipsedSatFilter.hpp \
       Equation.hpp \
       EquationSystem.hpp \
-      GeneralConstraint.hpp \
+      GDSUtils.hpp \
+	  GeneralConstraint.hpp \
       GeneralEquations.hpp \
       GravitationalDelay.hpp \
       IonexModel.hpp \
