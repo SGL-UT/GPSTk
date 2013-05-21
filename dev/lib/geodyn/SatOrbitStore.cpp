@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: SatOrbitStore.cpp 3140 2012-06-18 15:03:02Z susancummins $"
 
 /**
 * @file SatOrbitStore.hpp
@@ -165,7 +165,7 @@ namespace gpstk
          if( sp3c ) header.version = SP3Header::SP3c; else SP3Header::SP3a;
          header.containsVelocity = true;
 
-         header.timeSystem = SP3Header::timeGPS;
+         header.timeSystem = TimeSystem::GPS;
          header.coordSystem = "ITRF";
          
          header.time = CivilTime(2010,1,10,23,59,0.0);

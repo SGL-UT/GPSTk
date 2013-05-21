@@ -1,13 +1,13 @@
 #						-*- Autoconf -*-
 # Process this file with autoconf to produce a configure script.
 
-AC_PREREQ(2.61)
-AC_INIT([GPSTK], [1.7], [http://www.gpstk.org/], [gpstk])
-AM_INIT_AUTOMAKE([1.10 foreign])
-AC_CONFIG_SRCDIR([src/DayTime.hpp])
+AC_PREREQ(2.69)
+AC_INIT([GPSTK], [2.0], [http://www.gpstk.org/], [gpstk])
+AM_INIT_AUTOMAKE([1.11.6 foreign])
+# AC_CONFIG_SRCDIR([src/DayTime.hpp])
 
 #gpstk 1.7 -> libgpstk.so.17.0, etc...
-GPSTK_MAJOR_VERSION=17
+GPSTK_MAJOR_VERSION=20
 GPSTK_MINOR_VERSION=0
 GPSTK_SO_VERSION=$GPSTK_MAJOR_VERSION:$GPSTK_MINOR_VERSION:0
 AC_SUBST(GPSTK_SO_VERSION)
@@ -81,10 +81,9 @@ AC_CONFIG_FILES([Makefile
 		 apps/qa/Makefile
 		 apps/receiver/Makefile
 		 apps/reszilla/Makefile
-		 apps/rfw/Makefile
+		 apps/rfw/Makefile 
 		 apps/swrx/Makefile
 		 apps/time/Makefile
 		 apps/visibility/Makefile
-		 tests/Makefile
 		 examples/Makefile])
 AC_OUTPUT

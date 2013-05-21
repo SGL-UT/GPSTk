@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Makefile.am 3319 2012-09-19 16:58:10Z prestonherrmann $
 ## Process this file with automake to produce Makefile.in
 #
 # Please add entries in alphabetical order 
@@ -37,13 +37,14 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       CommonTime.cpp \
       ConfDataReader.cpp \
       ConfDataWriter.cpp \
-      DayTime.cpp \
-      DCBDataReader.cpp \
-      DOP.cpp \
+	  DCBDataReader.cpp \
+      DebugUtils.cpp \
+	  DOP.cpp \
       EngAlmanac.cpp \
       EngEphemeris.cpp \
       EngNav.cpp \
       ENUUtil.cpp \
+	  EOPDataStore.cpp \
       EphemerisRange.cpp \
       Epoch.cpp \
       EpochDataStore.cpp \
@@ -67,11 +68,14 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       GalEphemerisStore.cpp \
       GaussianDistribution.cpp \
       GenXSequence.cpp \
+	  getopt.c \
+	  getopt1.c \
       GloEphemeris.cpp \
       GloEphemerisStore.cpp \
       GloFreqIndex.cpp \
       GPSAlmanacStore.cpp \
       GPSEphemerisStore.cpp \
+	  GPSOrbElemStore.cpp \
       GPSWeek.cpp \
       GPSWeekSecond.cpp \
       GPSWeekZcount.cpp \
@@ -97,7 +101,16 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ObsID.cpp \
       ObsRngDev.cpp \
       OceanLoading.cpp \
+	  OrbElem.cpp \
+	  OrbElemICE.cpp \
+	  OrbElemCNAV.cpp \
+	  OrbElemCNAV2.cpp \
+	  OrbElemFIC9.cpp \
+	  OrbElemFIC109.cpp \
+	  OrbElemLNav.cpp \
+	  OrbElemRinex.cpp \
       PackedNavBits.cpp \
+	  PlanetEphemeris.cpp \
       PoleTides.cpp \
       Position.cpp \
       PositionSatStore.cpp \
@@ -115,7 +128,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       Rinex3ObsHeader.cpp \
       RinexClockData.cpp \
       RinexClockHeader.cpp \
-      #RinexConverter.cpp \
       RinexMetData.cpp \
       RinexMetHeader.cpp \
       RinexNavData.cpp \
@@ -159,7 +171,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       WxObsMap.cpp \
       X1Sequence.cpp \
       X2Sequence.cpp \
-      Xt.cpp \
       Xvt.cpp \
       YDSTime.cpp \
       YumaAlmanacStore.cpp \
@@ -205,16 +216,18 @@ incl_HEADERS = AllanDeviation.hpp \
       CommandOptionWithPositionArg.hpp \
       CommandOptionWithTimeArg.hpp \
       CommonTime.hpp \
+	  compass_constants.hpp \
       ConfDataReader.hpp \
       ConfDataWriter.hpp \
-      DayTime.hpp \
       DCBDataReader.hpp \
+	  DebugUtils.hpp \
       DOP.hpp \
       EllipsoidModel.hpp \
       EngAlmanac.hpp \
       EngEphemeris.hpp \
       EngNav.hpp \
       ENUUtil.hpp \
+	  EOPDataStore.hpp \
       EphemerisRange.hpp \
       Epoch.hpp \
       EpochClockModel.hpp \
@@ -255,18 +268,20 @@ incl_HEADERS = AllanDeviation.hpp \
       GalEphemerisStore.hpp \
       GaussianDistribution.hpp \
       GenXSequence.hpp \
-      GeoidModel.hpp \
+	  getopt.h \
       GloEphemeris.hpp \
       GloEphemerisStore.hpp \
       GloFreqIndex.hpp \
       GPSAlmanacStore.hpp \
       GPSEllipsoid.hpp \
       GPSEphemerisStore.hpp \
-      GPSGeoid.hpp \
+	  GPSOrbElemStore.hpp \
       GPSWeek.hpp \
       GPSWeekSecond.hpp \
       GPSWeekZcount.hpp \
       GPSZcount.hpp \
+	  GPS_URA.hpp \
+	  GNSSconstants.hpp \
       HelmertTransform.hpp \
       InOutFramework.hpp \
       IonexBase.hpp \
@@ -288,6 +303,7 @@ incl_HEADERS = AllanDeviation.hpp \
       MatrixFunctors.hpp \
       MatrixImplementation.hpp \
       MatrixOperators.hpp \
+	  MemoryUtils.hpp \
       MiscMath.hpp \
       MJD.hpp \
       ModeledPseudorangeBase.hpp \
@@ -305,10 +321,19 @@ incl_HEADERS = AllanDeviation.hpp \
       ObsID.hpp \
       ObsRngDev.hpp \
       OceanLoading.hpp \
-      OrbElemStore.hpp \
-      ORDEpoch.hpp \
+	  OrbElem.hpp \
+	  OrbElemCNAV.hpp \
+	  OrbElemCNAV2.hpp \
+	  OrbElemFIC9.hpp \
+	  OrbElemFIC109.hpp \
+	  OrbElemICE.hpp \
+      OrbElemLNav.hpp \
+	  OrbElemRinex.hpp \
+	  OrbElemStore.hpp \
+	  ORDEpoch.hpp \
       PackedNavBits.hpp \
       PCodeConst.hpp \
+	  PlanetEphemeris.hpp \
       PoleTides.hpp \
       PolyFit.hpp \
       Position.hpp \
@@ -339,7 +364,6 @@ incl_HEADERS = AllanDeviation.hpp \
       RinexClockHeader.hpp \
       RinexClockStore.hpp \
       RinexClockStream.hpp \
-      #RinexConverter.hpp \
       RinexMetBase.hpp \
       RinexMetData.hpp \
       RinexMetFilterOperators.hpp \
@@ -384,6 +408,7 @@ incl_HEADERS = AllanDeviation.hpp \
       SP3Stream.hpp \
       SpecialFunctions.hpp \
       Stats.hpp \
+	  StreamBuf.hpp \
       StringUtils.hpp \
       StudentDistribution.hpp \
       SunPosition.hpp \
@@ -391,7 +416,6 @@ incl_HEADERS = AllanDeviation.hpp \
       SVNumXRef.hpp \
       SVPCodeGen.hpp \
       SystemTime.hpp \
-      TabularEphemerisStore.hpp \
       TabularSatStore.hpp \
       TimeConstants.hpp \
       TimeConverters.hpp \
@@ -411,11 +435,10 @@ incl_HEADERS = AllanDeviation.hpp \
       VectorOperators.hpp \
       WeightBase.hpp \
       WGS84Ellipsoid.hpp \
-      WGS84Geoid.hpp \
       WxObsMap.hpp \
       X1Sequence.hpp \
       X2Sequence.hpp \
-      Xt.hpp \
+	  Xv.hpp \
       Xvt.hpp \
       XvtStore.hpp \
       YDSTime.hpp \
@@ -428,10 +451,6 @@ incl_HEADERS = AllanDeviation.hpp \
       geometry.hpp \
       gps_constants.hpp \
       gpstkplatform.h \
-      icd_200_constants.hpp \
-      icd_glo_constants.hpp \
-      icd_glo_freqindex.hpp \
-      icd_gps_constants.hpp \
       mergePCodeWords.h \
       stl_helpers.hpp \
       $(GETOPT_INC)
