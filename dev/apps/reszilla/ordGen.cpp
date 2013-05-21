@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ordGen.cpp 3347 2013-03-04 16:53:46Z ocibu $"
 
 //============================================================================
 //
@@ -151,7 +151,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
 
       ordModeOption('\0', "omode", "Specifies what observations are used to "
                     "compute the ORDs. Valid values are:"
-                    "c1, y1, y2, m2, l2, c1+y2,  "
+                    "c1c, c1y, c1p, c2p, c2y, c2c, or c1c+c2y, c1p+c2p, ...,  "
                     "smo, dynamic, and smart. The default is " + ordMode),
    
       tropModelOption('\0', "trop-model", "Specify the trop model to use. "
@@ -177,7 +177,7 @@ bool OrdGen::initialize(int argc, char *argv[]) throw()
    if (!OrdApp::initialize(argc,argv)) return false;
 
    if (ordModeOption.getCount())
-      ordMode = upperCase(ordModeOption.getValue()[0]);
+      ordMode = ordModeOption.getValue()[0];
 
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
@@ -267,7 +267,7 @@ void OrdGen::process()
       metReader.read(metFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
-   TropModel* tm; 
+   TropModel* tm;
    if (tropModel=="nb")
       tm = new NBTropModel;
    else if (tropModel=="zero")

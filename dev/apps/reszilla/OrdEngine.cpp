@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: OrdEngine.cpp 3347 2013-03-04 16:53:46Z ocibu $"
 
 //============================================================================
 //
@@ -42,6 +42,7 @@
 
 using namespace std;
 using namespace gpstk;
+using namespace gpstk::StringUtils;
 
 
 // ---------------------------------------------------------------------
@@ -123,12 +124,13 @@ inline double getAlpha(const ObsID& a, const ObsID& b) throw()
 
 void OrdEngine::setMode(const ObsEpoch& obs)
 {
-   if (mode == "smo")
+   string ucmode = upperCase(mode);
+   if (ucmode == "SMO")
    {
       oid1 = ObsID(ObsID::otRange,   ObsID::cbL1L2,   ObsID::tcP);
       svTime = true;
    }
-   else if (mode == "smart" || mode == "dynamic")
+   else if (ucmode == "SMART" || ucmode == "DYNAMIC")
    {
       const SvObsEpoch& soe = obs.begin()->second;
       SvObsEpoch::const_iterator itr;
@@ -155,7 +157,7 @@ void OrdEngine::setMode(const ObsEpoch& obs)
    }
    else
    {
-      vector<string> words = StringUtils::split(mode, "+");
+      vector<string> words = StringUtils::split(ucmode, "+");
       if (words.size() == 0 || words.size() > 2)
       {
          cerr << "Couldn't figure out ORD computation requested, mode=" << mode << endl;

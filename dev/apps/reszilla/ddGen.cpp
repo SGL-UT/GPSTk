@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: ddGen.cpp 3332 2012-11-08 17:41:26Z ocibu $"
 
 //============================================================================
 //
@@ -126,10 +126,10 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
       ddModeOption('\0', "ddmode", "Specifies what observations are used to "
                    "compute the double difference residuals. Valid values are:"
                    " all, phase. The default is " + ddMode + "."),
-      ordModeOption('\0', "omode", "Specifies what observations to use to "
-                    "compute the ORDs. Valid values are: p1p2, z1z2, c1p2, "
-                    "c1y2, c1z2, y1y2, c1, p1, y1, z1, c2, p2, y2, "
-                    "z2 smo, dynamic, and smart. The default is " + ordMode + "."),
+      ordModeOption('\0', "omode", "Specifies what observations are used to "
+                    "compute the ORDs. Valid values are:"
+                    "c1c, c1y, c1p, c2p, c2y, c2c, or c1c+c2y, c1p+c2p, ...,  "
+                    "smo, dynamic, and smart. The default is " + ordMode),
       minArcTimeOption('\0', "min-arc-time", "The minimum length of time "
                        "(in seconds) that a sequence of observations must "
                        "span to be considered as an arc. The default "
@@ -210,7 +210,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    }
 
    if (ordModeOption.getCount())
-      ordMode = lowerCase(ordModeOption.getValue()[0]);
+      ordMode =ordModeOption.getValue()[0];
    
    if (msidOption.getCount())
       msid = asUnsigned(msidOption.getValue().front());
