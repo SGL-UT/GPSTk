@@ -87,6 +87,18 @@ namespace gpstk
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
+      /// the CER quantities, given the nominal receive time tr_nom and
+      /// an XvtStore.
+      /// This doesn't use a pseudorange to initialize the time-of-flight
+      /// computation.
+      double ComputeAtTransmitTime(
+         const CommonTime& tr_nom,
+         const Position& Rx,
+         const SatID sat,
+         const XvtStore<SatID>& Eph) throw(Exception);
+
+      /// Compute the corrected range at TRANSMIT time, from receiver at
+      /// position Rx, to the GPS satellite given by SatID sat, as well as all
       /// the CER quantities, given the nominal transmit time tt_nom and
       /// an XvtStore. This is used for data smoothed to transmit time.
       double ComputeAtTransmitSvTime(

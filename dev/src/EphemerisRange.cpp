@@ -151,6 +151,24 @@ namespace gpstk
    }  // end CorrectedEphemerisRange::ComputeAtTransmitTime
 
 
+   double CorrectedEphemerisRange::ComputeAtTransmitTime(
+      const CommonTime& tr_nom,
+      const Position& Rx,
+      const SatID sat,
+      const XvtStore<SatID>& Eph) throw(Exception)
+   {
+      try {
+         gpstk::GPSEllipsoid gm;
+         svPosVel = Eph.getXvt(sat, tr_nom);
+         double pr = svPosVel.preciseRho(Rx, gm);
+         return ComputeAtTransmitTime(tr_nom, pr, Rx, sat, Eph);
+      }
+      catch(gpstk::Exception& e) {
+         GPSTK_RETHROW(e);
+      }
+   }
+
+
    double CorrectedEphemerisRange::ComputeAtTransmitSvTime(
       const CommonTime& tt_nom,
       const double& pr,
