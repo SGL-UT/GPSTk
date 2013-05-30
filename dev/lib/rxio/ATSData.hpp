@@ -53,7 +53,7 @@
 
 #include <FFData.hpp>
 #include <FFStream.hpp>
-#include <DataStatus.hpp>
+#include "DataStatus.hpp"
 
 #include <RinexObsData.hpp>
 
