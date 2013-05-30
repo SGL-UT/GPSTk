@@ -65,7 +65,6 @@
 
    // Class to store satellite precise navigation data
 #include "SP3EphemerisStore.hpp"
-#include "TabularEphemerisStore.hpp"
 
    // Class to store a list of processing objects
 #include "ProcessingList.hpp"
