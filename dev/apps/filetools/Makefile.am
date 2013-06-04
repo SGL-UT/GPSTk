@@ -13,5 +13,5 @@ sp3version_SOURCES = sp3version.cpp
 bc2sp3_SOURCES = bc2sp3.cpp
 navsum_SOURCES = navsum.cpp
 ephsum_SOURCES = EphSum.cpp
-RinexElvStrip = RinexElvStrip.cpp
-ficedit = ficedit.cpp
+RinexElvStrip_SOURCES = RinexElvStrip.cpp
+ficedit_SOURCES = ficedit.cpp
