@@ -482,7 +482,7 @@ void DDGen::readObsFile(
 
    // Set up a simple epoch clock model.
    EpochClockModel cm(1.5, 10, ObsClockModel::HEALTHY);
-   const GPSEllipsoid gm;
+   const GPSEllipsoid gm = GPSEllipsoid();
 
    // Walk through each obs file, reading and computing ords along the way.
    for (int i=0; i<obsFileOption.getCount(); i++)
