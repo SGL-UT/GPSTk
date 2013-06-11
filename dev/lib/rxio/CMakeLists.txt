@@ -1,0 +1,26 @@
+# lib/rxio/CMakeLists.txt
+set (rxio_src
+AshtechALB.cpp 
+AshtechData.cpp 
+AshtechEPB.cpp 
+AshtechMBEN.cpp 
+AshtechPBEN.cpp
+ATSData.cpp 
+EphReader.cpp 
+FFIdentifier.cpp 
+MDPHeader.cpp
+MDPNavSubframe.cpp 
+MDPObsEpoch.cpp 
+MDPPVTSolution.cpp
+MDPSelftestStatus.cpp 
+MetReader.cpp 
+NovatelData.cpp 
+ObsEphReaderFramework.cpp
+ObsReader.cpp
+ObsUtils.cpp
+RinexConverters.cpp
+)
+   
+add_library (rxio SHARED ${rxio_src})
+include_directories (${CMAKE_SOURCE_DIR}/src)
+target_link_libraries (rxio gpstk)

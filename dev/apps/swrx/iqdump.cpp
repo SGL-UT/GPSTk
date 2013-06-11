@@ -29,7 +29,7 @@
 #include "BasicFramework.hpp"
 #include "CommandOption.hpp"
 
-#include <IQStream.hpp>
+#include "IQStream.hpp"
 
 using namespace gpstk;
 using namespace std;

@@ -44,7 +44,7 @@
  * gpstk::AshtechALB - class to hold an Ashtech ALB message
  */
 
-#include <AshtechData.hpp>
+#include "AshtechData.hpp"
 
 namespace gpstk
 {

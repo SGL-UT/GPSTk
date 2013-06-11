@@ -40,7 +40,7 @@ namespace gpstk
    using namespace std;
    
       // Reference epoch (J2000)
-   const CommonTime J2000(CivilTime(2000,1,1,12,0,0.0));
+   const CommonTime J2000(CivilTime(2000,1,1,12,0,0.0,TimeSystem::UTC));
 
    const double PI = std::atan(1.0)*4.0;    // 3.1415926535897932; 
       // 2PI
@@ -63,7 +63,7 @@ namespace gpstk
    {     
    public:
       void leapHistory(int year, int month, int day,int leap)
-      { (*this)[ CivilTime(year,month,day,0,0,0.0) ] = leap; }  
+      { (*this)[ CivilTime(year,month,day,0,0,0.0,TimeSystem::UTC) ] = leap; }  
       
       TAImUTCData()
       {         
@@ -92,6 +92,7 @@ namespace gpstk
          leapHistory( 1999, 1, 1, 32 );
          leapHistory( 2006, 1, 1, 33 );
          leapHistory( 2009, 1, 1, 34 );
+         leapHistory( 2012, 7, 1, 35 );
 
          // more leap seconds should be appended here
          // ...
@@ -103,7 +104,7 @@ namespace gpstk
    int TAImUTC(const CommonTime& UTC)
       throw(InvalidRequest)
    {
-      if( UTC < CivilTime(1972,1,1,0,0,0.0) )
+      if( UTC < CivilTime(1972,1,1,0,0,0.0,TimeSystem::UTC) )
       {  
          GPSTK_THROW(
             InvalidRequest( "There are no leap second data for the epoch"
