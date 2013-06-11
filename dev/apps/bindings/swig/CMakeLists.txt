@@ -25,7 +25,6 @@ SWIG_ADD_MODULE(gpstk_time python gpstk_time.i
 					../../../src/GPSWeekZcount.cpp
 					../../../src/JulianDate.cpp
 					../../../src/MJD.cpp
-					../../../src/StringUtils.hpp
 					../../../src/SystemTime.cpp
 					../../../src/TimeConstants.hpp
 					../../../src/TimeConverters.cpp
@@ -34,9 +33,7 @@ SWIG_ADD_MODULE(gpstk_time python gpstk_time.i
 					../../../src/TimeTag.hpp
 					../../../src/TimeTag.cpp
 					../../../src/UnixTime.cpp
-					../../../src/YDSTime.cpp
-				)
-
+					../../../src/YDSTime.cpp)
 
 
 SWIG_LINK_LIBRARIES(gpstk_time ${PYTHON_LIBRARIES})
