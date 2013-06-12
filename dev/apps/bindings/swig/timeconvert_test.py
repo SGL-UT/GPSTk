@@ -208,8 +208,9 @@ test(['-R', '05 06 1985 13:50:02', '-F', 'ms:%K, year:%Y'],
         'output format')
 
 test(['-y 1980 5 86499'],
-         'Input could not be parsed. Check the formatting and ensure that the input is in quotes.',
-         'doy crash input - 1sec before gps epoch')
+         expected='Input could not be parsed',
+         pass_condition=lambda actual,expected: expected in actual,
+         name='doy crash input - 1sec before gps epoch')
 
 print ''
 print 'Number of fails:', len(fails)

@@ -45,15 +45,14 @@ test('t3 >= t4', False)
 test('t3 == t4', False)
 test('t3 != t4', True)
 
-
-t5 = CivilTime(2012, 11, 6, 20, 40, 400).convertToCommonTime() # in 2012
+t5 = UnixTime(1370983244, 659200).convertToCommonTime() # in 2013
 t5.setTimeSystem(timeSystem)
-t6 = UnixTime(1370983244, 659200).convertToCommonTime() # in 2013
+t6 = CivilTime(2012, 11, 6, 20, 40, 400).convertToCommonTime() # in 2012
 t6.setTimeSystem(timeSystem)
-test('t5 <  t6', True)
-test('t5 <= t6', True)
-test('t5 >  t6', False)
-test('t5 >= t6', False)
+test('t5 <  t6', False)
+test('t5 <= t6', False)
+test('t5 >  t6', True)
+test('t5 >= t6', True)
 test('t5 == t6', False)
 test('t5 != t6', True)
 

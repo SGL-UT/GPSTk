@@ -86,7 +86,8 @@ for key in formats:
 		try:
 			ct = scanTime(input_time, formats[key])
 		except InvalidRequest:
-			print 'Input could not be parsed. Check the formatting and ensure that the input is in quotes.'
+			print 'Input could not be parsed. Check the formatting and '
+			'ensure that the input is both valid and in quotes.'
 			sys.exit()
 
 
