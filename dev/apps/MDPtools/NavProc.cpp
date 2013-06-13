@@ -408,6 +408,18 @@ void MDPNavProcessor::process(const MDPNavSubframe& msg)
             else
                peHist[rcp].addValue(snr[ni]);
          }
+
+         //out << "Found data and passed parity check" << endl;
+         std::map<NavIndex,CNAVMessageAsm>::iterator it;
+         it = CNAVMsgStore.find(ni);
+         if (it==CNAVMsgStore.end())
+         {
+            CNAVMessageAsm o; 
+            CNAVMsgStore[ni] = o;
+            it = CNAVMsgStore.find(ni); 
+         }
+         CNAVMessageAsm& cnavMsgAsm = it->second;
+         cnavMsgAsm.addMDPNavSubframe(msg); 
       }
    }
 }  // end of process()

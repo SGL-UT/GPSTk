@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+#pragma ident "$Id: $"
 
 //============================================================================
 //
@@ -152,41 +152,99 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-      long beginFitSOW = TOWCount10;
-      long endFitSOW   = beginFitSOW + 10800;
-      short beginFitWk = TOWWeek;
-      short endFitWk   = TOWWeek;
+/*
+      unsigned long midPointSOW = (unsigned long) Toe;   
+      unsigned long offsetFromEven2Hours = midPointSOW % TWO_HOURS;
+      bool smallOffset = false;
+      if (offsetFromEven2Hours!=90_MINUTES)
+      {
+         smallOffset = true; 
+         
+           // Compute the "small offset".   Negative value means the
+           // midPoint is early.  
+         unsigned long sizeOfOffset = offsetFromEven2Hours - 90_MINUTES; 
 
+            // Apply the offset such that the midPointSOW is now the 
+            // nominal midpoint of the tranmission interval.
+         midPointSOW -= sizeOffset; 
+      }
+
+         // Derive the end of the fit interval
+      unsigned long endFitSOW   = midPointSOW + 90_MINUTES; 
+      short endFitWk   = TOWWeek;
       if (endFitSOW >= FULLWEEK)
       {
          endFitSOW -= FULLWEEK;
          endFitWk++;
       }
 
-         // Note that TOW times are referenced to the beginning of 
-         // the next message.  Therefore, the transmit time is TOW - 6 sec
-      ctMsg10 =    GPSWeekSecond(TOWWeek, TOWCount10-6, TimeSystem::GPS);
-      ctMsg11 =    GPSWeekSecond(TOWWeek, TOWCount11-6, TimeSystem::GPS);
-      ctMsgClk =    GPSWeekSecond(TOWWeek, TOWCountClk-6, TimeSystem::GPS);
+         // Derive the beginning of the fit interval
+      unsigned long beginFitSOW = midPointSOW - 90_MINUTES;
+      if (smallOffset)
+      {
+         if (TOWCount10>beginFitSOW) beginFitSOW = TOWCount10;
+      }
+      short beginFitWk = TOWWeek;
+      if (begFitSOW<0)
+      {
+         begFitSOW += FULLWEEK;
+         begFitWk--;
+      }
+*/
 
+         // Note that TOW times are referenced to the beginning of 
+         // the next message.  Therefore, the transmit time is actually
+         // PRIOR to the TOW count in SOW.  However, the amount prior
+         // is dependent on the signal.   12 sec for L2C, 6 sec for L5
+      unsigned long SOWOffset = 6;
+      if (obsID.code==ObsID::tcC2M ||
+          obsID.code==ObsID::tcC2L ||
+          obsID.code==ObsID::tcC2LM) SOWOffset=12;
+      ctMsg10 =    GPSWeekSecond(TOWWeek, TOWCount10-SOWOffset, TimeSystem::GPS);
+      ctMsg11 =    GPSWeekSecond(TOWWeek, TOWCount11-SOWOffset, TimeSystem::GPS);
+      ctMsgClk =    GPSWeekSecond(TOWWeek, TOWCountClk-SOWOffset, TimeSystem::GPS);
+
+         // The fit interval is nominally the middle of the trasmission interval.
+         // However, interval may "start late" for an upload.  Therefore, start
+         // from the Toe (rounded to the middle) and work forward/backward from 
+         // there.  The "beginning" is nominally the even two hour interval prior
+         // to the Toe; however, if the Toe is offset from the middle, the 
+         // beginning is the later of the beginning of fit and the transmission 
+         // time. 
       long testSOW1 = (static_cast<GPSWeekSecond>(ctMsg10)).sow;
       long testSOW2 = (static_cast<GPSWeekSecond>(ctMsg11)).sow;
       long testSOW3 = (static_cast<GPSWeekSecond>(ctMsgClk)).sow;
-      long longToe = (long) Toe;
+
+      long midPointSOW = (long) Toe;
       long Xmit = 0;
-      if((longToe % 7200)!=0)  // Not even two hour change
+      long offsetFromEven2Hours = midPointSOW % TWO_HOURS;
+      bool smallOffset = false;
+      if (offsetFromEven2Hours!=NINTY_MINUTES)
+      {
+         smallOffset = true; 
+         
+           // Compute the "small offset".   Negative value means the
+           // midPoint is early.  
+         unsigned long sizeOfOffset = offsetFromEven2Hours - NINTY_MINUTES; 
+
+            // Apply the offset such that the midPointSOW is now the 
+            // nominal midpoint of the tranmission interval.
+         midPointSOW -= sizeOfOffset; 
+      }
+
+      if (smallOffset) // May not have been an even two hour change
       {
          long leastSOW = testSOW1;
          if(testSOW2<leastSOW) leastSOW = testSOW2;
          if(testSOW3<leastSOW) leastSOW = testSOW3;
-         Xmit = leastSOW - (leastSOW % 24);    // See -705B Table 20-XII
+         Xmit = leastSOW - (leastSOW % (4*SOWOffset));    // See -705B Table 20-XII
       }
       else
       {
          long leastSOW = testSOW1;
          if(testSOW2<leastSOW) leastSOW = testSOW2;
          if(testSOW3<leastSOW) leastSOW = testSOW3;
-         Xmit = leastSOW - (leastSOW % 7200); 
+         Xmit = leastSOW - (leastSOW % TWO_HOURS); 
       } 
       beginValid = GPSWeekSecond(TOWWeek, Xmit, TimeSystem::GPS);
 
@@ -199,10 +257,8 @@ namespace gpstk
       ctTop = GPSWeekSecond(TopWeek, Top, TimeSystem::GPS);
       ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
       ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
-       
          
-         // Speculation at this point. Need confirmation
-      endValid = ctToe + 3600;  
+      endValid = ctToe + NINTY_MINUTES;  
 
       dataLoadedFlag = true;   
    } // end of loadData()

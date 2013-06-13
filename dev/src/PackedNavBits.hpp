@@ -70,6 +70,8 @@ namespace gpstk
                     const ObsID& obsIDArg,
                     const CommonTime& transmitTimeArg);
 
+      PackedNavBits* clone() const;
+
       void setSatID(const SatID& satSysArg);
       void setObsID(const ObsID& obsIDArg);
       void setTime(const CommonTime& transmitTimeArg);

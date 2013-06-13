@@ -74,6 +74,11 @@ namespace gpstk
       transmitTime = transmitTimeArg;
    }
 
+   PackedNavBits* PackedNavBits::clone() const
+   {
+      return new PackedNavBits (*this); 
+   }
+
    void PackedNavBits::setSatID(const SatID& satSysArg)
    {
       satSys = satSysArg;
