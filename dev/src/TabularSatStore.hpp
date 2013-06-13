@@ -746,7 +746,9 @@ namespace gpstk
       void setSmartMode(bool smart = true){ smartMode = smart; }
       
    };
-
+   
+   /// Non-member Operator overload for handling of gpstk::Xvt object
+   inline std::ostream& operator<<(std::ostream &os, const gpstk::Xvt &obj) { return os; }
       //@}
 
 }  // End of namespace gpstk
