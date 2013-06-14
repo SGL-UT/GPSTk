@@ -219,6 +219,8 @@ try {
                      str += sats[j].toString() + (j==sats.size()-1 ? "" : ",");
             }
             break;
+		 default: break;	
+			
       }  // end switch(type)
 
       if(!str.empty()) {
@@ -399,6 +401,7 @@ try {
                   }
             }
             break;
+		 default: break;
       }
 
       // build the syntax line
@@ -509,6 +512,7 @@ try {
                ((vector<RinexSatID> *)(undoc_options[i].p_output))->push_back(sat);
             }
             break;
+		 default: break;
       }
       LOG(DEBUG) << "CommandLine::PreProcess: process arg " << sarg
          << " of undocumented option " << undoc_options[i].longOpt;
@@ -867,6 +871,7 @@ try {
                ((vector<RinexSatID> *)(options[i].p_output))->push_back(sat);
             }
             break;
+		 default: break;
       }
 
    }  // end loop over options
