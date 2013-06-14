@@ -317,7 +317,7 @@ try {
    //LOG(DEBUG) << " deprec_opts ok";
 
    msg = oss.str();
-   if(!msg.empty()) LOG(DEBUG) << "ValidateCommandLine finds " << msg;
+   if(!msg.empty()) { LOG(DEBUG) << "ValidateCommandLine finds " << msg; }
 
    return isValid;
 
