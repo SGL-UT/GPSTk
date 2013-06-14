@@ -300,7 +300,9 @@ namespace gpstk
       if (messageNum == 10) return Alert[0];
       if (messageNum == 11) return Alert[1];
 
-	  Exception e("getAlert(): unrecognized value for messageNum: " + messageNum);
+	  stringstream os;
+	  os << messageNum;
+	  Exception e("getAlert(): unrecognized value for messageNum: " + os.str());
 	  GPSTK_THROW(e);
    }
 
