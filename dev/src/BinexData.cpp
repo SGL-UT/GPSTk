@@ -1669,13 +1669,13 @@ namespace gpstk
    void
    BinexData::reverseBuffer(std::string& buffer, size_t offset, size_t n)
    {
-      if ( (offset < 0) || (offset > buffer.size() ) )
+      if ( offset > buffer.size() )
       {
          FFStreamError err("Invalid offset reversing BINEX data buffer");
          GPSTK_THROW(err);
       }
       size_t back = (n == std::string::npos) ? buffer.size() : offset + n;
-      if ( (back < 0) || (back > buffer.size() ) )
+      if ( back > buffer.size() )
       {
          FFStreamError err("Invalid size reversing BINEX data buffer");
          GPSTK_THROW(err);
