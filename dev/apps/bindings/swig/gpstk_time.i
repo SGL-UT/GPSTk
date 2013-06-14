@@ -9,6 +9,7 @@
 	#include "../../../src/UnixTime.hpp"
 	#include "../../../src/ANSITime.hpp"
 	#include "../../../src/CivilTime.hpp"
+	#include "../../../src/MathBase.hpp"
 	#include "../../../src/CommonTime.hpp"
 	#include "../../../src/Exception.hpp"
 	#include "../../../src/GPSZcount.hpp"
@@ -33,97 +34,75 @@
 typedef std::map< char, std::string> IdToValue;
 
 %include "../../../src/TimeSystem.hpp"
+%pythoncode %{ # TimeSystem.System enum replacement:
+	TimeSystems = {
+         'Unknown' : TimeSystem(0),
+         'Any'     : TimeSystem(1),
+         'GPS'     : TimeSystem(2),
+         'GLO'     : TimeSystem(3),
+         'GAL'     : TimeSystem(4),
+         'COM'     : TimeSystem(5),
+         'UTC'     : TimeSystem(6),
+         'UT1'     : TimeSystem(7),
+         'TAI' 	   : TimeSystem(8),
+         'TT'      : TimeSystem(9),
+    }
+%}
+
+
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/TimeConstants.hpp"
-
 %include "../../../src/CommonTime.hpp"
-%extend gpstk::CommonTime {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") UnixTime;
 %include "../../../src/UnixTime.hpp"
-%extend gpstk::UnixTime {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") SystemTime;
 %include "../../../src/SystemTime.hpp"
-%extend gpstk::SystemTime {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") ANSITime;
 %include "../../../src/ANSITime.hpp"
-%extend gpstk::ANSITime {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") CivilTime;
 %include "../../../src/CivilTime.hpp"
-%extend gpstk::CivilTime {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %include "../../../src/GPSZcount.hpp"
 %include "../../../src/GPSWeek.hpp"
 
 %feature("notabstract") GPSWeekSecond;
 %include "../../../src/GPSWeekSecond.hpp"
-%extend gpstk::GPSWeekSecond {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") GPSWeekZcount;
 %include "../../../src/GPSWeekZcount.hpp"
-%extend gpstk::GPSWeekZcount {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") JulianDate; 
 %include "../../../src/JulianDate.hpp"
-%extend gpstk::JulianDate {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") MJD;
 %include "../../../src/MJD.hpp"
-%extend gpstk::MJD {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %feature("notabstract") YDSTime;
 %include "../../../src/YDSTime.hpp"
-%extend gpstk::YDSTime {
-	std::string __str__() {
-		return $self->asString();
-	}
-};
 
 %include "../../../src/TimeConverters.hpp"
 %include "../../../src/TimeString.hpp"
-
 %include "../../../src/Exception.hpp"
-%extend gpstk::Exception {
-	std::string __str__() {
-		return $self->getText();
-	}
-};
+
+
+%pythoncode %{
+def str(self):
+	return self.asString()
+
+CommonTime.__str__ = str
+UnixTime.__str__ = str
+SystemTime.__str__ = str
+ANSITime.__str__ = str
+CivilTime.__str__ = str
+GPSWeekSecond.__str__ = str
+GPSWeekZcount.__str__ = str
+JulianDate.__str__ = str
+MJD.__str__ = str
+YDSTime.__str__ = str
+Exception.__str__ = str
+
+%}
