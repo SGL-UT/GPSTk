@@ -305,8 +305,8 @@ try {
       LOG(DEBUG) << "Test deprec option " << it->first << " -> " << it->second;
       bool found(false);
       for(i=0; i<options.size(); i++) {
-         if(it->second == "--" + options[i].longOpt ||
-            it->second == "-" + options[i].shortOpt) { found=true; break; }
+         if(it->second == string("--") + options[i].longOpt ||
+            it->second == string("-") + options[i].shortOpt) { found=true; break; }
       }
       if(!found) {
          isValid = false;
