@@ -1,41 +1,5 @@
-#============================================================================
-#
-#  This file is part of GPSTk, the GPS Toolkit.
-#
-#  The GPSTk is free software; you can redistribute it and/or modify
-#  it under the terms of the GNU Lesser General Public License as published
-#  by the Free Software Foundation; either version 2.1 of the License, or
-#  any later version.
-#
-#  The GPSTk is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU Lesser General Public License for more details.
-#
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with GPSTk; if not, write to the Free Software Foundation,
-#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-#
-#  Copyright 2009, The University of Texas at Austin
-#
-#============================================================================
-
-#============================================================================
-#
-#This software developed by Applied Research Laboratories at the University of
-#Texas at Austin, under contract to an agency or agencies within the U.S. 
-#Department of Defense. The U.S. Government retains all rights to use,
-#duplicate, distribute, disclose, or release this software. 
-#
-#Pursuant to DoD Directive 523024 
-#
-# DISTRIBUTION STATEMENT A: This software has been approved for public 
-#                           release, distribution is unlimited.
-#
-#=============================================================================
-
 import argparse, sys
-from gpstk_time import *
+from gpstk import *
 
 parser = argparse.ArgumentParser(description='Converts from a given input time '
 								   'specification to other time formats.'  
@@ -75,12 +39,12 @@ formats = {
 	'julian'   : '%J',
 	'mjd'      : '%Q',
 	'unixtime' : '%U',
-	'doy'      : '%Y %j %s',
+	'doy'      : '%Y %j %s'
 }
 
 time_found = False
 for key in formats:
-	input_time = getattr(args, key)
+	input_time = getattr(args, key) # args.ansi, args.civl, etc.
 	if input_time:
 		time_found = True
 		try:
@@ -93,10 +57,8 @@ for key in formats:
 
 if not time_found:
 	ct = SystemTime()
-
-timeSystem = TimeSystem()
-timeSystem.setTimeSystem(TimeSystem.GPS)
-ct.setTimeSystem(timeSystem)
+ 
+ct.setTimeSystem(makeTimeSystem('GPS'))
 
 if args.add_offset:
 	for t in args.add_offset:

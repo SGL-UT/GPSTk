@@ -57,9 +57,11 @@
 
 #include "Exception.hpp"
 #include "SatID.hpp"
+#include "ObsIDInitializer.hpp"
 
 namespace gpstk
 {
+   
    class ObsID;
    namespace StringUtils
    {
@@ -236,9 +238,10 @@ namespace gpstk
       virtual ~ObsID() {};
 
       /// The next three methods are deprecated
-      static ObservationType newObservationType(const std::string& s);
-      static CarrierBand newCarrierBand(const std::string& s);
-      static TrackingCode newTrackingCode(const std::string& s);
+      /// So deprecated they aren't even defined anymore
+      // static ObservationType newObservationType(const std::string& s);
+      // static CarrierBand newCarrierBand(const std::string& s);
+      // static TrackingCode newTrackingCode(const std::string& s);
 
       // Extend the standard identifiers with a new Rinex 3 style identifier. If
       // the specified id is already defined, an exception is thrown and the
@@ -265,15 +268,7 @@ namespace gpstk
       static std::map< ObservationType, char > ot2char;
       static std::map< CarrierBand, char > cb2char;
       static std::map< TrackingCode, char> tc2char;
-
-      class Initializer
-      {
-      public:
-         Initializer();
-      };
-      
-      static Initializer singleton;
-
+     
    private:
       static ObsID idCreator(const std::string& id, const std::string& desc="");
 

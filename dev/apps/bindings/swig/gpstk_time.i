@@ -35,17 +35,19 @@ typedef std::map< char, std::string> IdToValue;
 
 %include "../../../src/TimeSystem.hpp"
 %pythoncode %{ # TimeSystem.System enum replacement:
+	def makeTimeSystem(system='Unknown'):
+		return TimeSystem(TimeSystems[system])
 	TimeSystems = {
-         'Unknown' : TimeSystem(0),
-         'Any'     : TimeSystem(1),
-         'GPS'     : TimeSystem(2),
-         'GLO'     : TimeSystem(3),
-         'GAL'     : TimeSystem(4),
-         'COM'     : TimeSystem(5),
-         'UTC'     : TimeSystem(6),
-         'UT1'     : TimeSystem(7),
-         'TAI' 	   : TimeSystem(8),
-         'TT'      : TimeSystem(9),
+         'Unknown' : 0,
+         'Any'     : 1,
+         'GPS'     : 2,
+         'GLO'     : 3,
+         'GAL'     : 4,
+         'COM'     : 5,
+         'UTC'     : 6,
+         'UT1'     : 7,
+         'TAI' 	   : 8,
+         'TT'      : 9
     }
 %}
 
