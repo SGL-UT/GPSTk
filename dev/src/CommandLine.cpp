@@ -219,7 +219,7 @@ try {
                      str += sats[j].toString() + (j==sats.size()-1 ? "" : ",");
             }
             break;
-		 default: break;	
+		 default: break; //NB Determine if additional enumeration values need to be handled
 			
       }  // end switch(type)
 
@@ -401,7 +401,7 @@ try {
                   }
             }
             break;
-		 default: break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
 
       // build the syntax line
@@ -512,7 +512,7 @@ try {
                ((vector<RinexSatID> *)(undoc_options[i].p_output))->push_back(sat);
             }
             break;
-		 default: break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
       LOG(DEBUG) << "CommandLine::PreProcess: process arg " << sarg
          << " of undocumented option " << undoc_options[i].longOpt;
@@ -871,7 +871,7 @@ try {
                ((vector<RinexSatID> *)(options[i].p_output))->push_back(sat);
             }
             break;
-		 default: break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
 
    }  // end loop over options

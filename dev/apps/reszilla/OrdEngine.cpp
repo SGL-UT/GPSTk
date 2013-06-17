@@ -110,6 +110,7 @@ inline double getAlpha(const ObsID& a, const ObsID& b) throw()
       case ObsID::tcIQE5:
          system = SatID(-1, SatID::systemGalileo);
          break;
+	  default: break; //NB Determine if additional enumeration values need to be handled
    }
    int na,nb;
    if (a.band == ObsID::cbL1) na=1;

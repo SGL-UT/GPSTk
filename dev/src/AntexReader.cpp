@@ -1502,6 +1502,7 @@ namespace gpstk
          case SatID::systemMixed:
             s << "Mixed";
             break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
       s << endl;
 
