@@ -55,8 +55,8 @@ namespace gpstk
          cerr << "IQStream::readComplex() checksum error "
               << hex << sum << dec << endl;
 
-      uint16_t fc = frameBuffer[frameLength-3] & 0x00ff   |
-         frameBuffer[frameLength-4]<<8 & 0xff00;
+      uint16_t fc = (frameBuffer[frameLength-3] & 0x00ff)   |
+         (frameBuffer[frameLength-4]<<8 & 0xff00);
       int16_t deltaFc = fc - frameCounter;
          
       if (sampleCounter && deltaFc != 1)

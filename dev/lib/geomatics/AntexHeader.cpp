@@ -92,7 +92,7 @@ namespace gpstk
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       string line;
 
-      if(valid & versionValid|systemValid) {
+      if((valid & versionValid)|systemValid) {
          line  = rightJustify(asString(version,1), 8);
          line += string(12,' ');
          line += system;
