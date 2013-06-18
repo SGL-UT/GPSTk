@@ -139,7 +139,7 @@ namespace gpstk
 
       if(Toe!=Toc)
       {
-       InvalidRequest exc("Toc and Toe are not equal.");
+       InvalidParameter exc("Toc and Toe are not equal.");
        GPSTK_THROW(exc);    
       } 
 

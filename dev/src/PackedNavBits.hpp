@@ -70,6 +70,9 @@ namespace gpstk
                     const ObsID& obsIDArg,
                     const CommonTime& transmitTimeArg);
 
+      PackedNavBits(const PackedNavBits& right);             // Copy constructor
+      PackedNavBits& operator=(const PackedNavBits& right); // Copy assignment
+
       PackedNavBits* clone() const;
 
       void setSatID(const SatID& satSysArg);
@@ -167,7 +170,18 @@ namespace gpstk
           * hex values, four per line, without any
           * additional information. 
           */
-      void outputPackedBits(std::ostream& s = std::cout) const;
+      void outputPackedBits(std::ostream& s = std::cout, short numPerLine=4) const;
+
+         /*
+          * Return true if all bits between start and end are identical
+          * between this object and right.  Default is to compare all
+          * bits.  
+          *
+          * This method allows comparison of the "unchanging" data in 
+          * nav messages while avoiding the time tags.
+          */
+      bool matchBits(const PackedNavBits& right, 
+                     short startBit=1, short endBit=-1) const;
       
          /* Resize the vector holding the packed data. */
       void trimsize();
