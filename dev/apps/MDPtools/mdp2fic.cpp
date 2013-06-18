@@ -82,7 +82,8 @@ public:
       if (!LoopedFramework::initialize(argc,argv)) return false;
 
       if (mdpFileOpt.getCount())
-         if (mdpFileOpt.getValue()[0] != "-")
+	  {	 
+	     if (mdpFileOpt.getValue()[0] != "-")
             mdpInput.open(mdpFileOpt.getValue()[0].c_str());
          else
          {
@@ -93,6 +94,7 @@ public:
             mdpInput.clear(std::cin.rdstate());
             mdpInput.std::basic_ios<char>::rdbuf(std::cin.rdbuf());
          }
+	  }
 
       if (navFileOpt.getCount())
          FICOutput.open(navFileOpt.getValue()[0].c_str(), std::ios::out);

@@ -202,11 +202,11 @@ namespace gpstk
             if (l.f[5] < r.f[5])
                return true;
             else if (l.f[5] == r.f[5])
-               if (l.f[33] < r.f[33])
+               {if (l.f[33] < r.f[33])
                   return true;
                else if (l.f[33] == r.f[33])
                   if (l.f[19] < r.f[19])
-                     return true;
+                     return true;}
             
             return false;
          }

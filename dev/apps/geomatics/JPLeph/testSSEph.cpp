@@ -205,12 +205,12 @@ try {
       if(istrm.eof() || !istrm.good()) break;
    }
 
-   if(iret) LOG(INFO) << PrgmName << " terminating with error code " << iret
+   if(iret) {LOG(INFO) << PrgmName << " terminating with error code " << iret
       << ", which means " <<
       (iret == 0 ? "OK" : 
       (iret == -1 ? "last time in file was before first time in ephemeris" :
       (iret == -2 ? "time is beyond end time of ephemeris" :
-      (iret == -3 ? "file reading failed" : "ephemeris file is corrupted")))) ;
+      (iret == -3 ? "file reading failed" : "ephemeris file is corrupted")))) ;}
 
       // compute run time
    totaltime = clock()-totaltime;
