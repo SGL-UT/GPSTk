@@ -927,8 +927,7 @@ try {
          
          // output obs types
          map<std::string,vector<RinexObsID> >::const_iterator sysIter;
-         sysIter = Rhead.mapObsTypes.begin();
-         for(sysIter; sysIter != Rhead.mapObsTypes.end(); ++sysIter) {
+         for(sysIter= Rhead.mapObsTypes.begin(); sysIter != Rhead.mapObsTypes.end(); ++sysIter) {
             string sysCode = (sysIter->first);
             vector<RinexObsID>& vec = Rhead.mapObsTypes[sysCode];
 

@@ -84,7 +84,6 @@ int main(int argv, char **argc)
 	else
 	{
 		cout << "Not Enough Points to Calculate Tau0" << endl;
-		Tau0;
 	}
 	
 	// Actual Allan Deviation Calculation is done here

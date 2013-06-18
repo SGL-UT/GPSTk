@@ -361,7 +361,7 @@ void GpsSim::process()
 
       // Clear out our accumulators
       for (int i=0; i < LO_COUNT; i++)
-         accum[i] = (0,0);
+         accum[i] = (0.0);
 
       // Sum the signals from each SV
       list<SVSource*>::iterator i;
