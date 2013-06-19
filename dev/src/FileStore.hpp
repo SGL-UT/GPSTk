@@ -65,7 +65,9 @@ namespace gpstk
             InvalidRequest e("File name not found");
             GPSTK_THROW(e);
          }
-         return headerMap[fn];
+         return headerMap.at(fn);
+         // changed from headerMap[fn] since that is a non-const member of std::map
+         // and therefore could modify headerMap, making this function not be side-effect free
       }
 
       /// dump a list of file names
@@ -86,8 +88,7 @@ namespace gpstk
          os << "End dump of FileStore\n";
       }
 
-      /// Clear the contents of the (filename, header) map
- 
+      /// Clear the contents of the (filename, header) map 
       void clear()
          throw()
       {
