@@ -1,5 +1,5 @@
 # $Id: Makefile.am 1800 2009-03-09 22:48:06Z architest $
-INCLUDES = -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../src
 LDADD = ../../src/libgpstk.la
 
 bin_PROGRAMS = ficafic ficfica navdmp fic2rin rinexthin sp3version bc2sp3 navsum ephsum RinexElvStrip ficedit

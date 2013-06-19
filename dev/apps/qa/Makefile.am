@@ -1,5 +1,5 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../src
 LDADD = ../../src/libgpstk.la
 
 bin_PROGRAMS = obsrip testexpr

@@ -1,5 +1,5 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
+AM_CPPFLAGS = -I$(srcdir)/../../../src -I$(srcdir)/../../../lib/geomatics
 
 LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la
 DDBase_LDADD = ../../../lib/geomatics/libgeomatics.la ../../../src/libgpstk.la ./libbase.la

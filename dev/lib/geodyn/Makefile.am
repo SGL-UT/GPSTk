@@ -1,6 +1,6 @@
 # $Id: Makefile.am 1331 2008-07-30 04:51:40Z ckuethe $
 # please add new entries in alphabetic order
-INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../geomatics
+AM_CPPFLAGS = -I$(srcdir)/../../src -I$(srcdir)/../geomatics
 lib_LTLIBRARIES = libgeodyn.la
 libgeodyn_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libgeodyn_la_SOURCES = AtmosphericDrag.cpp \

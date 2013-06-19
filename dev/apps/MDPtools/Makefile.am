@@ -1,5 +1,5 @@
 # $Id: Makefile.am 2143 2009-09-28 12:26:55Z ocibu $
-INCLUDES = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../../src
 LDADD = ./libmdplib.la ../../lib/rxio/librxio.la ../../src/libgpstk.la
 
 lib_LTLIBRARIES = libmdplib.la
