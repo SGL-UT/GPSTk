@@ -128,6 +128,17 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/TimeString.hpp"
 %include "../../../src/Exception.hpp"
 
+%inline %{
+   gpstk::CommonTime getTime( const std::string& str,
+                              const std::string& fmt )
+      throw( gpstk::InvalidRequest,
+             gpstk::StringUtils::StringException ) {
+      gpstk::CommonTime m;
+      gpstk::scanTime(m, str, fmt);
+      return m;
+   }
+%}
+
 
 
 

@@ -65,15 +65,6 @@ namespace gpstk
          GPSTK_RETHROW( se );
       }
    }
-
-   gpstk::CommonTime scanTime( const std::string& str,
-                              const std::string& fmt )
-      throw( gpstk::InvalidRequest,
-             gpstk::StringUtils::StringException ) {
-      gpstk::CommonTime m;
-      gpstk::scanTime(m, str, fmt);
-      return m;
-   }
    
       /// Fill the TimeTag object \a btime with time information found in
       /// string \a str formatted according to string \a fmt.
