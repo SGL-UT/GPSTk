@@ -193,13 +193,13 @@ namespace gpstk
 
             options.c_cc[VTIME] = 0; // Wait forever
             options.c_cc[VMIN] = 16; // And always get at least 16 characters
-            if (rc=cfsetospeed(&options, B115200))
+            if (rc==cfsetospeed(&options, B115200))
                cout << "Error in cfsetospeed(), rc=" << rc << endl;
-            if (rc=cfsetispeed(&options, B115200))
+            if (rc==cfsetispeed(&options, B115200))
                cout << "Error in cfsetispeed(), rc=" << rc << endl;
 
             // Final step... apply them
-            if (rc=tcsetattr(fd, TCSANOW, &options))
+            if (rc==tcsetattr(fd, TCSANOW, &options))
                cout << "Error in tcsetattr(), rc=" << rc << endl;
 
             deviceType = dtSerial;

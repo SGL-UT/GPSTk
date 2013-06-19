@@ -180,7 +180,7 @@ namespace gpstk
    Matrix<double> GeneralConstraint::convertMatrix(size_t n,size_t oi,size_t ni)
    {
       // Check input
-      if( n<1 || oi<0 || ni<0 || oi>=n || ni>=n )
+      if( n<1 || oi>=n || ni>=n )
       {
          Exception e("Invalid input, and check it.");
          GPSTK_THROW(e);
@@ -213,7 +213,7 @@ namespace gpstk
       // Check input
       bool validInput(true);
       
-      if( n<1 || oi<0 || ni<0 || oi>=n || ni>=n ) validInput = false;
+      if( n<1 || oi>=n || ni>=n ) validInput = false;
       
       for(int i=0;i<iv.size();i++)
       {
