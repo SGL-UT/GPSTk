@@ -16,51 +16,78 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_SWIG_FLAGS "-w362,383,384,503")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
-# time module
-set_source_files_properties(gpstk_time.i PROPERTIES CPLUSPLUS ON) 
-swig_add_module(gpstk_time python gpstk_time.i 
+set_source_files_properties(gpstk.i PROPERTIES CPLUSPLUS ON) 
+swig_add_module(gpstk python gpstk.i 
+					../../../src/AlmOrbit.cpp
 					../../../src/ANSITime.cpp
+					../../../src/BinUtils.cpp
+					../../../src/BrcClockCorrection.cpp
+					../../../src/BrcKeplerOrbit.cpp
 					../../../src/CivilTime.cpp
 					../../../src/CommonTime.cpp
+					../../../src/convhelp.hpp
+					../../../src/EllipsoidModel.hpp
+					../../../src/EngAlmanac.cpp
+					../../../src/EngEphemeris.cpp
+					../../../src/EngNav.cpp
 					../../../src/Exception.cpp
+					../../../src/Exception.cpp
+					../../../src/Exception.cpp
+					../../../src/FFData.cpp
+					../../../src/FFStream.cpp
+					../../../src/FFStreamError.hpp
+					../../../src/geometry.hpp
+					../../../src/GNSSconstants.hpp
+					../../../src/gps_constants.hpp
+					../../../src/GPS_URA.hpp
+					../../../src/GPSAlmanacStore.cpp
+					../../../src/GPSEphemerisStore.cpp
+					../../../src/gpstkplatform.h
+					../../../src/GPSWeek.cpp
 					../../../src/GPSWeek.cpp
 					../../../src/GPSWeekSecond.cpp
 					../../../src/GPSWeekZcount.cpp
 					../../../src/GPSZcount.cpp
 					../../../src/JulianDate.cpp
+					../../../src/JulianDate.cpp
+					../../../src/MathBase.hpp
 					../../../src/MJD.cpp
+					../../../src/ObsID.cpp
+					../../../src/ObsID.cpp
+					../../../src/ObsID.hpp
+					../../../src/ObsIDInitializer.cpp
+					../../../src/OrbElemStore.hpp
+					../../../src/Position.cpp
+					../../../src/PZ90Ellipsoid.hpp
+					../../../src/ReferenceFrame.cpp
+					../../../src/ReferenceFrame.cpp
+					../../../src/RinexObsHeader.cpp
+					../../../src/RinexSatID.cpp
+					../../../src/SatID.hpp
+					../../../src/SatID.hpp
+					../../../src/SpecialFunctions.cpp
+					../../../src/StringUtils.hpp
+					../../../src/StringUtils.hpp
+					../../../src/SVNumXRef.cpp
+					../../../src/SystemTime.cpp
 					../../../src/SystemTime.cpp
 					../../../src/TimeConstants.hpp
 					../../../src/TimeConverters.cpp
 					../../../src/TimeString.cpp
 					../../../src/TimeSystem.cpp
 					../../../src/TimeTag.cpp
+					../../../src/TimeTag.cpp
 					../../../src/TimeTag.hpp
-					../../../src/UnixTime.cpp
-					../../../src/YDSTime.cpp)
-swig_link_libraries(gpstk_time ${PYTHON_LIBRARIES})
-
-
-
-# util module
-set_source_files_properties(gpstk_util.i PROPERTIES CPLUSPLUS ON)
-swig_add_module(gpstk_util python gpstk_util.i 
-					../../../src/EllipsoidModel.hpp
-					../../../src/geometry.hpp
-					../../../src/GNSSconstants.hpp
-					../../../src/gps_constants.hpp
-					../../../src/MathBase.hpp
-					../../../src/ObsID.cpp
-					../../../src/ObsID.hpp
-					../../../src/ObsIDInitializer.cpp
-					../../../src/ReferenceFrame.cpp
-					../../../src/SatID.hpp
-					../../../src/SpecialFunctions.cpp
 					../../../src/Triple.cpp
+					../../../src/UnixTime.cpp
+					../../../src/UnixTime.cpp
+					../../../src/WGS84Ellipsoid.hpp
 					../../../src/Xv.hpp
 					../../../src/Xvt.cpp
-	                ../../../src/Exception.cpp
-	                ../../../src/Position.cpp
-	                ../../../src/StringUtils.hpp
+					../../../src/XvtStore.hpp
+					../../../src/YDSTime.cpp
+					../../../src/YumaAlmanacStore.cpp
+					../../../src/YumaData.cpp
 					)
-swig_link_libraries(gpstk_util ${PYTHON_LIBRARIES})
+
+swig_link_libraries(gpstk ${PYTHON_LIBRARIES})

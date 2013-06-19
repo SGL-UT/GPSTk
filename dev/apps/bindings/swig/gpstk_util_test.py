@@ -1,5 +1,5 @@
 import unittest
-from gpstk_util import *
+from gpstk import *
 
 class gps_consants_test(unittest.TestCase):
 	def test(self):
@@ -104,7 +104,10 @@ class std_template_test(unittest.TestCase):
 		self.assertEqual(123, map['key1'])
 		self.assertEqual(321, map['key2'])
 
-
+class convhelp_test(unittest.TestCase):
+	def test(self):
+		self.assertAlmostEqual(32.0, cel2far(0))
+		self.assertAlmostEqual(49.5, far2cel(cel2far(49.5)))
 
 
 if __name__ == '__main__':
