@@ -160,10 +160,12 @@ namespace gpstk
       bool hasData( ) const;
 
          /** Return satellite system ID */
-      std::string getSatSystem() const throw(gpstk::InvalidRequest);
+// TODO: removed since it was never defined
+      // std::string getSatSystem() const throw(gpstk::InvalidRequest);
 
          /** Return signal type associated with this orbit */
-      std::string getSignal() const throw(gpstk::InvalidRequest);
+// TODO: removed since it was never defined
+      // std::string getSignal() const throw(gpstk::InvalidRequest);
 
          /** This function returns the PRN ID of the SV. */
       short getPRNID() const throw(gpstk::InvalidRequest);
