@@ -4,7 +4,8 @@ LDADD = ../src/libgpstk.la ../lib/procframe/libprocframe.la ../lib/vdraw/libvdra
 
 bin_PROGRAMS = example1 example2 example3 example4 example5 example6 example7 \
 example8 example9 example10 example11 example12 example13 example14 example15 \
-example16 example17
+example18
+  
 example1_SOURCES = example1.cpp
 example2_SOURCES = example2.cpp
 example3_SOURCES = example3.cpp
@@ -20,8 +21,9 @@ example12_SOURCES = example12.cpp
 example13_SOURCES = example13.cpp
 example14_SOURCES = example14.cpp
 example15_SOURCES = example15.cpp
-example16_SOURCES = example16.cpp
-example17_SOURCES = example17.cpp
+##example16_SOURCES = example16.cpp
+##example17_SOURCES = example17.cpp
+example18_SOURCES = example18.cpp
 
 
 EXTRA_DIST = bahr1620.04m bahr1620.04o bahr1620.04n ebre030a.02o ebre0300.02o \
