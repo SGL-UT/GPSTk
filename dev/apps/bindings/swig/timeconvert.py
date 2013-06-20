@@ -48,7 +48,7 @@ for key in formats:
 	if input_time:
 		time_found = True
 		try:
-			ct = scanTime(input_time, formats[key])
+			ct = getTime(input_time, formats[key])
 		except InvalidRequest:
 			print 'Input could not be parsed. Check the formatting and '
 			'ensure that the input is both valid and in quotes.'

@@ -1,5 +1,3 @@
-// SWIG interface for the gpstk_time module
-
 %module gpstk
 %{
 	#include "../../../src/TimeSystem.hpp"
@@ -67,15 +65,37 @@
 	#include "../../../src/BrcClockCorrection.hpp"
 	#include "../../../src/BrcKeplerOrbit.hpp"
 	#include "../../../src/EngEphemeris.hpp"
-	typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp
+	#include "../../../src/GalEphemeris.hpp"
+	#include "../../../src/GalEphemerisStore.hpp"
+
+	#include "../../../src/RinexClockBase.hpp"
+	#include "../../../src/RinexClockHeader.hpp"
+	#include "../../../src/TabularSatStore.hpp"
+	#include "../../../src/ClockSatStore.hpp"
+	#include "../../../src/SP3Base.hpp"
+	#include "../../../src/SP3SatID.hpp"
+	#include "../../../src/SP3Data.hpp"
+	#include "../../../src/PositionSatStore.hpp"
+	#include "../../../src/SP3EphemerisStore.hpp"
+
+	typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp  
+	// typedef struct ClockDataRecord { // ClockSatStore.hpp
+ //    	double bias, sig_bias;
+ //    	double drift, sig_drift;
+ //     	double accel, sig_accel;
+ //    } ClockRecord;
+ //    typedef struct PositionStoreDataRecord { // PositionSatStore.hpp
+ //     	Triple Pos, sigPos;
+ //     	Triple Vel, sigVel;
+ //     	Triple Acc, sigAcc;
+ //    } PositionRecord;
+
 	using namespace gpstk;
 %}
 
 
 // =============================================================
-//
 //  Section 1: C++ template containers & typedefs
-//
 // =============================================================
 %include "std_string.i"
 %include "std_vector.i"
@@ -92,107 +112,30 @@ typedef std::map< char, std::string> IdToValue;
 %template(map_string_int) std::map<std::string, int>;
   %template() std::pair<std::string, int>; 
 
-
-
-
-// =============================================================
-//
-//  Section 2: Time classes
-//
-// =============================================================
-%include "../../../src/TimeSystem.hpp"
-%include "../../../src/TimeTag.hpp"
-%include "../../../src/TimeConstants.hpp"
-%include "../../../src/CommonTime.hpp"
-%feature("notabstract") UnixTime;
-%include "../../../src/UnixTime.hpp"
-%feature("notabstract") SystemTime;
-%include "../../../src/SystemTime.hpp"
-%feature("notabstract") ANSITime;
-%include "../../../src/ANSITime.hpp"
-%feature("notabstract") CivilTime;
-%include "../../../src/CivilTime.hpp"
-%include "../../../src/GPSZcount.hpp"
-%include "../../../src/GPSWeek.hpp"
-%feature("notabstract") GPSWeekSecond;
-%include "../../../src/GPSWeekSecond.hpp"
-%feature("notabstract") GPSWeekZcount;
-%include "../../../src/GPSWeekZcount.hpp"
-%feature("notabstract") JulianDate; 
-%include "../../../src/JulianDate.hpp"
-%feature("notabstract") MJD;
-%include "../../../src/MJD.hpp"
-%feature("notabstract") YDSTime;
-%include "../../../src/YDSTime.hpp"
-%include "../../../src/TimeConverters.hpp"
-%include "../../../src/TimeString.hpp"
+%rename(__str__) gpstk::Exception::asString() const;
 %include "../../../src/Exception.hpp"
 
-%inline %{
-   gpstk::CommonTime getTime( const std::string& str,
-                              const std::string& fmt )
-      throw( gpstk::InvalidRequest,
-             gpstk::StringUtils::StringException ) {
-      gpstk::CommonTime m;
-      gpstk::scanTime(m, str, fmt);
-      return m;
-   }
-%}
 
-
+// =============================================================
+//  Section 2: Time classes
+// =============================================================
+%include "gpstk_time.i"
 
 
 // =============================================================
-//
 //  Section 3: General/Utils classes
-//
 // =============================================================
-%include "../../../src/geometry.hpp"
-%include "../../../src/gps_constants.hpp"
-%include "../../../src/SatID.hpp"
-%include "../../../src/ObsIDInitializer.hpp"
-%include "../../../src/ObsID.hpp"
-%include "../../../src/GNSSconstants.hpp"
-
-%include "../../../src/Triple.hpp"
-%extend gpstk::Triple {
-    double __getitem__(unsigned int i) {
-        return $self->theArray[i];
-	} 
-	gpstk::Triple scale(double scalar) {
-		return Triple(scalar * $self->theArray[0], 
-				      scalar * $self->theArray[1], 
-				      scalar * $self->theArray[2]);
-	}
-	std::string __str__() {
-		return "(" + std::to_string($self->theArray[0]) + ", " 
-				   + std::to_string($self->theArray[1]) + ", " 
-				   + std::to_string($self->theArray[2]) + ")";
-	}		
-}
-
-%include "../../../src/ReferenceFrame.hpp"
-%include "../../../src/EllipsoidModel.hpp"
-%include "../../../src/Xvt.hpp"
-%include "../../../src/Position.hpp"
-%include "../../../src/convhelp.hpp"
-%include "../../../src/SpecialFunctions.hpp"
-%include "../../../src/Xv.hpp"
-
-
+%include "gpstk_util.i"
 
 
 // =============================================================
-//
 //  Section 4: "XvtStore and friends" (The wild, wild west)
-//
 // =============================================================
-
 %include "../../../src/PZ90Ellipsoid.hpp"
 %include "../../../src/WGS84Ellipsoid.hpp"
 
 %include "../../../src/XvtStore.hpp"
-%template(XvtStore_SatID)  gpstk::XvtStore<SatID>;
+%template(XvtStore_SatID)  gpstk::XvtStore<gpstk::SatID>;
 %template(XvtStore_string) gpstk::XvtStore<std::string>;
 
 %include "../../../src/gpstkplatform.h"
@@ -212,7 +155,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/YumaStream.hpp"
 %include "../../../src/YumaData.hpp"
 %include "../../../src/GPSAlmanacStore.hpp"
-// %template(FileStore_YumaHeader) gpstk::FileStore<YumaHeader>;	
+%template(FileStore_YumaHeader) gpstk::FileStore<gpstk::YumaHeader>;	
 %include "../../../src/YumaAlmanacStore.hpp"
 
 %include "../../../src/OrbElemStore.hpp"
@@ -223,5 +166,47 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/BrcClockCorrection.hpp"
 %include "../../../src/BrcKeplerOrbit.hpp"
 %include "../../../src/EngEphemeris.hpp"
+%include "../../../src/GalEphemeris.hpp"
+%include "../../../src/GalEphemerisStore.hpp"
 
-%include "gpstk_python_extensions.i"
+%include "../../../src/RinexClockBase.hpp"
+%include "../../../src/RinexClockHeader.hpp"
+%include "../../../src/TabularSatStore.hpp"
+
+// typedef struct ClockDataRecord {
+//       double bias, sig_bias;
+//       double drift, sig_drift;
+//       double accel, sig_accel;
+// } ClockRecord;
+
+// typedef struct PositionStoreDataRecord {
+//       Triple Pos, sigPos;
+//       Triple Vel, sigVel;
+//       Triple Acc, sigAcc;
+// } PositionRecord;
+
+%template(TabularSatStore_ClockRecord) gpstk::TabularSatStore<gpstk::ClockRecord>;
+%include "../../../src/ClockSatStore.hpp"
+%include "../../../src/SP3Base.hpp"
+%include "../../../src/SP3SatID.hpp"
+%include "../../../src/SP3Data.hpp"
+%template(TabularSatStore_ClockRecord) gpstk::TabularSatStore<gpstk::PositionRecord>;
+%include "../../../src/PositionSatStore.hpp"
+%include "../../../src/SP3EphemerisStore.hpp"
+
+%pythoncode %{
+SatelliteSystems = {
+	'systemGPS' 	    : SatID.systemGPS,
+	'systemGalileo'     : SatID.systemGalileo,
+	'systemGlonass'     : SatID.systemGlonass,
+	'systemGeosync'     : SatID.systemGeosync,
+	'systemLEO'         : SatID.systemLEO,
+	'systemTransit'     : SatID.systemTransit,
+	'systemCompass'     : SatID.systemCompass,
+	'systemMixed'       : SatID.systemMixed,
+	'systemUserDefined' : SatID.systemUserDefined,
+	'systemUnknown'     : SatID.systemUnknown
+}
+def makeSatelliteSystem(id=-1, system='systemGPS'):
+	return SatelliteSystem(id, SatelliteSystems[system])
+%}
