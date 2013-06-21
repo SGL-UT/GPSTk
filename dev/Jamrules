@@ -269,7 +269,7 @@ rule GPSBuildLibrary
      ObjectC++Flags $(shrobjs) : $(CCSHARE_FLAGS) ;
      if $(OS) != MACOSX
      {
-       LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) -Wl,-soname=$(soname) ;
+       LINKFLAGS on $(shlib) += $(CCSHARE_FLAGS) $(LDSHARE_FLAGS) $(OPTIM) ;
      }
      else
      {
