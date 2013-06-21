@@ -15,23 +15,75 @@
 				      scalar * $self->theArray[1], 
 				      scalar * $self->theArray[2]);
 	}
-	std::string __str__() {
-		return "(" + std::to_string($self->theArray[0]) + ", " 
-				   + std::to_string($self->theArray[1]) + ", " 
-				   + std::to_string($self->theArray[2]) + ")";
-	}		
+	// std::string __str__() {
+	// 	return "(" + std::to_string($self->theArray[0]) + ", " 
+	// 			   + std::to_string($self->theArray[1]) + ", " 
+	// 			   + std::to_string($self->theArray[2]) + ")";
+	// }
 }
 
 %include "../../../src/ReferenceFrame.hpp"
 %include "../../../src/EllipsoidModel.hpp"
 %include "../../../src/Xvt.hpp"
 %include "../../../src/Position.hpp"
+%extend gpstk::Position {
+	static gpstk::Triple convertSphericalToCartesian(const gpstk::Triple& tpr) throw() {
+		gpstk::Triple xyz;
+		gpstk::Position::convertSphericalToCartesian(tpr, xyz);
+		return xyz;
+	}
+	static gpstk::Triple convertCartesianToSpherical(const gpstk::Triple& xyz) throw() {
+		gpstk::Triple tpr;
+		gpstk::Position::convertCartesianToSpherical(xyz, tpr);
+		return tpr;
+	}
+	static gpstk::Triple convertCartesianToGeodetic(const Triple& xyz,
+                                                    const double A,
+                                                    const double eccSq) throw() {
+		gpstk::Triple llh;
+		gpstk::Position::convertCartesianToGeodetic(xyz, llh, A, eccSq);
+		return llh;
+	}
+	static gpstk::Triple convertGeodeticToCartesian(const Triple& llh,
+                                                    const double A,
+                                                    const double eccSq) throw() {
+		gpstk::Triple xyz;
+		gpstk::Position::convertGeodeticToCartesian(llh, xyz, A, eccSq);
+		return xyz;
+	}
+	static gpstk::Triple convertCartesianToGeocentric(const Triple& xyz) throw() {
+		gpstk::Triple llr;
+		gpstk::Position::convertCartesianToGeocentric(xyz, llr);
+		return llr;
+	}
+	static gpstk::Triple convertGeocentricToCartesian(const gpstk::Triple& llr) throw() {
+		gpstk::Triple xyz;
+		gpstk::Position::convertGeocentricToCartesian(llr, xyz);
+		return xyz;
+	}
+	static gpstk::Triple convertGeocentricToGeodetic(const Triple& llr,
+                                                     const double A,
+                                                     const double eccSq) throw() {
+        gpstk::Triple geodeticllh;
+		gpstk::Position::convertGeocentricToGeodetic(llr, geodeticllh, A, eccSq);
+		return geodeticllh;
+	}
+	static gpstk::Triple convertGeodeticToGeocentric(const Triple& geodeticllh,
+                                                     const double A,
+                                                     const double eccSq) throw() {
+		gpstk::Triple llr;
+		gpstk::Position::convertGeodeticToGeocentric(geodeticllh, llr, A, eccSq);
+		return llr;
+	}
+}
+
+
 %include "../../../src/convhelp.hpp"
-%include "../../../src/SpecialFunctions.hpp"
 %include "../../../src/Xv.hpp"
 
 
 %pythoncode %{
+SatID.__str__ = lambda self: asString(self)
 ObsID.__str__ = lambda self: asString(self)
 
 def form_dict(class_name, prefix, member_names):
@@ -40,6 +92,31 @@ def form_dict(class_name, prefix, member_names):
 	for member in member_names:
 		tmp[member] = getattr(class_obj, prefix + member)
 	return tmp
+
+# ReferenceFrame enum 
+ReferenceFrames = form_dict('ReferenceFrame', '', ['Unknown', 'WGS84', 'PZ90'])
+
+def makeReferenceFrame(frame='Unknown'):
+	return ReferenceFrame(ReferenceFrames[frame])
+
+
+# SatID extensions/enum	
+SatelliteSystems = {
+	'GPS' 	      : SatID.systemGPS,
+	'Galileo'     : SatID.systemGalileo,
+	'Glonass'     : SatID.systemGlonass,
+	'Geosync'     : SatID.systemGeosync,
+	'LEO'         : SatID.systemLEO,
+	'Transit'     : SatID.systemTransit,
+	'Compass'     : SatID.systemCompass,
+	'Mixed'       : SatID.systemMixed,
+	'UserDefined' : SatID.systemUserDefined,
+	'Unknown'     : SatID.systemUnknown
+}
+def makeSatID(id=-1, system='GPS'):
+	return SatID(id, SatelliteSystems[system])
+
+
 
 # ObsID enum (3 of them) values:
 ObservationTypes = form_dict('ObsID', 'ot', 
@@ -67,9 +144,6 @@ def makeObsID(observationType='Unknown', carrierBand='Unknown', trackingCode='Un
 CoordinateSystems = form_dict('Position', '', 
 	['Unknown', 'Geodetic', 'Geocentric', 'Cartesian', 'Spherical'])
 
-Position.__str__ = lambda self: self.asString()
-
-
 # Triple class extensions:
 # tuple -> triple translation:
 def makeTriple(tuple): 
@@ -77,7 +151,9 @@ def makeTriple(tuple):
 # triple -> tuple translation:
 def makeTuple(self):
 	return (self[0], self[1], self[2])
-	Triple.makeTuple = makeTuple
+	
+Triple.makeTuple = makeTuple
+Triple.__str__ = lambda self: makeTuple(self).__str__()
 
 # Xv string method
 Xv.__str__ = lambda self: 'x:'+ self.x.__str__() + ', v:' + self.v.__str__()
