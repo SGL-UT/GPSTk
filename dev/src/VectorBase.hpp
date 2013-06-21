@@ -124,7 +124,9 @@ NEW_EXCEPTION_CLASS(VectorException, gpstk::Exception);
    public:
          /// used with zeroize(), any number below this value will become 0.
          /// this variable can be assigned any value.
+#ifndef SWIG
       static double zeroTolerance;
+#endif
    };
 
 /**
@@ -145,6 +147,7 @@ NEW_EXCEPTION_CLASS(VectorException, gpstk::Exception);
          { return vecRef(i); }
          /// Any value in the vector with absolute value below
          /// zeroTolerance is set to zero.
+#ifndef SWIG
       BaseClass& zeroize()
          {
             BaseClass& me = static_cast<BaseClass&>(*this); 
@@ -154,6 +157,7 @@ NEW_EXCEPTION_CLASS(VectorException, gpstk::Exception);
                   me[i] = T(0);
             return me;
          }
+#endif
 
 #define VecBaseArrayAssignMacroDontCheckRange(func) \
    BaseClass& me = static_cast<BaseClass&>(*this); \
