@@ -34,15 +34,19 @@ namespace gpstk
    class TabularSatStore
    {
 
-   // member data
-   protected:
-
+   // typedefs had to be set to public for python bindings to compile
+   // these were originally in the protected block.
+   public:
       // the data tables
       /// std::map with key=CommonTime, value=DataRecord
       typedef std::map<CommonTime, DataRecord> DataTable;
 
       /// std::map with key=SatID, value=DataTable
       typedef std::map<SatID, DataTable> SatTable;
+
+
+   // member data
+   protected:
 
       /// the data tables: std::map<SatID, std::map<CommonTime, DataRecord> >
       SatTable tables;

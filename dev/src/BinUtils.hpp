@@ -69,7 +69,9 @@
 #define BIG_ENDIAN 0
 #define BYTE_ORDER LITTLE_ENDIAN
 #else
+#ifndef SWIG
 #error "Platform doesn't support BYTE_ORDER?"
+#endif
 #endif
 #endif
 
