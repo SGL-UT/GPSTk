@@ -173,7 +173,7 @@ namespace gpstk
       /// @param eph the OrbElem to add
       /// @return true if OrbElem was added, false otherwise
       bool addOrbElem( const OrbElem& eph )
-         throw(...);
+         throw(InvalidParameter,Exception);
 
       /// Remove all data from this collection.
       void clear()
