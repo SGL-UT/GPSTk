@@ -218,7 +218,7 @@ namespace gpstk
 // It should keep the one with the earliest transmit time.
 //------------------------------------------------------------------------------------ 
    bool GPSOrbElemStore::addOrbElem(const OrbElem& eph)
-      throw()
+      throw(...)
    {
       bool rc = false;
      try

@@ -275,11 +275,11 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    }
    else
    {
-      elr.push_back( ElevationRange( 0, 10) );
-      elr.push_back( ElevationRange(10, 20) );
-      elr.push_back( ElevationRange(20, 60) );
-      elr.push_back( ElevationRange(60, 90) );
-      elr.push_back( ElevationRange(10, 90) );
+      elr.push_back( ElevationRange(float(0), float(10)));
+      elr.push_back( ElevationRange(float(10), float(20)));
+      elr.push_back( ElevationRange(float(20), float(60)));
+      elr.push_back( ElevationRange(float(60), float(90)));
+      elr.push_back( ElevationRange(float(10), float(90)));
    }
    
    if (ephHealthSource.getCount())
