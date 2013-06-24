@@ -61,7 +61,7 @@ namespace gpstk
       ctXmit.setTimeSystem(TimeSystem::GPS);
       dataLoadedFlag = false;
    }
-   
+ 
    bool CNavDataElement::dataLoaded() const
    {
       return(dataLoadedFlag);

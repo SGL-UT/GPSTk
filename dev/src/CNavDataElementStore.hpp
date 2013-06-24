@@ -60,9 +60,12 @@ namespace gpstk
    class CNavDataElementStore
    {
    public:
-      CNavDataElementStore();
+      CNavDataElementStore(bool keepOnlyUnique=false);
       
-      ~CNavDataElementStore() {};
+      ~CNavDataElementStore() { clear(); };
+
+      /// Clear the dataset, meaning remove all data
+      virtual void clear();
 
       /// A debugging function that outputs in human readable form,
       /// all data stored in this object.
@@ -75,9 +78,6 @@ namespace gpstk
       /// @param[in] tmax defines the end of the time interval
       void edit(const CommonTime& tmin, 
                         const CommonTime& tmax = CommonTime::END_OF_TIME);
-
-      /// Clear the dataset, meaning remove all data
-      void clear(void);
 
       /// Return the time system of the store
       /// Only one option for CNAV/CNAV-2.
@@ -134,6 +134,8 @@ namespace gpstk
 
       CommonTime initialTime;
       CommonTime finalTime; 
+
+      bool keepingOnlyUnique;
       
    };    // End of class
 }        // End of namespace

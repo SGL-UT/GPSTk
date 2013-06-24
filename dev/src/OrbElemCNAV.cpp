@@ -244,7 +244,9 @@ namespace gpstk
          long leastSOW = testSOW1;
          if(testSOW2<leastSOW) leastSOW = testSOW2;
          if(testSOW3<leastSOW) leastSOW = testSOW3;
-         Xmit = leastSOW - (leastSOW % TWO_HOURS); 
+         Xmit = leastSOW - (leastSOW % TWO_HOURS);
+         long defBegFit = midPointSOW - NINTY_MINUTES;
+         if (Xmit<defBegFit) Xmit = defBegFit; 
       } 
       beginValid = GPSWeekSecond(TOWWeek, Xmit, TimeSystem::GPS);
 

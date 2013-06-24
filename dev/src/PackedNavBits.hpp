@@ -78,6 +78,7 @@ namespace gpstk
       void setSatID(const SatID& satSysArg);
       void setObsID(const ObsID& obsIDArg);
       void setTime(const CommonTime& transmitTimeArg);
+      void clearBits();
 
          /* Returnst the satellite system ID for a particular SV */
       SatID getsatSys() const;

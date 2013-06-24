@@ -125,6 +125,12 @@ namespace gpstk
       transmitTime = TransmitTimeArg;
       return;
    }
+   
+   void PackedNavBits::clearBits()
+   {
+      bits.clear();
+      bits_used = 0;
+   }
 
    ObsID PackedNavBits::getobsID() const
    {

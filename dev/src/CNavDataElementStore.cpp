@@ -37,7 +37,7 @@
 //=============================================================================
 
 /**
- * @file CNavDaddtaElementStore.cpp
+ * @file CNavDataElementStore.cpp
  *
  */
 
@@ -51,13 +51,32 @@ using namespace gpstk;
 
 namespace gpstk
 {
-   CNavDataElementStore::CNavDataElementStore():
+   CNavDataElementStore::CNavDataElementStore(bool keepOnlyUnique):
       initialTime(CommonTime::BEGINNING_OF_TIME),
-      finalTime(CommonTime::END_OF_TIME)
+      finalTime(CommonTime::END_OF_TIME),
+      keepingOnlyUnique(false)
     {
        initialTime.setTimeSystem(TimeSystem::GPS); 
        finalTime.setTimeSystem(TimeSystem::GPS); 
+       keepingOnlyUnique = keepOnlyUnique;
     }
+
+   void CNavDataElementStore::clear()
+   {
+      for( DEMap::iterator ui = deMap.begin(); ui != deMap.end(); ui++)
+      {
+         DataElementMap& dem = ui->second;
+         for (DataElementMap::iterator oi = dem.begin(); oi != dem.end(); oi++)
+         {
+            delete oi->second;
+         }
+      } 
+     deMap.clear();
+     initialTime = gpstk::CommonTime::END_OF_TIME;
+     finalTime = gpstk::CommonTime::BEGINNING_OF_TIME;
+     initialTime.setTimeSystem(TimeSystem::GPS);
+     finalTime.setTimeSystem(TimeSystem::GPS); 
+   }
 
    void CNavDataElementStore::dump(std::ostream& s, short detail) const
    {
@@ -105,15 +124,6 @@ namespace gpstk
       }
       initialTime = tmin;
       finalTime = tmax; 
-   }
-
-   void CNavDataElementStore::clear(void)
-   {
-      for (DEMap::iterator i=deMap.begin(); i!=deMap.end(); i++)
-      {
-         i->second.clear();
-      }
-      deMap.clear();
    }
 
    CommonTime CNavDataElementStore::getInitialTime() const

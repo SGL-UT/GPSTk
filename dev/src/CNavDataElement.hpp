@@ -75,7 +75,7 @@ namespace gpstk
 	   CNavDataElement( );
 
          /// Destructor
-      virtual ~CNavDataElement() {}
+      virtual ~CNavDataElement() { }
 
          /// Clone method.
 	 /// Return pointer to new copy of this type.
