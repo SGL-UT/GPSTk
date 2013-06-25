@@ -436,7 +436,7 @@ namespace gpstk
   
       s << "              Week(10bt)     SOW      UTD     SOD"
         << "  MM/DD/YYYY   HH:MM:SS\n";
-      s << "Clock Epoch:  ";
+      s << " Xmit Time:  ";
 
       s << printTime( transmitTime, "      %4F  %6.0g      %3j   %5.0s  %02m/%02d/%04Y   %02H:%02M:%02S");
       s << endl;     
