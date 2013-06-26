@@ -92,6 +92,7 @@ swig_add_module(gpstk python gpstk.i
 					../../../src/SP3Header.cpp
 					../../../src/SP3SatID.cpp
 					../../../src/SpecialFunctions.cpp
+					../../../src/Stats.hpp
 					../../../src/StringUtils.hpp
 					../../../src/StudentDistribution.cpp
 					../../../src/SVNumXRef.cpp
