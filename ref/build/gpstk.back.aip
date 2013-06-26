@@ -1,57 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<DOCUMENT Type="Advanced Installer" CreateVersion="5.1.1" version="10.3" Modules="professional" RootPath="." Language="en" Id="{7754C63C-C031-43ED-B098-75FA3B7F2088}">
-  <COMPONENT cid="caphyon.advinst.msicomp.MsiValidationComponent">
-    <ROW Table="File" Column="Sequence" MinValue="1" MaxValue="2147483647" Description="Sequence with respect to the media images; order must track cabinet order." Options="0" ColumnType="3" ColumnIndex="7" ColumnSize="4" MsiKey="File#Sequence"/>
-    <ROW Table="Media" Column="LastSequence" MinValue="0" MaxValue="2147483647" Description="File sequence number for the last file for this media." Options="0" ColumnType="3" ColumnIndex="1" ColumnSize="4" MsiKey="Media#LastSequence"/>
-  </COMPONENT>
+<DOCUMENT Type="Advanced Installer" CreateVersion="5.1.1" version="10.3" Modules="professional" RootPath="." Language="en" Id="{F245A3F9-7D4C-4C1A-9836-3D07154E427C}">
   <COMPONENT cid="caphyon.advinst.msicomp.MsiPropsComponent">
-    <ROW Property="AI_CF_FrameBottomLeft" Value="frame_bottom_left.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameBottomLeftInactive" Value="frame_bottom_left_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameBottomMid" Value="frame_bottom_mid.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameBottomMidInactive" Value="frame_bottom_mid_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameBottomRight" Value="frame_bottom_right.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameBottomRightInactive" Value="frame_bottom_right_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameCaption" Value="frame_caption.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameCaptionInactive" Value="frame_caption_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameLeft" Value="frame_left.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameLeftInactive" Value="frame_left_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameRight" Value="frame_right.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameRightInactive" Value="frame_right_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameTopLeft" Value="frame_top_left.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameTopLeftInactive" Value="frame_top_left_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameTopMid" Value="frame_top_mid.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameTopMidInactive" Value="frame_top_mid_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameTopRight" Value="frame_top_right.bmp" Type="1"/>
-    <ROW Property="AI_CF_FrameTopRightInactive" Value="frame_top_right_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysCloseDown" Value="sys_close_down.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysCloseHot" Value="sys_close_hot.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysCloseInactive" Value="sys_close_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysCloseNormal" Value="sys_close_normal.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysMinDown" Value="sys_min_down.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysMinHot" Value="sys_min_hot.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysMinInactive" Value="sys_min_inactive.bmp" Type="1"/>
-    <ROW Property="AI_CF_SysMinNormal" Value="sys_min_normal.bmp" Type="1"/>
-    <ROW Property="AI_CF_TYPE" Value="0" MultiBuildValue="DefaultBuild:1" Type="4"/>
-    <ROW Property="AI_EXTERNALUIUNINSTALLERNAME" MultiBuildValue="DefaultBuild:aiui"/>
     <ROW Property="AI_FINDEXE_TITLE" Value="Select the installation package for [|ProductName]" ValueLocId="AI.Property.FindExeTitle"/>
-    <ROW Property="AI_FrameBtns" Value="default" MultiBuildValue="DefaultBuild:orange" MsiKey="AI_FrameBtns"/>
-    <ROW Property="AI_FrameColor" Value="lightslategray" MultiBuildValue="DefaultBuild:darkblue" MsiKey="AI_FrameColor"/>
-    <ROW Property="AI_ImagesColor" Value="powderblue" MultiBuildValue="DefaultBuild:chrome" MsiKey="AI_ImagesColor"/>
-    <ROW Property="AI_PRODUCTNAME_ARP" Value="GPS Toolkit"/>
-    <ROW Property="AI_SecondColor" Value="default" MultiBuildValue="DefaultBuild:orange" MsiKey="AI_SecondColor"/>
-    <ROW Property="AI_ThemeStyle" Value="default" MultiBuildValue="DefaultBuild:blue-cave" MsiKey="AI_ThemeStyle"/>
-    <ROW Property="AI_UNINSTALLER" Value="msiexec.exe"/>
-    <ROW Property="ALLUSERS" Value="2" MultiBuildValue="DefaultBuild:1"/>
+    <ROW Property="AI_ThemeStyle" Value="default" MultiBuildValue="DefaultBuild:classic" MsiKey="AI_ThemeStyle"/>
+    <ROW Property="ALLUSERS" Value="2"/>
     <ROW Property="ARPCOMMENTS" Value="This installer database contains the logic and data required to install [|ProductName]." ValueLocId="*"/>
     <ROW Property="ARPCONTACT" Value="gpstk@arlut.utexas.edu"/>
     <ROW Property="ARPHELPLINK" Value="http://www.gpstk.org/"/>
-    <ROW Property="ARPNOREPAIR" Value="1"/>
-    <ROW Property="ARPPRODUCTICON" Value="GPSTk.exe" Type="8"/>
-    <ROW Property="ARPSYSTEMCOMPONENT" Value="1"/>
+    <ROW Property="ARPPRODUCTICON" Value="logo_rsmall.exe" Type="8"/>
     <ROW Property="ARPURLINFOABOUT" Value="http://www.gpstk.org/"/>
-    <ROW Property="CTRLS" Value="1"/>
-    <ROW Property="Manufacturer" Value="Applied Research Laboratories, University of Texas at Austin" ValueLocId="*"/>
-    <ROW Property="ProductCode" Value="1033:{C8E54CE2-776B-4040-B0A3-5CDA302C82E1} " Type="16"/>
+    <ROW Property="Manufacturer" Value="Applied Research Laboratories, The University of Texas at Austin" ValueLocId="*"/>
+    <ROW Property="ProductCode" Value="1033:{E1078D5B-C77E-49AE-AF0B-AB6B8643A891} " Type="16"/>
     <ROW Property="ProductLanguage" Value="1033"/>
     <ROW Property="ProductName" Value="GPS Toolkit" ValueLocId="*"/>
     <ROW Property="ProductVersion" Value="2.1" Type="32"/>
@@ -69,97 +28,96 @@
     <ROW Directory="lib_Dir" Directory_Parent="APPDIR" DefaultDir="lib"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCompsComponent">
-    <ROW Component="AI_CustomARPName" ComponentId="{6A88C6CA-457E-497B-9923-77837DDDAB73}" Directory_="APPDIR" Attributes="4" KeyPath="DisplayName" Options="1"/>
     <ROW Component="AI_ExePath" ComponentId="{D52E43DE-F175-42CC-9FB9-A5540427A336}" Directory_="APPDIR" Attributes="4" KeyPath="AI_ExePath"/>
-    <ROW Component="Adler32.hpp" ComponentId="{ACCC4A2D-1DD5-466F-8875-7DD6206B1C90}" Directory_="gpstk_Dir" Attributes="0" KeyPath="Adler32.hpp" Type="0"/>
-    <ROW Component="CalcDOPs.exe" ComponentId="{AF14FCD5-A08F-48E0-A5D1-FD6E6311858F}" Directory_="bin_Dir" Attributes="0" KeyPath="CalcDOPs.exe"/>
-    <ROW Component="ConstellationList.exe" ComponentId="{7C8A09ED-D2A3-46C1-AB25-D810FD9B3911}" Directory_="bin_Dir" Attributes="0" KeyPath="ConstellationList.exe"/>
-    <ROW Component="DDBase.exe" ComponentId="{749DA393-48A4-4C8E-B264-B4C02A4C4407}" Directory_="bin_Dir" Attributes="0" KeyPath="DDBase.exe"/>
+    <ROW Component="Adler32.hpp" ComponentId="{9E061AA3-F6C0-4037-8BB1-E8315D8780C6}" Directory_="gpstk_Dir" Attributes="0" KeyPath="Adler32.hpp" Type="0"/>
+    <ROW Component="CalcDOPs.exe" ComponentId="{4CCA19A1-FBF7-4BBE-8D8A-A565EE819381}" Directory_="bin_Dir" Attributes="0" KeyPath="CalcDOPs.exe"/>
+    <ROW Component="ConstellationList.exe" ComponentId="{7A015300-DBB6-4073-9DE6-4767B3F1AB38}" Directory_="bin_Dir" Attributes="0" KeyPath="ConstellationList.exe"/>
+    <ROW Component="DDBase.exe" ComponentId="{927EB00A-ED95-4F51-9F76-07A31490D48E}" Directory_="bin_Dir" Attributes="0" KeyPath="DDBase.exe"/>
     <ROW Component="DDBaseDoc.pdf" ComponentId="{F3213EF2-3140-439E-B5F9-E7A749EC5C67}" Directory_="DDBase_DIR" Attributes="0" KeyPath="DDBaseDoc.pdf" Type="0"/>
-    <ROW Component="DOPcalc.exe" ComponentId="{941344AF-5D07-4104-ACFD-9307092F57E0}" Directory_="bin_Dir" Attributes="0" KeyPath="DOPcalc.exe"/>
-    <ROW Component="DiscFix.exe" ComponentId="{32AB50D1-0570-4AD4-8D6B-6179A41168AC}" Directory_="bin_Dir" Attributes="0" KeyPath="DiscFix.exe"/>
-    <ROW Component="IonoBias.exe" ComponentId="{55088FB6-B68E-482E-8B2E-BBFC647D1E38}" Directory_="bin_Dir" Attributes="0" KeyPath="IonoBias.exe"/>
-    <ROW Component="ORDPhaseParser.exe" ComponentId="{3EB81FA0-29B6-4CCC-8923-93FBA1F250A4}" Directory_="bin_Dir" Attributes="0" KeyPath="ORDPhaseParser.exe"/>
-    <ROW Component="PRSolve.exe" ComponentId="{BF332AC4-7765-4E7E-AD7C-3101996278CC}" Directory_="bin_Dir" Attributes="0" KeyPath="PRSolve.exe"/>
-    <ROW Component="RinDump.exe" ComponentId="{368112EB-C5E3-4966-92E9-2708D55E74F1}" Directory_="bin_Dir" Attributes="0" KeyPath="RinDump.exe"/>
-    <ROW Component="RinEdit.exe" ComponentId="{DE2D5DED-C911-4A42-A0DF-B67C0C67FF62}" Directory_="bin_Dir" Attributes="0" KeyPath="RinEdit.exe"/>
-    <ROW Component="RinNav.exe" ComponentId="{91B18ABD-4185-4488-B76E-B559C72B11A3}" Directory_="bin_Dir" Attributes="0" KeyPath="RinNav.exe"/>
-    <ROW Component="RinSum.exe" ComponentId="{96E1FEB9-2031-416F-A3B0-753734E74F85}" Directory_="bin_Dir" Attributes="0" KeyPath="RinSum.exe"/>
-    <ROW Component="TECMaps.exe" ComponentId="{6F082D16-44C1-48D0-8907-5BE59A17B453}" Directory_="bin_Dir" Attributes="0" KeyPath="TECMaps.exe"/>
-    <ROW Component="TIAPhaseParser.exe" ComponentId="{C417B7FD-AF03-471E-A9D3-379230C16A49}" Directory_="bin_Dir" Attributes="0" KeyPath="TIAPhaseParser.exe"/>
-    <ROW Component="ash2mdp.exe" ComponentId="{2ACCBE14-6815-4C77-8820-E83AB0508503}" Directory_="bin_Dir" Attributes="0" KeyPath="ash2mdp.exe"/>
-    <ROW Component="ash2xyz.exe" ComponentId="{E238C1EF-02AF-41E5-93E5-2E5FCDD5D208}" Directory_="bin_Dir" Attributes="0" KeyPath="ash2xyz.exe"/>
-    <ROW Component="bc2sp3.exe" ComponentId="{235B200A-E5D9-4088-8CB1-9A308BBFE2BB}" Directory_="bin_Dir" Attributes="0" KeyPath="bc2sp3.exe"/>
-    <ROW Component="calgps.exe" ComponentId="{63A0A6C6-6556-4627-B7E7-09162EDE06F5}" Directory_="bin_Dir" Attributes="0" KeyPath="calgps.exe"/>
-    <ROW Component="compSatVis.exe" ComponentId="{C051F990-66E0-49C8-98C2-DA8AA0636932}" Directory_="bin_Dir" Attributes="0" KeyPath="compSatVis.exe"/>
-    <ROW Component="compStaVis.exe" ComponentId="{D1E9FB80-E1BD-4677-91A1-AE533FC1D0DF}" Directory_="bin_Dir" Attributes="0" KeyPath="compStaVis.exe"/>
-    <ROW Component="convertSSEph.exe" ComponentId="{81BD2186-B795-4CE7-A649-EE24C374452A}" Directory_="bin_Dir" Attributes="0" KeyPath="convertSSEph.exe"/>
-    <ROW Component="daa.exe" ComponentId="{1E237772-070E-4438-9303-7F1E67F222F2}" Directory_="bin_Dir" Attributes="0" KeyPath="daa.exe"/>
-    <ROW Component="dallandev.exe" ComponentId="{3DBD317C-087B-484B-86FA-EF3F11F3D288}" Directory_="bin_Dir" Attributes="0" KeyPath="dallandev.exe"/>
-    <ROW Component="ddGen.exe" ComponentId="{C23FCC3E-4C5F-4163-BB75-E1C1C103BE9D}" Directory_="bin_Dir" Attributes="0" KeyPath="ddGen.exe"/>
-    <ROW Component="ddPlot.py" ComponentId="{C9557C41-B024-47A5-AFDA-4B17937DC1A8}" Directory_="bin_Dir" Attributes="0" KeyPath="ddPlot.py" Type="0"/>
-    <ROW Component="ddmerge.exe" ComponentId="{C412ED41-8FF2-4722-AC21-A9CC8B9E9D84}" Directory_="bin_Dir" Attributes="0" KeyPath="ddmerge.exe"/>
-    <ROW Component="ephdiff.exe" ComponentId="{ACDD0AE5-8EF4-4916-97CD-3C6E021D13BC}" Directory_="bin_Dir" Attributes="0" KeyPath="ephdiff.exe"/>
-    <ROW Component="ephemfix.exe" ComponentId="{99D9F6B7-10BA-4EC7-9223-0C8B66EC41EC}" Directory_="bin_Dir" Attributes="0" KeyPath="ephemfix.exe"/>
-    <ROW Component="ephsum.exe" ComponentId="{B868369C-8F4A-4C64-8AF0-EE377E9B67BC}" Directory_="bin_Dir" Attributes="0" KeyPath="ephsum.exe"/>
-    <ROW Component="ffp.exe" ComponentId="{5A6ABCB2-3CF2-4239-A489-744C43F3BB65}" Directory_="bin_Dir" Attributes="0" KeyPath="ffp.exe"/>
-    <ROW Component="fic2rin.exe" ComponentId="{808C45C8-DEF2-4E16-8619-9E3C59F128CE}" Directory_="bin_Dir" Attributes="0" KeyPath="fic2rin.exe"/>
-    <ROW Component="ficacheck.exe" ComponentId="{11F342C9-9DA6-439E-9EDA-8DC9046F69EB}" Directory_="bin_Dir" Attributes="0" KeyPath="ficacheck.exe"/>
-    <ROW Component="ficafic.exe" ComponentId="{9F16DEFF-4761-4C67-ABCF-DA7FDDF1E824}" Directory_="bin_Dir" Attributes="0" KeyPath="ficafic.exe"/>
-    <ROW Component="ficcheck.exe" ComponentId="{BECFB33F-FA7A-48B0-B442-49137B5B61DF}" Directory_="bin_Dir" Attributes="0" KeyPath="ficcheck.exe"/>
-    <ROW Component="ficdiff.exe" ComponentId="{FE5269AB-5084-4F46-B4E3-DAB1C38BE4C3}" Directory_="bin_Dir" Attributes="0" KeyPath="ficdiff.exe"/>
-    <ROW Component="ficedit.exe" ComponentId="{EE4D6794-B9A8-4A85-972F-6057856ED703}" Directory_="bin_Dir" Attributes="0" KeyPath="ficedit.exe"/>
-    <ROW Component="ficfica.exe" ComponentId="{274F592E-C987-4A93-AF3D-7C31A899DEEA}" Directory_="bin_Dir" Attributes="0" KeyPath="ficfica.exe"/>
-    <ROW Component="findMoreThan12.exe" ComponentId="{D513A574-6440-42D2-95EE-F1234B2A505B}" Directory_="bin_Dir" Attributes="0" KeyPath="findMoreThan12.exe"/>
-    <ROW Component="geodyn.lib" ComponentId="{DE77C58B-9E4C-4291-8D25-E1C589B1702A}" Directory_="lib_Dir" Attributes="0" KeyPath="geodyn.lib" Type="0"/>
+    <ROW Component="DOPcalc.exe" ComponentId="{742EF847-C390-41DE-890B-EBED2A6E2833}" Directory_="bin_Dir" Attributes="0" KeyPath="DOPcalc.exe"/>
+    <ROW Component="DiscFix.exe" ComponentId="{437089F8-92CF-4822-9C24-18407EA104AC}" Directory_="bin_Dir" Attributes="0" KeyPath="DiscFix.exe"/>
+    <ROW Component="IonoBias.exe" ComponentId="{669F921B-D7D5-4360-ADEB-916FA4002972}" Directory_="bin_Dir" Attributes="0" KeyPath="IonoBias.exe"/>
+    <ROW Component="ORDPhaseParser.exe" ComponentId="{73EAD54A-BE43-4271-80C8-7BB9FEC7ADDF}" Directory_="bin_Dir" Attributes="0" KeyPath="ORDPhaseParser.exe"/>
+    <ROW Component="PRSolve.exe" ComponentId="{473612FD-F17E-47B8-940A-F810C680313D}" Directory_="bin_Dir" Attributes="0" KeyPath="PRSolve.exe"/>
+    <ROW Component="RinDump.exe" ComponentId="{D8BFA10C-6E70-494D-80B6-E49BDF0C7FB0}" Directory_="bin_Dir" Attributes="0" KeyPath="RinDump.exe"/>
+    <ROW Component="RinEdit.exe" ComponentId="{DAD116F7-9988-489C-8DA7-B2AC613234C4}" Directory_="bin_Dir" Attributes="0" KeyPath="RinEdit.exe"/>
+    <ROW Component="RinNav.exe" ComponentId="{229C4037-B80D-47CC-9A80-B787656CE49F}" Directory_="bin_Dir" Attributes="0" KeyPath="RinNav.exe"/>
+    <ROW Component="RinSum.exe" ComponentId="{E2297B8E-3727-4811-9E51-9288798F39B9}" Directory_="bin_Dir" Attributes="0" KeyPath="RinSum.exe"/>
+    <ROW Component="TECMaps.exe" ComponentId="{9CCE1996-A9CD-46A5-8D82-204967D04A7B}" Directory_="bin_Dir" Attributes="0" KeyPath="TECMaps.exe"/>
+    <ROW Component="TIAPhaseParser.exe" ComponentId="{4F724CF5-EB81-4508-AE82-BC0B3203D9F9}" Directory_="bin_Dir" Attributes="0" KeyPath="TIAPhaseParser.exe"/>
+    <ROW Component="ash2mdp.exe" ComponentId="{EB2DD964-A12D-4A49-A13C-79239898AEC9}" Directory_="bin_Dir" Attributes="0" KeyPath="ash2mdp.exe"/>
+    <ROW Component="ash2xyz.exe" ComponentId="{5F89919A-3157-4122-9EDF-74170F9916EE}" Directory_="bin_Dir" Attributes="0" KeyPath="ash2xyz.exe"/>
+    <ROW Component="bc2sp3.exe" ComponentId="{4E3BEEC3-FAC1-40B0-AD09-B7627CD402BA}" Directory_="bin_Dir" Attributes="0" KeyPath="bc2sp3.exe"/>
+    <ROW Component="calgps.exe" ComponentId="{E1C9D593-C6EB-4C75-954A-485EDDF27C74}" Directory_="bin_Dir" Attributes="0" KeyPath="calgps.exe"/>
+    <ROW Component="compSatVis.exe" ComponentId="{D32626A4-8FD4-49BC-9878-602B1908703E}" Directory_="bin_Dir" Attributes="0" KeyPath="compSatVis.exe"/>
+    <ROW Component="compStaVis.exe" ComponentId="{02C0CFC6-3627-48EB-97B7-FAF66D5455EC}" Directory_="bin_Dir" Attributes="0" KeyPath="compStaVis.exe"/>
+    <ROW Component="convertSSEph.exe" ComponentId="{60779916-7584-4500-98DC-85DE010869AD}" Directory_="bin_Dir" Attributes="0" KeyPath="convertSSEph.exe"/>
+    <ROW Component="daa.exe" ComponentId="{3B2730CF-DBEC-416E-98D3-16005839A520}" Directory_="bin_Dir" Attributes="0" KeyPath="daa.exe"/>
+    <ROW Component="dallandev.exe" ComponentId="{D040D4D3-7C9D-4FA0-8A91-B1A60754A16F}" Directory_="bin_Dir" Attributes="0" KeyPath="dallandev.exe"/>
+    <ROW Component="ddGen.exe" ComponentId="{11EDA161-F135-4DEA-AD68-85CE13356C8B}" Directory_="bin_Dir" Attributes="0" KeyPath="ddGen.exe"/>
+    <ROW Component="ddPlot.py" ComponentId="{88DB685B-1E61-42C2-9758-0A8D1A860616}" Directory_="bin_Dir" Attributes="0" KeyPath="ddPlot.py" Type="0"/>
+    <ROW Component="ddmerge.exe" ComponentId="{A14D4706-0A65-4451-8CC9-29E9D873D0A4}" Directory_="bin_Dir" Attributes="0" KeyPath="ddmerge.exe"/>
+    <ROW Component="ephdiff.exe" ComponentId="{FA81A631-9910-436E-B1FA-5097BB9EBEDD}" Directory_="bin_Dir" Attributes="0" KeyPath="ephdiff.exe"/>
+    <ROW Component="ephemfix.exe" ComponentId="{8788BA09-09CC-4BC2-89E2-8B8B4472A8C2}" Directory_="bin_Dir" Attributes="0" KeyPath="ephemfix.exe"/>
+    <ROW Component="ephsum.exe" ComponentId="{10DFB6B9-7C99-4D6F-883A-2AF68F894E7C}" Directory_="bin_Dir" Attributes="0" KeyPath="ephsum.exe"/>
+    <ROW Component="ffp.exe" ComponentId="{E975CFFB-33CB-4241-9D6F-81962E001F3D}" Directory_="bin_Dir" Attributes="0" KeyPath="ffp.exe"/>
+    <ROW Component="fic2rin.exe" ComponentId="{8805BC3F-18F7-41B2-B28D-8B94C59DA6A5}" Directory_="bin_Dir" Attributes="0" KeyPath="fic2rin.exe"/>
+    <ROW Component="ficacheck.exe" ComponentId="{4A2CE128-D33E-4B43-9275-12AC3FA02670}" Directory_="bin_Dir" Attributes="0" KeyPath="ficacheck.exe"/>
+    <ROW Component="ficafic.exe" ComponentId="{F7830FB3-52B7-4009-A7C7-9256FCE58E08}" Directory_="bin_Dir" Attributes="0" KeyPath="ficafic.exe"/>
+    <ROW Component="ficcheck.exe" ComponentId="{3C08E0C5-1E35-43A3-AEA1-9581BF3407E7}" Directory_="bin_Dir" Attributes="0" KeyPath="ficcheck.exe"/>
+    <ROW Component="ficdiff.exe" ComponentId="{435B6823-203B-444C-BC58-1E4934096A0A}" Directory_="bin_Dir" Attributes="0" KeyPath="ficdiff.exe"/>
+    <ROW Component="ficedit.exe" ComponentId="{1BA2F3D2-3771-4CAC-B013-FC42975AF6DE}" Directory_="bin_Dir" Attributes="0" KeyPath="ficedit.exe"/>
+    <ROW Component="ficfica.exe" ComponentId="{56E6F63D-7C0A-46A5-8D2D-C01BD654F42F}" Directory_="bin_Dir" Attributes="0" KeyPath="ficfica.exe"/>
+    <ROW Component="findMoreThan12.exe" ComponentId="{377EF35D-CADA-4B3D-81CF-D8D455674C82}" Directory_="bin_Dir" Attributes="0" KeyPath="findMoreThan12.exe"/>
+    <ROW Component="geodyn.lib" ComponentId="{3EA1EBC1-F6DD-44CC-8983-08CC2817D98C}" Directory_="lib_Dir" Attributes="0" KeyPath="geodyn.lib" Type="0"/>
     <ROW Component="gpstk_user_reference.pdf_1" ComponentId="{FA0A4E59-6949-449B-BB63-DE6E0E7E05A1}" Directory_="SHORTCUTDIR" Attributes="0" KeyPath="gpstk_user_reference.pdf" Type="0"/>
-    <ROW Component="lsfilt.exe" ComponentId="{C5D12A23-AF02-426F-9CE2-510A46CFC552}" Directory_="bin_Dir" Attributes="0" KeyPath="lsfilt.exe"/>
-    <ROW Component="mallandev.exe" ComponentId="{CF74AA69-89AB-4570-933D-59C6A48FF663}" Directory_="bin_Dir" Attributes="0" KeyPath="mallandev.exe"/>
-    <ROW Component="mergeFIC.exe" ComponentId="{5538EA2B-64E4-419D-B879-63805CE9CED1}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeFIC.exe"/>
-    <ROW Component="mergeRinMet.exe" ComponentId="{06C163B2-FE12-4E6C-847F-32050F541165}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeRinMet.exe"/>
-    <ROW Component="mergeRinNav.exe" ComponentId="{BB5D4530-F954-49EA-9DCC-9B5F8BFE1EF7}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeRinNav.exe"/>
-    <ROW Component="mergeRinObs.exe" ComponentId="{E4B83997-E931-48CC-9D7B-E46D4C681DD6}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeRinObs.exe"/>
-    <ROW Component="mergeSRI.exe" ComponentId="{A2A195D1-B768-46B4-A3FD-A6BC0DDA41A6}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeSRI.exe"/>
-    <ROW Component="mpsolve.exe" ComponentId="{C07666B9-224D-4936-A750-20D163036ABC}" Directory_="bin_Dir" Attributes="0" KeyPath="mpsolve.exe"/>
-    <ROW Component="nallandev.exe" ComponentId="{73B67FC7-7CB2-490D-84EE-6306925FA31D}" Directory_="bin_Dir" Attributes="0" KeyPath="nallandev.exe"/>
-    <ROW Component="navdmp.exe" ComponentId="{4F7646EF-B9E4-40CB-A61D-A18D0761D605}" Directory_="bin_Dir" Attributes="0" KeyPath="navdmp.exe"/>
-    <ROW Component="navsum.exe" ComponentId="{0372CEA3-02E3-4BBF-BAD6-4F6154A1DB4E}" Directory_="bin_Dir" Attributes="0" KeyPath="navsum.exe"/>
-    <ROW Component="novaRinex.exe" ComponentId="{481946C5-0FCC-4A64-A9A3-5D41A9191DC2}" Directory_="bin_Dir" Attributes="0" KeyPath="novaRinex.exe"/>
-    <ROW Component="oallandev.exe" ComponentId="{66818C10-661C-44CE-8B7F-94A4EDF4D574}" Directory_="bin_Dir" Attributes="0" KeyPath="oallandev.exe"/>
-    <ROW Component="ohadamarddev.exe" ComponentId="{33F9E000-329C-41C2-AD69-8038256353ED}" Directory_="bin_Dir" Attributes="0" KeyPath="ohadamarddev.exe"/>
-    <ROW Component="ordClock.exe" ComponentId="{8EE4C174-F0B3-4E59-AC47-099909EB040F}" Directory_="bin_Dir" Attributes="0" KeyPath="ordClock.exe"/>
-    <ROW Component="ordEdit.exe" ComponentId="{635D3504-93C7-4CD7-920D-6067C0D2C0BC}" Directory_="bin_Dir" Attributes="0" KeyPath="ordEdit.exe"/>
-    <ROW Component="ordGen.exe" ComponentId="{2C700934-6D5F-4904-B309-BD994279A34E}" Directory_="bin_Dir" Attributes="0" KeyPath="ordGen.exe"/>
-    <ROW Component="ordLinEst.exe" ComponentId="{3F1F75E2-E611-40D8-88D1-093470ACABA3}" Directory_="bin_Dir" Attributes="0" KeyPath="ordLinEst.exe"/>
-    <ROW Component="ordStats.exe" ComponentId="{14EBBB67-ED23-49C0-91CB-B76B3947FBF6}" Directory_="bin_Dir" Attributes="0" KeyPath="ordStats.exe"/>
-    <ROW Component="pff.exe" ComponentId="{B2A866ED-8F06-4CFE-970A-822833BB7DF1}" Directory_="bin_Dir" Attributes="0" KeyPath="pff.exe"/>
-    <ROW Component="posInterp.exe" ComponentId="{AF2F5DCC-E4A2-4AB5-A806-257A7E82B99D}" Directory_="bin_Dir" Attributes="0" KeyPath="posInterp.exe"/>
-    <ROW Component="poscvt.exe" ComponentId="{EC3E7516-C67E-4A03-AAB3-C8C7B03FC5AE}" Directory_="bin_Dir" Attributes="0" KeyPath="poscvt.exe"/>
-    <ROW Component="posmsc.exe" ComponentId="{09CC9029-EC3C-4531-84BF-990DCBAC4C64}" Directory_="bin_Dir" Attributes="0" KeyPath="posmsc.exe"/>
-    <ROW Component="rinexelvstrip.exe" ComponentId="{44A1F55D-F671-4C19-B5DB-619CC03ED3BF}" Directory_="bin_Dir" Attributes="0" KeyPath="rinexelvstrip.exe"/>
-    <ROW Component="rinexpvt.exe" ComponentId="{679602AF-4E26-43B4-A795-7BBA8817EA60}" Directory_="bin_Dir" Attributes="0" KeyPath="rinexpvt.exe"/>
-    <ROW Component="rinexthin.exe" ComponentId="{688B73C6-7101-4E39-8AC6-A58DB34D3171}" Directory_="bin_Dir" Attributes="0" KeyPath="rinexthin.exe"/>
-    <ROW Component="rmoutlier.exe" ComponentId="{CC2864FA-25AF-4820-A46D-99C83523BA45}" Directory_="bin_Dir" Attributes="0" KeyPath="rmoutlier.exe"/>
-    <ROW Component="rmwcheck.exe" ComponentId="{6366A53C-C9A0-4F67-B88E-FF5A818B82D7}" Directory_="bin_Dir" Attributes="0" KeyPath="rmwcheck.exe"/>
-    <ROW Component="rmwdiff.exe" ComponentId="{4D82C73D-72AB-4892-9157-524287DEF8E8}" Directory_="bin_Dir" Attributes="0" KeyPath="rmwdiff.exe"/>
-    <ROW Component="rnwcheck.exe" ComponentId="{73BB5B80-CEB5-447B-8EB7-360DA76934F9}" Directory_="bin_Dir" Attributes="0" KeyPath="rnwcheck.exe"/>
-    <ROW Component="rnwdiff.exe" ComponentId="{D12C875B-0BFC-4EC5-860E-938B4E39F5BE}" Directory_="bin_Dir" Attributes="0" KeyPath="rnwdiff.exe"/>
-    <ROW Component="rowcheck.exe" ComponentId="{0C88AB18-1E67-42C6-A81C-5DAC4EDD6FEB}" Directory_="bin_Dir" Attributes="0" KeyPath="rowcheck.exe"/>
-    <ROW Component="rowdiff.exe" ComponentId="{0F9530B6-4EE4-43BF-9A94-DD097038D985}" Directory_="bin_Dir" Attributes="0" KeyPath="rowdiff.exe"/>
-    <ROW Component="rstats.exe" ComponentId="{3BAD5B43-ECA6-46C7-879D-4EB93BC5387B}" Directory_="bin_Dir" Attributes="0" KeyPath="rstats.exe"/>
-    <ROW Component="scale.exe" ComponentId="{FDAFEAE4-19DB-4363-9299-383DE1E2D9C3}" Directory_="bin_Dir" Attributes="0" KeyPath="scale.exe"/>
-    <ROW Component="sp3version.exe" ComponentId="{447E4420-3722-4ED1-B120-57C7B85C5C4C}" Directory_="bin_Dir" Attributes="0" KeyPath="sp3version.exe"/>
-    <ROW Component="svvis.exe" ComponentId="{A03EABF9-7698-4FAC-9285-330A03FCB4E1}" Directory_="bin_Dir" Attributes="0" KeyPath="svvis.exe"/>
-    <ROW Component="tallandev.exe" ComponentId="{FC51E0C2-56E6-48C7-9EC7-123BFDBB24A2}" Directory_="bin_Dir" Attributes="0" KeyPath="tallandev.exe"/>
-    <ROW Component="testSSEph.exe" ComponentId="{11AB0771-E7D0-46D3-BE3D-83B57976082D}" Directory_="bin_Dir" Attributes="0" KeyPath="testSSEph.exe"/>
-    <ROW Component="timeconvert.exe" ComponentId="{CC34E64E-9708-4FF6-8882-8A14AD5F1030}" Directory_="bin_Dir" Attributes="0" KeyPath="timeconvert.exe"/>
-    <ROW Component="tkalm.exe" ComponentId="{045E28BB-0E07-4452-9DFB-DA3EF4A7E75A}" Directory_="bin_Dir" Attributes="0" KeyPath="tkalm.exe"/>
-    <ROW Component="trunc.exe" ComponentId="{0213C60A-418D-43F6-8235-E9CE7E37D618}" Directory_="bin_Dir" Attributes="0" KeyPath="trunc.exe"/>
-    <ROW Component="vecsol.exe" ComponentId="{76DE383E-8578-48C8-9166-0B1B8D15A88A}" Directory_="bin_Dir" Attributes="0" KeyPath="vecsol.exe"/>
-    <ROW Component="wheresat.exe" ComponentId="{FFC25CAC-2B2C-4F90-8351-DC0C31D3BFFD}" Directory_="bin_Dir" Attributes="0" KeyPath="wheresat.exe"/>
+    <ROW Component="lsfilt.exe" ComponentId="{76DF50A2-05AA-4EB9-A295-F45B628ADA0C}" Directory_="bin_Dir" Attributes="0" KeyPath="lsfilt.exe"/>
+    <ROW Component="mallandev.exe" ComponentId="{6EA3671A-34B6-4240-9AB8-8A89340F2FDA}" Directory_="bin_Dir" Attributes="0" KeyPath="mallandev.exe"/>
+    <ROW Component="mergeFIC.exe" ComponentId="{B84B7ABB-1C1B-4942-9AB7-BAC317CBA269}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeFIC.exe"/>
+    <ROW Component="mergeRinMet.exe" ComponentId="{E35387F1-235B-420F-9500-8C96BB3D9A85}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeRinMet.exe"/>
+    <ROW Component="mergeRinNav.exe" ComponentId="{F10BA044-446E-4C49-B1D3-DA4AFD4C66D3}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeRinNav.exe"/>
+    <ROW Component="mergeRinObs.exe" ComponentId="{6BC4DF3A-7031-46BB-B69B-7F1E239DBB88}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeRinObs.exe"/>
+    <ROW Component="mergeSRI.exe" ComponentId="{5DC16A56-74DF-420C-B7AE-4E5F86262CF7}" Directory_="bin_Dir" Attributes="0" KeyPath="mergeSRI.exe"/>
+    <ROW Component="mpsolve.exe" ComponentId="{D6F91ED6-5AAC-4FE3-8178-D023DE505039}" Directory_="bin_Dir" Attributes="0" KeyPath="mpsolve.exe"/>
+    <ROW Component="nallandev.exe" ComponentId="{315F9E72-6EE2-484D-9B10-2356752C11F6}" Directory_="bin_Dir" Attributes="0" KeyPath="nallandev.exe"/>
+    <ROW Component="navdmp.exe" ComponentId="{7A3AA1B7-2F70-4E70-AE48-361EFFAEDB27}" Directory_="bin_Dir" Attributes="0" KeyPath="navdmp.exe"/>
+    <ROW Component="navsum.exe" ComponentId="{4D312829-13A7-41EB-96E5-5DF6EC703FB9}" Directory_="bin_Dir" Attributes="0" KeyPath="navsum.exe"/>
+    <ROW Component="novaRinex.exe" ComponentId="{BBD08F3C-BC83-4FAC-80C1-2304E3F88B44}" Directory_="bin_Dir" Attributes="0" KeyPath="novaRinex.exe"/>
+    <ROW Component="oallandev.exe" ComponentId="{00FCA349-7F69-451A-B139-7575D97119A8}" Directory_="bin_Dir" Attributes="0" KeyPath="oallandev.exe"/>
+    <ROW Component="ohadamarddev.exe" ComponentId="{02AB9EEA-E4B4-4BF7-8881-8AF9ED7362FC}" Directory_="bin_Dir" Attributes="0" KeyPath="ohadamarddev.exe"/>
+    <ROW Component="ordClock.exe" ComponentId="{B53925E8-76CF-47F4-A38F-29611ADB2FD0}" Directory_="bin_Dir" Attributes="0" KeyPath="ordClock.exe"/>
+    <ROW Component="ordEdit.exe" ComponentId="{67B6FA5E-E511-4A5A-A4BD-B8E8C6B50151}" Directory_="bin_Dir" Attributes="0" KeyPath="ordEdit.exe"/>
+    <ROW Component="ordGen.exe" ComponentId="{EF882640-CE9B-43A6-90D4-C086DFC88F78}" Directory_="bin_Dir" Attributes="0" KeyPath="ordGen.exe"/>
+    <ROW Component="ordLinEst.exe" ComponentId="{976426D8-7EA2-486F-A190-1956233BACC4}" Directory_="bin_Dir" Attributes="0" KeyPath="ordLinEst.exe"/>
+    <ROW Component="ordStats.exe" ComponentId="{69EC983D-FEE8-48D1-91D2-3CFAACC66524}" Directory_="bin_Dir" Attributes="0" KeyPath="ordStats.exe"/>
+    <ROW Component="pff.exe" ComponentId="{12264E5D-1859-4A32-9254-3835D05639BE}" Directory_="bin_Dir" Attributes="0" KeyPath="pff.exe"/>
+    <ROW Component="posInterp.exe" ComponentId="{5EE887A6-11E5-462D-8D24-FBBFDEC0A7C9}" Directory_="bin_Dir" Attributes="0" KeyPath="posInterp.exe"/>
+    <ROW Component="poscvt.exe" ComponentId="{0AA05A59-8896-49F2-816C-D9ECFEC74FB9}" Directory_="bin_Dir" Attributes="0" KeyPath="poscvt.exe"/>
+    <ROW Component="posmsc.exe" ComponentId="{95EC257B-7591-4890-8E7B-986A48A1B845}" Directory_="bin_Dir" Attributes="0" KeyPath="posmsc.exe"/>
+    <ROW Component="rinexelvstrip.exe" ComponentId="{254DA5D9-53EF-4C5C-9876-8D4CB5349ECD}" Directory_="bin_Dir" Attributes="0" KeyPath="rinexelvstrip.exe"/>
+    <ROW Component="rinexpvt.exe" ComponentId="{C76FD49D-196E-4B83-862B-857ACB200560}" Directory_="bin_Dir" Attributes="0" KeyPath="rinexpvt.exe"/>
+    <ROW Component="rinexthin.exe" ComponentId="{AF0CE4F4-937E-4554-AB2A-55358166507E}" Directory_="bin_Dir" Attributes="0" KeyPath="rinexthin.exe"/>
+    <ROW Component="rmoutlier.exe" ComponentId="{CAF4CF7D-6D56-4F18-883B-83AB57559D3A}" Directory_="bin_Dir" Attributes="0" KeyPath="rmoutlier.exe"/>
+    <ROW Component="rmwcheck.exe" ComponentId="{A94A4DD4-E188-4E09-8935-0D5A616D6311}" Directory_="bin_Dir" Attributes="0" KeyPath="rmwcheck.exe"/>
+    <ROW Component="rmwdiff.exe" ComponentId="{0F27CFA0-AD67-4B02-AB0E-7ED393D9B565}" Directory_="bin_Dir" Attributes="0" KeyPath="rmwdiff.exe"/>
+    <ROW Component="rnwcheck.exe" ComponentId="{3790BE70-3490-419D-8E05-2A0A1E0D3EDE}" Directory_="bin_Dir" Attributes="0" KeyPath="rnwcheck.exe"/>
+    <ROW Component="rnwdiff.exe" ComponentId="{126F7FF7-0FF1-474C-8085-C76B51DF3152}" Directory_="bin_Dir" Attributes="0" KeyPath="rnwdiff.exe"/>
+    <ROW Component="rowcheck.exe" ComponentId="{ACB3BB2B-111D-4BC7-A660-215E4A2A6E82}" Directory_="bin_Dir" Attributes="0" KeyPath="rowcheck.exe"/>
+    <ROW Component="rowdiff.exe" ComponentId="{B7BAD5C7-7F90-4B2C-AA2E-CB005F5B04D2}" Directory_="bin_Dir" Attributes="0" KeyPath="rowdiff.exe"/>
+    <ROW Component="rstats.exe" ComponentId="{872233AC-5097-4545-B740-D96258F22F75}" Directory_="bin_Dir" Attributes="0" KeyPath="rstats.exe"/>
+    <ROW Component="scale.exe" ComponentId="{D7B77493-0E10-4892-A62D-F8D9DE9CD828}" Directory_="bin_Dir" Attributes="0" KeyPath="scale.exe"/>
+    <ROW Component="sp3version.exe" ComponentId="{A1ADA3ED-65EE-40CF-A7EF-C89088D11AC8}" Directory_="bin_Dir" Attributes="0" KeyPath="sp3version.exe"/>
+    <ROW Component="svvis.exe" ComponentId="{4E2D205D-E7CD-40D9-84D0-C51E98190DBC}" Directory_="bin_Dir" Attributes="0" KeyPath="svvis.exe"/>
+    <ROW Component="tallandev.exe" ComponentId="{4F427879-FC20-4B88-8795-5EC0BB0CE1A5}" Directory_="bin_Dir" Attributes="0" KeyPath="tallandev.exe"/>
+    <ROW Component="testSSEph.exe" ComponentId="{69AE7D2A-6DF4-41EF-AB82-F4E037E31460}" Directory_="bin_Dir" Attributes="0" KeyPath="testSSEph.exe"/>
+    <ROW Component="timeconvert.exe" ComponentId="{FD184F91-672D-4A6C-A8D3-C316344D2A90}" Directory_="bin_Dir" Attributes="0" KeyPath="timeconvert.exe"/>
+    <ROW Component="tkalm.exe" ComponentId="{A618BC38-47AA-4197-863A-F9F811AA39FD}" Directory_="bin_Dir" Attributes="0" KeyPath="tkalm.exe"/>
+    <ROW Component="trunc.exe" ComponentId="{74630E35-C314-4F4F-A943-BB67E476C0E1}" Directory_="bin_Dir" Attributes="0" KeyPath="trunc.exe"/>
+    <ROW Component="vecsol.exe" ComponentId="{A9F77F8B-C95A-4843-AA1A-603F4CBAEFE1}" Directory_="bin_Dir" Attributes="0" KeyPath="vecsol.exe"/>
+    <ROW Component="wheresat.exe" ComponentId="{38F794D2-D4CD-4E70-ABBB-8FCCF555FACE}" Directory_="bin_Dir" Attributes="0" KeyPath="wheresat.exe"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFeatsComponent">
-    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_CustomARPName AI_ExePath Adler32.hpp CalcDOPs.exe ConstellationList.exe DDBase.exe DDBaseDoc.pdf DOPcalc.exe DiscFix.exe IonoBias.exe ORDPhaseParser.exe PRSolve.exe RinDump.exe RinEdit.exe RinNav.exe RinSum.exe TECMaps.exe TIAPhaseParser.exe ash2mdp.exe ash2xyz.exe bc2sp3.exe calgps.exe compSatVis.exe compStaVis.exe convertSSEph.exe daa.exe dallandev.exe ddGen.exe ddPlot.py ddmerge.exe ephdiff.exe ephemfix.exe ephsum.exe ffp.exe fic2rin.exe ficacheck.exe ficafic.exe ficcheck.exe ficdiff.exe ficedit.exe ficfica.exe findMoreThan12.exe geodyn.lib gpstk_user_reference.pdf_1 lsfilt.exe mallandev.exe mergeFIC.exe mergeRinMet.exe mergeRinNav.exe mergeRinObs.exe mergeSRI.exe mpsolve.exe nallandev.exe navdmp.exe navsum.exe novaRinex.exe oallandev.exe ohadamarddev.exe ordClock.exe ordEdit.exe ordGen.exe ordLinEst.exe ordStats.exe pff.exe posInterp.exe poscvt.exe posmsc.exe rinexelvstrip.exe rinexpvt.exe rinexthin.exe rmoutlier.exe rmwcheck.exe rmwdiff.exe rnwcheck.exe rnwdiff.exe rowcheck.exe rowdiff.exe rstats.exe scale.exe sp3version.exe svvis.exe tallandev.exe testSSEph.exe timeconvert.exe tkalm.exe trunc.exe vecsol.exe wheresat.exe"/>
+    <ROW Feature="MainFeature" Title="MainFeature" Description="Description" Display="1" Level="1" Directory_="APPDIR" Attributes="0" Components="AI_ExePath Adler32.hpp CalcDOPs.exe ConstellationList.exe DDBase.exe DDBaseDoc.pdf DOPcalc.exe DiscFix.exe IonoBias.exe ORDPhaseParser.exe PRSolve.exe RinDump.exe RinEdit.exe RinNav.exe RinSum.exe TECMaps.exe TIAPhaseParser.exe ash2mdp.exe ash2xyz.exe bc2sp3.exe calgps.exe compSatVis.exe compStaVis.exe convertSSEph.exe daa.exe dallandev.exe ddGen.exe ddPlot.py ddmerge.exe ephdiff.exe ephemfix.exe ephsum.exe ffp.exe fic2rin.exe ficacheck.exe ficafic.exe ficcheck.exe ficdiff.exe ficedit.exe ficfica.exe findMoreThan12.exe geodyn.lib gpstk_user_reference.pdf_1 lsfilt.exe mallandev.exe mergeFIC.exe mergeRinMet.exe mergeRinNav.exe mergeRinObs.exe mergeSRI.exe mpsolve.exe nallandev.exe navdmp.exe navsum.exe novaRinex.exe oallandev.exe ohadamarddev.exe ordClock.exe ordEdit.exe ordGen.exe ordLinEst.exe ordStats.exe pff.exe posInterp.exe poscvt.exe posmsc.exe rinexelvstrip.exe rinexpvt.exe rinexthin.exe rmoutlier.exe rmwcheck.exe rmwdiff.exe rnwcheck.exe rnwdiff.exe rowcheck.exe rowdiff.exe rstats.exe scale.exe sp3version.exe svvis.exe tallandev.exe testSSEph.exe timeconvert.exe tkalm.exe trunc.exe vecsol.exe wheresat.exe"/>
     <ATTRIBUTE name="CurrentFeature" value="MainFeature"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiFilesComponent">
@@ -679,7 +637,7 @@
     <ROW File="getopt.h" Component_="Adler32.hpp" FileName="getopt.h" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\gpstk-2.1.win\include\gpstk\getopt.h" SelfReg="false" NextFile="GloEphemeris.hpp"/>
     <ROW File="gps_constants.hpp" Component_="Adler32.hpp" FileName="gps_co~1.hpp|gps_constants.hpp" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\gpstk-2.1.win\include\gpstk\gps_constants.hpp" SelfReg="false" NextFile="GPS_URA.hpp"/>
     <ROW File="gpstk.lib" Component_="geodyn.lib" FileName="gpstk.lib" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\gpstk-2.1.win\lib\gpstk.lib" SelfReg="false" NextFile="procframe.lib"/>
-    <ROW File="gpstk_user_reference.pdf" Component_="gpstk_user_reference.pdf_1" FileName="gpstk-~1.pdf|gpstk-user-reference.pdf" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\ref\usersguide\gpstk-user-reference.pdf" SelfReg="false" NextFile="DDBaseDoc.pdf"/>
+    <ROW File="gpstk_user_reference.pdf" Component_="gpstk_user_reference.pdf_1" FileName="gpstk-~1.pdf|gpstk-user-reference.pdf" Attributes="0" SourcePath="gpstk-user-reference.pdf" SelfReg="false" NextFile="DDBaseDoc.pdf"/>
     <ROW File="gpstkplatform.h" Component_="Adler32.hpp" FileName="gpstkp~1.h|gpstkplatform.h" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\gpstk-2.1.win\include\gpstk\gpstkplatform.h" SelfReg="false" NextFile="GPSWeek.hpp"/>
     <ROW File="index.hpp" Component_="Adler32.hpp" FileName="index.hpp" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\gpstk-2.1.win\include\gpstk\index.hpp" SelfReg="false" NextFile="InOutFramework.hpp"/>
     <ROW File="logstream.hpp" Component_="Adler32.hpp" FileName="logstr~1.hpp|logstream.hpp" Attributes="0" SourcePath="C:\Users\bparsons\git\gpstk\gpstk-2.1.win\include\gpstk\logstream.hpp" SelfReg="false" NextFile="LoopedFramework.hpp"/>
@@ -744,7 +702,7 @@
     <ROW BootstrOptKey="GlobalOptions" Options="2"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.BuildComponent">
-    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="logo-rsmall.ico" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\install" ExtUI="true" MsiPackageType="x64"/>
+    <ROW BuildKey="DefaultBuild" BuildName="DefaultBuild" BuildOrder="1" BuildType="0" PackageFolder="." Languages="en" InstallationType="4" CabsLocation="1" PackageType="1" FilesInsideExe="true" ExeIconPath="logo-rsmall.ico" ExtractionFolder="[AppDataFolder][|Manufacturer]\[|ProductName]\install" MsiPackageType="x64"/>
     <ATTRIBUTE name="CurrentBuild" value="DefaultBuild"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.DictionaryComponent">
@@ -753,18 +711,18 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.FragmentComponent">
     <ROW Fragment="CommonUI.aip" Path="&lt;AI_FRAGS&gt;CommonUI.aip"/>
-    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\FolderDlg.aip"/>
-    <ROW Fragment="LicenseAgreementDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\LicenseAgreementDlg.aip"/>
-    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\MaintenanceTypeDlg.aip"/>
-    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\MaintenanceWelcomeDlg.aip"/>
-    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\SequenceDialogs.aip"/>
+    <ROW Fragment="FolderDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\FolderDlg.aip"/>
+    <ROW Fragment="LicenseAgreementDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\LicenseAgreementDlg.aip"/>
+    <ROW Fragment="MaintenanceTypeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceTypeDlg.aip"/>
+    <ROW Fragment="MaintenanceWelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\MaintenanceWelcomeDlg.aip"/>
+    <ROW Fragment="SequenceDialogs.aip" Path="&lt;AI_THEMES&gt;classic\fragments\SequenceDialogs.aip"/>
     <ROW Fragment="Sequences.aip" Path="&lt;AI_FRAGS&gt;Sequences.aip"/>
     <ROW Fragment="StaticUIStrings.aip" Path="&lt;AI_FRAGS&gt;StaticUIStrings.aip"/>
-    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\UI.aip"/>
+    <ROW Fragment="UI.aip" Path="&lt;AI_THEMES&gt;classic\fragments\UI.aip"/>
     <ROW Fragment="Validation.aip" Path="&lt;AI_FRAGS&gt;Validation.aip"/>
-    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\VerifyRemoveDlg.aip"/>
-    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\VerifyRepairDlg.aip"/>
-    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;graphite\fragments\WelcomeDlg.aip"/>
+    <ROW Fragment="VerifyRemoveDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRemoveDlg.aip"/>
+    <ROW Fragment="VerifyRepairDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\VerifyRepairDlg.aip"/>
+    <ROW Fragment="WelcomeDlg.aip" Path="&lt;AI_THEMES&gt;classic\fragments\WelcomeDlg.aip"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiActionTextComponent">
     <ROW Action="AI_DeleteLzma" Description="Deleting files extracted from archive" DescriptionLocId="ActionText.Description.AI_DeleteLzma" TemplateLocId="-"/>
@@ -778,67 +736,41 @@
     <ROW Property="GNU_DIR" Signature_="AppSearchSign"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiBinaryComponent">
-    <ROW Name="ExternalUICleaner.dll" SourcePath="&lt;AI_CUSTACTS&gt;ExternalUICleaner.dll"/>
     <ROW Name="Prereq.dll" SourcePath="&lt;AI_CUSTACTS&gt;Prereq.dll"/>
     <ROW Name="aicustact.dll" SourcePath="&lt;AI_CUSTACTS&gt;aicustact.dll"/>
-    <ROW Name="frame_bottom_left.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_bottom_left.bmp"/>
-    <ROW Name="frame_bottom_left_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_bottom_left_inactive.bmp"/>
-    <ROW Name="frame_bottom_mid.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_bottom_mid.bmp"/>
-    <ROW Name="frame_bottom_mid_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_bottom_mid_inactive.bmp"/>
-    <ROW Name="frame_bottom_right.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_bottom_right.bmp"/>
-    <ROW Name="frame_bottom_right_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_bottom_right_inactive.bmp"/>
-    <ROW Name="frame_caption.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_caption.bmp"/>
-    <ROW Name="frame_caption_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_caption_inactive.bmp"/>
-    <ROW Name="frame_left.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_left.bmp"/>
-    <ROW Name="frame_left_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_left_inactive.bmp"/>
-    <ROW Name="frame_right.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_right.bmp"/>
-    <ROW Name="frame_right_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_right_inactive.bmp"/>
-    <ROW Name="frame_top_left.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_top_left.bmp"/>
-    <ROW Name="frame_top_left_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_top_left_inactive.bmp"/>
-    <ROW Name="frame_top_mid.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_top_mid.bmp"/>
-    <ROW Name="frame_top_mid_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_top_mid_inactive.bmp"/>
-    <ROW Name="frame_top_right.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_top_right.bmp"/>
-    <ROW Name="frame_top_right_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;frame_top_right_inactive.bmp"/>
     <ROW Name="lzmaextractor.dll" SourcePath="&lt;AI_CUSTACTS&gt;lzmaextractor.dll"/>
-    <ROW Name="sys_close_down.bmp" SourcePath="&lt;AI_FRAME_BTNS&gt;sys_close_down.bmp"/>
-    <ROW Name="sys_close_hot.bmp" SourcePath="&lt;AI_FRAME_BTNS&gt;sys_close_hot.bmp"/>
-    <ROW Name="sys_close_inactive.bmp" SourcePath="&lt;AI_FRAME_BTNS&gt;sys_close_inactive.bmp"/>
-    <ROW Name="sys_close_normal.bmp" SourcePath="&lt;AI_FRAME_BTNS&gt;sys_close_normal.bmp"/>
-    <ROW Name="sys_min_down.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;sys_min_down.bmp"/>
-    <ROW Name="sys_min_hot.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;sys_min_hot.bmp"/>
-    <ROW Name="sys_min_inactive.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;sys_min_inactive.bmp"/>
-    <ROW Name="sys_min_normal.bmp" SourcePath="&lt;AI_FRAME_COLOR&gt;sys_min_normal.bmp"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlComponent">
-    <ROW Dialog_="LicenseAgreementDlg" Control="AgreementText" Type="ScrollableText" X="175" Y="104" Width="323" Height="120" Attributes="7" Text="..\..\..\..\GPSTk\lgpl-3.0.rtf" Order="400" TextLocId="Control.Text.LicenseAgreementDlg#AgreementText_2" MsiKey="LicenseAgreementDlg#AgreementText"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="44" Attributes="1048577" Text="[BannerBitmap]" Order="300" MsiKey="LicenseAgreementDlg#BannerBitmap"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="120" Attributes="7" Text="..\..\..\..\GPSTk\lgpl-3.0.rtf" Order="400" TextLocId="Control.Text.LicenseAgreementDlg#AgreementText_2"/>
+    <ATTRIBUTE name="DeletedRows" value="LicenseAgreementDlg#AgreementText"/>
     <ATTRIBUTE name="FixedSizeBitmaps" value="0"/>
-    <ATTRIBUTE name="MultiBuildFixedSizeBitmaps" value="DefaultBuild:1"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiControlEventComponent">
-    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="201"/>
     <ROW Dialog_="FolderDlg" Control_="Back" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="197"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="201"/>
-    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="99"/>
-    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="101"/>
-    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="198"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="202"/>
-    <ROW Dialog_="MaintenanceTypeDlg" Control_="Next" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="1401"/>
+    <ROW Dialog_="WelcomeDlg" Control_="Next" Event="NewDialog" Argument="LicenseAgreementDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="FolderDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_INSTALL" Ordering="3"/>
     <ROW Dialog_="MaintenanceTypeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceWelcomeDlg" Condition="AI_MAINT" Ordering="1"/>
-    <ROW Dialog_="MaintenanceTypeDlg" Control_="Next" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND MaintenanceTypeOption=&quot;Remove&quot;" Ordering="1403"/>
-    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND MaintenanceTypeOption=&quot;Remove&quot;" Ordering="1"/>
-    <ROW Dialog_="MaintenanceTypeDlg" Control_="Next" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND MaintenanceTypeOption=&quot;Repair&quot;" Ordering="1402"/>
-    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND MaintenanceTypeOption=&quot;Repair&quot;" Ordering="1"/>
-    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND MaintenanceTypeOption=&quot;Repair&quot;" Ordering="399" Options="1"/>
-    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND MaintenanceTypeOption=&quot;Remove&quot;" Ordering="299" Options="1"/>
-    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="201"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="199"/>
-    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="203"/>
+    <ROW Dialog_="MaintenanceWelcomeDlg" Control_="Next" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="2"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="PatchWelcomeDlg" Condition="AI_PATCH" Ordering="1"/>
+    <ROW Dialog_="PatchWelcomeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_PATCH" Ordering="3"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Back" Event="NewDialog" Argument="WelcomeDlg" Condition="AI_INSTALL" Ordering="1"/>
+    <ROW Dialog_="LicenseAgreementDlg" Control_="Next" Event="NewDialog" Argument="FolderDlg" Condition="AI_INSTALL AND IAgree = &quot;Yes&quot;" Ordering="1"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="CustomizeDlg" Control_="Next" Event="NewDialog" Argument="VerifyReadyDlg" Condition="AI_MAINT" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="ChangeButton" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="301"/>
     <ROW Dialog_="ResumeDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_RESUME" Ordering="299"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_MAINT" Ordering="197"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_PATCH" Ordering="198"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Install" Event="EndDialog" Argument="Return" Condition="AI_INSTALL" Ordering="199"/>
+    <ROW Dialog_="VerifyReadyDlg" Control_="Back" Event="NewDialog" Argument="CustomizeDlg" Condition="AI_MAINT" Ordering="201"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Remove" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode = &quot;Remove&quot;" Ordering="299"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Repair" Event="EndDialog" Argument="Return" Condition="AI_MAINT AND InstallMode = &quot;Repair&quot;" Ordering="399"/>
+    <ROW Dialog_="VerifyRemoveDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode = &quot;Remove&quot;" Ordering="1"/>
+    <ROW Dialog_="VerifyRepairDlg" Control_="Back" Event="NewDialog" Argument="MaintenanceTypeDlg" Condition="AI_MAINT AND InstallMode = &quot;Repair&quot;" Ordering="1"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RemoveButton" Event="NewDialog" Argument="VerifyRemoveDlg" Condition="AI_MAINT AND InstallMode = &quot;Remove&quot;" Ordering="601"/>
+    <ROW Dialog_="MaintenanceTypeDlg" Control_="RepairButton" Event="NewDialog" Argument="VerifyRepairDlg" Condition="AI_MAINT AND InstallMode = &quot;Repair&quot;" Ordering="601"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiCustActComponent">
     <ROW Action="AI_AppSearchEx" Type="1" Source="Prereq.dll" Target="DoAppSearchEx"/>
@@ -849,23 +781,19 @@
     <ROW Action="AI_DeleteLzma" Type="1025" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
     <ROW Action="AI_DeleteRCadLzma" Type="51" Source="AI_DeleteRLzma" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_DeleteRLzma" Type="1281" Source="lzmaextractor.dll" Target="DeleteLZMAFiles"/>
-    <ROW Action="AI_DoRemoveExternalUIStub" Type="3585" Source="ExternalUICleaner.dll" Target="DoRemoveExternalUIStub" WithoutSeq="true"/>
     <ROW Action="AI_EstimateExtractFiles" Type="1" Source="Prereq.dll" Target="EstimateExtractFiles"/>
     <ROW Action="AI_ExtractCadLzma" Type="51" Source="AI_ExtractLzma" Target="[AI_SETUPEXEPATH]"/>
     <ROW Action="AI_ExtractFiles" Type="1025" Source="Prereq.dll" Target="ExtractSourceFiles" AdditionalSeq="AI_DATA_SETTER"/>
     <ROW Action="AI_ExtractLzma" Type="1025" Source="lzmaextractor.dll" Target="ExtractLZMAFiles"/>
     <ROW Action="AI_FindExeLzma" Type="1" Source="lzmaextractor.dll" Target="FindEXE"/>
-    <ROW Action="AI_GetArpIconPath" Type="1" Source="aicustact.dll" Target="GetArpIconPath"/>
     <ROW Action="AI_InstallModeCheck" Type="1" Source="aicustact.dll" Target="UpdateInstallMode" WithoutSeq="true"/>
     <ROW Action="AI_PREPARE_UPGRADE" Type="65" Source="aicustact.dll" Target="PrepareUpgrade"/>
     <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Type="51" Source="AI_SETUPEXEPATH" Target="[AI_SETUPEXEPATH_ORIGINAL]"/>
     <ROW Action="AI_RESTORE_LOCATION" Type="65" Source="aicustact.dll" Target="RestoreLocation"/>
-    <ROW Action="AI_RemoveExternalUIStub" Type="1" Source="ExternalUICleaner.dll" Target="RemoveExternalUIStub"/>
     <ROW Action="AI_ResolveKnownFolders" Type="1" Source="aicustact.dll" Target="AI_ResolveKnownFolders"/>
     <ROW Action="AI_ResolveLocalizedCredentials" Type="1" Source="aicustact.dll" Target="GetLocalizedCredentials"/>
     <ROW Action="AI_SHOW_LOG" Type="65" Source="aicustact.dll" Target="LaunchLogFile" WithoutSeq="true"/>
     <ROW Action="AI_STORE_LOCATION" Type="51" Source="ARPINSTALLLOCATION" Target="[APPDIR]"/>
-    <ROW Action="AI_ViewReadme" Type="1" Source="aicustact.dll" Target="[#gpstk_user_reference.pdf]"/>
     <ROW Action="SET_APPDIR" Type="307" Source="APPDIR" Target="[ProgramFilesFolder][Manufacturer]\[ProductName]" MultiBuildTarget="DefaultBuild:[ProgramFiles64Folder][ProductName]"/>
     <ROW Action="SET_SHORTCUTDIR" Type="307" Source="SHORTCUTDIR" Target="[ProgramMenuFolder][ProductName]"/>
     <ROW Action="SET_TARGETDIR_TO_APPDIR" Type="51" Source="TARGETDIR" Target="[APPDIR]"/>
@@ -875,7 +803,7 @@
     <ROW Environment="PATH_1" Name="+-PATH" Value="[~];[GNU_DIR]bin" Component_="DDBaseDoc.pdf"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIconsComponent">
-    <ROW Name="GPSTk.exe" SourcePath="..\..\..\..\GPSTk\GPSTk.ico" Index="0"/>
+    <ROW Name="logo_rsmall.exe" SourcePath="logo-rsmall.ico" Index="0"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiIniFileComponent">
     <ROW IniFile="URL" FileName="GPSTkW~1.url|GPSTk Website.url" DirProperty="SHORTCUTDIR" Section="InternetShortcut" Key="URL" Value="http://www.gpstk.org/" Action="0" Component_="DDBaseDoc.pdf"/>
@@ -883,7 +811,7 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstExSeqComponent">
     <ROW Action="AI_DOWNGRADE" Condition="AI_NEWERPRODUCTFOUND AND (UILevel &lt;&gt; 5)" Sequence="210"/>
-    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="738"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="740"/>
     <ROW Action="AI_STORE_LOCATION" Condition="Not Installed" Sequence="1545"/>
     <ROW Action="AI_PREPARE_UPGRADE" Condition="AI_UPGRADE=&quot;No&quot; AND (Not Installed)" Sequence="1300"/>
     <ROW Action="AI_DeleteCadLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="199" Builds="DefaultBuild"/>
@@ -892,21 +820,18 @@
     <ROW Action="AI_FindExeLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="196" Builds="DefaultBuild"/>
     <ROW Action="AI_ExtractLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1549" Builds="DefaultBuild"/>
     <ROW Action="AI_DeleteRLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="1548" Builds="DefaultBuild"/>
-    <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6596" Builds="DefaultBuild"/>
+    <ROW Action="AI_DeleteLzma" Condition="SETUPEXEDIR=&quot;&quot; AND Installed AND (REMOVE&lt;&gt;&quot;ALL&quot;) AND (AI_INSTALL_MODE&lt;&gt;&quot;Remove&quot;) AND (NOT PATCH)" Sequence="6599" Builds="DefaultBuild"/>
     <ROW Action="AI_AppSearchEx" Sequence="102"/>
-    <ROW Action="AI_ResolveKnownFolders" Sequence="53"/>
-    <ROW Action="InstallFinalize" Sequence="6597" SeqType="0" MsiKey="InstallFinalize"/>
-    <ROW Action="AI_ResolveLocalizedCredentials" Sequence="52"/>
+    <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
+    <ROW Action="AI_ResolveLocalizedCredentials" Sequence="51"/>
     <ROW Action="AI_BACKUP_AI_SETUPEXEPATH" Sequence="99" Builds="DefaultBuild"/>
     <ROW Action="AI_RESTORE_AI_SETUPEXEPATH" Condition="AI_SETUPEXEPATH_ORIGINAL" Sequence="101" Builds="DefaultBuild"/>
     <ROW Action="AI_ExtractFiles" Sequence="3998" Builds="DefaultBuild"/>
     <ROW Action="AI_DATA_SETTER" Sequence="3997"/>
     <ROW Action="AI_EstimateExtractFiles" Sequence="3999" Builds="DefaultBuild"/>
-    <ROW Action="AI_GetArpIconPath" Sequence="51"/>
-    <ROW Action="AI_RemoveExternalUIStub" Condition="(REMOVE=&quot;ALL&quot;) AND ((VersionNT &gt; 500) OR((VersionNT = 500) AND (ServicePackLevel &gt;= 4)))" Sequence="1501"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiInstallUISequenceComponent">
-    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="738"/>
+    <ROW Action="AI_RESTORE_LOCATION" Condition="APPDIR=&quot;&quot;" Sequence="740"/>
     <ROW Action="AI_AppSearchEx" Sequence="102"/>
     <ROW Action="AI_ResolveKnownFolders" Sequence="52"/>
     <ROW Action="AI_ResolveLocalizedCredentials" Sequence="51"/>
@@ -920,26 +845,9 @@
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiRegsComponent">
     <ROW Registry="AI_ExePath" Root="-1" Key="Software\Caphyon\Advanced Installer\LZMA\[ProductCode]\[ProductVersion]" Name="AI_ExePath" Value="[AI_SETUPEXEPATH]" Component_="AI_ExePath"/>
-    <ROW Registry="Comments" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Comments" Value="[ARPCOMMENTS]" Component_="AI_CustomARPName"/>
-    <ROW Registry="Contact" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Contact" Value="[ARPCONTACT]" Component_="AI_CustomARPName"/>
-    <ROW Registry="DisplayIcon" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="DisplayIcon" Value="[ARP_ICON_PATH]" Component_="AI_CustomARPName"/>
-    <ROW Registry="DisplayName" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="DisplayName" Value="[AI_PRODUCTNAME_ARP]" Component_="AI_CustomARPName"/>
-    <ROW Registry="DisplayVersion" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="DisplayVersion" Value="[ProductVersion]" Component_="AI_CustomARPName"/>
-    <ROW Registry="HelpLink" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="HelpLink" Value="[ARPHELPLINK]" Component_="AI_CustomARPName"/>
-    <ROW Registry="HelpTelephone" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="HelpTelephone" Value="[ARPHELPTELEPHONE]" Component_="AI_CustomARPName"/>
-    <ROW Registry="InstallLocation" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="InstallLocation" Value="[APPDIR]" Component_="AI_CustomARPName"/>
-    <ROW Registry="ModifyPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="ModifyPath" Value="[AI_UNINSTALLER] /I [ProductCode]" Component_="AI_CustomARPName"/>
-    <ROW Registry="NoRepair" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="NoRepair" Value="#1" Component_="AI_CustomARPName"/>
-    <ROW Registry="Publisher" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="Publisher" Value="[Manufacturer]" Component_="AI_CustomARPName"/>
-    <ROW Registry="URLInfoAbout" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="URLInfoAbout" Value="[ARPURLINFOABOUT]" Component_="AI_CustomARPName"/>
-    <ROW Registry="URLUpdateInfo" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="URLUpdateInfo" Value="[ARPURLUPDATEINFO]" Component_="AI_CustomARPName"/>
-    <ROW Registry="UninstallPath" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallPath" Value="[AI_UNINSTALLER] /x [ProductCode]" Component_="AI_CustomARPName"/>
-    <ROW Registry="UninstallString" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="UninstallString" Value="[AI_UNINSTALLER] /x [ProductCode]" Component_="AI_CustomARPName"/>
-    <ROW Registry="VersionMajor" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="VersionMajor" Value="#2" Component_="AI_CustomARPName"/>
-    <ROW Registry="VersionMinor" Root="-1" Key="Software\Microsoft\Windows\CurrentVersion\Uninstall\[ProductName] [ProductVersion]" Name="VersionMinor" Value="#1" Component_="AI_CustomARPName"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiThemeComponent">
-    <ATTRIBUTE name="UsedTheme" value="graphite"/>
+    <ATTRIBUTE name="UsedTheme" value="classic"/>
   </COMPONENT>
   <COMPONENT cid="caphyon.advinst.msicomp.MsiUpgradeComponent">
     <ROW UpgradeCode="[|UpgradeCode]" VersionMax="[|ProductVersion]" Attributes="1025" ActionProperty="OLDPRODUCTS"/>
