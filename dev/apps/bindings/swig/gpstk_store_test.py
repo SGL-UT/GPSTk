@@ -21,6 +21,17 @@ class URATest(unittest.TestCase):
         self.assertEqual(15, SV_ACCURACY_GPS_MAX_INDEX_VALUE)
 
 
+class EngAlmanacTest(unittest.TestCase):
+    def test(self):
+        pass
+        # TODO: move inner exception macros outside in c++ source
+
+
+        # TODO: EngAlmanac testing
+        e = EngAlmanac()
+        # e.getEcc(SatID(1))
+
+
 # class SP3EphemerisStoreTest(unittest.TestCase):
 #   def test_raw_data(self):
 #       s = SP3EphemerisStore()

@@ -366,85 +366,84 @@ namespace gpstk
 
    };
 
-   template <class T>
-   std::ostream& operator<<(std::ostream& s, const TwoSampleStats<T>& TSS)
-   {
-      std::ofstream savefmt;
-      savefmt.copyfmt(s);
-      s << " N           = " << TSS.N() << "\n";
-      s << " Minimum:  X = "; s.copyfmt(savefmt); s << TSS.MinimumX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.MinimumY() << "\n";
-      s << " Maximum:  X = "; s.copyfmt(savefmt); s << TSS.MaximumX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.MaximumY() << "\n";
-      s << " Average:  X = "; s.copyfmt(savefmt); s << TSS.AverageX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.AverageY() << "\n";
-      s << " Std Dev:  X = "; s.copyfmt(savefmt); s << TSS.StdDevX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.StdDevY() << "\n";
-      s << " Variance: X = "; s.copyfmt(savefmt); s << TSS.VarianceX();
-      s << "  Y = "; s.copyfmt(savefmt); s << TSS.VarianceY() << "\n";
-      s << " Intercept = "; s.copyfmt(savefmt); s << TSS.Intercept();
-      s << "  Slope = "; s.copyfmt(savefmt); s << TSS.Slope();
-      s << " with uncertainty = "; s.copyfmt(savefmt); s << TSS.SigmaSlope() << "\n";
-      s << " Conditional uncertainty (sigma y given x) = ";
-      s.copyfmt(savefmt); s << TSS.SigmaYX();
-      s << "  Correlation = "; s.copyfmt(savefmt); s << TSS.Correlation();
-      return s;
-   }
+   // template <class T>
+   // std::ostream& operator<<(std::ostream& s, const TwoSampleStats<T>& TSS)
+   // {
+   //    std::ofstream savefmt;
+   //    savefmt.copyfmt(s);
+   //    s << " N           = " << TSS.N() << "\n";
+   //    s << " Minimum:  X = "; s.copyfmt(savefmt); s << TSS.MinimumX();
+   //    s << "  Y = "; s.copyfmt(savefmt); s << TSS.MinimumY() << "\n";
+   //    s << " Maximum:  X = "; s.copyfmt(savefmt); s << TSS.MaximumX();
+   //    s << "  Y = "; s.copyfmt(savefmt); s << TSS.MaximumY() << "\n";
+   //    s << " Average:  X = "; s.copyfmt(savefmt); s << TSS.AverageX();
+   //    s << "  Y = "; s.copyfmt(savefmt); s << TSS.AverageY() << "\n";
+   //    s << " Std Dev:  X = "; s.copyfmt(savefmt); s << TSS.StdDevX();
+   //    s << "  Y = "; s.copyfmt(savefmt); s << TSS.StdDevY() << "\n";
+   //    s << " Variance: X = "; s.copyfmt(savefmt); s << TSS.VarianceX();
+   //    s << "  Y = "; s.copyfmt(savefmt); s << TSS.VarianceY() << "\n";
+   //    s << " Intercept = "; s.copyfmt(savefmt); s << TSS.Intercept();
+   //    s << "  Slope = "; s.copyfmt(savefmt); s << TSS.Slope();
+   //    s << " with uncertainty = "; s.copyfmt(savefmt); s << TSS.SigmaSlope() << "\n";
+   //    s << " Conditional uncertainty (sigma y given x) = ";
+   //    s.copyfmt(savefmt); s << TSS.SigmaYX();
+   //    s << "  Correlation = "; s.copyfmt(savefmt); s << TSS.Correlation();
+   //    return s;
+   // }
 
-// TODO: implement these below methods
-   template <class T>
-   inline T median(const Vector<T>& v)
-   {
-      if(v.size()==0) return T();
-      if(v.size()==1) return v(0);
-      if(v.size()==2) return (v(0)+v(1))/T(2);
-      // insert sort
-      int i,j;
-      T x;
-      Vector<T> w(v);
-      for(i=0; i<v.size(); i++) {
-         x = w[i] = v(i);
-         j = i-1;
-         while(j>=0 && x<w[j]) {
-            w[j+1] = w[j];
-            j--;
-         }
-         w[j+1] = x;
-      }
-      if(v.size() % 2)
-         x=w[(v.size()+1)/2-1];
-      else
-         x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
+   // template <class T>
+   // inline T median(const Vector<T>& v)
+   // {
+   //    if(v.size()==0) return T();
+   //    if(v.size()==1) return v(0);
+   //    if(v.size()==2) return (v(0)+v(1))/T(2);
+   //    // insert sort
+   //    int i,j;
+   //    T x;
+   //    Vector<T> w(v);
+   //    for(i=0; i<v.size(); i++) {
+   //       x = w[i] = v(i);
+   //       j = i-1;
+   //       while(j>=0 && x<w[j]) {
+   //          w[j+1] = w[j];
+   //          j--;
+   //       }
+   //       w[j+1] = x;
+   //    }
+   //    if(v.size() % 2)
+   //       x=w[(v.size()+1)/2-1];
+   //    else
+   //       x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
 
-      return x;
-   }
+   //    return x;
+   // }
 
-   template <class T>
-   inline T median(const std::vector<T>& v)
-   {
-      if(v.size()==0) return T();
-      if(v.size()==1) return v[0];
-      if(v.size()==2) return (v[0]+v[1])/T(2);
-      // insert sort
-      int i,j;
-      T x;
-      std::vector<T> w(v);
-      for(i=0; i<v.size(); i++) {
-         x = w[i] = v[i];
-         j = i-1;
-         while(j>=0 && x<w[j]) {
-            w[j+1] = w[j];
-            j--;
-         }
-         w[j+1] = x;
-      }
-      if(v.size() % 2)
-         x=w[(v.size()+1)/2-1];
-      else
-         x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
+   // template <class T>
+   // inline T median(const std::vector<T>& v)
+   // {
+   //    if(v.size()==0) return T();
+   //    if(v.size()==1) return v[0];
+   //    if(v.size()==2) return (v[0]+v[1])/T(2);
+   //    // insert sort
+   //    int i,j;
+   //    T x;
+   //    std::vector<T> w(v);
+   //    for(i=0; i<v.size(); i++) {
+   //       x = w[i] = v[i];
+   //       j = i-1;
+   //       while(j>=0 && x<w[j]) {
+   //          w[j+1] = w[j];
+   //          j--;
+   //       }
+   //       w[j+1] = x;
+   //    }
+   //    if(v.size() % 2)
+   //       x=w[(v.size()+1)/2-1];
+   //    else
+   //       x=(w[v.size()/2-1]+w[v.size()/2])/T(2);
 
-      return x;
-   }
+   //    return x;
+   // }
 
 }
 

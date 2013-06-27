@@ -12,12 +12,12 @@
 namespace gpstk{
    class ReferenceFrame {
       public:
-      
-      // enum FramesEnum{
-      //    Unknown = 0,
-      //    WGS84,
-      //    PZ90
-      // };      
+
+      enum FramesEnum {
+         Unknown = 0,
+         WGS84,
+         PZ90
+      };
       // ReferenceFrame(FramesEnum e);
       ReferenceFrame(int index = 0);
       // ReferenceFrame(const char str[]);
@@ -57,10 +57,3 @@ namespace gpstk{
         else return "Unknown";
 	}
 }
-
-%pythoncode %{
-import __builtin__
-class ReferenceFrames:
-	Unknown, WGS84, PZ90 = __builtin__.range(3)
-
-%}

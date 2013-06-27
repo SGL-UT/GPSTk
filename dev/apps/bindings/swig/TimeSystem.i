@@ -1,12 +1,37 @@
+#pragma ident "$Id$"
 #ifndef GPSTK_TIMESYSTEM_HPP
 #define GPSTK_TIMESYSTEM_HPP
 #include <iostream>
 #include <string>
+
 namespace gpstk
 {
    class TimeSystem
    {
-   public: 
+   public:
+
+      enum Systems
+      {
+         Unknown = 0, ///< unknown time frame; for legacy code compatibility
+         Any,         ///< wildcard; allows comparison with any other type
+         GPS,         ///< GPS system time
+         GLO,         ///< GLONASS system time
+         GAL,         ///< Galileo system time
+         COM,         ///< Compass system time(BeiDou Time, BDT)
+         UTC,         ///< Coordinated Universal Time (e.g., from NTP)
+         UT1,         ///< UT0 corrected for polar wandering
+         TAI,         ///< International Atomic Time
+         TT,          ///< Terrestial Time
+         count        ///< the number of systems - not a system
+      };
+
+      // TimeSystem(Systems sys = Unknown) throw()
+      // {
+      //    if(sys < 0 || sys >= count)
+      //       system = Unknown;
+      //    else
+      //       system = sys;
+      // }
 
       TimeSystem(int i) throw()
       {
@@ -15,6 +40,17 @@ namespace gpstk
          else
             system = static_cast<Systems>(i);
       }
+
+      void setTimeSystem(const Systems& sys) throw();
+
+      // Systems getTimeSystem() const throw()
+      // { return system; }
+
+      // std::string asString() const throw()
+      // { return Strings[system]; }
+
+      void fromString(const std::string str) throw();
+
       bool operator==(const TimeSystem& right) const throw()
       { return system == right.system; }
 
@@ -32,10 +68,16 @@ namespace gpstk
 
       bool operator>(const TimeSystem& right) const throw()
       { return (!operator<(right) && !operator==(right)); }
-   };   
-   std::ostream& operator<<(std::ostream& os, const TimeSystem& ts);
+
+   // private:
+   //    Systems system;
+   //    static const std::string Strings[];
+
+   };
+   // std::ostream& operator<<(std::ostream& os, const TimeSystem& ts);
 }
 #endif // GPSTK_TIMESYSTEM_HPP
+
 
 
 %extend gpstk::TimeSystem {
@@ -57,8 +99,6 @@ namespace gpstk
 };
 
 %pythoncode {
-class TimeSystems:
-  Unknown, Any, GPS, GLO, GAL, COM, UTC, UT1, TAI, TT = range(10)
 
 
 TimeSystem.__eq__.__func__.__doc__ = """
@@ -67,7 +107,7 @@ Boolean equality operator.
 Parameters
     ----------
     right : TimeSystem
-        Another TimeSystem.       
+        Another TimeSystem.
 """
 
 TimeSystem.__lt__ .__func__.__doc__= """

@@ -12,15 +12,15 @@ def main():
         'ansi'  : '\"ANSI-Second\"',
         'civil' : '\"Month(numeric) DayOfMonth Year Hour:Minute:Second\"',
         'rinex' : '\"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second\"',
-        'ews'      : '\"GPSEpoch 10bitGPSweek SecondOfWeek\"',
-        'ws'       : '\"FullGPSWeek SecondOfWeek\"',
-        'wz'       : '\"FullGPSWeek Zcount\"',
-        'z29'      : '\"29bitZcount\"',
-        'z32'      : '\"32bitZcount\"',
-        'julian'   : '\"JulianDate\"',
-        'mjd'      : '\"ModifiedJulianDate\"',
-        'unixtime' : '\"UnixSeconds UnixMicroseconds\"',
-        'doy'      : '\"Year DayOfYear SecondsOfDay\"',
+        'ews'           : '\"GPSEpoch 10bitGPSweek SecondOfWeek\"',
+        'ws'            : '\"FullGPSWeek SecondOfWeek\"',
+        'wz'            : '\"FullGPSWeek Zcount\"',
+        'z29'           : '\"29bitZcount\"',
+        'z32'           : '\"32bitZcount\"',
+        'julian'        : '\"JulianDate\"',
+        'mjd'           : '\"ModifiedJulianDate\"',
+        'unixtime'      : '\"UnixSeconds UnixMicroseconds\"',
+        'doy'           : '\"Year DayOfYear SecondsOfDay\"',
         'output_format' : 'Time format to use on output',
         'add_offset'    : 'add NUM seconds to specified time',
         'sub_offset'    : 'subtract NUM seconds to specified time'
@@ -66,20 +66,20 @@ def main():
 
     time_found = False
     for key in formats:
-        input_time = getattr(args, key)  # args.ansi, args.civl, etc.
+        input_time = getattr(args, key)  # args.ansi, args.civil, etc.
         if input_time is not None:
             time_found = True
             try:
                 ct = scanTime(input_time, formats[key])
             except InvalidRequest:
-                print 'Input could not be parsed. Check the formatting and '
-                'ensure that the input is both valid and in quotes.'
+                print ('Input could not be parsed. Check the formatting and '
+                       'ensure that the input is both valid and in quotes.')
                 sys.exit()
 
     if not time_found:
         ct = SystemTime()
 
-    timeSys = TimeSystem(TimeSystems.GPS)
+    timeSys = TimeSystem(TimeSystem.GPS)
     ct.setTimeSystem(timeSys)
 
     if args.add_offset is not None:

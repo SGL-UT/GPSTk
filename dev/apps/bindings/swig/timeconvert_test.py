@@ -235,7 +235,7 @@ class invalid_time(unittest.TestCase):
     def test(self):
         run_test(self, ['-y 1980 5 86499'],
                  expected='Input could not be parsed',
-                 pass_condition=lambda expected,actual: expected in actual)
+                 pass_condition=lambda expected, actual: expected in actual)
 
 
 if __name__ == '__main__':

@@ -3,25 +3,20 @@ from gpstk import *
 
 
 class TimeSystem_Tests(unittest.TestCase):
-    def test_constructor1(self):
+    def test_constructor_string(self):
         sys = TimeSystem('GPS')
-        self.assertEqual('GPS', sys.__str__())
+        self.assertEqual('GPS', str(sys))
         self.assertEqual('GPS', sys.getTimeSystem())
 
-    def test_constructor2(self):
-        sys = TimeSystem('I promise I am valid!')
-        self.assertEqual('Unknown', sys.__str__())
-        self.assertEqual('Unknown', sys.getTimeSystem())
-
-    def test_constructor3(self):
-        sys = TimeSystem(TimeSystems.GPS)
-        self.assertEqual('GPS', sys.__str__())
+    def test_constructor_constant(self):
+        sys = TimeSystem(TimeSystem.GPS)
+        self.assertEqual('GPS', str(sys))
         self.assertEqual('GPS', sys.getTimeSystem())
 
 
 class Time_Comparisons(unittest.TestCase):
     def test_standard_times(self):
-        timeSystem = TimeSystem('GPS')
+        timeSystem = TimeSystem(TimeSystem.GPS)
 
         t1 = UnixTime(1370983244, 659200)  # in 2013
         t1 = t1.convertToCommonTime()

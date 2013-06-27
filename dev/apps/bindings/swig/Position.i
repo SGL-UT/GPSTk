@@ -11,8 +11,9 @@
 namespace gpstk
 {
    class Position;
-   double range(const Position& A, const Position& B) throw(GeometryException);
-   
+   // renamed to rangeBetween
+   // double range(const Position& A, const Position& B) throw(GeometryException);
+
    class Position : public Triple
    {
    public:
@@ -31,7 +32,7 @@ namespace gpstk
       static const double ONE_MM_TOLERANCE;
       static const double ONE_CM_TOLERANCE;
       static const double ONE_UM_TOLERANCE;
-      
+
       static double POSITION_TOLERANCE;
 
       static double setPositionTolerance(const double tol)
@@ -39,7 +40,7 @@ namespace gpstk
 
       static double getPositionTolerance()
          { return POSITION_TOLERANCE; }
-   
+
       Position& setTolerance(const double tol)
          throw();
 
@@ -140,7 +141,7 @@ namespace gpstk
 
       const ReferenceFrame& getReferenceFrame() const
          throw();
-      
+
       double X() const
          throw();
 
@@ -171,7 +172,7 @@ namespace gpstk
          throw();
 
       CoordinateSystem getCoordinateSystem() const
-         throw() 
+         throw()
       { return system; };
 
       double getGeodeticLatitude() const
@@ -265,7 +266,7 @@ namespace gpstk
          throw(StringUtils::StringException);
 
       std::string printf(const std::string& fmt) const
-         throw(StringUtils::StringException) 
+         throw(StringUtils::StringException)
       { return printf(fmt.c_str()); }
 
       std::string asString() const
@@ -353,7 +354,7 @@ namespace gpstk
          throw();
 
       double getCurvMeridian() const
-         throw(); 
+         throw();
 
       double getCurvPrimeVertical() const
          throw();
@@ -370,59 +371,65 @@ namespace gpstk
 
 
 %extend gpstk::Position {
-	static gpstk::Triple convertSphericalToCartesian(const gpstk::Triple& tpr) throw() {
-		gpstk::Triple xyz;
-		gpstk::Position::convertSphericalToCartesian(tpr, xyz);
-		return xyz;
-	}
-	static gpstk::Triple convertCartesianToSpherical(const gpstk::Triple& xyz) throw() {
-		gpstk::Triple tpr;
-		gpstk::Position::convertCartesianToSpherical(xyz, tpr);
-		return tpr;
-	}
-	static gpstk::Triple convertCartesianToGeodetic(const Triple& xyz,
+   static gpstk::Triple convertSphericalToCartesian(const gpstk::Triple& tpr) throw() {
+      gpstk::Triple xyz;
+      gpstk::Position::convertSphericalToCartesian(tpr, xyz);
+      return xyz;
+   }
+   static gpstk::Triple convertCartesianToSpherical(const gpstk::Triple& xyz) throw() {
+      gpstk::Triple tpr;
+      gpstk::Position::convertCartesianToSpherical(xyz, tpr);
+      return tpr;
+   }
+   static gpstk::Triple convertCartesianToGeodetic( const Triple& xyz,
                                                     const double A,
                                                     const double eccSq) throw() {
-		gpstk::Triple llh;
-		gpstk::Position::convertCartesianToGeodetic(xyz, llh, A, eccSq);
-		return llh;
-	}
-	static gpstk::Triple convertGeodeticToCartesian(const Triple& llh,
+      gpstk::Triple llh;
+      gpstk::Position::convertCartesianToGeodetic(xyz, llh, A, eccSq);
+      return llh;
+   }
+   static gpstk::Triple convertGeodeticToCartesian( const Triple& llh,
                                                     const double A,
                                                     const double eccSq) throw() {
-		gpstk::Triple xyz;
-		gpstk::Position::convertGeodeticToCartesian(llh, xyz, A, eccSq);
-		return xyz;
-	}
-	static gpstk::Triple convertCartesianToGeocentric(const Triple& xyz) throw() {
-		gpstk::Triple llr;
-		gpstk::Position::convertCartesianToGeocentric(xyz, llr);
-		return llr;
-	}
-	static gpstk::Triple convertGeocentricToCartesian(const gpstk::Triple& llr) throw() {
-		gpstk::Triple xyz;
-		gpstk::Position::convertGeocentricToCartesian(llr, xyz);
-		return xyz;
-	}
-	static gpstk::Triple convertGeocentricToGeodetic(const Triple& llr,
+      gpstk::Triple xyz;
+      gpstk::Position::convertGeodeticToCartesian(llh, xyz, A, eccSq);
+      return xyz;
+   }
+   static gpstk::Triple convertCartesianToGeocentric(const Triple& xyz) throw() {
+      gpstk::Triple llr;
+      gpstk::Position::convertCartesianToGeocentric(xyz, llr);
+      return llr;
+   }
+   static gpstk::Triple convertGeocentricToCartesian(const gpstk::Triple& llr) throw() {
+      gpstk::Triple xyz;
+      gpstk::Position::convertGeocentricToCartesian(llr, xyz);
+      return xyz;
+   }
+   static gpstk::Triple convertGeocentricToGeodetic( const Triple& llr,
                                                      const double A,
                                                      const double eccSq) throw() {
-        gpstk::Triple geodeticllh;
-		gpstk::Position::convertGeocentricToGeodetic(llr, geodeticllh, A, eccSq);
-		return geodeticllh;
-	}
-	static gpstk::Triple convertGeodeticToGeocentric(const Triple& geodeticllh,
+      gpstk::Triple geodeticllh;
+      gpstk::Position::convertGeocentricToGeodetic(llr, geodeticllh, A, eccSq);
+      return geodeticllh;
+   }
+   static gpstk::Triple convertGeodeticToGeocentric( const Triple& geodeticllh,
                                                      const double A,
                                                      const double eccSq) throw() {
-		gpstk::Triple llr;
-		gpstk::Position::convertGeodeticToGeocentric(geodeticllh, llr, A, eccSq);
-		return llr;
-	}
+      gpstk::Triple llr;
+      gpstk::Position::convertGeodeticToGeocentric(geodeticllh, llr, A, eccSq);
+      return llr;
+   }
 };
+
+%inline {
+   double rangeBetween(const gpstk::Position& A, const gpstk::Position& B) throw(gpstk::GeometryException) {
+      return gpstk::range(A, B);
+   }
+}
 
 
 %pythoncode %{
 import __builtin__
 class CoordinateSystems:
-	Unknown, Geodetic, Geocentric, Cartesian, Spherical = __builtin__.range(5)
+    Unknown, Geodetic, Geocentric, Cartesian, Spherical = __builtin__.range(5)
 %}

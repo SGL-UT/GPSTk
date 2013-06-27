@@ -18,8 +18,7 @@ class Vector_test(unittest.TestCase):
         self.assertAlmostEqual(3.0, v[2])
         self.assertAlmostEqual(3.0, v[3])
         self.assertAlmostEqual(3.0, v[4])
-        v1 = vector(5, 4.0)  # 4 4 4 4 4
-        v2 = vector(5, 5.0)  # 3 3 3 3 3
+        self.assertEqual(5, len(v))
 
     def test_from_stdvector_double(self):
         tmp = std_vector_double(5)
@@ -37,17 +36,10 @@ class Vector_test(unittest.TestCase):
 
     def test_iter(self):
         v = vector(3, 2.5)
-        iterations = 0
+        i = 0
         for x in v:
-            if iterations == 0:
-                self.assertEqual(2.5, x)
-            elif iterations == 1:
-                self.assertEqual(2.5, x)
-            elif iterations == 2:
-                self.assertEqual(2.5, x)
-            else:
-                self.fail()
-            iterations += 1
+            self.assertAlmostEqual(v[i], x)
+            i += 1
 
 
 class Stats_test(unittest.TestCase):
@@ -74,7 +66,6 @@ class Stats_test(unittest.TestCase):
         v = vector(tmp)
         w = vector(3, 1.0)
         s = Stats_double(v, w)
-        # TODO: consider changing the case of the method names
         self.assertAlmostEqual(4.5, s.Minimum())
         self.assertAlmostEqual(5.166666666666667, s.Average())
         self.assertAlmostEqual(0.583333333333333, s.Variance())
@@ -97,14 +88,14 @@ class Stats_test(unittest.TestCase):
         self.assertAlmostEqual(1000000.0, s.VarianceX())
         self.assertAlmostEqual(1000.0, s.StdDevX())
 
-        # # y vals
+        # y vals
         self.assertAlmostEqual(2500.0, s.MinimumY())
         self.assertAlmostEqual(6500.0, s.MaximumY())
         self.assertAlmostEqual(4500.0, s.AverageY())
         self.assertAlmostEqual(4000000.0, s.VarianceY())
         self.assertAlmostEqual(2000.0, s.StdDevY())
 
-        # # x and y
+        # x and y
         self.assertAlmostEqual(2.0, s.Slope())
         self.assertAlmostEqual(500.0, s.Intercept())
         self.assertAlmostEqual(8.940696716308592e-08, s.SigmaSlope())

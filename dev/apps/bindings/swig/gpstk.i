@@ -66,7 +66,6 @@
     #include "../../../src/YumaHeader.hpp"
     #include "../../../src/EngAlmanac.hpp"
     #include "../../../src/OrbElemStore.hpp"
-    #include "../../../src/AlmOrbit.hpp"
     #include "../../../src/YumaStream.hpp"
     #include "../../../src/YumaData.hpp"
     #include "../../../src/GPSAlmanacStore.hpp"
@@ -184,6 +183,14 @@ typedef std::map< char, std::string> IdToValue;
 
 %pythoncode %{
 Xv.__str__ = lambda self: 'x:'+ self.x.__str__() + ', v:' + self.v.__str__()
+def xvt_str(self):
+    output = 'x:' + str(self.x)
+    output += ', v:' + str(self.v)
+    output += ', clk bias:' + str(self.clkbias)
+    output += ', clk drift:' + str(self.clkdrift)
+    output += ', relcorr:' + str(self.relcorr)
+    return output
+Xvt.__str__ = xvt_str
 %}
 
 
@@ -220,7 +227,7 @@ Xv.__str__ = lambda self: 'x:'+ self.x.__str__() + ', v:' + self.v.__str__()
 %include "../../../src/FFTextStream.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaHeader.hpp"
-%include "../../../src/EngAlmanac.hpp"
+%include "EngAlmanac.i"
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"

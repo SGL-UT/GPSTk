@@ -112,7 +112,7 @@ namespace gpstk
 
       bool empty() const { return size() == 0; }
 
-      size_t size() const {return s; }
+      // size_t size() const {return s; }
 
       size_t max_size() const { return std::numeric_limits<size_t>().max(); }
 
@@ -376,13 +376,15 @@ namespace gpstk
 
 
 %pythoncode %{
+    vector.__len__ = lambda self: self.size()
+
     def __iter__(self):
         self.index = 0
         return self
     vector.__iter__ = __iter__
 
     def next(self):
-          if self.index >= self.size():
+          if self.index >= len(self):
             raise StopIteration
           else:
             self.index += 1

@@ -14,7 +14,6 @@ namespace gpstk
    {
    public:
 
-      // left in because RinexSatId uses them, remove this in the future if possible
       enum SatelliteSystem
       {
          systemGPS = 1,
@@ -93,7 +92,7 @@ namespace gpstk
       // SatelliteSystem system;
 
    }; // class SatID
-   
+
    namespace StringUtils
    {
       inline std::string asString(const SatID& p)
@@ -107,7 +106,7 @@ namespace gpstk
    {
       p.dump(s);
       return s;
-   }   
+   }
 }
 
 #endif
@@ -118,6 +117,7 @@ namespace gpstk
       gpstk::SatID helper;
       return new gpstk::SatID(p, helper.systemGPS);
    }
+   // TODO: find a way to get rid of this
    SatID(int p, int sys) throw() {
       gpstk::SatID helper;
       if(sys == 1) return new gpstk::SatID(p, helper.systemGPS);
@@ -135,11 +135,5 @@ namespace gpstk
 
 
 %pythoncode %{
-import __builtin__
 SatID.__str__ = lambda self: asString(self)
-
-class SatSystems:   
-    (GPS, Galileo, Glonass, Geosync, LEO, Transit, 
-     Compass, Mixed, UserDefined, Unknown) = range(1, 11)
-
 %}
