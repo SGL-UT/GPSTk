@@ -56,6 +56,11 @@ namespace gpstk
 {
    using namespace std;
 
+   long OrbElemICE::ONE_HOUR = 3600;
+   long OrbElemICE::TWO_HOURS = 7200;
+   long OrbElemICE::NINTY_MINUTES = 5400; 
+
+
    OrbElemICE::OrbElemICE()
       :OrbElem(),
        URAed(0), URAned0(0), URAned1(0),
@@ -140,26 +145,30 @@ namespace gpstk
       if (!dataLoaded()) return;
      
          // If we assume this is the SECOND set of elements in a set
-         // (which is an assumption of this function - see the .hpp) then
+         // (which is an assumption of this method - see the .hpp) then
          // the "small offset in Toe" will actually push the Toe-oneHalfInterval
          // too early. For example, consider the following case.
-         //         Toe : 19:59:44  (really near 20:00:00)
+         //         Toe : 19:29:44  (really near 19:30:00)
          //  first xMit : 18:00:00  (nominal)
-         // Blindly setting beginValid top Toe - 1/2 fit interval will
+         // Blindly setting beginValid to Toe - 1/2 fit interval will
          // result in 17:59:44.  But 18:00:00 actually is the right answer
          // because the -16 second offset is an artifact.   
          //
          // Therefore, we are FIRST going to remove that offset,
-         // THEN determine beginValid.    
+         // THEN (re-)determine beginValid.    
       long sow = (long) (static_cast<GPSWeekSecond>(ctToe)).sow;
       short week = (static_cast<GPSWeekSecond>(ctToe)).week;
-      sow = sow + (3600 - (sow%3600)); 
+      long offsetFrom2Hours = sow % TWO_HOURS;
+      if (offsetFrom2Hours!=NINTY_MINUTES)
+      {
+         sow = sow - (offsetFrom2Hours-NINTY_MINUTES);
+      }
       CommonTime adjustedToe = GPSWeekSecond(week, (double) sow);
       adjustedToe.setTimeSystem(TimeSystem::GPS);
       
-         // For CNAV the nominal beginning of validity is two hours
+         // For CNAV the nominal beginning of validity is ninty minutes
          // prior to the Toe.
-      beginValid = adjustedToe - 7200; 
+      beginValid = adjustedToe - NINTY_MINUTES; 
 
       return;
    }
@@ -177,7 +186,11 @@ namespace gpstk
         << "NED accuracy indices  0, 1, 2  :  " << setfill(' ')
         << setw(4) << dec << URAned0 << ", "  
         << setw(4) << dec << URAned1 << ", " 
-        << setw(4) << dec << URAned2;
+        << setw(4) << dec << URAned2 << endl;
+      s << "Integrity Status Flag          : ";
+      if (IntegrityStatusFlag) s << "1 (Enhanced)";
+       else s << "0 (Legacy)";
+      s << endl;
     
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);

@@ -434,15 +434,16 @@ namespace gpstk
         << "           ORBIT PARAMETERS"
         << endl
         << endl
-        << "Semi-major axis:       " << setw(16) <<  A  << " m" << endl
-        << "Motion correction:     " << setw(16) <<  dn << " rad/sec"
-        << endl
+        << "Semi-major axis:       " << setw(16) <<  A     << " m       " 
+        << setw(16) << Adot  << "   m/sec" << endl
+        << "Motion correction:     " << setw(16) <<  dn    << " rad/sec "
+        << setw(16) << dndot << " rad/(sec**2)" << endl
         << "Eccentricity:          " << setw(16) << ecc << endl
         << "Arg of perigee:        " << setw(16) << w << " rad" << endl
         << "Mean anomaly at epoch: " << setw(16) << M0 << " rad" << endl
-        << "Right ascension:       " << setw(16) << OMEGA0 << " rad    "
+        << "Right ascension:       " << setw(16) << OMEGA0 << " rad     "
         << setw(16) << OMEGAdot << " rad/sec" << endl
-        << "Inclination:           " << setw(16) << i0 << " rad    "
+        << "Inclination:           " << setw(16) << i0     << " rad     "
         << setw(16) << idot << " rad/sec" << endl;
 
        s << endl
