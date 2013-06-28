@@ -6,7 +6,7 @@ Version 2.1   Tuesday, June 25, 2013
 
    General modifications
    ---------------------
-   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number
+   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number 4daf4c5
    - A number of modifications were made to Jamfiles, Makefiles, and source code 
      for clean compilation (no warnings or errors) & compatibility with the latest 
 	 Cygwin, Windows 7 VS, Solaris 10 Sparc, and Mac OX X Lion (10.7.5).
