@@ -1,6 +1,6 @@
 # $Id: Makefile.am 741 2007-09-15 16:14:43Z mvermeer $
 # please add in alphabetic order
-INCLUDES = -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../src
 lib_LTLIBRARIES = libvdraw.la
 libvdraw_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libvdraw_la_SOURCES = Adler32.cpp \

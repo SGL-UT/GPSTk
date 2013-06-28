@@ -123,7 +123,7 @@ namespace gpstk
       const size_t& index) const
       throw()
    {
-      if (index < 0 || index>=getLocationCount())
+      if (index>=getLocationCount())
       {
          return ExceptionLocation();
       }
@@ -149,7 +149,7 @@ namespace gpstk
    string Exception::getText(const size_t& index) const
       throw()
    {
-      if (index < 0 || index>=getTextCount())
+      if (index>=getTextCount())
       {
          string tmp;
          return tmp;

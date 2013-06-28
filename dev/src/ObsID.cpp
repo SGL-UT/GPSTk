@@ -296,6 +296,7 @@ namespace gpstk
             case tcCA: code = tcC; break;
             case tcI5: code = tcIE5; break;
             case tcQ5: code = tcQE5; break;
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          if (tc == 'X')
          {
@@ -311,11 +312,13 @@ namespace gpstk
          {
             case tcCA: code = tcGCA; break;
             case tcP: code = tcGP; break;
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          switch (band)
          {
             case cbL1: band = cbG1; break;
             case cbL2: band = cbG2; break;
+			default: break; //NB Determine if additional enumeration values need to be handled			
          }
       }
       else if (sys == 'S') // SBAS or Geosync
@@ -326,6 +329,7 @@ namespace gpstk
             case tcI5: code = tcSI5; break;     // 'I'
             case tcQ5: code = tcSQ5; break;     // 'Q'
             case tcC2LM: code = tcSIQ5; break;  // 'X'
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
       }
       else if (sys == 'C') // Compass
@@ -341,6 +345,7 @@ namespace gpstk
                case tcI5: code = tcCI2; break;     // 'I'
                case tcQ5: code = tcCQ2; break;     // 'Q'
                case tcC2LM: code = tcCIQ2; break;  // 'X'
+			   default: break; //NB Determine if additional enumeration values need to be handled
             }
          }
          if(band == cbE5b) switch (code)
@@ -348,6 +353,7 @@ namespace gpstk
             case tcI5: code = tcCI5; break;     // 'I'
             case tcQ5: code = tcCQ5; break;     // 'Q'
             case tcC2LM: code = tcCIQ5; break;  // 'X'
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          if(band == cbE6) {
             band = cbC6;
@@ -356,6 +362,7 @@ namespace gpstk
                case tcI5: code = tcCI6; break;     // 'I'
                case tcQ5: code = tcCQ6; break;     // 'Q'
                case tcC2LM: code = tcCIQ6; break;  // 'X'
+			   default: break; //NB Determine if additional enumeration values need to be handled
             }
          }
       } // end of checking which GNSS system this obs is for

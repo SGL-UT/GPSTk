@@ -362,8 +362,8 @@ namespace gpstk
          return 4;
       }
 
-      if (((fiti == 0) &&
-           (iodc & 0xFF) < 240 || (iodc & 0xFF) > 255 ))
+      if ((((fiti == 0) &&
+           (iodc & 0xFF) < 240) || (iodc & 0xFF) > 255 ))
       {
             /* fit interval of 4 hours */
          return 4;
@@ -380,13 +380,13 @@ namespace gpstk
                /* fit interval of 8 hours */
             return 8;
          }
-         else if(iodc >= 248 && iodc <= 255 || iodc == 496)
+         else if((iodc >= 248 && iodc <= 255) || iodc == 496)
          {
                /* fit interval of 14 hours */
             return 14;
          }
          // Revised in IS-GPS-200 Revision D for Block IIR/IIR-M/IIF
-         else if(iodc >= 497 && iodc <=503 || iodc >= 1021 && iodc <= 1023)
+         else if((iodc >= 497 && iodc <=503) || (iodc >= 1021 && iodc <= 1023))
          {
                /* fit interval of 26 hours */
             return 26;
@@ -396,7 +396,7 @@ namespace gpstk
                /* fit interval of 50 hours */
             return 50;
          }
-         else if(iodc == 511 || iodc >= 752 && iodc <= 756)
+         else if(iodc == 511 || (iodc >= 752 && iodc <= 756))
          {
                /* fit interval of 74 hours */
             return 74;
@@ -413,7 +413,7 @@ namespace gpstk
                /* fit interval of 98 hours */
             return 98;
          }
-         else if(iodc >= 764 && iodc <=767 || iodc >=1008 && iodc <=1010)
+         else if((iodc >= 764 && iodc <=767) || (iodc >=1008 && iodc <=1010))
          {
                /* fit interval of 122 hours */
             return 122;

@@ -24,6 +24,7 @@
 //
 //============================================================================
 
+#include <sstream>
 
 #include "TextStyle.hpp"
 
@@ -91,7 +92,9 @@ namespace vdraw
           set = set | STRIKE;
           break;
         default:
-          cout << "Parse Error: " + tmp; 
+          stringstream os;
+		  os << tmp;
+		  cout << "Parse Error: " + os.str(); 
       }
     }
     return set;

@@ -235,7 +235,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
+      if(!errs.empty()) {LOG(INFO) << errs;}         // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -308,8 +308,8 @@ try {
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
-      if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
-         << "(--start) is not an even GPS-seconds-of-week mark.";
+      if(::fabs(s-sow) > 1.0) {LOG(WARNING) << "Warning : decimation reference time "
+         << "(--start) is not an even GPS-seconds-of-week mark.";}
       C.decTime = static_cast<CommonTime>(
          GPSWeekSecond(static_cast<GPSWeekSecond>(C.decTime).week,0.0));
    }

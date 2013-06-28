@@ -379,7 +379,7 @@ HelmertTransform::Transform HelmertTransform::buildTransform(const HelmertTransf
 
 void HelmertTransform::dump()
 {
-   for (LookupMap::iterator out = fromMap.begin(); out != fromMap.end(); out)
+   for (LookupMap::iterator out = fromMap.begin(); out != fromMap.end(); ++out)
    {
       cout << out->first << endl;
 

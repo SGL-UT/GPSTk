@@ -1,9 +1,601 @@
-Version 2.0   Thursday, 24 May, 2012
+	#################################################
+
+
+
+Version 2.1   Tuesday, June 25, 2013
+
+   General modifications
+   ---------------------
+   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number
+   - A number of modifications were made to Jamfiles, Makefiles, and source code 
+     for clean compilation (no warnings or errors) & compatibility with the latest 
+	 Cygwin, Windows 7 VS, Solaris 10 Sparc, and Mac OX X Lion (10.7.5).
+   - Base CMake files have been added for future CMake support, still in development
+     stages.
+   - The next planned release, GPSTk v2.2, will be a minor upgrade that will introduce
+     a new fully functioning CMake cross-platform build system and deprecation of some
+     older supported platforms.	 
+   - This release includes new/modified source code comments for improved
+     readability.
+
+   
+   Library modifications
+   ---------------------
+   - Added to dev
+   
+		dev/CMakeLists.txt
+			Added first CMake files to src, lib, apps, and examples	
+		
+		dev/.gitignore
+			added .gitignore
+		   
+   - Modified in dev
+		
+		dev/Jamrules
+		    Code Changes to fix Solaris Sparc Warnings
+			Fixed Make build files, code format cleanup, TimeSystem error
+			Add ruls for vs2012 to get rid of 'regex.lib' on windows.
+		
+		dev/Makefile.am
+			Fixed Make build files, code format cleanup, TimeSystem error
+			
+		dev/config.guess
+		dev/config.sub
+		dev/configure.ac
+		dev/depcomp
+		dev/install-sh
+		dev/ltmain.sh
+		dev/missing
+			Fixed Make build files, code format cleanup, TimeSystem error
+			
+   - Added to src
+   
+		dev/src/CMakeLists.txt
+			Added first CMake files to src and lib.
+   
+   - Modified in src   
+   
+		dev/src/Makefile.am
+			Fixed Make build files, code format cleanup, TimeSystem error
+			
+		dev/src/Jamfile
+			jam install wasn't installing GNSSconstants.hpp. Now it will
+
+		dev/src/GPSOrbElemStore.cpp
+		dev/src/GPSOrbElemStore.hpp
+		dev/src/Exception.cpp
+		dev/src/Vector.hpp
+		dev/src/FICFilterOperators.hpp
+		dev/src/PRSolution.cpp
+		dev/src/CommandLine.cpp
+		dev/src/PowerSum.hpp
+		dev/src/HelmertTransform.cpp
+		dev/src/ReferenceFrame.cpp
+		dev/src/LinearClockModel.cpp
+		dev/src/GPSOrbElemStore.cpp
+		dev/src/CNAVEphemeris.cpp
+		dev/src/CommandLine.cpp
+		dev/src/EngEphemeris.cpp
+		dev/src/AntexReader.cpp
+		dev/src/CommandLine.cpp
+		dev/src/Expression.cpp
+		dev/src/ObsID.cpp
+		dev/src/Rinex3EphemerisStore.hpp
+		dev/src/Rinex3NavHeader.cpp
+		dev/src/RinexMetHeader.hpp
+		dev/src/TabularSatStore.hpp
+		dev/src/CommandLine.cpp
+		dev/src/BinexData.cpp
+		dev/src/TypeID.hpp
+		dev/src/TabularSatStore.hpp		
+			Code Changes to fix various Warnings on various supported platforms 
+
+		dev/src/TypeID.cpp
+			Add a new TypeID::transmit for POD.
+			
+		dev/src/BrcClockCorrection.hpp
+		dev/src/BrcKeplerOrbit.hpp
+		dev/src/EngEphemeris.hpp
+		dev/src/GalEphemeris.hpp
+			Commented out unused functions for Python development efforts 
+			
+		dev/src/OrbElemLNav.cpp
+		dev/src/OrbElemRinex.cpp
+		dev/src/OrbElemFIC9.cpp
+			Fix health bit format
+			Mod to round endValid UP to appropriate value when Toe offset
+				
+		dev/src/SVPCodeGen.cpp
+			Fixed end of week bug for PRNs 38-210.
+			
+		dev/src/TimeString.cpp
+			Fixed a bug where scanTime would not process a %f specifier correctly
+			
+		dev/src/GNSSconstants.hpp
+		dev/src/ObsID.cpp
+		dev/src/ObsRngDev.cpp
+		dev/src/ObsRngDev.hpp
+			Paramaterizing ObsRngDev to allow for other than L1-L2 dual frequency iono corrections
+			
+		dev/src/DebugUtils.hpp
+			Adding support for ashtech smoothing
+
+		dev/src/Rinex3NavData.cpp
+		dev/src/Rinex3NavData.hpp
+			Added constructor to allow conversions between OrbElem and Rinex3NavData objects
+			
+		dev/src/StringUtils.hpp
+			We can use 'std::regex' instead of 'gnu regex' for visual studio 2012!
+			
+		dev/src/Matrix.hpp
+		dev/src/MatrixOperators.hpp
+		dev/src/Vector.hpp
+			1)Fix the constructor Matrix(row,col,vector) to make it consist with operator'=' and all the other Matrix constructors;
+			2)Enable 'Vector || Vector' to get a left to right matrix;
+			3)Add a operator '<<' for 'Vector', and user can construct a vector as the following:
+			  Vector v; v << 1 << 2 << 3 << 4 << 5 << 6;
+			  	
+		dev/src/FICFilterOperators.hpp
+		dev/src/FileFilter.hpp
+			Add blockNum tests to Block 62 & 162 unique methods in FICFilterOperators to fix seg fault in mergeFIC.
+			
+		dev/src/MemoryUtils.hpp
+		dev/src/RinexUtilities.cpp
+			Fix some expression 'GPSTK_THROW(Exception("..."))' for it COULD NOT get the exception location properly!
+			
+		dev/src/GPSOrbElemStore.cpp
+		dev/src/GPSOrbElemStore.hpp
+		dev/src/OrbElem.hpp
+		dev/src/OrbElemICE.hpp
+		dev/src/OrbElemLNav.hpp
+		dev/src/OrbElemRinex.hpp	
+		dev/src/OrbElemICE.cpp
+		dev/src/OrbElemLNav.cpp
+		dev/src/OrbElemRinex.cpp
+		dev/src/OrbElemCNAV.cpp
+		dev/src/OrbElemCNAV2.cpp
+		dev/src/OrbElemICE.cpp
+			Bug fixes from synthetic data testing
+			Added OrbElemICE and OrbElemCNAV2 to accomandate the new CNAV2 navigation message coming soon.
+			Added OrbElemCNAV to accomodate new CNAV message coming soon. 
+			OrbElemRinex.hpp: Added loadData( Rinex3NavData ) to fix compile error.
+			
+		dev/src/AntexReader.cpp
+		dev/src/MoonPosition.cpp
+		dev/src/SunPosition.cpp
+			Fix problems for PPP examples.
+			
+		dev/src/TimeSystem.cpp
+			Add the TimeSystem string for COM(BeiDou Time,BDT)
+			
+		dev/src/ReferenceFrame.cpp
+		dev/src/ReferenceFrame.hpp
+			fixed a segmentation fault when initializing static data members.
+			
+   - Deleted from src
+   
+		none
+
+   - Added to lib
+
+		dev/lib/CMakeLists.txt
+		dev/lib/geodyn/CMakeLists.txt
+		dev/lib/geomatics/CMakeLists.txt
+		dev/lib/procframe/CMakeLists.txt
+		dev/lib/rxio/CMakeLists.txt
+		dev/lib/vdraw/CMakeLists.txt
+		dev/lib/vplot/CMakeLists.txt
+			Added first CMake files to src and lib.
+   
+   - Modified in lib
+		
+		dev/lib/geodyn/Makefile.am
+		dev/lib/geomatics/Makefile.am
+		dev/lib/procframe/Makefile.am
+		dev/lib/rxio/Makefile.am
+		dev/lib/vdraw/Makefile.am
+		dev/lib/vplot/Makefile.am  
+			Fixed Make build files, code format cleanup, TimeSystem error
+		
+		dev/lib/geomatics/SRIMatrix.hpp
+		dev/lib/procframe/GeneralConstraint.cpp
+		dev/lib/vplot/LinePlot.cpp
+		dev/lib/vplot/ScatterPlot.cpp
+		dev/lib/geomatics/AntexHeader.cpp
+		dev/lib/vdraw/TextStyle.cpp
+		dev/lib/geomatics/AntexHeader.cpp
+		dev/lib/rxio/FFIdentifier.cpp
+		dev/lib/rxio/miscenum.hpp
+		dev/lib/rxio/ATSData.hpp
+		dev/lib/rxio/AshtechALB.hpp
+		dev/lib/rxio/AshtechData.hpp
+			Code Changes to fix various Warnings on various supported platforms
+		
+		dev/lib/geodyn/IERSConventions.cpp
+			Updates Leap History Map and UTC Timesystem initializations to prevent 
+			comparison exceptions.
+			
+		dev/lib/rxio/MDPObsEpoch.cpp
+			Fixed bug in reading epochs
+			
+		dev/lib/rxio/ObsUtils.cpp
+		dev/lib/rxio/ObsUtils.hpp
+		dev/lib/rxio/RinexConverters.cpp
+		dev/lib/rxio/miscenum.hpp		
+			Adding support for ashtech smoothing
+			Now supports removing smoothing from ashtech data
+		
+		dev/lib/rxio/FFIdentifier.cpp
+			Correctly detects when a file is not SP3
+			
+		
+			
+   - Deleted from lib   
+   
+		none
+
+   Application modifications
+   -------------------------
+   - Added to apps
+   
+		dev/apps/CMakeLists.txt
+		dev/apps/DataAvailability/CMakeLists.txt
+		dev/apps/MDPtools/CMakeLists.txt
+		dev/apps/Rinextools/CMakeLists.txt
+		dev/apps/checktools/CMakeLists.txt
+		dev/apps/clocktools/CMakeLists.txt
+		dev/apps/converters/CMakeLists.txt
+		dev/apps/differential/CMakeLists.txt
+		dev/apps/difftools/CMakeLists.txt
+		dev/apps/filetools/CMakeLists.txt
+		dev/apps/geomatics/CMakeLists.txt
+		dev/apps/geomatics/JPLeph/CMakeLists.txt
+		dev/apps/geomatics/cycleslips/CMakeLists.txt
+		dev/apps/geomatics/kalman/CMakeLists.txt
+		dev/apps/geomatics/relposition/CMakeLists.txt
+		dev/apps/geomatics/robust/CMakeLists.txt
+		dev/apps/ionosphere/CMakeLists.txt
+		dev/apps/mergetools/CMakeLists.txt
+		dev/apps/multipath/CMakeLists.txt
+		dev/apps/performance/CMakeLists.txt
+		dev/apps/positioning/CMakeLists.txt
+		dev/apps/receiver/CMakeLists.txt
+		dev/apps/reszilla/CMakeLists.txt
+		dev/apps/rfw/CMakeLists.txt
+		dev/apps/swrx/CMakeLists.txt
+		dev/apps/time/CMakeLists.txt
+		dev/apps/visibility/CMakeLists.txt
+			Added the apps to the CMake build.
+			
+		dev/apps/reszilla/.gitignore
+			.gitignore added
+		
+		dev/apps/filetools/RinexElvStrip.cpp
+			Add a tool to strip RINEX obs data by elevation
+		
+   - Modified in apps
+
+		dev/apps/filetools/Jamfile
+			Add a tool to strip RINEX obs data by elevation
+			
+		dev/apps/DataAvailability/Makefile.am
+		dev/apps/MDPtools/Makefile.am
+		dev/apps/ObsArrayEvaluator/Makefile.am
+		dev/apps/Rinextools/Makefile.am
+		dev/apps/checktools/Makefile.am
+		dev/apps/clocktools/Makefile.am
+		dev/apps/converters/Makefile.am
+		dev/apps/differential/Makefile.am
+		dev/apps/difftools/Makefile.am
+		dev/apps/filetools/Makefile.am
+		dev/apps/geomatics/JPLeph/Makefile.am
+		dev/apps/geomatics/cycleslips/Makefile.am
+		dev/apps/geomatics/kalman/Makefile.am
+		dev/apps/geomatics/relposition/Makefile.am
+		dev/apps/geomatics/robust/Makefile.am
+		dev/apps/ionosphere/Makefile.am
+		dev/apps/mergetools/Makefile.am
+		dev/apps/multipath/Makefile.am
+		dev/apps/performance/Makefile.am
+		dev/apps/positioning/Makefile.am
+		dev/apps/qa/Makefile.am
+		dev/apps/receiver/Makefile.am
+		dev/apps/reszilla/Makefile.am
+		dev/apps/rfw/Makefile.am
+		dev/apps/swrx/Makefile.am
+		dev/apps/time/Makefile.am
+		dev/apps/visibility/Makefile.am
+			Fixed Make build files, code format cleanup, TimeSystem error
+
+		dev/apps/clocktools/ORDPhaseParser.cpp
+		dev/apps/clocktools/dallandev.cpp
+		dev/apps/clocktools/ffp.cpp
+		dev/apps/clocktools/mallandev.cpp
+		dev/apps/clocktools/nallandev.cpp
+		dev/apps/clocktools/oallandev.cpp
+		dev/apps/clocktools/ohadamarddev.cpp
+		dev/apps/clocktools/pff.cpp
+		dev/apps/clocktools/rmoutlier.cpp
+		dev/apps/clocktools/scale.cpp
+		dev/apps/clocktools/tallandev.cpp
+		dev/apps/geomatics/robust/rstats.cpp
+		dev/apps/positioning/rinexpvt.cpp
+		dev/apps/rfw/DeviceStream.hpp
+		dev/apps/swrx/CodeGenerator.hpp
+		dev/apps/visibility/compSatVis.cpp
+		dev/apps/visibility/compStaVis.cpp
+		dev/apps/MDPtools/mdp2fic.cpp
+		dev/apps/Rinextools/RinDump.cpp
+		dev/apps/Rinextools/RinEdit.cpp
+		dev/apps/Rinextools/RinNav.cpp
+		dev/apps/Rinextools/RinSum.cpp
+		dev/apps/geomatics/JPLeph/testSSEph.cpp
+		dev/apps/positioning/PRSolve.cpp
+		dev/apps/Rinextools/RinSum.cpp
+		dev/apps/clocktools/dallandev.cpp
+		dev/apps/clocktools/mallandev.cpp
+		dev/apps/clocktools/nallandev.cpp
+		dev/apps/clocktools/oallandev.cpp
+		dev/apps/clocktools/ohadamarddev.cpp
+		dev/apps/clocktools/tallandev.cpp
+		dev/apps/swrx/gpsSim.cpp		
+		dev/apps/swrx/IQStream.cpp
+		dev/apps/reszilla/OrdEngine.cpp
+		dev/apps/reszilla/ddGen.cpp
+			Code Changes to fix various Warnings on various supported platforms 
+				
+		dev/apps/reszilla/OrdApp.cpp
+		dev/apps/reszilla/OrdEngine.cpp
+		dev/apps/reszilla/OrdEngine.hpp
+		dev/apps/reszilla/ordGen.cpp
+		dev/apps/reszilla/ordPlot
+			ordGen now handles two frequency combos other than L1-L2 better. 
+			Fixing some obs combos
+			
+		dev/apps/Rinextools/RinDump.cpp
+			Add GPS Nav support and debiasing
+			
+		dev/apps/converters/ash2mdp.cpp
+			Adding support for ashtech smoothing
+			Now supports removing smoothing from ashtech data
+			Fixed a week rollover problem
+			
+		dev/apps/MDPtools/SummaryProc.cpp
+		dev/apps/MDPtools/SummaryProc.hpp
+		dev/apps/MDPtools/TrackProc.cpp
+		dev/apps/MDPtools/TrackProc.hpp
+			Removing a 12 channel limit
+			
+		dev/apps/reszilla/ddrecord.py
+		dev/apps/reszilla/ordPlot
+			Adding ability to parse stats records
+			
+		dev/apps/reszilla/ordStats.cpp
+			doesn't segfault when no data is provided
+			
+		dev/apps/visibility/compStaVis.cpp
+			Fixed CompStaVis debug mesage time display error
+			
+		dev/apps/difftools/DiffFrame.hpp
+		dev/apps/difftools/ficdiff.cpp
+			Added notification for missing input files
+			
+		dev/apps/geomatics/relposition/ReadRawData.cpp
+			Fixed reference to global SolutionEpoch variable in ReadRawData.
+		
+		dev/apps/geomatics/relposition/CommandInput.cpp		
+			Time system mismatch fix.
+		
+		dev/apps/geomatics/relposition/ProcessRawData.cpp
+			Fix for DDBase in ProcessRawData.cpp - CommonTime TimeSystem mismatch corrected.
+		
+		dev/apps/clocktools/ffp.cpp
+		dev/apps/clocktools/pff.cpp
+			Added usage information and examples for ffp.cpp and pff.cpp
+		
+		dev/apps/mergetools/mergeFIC.cpp
+			Add blockNum tests to Block 62 & 162 unique methods in FICFilterOperators to fix seg fault in mergeFIC.
+		
+		dev/apps/MDPtools/mdp2rinex.cpp
+		dev/apps/MDPtools/mdpEdit.cpp
+		dev/apps/MDPtools/mdpScrubber.cpp
+			Fixed a bug in filtering by PRN number
+			
+		dev/apps/visibility/compSatVis.cpp
+			fixed a time printing error in the output.
+			
+		dev/apps/converters/ash2xyz.cpp
+			fixed a bug where a cleared vector wasn't removed from the map which contains it. 
+			
+		dev/apps/filetools/ficfica.cpp
+			Added basic invalid input file error handling and output dialog to ficfica app
+			
+		dev/apps/geomatics/cycleslips/DiscFix.cpp
+			Fixed a logic bug in ignoring other satellite systems
+			
+		dev/apps/reszilla/DDEpoch.cpp
+		dev/apps/reszilla/PhaseResidual.cpp
+			Corrected bug in computing triple difference.
+
+		
+   - Deleted from apps
+   
+		dev/apps/filetools/sp32bc.cpp
+			Removed sp32bc from repository			
+   
+   Example modifications
+   -------------------------   
+   - Added to examples
+   
+		dev/examples/CMakeLists.txt
+			Added examples to the CMake build.
+
+   - Modified in examples  
+   
+		/Makefile.am
+		    Code changes to fix remaining Windows error & warnings
+	
+		dev/examples/Jamfile
+		    Examples folder Make/Jam file changes
+
+		dev/examples/example14.cpp
+			Added examples to the CMake build.
+		 
+   
+   - Deleted from examples  
+   
+		none
+
+	Testing modifications
+   -------------------------   
+   - Added to tests
+
+		dev/tests/GPSOrbElemStore/xTestRationalize.cpp
+			Adding a program that specifically tests GPSOrbElemStore::rationalize()
+   
+   - Modified in tests
+   
+		dev/tests/Makefile.am
+			 Fixed Make build files, code format cleanup, TimeSystem error
+   
+   - Deleted from tests
+   
+		none
+   
+	Reference modifications
+   -------------------------     
+
+		ref/usersguide/CalcDOPs.tex
+		ref/usersguide/CalcDOPs.tex.backup
+		ref/usersguide/ConstellationList.tex
+		ref/usersguide/ConstellationList.tex.backup
+		ref/usersguide/DOPcalc.tex
+		ref/usersguide/DOPcalc.tex.backup
+		ref/usersguide/DiscFix.tex
+		ref/usersguide/DiscFix.tex.backup
+		ref/usersguide/FICcheck.tex
+		ref/usersguide/FICcheck.tex.backup
+		ref/usersguide/IonoBias.tex
+		ref/usersguide/NavMerge.tex
+		ref/usersguide/PRSolve.tex
+		ref/usersguide/PRSolve.tex.backup
+		ref/usersguide/README.txt
+		ref/usersguide/RINcheck.tex
+		ref/usersguide/RINdiff.tex
+		ref/usersguide/ResCor.tex
+		ref/usersguide/RinDump.tex
+		ref/usersguide/RinEdit.tex
+		ref/usersguide/RinNav.tex
+		ref/usersguide/RinNav.tex.backup
+		ref/usersguide/RinSum.tex
+		ref/usersguide/RinSum.tex.backup
+		ref/usersguide/RinexDump.tex
+		ref/usersguide/RinexNav.tex
+		ref/usersguide/TECMaps.tex
+		ref/usersguide/WhereSat.tex
+		ref/usersguide/WhereSat.tex.backup
+		ref/usersguide/ashconv.tex
+		ref/usersguide/ashconv.tex.backup
+		ref/usersguide/ats2mdp.tex
+		ref/usersguide/bc2sp3.tex
+		ref/usersguide/bc2sp3.tex.backup
+		ref/usersguide/bibtexall
+		ref/usersguide/bibunits.sty
+		ref/usersguide/blankpg.tex
+		ref/usersguide/blankpg.tex.backup
+		ref/usersguide/calgps.tex
+		ref/usersguide/calgps.tex.backup
+		ref/usersguide/cmd.tex
+		ref/usersguide/colortbl.dtx
+		ref/usersguide/colortbl.ins
+		ref/usersguide/colortbl.sty
+		ref/usersguide/compSatStaVis.tex
+		ref/usersguide/compSatStaVis.tex.backup
+		ref/usersguide/convcoordtime.tex
+		ref/usersguide/convcoordtime.tex.backup
+		ref/usersguide/daa.tex
+		ref/usersguide/daa.tex.backup
+		ref/usersguide/ephdiff.tex
+		ref/usersguide/ephdiff.tex.backup
+		ref/usersguide/ephsum.tex
+		ref/usersguide/ephsum.tex.backup
+		ref/usersguide/fancyvrb.dtx
+		ref/usersguide/fancyvrb.ins
+		ref/usersguide/fancyvrb.sty
+		ref/usersguide/fic2rin.tex
+		ref/usersguide/fic2rin.tex.backup
+		ref/usersguide/ficconv.tex
+		ref/usersguide/ficconv.tex.backup
+		ref/usersguide/ficdiff.tex
+		ref/usersguide/findMoreThan12.tex
+		ref/usersguide/gpsfileforms.tex
+		ref/usersguide/gpsnutshell.tex
+		ref/usersguide/gpstk-user-reference.pdf
+		ref/usersguide/gpstk-user-reference.tex
+		ref/usersguide/gpstk-user-referenceNewRender.pdf
+		ref/usersguide/gpstk.bib
+		ref/usersguide/gpstk.bib.back
+		ref/usersguide/gpstk.bib.bkp
+		ref/usersguide/gpstklogo.jpg
+		ref/usersguide/introduction.tex
+		ref/usersguide/make.out
+		ref/usersguide/makescr
+		ref/usersguide/manual.tex
+		ref/usersguide/mdpconv.tex
+		ref/usersguide/mdptool.tex
+		ref/usersguide/mergeFIC.tex
+		ref/usersguide/mergeRin.tex
+		ref/usersguide/navdmp.tex
+		ref/usersguide/navsum.tex
+		ref/usersguide/novaRinex.tex
+		ref/usersguide/perltex
+		ref/usersguide/perltex.sty
+		ref/usersguide/perltexout.out
+		ref/usersguide/poscvt.tex
+		ref/usersguide/poscvt.tex.backup
+		ref/usersguide/recurse.sh
+		ref/usersguide/reszilla.tex
+		ref/usersguide/rinexpvt.tex
+		ref/usersguide/rtAshtech.tex
+		ref/usersguide/sec2_2.tex
+		ref/usersguide/sp32bc.tex
+		ref/usersguide/sp3version.tex
+		ref/usersguide/src/bibunits.sty
+		ref/usersguide/src/texput.lgpl
+		ref/usersguide/src/texput.log
+		ref/usersguide/svgnam.def
+		ref/usersguide/svvis.tex
+		ref/usersguide/svvis.tex.backup
+		ref/usersguide/tex.out
+		ref/usersguide/timeconvert.tex
+		ref/usersguide/toolkitportrait.pdf
+		ref/usersguide/toolkitportrait.tex
+		ref/usersguide/toolkitportrait2.tex
+		ref/usersguide/vecsol.tex
+		ref/usersguide/x11nam.def
+		ref/usersguide/xcolor.dtx
+		ref/usersguide/xcolor.ins
+		ref/usersguide/xcolor.lox
+		ref/usersguide/xcolor.pro
+		ref/usersguide/xcolor.sty
+		ref/usersguide/xcolor1.tex
+		ref/usersguide/xcolor2.tex
+		ref/usersguide/xcolor3.tex
+		ref/usersguide/xcolor4.tex
+			Updated Users Guide to version 3.0 of Rinex, added more usage 
+			examples for applications that were lacking them.
+   
+	#################################################
+
+	
+	
+   Version 2.0   Thursday, 24 May, 2012
 
    General modifications
    ---------------------
 
-   - Version 2.0 was branched from dev/ on revision 2537.
+   - Version 2.0 was branched from dev/ on revision 2537, merged back into the 
+     trunk with revision 3140.
 
    Library modifications
    ---------------------
@@ -50,7 +642,8 @@ Version 2.0   Thursday, 24 May, 2012
        Rinex3ObsBase.hpp
        Rinex3ObsData.cpp
        Rinex3ObsData.hpp
-	   The new 'Rinex3ObsData' method was modified and renamed to improve consistency 	     with the former GPSTk version, and a new method was added. 
+	   The new 'Rinex3ObsData' method was modified and renamed to improve consistency
+	   with the former GPSTk version, and a new method was added. 
 
        Rinex3ObsFilterOperators.hpp
        Rinex3ObsHeader.cpp
@@ -61,7 +654,9 @@ Version 2.0   Thursday, 24 May, 2012
        TimeSystem.cpp
        TimeSystem.hpp
        TimeSystemCorr.hpp
-	   Move TimeSystem correction out of Rinex3NavHeader and into its own class, 		   preparatory to implementing time system conversions and doing real mixed-system 		   applications.
+	   Move TimeSystem correction out of Rinex3NavHeader and into its own class,
+	   preparatory to implementing time system conversions and doing real mixed-system
+	   applications.
 
        TypeID.cpp
        TypeID.hpp
@@ -222,7 +817,8 @@ Version 2.0   Thursday, 24 May, 2012
        SimpleIURAWeight.hpp
        SimpleKalmanFilter.cpp
        SimpleKalmanFilter.hpp
-	  Removed the SuperKalmanFilter class and combined the features into 		   		  SimpleKalmanFilter.
+	  Removed the SuperKalmanFilter class and combined the features into
+	  SimpleKalmanFilter.
 
        SolidTides.hpp
        SpecialFunctions.hpp
@@ -305,13 +901,16 @@ Version 2.0   Thursday, 24 May, 2012
 	  TabularSatStore; eventually TabularEphemerisStore will be deleted. 
 	  Add classes ClockSatStore and PositionSatStore, which are 
 	  standalone functional stores, derived from TabularSatStore, 
-	  which are not associated with any file type.Added 'findEphemeris()' methods to 		  'GloEphemerisStore' in order to keep consistency with 'GPSEphemerisStore' and 	  'GalEphemerisStore' classes.
+	  which are not associated with any file type.Added 'findEphemeris()' methods to
+	  'GloEphemerisStore' in order to keep consistency with 'GPSEphemerisStore' and
+ 	  'GalEphemerisStore' classes.
 
        AlmOrbit.cpp
        ENUUtil.cpp
        EngEphemeris.cpp
        EngEphemeris.hpp
-          Removed protection on EngEphemeris variables to make it easier to convert from 		  Rinex3NavData to EngEphemeris objects.
+          Removed protection on EngEphemeris variables to make it easier to convert from
+ 		  Rinex3NavData to EngEphemeris objects.
 
        EphemerisRange.cpp
        EphemerisRange.hpp

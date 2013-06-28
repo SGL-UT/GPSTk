@@ -285,8 +285,6 @@ int main(int argc, char **argv)
             if(numWords(line) < xcol)
                { data.pop_back(); nxd++; continue; }
             stuff = word(line,xcol-1);
-            if(dobeg && xd <= beg) continue;
-            if(doend && xd >= end) continue;
             if(!(isScientificString(stuff)))
                { data.pop_back(); nxd++; continue; }
             xd = asDouble(stuff);
