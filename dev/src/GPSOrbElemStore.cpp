@@ -218,7 +218,7 @@ namespace gpstk
 // It should keep the one with the earliest transmit time.
 //------------------------------------------------------------------------------------ 
    bool GPSOrbElemStore::addOrbElem(const OrbElem& eph)
-      throw(Exception)
+      throw(InvalidParameter,Exception)
    {
       bool rc = false;
      try
@@ -254,7 +254,9 @@ namespace gpstk
         else
         {
            string str = "Unexpectedly found matching beginValid times";
-           str += " but different Toe.   PRN= " + eph.satID.id;
+           stringstream os;
+           os << eph.satID.id;
+           str += " but different Toe.   PRN= " + os.str();
            str += ", beginValid= " + printTime(eph.beginValid,ts);
            str += ", Toe(map)= " + printTime(eph.ctToe,ts);
            str += ", Toe(candidate)= "+ printTime(oe->ctToe," %6.0g");
