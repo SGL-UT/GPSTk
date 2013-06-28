@@ -113,13 +113,15 @@
 // =============================================================
 //  Section 1: C++ template containers & typedefs
 // =============================================================
+%feature("autodoc","1");
+%include "doc/doc.i"
 %include "std_string.i"
 %include "std_map.i"
 %rename(streamInput) operator>>;
 %rename(__str__) *::asString() const;
 
 // %rename(streamOutput) operator<<;
-%include "std_vector_extra.i" // renamed since std_vector.i part of core swig
+%include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
 typedef std::map< char, std::string> IdToValue;
 %template(map_int_char) std::map<int, char>;
   %template() std::pair<int, char>;
@@ -129,13 +131,13 @@ typedef std::map< char, std::string> IdToValue;
   %template() std::pair<char, int>;
 %template(map_string_int) std::map<std::string, int>;
   %template() std::pair<std::string, int>;
-%include "Exception.i"
+%include "src/Exception.i"
 
 
 // =============================================================
 //  Section 2: Time classes
 // =============================================================
-%include "TimeSystem.i"
+%include "src/TimeSystem.i"
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/TimeConstants.hpp"
 %include "../../../src/CommonTime.hpp"
@@ -146,7 +148,7 @@ typedef std::map< char, std::string> IdToValue;
 %feature("notabstract") ANSITime;
 %include "../../../src/ANSITime.hpp"
 %feature("notabstract") CivilTime;
-%include "CivilTime.i"
+%include "src/CivilTime.i"
 %include "../../../src/GPSZcount.hpp"
 %include "../../../src/GPSWeek.hpp"
 %feature("notabstract") GPSWeekSecond;
@@ -160,7 +162,7 @@ typedef std::map< char, std::string> IdToValue;
 %feature("notabstract") YDSTime;
 %include "../../../src/YDSTime.hpp"
 %include "../../../src/TimeConverters.hpp"
-%include "TimeString.i"
+%include "src/TimeString.i"
 
 
 // =============================================================
@@ -169,15 +171,15 @@ typedef std::map< char, std::string> IdToValue;
 // Utils stuff
 %include "../../../src/geometry.hpp"
 %include "../../../src/gps_constants.hpp"
-%include "SatID.i"
+%include "src/SatID.i"
 %include "../../../src/ObsIDInitializer.hpp"
-%include "ObsID.i"
+%include "src/ObsID.i"
 %include "../../../src/GNSSconstants.hpp"
-%include "Triple.i"
-%include "ReferenceFrame.i"
+%include "src/Triple.i"
+%include "src/ReferenceFrame.i"
 %include "../../../src/EllipsoidModel.hpp"
 %include "../../../src/Xvt.hpp"
-%include "Position.i"
+%include "src/Position.i"
 %include "../../../src/convhelp.hpp"
 %include "../../../src/Xv.hpp"
 
@@ -196,13 +198,13 @@ Xvt.__str__ = xvt_str
 
 // Math stuff
 %include "../../../src/SpecialFunctions.hpp"
-%include "VectorBase.i"
-%include "Vector.i"
+%include "src/VectorBase.i"
+%include "src/Vector.i"
 %include "../../../src/BaseDistribution.hpp"
 %include "../../../src/GaussianDistribution.hpp"
 %include "../../../src/Chi2Distribution.hpp"
 %include "../../../src/StudentDistribution.hpp"
-%include "Stats.i"
+%include "src/Stats.i"
 
 
 
@@ -227,7 +229,7 @@ Xvt.__str__ = xvt_str
 %include "../../../src/FFTextStream.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaHeader.hpp"
-%include "EngAlmanac.i"
+%include "src/EngAlmanac.i"
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
@@ -265,12 +267,12 @@ Xvt.__str__ = xvt_str
 
 // %include "../../../src/TabularSatStore.hpp"
 
-// %include "ClockSatStore.i"
+// %include "src/ClockSatStore.i"
 // %include "../../../src/SP3Base.hpp"
 // %include "../../../src/SP3SatID.hpp"
 // %include "../../../src/SP3Header.hpp"
 // %include "../../../src/SP3Data.hpp"
-// %include "PositionSatStore.i"
+// %include "src/PositionSatStore.i"
 // %include "../../../src/SP3EphemerisStore.hpp"
 
 // %inline %{

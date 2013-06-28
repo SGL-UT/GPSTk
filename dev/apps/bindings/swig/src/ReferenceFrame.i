@@ -44,7 +44,7 @@ namespace gpstk{
       bool operator<=(const ReferenceFrame& right) const
          throw();
    };
-   std::ostream& operator<<(std::ostream& os, const ReferenceFrame& rf);
+   // std::ostream& operator<<(std::ostream& os, const ReferenceFrame& rf);
 
 #endif   //End of ReferenceFrame Header
 }

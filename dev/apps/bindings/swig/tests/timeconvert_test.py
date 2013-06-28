@@ -1,10 +1,12 @@
 import subprocess
 import unittest
+import sys
+sys.path.append('../examples')
 import timeconvert
 
 default_condition = lambda expected,actual: expected.split() == actual.split()
 def run_test(test, commands, expected, pass_condition=default_condition):
-    actual = subprocess.check_output(['python', 'timeconvert.py'] + commands)
+    actual = subprocess.check_output(['python', '../examples/timeconvert.py'] + commands)
     fail_message = '\nExpected ouput: \n' + expected + "Actual output: " + actual
     test.assertTrue(pass_condition(expected, actual), fail_message)
 

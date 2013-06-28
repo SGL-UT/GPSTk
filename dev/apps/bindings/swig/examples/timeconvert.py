@@ -1,5 +1,6 @@
 import argparse
 import sys
+sys.path.append('../bin')
 from gpstk import *
 
 def main():
