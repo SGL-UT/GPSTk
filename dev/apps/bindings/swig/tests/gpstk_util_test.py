@@ -171,6 +171,38 @@ class ObsID_test(unittest.TestCase):
         self.assertEqual('C6 GPSsquare pseudorange', str(o1))
 
 
+class Vector_test(unittest.TestCase):
+    def test_standard_double(self):
+        v = vector(5, 3.0)  # 3 3 3 3 3
+        self.assertAlmostEqual(3.0, v[0])
+        self.assertAlmostEqual(3.0, v[1])
+        self.assertAlmostEqual(3.0, v[2])
+        self.assertAlmostEqual(3.0, v[3])
+        self.assertAlmostEqual(3.0, v[4])
+        self.assertEqual(5, len(v))
+
+    def test_from_stdvector_double(self):
+        tmp = std_vector_double(5)
+        tmp[0] = 1.23
+        tmp[1] = 2.34
+        tmp[2] = 3.45
+        tmp[3] = 4.56
+        tmp[4] = 5.67
+        v = vector(tmp)
+        self.assertAlmostEqual(1.23, v[0])
+        self.assertAlmostEqual(2.34, v[1])
+        self.assertAlmostEqual(3.45, v[2])
+        self.assertAlmostEqual(4.56, v[3])
+        self.assertAlmostEqual(5.67, v[4])
+
+    def test_iter(self):
+        v = vector(3, 2.5)
+        i = 0
+        for x in v:
+            self.assertAlmostEqual(v[i], x)
+            i += 1
+
+
 class std_template_test(unittest.TestCase):
     def test_vector(self):
         v = std_vector_int()

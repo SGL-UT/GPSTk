@@ -39,14 +39,8 @@
     #include "../../../src/convhelp.hpp"
 
     // math:
-    #include "../../../src/SpecialFunctions.hpp"
     #include "../../../src/VectorBase.hpp"
     #include "../../../src/Vector.hpp"
-    #include "../../../src/BaseDistribution.hpp"
-    #include "../../../src/GaussianDistribution.hpp"
-    #include "../../../src/Chi2Distribution.hpp"
-    #include "../../../src/StudentDistribution.hpp"
-    #include "../../../src/Stats.hpp"
 
 
     // ?
@@ -198,19 +192,13 @@ Xvt.__str__ = xvt_str
 
 
 // Math stuff
-%include "../../../src/SpecialFunctions.hpp"
 %include "src/VectorBase.i"
 %include "src/Vector.i"
-%include "../../../src/BaseDistribution.hpp"
-%include "../../../src/GaussianDistribution.hpp"
-%include "../../../src/Chi2Distribution.hpp"
-%include "../../../src/StudentDistribution.hpp"
-%include "src/Stats.i"
 
 
 
 // =============================================================
-//  Section 4: "XvtStore and friends" (The wild, wild west)
+//  Section 4: "XvtStore and friends"
 // =============================================================
 %include "../../../src/PZ90Ellipsoid.hpp"
 %include "../../../src/WGS84Ellipsoid.hpp"
@@ -230,7 +218,7 @@ Xvt.__str__ = xvt_str
 %include "../../../src/FFTextStream.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaHeader.hpp"
-%include "src/EngAlmanac.i"
+%include "../../../src/EngAlmanac.hpp"
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
