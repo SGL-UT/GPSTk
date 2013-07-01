@@ -16,8 +16,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_SWIG_FLAGS "-w362,383,384,503")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
-set_source_files_properties(gpstk.i PROPERTIES CPLUSPLUS ON) 
-swig_add_module(gpstk python gpstk.i 
+set_source_files_properties(gpstk.i PROPERTIES CPLUSPLUS ON)
+swig_add_module(gpstk python gpstk.i
 					../../../src/AlmOrbit.cpp
 					../../../src/ANSITime.cpp
 					../../../src/BaseDistribution.hpp
@@ -33,8 +33,6 @@ swig_add_module(gpstk python gpstk.i
 					../../../src/EngAlmanac.cpp
 					../../../src/EngEphemeris.cpp
 					../../../src/EngNav.cpp
-					../../../src/Exception.cpp
-					../../../src/Exception.cpp
 					../../../src/Exception.cpp
 					../../../src/FFData.cpp
 					../../../src/FFStream.cpp
@@ -52,15 +50,12 @@ swig_add_module(gpstk python gpstk.i
 					../../../src/GPSEphemerisStore.cpp
 					../../../src/gpstkplatform.h
 					../../../src/GPSWeek.cpp
-					../../../src/GPSWeek.cpp
+           			../../../src/GPSWeekZcount.cpp
 					../../../src/GPSWeekSecond.cpp
-					../../../src/GPSWeekZcount.cpp
 					../../../src/GPSZcount.cpp
-					../../../src/JulianDate.cpp
 					../../../src/JulianDate.cpp
 					../../../src/MathBase.hpp
 					../../../src/MJD.cpp
-					../../../src/ObsID.cpp
 					../../../src/ObsID.cpp
 					../../../src/ObsID.hpp
 					../../../src/ObsIDInitializer.cpp
@@ -68,7 +63,6 @@ swig_add_module(gpstk python gpstk.i
 					../../../src/Position.cpp
 					../../../src/PositionSatStore.cpp
 					../../../src/PZ90Ellipsoid.hpp
-					../../../src/ReferenceFrame.cpp
 					../../../src/ReferenceFrame.cpp
 					../../../src/Rinex3ClockBase.hpp
 					../../../src/Rinex3ClockData.cpp
@@ -102,7 +96,6 @@ swig_add_module(gpstk python gpstk.i
 					../../../src/TimeConverters.cpp
 					../../../src/TimeString.cpp
 					../../../src/TimeSystem.cpp
-					../../../src/TimeTag.cpp
 					../../../src/TimeTag.cpp
 					../../../src/TimeTag.hpp
 					../../../src/Triple.cpp

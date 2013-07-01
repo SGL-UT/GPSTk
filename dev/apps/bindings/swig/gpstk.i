@@ -173,7 +173,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/gps_constants.hpp"
 %include "src/SatID.i"
 %include "../../../src/ObsIDInitializer.hpp"
-%include "src/ObsID.i"
+%include "../../../src/ObsID.hpp"
 %include "../../../src/GNSSconstants.hpp"
 %include "src/Triple.i"
 %include "src/ReferenceFrame.i"
@@ -184,6 +184,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/Xv.hpp"
 
 %pythoncode %{
+ObsID.__str__ = lambda self: asString(self)
 Xv.__str__ = lambda self: 'x:'+ self.x.__str__() + ', v:' + self.v.__str__()
 def xvt_str(self):
     output = 'x:' + str(self.x)
