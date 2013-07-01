@@ -34,25 +34,25 @@
 *   date so the method can select between multiple options.
 *
 *   Note: Thie information is not contained anywhere in the navigation message.
-*   Therefore, it needs to come from "outside the system".  The information 
-*   contained in the class constructor will also need to updated with each 
+*   Therefore, it needs to come from "outside the system".  The information
+*   contained in the class constructor will also need to updated with each
 *   new launch and disposal.  This is a sore point, but there appears to be
-*   no easy way around it. 
+*   no easy way around it.
 *
-*   Note: The data in the module is derived from several sources and there 
-*   are some issues of interpretation.  
+*   Note: The data in the module is derived from several sources and there
+*   are some issues of interpretation.
 *    - The USNO website ftp://tycho.usno.navy.mil/pub/gps/gpsb2.txt contains
 *      a very helpful history
-*    - This class only attempts to track the relationship between PRN ID and 
+*    - This class only attempts to track the relationship between PRN ID and
 *      NAVSTAR numbers.  There's no guarantee a SV was operationally, broadcasting,
-*      or healthy.  
+*      or healthy.
 *
 *  MEMBER METHODS
 *     SVNumXRef( ); - Constructor.  Works from a fixed table that is compiled
 *                     into the code.
 *     int getNAVSTAR( const int PRNID, const gpstk::CommonTime dt ) const; -
 *                     Given a PRNID and a date, return the NAVSTAR number
-*                     related to thsat PRNID at the date provided.  May 
+*                     related to thsat PRNID at the date provided.  May
 *                     throw "NoNAVSTARNumFound" error. The date defaults to
 *                     the current date if one is not provided.
 *     int getPRNID( const int NAVSTARID, const gpstk::CommonTime dt ) const; -
@@ -61,10 +61,10 @@
 *                     May throw "No PRNNumberFound" error." The date defaults to
 *                     the current date if one is not provided.
 *
-*  The following four members parallel the preceding four and provide a 
+*  The following four members parallel the preceding four and provide a
 *  means of determining is the specified information is available prior to
-*  making a "get" call.  This is useful if you want to avoid writing 
-*  "try/catch" blocks. 
+*  making a "get" call.  This is useful if you want to avoid writing
+*  "try/catch" blocks.
 *     bool PRNIDavailable( const int NAVSTARID, const gpstk::CommonTime dt ) const;
 *     bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt ) const;
 *
@@ -93,6 +93,10 @@
 namespace gpstk
 {
 
+NEW_EXCEPTION_CLASS( NoPRNNumberFound, gpstk::Exception);
+NEW_EXCEPTION_CLASS( NoNAVSTARNumberFound, gpstk::Exception);
+
+
 class XRefNode
 {
    public:
@@ -104,7 +108,7 @@ class XRefNode
       gpstk::CommonTime getBeginTime() const;
       gpstk::CommonTime getEndTime() const;
       bool isApplicable( gpstk::CommonTime dt ) const;
-                  
+
    protected:
       int Num;
       gpstk::CommonTime begValid;
@@ -119,10 +123,8 @@ typedef std::pair<NAVNumXRefCI,NAVNumXRefCI> NAVNumXRefPair;
 class SVNumXRef
 {
    public:
-      NEW_EXCEPTION_CLASS( NoPRNNumberFound, gpstk::Exception);
-      NEW_EXCEPTION_CLASS( NoNAVSTARNumberFound, gpstk::Exception);
 
-      enum BlockType 
+      enum BlockType
       {
       I,
       II,
@@ -130,7 +132,7 @@ class SVNumXRef
       IIR,
       IIR_M,
       IIF
-      };  
+      };
       SVNumXRef( );
       ~SVNumXRef() {}
       BlockType getBlockType( const int NAVSTARID ) const;
@@ -141,7 +143,7 @@ class SVNumXRef
       bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
       bool BlockTypeAvailable( const int NAVSTARID ) const;
       bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
-      
+
    protected:
       std::multimap<int,XRefNode> NtoPMap;
       std::multimap<int,XRefNode> PtoNMap;

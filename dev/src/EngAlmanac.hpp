@@ -17,20 +17,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -51,9 +51,14 @@
 
 namespace gpstk
 {
+
+      /// Exception - requested almanac page that wasn't present.
+      /// @ingroup exceptiongroup
+   NEW_EXCEPTION_CLASS(SVNotPresentException, gpstk::InvalidRequest);
+
+
    /** @addtogroup ephemcalc */
    //@{
-
       /**
        * Almanac information for the GPS constellation.  This class
        * encapsulates the almanac navigation message (subframes 4 & 5)
@@ -64,9 +69,6 @@ namespace gpstk
    class EngAlmanac : public EngNav
    {
    public:
-         /// Exception - requested almanac page that wasn't present.
-         /// @ingroup exceptiongroup
-      NEW_EXCEPTION_CLASS(SVNotPresentException, gpstk::InvalidRequest);
 
          /// Map PRN to bits (e.g. health bits).
       typedef std::map<short, unsigned char, std::less<short> > SVBitsMap;
@@ -92,21 +94,21 @@ namespace gpstk
           * PRN.  This data is accessed by the below accesser methods
           */
       bool isData(SatID sat) const throw();
-      
+
          /** This function returns the value of the eccentricity for
           * the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getEcc(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the offset of the
           * inclination from 54 degrees in radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getIOffset(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the rate of the right
           * ascension of the ascending node in radians/second for the
           * given PRN.
@@ -114,7 +116,7 @@ namespace gpstk
           * PRN isn't present.
           */
       double getOmegadot(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the health of the given
           * PRN from the general pages in the almanac.  It return the
           * shortened 6 bit health that is in those pages.
@@ -122,7 +124,7 @@ namespace gpstk
           * PRN isn't present.
           */
       short get6bitHealth(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the health of the given
           * PRN from the PRN specific page which might not be present.
           * This is the full 8 bit health
@@ -130,7 +132,7 @@ namespace gpstk
           * PRN isn't present.
           */
       short getSVHealth(SatID sat) const throw(SVNotPresentException);
-      
+
 
          /** This function returns the four-bit A/S-flag and configuration
           * bits for the given PRN.
@@ -146,78 +148,78 @@ namespace gpstk
           * PRN isn't present.
           */
       double getAhalf(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the semi-major axis in
           * meters for the specified PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getA(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the right ascension of
           * the ascending node in radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getOmega0(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the argument of perigee
           * in radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getW(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the mean anomaly in
           * radians for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getM0(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the SV clock error in seconds for
           * the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getAf0(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the SV clock drift in
           * seconds/seconds for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getAf1(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the time of the almanac
           * (from page 51) in GPS seconds of week.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getToa() const throw();
-      
+
          /** This function returns the value of the time of the almanac
           * in GPS seconds of week for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getToa(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the transmit time for
           * this almanac data in seconds of week for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       double getXmitTime(SatID sat) const throw(SVNotPresentException);
-      
+
          /** This function returns the value of the week of the page
           * transmission for the given PRN.
           * @throw SVNotPresentException if almanac page for the given
           * PRN isn't present.
           */
       short getFullWeek(SatID sat) const throw(SVNotPresentException);
-      
-         /** 
+
+         /**
           * Get the ionospheric parameters.
           * @throw InvalidRequest if the almanac page isn't present
           */
@@ -231,7 +233,7 @@ namespace gpstk
       void getUTC(double& a0, double& a1, double& deltaTLS, long& tot,
                   int& WNt, int& WNLSF, int& DN, double& deltaTLSF) const
          throw(InvalidRequest);
-      
+
          /** This function gets the week number for the almanac stored
           * in this object.  It is replaced when an almanac is
           * converted to engineering units with the almWeek from the
@@ -255,7 +257,7 @@ namespace gpstk
           */
       AlmOrbits getAlmOrbElems() const
       { return almPRN; }
-      
+
          /** Compute satellite velocity/position at the given time
           * using this almanac.
           * @param sat SatID of satellite to get velocity/position of.
@@ -279,8 +281,8 @@ namespace gpstk
           * accessing it.
           */
       void checkSVHere(SatID sat) const throw(SVNotPresentException);
-      
-      
+
+
          /** ionosphere parameters */
          //@{
       double alpha[4];
@@ -307,10 +309,10 @@ namespace gpstk
                                       second */
       SVBitsMap health;            /**< satellite health array */
       std::string special_msg;     /**< Special message from GPS */
-      
+
       SVBitsMap SV_config;         /**< 4 bit anti-spoofing/SV config sats. */
          //@}
-   
+
       AlmOrbits almPRN;
       bool haveUTC;
 
