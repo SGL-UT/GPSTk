@@ -1,6 +1,6 @@
 import unittest
 import sys
-sys.path.append('../bin')
+# sys.path.append('../bin')
 from gpstk import *
 
 
@@ -179,7 +179,6 @@ class Vector_test(unittest.TestCase):
         self.assertAlmostEqual(3.0, v[2])
         self.assertAlmostEqual(3.0, v[3])
         self.assertAlmostEqual(3.0, v[4])
-        self.assertEqual(5, len(v))
 
     def test_from_stdvector_double(self):
         tmp = std_vector_double(5)
