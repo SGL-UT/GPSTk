@@ -76,7 +76,7 @@ namespace gpstk
 
       IODC = IODE = 0;
       Tgd = 0.0;
-     
+
       isFIC = true;
 
       fitint = 0;
@@ -89,14 +89,14 @@ namespace gpstk
 
    /**
    *  Historically, EngEphemeris allowed calling programs to add data
-   *  one subframe at a time.  This functionality does not exist in 
-   *  KeplerOrbit and BroadcastClockCorrection.  Therefore, EngEphemeris 
-   *  must handle the subframe collection overhead before calling 
-   *  BrcKeplerOrbit.loadData() and BrcClockCorrection.loadData(). 
+   *  one subframe at a time.  This functionality does not exist in
+   *  KeplerOrbit and BroadcastClockCorrection.  Therefore, EngEphemeris
+   *  must handle the subframe collection overhead before calling
+   *  BrcKeplerOrbit.loadData() and BrcClockCorrection.loadData().
    *
-   *  Note: Historically, the gpsWeek in the calling parameters to 
-   *  addSubframe is the full week number associated with the TRANSMIT 
-   *  time (not the epoch times). 
+   *  Note: Historically, the gpsWeek in the calling parameters to
+   *  addSubframe is the full week number associated with the TRANSMIT
+   *  time (not the epoch times).
    */
 
    bool EngEphemeris::addSubframe(const long subframe[10], const int gpsWeek,
@@ -114,13 +114,13 @@ namespace gpstk
          InvalidParameter exc("Invalid SF ID: "+StringUtils::asString(sfID));
          GPSTK_THROW(exc);
       }
-      
-         // Store the subframe in the appropriate location 
+
+         // Store the subframe in the appropriate location
          // and set the flag
-      int sfNdx = sfID - 1; 
+      int sfNdx = sfID - 1;
       for (int i=0;i<10;++i) subframeStore[sfNdx][i] = subframe[i];
       haveSubframe[sfNdx] = true;
-      
+
          // Determine if all subframes are available.  If so,
          // load the data. Otherwise return and try again later.
       bool result = true;  // default return OK in cases where no cracking occurs
@@ -131,8 +131,8 @@ namespace gpstk
          result = unifiedConvert( gpsWeek, PRN, track );
       }
       return(result);
-   }  
-   
+   }
+
    bool EngEphemeris::addSubframeNoParity(const long subframe[10],
                                           const int  gpsWeek,
                                           const short PRN,
@@ -203,12 +203,12 @@ namespace gpstk
    }
 
       /**
-      * Each of the addSubframe( ) methods eventually calls unifiedConvert( ) 
+      * Each of the addSubframe( ) methods eventually calls unifiedConvert( )
       * in order to crack the raw subframe data into engineering units and
-      * load the orbit and clock objects. 
+      * load the orbit and clock objects.
       */
-   bool EngEphemeris::unifiedConvert( const int gpsWeek, 
-                                      const short PRN, 
+   bool EngEphemeris::unifiedConvert( const int gpsWeek,
+                                      const short PRN,
                                       const short track)
    {
       double ficked[60];
@@ -233,7 +233,7 @@ namespace gpstk
 
       if (!subframeConvert(subframeStore[1], gpsWeek, ficked))
          return false;
-         
+
       tlm_message[1] = (subframeStore[1][0] >> 8) & 0x3fff;
       HOWtime[1]     = static_cast<long>( ficked[2] );
       ASalert[1]     = static_cast<short>( ficked[3] );
@@ -273,11 +273,11 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-      
+
       bool healthy = false;
       if (health==0) healthy = true;
       double Adot = 0.0;
-      double dnDot = 0.0; 
+      double dnDot = 0.0;
       double A = Ahalf * Ahalf;
 
       double timeDiff = Toe - HOWtime[1];
@@ -308,14 +308,14 @@ namespace gpstk
          endFitSOW -= FULLWEEK;
          endFitWk++;
       }
-      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);   
+      CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
-      orbit.loadData(satSys, obsID, PRN, beginFit, endFit, ToeCT, 
-                     accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0, 
+      orbit.loadData(satSys, obsID, PRN, beginFit, endFit, ToeCT,
+                     accFlag, healthy, Cuc, Cus, Crc, Crs, Cic, Cis, M0,
                      dn, dnDot, ecc, A, Ahalf, Adot, OMEGA0, i0, w, OMEGAdot, idot);
-         
+
       bcClock.loadData( satSys, obsID, PRNID, TocCT,
-                        accFlag, healthy, af0, af1, af2); 
+                        accFlag, healthy, af0, af1, af2);
 
 	  return true;
    }
@@ -346,7 +346,7 @@ namespace gpstk
    }
 
       /**
-      *This is for Block II/IIA 
+      *This is for Block II/IIA
       *Need update for Block IIR and IIF
       */
    short EngEphemeris :: getFitInterval() const
@@ -454,7 +454,7 @@ namespace gpstk
       sv.relcorr = orbit.svRelativity(t);
 
       sv.clkdrift = bcClock.svClockDrift(t);
-      
+
       return sv;
    }
 
@@ -561,7 +561,7 @@ namespace gpstk
                             +StringUtils::asString(subframe)+" not stored.");
          GPSTK_THROW(exc);
       }
-         // This return as a double is necessary for sets into CommonTime 
+         // This return as a double is necessary for sets into CommonTime
          // to not get confused.  Ints are Zcounts whereas doubles are seconds.
          // This should still return a double after CommonTime->CommonTime
          // conversion, for backwards compatibility. [DR]
@@ -965,11 +965,11 @@ namespace gpstk
       foo*=30;
       return foo;
    }
-   
-   EngEphemeris& EngEphemeris::loadData( const std::string satSysArg, unsigned short tlm[3], 
+
+   EngEphemeris& EngEphemeris::loadData( const std::string satSysArg, unsigned short tlm[3],
                                          const long how[3], const short asalert[3],
-                                         const short Tracker, const short prn, 
-                                         const short fullweek, const short cflags, const short acc, 
+                                         const short Tracker, const short prn,
+                                         const short fullweek, const short cflags, const short acc,
                                          const short svhealth, const short iodc, const short l2pdata,
                                          const long aodo, const double tgd, const double toc,
                                          const double Af2, const double Af1, const double Af0,
@@ -1034,19 +1034,19 @@ namespace gpstk
       CommonTime endFit = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
 
       orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                     accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn, 
+                     accFlag, health, cuc, cus, crc, crs, cic, cis, m0, Dn,
                      dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
-         
+
       bcClock.loadData( satSys, obsID, PRNID, tocCT,
                         accFlag, health, Af0, Af1, Af2);
       haveSubframe[0] = true;
       haveSubframe[1] = true;
       haveSubframe[2] = true;
       return *this;
-   } 
+   }
 
-   EngEphemeris& EngEphemeris::setSF1( unsigned tlm, double how, short asalert, 
-                                       short fullweek, short cflags, short acc, 
+   EngEphemeris& EngEphemeris::setSF1( unsigned tlm, double how, short asalert,
+                                       short fullweek, short cflags, short acc,
                                        short svhealth, short iodc, short l2pdata,
                                        double tgd, double toc, double Af2,
                                        double Af1, double Af0, short Tracker,
@@ -1060,7 +1060,7 @@ namespace gpstk
       weeknum    = fullweek;
       codeflags  = cflags;
       accFlagTmp = acc;
-      health     = svhealth;  
+      health     = svhealth;
       IODC       = iodc;
       L2Pdata    = l2pdata;
       Tgd        = tgd;
@@ -1083,7 +1083,7 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-         
+
       bcClock.loadData( satSys, obsID, PRNID, tocCT,
                         accFlagTmp, healthy, Af0, Af1, Af2);
       haveSubframe[0] = true;
@@ -1102,7 +1102,7 @@ namespace gpstk
       ASalert[1] = asalert;
       IODE       = iode;
       fitint     = fitInt;
-      
+
       if (!haveSubframe[0])
       {
          InvalidRequest exc("Need to load subframe 1 before subframe 2");
@@ -1126,14 +1126,14 @@ namespace gpstk
       double crc = 0.0;
       double cis = 0.0;
       double cic = 0.0;
-      double Omega0 = 0.0; 
+      double Omega0 = 0.0;
       double I0 = 0.0;
       double W = 0.0;
       double OmegaDot = 0.0;
       double IDot = 0.0;
       //also need locals for modernized nav quantaties not in SF2 or SF3
       double A = ahalf*ahalf;     // TEMP fix BWT
-      double dndot = 0.0;  
+      double dndot = 0.0;
       double Adot = 0.0;
 
       short fitHours = getLegacyFitInterval(IODC, fitint);
@@ -1157,7 +1157,7 @@ namespace gpstk
       CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
 
       orbit.loadData(satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                     accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn, 
+                     accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
                      dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
       haveSubframe[1] = true;
       return *this;
@@ -1190,7 +1190,7 @@ namespace gpstk
          // carrier and code types are undefined.  They could be
          // L1/L2 C/A, P, Y,.....
       ObsID obsID(ObsID::otNavMsg, ObsID::cbUndefined, ObsID::tcUndefined);
-    
+
       short accFlag = 0;
       double toe = 0.0;
       double cuc = 0.0;
@@ -1229,21 +1229,21 @@ namespace gpstk
          haveSubframe[2] = false;
          return *this;
       }
-      
+
       CommonTime toeCT = GPSWeekSecond(epochWeek, toe, TimeSystem::GPS);
 
       orbit.loadData( satSys, obsID, PRNID, beginFit, endFit, toeCT,
-                      accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn, 
+                      accFlag, healthy, cuc, cus, crc, crs, cic, cis, m0, Dn,
                       dndot, Ecc, A, ahalf, Adot, Omega0, I0, W, OmegaDot, IDot);
 
       haveSubframe[2] = true;
       return *this;
    }
-     
+
   void EngEphemeris::setFIC(const bool arg)
   {
 	isFIC = arg;
-  } 
+  }
 
    static void timeDisplay( ostream & os, const CommonTime& t )
    {
@@ -1265,7 +1265,7 @@ namespace gpstk
          case 6: os << "Sat-6"; break;
          default: break;
       }
-      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s   ") 
+      os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s   ")
          << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
 
@@ -1305,7 +1305,7 @@ namespace gpstk
     void EngEphemeris :: dumpTerse(ostream& s) const
       throw(InvalidRequest )
    {
-     
+
        // Check if the subframes have been loaded before attempting
        // to dump them.
       if (!haveSubframe[0] || !haveSubframe[1] || !haveSubframe[2])
@@ -1322,22 +1322,22 @@ namespace gpstk
       s.precision(0);
       s.fill(' ');
 
-      SVNumXRef svNumXRef; 
+      SVNumXRef svNumXRef;
       int NAVSTARNum = 0;
       try
       {
 	NAVSTARNum = svNumXRef.getNAVSTAR(PRNID, bcClock.getEpochTime());
-        
-     
+
+
         s << setw(2) << " " << NAVSTARNum << "  ";
       }
-      catch(SVNumXRef::NoNAVSTARNumberFound)
-      { 
+      catch(NoNAVSTARNumberFound)
+      {
 	s << "  XX  ";
       }
 
       s << setw(2) << PRNID << " ! ";
-      
+
       string tform = "%3j %02H:%02M:%02S";
 
       s << printTime(getTransmitTime(), tform) << " ! ";
@@ -1360,8 +1360,8 @@ namespace gpstk
    void EngEphemeris :: dump(ostream& s) const
       throw( InvalidRequest )
    {
-      
-       
+
+
        // Check if the subframes have been loaded before attempting
        // to dump them.
       if (!haveSubframe[0] || !haveSubframe[1] || !haveSubframe[2])
@@ -1447,7 +1447,7 @@ namespace gpstk
            		 s << setw(3) << IODC;
         	 else
         	    s << setw(2) << IODE;
-	
+
        		  s << dec << "      " << setfill(' ');
 
         	 if (ASalert[i] & 0x0002)    // "Alert" bit handling
@@ -1509,8 +1509,8 @@ namespace gpstk
         << "Inclination   Sine: " << setw(16) << orbit.getCis() << " rad  Cosine: "
         << setw(16) << orbit.getCic() << " rad" << endl
         << "In-track      Sine: " << setw(16) << orbit.getCus() << " rad  Cosine: "
-        << setw(16) << orbit.getCuc() << " rad" << endl;    
-      
+        << setw(16) << orbit.getCuc() << " rad" << endl;
+
       s << endl
         << "           SV STATUS"
         << endl
