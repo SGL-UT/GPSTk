@@ -1,9 +1,6 @@
-// this is for Doxygen to parse and add to the documentation
-
-
 /** @mainpage
- * This documentation describes the architecture and design of the
- * GPS ToolKit (GPSTk), produced by the Space and Geophysics Laboratory (SGL)
+ * This documentaiton describes the architecture and design of the Python version
+ * of the GPS ToolKit (GPSTk), produced by the Space and Geophysics Laboratory (SGL)
  * of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
  *
  * \section intro Introduction
@@ -22,7 +19,37 @@
  * must be aware that the GPSTk is primarily a C++ library and some things
  * may require unusual semantics. It is recommended that you avoid using
  * some of these unusual classes, such as std_vector_double (std::vector<double>)
- * as much as a possible. A much better replacement would be a numpy array. *
+ * as much as a possible. A much better replacement would be a numpy array.
+ *
+ *
+ * \section note Note to C++ GPSTk users
+ * There are significant changes. These bindings do not encourage writing C++ in
+ * Python. Enabling the use of standard Python idioms is a goal of the bindings.
+ * For example, while we could have wrapped the gpstk::Vector iterators (defined
+ * by several typedefs in Vector.hpp), we decided to use the standard python
+ * iteration interface by adding __iter__ and __next__ methods, which allows
+ * iteration with 'for x in v:', where v is a a vector.
+ *
+ * Additionally, since python doesn't allowed for as much operator redefining
+ * different naming conventions had to be used in various places. It is wise
+ * to refer to documentation or use the builtin help method often. Documentation
+ * from the C++ source is built into the module's docstrings.
+ *
+ *
+ * \section scope Scope
+ * The GPSTk C++ library is the product of a large number of people over a
+ * sparse time period; as a result, the focus of the library has been somewhat
+ * lost. There are many non-GPS related utilities implemented that have been
+ * implemented more efficiently, robustly, and accurately by others.
+ * These bindings attempt to expose as little as needed to the programmer.
+ *
+ * Prime examples of things NOT wrapped include (most of which are easily replace by scipy&numpy):
+ * - SpecialFunctions (e.g. the gamma function)
+ * - Stats, GaussianDistribution, etc.
+ * - Command Line utilities (python's built-in argparse does the job better)
+ * - String utilities
+ * - Vector graphics utilities
+ *
  *
  *
  * \section content Library Content
@@ -30,14 +57,9 @@
  * other. These include
  * - Exceptions for use throughout the library
  * - Binary utilities
- * - STL "helpers"
- * - String utilities
- * - Command line options
  * - Date and time conversions
  * - Formatted file I/O
  * - File utilities, including file filters and filter hunter
- * - Vector and Matrix algorithms
- * - Mathematical algorithms
  * - Geodetic coordinates, conversions, etc
  * - Complete RINEX implementation (including Glonass and other data),
  *    with extensions that allow user-defined observation types

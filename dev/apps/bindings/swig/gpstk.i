@@ -103,7 +103,6 @@
     using namespace gpstk;
 %}
 
-
 // =============================================================
 //  Section 1: C++ template containers & typedefs
 // =============================================================
@@ -115,6 +114,7 @@
 %rename(__str__) *::asString() const;
 
 // %rename(streamOutput) operator<<;
+%include "src/typemaps.i"
 %include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
 typedef std::map< char, std::string> IdToValue;
 %template(map_int_char) std::map<int, char>;
@@ -134,6 +134,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "src/TimeSystem.i"
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/TimeConstants.hpp"
+%ignore gpstk::CommonTime::get;
 %include "../../../src/CommonTime.hpp"
 %feature("notabstract") UnixTime;
 %include "../../../src/UnixTime.hpp"
@@ -218,7 +219,9 @@ Xvt.__str__ = xvt_str
 %include "../../../src/FFTextStream.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaHeader.hpp"
+%ignore gpstk::EngAlmanac::getUTC;
 %include "../../../src/EngAlmanac.hpp"
+
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
@@ -233,36 +236,38 @@ Xvt.__str__ = xvt_str
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/GPS_URA.hpp"
 %include "../../../src/BrcClockCorrection.hpp"
+%rename (__str__) gpstk::BrcKeplerOrbit::dump;
 %include "../../../src/BrcKeplerOrbit.hpp"
+
 %include "../../../src/EngEphemeris.hpp"
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
 
-// %include "../../../src/RinexClockBase.hpp"
-// %include "../../../src/RinexObsBase.hpp"
-// %include "../../../src/RinexObsHeader.hpp"
-// %include "../../../src/RinexObsID.hpp"
-// %include "../../../src/RinexObsStream.hpp"
-// %include "../../../src/RinexClockHeader.hpp"
-// %include "../../../src/RinexClockData.hpp"
+%include "../../../src/RinexClockBase.hpp"
+%include "../../../src/RinexObsBase.hpp"
+%include "../../../src/RinexObsHeader.hpp"
+%include "../../../src/RinexObsID.hpp"
+%include "../../../src/RinexObsStream.hpp"
+%include "../../../src/RinexClockHeader.hpp"
+%include "../../../src/RinexClockData.hpp"
 
-// %include "../../../src/Rinex3ClockBase.hpp"
-// %include "../../../src/Rinex3ObsBase.hpp"
-// %include "../../../src/Rinex3ObsHeader.hpp"
-// %include "../../../src/Rinex3ObsStream.hpp"
+%include "../../../src/Rinex3ClockBase.hpp"
+%include "../../../src/Rinex3ObsBase.hpp"
+%include "../../../src/Rinex3ObsHeader.hpp"
+%include "../../../src/Rinex3ObsStream.hpp"
 
-// %include "../../../src/Rinex3ClockHeader.hpp"
-// %include "../../../src/Rinex3ClockData.hpp"
+%include "../../../src/Rinex3ClockHeader.hpp"
+%include "../../../src/Rinex3ClockData.hpp"
 
-// %include "../../../src/TabularSatStore.hpp"
+%include "../../../src/TabularSatStore.hpp"
 
-// %include "src/ClockSatStore.i"
-// %include "../../../src/SP3Base.hpp"
-// %include "../../../src/SP3SatID.hpp"
-// %include "../../../src/SP3Header.hpp"
-// %include "../../../src/SP3Data.hpp"
-// %include "src/PositionSatStore.i"
-// %include "../../../src/SP3EphemerisStore.hpp"
+%include "src/ClockSatStore.i"
+%include "../../../src/SP3Base.hpp"
+%include "../../../src/SP3SatID.hpp"
+%include "../../../src/SP3Header.hpp"
+%include "../../../src/SP3Data.hpp"
+%include "src/PositionSatStore.i"
+%include "../../../src/SP3EphemerisStore.hpp"
 
 // %inline %{
 //  gpstk::Rinex3ObsStream makeRinex3ObsStream(std::string file, std::string mode) {

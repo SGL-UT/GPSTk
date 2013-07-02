@@ -94,7 +94,6 @@ swig_add_module(gpstk python gpstk.i
                     ../../../src/TimeTag.hpp
                     ../../../src/Triple.cpp
                     ../../../src/UnixTime.cpp
-                    ../../../src/UnixTime.cpp
                     ../../../src/Vector.hpp
                     ../../../src/VectorBase.hpp
                     ../../../src/WGS84Ellipsoid.hpp
