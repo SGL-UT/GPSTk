@@ -94,6 +94,7 @@ namespace gpstk
             case ccL1: return "L1";
             case ccL2: return "L2";
             case ccL5: return "L5";
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          return "BadCarrierCode";
       }
@@ -115,6 +116,7 @@ namespace gpstk
             case rcI5:       return "I5";
             case rcQ5:       return "Q5";
             case rcCMCL:     return "CMCL";
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          return "BadRangeCode";
       }
@@ -131,6 +133,7 @@ namespace gpstk
             case ncICD_700_M:  return "ICD-GPS-700 M-code";
             case ncICD_705_L5: return "ICD-GPS-705 L5 nav";
             case ncICD_200_4:  return "ICD-GPS-200 Data ID No. 4";
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          return "BadNavCode";
       }
@@ -146,6 +149,7 @@ namespace gpstk
          {
             case efsNotLocked: return "NotLocked";
             case efsLocked:    return "Locked";
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          return "BadEFS";
       }

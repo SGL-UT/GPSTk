@@ -123,7 +123,11 @@ namespace gpstk
       short  URAned1;		   /**< NED accuracy change index */
       short  URAned2;		   /**< NED accuracy change rate index */
       bool   IntegrityStatusFlag;  /**< Integrity Status Flag */
-      
+
+      static long ONE_HOUR;
+      static long TWO_HOURS;
+      static long NINTY_MINUTES; 
+            
    }; // end class OrbElemICE
 
    std::ostream& operator<<(std::ostream& s, 

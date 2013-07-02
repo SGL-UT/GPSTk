@@ -360,7 +360,7 @@ namespace gpstk
       for(i=0; i<n-1; i++) Inv(n-1,i)=0;
    
          // now move to rows i = n-2 to 0
-      for(i=n-2; i>=0; i--) {
+      for(i=n-2;; i--) {
          if(UT(i,i) == T(0))
             throw SingularMatrixException("Singular matrix");
    

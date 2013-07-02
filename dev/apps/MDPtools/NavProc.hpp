@@ -33,6 +33,7 @@
 #include "Histogram.hpp"
 
 #include "MDPProcessors.hpp"
+#include "CNAVMessageAsm.hpp"
 
 
 //-----------------------------------------------------------------------------
@@ -94,5 +95,8 @@ public:
 
    // total number of subframes received in this bin
    std::map<RangeCarrierPair, gpstk::Histogram> sfCount;
+
+   // CNAV message assembly area
+   std::map<NavIndex, CNAVMessageAsm> CNAVMsgStore;
 };
 #endif

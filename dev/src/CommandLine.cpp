@@ -219,6 +219,8 @@ try {
                      str += sats[j].toString() + (j==sats.size()-1 ? "" : ",");
             }
             break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
+			
       }  // end switch(type)
 
       if(!str.empty()) {
@@ -305,8 +307,8 @@ try {
       LOG(DEBUG) << "Test deprec option " << it->first << " -> " << it->second;
       bool found(false);
       for(i=0; i<options.size(); i++) {
-         if(it->second == "--" + options[i].longOpt ||
-            it->second == "-" + options[i].shortOpt) { found=true; break; }
+         if(it->second == string("--") + options[i].longOpt ||
+            it->second == string("-") + options[i].shortOpt) { found=true; break; }
       }
       if(!found) {
          isValid = false;
@@ -317,7 +319,7 @@ try {
    //LOG(DEBUG) << " deprec_opts ok";
 
    msg = oss.str();
-   if(!msg.empty()) LOG(DEBUG) << "ValidateCommandLine finds " << msg;
+   if(!msg.empty()) { LOG(DEBUG) << "ValidateCommandLine finds " << msg; }
 
    return isValid;
 
@@ -399,6 +401,7 @@ try {
                   }
             }
             break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
 
       // build the syntax line
@@ -509,6 +512,7 @@ try {
                ((vector<RinexSatID> *)(undoc_options[i].p_output))->push_back(sat);
             }
             break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
       LOG(DEBUG) << "CommandLine::PreProcess: process arg " << sarg
          << " of undocumented option " << undoc_options[i].longOpt;
@@ -867,6 +871,7 @@ try {
                ((vector<RinexSatID> *)(options[i].p_output))->push_back(sat);
             }
             break;
+		 default: break; //NB Determine if additional enumeration values need to be handled
       }
 
    }  // end loop over options

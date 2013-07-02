@@ -428,9 +428,9 @@ namespace gpstk
          /** This function returns the value of the ephemeris key that
           * is used to sort the ephemerides when they are stored in
           * the bcetable. */
-// TODO: removed since there is no definition
-      // double getEphkey() const
-      //    throw( gpstk::InvalidRequest );
+	  //NB Determine if this function is needed, as it is never used
+	  //double getEphkey() const //NB Determine if this function is needed, as it is never used
+      //   throw( gpstk::InvalidRequest );
 
          /** This function returnst the value of the Time of Transmit.
           * Basically just the earliest of the HOWs. */

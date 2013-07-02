@@ -53,7 +53,7 @@ namespace gpstk
    public:
       PowerSum() {clear();};
 
-      const static int order = 4;
+      const static int order = 5;
 
       /// Reset all sums
       void clear() throw();

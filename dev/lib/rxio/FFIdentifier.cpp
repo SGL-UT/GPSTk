@@ -288,17 +288,18 @@ namespace gpstk
 
       switch (type)
       {
-         case FFIdentifier::tRinexObs : 
+		case FFIdentifier::tRinexObs : 
 	    desc="RINEX obs"; 
 	    break;
 
-         case FFIdentifier::tMDP :      
+		case FFIdentifier::tMDP :      
 	    desc="Measurement Data Protocol";  
 	    break;
 
          case FFIdentifier::tSMODF :
-	   desc="Smoothed measurement";
-	   break;
+		desc="Smoothed measurement";
+		break;
+		default: break; //NB Determine if additional enumeration values need to be handled
       }
       return desc;
    }

@@ -624,6 +624,7 @@ namespace gpstk
             case ObsID::otSSI:      ignore = true; break;
             case ObsID::otLLI:      ignore = true; break;
             case ObsID::otTrackLen: ignore = true; break;
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
 
          switch (i->first.band)
@@ -634,6 +635,7 @@ namespace gpstk
             case ObsID::cbE6:   band = "6"; break;
             case ObsID::cbE5b:  band = "7"; break;
             case ObsID::cbE5ab: band = "8"; break;
+			default: break; //NB Determine if additional enumeration values need to be handled	
          }
 
          switch (i->first.code)
@@ -655,6 +657,7 @@ namespace gpstk
             case ObsID::tcC:    attribute = "C"; break;
             case ObsID::tcBC:   attribute = "X"; break;
             case ObsID::tcABC:  attribute = "Z"; break;
+			default: break; //NB Determine if additional enumeration values need to be handled
          }
          if (ignore)
             continue;

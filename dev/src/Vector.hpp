@@ -136,7 +136,7 @@ namespace gpstk
       template <class E>
       Vector(const ConstVectorBase<T, E>& vec,
              size_t top,
-             size_t num) : v(size_t(0)),s(0)
+             size_t num) : v(NULL),s(0)
          {
                // sanity checks...
             if ( top >= vec.size() || 

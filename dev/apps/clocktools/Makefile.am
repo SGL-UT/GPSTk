@@ -1,5 +1,5 @@
 # $Id: Makefile.am 1211 2008-04-22 06:10:13Z ckuethe $
-INCLUDES = -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../src
 LDADD = ../../src/libgpstk.la
 
 bin_PROGRAMS = dallandev ffp mallandev nallandev oallandev ohadamarddev ORDPhaseParser pff rmoutlier scale tallandev TIAPhaseParser trunc

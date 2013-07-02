@@ -157,6 +157,7 @@ namespace gpstk
           return stringSensorPos;
         case validEoH:
           return stringEoH;
+		default: break; //NB Determine if additional enumeration values need to be handled  
       }
 
       return "*UNKNOWN/INVALID BITS*";

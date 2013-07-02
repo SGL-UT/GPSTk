@@ -17,7 +17,7 @@ GPSLinkLibraries mdptool mdp2rinex mdpEdit mdp2fic mdpScrubber : rxio gpstk ;
 
 BonkForte ;
 
-GPSMain mdptool : mdptool.cpp ;
+GPSMain mdptool : mdptool.cpp CNAVMessageAsm.cpp ;
 
 GPSMain mdp2rinex : mdp2rinex.cpp ;
 

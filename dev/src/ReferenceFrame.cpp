@@ -64,8 +64,8 @@ namespace gpstk
    
    void ReferenceFrame::setReferenceFrame(const std::string& name)
    {
-      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
-      for(iter; iter != names.end(); ++iter)
+      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter;
+      for(iter = names.begin(); iter != names.end(); ++iter)
       {
          if(iter->second == name)
          {
@@ -95,8 +95,8 @@ namespace gpstk
    
    ReferenceFrame& ReferenceFrame::createReferenceFrame(std::string& name)
    {
-      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter = names.begin();
-      for(iter; iter != names.end(); ++iter)
+      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter;
+      for(iter= names.begin(); iter != names.end(); ++iter)
       {
          if(iter->second == name)
          {

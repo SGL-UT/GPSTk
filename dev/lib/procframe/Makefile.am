@@ -1,7 +1,7 @@
 #pragma ident "$Id$"
 
 # Please add in alphabetic order
-INCLUDES = -I$(srcdir)/../../src/
+AM_CPPFLAGS = -I$(srcdir)/../../src/
 lib_LTLIBRARIES = libprocframe.la
 libprocframe_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libprocframe_la_SOURCES = BasicModel.cpp \

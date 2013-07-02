@@ -1,5 +1,5 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio
+AM_CPPFLAGS = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio
 LDADD = ../../src/libgpstk.la ../../lib/rxio/librxio.la
 
 bin_PROGRAMS = svvis wheresat findMoreThan12 compStaVis compSatVis DOPcalc CalcDOPs

@@ -1,5 +1,5 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio \
+AM_CPPFLAGS = -I$(srcdir)/../../src -I$(srcdir)/../../lib/rxio \
 	-I$(srcdir)/../../lib/geomatics
 LDADD = ./librlib.la ../../lib/rxio/librxio.la ../../src/libgpstk.la
 

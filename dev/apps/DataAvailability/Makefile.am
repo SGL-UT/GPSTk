@@ -1,5 +1,5 @@
 # $Id$
-INCLUDES = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../lib/rxio -I$(srcdir)/../../src
 LDADD = ../../lib/rxio/librxio.la ../../src/libgpstk.la
 
 bin_PROGRAMS = daa

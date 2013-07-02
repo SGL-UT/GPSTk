@@ -92,7 +92,7 @@ namespace gpstk
       AntexStream& strm = dynamic_cast<AntexStream&>(ffs);
       string line;
 
-      if(valid & versionValid|systemValid) {
+      if((valid & versionValid)|systemValid) {
          line  = rightJustify(asString(version,1), 8);
          line += string(12,' ');
          line += system;
@@ -140,7 +140,9 @@ namespace gpstk
          if(system != ' ' && system != 'G' &&
             system != 'R' && system != 'E' && system != 'M')
          {
-            FFStreamError e("Satellite system is invalid: " + system);
+            stringstream os;
+			os >> system;
+			FFStreamError e("Satellite system is invalid: " + os.str());
             GPSTK_THROW(e);
          }
          valid |= versionValid;
@@ -149,7 +151,9 @@ namespace gpstk
       else if(label == pcvTypeString) {
          pcvType = line[0];
          if(pcvType != 'A' && pcvType != 'R') {
-            FFStreamError e("PCV type is invalid: " + pcvType);
+		    stringstream os;
+			os >> pcvType;
+            FFStreamError e("PCV type is invalid: " + os.str());
             GPSTK_THROW(e);
          }
          refAntType = line.substr(20,20);

@@ -54,6 +54,7 @@ namespace gpstk
       // and dump interval should be alligned
       virtual CodeIndex getSyncIndex() const = 0;
 
+	  virtual ~CodeGenerator(){};
       virtual void reset() {setIndex(0);}
 
       const ObsID::TrackingCode code;
