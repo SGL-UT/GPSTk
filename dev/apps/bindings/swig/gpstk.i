@@ -42,7 +42,6 @@
     #include "../../../src/VectorBase.hpp"
     #include "../../../src/Vector.hpp"
 
-
     // ?
     #include "../../../src/XvtStore.hpp"
     #include "../../../src/PZ90Ellipsoid.hpp"
@@ -112,6 +111,7 @@
 %include "std_map.i"
 %rename(streamInput) operator>>;
 %rename(__str__) *::asString() const;
+%rename(__str__) gpstk::*::dump;
 
 // %rename(streamOutput) operator<<;
 %include "src/typemaps.i"
@@ -191,8 +191,6 @@ def xvt_str(self):
 Xvt.__str__ = xvt_str
 %}
 
-
-// Math stuff
 %include "src/VectorBase.i"
 %include "src/Vector.i"
 
@@ -236,9 +234,7 @@ Xvt.__str__ = xvt_str
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/GPS_URA.hpp"
 %include "../../../src/BrcClockCorrection.hpp"
-%rename (__str__) gpstk::BrcKeplerOrbit::dump;
 %include "../../../src/BrcKeplerOrbit.hpp"
-
 %include "../../../src/EngEphemeris.hpp"
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
@@ -255,12 +251,10 @@ Xvt.__str__ = xvt_str
 %include "../../../src/Rinex3ObsBase.hpp"
 %include "../../../src/Rinex3ObsHeader.hpp"
 %include "../../../src/Rinex3ObsStream.hpp"
-
 %include "../../../src/Rinex3ClockHeader.hpp"
 %include "../../../src/Rinex3ClockData.hpp"
 
 %include "../../../src/TabularSatStore.hpp"
-
 %include "src/ClockSatStore.i"
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
@@ -268,10 +262,3 @@ Xvt.__str__ = xvt_str
 %include "../../../src/SP3Data.hpp"
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
-
-// %inline %{
-//  gpstk::Rinex3ObsStream makeRinex3ObsStream(std::string file, std::string mode) {
-//      Rinex3ObsStream r(); (//"bahr1620.04o.new", std::ios::out|std::ios::trunc);
-//      return r;
-//  }
-// %}
