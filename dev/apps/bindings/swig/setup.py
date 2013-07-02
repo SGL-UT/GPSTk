@@ -88,11 +88,11 @@ core_lib =  ['gpstk.i',
             '../../../src/YDSTime.cpp',
             '../../../src/YumaAlmanacStore.cpp',
             '../../../src/YumaData.cpp',
-            '../../../src/YumaHeader.hpp',]
+            '../../../src/YumaHeader.hpp']
 
 def is_header(f):
     return ('.hpp' in f) or ('.h' in f)
-files_to_compile = filter(lambda x: not is_header(x), core_lib)
+files_to_compile = filter(lambda f: not is_header(f), core_lib)
 
 cpp_flags = ['-std=c++11']
 swig_flags = ['-c++', '-I../include', '-w362,383,384,503']
@@ -108,8 +108,5 @@ setup(name='GPSTk',
                              include_dirs=['../../../src/'],
                              extra_compile_args=cpp_flags,
                              swig_opts=swig_flags,
-                             language='c++'
-                            )
-                  ],
-      py_modules=['gpstk'],
-     )
+                             language='c++')],
+      py_modules=['gpstk'])

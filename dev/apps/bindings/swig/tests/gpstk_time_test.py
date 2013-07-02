@@ -28,12 +28,12 @@ class Time_Comparisons(unittest.TestCase):
         t2 = t2.convertToCommonTime()
         t2.setTimeSystem(timeSystem)
 
-        self.assertEqual(t1 < t2, False)
-        self.assertEqual(t1 <= t2, False)
-        self.assertEqual(t1 > t2, True)
-        self.assertEqual(t1 >= t2, True)
-        self.assertEqual(t1 == t2, False)
-        self.assertEqual(t1 != t2, True)
+        self.assertEqual(False, t1 < t2)
+        self.assertEqual(False, t1 <= t2)
+        self.assertEqual(True, t1 > t2)
+        self.assertEqual(True, t1 >= t2)
+        self.assertEqual(False, t1 == t2)
+        self.assertEqual(True, t1 != t2)
 
     def test_equal_common_times(self):
         timeSystem = TimeSystem('GPS')
@@ -41,12 +41,12 @@ class Time_Comparisons(unittest.TestCase):
         t1.addDays(3)
         t2 = CommonTime(timeSystem)
         t2.addSeconds(60*60*24*3)
-        self.assertEqual(t1 < t2, False)
-        self.assertEqual(t1 <= t2, True)
-        self.assertEqual(t1 > t2, False)
-        self.assertEqual(t1 >= t2, True)
-        self.assertEqual(t1 == t2, True)
-        self.assertEqual(t1 != t2, False)
+        self.assertEqual(False, t1 < t2)
+        self.assertEqual(True, t1 <= t2,)
+        self.assertEqual(False, t1 > t2)
+        self.assertEqual(True, t1 >= t2)
+        self.assertEqual(True, t1 == t2)
+        self.assertEqual(False, t1 != t2)
 
 
 if __name__ == '__main__':
