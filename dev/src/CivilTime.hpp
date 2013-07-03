@@ -211,7 +211,7 @@ namespace gpstk
       //
       /**
        * Stream output for CivilTime objects.  Typically used for debugging.
-       * @param s stream to append formatted YDSTime to.
+       * @param s stream to append formatted CivilTime to.
        * @param cit CivilTime to append to stream \c s.
        * @return reference to \c s.
        */

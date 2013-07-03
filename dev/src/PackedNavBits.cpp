@@ -74,6 +74,40 @@ namespace gpstk
       transmitTime = transmitTimeArg;
    }
 
+      // Copy constructor
+   PackedNavBits::PackedNavBits(const PackedNavBits& right)
+   {
+      satSys = right.satSys; 
+      obsID = right.obsID;
+      transmitTime = right.transmitTime;
+      bits_used = right.bits_used;
+      bits.resize(bits_used);
+      for (int i=0;i<bits_used;i++)
+      {
+         bits[i] = right.bits[i];
+      }
+   }
+   
+      // Copy assignment
+   PackedNavBits& PackedNavBits::operator=(const PackedNavBits& right)
+   {
+      satSys = right.satSys; 
+      obsID = right.obsID;
+      transmitTime = right.transmitTime;
+      bits_used = right.bits_used;
+      bits.resize(bits_used);
+      for (int i=0;i<bits_used;i++)
+      {
+         bits[i] = right.bits[i];
+      }
+   }
+
+
+   PackedNavBits* PackedNavBits::clone() const
+   {
+      return new PackedNavBits (*this); 
+   }
+
    void PackedNavBits::setSatID(const SatID& satSysArg)
    {
       satSys = satSysArg;
@@ -90,6 +124,12 @@ namespace gpstk
    {
       transmitTime = TransmitTimeArg;
       return;
+   }
+   
+   void PackedNavBits::clearBits()
+   {
+      bits.clear();
+      bits_used = 0;
    }
 
    ObsID PackedNavBits::getobsID() const
@@ -396,7 +436,7 @@ namespace gpstk
   
       s << "              Week(10bt)     SOW      UTD     SOD"
         << "  MM/DD/YYYY   HH:MM:SS\n";
-      s << "Clock Epoch:  ";
+      s << "  Xmit Time:  ";
 
       s << printTime( transmitTime, "      %4F  %6.0g      %3j   %5.0s  %02m/%02d/%04Y   %02H:%02M:%02S");
       s << endl;     
@@ -430,9 +470,12 @@ namespace gpstk
 
       /*
       */
-   void PackedNavBits::outputPackedBits(std::ostream& s) const
+   void PackedNavBits::outputPackedBits(std::ostream& s, short numPerLine) const
    {
       ios::fmtflags oldFlags = s.flags();
+
+      s.setf(ios::uppercase); 
+      int rollover = numPerLine + 1;
 
       int numBitInWord = 0;
       int word_count   = 0;
@@ -446,18 +489,49 @@ namespace gpstk
          if (numBitInWord >= 32)
          {
             s << "  0x" << setw(8) << setfill('0') << hex << word;
+            word = 0;
             numBitInWord = 0;
             word_count++;
-            //Print four words per line 
-            if (word_count %5 == 0) s << endl;        
+            //Print "numPerLine" words per line 
+            if (word_count % rollover == 0) s << endl;        
          }
       }
          // Need to check if there is a partial word in the buffer
+      word <<= 32 - numBitInWord;
       if (numBitInWord>0)
       {
          s << "  0x" << setw(8) << setfill('0') << hex << word;
       }
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
+   }
+
+   bool PackedNavBits::matchBits(const PackedNavBits& right, 
+                                 short startBit, short endBit) const
+   {
+         // If the two objects don't have the same number of bits,
+         // don't even try to compare them. 
+      if (bits.size()!=right.bits.size()) return false; 
+
+         // If not the same satellite, return false. 
+      if (satSys!=right.satSys) return false;
+
+         // If not the same observation types (carrier, code) return false.
+      if (obsID!=right.obsID) return false;
+
+         // Check for nonsense arguments
+      if (endBit==-1 ||
+          endBit>=bits.size()) endBit = bits.size()-1;
+      if (startBit<0) startBit=0;
+      if (startBit>=bits.size()) startBit = bits.size()-1;
+
+      for (int i=startBit;i<=endBit;i++)
+      {
+         if (bits[i]!=right.bits[i])
+         {
+            return false;
+         }
+      }
+      return true;
    }
       
    void PackedNavBits::rawBitInput(const std::string inString )

@@ -189,6 +189,7 @@ namespace gpstk
                         << "/" << tcit->second.refMon
                         << "/" << tcit->second.refDay;
                   break;
+				  default: break; //NB Determine if additional enumeration values need to be handled
             }
             os << std::endl;
          }

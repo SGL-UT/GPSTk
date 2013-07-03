@@ -522,7 +522,7 @@ void compSatVis::generateHeader( gpstk::CommonTime currT )
    fprintf(logfp,"compSatVis output file.  Generated at %s\n",
            printTime(sysTime,"%02H:%02M on %02m/%02d/%02y").c_str() );
    fprintf(logfp,"Program arguments:\n");
-   fprintf(logfp,"  Navigation file         : ",nFileNameOpt.getValue().front().c_str());
+   fprintf(logfp,"  Navigation file         : ");
    vector<std::string> values = nFileNameOpt.getValue();
    for (int i=0; i<nFileNameOpt.getCount(); ++i) 
       fprintf(logfp,"%s  ",values[i].c_str());

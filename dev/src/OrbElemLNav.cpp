@@ -386,7 +386,8 @@ namespace gpstk
         << "           SV STATUS"
         << endl
         << endl
-        << "Health bits         :      0x" << setfill('0')  << setw(2) << health;
+        << "Health bits         :      0x" << setfill('0') << hex << setw(2) 
+        << health << dec << ", " <<health;
       s << endl
         << "Fit interval flag   :         " << setw(1) << fitint;
       s << endl   

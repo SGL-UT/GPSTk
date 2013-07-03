@@ -35,6 +35,7 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
 
 #include <stdio.h>
 #include <string.h>
@@ -87,7 +88,6 @@ int main(int argv, char **argc)
 	else
 	{
 		cout << "Not Enough Points to Calculate Tau0" << endl;
-		Tau0;
 	}
 
         //Vector to store the transformed data

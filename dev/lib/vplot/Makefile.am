@@ -1,6 +1,6 @@
 # $Id: Makefile.am 741 2007-09-15 16:14:43Z mvermeer $
 # please add in alphabetic order
-INCLUDES = -I$(srcdir)/../../src -I$(srcdir)/../vdraw
+AM_CPPFLAGS = -I$(srcdir)/../../src -I$(srcdir)/../vdraw
 lib_LTLIBRARIES = libvplot.la
 libvplot_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 libvplot_la_SOURCES = Axis.cpp \

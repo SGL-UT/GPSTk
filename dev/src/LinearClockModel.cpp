@@ -55,8 +55,8 @@ namespace gpstk
 
    void LinearClockModel::reset() throw()
    {
-      startTime == gpstk::CommonTime::END_OF_TIME;
-      endTime == gpstk::CommonTime::BEGINNING_OF_TIME;
+      startTime = gpstk::CommonTime::END_OF_TIME;
+      endTime = gpstk::CommonTime::BEGINNING_OF_TIME;
       clockObs.clear();
       prnStatus.clear();
       clockModel.Reset();

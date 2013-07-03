@@ -116,7 +116,8 @@ namespace gpstk
       short getURAoc(const short& ndx) const throw(gpstk::InvalidRequest);
 
          /** Returns SV health status. */
-      bool isHealthy() const throw(gpstk::InvalidRequest);
+      //NB Determine if this function is needed, as it is never used
+	  //bool isHealthy() const throw(gpstk::InvalidRequest);
 
          /** 
           * This function return the GPS week number for the

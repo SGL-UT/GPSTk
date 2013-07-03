@@ -61,14 +61,14 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
     // Yes, if we skipped an epoch
     if (!initialize)
     {
-	if (initialize = ( fabs(t - lastEpoch[sat] - datarate) > teps ))
+	if ((initialize = ( fabs(t - lastEpoch[sat] - datarate) > teps )))
            thisState = SKIPPEDEPOCH;
     }
 
     // Yes, if the filter is too old
     if (!initialize)
     {
-        if (initialize = ( fabs( t - firstEpoch[sat]) > maxAge))
+        if ((initialize = ( fabs( t - firstEpoch[sat]) > maxAge)))
            thisState = AGE;
     }
 

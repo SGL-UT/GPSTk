@@ -645,13 +645,13 @@ namespace gpstk
             absValue -= 14LL;
             if (littleEndian)
             {
-               us = ( (unsigned short)signBit <<  3) | 0xfff1
-                  & (0x0001 | (unsigned short)absValue << 4);
+               us = ( (unsigned short)signBit <<  3) | (0xfff1
+                  & (0x0001 | (unsigned short)absValue << 4));
             }
             else
             {
-               us = ((unsigned short)signBit << 15) | 0x1fff
-                  & (0x1000 | (unsigned short)absValue);
+               us = ((unsigned short)signBit << 15) | (0x1fff
+                  & (0x1000 | (unsigned short)absValue));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -664,13 +664,13 @@ namespace gpstk
             absValue -= 4109LL;   
             if (littleEndian)
             {
-               ul = ((unsigned long)signBit << 3) | 0x00fffff2
-                  & (0x00000002 | (unsigned long)absValue << 4);
+               ul = ((unsigned long)signBit << 3) | (0x00fffff2
+                  & (0x00000002 | (unsigned long)absValue << 4));
             }
             else
             {
-               ul = ((unsigned long)signBit << 31) | 0x2fffff00
-                  & (0x20000000 | (unsigned long)absValue << 8);
+               ul = ((unsigned long)signBit << 31) | (0x2fffff00
+                  & (0x20000000 | (unsigned long)absValue << 8));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -683,13 +683,13 @@ namespace gpstk
             absValue -= 1052684LL;
             if (littleEndian)
             {
-               ul = ((unsigned long)signBit << 3) | 0xfffffff3
-                  & (0x00000003 | (unsigned long)absValue << 4);
+               ul = ((unsigned long)signBit << 3) | (0xfffffff3
+                  & (0x00000003 | (unsigned long)absValue << 4));
             }
             else
             {
-               ul = ((unsigned long)signBit << 31) | 0x3fffffff
-                  & (0x30000000 | (unsigned long)absValue);
+               ul = ((unsigned long)signBit << 31) | (0x3fffffff
+                  & (0x30000000 | (unsigned long)absValue));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -702,13 +702,13 @@ namespace gpstk
             absValue -= 269488139LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | 0x000000fffffffff4ULL
-                  & (0x0000000000000004ULL | (unsigned long long)absValue << 4);
+               ull = ((unsigned long long)signBit << 3) | (0x000000fffffffff4ULL
+                  & (0x0000000000000004ULL | (unsigned long long)absValue << 4));
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | 0x4fffffffff000000ULL
-                  & (0x4000000000000000ULL | (unsigned long long)absValue << 24);
+               ull = ((unsigned long long)signBit << 63) | (0x4fffffffff000000ULL
+                  & (0x4000000000000000ULL | (unsigned long long)absValue << 24));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -721,13 +721,13 @@ namespace gpstk
             absValue -= 68988964874LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | 0x0000fffffffffff5ULL
-                  & (0x0000000000000005ULL| (unsigned long long)absValue << 4);
+               ull = ((unsigned long long)signBit << 3) | (0x0000fffffffffff5ULL
+                  & (0x0000000000000005ULL| (unsigned long long)absValue << 4));
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | 0x5fffffffffff0000ULL
-                  & (0x5000000000000000ULL | (unsigned long long)absValue << 16);
+               ull = ((unsigned long long)signBit << 63) | (0x5fffffffffff0000ULL
+                  & (0x5000000000000000ULL | (unsigned long long)absValue << 16));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -740,13 +740,13 @@ namespace gpstk
             absValue -= 17661175009289LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | 0x00fffffffffffff6ULL
-                  & (0x0000000000000006ULL | (unsigned long long)absValue << 4);
+               ull = ((unsigned long long)signBit << 3) | (0x00fffffffffffff6ULL
+                  & (0x0000000000000006ULL | (unsigned long long)absValue << 4));
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | 0x6fffffffffffff00ULL
-                  & (0x6000000000000000ULL | (unsigned long long)absValue << 8);
+               ull = ((unsigned long long)signBit << 63) | (0x6fffffffffffff00ULL
+                  & (0x6000000000000000ULL | (unsigned long long)absValue << 8));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -759,13 +759,13 @@ namespace gpstk
             absValue -= 4521260802379784LL;
             if (littleEndian)
             {
-               ull = ((unsigned long long)signBit << 3) | 0xfffffffffffffff7ULL
-                  & (0x0000000000000007ULL | (unsigned long long)absValue << 4);
+               ull = ((unsigned long long)signBit << 3) | (0xfffffffffffffff7ULL
+                  & (0x0000000000000007ULL | (unsigned long long)absValue << 4));
             }
             else
             {
-               ull = ((unsigned long long)signBit << 63) | 0x7fffffffffffffffULL
-                  & (0x7000000000000000ULL | (unsigned long long)absValue);
+               ull = ((unsigned long long)signBit << 63) | (0x7fffffffffffffffULL
+                  & (0x7000000000000000ULL | (unsigned long long)absValue));
             }
             if (littleEndian != nativeLittleEndian)
             {
@@ -1669,13 +1669,13 @@ namespace gpstk
    void
    BinexData::reverseBuffer(std::string& buffer, size_t offset, size_t n)
    {
-      if ( (offset < 0) || (offset > buffer.size() ) )
+      if ( offset > buffer.size() )
       {
          FFStreamError err("Invalid offset reversing BINEX data buffer");
          GPSTK_THROW(err);
       }
       size_t back = (n == std::string::npos) ? buffer.size() : offset + n;
-      if ( (back < 0) || (back > buffer.size() ) )
+      if ( back > buffer.size() )
       {
          FFStreamError err("Invalid size reversing BINEX data buffer");
          GPSTK_THROW(err);

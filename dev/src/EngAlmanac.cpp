@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -74,21 +74,21 @@ namespace gpstk
       {
          alpha[n] = beta[n] = 0.0;
       }
-      
+
       A0 = A1 = dt_ls = dt_lsf = 0.0;
-      
+
       t_ot = t_oa = 0;
-      
+
       wn_t = wn_lsf = 0;
-      
+
       alm_wk = 0;
-      
+
       dn = 0;
 
       haveUTC = false;
    }
 
-   bool EngAlmanac::addSubframe(const long subframe[10], 
+   bool EngAlmanac::addSubframe(const long subframe[10],
                                 const int gpsWeek)
       throw(InvalidParameter)
    {
@@ -146,7 +146,7 @@ namespace gpstk
             alm_wk = static_cast<int>(ficked[7]);
             break;
 
-         case 6: 
+         case 6:
          case 7:
                /* ignore page becase no data for our structure */
             return true;
@@ -185,7 +185,7 @@ namespace gpstk
                special_msg += static_cast<char>( ficked[7 + i] );
             break;
 
-         default: 
+         default:
                // never reached, see if statement prior to this switch
             break;
       }
@@ -193,38 +193,38 @@ namespace gpstk
    }
 
    double EngAlmanac::getEcc(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the ecc for the given PRN
       return (*i).second.ecc;
    }
-   
+
    double EngAlmanac::getIOffset(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the iOffset for the given PRN
       return (*i).second.i_offset;
    }
 
    double EngAlmanac::getOmegadot(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
-      
+
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of OMEGAdot for the given PRN
       return (*i).second.OMEGAdot;
    }
 
    short EngAlmanac::get6bitHealth(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       SVBitsMap::const_iterator i = health.find(sat.id);
       if (i == health.end())
@@ -233,22 +233,22 @@ namespace gpstk
                                      StringUtils::asString(sat.id));
          GPSTK_THROW(svnpe);
       }
-      
+
       return i->second;
    }
 
    short EngAlmanac::getSVHealth(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of SV_health for the given PRN
       return (*i).second.SV_health;
    }
 
    short EngAlmanac::getSVConfig(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       SVBitsMap::const_iterator i = SV_config.find(sat.id);
       if (i == SV_config.end())
@@ -257,116 +257,116 @@ namespace gpstk
                                      StringUtils::asString(sat.id));
          GPSTK_THROW(svnpe);
       }
-      
+
       return i->second;
    }
 
    double EngAlmanac::getAhalf(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of Ahalf for the given PRN
       return (*i).second.Ahalf;
    }
 
    double EngAlmanac::getA(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of A for the given PRN
       return (*i).second.Ahalf * (*i).second.Ahalf;
    }
 
    double EngAlmanac::getOmega0(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
-      
+
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of OMEGA0 for the given PRN
       return (*i).second.OMEGA0;
    }
 
    double EngAlmanac::getW(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of w for the given PRN
       return (*i).second.w;
    }
 
    double EngAlmanac::getM0(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of M0 for the given PRN
       return (*i).second.M0;
    }
 
    double EngAlmanac::getAf0(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the af0 for the given PRN
       return (*i).second.AF0;
    }
-   
-   
+
+
    double EngAlmanac::getAf1(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of af1 for the given PRN
       return (*i).second.AF1;
    }
-   
-   
+
+
    double EngAlmanac::getToa() const throw()
    {
       return static_cast<double>( t_oa );
    }
-   
+
    double EngAlmanac::getToa(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the Toa for the given PRN
       return static_cast<double>( (*i).second.Toa );
    }
-   
-   
+
+
    double EngAlmanac::getXmitTime(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the xmit_time for the given PRN
       return static_cast<double>( (*i).second.xmit_time );
    }
-   
-   
+
+
    short EngAlmanac::getFullWeek(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
       return (*i).second.getFullWeek();
    }
 
@@ -375,7 +375,7 @@ namespace gpstk
    {
       if (!haveUTC)
       {
-         InvalidRequest 
+         InvalidRequest
             exc("UTC offset (subframe 4, page 18) is not present.");
          GPSTK_THROW(exc);
       }
@@ -385,7 +385,7 @@ namespace gpstk
          b[n] = beta[n];
       }
    }
-      
+
    void EngAlmanac::getUTC(double& a0, double& a1, double& deltaTLS,
                            long& tot, int& WNt, int& WNLSF,
                            int& DN, double& deltaTLSF) const
@@ -393,7 +393,7 @@ namespace gpstk
    {
       if (!haveUTC)
       {
-         InvalidRequest 
+         InvalidRequest
             exc("UTC offset (subframe 4, page 18) is not present.");
          GPSTK_THROW(exc);
       }
@@ -411,23 +411,23 @@ namespace gpstk
    {
       return alm_wk;
    }
-   
+
    AlmOrbit EngAlmanac::getAlmOrbElem(SatID sat) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the orbit elm. for the given PRN
       return (*i).second;
    }
 
    Xvt EngAlmanac::svXvt(SatID sat, const CommonTime& t) const
-      throw(EngAlmanac::SVNotPresentException)
+      throw(SVNotPresentException)
    {
       AlmOrbits::const_iterator i = almPRN.find(sat);
       CHECK_SV_HERE(i, sat);
-      
+
          // return value of the orbit elm. for the given PRN
       return (*i).second.svXvt(t);
    }
@@ -455,19 +455,19 @@ namespace gpstk
    bool EngAlmanac::check(ostream& s) const
    {
       bool good = false;
-      
+
       if (!haveUTC)
          s << "UTC offset (subframe 4, page 18) is not present." << endl;
 
       double p51Toa=getToa();
       for (int prn=1; prn<=32; prn++)
       {
-         try 
+         try
          {
             double svToa = getToa(gpstk::SatID(prn, SatID::systemGPS));
             if (svToa != p51Toa)
             {
-               s << "Toa mis-match on prn " << prn 
+               s << "Toa mis-match on prn " << prn
                  << "  page 51 Toa=" << p51Toa
                  << ", SV Toa=" << svToa << endl;
                good = false;
@@ -485,7 +485,7 @@ namespace gpstk
    void EngAlmanac::dump(ostream& s, bool checkFlag) const
    {
       ios::fmtflags oldFlags = s.flags();
-   
+
       s.fill(' ');
 
       s << "****************************************************************"
@@ -495,14 +495,14 @@ namespace gpstk
 
       s << endl << "           Iono Parameters" << endl << endl;
       s << "Alpha:    " << scientific << setprecision(6);
-      for (int i=0; i<4; i++) 
+      for (int i=0; i<4; i++)
          s << setw(13) << alpha[i] << "  ";
       s << " various" << endl;
       s << " Beta:    " << fixed << setprecision(1);
-      for (int i=0; i<4; i++) 
+      for (int i=0; i<4; i++)
          s << setw(13) << beta[i] << "  ";
       s << " various" << endl;
-         
+
       s << endl << "           UTC Paramters" << endl << endl;
       s << scientific << setprecision(8)
         << "A0:       " << setw(15) << A0      << " sec" << endl
@@ -536,7 +536,7 @@ namespace gpstk
          if (prn >= 1 && prn <= 32)
             bits[prn] = int2bin(i->second, 6);
       }
-      
+
       for (SVBitsMap::const_iterator i = SV_config.begin(); i != SV_config.end(); i++)
       {
          int prn = i->first;
@@ -566,5 +566,5 @@ namespace gpstk
       alm.dump(s);
       return s;
    }
-   
+
 } // namespace

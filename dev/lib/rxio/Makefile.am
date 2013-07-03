@@ -1,6 +1,6 @@
 # $Id: Makefile.am 1331 2008-07-30 04:51:40Z ckuethe $
 # please add new entries in alphabetic order
-INCLUDES = -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../src
 lib_LTLIBRARIES = librxio.la
 librxio_la_LDFLAGS = -version-number @GPSTK_SO_VERSION@
 librxio_la_SOURCES = AshtechALB.cpp \

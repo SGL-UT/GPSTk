@@ -1,5 +1,5 @@
 # $Id:$
-INCLUDES = -I$(srcdir)/../../src
+AM_CPPFLAGS = -I$(srcdir)/../../src
 LDADD = ./libsimlib.la ../../src/libgpstk.la
 
 lib_LTLIBRARIES = libsimlib.la

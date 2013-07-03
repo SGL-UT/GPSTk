@@ -113,7 +113,8 @@ namespace gpstk
          return ttt.printError(fmt);
       }
    }
-   
+ 
+
       /// Fill the TimeTag object \a btime with time information found in
       /// string \a str formatted according to string \a fmt.
    void scanTime( TimeTag& btime,
