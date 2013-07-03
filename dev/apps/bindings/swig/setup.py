@@ -94,7 +94,7 @@ def is_header(f):
     return ('.hpp' in f) or ('.h' in f)
 files_to_compile = filter(lambda f: not is_header(f), core_lib)
 
-cpp_flags = ['-std=c++11']
+cpp_flags = ['-std=c++11', '-w']
 swig_flags = ['-c++', '-I../include', '-w362,383,384,503']
 
 setup(name='GPSTk',
@@ -109,4 +109,4 @@ setup(name='GPSTk',
                              extra_compile_args=cpp_flags,
                              swig_opts=swig_flags,
                              language='c++')],
-      py_modules=['gpstk'])
+      py_modules=['gpstk', 'timeconvert'])

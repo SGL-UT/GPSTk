@@ -2,7 +2,6 @@ from cStringIO import StringIO
 import subprocess
 import sys
 import unittest
-sys.path.append('../examples')
 import timeconvert
 
 

@@ -1,6 +1,5 @@
 import unittest
 import sys
-# sys.path.append('../bin')
 from gpstk import *
 
 
