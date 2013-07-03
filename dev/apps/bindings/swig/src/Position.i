@@ -55,11 +55,11 @@ namespace gpstk
                ReferenceFrame frame = ReferenceFrame::Unknown)
          throw(GeometryException);
 
-      // Position(const double ABC[3],
-      //          CoordinateSystem s = Cartesian,
-      //          EllipsoidModel *ell = NULL,
-      //          ReferenceFrame frame = ReferenceFrame::Unknown)
-      //    throw(GeometryException);
+      Position(const double ABC[3],
+               CoordinateSystem s = Cartesian,
+               EllipsoidModel *ell = NULL,
+               ReferenceFrame frame = ReferenceFrame::Unknown)
+         throw(GeometryException);
 
       Position(const Triple& ABC,
                CoordinateSystem s = Cartesian,
@@ -428,8 +428,134 @@ namespace gpstk
 }
 
 
-%pythoncode %{
-import __builtin__
-class CoordinateSystems:
-    Unknown, Geodetic, Geocentric, Cartesian, Spherical = __builtin__.range(5)
-%}
+// TODO: figure out how to get these to show up!
+
+
+%feature("docstring")  rangeBetween "throw()
+
+Computes the range (in meters) between two Positions.
+
+Parameters:
+-----------
+
+A:  a Position
+
+B:  another Position
+
+
+Exceptions:
+-----------
+GeometryException:  if ellipsoid values differ or if transformTo(Cartesian) fails"
+
+
+
+%feature("docstring")  gpstk::Position::convertGeodeticToGeocentric "throw ()
+
+Fundamental routine to convert geodetic to geocentric.
+
+Parameters:
+-----------
+
+geodeticllh: Triple consisting of (geodetic latitude (deg N),
+                                   longitude (deg E),
+                                   height above ellipsoid (meters))
+
+A:  Earth semi-major axis
+
+eccSq:  square of Earth eccentricity";
+
+
+%feature("docstring")  gpstk::Position::convertSphericalToCartesian "throw ()
+Fundamental conversion from spherical to cartesian coordinates.
+
+This is the workhorse for the addition/subtraction operators.
+
+Parameters:
+-----------
+
+trp: triple consisting of (theta, phi (degrees), radius)";
+
+
+%feature("docstring")  gpstk::Position::convertCartesianToSpherical "throw ()
+Fundamental routine to convert cartesian to spherical coordinates.
+Note that The zero vector is converted to (90,0,0).
+
+Parameters:
+-----------
+
+xyz:  Triple consisting of (X,Y,Z)";
+
+
+%feature("docstring")  gpstk::Position::convertCartesianToGeodetic "throw ()
+Fundamental routine to convert ECEF (cartesian) to geodetic coordinates.
+
+Note thatThe zero vector is converted to (90,0,-R(earth)).
+
+Parameters:
+-----------
+
+xyz:  Triple of (X,Y,Z) in meters
+
+A:  Earth semi-major axis
+
+eccSq: square of Earth eccentricity";
+
+
+%feature("docstring")  gpstk::Position::convertGeodeticToCartesian "throw ()
+Fundamental routine to convert geodetic to ECEF (cartesian) coordinates.
+
+Parameters:
+-----------
+
+llh:  geodetic lat(deg N), lon(deg E), height above ellipsoid (meters)
+
+A:  Earth semi-major axis
+
+eccSq: square of Earth eccentricity";
+
+
+%feature("docstring")  gpstk::Position::convertCartesianToGeocentric "throw ()
+Fundamental routine to convert cartesian (ECEF) to geocentric.
+
+Parameters:
+-----------
+
+xyz:  triple consisting of (X,Y,Z)";
+
+
+%feature("docstring")  gpstk::Position::convertGeocentricToCartesian "throw ()
+Fundamental routine to convert geocentric to cartesian (ECEF).
+
+Parameters:
+-----------
+
+llr:  Triple consisting of (geocentric lat(deg N), lon(deg E), radius)";
+
+
+%feature("docstring")  gpstk::Position::convertGeocentricToGeodetic "throw ()
+Fundamental routine to convert geocentric to geodetic.
+
+Parameters:
+-----------
+
+llr: Triple consisting of (geocentric lat(deg N), lon(deg E), radius(meters))
+
+A:  Earth semi-major axis
+
+eccSq:  square of Earth eccentricity";
+
+
+%feature("docstring")  gpstk::Position::convertGeodeticToGeocentric "throw ()
+
+Fundamental routine to convert geodetic to geocentric.
+
+Parameters:
+-----------
+
+geodeticllh: Triple consisting of (geodetic latitude (deg N),
+                                   longitude (deg E),
+                                   height above ellipsoid (meters))
+
+A:  Earth semi-major axis
+
+eccSq:  square of Earth eccentricity";
