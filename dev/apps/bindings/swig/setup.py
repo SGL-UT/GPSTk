@@ -1,7 +1,9 @@
 import sys
+import doc
+import os
 from distutils.core import setup, Extension
 
-# duplicate of cmakelists.txt files
+
 core_lib =  ['gpstk.i',
             '../../../src/AlmOrbit.cpp',
             '../../../src/ANSITime.cpp',
@@ -90,12 +92,20 @@ core_lib =  ['gpstk.i',
             '../../../src/YumaData.cpp',
             '../../../src/YumaHeader.hpp']
 
+
 def is_header(f):
     return ('.hpp' in f) or ('.h' in f)
 files_to_compile = filter(lambda f: not is_header(f), core_lib)
 
 cpp_flags = ['-std=c++11', '-w']
 swig_flags = ['-c++', '-I../include', '-w362,383,384,503']
+
+
+if not os.path.exists('doc/doc.i'):
+      os.makedirs('doc')
+      file = open('doc/doc.i', 'w+')
+doc.generate_docs()
+
 
 setup(name='GPSTk',
       version='2.1',
