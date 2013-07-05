@@ -71,7 +71,7 @@ swig_flags = ['-c++', '-I../include', '-w362,383,384,503']
 if not os.path.exists('doc/doc.i'):
       os.makedirs('doc')
       file = open('doc/doc.i', 'w+')
-# doc.generate_docs()
+doc.generate_docs()
 
 
 setup(name='GPSTk',
