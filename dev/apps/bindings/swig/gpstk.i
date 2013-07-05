@@ -39,6 +39,7 @@
     #include "../../../src/convhelp.hpp"
     #include "../../../src/VectorBase.hpp"
     #include "../../../src/Vector.hpp"
+    #include "../../../src/AstronomicalFunctions.hpp"
 
     // ?
     #include "../../../src/XvtStore.hpp"
@@ -206,6 +207,7 @@ Xvt.__str__ = xvt_str
 
 %include "src/VectorBase.i"
 %include "src/Vector.i"
+%include "../../../src/AstronomicalFunctions.hpp"
 
 
 

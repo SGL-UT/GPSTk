@@ -290,5 +290,17 @@ class Xvt_test(unittest.TestCase):
         self.assertEqual(expected, str(data))
 
 
+class AstronomicalFunctions_test(unittest.TestCase):
+    def test_functions(self):
+        c = CommonTime()
+        c.addSeconds(12345678)
+        self.assertAlmostEqual(10.934294925420545, UTC2SID(c))
+
+    def test_constants(self):
+        self.assertAlmostEqual(1.49597870e11, AU_CONST)
+        self.assertAlmostEqual(0.0174532925199432957692369, D2R)
+        self.assertAlmostEqual(9.80665,  EarthGrav)
+
+
 if __name__ == '__main__':
     unittest.main()
