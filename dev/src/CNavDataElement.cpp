@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2013, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -51,7 +51,7 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
-   
+
    CNavDataElement::CNavDataElement()
       :dataLoadedFlag(false),
        ctEpoch(CommonTime::BEGINNING_OF_TIME),
@@ -61,7 +61,7 @@ namespace gpstk
       ctXmit.setTimeSystem(TimeSystem::GPS);
       dataLoadedFlag = false;
    }
- 
+
    bool CNavDataElement::dataLoaded() const
    {
       return(dataLoadedFlag);
@@ -99,12 +99,12 @@ namespace gpstk
          << ":" << setw(2) << min
          << ":" << setw(2) << sec
          << setfill(' ');
-   } 
-   
+   }
+
 
    void CNavDataElement::timeDisplay( ostream & os, const CommonTime& t )
    {
-      os.setf(ios::dec, ios::basefield); 
+      os.setf(ios::dec, ios::basefield);
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       GPSWeekSecond dummyTime;
       dummyTime = GPSWeekSecond(t);
@@ -141,9 +141,9 @@ namespace gpstk
         << "************" << endl
         << "Broadcast Data (Engineering Units) - " << getNameLong();
       s << endl;
-      
-      SVNumXRef svNumXRef; 
-      int NAVSTARNum = 0; 
+
+      SVNumXRef svNumXRef;
+      int NAVSTARNum = 0;
 
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
@@ -153,8 +153,8 @@ namespace gpstk
          NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctXmit );
          s << NAVSTARNum << "  ";
       }
-      catch(SVNumXRef::NoNAVSTARNumberFound)
-      { 
+      catch(NoNAVSTARNumberFound)
+      {
          s << "XX";
       }
       s << endl
@@ -166,24 +166,24 @@ namespace gpstk
       s.setf(ios::uppercase);
       s.precision(0);
       s.fill(' ');
- 
+
       s << endl;
       s << "           TIMES OF INTEREST"
         << endl << endl;
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
-        << "   MM/DD/YYYY   HH:MM:SS\n"; 
-      s << "Transmit Time:";        
+        << "   MM/DD/YYYY   HH:MM:SS\n";
+      s << "Transmit Time:";
       timeDisplay(s, ctXmit);
       s << endl;
       s << "Epoch Time:   ";
       timeDisplay(s, ctEpoch);
       s << endl;
-   } 
+   }
 
    void CNavDataElement::dumpBody(ostream& s) const
       throw( InvalidRequest )
    {}
-   
+
    void CNavDataElement::dumpFooter(ostream& s) const
       throw( InvalidRequest )
    {}

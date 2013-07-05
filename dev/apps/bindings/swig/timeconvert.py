@@ -1,6 +1,5 @@
 import argparse
 import sys
-sys.path.append('../bin')
 from gpstk import *
 
 def main(input_args=sys.argv[1:]):

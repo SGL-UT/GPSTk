@@ -1,6 +1,5 @@
 import unittest
 import sys
-# sys.path.append('../bin')
 from gpstk import *
 
 
@@ -71,6 +70,22 @@ class BrcKeplerOrbitTest(unittest.TestCase):
         self.assertEqual(1.1, b.getEcc())
         self.assertEqual(1.2, b.getW())
         self.assertEqual(1.3, b.getOmegaDot())
+
+
+class AlmOrbitTest(unittest.TestCase):
+    def test(self):
+        a = AlmOrbit(0,0,0,1.5,0,0,0,50.5,0,0,0,3000000L,1,2)
+        self.assertEqual(0.0, a.getAF0())
+        self.assertEqual(0L, a.getFullWeek())
+
+
+class GPSAlmanacStoreTest(unittest.TestCase):
+    def test(self):
+        e = EngAlmanac()
+        suframe = [023222245L,14111111324L,4623626L,33333531536L,4126166634L,17845L,6317L,736162361L,83163L,91471L]
+        e.addSubframe(suframe, 1)
+        g = GPSAlmanacStore()
+        g.addAlmanac(e)
 
 
 if __name__ == '__main__':

@@ -1,5 +1,4 @@
-"""
-GPSTk python-swig binding documentation generator.
+"""GPSTk python-swig binding documentation generator.
 
 This reads every file in the gpstk/dev/doc/xml (where doxygen places its xml)
 and uses doxy2swig.py to create docstring output for a SWIG .i file. These
@@ -8,12 +7,14 @@ to include all of these new files in the doc/ folder.
 
 Usage:
   python doc.py
-
 """
+
+
 import doxy2swig  # local file
 import glob
 import os
 import sys
+import subprocess
 
 
 def file_name(path):
@@ -23,7 +24,7 @@ def file_name(path):
 
 
 def clean_errors(file):
-    """Removes any instance of ::throw in a file that doxy2swig produces"""
+    """Removes any instance of ::throw in a file that doxy2swig produces."""
     # doxy2swig.py has a minor bug where it can make documentation
     # slightly incorrect. For example, if Cat is a class which has a
     # constructor that can throw an exception; (i.e. Cat::Cat() throws())
@@ -45,13 +46,12 @@ def clean_errors(file):
     f.close()
 
 
-def main():
-    gpstk_dev = '../../../'
-    gpstk_xml = gpstk_dev + 'doc/xml/'
-    xml_files = glob.glob(gpstk_xml + '*.xml')
+def generate_docs():
+    gpstk_folder = os.path.realpath(__file__)[:-29]
+    xml_files = glob.glob(gpstk_folder + 'dev/doc/xml/*.xml')
     num_files = len(xml_files)
     if num_files == 0:
-        print 'No doxygen-xml files found: was doxygen run yet?'
+        print 'WARNING: No doxygen-xml files found, docstrings cannot be generated.'
 
     gpstk_swig = ''
     gpstk_py_doc = gpstk_swig + 'doc/'
@@ -76,10 +76,11 @@ def main():
     out_file.write('# Do not modify it unless you know what you are doing.\n')
     generated_files = glob.glob(gpstk_py_doc + '*.i')
     for f_i in generated_files:
-        out_file.write('%include ' + f_i + '\n')
+        if 'doc.i' not in f_i:
+            out_file.write('%include ' + f_i + '\n')
     out_file.close()
-    print '\nFinished.'
+    print '\nFinished with documentation.'
 
 
 if __name__ == '__main__':
-    main()
+    generate_docs()

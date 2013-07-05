@@ -1,6 +1,5 @@
 import unittest
 import sys
-# sys.path.append('../bin')
 from gpstk import *
 
 
@@ -132,7 +131,7 @@ class Position_test(unittest.TestCase):
     def test_geocentric_geodetic(self):
         a = PZ90Ellipsoid().a()
         eccSq = PZ90Ellipsoid().eccSquared()
-        orig = Position(40.0, 100.0, 2.5e5, CoordinateSystems.Geocentric)
+        orig = Position(40.0, 100.0, 2.5e5, Position.Geocentric)
         p = Position.convertGeocentricToGeodetic(orig, a, eccSq)
         q = Position.convertGeodeticToGeocentric(p, a, eccSq)
         self.assertAlmostEqual(44.90696703221949, p[0])
@@ -154,7 +153,7 @@ class Position_test(unittest.TestCase):
         self.assertAlmostEqual(orig[2], q[2])
 
     def test_functions(self):
-        system = CoordinateSystems.Cartesian
+        system = Position.Cartesian
         ell = PZ90Ellipsoid()
         frame = ReferenceFrame(ReferenceFrame.PZ90)
         p = Position(10000.0, 150000.0, 200000.0, system, ell, frame)

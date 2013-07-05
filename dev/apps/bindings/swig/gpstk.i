@@ -37,11 +37,8 @@
     #include "../../../src/Position.hpp"
     #include "../../../src/Xv.hpp"
     #include "../../../src/convhelp.hpp"
-
-    // math:
     #include "../../../src/VectorBase.hpp"
     #include "../../../src/Vector.hpp"
-
 
     // ?
     #include "../../../src/XvtStore.hpp"
@@ -82,7 +79,6 @@
     #include "../../../src/RinexClockData.hpp"
     #include "../../../src/RinexObsStream.hpp"
 
-
     #include "../../../src/Rinex3ClockBase.hpp"
     #include "../../../src/Rinex3ObsBase.hpp"
     #include "../../../src/Rinex3ObsHeader.hpp"
@@ -99,6 +95,15 @@
     #include "../../../src/PositionSatStore.hpp"
     #include "../../../src/SP3EphemerisStore.hpp"
 
+    #include "../../../src/SEMBase.hpp"
+    #include "../../../src/SEMHeader.hpp"
+    #include "../../../src/SEMStream.hpp"
+    #include "../../../src/SEMData.hpp"
+    #include "../../../src/SEMAlmanacStore.hpp"
+
+
+
+
     typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp
     using namespace gpstk;
 %}
@@ -112,6 +117,7 @@
 %include "std_map.i"
 %rename(streamInput) operator>>;
 %rename(__str__) *::asString() const;
+%rename(__str__) gpstk::*::dump;
 
 // %rename(streamOutput) operator<<;
 %include "src/typemaps.i"
@@ -191,8 +197,6 @@ def xvt_str(self):
 Xvt.__str__ = xvt_str
 %}
 
-
-// Math stuff
 %include "src/VectorBase.i"
 %include "src/Vector.i"
 
@@ -236,9 +240,7 @@ Xvt.__str__ = xvt_str
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/GPS_URA.hpp"
 %include "../../../src/BrcClockCorrection.hpp"
-%rename (__str__) gpstk::BrcKeplerOrbit::dump;
 %include "../../../src/BrcKeplerOrbit.hpp"
-
 %include "../../../src/EngEphemeris.hpp"
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
@@ -255,12 +257,10 @@ Xvt.__str__ = xvt_str
 %include "../../../src/Rinex3ObsBase.hpp"
 %include "../../../src/Rinex3ObsHeader.hpp"
 %include "../../../src/Rinex3ObsStream.hpp"
-
 %include "../../../src/Rinex3ClockHeader.hpp"
 %include "../../../src/Rinex3ClockData.hpp"
 
 %include "../../../src/TabularSatStore.hpp"
-
 %include "src/ClockSatStore.i"
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
@@ -269,9 +269,9 @@ Xvt.__str__ = xvt_str
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
 
-// %inline %{
-//  gpstk::Rinex3ObsStream makeRinex3ObsStream(std::string file, std::string mode) {
-//      Rinex3ObsStream r(); (//"bahr1620.04o.new", std::ios::out|std::ios::trunc);
-//      return r;
-//  }
-// %}
+%include "../../../src/SEMBase.hpp"
+%include "../../../src/SEMHeader.hpp"
+%include "../../../src/SEMStream.hpp"
+%include "../../../src/SEMData.hpp"
+%template(FileStore_SEMHeader) gpstk::FileStore<gpstk::SEMHeader>;
+%include "../../../src/SEMAlmanacStore.hpp"

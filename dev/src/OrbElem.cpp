@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -73,25 +73,25 @@ namespace gpstk
       throw(InvalidRequest)
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      if (ct >= beginValid && ct <= endValid) return(true);    
+      if (ct >= beginValid && ct <= endValid) return(true);
       return(false);
    }
 
-   
+
    bool OrbElem::dataLoaded() const
    {
       return(dataLoadedFlag);
    }
- 
+
    bool OrbElem::isHealthy() const
       throw(InvalidRequest)
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -102,7 +102,7 @@ namespace gpstk
       throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -116,7 +116,7 @@ namespace gpstk
       throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -129,7 +129,7 @@ namespace gpstk
       throw(gpstk::InvalidRequest)
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -143,7 +143,7 @@ namespace gpstk
       throw(InvalidRequest)
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -153,13 +153,13 @@ namespace gpstk
       double ToeSOW = gpsws.sow;
       double ea;              // eccentric anomaly //
       double delea;           // delta eccentric anomaly during iteration */
-      double elapte;          // elapsed time since Toe 
-      double elaptc;          // elapsed time since Toc 
+      double elapte;          // elapsed time since Toe
+      double elaptc;          // elapsed time since Toc
       double dtc,dtr,q,sinea,cosea;
       double GSTA,GCTA;
       double amm;
-      double meana;           // mean anomaly 
-      double F,G;             // temporary real variables 
+      double meana;           // mean anomaly
+      double F,G;             // temporary real variables
       double alat,talat,c2al,s2al,du,dr,di,U,R,truea,AINC;
       double ANLON,cosu,sinu,xip,yip,can,san,cinc,sinc;
       double xef,yef,zef,dek,dlk,div,domk,duv,drv;
@@ -179,7 +179,7 @@ namespace gpstk
 
          // Compute time since ephemeris & clock epochs
       elapte = t - ctToe;
-     
+
 
          // Compute mean motion
       amm  = (sqrtgm / (A*Ahalf)) + dn;
@@ -192,7 +192,7 @@ namespace gpstk
 
       meana = M0 + elapte * amm;
       meana = fmod(meana, twoPI);
-   
+
       ea = meana + lecc * ::sin(meana);
 
       int loop_cnt = 1;
@@ -209,13 +209,13 @@ namespace gpstk
       sv.clkbias = svClockBias(t);
       sv.clkdrift = svClockDrift(t);
       sv.frame = ReferenceFrame::WGS84;
-   
+
          // Compute true anomaly
       q     = SQRT( 1.0e0 - lecc*lecc);
       sinea = ::sin(ea);
       cosea = ::cos(ea);
       G     = 1.0e0 - lecc * cosea;
-   
+
          //  G*SIN(TA) AND G*COS(TA)
       GSTA  = q * sinea;
       GCTA  = cosea - lecc;
@@ -254,7 +254,7 @@ namespace gpstk
       san  = ::sin( ANLON );
       cinc = ::cos( AINC  );
       sinc = ::sin( AINC  );
- 
+
          // Earth fixed - meters
       xef  =  xip*can  -  yip*cinc*san;
       yef  =  xip*san  +  yip*cinc*can;
@@ -296,7 +296,7 @@ namespace gpstk
       throw( InvalidRequest )
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -308,8 +308,8 @@ namespace gpstk
       double Ahalf = SQRT(A);
       double amm    = (sqrtgm / (A*Ahalf)) + dn;
       double meana,F,G,delea;
-      
-      meana = M0 + elapte * amm; 
+
+      meana = M0 + elapte * amm;
       meana = fmod(meana, twoPI);
       double ea = meana + ecc * ::sin(meana);
 
@@ -357,12 +357,12 @@ namespace gpstk
          << ":" << setw(2) << min
          << ":" << setw(2) << sec
          << setfill(' ');
-   } 
-   
+   }
+
 
    void OrbElem::timeDisplay( ostream & os, const CommonTime& t )
    {
-      os.setf(ios::dec, ios::basefield); 
+      os.setf(ios::dec, ios::basefield);
          // Convert to CommonTime struct from GPS wk,SOW to M/D/Y, H:M:S.
       GPSWeekSecond dummyTime;
       dummyTime = GPSWeekSecond(t);
@@ -388,7 +388,7 @@ namespace gpstk
       throw( InvalidRequest )
    {
       if (!dataLoaded())
-      {   
+      {
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
@@ -399,13 +399,13 @@ namespace gpstk
       s.setf(ios::uppercase);
       s.precision(0);
       s.fill(' ');
- 
+
       s << endl;
       s << "           TIMES OF INTEREST"
         << endl << endl;
       s << "              Week(10bt)     SOW     DOW   UTD     SOD"
-        << "   MM/DD/YYYY   HH:MM:SS\n"; 
-      s << "Begin Valid:  ";        
+        << "   MM/DD/YYYY   HH:MM:SS\n";
+      s << "Begin Valid:  ";
       timeDisplay(s, beginValid);
       s << endl;
       s << "Clock Epoch:  ";
@@ -416,9 +416,9 @@ namespace gpstk
       s << endl;
       s << "End Valid:    ";
       timeDisplay(s, endValid);
-     
+
       s.setf(ios::scientific, ios::floatfield);
-      s.precision(8); 
+      s.precision(8);
       s.fill(' ');
 
       s << endl
@@ -434,7 +434,7 @@ namespace gpstk
         << "           ORBIT PARAMETERS"
         << endl
         << endl
-        << "Semi-major axis:       " << setw(16) <<  A     << " m       " 
+        << "Semi-major axis:       " << setw(16) <<  A     << " m       "
         << setw(16) << Adot  << "   m/sec" << endl
         << "Motion correction:     " << setw(16) <<  dn    << " rad/sec "
         << setw(16) << dndot << " rad/(sec**2)" << endl
@@ -455,7 +455,7 @@ namespace gpstk
         << "Inclination   Sine: " << setw(16) << Cis << " rad  Cosine: "
         << setw(16) << Cic << " rad" << endl
         << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
-        << setw(16) << Cuc << " rad" << endl;        
+        << setw(16) << Cuc << " rad" << endl;
    } // end of dumpBody()
 
    void OrbElem::dumpHeader(ostream& s) const
@@ -465,9 +465,9 @@ namespace gpstk
         << "************" << endl
         << "Broadcast Ephemeris (Engineering Units) - " << getNameLong();
       s << endl;
-      
-      SVNumXRef svNumXRef; 
-      int NAVSTARNum = 0; 
+
+      SVNumXRef svNumXRef;
+      int NAVSTARNum = 0;
 
       s << endl;
       s << "PRN : " << setw(2) << satID.id << " / "
@@ -477,13 +477,13 @@ namespace gpstk
          NAVSTARNum = svNumXRef.getNAVSTAR(satID.id, ctToe );
          s << NAVSTARNum << "  ";
       }
-      catch(SVNumXRef::NoNAVSTARNumberFound)
-      { 
+      catch(NoNAVSTARNumberFound)
+      {
          s << "XX";
       }
       s << endl
         << endl;
-   } 
+   }
 
    void OrbElem::dumpFooter(ostream& s) const
       throw( InvalidRequest )
@@ -496,7 +496,7 @@ namespace gpstk
       dumpBody(s);
       dumpFooter(s);
    }
-    
+
 } // namespace
 
 
