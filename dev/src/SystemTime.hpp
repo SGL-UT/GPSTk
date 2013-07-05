@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -44,7 +44,7 @@ namespace gpstk
           * @defgroup stbo SystemTime Basic Operations
           */
          //@{
-      
+
          /**
           * Default Constructor.
           * Reads the system clock for the current system time.
@@ -55,15 +55,15 @@ namespace gpstk
          setTimeSystem(TimeSystem::UTC);
          update();
       }
-      
+
          /// Virtual Destructor.
       virtual ~SystemTime()
          throw()
       {}
-      
+
          /**
           * Copy Constructor.
-          * @param right a reference to teh SystemTime object to copy.
+          * @param right a reference to the SystemTime object to copy.
           */
       SystemTime( const SystemTime& right )
          throw()
@@ -71,7 +71,7 @@ namespace gpstk
       {}
          //@}
 
-         /** 
+         /**
           * Update this object to the current system time.
           * @return a reference to this SystemTime
           */
