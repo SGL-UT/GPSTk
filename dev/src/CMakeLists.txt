@@ -93,6 +93,7 @@ set (gpstk_src
       ObsClockModel.cpp
       ObsEpochMap.cpp
       ObsID.cpp
+      ObsIDInitializer.cpp
       ObsRngDev.cpp
       OceanLoading.cpp
       OrbElem.cpp
