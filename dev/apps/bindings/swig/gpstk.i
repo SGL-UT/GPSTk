@@ -165,6 +165,13 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/TimeConverters.hpp"
 %include "src/TimeString.i"
 
+%pythoncode %{
+def now(timeSystem=TimeSystem.Unknown):
+    t = SystemTime()
+    t = t.convertToCommonTime()
+    t.setTimeSystem(TimeSystem(timeSystem))
+    return t
+%}
 
 // =============================================================
 //  Section 3: General/Utils classes
