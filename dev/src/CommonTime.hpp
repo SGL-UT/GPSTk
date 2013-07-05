@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,13 +28,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,23 +45,23 @@
 
 namespace gpstk
 {
-      /** 
+      /**
        * This is the common time format that all time formats convert to when
-       * converting between themselves.  This allows the decoupling of 
+       * converting between themselves.  This allows the decoupling of
        * inter-format conversions.
        *
        * The interface is based on three quantites: days, seconds of day, and
        * fractional seconds of day.  The internal representation, however, is
        * slightly different.  It consists of a day, milliseconds of day, and
        * fractional seconds of day.  Their valid ranges are shown below:
-       * 
+       *
        *  Quantity   >=     <
        *  --------   ---   ---
        *   day        0    2^31
        *   msod       0    86400000
        *   fsod       0    0.001
-       * 
-       * The above is somewhat difficult to grasp at first, but the reason for 
+       *
+       * The above is somewhat difficult to grasp at first, but the reason for
        * keeping the fractional part of time in units of seconds is due to the
        * fact that the time formats usually break at seconds and partial seconds
        * not at milliseconds and partial milliseconds.  By keeping the value in
@@ -121,7 +121,7 @@ namespace gpstk
           */
       CommonTime& operator=( const CommonTime& right )
          throw();
-      
+
          /// Destructor.
       virtual ~CommonTime()
          throw()
@@ -129,16 +129,16 @@ namespace gpstk
 
          //@}
 
-         /** 
+         /**
           * @defgroup ctam CommonTime Accessor Methods
           */
          //@{
-         /** 
+         /**
           * Set method that accepts values for day, seconds of day and
-          * fractional seconds of day.  It also checks the validity of the 
+          * fractional seconds of day.  It also checks the validity of the
           * arguments and throws an exception if any values are out of bounds.
           */
-      CommonTime& set( long day, 
+      CommonTime& set( long day,
                        long sod,
                        double fsod = 0.0,
                        TimeSystem timeSystem = TimeSystem::Unknown )
@@ -153,7 +153,7 @@ namespace gpstk
                        double sod = 0.0,
                        TimeSystem timeSystem = TimeSystem::Unknown )
          throw( InvalidParameter );
-      
+
          /**
           * Set method that accepts a value for day.  It also checks the
           * validity of the argument and throws an exception if its value is
@@ -185,7 +185,7 @@ namespace gpstk
           * Get method.  Obtain values in days, second of day and fractional
           * second of day, plus the time frame.
           */
-      void get( long& day, 
+      void get( long& day,
                 long& sod,
                 double& fsod,
                 TimeSystem& timeSystem ) const
@@ -195,7 +195,7 @@ namespace gpstk
           * Get method.  Obtain values in days, second of day and fractional
           * second of day.
           */
-      void get( long& day, 
+      void get( long& day,
                 long& sod,
                 double& fsod ) const
          throw();
@@ -233,7 +233,7 @@ namespace gpstk
       void get( double& day ) const
          throw();
 
-         /** 
+         /**
           * Get internal values method.  Obtain the values stored within this
           * object.
           */
@@ -244,7 +244,7 @@ namespace gpstk
          throw()
       { day = m_day; msod = m_msod; fsod = m_fsod; timeSystem = m_timeSystem; }
 
-         /** 
+         /**
           * Get internal values method.  Obtain the values stored within this
           * object.
           */
@@ -255,7 +255,7 @@ namespace gpstk
       { day = m_day; msod = m_msod; fsod = m_fsod; }
 
          /// Obtain the time, in days, including the fraction of a day.
-      double getDays() const 
+      double getDays() const
          throw();
 
          /// Obtain the seconds of day (ignoring the day).
@@ -272,17 +272,17 @@ namespace gpstk
           * @defgroup ctao CommonTime Arithmetic Operations
           */
          //@{
-         /** 
+         /**
           * Difference two Common Time objects.
           * @param right CommonTime to subtract from this one
-          * @param reutrn difference in seconds
+          * @return the difference in seconds
           */
       double operator-( const CommonTime& right ) const
          throw( InvalidRequest );
 
          /**
           * Add seconds to a copy of this CommonTime.
-          * @param sec the number of seconds to add to a copy of this CommonTime
+          * @param seconds the number of seconds to add to a copy of this CommonTime
           * @return the new CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
@@ -291,7 +291,7 @@ namespace gpstk
 
          /**
           * Subtract seconds from a copy of this CommonTime.
-          * @param sec the number of seconds to subtract from a copy of this
+          * @param seconds the number of seconds to subtract from a copy of this
           *  CommonTime
           * @return the new CommonTime object
           * @throws InvalidRequest on over-/under-flow
@@ -299,9 +299,9 @@ namespace gpstk
       CommonTime operator-( double seconds ) const
          throw();
 
-         /** 
+         /**
           * Add seconds to this CommonTime.
-          * @param sec the number of seconds to add to this CommonTime.
+          * @param seconds the number of seconds to add to this CommonTime.
           * @return a reference to this CommonTime
           * @throws InvalidRequest on over-/under-flow
           */
@@ -310,24 +310,24 @@ namespace gpstk
 
          /**
           * Subtract seconds from this CommonTime.
-          * @param sec the number of seconds to subtract from this CommonTime
+          * @param seconds the number of seconds to subtract from this CommonTime
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& operator-=( double seconds )
          throw();
 
-         /** 
+         /**
           * Add seconds to this CommonTime object.
           * This is the workhorse for the addition/subtraction operators.
-          * @param sec the number of seconds to add to this CommonTime
+          * @param seconds the number of seconds to add to this CommonTime
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
       CommonTime& addSeconds( double seconds )
          throw();
 
-         /** 
+         /**
           * Add integer days to this CommonTime object.
           * param days the number of days to add to this CommonTime
           * @return a reference to this CommonTime object
@@ -336,7 +336,7 @@ namespace gpstk
       CommonTime& addDays( long days )
          throw();
 
-         /** 
+         /**
           * Add integer seconds to this CommonTime object.
           * @param sec the number of seconds to add to this CommonTime
           * @return a reference to this CommonTime object
@@ -345,7 +345,7 @@ namespace gpstk
       CommonTime& addSeconds( long seconds )
          throw();
 
-         /** 
+         /**
           * Add integer milliseconds to this CommonTime object.
           * @param ms the number of milliseconds to add to this CommonTime
           * @return a reference to this CommonTime object
@@ -385,14 +385,14 @@ namespace gpstk
          throw();
 
    protected:
-      
-      CommonTime( long day, 
+
+      CommonTime( long day,
                   long sod,
                   double fsod,
                   TimeSystem timeSystem = TimeSystem::Unknown )
          throw( InvalidParameter )
       { set( day, sod, fsod, timeSystem ); }
-      
+
          /**
           * Add the following quantities to this CommonTime object.
           * @param days the number of days to add
@@ -404,13 +404,13 @@ namespace gpstk
                 long msod,
                 double fsod )
          throw();
-      
+
          /// Normalize the values.  This takes out of bounds values and rolls
          /// other values appropriately.
          /// @return true if m_day is valid, false otherwise
       bool normalize()
          throw();
-      
+
       long m_day;     ///< days (as a Julian Day)     0 <= val < 2^31
       long m_msod;    ///< milliseconds-of-day        0 <= val < 86400000
       double m_fsod;  ///< fractional seconds-of-day  0 <= val < 0.001
