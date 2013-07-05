@@ -1,5 +1,6 @@
-import sys
 import doc
+import sys
+import shutil
 import os
 from distutils.core import setup, Extension
 
@@ -61,29 +62,38 @@ core_lib =  ['gpstk.i',
             '../../../src/YDSTime.cpp',
             '../../../src/YumaAlmanacStore.cpp',
             '../../../src/YumaData.cpp',
-      ]
+            ]
 
 
 cpp_flags = ['-std=c++11', '-w']
 swig_flags = ['-c++', '-I../include', '-w362,383,384,503']
 
 
-if not os.path.exists('doc/doc.i'):
+if not os.path.exists('doc/'):
       os.makedirs('doc')
-      file = open('doc/doc.i', 'w+')
+if not os.path.exists('doc/doc.i'):
+      file = open('doc/doc.i', 'w')
 doc.generate_docs()
 
+def main():
+      setup(name='GPSTk',
+            version='2.1',
+            description='The GPS Toolkit',
+            author='Applied Research Laboratories at the University of Texas at Austin',
+            author_email='gpstk@arlut.utexas.edu',
+            url='http://www.gpstk.org/',
+            ext_modules=[Extension(name='_gpstk',
+                                   sources=core_lib,
+                                   include_dirs=['../../../src/'],
+                                   extra_compile_args=cpp_flags,
+                                   swig_opts=swig_flags,
+                                   language='c++')],
+            py_modules=['gpstk', 'timeconvert'])
 
-setup(name='GPSTk',
-      version='2.1',
-      description='The GPS Toolkit',
-      author='Applied Research Laboratories at the University of Texas at Austin',
-      author_email='gpstk@arlut.utexas.edu',
-      url='http://www.gpstk.org/',
-      ext_modules=[Extension(name='_gpstk',
-                             sources=core_lib,
-                             include_dirs=['../../../src/'],
-                             extra_compile_args=cpp_flags,
-                             swig_opts=swig_flags,
-                             language='c++')],
-      py_modules=['gpstk', 'timeconvert'])
+if __name__ == '__main__'
+      # Temporary fix to get distutils to copy gpstk.py into build directory.
+      # Distutils copies py modules before it runs swig, so gpstk.py doesn't
+      # exist when it copies, but it exists when it finishes.
+      # A solution to this is to run the command TWICE.
+      main()
+      main()
