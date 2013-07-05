@@ -37,8 +37,6 @@
     #include "../../../src/Position.hpp"
     #include "../../../src/Xv.hpp"
     #include "../../../src/convhelp.hpp"
-
-    // math:
     #include "../../../src/VectorBase.hpp"
     #include "../../../src/Vector.hpp"
 
@@ -81,7 +79,6 @@
     #include "../../../src/RinexClockData.hpp"
     #include "../../../src/RinexObsStream.hpp"
 
-
     #include "../../../src/Rinex3ClockBase.hpp"
     #include "../../../src/Rinex3ObsBase.hpp"
     #include "../../../src/Rinex3ObsHeader.hpp"
@@ -97,6 +94,15 @@
     #include "../../../src/SP3Data.hpp"
     #include "../../../src/PositionSatStore.hpp"
     #include "../../../src/SP3EphemerisStore.hpp"
+
+    #include "../../../src/SEMBase.hpp"
+    #include "../../../src/SEMHeader.hpp"
+    #include "../../../src/SEMStream.hpp"
+    #include "../../../src/SEMData.hpp"
+    #include "../../../src/SEMAlmanacStore.hpp"
+
+
+
 
     typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp
     using namespace gpstk;
@@ -262,3 +268,10 @@ Xvt.__str__ = xvt_str
 %include "../../../src/SP3Data.hpp"
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
+
+%include "../../../src/SEMBase.hpp"
+%include "../../../src/SEMHeader.hpp"
+%include "../../../src/SEMStream.hpp"
+%include "../../../src/SEMData.hpp"
+%template(FileStore_SEMHeader) gpstk::FileStore<gpstk::SEMHeader>;
+%include "../../../src/SEMAlmanacStore.hpp"
