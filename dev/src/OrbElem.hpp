@@ -35,7 +35,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -43,13 +43,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -81,31 +81,31 @@ namespace gpstk
 
          /// Clone method.
 	 /// Return pointer to new copy of this type.
-	 /// Implication of the "= 0" at this end is that this is a 
-	 /// "pure virtual" method and that makes OrbElem an abstract 
+	 /// Implication of the "= 0" at this end is that this is a
+	 /// "pure virtual" method and that makes OrbElem an abstract
 	 /// class.  That is to say no objects of type OrbElem may
 	 /// be constructed.   This is a good thing since OrbElem
-	 /// doesn't even provide methods to load its' members.  
+	 /// doesn't even provide methods to load its' members.
 	 /// Only its' descendents may be instantiated.
       virtual OrbElem* clone() const = 0;
 
          /**
           * Returns true if the time, ct, is within the period of validity of this OrbElem object.
           * @throw Invalid Request if the required data has not been stored.
-          */ 
+          */
       virtual bool isValid(const CommonTime& ct) const throw(InvalidRequest);
 
 	 /**
           *   Return true if orbit data have been loaded.
           *   Returns false if the object has been instantiated,
           *   but no data have been loaded.
-          */ 
+          */
       virtual bool dataLoaded( ) const;
 
       virtual std::string getName() const = 0;
 
       virtual std::string getNameLong() const = 0;
-      
+
          /** This function returns the health status of the SV.
           * @throw Invalid Request if the required data has not been stored.
           */
@@ -126,7 +126,7 @@ namespace gpstk
           */
       double svClockDrift(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
-      
+
          /** Compute satellite position at the given time
           * using this orbit data.
           * @throw Invalid Request if the required data has not been stored.
@@ -140,7 +140,7 @@ namespace gpstk
 
 
          /** adjustBeginningValidity is provided to support
-          *  GPSOrbElemStore::rationalize( ).  It rounds the 
+          *  GPSOrbElemStore::rationalize( ).  It rounds the
           *  beginning time of validity back to the nominal
           *  beginning time in the case of a set of elements that
           *  are the second set following an upload.  It should not
@@ -151,8 +151,8 @@ namespace gpstk
           *  and implemented in descendents.
           */
       virtual void adjustBeginningValidity() = 0;
-      
-         /** Output the contents of this orbit data to the given stream. 
+
+         /** Output the contents of this orbit data to the given stream.
           * @throw Invalid Request if the required data has not been stored.
           */
 
@@ -171,10 +171,10 @@ namespace gpstk
 
       virtual void dumpFooter(std::ostream& s = std::cout) const
          throw( InvalidRequest );
-     
-      virtual void dump(std::ostream& s = std::cout) const 
+
+      virtual void dump(std::ostream& s = std::cout) const
 	 throw( InvalidRequest );
-     
+
          /// Overhead information
          //@{
       bool    dataLoadedFlag;  /**< True if data is present, False otherwise */
@@ -201,14 +201,14 @@ namespace gpstk
       double   dndot;	      /**< Rate of correction to mean motion (rad/sec/sec) */
       double   ecc;           /**< Eccentricity */
       double   A;             /**< Semi-major axis (m) */
-      double   Adot;          /**< Rate of semi-major axis (m/sec) */ 
+      double   Adot;          /**< Rate of semi-major axis (m/sec) */
       double   OMEGA0;        /**< Rt ascension of ascending node (rad) */
       double   i0;            /**< Inclination (rad) */
       double   w;             /**< Argument of perigee (rad) */
       double   OMEGAdot;      /**< Rate of Rt ascension (rad/sec) */
       double   idot;          /**< Rate of inclination angle (rad/sec) */
          //@}
-          
+
          /// Clock information
          //@{
       CommonTime ctToc;	    /**< Clock Epoch in commontime format */
@@ -229,20 +229,21 @@ namespace gpstk
          // in the case of legacy GPS navigation message data)  to be
          // transmitted. (See the appropriate loadData( ) function in
          // the relevant OrbElem descendents for details on how beginValid
-         // and endValid are derived. 
-           
+         // and endValid are derived.
+
          //@{
       CommonTime beginValid;    /**< Time at beginning of validity */
       CommonTime endValid;      /**< Time at end of fit validity */
 
-   
-         
+
+
    }; // end class OrbElem
 
    //@}
-   
-   std::ostream& operator<<(std::ostream& s, 
-                                      const OrbElem& eph);
+
+//NB this was removed since it was never defined
+   // std::ostream& operator<<(std::ostream& s,
+   //                                    const OrbElem& eph);
 
 } // end namespace
 
