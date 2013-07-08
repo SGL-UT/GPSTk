@@ -1,5 +1,7 @@
 %module(docstring="The GPS Toolkit - an open source library to the satellite navigation community.") gpstk
 %{
+    #include <sstream>
+
     // time:
     #include "../../../src/TimeSystem.hpp"
     #include "../../../src/TimeTag.hpp"
@@ -116,9 +118,9 @@
 %include "doc/doc.i"
 %include "std_string.i"
 %include "std_map.i"
-%rename(streamInput) operator>>;
+%rename(streamOut) *::operator<<;
+%rename(streamIn) *::operator>>;
 %rename(__str__) *::asString() const;
-%rename(__str__) gpstk::*::dump;
 
 // %rename(streamOutput) operator<<;
 %include "src/typemaps.i"
@@ -168,10 +170,21 @@ typedef std::map< char, std::string> IdToValue;
 
 %pythoncode %{
 def now(timeSystem=TimeSystem.Unknown):
-    t = SystemTime()
-    t = t.convertToCommonTime()
+    """Returns the current time (defined by what SystemTime() returns)
+    in a CommonTime format, in the given TimeSystem.
+
+    Parameters:
+            -----------
+
+        timeSystem:  the TimeSystem (enum value) to assign to the output
+    """
+    t = SystemTime().convertToCommonTime()
     t.setTimeSystem(TimeSystem(timeSystem))
     return t
+
+def commonTime(timeTag):
+    """Converts a time to a CommonTime using its convertToCommonTime method."""
+    return timeTag.convertToCommonTime()
 %}
 
 // =============================================================
@@ -191,20 +204,6 @@ def now(timeSystem=TimeSystem.Unknown):
 %include "src/Position.i"
 %include "../../../src/convhelp.hpp"
 %include "../../../src/Xv.hpp"
-
-%pythoncode %{
-ObsID.__str__ = lambda self: asString(self)
-Xv.__str__ = lambda self: 'x:'+ self.x.__str__() + ', v:' + self.v.__str__()
-def xvt_str(self):
-    output = 'x:' + str(self.x)
-    output += ', v:' + str(self.v)
-    output += ', clk bias:' + str(self.clkbias)
-    output += ', clk drift:' + str(self.clkdrift)
-    output += ', relcorr:' + str(self.relcorr)
-    return output
-Xvt.__str__ = xvt_str
-%}
-
 %include "src/VectorBase.i"
 %include "src/Vector.i"
 %include "../../../src/AstronomicalFunctions.hpp"
@@ -284,3 +283,9 @@ Xvt.__str__ = xvt_str
 %include "../../../src/SEMData.hpp"
 %template(FileStore_SEMHeader) gpstk::FileStore<gpstk::SEMHeader>;
 %include "../../../src/SEMAlmanacStore.hpp"
+
+
+// encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter
+// when the only change to a class is adding a simple wrapper, add to pythonfunctions
+// instead of creating another small file:
+%include "src/pythonfunctions.i"

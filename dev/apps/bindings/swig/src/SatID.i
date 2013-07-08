@@ -132,8 +132,3 @@ namespace gpstk
       else         return new gpstk::SatID(p, helper.systemUnknown);
    }
 };
-
-
-%pythoncode %{
-SatID.__str__ = lambda self: asString(self)
-%}
