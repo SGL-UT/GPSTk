@@ -27,23 +27,14 @@ swig_add_module(gpstk python gpstk.i
                     ../../../src/CivilTime.cpp
                     ../../../src/ClockSatStore.cpp
                     ../../../src/CommonTime.cpp
-                    ../../../src/convhelp.hpp
-                    ../../../src/EllipsoidModel.hpp
                     ../../../src/EngAlmanac.cpp
                     ../../../src/EngEphemeris.cpp
                     ../../../src/EngNav.cpp
                     ../../../src/Exception.cpp
                     ../../../src/FFData.cpp
                     ../../../src/FFStream.cpp
-                    ../../../src/FFStreamError.hpp
-                    ../../../src/FFTextStream.hpp
-                    ../../../src/FileStore.hpp
                     ../../../src/GalEphemeris.cpp
                     ../../../src/GalEphemerisStore.cpp
-                    ../../../src/geometry.hpp
-                    ../../../src/GNSSconstants.hpp
-                    ../../../src/gps_constants.hpp
-                    ../../../src/GPS_URA.hpp
                     ../../../src/GPSAlmanacStore.cpp
                     ../../../src/GPSEphemerisStore.cpp
                     ../../../src/gpstkplatform.h
@@ -52,62 +43,39 @@ swig_add_module(gpstk python gpstk.i
                     ../../../src/GPSWeekZcount.cpp
                     ../../../src/GPSZcount.cpp
                     ../../../src/JulianDate.cpp
-                    ../../../src/MathBase.hpp
                     ../../../src/MJD.cpp
                     ../../../src/ObsID.cpp
-                    ../../../src/ObsID.hpp
                     ../../../src/ObsIDInitializer.cpp
-                    ../../../src/OrbElemStore.hpp
                     ../../../src/Position.cpp
                     ../../../src/PositionSatStore.cpp
-                    ../../../src/PZ90Ellipsoid.hpp
                     ../../../src/ReferenceFrame.cpp
-                    ../../../src/Rinex3ClockBase.hpp
                     ../../../src/Rinex3ClockData.cpp
                     ../../../src/Rinex3ClockHeader.cpp
                     ../../../src/Rinex3ObsHeader.cpp
-                    ../../../src/Rinex3ObsHeader.hpp
-                    ../../../src/Rinex3ObsStream.hpp
-                    ../../../src/RinexClockBase.hpp
                     ../../../src/RinexClockData.cpp
                     ../../../src/RinexClockHeader.cpp
                     ../../../src/RinexObsHeader.cpp
-                    ../../../src/RinexObsHeader.hpp
                     ../../../src/RinexObsID.cpp
-                    ../../../src/RinexObsStream.hpp
                     ../../../src/RinexSatID.cpp
-                    ../../../src/SatID.hpp
-                    ../../../src/SatID.hpp
                     ../../../src/SEMAlmanacStore.cpp
                     ../../../src/SEMData.cpp
                     ../../../src/SEMHeader.cpp
-                    ../../../src/SP3Base.hpp
                     ../../../src/SP3Data.cpp
                     ../../../src/SP3EphemerisStore.cpp
                     ../../../src/SP3Header.cpp
                     ../../../src/SP3SatID.cpp
-                    ../../../src/StringUtils.hpp
                     ../../../src/SVNumXRef.cpp
                     ../../../src/SystemTime.cpp
-                    ../../../src/TabularSatStore.hpp
-                    ../../../src/TimeConstants.hpp
                     ../../../src/TimeConverters.cpp
                     ../../../src/TimeString.cpp
                     ../../../src/TimeSystem.cpp
                     ../../../src/TimeTag.cpp
-                    ../../../src/TimeTag.hpp
                     ../../../src/Triple.cpp
                     ../../../src/UnixTime.cpp
-                    ../../../src/Vector.hpp
-                    ../../../src/VectorBase.hpp
-                    ../../../src/WGS84Ellipsoid.hpp
-                    ../../../src/Xv.hpp
                     ../../../src/Xvt.cpp
-                    ../../../src/XvtStore.hpp
                     ../../../src/YDSTime.cpp
                     ../../../src/YumaAlmanacStore.cpp
                     ../../../src/YumaData.cpp
-                    ../../../src/YumaHeader.hpp
                     )
 
 swig_link_libraries(gpstk ${PYTHON_LIBRARIES})
