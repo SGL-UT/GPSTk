@@ -363,9 +363,26 @@ namespace gpstk
       }
      return new gpstk::Vector<double>(tmp);
    }
+
    double __getitem__(unsigned int i) {
       return (*($self))[i];
    }
+
+   // alias for operator<<
+   Vector& concatenate(const Vector& b)
+   {
+      (*$self) << b;
+   }
+
+   std::string __str__() {
+      std::ostringstream os;
+      size_t i;
+      for(i = 0; i < $self->size() - 1; i++)
+         os << (*($self))[i] << ", ";
+      os << (*($self))[i];
+      return os.str();
+   }
+
 }
 
 

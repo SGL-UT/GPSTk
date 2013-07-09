@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -30,13 +30,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -122,7 +122,7 @@ namespace gpstk
       /// destructor
       virtual ~Rinex3EphemerisStore()
       { }
-      
+
    // XvtStore interface:
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
@@ -207,7 +207,7 @@ namespace gpstk
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
-      virtual void edit(const CommonTime& tmin, 
+      virtual void edit(const CommonTime& tmin,
                         const CommonTime& tmax = CommonTime::END_OF_TIME) throw()
       {
          if (GPSstore.size()) GPSstore.edit(tmin, tmax);
@@ -234,13 +234,13 @@ namespace gpstk
       virtual TimeSystem getTimeSystem(void) const throw()
          { return TimeSystem::Any; }
 
-      /// Determine the earliest time for which this object can successfully 
+      /// Determine the earliest time for which this object can successfully
       /// determine the Xvt for any object.
       /// @return the earliest time in the table
       /// @throw InvalidRequest if the object has no data.
       virtual CommonTime getInitialTime() const throw(InvalidRequest);
 
-      /// Determine the latest time for which this object can successfully 
+      /// Determine the latest time for which this object can successfully
       /// determine the Xvt for any object.
       /// @return the latest time in the table
       /// @throw InvalidRequest if the object has no data.
@@ -267,20 +267,20 @@ namespace gpstk
    // end of XvtStore interface
 
       /// add a Rinex3NavData to the store
-      /// @param Rinex3NavData Rdata data to be added
+      /// @param Rdata data to be added
       /// @return true if data was added, false otherwise
       bool addEphemeris(const Rinex3NavData& Rdata) throw();
 
       /// add filename and header to FileStore
-      /// @param string filename file name to be added
-      /// @param Rinex3NavHeader Rhead header to be added
+      /// @param filename file name to be added
+      /// @param Rhead header to be added
       void addFile(const std::string& filename, Rinex3NavHeader& head) throw()
       { NavFiles.addFile(filename,head); }
 
       /// load a RINEX navigation file
-      /// @param string filename name of the RINEX navigation file to read
-      /// @param bool dump if true, dump header and nav data as read, default false
-      /// @param ostream stream to which dump is written, default cout
+      /// @param filename name of the RINEX navigation file to read
+      /// @param dump if true, dump header and nav data as read, default false
+      /// @param stream to which dump is written, default cout
       /// @return -1 failed to open file,
       ///         -2 failed to read header (this->Rhead),
       ///         -3 failed to read data (this->Rdata),
@@ -326,7 +326,7 @@ namespace gpstk
       }
 
       /// Delete from the map of time system corrections.
-      /// @param type of TimeSystemCorrection, as a string,
+      /// @param typestr type of TimeSystemCorrection, as a string,
       ///                   i.e. TimeSystemCorrection::asString4()
       /// @return true if an existing correction was deleted.
       bool delTimeCorr(const std::string& typestr) throw()

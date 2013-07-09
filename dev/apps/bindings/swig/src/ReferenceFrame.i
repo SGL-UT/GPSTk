@@ -48,12 +48,3 @@ namespace gpstk{
 
 #endif   //End of ReferenceFrame Header
 }
-
-%extend gpstk::ReferenceFrame {
-	std::string gpstk::ReferenceFrame::__str__() {
-        int f = static_cast<int>($self->getFrame());
-        if(f == 1) return "WGS84";
-        if(f == 2) return "PZ90";
-        else return "Unknown";
-	}
-}
