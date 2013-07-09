@@ -179,6 +179,18 @@ class Vector_test(unittest.TestCase):
         self.assertAlmostEqual(3.0, v[3])
         self.assertAlmostEqual(3.0, v[4])
 
+    def test_concatenate(self):
+        u = vector(1, 2.5)
+        v = vector(1, 3.5)
+        u.concatenate(v)
+        self.assertAlmostEqual(2.5, u[0])
+        self.assertAlmostEqual(3.5, u[1])
+        self.assertAlmostEqual(3.5, v[0])  # v should be unchanged
+
+    def test_string(self):
+        v = vector(5, 3.0)
+        self.assertEqual('3, 3, 3, 3, 3', str(v))
+
     def test_from_stdvector_double(self):
         tmp = std_vector_double(5)
         tmp[0] = 1.23
@@ -267,7 +279,7 @@ class Xv_test(unittest.TestCase):
         data.x = Triple(1.5, 2.5, 3.5)
         data.v = Triple(500, 1000, -100)
         self.assertEqual(1.5, data.x[0])
-        expected = 'x:(1.5, 2.5, 3.5), v:(500.0, 1000.0, -100.0)'
+        expected = 'x:(1.5, 2.5, 3.5), v:(500, 1000, -100)'
         self.assertEqual(expected, str(data))
 
 
@@ -285,8 +297,8 @@ class Xvt_test(unittest.TestCase):
         expected = 1.446445072869704e-11
         self.assertAlmostEqual(expected, data.computeRelativityCorrection())
 
-        expected = ("x:(1000.0, 2000.0, 1500.0), v:(50.0, 25.0, -500.0), "
-                   "clk bias:0.0001, clk drift:0.05, relcorr:1.44644507287e-11")
+        expected = ('x:(1000, 2000, 1500), v:(50, 25, -500), clk bias:0.0001, '
+                    'clk drift:0.05, relcorr:1.44645e-11')
         self.assertEqual(expected, str(data))
 
 
