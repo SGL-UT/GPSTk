@@ -1,29 +1,30 @@
-%extend gpstk::SEMStream {
-    static gpstk::SEMStream* outSEMStream(std::string fileName) {
-        return new SEMStream(fileName.c_str(), std::ios::out|std::ios::trunc);
+%define STREAM_HELPER(FORMATNAME,STREAMNAME,HEADERNAME,DATANAME)
+%extend gpstk:: ##STREAMNAME {
+    static gpstk:: ##STREAMNAME * out ##STREAMNAME(std::string fileName) {
+        return new STREAMNAME (fileName.c_str(), std::ios::out|std::ios::trunc);
     }
 
-    gpstk::SEMHeader readHeader() {
-        gpstk::SEMHeader head;
+    gpstk:: ##HEADERNAME readHeader() {
+        gpstk:: ##HEADERNAME head;
         (*($self)) >> head;
         return head;
     }
-    gpstk::SEMData readData() {
-        gpstk::SEMData data;
+    gpstk:: ##DATANAME readData() {
+        gpstk:: ##DATANAME data;
         (*($self)) >> data;
         return data;
     }
-    void writeHeader(const gpstk::SEMHeader& head) {
+    void writeHeader(const gpstk:: ##HEADERNAME & head) {
         (*($self)) << head;
     }
-    void writeData(const gpstk::SEMData& data) {
+    void writeData(const gpstk:: ##DATANAME & data) {
         (*($self)) << data;
     }
 }
 
-%pythoncode %{
-def readSEMFile(fileName, lazy=False):
-    """This reads from a SEM file and returns a two-element tuple
+%pythoncode {
+def read ##FORMATNAME(fileName, lazy=False):
+    """This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
 
     Parameters:
@@ -33,22 +34,22 @@ def readSEMFile(fileName, lazy=False):
              If it is, it will be a generator, otherwise, it will be a list.
     """
     num_lines = nlines(fileName)
-    stream = SEMStream(fileName)
+    stream = STREAMNAME (fileName)
     header = stream.readHeader()
-    def readSEMData(fileName):
+    def read ##DATANAME (fileName):
         while True:
-            if stream.lineNumber < num_lines:
+            if stream.lineNumber <= num_lines:
                 yield stream.readData()
             else:
                 break
     if lazy:
-        return (header, readSEMData(fileName))
+        return (header, read ##DATANAME (fileName))
     else:
-        return (header, [x for x in readSEMData(fileName)])
+        return (header, [x for x in read ##DATANAME (fileName)])
 
 
-def writeSEMFile(fileName, header, data):
-    """Writes a SEMHeader and sequence of SEMData objects to a file.
+def write ##FORMATNAME(fileName, header, data):
+    """Writes a HEADERNAME and sequence of ##DATANAME objects to a file.
     Note that this overwrites the file if it already exists.
 
     Parameters:
@@ -56,12 +57,18 @@ def writeSEMFile(fileName, header, data):
 
       fileName:  the name of the file to write to.
 
-      header:  the SEMHeader object
+      header:  the ##HEADERNAME object
 
-      data:  the sequence of SEMData objects
+      data:  the sequence of ##DATANAME objects
     """
-    s = SEMStream.outSEMStream(fileName)
+    s = STREAMNAME .out ##STREAMNAME (fileName)
     s.writeHeader(header)
     for d in data:
         s.writeData(d)
-%}
+}
+%enddef
+
+
+STREAM_HELPER(SEM,SEMStream,SEMHeader,SEMData)
+STREAM_HELPER(SP3,SP3Stream,SP3Header,SP3Data)
+STREAM_HELPER(Yuma,YumaStream,YumaHeader,YumaData)

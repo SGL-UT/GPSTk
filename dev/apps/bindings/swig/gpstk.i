@@ -106,6 +106,7 @@
     #include "../../../src/SP3SatID.hpp"
     #include "../../../src/SP3Header.hpp"
     #include "../../../src/SP3Data.hpp"
+    #include "../../../src/SP3Stream.hpp"
     #include "../../../src/PositionSatStore.hpp"
     #include "../../../src/SP3EphemerisStore.hpp"
 
@@ -278,6 +279,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/SP3SatID.hpp"
 %include "../../../src/SP3Header.hpp"
 %include "../../../src/SP3Data.hpp"
+%include "../../../src/SP3Stream.hpp"
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
 
