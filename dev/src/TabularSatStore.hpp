@@ -16,7 +16,7 @@
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
 #include "Xvt.hpp"
-#include "CivilTime.hpp"     
+#include "CivilTime.hpp"
 
 namespace gpstk
 {
@@ -180,10 +180,10 @@ namespace gpstk
          // user must decide whether to return with exact value; e.g. without
          // velocity data, user needs the interval to compute v from x data
          if(exactMatch && exactReturn) return true;
-         
+
          // lower_bound points to the first element with key >= ttag
          it1 = dtable.lower_bound(ttag);
-         
+
          // Attention:
          // The following piece of code with logic problem and take care!(Wei Yan)
 
@@ -314,20 +314,20 @@ namespace gpstk
               if(it1 == dtable.end()) {
                   InvalidRequest ir("No data for the requested time of satellite "
                       + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
-                  GPSTK_THROW(ir);  
+                  GPSTK_THROW(ir);
               }
-              
+
               if(dtable.size() < 2*nhalf){
                   InvalidRequest ir("Inadequate data for satellite "
                       + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
-                  GPSTK_THROW(ir); 
+                  GPSTK_THROW(ir);
               }
 
               // check for gap only when exactMatch==false
               if(!exactMatch && checkDataGap){
                 typename DataTable::const_iterator lit,rit;
                 lit = rit = it2;
-               
+
                 if(rit!=dtable.begin()){
                     lit--;
                     if((rit->first-lit->first) > gapInterval) {
@@ -344,7 +344,7 @@ namespace gpstk
                     }
                 }
               }
-              
+
               // try to get the beginning of the window
               int ileft(nhalf);
               for(int i = 0; i < nhalf; i++){
@@ -366,13 +366,13 @@ namespace gpstk
               }
 
               // adjust the beginning of the window again
-              int ileft2 = iright; 
+              int ileft2 = iright;
               for(int i = 0; i < iright; i++){
                   if(it1 == dtable.begin()) break;
                   it1--;
                   ileft2--;
               }
-              
+
               // We have checked that there are enough data, so ileft2 should
               // always be zero.
               if(ileft2 > 0){
@@ -748,11 +748,12 @@ namespace gpstk
 
       /// set the smartMode flag to select data from the table for interpolation
       void setSmartMode(bool smart = true){ smartMode = smart; }
-      
+
    };
-   
+
    /// Non-member Operator overload for handling of gpstk::Xvt object
-   inline std::ostream& operator<<(std::ostream &os, const gpstk::Xvt &obj) { return os; } //NB may need additional code
+//NB this was removed since a function of the same signature is already defined in Xvt.cpp
+   // inline std::ostream& operator<<(std::ostream &os, const gpstk::Xvt &obj) { return os; } //NB may need additional code
       //@}
 
 }  // End of namespace gpstk
