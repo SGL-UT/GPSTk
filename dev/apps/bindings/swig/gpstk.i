@@ -23,6 +23,7 @@
     #include "../../../src/TimeString.hpp"
     #include "../../../src/YDSTime.hpp"
     #include "../../../src/Exception.hpp"
+    #include "../../../src/TimeSystemCorr.hpp"
 
     // util:
     #include "../../../src/geometry.hpp"
@@ -59,12 +60,12 @@
     #include "../../../src/AlmOrbit.hpp"
     #include "../../../src/YumaHeader.hpp"
     #include "../../../src/EngAlmanac.hpp"
+    #include "../../../src/OrbElem.hpp"
     #include "../../../src/OrbElemStore.hpp"
     #include "../../../src/YumaStream.hpp"
     #include "../../../src/YumaData.hpp"
     #include "../../../src/GPSAlmanacStore.hpp"
     #include "../../../src/YumaAlmanacStore.hpp"
-    #include "../../../src/OrbElemStore.hpp"
     #include "../../../src/SVNumXRef.hpp"
     #include "../../../src/GPSEphemerisStore.hpp"
     #include "../../../src/RinexSatID.hpp"
@@ -74,6 +75,8 @@
     #include "../../../src/EngEphemeris.hpp"
     #include "../../../src/GalEphemeris.hpp"
     #include "../../../src/GalEphemerisStore.hpp"
+    #include "../../../src/GloEphemeris.hpp"
+
     #include "../../../src/RinexClockBase.hpp"
     #include "../../../src/RinexObsBase.hpp"
     #include "../../../src/RinexObsHeader.hpp"
@@ -82,12 +85,20 @@
     #include "../../../src/RinexClockData.hpp"
     #include "../../../src/RinexObsStream.hpp"
 
+    #include "../../../src/Rinex3NavBase.hpp"
+    #include "../../../src/Rinex3NavHeader.hpp"
+    #include "../../../src/Rinex3NavStream.hpp"
+    #include "../../../src/Rinex3NavData.hpp"
+    #include "../../../src/OrbElemRinex.hpp"
+
     #include "../../../src/Rinex3ClockBase.hpp"
     #include "../../../src/Rinex3ObsBase.hpp"
     #include "../../../src/Rinex3ObsHeader.hpp"
+    #include "../../../src/Rinex3ObsData.hpp"
     #include "../../../src/Rinex3ObsStream.hpp"
     #include "../../../src/Rinex3ClockHeader.hpp"
     #include "../../../src/Rinex3ClockData.hpp"
+    #include "../../../src/Rinex3EphemerisStore.hpp"
 
     #include "../../../src/TabularSatStore.hpp"
     #include "../../../src/ClockSatStore.hpp"
@@ -167,25 +178,8 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/YDSTime.hpp"
 %include "../../../src/TimeConverters.hpp"
 %include "src/TimeString.i"
+%include "../../../src/TimeSystemCorr.hpp"
 
-%pythoncode %{
-def now(timeSystem=TimeSystem.Unknown):
-    """Returns the current time (defined by what SystemTime() returns)
-    in a CommonTime format, in the given TimeSystem.
-
-    Parameters:
-            -----------
-
-        timeSystem:  the TimeSystem (enum value) to assign to the output
-    """
-    t = SystemTime().convertToCommonTime()
-    t.setTimeSystem(TimeSystem(timeSystem))
-    return t
-
-def commonTime(timeTag):
-    """Converts a time to a CommonTime using its convertToCommonTime method."""
-    return timeTag.convertToCommonTime()
-%}
 
 // =============================================================
 //  Section 3: General/Utils classes
@@ -234,6 +228,7 @@ def commonTime(timeTag):
 %ignore gpstk::EngAlmanac::getUTC;
 %include "../../../src/EngAlmanac.hpp"
 
+%include "../../../src/OrbElem.hpp"
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
@@ -242,7 +237,6 @@ def commonTime(timeTag):
 %template(FileStore_YumaHeader) gpstk::FileStore<gpstk::YumaHeader>;
 %include "../../../src/YumaAlmanacStore.hpp"
 
-%include "../../../src/OrbElemStore.hpp"
 %include "../../../src/SVNumXRef.hpp"
 %include "../../../src/GPSEphemerisStore.hpp"
 %include "../../../src/RinexSatID.hpp"
@@ -252,6 +246,8 @@ def commonTime(timeTag):
 %include "../../../src/EngEphemeris.hpp"
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
+%include "../../../src/GloEphemeris.hpp"
+// %include "../../../src/GloEphemerisStore.hpp" // not ready yet
 
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"
@@ -261,12 +257,20 @@ def commonTime(timeTag):
 %include "../../../src/RinexClockHeader.hpp"
 %include "../../../src/RinexClockData.hpp"
 
+%include "../../../src/Rinex3NavBase.hpp"
+%include "../../../src/Rinex3NavHeader.hpp"
+%include "../../../src/Rinex3NavStream.hpp"
+%include "../../../src/Rinex3NavData.hpp"
+%include "../../../src/OrbElemRinex.hpp"
+
 %include "../../../src/Rinex3ClockBase.hpp"
 %include "../../../src/Rinex3ObsBase.hpp"
 %include "../../../src/Rinex3ObsHeader.hpp"
+%include "../../../src/Rinex3ObsData.hpp"
 %include "../../../src/Rinex3ObsStream.hpp"
 %include "../../../src/Rinex3ClockHeader.hpp"
 %include "../../../src/Rinex3ClockData.hpp"
+%include "../../../src/Rinex3EphemerisStore.hpp"
 
 %include "../../../src/TabularSatStore.hpp"
 %include "src/ClockSatStore.i"
@@ -277,6 +281,7 @@ def commonTime(timeTag):
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
 
+%rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
 %include "../../../src/SEMBase.hpp"
 %include "../../../src/SEMHeader.hpp"
 %include "../../../src/SEMStream.hpp"
@@ -285,7 +290,8 @@ def commonTime(timeTag):
 %include "../../../src/SEMAlmanacStore.hpp"
 
 
-// encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter
-// when the only change to a class is adding a simple wrapper, add to pythonfunctions
-// instead of creating another small file:
+// Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
+// When the only change to a class is adding a simple wrapper, add to pythonfunctions
+// instead of creating another small file.
 %include "src/pythonfunctions.i"
+%include "src/FileIO.i"

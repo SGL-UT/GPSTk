@@ -91,7 +91,4 @@ namespace gpstk
       return $self->asString();
    }
 
-   std::string __str__() throw() {
-       return $self->asString();
-   }
 };

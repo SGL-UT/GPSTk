@@ -1,21 +1,42 @@
+///////////////////////////////////////////////
+//              Python stuff
+///////////////////////////////////////////////
 %pythoncode %{
 
-ObsID.__str__ = lambda self: asString(self)
+def nlines(fileName):
+    count = 0
+    with open(fileName) as infp:
+        for line in infp:
+            count += 1
+    return count
 
-Xv.__str__ = lambda self: 'x:'+ self.x.__str__() + ', v:' + self.v.__str__()
-def xvt_str(self):
-    output = 'x:' + str(self.x)
-    output += ', v:' + str(self.v)
-    output += ', clk bias:' + str(self.clkbias)
-    output += ', clk drift:' + str(self.clkdrift)
-    output += ', relcorr:' + str(self.relcorr)
-    return output
-Xvt.__str__ = xvt_str
 
-SatID.__str__ = lambda self: asString(self)
+def now(timeSystem=TimeSystem.Unknown):
+    """Returns the current time (defined by what SystemTime() returns)
+    in a CommonTime format, in the given TimeSystem.
 
+    Parameters:
+            -----------
+
+        timeSystem:  the TimeSystem (enum value) to assign to the output
+    """
+    t = SystemTime().convertToCommonTime()
+    t.setTimeSystem(TimeSystem(timeSystem))
+    return t
+
+
+
+def commonTime(timeTag):
+    """Converts a time to a CommonTime using its convertToCommonTime method."""
+    return timeTag.convertToCommonTime()
 %}
 
+
+
+
+///////////////////////////////////////////////
+//           C++ extension stuff
+///////////////////////////////////////////////
 %extend gpstk::ReferenceFrame {
 	std::string gpstk::ReferenceFrame::__str__() {
         int f = static_cast<int>($self->getFrame());
@@ -25,11 +46,55 @@ SatID.__str__ = lambda self: asString(self)
 	}
 }
 
-%extend gpstk::SEMHeader {
-    std::string __str__() {
+
+
+///////////////////////////////////////////////
+//            macro string stuff
+///////////////////////////////////////////////
+// Uses the dump method in the class to get string output
+%define STR_DUMP_HELPER(name)
+%extend gpstk:: ## name {
+     std::string __str__() {
         std::ostringstream stream;
         $self->dump(stream);
         return stream.str();
     }
 }
+%enddef
+STR_DUMP_HELPER(AlmOrbit)
+STR_DUMP_HELPER(Rinex3EphemerisStore)
+STR_DUMP_HELPER(Rinex3ObsHeader)
+STR_DUMP_HELPER(Rinex3ObsData)
+STR_DUMP_HELPER(Rinex3NavData)
+STR_DUMP_HELPER(Rinex3NavHeader)
+STR_DUMP_HELPER(SEMData)
+STR_DUMP_HELPER(SEMHeader)
 
+
+
+// Uses the operator<< in the class to get string output
+%define STR_STREAM_HELPER(name)
+%extend gpstk:: ##name {
+    std::string __str__() {
+        std::ostringstream stream;
+        stream << *($self);
+        return stream.str();
+    }
+}
+%enddef
+STR_STREAM_HELPER(Xv)
+STR_STREAM_HELPER(Xvt)
+
+
+
+
+// Uses gpstk::StringUtils::asString(x) to get string output
+%define AS_STRING_HELPER(name)
+%extend gpstk:: ##name {
+    std::string __str__() {
+        return gpstk::StringUtils::asString(*($self));
+    }
+}
+%enddef
+AS_STRING_HELPER(ObsID)
+AS_STRING_HELPER(SatID)
