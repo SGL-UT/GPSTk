@@ -1,4 +1,4 @@
-gpstk.py
+gpstk_pylib.py
 
 *.pyc
 *.cxx

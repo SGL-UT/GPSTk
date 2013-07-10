@@ -16,8 +16,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_SWIG_FLAGS "-w362,383,384,503")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
-set_source_files_properties(gpstk.i PROPERTIES CPLUSPLUS ON)
-swig_add_module(gpstk python gpstk.i
+set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
+swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/AlmOrbit.cpp
                     ../../../src/ANSITime.cpp
                     ../../../src/AstronomicalFunctions.cpp
@@ -86,7 +86,9 @@ swig_add_module(gpstk python gpstk.i
                     ../../../src/YumaData.cpp
                     )
 
-swig_link_libraries(gpstk ${PYTHON_LIBRARIES})
+swig_link_libraries(gpstk_pylib ${PYTHON_LIBRARIES})
 
   # copies timeconvert.py to build directory
+
 configure_file(examples/timeconvert.py timeconvert.py COPYONLY)
+configure_file(module_builder.py module_builder.py COPYONLY)
