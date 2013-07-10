@@ -88,5 +88,27 @@ class GPSAlmanacStoreTest(unittest.TestCase):
         g.addAlmanac(e)
 
 
+class SEMTest(unittest.TestCase):
+    def test_fileIO(self):
+        header, data = readSEM('sem_plot_data.txt')
+        self.assertEqual(724, header.week)
+        self.assertEqual(405504L, header.Toa)
+        self.assertEqual(len(data), 32)
+        dataPoint = data[15]
+        self.assertEqual(16, dataPoint.PRN)
+        self.assertAlmostEqual(0.00711489, dataPoint.ecc)
+
+
+class YumaTest(unittest.TestCase):
+    def test_fileIO(self):
+        header, data = readYuma('yuma_data.txt')
+        self.assertEqual(31, len(data))
+        dataPoint = data[10]
+        self.assertAlmostEqual(0.0, dataPoint.AF1)
+        self.assertEqual(11L, dataPoint.PRN)
+        self.assertAlmostEqual(0.006191730499, dataPoint.ecc)
+        self.assertEqual(377L, dataPoint.week)
+
+
 if __name__ == '__main__':
     unittest.main()
