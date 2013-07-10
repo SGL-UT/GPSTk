@@ -27,7 +27,7 @@ def main():
 
         X.append(t.getSecondOfDay())
         Y.append(elevation)
-        t.addSeconds(60*30)
+        t.addSeconds(60*10)
 
     # Make the plot
     fig = plt.figure()
@@ -36,7 +36,7 @@ def main():
     ax = fig.add_subplot(111)
     ax.set_xlabel('Time (seconds)')
     ax.set_ylabel('Elevation (degrees)')
-    plt.plot(X, Y, 'ro')
+    plt.plot(X, Y, 'r')
     plt.show()
 
 
