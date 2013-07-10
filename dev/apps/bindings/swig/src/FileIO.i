@@ -27,21 +27,21 @@ def read ##FORMATNAME(fileName, lazy=False):
     """This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
 
+    Warning: if there are extra blank lines at the end of the file,
+    invalid DATANAME objects may be put at the end of the data sequence.
+
     Parameters:
     -----------
 
       lazy:  if the data object sequence should be lazily evaluated.
              If it is, it will be a generator, otherwise, it will be a list.
     """
-    num_lines = nlines(fileName)
-    stream = STREAMNAME (fileName)
+    num_lines = _nlines(fileName)
+    stream = _ ##STREAMNAME (fileName)
     header = stream.readHeader()
     def read ##DATANAME (fileName):
-        while True:
-            if stream.lineNumber <= num_lines:
-                yield stream.readData()
-            else:
-                break
+        while stream.lineNumber <= num_lines:
+            yield stream.readData()
     if lazy:
         return (header, read ##DATANAME (fileName))
     else:
@@ -61,7 +61,7 @@ def write ##FORMATNAME(fileName, header, data):
 
       data:  the sequence of ##DATANAME objects
     """
-    s = STREAMNAME .out ##STREAMNAME (fileName)
+    s = _ ##STREAMNAME .out ##STREAMNAME (fileName)
     s.writeHeader(header)
     for d in data:
         s.writeData(d)

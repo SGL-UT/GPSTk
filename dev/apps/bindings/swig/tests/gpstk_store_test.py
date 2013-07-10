@@ -95,7 +95,7 @@ class SEMTest(unittest.TestCase):
         header, data = readSEM('sem_plot_data.txt')
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
-        self.assertEqual(len(data), 32)
+        self.assertEqual(32, len(data))
         dataPoint = data[15]
         self.assertEqual(16, dataPoint.PRN)
         self.assertAlmostEqual(0.00711489, dataPoint.ecc)
