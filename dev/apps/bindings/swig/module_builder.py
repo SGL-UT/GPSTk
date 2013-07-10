@@ -7,15 +7,18 @@ import os
 
 # Any object that is exactly a string in this list will be ignored
 ignore_exact = [
-
 ]
 
 # Any object that contains a string in this list will be ignored
 ignore_patterns = [
 'swigregister',
 'gpstk_pylib',
+'ObsIDInitializer',
 'Stream',
+'EngNav_',
+'OrbElem_',
 'Position_',
+'TimeTag_',
 'RinexObsHeader_',
 ]
 
