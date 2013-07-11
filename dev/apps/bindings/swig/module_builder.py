@@ -6,9 +6,14 @@ Usage:
 
     python module_builder.py ~/.local/lib/python2.7/site-packages
     This runs the program and builds to ~/.local/lib/python2.7/site-packages/
+
+    python module_builder.py C:\Python27\Lib\site-packages
+    This runs the program and builds to C:\Python27\Lib\site-packages/
 """
 
+
 import argparse
+import distutils.dir_util
 import os
 import shutil
 import sys
@@ -16,22 +21,29 @@ import sys
 
 # Any object that is exactly a string in this list will be ignored
 ignore_exact = [
-'FFData'
-''
+'cvar',
+'FFData',
+'Rinex3ObsBase',
+'SEMBase',
+'SP3Base',
 ]
+
 
 # Any object that contains a string in this list will be ignored
 ignore_patterns = [
-'swigregister',
-'gpstk_pylib',
-'ObsIDInitializer',
-'Stream',
 'EngNav_',
+'FileStore',
+'gpstk_pylib',
+'ObsID_',
+'ObsIDInitializer',
 'OrbElem_',
 'Position_',
-'TimeTag_',
 'RinexObsHeader_',
-'VectorBase'
+'Stream',
+'swigregister',
+'TimeTag_',
+'VectorBase',
+'XvtStore',
 ]
 
 
@@ -48,7 +60,14 @@ def should_be_added(name):
         return True
 
 
-def main(arg='.'):
+def main():
+    if len(sys.argv) >= 2:
+        out_dir = os.path.join(sys.argv[1], 'gpstk/')
+    else:
+        out_dir = 'gpstk'
+
+    print 'Placing gpstk build files in', out_dir
+
     # Create __init__.py file
     import gpstk_pylib
     namespace = dir(gpstk_pylib)
@@ -62,15 +81,14 @@ def main(arg='.'):
             out_file.write('\n')
 
     # Create gpstk folder, move things into it
-    out_dir = 'gpstk/'
     files_to_move = ['gpstk_pylib.py', '__init__.py']
-
     # we don't know extension of library file, so search the directory:
     files = [f for f in os.listdir('.') if os.path.isfile(f)]
     for f in files:
         if '_gpstk_pylib' in f:
             files_to_move.append(f)
 
+    # build to local gpstk folder
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     for f in files_to_move:
@@ -79,13 +97,6 @@ def main(arg='.'):
         # adds pyc file if it exists:
         if os.path.exists(f + 'c'):
             os.rename(f + 'c', out_dir + f + 'c')
-
-    if len(sys.argv) >= 2:
-        if (sys.argv[1])[-1] != '/' and (sys.argv[1])[-1] != '\\':
-            sys.argv[1] = sys.argv[1] + '/'
-        out = sys.argv[1] + out_dir
-        shutil.rmtree(out)
-        shutil.move(out_dir, out)
 
 
 if __name__ == '__main__':
