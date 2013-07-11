@@ -1,34 +1,31 @@
-%define STREAM_HELPER(FORMATNAME,STREAMNAME,HEADERNAME,DATANAME)
-%extend gpstk:: ##STREAMNAME {
-    static gpstk:: ##STREAMNAME * out ##STREAMNAME(std::string fileName) {
-        return new STREAMNAME (fileName.c_str(), std::ios::out|std::ios::trunc);
+%define STREAM_HELPER(FORMATNAME,OP)
+%extend gpstk:: ## FORMATNAME ## Stream {
+    static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(std::string fileName) {
+        return new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
     }
 
-    gpstk:: ##HEADERNAME readHeader() {
-        gpstk:: ##HEADERNAME head;
+    gpstk:: ## FORMATNAME ## Header readHeader() {
+        gpstk:: ##FORMATNAME ## Header head;
         (*($self)) >> head;
         return head;
     }
-    gpstk:: ##DATANAME readData() {
-        gpstk:: ##DATANAME data;
+    gpstk:: ## FORMATNAME ## Data readData() {
+        gpstk:: ## FORMATNAME ##Data data;
         (*($self)) >> data;
         return data;
     }
-    void writeHeader(const gpstk:: ##HEADERNAME & head) {
+    void writeHeader(const gpstk:: ## FORMATNAME ## Header & head) {
         (*($self)) << head;
     }
-    void writeData(const gpstk:: ##DATANAME & data) {
+    void writeData(const gpstk:: ## FORMATNAME ## Data & data) {
         (*($self)) << data;
     }
 }
 
 %pythoncode {
-def read ##FORMATNAME(fileName, lazy=False):
+def read ## FORMATNAME(fileName, lazy=False):
     """This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
-
-    Warning: if there are extra blank lines at the end of the file,
-    invalid DATANAME objects may be put at the end of the data sequence.
 
     Parameters:
     -----------
@@ -37,19 +34,19 @@ def read ##FORMATNAME(fileName, lazy=False):
              If it is, it will be a generator, otherwise, it will be a list.
     """
     num_lines = _nlines(fileName)
-    stream = _ ##STREAMNAME (fileName)
+    stream = FORMATNAME ## Stream (fileName)
     header = stream.readHeader()
-    def read ##DATANAME (fileName):
-        while stream.lineNumber <= num_lines:
+    def read ## FORMATNAME ## Data (fileName):
+        while stream.lineNumber OP num_lines:
             yield stream.readData()
     if lazy:
-        return (header, read ##DATANAME (fileName))
+        return (header, read ##FORMATNAME ## Data (fileName))
     else:
-        return (header, [x for x in read ##DATANAME (fileName)])
+        return (header, [x for x in read ## FORMATNAME ## Data (fileName)])
 
 
-def write ##FORMATNAME(fileName, header, data):
-    """Writes a HEADERNAME and sequence of ##DATANAME objects to a file.
+def write ## FORMATNAME(fileName, header, data):
+    """Writes a FORMATNAME ## Header and sequence of FORMATNAME ## Data objects to a file.
     Note that this overwrites the file if it already exists.
 
     Parameters:
@@ -57,18 +54,18 @@ def write ##FORMATNAME(fileName, header, data):
 
       fileName:  the name of the file to write to.
 
-      header:  the ##HEADERNAME object
+      header:  the FORMATNAME ## Header object
 
-      data:  the sequence of ##DATANAME objects
+      data:  the sequence of FORMATNAME ##Data objects
     """
-    s = _ ##STREAMNAME .out ##STREAMNAME (fileName)
+    s = FORMATNAME ## Stream .out ##FORMATNAME ## Stream (fileName)
     s.writeHeader(header)
     for d in data:
         s.writeData(d)
 }
 %enddef
 
-
-STREAM_HELPER(SEM,SEMStream,SEMHeader,SEMData)
-STREAM_HELPER(SP3,SP3Stream,SP3Header,SP3Data)
-STREAM_HELPER(Yuma,YumaStream,YumaHeader,YumaData)
+STREAM_HELPER(SEM,<=)
+STREAM_HELPER(SP3,<=)
+STREAM_HELPER(Yuma,<=)
+STREAM_HELPER(Rinex3Obs,<)

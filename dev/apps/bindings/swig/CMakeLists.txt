@@ -90,5 +90,4 @@ swig_link_libraries(gpstk_pylib ${PYTHON_LIBRARIES})
 
   # copies timeconvert.py to build directory
 
-configure_file(examples/timeconvert.py timeconvert.py COPYONLY)
 configure_file(module_builder.py module_builder.py COPYONLY)

@@ -112,5 +112,11 @@ class YumaTest(unittest.TestCase):
         self.assertEqual(377L, dataPoint.week)
 
 
+class Rinex3ObsTest(unittest.TestCase):
+    def test_fileIO(self):
+        header, data = readRinex3Obs('bahr1620.04o')
+        self.assertEqual(120, len(data))
+
+
 if __name__ == '__main__':
     unittest.main()

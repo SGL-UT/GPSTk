@@ -232,7 +232,6 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/OrbElem.hpp"
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
-%rename (_YumaStream) gpstk::YumaStream;
 %include "../../../src/YumaStream.hpp"
 %include "../../../src/YumaData.hpp"
 %include "../../../src/GPSAlmanacStore.hpp"
@@ -280,7 +279,6 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/TabularSatStore.hpp"
 %include "src/ClockSatStore.i"
 
-%rename (_SP3Stream) gpstk::SP3Stream;
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
 %include "../../../src/SP3Header.hpp"
@@ -290,7 +288,6 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/SP3EphemerisStore.hpp"
 
 %rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
-%rename (_SEMStream) gpstk::SEMStream;
 %include "../../../src/SEMBase.hpp"
 %include "../../../src/SEMHeader.hpp"
 %include "../../../src/SEMStream.hpp"
