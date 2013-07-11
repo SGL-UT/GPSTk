@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -145,10 +145,10 @@ struct TableData
 {
    RinexSatID sat;
    vector<int> nobs;                   // number of data for each obs type
-   vector<int> gapcount;               // 
+   vector<int> gapcount;               //
    double prevC1, prevP1, prevL1;
    CommonTime begin, end;
-   
+
    // c'tor
    TableData(const SatID& p, const int& n) {
       sat = RinexSatID(p);
@@ -161,7 +161,7 @@ struct TableData
    inline bool operator==(const TableData& d) { return d.sat == sat; }
 };
 // needed for sort()
-class TableSATLessThan {      
+class TableSATLessThan {
    public:
    bool operator()(const TableData& d1, const TableData& d2)
       { return d1.sat < d2.sat; }
@@ -193,7 +193,7 @@ try {
    // build title = first line of output
    C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
-   
+
    for(;;) {
       // get information from the command line
       // iret -2 -3 -4
@@ -593,16 +593,16 @@ try {
 
       prevObsTime = CommonTime::BEGINNING_OF_TIME;
       firstObsTime = CommonTime::BEGINNING_OF_TIME;
-         
+
       // initialize for all systems in the header
       map<std::string,vector<RinexObsID> >::const_iterator sit;
       for(sit=Rhead.mapObsTypes.begin(); sit != Rhead.mapObsTypes.end(); ++sit) {
          // Initialize the vectors contained in the map
          totals[(sit->first)[0]] = vector<int>((sit->second).size());
-         
+
          LOG(DEBUG) << "GNSS " << (sit->first) << " is present with "
                  << (sit->second).size() << " observations...";
-         
+
          // find the max size of obs list
          if((sit->second).size() > nmaxobs) nmaxobs = (sit->second).size();
       }
@@ -699,7 +699,7 @@ try {
             else if(find(C.exSats.begin(), C.exSats.end(), RinexSatID(-1,sat.system))
                   != C.exSats.end()) continue;
 
-            const vector<Rinex3ObsData::RinexDatum>& vecData(it->second);
+            const vector<RinexDatum>& vecData(it->second);
 
             // find this sat in the table; add it if necessary
             vector<TableData>::iterator ptab;
@@ -820,7 +820,7 @@ try {
             << dt << " seconds.";
       LOG(INFO) << "Computed first epoch: " << printTime(firstObsTime,C.longfmt);
       LOG(INFO) << "Computed last  epoch: " << printTime(lastObsTime,C.longfmt);
-      
+
       // compute time span of dataset in days/hours/minutes/seconds
       oss.str("");
       oss << "Computed time span: ";
@@ -832,32 +832,32 @@ try {
       delta.minute = remainder / 60;    remainder %= 60;
       delta.second = remainder;
       if(delta.day > 0) oss << delta.day << "d ";
-      
+
       LOG(INFO) << oss.str() << delta.hour << "h " << delta.minute << "m "
             << delta.second << "s = " << secs << " seconds.";
 
       LOG(INFO) << "Computed file size: " << filesize << " bytes.";
-      
+
       // Reusing secs, as it is equivalent to the original expression
       // i = 1+int(0.5+(lastObsTime-firstObsTime)/dt);
       i = 1+int(0.5 + secs / dt);
-      
+
       LOG(INFO) << "There were " << nepochs << " epochs ("
             << fixed << setprecision(2) << double(nepochs*100)/i
             << "% of " << i << " possible epochs in this timespan) and "
             << ncommentblocks << " inline header blocks.";
-      
+
       // Sort table
       if(C.sorttime)
          sort(table.begin(),table.end(),TableBegLessThan());
       else
          sort(table.begin(),table.end(),TableSATLessThan());
-      
+
       // output table
       // header
       vector<TableData>::iterator tabIt;
       if(table.size() > 0) table.begin()->sat.setfill('0');
-      
+
       if(!C.brief && !C.notab) {                  // non-brief output ------------
          LOG(INFO) << "\n      Summary of data available in this file: "
                << "(Spans are based on times and interval)";
@@ -896,14 +896,14 @@ try {
                   int obsSize = (Rhead.mapObsTypes.find(sysChar)->second).size();
                   for(k = 0; k < obsSize; k++)
                      oss << setw(7) << tabIt->nobs[k];
-                  
+
                   oss << setw(7) << 1+int(0.5+(tabIt->end-tabIt->begin)/dt);
-                  
+
                   LOG(INFO) << oss.str() << "  " << printTime(tabIt->begin,fmt)
                        << " - " << printTime(tabIt->end,fmt);
                }
             }
-            
+
             oss.str("");
             oss << "TOTAL";
             for(k=0; k<vec.size(); k++) oss << setw(7) << vec[k];
@@ -924,7 +924,7 @@ try {
             }
          }
          LOG(INFO) << oss.str();
-         
+
          // output obs types
          map<std::string,vector<RinexObsID> >::const_iterator sysIter;
          for(sysIter= Rhead.mapObsTypes.begin(); sysIter != Rhead.mapObsTypes.end(); ++sysIter) {
@@ -934,7 +934,7 @@ try {
             oss.str("");
             oss << "System " << RinexSatID(sysCode).systemString3()
                << " Obs types(" << vec.size() << "): ";
-            
+
             for(i=0; i<vec.size(); i++) oss << " " << asString(vec[i]);
             LOG(INFO) << oss.str();
          }
@@ -962,7 +962,7 @@ try {
          //for(i=0; i<C.gapcount.size(); i++) oss << " " << C.gapcount[i]
          //         << "(" << int(C.gapcount[i]/double(C.vres)) << ")";
          //oss << "\n";
-         
+
          // loop over sats
          for(tabIt = table.begin(); tabIt != table.end(); ++tabIt) {
             k = tabIt->gapcount.size() - 1;
@@ -1067,7 +1067,7 @@ try {
                LOG(INFO) << oss.str();
                //LOG(INFO) << ossvt.str() << " " << kk << "-";
             }
-      
+
             if(C.vistab) {
                LOG(INFO) << "\n Visibility Timetable - resolution is "
                   << dn << " epochs = " << dn*C.gapdt << " seconds.\n"
@@ -1203,7 +1203,7 @@ try {
                   << sat.systemString() << " should be removed from the header.";}
          }
       }
-         
+
       // failure due to critical error
       if(iret < 0) break;
 
