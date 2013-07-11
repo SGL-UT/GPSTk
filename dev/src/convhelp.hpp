@@ -66,9 +66,9 @@ namespace gpstk
        * @return Range in meters
        * @see meters2cycles
        */
-   inline double cycles2meters(double phase, double freq,const GeoidModel& geoid)
+   inline double cycles2meters(double phase, double freq, EllipsoidModel& ellipsoid)
    {
-      return geoid.c()/freq * phase;
+      return ellipsoid.c()/freq * phase;
    }
    
       /**
@@ -79,9 +79,9 @@ namespace gpstk
        * @return Phase in cycles (radians?)
        * @see cycles2meters
        */
-   inline double meters2cycles(double range, double freq, const GeoidModel& geoid)
+   inline double meters2cycles(double range, double freq, EllipsoidModel& ellipsoid)
    {
-      return freq/geoid.c() * range;
+      return freq/ellipsoid.c() * range;
    }
    
       /**
