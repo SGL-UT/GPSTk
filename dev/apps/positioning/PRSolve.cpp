@@ -863,8 +863,8 @@ try {
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
-      if(::fabs(s-sow) > 1.0) {LOG(WARNING) << "Warning : decimation reference time "
-         << "(--start) is not an even GPS-seconds-of-week mark.";}
+      if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
+         << "(--start) is not an even GPS-seconds-of-week mark.";
    }
 
    // ------ compute rotation matrix for knownPos
@@ -1216,8 +1216,8 @@ try {
             if(!C.SolObjs[i].isValid) continue;
 
             // dump the "DAT" record
-            if(C.verbose) {LOG(VERBOSE)
-               << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);}
+            if(C.verbose) LOG(VERBOSE)
+               << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);
 
             // compute the solution
             j = C.SolObjs[i].ComputeSolution(Rdata.time);
@@ -2376,12 +2376,12 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
             LOG(INFO) << prs.outputString(string("SPS ")+Descriptor,iret);
 
             if(prs.RMSFlag || prs.SlopeFlag || prs.TropFlag)
-               {LOG(WARNING) << "Warning for " << Descriptor
+               LOG(WARNING) << "Warning for " << Descriptor
                   << " - possible degraded SPS solution at "
                   << printTime(ttag,C.longfmt) << " due to"
                   << (prs.RMSFlag ? " large RMS":"")           // NB strings are used
                   << (prs.SlopeFlag ? " large slope":"")       // in PRSplot.pl
-                  << (prs.TropFlag ? " missed trop. corr.":"");}
+                  << (prs.TropFlag ? " missed trop. corr.":"");
 
             // compute residuals using known position, output XYZ resids, NEU resids
             if(C.knownPos.getCoordinateSystem() != Position::Unknown && iret >= 0) {
@@ -2431,21 +2431,21 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
       LOG(INFO) << prs.outputString(string("RPF ")+Descriptor,iret);
 
       if(prs.RMSFlag || prs.SlopeFlag || prs.TropFlag)
-         {LOG(WARNING) << "Warning for " << Descriptor
+         LOG(WARNING) << "Warning for " << Descriptor
             << " - possible degraded RPF solution at "
             << printTime(ttag,C.longfmt) << " due to"
             << (prs.RMSFlag ? " large RMS":"")           // NB these strings are used
             << (prs.SlopeFlag ? " large slope":"")       // in PRSplot.pl
-            << (prs.TropFlag ? " missed trop. corr.":"");}
+            << (prs.TropFlag ? " missed trop. corr.":"");
 
       // dump pre-fit residuals
       if(prs.hasMemory && ++nepochs > 1)
-         {LOG(VERBOSE) << "RPF " << Descriptor << " PFR"
+         LOG(VERBOSE) << "RPF " << Descriptor << " PFR"
             << " " << printTime(ttag,C.gpsfmt)              // time
             << fixed << setprecision(3)
             << " " << ::sqrt(prs.memory.getAPV())           // sig(APV)
             << " " << setw(2) << prs.PreFitResidual.size()  // n resids
-            << " " << prs.PreFitResidual;}                   // pre-fit residuals
+            << " " << prs.PreFitResidual;                   // pre-fit residuals
 
       // compute residuals using known position, and output XYZ resids, NEU resids
       if(C.knownPos.getCoordinateSystem() != Position::Unknown && iret >= 0) {
