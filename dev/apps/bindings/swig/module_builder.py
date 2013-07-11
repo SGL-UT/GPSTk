@@ -1,12 +1,23 @@
-"""GPSTk module __init__.py generator. This file should NOT be run
-manually, but scriped into the build system.
+"""GPSTk module __init__.py generator and build finisher.
+
+Usage:
+    python module_builder.py
+    This runs the program and builds to the gpstk folder in the current directory.
+
+    python module_builder.py ~/.local/lib/python2.7/site-packages
+    This runs the program and builds to ~/.local/lib/python2.7/site-packages/
 """
 
+import argparse
 import os
+import shutil
+import sys
 
 
 # Any object that is exactly a string in this list will be ignored
 ignore_exact = [
+'FFData'
+''
 ]
 
 # Any object that contains a string in this list will be ignored
@@ -20,6 +31,7 @@ ignore_patterns = [
 'Position_',
 'TimeTag_',
 'RinexObsHeader_',
+'VectorBase'
 ]
 
 
@@ -36,7 +48,7 @@ def should_be_added(name):
         return True
 
 
-def main():
+def main(arg='.'):
     # Create __init__.py file
     import gpstk_pylib
     namespace = dir(gpstk_pylib)
@@ -62,7 +74,18 @@ def main():
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
     for f in files_to_move:
-        os.rename(f, out_dir + f)
+        if os.path.exists(f):
+            os.rename(f, out_dir + f)
+        # adds pyc file if it exists:
+        if os.path.exists(f + 'c'):
+            os.rename(f + 'c', out_dir + f + 'c')
+
+    if len(sys.argv) >= 2:
+        if (sys.argv[1])[-1] != '/' and (sys.argv[1])[-1] != '\\':
+            sys.argv[1] = sys.argv[1] + '/'
+        out = sys.argv[1] + out_dir
+        shutil.rmtree(out)
+        shutil.move(out_dir, out)
 
 
 if __name__ == '__main__':
