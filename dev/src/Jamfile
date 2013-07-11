@@ -41,16 +41,8 @@ else
       CivilTime.cpp
       ClockSatStore.cpp
       CNAVClock.cpp
-      CNavDataElement.cpp
-      CNavDataElementStore.cpp
-      CNavEOP.cpp
       CNAVEphemeris.cpp
-      CNavGGTO.cpp
-      CNavISC.cpp
       CNAV2EphClk.cpp
-      CNavMsg12.cpp
-      CNavText.cpp
-      CNavUTC.cpp
       CodeBuffer.cpp
       CommandLine.cpp
       CommandOption.cpp
@@ -121,6 +113,7 @@ else
       ObsClockModel.cpp
       ObsEpochMap.cpp
       ObsID.cpp
+      ObsIDInitializer.cpp
       ObsRngDev.cpp
       OceanLoading.cpp
       OrbElem.cpp
@@ -130,7 +123,6 @@ else
       OrbElemFIC9.cpp
       OrbElemICE.cpp
       OrbElemLNav.cpp
-      OrbElemReducedAlm.cpp
       OrbElemRinex.cpp
       PackedNavBits.cpp
       PlanetEphemeris.cpp
@@ -231,16 +223,8 @@ else
       ClockModel.hpp
       ClockSatStore.hpp
       CNAVClock.hpp
-      CNavDataElement.hpp
-      CNavDataElementStore.cpp
-      CNavEOP.hpp
       CNAVEphemeris.hpp
-      CNavGGTO.hpp
-      CNavISC.hpp
       CNAV2EphClk.hpp
-      CNavMsg12.hpp
-      CNavText.hpp
-      CNavUTC.hpp
       CodeBuffer.hpp
       Combinations.hpp
       CommandLine.hpp
@@ -351,7 +335,8 @@ else
       NEDUtil.hpp
       ObsClockModel.hpp	
       ObsEpochMap.hpp	
-      ObsID.hpp	
+      ObsID.hpp
+      ObsIDInitializer.hpp	
       ObsRngDev.hpp	
       OceanLoading.hpp	
       OrbElem.hpp
@@ -361,9 +346,8 @@ else
       OrbElemFIC9.hpp
       OrbElemICE.hpp
       OrbElemLNav.hpp
-      OrbElemReducedAlm.hpp
-      OrbElemRinex.hpp	
       OrbElemStore.hpp
+      OrbElemRinex.hpp	
       ORDEpoch.hpp
       PackedNavBits.hpp	
       PCodeConst.hpp	

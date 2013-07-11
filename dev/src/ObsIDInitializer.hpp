@@ -59,3 +59,4 @@ namespace gpstk {
 }
 
 #endif   // OBSIDINIT_HPP
+

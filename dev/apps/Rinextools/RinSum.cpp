@@ -206,7 +206,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
+      if(!errs.empty()) {LOG(INFO) << errs;  }       // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -250,7 +250,7 @@ try {
    if(C.InputObsFiles.size() > 1) {
       C.msg = sortRinex3ObsFiles(C.InputObsFiles);
       if(!C.msg.empty())
-         LOG(ERROR) << C.msg;
+         {LOG(ERROR) << C.msg;}
    }
 
    // -------- save errors and output
@@ -348,7 +348,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       oss << "------ End configuration summary ------";
       LOG(VERBOSE) << oss.str();
    }
-   if(!cmdlineExtras.empty()) LOG(INFO) << "\n" << cmdlineExtras;
+   if(!cmdlineExtras.empty()) {LOG(INFO) << "\n" << cmdlineExtras;}
 
    return 0;
 
@@ -543,8 +543,8 @@ try {
       istrm.exceptions(ios::failbit);
 
       // output file name
-      if(!C.brief) LOG(INFO) << "+++++++++++++ " << C.PrgmName
-            << " summary of Rinex obs file " << filename << " +++++++++++++";
+      if(!C.brief) {LOG(INFO) << "+++++++++++++ " << C.PrgmName
+            << " summary of Rinex obs file " << filename << " +++++++++++++";}
 
       // get file size
       istrm.seekg(0,ios::end);
@@ -564,7 +564,7 @@ try {
 
       // output file name and header
       if(C.brief) {
-         if(nfile > 0) LOG(INFO) << "";
+         if(nfile > 0) {LOG(INFO) << "";}
          LOG(INFO) << "File name: " << filename
             << " (RINEX ver. " << Rhead.version << ")";
          LOG(INFO) << "Marker name: " << Rhead.markerName;
@@ -581,8 +581,8 @@ try {
 
       if(!Rhead.isValid()) {
          LOG(INFO) << "Abort: header is invalid.";
-         if(!C.brief) LOG(INFO) << "\n+++++++++++++ End of RinSum summary of "
-                     << filename << " +++++++++++++";
+         if(!C.brief) {LOG(INFO) << "\n+++++++++++++ End of RinSum summary of "
+                     << filename << " +++++++++++++";}
          continue;
       }
 
@@ -608,7 +608,7 @@ try {
       }
 
       if(pLOGstrm == &cout && !C.brief)
-         LOG(INFO) << "\nReading the observation data...";
+         {LOG(INFO) << "\nReading the observation data...";}
 
       // loop over epochs ---------------------------------------------
       while(1) {
@@ -656,8 +656,8 @@ try {
 
          // if aux header data, either output or skip
          if(Rdata.epochFlag > 1) {
-            if(C.debug > -1) for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
-               LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
+            if(C.debug > -1) {for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
+               LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];}
             ncommentblocks++;
             continue;
          }
@@ -756,7 +756,7 @@ try {
                   << " " << vecData[index].ssi;
 
             } // end loop over observations
-            if(C.debug > -1) LOG(DEBUG) << oss.str();
+            if(C.debug > -1) {LOG(DEBUG) << oss.str();}
 
          }  // end loop over satellites
 
@@ -876,7 +876,7 @@ try {
             if(i == 0) continue;
 
             // print the table
-            if(++j > 1) LOG(INFO) << "";
+            if(++j > 1) {LOG(INFO) << "";}
             LOG(INFO) << "System " << sit->first <<" = "<< sat.systemString() << ":";
             oss.str("");
             oss << " Sat\\OT:";
@@ -1179,16 +1179,16 @@ try {
       // Warnings
       if((Rhead.valid & Rinex3ObsHeader::validInterval)
                                           && fabs(dt-Rhead.interval) > 1.e-3)
-         LOG(INFO) << " Warning - Computed interval is " << setprecision(2)
+         {LOG(INFO) << " Warning - Computed interval is " << setprecision(2)
                << dt << " sec, while input header has " << setprecision(2)
-               << Rhead.interval << " sec.";
+               << Rhead.interval << " sec.";}
 
       if(fabs(firstObsTime-Rhead.firstObs) > 1.e-8)
-         LOG(INFO) << " Warning - Computed first time does not agree with header";
+         {LOG(INFO) << " Warning - Computed first time does not agree with header";}
 
       if((Rhead.valid & Rinex3ObsHeader::validLastTime)
                                           && fabs(lastObsTime-Rhead.lastObs) > 1.e-8)
-         LOG(INFO) << " Warning - Computed last time does not agree with header";
+         {LOG(INFO) << " Warning - Computed last time does not agree with header";}
 
       for(sit=Rhead.mapObsTypes.begin(); sit != Rhead.mapObsTypes.end(); ++sit) {
          map<char,vector<int> >::const_iterator totIt(totals.find(sit->first[0]));
@@ -1199,8 +1199,8 @@ try {
             RinexSatID sat(sit->first);
             if(find(C.exSats.begin(), C.exSats.end(),
                   RinexSatID(-1,sat.system)) == C.exSats.end())
-               LOG(INFO) << " Warning - System " << sit->first << " = "
-                  << sat.systemString() << " should be removed from the header.";
+               {LOG(INFO) << " Warning - System " << sit->first << " = "
+                  << sat.systemString() << " should be removed from the header.";}
          }
       }
          
