@@ -284,7 +284,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
+      if(!errs.empty()) {LOG(INFO) << errs; }        // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -524,8 +524,8 @@ try {
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
-      if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
-         << "(--start) is not an even GPS-seconds-of-week mark.";
+      if(::fabs(s-sow) > 1.0) {LOG(WARNING) << "Warning : decimation reference time "
+         << "(--start) is not an even GPS-seconds-of-week mark.";}
       C.decTime = static_cast<CommonTime>(
          GPSWeekSecond(static_cast<GPSWeekSecond>(C.decTime).week,0.0));
    }
@@ -815,7 +815,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(iret == -3) return iret;      // invalid command line
 
    // help: print syntax page and quit
-   if(opts.hasHelp() || typehelp || combohelp) LOG(INFO) << cmdlineUsage;
+   if(opts.hasHelp() || typehelp || combohelp) {LOG(INFO) << cmdlineUsage;}
       //return 1; // return below
 
    if(combohelp) {
@@ -915,7 +915,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       for(int i=0; i<syss.size(); ++i) {
          it = table.find(RinexSatID(string(1,syss[i])).systemString3());
          if(it == table.end()) continue;
-         if(i > 0) LOG(INFO) << "";
+         if(i > 0) {LOG(INFO) << "";}
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
             for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
                LOG(INFO) << " " << it->first // GPS
@@ -1457,12 +1457,12 @@ try {
 
          // write file name and header line(s)
          if(C.havePOS)
-            LOG(INFO) << "# wk secs-of-wk POS" 
+            {LOG(INFO) << "# wk secs-of-wk POS" 
                << " Sol-Desc        X            Y           Z"
-               << "     SYS Clk[...] Nsats PDOP GDOP RMS";
+               << "     SYS Clk[...] Nsats PDOP GDOP RMS";}
                
          if(C.haveRCL)
-            LOG(INFO) << "# wk secs-of-wk RCL clock_bias(m)";
+           { LOG(INFO) << "# wk secs-of-wk RCL clock_bias(m)";}
 
          if(C.haveObs || C.haveNonObs || C.haveCombo) {
             oss.str("");
@@ -1604,8 +1604,8 @@ try {
          else {
             if(C.haveObs || C.haveNonObs || C.haveCombo) {
                // dump receiver clock offset
-               if(C.haveRCL) LOG(INFO) << line << " RCL " << fixed << setprecision(3)
-                  << setw(width) << Rdata.clockOffset * C_MPS;
+               if(C.haveRCL) {LOG(INFO) << line << " RCL " << fixed << setprecision(3)
+                  << setw(width) << Rdata.clockOffset * C_MPS;}
 
                // clear CER store
                if(C.haveNonObs) C.mapSatCER.clear();
@@ -1762,8 +1762,8 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
             C.mapSatCER[sat] = CER;
          }
          catch(Exception& e) {
-            if(!C.noHeader) LOG(WARNING) << "# Warning - no ephemeris for ("
-                  << tag << ") sat " << sat;
+            if(!C.noHeader) {LOG(WARNING) << "# Warning - no ephemeris for ("
+                  << tag << ") sat " << sat;}
             return data;
          }
       }

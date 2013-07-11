@@ -50,6 +50,10 @@ if $(UNIX)
 
       case SOLARIS :
          LINKLIBS += -lgen ;
+			CC   = cc ;
+			C++  = CC ;
+			LINK = CC ;
+			OPTIM = -xO3 ;
          # for solaris forte
          if ( $(C++) = CC )
          {
