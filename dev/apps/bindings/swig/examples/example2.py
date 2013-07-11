@@ -1,28 +1,29 @@
-# this is a translation of dev/src/examples/example2.cpp
+# this is a port of dev/src/examples/example2.cpp
 
-from gpstk import *
+import gpstk
 
 
-# Create the input file stream
-rin = Rinex3ObsStream('bahr1620.04o')
+def main():
+    # Read in the rinex data
+    header, data = gpstk.readRinex3Obs('bahr1620.04o')
 
-# Create the output file stream
+    # Let's pretend we want to change something in the header
+    # (otherwise this would be a two-line example!)
+    outHeader = header
+    outHeader.receiverOffset = 47
 
-print(dir(rin))
+    # Now let's find the earliest observation time in the data
+    earliest = gpstk.CommonTime.END_OF_TIME
+    for d in data:
+        if d.time < earliest:
+            earliest = d.time
 
-#       // Read the RINEX header
-# Rinex3ObsHeader head;    #RINEX header object
-#    rin >> head;
-#    rout.header = rin.header;
-#    rout << rout.header;
+    print len(data)
+    print 'Earliest time found:', gpstk.CivilTime(earliest)
 
-#       // Loop over all data epochs
-#    Rinex3ObsData data;   //RINEX data object
-#    while (rin >> data)
-#    {
-#      rout << data;
-#    }
+    # Now let's write it all back to a different file
+    gpstk.writeRinex3Obs('bahr1620.04o', outHeader, data)
 
-#    exit(0);
 
-# }
+if __name__ == '__main__':
+    main()

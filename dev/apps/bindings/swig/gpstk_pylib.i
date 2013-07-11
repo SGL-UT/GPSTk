@@ -1,4 +1,4 @@
-%module(docstring="The GPS Toolkit - an open source library to the satellite navigation community.") gpstk
+%module gpstk_pylib
 %{
     #include <sstream>
 
@@ -130,11 +130,11 @@
 %include "doc/doc.i"
 %include "std_string.i"
 %include "std_map.i"
-%rename(streamOut) *::operator<<;
-%rename(streamIn) *::operator>>;
-%rename(__str__) *::asString() const;
 
-// %rename(streamOutput) operator<<;
+%rename(__str__) *::asString() const;
+%ignore *::dump;
+%ignore *::operator<<;
+
 %include "src/typemaps.i"
 %include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
 typedef std::map< char, std::string> IdToValue;
@@ -258,6 +258,9 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/RinexClockHeader.hpp"
 %include "../../../src/RinexClockData.hpp"
 
+%rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
+%rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;
+%rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
 %include "../../../src/Rinex3NavBase.hpp"
 %include "../../../src/Rinex3NavHeader.hpp"
 %include "../../../src/Rinex3NavStream.hpp"
@@ -275,6 +278,7 @@ typedef std::map< char, std::string> IdToValue;
 
 %include "../../../src/TabularSatStore.hpp"
 %include "src/ClockSatStore.i"
+
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
 %include "../../../src/SP3Header.hpp"

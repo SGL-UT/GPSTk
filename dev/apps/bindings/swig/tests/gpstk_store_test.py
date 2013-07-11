@@ -28,7 +28,8 @@ class EngAlmanacTest(unittest.TestCase):
         e = EngAlmanac()
         # we need better testing here; not convinced python longs
         # are being mapped to the native C longs needed
-        suframe = [023222245L,14111111324L,4623626L,33333531536L,4126166634L,17845L,6317L,736162361L,83163L,91471L]
+        suframe = [23222245L, 14111111324L, 4623626L, 33333531536L, 41261634L,
+                   17845L, 6317L, 736162361L, 83163L, 91471L]
         e.addSubframe(suframe, 1)
         # e.dump()
         # e.getEcc(SatID(1))
@@ -40,9 +41,9 @@ class SP3EphemerisStoreTest(unittest.TestCase):
       sat = SatID(1, SatID.systemGPS)
       time = CommonTime()
       time.addDays(10000)
-      s.addPositionData(sat, time, Triple(50.0, -45.5, 20), Triple(1.0, 100.0, 5.0))
-      s.addVelocityData(sat, time, Triple(1.0, 2.0, -10000.0), Triple(1.0, 100.0, 5.0))
-      self.assertEqual(Triple(50000, -45500, 20000), s.getPosition(sat, time))
+      s.addPositionData(sat, time, Triple(50, -45, 20), Triple(1, 100, 5))
+      s.addVelocityData(sat, time, Triple(1, 2, -10000), Triple(1, 100, 5))
+      self.assertEqual(Triple(50000, -45000, 20000), s.getPosition(sat, time))
   def test_file_data(self):
       pass
 
@@ -74,7 +75,7 @@ class BrcKeplerOrbitTest(unittest.TestCase):
 
 class AlmOrbitTest(unittest.TestCase):
     def test(self):
-        a = AlmOrbit(0,0,0,1.5,0,0,0,50.5,0,0,0,3000000L,1,2)
+        a = AlmOrbit(0, 0, 0, 1.5, 0, 0, 0, 50.5, 0, 0, 0, 3000000L, 1, 2)
         self.assertEqual(0.0, a.getAF0())
         self.assertEqual(0L, a.getFullWeek())
 
@@ -82,7 +83,8 @@ class AlmOrbitTest(unittest.TestCase):
 class GPSAlmanacStoreTest(unittest.TestCase):
     def test(self):
         e = EngAlmanac()
-        suframe = [023222245L,14111111324L,4623626L,33333531536L,4126166634L,17845L,6317L,736162361L,83163L,91471L]
+        suframe = [023222245L, 14111111324L, 4623626L, 33333531536L,
+                   4126166634L, 17845L, 6317L, 736162361L, 83163L, 91471L]
         e.addSubframe(suframe, 1)
         g = GPSAlmanacStore()
         g.addAlmanac(e)
@@ -93,7 +95,7 @@ class SEMTest(unittest.TestCase):
         header, data = readSEM('sem_plot_data.txt')
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
-        self.assertEqual(len(data), 32)
+        self.assertEqual(32, len(data))
         dataPoint = data[15]
         self.assertEqual(16, dataPoint.PRN)
         self.assertAlmostEqual(0.00711489, dataPoint.ecc)
@@ -108,6 +110,12 @@ class YumaTest(unittest.TestCase):
         self.assertEqual(11L, dataPoint.PRN)
         self.assertAlmostEqual(0.006191730499, dataPoint.ecc)
         self.assertEqual(377L, dataPoint.week)
+
+
+class Rinex3ObsTest(unittest.TestCase):
+    def test_fileIO(self):
+        header, data = readRinex3Obs('bahr1620.04o')
+        self.assertEqual(120, len(data))
 
 
 if __name__ == '__main__':

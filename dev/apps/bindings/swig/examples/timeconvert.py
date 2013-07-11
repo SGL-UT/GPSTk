@@ -1,6 +1,6 @@
 import argparse
 import sys
-from gpstk import *
+import gpstk
 
 def main(input_args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '
@@ -70,16 +70,16 @@ def main(input_args=sys.argv[1:]):
         if input_time is not None:
             time_found = True
             try:
-                ct = scanTime(input_time, formats[key])
-            except InvalidRequest:
+                ct = gpstk.scanTime(input_time, formats[key])
+            except gpstk.InvalidRequest:
                 print ('Input could not be parsed. Check the formatting and '
                        'ensure that the input is both valid and in quotes.')
                 sys.exit()
 
     if not time_found:
-        ct = SystemTime()
+        ct = gpstk.SystemTime()
 
-    timeSys = TimeSystem(TimeSystem.GPS)
+    timeSys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
     ct.setTimeSystem(timeSys)
 
     if args.add_offset is not None:
@@ -99,25 +99,25 @@ def main(input_args=sys.argv[1:]):
         print ''  # newline
 
         print left_align('Month/Day/Year H:M:S'),
-        print CivilTime(ct)
+        print gpstk.CivilTime(ct)
 
         print left_align('Modified Julian Date'),
-        print MJD(ct)
+        print gpstk.MJD(ct)
 
         print left_align('GPSweek DayOfWeek SecOfWeek'),
-        print GPSWeekSecond(ct).printf('%G %w % 13.6g')
+        print gpstk.GPSWeekSecond(ct).printf('%G %w % 13.6g')
 
         print left_align('FullGPSweek Zcount'),
-        print GPSWeekZcount(ct).printf('%F % 6z')
+        print gpstk.GPSWeekZcount(ct).printf('%F % 6z')
 
         print left_align('Year DayOfYear SecondOfDay'),
-        print YDSTime(ct).printf('%Y %03j % 12.6s')
+        print gpstk.YDSTime(ct).printf('%Y %03j % 12.6s')
 
         print left_align('Unix: Second Microsecond'),
-        print UnixTime(ct).printf('%U % 6u')
+        print gpstk.UnixTime(ct).printf('%U % 6u')
 
         print left_align('Zcount: 29-bit (32-bit)'),
-        print GPSWeekZcount(ct).printf('%c (%C)')
+        print gpstk.GPSWeekZcount(ct).printf('%c (%C)')
 
         print ''  # newline
 

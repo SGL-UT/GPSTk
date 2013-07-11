@@ -1,2 +1,10 @@
-gpstk_wrap.cpp
-gpstk.py
+gpstk_pylib.py
+
+*.pyc
+*.cxx
+*.new
+
+doc
+bin
+html
+latex

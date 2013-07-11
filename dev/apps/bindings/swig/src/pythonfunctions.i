@@ -3,7 +3,10 @@
 ///////////////////////////////////////////////
 %pythoncode %{
 
-def nlines(fileName):
+def _nlines(fileName):
+    """Counts and returns the number of lines in a file, excluding any blank
+    lines at the end of the file.
+    """
     count = 0
     with open(fileName) as infp:
         for line in infp:
@@ -33,23 +36,8 @@ def commonTime(timeTag):
 
 
 
-
 ///////////////////////////////////////////////
-//           C++ extension stuff
-///////////////////////////////////////////////
-%extend gpstk::ReferenceFrame {
-	std::string gpstk::ReferenceFrame::__str__() {
-        int f = static_cast<int>($self->getFrame());
-        if(f == 1) return "WGS84";
-        if(f == 2) return "PZ90";
-        else return "Unknown";
-	}
-}
-
-
-
-///////////////////////////////////////////////
-//            macro string stuff
+//      Macros for string (__str__) stuff
 ///////////////////////////////////////////////
 // Uses the dump method in the class to get string output
 %define STR_DUMP_HELPER(name)
@@ -69,6 +57,8 @@ STR_DUMP_HELPER(Rinex3NavData)
 STR_DUMP_HELPER(Rinex3NavHeader)
 STR_DUMP_HELPER(SEMData)
 STR_DUMP_HELPER(SEMHeader)
+STR_DUMP_HELPER(SP3Data)
+STR_DUMP_HELPER(SP3Header)
 
 
 
@@ -82,6 +72,7 @@ STR_DUMP_HELPER(SEMHeader)
     }
 }
 %enddef
+STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
 STR_STREAM_HELPER(Xvt)
 

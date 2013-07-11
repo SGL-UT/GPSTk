@@ -407,8 +407,8 @@ namespace gpstk
          } while(1);    // end iteration loop
          LOG(DEBUG) << "Out of iteration loop";
 
-         if(TropFlag) {LOG(DEBUG) << "Trop correction not applied at time "
-                                 << printTime(T,timfmt);}
+         if(TropFlag) LOG(DEBUG) << "Trop correction not applied at time "
+                                 << printTime(T,timfmt);
 
          // compute slopes
          MaxSlope = 0.0;

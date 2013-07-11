@@ -295,8 +295,8 @@ template<> bool Log<ConfigureLOGstream>::dumpLevels = false;
 
 /// define the macro that is used to write to the log stream
 #define LOG(level) \
-   if(level > FILELOG_MAX_LEVEL) ;\
-   else if(level > ConfigureLOG::ReportingLevel() || !ConfigureLOGstream::Stream()) ;\
+   if(level > FILELOG_MAX_LEVEL) {;}\
+   else if(level > ConfigureLOG::ReportingLevel()||!ConfigureLOGstream::Stream()) {;}\
    else ConfigureLOG().Put(level)
 
 // conveniences
