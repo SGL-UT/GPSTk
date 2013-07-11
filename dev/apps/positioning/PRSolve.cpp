@@ -21,7 +21,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -320,7 +320,7 @@ public:
    // indicating whether there is sufficient good data.
    void CollectData(const RinexSatID& s,
                     const double& elev, const double& ER,
-                    const vector<Rinex3ObsData::RinexDatum>& v) throw();
+                    const vector<RinexDatum>& v) throw();
 
    // Compute a solution for the given epoch; call after CollectData()
    // same return value as RAIMCompute()
@@ -410,7 +410,7 @@ try {
    C.Title = C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
    cout << C.Title << endl;
-   
+
    for(;;) {
       // get information from the command line
       // iret -2 -3 -4
@@ -566,7 +566,7 @@ try {
                isValid = false;
                continue;
             }
-         
+
             strm.exceptions(ios_base::failbit);
             strm >> header;
          }
@@ -834,7 +834,7 @@ try {
 
             word = stripFirstWord(line);  // get sat
             if(word.empty()) continue;
-            
+
             try { sat.fromString(word); }
             catch(Exception& e) { continue; }
             if(sat.system == SatID::systemUnknown || sat.id == -1) continue;
@@ -1138,7 +1138,7 @@ try {
          Rinex3ObsData::DataMap::iterator it;
          for(it=Rdata.obs.begin(); it!=Rdata.obs.end(); ++it) {
             sat = it->first;
-            vector<Rinex3ObsData::RinexDatum>& vrdata(it->second);
+            vector<RinexDatum>& vrdata(it->second);
             string sys(asString(sat.systemChar()));
 
             // is this system excluded?
@@ -1989,7 +1989,7 @@ void SolutionObject::ParseDescriptor(void) throw()
 
    freqs = split(flds[1],'+');               // flds[1] ~ '12' '15' or '12+15'
    // TD require single or dual frequency?
-   
+
    // build a list (string) of unique frequencies
    ufreqs = string("");
    for(i=0; i<freqs.size(); i++)
@@ -2231,7 +2231,7 @@ void SolutionObject::EpochReset(void) throw()
 //------------------------------------------------------------------------------------
 void SolutionObject::CollectData(const RinexSatID& sat,
                                  const double& elev, const double& ER,
-                                 const vector<Rinex3ObsData::RinexDatum>& vrd)
+                                 const vector<RinexDatum>& vrd)
    throw()
 {
    if(!isValid) return;
@@ -2265,7 +2265,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
       RawPRs[f] = (k == -1 ? 0.0 : vrd[n].data);
       used[f] = (k == -1 ? f+"-" : mapSysFreqObsIDs[sys][f][k].substr(2,2));
    }
-      
+
    // build the PR (possibly a linear combination, possibly more than one)
    // usually, PR = iono-free pseudorange, and RI = ionospheric delay, built from
    // the two pseudoranges at different frequencies.
@@ -2537,7 +2537,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
 {
    try {
       Configuration& C(Configuration::Instance());
-   
+
       prs.memory.dump(LOGstrm,Descriptor+" RAIM solution");
       LOG(INFO) << "\n";
 

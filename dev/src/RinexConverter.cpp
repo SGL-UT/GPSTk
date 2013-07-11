@@ -187,8 +187,8 @@ bool RinexConverter::convertToRinex3(Rinex3ObsData& dest,
 
    /// The vector of observations to add to the destination header.
 
-   vector<Rinex3ObsData::RinexDatum> vec;
-   Rinex3ObsData::RinexDatum tempR3;
+   vector<RinexDatum> vec;
+   RinexDatum tempR3;
    RinexObsData::RinexDatum tempR2;
 
    /// Loop over the satellites in the data set.
@@ -480,7 +480,7 @@ bool RinexConverter::convertToRinex3(Rinex3ObsHeader& dest,
    if (!hasGEO)
       dest.mapObsTypes.erase(dest.mapObsTypes.find("S"));
 
-   // TODO::No consistency in 'validBits' definition between R2 and R3. 
+   // TODO::No consistency in 'validBits' definition between R2 and R3.
    // Thus, this leads to not writing the R3 header
    dest.valid = src.valid;                // perhaps needs item check
    dest.valid |= dest.validSystemObsType; // necessary since not in R2
@@ -537,7 +537,7 @@ bool RinexConverter::convertFromRinex3(RinexObsData& dest,
       string satSysTemp = satid.toString().substr(0,1);
 
       //and its R3 data
-      vector<Rinex3ObsData::RinexDatum> r3data= it->second;
+      vector<RinexDatum> r3data= it->second;
 
       // Now let's see what obs type are for this satellite system
       std::vector<ObsID> obsTypeList = srcHeader.mapObsTypes.find(satSysTemp)->second;
@@ -567,7 +567,7 @@ bool RinexConverter::convertFromRinex3(RinexObsData& dest,
          }
          else
          {
-            replacement = mapIter->first; 
+            replacement = mapIter->first;
          }
 
          // construct a R2 obs type
@@ -646,7 +646,7 @@ bool RinexConverter::convertFromRinex3(RinexObsHeader& dest,
          }
          else
          {
-            replacement = mapIter->first; 
+            replacement = mapIter->first;
          }
 
          // construct a R2 obs type

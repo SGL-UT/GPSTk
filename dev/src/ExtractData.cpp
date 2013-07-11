@@ -71,11 +71,11 @@ namespace gpstk
                // The satellites are stored in the first elements of the map...
             SatID sat(it->first);
                // .. and vectors of available obs are in the second elements
-            std::vector<Rinex3ObsData::RinexDatum> vecData(it->second);
+            std::vector<RinexDatum> vecData(it->second);
 
                // Extract observation value
             double obsValue( (vecData[index]).data );
-            
+
                // Let's check if we found this type of observation and if it
                // is between the limits
             if ( !(checkData) || (checker.check(obsValue)) )
