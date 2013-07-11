@@ -176,7 +176,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
+      if(!errs.empty()) {LOG(INFO) << errs;  }       // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -652,11 +652,11 @@ try {
    int NGEO(C.NavStore.size(SatID::systemGeosync));
    int NCOM(C.NavStore.size(SatID::systemCompass));
    LOG(VERBOSE) << "RinNav has stored " << Neph << " navigation records.";
-   if(NGPS) LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";
-   if(NGLO) LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";
-   if(NGAL) LOG(VERBOSE) <<"RinNav has stored " << NGAL << " GAL navigation records.";
-   if(NGEO) LOG(VERBOSE) <<"RinNav has stored " << NGEO << " GEO navigation records.";
-   if(NCOM) LOG(VERBOSE) <<"RinNav has stored " << NCOM << " COM navigation records.";
+   if(NGPS) {LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";}
+   if(NGLO) {LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";}
+   if(NGAL) {LOG(VERBOSE) <<"RinNav has stored " << NGAL << " GAL navigation records.";}
+   if(NGEO) {LOG(VERBOSE) <<"RinNav has stored " << NGEO << " GEO navigation records.";}
+   if(NCOM) {LOG(VERBOSE) <<"RinNav has stored " << NCOM << " COM navigation records.";}
 
    int Nsys(0);
    if(NGPS > 0) Nsys++;
@@ -762,11 +762,11 @@ try {
       ostrm.close();
 
       //if(sys == "M") LOG(VERBOSE) << "Wrote " << neph << " records for all systems";
-      if(sys == "G") LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";
-      if(sys == "R") LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";
-      if(sys == "E") LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";
-      if(sys == "S") LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";
-      if(sys == "C") LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";
+      if(sys == "G") {LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";}
+      if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
+      if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
+      if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
+      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";}
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 3 file " << filename;
    }
 
@@ -819,11 +819,11 @@ try {
       ostrm.close();
 
       //if(sys == "M") LOG(VERBOSE) << "Wrote " << neph << " records for all systems";
-      if(sys == "G") LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";
-      if(sys == "R") LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";
-      if(sys == "E") LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";
-      if(sys == "S") LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";
-      if(sys == "C") LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";
+      if(sys == "G") {LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";}
+      if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
+      if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
+      if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
+      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";}
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 2 file " << filename;
    }
 
