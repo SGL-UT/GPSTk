@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -61,6 +61,24 @@ namespace gpstk
 {
   /** @addtogroup Rinex3Obs */
   //@{
+
+
+   /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
+   struct Rinex3CorrInfo
+   {
+      std::string satSys,  ///< 1-char SV system (G/R/E/S)
+                  name,    ///< program name used to apply corrections
+                  source;  ///< source of corrections (URL)
+   };
+
+   /// RINEX 2 extra "WAVELENGTH FACT" lines
+   struct ExtraWaveFact
+   {
+      /// List of Sats with this wavelength factor
+      std::vector<SatID> satList;
+      /// vector of wavelength factor values
+      short wavelengthFactor[2];
+   };
 
   /**
    * This class models the header for a RINEX 3 Observation File.
@@ -166,30 +184,14 @@ namespace gpstk
          validNumSats           = 0x20000000, ///< "# OF SATELLITES"       optional
          validPrnObs            = 0x40000000, ///< "PRN / # OF OBS"        optional
          validEoH               = 0x80000000, ///< "END OF HEADER"
-   
+
          /// This mask is for all required valid fields
          allValid2 = 0x801207CB,
          //allValid30 = 0x801207CB,  // case for static receivers - AntennaPosition present
          allValid30 = 0x801205CB,    // case for moving receivers -- make default
          allValid301 = 0x841205CB
       };
-   
-      /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
-      struct Rinex3CorrInfo
-      {
-         std::string satSys,  ///< 1-char SV system (G/R/E/S)
-                     name,    ///< program name used to apply corrections
-                     source;  ///< source of corrections (URL)
-      };
 
-      /// RINEX 2 extra "WAVELENGTH FACT" lines
-      struct ExtraWaveFact
-      {
-         /// List of Sats with this wavelength factor
-         std::vector<SatID> satList;
-         /// vector of wavelength factor values
-         short wavelengthFactor[2];
-      };
 
       /// Storage for R2 <-> R3 conversion of obstypes during reallyGet/Put
       /// Vector of strings containing ver 2 obs types (e.g. "C1" "L2") defined in reallyGet;
