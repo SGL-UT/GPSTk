@@ -113,6 +113,7 @@ else
       ObsClockModel.cpp
       ObsEpochMap.cpp
       ObsID.cpp
+      ObsIDInitializer.cpp
       ObsRngDev.cpp
       OceanLoading.cpp
       OrbElem.cpp
@@ -334,7 +335,8 @@ else
       NEDUtil.hpp
       ObsClockModel.hpp	
       ObsEpochMap.hpp	
-      ObsID.hpp	
+      ObsID.hpp
+      ObsIDInitializer.hpp	
       ObsRngDev.hpp	
       OceanLoading.hpp	
       OrbElem.hpp
