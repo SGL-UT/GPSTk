@@ -115,7 +115,17 @@ class YumaTest(unittest.TestCase):
 class Rinex3ObsTest(unittest.TestCase):
     def test_fileIO(self):
         header, data = readRinex3Obs('bahr1620.04o')
+        self.assertEqual(0L, header.numSVs)
+        self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
         self.assertEqual(120, len(data))
+        dataPoint = data[0]
+        datum = dataPoint.getObs(SatID(4), header.getObsIndex("C1"))
+        self.assertAlmostEqual(24236698.057, datum.data)
+        self.assertEqual(0, dataPoint.clockOffset)
+        expectedTime = CommonTime()
+        expectedTime.set(2453167)
+        expectedTime.setTimeSystem(TimeSystem(TimeSystem.GPS))
+        self.assertEqual(expectedTime, dataPoint.time)
 
 
 if __name__ == '__main__':

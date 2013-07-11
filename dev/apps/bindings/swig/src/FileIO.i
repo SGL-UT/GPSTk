@@ -27,6 +27,9 @@ def read ## FORMATNAME(fileName, lazy=False):
     """This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
 
+    BE WARY OF OFF-BY-ONE errors that this function produces and please report them.
+    It may produce an additonal data object that has invalid values.
+
     Parameters:
     -----------
 
@@ -68,4 +71,8 @@ def write ## FORMATNAME(fileName, header, data):
 STREAM_HELPER(SEM,<=)
 STREAM_HELPER(SP3,<=)
 STREAM_HELPER(Yuma,<=)
+STREAM_HELPER(RinexClock,<)
+STREAM_HELPER(RinexObs,<)
 STREAM_HELPER(Rinex3Obs,<)
+STREAM_HELPER(Rinex3Nav,<)
+STREAM_HELPER(Rinex3Clock,<)

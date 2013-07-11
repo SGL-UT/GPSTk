@@ -18,7 +18,6 @@ def main():
         if d.time < earliest:
             earliest = d.time
 
-    print len(data)
     print 'Earliest time found:', gpstk.CivilTime(earliest)
 
     # Now let's write it all back to a different file

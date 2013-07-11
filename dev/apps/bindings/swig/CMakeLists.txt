@@ -63,6 +63,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/RinexClockData.cpp
                     ../../../src/RinexClockHeader.cpp
                     ../../../src/RinexObsHeader.cpp
+                    ../../../src/RinexObsData.cpp
                     ../../../src/RinexObsID.cpp
                     ../../../src/RinexSatID.cpp
                     ../../../src/SEMAlmanacStore.cpp

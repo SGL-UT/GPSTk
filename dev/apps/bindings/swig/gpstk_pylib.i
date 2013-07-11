@@ -80,9 +80,11 @@
     #include "../../../src/RinexClockBase.hpp"
     #include "../../../src/RinexObsBase.hpp"
     #include "../../../src/RinexObsHeader.hpp"
+    #include "../../../src/RinexObsData.hpp"
     #include "../../../src/RinexObsID.hpp"
     #include "../../../src/RinexClockHeader.hpp"
     #include "../../../src/RinexClockData.hpp"
+    #include "../../../src/RinexClockStream.hpp"
     #include "../../../src/RinexObsStream.hpp"
 
     #include "../../../src/Rinex3NavBase.hpp"
@@ -98,6 +100,7 @@
     #include "../../../src/Rinex3ObsStream.hpp"
     #include "../../../src/Rinex3ClockHeader.hpp"
     #include "../../../src/Rinex3ClockData.hpp"
+    #include "../../../src/Rinex3ClockStream.hpp"
     #include "../../../src/Rinex3EphemerisStore.hpp"
 
     #include "../../../src/TabularSatStore.hpp"
@@ -147,7 +150,6 @@ typedef std::map< char, std::string> IdToValue;
 %template(map_string_int) std::map<std::string, int>;
   %template() std::pair<std::string, int>;
 %include "src/Exception.i"
-
 
 // =============================================================
 //  Section 2: Time classes
@@ -257,10 +259,11 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/RinexObsStream.hpp"
 %include "../../../src/RinexClockHeader.hpp"
 %include "../../../src/RinexClockData.hpp"
+%include "../../../src/RinexClockStream.hpp"
 
 %rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
 %rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;
-%rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
+// %rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
 %include "../../../src/Rinex3NavBase.hpp"
 %include "../../../src/Rinex3NavHeader.hpp"
 %include "../../../src/Rinex3NavStream.hpp"
@@ -274,6 +277,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/Rinex3ObsStream.hpp"
 %include "../../../src/Rinex3ClockHeader.hpp"
 %include "../../../src/Rinex3ClockData.hpp"
+%include "../../../src/Rinex3ClockStream.hpp"
 %include "../../../src/Rinex3EphemerisStore.hpp"
 
 %include "../../../src/TabularSatStore.hpp"

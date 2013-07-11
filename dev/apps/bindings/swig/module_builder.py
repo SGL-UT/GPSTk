@@ -22,10 +22,17 @@ import sys
 # Any object that is exactly a string in this list will be ignored
 ignore_exact = [
 'cvar',
+'DisplayExtendedRinexObsTypes',
+'DisplayStandardRinexObsTypes',
 'FFData',
+'Rinex3NavBase',
 'Rinex3ObsBase',
+'RinexClockBase',
+'RinexObsBase',
 'SEMBase',
 'SP3Base',
+'SwigPyIterator',
+'YumaBase',
 ]
 
 
