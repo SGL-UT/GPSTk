@@ -788,8 +788,8 @@ try {
                }
             }
             else if(dt == 0)
-               LOG(WARNING) << "Warning - repeated time tag at "
-                    << printTime(lastObsTime,C.longfmt);
+               {LOG(WARNING) << "Warning - repeated time tag at "
+                    << printTime(lastObsTime,C.longfmt);}
             else
                LOG(WARNING) << "Warning - time tags out of order: "
                     << printTime(prevObsTime,C.longfmt) << " > "

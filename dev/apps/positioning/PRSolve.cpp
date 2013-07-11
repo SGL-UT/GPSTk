@@ -768,8 +768,8 @@ try {
             if(C.MetStore.size() > 0) {
                it = C.MetStore.begin();
                if(C.MetStore.size() == 1)
-                  LOG(VERBOSE) << "  Met store is at single time "
-                     << printTime(it->time,C.longfmt);
+                  {LOG(VERBOSE) << "  Met store is at single time "
+                     << printTime(it->time,C.longfmt);}
                else {
                   LOG(VERBOSE) << "  Met store starts at time "
                      << printTime(it->time,C.longfmt);
@@ -845,8 +845,8 @@ try {
             double bias(asDouble(word)*C_MPS*1.e-9);  // ns to m
 
             if(C.P1C1bias.find(sat) != C.P1C1bias.end())
-               LOG(WARNING) << "Warning : satellite " << sat
-                  << " is duplicated in P1-C1 bias file(s)";
+               {LOG(WARNING) << "Warning : satellite " << sat
+                  << " is duplicated in P1-C1 bias file(s)";}
             else {
                C.P1C1bias.insert(map<RinexSatID,double>::value_type(sat,bias));
                LOG(DEBUG) << " Found P1-C1 bias for sat " << sat
@@ -2361,13 +2361,13 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
                prs.MaxNIterations, prs.ConvergenceLimit, Syss, APSol, Resid, Slopes);
          }
 
-         if(iret < 0) LOG(VERBOSE) << "SimplePRS failed "
+         if(iret < 0) {LOG(VERBOSE) << "SimplePRS failed "
             << (iret==-4 ? "to find ANY ephemeris" :
                (iret==-3 ? "to find enough satellites with data" :
                (iret==-2 ? "because the problem is singular" :
               /*iret==-1*/ "because the algorithm failed to converge")))
             << " for " << Descriptor
-            << " at time " << printTime(ttag,C.longfmt);
+            << " at time " << printTime(ttag,C.longfmt);}
 
          else {
             // at this point we have a good solution

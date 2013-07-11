@@ -788,8 +788,8 @@ void Configuration::SetDefaults(void) throw()
    string validSys(ObsID::validRinexSystems);
    for(int i=0; i<validSys.size(); i++) {
       if(map1to3Sys.count(string(1,validSys[i])) == 0)
-         LOG(WARNING) << "Warning - system \"" << validSys[i]
-            << "\" does not have 3-char entry in map1to3Sys";
+         {LOG(WARNING) << "Warning - system \"" << validSys[i]
+            << "\" does not have 3-char entry in map1to3Sys";}
       else
          vecAllSys.push_back(map1to3Sys[string(1,validSys[i])]);
    }
