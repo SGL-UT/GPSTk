@@ -256,7 +256,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
 %include "../../../src/GloEphemeris.hpp"
-// %include "../../../src/GloEphemerisStore.hpp" // not ready yet
+%include "../../../src/GloEphemerisStore.hpp"
 
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"

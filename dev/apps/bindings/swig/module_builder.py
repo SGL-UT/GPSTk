@@ -3,12 +3,18 @@
 Usage:
     python module_builder.py
     This runs the program and builds to the gpstk folder in the current directory.
+    /usr/local/lib/pythonX.Y/site-packages
+
+If on a Unix-like platform:
+    sudo python module_builder.py /usr/local/lib/python2.7/site-packages
+    This runs the program and builds to /usr/local/lib/python2.7/site-packages
 
     python module_builder.py ~/.local/lib/python2.7/site-packages
     This runs the program and builds to ~/.local/lib/python2.7/site-packages/
 
+If on Windows:
     python module_builder.py C:\Python27\Lib\site-packages
-    This runs the program and builds to C:\Python27\Lib\site-packages/
+    This runs the program and builds to C:\Python27\Lib\site-packages\
 """
 
 

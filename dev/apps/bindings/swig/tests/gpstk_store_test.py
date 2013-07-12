@@ -42,19 +42,9 @@ class BrcKeplerOrbitTest(unittest.TestCase):
         t3 = gpstk.CommonTime()
         t3.addSeconds(60)
         obs = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.ObsID.cbC6, gpstk.ObsID.tcN)
-        b = gpstk.BrcKeplerOrbit('GPS', obs,
-                           10, t1,
-                           t2, t3,
-                           5, True,
-                           0.0, 0.0,
-                           0.0, 0.0,
-                           0.0, 0.0,
-                           0.0, 0.0,
-                           0.0, 1.1,
-                           0.0, 0.0,
-                           0.0, 0.0,
-                           0.0, 1.2,
-                           1.3, 0.0)
+        b = gpstk.BrcKeplerOrbit('GPS', obs, 10, t1, t2, t3,
+                           5, True, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+                           0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 0.0, 1.2, 1.3, 0.0)
         self.assertEqual(1.1, b.getEcc())
         self.assertEqual(1.2, b.getW())
         self.assertEqual(1.3, b.getOmegaDot())
@@ -76,6 +66,21 @@ class GPSAlmanacStoreTest(unittest.TestCase):
         g = gpstk.GPSAlmanacStore()
         g.addAlmanac(e)
 
+
+class GloEphemerisTest(unittest.TestCase):
+    def test_ephemeris(self):
+        g = gpstk.GloEphemeris()
+        g.setRecord('mySys', 1, gpstk.CommonTime(), gpstk.Triple(100, 200, 300),
+            gpstk.Triple(10, 20, 30), gpstk.Triple(1, 2, 3),
+            0.0,  0.0, 1, 2, 3, 1.1, 1.0)
+        expected = ("Sys:mySys, PRN:1\nEpoch:0000000 00000000 0.000000000000000 "
+            "Unknown, pos:(100, 200, 300)\nvel:(10, 20, 30), acc:(1, 2, 3)\n"
+            "TauN:0, GammaN:0\nMFTime:1, health:2\nfreqNum:3, ageOfInfo:1.1")
+        self.assertEqual(expected, str(g))
+
+
+
+
 class SP3Test(unittest.TestCase):
     def test_fileIO(self):
         pass
@@ -91,7 +96,7 @@ class SP3Test(unittest.TestCase):
 
 class SEMTest(unittest.TestCase):
     def test_fileIO(self):
-        header, data = gpstk.readSEM('sem_plot_data.txt')
+        header, data = gpstk.readSEM('sem_data.txt')
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
         self.assertEqual(32, len(data))
@@ -113,7 +118,7 @@ class YumaTest(unittest.TestCase):
 
 class Rinex3ObsTest(unittest.TestCase):
     def test_fileIO(self):
-        header, data = gpstk.readRinex3Obs('bahr1620.04o')
+        header, data = gpstk.readRinex3Obs('rinex3obs_data.txt')
         self.assertEqual(0L, header.numSVs)
         self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
         self.assertEqual(120, len(data))

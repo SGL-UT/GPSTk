@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 
 def main():
     # Read in data:
-    header, dataSets = gpstk.readSEM('sem_plot_data.txt')
+    header, dataSets = gpstk.readSEM('sem_data.txt')
 
     # Write the data back to a different file (their contents should match):
-    gpstk.writeSEM('sem_plot_data.txt.new', header, dataSets)
+    gpstk.writeSEM('sem_data.txt.new', header, dataSets)
 
     # Rranslate the data to AlmOrbits:
     almOrbits = [data.toAlmOrbit() for data in dataSets]

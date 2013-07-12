@@ -1,6 +1,6 @@
 import argparse
-import sys
 import gpstk
+import sys
 
 def main(input_args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '
@@ -71,7 +71,7 @@ def main(input_args=sys.argv[1:]):
             time_found = True
             try:
                 ct = gpstk.scanTime(input_time, formats[key])
-            except gpstk.InvalidRequest:
+            except gpstk.exceptions.InvalidRequest:
                 print ('Input could not be parsed. Check the formatting and '
                        'ensure that the input is both valid and in quotes.')
                 sys.exit()
