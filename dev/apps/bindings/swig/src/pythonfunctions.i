@@ -50,15 +50,30 @@ def commonTime(timeTag):
 }
 %enddef
 STR_DUMP_HELPER(AlmOrbit)
+STR_DUMP_HELPER(BrcClockCorrection)
+STR_DUMP_HELPER(BrcKeplerOrbit)
+STR_DUMP_HELPER(EngAlmanac)
+STR_DUMP_HELPER(GalEphemeris)
+STR_DUMP_HELPER(GalEphemerisStore)
+STR_DUMP_HELPER(GloEphemeris)
+STR_DUMP_HELPER(GPSEphemerisStore)
+STR_DUMP_HELPER(OrbElem)
+STR_DUMP_HELPER(OrbElemStore)
+STR_DUMP_HELPER(Rinex3ClockData)
+STR_DUMP_HELPER(Rinex3ClockHeader)
 STR_DUMP_HELPER(Rinex3EphemerisStore)
-STR_DUMP_HELPER(Rinex3ObsHeader)
-STR_DUMP_HELPER(Rinex3ObsData)
 STR_DUMP_HELPER(Rinex3NavData)
 STR_DUMP_HELPER(Rinex3NavHeader)
+STR_DUMP_HELPER(Rinex3ObsData)
+STR_DUMP_HELPER(Rinex3ObsHeader)
+STR_DUMP_HELPER(RinexObsData)
+STR_DUMP_HELPER(RinexObsHeader)
 STR_DUMP_HELPER(SEMData)
 STR_DUMP_HELPER(SEMHeader)
 STR_DUMP_HELPER(SP3Data)
 STR_DUMP_HELPER(SP3Header)
+STR_DUMP_HELPER(YumaData)
+STR_DUMP_HELPER(YumaHeader)
 
 
 

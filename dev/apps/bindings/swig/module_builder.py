@@ -27,7 +27,6 @@ ignore_exact = [
 'DisplayExtendedRinexObsTypes',
 'DisplayStandardRinexObsTypes',
 'FFData',
-'gpstk_pylib',
 'Rinex3NavBase',
 'Rinex3ObsBase',
 'RinexClockBase',
@@ -59,7 +58,7 @@ ignore_patterns = [
 # submodule_name -> (list of exact names, list of pattern names)
 submodules = {
     'cpp' : (
-        [],
+        ['seqToVector', 'vectorToSeq'],
         ['vector_', 'map_']),
 }
 
@@ -87,7 +86,7 @@ def main():
     # saves all files to move, some are added later
     files_to_move = ['gpstk_pylib.py', '__init__.py']
 
-    # Create __init__.py file
+    # Create gpstk __init__.py file
     import gpstk_pylib
     namespace = dir(gpstk_pylib)
     out_file = open('__init__.py', 'w')
@@ -128,9 +127,7 @@ def main():
             if (type(t) is not type) and (not hasattr(t, '__call__')):
                 use_global_namespace = False
                 add_to_submodule(x, 'constants')
-
             # if it subclasses gpstk.Exception add to exceptions submodule
-            t = eval('gpstk_pylib.' + x)
             if inspect.isclass(t) and issubclass(t, gpstk_pylib.Exception):
                 use_global_namespace = False
                 add_to_submodule(x, 'exceptions')

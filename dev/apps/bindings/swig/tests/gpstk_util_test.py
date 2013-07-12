@@ -243,6 +243,26 @@ class std_template_test(unittest.TestCase):
             self.assertEqual(v[i], x)
             i += 1
 
+    def test_vector_conversions(self):
+        def same_seq(seq1, seq2):
+            self.assertEqual(len(seq1), len(seq2))
+            for i in range(len(seq1)):
+                self.assertEqual(seq1[i], seq2[i])
+
+        list = [1.1, 2.2, 3.3]
+        v = gpstk.cpp.seqToVector(list)
+        same_seq(list, v)
+
+        list = ['bar!', 'foo?']
+        v = gpstk.cpp.seqToVector(list)
+        same_seq(list, v)
+
+        v = gpstk.cpp.vector_int()
+        v.push_back(3)
+        v.push_back(5)
+        list = gpstk.cpp.vectorToSeq(v)
+        same_seq(list, v)
+
     def test_map(self):
         map = gpstk.cpp.map_int_char()
         map[1] = 'A'
