@@ -90,7 +90,7 @@ def main(input_args=sys.argv[1:]):
             ct.addSeconds(-float(t))
 
     if args.output_format is not None:
-        print printTime(ct, args.output_format)
+        print gpstk.printTime(ct, args.output_format)
     else:
         def left_align(str):
             spacing = ' ' * 8

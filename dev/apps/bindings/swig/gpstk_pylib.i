@@ -263,7 +263,7 @@ typedef std::map< char, std::string> IdToValue;
 
 %rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
 %rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;
-// %rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
+%rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
 %include "../../../src/Rinex3NavBase.hpp"
 %include "../../../src/Rinex3NavHeader.hpp"
 %include "../../../src/Rinex3NavStream.hpp"
