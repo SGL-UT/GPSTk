@@ -87,6 +87,11 @@
     #include "../../../src/RinexClockStream.hpp"
     #include "../../../src/RinexObsStream.hpp"
 
+    #include "../../../src/RinexNavBase.hpp"
+    #include "../../../src/RinexNavHeader.hpp"
+    #include "../../../src/RinexNavStream.hpp"
+    #include "../../../src/RinexNavData.hpp"
+
     #include "../../../src/Rinex3NavBase.hpp"
     #include "../../../src/Rinex3NavHeader.hpp"
     #include "../../../src/Rinex3NavStream.hpp"
@@ -112,6 +117,7 @@
     #include "../../../src/SP3Stream.hpp"
     #include "../../../src/PositionSatStore.hpp"
     #include "../../../src/SP3EphemerisStore.hpp"
+    #include "../../../src/RinexUtilities.hpp"
 
     #include "../../../src/SEMBase.hpp"
     #include "../../../src/SEMHeader.hpp"
@@ -255,6 +261,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"
 %include "../../../src/RinexObsHeader.hpp"
+%include "../../../src/RinexObsData.hpp"
 %include "../../../src/RinexObsID.hpp"
 %include "../../../src/RinexObsStream.hpp"
 %include "../../../src/RinexClockHeader.hpp"
@@ -290,6 +297,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/SP3Stream.hpp"
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
+%include "../../../src/RinexUtilities.hpp"
 
 %rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
 %include "../../../src/SEMBase.hpp"

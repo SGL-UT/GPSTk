@@ -31,21 +31,7 @@ class EngAlmanacTest(unittest.TestCase):
         suframe = [23222245L, 14111111324L, 4623626L, 33333531536L, 41261634L,
                    17845L, 6317L, 736162361L, 83163L, 91471L]
         e.addSubframe(suframe, 1)
-        # e.dump()
         # e.getEcc(SatID(1))
-
-
-class SP3EphemerisStoreTest(unittest.TestCase):
-  def test_raw_data(self):
-      s = gpstk.SP3EphemerisStore()
-      sat = gpstk.SatID(1, gpstk.SatID.systemGPS)
-      time = gpstk.CommonTime()
-      time.addDays(10000)
-      s.addPositionData(sat, time, gpstk.Triple(50, -45, 20), gpstk.Triple(1, 100, 5))
-      s.addVelocityData(sat, time, gpstk.Triple(1, 2, -10000), gpstk.Triple(1, 100, 5))
-      self.assertEqual(gpstk.Triple(50000, -45000, 20000), s.getPosition(sat, time))
-  def test_file_data(self):
-      pass
 
 
 class BrcKeplerOrbitTest(unittest.TestCase):
@@ -89,6 +75,18 @@ class GPSAlmanacStoreTest(unittest.TestCase):
         e.addSubframe(suframe, 1)
         g = gpstk.GPSAlmanacStore()
         g.addAlmanac(e)
+
+class SP3Test(unittest.TestCase):
+    def test_fileIO(self):
+        pass
+    def test_almanac_store(self):
+      s = gpstk.SP3EphemerisStore()
+      sat = gpstk.SatID(1, gpstk.SatID.systemGPS)
+      time = gpstk.CommonTime()
+      time.addDays(10000)
+      s.addPositionData(sat, time, gpstk.Triple(50, -45, 20), gpstk.Triple(1, 100, 5))
+      s.addVelocityData(sat, time, gpstk.Triple(1, 2, -10000), gpstk.Triple(1, 100, 5))
+      self.assertEqual(gpstk.Triple(50000, -45000, 20000), s.getPosition(sat, time))
 
 
 class SEMTest(unittest.TestCase):

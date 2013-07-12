@@ -56,6 +56,8 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/Rinex3ClockData.cpp
                     ../../../src/Rinex3ClockHeader.cpp
                     ../../../src/Rinex3EphemerisStore.cpp
+                    ../../../src/RinexNavData.cpp
+                    ../../../src/RinexNavHeader.cpp
                     ../../../src/Rinex3NavData.cpp
                     ../../../src/Rinex3NavHeader.cpp
                     ../../../src/Rinex3ObsData.cpp
@@ -66,6 +68,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/RinexObsData.cpp
                     ../../../src/RinexObsID.cpp
                     ../../../src/RinexSatID.cpp
+                    ../../../src/RinexUtilities.cpp
                     ../../../src/SEMAlmanacStore.cpp
                     ../../../src/SEMData.cpp
                     ../../../src/SEMHeader.cpp
