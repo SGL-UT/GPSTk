@@ -104,6 +104,11 @@ class SEMTest(unittest.TestCase):
         self.assertEqual(16, dataPoint.PRN)
         self.assertAlmostEqual(0.00711489, dataPoint.ecc)
 
+    def test_fileIO_lazy(self):
+        header, gen = gpstk.readSEM('sem_data.txt', lazy=True)
+        data = [x for x in gen]
+        self.assertEqual(32, len(data))
+
 
 class YumaTest(unittest.TestCase):
     def test_fileIO(self):
@@ -114,6 +119,11 @@ class YumaTest(unittest.TestCase):
         self.assertEqual(11L, dataPoint.PRN)
         self.assertAlmostEqual(0.006191730499, dataPoint.ecc)
         self.assertEqual(377L, dataPoint.week)
+
+    def test_fileIO_lazy(self):
+        header, gen = gpstk.readYuma('yuma_data.txt', lazy=True)
+        data = [x for x in gen]
+        self.assertEqual(31, len(data))
 
 
 class Rinex3ObsTest(unittest.TestCase):
@@ -130,6 +140,11 @@ class Rinex3ObsTest(unittest.TestCase):
         expectedTime.set(2453167)
         expectedTime.setTimeSystem(gpstk.TimeSystem(gpstk.TimeSystem.GPS))
         self.assertEqual(expectedTime, dataPoint.time)
+
+    def test_fileIO_lazy(self):
+        header, gen = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=True)
+        data = [x for x in gen]
+        self.assertEqual(120, len(data))
 
 
 if __name__ == '__main__':

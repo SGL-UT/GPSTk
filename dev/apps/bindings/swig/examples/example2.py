@@ -13,12 +13,9 @@ def main():
     outHeader.receiverOffset = 47
 
     # Now let's find the earliest observation time in the data
-    earliest = gpstk.CommonTime.END_OF_TIME
-    for d in data:
-        if d.time < earliest:
-            earliest = d.time
+    earliest = min(data, key=lambda dataPoint: dataPoint.time)
 
-    print 'Earliest time found:', gpstk.CivilTime(earliest)
+    print 'Earliest time found:', gpstk.CivilTime(earliest.time)
 
     # Now let's write it all back to a different file
     gpstk.writeRinex3Obs('rinex3obs_data.txt.new', outHeader, data)
