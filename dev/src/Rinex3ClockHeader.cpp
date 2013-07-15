@@ -62,17 +62,17 @@ namespace gpstk
    const string Rinex3ClockHeader::endOfHeader       =  "END OF HEADER";
 
 
-   const Rinex3ClockHeader::RinexClkType 
+   const RinexClkType
       Rinex3ClockHeader::UN("UN", "Unknown or Invalid");
-   const Rinex3ClockHeader::RinexClkType 
+   const RinexClkType
       Rinex3ClockHeader::AR("AR", "analysis data for receiver clocks");
-   const Rinex3ClockHeader::RinexClkType 
+   const RinexClkType
       Rinex3ClockHeader::AS("AS", "analysis data for satellite clocks");
-   const Rinex3ClockHeader::RinexClkType 
+   const RinexClkType
       Rinex3ClockHeader::CR("CR", "calibration data");
-   const Rinex3ClockHeader::RinexClkType 
+   const RinexClkType
       Rinex3ClockHeader::DR("DR", "discontinuity data");
-   const Rinex3ClockHeader::RinexClkType 
+   const RinexClkType
       Rinex3ClockHeader::MS("MS", "monitor data");
 
       // Clear (empty out) header
@@ -107,7 +107,7 @@ namespace gpstk
 
 
 
-   void Rinex3ClockHeader::reallyPutRecord(FFStream& ffs) const 
+   void Rinex3ClockHeader::reallyPutRecord(FFStream& ffs) const
       throw(std::exception, FFStreamError, StringException)
    {
       cout << "WARNING: There is no implementation for "
@@ -122,7 +122,7 @@ namespace gpstk
 
       // This function parses the entire header from the given stream
    void Rinex3ClockHeader::reallyGetRecord(FFStream& ffs)
-      throw(std::exception, FFStreamError, 
+      throw(std::exception, FFStreamError,
             StringUtils::StringException)
    {
 
@@ -166,7 +166,7 @@ namespace gpstk
          {
             GPSTK_RETHROW(ffse);
          }
-         
+
       }   // end while(not end of header)
 
 
@@ -194,11 +194,11 @@ namespace gpstk
          version  =  asDouble(line.substr(0,9));
          fileType =  strip(line.substr(20, 20));
 
-            // check version 
-         if ( version <= 0.0 || 
+            // check version
+         if ( version <= 0.0 ||
               version > 3.0 )
          {
-            FFStreamError e( "This isn't an anticipated version number." + 
+            FFStreamError e( "This isn't an anticipated version number." +
                               asString(version) );
             GPSTK_THROW(e);
          }
@@ -219,7 +219,7 @@ namespace gpstk
          }
          catch (Exception& e)
          {
-            FFStreamError ffse( "Input satellite system is unsupported: " 
+            FFStreamError ffse( "Input satellite system is unsupported: "
                                  + system_str + e.getText() );
             GPSTK_THROW(ffse);
          }
@@ -341,7 +341,7 @@ namespace gpstk
       {
 
             // new reference clock record
-         Rinex3ClockHeader::RefClkRecord ref;
+         RefClkRecord ref;
             // get the number of reference clocks for this record
          ref.nRef = asInt( line.substr(0,6) );
             // epoch
@@ -359,7 +359,7 @@ namespace gpstk
             T0 = parseTime( line.substr(34,26) );
             ref.refWin[1] = T0 - timeFirst;
 
-               // time inconsistency 
+               // time inconsistency
             if (T0 < timeFirst)
             {
                FFStreamError e( "Wrong epoch of file, expected epoch: " +
@@ -390,7 +390,7 @@ namespace gpstk
          if ( nClks < iRef->nRef )
          {
 
-            Rinex3ClockHeader::RefClk refclk;
+            RefClk refclk;
                // reference clock info
             refclk.name    =  line.substr(0,4);
             refclk.sigma   =  asDouble( strip( line.substr(40,20) ) );
@@ -512,7 +512,7 @@ namespace gpstk
 
       int year, month, day, hour, min;
       double sec;
-   
+
       year  = asInt(   line.substr( 0, 4 ));
       month = asInt(   line.substr( 4, 3 ));
       day   = asInt(   line.substr( 7, 3 ));
@@ -567,7 +567,7 @@ namespace gpstk
          << ",  By: " << fileAgency
         << endl;
       s << "Clock data types (" << dataTypeList.size() << ") :" << endl;
-      for(i=0; i<dataTypeList.size(); i++) 
+      for(i=0; i<dataTypeList.size(); i++)
          s << " Type #" << i << " = "
             << " " << dataTypeList[i] << endl;
       if(valid & acNameValid)
@@ -585,7 +585,7 @@ namespace gpstk
             jt++)
             {
                s << setw(5) << jt->name;
-               s << " from " << setw(7) << it->refWin[0] 
+               s << " from " << setw(7) << it->refWin[0]
                  << " to "   << setw(7) << it->refWin[1];
             }
             s << endl;
@@ -609,8 +609,8 @@ namespace gpstk
          s << endl;
       }
       s << "(This header is ";
-      if(valid) 
-      { 
+      if(valid)
+      {
          if (version == 3.0) s << "VALID 3.0";
          if (version == 2.0) s << "VALID 2.0";
       }

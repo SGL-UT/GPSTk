@@ -51,6 +51,45 @@ namespace gpstk
       /** @addtogroup Rinex3Clock */
       //@{
 
+
+      /// Holds the necessary data for one reference clock corresponding to
+      /// one "ANALYSIS CLK REF" line
+   struct RefClk
+   {
+         /// Name of the reference station
+      std::string name;
+            /// Constraints for the ref-clock (ms)
+      double sigma;
+   };
+
+
+         /// Holds the data for the analysis clock references
+         /// i.e., the "# OF CLK REF" lines
+   struct RefClkRecord
+   {
+         /// Number of reference stations in file
+      size_t nRef;
+         /// List of reference clocks
+      std::list<RefClk> clk;
+         /// Ref-clock window in the file (sec)
+      double refWin[2];
+
+      RefClkRecord() : nRef(0)
+      { refWin[0] = refWin[1] = 0.0; };
+   };
+
+      /// RINEX clock data types
+   struct RinexClkType
+   {
+      std::string type;
+      std::string description;
+      RinexClkType() : type(std::string("UN")),
+      description(std::string("Unknown or Invalid")) {}
+      RinexClkType(std::string t, std::string d) :
+      type(t),description(d) {}
+   };
+
+
       /** This class models the header for a RINEX3 clock file.
        *
        * @sa gpstk::Rinex3ClockData and gpstk::Rinex3ClockStream.
@@ -61,7 +100,7 @@ namespace gpstk
    public:
 
          /// A Simple Constructor.
-      Rinex3ClockHeader() : 
+      Rinex3ClockHeader() :
          version(3.0), valid(false), timeFirst(CommonTime::BEGINNING_OF_TIME)
          {}
 
@@ -125,45 +164,6 @@ namespace gpstk
 
       };
 
-
-         /// Holds the necessary data for one reference clock corresponding to 
-         /// one "ANALYSIS CLK REF" line
-      struct RefClk
-      {
-            /// Name of the reference station
-         std::string name;
-            /// Constraints for the ref-clock (ms)
-         double sigma;
-      };
-
-
-         /// Holds the data for the analysis clock references
-         /// i.e., the "# OF CLK REF" lines
-      struct RefClkRecord
-      {
-            /// Number of reference stations in file
-         size_t nRef;
-            /// List of reference clocks
-         std::list<RefClk> clk;
-            /// Ref-clock window in the file (sec)
-         double refWin[2];
-
-         RefClkRecord() : nRef(0) 
-         { refWin[0] = refWin[1] = 0.0; };
-      };
-
-         /// RINEX clock data types
-      struct RinexClkType
-      {
-         std::string type;
-         std::string description;
-         RinexClkType() : type(std::string("UN")),
-            description(std::string("Unknown or Invalid")) {}
-         RinexClkType(std::string t, std::string d) :
-            type(t),description(d) {}
-      };
-
-
          /** @name Standard RINEX clock data types
           */
          //@{
@@ -180,7 +180,7 @@ namespace gpstk
 
 
          /** @name Rinex3ClockHeaderValues
-          */ 
+          */
          //@{
       double version;                        ///< RINEX3 VERSION & TYPE
       std::string fileType;                  ///< RINEX3 FILETYPE (Clock data etc)
@@ -219,12 +219,12 @@ namespace gpstk
       virtual ~Rinex3ClockHeader() {}
 
          // The next four lines is our common interface
-         /// Rinex3ClockHeader is a "header" so this function 
+         /// Rinex3ClockHeader is a "header" so this function
          /// always returns true.
       virtual bool isHeader() const {return true;}
 
 
-         /** 
+         /**
           * This is a simple Debug output function.
           * It simply outputs the version, name and antenna number of this
           * RINEX3 clock header.
@@ -234,7 +234,7 @@ namespace gpstk
 
          /**
           * Parse a single header record, and modify valid accordingly.
-          * Used by reallyGetRecord for both Rinex3ClockHeader and 
+          * Used by reallyGetRecord for both Rinex3ClockHeader and
           * Rinex3ClockData.
           */
       void ParseHeaderRecord(std::string& line)
@@ -262,7 +262,7 @@ namespace gpstk
           *  a read or formatting error occurs.  This also resets the
           *  stream to its pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
+      virtual void reallyGetRecord(FFStream& s)
          throw(std::exception, FFStreamError,StringUtils::StringException);
 
       friend class Rinex3ClockData;

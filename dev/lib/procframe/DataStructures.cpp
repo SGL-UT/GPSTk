@@ -3014,7 +3014,7 @@ in matrix and number of types do not match") );
                   TypeID type = ConvertToTypeID( *obsTypeItr,
                      RinexSatID(itSat->id,itSat->system));
 
-                  RinexObsData::RinexDatum data;
+                  RinexDatum data;
                   data.data = f.body[*itSat][type];
                   data.ssi = 0;
                   data.lli = 0;
