@@ -71,6 +71,9 @@ namespace gpstk
                   source;  ///< source of corrections (URL)
    };
 
+// Guards are here since an identical struct is used in RinexObsHeader and Rinex3NavHeader
+   #ifndef GPSTK_EXTRAWAVEFACT
+   #define GPSTK_EXTRAWAVEFACT
    /// RINEX 2 extra "WAVELENGTH FACT" lines
    struct ExtraWaveFact
    {
@@ -79,6 +82,7 @@ namespace gpstk
       /// vector of wavelength factor values
       short wavelengthFactor[2];
    };
+   #endif  // GPSTK_EXTRAWAVEFACT
 
   /**
    * This class models the header for a RINEX 3 Observation File.

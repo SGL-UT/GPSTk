@@ -1498,11 +1498,11 @@ in matrix and number of types do not match") );
 
 
       // Returns a gnssRinex with only these types of data.
-      // @param satSys Satellite System value to be kept. 
+      // @param satSys Satellite System value to be kept.
    gnssRinex& gnssRinex::keepOnlySatSystem(const SatID::SatelliteSystem satSys)
    {
        satTypeValueMap stvMap( (*this).body );
-       
+
        SatIDSet satRejectedSet;
        for(satTypeValueMap::iterator it = stvMap.begin();
            it != stvMap.end();
@@ -2448,13 +2448,13 @@ in matrix and number of types do not match") );
       sourceSet.insert(source);
 
       return extractSourceID(sourceSet);
-   
+
    }  // End of method 'gnssDataMap::extractSourceID()'
 
 
 
       /// Returns a gnssDataMap with only these sources.
-      /// @param sourceSet Set(SourceIDSet) containing the sources 
+      /// @param sourceSet Set(SourceIDSet) containing the sources
       ///                  to be extracted.
    gnssDataMap gnssDataMap::extractSourceID(const SourceIDSet& sourceSet)
    {
@@ -2502,7 +2502,7 @@ in matrix and number of types do not match") );
 
 
       // Modifies this object, keeping only these sources.
-      // @param sourceSet Set(SourceIDSet) containing the sources 
+      // @param sourceSet Set(SourceIDSet) containing the sources
       //                  to be extracted.
    gnssDataMap& gnssDataMap::keepOnlySourceID(const SourceIDSet& sourceSet)
    {
@@ -2523,7 +2523,7 @@ in matrix and number of types do not match") );
 
 
       // Modifies this object, keeping only these sources.
-      // @param sourceSet Set(SourceIDSet) containing the sources 
+      // @param sourceSet Set(SourceIDSet) containing the sources
       //                  to be removed.
    gnssDataMap& gnssDataMap::removeSourceID(const SourceIDSet& sourceSet)
    {
@@ -2555,7 +2555,7 @@ in matrix and number of types do not match") );
          }  // loop in the sources
 
       }  // End of 'for( gnssDataMap::const_iterator it = gdMap.begin(); ...'
-      
+
       (*this) = dataMap;
 
       return (*this);
@@ -2575,7 +2575,7 @@ in matrix and number of types do not match") );
 
 
       // Returns a gnssDataMap with only these satellites.
-      // @param satSet Set(SatIDSet) containing the satellite 
+      // @param satSet Set(SatIDSet) containing the satellite
       //               to be extracted.
    gnssDataMap gnssDataMap::extractSatID(const SatIDSet& satSet)
    {
@@ -2617,17 +2617,17 @@ in matrix and number of types do not match") );
    {
       (*this) = extractSatID(sat);
       return (*this);
-   } 
+   }
 
 
       // Modifies this object, keeping only these satellites.
-      // @param satSet Set(SatIDSet) containing the satellite 
+      // @param satSet Set(SatIDSet) containing the satellite
       //                  to be extracted.
    gnssDataMap& gnssDataMap::keepOnlySatID(const SatIDSet& satSet)
    {
       (*this) = extractSatID(satSet);
       return (*this);
-   }  
+   }
 
       // Modifies this object, removing this satellite.
       // @param sat Satellite to be removed.
@@ -2641,7 +2641,7 @@ in matrix and number of types do not match") );
 
 
       // Modifies this object, keeping only these satellites.
-      // @param satSet Set(SatIDSet) containing the satellites 
+      // @param satSet Set(SatIDSet) containing the satellites
       //               to be removed.
    gnssDataMap& gnssDataMap::removeSatID(const SatIDSet& satSet)
    {
@@ -2692,7 +2692,7 @@ in matrix and number of types do not match") );
 
 
       // Returns a gnssDataMap with only these satellites.
-      // @param typeSet Set(TypeIDSet) containing the types 
+      // @param typeSet Set(TypeIDSet) containing the types
       //               to be extracted.
    gnssDataMap gnssDataMap::extractTypeID(const TypeIDSet& typeSet)
    {
@@ -2737,7 +2737,7 @@ in matrix and number of types do not match") );
 
 
       // Modifies this object, keeping only these types.
-      // @param typeSet Set(TypeIDSet) containing the type 
+      // @param typeSet Set(TypeIDSet) containing the type
       //                  to be extracted.
    gnssDataMap& gnssDataMap::keepOnlyTypeID(const TypeIDSet& typeSet)
    {
@@ -2758,7 +2758,7 @@ in matrix and number of types do not match") );
 
 
       // Modifies this object, keeping only these types.
-      // @param typeSet Set(TypeIDSet) containing the types 
+      // @param typeSet Set(TypeIDSet) containing the types
       //               to be removed.
    gnssDataMap& gnssDataMap::removeTypeID(const TypeIDSet& typeSet)
    {
@@ -2834,7 +2834,7 @@ in matrix and number of types do not match") );
          {
             this->addGnssRinex(gRin);
          }
-         
+
          rin.close();
       }
       catch(...)
@@ -2941,7 +2941,7 @@ in matrix and number of types do not match") );
             f.body = satTypeValueMapFromRinexObsData(roh, rod);
 
             return i;
-         }  
+         }
          catch (...)
          {
             return i;
@@ -2972,7 +2972,7 @@ in matrix and number of types do not match") );
 
          return i;
       }
-      
+
       return i;
 
    }  // End of stream input for gnssRinex
@@ -2992,33 +2992,33 @@ in matrix and number of types do not match") );
 
             // Clear out this object
             RinexObsHeader& hdr = strm.header;
-            
+
             RinexObsData rod;
-            
+
             rod.time = f.header.epoch;
-            rod.epochFlag = f.header.epochFlag; 
+            rod.epochFlag = f.header.epochFlag;
             rod.numSvs = f.numSats();
             rod.clockOffset = 0.0;
             rod.auxHeader = hdr;
-                        
+
             SatIDSet satSet = f.getSatID();
             for(SatIDSet::iterator itSat = satSet.begin();
                itSat != satSet.end();
                ++itSat)
             {
-               vector<RinexObsHeader::RinexObsType>::iterator obsTypeItr = 
+               vector<RinexObsType>::iterator obsTypeItr =
                   hdr.obsTypeList.begin();
 
                while (obsTypeItr != strm.header.obsTypeList.end())
                {
                   TypeID type = ConvertToTypeID( *obsTypeItr,
                      RinexSatID(itSat->id,itSat->system));
-                  
+
                   RinexObsData::RinexDatum data;
                   data.data = f.body[*itSat][type];
                   data.ssi = 0;
                   data.lli = 0;
-                  
+
                   if( (type == TypeID::P1) || (type == TypeID::L1) )
                   {
                      if(type == TypeID::L1)
@@ -3026,7 +3026,7 @@ in matrix and number of types do not match") );
                         data.data /= L1_WAVELENGTH_GAL;
                         data.ssi = f.body[*itSat][TypeID::SSI1];
                      }
- 
+
                      data.lli = f.body[*itSat][TypeID::LLI1];
                   }
 
@@ -3085,7 +3085,7 @@ in matrix and number of types do not match") );
                      data.lli = f.body[*itSat][TypeID::LLI8];
                   }
 
-                  if( (type == TypeID::D1) || 
+                  if( (type == TypeID::D1) ||
                       (type == TypeID::S1) ||
                       (type == TypeID::C1) )
                   {
@@ -3099,7 +3099,7 @@ in matrix and number of types do not match") );
 
 
                   rod.obs[*itSat][*obsTypeItr] = data;
-               
+
                   obsTypeItr++;
                }
             }
@@ -3192,7 +3192,7 @@ in matrix and number of types do not match") );
            ++it )
       {
             // RinexObsTypeMap is a map from RinexObsType to RinexDatum:
-            //   std::map<RinexObsHeader::RinexObsType, RinexDatum>
+            //   std::map<RinexObsType, RinexDatum>
             // The "second" field of a RinexSatMap (it) is a
             // RinexObsTypeMap (otmap)
          RinexObsData::RinexObsTypeMap otmap = (*it).second;
@@ -3276,10 +3276,10 @@ in matrix and number of types do not match") );
       satTypeValueMap theMap;
 
       Rinex3ObsData::DataMap::const_iterator it;
-      for(it=rod.obs.begin(); it != rod.obs.end(); it++) 
+      for(it=rod.obs.begin(); it != rod.obs.end(); it++)
       {
          RinexSatID sat(it->first);
- 
+
          typeValueMap tvMap;
 
          map<std::string,std::vector<RinexObsID> > mapObsTypes(roh.mapObsTypes);

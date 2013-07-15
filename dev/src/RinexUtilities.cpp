@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,7 +45,7 @@
 // system includes
 #include <map>
 
-// GPSTk includes 
+// GPSTk includes
 #include "RinexObsStream.hpp"
 #include "RinexObsHeader.hpp"
 #include "RinexNavStream.hpp"
@@ -73,19 +73,19 @@ int RegisterARLUTExtendedTypes(void)
 {
 try {
    unsigned int EPPS = //0x60
-      RinexObsHeader::RinexObsType::EPdepend | RinexObsHeader::RinexObsType::PSdepend;
+      RinexObsType::EPdepend | RinexObsType::PSdepend;
    unsigned int L1L2 = //0x06
-      RinexObsHeader::RinexObsType::L1depend | RinexObsHeader::RinexObsType::L2depend;
+      RinexObsType::L1depend | RinexObsType::L2depend;
    unsigned int P1P2 = //0x18
-      RinexObsHeader::RinexObsType::P1depend | RinexObsHeader::RinexObsType::P2depend;
-   unsigned int EPEP=RinexObsHeader::RinexObsType::EPdepend;//0x20
+      RinexObsType::P1depend | RinexObsType::P2depend;
+   unsigned int EPEP=RinexObsType::EPdepend;//0x20
    unsigned int PELL=EPPS | L1L2;//0x66
    unsigned int PEPP=EPPS | P1P2;//0x78
    unsigned int PsLs=L1L2 | P1P2;//0x1E
    unsigned int L1P1 = //0x0A
-      RinexObsHeader::RinexObsType::L1depend | RinexObsHeader::RinexObsType::P1depend;
+      RinexObsType::L1depend | RinexObsType::P1depend;
    unsigned int L2P2 = //0x14
-      RinexObsHeader::RinexObsType::L2depend | RinexObsHeader::RinexObsType::P2depend;
+      RinexObsType::L2depend | RinexObsType::P2depend;
    int j;
    j = RegisterExtendedRinexObsType("ER","Ephemeris range",     "meters", EPPS);
    if(j) return j;
@@ -326,7 +326,7 @@ bool isRinexObsFile(const string& file)
 	   {
 	   	return false;
 	   }
-	   
+
 	   try
 	   {
 	   	rostream >> header;
@@ -339,7 +339,7 @@ bool isRinexObsFile(const string& file)
 	   {
 	   	return false;
 	   }
-	   
+
 	   rostream.close();
 	   return true;
 	}
@@ -381,7 +381,7 @@ bool isRinex3ObsFile(const string& file)
 	   {
 	   	return false;
 	   }
-	   
+
 	   try
 	   {
 	   	rostream >> header;
@@ -394,7 +394,7 @@ bool isRinex3ObsFile(const string& file)
 	   {
 	   	return false;
 	   }
-	   
+
 	   rostream.close();
 	   return true;
 	}

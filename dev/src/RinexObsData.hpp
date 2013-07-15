@@ -78,7 +78,7 @@ namespace gpstk
       };
 
          /// map from RinexObsType to RinexDatum.
-      typedef std::map<RinexObsHeader::RinexObsType, RinexDatum> RinexObsTypeMap;
+      typedef std::map<RinexObsType, RinexDatum> RinexObsTypeMap;
          /// map from SatID to RinexObsTypeMap.
       typedef std::map<SatID, RinexObsTypeMap> RinexSatMap;
 

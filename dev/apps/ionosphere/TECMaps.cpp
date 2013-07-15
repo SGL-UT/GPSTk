@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -87,8 +87,8 @@ string NavDir;
 vector<string> NavFiles;
 XvtStore<SatID> *pEph;         // is this used?
    // obs types needed
-RinexObsHeader::RinexObsType ELot,AZot,VRot,SRot,TPot;
-RinexObsHeader::RinexObsType LAot,LOot;
+RinexObsType ELot,AZot,VRot,SRot,TPot;
+RinexObsType LAot,LOot;
    // geoid
 WGS84Ellipsoid WGS84;
    // Start and stop times
@@ -279,7 +279,7 @@ try {
    CommandOption dashl(CommandOption::hasArgument, CommandOption::stdType,
       0,"log","Output:\n --log <file>         Output log file name");
    dashl.setMaxCount(1);
-   
+
    // time
    CommandOptionWithTimeArg dasheb(0,"BeginTime","%Y,%m,%d,%H,%M,%f",
       "Time limits:\n --BeginTime <arg>    Start time, arg is of the form "
@@ -393,7 +393,7 @@ try {
    CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
       '0', "XSat", "Other options:\n --XSat <sat>         Exclude this satellite "
       "(<sat> may be <system> only)");
-   
+
    // ... other options
    CommandOptionNoArg dashv('v', "verbose",
          "Help:\n [-v|--verbose]       print extended output info.");
@@ -476,10 +476,10 @@ try {
       oflog << "...end of Errors\n\n";
       help = true;
    }
-   
+
       // f never appears because we intercept it above
    //if(dashf.getCount()) { cout << "Option f "; dashf.dumpValue(cout); }
- 
+
       // input path; do path before input file names
    if(dashp.getCount()) {
       values = dashp.getValue();
@@ -1385,12 +1385,12 @@ try {
          if(debug) oflog << "Satellite is excluded " << sat << endl;
          continue;
       }
-   
+
          // save first time
       if(S.InitTime[sat] == CommonTime::BEGINNING_OF_TIME) {
          S.InitTime[sat] = S.robs.time;
       }
-      
+
          // process this sat
       if((jt=it->second.find(ELot)) != it->second.end())
          EL = jt->second.data;
@@ -1403,18 +1403,18 @@ try {
            << EL << " < " << vtecmap.MinElevation << endl;
          continue;   // here or inside class?
       }
-  
+
       if((jt=it->second.find(AZot)) != it->second.end())
          AZ = jt->second.data;
       else {
          if(debug) oflog << "Azimuth is not found" << endl;
          continue;
       }
-  
+
       if((jt=it->second.find(LAot)) != it->second.end())
          la = jt->second.data;
       else lo = -999.0;
- 
+
       if((jt=it->second.find(LOot)) != it->second.end())
          lo = jt->second.data;
       else lo = -999.0;

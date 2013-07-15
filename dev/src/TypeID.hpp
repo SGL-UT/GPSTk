@@ -479,7 +479,7 @@ namespace gpstk
           * @param name      Identifying string for the new TypeID
           * @return          The desired TypeID
           */
-      static TypeID byName(std::string name) 
+      static TypeID byName(std::string name)
          throw(InvalidRequest);
 
          /** Static method to add new TypeID's by name string
@@ -488,7 +488,7 @@ namespace gpstk
           * @return          The new TypeID
           */
       static TypeID regByName(std::string name,std::string desc);
-      
+
          /// unregister a TypeID by it's name string
       static void unregByName(std::string name);
 
@@ -497,7 +497,7 @@ namespace gpstk
 
    private:
 
-         /// Have user deined TypeIDs been registered ?  
+         /// Have user deined TypeIDs been registered ?
       static bool bUserTypeIDRegistered;
 
          /// Map holding user defined TypeIDs by a string
@@ -520,13 +520,13 @@ namespace gpstk
    std::ostream& operator<<(std::ostream& s, const TypeID& p);
 
 
-   bool IsCarrierPhase(const RinexObsHeader::RinexObsType& rot);
-   
-   int GetCarrierBand(const RinexObsHeader::RinexObsType& rot);
+   bool IsCarrierPhase(const RinexObsType& rot);
+
+   int GetCarrierBand(const RinexObsType& rot);
 
    int GetCarrierBand(const RinexObsID& roi);
 
-   TypeID::ValueType ConvertToTypeID(const RinexObsHeader::RinexObsType& rot,
+   TypeID::ValueType ConvertToTypeID(const RinexObsType& rot,
                                      const RinexSatID& sat);
 
    TypeID::ValueType ConvertToTypeID(const RinexObsID& roi,
