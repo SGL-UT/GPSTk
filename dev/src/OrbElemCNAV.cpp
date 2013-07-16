@@ -152,46 +152,6 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-/*
-      unsigned long midPointSOW = (unsigned long) Toe;   
-      unsigned long offsetFromEven2Hours = midPointSOW % TWO_HOURS;
-      bool smallOffset = false;
-      if (offsetFromEven2Hours!=90_MINUTES)
-      {
-         smallOffset = true; 
-         
-           // Compute the "small offset".   Negative value means the
-           // midPoint is early.  
-         unsigned long sizeOfOffset = offsetFromEven2Hours - 90_MINUTES; 
-
-            // Apply the offset such that the midPointSOW is now the 
-            // nominal midpoint of the tranmission interval.
-         midPointSOW -= sizeOffset; 
-      }
-
-         // Derive the end of the fit interval
-      unsigned long endFitSOW   = midPointSOW + 90_MINUTES; 
-      short endFitWk   = TOWWeek;
-      if (endFitSOW >= FULLWEEK)
-      {
-         endFitSOW -= FULLWEEK;
-         endFitWk++;
-      }
-
-         // Derive the beginning of the fit interval
-      unsigned long beginFitSOW = midPointSOW - 90_MINUTES;
-      if (smallOffset)
-      {
-         if (TOWCount10>beginFitSOW) beginFitSOW = TOWCount10;
-      }
-      short beginFitWk = TOWWeek;
-      if (begFitSOW<0)
-      {
-         begFitSOW += FULLWEEK;
-         begFitWk--;
-      }
-*/
-
          // Note that TOW times are referenced to the beginning of 
          // the next message.  Therefore, the transmit time is actually
          // PRIOR to the TOW count in SOW.  However, the amount prior
@@ -274,7 +234,6 @@ namespace gpstk
          endWeek++;
       }
       endValid = GPSWeekSecond(endWeek, endSOW, TimeSystem::GPS);
-      //endValid = ctToe + NINTY_MINUTES;  
 
       dataLoadedFlag = true;   
    } // end of loadData()
