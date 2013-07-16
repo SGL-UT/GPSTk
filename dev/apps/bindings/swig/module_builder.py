@@ -52,6 +52,7 @@ ignore_patterns = [
 'ObsIDInitializer',
 'OrbElem_',
 'Position_',
+'RinexMetHeader_',
 'RinexObsHeader_',
 'Stream',
 'swigregister',

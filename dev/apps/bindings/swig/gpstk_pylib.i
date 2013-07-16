@@ -92,6 +92,11 @@
     #include "../../../src/RinexNavStream.hpp"
     #include "../../../src/RinexNavData.hpp"
 
+    #include "../../../src/RinexMetBase.hpp"
+    #include "../../../src/RinexMetHeader.hpp"
+    #include "../../../src/RinexMetStream.hpp"
+    #include "../../../src/RinexMetData.hpp"
+
     #include "../../../src/Rinex3NavBase.hpp"
     #include "../../../src/Rinex3NavHeader.hpp"
     #include "../../../src/Rinex3NavStream.hpp"
@@ -267,6 +272,16 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/RinexClockHeader.hpp"
 %include "../../../src/RinexClockData.hpp"
 %include "../../../src/RinexClockStream.hpp"
+
+%include "../../../src/RinexNavBase.hpp"
+%include "../../../src/RinexNavHeader.hpp"
+%include "../../../src/RinexNavStream.hpp"
+%include "../../../src/RinexNavData.hpp"
+
+%include "../../../src/RinexMetBase.hpp"
+%include "../../../src/RinexMetHeader.hpp"
+%include "../../../src/RinexMetStream.hpp"
+%include "../../../src/RinexMetData.hpp"
 
 %rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
 %rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;

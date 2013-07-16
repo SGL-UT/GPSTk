@@ -56,16 +56,18 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/Rinex3ClockData.cpp
                     ../../../src/Rinex3ClockHeader.cpp
                     ../../../src/Rinex3EphemerisStore.cpp
-                    ../../../src/RinexNavData.cpp
-                    ../../../src/RinexNavHeader.cpp
                     ../../../src/Rinex3NavData.cpp
                     ../../../src/Rinex3NavHeader.cpp
                     ../../../src/Rinex3ObsData.cpp
                     ../../../src/Rinex3ObsHeader.cpp
                     ../../../src/RinexClockData.cpp
                     ../../../src/RinexClockHeader.cpp
-                    ../../../src/RinexObsHeader.cpp
+                    ../../../src/RinexMetData.cpp
+                    ../../../src/RinexMetHeader.cpp
+                    ../../../src/RinexNavData.cpp
+                    ../../../src/RinexNavHeader.cpp
                     ../../../src/RinexObsData.cpp
+                    ../../../src/RinexObsHeader.cpp
                     ../../../src/RinexObsID.cpp
                     ../../../src/RinexSatID.cpp
                     ../../../src/RinexUtilities.cpp
