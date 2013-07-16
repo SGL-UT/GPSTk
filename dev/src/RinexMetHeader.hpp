@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -55,6 +55,11 @@ namespace gpstk
 {
   /** @addtogroup RinexMet */
   //@{
+
+      // forward declarations
+   struct sensorType;
+
+   struct sensorPosType;
 
   /**
    * This class models the RINEX MET header for a RINEX MET file.
@@ -157,7 +162,7 @@ namespace gpstk
           return stringSensorPos;
         case validEoH:
           return stringEoH;
-		default: break; //NB Determine if additional enumeration values need to be handled  
+		default: break; //NB Determine if additional enumeration values need to be handled
       }
 
       return "*UNKNOWN/INVALID BITS*";
@@ -173,26 +178,6 @@ namespace gpstk
     static std::string bitString(unsigned long vb, char quote='\"',
                                  std::string sep=", ");
 
-    /// Struct for holding information about a sensor
-    struct sensorType
-    {
-      std::string model;    ///< The manufacturer of the sensor.
-      std::string type;     ///< The specific type of sensor.
-      double accuracy;      ///< The accuracy of the sensor.
-      RinexMetType obsType; ///< The obs type this sensor corresponds to.
-    };
-
-    /// Struct for holding info about a sensor position
-    struct sensorPosType
-    {
-      /**
-       * XYZ and height of sensor coordinates.  Use ITRF or WGS-84 coordinates.
-       */
-      gpstk::Triple position;
-      double height;
-      /// The obs type of the sensor this position corresponds to.
-      RinexMetType obsType;
-    };
 
     /** @name HeaderValues
      */
@@ -208,10 +193,10 @@ namespace gpstk
     std::string markerName;                    ///< The name of the location.
     std::string markerNumber;                  ///< The number of the location.
 
-    /** 
+    /**
      * A list of obs types in the file.
      * @warning This variable determines what data gets written to
-     * an output RinexObsStream.  Set this with the RinexMetTypes 
+     * an output RinexObsStream.  Set this with the RinexMetTypes
      * that you want written to the file.
      */
     std::vector<RinexMetType> obsTypeList;
@@ -239,7 +224,7 @@ namespace gpstk
   protected:
 
   /// Writes the RINEX Met header to the stream \a s.
-    virtual void reallyPutRecord(FFStream& s) const 
+    virtual void reallyPutRecord(FFStream& s) const
       throw(std::exception, FFStreamError,
             gpstk::StringUtils::StringException);
 
@@ -257,6 +242,28 @@ namespace gpstk
             gpstk::StringUtils::StringException);
 
   }; // class RinexMetHeader
+
+  /// Struct for holding information about a sensor
+   struct sensorType
+   {
+      std::string model;    ///< The manufacturer of the sensor.
+      std::string type;     ///< The specific type of sensor.
+      double accuracy;      ///< The accuracy of the sensor.
+      RinexMetHeader::RinexMetType obsType; ///< The obs type this sensor corresponds to.
+   };
+
+   /// Struct for holding info about a sensor position
+   struct sensorPosType
+   {
+     /**
+      * XYZ and height of sensor coordinates.  Use ITRF or WGS-84 coordinates.
+      */
+      gpstk::Triple position;
+      double height;
+      /// The obs type of the sensor this position corresponds to.
+      RinexMetHeader::RinexMetType obsType;
+   };
+
 
   //@}
 
