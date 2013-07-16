@@ -23,17 +23,6 @@ class URATest(unittest.TestCase):
         self.assertEqual(15, gpstk.constants.SV_ACCURACY_GPS_MAX_INDEX_VALUE)
 
 
-class EngAlmanacTest(unittest.TestCase):
-    def test(self):
-        e = gpstk.EngAlmanac()
-        # we need better testing here; not convinced python longs
-        # are being mapped to the native C longs needed
-        suframe = [23222245L, 14111111324L, 4623626L, 33333531536L, 41261634L,
-                   17845L, 6317L, 736162361L, 83163L, 91471L]
-        e.addSubframe(suframe, 1)
-        # e.getEcc(SatID(1))
-
-
 class BrcKeplerOrbitTest(unittest.TestCase):
     def test(self):
         t1 = gpstk.CommonTime()
@@ -79,11 +68,10 @@ class GloEphemerisTest(unittest.TestCase):
         self.assertEqual(expected, str(g))
 
 
-
-
 class SP3Test(unittest.TestCase):
     def test_fileIO(self):
         pass
+
     def test_almanac_store(self):
       s = gpstk.SP3EphemerisStore()
       sat = gpstk.SatID(1, gpstk.SatID.systemGPS)
@@ -96,7 +84,7 @@ class SP3Test(unittest.TestCase):
 
 class SEMTest(unittest.TestCase):
     def test_fileIO(self):
-        header, data = gpstk.readSEM('sem_data.txt')
+        header, data = gpstk.readSEM('sem_data.txt', lazy=False)
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
         self.assertEqual(32, len(data))
@@ -112,7 +100,7 @@ class SEMTest(unittest.TestCase):
 
 class YumaTest(unittest.TestCase):
     def test_fileIO(self):
-        header, data = gpstk.readYuma('yuma_data.txt')
+        header, data = gpstk.readYuma('yuma_data.txt', lazy=False)
         self.assertEqual(31, len(data))
         dataPoint = data[10]
         self.assertAlmostEqual(0.0, dataPoint.AF1)
@@ -128,7 +116,7 @@ class YumaTest(unittest.TestCase):
 
 class Rinex3ObsTest(unittest.TestCase):
     def test_fileIO(self):
-        header, data = gpstk.readRinex3Obs('rinex3obs_data.txt')
+        header, data = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=False)
         self.assertEqual(0L, header.numSVs)
         self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
         self.assertEqual(120, len(data))

@@ -33,7 +33,6 @@ STD_VECTOR(std::string, vector_string)
 
 
 %pythoncode %{
-from __builtin__ import range as rng
 def seqToVector(seq):
     """Translates a python sequence type to a std::vector backed type.
     This uses the first element to get the type. If there are 0 elements,
@@ -41,23 +40,27 @@ def seqToVector(seq):
     You should make sure all elements are of the same type or an error will
     occur.
     """
+    import __builtin__
     if len(seq) == 0:
         return vector_string()
     first = seq[0]
     if isinstance(first, basestring):  # change basestring to str when moves to python3.x
         v = vector_string(len(seq))
-    if isinstance(first, int):
+    elif isinstance(first, int):
         v = vector_int(len(seq))
-    if isinstance(first, float):
+    elif isinstance(first, float):
         v = vector_double(len(seq))
-    for i in rng(len(seq)):
+    else:
+        return None
+    for i in __builtin__.range(len(seq)):
         v[i] = seq[i]
     return v
 
 def vectorToSeq(vector):
     """Translates a std::vector backed type (from gpstk.cpp) to a python list."""
     list = [None] * vector.size()  # pre-allocates size to help efficiency
-    for i in rng(vector.size()):
+    import __builtin__
+    for i in __builtin__.range(vector.size()):
         list[i] = vector[i]
     return list
 %}
