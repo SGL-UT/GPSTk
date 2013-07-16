@@ -1,7 +1,3 @@
-#pragma ident "$Id$"
-
-
-
 /**
  * @file MiscMath.hpp
  * Miscellaneous mathematical algorithms
@@ -56,45 +52,37 @@ namespace gpstk
    /** @defgroup math Mathematical algorithms */
    //@{
 
-    /// This is a straightforward version of Lagrange Interpolation, and it is
-    /// here for the following existing LagrangeInterpolation is buggy
-    /// (corrupt when input data size is 2).
-    ///
-    /// template <class T>
-    /// T LagrangeInterpolation(const std::vector<T>& X, 
-    ///                         const std::vector<T>& Y, const T& x, T& err);
-    ///
-    /// Please DO KEEP THIS function unless you fix the existing bug.(Wei Yan)
-    ///
-    template <class T>
-    T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, T x)
-    {
-        if(!(X.size()==Y.size())) throw Exception();
-
-        T Yx(0.0);
-        for(std::size_t i=0;i<X.size();i++)
-        {
-            if(x==X[i]) return Y[i];
-
-            T Li(1.0);
-            for(std::size_t j=0;j<X.size();j++)
-            {
-                if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
-            }
-            Yx += Li*Y[i];
-        }
-
-        return Yx;
-
-    }  // end T LagrangeInterpolation(vector, vector, const T)
-
-
-   /** Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
-    * returning the value of Y(x). Also return an estimate of the estimation error in 'err'.
-    * Assumes k=X.size() is even, and that x is between X[j-1] and X[j], where j=k/2.
-    */
+   /// This is a straightforward version of Lagrange Interpolation.
+   /// Y must have size at least as large as X, and X.size() must be >= 2;
+   /// x should lie within the range of X.
    template <class T>
-   T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& err)
+   T SimpleLagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
+      const T x) throw(Exception)
+   {
+      if(Y.size() < X.size()) {
+         GPSTK_THROW(Exception("Input vectors must be of same size"));
+      }
+      size_t i,j;
+      T Yx(0);
+      for(i=0; i<X.size(); i++) {
+         if(x==X[i]) return Y[i];
+
+         T Li(1);
+         for(j=0; j<X.size(); j++)
+             if(i!=j)  Li *= (x-X[j])/(X[i]-X[j]);
+
+         Yx += Li*Y[i];
+      }
+      return Yx;
+   }  // end T LagrangeInterpolation(const vector, const vector, const T)
+
+   /// Lagrange interpolation on data (X[i],Y[i]), i=0,N-1 (N=X.size()), return Y(x).
+   /// Also return an estimate of the estimation error in 'err'.
+   /// Assumes X.size() is even and > 2, and that x is between X[j-1] and X[j],
+   /// where j=X.size()/2.
+   template <class T>
+   T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
+      const T& x, T& err)
    {
       std::size_t i,j,k;
       T y,del;
@@ -138,12 +126,13 @@ namespace gpstk
 
    /** Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
     * returning the value of Y(x) and dY(x)/dX.
-    * Assumes that x is between X[k-1] and X[k], where k=N/2.
+    * Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
     * Warning: for use with the precise (SP3) ephemeris only when velocity is not
     * available; estimates of velocity, and especially clock drift, not as accurate.
     */
    template <class T>
-   void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, const T& x, T& y, T& dydx)
+   void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
+      const T& x, T& y, T& dydx)
    {
       std::size_t i,j,k,N=X.size(),M;
       M = (N*(N+1))/2;
@@ -154,13 +143,10 @@ namespace gpstk
                P[i] *= x-X[j];
                D[i] *= X[i]-X[j];
                if(i < j) {
-//std::cout << "Compute Q[" << i << "," << j << "=" << (i+(j*(j+1))/2) << "] = 1 ";
                   for(k=0; k<N; k++) {
                      if(k == i || k == j) continue;
-//std::cout << " * (x-X[" << k << "])";
                      Q[i+(j*(j+1))/2] *= (x-X[k]);
                   }
-//std::cout << " = " << Q[i+(j*(j+1))/2] << std::endl;
                }
             }
          }
@@ -180,69 +166,48 @@ namespace gpstk
 
       /// Returns the second derivative of Lagrange interpolation.
    template <class T>
-   T LagrangeInterpolating2ndDerivative( const std::vector<T>& pos,
-                                         const std::vector<T>& val,
-                                         T desiredPos )
+   T LagrangeInterpolating2ndDerivative(const std::vector<T>& pos,
+                                        const std::vector<T>& val,
+                                        const T desiredPos)
    {
-
-      int degree( pos.size() );
+      int degree(pos.size());
+      int i,j,m,n;
 
          // First, compute interpolation factors
       typedef std::vector< T > vectorType;
-      std::vector< vectorType > delta( degree, vectorType(degree, 0.0) );
+      std::vector< vectorType > delta(degree, vectorType(degree, 0.0));
 
-
-      for (int i = 0; i < degree; ++i)
-      {
-         for (int j = 0; j < degree; ++j)
-         {
-            if (j != i)
-            {
-               delta[i][j] = ( (desiredPos - pos[j]) / (pos[i] - pos[j]) );
+      for(i=0; i < degree; ++i) {
+         for(j=0; j < degree; ++j) {
+            if(j != i) {
+               delta[i][j] = ((desiredPos - pos[j])/(pos[i] - pos[j]));
             }
          }
       }
 
       double retVal(0.0);
+      for(i=0; i < degree; ++i) {
+         double sum(0.0);
 
-      for( int i = 0; i < degree; ++i )
-      {
-         double sum( 0.0 );
+         for(m=0; m < degree; ++m) {
+            if(m != i) {
+               double weight1(1.0/(pos[i]-pos[m]));
+               double sum2(0.0);
 
-         for( int m = 0; m < degree; ++m )
-         {
-
-            if( m != i )
-            {
-
-               double weight1( 1.0/(pos[i]-pos[m]) );
-               double sum2( 0.0 );
-
-               for( int j = 0; j < degree; ++j )
-               {
-
-                  if( (j != i) && (j != m) )
-                  {
-
-                     double weight2( 1.0/(pos[i]-pos[j]) );
-
-                     for( int n = 0; n < degree; ++n )
-                     {
-
-                        if( (n != j) && (n != m) && (n != i) )
-                        {
+               for(j=0; j < degree; ++j) {
+                  if((j != i) && (j != m)) {
+                     double weight2(1.0/(pos[i]-pos[j]));
+                     for(n=0; n < degree; ++n) {
+                        if((n != j) && (n != m) && (n != i)) {
                            weight2 *= delta[i][n];
                         }
                      }
                      sum2 += weight2;
                   }
                }
-
                sum += sum2*weight1;
             }
-
          }
-
          retVal += val[i] * sum;
       }
 
