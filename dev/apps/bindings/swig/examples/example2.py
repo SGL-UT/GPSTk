@@ -1,5 +1,3 @@
-# this is a port of dev/src/examples/example2.cpp
-
 import gpstk
 
 

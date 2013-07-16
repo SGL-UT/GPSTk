@@ -74,8 +74,8 @@ def generate_docs():
     out_file = open(gpstk_py_doc + 'doc.i', 'w')
     out_file.write('# This is an AUTO-GENERATED file by doc.py.\n')
     out_file.write('# Do not modify it unless you know what you are doing.\n')
-    generated_files = glob.glob(gpstk_py_doc + '*.i')
-    for f_i in generated_files:
+    doc_files = glob.glob(gpstk_py_doc + '*.i')
+    for f_i in doc_files:
         if 'doc.i' not in f_i:
             out_file.write('%include ' + f_i + '\n')
     out_file.close()

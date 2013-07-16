@@ -49,7 +49,7 @@ def read ## FORMATNAME(fileName, lazy=False):
 
 
 def write ## FORMATNAME(fileName, header, data):
-    """Writes a FORMATNAME ## Header and sequence of FORMATNAME ## Data objects to a file.
+    """Writes a FORMATNAME##Header and sequence of FORMATNAME##Data objects to a file.
     Note that this overwrites the file if it already exists.
 
     Parameters:
@@ -57,9 +57,9 @@ def write ## FORMATNAME(fileName, header, data):
 
       fileName:  the name of the file to write to.
 
-      header:  the FORMATNAME ## Header object
+      header:  the FORMATNAME## Header object
 
-      data:  the sequence of FORMATNAME ##Data objects
+      data:  the sequence of FORMATNAME## Data objects
     """
     s = FORMATNAME ## Stream .out ##FORMATNAME ## Stream (fileName)
     s.writeHeader(header)

@@ -1,5 +1,3 @@
-# This is a python port of gpstk/dev/examples/example1.cpp
-
 import gpstk
 
 

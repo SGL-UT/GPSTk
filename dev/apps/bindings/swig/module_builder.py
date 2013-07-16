@@ -135,7 +135,7 @@ def main():
                 use_global_namespace = False
                 add_to_submodule(x, 'constants')
             # if it subclasses gpstk.Exception add to exceptions submodule
-            if inspect.isclass(t) and issubclass(t, gpstk_pylib.Exception):
+            if inspect.isclass(t) and issubclass(t, gpstk_pylib.Exception) or 'Exception' in x:
                 use_global_namespace = False
                 add_to_submodule(x, 'exceptions')
 
