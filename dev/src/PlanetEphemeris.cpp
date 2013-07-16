@@ -32,8 +32,7 @@
 #include "MJD.hpp"
 #include "TimeString.hpp"
 #include "Matrix.hpp"
-//#include "Logger.hpp"
-#include "DebugUtils.hpp"
+#include "Exception.hpp"
 
 namespace gpstk
 {

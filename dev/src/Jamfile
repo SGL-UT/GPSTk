@@ -55,7 +55,6 @@ else
       ConfDataWriter.cpp
       DCBDataReader.cpp
       DOP.cpp
-      DebugUtils.cpp
       EngAlmanac.cpp
       EngEphemeris.cpp
       EngNav.cpp
@@ -238,7 +237,6 @@ else
       ConfDataReader.hpp
       ConfDataWriter.hpp
       DCBDataReader.hpp
-      DebugUtils.hpp
       DOP.hpp
       EllipsoidModel.hpp
       EngAlmanac.hpp

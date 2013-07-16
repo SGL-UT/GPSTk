@@ -1,4 +1,4 @@
-# src/CMakeLists.txt
+mm# src/CMakeLists.txt
 # Please add in alphabetical order.
 set (gpstk_src
       AlmOrbit.cpp
@@ -35,7 +35,6 @@ set (gpstk_src
       ConfDataWriter.cpp
       DCBDataReader.cpp
       DOP.cpp
-      DebugUtils.cpp
       EngAlmanac.cpp
       EngEphemeris.cpp
       EngNav.cpp

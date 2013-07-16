@@ -49,7 +49,7 @@
 #include <cstring>   // for size_t
 #include <vector>
 #include "MathBase.hpp"
-#include "DebugUtils.hpp"
+#include "Exception.hpp"
 
 namespace gpstk
 {
@@ -69,7 +69,7 @@ namespace gpstk
     template <class T>
     T LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y, T x)
     {
-        GPSTK_ASSERT(X.size()==Y.size());
+        if(!(X.size()==Y.size())) throw Exception();
 
         T Yx(0.0);
         for(std::size_t i=0;i<X.size();i++)
