@@ -238,6 +238,11 @@ namespace gpstk
          if(testSOW2<leastSOW) leastSOW = testSOW2;
          if(testSOW3<leastSOW) leastSOW = testSOW3;
          Xmit = leastSOW - (leastSOW % (4*SOWOffset));    // See -705B Table 20-XII
+            // Still need a test to assure that the begin of fit doesn't'
+            // exceed half the interval from the mid-point.  (During live
+            // CNAV test of June 2013, Msg 11 was cutting over early.)
+         long defBegFit = midPointSOW - NINTY_MINUTES;
+         if (Xmit<defBegFit) Xmit = defBegFit; 
       }
       else
       {
@@ -259,8 +264,17 @@ namespace gpstk
       ctTop = GPSWeekSecond(TopWeek, Top, TimeSystem::GPS);
       ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
       ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
-         
-      endValid = ctToe + NINTY_MINUTES;  
+
+         // The end of validity is 1.5 hours after the nominal midpoint
+      double endSOW = midPointSOW + NINTY_MINUTES;
+      short endWeek = TOWWeek;
+      if (endSOW> gpstk::FULLWEEK)   
+      {
+         endSOW -= gpstk::FULLWEEK;
+         endWeek++;
+      }
+      endValid = GPSWeekSecond(endWeek, endSOW, TimeSystem::GPS);
+      //endValid = ctToe + NINTY_MINUTES;  
 
       dataLoadedFlag = true;   
    } // end of loadData()
