@@ -16,10 +16,6 @@ def is_class(x):
     return inspect.isclass(t)
 
 
-def get_doc(x):
-    return pydoc.render_doc(str, "Help on %s")
-
-
 def should_doc(x):
     return '._' not in x and '__' not in x
 
@@ -27,6 +23,16 @@ def should_doc(x):
 def get_dir(x):
     list = dir(x)
     return filter(lambda y: should_doc(y), list)
+
+
+def render_page(x):
+    t = eval(x)
+    f = open(x + '.rst', 'w')
+    doc = pydoc.render_doc(t, "Help on %s")
+    f.write(':orphan:\n\n')
+    f.write(x + '\n=========================================================\n\n')
+    f.write(pydoc.plain(doc))
+    f.close()
 
 
 def main():
@@ -55,6 +61,7 @@ def main():
         elif is_function(x):
             functions.append(x)
 
+
     f = open('quickref.rst', 'w')
     f.write('Quick Reference\n====================\n\n')
     desc = ("Here we provide a list of all members avaliable in the gpstk namespace."
@@ -67,11 +74,13 @@ def main():
 
     f.write("\nClasses\n****************\n\n")
     for x in classes:
-        f.write('.. py:class:: ' + x + '\n')
+        render_page(x)
+        f.write(':doc:`' + x + '`\n\n')
 
     f.write("\nFunctions\n****************\n\n")
     for x in functions:
-        f.write('.. py:function:: ' + x + '\n')
+        render_page(x)
+        f.write(':doc:`' + x + '`\n\n')
 
     f.write("\nConstants\n****************\n\n")
     for x in constants:
@@ -79,11 +88,13 @@ def main():
 
     f.write("\nExceptions\n****************\n\n")
     for x in exceptions:
-        f.write('.. py:class:: ' + x + '\n')
+        render_page(x)
+        f.write(':doc:`' + x + '`\n\n')
 
     f.write("\nC++ Standard library wrappers\n*********************************\n\n")
     for x in cpp:
-        f.write('.. py:class:: ' + x + '\n')
+        render_page(x)
+        f.write(':doc:`' + x + '`\n\n')
     f.close()
 
 if __name__ == '__main__':

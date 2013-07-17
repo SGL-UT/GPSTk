@@ -2,12 +2,16 @@
 
 Usage:
     python module_builder.py
-    This runs the program and builds to the gpstk folder in the current directory.
-    /usr/local/lib/pythonX.Y/site-packages
+    This runs the program and builds to the gpstk folder to the system
+    default path for python. The path is defined by:
+        from distutils.sysconfig import get_python_lib
+        print(get_python_lib())
+    This may require extra permissions.
+
 
 If on a Unix-like platform:
-    sudo python module_builder.py /usr/local/lib/python2.7/site-packages
-    This runs the program and builds to /usr/local/lib/python2.7/site-packages
+    sudo python module_builder.py /usr/local/lib/python2.7/dist-packages
+    This runs the program and builds to /usr/local/lib/python2.7/dist-packages
 
     python module_builder.py ~/.local/lib/python2.7/site-packages
     This runs the program and builds to ~/.local/lib/python2.7/site-packages/
@@ -20,6 +24,7 @@ If on Windows:
 
 import argparse
 import distutils.dir_util
+import distutils.sysconfig
 import inspect
 import os
 import shutil
@@ -36,6 +41,8 @@ ignore_exact = [
 'Rinex3NavBase',
 'Rinex3ObsBase',
 'RinexClockBase',
+'RinexMetBase',
+'RinexNavBase',
 'RinexObsBase',
 'SEMBase',
 'SP3Base',
@@ -84,9 +91,13 @@ def should_be_added(name):
 
 def main():
     if len(sys.argv) >= 2:
-        out_dir = os.path.join(sys.argv[1], 'gpstk/')
+        out_dir = os.path.join(sys.argv[1], 'gpstk')
     else:
-        out_dir = 'gpstk'
+        out_dir = distutils.sysconfig.get_python_lib()
+
+    # add seperator at the end if one is missing
+    if out_dir[-1] != '/' and out_dir[-1] != '\\':
+        out_dir = out_dir + '/'
 
     print 'Placing gpstk build files in', out_dir
 
