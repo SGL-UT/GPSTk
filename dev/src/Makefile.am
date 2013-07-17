@@ -38,7 +38,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ConfDataReader.cpp \
       ConfDataWriter.cpp \
 	  DCBDataReader.cpp \
-      DebugUtils.cpp \
 	  DOP.cpp \
       EngAlmanac.cpp \
       EngEphemeris.cpp \
@@ -99,6 +98,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ObsClockModel.cpp \
       ObsEpochMap.cpp \
       ObsID.cpp \
+	  ObsIDInitializer.cpp \
       ObsRngDev.cpp \
       OceanLoading.cpp \
 	  OrbElem.cpp \
@@ -220,7 +220,6 @@ incl_HEADERS = AllanDeviation.hpp \
       ConfDataReader.hpp \
       ConfDataWriter.hpp \
       DCBDataReader.hpp \
-	  DebugUtils.hpp \
       DOP.hpp \
       EllipsoidModel.hpp \
       EngAlmanac.hpp \
@@ -319,6 +318,7 @@ incl_HEADERS = AllanDeviation.hpp \
       ObsClockModel.hpp \
       ObsEpochMap.hpp \
       ObsID.hpp \
+      ObsIDInitializer.hpp \	  
       ObsRngDev.hpp \
       OceanLoading.hpp \
 	  OrbElem.hpp \
