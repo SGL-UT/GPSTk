@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 // @file PositionSatStore.cpp
 // Store a tabular list of ephemeris data (position, option velocity & acceleration)
 // for several satellites, and compute values at any timetag from this table.
@@ -146,7 +144,6 @@ namespace gpstk
                rec.sigVel[i] = 0.0;
             }
          }
-
          return rec;
       }
       catch(InvalidRequest& e) { GPSTK_RETHROW(e); }
