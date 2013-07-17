@@ -9,7 +9,7 @@ NavProc.cpp SubframeProc.cpp UniqueAlmStore.cpp
 
 bin_PROGRAMS = mdp2rinex mdptool mdpEdit mdp2fic mdpScrubber #mdpscreenx
 
-mdptool_SOURCES = mdptool.cpp
+mdptool_SOURCES = mdptool.cpp CNAVMessageASN.cpp
 mdp2rinex_SOURCES = mdp2rinex.cpp
 mdpEdit_SOURCES = mdpEdit.cpp
 mdpScrubber_SOURCES = mdpScrubber.cpp
