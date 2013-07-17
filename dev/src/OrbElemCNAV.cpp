@@ -160,9 +160,37 @@ namespace gpstk
       if (obsID.code==ObsID::tcC2M ||
           obsID.code==ObsID::tcC2L ||
           obsID.code==ObsID::tcC2LM) SOWOffset=12;
-      ctMsg10 =    GPSWeekSecond(TOWWeek, TOWCount10-SOWOffset, TimeSystem::GPS);
-      ctMsg11 =    GPSWeekSecond(TOWWeek, TOWCount11-SOWOffset, TimeSystem::GPS);
-      ctMsgClk =    GPSWeekSecond(TOWWeek, TOWCountClk-SOWOffset, TimeSystem::GPS);
+
+         // Message Type 10  CONTAINS the week number.  Therefore, there
+         // should not be any SOW rollover to deal with for Message Type 10. 
+         // However, we don't know for certain that the 11 and the clock (31-37)
+         // messages were collected in the same week (probably, but not certainly).
+         // Therefore, we need to look for week rollovers.
+      long SOW10 = TOWCount10 - SOWOffset;
+      ctMsg10  =    GPSWeekSecond(TOWWeek, SOW10, TimeSystem::GPS);
+
+         // Set up temp variables for MsgType 11 SOW and week.   
+      short Week11 = TOWWeek;
+      long SOW11 = TOWCount11-SOWOffset;
+
+         // First, check to see that the TOW -> transmit time adjust did not 
+         // cross the week boundary.
+      if (SOW11<0) SOW11 += gpstk::FULLWEEK;
+
+         // Then check against the MsgType 10 XMit time/week      
+      long check = (SOW10-SOW11);
+      if (check>gpstk::HALFWEEK) Week11++;
+      else if (check<-gpstk::HALFWEEK) Week11--; 
+      ctMsg11  =    GPSWeekSecond(Week11, SOW11, TimeSystem::GPS);
+
+         // Now follow the same process for the clock message times.
+      short WeekClk = TOWWeek;
+      long SOWClk = TOWCountClk - SOWOffset;
+      if (SOWClk<0) SOWClk += gpstk::FULLWEEK;
+      check = (SOW10-SOW11);
+      if (check>gpstk::HALFWEEK) WeekClk++;
+      else if (check<-gpstk::HALFWEEK) WeekClk--; 
+      ctMsgClk =    GPSWeekSecond(WeekClk, SOWClk, TimeSystem::GPS);
 
          // The fit interval is nominally the middle of the trasmission interval.
          // However, interval may "start late" for an upload.  Therefore, start
