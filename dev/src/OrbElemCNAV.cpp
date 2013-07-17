@@ -110,7 +110,10 @@ namespace gpstk
       M0                        = message10.asDoubleSemiCircles(172, 33, -32);
       ecc                       = message10.asUnsignedDouble(205, 33, -34);
       w                         = message10.asDoubleSemiCircles(238, 33, -32);
-      
+      short ISFVal              = message10.asUnsignedLong(271, 1, 1);
+      if (ISFVal==1) IntegrityStatusFlag = true;
+      L2CPhasing                = message10.asUnsignedLong(272, 1, 1);    
+       
          // Message Type 11 data
       unsigned long TOWCount11  = message11.asUnsignedLong(20, 17, 6);
       OMEGA0                    = message11.asDoubleSemiCircles(49, 33, -32);
@@ -287,7 +290,11 @@ namespace gpstk
         << endl
         << endl
         << "Health bits  L1, L2, L5        :     " << setfill('0') << setw(1)
-        << L1Health << ",  " << L2Health << ",  " << L5Health; 
+        << L1Health << ",  " << L2Health << ",  " << L5Health
+        << endl; 
+      s << "L2C Phasing                    :     " << setfill(' ')
+        << L2CPhasing << " (0=quadrature, 1=in-phase)" 
+        << endl; 
      
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);

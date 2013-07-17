@@ -110,6 +110,8 @@ namespace gpstk
       short  L2Health;             /**< SV L2 health */
       short  L5Health;             /**< SV L5 health */
       short  ITOW;		   /**< Interval time of week */
+
+      short  L2CPhasing;   /**< L2C Phasing flag */
           
    }; // end class OrbElemCNAV
 
