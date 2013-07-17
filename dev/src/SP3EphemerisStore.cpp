@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file SP3EphemerisStore.cpp
 /// Store a tabular list of position and clock bias (perhaps also velocity and clock
 /// drift) data from SP3 file(s) for several satellites; access the tables to compute
@@ -391,7 +389,8 @@ namespace gpstk
                      //cout << "Bad position" << endl;
                      haveP = haveV = haveEV = haveEP = false; // bad position record
                   }
-                  else if(fillClockStore && rejectBadClockFlag && crec.bias >= 999999.) {
+                  else if(fillClockStore && rejectBadClockFlag
+                                                      && crec.bias >= 999999.) {
                      //cout << "Bad clock" << endl;
                      haveP = haveV = haveEV = haveEP = false; // bad clock record
                   }
@@ -415,7 +414,7 @@ namespace gpstk
             }  // end read loop
 
             if(haveP || haveV) {
-               if( rejectBadPosFlag && (prec.Pos[0]==0.0 ||
+               if(rejectBadPosFlag && (prec.Pos[0]==0.0 ||
                                     prec.Pos[1]==0.0 ||
                                     prec.Pos[2]==0.0) ) {
                   //cout << "Bad last rec: position" << endl;
@@ -558,6 +557,15 @@ namespace gpstk
             }
          }  // end if header time system is set
 
+         // there is no way to determine the time system....this is a problem TD
+         // TD SP3EphemerisStore::fixTimeSystem() ??
+         else {
+            head.timeSystem = TimeSystem::GPS;
+            storeTimeSystem = head.timeSystem;
+            posStore.setTimeSystem(head.timeSystem);
+            clkStore.setTimeSystem(head.timeSystem);
+         }
+
          // save in FileStore
          clkFiles.addFile(filename, head);
 
@@ -567,6 +575,7 @@ namespace gpstk
                //data.dump(cout);
 
                if(data.datatype == std::string("AS")) {
+                  data.time.setTimeSystem(head.timeSystem);
                   // add this data
                   ClockRecord rec;
                   rec.bias = data.bias; rec.sig_bias = data.sig_bias,

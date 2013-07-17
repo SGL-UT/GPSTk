@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file ClockSatStore.cpp
 /// Store a tabular list of clock data (bias, drift, accel) for several satellites,
 /// and compute values at any timetag from this table. Inherits TabularSatStore.

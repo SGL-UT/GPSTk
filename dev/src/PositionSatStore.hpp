@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file PositionSatStore.hpp
 /// Store a tabular list of ephemeris data (position, velocity, acceleration)
 /// for several satellites, and compute values at any timetag from this table

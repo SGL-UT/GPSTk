@@ -1,9 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file SP3Data.cpp
- * Encapsulate SP3 file data, including I/O
- */
+/// @file SP3Data.cpp
+/// Encapsulate SP3 file data, including I/O
 
 //============================================================================
 //
@@ -130,6 +126,9 @@ namespace gpstk
          else if(strm.lastLine[0] == '*') {
 
             // if an epoch record was already processed this call, that's an error
+            // TD consider simply removing this if(status==1) entirely. Some SP3 files
+            // particularly those generated from a realtime stream, have consecutive
+            // epoch lines. Why would we not just ignore the epoch with no data?
             if(status == 1) {
                FFStreamError ffse("Consecutive epoch records found");
                GPSTK_THROW(ffse);

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file SP3EphemerisStore.hpp
 /// Store a tabular list of position and clock bias (perhaps also velocity and clock
 /// drift) data from SP3 file(s) for several satellites; access the tables to compute
@@ -65,10 +63,10 @@ namespace gpstk
       /// the default) or Rinex clock (false) files
       bool useSP3clock;
 
-      /// Flag to reject clock data when there are bad positions, default true.
+      /// Flag to reject all data when there are bad positions, default true.
       bool rejectBadPosFlag;
 
-      /// Flag to reject position data when there are bad clocks, default true.
+      /// Flag to reject all data when there are bad clocks, default true.
       /// NB this flag has no effect if the clock store comes from RINEX clock files.
       bool rejectBadClockFlag;
 
@@ -410,6 +408,10 @@ namespace gpstk
       inline int ndata(const SatID& sat) const throw()
          { return posStore.ndata(sat); }
 
+      /// Get the number of (position) data records for the given satellite system
+      inline int ndata(const SatID::SatelliteSystem& sys) const throw()
+         { return posStore.ndata(sys); }
+
       /// Get the total number of position data records in the store
       inline int ndataPosition(void) const throw()
          { return posStore.ndata(); }
@@ -418,13 +420,21 @@ namespace gpstk
       inline int ndataPosition(const SatID& sat) const throw()
          { return posStore.ndata(sat); }
 
+      /// Get the number of position data records for the given satellite system
+      inline int ndataPosition(const SatID::SatelliteSystem& sys) const throw()
+         { return posStore.ndata(sys); }
+
       /// Get the total number of clock data records in the store
       inline int ndataClock(void) const throw()
          { return clkStore.ndata(); }
 
-      /// Get the number of position data records for the given sat
+      /// Get the number of clock data records for the given sat
       inline int ndataClock(const SatID& sat) const throw()
          { return clkStore.ndata(sat); }
+
+      /// Get the number of clock data records for the given satellite system
+      inline int ndataClock(const SatID::SatelliteSystem& sys) const throw()
+         { return clkStore.ndata(sys); }
 
       /// same as ndataPosition()
       inline int size(void) const throw() { return ndataPosition(); }
@@ -540,13 +550,13 @@ namespace gpstk
          {  return clkStore.hasClockDrift(); }
 
 
-      /// Set the flag; if true then position values are rejected when a bad clock
+      /// Set the flag; if true then all values are rejected when a bad position
       /// value is found, while adding data to the store.
       void rejectBadPositions(const bool flag)
          { rejectBadPosFlag = flag; }
 
-      /// Set the flag; if true then clock values are rejected when bad
-      /// position values are found, while adding data to the store.
+      /// Set the flag; if true then all values are rejected when bad clock
+      /// values are found, while adding data to the store.
       void rejectBadClocks(const bool flag)
          { rejectBadClockFlag = flag; }
 
