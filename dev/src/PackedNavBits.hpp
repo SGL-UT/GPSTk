@@ -170,8 +170,9 @@ namespace gpstk
           * Output the packed bits as a set of 32 bit
           * hex values, four per line, without any
           * additional information. 
+          * Returns the number of bits in the object.
           */
-      void outputPackedBits(std::ostream& s = std::cout, short numPerLine=4) const;
+      int outputPackedBits(std::ostream& s = std::cout, short numPerLine=4) const;
 
          /*
           * Return true if all bits between start and end are identical
