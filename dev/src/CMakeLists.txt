@@ -1,4 +1,4 @@
-mm# src/CMakeLists.txt
+# src/CMakeLists.txt
 # Please add in alphabetical order.
 set (gpstk_src
       AlmOrbit.cpp
