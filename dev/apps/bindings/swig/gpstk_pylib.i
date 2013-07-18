@@ -130,7 +130,12 @@
     #include "../../../src/SEMData.hpp"
     #include "../../../src/SEMAlmanacStore.hpp"
 
-
+    #include "../../../src/Matrix.hpp"
+    #include "../../../src/ValidType.hpp"
+    #include "../../../src/ObsEpochMap.hpp"
+    #include "../../../src/WxObsMap.hpp"
+    #include "../../../src/TropModel.hpp"
+    #include "../../../src/PRSolution2.hpp"
 
 
     typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp
@@ -143,7 +148,27 @@
 %feature("autodoc","1");
 %include "doc/doc.i"
 %include "std_string.i"
+%include "std_pair.i"
 %include "std_map.i"
+
+
+namespace std {
+  %template(map_string_double) map<std::string, double>;
+  %template(map_string_int) map<std::string, int>;
+  %template(map_string_char) map<std::string, char>;
+
+  %template(map_double_string) map<double, std::string>;
+
+  %template(map_int_string) map<int, std::string>;
+  %template(map_int_char) map<int, char>;
+
+  %template(map_char_string) map<char, std::string>;
+  %template(map_char_int) map<char, int>;
+}
+
+%template() std::pair<swig::SwigPtr_PyObject, swig::SwigPtr_PyObject>;
+%template(cmap) std::map<swig::SwigPtr_PyObject, swig::SwigPtr_PyObject>;
+
 
 %rename(__str__) *::asString() const;
 %ignore *::dump;
@@ -152,14 +177,7 @@
 %include "src/typemaps.i"
 %include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
 typedef std::map< char, std::string> IdToValue;
-%template(map_int_char) std::map<int, char>;
-  %template() std::pair<int, char>;
-%template(map_int_string) std::map<int, std::string>;
-  %template() std::pair<int, std::string>;
-%template(map_char_int) std::map<char, int>;
-  %template() std::pair<char, int>;
-%template(map_string_int) std::map<std::string, int>;
-  %template() std::pair<std::string, int>;
+typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
 %include "src/Exception.i"
 
 // =============================================================
@@ -272,6 +290,8 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/RinexClockHeader.hpp"
 %include "../../../src/RinexClockData.hpp"
 %include "../../../src/RinexClockStream.hpp"
+%template(vector_RinexDatum) std::vector<gpstk::RinexDatum>;
+%template(map_RinexSatID_vecRinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
 
 %include "../../../src/RinexNavBase.hpp"
 %include "../../../src/RinexNavHeader.hpp"
@@ -322,6 +342,14 @@ typedef std::map< char, std::string> IdToValue;
 %template(FileStore_SEMHeader) gpstk::FileStore<gpstk::SEMHeader>;
 %include "../../../src/SEMAlmanacStore.hpp"
 
+
+%include "../../../src/ValidType.hpp"
+%template(map_ObsID_double) std::map< gpstk::ObsID,double >;
+%template(map_SatID_SvObsEpoch) std::map< gpstk::SatID,gpstk::SvObsEpoch >;
+%include "../../../src/ObsEpochMap.hpp"
+%include "../../../src/WxObsMap.hpp"
+%include "../../../src/TropModel.hpp"
+%include "../../../src/PRSolution2.hpp"
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions

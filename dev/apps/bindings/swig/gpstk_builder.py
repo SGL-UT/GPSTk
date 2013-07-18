@@ -72,7 +72,7 @@ ignore_patterns = [
 # submodule_name -> (list of exact names, list of pattern names)
 submodules = {
     'cpp' : (
-        ['seqToVector', 'vectorToSeq'],
+        ['seqToVector', 'vectorToSeq', 'cmap'],
         ['vector_', 'map_']),
 }
 

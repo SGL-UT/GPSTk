@@ -2,7 +2,7 @@ import argparse
 import gpstk
 import sys
 
-def main(input_args=sys.argv[1:]):
+def main(args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '
                            'other time formats. Include the quotation marks. '
                            'All year values are four digit years.')
@@ -46,7 +46,7 @@ def main(input_args=sys.argv[1:]):
                         type=int, nargs='+')
     parser.add_argument('-s', '--sub_offset', help=help_messages['sub_offset'],
                         type=int, nargs='+')
-    args = parser.parse_args(input_args)
+    args = parser.parse_args(args)
 
     # these format keys must match the long arg names
     formats = {

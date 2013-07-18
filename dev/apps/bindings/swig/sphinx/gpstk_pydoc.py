@@ -63,12 +63,15 @@ def main():
 
 
     f = open('quickref.rst', 'w')
+    f.write('.. _quickref_label:\n\n')
     f.write('Quick Reference\n====================\n\n')
     desc = ("Here we provide a list of all members avaliable in the gpstk namespace."
             "This is not meant to be complete documentation. Refer to the C++ API and "
             "the additional changes pages for more information. \n"
             "You should also try to use the help(x) function, where x is the object "
-            "that you are interested in.")
+            "that you are interested in.\n\n"
+            "This is completely AUTO-GENERATED documentation. All text on the functions and classes "
+            "is originally derived from the C++ source files.")
     f.write(desc + '\n\n')
     f.write(".. py:currentmodule:: gpstk\n\n")
 
@@ -96,6 +99,7 @@ def main():
         render_page(x)
         f.write(':doc:`' + x + '`\n\n')
     f.close()
+
 
 if __name__ == '__main__':
     main()

@@ -1,3 +1,14 @@
+"""
+A GPSTk example featuring some file input and processing to
+create a plot with matplotlib.
+
+Usage:
+
+  python sem_plot.py
+
+"""
+
+
 import gpstk
 import matplotlib.pyplot as plt
 
@@ -12,22 +23,23 @@ def main():
     # Rranslate the data to AlmOrbits:
     almOrbits = [data.toAlmOrbit() for data in dataSets]
 
-    # Step through a day, adding plot points:
+    t = gpstk.CommonTime()    # iterator time
+    t_f = gpstk.CommonTime()  # end time, 1 day later (see below)
+    t_f.addDays(1)
     X = []
     Y = []
-    t = gpstk.CommonTime()
-    t_f = gpstk.CommonTime()
-    t_f.addDays(1)
 
+    # Step through a day, adding plot points:
+    dt = 60  # time step, in seconds
     while t < t_f:
-        xvt = almOrbits[18].svXvt(t)
+        xvt = almOrbits[0].svXvt(t)  # the xvt of the first orbit
         austin = gpstk.Position(30, 97, 0, gpstk.Position.Geodetic)  # Austin, TX
         location = gpstk.Position(xvt.x)
         elevation = austin.elevation(location)
 
         X.append(t.getSecondOfDay())
         Y.append(elevation)
-        t.addSeconds(60*10)
+        t.addSeconds(dt)
 
     # Make the plot
     fig = plt.figure()

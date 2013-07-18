@@ -12,6 +12,7 @@ About
 GPSTK is a library of support routines designed for use by programmers
 developing applications that read and write (particularly in RINEX format),
 process and otherwise manipulate GPS data. It is characterized by the following:
+
 - Modern, ANSI C++; highly object oriented
 - Uses templates, the Standard Template Library (STL) and iostreams classes
 - Portable and platform independent
@@ -21,7 +22,8 @@ process and otherwise manipulate GPS data. It is characterized by the following:
 As the GPSTk is primarily a C++ library, it's API reference should still be used:
 http://www.gpstk.org/doxygen/
 
-Part of the goal is to turn this C++ code to the much simpler python code:
+
+Example of how C++ GPSTk reads a Rinex3Obs file:
 
 .. parsed-literal::
     // Create the input file stream
@@ -38,11 +40,20 @@ Part of the goal is to turn this C++ code to the much simpler python code:
       // process data
    }
 
+Compare to the simpler Python GPSTk read process:
+
 .. parsed-literal::
    # read in the data
    header, data = readRinex3Obs('bahr1620.04o')
    for dataObject in data:
-       # process data
+       # process dataObject
+
+
+Getting the Python GPSTk
+****************************
+Building the GPSTk from source is a fairly involved process, see :ref:`quickref_label`
+for the details.
+
 
 
 
@@ -76,6 +87,10 @@ to easily find out about classes and functions.
 
 Changes and additions to the C++ core are noted in this documentation,
 as well as in the docstrings themselves.
+
+A good first step is to browse the things avaliable in the :ref:`quickref_label`
+section. If you are coming from writing C++ GPSTk programs, you should be sure to read
+the section on how C++ structures have been changed for python.
 
 
 
@@ -171,8 +186,6 @@ Some C++ functions didn't return a value, but just modify a non-const parameter.
     static void convertCartesianToGeocentric(const Triple& xyz, Triple& llr)
 
 Simple wrappers are added to the library that have a signature of:
-
-Part of the goal is to turn this C++ code to the much simpler python code:
 
 .. parsed-literal::
     static Triple convertCartesianToGeocentric(const Triple& xyz)

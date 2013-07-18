@@ -27,6 +27,7 @@ pyName ## .next = _vector_next
 
 
 // you should update seqToVector if you add more types here:
+STD_VECTOR(gpstk::SatID, vector_SatID)
 STD_VECTOR(double, vector_double)
 STD_VECTOR(int, vector_int)
 STD_VECTOR(std::string, vector_string)
@@ -50,6 +51,8 @@ def seqToVector(seq):
         v = vector_int(len(seq))
     elif isinstance(first, float):
         v = vector_double(len(seq))
+    elif isinstance(first, SatID):
+        v = vector_SatID(len(seq))
     else:
         return None
     for i in __builtin__.range(len(seq)):

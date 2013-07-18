@@ -46,12 +46,14 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/GPSZcount.cpp
                     ../../../src/JulianDate.cpp
                     ../../../src/MJD.cpp
+                    ../../../src/ObsEpochMap.cpp
                     ../../../src/ObsID.cpp
                     ../../../src/ObsIDInitializer.cpp
                     ../../../src/OrbElem.cpp
                     ../../../src/OrbElemRinex.cpp
                     ../../../src/Position.cpp
                     ../../../src/PositionSatStore.cpp
+                    ../../../src/PRSolution2.cpp
                     ../../../src/ReferenceFrame.cpp
                     ../../../src/Rinex3ClockData.cpp
                     ../../../src/Rinex3ClockHeader.cpp
@@ -85,7 +87,9 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/TimeSystem.cpp
                     ../../../src/TimeTag.cpp
                     ../../../src/Triple.cpp
+                    ../../../src/TropModel.cpp
                     ../../../src/UnixTime.cpp
+                    ../../../src/WxObsMap.cpp
                     ../../../src/Xvt.cpp
                     ../../../src/YDSTime.cpp
                     ../../../src/YumaAlmanacStore.cpp

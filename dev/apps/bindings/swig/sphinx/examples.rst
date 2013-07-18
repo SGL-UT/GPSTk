@@ -2,7 +2,7 @@ Examples
 ==============
 
 
-Example 1 (simple time classes)
+Example 1
 ***************************************
 
 .. literalinclude:: ../examples/example1.py
@@ -11,8 +11,24 @@ Example 1 (simple time classes)
 
 
 
-Example 2 (simple almanac manipulation and IO)
+Example 2
 **********************************************************
 
 .. literalinclude:: ../examples/example2.py
    :language: python
+
+
+
+Example 3
+**********************************************************
+
+.. literalinclude:: ../examples/example3.py
+   :language: python
+
+
+
+SEM Elevation Plotting example
+*****************************************************************************
+
+.. literalinclude:: ../examples/sem_plot.py
+    :language: python
