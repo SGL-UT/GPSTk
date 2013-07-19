@@ -5,7 +5,6 @@ gpstk_pylib.py
 *.new
 
 doc
-bin
 html
 latex
 
