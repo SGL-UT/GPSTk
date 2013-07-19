@@ -138,7 +138,9 @@
     #include "../../../src/PRSolution2.hpp"
 
 
-    typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp
+    typedef std::map< char, std::string> IdToValue;
+    typedef std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> > DataMap;
+    typedef std::map<gpstk::RinexMetHeader::RinexMetType, double> RinexMetMap;
     using namespace gpstk;
 %}
 
@@ -158,26 +160,30 @@ namespace std {
   %template(map_string_char) map<std::string, char>;
 
   %template(map_double_string) map<double, std::string>;
+  %template(map_double_int) map<double, int>;
 
-  %template(map_int_string) map<int, std::string>;
   %template(map_int_char) map<int, char>;
+  %template(map_int_double) map<int, double>;
+  %template(map_int_string) map<int, std::string>;
 
   %template(map_char_string) map<char, std::string>;
   %template(map_char_int) map<char, int>;
 }
-
 %template() std::pair<swig::SwigPtr_PyObject, swig::SwigPtr_PyObject>;
 %template(cmap) std::map<swig::SwigPtr_PyObject, swig::SwigPtr_PyObject>;
-
 
 %rename(__str__) *::asString() const;
 %ignore *::dump;
 %ignore *::operator<<;
+%ignore operator<<;
 
 %include "src/typemaps.i"
 %include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
+
 typedef std::map< char, std::string> IdToValue;
 typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
+typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
+
 %include "src/Exception.i"
 
 // =============================================================
@@ -301,7 +307,7 @@ typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
 %include "../../../src/RinexMetBase.hpp"
 %include "../../../src/RinexMetHeader.hpp"
 %include "../../../src/RinexMetStream.hpp"
-%include "../../../src/RinexMetData.hpp"
+%include "src/RinexMetData.i"
 
 %rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
 %rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;

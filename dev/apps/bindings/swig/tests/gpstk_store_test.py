@@ -68,6 +68,14 @@ class GloEphemerisTest(unittest.TestCase):
         self.assertEqual(expected, str(g))
 
 
+class GPSEphemerisStoreTest(unittest.TestCase):
+    def test(self):
+        e = gpstk.EngEphemeris()
+        g = gpstk.GPSEphemerisStore()
+        # help(g)
+        # g.addEphemeris(e)
+
+
 class SP3Test(unittest.TestCase):
     def test_fileIO(self):
         pass
@@ -133,6 +141,29 @@ class Rinex3ObsTest(unittest.TestCase):
         header, gen = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=True)
         data = [x for x in gen]
         self.assertEqual(120, len(data))
+
+
+class Rinex3NavTest(unittest.TestCase):
+    def test_fileIO(self):
+        header, data = gpstk.readRinex3Nav('rinex3nav_data.txt', lazy=False)
+        self.assertEqual('06/10/2004 00:00:26', header.date)
+        self.assertEqual(166, len(data))
+        dataPoint = data[165]
+        self.assertEqual(5153.72985268, dataPoint.Ahalf)
+        self.assertEqual(432000.0, dataPoint.Toc)
+
+class RinexMetTest(unittest.TestCase):
+    def test_fileIO(self):
+        header, data = gpstk.readRinexMet('rinexmet_data.txt', lazy=False)
+        self.assertEqual('06/09/2004 23:58:58', header.date)
+        self.assertEqual(96, len(data))
+        dataPoint = data[95]
+        d = dataPoint.getData()
+        self.assertAlmostEqual(998.3, d[gpstk.RinexMetHeader.PR])
+        self.assertAlmostEqual(30.8, d[gpstk.RinexMetHeader.TD])
+        help(dataPoint)
+
+
 
 
 if __name__ == '__main__':

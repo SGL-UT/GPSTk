@@ -1,7 +1,14 @@
 %define STREAM_HELPER(FORMATNAME,OP)
 %extend gpstk:: ## FORMATNAME ## Stream {
+
+    static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(std::string fileName) {
+        FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str());
+        return s;
+    }
+
     static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(std::string fileName) {
-        return new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
+        FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
+        return s;
     }
 
     gpstk:: ## FORMATNAME ## Header readHeader() {
@@ -37,7 +44,7 @@ def read ## FORMATNAME(fileName, lazy=False):
              If it is, it will be a generator, otherwise, it will be a list.
     """
     num_lines = _nlines(fileName)
-    stream = FORMATNAME ## Stream (fileName)
+    stream = FORMATNAME ## Stream .in ##FORMATNAME ## Stream (fileName)
     header = stream.readHeader()
     def read ## FORMATNAME ## Data (fileName):
         while stream.lineNumber OP num_lines:
