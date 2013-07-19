@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -56,8 +56,8 @@ namespace gpstk
   /** @addtogroup RinexMet */
   //@{
 
-  /** 
-   * This class stores, reads, and writes RINEX 2 & 3 Met records. 
+  /**
+   * This class stores, reads, and writes RINEX 2 & 3 Met records.
    * @warning When writing a RinexMetData, the RinexMetStream::headerData
    * must have the correct observation types set or else no data will
    * be written.
@@ -110,10 +110,10 @@ namespace gpstk
 
     /// Writes the met data to the file stream formatted correctly.
     void reallyPutRecord(FFStream& s) const
-      throw(std::exception, FFStreamError, 
-            gpstk::StringUtils::StringException);     
+      throw(std::exception, FFStreamError,
+            gpstk::StringUtils::StringException);
 
-    /** 
+    /**
      * This function retrieves a RINEX 2 or 3 Met record from the given FFStream.
      * If an error is encountered reading from the stream, the stream is returned
      * to its original position and its fail-bit is set.
@@ -122,7 +122,7 @@ namespace gpstk
      *         read or formatting error occurs.  This also resets the
      *         stream to its pre-read position.
      */
-    virtual void reallyGetRecord(FFStream& s) 
+    virtual void reallyGetRecord(FFStream& s)
       throw(std::exception, FFStreamError,
             gpstk::StringUtils::StringException);
 
@@ -139,7 +139,7 @@ namespace gpstk
       throw(FFStreamError);
 
     /// Parses the time portion of a line into a CommonTime object.
-    CommonTime parseTime(const std::string& line) const 
+    CommonTime parseTime(const std::string& line) const
       throw(FFStreamError);
 
   };  // class RinexMetData

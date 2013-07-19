@@ -72,6 +72,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/RinexObsHeader.cpp
                     ../../../src/RinexObsID.cpp
                     ../../../src/RinexSatID.cpp
+                    ../../../src/RinexSatID.cpp
                     ../../../src/RinexUtilities.cpp
                     ../../../src/SEMAlmanacStore.cpp
                     ../../../src/SEMData.cpp
@@ -95,6 +96,3 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/YumaAlmanacStore.cpp
                     ../../../src/YumaData.cpp
                     )
-
-swig_link_libraries(gpstk_pylib ${PYTHON_LIBRARIES})
-configure_file(gpstk_builder.py gpstk_builder.py COPYONLY)

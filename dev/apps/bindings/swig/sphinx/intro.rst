@@ -51,7 +51,7 @@ Compare to the simpler Python GPSTk read process:
 
 Getting the Python GPSTk
 ****************************
-Building the GPSTk from source is a fairly involved process, see :ref:`quickref_label`
+Building the GPSTk from source can be a fairly involved process, see :ref:`build_label`
 for the details.
 
 

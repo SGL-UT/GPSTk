@@ -1,0 +1,10 @@
+prune CMakeFiles
+prune doc
+prune examples
+prune lib
+prune oldtests
+prune tests/
+
+include src/*.cpp
+include src/*.h
+include src/*.hpp

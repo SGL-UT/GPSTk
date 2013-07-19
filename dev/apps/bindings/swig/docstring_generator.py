@@ -47,7 +47,10 @@ def clean_errors(file):
 
 
 def generate_docs():
-    gpstk_folder = os.path.realpath(__file__)[:-29]
+    # yes, it's a magic number below.
+    # gpstk_folder should be the path ending with 'gpstk/'
+    # the number is the number of chars to cut off from this file's path
+    gpstk_folder = os.path.realpath(__file__)[:-45]
     xml_files = glob.glob(gpstk_folder + 'dev/doc/xml/*.xml')
     num_files = len(xml_files)
     if num_files == 0:

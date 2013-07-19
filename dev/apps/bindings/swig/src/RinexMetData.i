@@ -72,7 +72,7 @@ namespace gpstk
 %pythoncode %{
 def _RinexMetData_getData(self):
     """
-    Returns a dict of the int->double data stored.
+    Returns a dict of the (int->double) data stored.
     The ints are drawn from an enum defined in RinexMetHeader.
     For example, to get the pressure you would use:
         d = myMetData.getData()

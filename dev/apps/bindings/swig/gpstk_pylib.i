@@ -44,7 +44,6 @@
     #include "../../../src/Vector.hpp"
     #include "../../../src/AstronomicalFunctions.hpp"
 
-    // ?
     #include "../../../src/XvtStore.hpp"
     #include "../../../src/PZ90Ellipsoid.hpp"
     #include "../../../src/WGS84Ellipsoid.hpp"
@@ -77,6 +76,8 @@
     #include "../../../src/GalEphemerisStore.hpp"
     #include "../../../src/GloEphemeris.hpp"
 
+    // RINEX things:
+    #include "../../../src/RinexSatID.hpp"
     #include "../../../src/RinexClockBase.hpp"
     #include "../../../src/RinexObsBase.hpp"
     #include "../../../src/RinexObsHeader.hpp"
@@ -86,23 +87,19 @@
     #include "../../../src/RinexClockData.hpp"
     #include "../../../src/RinexClockStream.hpp"
     #include "../../../src/RinexObsStream.hpp"
-
     #include "../../../src/RinexNavBase.hpp"
     #include "../../../src/RinexNavHeader.hpp"
     #include "../../../src/RinexNavStream.hpp"
     #include "../../../src/RinexNavData.hpp"
-
     #include "../../../src/RinexMetBase.hpp"
     #include "../../../src/RinexMetHeader.hpp"
     #include "../../../src/RinexMetStream.hpp"
     #include "../../../src/RinexMetData.hpp"
-
     #include "../../../src/Rinex3NavBase.hpp"
     #include "../../../src/Rinex3NavHeader.hpp"
     #include "../../../src/Rinex3NavStream.hpp"
     #include "../../../src/Rinex3NavData.hpp"
     #include "../../../src/OrbElemRinex.hpp"
-
     #include "../../../src/Rinex3ClockBase.hpp"
     #include "../../../src/Rinex3ObsBase.hpp"
     #include "../../../src/Rinex3ObsHeader.hpp"
@@ -113,6 +110,7 @@
     #include "../../../src/Rinex3ClockStream.hpp"
     #include "../../../src/Rinex3EphemerisStore.hpp"
 
+    // SP3 things:
     #include "../../../src/TabularSatStore.hpp"
     #include "../../../src/ClockSatStore.hpp"
     #include "../../../src/SP3Base.hpp"
@@ -124,6 +122,7 @@
     #include "../../../src/SP3EphemerisStore.hpp"
     #include "../../../src/RinexUtilities.hpp"
 
+    // SEM things:
     #include "../../../src/SEMBase.hpp"
     #include "../../../src/SEMHeader.hpp"
     #include "../../../src/SEMStream.hpp"
@@ -287,6 +286,9 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/GloEphemeris.hpp"
 %include "../../../src/GloEphemerisStore.hpp"
 
+
+// RINEX things:
+%include "../../../src/RinexSatID.hpp"
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"
 %include "../../../src/RinexObsHeader.hpp"
@@ -317,7 +319,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/Rinex3NavStream.hpp"
 %include "../../../src/Rinex3NavData.hpp"
 %include "../../../src/OrbElemRinex.hpp"
-
 %include "../../../src/Rinex3ClockBase.hpp"
 %include "../../../src/Rinex3ObsBase.hpp"
 %include "../../../src/Rinex3ObsHeader.hpp"
@@ -328,9 +329,11 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/Rinex3ClockStream.hpp"
 %include "../../../src/Rinex3EphemerisStore.hpp"
 
+
+
+// SP3 things:
 %include "../../../src/TabularSatStore.hpp"
 %include "src/ClockSatStore.i"
-
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
 %include "../../../src/SP3Header.hpp"
@@ -340,6 +343,8 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/SP3EphemerisStore.hpp"
 %include "../../../src/RinexUtilities.hpp"
 
+
+// SEM things:
 %rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
 %include "../../../src/SEMBase.hpp"
 %include "../../../src/SEMHeader.hpp"
