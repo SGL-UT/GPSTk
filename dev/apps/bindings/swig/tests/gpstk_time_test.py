@@ -20,11 +20,11 @@ class Time_Comparisons(unittest.TestCase):
         timeSystem = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
 
         t1 = gpstk.UnixTime(1370983244, 659200)  # in 2013
-        t1 = t1.convertToCommonTime()
+        t1 = t1.toCommonTime()
         t1.setTimeSystem(timeSystem)
 
         t2 = gpstk.CivilTime(2012, 11, 6, 20, 40, 400)  # in 2012
-        t2 = t2.convertToCommonTime()
+        t2 = t2.toCommonTime()
         t2.setTimeSystem(timeSystem)
 
         self.assertEqual(False, t1 < t2)

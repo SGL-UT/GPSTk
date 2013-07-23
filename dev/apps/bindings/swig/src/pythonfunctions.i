@@ -26,15 +26,7 @@ def now(timeSystem=TimeSystem.Unknown):
     t = SystemTime().convertToCommonTime()
     t.setTimeSystem(TimeSystem(timeSystem))
     return t
-
-
-
-def commonTime(timeTag):
-    """Converts a time to a CommonTime using its convertToCommonTime method."""
-    return timeTag.convertToCommonTime()
 %}
-
-
 
 ///////////////////////////////////////////////
 //      Macros for string (__str__) stuff

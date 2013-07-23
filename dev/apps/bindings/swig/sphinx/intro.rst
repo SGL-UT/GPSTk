@@ -23,7 +23,7 @@ As the GPSTk is primarily a C++ library, it's API reference should still be used
 http://www.gpstk.org/doxygen/
 
 
-Example of how C++ GPSTk reads a Rinex3Obs file:
+Example of how C++ GPSTk reads and prints a Rinex3Obs file:
 
 .. parsed-literal::
     // Create the input file stream
@@ -32,12 +32,13 @@ Example of how C++ GPSTk reads a Rinex3Obs file:
    // Read the RINEX header
    Rinex3ObsHeader head;    // RINEX header object
    rin >> head;
+   std::cout << head << std::endl;
 
    // Loop over all data epochs
    Rinex3ObsData data;   // RINEX data object
    while (rin >> data)
    {
-      // process data
+      std::cout << data << std::endl;
    }
 
 Compare to the simpler Python GPSTk read process:
@@ -45,7 +46,9 @@ Compare to the simpler Python GPSTk read process:
 .. parsed-literal::
    # read in the data
    header, data = readRinex3Obs('bahr1620.04o')
+   print header
    for dataObject in data:
+       print data
        # process dataObject
 
 
@@ -176,6 +179,10 @@ for some purpose (i.e. a function takes them as a parameter). They are included
 in a few common templated forms (string->char, etc.), but you should avoid
 the use of these whenever possible.
 
+.. warning::
+    Reading documentation can get difficult in dealing with heavily-templated wrapped C++ code. Use these structures as little as possible.
+    If containers are small it might be wise to use the provided functions in gpstk.cpp to convert the containers to native python lists/dicts.
+
 
 
 **Functions that modify a parameter that is passed by reference**
@@ -190,4 +197,11 @@ Simple wrappers are added to the library that have a signature of:
 .. parsed-literal::
     static Triple convertCartesianToGeocentric(const Triple& xyz)
 
-Which behaves as expected when used in Python.
+Which behaves as expected when used in Python: ::
+
+    >>> import gpstk
+    >>> u = gpstk.Position(100, 200, 300)
+    >>> v = gpstk.Position.convertCartesianToGeocentric(u)
+    >>> print v
+    (53.30077479951032, 63.434948822921655, 374.16573867739413)
+

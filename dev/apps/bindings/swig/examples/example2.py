@@ -21,18 +21,19 @@ def main():
 
     # Let's pretend we want to change something in the header
     # (otherwise this would be a two-line example!)
-    outHeader = header
-    outHeader.receiverOffset = 47
+    header.receiverOffset = 47
 
     # Now let's find the earliest and latest observations
-    earliest = min(data, key=lambda dataPoint: dataPoint.time)
-    latest = max(data, key=lambda dataPoint: dataPoint.time)
+    # function for how to compare Rinex3ObsData objects for min/max functions:
+    timeFunction = lambda self: self.time
+    earliest = min(data, key=timeFunction)
+    latest = max(data, key=timeFunction)
 
     print 'Earliest time found:', gpstk.CivilTime(earliest.time)
     print 'Latest time found:  ', gpstk.CivilTime(latest.time)
 
     # Now let's write it all back to a different file
-    gpstk.writeRinex3Obs('rinex3obs_data.txt.new', outHeader, data)
+    gpstk.writeRinex3Obs('rinex3obs_data.txt.new', header, data)
 
 
 if __name__ == '__main__':

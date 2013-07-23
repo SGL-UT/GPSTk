@@ -134,7 +134,9 @@
     #include "../../../src/ObsEpochMap.hpp"
     #include "../../../src/WxObsMap.hpp"
     #include "../../../src/TropModel.hpp"
+    #include "../../../src/CheckPRData.hpp"
     #include "../../../src/PRSolution2.hpp"
+    #include "../../../src/ExtractData.hpp"
 
 
     typedef std::map< char, std::string> IdToValue;
@@ -172,6 +174,7 @@ namespace std {
 %template(cmap) std::map<swig::SwigPtr_PyObject, swig::SwigPtr_PyObject>;
 
 %rename(__str__) *::asString() const;
+%rename(toCommonTime) *::convertToCommonTime() const;
 %ignore *::dump;
 %ignore *::operator<<;
 %ignore operator<<;
@@ -361,6 +364,7 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/WxObsMap.hpp"
 %include "../../../src/TropModel.hpp"
 %include "../../../src/PRSolution2.hpp"
+%include "../../../src/ExtractData.hpp"
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions

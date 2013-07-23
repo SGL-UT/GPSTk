@@ -18,24 +18,6 @@ Example: ::
 
 
 
-
-.. py:function:: gpstk.commonTime(timeTag)
-
-Converts the parameter function to gpstk.CommonTime, using its
-convertToCommonTime function.
-
-This is meant to replace the C++ implicit operator named 'CommonTime',
-which acted like a constructor that converted time. ::
-
-    >>> u = gpstk.UnixTime(12345)
-    >>> print u
-    12345 0 Unknown
-    >>> print gpstk.commonTime(u)
-    2440588 12345000 0.000000000000000 Unknown
-
-
-
-
 File I/O Functions
 *******************
 

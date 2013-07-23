@@ -25,18 +25,26 @@ def get_dir(x):
     return filter(lambda y: should_doc(y), list)
 
 
-def render_page(x):
-    t = eval(x)
-    f = open(x + '.rst', 'w')
-    doc = pydoc.render_doc(t, "Help on %s")
-    f.write(':orphan:\n\n')
-    f.write(x + '\n=========================================================\n\n')
-    f.write(pydoc.plain(doc))
-    f.close()
+def write_page(x):
+    def write_class(x):
+        class_file = open(x + '.rst', 'w')
+        class_file.write(x + '\n=========================================================\n\n')
+        class_file.write('.. autoclass:: ' + x + '\n')
+        class_file.write('   :members:\n')
+        class_file.write('   :inherited-members:\n')
+        class_file.close()
+    def write_function(x):
+        function_file = open(x + '.rst', 'w')
+        function_file.write(x + '\n=========================================================\n\n')
+        function_file.write('.. autofunction:: ' + x + '\n')
+        function_file.close()
+    if is_function(x):
+        write_function(x)
+    if is_class(x):
+        write_class(x)
 
 
 def main():
-    # Quick ref:
     classes = []
     functions = []
     constants = []
@@ -77,12 +85,12 @@ def main():
 
     f.write("\nClasses\n****************\n\n")
     for x in classes:
-        render_page(x)
+        write_page(x)
         f.write(':doc:`' + x + '`\n\n')
 
     f.write("\nFunctions\n****************\n\n")
     for x in functions:
-        render_page(x)
+        write_page(x)
         f.write(':doc:`' + x + '`\n\n')
 
     f.write("\nConstants\n****************\n\n")
@@ -91,12 +99,12 @@ def main():
 
     f.write("\nExceptions\n****************\n\n")
     for x in exceptions:
-        render_page(x)
+        write_page(x)
         f.write(':doc:`' + x + '`\n\n')
 
     f.write("\nC++ Standard library wrappers\n*********************************\n\n")
     for x in cpp:
-        render_page(x)
+        write_page(x)
         f.write(':doc:`' + x + '`\n\n')
     f.close()
 

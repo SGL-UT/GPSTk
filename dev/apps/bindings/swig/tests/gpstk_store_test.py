@@ -43,8 +43,8 @@ class AlmOrbitTest(unittest.TestCase):
         self.assertEqual(0.0, a.getAF0())
         self.assertEqual(0L, a.getFullWeek())
         xvt = a.svXvt(gpstk.CommonTime())
-        self.assertAlmostEqual(-17.959049543400, xvt.x[0])
-        self.assertAlmostEqual(9442.96597037813, xvt.v[1])
+        self.assertAlmostEqual(-17.959049543400, xvt.x[0], places=3)
+        self.assertAlmostEqual(9442.96597037813, xvt.v[1], places=3)
 
 
 class GPSAlmanacStoreTest(unittest.TestCase):
@@ -72,9 +72,9 @@ class GloEphemerisTest(unittest.TestCase):
 class GPSEphemerisStoreTest(unittest.TestCase):
     def test(self):
         e = gpstk.EngEphemeris()
+        e.addSubframe([1L, 24631777L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L], 10, 20, 30)
         g = gpstk.GPSEphemerisStore()
-        # help(g)
-        # g.addEphemeris(e)
+        g.addEphemeris(e)
 
 
 class SP3Test(unittest.TestCase):
@@ -82,13 +82,13 @@ class SP3Test(unittest.TestCase):
         pass
 
     def test_almanac_store(self):
-      s = gpstk.SP3EphemerisStore()
-      sat = gpstk.SatID(1, gpstk.SatID.systemGPS)
-      time = gpstk.CommonTime()
-      time.addDays(10000)
-      s.addPositionData(sat, time, gpstk.Triple(50, -45, 20), gpstk.Triple(1, 100, 5))
-      s.addVelocityData(sat, time, gpstk.Triple(1, 2, -10000), gpstk.Triple(1, 100, 5))
-      self.assertEqual(gpstk.Triple(50000, -45000, 20000), s.getPosition(sat, time))
+        s = gpstk.SP3EphemerisStore()
+        sat = gpstk.SatID(1, gpstk.SatID.systemGPS)
+        time = gpstk.CommonTime()
+        time.addDays(10000)
+        s.addPositionData(sat, time, gpstk.Triple(50, -45, 20), gpstk.Triple(1, 100, 5))
+        s.addVelocityData(sat, time, gpstk.Triple(1, 2, -10000), gpstk.Triple(1, 100, 5))
+        self.assertEqual(gpstk.Triple(50000, -45000, 20000), s.getPosition(sat, time))
 
 
 class SEMTest(unittest.TestCase):

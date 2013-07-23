@@ -12,7 +12,9 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/BrcClockCorrection.cpp',
             'src/BrcKeplerOrbit.cpp',
             'src/CivilTime.cpp',
+            'src/CheckPRData.cpp',
             'src/ClockSatStore.cpp',
+            'src/ExtractData.cpp',
             'src/CommonTime.cpp',
             'src/EngAlmanac.cpp',
             'src/EngEphemeris.cpp',
@@ -83,9 +85,29 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             ]
 
 
+desc = """The goal of the GPSTk project is to provide an open source library
+and suite of applications to the satellite navigation community--to free
+researchers to focus on research, not lower level coding.
+
+The GPSTk provides a wide array of functions that solve processing problems
+associated with GPS such as processing or using standard formats such as RINEX.
+The libraries are the basis for the more advanced applications distributed
+as part of the GPSTk suite. The GPSTk is sponsored by Space and Geophysics
+Laboratory, within the Applied Research Laboratories at the University of
+Texas at Austin (ARL:UT).
+
+GPSTk is the by-product of GPS research conducted at
+ARL:UT since before the first satellite launched in 1978; it is the combined
+effort of many software engineers and scientists. In 2003, the research staff
+at ARL:UT decided to open source much of their basic GPS processing software
+as the GPSTk.
+"""
+
+
 def main():
       setup(name='gpstk',
             version='2.1',
+            long_description=desc,
             description='The GPS Toolkit',
             author='Applied Research Laboratories at the University of Texas at Austin',
             author_email='gpstk@arlut.utexas.edu',
