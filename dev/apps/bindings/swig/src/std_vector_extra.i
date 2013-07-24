@@ -1,66 +1,50 @@
-%include "std_vector.i"
-
-
-// This section does not need to be duplicated by macros:
-%pythoncode %{
-def _vector_iter(self):
-    self.index = 0
-    return self
-
-def _vector_next(self):
-    if self.index >= self.size():
-        raise StopIteration
-    else:
-        self.index += 1
-        return self[self.index - 1]
-%}
-
-
-%define STD_VECTOR(cName, pyName)
-%template( pyName ) std::vector< cName >;
-%pythoncode %{
-pyName ## .__iter__ = _vector_iter
-pyName ## .next = _vector_next
-%}
-%enddef
-
-
-
-// you should update seqToVector if you add more types here:
-STD_VECTOR(gpstk::SatID, vector_SatID)
-STD_VECTOR(double, vector_double)
-STD_VECTOR(int, vector_int)
-STD_VECTOR(std::string, vector_string)
+%template(vector_SatID) std::vector<gpstk::SatID>;
+%template(vector_double) std::vector<double>;
+%template(vector_int) std::vector<int>;
+%template(vector_string) std::vector<std::string>;
+%template(vector_RinexDatum) std::vector<gpstk::RinexDatum>;
 
 
 %pythoncode %{
+_namefixes = {'str': 'string', 'float' : 'double'}
 def seqToVector(seq):
-    """Translates a python sequence type to a std::vector backed type.
+    """Translates a python iterable type to a std::vector backed type.
     This uses the first element to get the type. If there are 0 elements,
-    an empty vector_string will be returned.
-    You should make sure all elements are of the same type or an error will
-    occur.
+    None is returned.
+
+    This raises a TypeError if it uses a type that is not templated or if the
+    sequence does not use the same type for all its elements.
+
+    Note that this recopies the contents of the sequence and is a linear time operation.
     """
     import __builtin__
     if len(seq) == 0:
-        return vector_string()
-    first = seq[0]
-    if isinstance(first, basestring):  # change basestring to str when moves to python3.x
-        v = vector_string(len(seq))
-    elif isinstance(first, int):
-        v = vector_int(len(seq))
-    elif isinstance(first, float):
-        v = vector_double(len(seq))
-    elif isinstance(first, SatID):
-        v = vector_SatID(len(seq))
-    else:
         return None
+    t = seq[0].__class__.__name__
+
+    # some python names don't map to the vector wrap names perfectly, so they get fixed:
+    if t in _namefixes:
+        t = _namefixes[t]
+
+    new_name = 'vector_' + t
+    try:
+        v = globals()[new_name](len(seq))  # constructs an object of class t
+    except:
+        raise TypeError('There is no vector wrapper for ' + t)
+
+    first_type = type(seq[0])
     for i in __builtin__.range(len(seq)):
+        if type(seq[i]) != first_type:
+            raise TypeError('Type mismatch in sequence: {0} vs. {1}'
+                            .format(first_type, type(seq[i])))
         v[i] = seq[i]
     return v
 
 def vectorToSeq(vector):
-    """Translates a std::vector backed type (from gpstk.cpp) to a python list."""
+    """Translates a std::vector backed type (from gpstk.cpp) to a python list.
+
+    Note that this recopies the contents of the vector and is a linear time operation.
+    """
     list = [None] * vector.size()  # pre-allocates size to help efficiency
     import __builtin__
     for i in __builtin__.range(vector.size()):

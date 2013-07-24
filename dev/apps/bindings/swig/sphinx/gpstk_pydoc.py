@@ -25,11 +25,30 @@ def get_dir(x):
     return filter(lambda y: should_doc(y), list)
 
 
+def get_constructor_doc(x):
+        t = eval(x)
+        try:
+            lines = eval(x).__init__.__doc__.splitlines()
+            output = ""
+            textRead = False
+            for l in lines:
+                output = output + '   | ' + l + '\n'
+                if len(l.strip()) == 0 and textRead:
+                    break
+                else:
+                    textRead = True
+            output = '   | Constructors: \n' + output
+            return output
+        except AttributeError:
+            return ""
+
+
 def write_page(x):
     def write_class(x):
         class_file = open(x + '.rst', 'w')
         class_file.write(x + '\n=========================================================\n\n')
-        class_file.write('.. autoclass:: ' + x + '\n')
+        class_file.write(get_constructor_doc(x))
+        class_file.write('\n\n.. autoclass:: ' + x + '\n')
         class_file.write('   :members:\n')
         class_file.write('   :inherited-members:\n')
         class_file.close()
@@ -84,28 +103,32 @@ def main():
     f.write(".. py:currentmodule:: gpstk\n\n")
 
     f.write("\nClasses\n****************\n\n")
+    f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in classes:
         write_page(x)
-        f.write(':doc:`' + x + '`\n\n')
+        f.write('   ' + x + '\n')
 
     f.write("\nFunctions\n****************\n\n")
+    f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in functions:
         write_page(x)
-        f.write(':doc:`' + x + '`\n\n')
+        f.write('   ' + x + '\n')
 
     f.write("\nConstants\n****************\n\n")
     for x in constants:
-        f.write('.. py:data:: ' + x + '\n')
+        f.write('* .. py:data:: ' + x + '\n')
 
     f.write("\nExceptions\n****************\n\n")
+    f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in exceptions:
         write_page(x)
-        f.write(':doc:`' + x + '`\n\n')
+        f.write('   ' + x + '\n')
 
     f.write("\nC++ Standard library wrappers\n*********************************\n\n")
+    f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in cpp:
         write_page(x)
-        f.write(':doc:`' + x + '`\n\n')
+        f.write('   ' + x + '\n')
     f.close()
 
 

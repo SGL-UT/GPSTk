@@ -31,9 +31,9 @@ def main():
 
     # Step through a day, adding plot points:
     dt = 60  # time step, in seconds
+    austin = gpstk.Position(30, 97, 0, gpstk.Position.Geodetic)  # Austin, TX
     while t < t_f:
         xvt = almOrbits[0].svXvt(t)  # the xvt of the first orbit
-        austin = gpstk.Position(30, 97, 0, gpstk.Position.Geodetic)  # Austin, TX
         location = gpstk.Position(xvt.x)
         elevation = austin.elevation(location)
 

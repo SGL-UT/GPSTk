@@ -251,10 +251,12 @@ class std_template_test(unittest.TestCase):
 
         list = [1.1, 2.2, 3.3]
         v = gpstk.cpp.seqToVector(list)
+        self.assertIsInstance(v, gpstk.cpp.vector_double)
         same_seq(list, v)
 
         list = ['bar!', 'foo?']
         v = gpstk.cpp.seqToVector(list)
+        self.assertIsInstance(v, gpstk.cpp.vector_string)
         same_seq(list, v)
 
         v = gpstk.cpp.vector_int()
@@ -262,6 +264,12 @@ class std_template_test(unittest.TestCase):
         v.push_back(5)
         list = gpstk.cpp.vectorToSeq(v)
         same_seq(list, v)
+
+        l = [1, 2.2, 'c']  # mismatching types not allowed
+        self.assertRaises(TypeError, gpstk.cpp.seqToVector, l)
+
+        l = [1000L, 2000L]  # longs are not templated
+        self.assertRaises(TypeError, gpstk.cpp.seqToVector, l)
 
     def test_map(self):
         map = gpstk.cpp.map_int_char()
@@ -289,6 +297,27 @@ class std_template_test(unittest.TestCase):
         map[5] = 'five'
         map[6] = 'six'
         self.assertEqual(2, len(map))
+
+    def test_map_conversions(self):
+        def same(a, b):
+            self.assertEqual(len(a), len(b))
+            for x in a:
+                self.assertEqual(a[x], b[x])
+
+        d = {1: 'A', 2: 'B', 3: 'C'}
+        m = gpstk.cpp.dictToMap(d)
+        same(d, m)
+        self.assertIsInstance(m, gpstk.cpp.map_int_string)
+        same(d, gpstk.cpp.mapToDict(m))
+
+        d = {'A': 1.1, 'B': 2.2, 'C': 3.3}
+        m = gpstk.cpp.dictToMap(d)
+        same(d, m)
+        self.assertIsInstance(m, gpstk.cpp.map_string_double)
+        same(d, gpstk.cpp.mapToDict(m))
+
+        d = {'A': 1, 'B': 1.1}
+        self.assertRaises(TypeError, gpstk.cpp.dictToMap, d)
 
 
 class convhelp_test(unittest.TestCase):

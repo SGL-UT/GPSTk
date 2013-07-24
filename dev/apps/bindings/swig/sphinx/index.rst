@@ -15,6 +15,7 @@ Contents:
    build
    newstuff
    examples
+   bugs
    quickref
 
 

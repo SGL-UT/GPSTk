@@ -1,7 +1,7 @@
 Introduction
 ==================
 
-This documentaiton describes the architecture and design of the Python version
+This documentation describes the architecture and design of the Python bindings
 of the GPS ToolKit (GPSTk), produced by the Space and Geophysics Laboratory (SGL)
 of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
 
@@ -9,7 +9,7 @@ of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
 
 About
 **********
-GPSTK is a library of support routines designed for use by programmers
+The GPSTK is a library of support routines designed for use by programmers
 developing applications that read and write (particularly in RINEX format),
 process and otherwise manipulate GPS data. It is characterized by the following:
 
@@ -23,11 +23,29 @@ As the GPSTk is primarily a C++ library, it's API reference should still be used
 http://www.gpstk.org/doxygen/
 
 
+
+Getting the Python GPSTk
+****************************
+Building the GPSTk from source can be a fairly involved process, see :ref:`build_label`
+for the details.
+
+
+
+
+Bindings
+**********
+Though effort has been taken to reduce the C++-feeling when using these Python
+classes, it is impossible to completely purify the library without creating severe
+maintenance problems. Thus, the user must be aware that the GPSTk is primarily a
+C++ library and some things may require unusual semantics. It is recommended that you avoid using
+some of these unusual classes, such as gpstk.cpp.vector_double (std::vector<double>)
+as much as a possible. A much better replacement would be a numpy array.
+
 Example of how C++ GPSTk reads and prints a Rinex3Obs file:
 
 .. parsed-literal::
     // Create the input file stream
-   Rinex3ObsStream rin("bahr1620.04o");
+   Rinex3ObsStream rin("rinex3obs_data.txt");
 
    // Read the RINEX header
    Rinex3ObsHeader head;    // RINEX header object
@@ -45,29 +63,11 @@ Compare to the simpler Python GPSTk read process:
 
 .. parsed-literal::
    # read in the data
-   header, data = readRinex3Obs('bahr1620.04o')
+   header, data = readRinex3Obs('rinex3obs_data.txt')
    print header
    for dataObject in data:
        print data
-       # process dataObject
 
-
-Getting the Python GPSTk
-****************************
-Building the GPSTk from source can be a fairly involved process, see :ref:`build_label`
-for the details.
-
-
-
-
-Bindings
-**********
-Though effort has been taken to reduce the C++-feeling when using these Python
-classes, it is impossible to completely purify the library. Thus, the user
-must be aware that the GPSTk is primarily a C++ library and some things
-may require unusual semantics. It is recommended that you avoid using
-some of these unusual classes, such as gpstk.cpp.vector_double (std::vector<double>)
-as much as a possible. A much better replacement would be a numpy array.
 
 
 
@@ -82,16 +82,16 @@ Most classes and functions are in the gpstk namespace, but there are some except
 
 
 
-How to Use Documentation
-**************************
-The C++ API is the primary reference still. Most of it is embedded into
-the python source as docstrings however. This means you can use ipython
+How to Use This Documentation
+**************************************
+The C++ API is the primary reference still, however much of it is embedded into
+the python source in the form of docstrings. This means you can use ipython
 to easily find out about classes and functions.
 
 Changes and additions to the C++ core are noted in this documentation,
 as well as in the docstrings themselves.
 
-A good first step is to browse the things avaliable in the :ref:`quickref_label`
+A good first step is to browse the things available in the :ref:`quickref_label`
 section. If you are coming from writing C++ GPSTk programs, you should be sure to read
 the section on how C++ structures have been changed for python.
 
@@ -121,7 +121,7 @@ How some particular C++ structures are translated to Python
 
 To wrap the library we used the Standard Wrapper Interface Generator (SWIG).
 Without SWIG, the amount of work to wrap the library would have made it completely infeasible.
-However, some elements of C++ do not have clear analouges in Python; as such, some
+However, some elements of C++ do not have clear analogues in Python; as such, some
 compromises had to be made to allow for clean python programming without a complete
 rework of the well-established C++ API.
 
@@ -146,7 +146,7 @@ Templates in the GPSTk were largely for 3 purposes:
 
 * standard library containers (std::vector<T>, std::map<K,V>)
 * accepting any numeric type (gpstk::Vector<T>)
-* creating specialized class for use in inheiritance
+* creating specialized class for use in inheritance
     (such as how YumaAlmanacStore is a subclass of FileStore<YumaHeader>)
 
 Using the standard library containers of C++ is discouraged,
@@ -168,7 +168,7 @@ string output, these have been replaced with the __str__ method.
 
 **Inner Classes:**
 
-SWIG cannot wrap nested classes/structs, so many of the
+SWIG cannot wrap nested classes/structs (as of v2.0.7), so many of the
 inner classes and exceptions were simply pulled into the gpstk namespace.
 
 

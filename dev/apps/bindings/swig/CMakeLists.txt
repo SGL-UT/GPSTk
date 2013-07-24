@@ -20,7 +20,13 @@ set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
 swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/AlmOrbit.cpp
                     ../../../src/ANSITime.cpp
+                    ../../../src/ARBase.hpp
+                    ../../../src/ARLambda.hpp
+                    ../../../src/ARMLambda.hpp
+                    ../../../src/ARSimple.hpp
                     ../../../src/AstronomicalFunctions.cpp
+                    ../../../src/Bancroft.cpp
+                    ../../../src/Bancroft.cpp
                     ../../../src/BinUtils.cpp
                     ../../../src/BrcClockCorrection.cpp
                     ../../../src/BrcKeplerOrbit.cpp
@@ -52,6 +58,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/ObsIDInitializer.cpp
                     ../../../src/OrbElem.cpp
                     ../../../src/OrbElemRinex.cpp
+                    ../../../src/PoleTides.cpp
                     ../../../src/Position.cpp
                     ../../../src/PositionSatStore.cpp
                     ../../../src/PRSolution2.cpp
@@ -72,7 +79,6 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/RinexObsData.cpp
                     ../../../src/RinexObsHeader.cpp
                     ../../../src/RinexObsID.cpp
-                    ../../../src/RinexSatID.cpp
                     ../../../src/RinexSatID.cpp
                     ../../../src/RinexUtilities.cpp
                     ../../../src/SEMAlmanacStore.cpp

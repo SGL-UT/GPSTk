@@ -64,18 +64,18 @@ ignore_patterns = [
 'RinexObsHeader_',
 'Stream',
 'swigregister',
+'TabularSatStore_',
 'TimeTag_',
 'TropModel_',
 'VectorBase',
-'XvtStore',
 ]
 
 
 # submodule_name -> (list of exact names, list of pattern names)
 submodules = {
     'cpp' : (
-        ['seqToVector', 'vectorToSeq', 'cmap'],
-        ['vector_', 'map_']),
+        ['seqToVector', 'vectorToSeq', 'cmap', 'mapToDict', 'dictToMap'],
+        ['vector_', 'map_', 'set_']),
 }
 
 

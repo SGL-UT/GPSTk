@@ -33,6 +33,12 @@ templates_path = ['_templates']
 # The suffix of source filenames.
 source_suffix = '.rst'
 
+
+# TODO
+# putting this back in will give the __init__ descriptions, but the line breaks get all messed
+# up by sphinx
+# autoclass_content = 'both'
+
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
 
@@ -92,6 +98,8 @@ pygments_style = 'sphinx'
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 html_theme = 'default'
+# default = python2 style
+# pyramid = python3 style
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
