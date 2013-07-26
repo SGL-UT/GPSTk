@@ -83,8 +83,6 @@ The following functions use this pattern:
 
 .. py:function:: gpstk.readSEM(filename[, lazy=False])
 
-.. py:function:: gpstk.readSP3(filename[, lazy=False])
-
 .. py:function:: gpstk.readYuma(filename[, lazy=False])
 
 .. py:function:: gpstk.writeRinex3Clock(filename, header, data)
@@ -102,8 +100,6 @@ The following functions use this pattern:
 .. py:function:: gpstk.writeRinexObs(filename, header, data)
 
 .. py:function:: gpstk.writeSEM(filename, header, data)
-
-.. py:function:: gpstk.writeSP3(filename, header, data)
 
 .. py:function:: gpstk.writeYuma(filename, header, data)
 

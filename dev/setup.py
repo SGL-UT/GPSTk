@@ -4,20 +4,18 @@ import os
 from distutils.core import setup, Extension
 
 
+script_names = ['timeconvert.py', 'position_difference.py']
+
+
 core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/AlmOrbit.cpp',
             'src/ANSITime.cpp',
-            'src/ARBase.hpp',
-            'src/ARLambda.hpp',
-            'src/ARMLambda.hpp',
-            'src/ARSimple.hpp',
             'src/AstronomicalFunctions.cpp',
             'src/Bancroft.cpp',
             'src/Bancroft.cpp',
             'src/BinUtils.cpp',
             'src/BrcClockCorrection.cpp',
             'src/BrcKeplerOrbit.cpp',
-            'src/CheckPRData.cpp',
             'src/CivilTime.cpp',
             'src/ClockSatStore.cpp',
             'src/CommonTime.cpp',
@@ -28,6 +26,8 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/ExtractData.cpp',
             'src/FFData.cpp',
             'src/FFStream.cpp',
+            'src/FICData.cpp',
+            'src/FICHeader.cpp',
             'src/GalEphemeris.cpp',
             'src/GalEphemerisStore.cpp',
             'src/GloEphemeris.cpp',
@@ -125,6 +125,7 @@ def main():
                                    extra_compile_args=['-std=c++11', '-w'],
                                    language='c++')],
             packages=['gpstk', 'gpstk.cpp', 'gpstk.constants', 'gpstk.exceptions'],
+            scripts=map(lambda x: 'apps/bindings/swig/scripts' + x, script_names),
             )
 
 if __name__ == '__main__':

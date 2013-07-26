@@ -23,7 +23,7 @@ def now(timeSystem=TimeSystem.Unknown):
 
         timeSystem:  the TimeSystem (enum value) to assign to the output
     """
-    t = SystemTime().convertToCommonTime()
+    t = SystemTime().toCommonTime()
     t.setTimeSystem(TimeSystem(timeSystem))
     return t
 %}
@@ -46,6 +46,8 @@ STR_DUMP_HELPER(BrcClockCorrection)
 STR_DUMP_HELPER(BrcKeplerOrbit)
 STR_DUMP_HELPER(EngAlmanac)
 STR_DUMP_HELPER(EngEphemeris)
+STR_DUMP_HELPER(FICData)
+STR_DUMP_HELPER(FICHeader)
 STR_DUMP_HELPER(GalEphemeris)
 STR_DUMP_HELPER(GalEphemerisStore)
 STR_DUMP_HELPER(GloEphemeris)
@@ -61,12 +63,15 @@ STR_DUMP_HELPER(Rinex3ObsData)
 STR_DUMP_HELPER(Rinex3ObsHeader)
 STR_DUMP_HELPER(RinexMetData)
 STR_DUMP_HELPER(RinexMetHeader)
+STR_DUMP_HELPER(RinexNavData)
+STR_DUMP_HELPER(RinexNavHeader)
 STR_DUMP_HELPER(RinexObsData)
 STR_DUMP_HELPER(RinexObsHeader)
 STR_DUMP_HELPER(RinexSatID)
 STR_DUMP_HELPER(SEMData)
 STR_DUMP_HELPER(SEMHeader)
 STR_DUMP_HELPER(SP3Data)
+STR_DUMP_HELPER(SP3EphemerisStore)
 STR_DUMP_HELPER(SP3Header)
 STR_DUMP_HELPER(SP3SatID)
 STR_DUMP_HELPER(YumaData)

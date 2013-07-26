@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+
 import gpstk
 import inspect
 import pydoc
@@ -64,6 +65,7 @@ def write_page(x):
 
 
 def main():
+    os.system('rm -f gpstk.*.rst')
     classes = []
     functions = []
     constants = []

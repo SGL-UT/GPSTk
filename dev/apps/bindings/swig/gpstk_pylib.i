@@ -66,12 +66,12 @@
     #include "../../../src/GPSAlmanacStore.hpp"
     #include "../../../src/YumaAlmanacStore.hpp"
     #include "../../../src/SVNumXRef.hpp"
-    #include "../../../src/GPSEphemerisStore.hpp"
     #include "../../../src/RinexSatID.hpp"
     #include "../../../src/GPS_URA.hpp"
     #include "../../../src/BrcClockCorrection.hpp"
     #include "../../../src/BrcKeplerOrbit.hpp"
     #include "../../../src/EngEphemeris.hpp"
+    #include "../../../src/GPSEphemerisStore.hpp"
     #include "../../../src/GalEphemeris.hpp"
     #include "../../../src/GalEphemerisStore.hpp"
     #include "../../../src/GloEphemeris.hpp"
@@ -138,18 +138,14 @@
     #include "../../../src/CheckPRData.hpp"
     #include "../../../src/PRSolution2.hpp"
     #include "../../../src/ExtractData.hpp"
-    #include "../../../src/Bancroft.hpp"
 
 
-   // Ambiguity Resolution
-    #include "../../../src/ARBase.hpp"
-    #include "../../../src/ARLambda.hpp"
-    #include "../../../src/ARMLambda.hpp"
-    #include "../../../src/ARSimple.hpp"
-
-
-    #include "../../../src/PoleTides.hpp"
-
+    #include "../../../src/FFBinaryStream.hpp"
+    #include "../../../src/FICBase.hpp"
+    #include "../../../src/FICStreamBase.hpp"
+    #include "../../../src/FICStream.hpp"
+    #include "../../../src/FICHeader.hpp"
+    #include "../../../src/FICData.hpp"
 
 
     typedef std::map< char, std::string> IdToValue;
@@ -232,6 +228,7 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/ObsID.hpp"
 %include "../../../src/GNSSconstants.hpp"
 %include "src/Triple.i"
+%extend gpstk::Triple { int __len__() {return 3;}}
 %include "src/ReferenceFrame.i"
 %include "../../../src/EllipsoidModel.hpp"
 %include "../../../src/Xvt.hpp"
@@ -272,18 +269,19 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
+%rename (toAlmOrbit) gpstk::YumaData::operator AlmOrbit() const;
 %include "../../../src/YumaData.hpp"
 %include "../../../src/GPSAlmanacStore.hpp"
 %template(FileStore_YumaHeader) gpstk::FileStore<gpstk::YumaHeader>;
 %include "../../../src/YumaAlmanacStore.hpp"
 
 %include "../../../src/SVNumXRef.hpp"
-%include "../../../src/GPSEphemerisStore.hpp"
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/GPS_URA.hpp"
 %include "../../../src/BrcClockCorrection.hpp"
 %include "../../../src/BrcKeplerOrbit.hpp"
 %include "../../../src/EngEphemeris.hpp"
+%include "../../../src/GPSEphemerisStore.hpp"
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
 %include "../../../src/GloEphemeris.hpp"
@@ -302,6 +300,7 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/RinexClockData.hpp"
 %include "../../../src/RinexClockStream.hpp"
 
+%rename (toEngEphemeris) gpstk::RinexNavData::operator EngEphemeris() const;
 %include "../../../src/RinexNavBase.hpp"
 %include "../../../src/RinexNavHeader.hpp"
 %include "../../../src/RinexNavStream.hpp"
@@ -362,14 +361,15 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/PRSolution2.hpp"
 %include "../../../src/ExtractData.hpp"
 
-// Ambiguity Resolution
-// Compiled, but not wrapped at the moment since they need Matrix<double> access to be useful.
-// #include "../../../src/ARBase.hpp"
-// #include "../../../src/ARLambda.hpp"
-// #include "../../../src/ARMLambda.hpp"
-// #include "../../../src/ARSimple.hpp"
 
-%include "../../../src/PoleTides.hpp"
+%rename (toEngEphemeris) gpstk::FICData::operator EngEphemeris() const;
+%rename (toAlmOrbit) gpstk::FICData::operator AlmOrbit() const;
+%include "../../../src/FFBinaryStream.hpp"
+%include "../../../src/FICBase.hpp"
+%include "../../../src/FICStreamBase.hpp"
+%include "../../../src/FICStream.hpp"
+%include "../../../src/FICHeader.hpp"
+%include "../../../src/FICData.hpp"
 
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.

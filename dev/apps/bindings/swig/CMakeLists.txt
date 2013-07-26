@@ -20,13 +20,7 @@ set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
 swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/AlmOrbit.cpp
                     ../../../src/ANSITime.cpp
-                    ../../../src/ARBase.hpp
-                    ../../../src/ARLambda.hpp
-                    ../../../src/ARMLambda.hpp
-                    ../../../src/ARSimple.hpp
                     ../../../src/AstronomicalFunctions.cpp
-                    ../../../src/Bancroft.cpp
-                    ../../../src/Bancroft.cpp
                     ../../../src/BinUtils.cpp
                     ../../../src/BrcClockCorrection.cpp
                     ../../../src/BrcKeplerOrbit.cpp
@@ -40,6 +34,8 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/ExtractData.cpp
                     ../../../src/FFData.cpp
                     ../../../src/FFStream.cpp
+                    ../../../src/FICData.cpp
+                    ../../../src/FICHeader.cpp
                     ../../../src/GalEphemeris.cpp
                     ../../../src/GalEphemerisStore.cpp
                     ../../../src/GloEphemeris.cpp

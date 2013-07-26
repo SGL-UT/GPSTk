@@ -1,6 +1,9 @@
+#!/usr/bin/env python
+
 import argparse
 import gpstk
 import sys
+
 
 def main(args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '

@@ -34,9 +34,9 @@ def main():
     austin = gpstk.Position(30, 97, 0, gpstk.Position.Geodetic)  # Austin, TX
     while t < t_f:
         xvt = almOrbits[0].svXvt(t)  # the xvt of the first orbit
+        print xvt.x
         location = gpstk.Position(xvt.x)
         elevation = austin.elevation(location)
-
         X.append(t.getSecondOfDay())
         Y.append(elevation)
         t.addSeconds(dt)
