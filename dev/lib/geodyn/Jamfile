@@ -13,7 +13,6 @@ else
          HarrisPriesterDrag.cpp IERS.cpp IERSConventions.cpp 
          JGM3GravityModel.cpp KeplerOrbit.cpp LEOSatOrbit.cpp Msise00Drag.cpp MoonForce.cpp NavSatOrbit.cpp PvtStore.cpp
          ReferenceFrames.cpp RelativityEffect.cpp RungeKuttaFehlberg.cpp 
-         SatOrbit.cpp SatOrbitPropagator.cpp SatOrbitStore.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
          SatOrbit.cpp SatOrbitPropagator.cpp Spacecraft.cpp SphericalHarmonicGravity.cpp SolarRadiationPressure.cpp SunForce.cpp UTCTime.cpp
       ;
 
@@ -22,7 +21,7 @@ else
          ForceModel.hpp ForceModelList.hpp HarrisPriesterDrag.hpp
          IERS.hpp IERSConventions.hpp LEOSatOrbit.hpp Msise00Drag.hpp NavSatOrbit.hpp PvtStore.hpp
          SphericalHarmonicGravity.hpp Integrator.hpp JGM3GravityModel.hpp
-         KeplerOrbit.hpp MoonForce.hpp ReferenceFrames.hpp RelativityEffect.hpp RungeKuttaFehlberg.hpp SatOrbit.hpp SatOrbitPropagator.hpp SatOrbitStore.hpp SolarRadiationPressure.hpp
+         KeplerOrbit.hpp MoonForce.hpp ReferenceFrames.hpp RelativityEffect.hpp RungeKuttaFehlberg.hpp SatOrbit.hpp SatOrbitPropagator.hpp SolarRadiationPressure.hpp
          Spacecraft.hpp SunForce.hpp UTCTime.hpp
       ;
 }

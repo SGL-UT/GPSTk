@@ -23,7 +23,6 @@ RelativityEffect.cpp
 RungeKuttaFehlberg.cpp 
 SatOrbit.cpp
 SatOrbitPropagator.cpp
-SatOrbitStore.cpp
 Spacecraft.cpp
 SphericalHarmonicGravity.cpp
 SolarRadiationPressure.cpp
