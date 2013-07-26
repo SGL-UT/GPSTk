@@ -7,6 +7,8 @@ ${CMAKE_SOURCE_DIR}/lib/geomatics
 
 add_executable(mergeSRI mergeSRI.cpp)
 target_link_libraries(mergeSRI gpstk geomatics)
+install (TARGETS mergeSRI DESTINATION bin)
 
 add_executable(tkalm tkalm.cpp)
 target_link_libraries(tkalm gpstk geomatics)
+install (TARGETS tkalm DESTINATION bin)

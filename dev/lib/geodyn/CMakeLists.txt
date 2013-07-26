@@ -33,4 +33,6 @@ UTCTime.cpp
 
 add_library (geodyn SHARED ${geodyn_src})
 include_directories (${CMAKE_SOURCE_DIR}/lib/geomatics ${CMAKE_SOURCE_DIR}/src)
+install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 target_link_libraries (geodyn geomatics)
+install (TARGETS geodyn DESTINATION lib)

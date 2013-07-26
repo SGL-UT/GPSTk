@@ -17,7 +17,6 @@ libvdraw_la_SOURCES = Adler32.cpp \
 	  GraphicsConstants.cpp \
 	  GridLayout.cpp \
 	  HLayout.cpp \
-	  IndexedColorMap.cpp \
 	  InterpolatedColorMap.cpp \
 	  Line.cpp \
 	  Marker.cpp \
@@ -54,7 +53,6 @@ incl_HEADERS = Adler32.hpp \
 	  GridLayout.hpp \
 	  HLayout.hpp \
 	  Helper.hpp \
-	  IndexedColorMap.hpp \
 	  InterpolatedColorMap.hpp \
 	  Layout.hpp \
 	  Line.hpp \

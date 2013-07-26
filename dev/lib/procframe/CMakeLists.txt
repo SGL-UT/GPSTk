@@ -73,4 +73,6 @@ XYZ2NEU.cpp
     
 add_library (procframe SHARED ${procframe_src})
 include_directories (${CMAKE_SOURCE_DIR}/src)
+install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 target_link_libraries (procframe gpstk)
+install (TARGETS procframe DESTINATION lib)

@@ -4,6 +4,9 @@ include_directories(
 ${CMAKE_SOURCE_DIR}/src
 )
 
+SET( LINK_FLAGS "-lpthread")
+SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${LINK_FLAGS}" )
+
 add_library(simlib STATIC
 normal.cpp
 CCReplica.cpp

@@ -25,7 +25,14 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       CivilTime.cpp \
       ClockSatStore.cpp \
       CNAVClock.cpp \
+      CNavDataElement.cpp \
+      CNavDataElementStore.cpp \
+      CNavEOP.cpp \
       CNAVEphemeris.cpp \
+      CNavGGTO.cpp \
+      CNavISC.cpp \
+      CNavText.cpp \
+      CNavUTC.cpp \
       CNAV2EphClk.cpp \
       CodeBuffer.cpp \
       CommandLine.cpp \
@@ -37,13 +44,19 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       CommonTime.cpp \
       ConfDataReader.cpp \
       ConfDataWriter.cpp \
+<<<<<<< Updated upstream
 	  DCBDataReader.cpp \
 	  DOP.cpp \
+=======
+	DCBDataReader.cpp \
+      DebugUtils.cpp \
+	DOP.cpp \
+>>>>>>> Stashed changes
       EngAlmanac.cpp \
       EngEphemeris.cpp \
       EngNav.cpp \
       ENUUtil.cpp \
-	  EOPDataStore.cpp \
+	EOPDataStore.cpp \
       EphemerisRange.cpp \
       Epoch.cpp \
       EpochDataStore.cpp \
@@ -67,14 +80,14 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       GalEphemerisStore.cpp \
       GaussianDistribution.cpp \
       GenXSequence.cpp \
-	  getopt.c \
-	  getopt1.c \
+	getopt.c \
+	getopt1.c \
       GloEphemeris.cpp \
       GloEphemerisStore.cpp \
       GloFreqIndex.cpp \
       GPSAlmanacStore.cpp \
       GPSEphemerisStore.cpp \
-	  GPSOrbElemStore.cpp \
+	GPSOrbElemStore.cpp \
       GPSWeek.cpp \
       GPSWeekSecond.cpp \
       GPSWeekZcount.cpp \
@@ -101,16 +114,16 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
 	  ObsIDInitializer.cpp \
       ObsRngDev.cpp \
       OceanLoading.cpp \
-	  OrbElem.cpp \
-	  OrbElemICE.cpp \
-	  OrbElemCNAV.cpp \
-	  OrbElemCNAV2.cpp \
-	  OrbElemFIC9.cpp \
-	  OrbElemFIC109.cpp \
-	  OrbElemLNav.cpp \
-	  OrbElemRinex.cpp \
+	OrbElem.cpp \
+	OrbElemICE.cpp \
+	OrbElemCNAV.cpp \
+	OrbElemCNAV2.cpp \
+	OrbElemFIC9.cpp \
+	OrbElemFIC109.cpp \
+	OrbElemLNav.cpp \
+	OrbElemRinex.cpp \
       PackedNavBits.cpp \
-	  PlanetEphemeris.cpp \
+	PlanetEphemeris.cpp \
       PoleTides.cpp \
       Position.cpp \
       PositionSatStore.cpp \
@@ -205,7 +218,14 @@ incl_HEADERS = AllanDeviation.hpp \
       ClockModel.hpp \
       ClockSatStore.hpp \
       CNAVClock.hpp \
+      CNavDataElement.hpp \
+      CNavDataElementStore.hpp \
+      CNavEOP.hpp \
       CNAVEphemeris.hpp \
+      CNavGGTO.hpp \
+      CNavISC.hpp \
+      CNavText.hpp \
+      CNavUTC.hpp \
       CNAV2EphClk.hpp \
       CodeBuffer.hpp \
       Combinations.hpp \
@@ -216,17 +236,21 @@ incl_HEADERS = AllanDeviation.hpp \
       CommandOptionWithPositionArg.hpp \
       CommandOptionWithTimeArg.hpp \
       CommonTime.hpp \
-	  compass_constants.hpp \
+	compass_constants.hpp \
       ConfDataReader.hpp \
       ConfDataWriter.hpp \
       DCBDataReader.hpp \
+<<<<<<< Updated upstream
+=======
+	DebugUtils.hpp \
+>>>>>>> Stashed changes
       DOP.hpp \
       EllipsoidModel.hpp \
       EngAlmanac.hpp \
       EngEphemeris.hpp \
       EngNav.hpp \
       ENUUtil.hpp \
-	  EOPDataStore.hpp \
+	EOPDataStore.hpp \
       EphemerisRange.hpp \
       Epoch.hpp \
       EpochClockModel.hpp \
@@ -267,20 +291,20 @@ incl_HEADERS = AllanDeviation.hpp \
       GalEphemerisStore.hpp \
       GaussianDistribution.hpp \
       GenXSequence.hpp \
-	  getopt.h \
+	getopt.h \
       GloEphemeris.hpp \
       GloEphemerisStore.hpp \
       GloFreqIndex.hpp \
       GPSAlmanacStore.hpp \
       GPSEllipsoid.hpp \
       GPSEphemerisStore.hpp \
-	  GPSOrbElemStore.hpp \
+	GPSOrbElemStore.hpp \
       GPSWeek.hpp \
       GPSWeekSecond.hpp \
       GPSWeekZcount.hpp \
       GPSZcount.hpp \
-	  GPS_URA.hpp \
-	  GNSSconstants.hpp \
+	GPS_URA.hpp \
+	GNSSconstants.hpp \
       HelmertTransform.hpp \
       InOutFramework.hpp \
       IonexBase.hpp \
@@ -302,7 +326,7 @@ incl_HEADERS = AllanDeviation.hpp \
       MatrixFunctors.hpp \
       MatrixImplementation.hpp \
       MatrixOperators.hpp \
-	  MemoryUtils.hpp \
+	MemoryUtils.hpp \
       MiscMath.hpp \
       MJD.hpp \
       ModeledPseudorangeBase.hpp \
@@ -321,19 +345,19 @@ incl_HEADERS = AllanDeviation.hpp \
       ObsIDInitializer.hpp \	  
       ObsRngDev.hpp \
       OceanLoading.hpp \
-	  OrbElem.hpp \
-	  OrbElemCNAV.hpp \
-	  OrbElemCNAV2.hpp \
-	  OrbElemFIC9.hpp \
-	  OrbElemFIC109.hpp \
-	  OrbElemICE.hpp \
+	OrbElem.hpp \
+	OrbElemCNAV.hpp \
+	OrbElemCNAV2.hpp \
+	OrbElemFIC9.hpp \
+	OrbElemFIC109.hpp \
+	OrbElemICE.hpp \
       OrbElemLNav.hpp \
-	  OrbElemRinex.hpp \
-	  OrbElemStore.hpp \
-	  ORDEpoch.hpp \
+	OrbElemRinex.hpp \
+	OrbElemStore.hpp \
+	ORDEpoch.hpp \
       PackedNavBits.hpp \
       PCodeConst.hpp \
-	  PlanetEphemeris.hpp \
+	PlanetEphemeris.hpp \
       PoleTides.hpp \
       PolyFit.hpp \
       Position.hpp \
@@ -408,7 +432,7 @@ incl_HEADERS = AllanDeviation.hpp \
       SP3Stream.hpp \
       SpecialFunctions.hpp \
       Stats.hpp \
-	  StreamBuf.hpp \
+	StreamBuf.hpp \
       StringUtils.hpp \
       StudentDistribution.hpp \
       SunPosition.hpp \
@@ -438,7 +462,7 @@ incl_HEADERS = AllanDeviation.hpp \
       WxObsMap.hpp \
       X1Sequence.hpp \
       X2Sequence.hpp \
-	  Xv.hpp \
+	Xv.hpp \
       Xvt.hpp \
       XvtStore.hpp \
       YDSTime.hpp \
