@@ -82,8 +82,7 @@ def main(args=sys.argv[1:]):
     if not time_found:
         ct = gpstk.SystemTime()
 
-    timeSys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
-    ct.setTimeSystem(timeSys)
+    ct.setTimeSystem(gpstk.timeSystem('GPS'))
 
     if args.add_offset is not None:
         for t in args.add_offset:

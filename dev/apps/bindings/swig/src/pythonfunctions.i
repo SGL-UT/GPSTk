@@ -2,19 +2,7 @@
 //              Python stuff
 ///////////////////////////////////////////////
 %pythoncode %{
-
-def _nlines(fileName):
-    """Counts and returns the number of lines in a file, excluding any blank
-    lines at the end of the file.
-    """
-    count = 0
-    with open(fileName) as infp:
-        for line in infp:
-            count += 1
-    return count
-
-
-def now(timeSystem=TimeSystem.Unknown):
+def now():
     """Returns the current time (defined by what SystemTime() returns)
     in a CommonTime format, in the given TimeSystem.
 
@@ -26,6 +14,27 @@ def now(timeSystem=TimeSystem.Unknown):
     t = SystemTime().toCommonTime()
     t.setTimeSystem(TimeSystem(timeSystem))
     return t
+
+def timeSystem(str='Unknown'):
+    """Returns a TimeSystem object named by the given string.
+    Valid choices are:
+    Unknown, Any, GPS, GLO, GAL, COM, UTC, UT1, TAI, TT.
+    """
+
+    dict = {
+        'Unknown': TimeSystem.Unknown,
+        'Any': TimeSystem.Any,
+        'GPS': TimeSystem.GPS,
+        'GLO': TimeSystem.GLO,
+        'GAL': TimeSystem.GAL,
+        'COM': TimeSystem.COM,
+        'UTC': TimeSystem.UTC,
+        'UT1': TimeSystem.UT1,
+        'TAI': TimeSystem.TAI,
+        'TT': TimeSystem.TT,
+    }
+    return TimeSystem(dict[str])
+
 %}
 
 ///////////////////////////////////////////////

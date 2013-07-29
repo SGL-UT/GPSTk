@@ -20,3 +20,13 @@
       SWIG_exception(SWIG_RuntimeError, "unknown exception");
    }
 }
+
+%feature("director:except") {
+    if( $error != NULL ) {
+        PyObject *ptype, *pvalue, *ptraceback;
+        PyErr_Fetch( &ptype, &pvalue, &ptraceback );
+        PyErr_Restore( ptype, pvalue, ptraceback );
+        PyErr_Print();
+        Py_Exit(1);
+    }
+}

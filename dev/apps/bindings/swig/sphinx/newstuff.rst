@@ -5,16 +5,32 @@ New Functions
 Time Functions
 ***************
 
-.. py:function:: gpstk.now([timeSystem=gpstk.TimeSystem.Unknown])
+These are largely helper functions that make some functionality a little easier or more succint.
+
+.. py:function:: gpstk.now()
+    :noindex:
 
 Returns the current time (as defined by what SystemTime() returns) as a CommonTime.
 Example: ::
 
     >>> print gpstk.now()
-    2456490 72040524 0.000665000000000 Unknown
+    2456490 72040524 0.000665000000000 UTC
 
-    >>> print gpstk.CivilTime(gpstk.now(gpstk.TimeSystem.GPS))
-    07/16/2013 19:59:25 GPS
+    >>> print gpstk.CivilTime(gpstk.now())
+    07/16/2013 19:59:25 UTC
+
+
+
+.. py:function:: gpstk.timeSystem([str='Unknown'])
+    :noindex:
+
+Returns a gpstk.TimeSystem object given a string input. T
+his is just a more succint way of creating a TimeSystem. ::
+
+    >>> print gpstk.TimeSystem(gpstk.TimeSystem.GPS)
+    GPS
+    >>> print gpstk.timeSystem('GPS')
+    GPS
 
 
 
@@ -64,42 +80,70 @@ For example: ::
     AF1 = 3.63798e-12
     xmit_time = 0
 
+You can use add a filter to the read on the data objects using the filterfunction keyword argument.
+By default, it simply returns True, which includes all data objects in the output.
+
+
 
 The following functions use this pattern:
 
-.. py:function:: gpstk.readRinex3Clock(filename[, lazy=False])
+.. py:function:: gpstk.readRinex3Clock(filename[, lazy=False, filterfunction=lamba x: True, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readRinex3Nav(filename[, lazy=False])
+.. py:function:: gpstk.readRinex3Nav(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readRinex3Obs(filename[, lazy=False])
+.. py:function:: gpstk.readRinex3Obs(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readRinexClock(filename[, lazy=False])
+.. py:function:: gpstk.readRinexClock(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readRinexMet(filename[, lazy=False])
+.. py:function:: gpstk.readRinexMet(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readRinexNav(filename[, lazy=False])
+.. py:function:: gpstk.readRinexNav(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readRinexObs(filename[, lazy=False])
+.. py:function:: gpstk.readRinexObs(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readSEM(filename[, lazy=False])
+.. py:function:: gpstk.readSEM(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
-.. py:function:: gpstk.readYuma(filename[, lazy=False])
+.. py:function:: gpstk.readSP3(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
+
+.. py:function:: gpstk.readYuma(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
 
 .. py:function:: gpstk.writeRinex3Clock(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeRinex3Nav(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeRinex3Obs(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeRinexClock(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeRinexMet(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeRinexNav(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeRinexObs(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeSEM(filename, header, data)
+    :noindex:
+
+.. py:function:: gpstk.writeSP3(filename, header, data)
+    :noindex:
 
 .. py:function:: gpstk.writeYuma(filename, header, data)
+    :noindex:
 

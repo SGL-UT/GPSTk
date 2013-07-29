@@ -1,4 +1,4 @@
-%module gpstk_pylib
+%module(directors="1") gpstk_pylib
 %{
     #include <sstream>
 

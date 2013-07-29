@@ -50,7 +50,7 @@
 }
 
 %pythoncode {
-def read ## FORMATNAME(fileName, lazy=False):
+def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
     """This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
 
@@ -59,17 +59,23 @@ def read ## FORMATNAME(fileName, lazy=False):
 
       lazy:  if the data object sequence should be lazily evaluated.
              If it is, it will be a generator, otherwise, it will be a list.
+
+      filterfunction: a function that takes a FORMATNAME ## Data object
+                      and returns whether it should be included in the
+                      data output. This is similar to using the filter()
+                      function on the output list, but eliminates the extra step.
     """
     import os.path
     if not os.path.isfile(fileName):
         raise IOError(fileName + ' does not exist.')
-    num_lines = _nlines(fileName)
     stream = FORMATNAME ## Stream .in ##FORMATNAME ## Stream (fileName)
     header = stream.readHeader()
     def read ## FORMATNAME ## Data (fileName):
         while True:
             try:
-               yield stream.readData()
+               x = stream.readData()
+               if filterfunction(x):
+                  yield x
             except IOError:
                break
     if lazy:
@@ -99,7 +105,7 @@ def write ## FORMATNAME(fileName, header, data):
 %enddef
 
 STREAM_HELPER(SEM)
-// STREAM_HELPER(SP3,<=)
+STREAM_HELPER(SP3)
 STREAM_HELPER(Yuma)
 STREAM_HELPER(RinexClock)
 STREAM_HELPER(RinexObs)

@@ -69,14 +69,6 @@ class GloEphemerisTest(unittest.TestCase):
         self.assertEqual(expected, str(g))
 
 
-class GPSEphemerisStoreTest(unittest.TestCase):
-    def test(self):
-        e = gpstk.EngEphemeris()
-        e.addSubframe([1L, 24631777L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L], 10, 20, 30)
-        g = gpstk.GPSEphemerisStore()
-        # g.addEphemeris(e)
-
-
 class SP3Test(unittest.TestCase):
     def test_ephem_store(self):
         ephem = gpstk.SP3EphemerisStore()
@@ -92,7 +84,7 @@ class SP3Test(unittest.TestCase):
         self.assertAlmostEqual(-19921938.297000002, p[2])
 
     def test_fileIO(self):
-        print 'Warn: SP3 stream input unimplemented.'
+        print 'Warn: SP3 stream input untested.'
         pass
         # self.fail()
         # header, data = gpstk.readSP3('sp3_data.txt')
@@ -192,13 +184,20 @@ class RinexMetTest(unittest.TestCase):
 
 class FICTest(unittest.TestCase):
     def test_fileIO(self):
-        header, data = gpstk.readFIC('fic_data.txt')
-        self.assertEqual(1032, len(data))
-        sat = gpstk.SatID(1, gpstk.SatID.systemGPS)
+        isblock9 = filterfunction=lambda x: x.blockNum == 9
+        header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9)
+        self.assertEqual(420, len(data))
+
         g = gpstk.GPSEphemerisStore()
         for d in data:
             g.addEphemeris(d.toEngEphemeris())
 
+        sat = gpstk.SatID(4, gpstk.SatID.systemGPS)
+        t = gpstk.CivilTime(2012, 11, 10, 2, 0, 0, gpstk.timeSystem('GPS'))
+        t = t.toCommonTime()
+        xvt= g.getXvt(sat, t)
+        self.assertAlmostEqual(6887269.410901967, xvt.x[0])
+        self.assertAlmostEqual(1036.316911617130, xvt.v[1])
 
 
 if __name__ == '__main__':
