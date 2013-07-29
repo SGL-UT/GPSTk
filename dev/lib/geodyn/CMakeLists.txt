@@ -13,10 +13,10 @@ IERS.cpp
 IERSConventions.cpp
 JGM3GravityModel.cpp
 KeplerOrbit.cpp
-LEOSatOrbit.cpp
+#LEOSatOrbit.cpp
 Msise00Drag.cpp
 MoonForce.cpp
-NavSatOrbit.cpp
+#NavSatOrbit.cpp
 PvtStore.cpp
 ReferenceFrames.cpp
 RelativityEffect.cpp

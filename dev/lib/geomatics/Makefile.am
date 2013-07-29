@@ -51,5 +51,5 @@ incl_HEADERS = AntexBase.hpp \
 	  SatPass.hpp \
 	  SolarPosition.hpp \
 	  SolarSystem.hpp \
-	  SolidEarthTides.hpp \	  
+	  SolidEarthTides.hpp \
 	  SunEarthSatGeometry.hpp

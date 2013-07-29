@@ -95,7 +95,7 @@ namespace gpstk
       if(msgType!=15 && msgType!=36)
       {
          char temp[80];
-         sprintf(temp,"Expected CNAV MsgType 15 or 36.  Found MsgType %d",msgType);
+         sprintf(temp,"Expected CNAV MsgType 15 or 36.  Found MsgType %ld",msgType);
          std::string tstr(temp);
          InvalidParameter exc(tstr);
          GPSTK_THROW(exc);    

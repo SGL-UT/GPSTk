@@ -364,7 +364,7 @@ namespace gpstk
       // GPS time to UTC time
       // @param gpst    GPST as input 
       // @param utc     UTC as output
-   void GPST2UTC(const UTCTime& gpst, UTCTime& utc)
+   void GPST2UTC(const CommonTime& gpst, UTCTime& utc)
    {
       UTCTime T;
 
@@ -378,7 +378,8 @@ namespace gpstk
       dtu = IERS::TAImUTC(mjdUTC);
       mjdUTC = mjdTAI - dtu / UTCTime::DAY_TO_SECOND;      
 
-      utc = gpst;                           // GPST
+      CommonTime g = gpst;
+      utc = g;                           // GPST
       utc += UTCTime::TAI_GPS;            // TAI
       utc += -IERS::TAImUTC(mjdUTC);      // UTC
 
@@ -422,7 +423,7 @@ namespace gpstk
       // TT time to UTC time
       // @param tt      TT as input
       // @param utc     UTC as output 
-   void TT2UTC(const CommonTime& tt, CommonTime& utc)
+   void TT2UTC(const CommonTime& tt, UTCTime& utc)
    {
       UTCTime T(static_cast<YDSTime>(tt).year,static_cast<YDSTime>(tt).doy,static_cast<YDSTime>(tt).sod);
       
@@ -455,28 +456,28 @@ namespace gpstk
       // TAI time to UTC time
       // @param tai     TAI as input 
       // @param utc     UTC as output 
-   void TAI2UTC(const UTCTime& tai, UTCTime& utc)
+   void TAI2UTC(const CommonTime& tai, UTCTime& utc)
    {
       UTCTime T(static_cast<YDSTime>(tai).year,static_cast<YDSTime>(tai).doy,static_cast<YDSTime>(tai).sod);
-      
-      utc = tai;
+      CommonTime t = tai;
+      utc = t;
       utc -= IERS::TAImUTC(static_cast<Epoch>(tai).MJD()); // input should be UTC     
 
       double mjdUTC = static_cast<Epoch>(utc).MJD();
 
-      utc = tai;
+      utc = t;
       utc -= IERS::TAImUTC(mjdUTC);
 
       mjdUTC = static_cast<Epoch>(utc).MJD();
 
-      utc = tai;
+      utc = t;
       utc -= IERS::TAImUTC(mjdUTC);
    }
    
       // TAI time to UTC time
       // @param utc     UTC as input 
       // @param tai     TAI as output 
-   void UTC2TAI(const CommonTime& utc, CommonTime& tai)
+   void UTC2TAI(const UTCTime& utc, CommonTime& tai)
    {
       UTCTime T(static_cast<YDSTime>(utc).year,static_cast<YDSTime>(utc).doy,static_cast<YDSTime>(utc).sod);
       tai = T.asTAI();
