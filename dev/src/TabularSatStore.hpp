@@ -751,6 +751,13 @@ namespace gpstk
 
    };
 
+
+   // This definition is causing problems for the compilation for the wrappers
+   // created by SWIG. It seems to be a duplicate of the operator<< function defined
+   // in Xvt.hpp and implemented in Xvt.cpp. Removing this causes compilation errors in
+   // clang, however.
+   inline std::ostream& operator<<(std::ostream &os, const gpstk::Xvt &obj) { return os; } //NB may need additional code
+
       //@}
 
 }  // End of namespace gpstk

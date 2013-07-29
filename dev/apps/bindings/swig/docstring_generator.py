@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 """GPSTk python-swig binding documentation generator.
 
 This reads every file in the gpstk/dev/doc/xml (where doxygen places its xml)

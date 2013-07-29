@@ -1,6 +1,7 @@
-// Map a Python sequence into any sized C double array ( adapted from
-// SWIG docs @ http://www.swig.org/Doc2.0/SWIGDocumentation.html )
+// These typemaps help conversions between C style arrays and Python Lists.
 
+// Python Lists -> C arrays:
+//     [PyLong] -> [long]
 %typemap(in) long[ANY](long temp[$1_dim0]) {
    int i;
    if (!PySequence_Check($input))
@@ -28,6 +29,7 @@
    $1 = &temp[0];
 }
 
+//     [PyFloat] -> [double]
 %typemap(in) double[ANY](double temp[$1_dim0]) {
    int i;
    if (!PySequence_Check($input))
@@ -53,4 +55,46 @@
       Py_DECREF(o);
    }
    $1 = &temp[0];
+}
+
+
+// C arrays -> Python lists:
+//     [int] -> [PyInt]
+%typemap(out) int [ANY] {
+   int i;
+   $result = PyList_New($1_dim0);
+   for (i = 0; i < $1_dim0; i++) {
+      PyObject *o = PyInt_FromLong((long) $1[i]);
+      PyList_SetItem($result,i,o);
+   }
+}
+
+//     [unsigned int] -> [PyLong]
+%typemap(out) unsigned int [ANY] {
+   int i;
+   $result = PyList_New($1_dim0);
+   for (i = 0; i < $1_dim0; i++) {
+      PyObject *o = PyLong_FromUnsignedLong((unsigned long) $1[i]);
+      PyList_SetItem($result,i,o);
+   }
+}
+
+//     [long] -> [PyInt]
+%typemap(out) long [ANY] {
+   int i;
+   $result = PyList_New($1_dim0);
+   for (i = 0; i < $1_dim0; i++) {
+      PyObject *o = PyInt_FromLong($1[i]);
+      PyList_SetItem($result,i,o);
+   }
+}
+
+//     [double] -> [PyFloat]
+%typemap(out) double [ANY] {
+   int i;
+   $result = PyList_New($1_dim0);
+   for (i = 0; i < $1_dim0; i++) {
+      PyObject *o = PyFloat_FromDouble((double) $1[i]);
+      PyList_SetItem($result,i,o);
+   }
 }

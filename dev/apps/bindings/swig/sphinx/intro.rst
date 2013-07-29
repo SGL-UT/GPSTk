@@ -112,7 +112,7 @@ Prime examples of things **NOT wrapped** include (most of which are easily repla
 * Command Line utilities (python's built-in argparse does the job better)
 * String utilities
 * Vector graphics utilities
-* Matrix class (trust me, you wouldn't want to use a python wrap of that thing anyway!)
+* Matrix class (trust us, you wouldn't want to use a python wrap of that thing anyway!)
 
 
 
@@ -131,6 +131,10 @@ rework of the well-established C++ API.
 These don't exist in python, so they are simply discarded.
 The GPSTk largely only uses the gpstk namespace, which is roughly the gpstk package now.
 Exceptions include the submodules created for exceptions and constants.
+
+Note that SWIG is actually set to create a module called gpstk_pylib. To clean up the namespace
+and provide more organization, there are __init__.py files that divide up the namespace (into gpstk, gpstk.constants, etc.)
+and remove unwanted members. You can still access the raw wrapping through gpstk.gpstk_pylib, however.
 
 
 **Enums:**
@@ -165,6 +169,10 @@ Streams were used all over the GPSTk for input and output.
 Many classes had a dump or operator<< function that could be used for
 string output, these have been replaced with the __str__ method.
 
+Streams were also used heavily for reading in Almanac and Ephemeris data from files.
+A more pythonic interface was provided over these streams (the streams are now hidden)
+and is described at :ref:`fileio_label`.
+
 
 **Inner Classes:**
 
@@ -182,6 +190,22 @@ the use of these whenever possible.
 .. warning::
     Reading documentation can get difficult in dealing with heavily-templated wrapped C++ code. Use these structures as little as possible.
     If containers are small it might be wise to use the provided functions in gpstk.cpp to convert the containers to native python lists/dicts.
+
+
+
+
+**Exceptions:**
+Exceptions were tricky to get right. In general, most exceptions thrown by calling GPSTk routines should be caught in the
+standard way in Python. ::
+
+    try:
+        a = gpstk.someFunction()
+    except gpstk.exceptions.InvalidRequest:
+        print 'Could not process data.'
+
+However, there is somewhat of an inconsistency in what exceptions are thrown since they go through several layers of code.
+It's typically best to just check what exactly gets thrown to get safe. Exceptions that are commonly thrown are
+ValueError, IOError, RunTimeError, and any exceptions in the gpstk.exceptions submodule.
 
 
 

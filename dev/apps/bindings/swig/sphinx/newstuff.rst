@@ -16,23 +16,23 @@ Example: ::
     >>> print gpstk.now()
     2456490 72040524 0.000665000000000 UTC
 
-    >>> print gpstk.CivilTime(gpstk.now())
+    >> print gpstk.CivilTime(gpstk.SystemTime())
     07/16/2013 19:59:25 UTC
-
-
 
 .. py:function:: gpstk.timeSystem([str='Unknown'])
     :noindex:
 
-Returns a gpstk.TimeSystem object given a string input. T
-his is just a more succint way of creating a TimeSystem. ::
+Returns a gpstk.TimeSystem object given a string input.
+This is just a more succint way of creating a TimeSystem. ::
 
     >>> print gpstk.TimeSystem(gpstk.TimeSystem.GPS)
     GPS
+
     >>> print gpstk.timeSystem('GPS')
     GPS
 
 
+.. _fileio_label:
 
 File I/O Functions
 *******************
@@ -62,8 +62,10 @@ which will return a generator of data objects instead of a list.
 For example: ::
 
     >>> header, data = gpstk.readYuma('yuma_data.txt', lazy=True)
+
     >>> print type(data)
     <type 'generator'>
+
     >>> print data.next()
     PRN = 1
     week = 377
@@ -83,9 +85,27 @@ For example: ::
 You can use add a filter to the read on the data objects using the filterfunction keyword argument.
 By default, it simply returns True, which includes all data objects in the output.
 
+For example, to get a generator of Rinex3NavData objects with only the PRNID of 3, you could use: ::
+
+    >>> isPRN3 = (lambda x: x.PRNID == 3)
+
+    >>> header, data = gpstk.readRinex3Nav('rinex3nav_data.txt', lazy=True, filterfunction=isPRN3)
+
+    >>> print data.next()
+    Sat: G03 TOE: 1274 367200.000 TOC: 1274 367200.000 codeflags:   1 L2Pflag:   0 IODC:  902 IODE:  134 HOWtime: 362376 FitInt:  4.000
+
+    >>> print data.next()
+    Sat: G03 TOE: 1274 374400.000 TOC: 1274 374400.000 codeflags:   1 L2Pflag:   0 IODC:  903 IODE:  135 HOWtime: 367206 FitInt:  4.000
+
+    >>> print data.next()
+    Sat: G03 TOE: 1274 381600.000 TOC: 1274 381600.000 codeflags:   1 L2Pflag:   0 IODC:  904 IODE:  136 HOWtime: 374406 FitInt:  4.000
+
 
 
 The following functions use this pattern:
+
+.. py:function:: gpstk.readFIC(filename[, lazy=False, filterfunction=lamba x: True, filterfunction=lamba x: True])
+    :noindex:
 
 .. py:function:: gpstk.readRinex3Clock(filename[, lazy=False, filterfunction=lamba x: True, filterfunction=lamba x: True])
     :noindex:
@@ -117,6 +137,9 @@ The following functions use this pattern:
 .. py:function:: gpstk.readYuma(filename[, lazy=False, filterfunction=lamba x: True])
     :noindex:
 
+.. py:function:: gpstk.writeFIC(filename, header, data)
+    :noindex:
+
 .. py:function:: gpstk.writeRinex3Clock(filename, header, data)
     :noindex:
 
@@ -146,4 +169,3 @@ The following functions use this pattern:
 
 .. py:function:: gpstk.writeYuma(filename, header, data)
     :noindex:
-

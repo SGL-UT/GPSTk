@@ -11,15 +11,14 @@ def now():
 
         timeSystem:  the TimeSystem (enum value) to assign to the output
     """
-    t = SystemTime().toCommonTime()
-    t.setTimeSystem(TimeSystem(timeSystem))
-    return t
+    return SystemTime().toCommonTime()
 
 def timeSystem(str='Unknown'):
     """Returns a TimeSystem object named by the given string.
     Valid choices are:
     Unknown, Any, GPS, GLO, GAL, COM, UTC, UT1, TAI, TT.
     """
+
 
     dict = {
         'Unknown': TimeSystem.Unknown,
@@ -100,7 +99,23 @@ STR_DUMP_HELPER(YumaHeader)
 %enddef
 STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
-STR_STREAM_HELPER(Xvt)
+
+// STR_STREAM_HELPER(Xvt)
+// Q: Why is this (below) here instead of the macro for Xvt?
+// A: There is an ambiguity issue for the operator<< for Xvt,
+// see the end of TabularSatStore.hpp for a conflicting defintion
+// of the Xvt out stream operator and Xvt.hpp+Xvt.cpp.
+%extend gpstk::Xvt {
+   std::string __str__() {
+      std::ostringstream os;
+         os << "x:" << $self->x
+            << ", v:" << $self->v
+            << ", clk bias:" << $self->clkbias
+            << ", clk drift:" << $self->clkdrift
+            << ", relcorr:" << $self->relcorr;
+      return os.str();
+   }
+}
 
 
 

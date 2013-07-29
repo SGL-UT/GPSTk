@@ -84,10 +84,17 @@ class SP3Test(unittest.TestCase):
         self.assertAlmostEqual(-19921938.297000002, p[2])
 
     def test_fileIO(self):
-        print 'Warn: SP3 stream input untested.'
-        pass
-        # self.fail()
-        # header, data = gpstk.readSP3('sp3_data.txt')
+        header, data = gpstk.readSP3('sp3_data.txt')
+        self.assertEqual(' IGS', header.agency)
+        self.assertEqual(96, header.numberOfEpochs)
+        dataPoint = data[15]
+        self.assertEqual('P', dataPoint.RecType)
+        # Checking length of typemap conversions for the arrays->lists
+        self.assertEqual(3, len(dataPoint.x))
+        self.assertEqual(4, len(dataPoint.sig))
+        self.assertEqual(6, len(dataPoint.correlation))
+        self.assertEqual(-20622.832361, dataPoint.x[0])
+        self.assertEqual(0, dataPoint.sdev[0])
 
     def test_almanac_store(self):
         s = gpstk.SP3EphemerisStore()
@@ -169,6 +176,7 @@ class Rinex3NavTest(unittest.TestCase):
         dataPoint = data[165]
         self.assertEqual(5153.72985268, dataPoint.Ahalf)
         self.assertEqual(432000.0, dataPoint.Toc)
+        self.assertEqual(0, dataPoint.freqNum)
 
 
 class RinexMetTest(unittest.TestCase):
@@ -184,7 +192,7 @@ class RinexMetTest(unittest.TestCase):
 
 class FICTest(unittest.TestCase):
     def test_fileIO(self):
-        isblock9 = filterfunction=lambda x: x.blockNum == 9
+        isblock9 = (lambda x: x.blockNum == 9)
         header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9)
         self.assertEqual(420, len(data))
 
