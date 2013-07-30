@@ -1,8 +1,12 @@
-import argparse
-import sys
-import gpstk
+#!/usr/bin/env python
 
-def main(input_args=sys.argv[1:]):
+import argparse
+import gpstk
+import sys
+
+# default args to argv are left in so the script can be run without starting
+# a new python process. This is very useful for testing!
+def main(args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '
                            'other time formats. Include the quotation marks. '
                            'All year values are four digit years.')
@@ -46,7 +50,7 @@ def main(input_args=sys.argv[1:]):
                         type=int, nargs='+')
     parser.add_argument('-s', '--sub_offset', help=help_messages['sub_offset'],
                         type=int, nargs='+')
-    args = parser.parse_args(input_args)
+    args = parser.parse_args(args)
 
     # these format keys must match the long arg names
     formats = {
@@ -71,7 +75,7 @@ def main(input_args=sys.argv[1:]):
             time_found = True
             try:
                 ct = gpstk.scanTime(input_time, formats[key])
-            except gpstk.InvalidRequest:
+            except gpstk.exceptions.InvalidRequest:
                 print ('Input could not be parsed. Check the formatting and '
                        'ensure that the input is both valid and in quotes.')
                 sys.exit()
@@ -79,8 +83,7 @@ def main(input_args=sys.argv[1:]):
     if not time_found:
         ct = gpstk.SystemTime()
 
-    timeSys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
-    ct.setTimeSystem(timeSys)
+    ct.setTimeSystem(gpstk.timeSystem('GPS'))
 
     if args.add_offset is not None:
         for t in args.add_offset:
@@ -90,7 +93,7 @@ def main(input_args=sys.argv[1:]):
             ct.addSeconds(-float(t))
 
     if args.output_format is not None:
-        print printTime(ct, args.output_format)
+        print gpstk.printTime(ct, args.output_format)
     else:
         def left_align(str):
             spacing = ' ' * 8

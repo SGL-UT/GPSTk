@@ -11,7 +11,7 @@ default_condition = lambda expected,actual: expected.split() == actual.split()
 def run_test(test, commands, expected, pass_condition=default_condition):
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
-    timeconvert.main(commands)
+    timeconvert.main(['python'] + commands)
     actual = mystdout.getvalue()
     sys.stdout = old_stdout
     fail_message = '\nExpected ouput: \n' + expected + "Actual output: " + actual

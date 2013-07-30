@@ -74,7 +74,7 @@ namespace gpstk
          /// common.  This is easily generated with the set_intersection
          /// STL function.  See difftools/rowdiff.cpp for an example.
       RinexObsDataOperatorLessThanFull
-      (const std::set<gpstk::RinexObsHeader::RinexObsType>& rohset)
+      (const std::set<gpstk::RinexObsType>& rohset)
             : obsSet(rohset)
          {}
 
@@ -129,12 +129,12 @@ namespace gpstk
                   lObs = (*lItr).second,
                   rObs = (*rItr).second;
 
-               std::set<gpstk::RinexObsHeader::RinexObsType>::const_iterator obsItr =
+               std::set<gpstk::RinexObsType>::const_iterator obsItr =
                   obsSet.begin();
 
                while (obsItr != obsSet.end())
                {
-                  gpstk::RinexObsData::RinexDatum lData, rData;
+                  gpstk::RinexDatum lData, rData;
                   lData = lObs[*obsItr];
                   rData = rObs[*obsItr];
 
@@ -160,7 +160,7 @@ namespace gpstk
          }
 
    private:
-      std::set<gpstk::RinexObsHeader::RinexObsType> obsSet;
+      std::set<gpstk::RinexObsType> obsSet;
    };
 
       /// This is a much faster less than operator for RinexObsData,
@@ -219,7 +219,7 @@ namespace gpstk
             }
             else
             {
-               std::set<gpstk::RinexObsHeader::RinexObsType> thisObsSet,
+               std::set<gpstk::RinexObsType> thisObsSet,
                   tempObsSet;
                std::set<std::string> commentSet;
                obsSet.clear();
@@ -259,7 +259,7 @@ namespace gpstk
 
       bool firstHeader;
       gpstk::RinexObsHeader theHeader;
-      std::set<gpstk::RinexObsHeader::RinexObsType> obsSet;
+      std::set<gpstk::RinexObsType> obsSet;
    };
 
    //@}

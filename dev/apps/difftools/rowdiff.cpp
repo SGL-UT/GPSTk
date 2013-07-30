@@ -18,7 +18,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -26,13 +26,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -59,7 +59,7 @@ class ROWDiff : public DiffFrame
 {
 public:
    ROWDiff(char* arg0)
-         : DiffFrame(arg0, 
+         : DiffFrame(arg0,
                       std::string("RINEX Obs"))
       {}
 
@@ -90,16 +90,16 @@ void ROWDiff::process()
       // determine whether the two input files have the same observation types
    RinexObsHeader header1, header2;
    RinexObsStream ros1(inputFileOption.getValue()[0]), ros2(inputFileOption.getValue()[1]);
-   
+
    ros1 >> header1;
    ros2 >> header2;
- 
+
    if (header1.obsTypeList.size() != header2.obsTypeList.size())
    {
       cout << "The two files have a different number of observation types." << endl;
       cout << "The first file has ";
-      vector<RinexObsHeader::RinexObsType> types1 = header1.obsTypeList;
-      vector<RinexObsHeader::RinexObsType>::iterator i = types1.begin();
+      vector<RinexObsType> types1 = header1.obsTypeList;
+      vector<RinexObsType>::iterator i = types1.begin();
       while (i != types1.end())
 	{
       cout << gpstk::RinexObsHeader::convertObsType(*i) << ' ';
@@ -108,8 +108,8 @@ void ROWDiff::process()
       cout << endl;
 
       cout << "The second file has ";
-      vector<RinexObsHeader::RinexObsType> types2 = header2.obsTypeList;
-      vector<RinexObsHeader::RinexObsType>::iterator j = types2.begin();
+      vector<RinexObsType> types2 = header2.obsTypeList;
+      vector<RinexObsType>::iterator j = types2.begin();
       while (j != types2.end())
 	{
       cout << gpstk::RinexObsHeader::convertObsType(*j) << ' ';
@@ -123,11 +123,11 @@ void ROWDiff::process()
 
    merged(ff1.frontHeader());
    merged(ff2.frontHeader());
-   
-   cout << "Comparing the following fields (other header data is ignored):" 
+
+   cout << "Comparing the following fields (other header data is ignored):"
         << endl;
-   set<RinexObsHeader::RinexObsType> intersection = merged.obsSet;
-   set<RinexObsHeader::RinexObsType>::iterator m = intersection.begin();
+   set<RinexObsType> intersection = merged.obsSet;
+   set<RinexObsType>::iterator m = intersection.begin();
    while (m != intersection.end())
    {
       cout << gpstk::RinexObsHeader::convertObsType(*m) << ' ';
@@ -138,12 +138,12 @@ void ROWDiff::process()
    ff1.sort(RinexObsDataOperatorLessThanFull(intersection));
    ff2.sort(RinexObsDataOperatorLessThanFull(intersection));
 
-   pair< list<RinexObsData>, list<RinexObsData> > difflist = 
+   pair< list<RinexObsData>, list<RinexObsData> > difflist =
       ff1.diff(ff2, RinexObsDataOperatorLessThanFull(intersection));
 
    if (difflist.first.empty() && difflist.second.empty())
    {
-        //Indicate to the user, before exiting, that rowdiff 
+        //Indicate to the user, before exiting, that rowdiff
         //performed properly and no differenes were found.
      cout << "For the observation types that were compared, "
           << "no differences were found." << endl;
@@ -163,9 +163,9 @@ void ROWDiff::process()
             for (fpoi = firstitr->obs.begin(); fpoi != firstitr->obs.end();
                  fpoi++)
             {
-               cout << setw(3) << (static_cast<YDSTime>(firstitr->time)) << ' ' 
+               cout << setw(3) << (static_cast<YDSTime>(firstitr->time)) << ' '
                     << setw(10) << setprecision(0)
-                    << static_cast<YDSTime>(firstitr->time) << ' ' 
+                    << static_cast<YDSTime>(firstitr->time) << ' '
                     << ff1.frontHeader().markerName << ' '
                     << ff2.frontHeader().markerName << ' '
                     << setw(2) << fpoi->first << ' ';
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
          return 0;
       if (!m.run())
          return 1;
-      
+
       return 0;
    }
    catch(Exception& e)

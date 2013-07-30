@@ -73,54 +73,54 @@ namespace gpstk
    const string RinexObsHeader::prnObsString =          "PRN / # OF OBS";
    const string RinexObsHeader::endOfHeader =           "END OF HEADER";
 
-   const unsigned int RinexObsHeader::RinexObsType::C1depend=0x01;
-   const unsigned int RinexObsHeader::RinexObsType::L1depend=0x02;
-   const unsigned int RinexObsHeader::RinexObsType::L2depend=0x04;
-   const unsigned int RinexObsHeader::RinexObsType::P1depend=0x08;
-   const unsigned int RinexObsHeader::RinexObsType::P2depend=0x10;
-   const unsigned int RinexObsHeader::RinexObsType::EPdepend=0x20;
-   const unsigned int RinexObsHeader::RinexObsType::PSdepend=0x40;
+   const unsigned int RinexObsType::C1depend=0x01;
+   const unsigned int RinexObsType::L1depend=0x02;
+   const unsigned int RinexObsType::L2depend=0x04;
+   const unsigned int RinexObsType::P1depend=0x08;
+   const unsigned int RinexObsType::P2depend=0x10;
+   const unsigned int RinexObsType::EPdepend=0x20;
+   const unsigned int RinexObsType::PSdepend=0x40;
 
-   const RinexObsHeader::RinexObsType RinexObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
-      RinexObsHeader::RinexObsType::L1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles",
-      RinexObsHeader::RinexObsType::L2depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::C1("C1", "C/A-code pseudorange", "meters",
-      RinexObsHeader::RinexObsType::C1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::C2("C2", "L2C-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::P1("P1", "Pcode L1 pseudorange", "meters",
-      RinexObsHeader::RinexObsType::P1depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::P2("P2", "Pcode L2 pseudorange", "meters",
-      RinexObsHeader::RinexObsType::P2depend);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D1("D1", "Doppler Frequency L1", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D2("D2", "Doppler Frequency L2", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S1("S1", "Signal-to-Noise L1",   "dB-Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S2("S2", "Signal-to-Noise L2",   "dB-Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::T1("T1", "Transit 150 MHz",      "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::T2("T2", "Transit 400 MHz",      "meters", 0);
+   const RinexObsType RinexObsHeader::UN("UN", "Unknown or Invalid",   "unknown", 0);
+   const RinexObsType RinexObsHeader::L1("L1", "L1 Carrier Phase",     "L1 cycles",
+      RinexObsType::L1depend);
+   const RinexObsType RinexObsHeader::L2("L2", "L2 Carrier Phase",     "L2 cycles",
+      RinexObsType::L2depend);
+   const RinexObsType RinexObsHeader::C1("C1", "C/A-code pseudorange", "meters",
+      RinexObsType::C1depend);
+   const RinexObsType RinexObsHeader::C2("C2", "L2C-code pseudorange", "meters", 0);
+   const RinexObsType RinexObsHeader::P1("P1", "Pcode L1 pseudorange", "meters",
+      RinexObsType::P1depend);
+   const RinexObsType RinexObsHeader::P2("P2", "Pcode L2 pseudorange", "meters",
+      RinexObsType::P2depend);
+   const RinexObsType RinexObsHeader::D1("D1", "Doppler Frequency L1", "Hz", 0);
+   const RinexObsType RinexObsHeader::D2("D2", "Doppler Frequency L2", "Hz", 0);
+   const RinexObsType RinexObsHeader::S1("S1", "Signal-to-Noise L1",   "dB-Hz", 0);
+   const RinexObsType RinexObsHeader::S2("S2", "Signal-to-Noise L2",   "dB-Hz", 0);
+   const RinexObsType RinexObsHeader::T1("T1", "Transit 150 MHz",      "meters", 0);
+   const RinexObsType RinexObsHeader::T2("T2", "Transit 400 MHz",      "meters", 0);
    // v 2.11
-   const RinexObsHeader::RinexObsType RinexObsHeader::C5("C5", "L5C-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L5("L5", "L5 Carrier Phase",     "L5 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D5("D5", "Doppler Frequency L5", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S5("S5", "Signal-to-Noise L5",   "dB-Hz", 0);
+   const RinexObsType RinexObsHeader::C5("C5", "L5C-code pseudorange", "meters", 0);
+   const RinexObsType RinexObsHeader::L5("L5", "L5 Carrier Phase",     "L5 cycles", 0);
+   const RinexObsType RinexObsHeader::D5("D5", "Doppler Frequency L5", "Hz", 0);
+   const RinexObsType RinexObsHeader::S5("S5", "Signal-to-Noise L5",   "dB-Hz", 0);
    // Galileo only
-   const RinexObsHeader::RinexObsType RinexObsHeader::C6("C6", "E6-code pseudorange",  "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L6("L6", "E6 Carrier Phase",     "L6 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D6("D6", "Doppler Frequency E6", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S6("S6", "Signal-to-Noise E6",   "dB-Hz", 0);
+   const RinexObsType RinexObsHeader::C6("C6", "E6-code pseudorange",  "meters", 0);
+   const RinexObsType RinexObsHeader::L6("L6", "E6 Carrier Phase",     "L6 cycles", 0);
+   const RinexObsType RinexObsHeader::D6("D6", "Doppler Frequency E6", "Hz", 0);
+   const RinexObsType RinexObsHeader::S6("S6", "Signal-to-Noise E6",   "dB-Hz", 0);
 
-   const RinexObsHeader::RinexObsType RinexObsHeader::C7("C7", "E5b-code pseudorange",  "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L7("L7", "E5b Carrier Phase",     "L7 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D7("D7", "Doppler Frequency E5b", "Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S7("S7", "Signal-to-Noise E5b",   "dB-Hz", 0);
+   const RinexObsType RinexObsHeader::C7("C7", "E5b-code pseudorange",  "meters", 0);
+   const RinexObsType RinexObsHeader::L7("L7", "E5b Carrier Phase",     "L7 cycles", 0);
+   const RinexObsType RinexObsHeader::D7("D7", "Doppler Frequency E5b", "Hz", 0);
+   const RinexObsType RinexObsHeader::S7("S7", "Signal-to-Noise E5b",   "dB-Hz", 0);
 
-   const RinexObsHeader::RinexObsType RinexObsHeader::C8("C8", "E5a+b-code pseudorange", "meters", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::L8("L8", "E5a+b Carrier Phase",    "L8 cycles", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::D8("D8", "Doppler Frequency E5a+b","Hz", 0);
-   const RinexObsHeader::RinexObsType RinexObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
+   const RinexObsType RinexObsHeader::C8("C8", "E5a+b-code pseudorange", "meters", 0);
+   const RinexObsType RinexObsHeader::L8("L8", "E5a+b Carrier Phase",    "L8 cycles", 0);
+   const RinexObsType RinexObsHeader::D8("D8", "Doppler Frequency E5a+b","Hz", 0);
+   const RinexObsType RinexObsHeader::S8("S8", "Signal-to-Noise E5a+b",  "dB-Hz", 0);
 
-   RinexObsHeader::RinexObsType sot[29] =
+   RinexObsType sot[29] =
    {
       RinexObsHeader::UN,
       RinexObsHeader::L1, RinexObsHeader::L2,
@@ -137,9 +137,9 @@ namespace gpstk
 
    // Warning: the size of the above sot array needs to be put
    // in this initializer.
-   const std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::StandardRinexObsTypes(sot,sot+29);
+   const std::vector<RinexObsType> RinexObsHeader::StandardRinexObsTypes(sot,sot+29);
 
-   std::vector<RinexObsHeader::RinexObsType> RinexObsHeader::RegisteredRinexObsTypes
+   std::vector<RinexObsType> RinexObsHeader::RegisteredRinexObsTypes
       = RinexObsHeader::StandardRinexObsTypes;
 
    void RinexObsHeader::reallyPutRecord(FFStream& ffs) const
@@ -830,7 +830,7 @@ namespace gpstk
 
 
 
-   RinexObsHeader::RinexObsType
+   RinexObsType
    RinexObsHeader::convertObsType(const string& oneObs)
       throw(FFStreamError)
    {
@@ -846,7 +846,7 @@ namespace gpstk
       return ot;
    }
    string
-   RinexObsHeader::convertObsType(const RinexObsHeader::RinexObsType& oneObs)
+   RinexObsHeader::convertObsType(const RinexObsType& oneObs)
       throw(FFStreamError)
    {
       return oneObs.type;
@@ -980,7 +980,7 @@ namespace gpstk
       for(int i=0; i<RinexObsHeader::RegisteredRinexObsTypes.size(); i++) {
          if(RinexObsHeader::RegisteredRinexObsTypes[i].type == t) { return 1; }
       }
-      RinexObsHeader::RinexObsType ot;
+      RinexObsType ot;
       if(t.size()>2) t.resize(2,' '); ot.type = stripTrailing(t);
       if(d.size()>20) d.resize(20,' '); ot.description = stripTrailing(d);
       if(u.size()>10) u.resize(10,' '); ot.units = stripTrailing(u);
@@ -1023,9 +1023,9 @@ namespace gpstk
                   line += string(" ")+RinexObsHeader::StandardRinexObsTypes[j].type;
             else line += string("   ");
          }
-         if(RinexObsHeader::RegisteredRinexObsTypes[i].depend & RinexObsHeader::RinexObsType::EPdepend)
+         if(RinexObsHeader::RegisteredRinexObsTypes[i].depend & RinexObsType::EPdepend)
             line += string(" EP"); else line += string("   ");
-         if(RinexObsHeader::RegisteredRinexObsTypes[i].depend & RinexObsHeader::RinexObsType::PSdepend)
+         if(RinexObsHeader::RegisteredRinexObsTypes[i].depend & RinexObsType::PSdepend)
             line += string(" PS"); else line += string("   ");
          s << line << endl;
       }

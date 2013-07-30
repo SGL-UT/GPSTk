@@ -378,7 +378,7 @@ void RINEXPVTSolution::process()
 
        // Determine if we can have access to dual frequency measurements.
     bool p1Found(false), p2Found(false), caFound(false);
-    std::vector<RinexObsHeader::RinexObsType>::iterator i;
+    std::vector<RinexObsType>::iterator i;
     for (i = roh.obsTypeList.begin(); i != roh.obsTypeList.end(); i++)
     {
        if ((*i)== RinexObsHeader::P1) p1Found = true;

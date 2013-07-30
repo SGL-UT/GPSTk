@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -127,15 +127,15 @@ try {
       ObsFileList[i].inD1 = ObsFileList[i].inD2 = -1;
       ObsFileList[i].inS1 = ObsFileList[i].inS2 = -1;
 
-      RinexObsHeader::RinexObsType otC1(RinexObsHeader::convertObsType("C1"));
-      RinexObsHeader::RinexObsType otL1(RinexObsHeader::convertObsType("L1"));
-      RinexObsHeader::RinexObsType otL2(RinexObsHeader::convertObsType("L2"));
-      RinexObsHeader::RinexObsType otP1(RinexObsHeader::convertObsType("P1"));
-      RinexObsHeader::RinexObsType otP2(RinexObsHeader::convertObsType("P2"));
-      RinexObsHeader::RinexObsType otD1(RinexObsHeader::convertObsType("D1"));
-      RinexObsHeader::RinexObsType otD2(RinexObsHeader::convertObsType("D2"));
-      RinexObsHeader::RinexObsType otS1(RinexObsHeader::convertObsType("S1"));
-      RinexObsHeader::RinexObsType otS2(RinexObsHeader::convertObsType("S2"));
+      RinexObsType otC1(RinexObsHeader::convertObsType("C1"));
+      RinexObsType otL1(RinexObsHeader::convertObsType("L1"));
+      RinexObsType otL2(RinexObsHeader::convertObsType("L2"));
+      RinexObsType otP1(RinexObsHeader::convertObsType("P1"));
+      RinexObsType otP2(RinexObsHeader::convertObsType("P2"));
+      RinexObsType otD1(RinexObsHeader::convertObsType("D1"));
+      RinexObsType otD2(RinexObsHeader::convertObsType("D2"));
+      RinexObsType otS1(RinexObsHeader::convertObsType("S1"));
+      RinexObsType otS2(RinexObsHeader::convertObsType("S2"));
 
       for(j=0; j<ObsFileList[i].Rhead.obsTypeList.size(); j++) {
          if(ObsFileList[i].Rhead.obsTypeList[j]==otC1) ObsFileList[i].inC1 = j;
@@ -159,7 +159,7 @@ try {
       if(CI.Screen)
          cout << "Opened and read header of observation file: " << filename << endl;
       if(CI.Verbose) ObsFileList[i].Rhead.dump(oflog);
-      
+
          // prepare for RAIM solution
       Stations[ObsFileList[i].label].PRS.RMSLimit = CI.PRSrmsLimit;
       Stations[ObsFileList[i].label].PRS.Algebraic = CI.PRSalgebra;
@@ -206,7 +206,7 @@ try {
          for(jj=1,kk=0; jj<9; jj++) if(ndt[jj]>ndt[kk]) kk=jj;
          ObsFileList[i].dt = bestdt[kk];
          if(CI.Verbose) oflog
-         << "Found interval " << ObsFileList[i].dt << ", and first epoch " 
+         << "Found interval " << ObsFileList[i].dt << ", and first epoch "
          << printTime(ObsFileList[i].firstTime,"%Y/%02m/%02d %2H:%02M:%6.3f=%F/%10.3g")
          << endl;
       }

@@ -61,6 +61,43 @@ namespace gpstk
    /** @addtogroup RinexObs */
    //@{
 
+
+
+      /// RINEX Observation Types
+   struct RinexObsType
+   {
+      std::string type;          ///< 2- char type e.g. L1, P2
+      std::string description;   ///< 20- char description (optional) e.g. "L1 pseudorange"
+      std::string units;         ///< 10- char units (optional) e.g. "meters"
+      unsigned int depend;
+      RinexObsType() : type(std::string("UN")),description(std::string("Unknown or Invalid")),
+         units(std::string("")),depend(0) {}
+      RinexObsType(std::string t, std::string d, std::string u, unsigned int dep=0) :
+         type(t),description(d),units(u),depend(dep) {}
+      static const unsigned int C1depend;
+      static const unsigned int L1depend;
+      static const unsigned int L2depend;
+      static const unsigned int P1depend;
+      static const unsigned int P2depend;
+      static const unsigned int EPdepend;
+      static const unsigned int PSdepend;
+   };
+
+
+// Guards are here since an identical struct is used in RinexObsHeader and Rinex3NavHeader
+   #ifndef GPSTK_EXTRAWAVEFACT
+   #define GPSTK_EXTRAWAVEFACT
+   /// RINEX 2 extra "WAVELENGTH FACT" lines
+   struct ExtraWaveFact
+   {
+      /// List of Sats with this wavelength factor
+      std::vector<SatID> satList;
+      /// vector of wavelength factor values
+      short wavelengthFactor[2];
+   };
+   #endif  // GPSTK_EXTRAWAVEFACT
+
+
       /**
        * This class models the header for a RINEX Observation File.
        * @sa gpstk::RinexObsData and gpstk::RinexObsStream.
@@ -149,26 +186,6 @@ namespace gpstk
          allValid211 = 0x080002BEB
       };
 
-         /// RINEX Observation Types
-      struct RinexObsType
-      {
-         std::string type;          ///< 2- char type e.g. L1, P2
-         std::string description;   ///< 20- char description (optional) e.g. "L1 pseudorange"
-         std::string units;         ///< 10- char units (optional) e.g. "meters"
-         unsigned int depend;
-         RinexObsType() : type(std::string("UN")),description(std::string("Unknown or Invalid")),
-            units(std::string("")),depend(0) {}
-         RinexObsType(std::string t, std::string d, std::string u, unsigned int dep=0) :
-            type(t),description(d),units(u),depend(dep) {}
-         static const unsigned int C1depend;
-         static const unsigned int L1depend;
-         static const unsigned int L2depend;
-         static const unsigned int P1depend;
-         static const unsigned int P2depend;
-         static const unsigned int EPdepend;
-         static const unsigned int PSdepend;
-      };
-
          /** @name Standard RINEX observation types
           */
          //@{
@@ -208,14 +225,6 @@ namespace gpstk
       static const std::vector<RinexObsType> StandardRinexObsTypes;
       static std::vector<RinexObsType> RegisteredRinexObsTypes;
 
-         /// Holds the data for the extra Wavelength Factor lines
-      struct ExtraWaveFact
-      {
-            /// List of PRNs with this wavelength factor.
-         std::vector<SatID> satList;
-            /// The vector of wavelength factor values.
-         short wavelengthFactor[2];
-      };
 
          /** @name RinexObsHeaderValues
           */
@@ -338,17 +347,17 @@ namespace gpstk
 
    }; // end class RinexObsHeader
 
-      /// operator == for RinexObsHeader::RinexObsType
-   inline bool operator==(const RinexObsHeader::RinexObsType& x,
-      const RinexObsHeader::RinexObsType& y) { return (x.type == y.type); }
+      /// operator == for RinexObsType
+   inline bool operator==(const RinexObsType& x,
+      const RinexObsType& y) { return (x.type == y.type); }
 
-      /// operator < for RinexObsHeader::RinexObsType
-   inline bool operator<(const RinexObsHeader::RinexObsType& x,
-      const RinexObsHeader::RinexObsType& y) { return (x.type < y.type); }
+      /// operator < for RinexObsType
+   inline bool operator<(const RinexObsType& x,
+      const RinexObsType& y) { return (x.type < y.type); }
 
-      /// operator << for RinexObsHeader::RinexObsType
+      /// operator << for RinexObsType
    inline std::ostream& operator<<(std::ostream& s,
-                                   const RinexObsHeader::RinexObsType rot)
+                                   const RinexObsType rot)
       {
          return s << "Type=" << rot.type
             << ", Description=" << rot.description

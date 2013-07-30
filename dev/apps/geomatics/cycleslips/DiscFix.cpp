@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -785,7 +785,7 @@ void WriteToRINEXfile(void) throw(Exception)
 void WriteRINEXheader(void) throw(Exception)
 {
    try {
-      RinexObsHeader rheadout;   
+      RinexObsHeader rheadout;
 
       config.oflog << "Write the output header at "
          << printTime(CurrEpoch,config.format) << endl;
@@ -900,7 +900,7 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
                   roe.numSvs++;
 
                	// build the RINEX data object
-               	RinexObsData::RinexDatum rd;
+               	RinexDatum rd;
 
                	rd.lli = SPList[in].LLI(SPIndexList[in],P1);
                	rd.ssi = SPList[in].SSI(SPIndexList[in],P1);
@@ -1025,7 +1025,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    config.ForceCA = false;    // if true, use C1 even if P1 also present
 
    config.dt = -1.0;
-   
+
    config.HDPrgm = PrgmName + string(" v.") + PrgmVers.substr(0,4);
    config.HDRunby = string("ARL:UT/SGL/GPSTk");
 
@@ -1050,7 +1050,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       "[NB this defines DT\n                       in the GDC, hence "
       + PrgmName + " ignores --DCDT=<dt> ]");
    dashDT.setMaxCount(1);
-   
+
       // optional options
       // this only so it will show up in help page...
    CommandOption dashf(CommandOption::hasArgument, CommandOption::stdType,
@@ -1079,30 +1079,30 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    CommandOptionNoArg dashCA(0,"forceCA", " --forceCA           "
       "Use C/A code range, NOT P code (default: only if P absent)");
    dashCA.setMaxCount(1);
-   
+
    CommandOption dashGap(CommandOption::hasArgument, CommandOption::stdType,
       0,"gap"," --gap <t>           Minimum data gap (sec) separating "
       "satellite passes (" + asString(int(config.MaxGap)) + ")");
    dashGap.setMaxCount(1);
-   
+
    //CommandOption dashPts(CommandOption::hasArgument, CommandOption::stdType,
       //0,"Points"," --Points <n>        Minimum number of points needed to "
       //"process a pass");
    //dashPts.setMaxCount(1);
-   
+
    CommandOption dashSV(CommandOption::hasArgument, CommandOption::stdType,
       0,"onlySat"," --onlySat <sat>     Process only satellite <sat> "
       "(a GPS SatID, e.g. G21)");
    dashSV.setMaxCount(1);
-   
+
    CommandOption dashXsat(CommandOption::hasArgument, CommandOption::stdType,
       0,"exSat"," --exSat <sat>       Exclude satellite(s) [e.g. --exSat G22]");
-   
+
    CommandOptionNoArg dashSmoothPR(0,"smoothPR",
    "# Smoothing: [NB smoothed " "pseudorange and debiased phase are not identical.]\n"
    " --smoothPR          Smooth pseudorange and output in place of raw pseudorange");
    dashSmoothPR.setMaxCount(1);
-   
+
    CommandOptionNoArg dashSmoothPH(0,"smoothPH",
       " --smoothPH          Debias phase and output in place of raw phase");
    dashSmoothPH.setMaxCount(1);
@@ -1116,17 +1116,17 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
    " --DChelp            Print a list of GDC parameters and their defaults, then quit"
    );
    dashSmooth.setMaxCount(1);
-   
+
    CommandOption dashLog(CommandOption::hasArgument, CommandOption::stdType,
       0,"logOut","# Output:\n --logOut <file>     Output log file name ("
       + config.LogFile + ")");
    //dashLog.setMaxCount(1);
-   
+
    CommandOption dashOut(CommandOption::hasArgument, CommandOption::stdType,
       0,"cmdOut"," --cmdOut <file>     Output file name (for editing commands) ("
       + config.OutFile + ")");
    dashOut.setMaxCount(1);
-   
+
    CommandOption dashFormat(CommandOption::hasArgument, CommandOption::stdType,
       0,"format"," --format \"<format>\" Output time format (cf. gpstk::"
       "CommonTime) (" + config.format + ")");
@@ -1136,36 +1136,36 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       0,"RinexFile","# RINEX output:\n"
       " --RinexFile <file>  RINEX (obs) file name for output of corrected data");
    //dashRfile.setMaxCount(1);
-   
+
    CommandOption dashRrun(CommandOption::hasArgument, CommandOption::stdType,
       0,"RunBy"," --RunBy <string>    RINEX header 'RUN BY' string for output");
    dashRrun.setMaxCount(1);
-   
+
    CommandOption dashRobs(CommandOption::hasArgument, CommandOption::stdType,
       0,"Observer"," --Observer <string> RINEX header 'OBSERVER' string for output");
    dashRobs.setMaxCount(1);
-   
+
    CommandOption dashRag(CommandOption::hasArgument, CommandOption::stdType,
       0,"Agency"," --Agency <string>   RINEX header 'AGENCY' string for output");
    dashRag.setMaxCount(1);
-   
+
    CommandOption dashRmark(CommandOption::hasArgument, CommandOption::stdType,
       0,"Marker"," --Marker <string>   RINEX header 'MARKER' string for output");
    dashRmark.setMaxCount(1);
-   
+
    CommandOption dashRnumb(CommandOption::hasArgument, CommandOption::stdType,
       0,"Number"," --Number <string>   RINEX header 'NUMBER' string for output");
    dashRnumb.setMaxCount(1);
-   
+
    // TD? pass-through 'other' data found in input RINEX file - requires buffering?
    //CommandOptionNoArg dashCAOut(0,"CAOut",
    //   " --CAOut             Output C/A code in RINEX");
    //dashCAOut.setMaxCount(1);
-   
+
    //CommandOptionNoArg dashDOut(0,"DOut",
    //   " --DOut              Output Doppler in RINEX");
    //dashDOut.setMaxCount(1);
-   
+
    CommandOptionNoArg dashh('h', "help",
       "# Help:\n"
       " [-h|--help]         print this syntax page and quit."
@@ -1238,7 +1238,7 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
       }
       help = true;
    }
-   
+
    // -------------------------------------------------
    // get values found on command line
 

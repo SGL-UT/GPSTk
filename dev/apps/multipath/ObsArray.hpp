@@ -40,7 +40,7 @@
 #include "ValarrayUtils.hpp"
 #include "CommonTime.hpp"
 #include "Rinex3EphemerisStore.hpp"
-#include "Exception.hpp" 
+#include "Exception.hpp"
 #include "Expression.hpp"
 #include "RinexObsHeader.hpp"
 #include "Rinex3ObsHeader.hpp"
@@ -50,16 +50,16 @@
 namespace gpstk
 {
    typedef int ObsIndex;
-   
+
    /** @defgroup ObsGroup Storage and manipulation of general observations. */
    //@{
- 
+
       /**
        * This class provides the ability to quickly access and manipulate
        * logical groups of observations. Observations can be any basic
        * type, e.g., "P1", or a function of types, e.g., "P1-C1". The
        * observations can be accessed by pass, by PRN, by time, or via
-       * as user-defined mask. 
+       * as user-defined mask.
        *
        * Access to observations is provided via std::valarray .
        * Therefore indexing
@@ -70,7 +70,7 @@ namespace gpstk
        * "The C++ Programming Language," 3rd edition. That book explains
        * valarray and how to use it. Such material explains how ObsArray
        * works internally and how advanced use of ObsArray is accomplished.
-       */  
+       */
 
    class ObsArray
    {
@@ -88,7 +88,7 @@ namespace gpstk
           * data type. This function must be called before loading
           * observations from file.
           */
-      ObsIndex add(RinexObsHeader::RinexObsType type);
+      ObsIndex add(RinexObsType type);
 
          /**
           * This function notifies the object to track functions of
@@ -97,29 +97,29 @@ namespace gpstk
           */
       ObsIndex add(const std::string& expression);
 
-      ObsIndex getNumObsTypes(void) const 
+      ObsIndex getNumObsTypes(void) const
          { return numObsTypes; }
 
       size_t getNumSatEpochs(void) const
          { return numSatEpochs; }  // { return numSatEpochs }
 
-         /** 
+         /**
           * This functions loads a RINEX obs and nav file. Both files
           * should be from the same period.
-          */ 
-      void load(const std::string& obsfilename, 
+          */
+      void load(const std::string& obsfilename,
                 const std::string& navfilename);
       void load(const char* obsfilename,
                 const char* navfilename)
-      {   
+      {
          load(std::string(obsfilename),std::string(navfilename));
       }
-      void load(const std::vector<std::string>& obsList, 
+      void load(const std::vector<std::string>& obsList,
                 const std::vector<std::string>& navList);
 
-      void scanObsFile(const std::string& obsfilename, 
-                       long& numEpochsObs, 
-                       double& dataRate, 
+      void scanObsFile(const std::string& obsfilename,
+                       long& numEpochsObs,
+                       double& dataRate,
                        Triple& antennaPos);
 
          /**
@@ -128,9 +128,9 @@ namespace gpstk
           */
       void edit(const std::valarray<bool> strikeList)
          throw(ObsArrayException);
-      
+
       double getPassLength(long passNo);
-      
+
       double& operator() (size_t r, size_t c)
       {  return observation[r*numObsTypes + c]; }
 
@@ -147,7 +147,7 @@ namespace gpstk
       double interval;
 
          /**
-          *  This is true if the interval was not read from the header but 
+          *  This is true if the interval was not read from the header but
           *  instead calculated from the data.
           */
       bool intervalInferred;
@@ -157,14 +157,14 @@ namespace gpstk
       void loadObsFile(const std::string& obsfilename);
 
       ObsIndex numObsTypes;
-      std::map<ObsIndex, RinexObsHeader::RinexObsType > basicTypeMap;
+      std::map<ObsIndex, RinexObsType > basicTypeMap;
       std::map<ObsIndex, bool> isBasic;
-      std::map<ObsIndex, Expression > expressionMap;      
+      std::map<ObsIndex, Expression > expressionMap;
 
          /**
           *  The number observation sets stored. Each set is derived
           *  from unique combination of satellite and nominal epoch.
-          */ 
+          */
       size_t numSatEpochs;
 
       int numFiles;
@@ -175,10 +175,10 @@ namespace gpstk
 
 
       Rinex3EphemerisStore ephStore;
-       
+
    }; // End class ObsArray
-   
-      //@}   
+
+      //@}
 } // End namespace gpstk
 
-#endif // OBSARRAY_HPP  
+#endif // OBSARRAY_HPP

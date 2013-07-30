@@ -410,13 +410,13 @@ namespace gpstk
    }
 
 
-   bool IsCarrierPhase(const RinexObsHeader::RinexObsType& rot)
+   bool IsCarrierPhase(const RinexObsType& rot)
    {
       return (rot.type[0]=='L') ? true : false;
    }
 
 
-   int GetCarrierBand(const RinexObsHeader::RinexObsType& rot)
+   int GetCarrierBand(const RinexObsType& rot)
    {
       // 1 2 5 6 7 8
       try
@@ -435,7 +435,7 @@ namespace gpstk
      if(roi.band == ObsID::cbL1) return 1;
      if(roi.band == ObsID::cbG1) return 1;
      if(roi.band == ObsID::cbE1) return 1;
-     
+
      if(roi.band == ObsID::cbL2) return 2;
      if(roi.band == ObsID::cbG2) return 2;
      if(roi.band == ObsID::cbE2) return 2;
@@ -452,14 +452,14 @@ namespace gpstk
      return -1;
    }
 
-   TypeID::ValueType ConvertToTypeID(const RinexObsHeader::RinexObsType& rot,
+   TypeID::ValueType ConvertToTypeID(const RinexObsType& rot,
                                      const RinexSatID& sat)
    {
       if(sat.system==SatID::systemGPS)
       {
-         //GPS     L1         1575.42     C1,P1       L1         D1         S1  
-         //        L2         1227.60     C2,P2       L2         D2         S2  
-         //        L5         1176.45      C5         L5         D5         S5  
+         //GPS     L1         1575.42     C1,P1       L1         D1         S1
+         //        L2         1227.60     C2,P2       L2         D2         S2
+         //        L5         1176.45      C5         L5         D5         S5
 
          // For L1: C1 P1 L1 D1 S1
          if(rot == RinexObsHeader::C1) return TypeID::C1;
@@ -467,7 +467,7 @@ namespace gpstk
          if(rot == RinexObsHeader::L1) return TypeID::L1;
          if(rot == RinexObsHeader::D1) return TypeID::D1;
          if(rot == RinexObsHeader::S1) return TypeID::S1;
-         // For L2: C2 P2 L2 D2 S2 
+         // For L2: C2 P2 L2 D2 S2
          if(rot == RinexObsHeader::C2) return TypeID::C2;
          if(rot == RinexObsHeader::P2) return TypeID::P2;
          if(rot == RinexObsHeader::L2) return TypeID::L2;
@@ -481,8 +481,8 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemGlonass)
       {
-         // Glonass G1         1602+k*9/16 C1,P1       L1         D1         S1 
-         //         G2         1246+k*7/16 C2,P2       L2         D2         S2 
+         // Glonass G1         1602+k*9/16 C1,P1       L1         D1         S1
+         //         G2         1246+k*7/16 C2,P2       L2         D2         S2
 
          // For L1: C1 P1 L1 D1 S1
          if(rot == RinexObsHeader::C1) return TypeID::C1;
@@ -490,7 +490,7 @@ namespace gpstk
          if(rot == RinexObsHeader::L1) return TypeID::L1;
          if(rot == RinexObsHeader::D1) return TypeID::D1;
          if(rot == RinexObsHeader::S1) return TypeID::S1;
-         // For L2: C2 P2 L2 D2 S2 
+         // For L2: C2 P2 L2 D2 S2
          if(rot == RinexObsHeader::C2) return TypeID::C2;
          if(rot == RinexObsHeader::P2) return TypeID::P2;
          if(rot == RinexObsHeader::L2) return TypeID::L2;
@@ -499,11 +499,11 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemGalileo)
       {
-         // Galileo E2-L1-E1   1575.42      C1         L1         D1         S1 
-         //         E5a        1176.45      C5         L5         D5         S5 
-         //         E5b        1207.140     C7         L7         D7         S7 
-         //         E5a+b      1191.795     C8         L8         D8         S8 
-         //         E6         1278.75      C6         L6         D6         S6 
+         // Galileo E2-L1-E1   1575.42      C1         L1         D1         S1
+         //         E5a        1176.45      C5         L5         D5         S5
+         //         E5b        1207.140     C7         L7         D7         S7
+         //         E5a+b      1191.795     C8         L8         D8         S8
+         //         E6         1278.75      C6         L6         D6         S6
          // E2-L1-E1
          if(rot == RinexObsHeader::C1) return TypeID::C1;
          if(rot == RinexObsHeader::L1) return TypeID::L1;
@@ -532,7 +532,7 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemCompass)
       {
-         // Compass E2   I/Q                 C2         L2         D2         S2 
+         // Compass E2   I/Q                 C2         L2         D2         S2
          //         E5b  I/Q                 C7         L7         D7         S7
          //         E6   I/Q                 C6         L6         D6         S6
 
@@ -554,8 +554,8 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemGeosync)
       {
-         // SBAS    L1         1575.42      C1         L1         D1         S1 
-         //         L5         1176.45      C5         L5         D5         S5   
+         // SBAS    L1         1575.42      C1         L1         D1         S1
+         //         L5         1176.45      C5         L5         D5         S5
 
          // L1
          if(rot == RinexObsHeader::C1) return TypeID::C1;
@@ -578,9 +578,9 @@ namespace gpstk
    {
       if(sat.system==SatID::systemGPS)
       {
-         //GPS     L1         1575.42     C1,P1       L1         D1         S1  
-         //        L2         1227.60     C2,P2       L2         D2         S2  
-         //        L5         1176.45      C5         L5         D5         S5  
+         //GPS     L1         1575.42     C1,P1       L1         D1         S1
+         //        L2         1227.60     C2,P2       L2         D2         S2
+         //        L5         1176.45      C5         L5         D5         S5
 
          // For L1: C1 P1 L1 D1 S1
          if(roi.band==ObsID::cbL1)
@@ -613,8 +613,8 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemGlonass)
       {
-         // Glonass G1         1602+k*9/16 C1,P1       L1         D1         S1 
-         //         G2         1246+k*7/16 C2,P2       L2         D2         S2 
+         // Glonass G1         1602+k*9/16 C1,P1       L1         D1         S1
+         //         G2         1246+k*7/16 C2,P2       L2         D2         S2
 
          // For L1: C1 P1 L1 D1 S1
          if(roi.band == ObsID::cbG1)
@@ -626,7 +626,7 @@ namespace gpstk
             if(roi.type == ObsID::otDoppler) return TypeID::D1;
             if(roi.type == ObsID::otSNR) return TypeID::S1;
          }
-         // For L2: C2 P2 L2 D2 S2 
+         // For L2: C2 P2 L2 D2 S2
          else if(roi.band == ObsID::cbG1)
          {
             if(roi.type == ObsID::otRange)   // tcGCA or tcGP
@@ -635,15 +635,15 @@ namespace gpstk
             if(roi.type == ObsID::otPhase) return TypeID::L2;
             if(roi.type == ObsID::otDoppler) return TypeID::D2;
             if(roi.type == ObsID::otSNR) return TypeID::S2;
-         }  
+         }
       }
       else if(sat.system==SatID::systemGalileo)
       {
-         // Galileo E2-L1-E1   1575.42      C1         L1         D1         S1 
-         //         E5a        1176.45      C5         L5         D5         S5 
-         //         E5b        1207.140     C7         L7         D7         S7 
-         //         E5a+b      1191.795     C8         L8         D8         S8 
-         //         E6         1278.75      C6         L6         D6         S6 
+         // Galileo E2-L1-E1   1575.42      C1         L1         D1         S1
+         //         E5a        1176.45      C5         L5         D5         S5
+         //         E5b        1207.140     C7         L7         D7         S7
+         //         E5a+b      1191.795     C8         L8         D8         S8
+         //         E6         1278.75      C6         L6         D6         S6
          // E2-L1-E1
          if(roi.band == ObsID::cbL1)         // E1
          {
@@ -683,7 +683,7 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemCompass)
       {
-         // Compass E2   I/Q                 C2         L2         D2         S2 
+         // Compass E2   I/Q                 C2         L2         D2         S2
          //         E5b  I/Q                 C7         L7         D7         S7
          //         E6   I/Q                 C6         L6         D6         S6
 
@@ -713,8 +713,8 @@ namespace gpstk
       }
       else if(sat.system==SatID::systemGeosync)
       {
-         // SBAS    L1         1575.42      C1         L1         D1         S1 
-         //         L5         1176.45      C5         L5         D5         S5   
+         // SBAS    L1         1575.42      C1         L1         D1         S1
+         //         L5         1176.45      C5         L5         D5         S5
 
          // L1
          if(roi.band == ObsID::cbL1)
@@ -821,7 +821,7 @@ namespace gpstk
       }
       else
       {
-         InvalidRequest e("There are no registered TypeID name as '" 
+         InvalidRequest e("There are no registered TypeID name as '"
             + name + "'.");
          GPSTK_THROW(e);
       }

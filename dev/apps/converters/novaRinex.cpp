@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -101,7 +101,7 @@ string InputDirectory;
 bool FillOptionalHeader;
 Triple HDAntPos,HDAntOffset;      // TD
 vector<string> HDcomments;
-vector<RinexObsHeader::RinexObsType> OutputTypes;
+vector<RinexObsType> OutputTypes;
 long gpsWeek;
 bool debias;
 
@@ -322,7 +322,7 @@ try {
    // observation header
    roh.version = 2.1;
    roh.fileType = "Observation";
-   //Currently only supports GPS data.  
+   //Currently only supports GPS data.
    roh.system = RinexSatID(-1, RinexSatID::systemGPS);
    // use same format as writer in RinexObsHeader.cpp uses
       // old "%04Y/%02m/%02d %02H:%02M:%02S");
@@ -530,7 +530,7 @@ try {
    }
 
    // edit out obs types that have no data
-   vector<RinexObsHeader::RinexObsType>::iterator it;
+   vector<RinexObsType>::iterator it;
    vector<int> indexes;    // indexes is a list of 'good' indexes into table
    for(i=0, it=rh.obsTypeList.begin(); it != rh.obsTypeList.end(); i++) {
       if(totals[i] <= 0) {
@@ -552,7 +552,7 @@ try {
          if(j != indexes[i]) jt->second[j] = jt->second[indexes[i]];
       jt->second.resize(indexes.size());
    }
-   
+
 
    // add the PRN/obs table
    if(FillOptionalHeader && table.size() > 0) {
@@ -672,7 +672,7 @@ try {
    roh.antType = " ";
    //string HDRxNo,HDRxType,HDRxVer,HDAntNo,HDAntType;     // TD
    //vector<string> HDcomments;        // none
-   //vector<RinexObsHeader::RinexObsType> OutputTypes;  // define later
+   //vector<RinexObsType> OutputTypes;  // define later
    gpsWeek = -1;
    debias = false;
 
@@ -984,7 +984,7 @@ try {
    if(dashobstype.getCount()) {
       values = dashobstype.getValue();
       for(i=0; i<values.size(); i++) {
-         RinexObsHeader::RinexObsType rot;
+         RinexObsType rot;
          rot = RinexObsHeader::convertObsType(values[i]);
          OutputTypes.push_back(rot);
          if(help) cout << " Input output RINEX obs type " << values[i] << endl;

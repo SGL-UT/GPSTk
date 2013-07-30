@@ -4,6 +4,14 @@
 %exception {
    try {
       $action
+   } catch (gpstk::InvalidRequest &e) {
+      std::string s("Invalid Request: "), s2(e.what());
+      s = s + s2;
+      SWIG_exception(SWIG_ValueError, s.c_str());
+   } catch (gpstk::EndOfFile &e) {
+      std::string s("End of File: "), s2(e.what());
+      s = s + s2;
+      SWIG_exception(SWIG_IOError, s.c_str());
    } catch (Exception &e) {
       std::string s("Backend exception: "), s2(e.what());
       s = s + s2;
@@ -11,4 +19,14 @@
    } catch (...) {
       SWIG_exception(SWIG_RuntimeError, "unknown exception");
    }
+}
+
+%feature("director:except") {
+    if( $error != NULL ) {
+        PyObject *ptype, *pvalue, *ptraceback;
+        PyErr_Fetch( &ptype, &pvalue, &ptraceback );
+        PyErr_Restore( ptype, pvalue, ptraceback );
+        PyErr_Print();
+        Py_Exit(1);
+    }
 }
