@@ -187,6 +187,12 @@ for some purpose (i.e. a function takes them as a parameter). They are included
 in a few common templated forms (string->char, etc.), but you should avoid
 the use of these whenever possible.
 
+
+When C++ functions deal with arrays, they are automatically converted (since the Python C API already uses arrays),
+but when other containers are used, they must be explicitly converted.
+Conversion functions (such as seqToVector for list->std::vector conversion) are defined in the cpp submodule.
+
+
 .. warning::
     Reading documentation can get difficult in dealing with heavily-templated wrapped C++ code. Use these structures as little as possible.
     If containers are small it might be wise to use the provided functions in gpstk.cpp to convert the containers to native python lists/dicts.

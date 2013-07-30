@@ -19,7 +19,6 @@ def timeSystem(str='Unknown'):
     Unknown, Any, GPS, GLO, GAL, COM, UTC, UT1, TAI, TT.
     """
 
-
     dict = {
         'Unknown': TimeSystem.Unknown,
         'Any': TimeSystem.Any,

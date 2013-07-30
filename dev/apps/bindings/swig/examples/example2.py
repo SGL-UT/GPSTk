@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 """
 A GPSTk example with some simple time classes and functions.
 

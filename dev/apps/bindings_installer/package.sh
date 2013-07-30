@@ -7,10 +7,10 @@ build() {
     cd apps/bindings/swig
     python docstring_generator.py
 
-    cd ../bindings/swig/bin
-    rm ../bindings/swig/bin/*.cxx
+    cd bin
+    rm *.cxx
     cmake ..
-    make -j4
+    make -j6
     python gpstk_builder.py .
 
     mkdir ../../../bindings_installer/gpstk
@@ -21,7 +21,7 @@ build() {
     mv gpstk/constants ../../../bindings_installer/gpstk
     mv gpstk/exceptions ../../../bindings_installer/gpstk
 
-    cd ../../..
+    cd ../../../..
     python setup.py sdist --formats=zip,gztar
     python setup.py bdist --formats=gztar
 }

@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 """
 A GPSTk example featuring more complex processing. You can use the
 sample text file rinex3obs_data.txt. A PRN number that gives useful output is 5.
@@ -13,31 +16,28 @@ For example:
 
 """
 
-
+from gpstk.constants import C_MPS, GAMMA_GPS, L1_FREQ_GPS, L2_FREQ_GPS
+import argparse  # an incredibly useful module for command line processing
 import gpstk
-from gpstk.constants import *
 import sys
 
 # We recommend only using
 #     'import gpstk',
-# but if you need constants fairly often, then importing them all can be useful.
+# but if you need constants fairly often, then importing them specifically at once
+# may be easier than referring to them by gpstk.constants.L1_FREQ_GPS.
 
 
-def main(args=sys.argv):
-    if len(args) < 2:
-        print 'This programs requires an argument that is a RINEX Obs file.'
-        sys.exit()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('rinex3obs_filename')
+    args = parser.parse_args()
 
-    file_name = args[1]
     user_input = raw_input('Name your PRN of interest, by number: 1 through 32: ')
     int_prn = int(user_input)
 
-    #  You could also find this value from: gpstk.constants.GAMMA_GPS, or just GAMMA_GPS
-    gamma = (L1_FREQ_GPS / L2_FREQ_GPS)**2
-
     try:
-        print 'Reading ' + file_name + '.'
-        header, data = gpstk.readRinex3Obs(file_name)  # read in everything
+        print 'Reading ' + args.rinex3obs_filename + '.'
+        header, data = gpstk.readRinex3Obs(args.rinex3obs_filename)  # read in everything
         print header
 
         indexP1 = header.getObsIndex('P1')
@@ -60,7 +60,7 @@ def main(args=sys.argv):
                 P1 = d.getObs(prn, "P1", header).data
                 P2 = d.getObs(prn, "P2", header).data
                 L1 = d.getObs(prn, "L1", header).data
-                mu = P1 - L1*(C_MPS/L1_FREQ_GPS) - 2*(P1-P2)/(1-gamma)
+                mu = P1 - L1*(C_MPS/L1_FREQ_GPS) - 2*(P1-P2)/(1-GAMMA_GPS)
                 print 'PRN', int_prn, 'biased multipath', mu
 
     # We can catch any custom gpstk exception like this:

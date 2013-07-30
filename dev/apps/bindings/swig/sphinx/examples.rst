@@ -26,6 +26,13 @@ Example 3
    :language: python
 
 
+Example 4
+**********************************************************
+
+.. literalinclude:: ../examples/example4.py
+   :language: python
+
+
 
 SEM Elevation Plotting example
 *****************************************************************************

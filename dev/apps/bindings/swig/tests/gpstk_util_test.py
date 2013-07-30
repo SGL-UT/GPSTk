@@ -254,6 +254,11 @@ class std_template_test(unittest.TestCase):
         self.assertIsInstance(v, gpstk.cpp.vector_double)
         same_seq(list, v)
 
+        list = [1.1, 2.2, 3.3]
+        v = gpstk.cpp.seqToVector(list, outtype='vector_double')
+        self.assertIsInstance(v, gpstk.cpp.vector_double)
+        same_seq(list, v)
+
         list = ['bar!', 'foo?']
         v = gpstk.cpp.seqToVector(list)
         self.assertIsInstance(v, gpstk.cpp.vector_string)
@@ -265,11 +270,14 @@ class std_template_test(unittest.TestCase):
         list = gpstk.cpp.vectorToSeq(v)
         same_seq(list, v)
 
-        l = [1, 2.2, 'c']  # mismatching types not allowed
-        self.assertRaises(TypeError, gpstk.cpp.seqToVector, l)
+        list = [1.1, 2.2, 3.3]
+        self.assertRaises(TypeError, gpstk.cpp.seqToVector, list, 'vector_doesnotexist')
 
-        l = [1000L, 2000L]  # longs are not templated
-        self.assertRaises(TypeError, gpstk.cpp.seqToVector, l)
+        list = [1, 2.2, 'c']  # mismatching types not allowed
+        self.assertRaises(TypeError, gpstk.cpp.seqToVector, list)
+
+        list = [1000L, 2000L]  # longs are not templated
+        self.assertRaises(TypeError, gpstk.cpp.seqToVector, list)
 
     def test_map(self):
         map = gpstk.cpp.map_int_char()

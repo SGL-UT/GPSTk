@@ -24,7 +24,7 @@ namespace std {
 
 
 %pythoncode %{
-def dictToMap(dict):
+def dictToMap(dict, outtype=''):
     """Translates a python dict type to a std::map backed type.
     This uses the first element to get the type. If there are 0 elements,
     None is returned.
@@ -33,6 +33,10 @@ def dictToMap(dict):
     dict does not use the same key,value type for all its elements.
 
     Note that this recopies the contents of the dict and is a linear time operation.
+
+    You may specify the what the name (string name) of the C++ backed type is. If it is blank (the default),
+    the function will attempt to discover what the appropriate type is. For example, you
+    might use outType=\'map_string_int\'.
     """
     import __builtin__
     if len(dict) == 0:
@@ -47,11 +51,18 @@ def dictToMap(dict):
     if t_value in _namefixes:
         t_value = _namefixes[t_value]
 
-    new_name = 'map_' + t_key + '_' + t_value
+    if outtype == '':
+        new_name = 'map_' + t_key + '_' + t_value
+    else:
+        new_name = outtype
+
     try:
         m = globals()[new_name]()  # constructs an object of class t
     except:
-        raise TypeError('There is no map wrapper for ' + t)
+        if outtype == '':
+            raise TypeError('There is no map wrapper for ' + t)
+        else:
+            raise TypeError('The type ' + outtype + ' does not exist')
 
     t_key = type(first_key)
     t_value = type(dict[first_key])

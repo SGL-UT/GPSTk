@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 """
 A GPSTk example with some simple time classes and functions.
 
@@ -26,7 +29,7 @@ def main():
     systime = gpstk.SystemTime()
 
     # Convert to 'CommonTime', the standard way to handle time at GPSTk
-    comtime = systime.convertToCommonTime()
+    comtime = systime.toCommonTime()
 
     # This is the typical way to handle civil time
     civtime = gpstk.CivilTime(comtime)

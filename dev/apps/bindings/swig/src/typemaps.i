@@ -64,17 +64,17 @@
    int i;
    $result = PyList_New($1_dim0);
    for (i = 0; i < $1_dim0; i++) {
-      PyObject *o = PyInt_FromLong((long) $1[i]);
+      PyObject *o = PyInt_FromLong(static_cast<long>($1[i]));
       PyList_SetItem($result,i,o);
    }
 }
 
-//     [unsigned int] -> [PyLong]
+//     [unsigned int] -> [PyInt]
 %typemap(out) unsigned int [ANY] {
    int i;
    $result = PyList_New($1_dim0);
    for (i = 0; i < $1_dim0; i++) {
-      PyObject *o = PyLong_FromUnsignedLong((unsigned long) $1[i]);
+      PyObject *o = PyInt_FromLong(static_cast<long>($1[i]));
       PyList_SetItem($result,i,o);
    }
 }
@@ -94,7 +94,7 @@
    int i;
    $result = PyList_New($1_dim0);
    for (i = 0; i < $1_dim0; i++) {
-      PyObject *o = PyFloat_FromDouble((double) $1[i]);
+      PyObject *o = PyFloat_FromDouble($1[i]);
       PyList_SetItem($result,i,o);
    }
 }

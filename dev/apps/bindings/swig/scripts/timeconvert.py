@@ -4,7 +4,8 @@ import argparse
 import gpstk
 import sys
 
-
+# default args to argv are left in so the script can be run without starting
+# a new python process. This is very useful for testing!
 def main(args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '
                            'other time formats. Include the quotation marks. '
