@@ -37,15 +37,16 @@ target_link_libraries(mdp2fic mdplib gpstk rxio)
 install (TARGETS mdp2fic DESTINATION bin)
 
 if (UNIX)
-	add_executable(mdpscreenx mdpscreen.cpp ScreenProc.cpp)
-	# if on Solaris, use curses, otherwise, use ncurses:
-	if (${CMAKE_SYSTEM_NAME} MATCHES "Solaris")
-		target_link_libraries(mdpscreenx mdplib gpstk rxio curses)
-	else ()
-		target_link_libraries(mdpscreenx mdplib gpstk rxio ncurses)
-	endif (${CMAKE_SYSTEM_NAME} MATCHES "Solaris")
-
 	if (NOT CYGWIN)
+		add_executable(mdpscreenx mdpscreen.cpp ScreenProc.cpp)
+		# if on Solaris, use curses, otherwise, use ncurses:
+		if (${CMAKE_SYSTEM_NAME} MATCHES "Solaris")
+			target_link_libraries(mdpscreenx mdplib gpstk rxio curses)
+		else ()
+			target_link_libraries(mdpscreenx mdplib gpstk rxio ncurses)
+		endif (${CMAKE_SYSTEM_NAME} MATCHES "Solaris")
+
+
 		install (TARGETS mdpscreenx DESTINATION bin)
 	endif (NOT CYGWIN)
 endif (UNIX)
