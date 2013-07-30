@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -59,11 +59,11 @@ namespace gpstk
 
       /// This compares all elements of the Rinex3ObsData with less than
       /// (only for those fields which the two obs data share).
-   struct Rinex3ObsDataOperatorLessThanFull : 
+   struct Rinex3ObsDataOperatorLessThanFull :
       public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
    public:
-         /// The set is a set of Rinex3ObsType that the two files have in 
+         /// The set is a set of Rinex3ObsType that the two files have in
          /// common.  This is easily generated with the set_intersection
          /// STL function.  See difftools/rowdiff.cpp for an example.
       Rinex3ObsDataOperatorLessThanFull
@@ -95,7 +95,7 @@ namespace gpstk
             }
             else
                return false;
-         
+
                // for the obs, first check that they're the same size
                // i.e. - contain the same number of PRNs
             if (l.obs.size() < r.obs.size())
@@ -104,10 +104,10 @@ namespace gpstk
             if (l.obs.size() > r.obs.size())
                return false;
 
-               // then check that each PRN has the same data for each of the 
+               // then check that each PRN has the same data for each of the
                // shared fields
             Rinex3ObsData::DataMap::const_iterator lItr = l.obs.begin(), rItr;
-         
+
             SatID sat;
 
             while (lItr != l.obs.end())
@@ -116,18 +116,18 @@ namespace gpstk
                rItr = r.obs.find(sat);
                if (rItr == r.obs.end())
                   return false;
-         
-               ///Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second, 
-               std::vector<Rinex3ObsData::RinexDatum> lObs = lItr->second,
+
+               ///Rinex3ObsData::Rinex3ObsTypeMap lObs = (*lItr).second,
+               std::vector<RinexDatum> lObs = lItr->second,
                                                       rObs = rItr->second;
 
-               ///std::set<ObsID>::const_iterator obsItr = 
+               ///std::set<ObsID>::const_iterator obsItr =
                ///   obsSet.begin();
-         
+
                ///while (obsItr != obsSet.end())
                for(int i = 0; i < obsSet.size(); ++i)
                {
-                  Rinex3ObsData::RinexDatum lData, rData;
+                  RinexDatum lData, rData;
                   ///lData = lObs[*obsItr];
                   lData = lObs[i];
                   ///rData = rObs[*obsItr];
@@ -135,15 +135,15 @@ namespace gpstk
 
                   if (lData.data < rData.data)
                      return true;
-               
+
                   if ( lData.lli != 0 && rData.lli != 0 )
                      if (lData.lli < rData.lli)
                         return true;
-               
+
                   if ( lData.ssi != 0 && rData.ssi != 0 )
                      if (lData.ssi < rData.ssi)
                         return true;
-               
+
                   ///obsItr++;
                }
 
@@ -161,7 +161,7 @@ namespace gpstk
 
       /// This is a much faster less than operator for Rinex3ObsData,
       /// only checking time
-   struct Rinex3ObsDataOperatorLessThanSimple : 
+   struct Rinex3ObsDataOperatorLessThanSimple :
       public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
    public:
@@ -175,7 +175,7 @@ namespace gpstk
 
       /// This simply compares the times of the two records
       /// for equality
-   struct Rinex3ObsDataOperatorEqualsSimple : 
+   struct Rinex3ObsDataOperatorEqualsSimple :
       public std::binary_function<Rinex3ObsData, Rinex3ObsData, bool>
    {
    public:
@@ -242,7 +242,7 @@ namespace gpstk
                   // then copy the obsTypes back into theHeader
                theHeader.obsTypeList.clear();
                copy(obsSet.begin(), obsSet.end(),
-                    inserter(theHeader.obsTypeList, 
+                    inserter(theHeader.obsTypeList,
                              theHeader.obsTypeList.begin()));
             }
             return true;

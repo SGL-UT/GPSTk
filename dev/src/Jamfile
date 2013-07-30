@@ -41,8 +41,15 @@ else
       CivilTime.cpp
       ClockSatStore.cpp
       CNAVClock.cpp
+      CNavDataElement.cpp
+      CNavDataElementStore.cpp
+      CNavEOP.cpp
       CNAVEphemeris.cpp
       CNAV2EphClk.cpp
+      CNavGGTO.cpp
+      CNavISC.cpp
+      CNavText.cpp
+      CNavUTC.cpp
       CodeBuffer.cpp
       CommandLine.cpp
       CommandOption.cpp
@@ -55,7 +62,6 @@ else
       ConfDataWriter.cpp
       DCBDataReader.cpp
       DOP.cpp
-      DebugUtils.cpp
       EngAlmanac.cpp
       EngEphemeris.cpp
       EngNav.cpp
@@ -223,8 +229,15 @@ else
       ClockModel.hpp
       ClockSatStore.hpp
       CNAVClock.hpp
+      CNavDataElement.hpp
+      CNavDataElementStore.hpp
+      CNavEOP.hpp
       CNAVEphemeris.hpp
       CNAV2EphClk.hpp
+      CNavGGTO.hpp
+      CNavISC.hpp
+      CNavText.hpp
+      CNavUTC.hpp
       CodeBuffer.hpp
       Combinations.hpp
       CommandLine.hpp
@@ -238,7 +251,6 @@ else
       ConfDataReader.hpp
       ConfDataWriter.hpp
       DCBDataReader.hpp
-      DebugUtils.hpp
       DOP.hpp
       EllipsoidModel.hpp
       EngAlmanac.hpp

@@ -8,10 +8,10 @@
 #ifndef LOGSTREAMINCLUDE
 #define LOGSTREAMINCLUDE
 
-#include <cstdio>
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <cstdio>
 
 /// levels that the user may give the log stream output in the output statement,
 /// e.g. LOG(ERROR) << "This is an error message"; DEBUGn levels appear indented
@@ -148,7 +148,7 @@ template <class T> inline std::string Log<T>::NowTime()
    dt -= m*60.;
    int s=int(dt);
    dt -= s;
-   sprintf(result,"%02d:%02d:%02d.%03d",h,m,s,int(dt*1000.));
+   std::sprintf(result,"%02d:%02d:%02d.%03d",h,m,s,int(dt*1000.));
    return result;
 }
 
@@ -165,7 +165,7 @@ template <class T> inline std::string Log<T>::NowTime()
    struct timeval tv;
    gettimeofday(&tv, 0);
    char result[100] = {0};
-   sprintf(result, "%s.%03ld", buffer, (long)tv.tv_usec / 1000); 
+   std::sprintf(result, "%s.%03ld", buffer, (long)tv.tv_usec / 1000); 
    return result;
 }
 
@@ -295,9 +295,9 @@ template<> bool Log<ConfigureLOGstream>::dumpLevels = false;
 
 /// define the macro that is used to write to the log stream
 #define LOG(level) \
-   if(level > FILELOG_MAX_LEVEL) ;\
-   else if(level > ConfigureLOG::ReportingLevel() || !ConfigureLOGstream::Stream()) ;\
-   else ConfigureLOG().Put(level)
+   if(level <= FILELOG_MAX_LEVEL && \
+      level <= ConfigureLOG::ReportingLevel() && \
+      ConfigureLOGstream::Stream()) ConfigureLOG().Put(level)
 
 // conveniences
 #define pLOGstrm ConfigureLOGstream::Stream()

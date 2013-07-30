@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file ClockSatStore.hpp
 /// Store a tabular list of clock data (bias, drift, accel) for several satellites,
 /// and compute values at any timetag from this table. Inherits TabularSatStore.
@@ -192,7 +190,7 @@ namespace gpstk
 
       /// Set the type of interpolation to linear. Note that
       void setLinearInterp(void) throw()
-         { interpType = 1; setInterpolationOrder(1); }
+         { interpType = 1; setInterpolationOrder(2); }
 
    }; // end class ClockSatStore
 

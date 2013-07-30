@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
       roffs.exceptions(ios::failbit);
       Rinex3ObsHeader roh;
       Rinex3ObsData roe;
-      Rinex3ObsData::RinexDatum dataobj;
+      RinexDatum dataobj;
 
          // Read the RINEX header (don't skip this step)
          // --------------------------------------------
@@ -144,7 +144,7 @@ int main(int argc, char *argv[])
       }  // End of 'while (roffs >> roe)'
 
       cout << "Read " << roffs.recordNumber << " epochs.  Cheers."  << endl;
-       
+
       exit(0);
 
    } // End of 'try' block

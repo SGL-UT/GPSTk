@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -56,6 +56,17 @@
 
 namespace gpstk
 {
+
+   /// A structure used to store a single RINEX Data point.
+   struct RinexDatum
+   {
+      RinexDatum() : data(0), lli(0), ssi(0) {} ///< constructor
+      double data;  ///< The actual data point.
+      short lli;    ///< See the RINEX Spec. for an explanation.
+      short ssi;    ///< See the RINEX Spec. for an explanation.
+   };
+
+
       /** @addtogroup Rinex3Obs */
       //@{
 
@@ -74,17 +85,6 @@ namespace gpstk
 
          /// Destructor
       virtual ~Rinex3ObsData() {}
-
-
-         /// A structure used to store a single RINEX Data point.
-      struct RinexDatum
-      {
-         RinexDatum() : data(0), lli(0), ssi(0) {} ///< constructor
-         double data;  ///< The actual data point.
-         short lli;    ///< See the RINEX Spec. for an explanation.
-         short ssi;    ///< See the RINEX Spec. for an explanation.
-      };
-
 
          /// Map from RinexSatID to RinexDatum; order of the data matches the
          /// order of RinexObsIDs in the header
@@ -163,7 +163,7 @@ namespace gpstk
          /// (<= 80 chrs).
          /// Also, make sure to correctly set the epochFlag to the correct
          /// number for the type of header data you want to write.
-      virtual void reallyPutRecord(FFStream& s) const 
+      virtual void reallyPutRecord(FFStream& s) const
          throw( std::exception, FFStreamError,
                 gpstk::StringUtils::StringException );
 
@@ -181,7 +181,7 @@ namespace gpstk
           *          or formatting error occurs.  Also resets the stream to its
           *          pre-read position.
           */
-      virtual void reallyGetRecord(FFStream& s) 
+      virtual void reallyGetRecord(FFStream& s)
          throw( std::exception, FFStreamError,
                 gpstk::StringUtils::StringException );
 

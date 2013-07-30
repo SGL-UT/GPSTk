@@ -438,7 +438,7 @@ namespace gpstk
         << "  MM/DD/YYYY   HH:MM:SS\n";
       s << "  Xmit Time:  ";
 
-      s << printTime( transmitTime, "      %4F  %6.0g      %3j   %5.0s  %02m/%02d/%04Y   %02H:%02M:%02S");
+      s << printTime( transmitTime, "%4F(%4G) %6.0g      %3j   %5.0s  %02m/%02d/%04Y   %02H:%02M:%02S");
       s << endl;     
 
       s << endl << "Packed Bits, Left Justified, 32 Bits Long:\n";
@@ -470,7 +470,7 @@ namespace gpstk
 
       /*
       */
-   void PackedNavBits::outputPackedBits(std::ostream& s, short numPerLine) const
+   int PackedNavBits::outputPackedBits(std::ostream& s, short numPerLine) const
    {
       ios::fmtflags oldFlags = s.flags();
 
@@ -503,6 +503,7 @@ namespace gpstk
          s << "  0x" << setw(8) << setfill('0') << hex << word;
       }
       s.flags(oldFlags);      // Reset whatever conditions pertained on entry
+      return(bits.size()); 
    }
 
    bool PackedNavBits::matchBits(const PackedNavBits& right, 

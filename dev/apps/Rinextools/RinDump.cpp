@@ -21,7 +21,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -116,7 +116,7 @@ public:
 
    /// compute the linear combination, given the satellite and RINEX data
    double Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception);
+                  const vector<RinexDatum>& vrdata) throw(Exception);
 
    /// remove a bias if jump larger than limit occurs
    bool removeBias(const RinexSatID& sat) throw();
@@ -250,7 +250,7 @@ const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 int Initialize(string& errors) throw(Exception);
 int ProcessFiles(void) throw(Exception);
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception);
+                  const vector<RinexDatum>& vrdata) throw(Exception);
 double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
    throw(Exception);
 
@@ -270,7 +270,7 @@ try {
    // build title = first line of output
    C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
-   
+
    for(;;) {
       // get information from the command line
       // iret -2 -3 -4
@@ -347,7 +347,7 @@ try {
                isValid = false;
                continue;
             }
-         
+
             strm.exceptions(ios_base::failbit);
             strm >> header;
          }
@@ -788,8 +788,8 @@ void Configuration::SetDefaults(void) throw()
    string validSys(ObsID::validRinexSystems);
    for(int i=0; i<validSys.size(); i++) {
       if(map1to3Sys.count(string(1,validSys[i])) == 0)
-         LOG(WARNING) << "Warning - system \"" << validSys[i]
-            << "\" does not have 3-char entry in map1to3Sys";
+         {LOG(WARNING) << "Warning - system \"" << validSys[i]
+            << "\" does not have 3-char entry in map1to3Sys";}
       else
          vecAllSys.push_back(map1to3Sys[string(1,validSys[i])]);
    }
@@ -1644,7 +1644,7 @@ try {
                   }
 
                   // access the data
-                  const vector<Rinex3ObsData::RinexDatum>& vrdata(it->second);
+                  const vector<RinexDatum>& vrdata(it->second);
 
                   // output the sat ID
                   oss.str("");
@@ -1716,7 +1716,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 
 //------------------------------------------------------------------------------------
 double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
-                   const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception)
+                   const vector<RinexDatum>& vrdata) throw(Exception)
 {
    try {
       double data(0);
@@ -1740,7 +1740,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
          int j = jt - Rhead.mapObsTypes[sys].begin();
          data = vrdata[j].data;
       }
-                     
+
       return data;
    }
    catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -1984,7 +1984,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
          sysObsids[sys].push_back(obsid);
 
          LOG(DEBUG2) << "Parse ok";
-      
+
          // TD VI LAT LON not implemented
          if(tag == string("SI") || tag == string("VI")) {         // iono delay
             double alpha(getAlpha(sat,n1,n2));
@@ -2112,7 +2112,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
 //------------------------------------------------------------------------------------
 double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
-                  const vector<Rinex3ObsData::RinexDatum>& vrdata) throw(Exception)
+                  const vector<RinexDatum>& vrdata) throw(Exception)
 {
    Configuration& C(Configuration::Instance());
 
@@ -2129,7 +2129,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
    for(int i=0; i<sysConsts[sys1].size(); i++) {
       // convert the string to a RinexObsID
       string obsid(sysObsids[sys1][i]);
-      if(obsid.size() == 4 && obsid[0] != sys1[0]) {     // system does not match 
+      if(obsid.size() == 4 && obsid[0] != sys1[0]) {     // system does not match
          LOG(DEBUG2) << msg << " Sys " << sys1 << " does not match obsid " << obsid;
          return 0.0;
       }
@@ -2221,7 +2221,7 @@ bool LinCom::removeBias(const RinexSatID& sat) throw()
       else
          biases[sat] = 0.0;
    }
-   
+
    // this is the test
    if(limit > 0.0 && ::fabs(value-prev[sat]) > limit) {
       biases[sat] = value;                   // this makes value-bias = 0

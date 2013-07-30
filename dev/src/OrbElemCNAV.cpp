@@ -110,7 +110,10 @@ namespace gpstk
       M0                        = message10.asDoubleSemiCircles(172, 33, -32);
       ecc                       = message10.asUnsignedDouble(205, 33, -34);
       w                         = message10.asDoubleSemiCircles(238, 33, -32);
-      
+      short ISFVal              = message10.asUnsignedLong(271, 1, 1);
+      if (ISFVal==1) IntegrityStatusFlag = true;
+      L2CPhasing                = message10.asUnsignedLong(272, 1, 1);    
+       
          // Message Type 11 data
       unsigned long TOWCount11  = message11.asUnsignedLong(20, 17, 6);
       OMEGA0                    = message11.asDoubleSemiCircles(49, 33, -32);
@@ -152,46 +155,6 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-/*
-      unsigned long midPointSOW = (unsigned long) Toe;   
-      unsigned long offsetFromEven2Hours = midPointSOW % TWO_HOURS;
-      bool smallOffset = false;
-      if (offsetFromEven2Hours!=90_MINUTES)
-      {
-         smallOffset = true; 
-         
-           // Compute the "small offset".   Negative value means the
-           // midPoint is early.  
-         unsigned long sizeOfOffset = offsetFromEven2Hours - 90_MINUTES; 
-
-            // Apply the offset such that the midPointSOW is now the 
-            // nominal midpoint of the tranmission interval.
-         midPointSOW -= sizeOffset; 
-      }
-
-         // Derive the end of the fit interval
-      unsigned long endFitSOW   = midPointSOW + 90_MINUTES; 
-      short endFitWk   = TOWWeek;
-      if (endFitSOW >= FULLWEEK)
-      {
-         endFitSOW -= FULLWEEK;
-         endFitWk++;
-      }
-
-         // Derive the beginning of the fit interval
-      unsigned long beginFitSOW = midPointSOW - 90_MINUTES;
-      if (smallOffset)
-      {
-         if (TOWCount10>beginFitSOW) beginFitSOW = TOWCount10;
-      }
-      short beginFitWk = TOWWeek;
-      if (begFitSOW<0)
-      {
-         begFitSOW += FULLWEEK;
-         begFitWk--;
-      }
-*/
-
          // Note that TOW times are referenced to the beginning of 
          // the next message.  Therefore, the transmit time is actually
          // PRIOR to the TOW count in SOW.  However, the amount prior
@@ -200,9 +163,37 @@ namespace gpstk
       if (obsID.code==ObsID::tcC2M ||
           obsID.code==ObsID::tcC2L ||
           obsID.code==ObsID::tcC2LM) SOWOffset=12;
-      ctMsg10 =    GPSWeekSecond(TOWWeek, TOWCount10-SOWOffset, TimeSystem::GPS);
-      ctMsg11 =    GPSWeekSecond(TOWWeek, TOWCount11-SOWOffset, TimeSystem::GPS);
-      ctMsgClk =    GPSWeekSecond(TOWWeek, TOWCountClk-SOWOffset, TimeSystem::GPS);
+
+         // Message Type 10  CONTAINS the week number.  Therefore, there
+         // should not be any SOW rollover to deal with for Message Type 10. 
+         // However, we don't know for certain that the 11 and the clock (31-37)
+         // messages were collected in the same week (probably, but not certainly).
+         // Therefore, we need to look for week rollovers.
+      long SOW10 = TOWCount10 - SOWOffset;
+      ctMsg10  =    GPSWeekSecond(TOWWeek, SOW10, TimeSystem::GPS);
+
+         // Set up temp variables for MsgType 11 SOW and week.   
+      short Week11 = TOWWeek;
+      long SOW11 = TOWCount11-SOWOffset;
+
+         // First, check to see that the TOW -> transmit time adjust did not 
+         // cross the week boundary.
+      if (SOW11<0) SOW11 += gpstk::FULLWEEK;
+
+         // Then check against the MsgType 10 XMit time/week      
+      long check = (SOW10-SOW11);
+      if (check>gpstk::HALFWEEK) Week11++;
+      else if (check<-gpstk::HALFWEEK) Week11--; 
+      ctMsg11  =    GPSWeekSecond(Week11, SOW11, TimeSystem::GPS);
+
+         // Now follow the same process for the clock message times.
+      short WeekClk = TOWWeek;
+      long SOWClk = TOWCountClk - SOWOffset;
+      if (SOWClk<0) SOWClk += gpstk::FULLWEEK;
+      check = (SOW10-SOW11);
+      if (check>gpstk::HALFWEEK) WeekClk++;
+      else if (check<-gpstk::HALFWEEK) WeekClk--; 
+      ctMsgClk =    GPSWeekSecond(WeekClk, SOWClk, TimeSystem::GPS);
 
          // The fit interval is nominally the middle of the trasmission interval.
          // However, interval may "start late" for an upload.  Therefore, start
@@ -238,6 +229,11 @@ namespace gpstk
          if(testSOW2<leastSOW) leastSOW = testSOW2;
          if(testSOW3<leastSOW) leastSOW = testSOW3;
          Xmit = leastSOW - (leastSOW % (4*SOWOffset));    // See -705B Table 20-XII
+            // Still need a test to assure that the begin of fit doesn't'
+            // exceed half the interval from the mid-point.  (During live
+            // CNAV test of June 2013, Msg 11 was cutting over early.)
+         long defBegFit = midPointSOW - NINTY_MINUTES;
+         if (Xmit<defBegFit) Xmit = defBegFit; 
       }
       else
       {
@@ -259,8 +255,16 @@ namespace gpstk
       ctTop = GPSWeekSecond(TopWeek, Top, TimeSystem::GPS);
       ctToe = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
       ctToc = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
-         
-      endValid = ctToe + NINTY_MINUTES;  
+
+         // The end of validity is 1.5 hours after the nominal midpoint
+      double endSOW = midPointSOW + NINTY_MINUTES;
+      short endWeek = TOWWeek;
+      if (endSOW> gpstk::FULLWEEK)   
+      {
+         endSOW -= gpstk::FULLWEEK;
+         endWeek++;
+      }
+      endValid = GPSWeekSecond(endWeek, endSOW, TimeSystem::GPS);
 
       dataLoadedFlag = true;   
    } // end of loadData()
@@ -286,7 +290,11 @@ namespace gpstk
         << endl
         << endl
         << "Health bits  L1, L2, L5        :     " << setfill('0') << setw(1)
-        << L1Health << ",  " << L2Health << ",  " << L5Health; 
+        << L1Health << ",  " << L2Health << ",  " << L5Health
+        << endl; 
+      s << "L2C Phasing                    :     " << setfill(' ')
+        << L2CPhasing << " (0=quadrature, 1=in-phase)" 
+        << endl; 
      
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);

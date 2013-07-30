@@ -16,7 +16,7 @@ UniqueAlmStore.cpp
 )
 target_link_libraries(mdplib gpstk rxio)
 
-add_executable(mdptool mdptool.cpp)
+add_executable(mdptool mdptool.cpp CNAVMessageAsm.cpp)
 target_link_libraries(mdptool mdplib gpstk rxio)
 
 add_executable(mdp2rinex mdp2rinex.cpp)

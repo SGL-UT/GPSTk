@@ -116,10 +116,10 @@ namespace gpstk
       A2 = message33.asSignedDouble(156, 7,-68);
 
       deltaTls  = message33.asLong(163, 8, 1);
-      Tot       = message33.asLong(171,16,16);
-      WNot      = message33.asLong(187,13, 1);
-      WNlsf     = message33.asLong(200,13, 1);
-      DN        = message33.asLong(213, 4, 1);
+      Tot       = message33.asUnsignedLong(171,16,16);
+      WNot      = message33.asUnsignedLong(187,13, 1);
+      WNlsf     = message33.asUnsignedLong(200,13, 1);
+      DN        = message33.asUnsignedLong(213, 4, 1);
       deltaTlsf = message33.asLong(217, 8, 1);
 
       ctEpoch   = GPSWeekSecond(WNot, Tot, TimeSystem::GPS);

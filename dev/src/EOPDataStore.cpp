@@ -32,7 +32,7 @@
 #include "MiscMath.hpp"
 #include <fstream>
 #include "MJD.hpp"
-#include "DebugUtils.hpp"
+#include "Exception.hpp"
 
 namespace gpstk
 {
@@ -43,7 +43,7 @@ namespace gpstk
                                   const EOPDataStore::EOPData& d)
       throw()
    {
-      GPSTK_ASSERT(utc.getTimeSystem()==TimeSystem::UTC);
+      if(!(utc.getTimeSystem()==TimeSystem::UTC)) throw Exception();
 
       std::vector<double> data(5,0.0);
       
@@ -62,8 +62,8 @@ namespace gpstk
    EOPDataStore::EOPData EOPDataStore::getEOPData(const CommonTime& utc) const
          throw(InvalidRequest)
    {
-       GPSTK_ASSERT(utc.getTimeSystem()==TimeSystem::UTC);
-
+      if(!(utc.getTimeSystem()==TimeSystem::UTC)) throw Exception();
+	  
       std::vector<double> data = getData(utc);
 
       return EOPData(data[0],data[1],data[2],data[3],data[4]);

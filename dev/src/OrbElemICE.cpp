@@ -250,8 +250,10 @@ namespace gpstk
 
       int tempHealth = 1;
       if (healthy) tempHealth = 0;
-      s << "      ! ";                  // URA space
-      s << "      !    ";      // IODC space
+      s << setw(4) << URAed << "  ! ";
+      //s << "      ! ";                  // URA space
+      s << setw(4) << URAned0 << "  !    ";
+      //s << "      !    ";      // IODC space
       if (healthy) s << "     0 ! ";
        else        s << "     1 ! ";
       s << endl;

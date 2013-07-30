@@ -35,7 +35,6 @@ set (gpstk_src
       ConfDataWriter.cpp
       DCBDataReader.cpp
       DOP.cpp
-      DebugUtils.cpp
       EngAlmanac.cpp
       EngEphemeris.cpp
       EngNav.cpp
