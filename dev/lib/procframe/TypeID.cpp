@@ -434,16 +434,16 @@ namespace gpstk
       // 1 2 5 6 7 8
      if(roi.band == ObsID::cbL1) return 1;
      if(roi.band == ObsID::cbG1) return 1;
-     if(roi.band == ObsID::cbE1) return 1;
+     if(roi.band == ObsID::cbB1) return 1;
 
      if(roi.band == ObsID::cbL2) return 2;
      if(roi.band == ObsID::cbG2) return 2;
-     if(roi.band == ObsID::cbE2) return 2;
+     if(roi.band == ObsID::cbB1) return 2;      // TD this is not correct
 
      if(roi.band == ObsID::cbL5) return 5;
 
      if(roi.band == ObsID::cbE6) return 6;
-     if(roi.band == ObsID::cbC6) return 6;
+     if(roi.band == ObsID::cbB3) return 6;
 
      if(roi.band == ObsID::cbE5b) return 7;
 
@@ -689,7 +689,7 @@ namespace gpstk
 
          // For E2-B1
          //if(roi.band == ObsID::cbE1) return TypeID::Unknown;
-         if(roi.band == ObsID::cbE2)
+         if(roi.band == ObsID::cbB3)         // TD is cbB3 correct?
          {
             if(roi.type == ObsID::otRange) return TypeID::C2;
             if(roi.type == ObsID::otPhase) return TypeID::L2;

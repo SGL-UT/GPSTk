@@ -185,7 +185,6 @@ else
       TimeTag.cpp
       Triple.cpp
       TropModel.cpp
-      TypeID.cpp
       UnixTime.cpp
       VectorBase.cpp
       Week.cpp
@@ -455,7 +454,6 @@ else
       TimeTag.hpp	
       Triple.hpp	
       TropModel.hpp	
-      TypeID.hpp	
       UnixTime.hpp	
       ValidType.hpp	
       Vector.hpp	

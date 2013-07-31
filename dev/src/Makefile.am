@@ -447,8 +447,8 @@ incl_HEADERS = AllanDeviation.hpp \
       VectorBase.hpp \
       VectorBaseOperators.hpp \
       VectorOperators.hpp \
-      Week.cpp \
-      WeekSecond.cpp \      
+      Week.hpp \
+      WeekSecond.hpp \      
       WeightBase.hpp \
       WGS84Ellipsoid.hpp \
       WxObsMap.hpp \
