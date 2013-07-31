@@ -1,5 +1,4 @@
 from cStringIO import StringIO
-import subprocess
 import sys
 import unittest
 import timeconvert
@@ -11,7 +10,7 @@ default_condition = lambda expected,actual: expected.split() == actual.split()
 def run_test(test, commands, expected, pass_condition=default_condition):
     old_stdout = sys.stdout
     sys.stdout = mystdout = StringIO()
-    timeconvert.main(['python'] + commands)
+    timeconvert.main(commands)
     actual = mystdout.getvalue()
     sys.stdout = old_stdout
     fail_message = '\nExpected ouput: \n' + expected + "Actual output: " + actual

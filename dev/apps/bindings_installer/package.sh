@@ -2,10 +2,10 @@
 
 build() {
     cd ../..
-    doxygen
+    # doxygen
 
     cd apps/bindings/swig
-    python docstring_generator.py
+    # python docstring_generator.py
 
     cd bin
     rm *.cxx
@@ -15,6 +15,7 @@ build() {
 
     mkdir ../../../bindings_installer/gpstk
     mv gpstk_pylibPYTHON_wrap.cxx ../../../bindings_installer/gpstk
+    mv gpstk_pylibPYTHON_wrap.h ../../../bindings_installer/gpstk
     mv gpstk/gpstk_pylib.py ../../../bindings_installer/gpstk
     mv gpstk/__init__.py ../../../bindings_installer/gpstk
     mv gpstk/cpp ../../../bindings_installer/gpstk
@@ -23,7 +24,6 @@ build() {
 
     cd ../../../..
     python setup.py sdist --formats=zip,gztar
-    python setup.py bdist --formats=gztar
 }
 
 build

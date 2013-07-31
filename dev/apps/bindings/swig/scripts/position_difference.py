@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import argparse
 import gpstk
 import matplotlib.pyplot as plt
@@ -86,7 +85,7 @@ def sp3_data(filename, prn):
 
 
 def fic_data(filename, prn):
-    isblock9 = lambda x: x.blockNum == 9
+    isblock9 = (lambda x: x.blockNum == 9)
     header, data = gpstk.readFIC(filename, lazy=True, filterfunction=isblock9)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
     g = gpstk.GPSEphemerisStore()
@@ -199,12 +198,18 @@ def main(args=sys.argv[1:]):
     end_time = min(pos1.last_time(), pos2.last_time())
 
     t = start_time
+    sum = 0.0
+    sumSq = 0.0
+    n = 0
     while t < end_time:
         t.addSeconds(args.timestep)
         try:
             p1 = pos1.position(t)
             p2 = pos2.position(t)
             error = np.linalg.norm(p1 - p2)  # euclidian distance
+            sum += error
+            sumSq += error
+            n += 1
             X.append(t.getDays())
             Y.append(error)
             if args.verbose:
@@ -215,6 +220,9 @@ def main(args=sys.argv[1:]):
         except gpstk.exceptions.InvalidRequest:
             if args.verbose:
                 print 'Can\'t use data at:', gpstk.CivilTime(t)
+
+    print 'Arithmetic mean of error values: ', sum / n, 'm'
+    print 'Root mean square of error values:', np.sqrt(sumSq / n), 'm'
 
     if not args.noplot:
         fig = plt.figure()

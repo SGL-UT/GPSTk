@@ -12,7 +12,6 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/ANSITime.cpp',
             'src/AstronomicalFunctions.cpp',
             'src/Bancroft.cpp',
-            'src/Bancroft.cpp',
             'src/BinUtils.cpp',
             'src/BrcClockCorrection.cpp',
             'src/BrcKeplerOrbit.cpp',
@@ -125,7 +124,7 @@ def main():
                                    extra_compile_args=['-std=c++11', '-w'],
                                    language='c++')],
             packages=['gpstk', 'gpstk.cpp', 'gpstk.constants', 'gpstk.exceptions'],
-            scripts=map(lambda x: 'apps/bindings/swig/scripts' + x, script_names),
+            scripts=map(lambda x: 'apps/bindings/swig/scripts/' + x, script_names),
             )
 
 if __name__ == '__main__':
