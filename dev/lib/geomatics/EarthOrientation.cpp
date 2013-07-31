@@ -48,12 +48,13 @@
 //------------------------------------------------------------------------------------
 // system includes
 #include <fstream>
+#include <cmath>
 // GPSTk
 #include "GNSSconstants.hpp"    // for TWO_PI
 #include "EarthOrientation.hpp"
-#include "GPSWeekSecond.cpp"
-#include "CivilTime.cpp"
-#include "YDSTime.cpp"
+#include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
+#include "YDSTime.hpp"
 #include "TimeString.hpp"
 
 //------------------------------------------------------------------------------------

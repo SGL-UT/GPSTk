@@ -1,4 +1,5 @@
-#pragma ident "$Id$"
+/// @file Epoch.cpp
+/// gpstk::Epoch - encapsulates date and time-of-day
 
 //============================================================================
 //
@@ -35,11 +36,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file Epoch.cpp
- * gpstk::Epoch - encapsulates date and time-of-day
- */
 
 #include <iostream>
 #include <iomanip>
@@ -109,7 +105,7 @@ namespace gpstk
        * TimeTag + Year Constructor.
        * Set the current time using the given year as a hint.
        */
-   Epoch::Epoch(const TimeTag& tt,
+   Epoch::Epoch(const WeekSecond& tt,
                 short year)
       throw(Epoch::EpochException)
          : tolerance(EPOCH_TOLERANCE)
@@ -342,22 +338,12 @@ namespace gpstk
       }
    }
 
-   Epoch& Epoch::set(const TimeTag& tt,
-                     short year)
+   Epoch& Epoch::set(const WeekSecond& tt, short year)
       throw(Epoch::EpochException)
    {
-      try
-      { 
-         GPSWeekSecond ws(tt);
-         ws.setEpoch(whichGPSEpoch(ws.getWeek10(), year));
-         core = ws;
-         return *this;
-      }
-      catch(InvalidParameter& ip)
-      {
-         EpochException ee(ip);
-         GPSTK_THROW(ee);
-      }
+      WeekSecond& ws = const_cast<WeekSecond&>(tt);
+      ws.adjustToYear(year);
+      set(ws);
    }
 
    Epoch& Epoch::set(const CommonTime& c)
@@ -471,40 +457,6 @@ namespace gpstk
       catch (StringException& se)
       {
          GPSTK_RETHROW(se);
-      }
-   }
-
-   short Epoch::whichGPSEpoch(int week,
-                              int year) const
-      throw(Epoch::EpochException)
-   {
-      try
-      {
-            // Get the epoch at the start of the given year.
-         short epoch1 = GPSWeekSecond(CivilTime(year, 1, 1)).getEpoch();
-            // Get the epoch at the end of the given year.
-         short epoch2 = GPSWeekSecond(CivilTime(year, 12, 31)).getEpoch();
-         
-         if (epoch1 == epoch2)
-         {
-               // The GPS 10-bit week *doesn't* rollover during the given year.
-            return epoch1;
-         }
-
-         if (week <= 512)
-         {
-               // roll-over happened before week -> use epoch2
-            return epoch2;
-         }
-         
-            // week > 512
-            // roll-over happened after week -> use epoch1
-         return epoch1;
-      }
-      catch( InvalidParameter& ip )
-      {
-         EpochException ee(ip);
-         GPSTK_THROW(ee);
       }
    }
 

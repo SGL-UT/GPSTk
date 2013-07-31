@@ -69,7 +69,8 @@ namespace gpstk
          systemGeosync,
          systemLEO,
          systemTransit,
-         systemCompass,
+         systemBeiDou,
+         systemQZSS,
          systemMixed,
          systemUserDefined,
          systemUnknown
@@ -90,17 +91,18 @@ namespace gpstk
       {
          switch(s)
          {
-            case systemGPS:     return "GPS";           break;
-            case systemGalileo: return "Galileo";       break;
-            case systemGlonass: return "GLONASS";       break;
-            case systemGeosync: return "Geostationary"; break;
-            case systemLEO:     return "LEO";           break;
-            case systemTransit: return "Transit";       break;
-            case systemCompass: return "Compass";       break;
-            case systemMixed:   return "Mixed";         break;
-            case systemUserDefined:   return "UserDefined";         break;
-            case systemUnknown: return "Unknown";       break;
-            default:            return "??";            break;
+            case systemGPS:         return "GPS";           break;
+            case systemGalileo:     return "Galileo";       break;
+            case systemGlonass:     return "GLONASS";       break;
+            case systemGeosync:     return "Geostationary"; break;
+            case systemLEO:         return "LEO";           break;
+            case systemTransit:     return "Transit";       break;
+            case systemBeiDou:      return "BeiDou";        break;
+            case systemQZSS:        return "QZSS";          break;
+            case systemMixed:       return "Mixed";         break;
+            case systemUserDefined: return "UserDefined";   break;
+            case systemUnknown:     return "Unknown";       break;
+            default:                return "??";            break;
          };
       }
 

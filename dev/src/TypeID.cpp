@@ -530,7 +530,7 @@ namespace gpstk
          if(rot == RinexObsHeader::D6) return TypeID::D6;
          if(rot == RinexObsHeader::S6) return TypeID::S6;
       }
-      else if(sat.system==SatID::systemCompass)
+      else if(sat.system==SatID::systemBeiDou)
       {
          // Compass E2   I/Q                 C2         L2         D2         S2
          //         E5b  I/Q                 C7         L7         D7         S7
@@ -681,7 +681,7 @@ namespace gpstk
             if(roi.type == ObsID::otSNR) return TypeID::S6;
          }
       }
-      else if(sat.system==SatID::systemCompass)
+      else if(sat.system==SatID::systemBeiDou)
       {
          // Compass E2   I/Q                 C2         L2         D2         S2
          //         E5b  I/Q                 C7         L7         D7         S7

@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file ANSITime.cpp
 
 //============================================================================
 //
@@ -73,10 +71,11 @@ namespace gpstk
    void ANSITime::convertFromCommonTime( const CommonTime& ct )
       throw( InvalidRequest )
    {
-         /// This is the earliest CommonTime for which ANSITimes are valid.
+         /// This is the earliest CommonTime for which ANSITimes are valid,
+         /// = UNIX_MJD = 40587 = Jan 1 1970
       static const CommonTime MIN_CT = ANSITime(0, TimeSystem::Any);
          /// This is the latest CommonTime for which ANSITimes are valid.
-         /// 2^31 - 1 seconds
+         /// 2^31 - 1 seconds = Jan 19 2038 3:14:7
       static const CommonTime MAX_CT = ANSITime(2147483647, TimeSystem::Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
@@ -147,7 +146,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
 
             default:

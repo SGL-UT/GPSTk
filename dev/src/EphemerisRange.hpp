@@ -76,8 +76,8 @@ namespace gpstk
 
       /// Compute the corrected range at TRANSMIT time, from receiver at
       /// position Rx, to the GPS satellite given by SatID sat, as well as all
-      /// the CER quantities, given the nominal receive time tr_nom and
-      /// an XvtStore.
+      /// the CER quantities, given the nominal receive time tr_nom, the measured
+      /// pseudorange, and an XvtStore.
       double ComputeAtTransmitTime(
          const CommonTime& tr_nom,
          const double& pr,
@@ -90,7 +90,9 @@ namespace gpstk
       /// the CER quantities, given the nominal receive time tr_nom and
       /// an XvtStore.
       /// This doesn't use a pseudorange to initialize the time-of-flight
-      /// computation.
+      /// computation; however note that this could be problematic since the
+      /// measured pseudorange includes the Rx clock bias while this does not;
+      /// prefer the version with measured pseudorange input.
       double ComputeAtTransmitTime(
          const CommonTime& tr_nom,
          const Position& Rx,

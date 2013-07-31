@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+/// TimeSystem.hpp
 
 #ifndef GPSTK_TIMESYSTEM_HPP
 #define GPSTK_TIMESYSTEM_HPP
@@ -62,12 +62,11 @@ namespace gpstk
          GPS,         ///< GPS system time
          GLO,         ///< GLONASS system time
          GAL,         ///< Galileo system time
-         COM,         ///< Compass system time(BeiDou Time, BDT)
+         QZS,         ///< QZSS system Time
+         BDS,         ///< BeiDou system Time
          UTC,         ///< Coordinated Universal Time (e.g., from NTP)
-         UT1,         ///< UT0 corrected for polar wandering 
          TAI,         ///< International Atomic Time
-         TT,          ///< Terrestial Time
-         
+         TT,          ///< Terrestrial Time
          // count MUST BE LAST
          count        ///< the number of systems - not a system
       };
@@ -92,6 +91,14 @@ namespace gpstk
 
       // (copy constructor and operator= are defined by compiler)
       
+      /// Return the number of leap seconds between UTC and TAI, that is the
+      /// difference in time scales UTC-TAI at an epoch defined by (year, month, day).
+      /// NB. Input day in a floating quantity and thus any epoch may be represented;
+      /// this is relevant the period 1960 to 1972, when UTC-TAI was not integral.
+      /// NB. GPS = TAI - 19sec and so GPS-UTC = getLeapSeconds()-19.
+      static double getLeapSeconds(const int& year,const int& month,const double& day)
+         throw();
+
       /// set the time system
       void setTimeSystem(const Systems& sys) throw();
 
