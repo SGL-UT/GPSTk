@@ -45,10 +45,6 @@ else
       CNavDataElementStore.cpp
       CNavEOP.cpp
       CNAVEphemeris.cpp
-      CNavGGTO.cpp
-      CNavISC.cpp
-      CNavText.cpp
-      CNavUTC.cpp
       CNAV2EphClk.cpp
       CNavGGTO.cpp
       CNavISC.cpp
@@ -242,10 +238,6 @@ else
       CNavText.hpp
       CNavUTC.hpp      
       CNAV2EphClk.hpp
-      CNavGGTO.hpp
-      CNavISC.hpp
-      CNavText.hpp
-      CNavUTC.hpp
       CodeBuffer.hpp
       Combinations.hpp
       CommandLine.hpp
@@ -316,7 +308,6 @@ else
       GPSOrbElemStore.hpp	
       GPS_URA.hpp
       GPSWeek.hpp	
-      GPSWeekSecond.hpp	
       GPSWeekZcount.hpp	
       GPSZcount.hpp	
       HelmertTransform.hpp	
