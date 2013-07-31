@@ -1,4 +1,5 @@
-/// @file ANSITime.hpp
+/// @file WeekSecond.hpp  Implement full week, mod week and seconds-of-week time
+/// representation.
 
 //============================================================================
 //
@@ -36,44 +37,44 @@
 //
 //=============================================================================
 
-#ifndef GPSTK_ANSITIME_HPP
-#define GPSTK_ANSITIME_HPP
+#ifndef GPSTK_WEEKSECOND_HPP
+#define GPSTK_WEEKSECOND_HPP
 
-#include "TimeTag.hpp"
+#include "Week.hpp"
+#include "TimeConstants.hpp"
 #include "TimeSystem.hpp"
 
 namespace gpstk
 {
-      /**
-       * This class encapsulates the "ANSITime (seconds since Unix epoch)" time
-       * representation.
-       */
-   class ANSITime : public TimeTag
+   /// This class encapsulates the "Full Week and Seconds-of-week"
+   /// time representation.
+   class WeekSecond : public Week
    {
    public:
-         /**
-          * @defgroup utbo ANSITime Basic Operations
+
+         /** 
+          * @defgroup wsbo WeekSecond Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
          //@{
-
          /**
           * Default Constructor.
           * All elements are initialized to zero.
           */
-     ANSITime( time_t t = 0,
-               TimeSystem ts = TimeSystem::Unknown )
+      WeekSecond(unsigned int w = 0,
+                 double s = 0.,
+                 TimeSystem ts = TimeSystem::Unknown)
          throw()
-        : time(t)
+            : Week(w), sow(s)
       { timeSystem = ts; }
-
-         /** 
+      
+         /**
           * Copy Constructor.
-          * @param right a reference to the ANSITime object to copy
+          * @param right a reference to the WeekSecond object to copy
           */
-      ANSITime( const ANSITime& right )
+      WeekSecond( const WeekSecond& right )
          throw()
-	: time( right.time )
+            : Week( right ), sow( right.sow )
       { timeSystem = right.timeSystem; }
       
          /**
@@ -83,8 +84,8 @@ namespace gpstk
           * @param right a const reference to the BasicTime object to copy
           * @throw InvalidRequest on over-/under-flow
           */
-      ANSITime( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
+      WeekSecond( const TimeTag& right )
+         throw( InvalidRequest )
       { 
          convertFromCommonTime( right.convertToCommonTime() ); 
       }
@@ -96,42 +97,43 @@ namespace gpstk
           * @param right a const reference to the CommonTime object to copy
           * @throw InvalidRequest on over-/under-flow
           */
-      ANSITime( const CommonTime& right )
-         throw( gpstk::InvalidRequest )
+      WeekSecond( const CommonTime& right )
+         throw( InvalidRequest )
       {
          convertFromCommonTime( right );
       }
 
          /** 
           * Assignment Operator.
-          * @param right a const reference to the ANSITime to copy
-          * @return a reference to this ANSITime
+          * @param right a const reference to the WeekSecond to copy
+          * @return a reference to this WeekSecond
           */
-      ANSITime& operator=( const ANSITime& right )
+      WeekSecond& operator=( const WeekSecond& right )
          throw();
       
          /// Virtual Destructor.
-      virtual ~ANSITime()
+      virtual ~WeekSecond()
          throw()
       {}
          //@}
 
          // The following functions are required by TimeTag.
+
       virtual CommonTime convertToCommonTime() const
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
       virtual void convertFromCommonTime( const CommonTime& ct )
-         throw( gpstk::InvalidRequest );
+         throw( InvalidRequest );
 
          /// This function formats this time to a string.  The exceptions 
          /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+         throw( StringUtils::StringException );
 
-         /// This function works similarly to printf. Instead of filling
+         /// This function works similarly to printf.  Instead of filling
          /// the format with data, it fills with error messages.
       virtual std::string printError( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+         throw( StringUtils::StringException );
 
          /**
           * Set this object using the information provided in \a info.
@@ -147,47 +149,53 @@ namespace gpstk
       virtual std::string getPrintChars() const
          throw()
       { 
-         return "KP";
+         return Week::getPrintChars() + "wg";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
          throw()
       {
-         return "%K %P";
+         return Week::getDefaultFormat() + " %010.3g %P";
       }
 
       virtual bool isValid() const
          throw();
 
-      virtual void reset() 
+      virtual void reset()
          throw();
 
+      inline virtual unsigned int getDayOfWeek() const
+         throw()
+      {
+         return static_cast<unsigned int>(sow) / SEC_PER_DAY;
+      }
+
          /**
-          * @defgroup utco ANSITime Comparison Operators
+          * @defgroup wsco WeekSecond Comparison Operators
           * All comparison operators have a parameter "right" which corresponds
-          *  to the ANSITime object to the right of the symbol.
+          *  to the WeekSecond object to the right of the symbol.
           * All comparison operators are const and return true on success
           *  and false on failure.
           */
          //@{
-      bool operator==( const ANSITime& right ) const
+      bool operator==( const WeekSecond& right ) const
          throw();
-      bool operator!=( const ANSITime& right ) const
+      bool operator!=( const WeekSecond& right ) const
          throw();
-      bool operator<( const ANSITime& right ) const
-         throw( gpstk::InvalidRequest );
-      bool operator>( const ANSITime& right ) const
-         throw( gpstk::InvalidRequest );
-      bool operator<=( const ANSITime& right ) const
-         throw( gpstk::InvalidRequest );
-      bool operator>=( const ANSITime& right ) const
-         throw( gpstk::InvalidRequest );
+      bool operator<( const WeekSecond& right ) const
+         throw();
+      bool operator>( const WeekSecond& right ) const
+         throw();
+      bool operator<=( const WeekSecond& right ) const
+         throw();
+      bool operator>=( const WeekSecond& right ) const
+         throw();
          //@}
 
-      time_t time;
+      double sow;
    };
 
-} // namespace
+}
 
-#endif // GPSTK_ANSITIME_HPP
+#endif // GPSTK_WEEKSECOND_HPP

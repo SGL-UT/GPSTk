@@ -295,7 +295,7 @@ namespace gpstk
                  if(n == 1) return L1_WAVELENGTH_GEO;
             else if(n == 5) return L5_WAVELENGTH_GEO;
             break;
-         case SatID::systemCompass:
+         case SatID::systemBeiDou:
                  if(n == 1) return L1_WAVELENGTH_COM;
             else if(n == 2) return L2_WAVELENGTH_COM;
             else if(n == 6) return L6_WAVELENGTH_COM;
@@ -348,7 +348,7 @@ namespace gpstk
                  if(na==1 && nb==5) return GPSbeta15;
             else if(na==5 && nb==1) return GPSbeta51;
             break;
-         case SatID::systemCompass:
+         case SatID::systemBeiDou:
             if(na==5 || na==8 || nb==5 || nb==8) break;
             return (getWavelength(sat,nb)/getWavelength(sat,na));
             break;

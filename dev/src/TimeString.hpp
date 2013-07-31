@@ -1,9 +1,4 @@
-#pragma ident "$Id$"
-
-
-
-#ifndef GPSTK_TIMESTRING_HPP
-#define GPSTK_TIMESTRING_HPP
+/// @file TimeString.hpp  print and scan using all TimeTag derived classes.
 
 //============================================================================
 //
@@ -26,6 +21,9 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
+#ifndef GPSTK_TIMESTRING_HPP
+#define GPSTK_TIMESTRING_HPP
 
 #include "TimeTag.hpp"
 #include "CommonTime.hpp"
@@ -87,7 +85,7 @@ namespace gpstk
        *   - s     integer second-of-day
        *
        * - Common Identifiers:
-       *   - P     Print the object's TimeSystem as a string.
+       *   - P     string TimeSystem
        */
    std::string printTime( const CommonTime& t,
                           const std::string& fmt )
@@ -113,7 +111,23 @@ namespace gpstk
          return ttt.printError(fmt);
       }
    }
- 
+
+      /// This function determines if the given format includes items that would
+      /// be printed by the TimeTag's printf(fmt); NB except 'P' (system).
+      /// In other words, determine if printAs<T>(t,fmt) will not modify the string.
+   template <class TimeTagType>
+   bool willPrintAs( const std::string& fmt ) throw( )
+   {
+      TimeTagType ttt;
+      std::string chars = ttt.getPrintChars();
+      for(size_t i=0; i<chars.length(); i++) {
+         if(chars[i] == 'P') continue;
+         if(StringUtils::isLike(fmt,TimeTag::getFormatPrefixInt()+chars[i]) ||
+            StringUtils::isLike(fmt,TimeTag::getFormatPrefixFloat()+chars[i]))
+            return true;
+      }
+      return false;
+   }
 
       /// Fill the TimeTag object \a btime with time information found in
       /// string \a str formatted according to string \a fmt.

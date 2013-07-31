@@ -650,7 +650,7 @@ try {
    int NGLO(C.NavStore.size(SatID::systemGlonass));
    int NGAL(C.NavStore.size(SatID::systemGalileo));
    int NGEO(C.NavStore.size(SatID::systemGeosync));
-   int NCOM(C.NavStore.size(SatID::systemCompass));
+   int NCOM(C.NavStore.size(SatID::systemBeiDou));
    LOG(VERBOSE) << "RinNav has stored " << Neph << " navigation records.";
    if(NGPS) {LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";}
    if(NGLO) {LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";}
@@ -674,7 +674,7 @@ try {
    C.NavStore.addToList(theFullList);
 
    // N... is what was read; n... will be what is kept
-   int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nCOM(0);
+   int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nBDS(0);
 
    // must edit out any excluded sats
    list<Rinex3NavData>::const_iterator listit;
@@ -692,13 +692,13 @@ try {
             case SatID::systemGlonass: nGLO++; break;
             case SatID::systemGalileo: nGAL++; break;
             case SatID::systemGeosync: nGEO++; break;
-            case SatID::systemCompass: nCOM++; break;
+            case SatID::systemBeiDou:  nBDS++; break;
             default: break;
          }
       }
    }
    else {
-      neph = Neph; nGPS = NGPS; nGLO = NGLO; nGAL = NGAL; nGEO = NGEO; nCOM = NCOM;
+      neph = Neph; nGPS = NGPS; nGLO = NGLO; nGAL = NGAL; nGEO = NGEO; nBDS = NCOM;
       theList = theFullList;
    }
    int nsys(0);
@@ -706,7 +706,7 @@ try {
    if(nGLO > 0) nsys++;
    if(nGAL > 0) nsys++;
    if(nGEO > 0) nsys++;
-   if(nCOM > 0) nsys++;
+   if(nBDS > 0) nsys++;
    if(nsys == 0 || neph == 0) {
       LOG(WARNING) << "Warning - no data to output.";
       return nfiles;
@@ -746,7 +746,7 @@ try {
          else if(nGLO > 0) sys = string("R");
          else if(nGAL > 0) sys = string("E");
          else if(nGEO > 0) sys = string("S");
-         else if(nCOM > 0) sys = string("C");
+         else if(nBDS > 0) sys = string("C");
       }
       rhead.setFileSystem(sys);
 
@@ -766,7 +766,7 @@ try {
       if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
       if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
       if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
-      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";}
+      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nBDS << " records for COM";}
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 3 file " << filename;
    }
 
@@ -803,7 +803,7 @@ try {
          else if(nGLO > 0) sys = string("R");
          else if(nGAL > 0) sys = string("E");
          else if(nGEO > 0) sys = string("S");
-         else if(nCOM > 0) sys = string("C");
+         else if(nBDS > 0) sys = string("C");
       }
       rhead.setFileSystem(sys);
 
@@ -823,7 +823,7 @@ try {
       if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
       if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
       if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
-      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";}
+      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nBDS << " records for COM";}
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 2 file " << filename;
    }
 

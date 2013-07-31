@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file TimeConverters.hpp
 
 #ifndef GPSTK_TIMECONVERTERS_HPP
 #define GPSTK_TIMECONVERTERS_HPP

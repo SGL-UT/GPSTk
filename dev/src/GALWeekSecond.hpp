@@ -1,7 +1,7 @@
-/// @file GPSWeekSecond.hpp  Define GPS week and seconds-of-week; inherits WeekSecond
+/// @file GALWeekSecond.hpp  Define GAL week and seconds-of-week; inherits WeekSecond
 
-#ifndef GPSTK_GPSWEEKSECOND_HPP
-#define GPSTK_GPSWEEKSECOND_HPP
+#ifndef GPSTK_GALWEEKSECOND_HPP
+#define GPSTK_GALWEEKSECOND_HPP
 
 //============================================================================
 //
@@ -43,69 +43,54 @@
 
 namespace gpstk
 {
-   /// This class handles the week portion of the GPS TimeTag classes.
-   ///
-   /// All of the GPS time classes can be boiled down to just two basic
-   /// types: GPSWeekZcount and GPSWeekSecond.
-   /// GPSWeekZcount consists of an integer week and integer zcount.
-   /// GPSWeekSecond consists of an integer week and double second.
-   ///
-   /// The GPS week is specified by
-   /// 10-bit ModWeek, rollover at 1024, bitmask 0x3FF and epoch GPS_EPOCH_JDAY
-   ///
-   /// GPSWeekZcount inherits from GPSWeek and covers all Zcount-related
-   /// special cases:
-   ///  getZcount29() returns (getModWeek() << 19) | getZcount()
-   ///  getZcount32() returns (getWeek() << 19) | getZcount()
-   ///  
-   ///  setZcount29(int z) sets week = (z >> 19) & 0x3FF; 
-   ///                          zcount = z & 0x7FFFF;
-   ///  setZcount32(int z) sets week = z >> 19; zcount = z & 07FFFF;
-   class GPSWeekSecond : public WeekSecond
+   /// This class handles the week portion of the GAL TimeTag classes.
+   /// The GAL week is specified by
+   /// 12-bit ModWeek, rollover at 4096, bitmask 0xFFF and epoch GAL_EPOCH_JDAY
+   class GALWeekSecond : public WeekSecond
    {
    public:
 
       /// Constructor.
-      GPSWeekSecond(unsigned int w = 0,
+      GALWeekSecond(unsigned int w = 0,
                        double s = 0.,
-                       TimeSystem ts = TimeSystem::GPS) throw()
+                       TimeSystem ts = TimeSystem::GAL) throw()
          : WeekSecond(w,s)
       { timeSystem = ts; }
 
       /// Constructor from CommonTime
-      GPSWeekSecond( const CommonTime& right )
+      GALWeekSecond( const CommonTime& right )
          throw( InvalidRequest )
       {
          convertFromCommonTime( right );
       }
 
       /// Destructor.
-      ~GPSWeekSecond() throw() {}
+      ~GALWeekSecond() throw() {}
       
       /// Return the number of bits in the bitmask used to get the ModWeek from the
       /// full week.
       int Nbits(void) const
       {
-         static const int n=10;
+         static const int n=12;
          return n;
       }
 
       /// Return the bitmask used to get the ModWeek from the full week.
       int bitmask(void) const
       {
-         static const int bm=0x3FF;
+         static const int bm=0xFFF;
          return bm;
       }
 
       /// Return the Julian Day (JDAY) of epoch for this system.
       long JDayEpoch(void) const
       {
-         static const long e=GPS_EPOCH_JDAY;
+         static const long e=GAL_EPOCH_JDAY;
          return e;
       }
 
-   }; // end class GPSWeekSecond
+   }; // end class GALWeekSecond
 
 } // namespace
 
-#endif // GPSTK_GPSWEEKSECOND_HPP
+#endif // GPSTK_GALWEEKSECOND_HPP

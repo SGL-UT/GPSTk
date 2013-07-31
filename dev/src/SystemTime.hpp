@@ -69,6 +69,7 @@ namespace gpstk
          throw()
             : UnixTime( right )
       {}
+
          //@}
 
          /**

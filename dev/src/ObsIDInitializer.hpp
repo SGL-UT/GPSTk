@@ -1,4 +1,7 @@
-#pragma ident "$Id$"
+/// @file ObsIDInitializer.hpp This class exists to initialize maps for ObsID.
+/// It was initally an inner class of ObsID but has been exported
+/// so it can be wrapped by SWIG, as SWIG does not support
+/// C++ inner classes as of summer 2013.
 
 //============================================================================
 //
@@ -40,14 +43,6 @@
 #define OBSIDINIT_HPP
 
 #include "ObsID.hpp"
-
-/*  
- *  This class exists to initialize maps for ObsID. It was
- *	initally an inner class of ObsID but has been exported
- *	so it can be wrapped by SWIG, as SWIG does not support
- *	C++ inner classes as of summer 2013.
-*/
-
 
 namespace gpstk {
 

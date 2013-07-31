@@ -66,7 +66,8 @@ namespace gpstk {
             case systemGeosync:
             case systemLEO:
             case systemTransit:
-            case systemCompass: break;
+            case systemBeiDou:
+            case systemQZSS: break;
             default:
                system = systemGPS;
                id = -1;
@@ -104,7 +105,8 @@ namespace gpstk {
             case systemGeosync: return 'S';
             case systemTransit: return 'T';
             case systemLEO:     return 'L';
-            case systemCompass: return 'C';
+            case systemBeiDou:  return 'C';
+            case systemQZSS:    return 'J';
             default:            return '?';
          }
       };
@@ -119,7 +121,8 @@ namespace gpstk {
             case systemGeosync: return "Geosync";
             case systemTransit: return "Transit";
             case systemLEO:     return "LEO";
-            case systemCompass: return "Compass";
+            case systemBeiDou:  return "BeiDou";
+            case systemQZSS:    return "QZSS";
             default:            return "Unknown";
          }
       };
@@ -163,7 +166,10 @@ namespace gpstk {
                system = SatID::systemGPS;
                break;
             case 'C': case 'c':
-               system = SatID::systemCompass;
+               system = SatID::systemBeiDou;
+               break;
+            case 'J': case 'j':
+               system = SatID::systemQZSS;
                break;
             default:                   // invalid system character
                Exception e(std::string("Invalid system character \"")

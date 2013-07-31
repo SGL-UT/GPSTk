@@ -82,7 +82,6 @@ set (gpstk_src
       GPSEphemerisStore.cpp
       GPSOrbElemStore.cpp
       GPSWeek.cpp
-      GPSWeekSecond.cpp
       GPSWeekZcount.cpp
       GPSZcount.cpp
       HelmertTransform.cpp
@@ -174,6 +173,8 @@ set (gpstk_src
       TypeID.cpp
       UnixTime.cpp
       VectorBase.cpp
+      Week.cpp
+      WeekSecond.cpp
       WxObsMap.cpp
       X1Sequence.cpp
       X2Sequence.cpp

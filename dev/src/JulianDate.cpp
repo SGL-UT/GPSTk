@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file JulianDate.cpp
 
 //============================================================================
 //
@@ -142,7 +140,7 @@ namespace gpstk
                break;
 
             case 'P':
-	            timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
 
             default:

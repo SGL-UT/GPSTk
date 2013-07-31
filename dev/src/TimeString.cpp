@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file TimeString.cpp  print and scan using all TimeTag derived classes.
 
 //============================================================================
 //
@@ -29,6 +27,9 @@
 #include "ANSITime.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
+#include "BDSWeekSecond.hpp"
+#include "GALWeekSecond.hpp"
+#include "QZSWeekSecond.hpp"
 #include "GPSWeekZcount.hpp"
 #include "JulianDate.hpp"
 #include "MJD.hpp"
@@ -47,16 +48,32 @@ namespace gpstk
       try
       {
          std::string rv( fmt );
-
-            // Convert to each TimeTag type and run its printf using rv.
-         rv = printAs<ANSITime>( t, rv );
-         rv = printAs<CivilTime>( t, rv );
-         rv = printAs<GPSWeekSecond>( t, rv );
-         rv = printAs<GPSWeekZcount>( t, rv );
-         rv = printAs<JulianDate>( t, rv );
-         rv = printAs<MJD>( t, rv );
-         rv = printAs<UnixTime>( t, rv );
-         rv = printAs<YDSTime>( t, rv );
+            // Convert to each TimeTag type and run its printf using rv, but
+            // only if fmt contains the format characters of that type
+         if(willPrintAs<ANSITime>(rv))
+            rv = printAs<ANSITime>( t, rv );
+         if(willPrintAs<CivilTime>(rv))
+            rv = printAs<CivilTime>( t, rv );
+         if(willPrintAs<GPSWeekSecond>(rv)) {
+            if(t.getTimeSystem() == TimeSystem::BDS)
+               rv = printAs<BDSWeekSecond>( t, rv );
+            else if(t.getTimeSystem() == TimeSystem::GAL)
+               rv = printAs<GALWeekSecond>( t, rv );
+            else if(t.getTimeSystem() == TimeSystem::QZS)
+               rv = printAs<QZSWeekSecond>( t, rv );
+            else                       // default is TimeSystem::GPS
+               rv = printAs<GPSWeekSecond>( t, rv );
+         }
+         if(willPrintAs<GPSWeekZcount>(rv))
+            rv = printAs<GPSWeekZcount>( t, rv );
+         if(willPrintAs<JulianDate>(rv))
+            rv = printAs<JulianDate>( t, rv );
+         if(willPrintAs<MJD>(rv))
+            rv = printAs<MJD>( t, rv );
+         if(willPrintAs<UnixTime>(rv))
+            rv = printAs<UnixTime>( t, rv );
+         if(willPrintAs<YDSTime>(rv))
+            rv = printAs<YDSTime>( t, rv );
       
          return rv;
       }
@@ -177,23 +194,23 @@ namespace gpstk
 
                case 'a':
                case 'A':
-               {
-                  hdow = true;
-                  std::string thisDay = firstWord( itr->second );
-                  lowerCase(thisDay);
-                  if (isLike(thisDay, "sun.*")) idow = 0;
-                  else if (isLike(thisDay, "mon.*")) idow = 1;
-                  else if (isLike(thisDay, "tue.*")) idow = 2;
-                  else if (isLike(thisDay, "wed.*")) idow = 3;
-                  else if (isLike(thisDay, "thu.*")) idow = 4;
-                  else if (isLike(thisDay, "fri.*")) idow = 5;
-                  else if (isLike(thisDay, "sat.*")) idow = 6;
-                  else
                   {
-                     hdow = false;
+                     hdow = true;
+                     std::string thisDay = firstWord( itr->second );
+                     lowerCase(thisDay);
+                     if (isLike(thisDay, "sun.*")) idow = 0;
+                     else if (isLike(thisDay, "mon.*")) idow = 1;
+                     else if (isLike(thisDay, "tue.*")) idow = 2;
+                     else if (isLike(thisDay, "wed.*")) idow = 3;
+                     else if (isLike(thisDay, "thu.*")) idow = 4;
+                     else if (isLike(thisDay, "fri.*")) idow = 5;
+                     else if (isLike(thisDay, "sat.*")) idow = 6;
+                     else
+                     {
+                        hdow = false;
+                     }
                   }
-               }
-               break;
+                  break;
                   
                case 'm':
                   hmonth = true;
@@ -217,7 +234,8 @@ namespace gpstk
 
                case 'f':
                   hsec = true;
-                  info['S'] = info['f'];  // a small hack to make fractional seconds work
+                  // a small hack to make fractional seconds work
+                  info['S'] = info['f'];
                   break;
 
                case 'U':
@@ -249,10 +267,10 @@ namespace gpstk
                   break;
 
                default:
-               {
+                  {
                      // do nothing
-               }
-               break;
+                  }
+                  break;
 
             };
          }
@@ -298,25 +316,25 @@ namespace gpstk
             return;
          }
 
-         if ( ((hepoch && hweek) || hfullweek) )
+         if ( (hepoch && hweek) || hfullweek )
          {
-            GPSWeekSecond tt;
-            tt.setFromInfo( info );
+            WeekSecond* ptt;
+            ptt->setFromInfo(info);
             if( hdow && !hsow )
             {
-               tt.sow = asInt( info['w'] ) * SEC_PER_DAY;
+               ptt->sow = asInt( info['w'] ) * SEC_PER_DAY;
                if( hsod )
                {
-                  tt.sow += asDouble( info['s'] );
+                  ptt->sow += asDouble( info['s'] );
                }
                else if( hhour && hmin && hsec )
                {
-                  tt.sow += convertTimeToSOD( asInt( info['H'] ), 
+                  ptt->sow += convertTimeToSOD( asInt( info['H'] ), 
                                               asInt( info['M'] ), 
                                               asDouble( info['S'] ) );
                }
             }
-            t = tt.convertToCommonTime();
+            t = ptt->convertToCommonTime();
             return;
          }
 
@@ -360,6 +378,29 @@ namespace gpstk
          GPSTK_RETHROW( se );
       }
    }   
+
+   // helper routine for mixedScanTime; all WeekSecond derived classes should be here.
+   WeekSecond* ptrToWeekSecond(CommonTime& ct) throw()
+   {
+      WeekSecond *ptt;
+      if(ct.getTimeSystem() == TimeSystem::BDS) {
+         BDSWeekSecond *pbtt = new BDSWeekSecond(ct);
+         ptt = dynamic_cast<WeekSecond*>(pbtt);
+      }
+      else if(ct.getTimeSystem() == TimeSystem::GAL) {
+         GALWeekSecond *pbtt = new GALWeekSecond(ct);
+         ptt = dynamic_cast<WeekSecond*>(pbtt);
+      }
+      else if(ct.getTimeSystem() == TimeSystem::QZS) {
+         QZSWeekSecond *pbtt = new QZSWeekSecond(ct);
+         ptt = dynamic_cast<WeekSecond*>(pbtt);
+      }
+      else {         // default is GPS
+         GPSWeekSecond *pgtt = new GPSWeekSecond(ct);
+         ptt = dynamic_cast<WeekSecond*>(pgtt);
+      }
+      return ptt;
+   }
 
    void mixedScanTime( CommonTime& t,
                        const std::string& str,
@@ -536,14 +577,15 @@ namespace gpstk
 
             // We'll copy this time to 't' after all of the processing.
          CommonTime ct;
+         ct.setTimeSystem(t.getTimeSystem());
          
             // Go through all of the types in order of least precise to most
             // precise.
          if( hepoch ) 
          {
-            GPSWeekSecond tt(ct);
-            tt.setEpoch( iepoch );
-            ct = tt.convertToCommonTime();
+            WeekSecond *ptt = ptrToWeekSecond(ct);
+            ptt->setEpoch( iepoch );
+            ct = ptt->convertToCommonTime();
          }
          
          if( hyear )
@@ -562,23 +604,23 @@ namespace gpstk
 
          if( hfullweek )
          {
-            GPSWeekSecond tt(ct);
-            tt.week = ifullweek;
-            ct = tt.convertToCommonTime();
+            WeekSecond *ptt = ptrToWeekSecond(ct);
+            ptt->week = ifullweek;
+            ct = ptt->convertToCommonTime();
          }
          
          if( hweek )
          {
-            GPSWeekSecond tt(ct);
-            tt.setWeek10( iweek );
-            ct = tt.convertToCommonTime();
+            WeekSecond *ptt = ptrToWeekSecond(ct);
+            ptt->setModWeek(iweek);
+            ct = ptt->convertToCommonTime();
          }
          
          if( hdow )
          {
-            GPSWeekSecond tt(ct);
-            tt.sow = static_cast<double>(idow) * SEC_PER_DAY;
-            ct = tt.convertToCommonTime();
+            WeekSecond *ptt = ptrToWeekSecond(ct);
+            ptt->sow = static_cast<double>(idow) * SEC_PER_DAY;
+            ct = ptt->convertToCommonTime();
          }
          
          if( hday )
@@ -625,9 +667,9 @@ namespace gpstk
          
          if( hsow )
          {
-            GPSWeekSecond tt(ct);
-            tt.sow = isow;
-            ct = tt.convertToCommonTime();
+            WeekSecond *ptt = ptrToWeekSecond(ct);
+            ptt->sow = isow;
+            ct = ptt->convertToCommonTime();
          }
          
          if( hsod )
