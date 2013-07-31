@@ -14,7 +14,6 @@ Frame.cpp
 GraphicsConstants.cpp 
 GridLayout.cpp
 HLayout.cpp 
-# IndexedColorMap.cpp 
 InterpolatedColorMap.cpp
 Line.cpp 
 Marker.cpp
@@ -34,3 +33,6 @@ ViewerManager.cpp
 )
     
 add_library (vdraw SHARED ${vdraw_src})
+include_directories (${CMAKE_SOURCE_DIR}/lib/geomatics)
+install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
+install (TARGETS vdraw DESTINATION lib)

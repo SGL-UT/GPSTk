@@ -47,21 +47,21 @@
 #include "StringUtils.hpp"
 #include "ObsArray.hpp"
 
-namespace gpstk 
+namespace gpstk
 {
-   
-   ObsArray::ObsArray(void) 
+
+   ObsArray::ObsArray(void)
          : numObsTypes(0)
    {
    }
 
-   ObsIndex ObsArray::add(RinexObsHeader::RinexObsType type)
+   ObsIndex ObsArray::add(RinexObsType type)
    {
       isBasic[numObsTypes]=true;
       basicTypeMap[numObsTypes]=type;
       return numObsTypes++;
    }
-   
+
    ObsIndex ObsArray::add(const std::string& expression)
    {
       isBasic[numObsTypes]=false;
@@ -70,7 +70,7 @@ namespace gpstk
       return numObsTypes++;
    }
 
-   void ObsArray::load(const std::string& obsfilename, 
+   void ObsArray::load(const std::string& obsfilename,
                        const std::string& navfilename)
    {
       std::vector<std::string> obsList(1), navList(1);
@@ -79,7 +79,7 @@ namespace gpstk
       load(obsList, navList);
    }
 
-   void ObsArray::load(const std::vector<std::string>& obsList, 
+   void ObsArray::load(const std::vector<std::string>& obsList,
                        const std::vector<std::string>& navList)
    {
       // First check for existance of input files
@@ -107,7 +107,7 @@ namespace gpstk
       long totalEpochsObs = 0;
       Triple antPos;
       double dR;
-   
+
       for (int i=0; i< obsList.size(); i++)
       {
          //RinexObsHeader roh;
@@ -126,7 +126,7 @@ namespace gpstk
 	    {
 	       PRSolution2 prSolver;
                prSolver.RMSLimit = 400;
-               GGTropModel ggTropModel; 
+               GGTropModel ggTropModel;
 	       ggTropModel.setWeather(20., 1000., 50.); // A default model for sea level.
 
           // NOTE: The following section is partially adapted to Rinex3, but
@@ -134,7 +134,7 @@ namespace gpstk
                RinexObsStream tempObsStream(obsList[i]);
                Rinex3ObsData   tempObsData;
                Rinex3ObsHeader tempObsHeader;
-                
+
                tempObsStream >> tempObsHeader;
                tempObsStream >> tempObsData;
 
@@ -155,17 +155,17 @@ namespace gpstk
 
 
                prSolver.RAIMCompute(tempObsData.time,
-				    vsats, vranges, 
+				    vsats, vranges,
 				    ephStore, &ggTropModel);
 
                antPos[0] = prSolver.Solution[0];
                antPos[1] = prSolver.Solution[1];
                antPos[2] = prSolver.Solution[2];
 	       /*
-	       std::cout << "Position resolved at " 
+	       std::cout << "Position resolved at "
 			 << antPos[0] << ", " << antPos[1] << ", "
-		         << antPos[2] << std::endl;		
-	       */ 
+		         << antPos[2] << std::endl;
+	       */
 
 	    }
          }
@@ -193,11 +193,11 @@ namespace gpstk
 
       validAzEl = true;
       long satEpochIdx = 0; // size_t satEpochIdx=0;
-         
+
       std::map<SatID, CommonTime> lastObsTime;
       std::map<SatID, CommonTime>::const_iterator it2;
       std::map<SatID, long> currPass;
-     
+
       long highestPass = 0;
       long thisPassNo;
 
@@ -215,7 +215,7 @@ namespace gpstk
 
          while (robs >> rod)
          {
-            // Second step through the obs for each SV 
+            // Second step through the obs for each SV
 
             for (it = rod.obs.begin(); it!=rod.obs.end(); it++)
             {
@@ -231,8 +231,8 @@ namespace gpstk
                   thislli = thislli || (i_rotm->second.lli > 0);
                }
                lli[satEpochIdx]=thislli;
-             
-            
+
+
                if (  (it2==lastObsTime.end()) || (thislli) || ( (rod.time-lastObsTime[(*it).first]) > 1.1*RinexObsHeader::intervalValid) )
                {
                   thisPassNo = highestPass;
@@ -240,12 +240,12 @@ namespace gpstk
                   currPass[(*it).first]=highestPass++;
                }
                else
-               { 
+               {
                   thisPassNo = currPass[(*it).first];
                   lastObsTime[(*it).first]=rod.time;
                }
 
-               pass[satEpochIdx]=thisPassNo;              
+               pass[satEpochIdx]=thisPassNo;
 
                for (int idx=0; idx<numObsTypes; idx++)
                {
@@ -253,7 +253,7 @@ namespace gpstk
                   {
                      observation[satEpochIdx*numObsTypes+idx] = rod.obs[it->first][basicTypeMap[idx]].data;
                   }
-                  else 
+                  else
                   {
                      expressionMap[idx].setRinexObs(rod.obs[it->first]);
                      observation[satEpochIdx*numObsTypes+idx] = expressionMap[idx].evaluate();
@@ -274,7 +274,7 @@ namespace gpstk
                {
                   validAzEl[satEpochIdx]=false;
                }
-               //std::cout << "i: (" << satEpochIdx << ")" << rod.time << std::endl;    
+               //std::cout << "i: (" << satEpochIdx << ")" << rod.time << std::endl;
 
             epoch[satEpochIdx]=rod.time;
 
@@ -317,7 +317,7 @@ namespace gpstk
       /////
 
       while ( robs >> rod )
-      { 
+      {
          numEpochsObs += rod.obs.size();
       }
    }
@@ -326,7 +326,7 @@ namespace gpstk
      throw(ObsArrayException)
    {
       using namespace std;
- 
+
       if (epoch.size() != strikeList.size())
       {
          ObsArrayException e("Edit request has wrong size.");
@@ -337,34 +337,34 @@ namespace gpstk
 
       valarray<CommonTime> newEpoch = epoch[keepList];
       size_t newObsEpochCount = newEpoch.size();
-      
+
       epoch.resize(newObsEpochCount);
       epoch = newEpoch;
-      
+
       valarray<SatID> newSatellite = satellite[keepList];
       satellite.resize(newObsEpochCount);
       satellite = newSatellite;
-      
+
       valarray<bool> newLLI = lli[keepList];
       lli.resize(newObsEpochCount);
       lli = newLLI;
-      
+
       valarray<double> newAz = azimuth[keepList];
       azimuth.resize(newObsEpochCount);
       azimuth = newAz;
-      
+
       valarray<double> newEl = elevation[keepList];
       elevation.resize(newObsEpochCount);
       elevation = newEl;
-      
+
       valarray<bool> newValidAzEl = validAzEl[keepList];
       validAzEl.resize(newObsEpochCount);
       validAzEl   = newValidAzEl;
-      
+
       valarray<long> newPass = pass[keepList];
       pass.resize(newObsEpochCount);
       pass = newPass;
-      
+
       valarray<bool> keepObs;
       keepObs.resize(numObsTypes*numSatEpochs);
       for (size_t i=0; i<(numObsTypes*numSatEpochs); i+=numSatEpochs)
@@ -380,7 +380,7 @@ namespace gpstk
       numSatEpochs = newObsEpochCount;
       //std::cout << "ObsArray::edit.numSatEpochs: " << numSatEpochs << "\n";
    }
-   
+
    double ObsArray::getPassLength(long passNo)
    {
          // TODO: use find_first_of to smartly search over pass number.
@@ -388,13 +388,13 @@ namespace gpstk
          // Again we must allocate space just to do a search!!
 
       using namespace std;
-      
+
       valarray<bool> ptest = (pass==passNo);
       valarray<CommonTime> pepochs = epoch[ptest];
       double length =  pepochs[pepochs.size()-1] - pepochs[0];
       return length;
    }
-   
+
 } // end namespace gpstk
- 
+
 

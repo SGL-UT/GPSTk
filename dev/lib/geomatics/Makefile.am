@@ -37,6 +37,7 @@ incl_HEADERS = AntexBase.hpp \
 	  GSatID.hpp \
 	  GeodeticFrames.hpp \
 	  index.hpp \
+	  KalmanFilter.hpp \
 	  logstream.hpp \
 	  Namelist.hpp \
 	  PhaseWindup.hpp \
@@ -50,4 +51,5 @@ incl_HEADERS = AntexBase.hpp \
 	  SatPass.hpp \
 	  SolarPosition.hpp \
 	  SolarSystem.hpp \
+	  SolidEarthTides.hpp \
 	  SunEarthSatGeometry.hpp

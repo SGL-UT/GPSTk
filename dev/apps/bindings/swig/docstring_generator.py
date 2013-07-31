@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+
+
 """GPSTk python-swig binding documentation generator.
 
 This reads every file in the gpstk/dev/doc/xml (where doxygen places its xml)
@@ -47,7 +50,10 @@ def clean_errors(file):
 
 
 def generate_docs():
-    gpstk_folder = os.path.realpath(__file__)[:-29]
+    # yes, it's a magic number below.
+    # gpstk_folder should be the path ending with 'gpstk/'
+    # the number is the number of chars to cut off from this file's path
+    gpstk_folder = os.path.realpath(__file__)[:-45]
     xml_files = glob.glob(gpstk_folder + 'dev/doc/xml/*.xml')
     num_files = len(xml_files)
     if num_files == 0:
@@ -74,8 +80,8 @@ def generate_docs():
     out_file = open(gpstk_py_doc + 'doc.i', 'w')
     out_file.write('# This is an AUTO-GENERATED file by doc.py.\n')
     out_file.write('# Do not modify it unless you know what you are doing.\n')
-    generated_files = glob.glob(gpstk_py_doc + '*.i')
-    for f_i in generated_files:
+    doc_files = glob.glob(gpstk_py_doc + '*.i')
+    for f_i in doc_files:
         if 'doc.i' not in f_i:
             out_file.write('%include ' + f_i + '\n')
     out_file.close()

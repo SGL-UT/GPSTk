@@ -1,4 +1,4 @@
-%module gpstk_pylib
+%module(directors="1") gpstk_pylib
 %{
     #include <sstream>
 
@@ -44,7 +44,6 @@
     #include "../../../src/Vector.hpp"
     #include "../../../src/AstronomicalFunctions.hpp"
 
-    // ?
     #include "../../../src/XvtStore.hpp"
     #include "../../../src/PZ90Ellipsoid.hpp"
     #include "../../../src/WGS84Ellipsoid.hpp"
@@ -67,30 +66,40 @@
     #include "../../../src/GPSAlmanacStore.hpp"
     #include "../../../src/YumaAlmanacStore.hpp"
     #include "../../../src/SVNumXRef.hpp"
-    #include "../../../src/GPSEphemerisStore.hpp"
     #include "../../../src/RinexSatID.hpp"
     #include "../../../src/GPS_URA.hpp"
     #include "../../../src/BrcClockCorrection.hpp"
     #include "../../../src/BrcKeplerOrbit.hpp"
     #include "../../../src/EngEphemeris.hpp"
+    #include "../../../src/GPSEphemerisStore.hpp"
     #include "../../../src/GalEphemeris.hpp"
     #include "../../../src/GalEphemerisStore.hpp"
     #include "../../../src/GloEphemeris.hpp"
 
+    // RINEX things:
+    #include "../../../src/RinexSatID.hpp"
     #include "../../../src/RinexClockBase.hpp"
     #include "../../../src/RinexObsBase.hpp"
     #include "../../../src/RinexObsHeader.hpp"
+    #include "../../../src/RinexObsData.hpp"
     #include "../../../src/RinexObsID.hpp"
     #include "../../../src/RinexClockHeader.hpp"
     #include "../../../src/RinexClockData.hpp"
+    #include "../../../src/RinexClockStream.hpp"
     #include "../../../src/RinexObsStream.hpp"
-
+    #include "../../../src/RinexNavBase.hpp"
+    #include "../../../src/RinexNavHeader.hpp"
+    #include "../../../src/RinexNavStream.hpp"
+    #include "../../../src/RinexNavData.hpp"
+    #include "../../../src/RinexMetBase.hpp"
+    #include "../../../src/RinexMetHeader.hpp"
+    #include "../../../src/RinexMetStream.hpp"
+    #include "../../../src/RinexMetData.hpp"
     #include "../../../src/Rinex3NavBase.hpp"
     #include "../../../src/Rinex3NavHeader.hpp"
     #include "../../../src/Rinex3NavStream.hpp"
     #include "../../../src/Rinex3NavData.hpp"
     #include "../../../src/OrbElemRinex.hpp"
-
     #include "../../../src/Rinex3ClockBase.hpp"
     #include "../../../src/Rinex3ObsBase.hpp"
     #include "../../../src/Rinex3ObsHeader.hpp"
@@ -98,8 +107,10 @@
     #include "../../../src/Rinex3ObsStream.hpp"
     #include "../../../src/Rinex3ClockHeader.hpp"
     #include "../../../src/Rinex3ClockData.hpp"
+    #include "../../../src/Rinex3ClockStream.hpp"
     #include "../../../src/Rinex3EphemerisStore.hpp"
 
+    // SP3 things:
     #include "../../../src/TabularSatStore.hpp"
     #include "../../../src/ClockSatStore.hpp"
     #include "../../../src/SP3Base.hpp"
@@ -109,17 +120,37 @@
     #include "../../../src/SP3Stream.hpp"
     #include "../../../src/PositionSatStore.hpp"
     #include "../../../src/SP3EphemerisStore.hpp"
+    #include "../../../src/RinexUtilities.hpp"
 
+    // SEM things:
     #include "../../../src/SEMBase.hpp"
     #include "../../../src/SEMHeader.hpp"
     #include "../../../src/SEMStream.hpp"
     #include "../../../src/SEMData.hpp"
     #include "../../../src/SEMAlmanacStore.hpp"
 
+    #include "../../../src/Matrix.hpp"
+    #include "../../../src/Bancroft.hpp"
+    #include "../../../src/ValidType.hpp"
+    #include "../../../src/ObsEpochMap.hpp"
+    #include "../../../src/WxObsMap.hpp"
+    #include "../../../src/TropModel.hpp"
+    #include "../../../src/CheckPRData.hpp"
+    #include "../../../src/PRSolution2.hpp"
+    #include "../../../src/ExtractData.hpp"
 
 
+    #include "../../../src/FFBinaryStream.hpp"
+    #include "../../../src/FICBase.hpp"
+    #include "../../../src/FICStreamBase.hpp"
+    #include "../../../src/FICStream.hpp"
+    #include "../../../src/FICHeader.hpp"
+    #include "../../../src/FICData.hpp"
 
-    typedef std::map<char, std::string> IdToValue; // defined in TimeTag.hpp
+
+    typedef std::map< char, std::string> IdToValue;
+    typedef std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> > DataMap;
+    typedef std::map<gpstk::RinexMetHeader::RinexMetType, double> RinexMetMap;
     using namespace gpstk;
 %}
 
@@ -129,25 +160,29 @@
 %feature("autodoc","1");
 %include "doc/doc.i"
 %include "std_string.i"
+%include "std_vector.i"
+%include "std_pair.i"
 %include "std_map.i"
+%include "std_list.i"
+%include "std_set.i"
+%include "std_multimap.i"
 
 %rename(__str__) *::asString() const;
+%rename(toCommonTime) *::convertToCommonTime() const;
 %ignore *::dump;
 %ignore *::operator<<;
+%ignore operator<<;
 
 %include "src/typemaps.i"
 %include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
-typedef std::map< char, std::string> IdToValue;
-%template(map_int_char) std::map<int, char>;
-  %template() std::pair<int, char>;
-%template(map_int_string) std::map<int, std::string>;
-  %template() std::pair<int, std::string>;
-%template(map_char_int) std::map<char, int>;
-  %template() std::pair<char, int>;
-%template(map_string_int) std::map<std::string, int>;
-  %template() std::pair<std::string, int>;
-%include "src/Exception.i"
+%include "src/std_map_extra.i"
+%include "src/std_set_extra.i"
 
+typedef std::map< char, std::string> IdToValue;
+typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
+typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
+
+%include "src/Exception.i"
 
 // =============================================================
 //  Section 2: Time classes
@@ -193,6 +228,7 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/ObsID.hpp"
 %include "../../../src/GNSSconstants.hpp"
 %include "src/Triple.i"
+%extend gpstk::Triple { int __len__() {return 3;}}
 %include "src/ReferenceFrame.i"
 %include "../../../src/EllipsoidModel.hpp"
 %include "../../../src/Xvt.hpp"
@@ -233,30 +269,47 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
+%rename (toAlmOrbit) gpstk::YumaData::operator AlmOrbit() const;
 %include "../../../src/YumaData.hpp"
 %include "../../../src/GPSAlmanacStore.hpp"
 %template(FileStore_YumaHeader) gpstk::FileStore<gpstk::YumaHeader>;
 %include "../../../src/YumaAlmanacStore.hpp"
 
 %include "../../../src/SVNumXRef.hpp"
-%include "../../../src/GPSEphemerisStore.hpp"
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/GPS_URA.hpp"
 %include "../../../src/BrcClockCorrection.hpp"
 %include "../../../src/BrcKeplerOrbit.hpp"
 %include "../../../src/EngEphemeris.hpp"
+%include "../../../src/GPSEphemerisStore.hpp"
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
 %include "../../../src/GloEphemeris.hpp"
-// %include "../../../src/GloEphemerisStore.hpp" // not ready yet
+%include "../../../src/GloEphemerisStore.hpp"
 
+
+// RINEX things:
+%include "../../../src/RinexSatID.hpp"
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"
 %include "../../../src/RinexObsHeader.hpp"
+%include "../../../src/RinexObsData.hpp"
 %include "../../../src/RinexObsID.hpp"
 %include "../../../src/RinexObsStream.hpp"
 %include "../../../src/RinexClockHeader.hpp"
 %include "../../../src/RinexClockData.hpp"
+%include "../../../src/RinexClockStream.hpp"
+
+%rename (toEngEphemeris) gpstk::RinexNavData::operator EngEphemeris() const;
+%include "../../../src/RinexNavBase.hpp"
+%include "../../../src/RinexNavHeader.hpp"
+%include "../../../src/RinexNavStream.hpp"
+%include "../../../src/RinexNavData.hpp"
+
+%include "../../../src/RinexMetBase.hpp"
+%include "../../../src/RinexMetHeader.hpp"
+%include "../../../src/RinexMetStream.hpp"
+%include "src/RinexMetData.i"
 
 %rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
 %rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;
@@ -266,7 +319,6 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/Rinex3NavStream.hpp"
 %include "../../../src/Rinex3NavData.hpp"
 %include "../../../src/OrbElemRinex.hpp"
-
 %include "../../../src/Rinex3ClockBase.hpp"
 %include "../../../src/Rinex3ObsBase.hpp"
 %include "../../../src/Rinex3ObsHeader.hpp"
@@ -274,11 +326,14 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/Rinex3ObsStream.hpp"
 %include "../../../src/Rinex3ClockHeader.hpp"
 %include "../../../src/Rinex3ClockData.hpp"
+%include "../../../src/Rinex3ClockStream.hpp"
 %include "../../../src/Rinex3EphemerisStore.hpp"
 
+
+
+// SP3 things:
 %include "../../../src/TabularSatStore.hpp"
 %include "src/ClockSatStore.i"
-
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
 %include "../../../src/SP3Header.hpp"
@@ -286,7 +341,10 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/SP3Stream.hpp"
 %include "src/PositionSatStore.i"
 %include "../../../src/SP3EphemerisStore.hpp"
+%include "../../../src/RinexUtilities.hpp"
 
+
+// SEM things:
 %rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
 %include "../../../src/SEMBase.hpp"
 %include "../../../src/SEMHeader.hpp"
@@ -294,6 +352,24 @@ typedef std::map< char, std::string> IdToValue;
 %include "../../../src/SEMData.hpp"
 %template(FileStore_SEMHeader) gpstk::FileStore<gpstk::SEMHeader>;
 %include "../../../src/SEMAlmanacStore.hpp"
+
+
+%include "../../../src/ValidType.hpp"
+%include "../../../src/ObsEpochMap.hpp"
+%include "../../../src/WxObsMap.hpp"
+%include "../../../src/TropModel.hpp"
+%include "../../../src/PRSolution2.hpp"
+%include "../../../src/ExtractData.hpp"
+
+
+%rename (toEngEphemeris) gpstk::FICData::operator EngEphemeris() const;
+%rename (toAlmOrbit) gpstk::FICData::operator AlmOrbit() const;
+%include "../../../src/FFBinaryStream.hpp"
+%include "../../../src/FICBase.hpp"
+%include "../../../src/FICStreamBase.hpp"
+%include "../../../src/FICStream.hpp"
+%include "../../../src/FICHeader.hpp"
+%include "../../../src/FICData.hpp"
 
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.

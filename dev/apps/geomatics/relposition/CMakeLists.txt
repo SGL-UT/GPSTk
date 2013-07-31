@@ -29,7 +29,9 @@ target_link_libraries(baselib gpstk geomatics)
 
 add_executable(DDBase DDBase.cpp)
 target_link_libraries(DDBase baselib gpstk geomatics)
+install (TARGETS DDBase DESTINATION bin)
 
 add_executable(ddmerge ddmerge.cpp)
 target_link_libraries(ddmerge baselib gpstk geomatics)
+install (TARGETS ddmerge DESTINATION bin)
 

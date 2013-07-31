@@ -17,20 +17,20 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -49,7 +49,7 @@
 
 namespace gpstk
 {
-   /// Determine if the given ObsID is valid. If the input string is 3 
+   /// Determine if the given ObsID is valid. If the input string is 3
    /// characters long, the system is unknown and the string is tested with all RINEX
    /// If this string is 4 characters long, the first character is the system
    /// character as described in the Rinex 3 specification.
@@ -97,7 +97,7 @@ namespace gpstk
       /// Explicit constructior
       RinexObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
          : ObsID(ot, cb, tc) {};
-      
+
       /// Construct this object from the string specifier
       RinexObsID(const std::string& strID) throw(InvalidParameter);
 
@@ -118,7 +118,7 @@ namespace gpstk
       /// L2 -> L2P; P2 -> C2P; C2 -> C2X; S2 -> S2P; D2 -> D2P
       /// Note that RinexHeader does the conversion with more care for tracking code,
       /// and does NOT USE THIS ROUTINE.
-      RinexObsID(const RinexObsHeader::RinexObsType& rot);
+      RinexObsID(const RinexObsType& rot);
 
       /// This returns a representation of this object using the observation
       /// codes described in section 5.1 of the Rinex 3 specification. Note that

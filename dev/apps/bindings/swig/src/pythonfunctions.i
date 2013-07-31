@@ -2,19 +2,7 @@
 //              Python stuff
 ///////////////////////////////////////////////
 %pythoncode %{
-
-def _nlines(fileName):
-    """Counts and returns the number of lines in a file, excluding any blank
-    lines at the end of the file.
-    """
-    count = 0
-    with open(fileName) as infp:
-        for line in infp:
-            count += 1
-    return count
-
-
-def now(timeSystem=TimeSystem.Unknown):
+def now():
     """Returns the current time (defined by what SystemTime() returns)
     in a CommonTime format, in the given TimeSystem.
 
@@ -23,18 +11,29 @@ def now(timeSystem=TimeSystem.Unknown):
 
         timeSystem:  the TimeSystem (enum value) to assign to the output
     """
-    t = SystemTime().convertToCommonTime()
-    t.setTimeSystem(TimeSystem(timeSystem))
-    return t
+    return SystemTime().toCommonTime()
 
+def timeSystem(str='Unknown'):
+    """Returns a TimeSystem object named by the given string.
+    Valid choices are:
+    Unknown, Any, GPS, GLO, GAL, COM, UTC, UT1, TAI, TT.
+    """
 
+    dict = {
+        'Unknown': TimeSystem.Unknown,
+        'Any': TimeSystem.Any,
+        'GPS': TimeSystem.GPS,
+        'GLO': TimeSystem.GLO,
+        'GAL': TimeSystem.GAL,
+        'COM': TimeSystem.COM,
+        'UTC': TimeSystem.UTC,
+        'UT1': TimeSystem.UT1,
+        'TAI': TimeSystem.TAI,
+        'TT': TimeSystem.TT,
+    }
+    return TimeSystem(dict[str])
 
-def commonTime(timeTag):
-    """Converts a time to a CommonTime using its convertToCommonTime method."""
-    return timeTag.convertToCommonTime()
 %}
-
-
 
 ///////////////////////////////////////////////
 //      Macros for string (__str__) stuff
@@ -50,15 +49,40 @@ def commonTime(timeTag):
 }
 %enddef
 STR_DUMP_HELPER(AlmOrbit)
+STR_DUMP_HELPER(BrcClockCorrection)
+STR_DUMP_HELPER(BrcKeplerOrbit)
+STR_DUMP_HELPER(EngAlmanac)
+STR_DUMP_HELPER(EngEphemeris)
+STR_DUMP_HELPER(FICData)
+STR_DUMP_HELPER(FICHeader)
+STR_DUMP_HELPER(GalEphemeris)
+STR_DUMP_HELPER(GalEphemerisStore)
+STR_DUMP_HELPER(GloEphemeris)
+STR_DUMP_HELPER(GPSEphemerisStore)
+STR_DUMP_HELPER(OrbElem)
+STR_DUMP_HELPER(OrbElemStore)
+STR_DUMP_HELPER(Rinex3ClockData)
+STR_DUMP_HELPER(Rinex3ClockHeader)
 STR_DUMP_HELPER(Rinex3EphemerisStore)
-STR_DUMP_HELPER(Rinex3ObsHeader)
-STR_DUMP_HELPER(Rinex3ObsData)
 STR_DUMP_HELPER(Rinex3NavData)
 STR_DUMP_HELPER(Rinex3NavHeader)
+STR_DUMP_HELPER(Rinex3ObsData)
+STR_DUMP_HELPER(Rinex3ObsHeader)
+STR_DUMP_HELPER(RinexMetData)
+STR_DUMP_HELPER(RinexMetHeader)
+STR_DUMP_HELPER(RinexNavData)
+STR_DUMP_HELPER(RinexNavHeader)
+STR_DUMP_HELPER(RinexObsData)
+STR_DUMP_HELPER(RinexObsHeader)
+STR_DUMP_HELPER(RinexSatID)
 STR_DUMP_HELPER(SEMData)
 STR_DUMP_HELPER(SEMHeader)
 STR_DUMP_HELPER(SP3Data)
+STR_DUMP_HELPER(SP3EphemerisStore)
 STR_DUMP_HELPER(SP3Header)
+STR_DUMP_HELPER(SP3SatID)
+STR_DUMP_HELPER(YumaData)
+STR_DUMP_HELPER(YumaHeader)
 
 
 
@@ -74,7 +98,23 @@ STR_DUMP_HELPER(SP3Header)
 %enddef
 STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
-STR_STREAM_HELPER(Xvt)
+
+// STR_STREAM_HELPER(Xvt)
+// Q: Why is this (below) here instead of the macro for Xvt?
+// A: There is an ambiguity issue for the operator<< for Xvt,
+// see the end of TabularSatStore.hpp for a conflicting defintion
+// of the Xvt out stream operator and Xvt.hpp+Xvt.cpp.
+%extend gpstk::Xvt {
+   std::string __str__() {
+      std::ostringstream os;
+         os << "x:" << $self->x
+            << ", v:" << $self->v
+            << ", clk bias:" << $self->clkbias
+            << ", clk drift:" << $self->clkdrift
+            << ", relcorr:" << $self->relcorr;
+      return os.str();
+   }
+}
 
 
 

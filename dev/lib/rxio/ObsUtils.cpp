@@ -106,8 +106,8 @@ namespace gpstk
       RinexObsData::RinexObsTypeMap::const_iterator rotm_itr;
       for (rotm_itr = rotm.begin(); rotm_itr != rotm.end(); rotm_itr++)
       {
-         const RinexObsHeader::RinexObsType& rot = rotm_itr->first;
-         const RinexObsData::RinexDatum& rd = rotm_itr->second;
+         const RinexObsType& rot = rotm_itr->first;
+         const RinexDatum& rd = rotm_itr->second;
          RinexObsID oid(rot);
          soe[oid] = rd.data;
          if (rd.ssi>0)

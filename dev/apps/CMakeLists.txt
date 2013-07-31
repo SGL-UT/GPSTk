@@ -12,12 +12,12 @@ add_subdirectory (ionosphere)
 add_subdirectory (mergetools)
 
 # If on UNIX, do these
-if (${UNIX})
-add_subdirectory (MDPtools)
-add_subdirectory (rfw)
-add_subdirectory (swrx)
-#add_subdirectory (receiver)
-endif (${UNIX})
+if (UNIX)
+	add_subdirectory (MDPtools)
+	add_subdirectory (rfw)
+	add_subdirectory (swrx)
+	#add_subdirectory (receiver)
+endif (UNIX)
 
 add_subdirectory (multipath)
 add_subdirectory (positioning)

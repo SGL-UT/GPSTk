@@ -45,6 +45,10 @@ else
       CNavDataElementStore.cpp
       CNavEOP.cpp
       CNAVEphemeris.cpp
+      CNavGGTO.cpp
+      CNavISC.cpp
+      CNavText.cpp
+      CNavUTC.cpp
       CNAV2EphClk.cpp
       CNavGGTO.cpp
       CNavISC.cpp
@@ -149,7 +153,6 @@ else
       Rinex3ObsHeader.cpp
       RinexClockData.cpp
       RinexClockHeader.cpp
-#      RinexConverter.cpp
       RinexMetData.cpp
       RinexMetHeader.cpp
       RinexNavData.cpp
@@ -233,6 +236,10 @@ else
       CNavDataElementStore.hpp
       CNavEOP.hpp
       CNAVEphemeris.hpp
+      CNavGGTO.hpp
+      CNavISC.hpp
+      CNavText.hpp
+      CNavUTC.hpp      
       CNAV2EphClk.hpp
       CNavGGTO.hpp
       CNavISC.hpp
@@ -394,7 +401,6 @@ else
       RinexClockHeader.hpp	
       RinexClockStore.hpp	
       RinexClockStream.hpp	
-#      RinexConverter.hpp	
       RinexMetBase.hpp
       RinexMetData.hpp	
       RinexMetFilterOperators.hpp	

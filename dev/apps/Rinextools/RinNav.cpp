@@ -21,7 +21,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -162,7 +162,7 @@ try {
    // build title = first line of output
    C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
-   
+
    for(;;) {
       cout << C.Title << endl;
       // get information from the command line
@@ -509,7 +509,7 @@ try {
    Rinex3NavHeader Rheadout,Rhead;
 
    for(nfiles=0,nfile=0; nfile<C.InputNavFiles.size(); nfile++) {
-      
+
       string filename(C.InputNavFiles[nfile]);
 
       // load filename
@@ -541,7 +541,7 @@ try {
       try {
          Rinex3NavStream strm;
          Rinex3NavData Rdata;
-         
+
          strm.open(filename.c_str(), ios::in);
          if(!strm.is_open()) {
             LOG(WARNING) << "Warning - File " << filename << " could not be opened.";
@@ -614,16 +614,16 @@ try {
                Rheadout.valid |= Rinex3NavHeader::validTimeSysCorr;
             }
          }
-   
+
          // add Iono Correction records from Rhead to Rheadout
-         map<string,Rinex3NavHeader::IonoCorr>::iterator icit;
+         map<string, IonoCorr>::iterator icit;
          for(icit=C.NavStore.Rhead.mapIonoCorr.begin();
                icit != C.NavStore.Rhead.mapIonoCorr.end(); ++icit)
          {
             if(Rheadout.mapIonoCorr.find(icit->first) == Rheadout.mapIonoCorr.end()) {
                Rheadout.mapIonoCorr[icit->first] = icit->second;
-               if(icit->second.type == Rinex3NavHeader::IonoCorr::GPSA
-                  || icit->second.type == Rinex3NavHeader::IonoCorr::GPSB)
+               if(icit->second.type ==  IonoCorr::GPSA
+                  || icit->second.type ==  IonoCorr::GPSB)
                      Rheadout.valid |= Rinex3NavHeader::validIonoCorrGPS;
                else
                   Rheadout.valid |= Rinex3NavHeader::validIonoCorrGal;
@@ -672,7 +672,7 @@ try {
    // get full list of Rinex3NavData
    list<Rinex3NavData> theList,theFullList;
    C.NavStore.addToList(theFullList);
-   
+
    // N... is what was read; n... will be what is kept
    int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nCOM(0);
 

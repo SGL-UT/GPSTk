@@ -35,10 +35,10 @@ else
    InstallFile $(INCDIR) :
       AntexBase.hpp AntexData.hpp AntexHeader.hpp AntexStream.hpp
       DDid.hpp DiscCorr.hpp EarthOrientation.hpp format.hpp
-      GeodeticFrames.hpp GSatID.hpp index.hpp logstream.hpp
-      Namelist.hpp PhaseWindup.hpp PreciseRange.hpp
+      GeodeticFrames.hpp GSatID.hpp index.hpp KalmanFilter.hpp 
+      logstream.hpp Namelist.hpp PhaseWindup.hpp PreciseRange.hpp
       random.hpp RobustStats.hpp SatPass.hpp SolarPosition.hpp
-      SRI.hpp SRIFilter.hpp SRIleastSquares.hpp SRIMatrix.hpp
-      SolarSystem.hpp SunEarthSatGeometry.hpp
+      SolidEarthTides.hpp SRI.hpp SRIFilter.hpp SRIleastSquares.hpp 
+      SRIMatrix.hpp SolarSystem.hpp SunEarthSatGeometry.hpp
       ;
 }
