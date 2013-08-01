@@ -48,6 +48,7 @@ ignore_exact = [
 'SP3Base',
 'SwigPyIterator',
 'YumaBase',
+'WEEK_PER_EPOCH',
 ]
 
 

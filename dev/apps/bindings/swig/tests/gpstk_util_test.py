@@ -170,8 +170,8 @@ class Position_test(unittest.TestCase):
 
 class ObsID_test(unittest.TestCase):
     def test(self):
-        o1 = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.ObsID.cbC6, gpstk.ObsID.tcN)
-        self.assertEqual('C6 GPSsquare pseudorange', str(o1))
+        o1 = gpstk.ObsID(gpstk.ObsID.otRange, gpstk.ObsID.cbAny, gpstk.ObsID.tcA)
+        self.assertEqual('AnyBand GALA pseudorange', str(o1))
 
 
 class Vector_test(unittest.TestCase):

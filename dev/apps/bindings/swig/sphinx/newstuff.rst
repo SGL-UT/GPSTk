@@ -19,18 +19,6 @@ Example: ::
     >> print gpstk.CivilTime(gpstk.SystemTime())
     07/16/2013 19:59:25 UTC
 
-.. py:function:: gpstk.timeSystem([str='Unknown'])
-    :noindex:
-
-Returns a gpstk.TimeSystem object given a string input.
-This is just a more succint way of creating a TimeSystem. ::
-
-    >>> print gpstk.TimeSystem(gpstk.TimeSystem.GPS)
-    GPS
-
-    >>> print gpstk.timeSystem('GPS')
-    GPS
-
 
 .. _fileio_label:
 

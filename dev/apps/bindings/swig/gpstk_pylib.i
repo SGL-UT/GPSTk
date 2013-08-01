@@ -5,6 +5,10 @@
     // time:
     #include "../../../src/TimeSystem.hpp"
     #include "../../../src/TimeTag.hpp"
+    #include "../../../src/TimeConstants.hpp"
+    #include "../../../src/TimeConverters.hpp"
+    #include "../../../src/Week.hpp"
+    #include "../../../src/WeekSecond.hpp"
     #include "../../../src/UnixTime.hpp"
     #include "../../../src/ANSITime.hpp"
     #include "../../../src/CivilTime.hpp"
@@ -16,10 +20,11 @@
     #include "../../../src/GPSWeekSecond.hpp"
     #include "../../../src/GPSWeekZcount.hpp"
     #include "../../../src/JulianDate.hpp"
+    #include "../../../src/BDSWeekSecond.hpp"
+    #include "../../../src/GALWeekSecond.hpp"
+    #include "../../../src/QZSWeekSecond.hpp"
     #include "../../../src/MJD.hpp"
     #include "../../../src/SystemTime.hpp"
-    #include "../../../src/TimeConstants.hpp"
-    #include "../../../src/TimeConverters.hpp"
     #include "../../../src/TimeString.hpp"
     #include "../../../src/YDSTime.hpp"
     #include "../../../src/Exception.hpp"
@@ -190,8 +195,11 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "src/TimeSystem.i"
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/TimeConstants.hpp"
+%include "../../../src/TimeConverters.hpp"
 %ignore gpstk::CommonTime::get;
 %include "../../../src/CommonTime.hpp"
+%include "../../../src/Week.hpp"
+%include "../../../src/WeekSecond.hpp"
 %feature("notabstract") UnixTime;
 %include "../../../src/UnixTime.hpp"
 %feature("notabstract") SystemTime;
@@ -208,11 +216,16 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/GPSWeekZcount.hpp"
 %feature("notabstract") JulianDate;
 %include "../../../src/JulianDate.hpp"
+%feature("notabstract") BDSWeekSecond;
+%include "../../../src/QZSWeekSecond.hpp"
+%feature("notabstract") GALWeekSecond;
+%include "../../../src/QZSWeekSecond.hpp"
+%feature("notabstract") QZSWeekSecond;
+%include "../../../src/QZSWeekSecond.hpp"
 %feature("notabstract") MJD;
 %include "../../../src/MJD.hpp"
 %feature("notabstract") YDSTime;
 %include "../../../src/YDSTime.hpp"
-%include "../../../src/TimeConverters.hpp"
 %include "src/TimeString.i"
 %include "../../../src/TimeSystemCorr.hpp"
 
@@ -228,7 +241,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/ObsID.hpp"
 %include "../../../src/GNSSconstants.hpp"
 %include "src/Triple.i"
-%extend gpstk::Triple { int __len__() {return 3;}}
 %include "src/ReferenceFrame.i"
 %include "../../../src/EllipsoidModel.hpp"
 %include "../../../src/Xvt.hpp"

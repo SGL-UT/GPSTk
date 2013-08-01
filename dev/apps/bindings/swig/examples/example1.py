@@ -49,7 +49,7 @@ def main():
     print "   The current day of year is", ydstime.doy
     print "   The current second of day is", ydstime.sod
     print "   The current full GPS week is", gpstime.week
-    print "   The current short GPS week is", gpstime.getWeek10()
+    print "   The current short GPS week is", gpstime.getModWeek()
     print "   The current day of GPS week is", gpstime.getDayOfWeek()
     print "   The current second of GPS week is", gpstime.sow
     print "   The current Modified Julian Date is", mjd
