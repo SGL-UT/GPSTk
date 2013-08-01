@@ -63,7 +63,7 @@ class GloEphemerisTest(unittest.TestCase):
         g.setRecord('mySys', 1, gpstk.CommonTime(), gpstk.Triple(100, 200, 300),
             gpstk.Triple(10, 20, 30), gpstk.Triple(1, 2, 3),
             0.0,  0.0, 1, 2, 3, 1.1, 1.0)
-        expected = ("Sys:mySys, PRN:1\nEpoch:0000000 00000000 0.000000000000000 Unknown"
+        expected = ("Sys:mySys, PRN:1\nEpoch:0000000 00000000 0.000000000000000 UNK"
             ", pos:(100, 200, 300)\nvel:(10, 20, 30), acc:(1, 2, 3)\nTauN:0, GammaN:0\n"
             "MFTime:1, health:2\nfreqNum:3, ageOfInfo:1.1")
         self.assertEqual(expected, str(g))
@@ -167,7 +167,7 @@ class Rinex3NavTest(unittest.TestCase):
         dataPoint = data[165]
         self.assertEqual(5153.72985268, dataPoint.Ahalf)
         self.assertEqual(432000.0, dataPoint.Toc)
-        self.assertEqual(0, dataPoint.freqNum)
+        self.assertEqual(32767L, dataPoint.freqNum)
 
 
 class RinexMetTest(unittest.TestCase):

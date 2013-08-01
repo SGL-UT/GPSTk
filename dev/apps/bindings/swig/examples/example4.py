@@ -105,7 +105,7 @@ def main():
                 P1 = 0.0
                 try:
                     P1 = obsObj.getObs(satID, indexP1).data
-                except:
+                except gpstk.exceptions.Exception:
                     continue  # Ignore this satellite if P1 is not found
 
                 ionocorr = 0.0
@@ -118,8 +118,7 @@ def main():
                     P2 = 0.0
                     try:
                         P2 = obsObj.getObs(satID, indexP2).data
-                    except Exception as e:
-                        print e
+                    except gpstk.exceptions.Exception:
                         continue  # Ignore this satellite if P1 is not found
                     # list 'vecList' contains RinexDatum, whose public
                     # attribute "data" indeed holds the actual data point

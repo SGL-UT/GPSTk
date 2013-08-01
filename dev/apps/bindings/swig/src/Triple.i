@@ -100,6 +100,9 @@ namespace gpstk
                       scalar * $self->theArray[1],
                       scalar * $self->theArray[2]);
     }
+    int __len__() {
+      return 3;
+    }
 };
 
 

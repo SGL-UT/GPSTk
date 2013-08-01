@@ -7,12 +7,18 @@ class TimeSystem_Tests(unittest.TestCase):
     def test_constructor_string(self):
         sys = gpstk.TimeSystem('GPS')
         self.assertEqual('GPS', str(sys))
-        self.assertEqual('GPS', sys.getTimeSystem())
+        self.assertEqual(gpstk.TimeSystem.GPS, sys.getTimeSystem())
 
     def test_constructor_constant(self):
         sys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
         self.assertEqual('GPS', str(sys))
-        self.assertEqual('GPS', sys.getTimeSystem())
+        self.assertEqual(gpstk.TimeSystem.GPS, sys.getTimeSystem())
+
+    def test_constructor_factory(self):
+        sys = gpstk.timeSystem('GPS')
+        self.assertEqual('GPS', str(sys))
+        self.assertEqual(gpstk.TimeSystem.GPS, sys.getTimeSystem())
+        self.assertRaises(ValueError, gpstk.timeSystem, 'badinput')
 
 
 class Time_Comparisons(unittest.TestCase):

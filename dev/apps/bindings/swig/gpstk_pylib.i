@@ -1,7 +1,5 @@
 %module(directors="1") gpstk_pylib
 %{
-    #include <sstream>
-
     // time:
     #include "../../../src/TimeSystem.hpp"
     #include "../../../src/TimeTag.hpp"
@@ -27,10 +25,10 @@
     #include "../../../src/SystemTime.hpp"
     #include "../../../src/TimeString.hpp"
     #include "../../../src/YDSTime.hpp"
-    #include "../../../src/Exception.hpp"
     #include "../../../src/TimeSystemCorr.hpp"
 
     // util:
+    #include "../../../src/StringUtils.hpp"
     #include "../../../src/geometry.hpp"
     #include "../../../src/gps_constants.hpp"
     #include "../../../src/SatID.hpp"
@@ -234,6 +232,7 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 //  Section 3: General/Utils classes
 // =============================================================
 // Utils stuff
+
 %include "../../../src/geometry.hpp"
 %include "../../../src/gps_constants.hpp"
 %include "src/SatID.i"
@@ -281,7 +280,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
-%rename (toAlmOrbit) gpstk::YumaData::operator AlmOrbit() const;
 %include "../../../src/YumaData.hpp"
 %include "../../../src/GPSAlmanacStore.hpp"
 %template(FileStore_YumaHeader) gpstk::FileStore<gpstk::YumaHeader>;
@@ -301,6 +299,10 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 
 
 // RINEX things:
+%rename (toEngEphemeris) *::operator EngEphemeris() const;
+%rename (toGalEphemeris) *::operator GalEphemeris() const;
+%rename (toGloEphemeris) *::operator GloEphemeris() const;
+%rename (toAlmOrbit) *::operator AlmOrbit() const;
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"
@@ -312,7 +314,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/RinexClockData.hpp"
 %include "../../../src/RinexClockStream.hpp"
 
-%rename (toEngEphemeris) gpstk::RinexNavData::operator EngEphemeris() const;
 %include "../../../src/RinexNavBase.hpp"
 %include "../../../src/RinexNavHeader.hpp"
 %include "../../../src/RinexNavStream.hpp"
@@ -323,9 +324,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/RinexMetStream.hpp"
 %include "src/RinexMetData.i"
 
-%rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
-%rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;
-%rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
 %include "../../../src/Rinex3NavBase.hpp"
 %include "../../../src/Rinex3NavHeader.hpp"
 %include "../../../src/Rinex3NavStream.hpp"
@@ -357,7 +355,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 
 
 // SEM things:
-%rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
 %include "../../../src/SEMBase.hpp"
 %include "../../../src/SEMHeader.hpp"
 %include "../../../src/SEMStream.hpp"
@@ -374,8 +371,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/ExtractData.hpp"
 
 
-%rename (toEngEphemeris) gpstk::FICData::operator EngEphemeris() const;
-%rename (toAlmOrbit) gpstk::FICData::operator AlmOrbit() const;
 %include "../../../src/FFBinaryStream.hpp"
 %include "../../../src/FICBase.hpp"
 %include "../../../src/FICStreamBase.hpp"

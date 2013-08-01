@@ -8,6 +8,7 @@
 //   - readData method for the stream
 //   - writeHeader method for the stream
 //   - writeData method for the stream
+//   - _remove method to delete the object (called from python helpers below)
 //
 //  gpstk python functions:
 //   - readX, where X is the file type
@@ -25,6 +26,10 @@
     static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(std::string fileName) {
         FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
         return s;
+    }
+
+    static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr) {
+      delete ptr;
     }
 
     gpstk:: ## FORMATNAME ## Header readHeader() {
@@ -60,7 +65,7 @@ def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
       lazy:  if the data object sequence should be lazily evaluated.
              If it is, it will be a generator, otherwise, it will be a list.
 
-      filterfunction: a function that takes a FORMATNAME ## Data object
+      filterfunction: a function that takes a FORMATNAME Data object
                       and returns whether it should be included in the
                       data output. This is similar to using the filter()
                       function on the output list, but eliminates the extra step.
@@ -77,6 +82,7 @@ def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
                if filterfunction(x):
                   yield x
             except IOError:
+               FORMATNAME ## Stream._remove(stream)
                break
     if lazy:
         return (header, read ##FORMATNAME ## Data (fileName))
@@ -101,6 +107,7 @@ def write ## FORMATNAME(fileName, header, data):
     s.writeHeader(header)
     for d in data:
         s.writeData(d)
+    FORMATNAME ## Stream ._remove(s)
 }
 %enddef
 
@@ -115,4 +122,3 @@ STREAM_HELPER(Rinex3Obs)
 STREAM_HELPER(Rinex3Nav)
 STREAM_HELPER(Rinex3Clock)
 STREAM_HELPER(FIC)
-
