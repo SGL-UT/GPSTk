@@ -111,7 +111,7 @@ namespace gpstk
             D[i] = (X[i+j]-x)*del;
             Q[i] = (X[i]-x)*del;
          }
-         err = (2*k < X.size()-j ? Q[k+1] : D[k--]);
+         err = (2*(k+1) < X.size()-j ? Q[k+1] : D[k--]);    // NOT 2*k
          y += err;
       }
       return y;
@@ -131,12 +131,11 @@ namespace gpstk
    // Qij is symmetric, there are only N(N+1)/2 - N of them, so store them
    // in a vector of length N(N+1)/2, where Qij==Q[i+j*(j+1)/2] (ignore i=j).
 
-   /** Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
-    * returning the value of Y(x) and dY(x)/dX.
-    * Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
-    * Warning: for use with the precise (SP3) ephemeris only when velocity is not
-    * available; estimates of velocity, and especially clock drift, not as accurate.
-    */
+   /// Perform Lagrange interpolation on the data (X[i],Y[i]), i=1,N (N=X.size()),
+   /// returning the value of Y(x) and dY(x)/dX.
+   /// Assumes that x is between X[k-1] and X[k], where k=N/2 and N > 2;
+   /// Warning: for use with the precise (SP3) ephemeris only when velocity is not
+   /// available; estimates of velocity, and especially clock drift, not as accurate.
    template <class T>
    void LagrangeInterpolation(const std::vector<T>& X, const std::vector<T>& Y,
       const T& x, T& y, T& dydx) throw(Exception)
@@ -226,47 +225,17 @@ namespace gpstk
 
    }  // End of 'lagrangeInterpolating2ndDerivative()'
 
+#define tswap(x,y) { T tmp; tmp = x; x = y; y = tmp; }
 
    /// Perform the root sum square of aa, bb and cc
    template <class T>
    T RSS (T aa, T bb, T cc)
    {
       T a(ABS(aa)), b(ABS(bb)), c(ABS(cc));
-      if ( (a > b) && (a > c) )
-         return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a));
-      if ( (b > a) && (b > c) )
-         return b * SQRT(1 + (a/b)*(a/b) + (c/b)*(c/b));
-      if ( (c > b) && (c > a) )
-         return c * SQRT(1 + (b/c)*(b/c) + (a/c)*(a/c));
-
-      if (a == b)
-      {
-         if (b == c)
-            return a * SQRT(T(3));
-         a *= SQRT(T(2));
-         if (a > c)
-            return a * SQRT(1 + (c/a)*(c/a));
-         else
-            return c * SQRT(1 + (a/c)*(a/c));
-      }
-      if (a == c)
-      {
-         a *= SQRT(T(2));
-         if (a > b)
-            return a * SQRT(1 + (b/a)*(b/a));
-         else
-            return b * SQRT(1 + (a/b)*(a/b));
-      }
-      if (b == c)
-      {
-         b *= SQRT(T(2));
-         if (b > a)
-            return b * SQRT(1 + (a/b)*(a/b));
-         else
-            return a * SQRT(1 + (b/a)*(b/a));
-      }
-
-      return T(0);
+      if(a < b) tswap(a,b);
+      if(a < c) tswap(a,c);
+      if(a == T(0)) return T(0);
+      return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a));
    }
 
    /// Perform the root sum square of aa, bb
@@ -276,30 +245,26 @@ namespace gpstk
       return RSS(aa,bb,T(0));
    }
 
- 
    /// Perform the root sum square of aa, bb, cc and dd
    template <class T>
    T RSS (T aa, T bb, T cc, T dd)
    {
-#define swapValues(x,y) \
-   { T temporalStorage; \
-   temporalStorage = x; x = y; y = temporalStorage; }
-
       T a(ABS(aa)), b(ABS(bb)), c(ABS(cc)), d(ABS(dd));
-
       // For numerical reason, let's just put the biggest in "a" (we are not sorting)
-      if (a < b) std::swap(a,b);
-      if (a < c) swapValues(a,c);
-      if (a < d) swapValues(a,d);
-
+      if(a < b) tswap(a,b);
+      if(a < c) tswap(a,c);
+      if(a < d) tswap(a,d);
+      if(a == T(0)) return T(0);
       return a * SQRT(1 + (b/a)*(b/a) + (c/a)*(c/a) + (d/a)*(d/a));
    }
 
+#undef tswap
 
    inline double Round(double x)
    {
       return double(std::floor(x+0.5));
    }
+
    //@}
 
 }  // namespace gpstk
