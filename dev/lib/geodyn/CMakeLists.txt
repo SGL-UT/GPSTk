@@ -13,17 +13,16 @@ IERS.cpp
 IERSConventions.cpp
 JGM3GravityModel.cpp
 KeplerOrbit.cpp
-LEOSatOrbit.cpp
+#LEOSatOrbit.cpp
 Msise00Drag.cpp
 MoonForce.cpp
-NavSatOrbit.cpp
+#NavSatOrbit.cpp
 PvtStore.cpp
 ReferenceFrames.cpp
 RelativityEffect.cpp
 RungeKuttaFehlberg.cpp 
 SatOrbit.cpp
 SatOrbitPropagator.cpp
-SatOrbitStore.cpp
 Spacecraft.cpp
 SphericalHarmonicGravity.cpp
 SolarRadiationPressure.cpp
@@ -33,4 +32,6 @@ UTCTime.cpp
 
 add_library (geodyn SHARED ${geodyn_src})
 include_directories (${CMAKE_SOURCE_DIR}/lib/geomatics ${CMAKE_SOURCE_DIR}/src)
+install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 target_link_libraries (geodyn geomatics)
+install (TARGETS geodyn DESTINATION lib)

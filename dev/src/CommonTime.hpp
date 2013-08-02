@@ -104,27 +104,23 @@ namespace gpstk
           * @see CommonTime::set()
           */
       explicit CommonTime(TimeSystem timeSystem = TimeSystem::Unknown )
-         throw( InvalidParameter )
       { set( 0, 0, 0.0, timeSystem ); }
 
          /**
           * Copy Constructor.
           * @param right a const reference to the CommonTime object to copy.
           */
-      CommonTime( const CommonTime& right )
-         throw();
+      CommonTime( const CommonTime& right );
 
          /**
           * Assignment Operator.
           * @param right a const reference to the CommonTime object to copy.
           * @return a reference to this CommonTime object.
           */
-      CommonTime& operator=( const CommonTime& right )
-         throw();
+      CommonTime& operator=( const CommonTime& right );
 
          /// Destructor.
       virtual ~CommonTime()
-         throw()
       {}
 
          //@}
@@ -141,8 +137,7 @@ namespace gpstk
       CommonTime& set( long day,
                        long sod,
                        double fsod = 0.0,
-                       TimeSystem timeSystem = TimeSystem::Unknown )
-         throw( InvalidParameter );
+                       TimeSystem timeSystem = TimeSystem::Unknown );
 
          /**
           * Set method that accepts values for day and seconds of day.  It also
@@ -151,8 +146,7 @@ namespace gpstk
           */
       CommonTime& set( long day,
                        double sod = 0.0,
-                       TimeSystem timeSystem = TimeSystem::Unknown )
-         throw( InvalidParameter );
+                       TimeSystem timeSystem = TimeSystem::Unknown );
 
          /**
           * Set method that accepts a value for day.  It also checks the
@@ -160,8 +154,7 @@ namespace gpstk
           * out of bounds.
           */
       CommonTime& set( double day,
-                       TimeSystem timeSys = TimeSystem::Unknown )
-         throw( InvalidParameter );
+                       TimeSystem timeSys = TimeSystem::Unknown );
 
          /**
           * Set internal values method.  Set the data members of this object
@@ -171,14 +164,12 @@ namespace gpstk
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
                                double fsod = 0.0,
-                               TimeSystem timeSys = TimeSystem::Unknown )
-         throw( InvalidParameter );
+                               TimeSystem timeSys = TimeSystem::Unknown );
 
          /**
           * Set method for internal variable m_timeSystem.
           */
       void setTimeSystem( const TimeSystem& timeSystem )
-         throw()
       { m_timeSystem = timeSystem; }
 
          /**
@@ -188,8 +179,7 @@ namespace gpstk
       void get( long& day,
                 long& sod,
                 double& fsod,
-                TimeSystem& timeSystem ) const
-         throw();
+                TimeSystem& timeSystem ) const;
 
          /**
           * Get method.  Obtain values in days, second of day and fractional
@@ -197,8 +187,7 @@ namespace gpstk
           */
       void get( long& day,
                 long& sod,
-                double& fsod ) const
-         throw();
+                double& fsod ) const;
 
          /**
           * Get method through which one may obtain values for day and
@@ -207,31 +196,27 @@ namespace gpstk
           */
       void get( long& day,
                 double& sod,
-                TimeSystem& timeSystem ) const
-         throw();
+                TimeSystem& timeSystem ) const;
 
          /**
           * Get method through which one may obtain values for day and
           * second of day which includes the fractional second of day.
           */
       void get( long& day,
-                double& sod ) const
-         throw();
+                double& sod ) const;
 
          /**
           * Get method through which one may obtain a value for day which
           * includes the fraction of a day, plus the time frame.
           */
       void get( double& day,
-                TimeSystem& timeSystem ) const
-         throw();
+                TimeSystem& timeSystem ) const;
 
          /**
           * Get method through which one may obtain a value for day which
           * includes the fraction of a day.
           */
-      void get( double& day ) const
-         throw();
+      void get( double& day ) const;
 
          /**
           * Get internal values method.  Obtain the values stored within this
@@ -241,7 +226,6 @@ namespace gpstk
                         long& msod,
                         double& fsod,
                         TimeSystem& timeSystem ) const
-         throw()
       { day = m_day; msod = m_msod; fsod = m_fsod; timeSystem = m_timeSystem; }
 
          /**
@@ -251,20 +235,16 @@ namespace gpstk
       void getInternal( long& day,
                         long& msod,
                         double& fsod ) const
-         throw()
       { day = m_day; msod = m_msod; fsod = m_fsod; }
 
          /// Obtain the time, in days, including the fraction of a day.
-      double getDays() const
-         throw();
+      double getDays() const;
 
          /// Obtain the seconds of day (ignoring the day).
-      double getSecondOfDay() const
-         throw();
+      double getSecondOfDay() const;
 
          /// Obtain time system info (enum).
-      TimeSystem getTimeSystem() const
-         throw();
+      TimeSystem getTimeSystem() const;
 
          //@}
 
@@ -277,8 +257,7 @@ namespace gpstk
           * @param right CommonTime to subtract from this one
           * @return the difference in seconds
           */
-      double operator-( const CommonTime& right ) const
-         throw( InvalidRequest );
+      double operator-( const CommonTime& right ) const;
 
          /**
           * Add seconds to a copy of this CommonTime.
@@ -286,8 +265,7 @@ namespace gpstk
           * @return the new CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime operator+( double seconds ) const
-         throw();
+      CommonTime operator+( double seconds ) const;
 
          /**
           * Subtract seconds from a copy of this CommonTime.
@@ -296,8 +274,7 @@ namespace gpstk
           * @return the new CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime operator-( double seconds ) const
-         throw();
+      CommonTime operator-( double seconds ) const;
 
          /**
           * Add seconds to this CommonTime.
@@ -305,8 +282,7 @@ namespace gpstk
           * @return a reference to this CommonTime
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime& operator+=( double seconds )
-         throw();
+      CommonTime& operator+=( double seconds );
 
          /**
           * Subtract seconds from this CommonTime.
@@ -314,8 +290,7 @@ namespace gpstk
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime& operator-=( double seconds )
-         throw();
+      CommonTime& operator-=( double seconds );
 
          /**
           * Add seconds to this CommonTime object.
@@ -324,8 +299,7 @@ namespace gpstk
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime& addSeconds( double seconds )
-         throw();
+      CommonTime& addSeconds( double seconds );
 
          /**
           * Add integer days to this CommonTime object.
@@ -333,8 +307,7 @@ namespace gpstk
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime& addDays( long days )
-         throw();
+      CommonTime& addDays( long days );
 
          /**
           * Add integer seconds to this CommonTime object.
@@ -342,8 +315,7 @@ namespace gpstk
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime& addSeconds( long seconds )
-         throw();
+      CommonTime& addSeconds( long seconds );
 
          /**
           * Add integer milliseconds to this CommonTime object.
@@ -351,8 +323,7 @@ namespace gpstk
           * @return a reference to this CommonTime object
           * @throws InvalidRequest on over-/under-flow
           */
-      CommonTime& addMilliseconds( long ms )
-         throw();
+      CommonTime& addMilliseconds( long ms );
          //@}
 
          /**
@@ -363,26 +334,18 @@ namespace gpstk
           *  and false on failure.
           */
          //@{
-      bool operator==( const CommonTime& right ) const
-         throw();
-      bool operator!=( const CommonTime& right ) const
-         throw();
-      bool operator<( const CommonTime& right ) const
-         throw( InvalidRequest );
-      bool operator>( const CommonTime& right ) const
-         throw( InvalidRequest );
-      bool operator<=( const CommonTime& right ) const
-         throw( InvalidRequest );
-      bool operator>=( const CommonTime& right ) const
-         throw( InvalidRequest );
+      bool operator==( const CommonTime& right ) const;
+      bool operator!=( const CommonTime& right ) const;
+      bool operator<( const CommonTime& right ) const;
+      bool operator>( const CommonTime& right ) const;
+      bool operator<=( const CommonTime& right ) const;
+      bool operator>=( const CommonTime& right ) const;
          //@}
 
       void reset()
-         throw()
       { m_day = m_msod = 0; m_fsod = 0.0; m_timeSystem = TimeSystem::Unknown; }
 
-      std::string asString() const
-         throw();
+      std::string asString() const;
 
    protected:
 
@@ -390,7 +353,6 @@ namespace gpstk
                   long sod,
                   double fsod,
                   TimeSystem timeSystem = TimeSystem::Unknown )
-         throw( InvalidParameter )
       { set( day, sod, fsod, timeSystem ); }
 
          /**
@@ -402,14 +364,12 @@ namespace gpstk
           */
       bool add( long days,
                 long msod,
-                double fsod )
-         throw();
+                double fsod );
 
          /// Normalize the values.  This takes out of bounds values and rolls
          /// other values appropriately.
          /// @return true if m_day is valid, false otherwise
-      bool normalize()
-         throw();
+      bool normalize();
 
       long m_day;     ///< days (as a Julian Day)     0 <= val < 2^31
       long m_msod;    ///< milliseconds-of-day        0 <= val < 86400000

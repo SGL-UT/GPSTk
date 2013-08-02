@@ -1,5 +1,10 @@
 # src/CMakeLists.txt
 # Please add in alphabetical order.
+
+if (${NEED_GETOPT})
+   set(GETOPT_SOURCE getopt.c getopt1.c)
+endif (${NEED_GETOPT})
+
 set (gpstk_src
       AlmOrbit.cpp
       ANSITime.cpp
@@ -21,7 +26,14 @@ set (gpstk_src
       CivilTime.cpp
       ClockSatStore.cpp
       CNAVClock.cpp
+      CNavDataElement.cpp
+      CNavDataElementStore.cpp
+      CNavEOP.cpp
       CNAVEphemeris.cpp
+      CNavGGTO.cpp
+      CNavISC.cpp
+      CNavText.cpp
+      CNavUTC.cpp
       CNAV2EphClk.cpp
       CodeBuffer.cpp
       CommandLine.cpp
@@ -70,7 +82,6 @@ set (gpstk_src
       GPSEphemerisStore.cpp
       GPSOrbElemStore.cpp
       GPSWeek.cpp
-      GPSWeekSecond.cpp
       GPSWeekZcount.cpp
       GPSZcount.cpp
       HelmertTransform.cpp
@@ -122,7 +133,6 @@ set (gpstk_src
       Rinex3ObsHeader.cpp
       RinexClockData.cpp
       RinexClockHeader.cpp
-#      RinexConverter.cpp
       RinexMetData.cpp
       RinexMetHeader.cpp
       RinexNavData.cpp
@@ -163,6 +173,8 @@ set (gpstk_src
       TypeID.cpp
       UnixTime.cpp
       VectorBase.cpp
+      Week.cpp
+      WeekSecond.cpp
       WxObsMap.cpp
       X1Sequence.cpp
       X2Sequence.cpp
@@ -170,7 +182,16 @@ set (gpstk_src
       YDSTime.cpp
       YumaAlmanacStore.cpp
       YumaData.cpp
+      convhelp.hpp      
+      geometry.hpp      
+      gps_constants.hpp 
+      gpstkplatform.h   
+      mergePCodeWords.h 
+      stl_helpers.hpp   
+      ${GETOPT_SOURCE}      
 )
 
 #add_library (gpstk_static STATIC ${gpstk_src})
+install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 add_library (gpstk SHARED ${gpstk_src})
+install (TARGETS gpstk DESTINATION lib)

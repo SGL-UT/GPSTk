@@ -140,7 +140,7 @@ namespace gpstk
 
          while(obsItr != obs.end())
          {
-            vector<RinexObsHeader::RinexObsType>::iterator obsTypeItr =
+            vector<RinexObsType>::iterator obsTypeItr =
                strm.header.obsTypeList.begin();
 
             line.erase();
@@ -221,10 +221,10 @@ namespace gpstk
             {
                isValidEpochLine = false;
             }
-            
+
                // Check if it is a number; if not, an exception will be thrown
             short tempNumSat = asInt(line.substr(29,3));
-            
+
          }
          catch(...)
          {
@@ -251,7 +251,7 @@ namespace gpstk
          // then throw an error.
          // If epoch flag = 2, 3, or 4 and there is no epoch time,
          // use the time of the previous record.
-      bool noEpochTime = (line.substr(0,26) == string(26, ' ')); 
+      bool noEpochTime = (line.substr(0,26) == string(26, ' '));
       if (noEpochTime &&
           (epochFlag==0 || epochFlag==1 || epochFlag==5 || epochFlag==6 ))
       {
@@ -310,7 +310,7 @@ namespace gpstk
             for (ndx=0, line_ndx=0; ndx < numObs; ndx++, line_ndx++)
             {
                SatID sat = satIndex[isv];
-               RinexObsHeader::RinexObsType obs_type = hdr.obsTypeList[ndx];
+               RinexObsType obs_type = hdr.obsTypeList[ndx];
                if (! (line_ndx % 5))
                {
                   strm.formattedGetLine(line);

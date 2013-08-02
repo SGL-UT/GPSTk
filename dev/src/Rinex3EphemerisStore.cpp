@@ -69,7 +69,7 @@ namespace gpstk
          case SatID::systemGeosync:
             //return GEOstore.addEphemeris(GeoEphemeris(Rdata));
             break;
-         case SatID::systemCompass:
+         case SatID::systemBeiDou:
             //return COMstore.addEphemeris(ComEphemeris(Rdata));
             break;
          default:
@@ -226,7 +226,7 @@ namespace gpstk
             //   ttag = correctTimeSystem(inttag, TimeSystem::GEO, mapTimeCorr);
             //   xvt = GEOstore.getXvt(sat,ttag);
             //   break;
-            //case SatID::systemCompass:
+            //case SatID::systemBeiDou:
             //   ttag = correctTimeSystem(inttag, TimeSystem::COM, mapTimeCorr);
             //   xvt = COMstore.getXvt(sat,ttag);
             //   break;
@@ -377,7 +377,7 @@ namespace gpstk
          for(it=GEOlist.begin(); it != GEOlist.end(); ++it)
             thelist.push_back(Rinex3NavData(*it));
       }
-      if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemCompass) {
+      if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemBeiDou) {
          list<ComRecord> COMlist;
          n += COMstore.addToList(COMlist);
 

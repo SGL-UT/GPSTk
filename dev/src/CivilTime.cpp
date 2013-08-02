@@ -1,4 +1,4 @@
-#pragma ident "$Id$"
+/// @file CivilTime.cpp
 
 //============================================================================
 //
@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -43,23 +43,22 @@
 namespace gpstk
 {
       /// Long month names for converstion from numbers to strings
-   const char * CivilTime::MonthNames[] = 
+   const char * CivilTime::MonthNames[] =
    {
       "Error",
       "January","February", "March", "April",
       "May", "June","July", "August",
       "September", "October", "November", "December"
    };
-      
+
       /// Short month names for converstion from numbers to strings
-   const char * CivilTime::MonthAbbrevNames[] = 
+   const char * CivilTime::MonthAbbrevNames[] =
    {
       "err", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
    };
-   
+
    CivilTime& CivilTime::operator=( const CivilTime& right )
-      throw()
    {
       year       = right.year;
       month      = right.month;
@@ -70,9 +69,8 @@ namespace gpstk
       timeSystem = right.timeSystem;
       return *this;
    }
-   
+
    CommonTime CivilTime::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -80,7 +78,7 @@ namespace gpstk
          long jday = convertCalendarToJD( year, month, day );
             // get the second of day
          double sod = convertTimeToSOD( hour, minute, second );
-            // make a CommonTime with jd, whole sod, and 
+            // make a CommonTime with jd, whole sod, and
             // fractional second of day
          CommonTime ct;
          return ct.set(  jday, static_cast<long>(sod) ,
@@ -93,9 +91,8 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
    }
-   
+
    void CivilTime::convertFromCommonTime( const CommonTime& ct )
-      throw()
    {
       long jday, sod;
       double fsod;
@@ -108,15 +105,14 @@ namespace gpstk
          // add the fractional second of day to "second"
       second += fsod;
    }
-   
+
    std::string CivilTime::printf( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv = fmt;
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Yd", year );
          rv = formattedPrint( rv, getFormatPrefixInt() + "y",
@@ -133,7 +129,7 @@ namespace gpstk
                               "Hu", hour );
          rv = formattedPrint( rv, getFormatPrefixInt() + "M",
                               "Mu", minute );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "S", 
+         rv = formattedPrint( rv, getFormatPrefixInt() + "S",
                               "Su", static_cast<short>( second ) );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "ff", second );
@@ -148,13 +144,12 @@ namespace gpstk
    }
 
    std::string CivilTime::printError( const std::string& fmt) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv = fmt;
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Ys", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "y",
@@ -171,7 +166,7 @@ namespace gpstk
                               "Hs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "M",
                               "Ms", getError().c_str() );
-         rv = formattedPrint( rv, getFormatPrefixInt() + "S", 
+         rv = formattedPrint( rv, getFormatPrefixInt() + "S",
                               "Ss", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixFloat() + "f",
                               "fs", getError().c_str() );
@@ -186,7 +181,6 @@ namespace gpstk
    }
 
    bool CivilTime::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace gpstk::StringUtils;
 
@@ -197,7 +191,7 @@ namespace gpstk
             case 'Y':
                year = asInt( i->second );
                break;
-               
+
             case 'y':
                switch( i->second.length() )
                {
@@ -216,18 +210,18 @@ namespace gpstk
                      break;
                };
                break;
-            
+
             case 'm':
                month = asInt( i->second );
                break;
-               
+
             case 'b':
             case 'B':
             {
                std::string thisMonth( i->second );
                lowerCase(thisMonth);
-               
-               if (isLike(thisMonth, "jan.*")) month = 1;               
+
+               if (isLike(thisMonth, "jan.*")) month = 1;
                else if (isLike(thisMonth, "feb.*")) month = 2;
                else if (isLike(thisMonth, "mar.*")) month = 3;
                else if (isLike(thisMonth, "apr.*")) month = 4;
@@ -249,26 +243,26 @@ namespace gpstk
             case 'd':
                day = asInt( i->second );
                break;
-               
+
             case 'H':
                hour = asInt( i->second );
                break;
-               
+
             case 'M':
                minute = asInt( i->second );
                break;
-               
+
             case 'S':
             case 'f':
                second = asDouble( i->second );
                if (i->first == 'S')
                   second = floor(second);
                break;
-            
+
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
-               
+
             default:
                   // do nothing
                break;
@@ -279,7 +273,6 @@ namespace gpstk
    }
 
    bool CivilTime::isValid() const
-      throw()
    {
       CivilTime temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -289,9 +282,8 @@ namespace gpstk
       }
       return false;
    }
-   
+
    void CivilTime::reset()
-      throw()
    {
       year = 0;
       month = day = 1;
@@ -301,7 +293,6 @@ namespace gpstk
    }
 
    bool CivilTime::operator==( const CivilTime& right ) const
-      throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -322,13 +313,11 @@ namespace gpstk
    }
 
    bool CivilTime::operator!=( const CivilTime& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool CivilTime::operator<( const CivilTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -388,19 +377,16 @@ namespace gpstk
    }
 
    bool CivilTime::operator>( const CivilTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool CivilTime::operator<=( const CivilTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) || operator==( right ) );
-   } 
+   }
 
    bool CivilTime::operator>=( const CivilTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }
@@ -412,12 +398,12 @@ namespace gpstk
       // @param cit CivilTime to append to stream \c s.
       // @return reference to \c s.
 
-   std::ostream& operator<<( std::ostream& s, 
+   std::ostream& operator<<( std::ostream& s,
                              const CivilTime& cit )
    {
       s << cit.printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
       return s;
    }
-  
-   
+
+
 } // namespace

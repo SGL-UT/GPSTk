@@ -21,7 +21,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -162,7 +162,7 @@ try {
    // build title = first line of output
    C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
-   
+
    for(;;) {
       cout << C.Title << endl;
       // get information from the command line
@@ -509,7 +509,7 @@ try {
    Rinex3NavHeader Rheadout,Rhead;
 
    for(nfiles=0,nfile=0; nfile<C.InputNavFiles.size(); nfile++) {
-      
+
       string filename(C.InputNavFiles[nfile]);
 
       // load filename
@@ -541,7 +541,7 @@ try {
       try {
          Rinex3NavStream strm;
          Rinex3NavData Rdata;
-         
+
          strm.open(filename.c_str(), ios::in);
          if(!strm.is_open()) {
             LOG(WARNING) << "Warning - File " << filename << " could not be opened.";
@@ -614,16 +614,16 @@ try {
                Rheadout.valid |= Rinex3NavHeader::validTimeSysCorr;
             }
          }
-   
+
          // add Iono Correction records from Rhead to Rheadout
-         map<string,Rinex3NavHeader::IonoCorr>::iterator icit;
+         map<string, IonoCorr>::iterator icit;
          for(icit=C.NavStore.Rhead.mapIonoCorr.begin();
                icit != C.NavStore.Rhead.mapIonoCorr.end(); ++icit)
          {
             if(Rheadout.mapIonoCorr.find(icit->first) == Rheadout.mapIonoCorr.end()) {
                Rheadout.mapIonoCorr[icit->first] = icit->second;
-               if(icit->second.type == Rinex3NavHeader::IonoCorr::GPSA
-                  || icit->second.type == Rinex3NavHeader::IonoCorr::GPSB)
+               if(icit->second.type ==  IonoCorr::GPSA
+                  || icit->second.type ==  IonoCorr::GPSB)
                      Rheadout.valid |= Rinex3NavHeader::validIonoCorrGPS;
                else
                   Rheadout.valid |= Rinex3NavHeader::validIonoCorrGal;
@@ -650,7 +650,7 @@ try {
    int NGLO(C.NavStore.size(SatID::systemGlonass));
    int NGAL(C.NavStore.size(SatID::systemGalileo));
    int NGEO(C.NavStore.size(SatID::systemGeosync));
-   int NCOM(C.NavStore.size(SatID::systemCompass));
+   int NCOM(C.NavStore.size(SatID::systemBeiDou));
    LOG(VERBOSE) << "RinNav has stored " << Neph << " navigation records.";
    if(NGPS) {LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";}
    if(NGLO) {LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";}
@@ -672,9 +672,9 @@ try {
    // get full list of Rinex3NavData
    list<Rinex3NavData> theList,theFullList;
    C.NavStore.addToList(theFullList);
-   
+
    // N... is what was read; n... will be what is kept
-   int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nCOM(0);
+   int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nBDS(0);
 
    // must edit out any excluded sats
    list<Rinex3NavData>::const_iterator listit;
@@ -692,13 +692,13 @@ try {
             case SatID::systemGlonass: nGLO++; break;
             case SatID::systemGalileo: nGAL++; break;
             case SatID::systemGeosync: nGEO++; break;
-            case SatID::systemCompass: nCOM++; break;
+            case SatID::systemBeiDou:  nBDS++; break;
             default: break;
          }
       }
    }
    else {
-      neph = Neph; nGPS = NGPS; nGLO = NGLO; nGAL = NGAL; nGEO = NGEO; nCOM = NCOM;
+      neph = Neph; nGPS = NGPS; nGLO = NGLO; nGAL = NGAL; nGEO = NGEO; nBDS = NCOM;
       theList = theFullList;
    }
    int nsys(0);
@@ -706,7 +706,7 @@ try {
    if(nGLO > 0) nsys++;
    if(nGAL > 0) nsys++;
    if(nGEO > 0) nsys++;
-   if(nCOM > 0) nsys++;
+   if(nBDS > 0) nsys++;
    if(nsys == 0 || neph == 0) {
       LOG(WARNING) << "Warning - no data to output.";
       return nfiles;
@@ -746,7 +746,7 @@ try {
          else if(nGLO > 0) sys = string("R");
          else if(nGAL > 0) sys = string("E");
          else if(nGEO > 0) sys = string("S");
-         else if(nCOM > 0) sys = string("C");
+         else if(nBDS > 0) sys = string("C");
       }
       rhead.setFileSystem(sys);
 
@@ -766,7 +766,7 @@ try {
       if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
       if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
       if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
-      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";}
+      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nBDS << " records for COM";}
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 3 file " << filename;
    }
 
@@ -803,7 +803,7 @@ try {
          else if(nGLO > 0) sys = string("R");
          else if(nGAL > 0) sys = string("E");
          else if(nGEO > 0) sys = string("S");
-         else if(nCOM > 0) sys = string("C");
+         else if(nBDS > 0) sys = string("C");
       }
       rhead.setFileSystem(sys);
 
@@ -823,7 +823,7 @@ try {
       if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
       if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
       if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
-      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nCOM << " records for COM";}
+      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nBDS << " records for COM";}
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 2 file " << filename;
    }
 

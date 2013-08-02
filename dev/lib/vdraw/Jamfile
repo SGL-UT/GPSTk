@@ -14,7 +14,7 @@ else
         BorderLayout.cpp Canvas.cpp Color.cpp 
         ColorMap.cpp Comment.cpp CRC32.cpp 
         EPSImage.cpp Frame.cpp GraphicsConstants.cpp 
-        GridLayout.cpp HLayout.cpp # IndexedColorMap.cpp 
+        GridLayout.cpp HLayout.cpp 
         InterpolatedColorMap.cpp Line.cpp 
         Marker.cpp Palette.cpp PNG.cpp PSImage.cpp PSImageBase.cpp Path.cpp
         Rectangle.cpp StrokeStyle.cpp SVGImage.cpp
@@ -28,7 +28,7 @@ else
         Canvas.hpp Circle.hpp Color.hpp 
         ColorMap.hpp Comment.hpp CRC32.hpp EPSImage.hpp 
         Fillable.hpp Frame.hpp GraphicsConstants.hpp
-        GridLayout.hpp HLayout.hpp Helper.hpp # IndexedColorMap.hpp
+        GridLayout.hpp HLayout.hpp Helper.hpp 
         InterpolatedColorMap.hpp Layout.hpp
         Line.hpp Markable.hpp Marker.hpp Palette.hpp PNG.hpp PSImage.hpp 
         PSImageBase.hpp Path.hpp Polygon.hpp

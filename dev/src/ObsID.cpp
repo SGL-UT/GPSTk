@@ -1,9 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file ObsID.cpp
- * gpstk::ObsID - Identifies types of observations
- */
+/// @file ObsID.cpp
+/// gpstk::ObsID - Identifies types of observations
 
 //============================================================================
 //
@@ -41,10 +37,7 @@
 //
 //=============================================================================
 
-
-
 #include "ObsID.hpp"
-
 
 namespace gpstk
 {
@@ -68,7 +61,6 @@ namespace gpstk
 
    // object that forces initialization of the maps
    ObsIDInitializer singleton;
-   
 
    // Construct this object from the string specifier
    ObsID::ObsID(const std::string& strID) throw(InvalidParameter)
@@ -106,7 +98,7 @@ namespace gpstk
             case tcCA: code = tcC; break;
             case tcI5: code = tcIE5; break;
             case tcQ5: code = tcQE5; break;
-			default: break; //NB Determine if additional enumeration values need to be handled
+            default: break;
          }
          if (tc == 'X')
          {
@@ -122,13 +114,16 @@ namespace gpstk
          {
             case tcCA: code = tcGCA; break;
             case tcP: code = tcGP; break;
-			default: break; //NB Determine if additional enumeration values need to be handled
+            case tcI5: code = tcIR3; break;
+            case tcQ5: code = tcQR3; break;
+            case tcC2LM: code = tcIQR3; break;
+            default: break;
          }
          switch (band)
          {
             case cbL1: band = cbG1; break;
             case cbL2: band = cbG2; break;
-			default: break; //NB Determine if additional enumeration values need to be handled			
+            default: break;
          }
       }
       else if (sys == 'S') // SBAS or Geosync
@@ -139,40 +134,70 @@ namespace gpstk
             case tcI5: code = tcSI5; break;     // 'I'
             case tcQ5: code = tcSQ5; break;     // 'Q'
             case tcC2LM: code = tcSIQ5; break;  // 'X'
-			default: break; //NB Determine if additional enumeration values need to be handled
+            default: break;
          }
       }
-      else if (sys == 'C') // Compass
+      else if (sys == 'J') // QZSS
       {
-         //if(band == cbL1) {
-         //   band = cbE1;
-         //   if(code == tcCA) code = tcCCA;
-         //}
-         if(band == cbL2) {
-            band = cbE2;
+         if(band == cbL1) switch (code)
+         {
+            case tcCA: code = tcJCA; break;     // 'C'
+            case tcC2M: code = tcJD1; break;    // 'S'
+            case tcC2L: code = tcJP1; break;    // 'L'
+            case tcC2LM: code = tcJX1; break;   // 'X'
+            case tcABC: code = tcJZ1; break;    // 'Z'
+            default: break;
+         }
+         if(band == cbL2) switch (code)
+         {
+            case tcC2M: code = tcJM2; break;    // 'S'
+            case tcC2L: code = tcJL2; break;    // 'L'
+            case tcC2LM: code = tcJX2; break;   // 'X'
+            default: break;
+         }
+         if(band == cbL5) switch (code)
+         {
+            case tcI5: code = tcJI5; break;     // 'I'
+            case tcQ5: code = tcJQ5; break;     // 'Q'
+            case tcC2LM: code = tcJIQ5; break;  // 'X'
+            default: break;
+         }
+         if(band == cbE6) switch (code)
+         {
+            case tcC2M: code = tcJI6; break;    // 'S'
+            case tcC2L: code = tcJQ6; break;    // 'L'
+            case tcC2LM: code = tcJIQ6; break;  // 'X'
+            default: break;
+         }
+      }
+      else if (sys == 'C') // BeiDou
+      {
+         if(band == cbL1) band = cbB1;
+         if(band == cbE6) band = cbB3;
+
+         if(band == cbB1) {
             switch (code)
             {
-               case tcI5: code = tcCI2; break;     // 'I'
-               case tcQ5: code = tcCQ2; break;     // 'Q'
-               case tcC2LM: code = tcCIQ2; break;  // 'X'
-			   default: break; //NB Determine if additional enumeration values need to be handled
+               case tcI5: code = tcCI1; break;     // 'I'
+               case tcQ5: code = tcCQ1; break;     // 'Q'
+               case tcC2LM: code = tcCIQ1; break;  // 'X'
+               default: break;
             }
          }
-         if(band == cbE5b) switch (code)
+         if(band == cbB3) switch (code)
          {
-            case tcI5: code = tcCI5; break;     // 'I'
-            case tcQ5: code = tcCQ5; break;     // 'Q'
-            case tcC2LM: code = tcCIQ5; break;  // 'X'
-			default: break; //NB Determine if additional enumeration values need to be handled
+            case tcI5: code = tcCI7; break;     // 'I'
+            case tcQ5: code = tcCQ7; break;     // 'Q'
+            case tcC2LM: code = tcCIQ7; break;  // 'X'
+            default: break;
          }
-         if(band == cbE6) {
-            band = cbC6;
+         if(band == cbE5b) {
             switch (code)
             {
                case tcI5: code = tcCI6; break;     // 'I'
                case tcQ5: code = tcCQ6; break;     // 'Q'
                case tcC2LM: code = tcCIQ6; break;  // 'X'
-			   default: break; //NB Determine if additional enumeration values need to be handled
+            default: break;
             }
          }
       } // end of checking which GNSS system this obs is for

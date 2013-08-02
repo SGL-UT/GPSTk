@@ -97,7 +97,6 @@ else
       GPSEphemerisStore.cpp
       GPSOrbElemStore.cpp
       GPSWeek.cpp
-      GPSWeekSecond.cpp
       GPSWeekZcount.cpp
       GPSZcount.cpp
       HelmertTransform.cpp
@@ -149,7 +148,6 @@ else
       Rinex3ObsHeader.cpp
       RinexClockData.cpp
       RinexClockHeader.cpp
-#      RinexConverter.cpp
       RinexMetData.cpp
       RinexMetHeader.cpp
       RinexNavData.cpp
@@ -187,9 +185,10 @@ else
       TimeTag.cpp
       Triple.cpp
       TropModel.cpp
-      TypeID.cpp
       UnixTime.cpp
       VectorBase.cpp
+      Week.cpp
+      WeekSecond.cpp
       WxObsMap.cpp
       X1Sequence.cpp
       X2Sequence.cpp
@@ -233,11 +232,11 @@ else
       CNavDataElementStore.hpp
       CNavEOP.hpp
       CNAVEphemeris.hpp
-      CNAV2EphClk.hpp
       CNavGGTO.hpp
       CNavISC.hpp
       CNavText.hpp
-      CNavUTC.hpp
+      CNavUTC.hpp      
+      CNAV2EphClk.hpp
       CodeBuffer.hpp
       Combinations.hpp
       CommandLine.hpp
@@ -308,7 +307,6 @@ else
       GPSOrbElemStore.hpp	
       GPS_URA.hpp
       GPSWeek.hpp	
-      GPSWeekSecond.hpp	
       GPSWeekZcount.hpp	
       GPSZcount.hpp	
       HelmertTransform.hpp	
@@ -394,7 +392,6 @@ else
       RinexClockHeader.hpp	
       RinexClockStore.hpp	
       RinexClockStream.hpp	
-#      RinexConverter.hpp	
       RinexMetBase.hpp
       RinexMetData.hpp	
       RinexMetFilterOperators.hpp	
@@ -457,13 +454,14 @@ else
       TimeTag.hpp	
       Triple.hpp	
       TropModel.hpp	
-      TypeID.hpp	
       UnixTime.hpp	
       ValidType.hpp	
       Vector.hpp	
       VectorBase.hpp	
       VectorBaseOperators.hpp	
       VectorOperators.hpp	
+      Week.hpp
+      WeekSecond.hpp
       WeightBase.hpp	
       WGS84Ellipsoid.hpp	
       WxObsMap.hpp	

@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file ANSITime.cpp
 
 //============================================================================
 //
@@ -19,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,15 +43,13 @@
 namespace gpstk
 {
    ANSITime& ANSITime::operator=( const ANSITime& right )
-      throw()
    {
       time = right.time;
       timeSystem = right.timeSystem;
       return *this;
    }
-   
+
    CommonTime ANSITime::convertToCommonTime() const
-      throw( InvalidRequest )
    {
       try
       {
@@ -69,14 +65,14 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
    }
-   
+
    void ANSITime::convertFromCommonTime( const CommonTime& ct )
-      throw( InvalidRequest )
    {
-         /// This is the earliest CommonTime for which ANSITimes are valid.
+         /// This is the earliest CommonTime for which ANSITimes are valid,
+         /// = UNIX_MJD = 40587 = Jan 1 1970
       static const CommonTime MIN_CT = ANSITime(0, TimeSystem::Any);
          /// This is the latest CommonTime for which ANSITimes are valid.
-         /// 2^31 - 1 seconds
+         /// 2^31 - 1 seconds = Jan 19 2038 3:14:7
       static const CommonTime MAX_CT = ANSITime(2147483647, TimeSystem::Any);
 
       if ( ct < MIN_CT || ct > MAX_CT )
@@ -88,44 +84,42 @@ namespace gpstk
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod, timeSystem );
-      
-      time = 
+
+      time =
          static_cast<time_t>((jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod);
    }
-   
+
    std::string ANSITime::printf( const std::string& fmt) const
-      throw( StringUtils::StringException )
    {
       try
       {
          using StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
                               "Klu", time );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", timeSystem.asString().c_str() );
-         return rv;         
+         return rv;
       }
       catch( StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
    }
-   
+
    std::string ANSITime::printError( const std::string& fmt) const
-      throw( StringUtils::StringException )
    {
       try
       {
          using StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "K",
                               "Ks", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", getError().c_str() );
-         return rv;         
+         return rv;
       }
       catch( StringUtils::StringException& se )
       {
@@ -134,10 +128,9 @@ namespace gpstk
    }
 
    bool ANSITime::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace StringUtils;
-      
+
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
@@ -147,7 +140,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
 
             default:
@@ -155,12 +148,11 @@ namespace gpstk
                break;
          };
       }
-      
+
       return true;
    }
-   
+
    bool ANSITime::isValid() const
-      throw()
    {
       ANSITime temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -170,16 +162,14 @@ namespace gpstk
       }
       return false;
    }
-   
-   void ANSITime::reset() 
-      throw()
+
+   void ANSITime::reset()
    {
       time = 0;
       timeSystem = TimeSystem::Unknown;
    }
 
    bool ANSITime::operator==( const ANSITime& right ) const
-      throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
      if ((timeSystem != TimeSystem::Any &&
@@ -195,13 +185,11 @@ namespace gpstk
    }
 
    bool ANSITime::operator!=( const ANSITime& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool ANSITime::operator<( const ANSITime& right ) const
-      throw( InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
      if ((timeSystem != TimeSystem::Any &&
@@ -216,20 +204,17 @@ namespace gpstk
    }
 
    bool ANSITime::operator>( const ANSITime& right ) const
-      throw( InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool ANSITime::operator<=( const ANSITime& right ) const
-      throw( InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool ANSITime::operator>=( const ANSITime& right ) const
-      throw( InvalidRequest )
    {
       return ( !operator<( right ) );
    }

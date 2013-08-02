@@ -1,5 +1,4 @@
 from cStringIO import StringIO
-import subprocess
 import sys
 import unittest
 import timeconvert

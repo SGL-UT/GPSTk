@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
       cout << "   The current day of year is " << ydstime.doy << endl;
       cout << "   The current second of day is " << ydstime.sod << endl;
       cout << "   The current full GPS week is " << gpstime.week << endl;
-      cout << "   The current short GPS week is " << gpstime.getWeek10()
+      cout << "   The current short GPS week is " << gpstime.getModWeek()
                                                   << endl;
       cout << "   The current day of GPS week is " << gpstime.getDayOfWeek()
                                                    << endl;

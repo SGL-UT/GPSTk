@@ -31,8 +31,11 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/EngEphemeris.cpp
                     ../../../src/EngNav.cpp
                     ../../../src/Exception.cpp
+                    ../../../src/ExtractData.cpp
                     ../../../src/FFData.cpp
                     ../../../src/FFStream.cpp
+                    ../../../src/FICData.cpp
+                    ../../../src/FICHeader.cpp
                     ../../../src/GalEphemeris.cpp
                     ../../../src/GalEphemerisStore.cpp
                     ../../../src/GloEphemeris.cpp
@@ -41,17 +44,19 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/GPSEphemerisStore.cpp
                     ../../../src/gpstkplatform.h
                     ../../../src/GPSWeek.cpp
-                    ../../../src/GPSWeekSecond.cpp
                     ../../../src/GPSWeekZcount.cpp
                     ../../../src/GPSZcount.cpp
                     ../../../src/JulianDate.cpp
                     ../../../src/MJD.cpp
+                    ../../../src/ObsEpochMap.cpp
                     ../../../src/ObsID.cpp
                     ../../../src/ObsIDInitializer.cpp
                     ../../../src/OrbElem.cpp
                     ../../../src/OrbElemRinex.cpp
+                    ../../../src/PoleTides.cpp
                     ../../../src/Position.cpp
                     ../../../src/PositionSatStore.cpp
+                    ../../../src/PRSolution2.cpp
                     ../../../src/ReferenceFrame.cpp
                     ../../../src/Rinex3ClockData.cpp
                     ../../../src/Rinex3ClockHeader.cpp
@@ -62,9 +67,15 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/Rinex3ObsHeader.cpp
                     ../../../src/RinexClockData.cpp
                     ../../../src/RinexClockHeader.cpp
+                    ../../../src/RinexMetData.cpp
+                    ../../../src/RinexMetHeader.cpp
+                    ../../../src/RinexNavData.cpp
+                    ../../../src/RinexNavHeader.cpp
+                    ../../../src/RinexObsData.cpp
                     ../../../src/RinexObsHeader.cpp
                     ../../../src/RinexObsID.cpp
                     ../../../src/RinexSatID.cpp
+                    ../../../src/RinexUtilities.cpp
                     ../../../src/SEMAlmanacStore.cpp
                     ../../../src/SEMData.cpp
                     ../../../src/SEMHeader.cpp
@@ -79,15 +90,13 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/TimeSystem.cpp
                     ../../../src/TimeTag.cpp
                     ../../../src/Triple.cpp
+                    ../../../src/TropModel.cpp
                     ../../../src/UnixTime.cpp
+                    ../../../src/Week.cpp
+                    ../../../src/WeekSecond.cpp
+                    ../../../src/WxObsMap.cpp
                     ../../../src/Xvt.cpp
                     ../../../src/YDSTime.cpp
                     ../../../src/YumaAlmanacStore.cpp
                     ../../../src/YumaData.cpp
                     )
-
-swig_link_libraries(gpstk_pylib ${PYTHON_LIBRARIES})
-
-  # copies timeconvert.py to build directory
-
-configure_file(module_builder.py module_builder.py COPYONLY)

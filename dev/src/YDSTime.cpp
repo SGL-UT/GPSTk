@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file YDSTime.cpp
 
 //============================================================================
 //
@@ -19,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -46,11 +44,10 @@ namespace gpstk
 {
 // YDSTime constant corresponding to CommonTime::BEGINNING_OF_TIME
 
-   
+
    const YDSTime YDSTime::BEGIN_TIME(CommonTime::BEGINNING_OF_TIME);
 
    YDSTime& YDSTime::operator=( const YDSTime& right )
-      throw()
    {
       year = right.year;
       doy  = right.doy;
@@ -58,9 +55,8 @@ namespace gpstk
       timeSystem = right.timeSystem;
       return *this;
    }
-   
+
    CommonTime YDSTime::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -74,9 +70,8 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
    }
-   
+
    void YDSTime::convertFromCommonTime( const CommonTime& ct )
-      throw()
    {
       long jday, secDay;
       double fsecDay;
@@ -87,15 +82,14 @@ namespace gpstk
       convertJDtoCalendar( jday, year, month, day );
       doy = jday - convertCalendarToJD( year, 1, 1 ) + 1;
    }
-   
+
    std::string YDSTime::printf( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv = fmt;
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Yd", year );
          rv = formattedPrint( rv, getFormatPrefixInt() + "y",
@@ -115,13 +109,12 @@ namespace gpstk
    }
 
    std::string YDSTime::printError( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv = fmt;
-         
+
          rv = formattedPrint( rv, getFormatPrefixInt() + "Y",
                               "Ys", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "y",
@@ -141,7 +134,6 @@ namespace gpstk
    }
 
    bool YDSTime::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace gpstk::StringUtils;
 
@@ -153,7 +145,7 @@ namespace gpstk
             case 'Y':
                year = asInt( i->second );
                break;
-            
+
             case 'y':
                switch( i->second.length() )
                {
@@ -182,20 +174,19 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
-            
+
             default:
                   // do nothing
                break;
          };
       }
-      
+
       return true;
    }
 
    bool YDSTime::isValid() const
-      throw()
    {
       YDSTime temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -207,7 +198,6 @@ namespace gpstk
    }
 
    void YDSTime::reset()
-      throw()
    {
       year = doy = 0;
       sod = 0.0;
@@ -215,7 +205,6 @@ namespace gpstk
    }
 
    bool YDSTime::operator==( const YDSTime& right ) const
-      throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -229,17 +218,15 @@ namespace gpstk
       {
          return true;
       }
-      return false;          
+      return false;
    }
 
    bool YDSTime::operator!=( const YDSTime& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool YDSTime::operator<( const YDSTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -259,7 +246,7 @@ namespace gpstk
          return false;
       }
       if( doy < right.doy )
-      { 
+      {
          return true;
       }
       if( doy > right.doy )
@@ -274,19 +261,16 @@ namespace gpstk
    }
 
    bool YDSTime::operator>( const YDSTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool YDSTime::operator<=( const YDSTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) || operator==( right ) );
    }
 
    bool YDSTime::operator>=( const YDSTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }
@@ -298,12 +282,12 @@ namespace gpstk
       // @param t YDSTime to append to stream \c s.
       // @return reference to \c s.
 
-   std::ostream& operator<<( std::ostream& s, 
+   std::ostream& operator<<( std::ostream& s,
                              const YDSTime& yt )
    {
       s << yt.printf("%04Y/%03j %s %P");
       return s;
    }
-  
-   
+
+
 } // namespace

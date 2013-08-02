@@ -9,4 +9,5 @@ ${CMAKE_SOURCE_DIR}/apps/rfw
 
 add_executable(rtAshtech AshtechMessage.cpp rtAshtech.cpp ScreenControl.cpp)
 target_link_libraries(rtAshtech gpstk rxio)
+install (TARGETS rtAshtech DESTINATION bin)
 

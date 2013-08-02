@@ -10,3 +10,4 @@ ${CMAKE_SOURCE_DIR}/lib/vplot
 
 add_executable(mpsolve mpsolve.cpp ObsArray.cpp)
 target_link_libraries(mpsolve gpstk rxio geomatics vdraw vplot)
+install (TARGETS mpsolve DESTINATION bin)

@@ -26,7 +26,6 @@ libgeodyn_la_SOURCES = AtmosphericDrag.cpp \
 	  RungeKuttaFehlberg.cpp \
 	  SatOrbit.cpp \
 	  SatOrbitPropagator.cpp \
-	  SatOrbitStore.cpp \
 	  SolarRadiationPressure.cpp \
 	  Spacecraft.cpp \
 	  SphericalHarmonicGravity.cpp \
@@ -61,7 +60,6 @@ incl_HEADERS = ASConstant.hpp \
 	  RungeKuttaFehlberg.hpp \
 	  SatOrbit.hpp \
 	  SatOrbitPropagator.hpp \
-	  SatOrbitStore.hpp \
 	  SolarRadiationPressure.hpp \
 	  Spacecraft.hpp \
 	  SphericalHarmonicGravity.hpp \

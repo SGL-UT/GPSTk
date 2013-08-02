@@ -139,7 +139,7 @@ public:
       }      
       
       // week option (otherwise assume data is from this week)
-      time = SystemTime();
+      time = GPSWeekSecond(SystemTime());
       if (weekOpt.getCount())
       {
          time.week = StringUtils::asInt(weekOpt.getValue()[0]);

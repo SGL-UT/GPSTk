@@ -101,7 +101,7 @@ string NavDir;
 vector<string> NavFiles;
 XvtStore<SatID> *pEph;
    // obs types needed
-RinexObsHeader::RinexObsType ELot,LAot,LOot,SRot,SSot;
+RinexObsType ELot,LAot,LOot,SRot,SSot;
    // geoid
 WGS84Ellipsoid WGS84;
    // Start and stop times

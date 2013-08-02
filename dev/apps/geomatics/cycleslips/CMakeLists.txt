@@ -7,4 +7,5 @@ ${CMAKE_SOURCE_DIR}/lib/geomatics
 
 add_executable(DiscFix DiscFix.cpp)
 target_link_libraries(DiscFix gpstk geomatics)
+install (TARGETS DiscFix DESTINATION bin)
 
