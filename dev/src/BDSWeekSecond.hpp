@@ -28,13 +28,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -61,6 +61,7 @@ namespace gpstk
       BDSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
+         timeSystem = TimeSystem::BDS;
       }
 
       /// Destructor.
@@ -74,7 +75,7 @@ namespace gpstk
          // ?? if(timeSys != TimeSystem::BDS) GPSTK_THROW(InvalidRequest(""));
          timeSystem = TimeSystem::BDS;
       }
-
+      
       // the rest define the week rollover and starting time
 
       /// Return the number of bits in the bitmask used to get the ModWeek from the
