@@ -193,7 +193,9 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "src/TimeSystem.i"
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/TimeConstants.hpp"
-%include "../../../src/TimeConverters.hpp"
+
+// functions only modifiy reference parameters, not useful in python ATM
+// %include "../../../src/TimeConverters.hpp"
 %ignore gpstk::CommonTime::get;
 %include "../../../src/CommonTime.hpp"
 %include "../../../src/Week.hpp"
@@ -215,9 +217,9 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %feature("notabstract") JulianDate;
 %include "../../../src/JulianDate.hpp"
 %feature("notabstract") BDSWeekSecond;
-%include "../../../src/QZSWeekSecond.hpp"
+%include "../../../src/BDSWeekSecond.hpp"
 %feature("notabstract") GALWeekSecond;
-%include "../../../src/QZSWeekSecond.hpp"
+%include "../../../src/GALWeekSecond.hpp"
 %feature("notabstract") QZSWeekSecond;
 %include "../../../src/QZSWeekSecond.hpp"
 %feature("notabstract") MJD;

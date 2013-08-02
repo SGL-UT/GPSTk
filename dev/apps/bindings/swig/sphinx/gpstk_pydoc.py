@@ -116,10 +116,6 @@ def main():
         write_page(x)
         f.write('   ' + x + '\n')
 
-    f.write("\nConstants\n****************\n\n")
-    for x in constants:
-        f.write('* .. py:data:: ' + x + '\n')
-
     f.write("\nExceptions\n****************\n\n")
     f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in exceptions:
@@ -131,6 +127,11 @@ def main():
     for x in cpp:
         write_page(x)
         f.write('   ' + x + '\n')
+
+    f.write("\nConstants\n****************\n\n")
+    for x in constants:
+        f.write('* .. py:data:: ' + x + '\n')
+
     f.close()
 
 
