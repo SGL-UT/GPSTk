@@ -58,7 +58,7 @@ namespace gpstk
              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
    };
 
-   CivilTime& CivilTime::operator=( const CivilTime& right )\
+   CivilTime& CivilTime::operator=( const CivilTime& right )
    {
       year       = right.year;
       month      = right.month;
@@ -70,7 +70,7 @@ namespace gpstk
       return *this;
    }
 
-   CommonTime CivilTime::convertToCommonTime() const\
+   CommonTime CivilTime::convertToCommonTime() const
    {
       try
       {
@@ -106,7 +106,7 @@ namespace gpstk
       second += fsod;
    }
 
-   std::string CivilTime::printf( const std::string& fmt ) const\
+   std::string CivilTime::printf( const std::string& fmt ) const
    {
       try
       {
@@ -143,7 +143,7 @@ namespace gpstk
       }
    }
 
-   std::string CivilTime::printError( const std::string& fmt) const\
+   std::string CivilTime::printError( const std::string& fmt) const
    {
       try
       {
@@ -180,7 +180,7 @@ namespace gpstk
       }
    }
 
-   bool CivilTime::setFromInfo( const IdToValue& info )\
+   bool CivilTime::setFromInfo( const IdToValue& info )
    {
       using namespace gpstk::StringUtils;
 
@@ -272,7 +272,7 @@ namespace gpstk
       return true;
    }
 
-   bool CivilTime::isValid() const\
+   bool CivilTime::isValid() const
    {
       CivilTime temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -283,7 +283,7 @@ namespace gpstk
       return false;
    }
 
-   void CivilTime::reset()\
+   void CivilTime::reset()
    {
       year = 0;
       month = day = 1;
@@ -292,7 +292,7 @@ namespace gpstk
       timeSystem = TimeSystem::Unknown;
    }
 
-   bool CivilTime::operator==( const CivilTime& right ) const\
+   bool CivilTime::operator==( const CivilTime& right ) const
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
