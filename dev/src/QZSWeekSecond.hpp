@@ -61,11 +61,13 @@ namespace gpstk
       QZSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
+         timeSystem = TimeSystem::QZS;
       }
 
       /// Destructor.
       ~QZSWeekSecond() {}
 
+      
       /// Return the number of bits in the bitmask used to get the ModWeek from the
       /// full week.
       int Nbits(void) const

@@ -62,6 +62,7 @@ namespace gpstk
    /// The Week class inherits from TimeTag and handles the epoch and
    /// N-bit week special cases:
    ///  getEpoch() returns int (week / rollover) or the number of rollovers,
+   ///  getWeek() returns full week
    ///  getModWeek() returns week % rollover or the "short week"
    ///  getEpochModWeek(int& e, int& w) e = getEpoch(); w = getModWeek();
    ///  setEpoch(int e) sets week = (week & bitmask) | (e << Nbits);
@@ -106,14 +107,14 @@ namespace gpstk
       Week(int w = 0, TimeSystem ts = TimeSystem::Unknown )
             : week(w)
       { timeSystem = ts; }
-
+      
       /// Virtual Destructor.
       virtual ~Week()
       {}
-
+      
       /// Assignment Operator.
       Week& operator=(const Week& right);
-
+      
          /// @name Comparison Operators.
          //@{
       inline bool operator==(const Week& right) const
@@ -131,25 +132,25 @@ namespace gpstk
          timeSystemCheck;
          return (week != right.week);
       }
-
+      
       inline bool operator<(const Week& right) const
       {
          timeSystemCheck;
          return week < right.week;
       }
-
+      
       inline bool operator<=(const Week& right) const
       {
          timeSystemCheck;
          return week <= right.week;
       }
-
+      
       inline bool operator>(const Week& right) const
       {
          timeSystemCheck;
          return week > right.week;
       }
-
+      
       inline bool operator>=(const Week& right) const
       {
          timeSystemCheck;
@@ -158,25 +159,29 @@ namespace gpstk
          //@}
 
       /// @name Special Epoch and Nbit Week Methods.
-      /// @todo Should the "set" methods return a reference?
          //@{
-      inline virtual unsigned int getEpoch() const
+      inline virtual unsigned int getWeek() const
       {
-         return week >> Nbits();
+         return week;
       }
 
       inline virtual unsigned int getModWeek() const
       {
          return week & bitmask();
       }
-
+      
+      inline virtual unsigned int getEpoch() const
+      {
+         return week >> Nbits();
+      }
+      
       inline virtual void getEpochModWeek(unsigned int& e,
                                           unsigned int& w) const
       {
          e = getEpoch();
          w = getModWeek();
       }
-
+      
       inline virtual void setEpoch(unsigned int e)
       {
          week &= bitmask();
@@ -188,7 +193,7 @@ namespace gpstk
          week &= ~bitmask();
          week |= w & bitmask();
       }
-
+      
       inline virtual void setEpochModWeek(unsigned int e,
                                           unsigned int w)
       {
@@ -202,9 +207,9 @@ namespace gpstk
          long jd1,jd2;
          int iyear,imon,iday,ep1,ep2;
          jd1 = convertCalendarToJD(y,1,1);
-         ep1 = (jd1 - JDayEpoch())/7;
+         ep1 = (jd1 - JDayEpoch())/7/rollover();
          jd2 = convertCalendarToJD(y,12,31);
-         ep2 = (jd2 - JDayEpoch())/7;
+         ep2 = (jd2 - JDayEpoch())/7/rollover();
          unsigned int mw = getModWeek();
 
          if(ep1 == ep2)                      // no rollover in given year
@@ -216,11 +221,11 @@ namespace gpstk
       }
 
          //@}
-
-      /// This function formats this time to a string.  The exceptions
+      
+      /// This function formats this time to a string.  The exceptions 
       /// thrown would only be due to problems parsing the fmt string.
       virtual std::string printf( const std::string& fmt ) const;
-
+      
       /// This function works similarly to printf.  Instead of filling
       /// the format with data, it fills with error messages.
       virtual std::string printError( const std::string& fmt ) const;
@@ -237,7 +242,7 @@ namespace gpstk
       {
          return "EFGP";
       }
-
+         
       /// Return a string containing the default format to use in printing.
       inline virtual std::string getDefaultFormat() const
       {
@@ -248,19 +253,21 @@ namespace gpstk
       {
          return ((week >= 0) && (week <= MAXWEEK()));
       }
-
+      
       inline virtual void reset()
       {
          week = 0;
       }
-
+      
       /// Force this interface on this classes descendants.
       virtual unsigned int getDayOfWeek() const = 0;
 
       // member data
-      int week;
+      int week;      ///< Full week number
    };
 
 } // namespace
+
+#undef timeSystemCheck
 
 #endif // GPSTK_WEEK_HPP

@@ -43,24 +43,7 @@
 
 namespace gpstk
 {
-   /// This class handles the week portion of the GPS TimeTag classes.
-   ///
-   /// All of the GPS time classes can be boiled down to just two basic
-   /// types: GPSWeekZcount and GPSWeekSecond.
-   /// GPSWeekZcount consists of an integer week and integer zcount.
-   /// GPSWeekSecond consists of an integer week and double second.
-   ///
-   /// The GPS week is specified by
-   /// 10-bit ModWeek, rollover at 1024, bitmask 0x3FF and epoch GPS_EPOCH_JDAY
-   ///
-   /// GPSWeekZcount inherits from GPSWeek and covers all Zcount-related
-   /// special cases:
-   ///  getZcount29() returns (getModWeek() << 19) | getZcount()
-   ///  getZcount32() returns (getWeek() << 19) | getZcount()
-   ///
-   ///  setZcount29(int z) sets week = (z >> 19) & 0x3FF;
-   ///                          zcount = z & 0x7FFFF;
-   ///  setZcount32(int z) sets week = z >> 19; zcount = z & 07FFFF;
+   /// This class handles GPS Week and Seconds-of-week. It inherits WeekSecond
    class GPSWeekSecond : public WeekSecond
    {
    public:
@@ -76,11 +59,12 @@ namespace gpstk
       GPSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
+         timeSystem = TimeSystem::GPS;
       }
 
       /// Destructor.
       ~GPSWeekSecond() {}
-
+      
       /// Return the number of bits in the bitmask used to get the ModWeek from the
       /// full week.
       int Nbits(void) const

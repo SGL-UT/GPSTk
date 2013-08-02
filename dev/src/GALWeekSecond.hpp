@@ -61,11 +61,12 @@ namespace gpstk
       GALWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
+         timeSystem = TimeSystem::GAL;
       }
 
       /// Destructor.
       ~GALWeekSecond() throw() {}
-
+      
       /// Return the number of bits in the bitmask used to get the ModWeek from the
       /// full week.
       int Nbits(void) const
