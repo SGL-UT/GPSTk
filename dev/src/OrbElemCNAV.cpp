@@ -116,6 +116,7 @@ namespace gpstk
        
          // Message Type 11 data
       unsigned long TOWCount11  = message11.asUnsignedLong(20, 17, 6);
+      double Toe11              = message11.asUnsignedLong(38,11,300);
       OMEGA0                    = message11.asDoubleSemiCircles(49, 33, -32);
       i0                        = message11.asDoubleSemiCircles(82, 33, -32);
       double deltaOMEGAdot      = message11.asDoubleSemiCircles(115, 17, -44);
@@ -140,9 +141,10 @@ namespace gpstk
       A        = A_REF_GPS + deltaA;
       OMEGAdot = OMEGADOT_REF_GPS + deltaOMEGAdot;
 
-      if(Toe!=Toc)
+      if(Toe!=Toc ||
+         Toe!=Toe11)
       {
-       InvalidParameter exc("Toc and Toe are not equal.");
+       InvalidParameter exc("Toe(s) and Toc are not consistent.");
        GPSTK_THROW(exc);    
       } 
 

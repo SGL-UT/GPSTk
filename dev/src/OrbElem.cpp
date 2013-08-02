@@ -139,6 +139,16 @@ namespace gpstk
       return drift;
    }
 
+      // Implements equations of motion as defined in IS-GPS-200.
+      // This code has its origins in 1980's FORTRAN code that has
+      // been ported to C, then C++, then became part of the toolkit.
+      // The original code was based on IS-GPS-200 Table 20-IV.
+      // In July 2013, the code was modified to conform to Table 30-II
+      // which includes additional time-dependent terms (A(dot) 
+      // and delta n(dot)) that are in CNAV but not in LNAV.  These
+      // changes should be backward compatible with LNAV as long as the 
+      // Adot and dndot variables are appropriately set to 0.0 by the 
+      // LNAV loaders. 
    Xvt OrbElem::svXvt(const CommonTime& t) const
       throw(InvalidRequest)
    {
@@ -166,10 +176,14 @@ namespace gpstk
       double dxp,dyp,vxef,vyef,vzef;
       GPSEllipsoid ell;
 
-      double sqrtgm = SQRT(ell.gm());
-      double Ahalf = SQRT(A);
+         // Compute time since ephemeris & clock epochs
+      elapte = t - ctToe;
 
-         // Check for ground transmitter
+      double sqrtgm = SQRT(ell.gm());
+
+         // Compute A at time of interest
+      double Ak = A + Adot * elapte;
+
       double twoPI = 2.0e0 * PI;
       double lecc;               // eccentricity
       double tdrinc;            // dt inclination
@@ -177,13 +191,11 @@ namespace gpstk
       lecc = ecc;
       tdrinc = idot;
 
-         // Compute time since ephemeris & clock epochs
-      elapte = t - ctToe;
-
-
          // Compute mean motion
-      amm  = (sqrtgm / (A*Ahalf)) + dn;
-
+      double dnA = dn + 0.5 * dndot * elapte;
+      double Ahalf = SQRT(A); 
+      amm  = (sqrtgm / (A*Ahalf)) + dnA;  // NOT Ak because this equation
+                                          // specifies A0, not Ak.  
 
          // In-plane angles
          //     meana - Mean anomaly
@@ -235,7 +247,7 @@ namespace gpstk
 
          // U = updated argument of lat, R = radius, AINC = inclination
       U    = alat + du;
-      R    = A*G  + dr;
+      R    = Ak*G  + dr;
       AINC = i0 + tdrinc * elapte  +  di;
 
          //  Longitude of ascending node (ANLON)
@@ -265,13 +277,13 @@ namespace gpstk
       sv.x[2] = zef;
 
          // Compute velocity of rotation coordinates
-      dek = amm * A / R;
-      dlk = Ahalf * q * sqrtgm / (R*R);
+      dek = amm * Ak / R;            
+      dlk = SQRT(Ak) * q * sqrtgm / (R*R);  
       div = tdrinc - 2.0e0 * dlk *
          ( Cic  * s2al - Cis * c2al );
       domk = OMEGAdot - ell.angVelocity();
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al) );
-      drv = A * lecc * dek * sinea - 2.e0 * dlk *
+      drv = Ak * lecc * dek * sinea - 2.e0 * dlk *
          ( Crc * s2al - Crs * c2al );
 
       dxp = drv*cosu - R*sinu*duv;
@@ -304,9 +316,14 @@ namespace gpstk
       double twoPI  = 2.0e0 * PI;
       double sqrtgm = SQRT(ell.gm());
       double elapte = t - ctToe;
-      /** Need to determine A at time t **/
+      
+         // Compute A at time of interest
+      double Ak = A + Adot * elapte;   
+      
+      double dnA = dn + 0.5 * dndot * elapte;
       double Ahalf = SQRT(A);
-      double amm    = (sqrtgm / (A*Ahalf)) + dn;
+      double amm    = (sqrtgm / (A*Ahalf)) + dnA;// NOT Ak because this equation
+                                                 // specifies A0, not Ak.  
       double meana,F,G,delea;
 
       meana = M0 + elapte * amm;
@@ -321,7 +338,9 @@ namespace gpstk
          ea    = ea + delea;
          loop_cnt++;
       } while ( (ABS(delea) > 1.0e-11 ) && (loop_cnt <= 20) );
-      double dtr = REL_CONST * ecc * Ahalf * ::sin(ea);
+      
+         // Use Ak as we are interested in semi-major axis at this moment.
+      double dtr = REL_CONST * ecc * SQRT(Ak) * ::sin(ea); 
       return dtr;
    }
 

@@ -219,7 +219,7 @@ namespace gpstk
 	 //    are converted to A at runtime.
       A = AHalf * AHalf;
       Adot = 0.0;
-         // Legacy nav doesn't have Rate of Chagen to corerction to mean motion,
+         // Legacy nav doesn't have Rate of Change to Correction to mean motion,
 	 // so set it to zero.
       dndot = 0.0;
 
@@ -363,7 +363,7 @@ namespace gpstk
 	 //    are converted to A at runtime.
       A = AHalf * AHalf;
       Adot = 0.0;
-         // Legacy nav doesn't have Rate of Chagen to corerction to mean motion,
+         // Legacy nav doesn't have Rate of Change to Correction to mean motion,
 	 // so set it to zero.
       dndot = 0.0;
 
