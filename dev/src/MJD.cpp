@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -43,15 +43,13 @@
 namespace gpstk
 {
    MJD& MJD::operator=( const MJD& right )
-      throw()
    {
       mjd = right.mjd;
       timeSystem = right.timeSystem;
       return *this;
    }
-   
+
    CommonTime MJD::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -66,7 +64,7 @@ namespace gpstk
             // Lose excess precision in 'tmp' because it may cause rounding
             // problems in the conversion to CommonTime.
          double dTmp( static_cast<double>( tmp ) );
-      
+
          CommonTime ct;
          return ct.set( jday,
                         static_cast<long>( dTmp ),
@@ -78,29 +76,27 @@ namespace gpstk
          InvalidRequest ir(ip);
          GPSTK_THROW(ip);
       }
-      
+
    }
-   
+
    void MJD::convertFromCommonTime( const CommonTime& ct )
-      throw()
    {
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod, timeSystem );
-     
+
       mjd =  static_cast<long double>( jday - MJD_JDAY ) +
-           (  static_cast<long double>( sod ) 
+           (  static_cast<long double>( sod )
             + static_cast<long double>( fsod ) ) * DAY_PER_SEC;
    }
-   
+
    std::string MJD::printf( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
                               "QLf", mjd );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
@@ -112,32 +108,30 @@ namespace gpstk
          GPSTK_RETHROW( se );
       }
    }
-   
+
    std::string MJD::printError( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixFloat() + "Q",
                               "Qs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", getError().c_str() );
-         return rv;         
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
    }
-   
+
    bool MJD::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace gpstk::StringUtils;
-      
+
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
@@ -154,13 +148,12 @@ namespace gpstk
                   // do nothing
                break;
          };
-      }      
+      }
 
       return true;
    }
-   
+
    bool MJD::isValid() const
-      throw()
    {
       MJD temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -170,16 +163,14 @@ namespace gpstk
       }
       return false;
    }
-   
+
    void MJD::reset()
-      throw()
    {
       mjd = 0.0;
       timeSystem = TimeSystem::Unknown;
    }
 
    bool MJD::operator==( const MJD& right ) const
-      throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -195,13 +186,11 @@ namespace gpstk
    }
 
    bool MJD::operator!=( const MJD& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool MJD::operator<( const MJD& right ) const
-      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -220,20 +209,17 @@ namespace gpstk
    }
 
    bool MJD::operator>( const MJD& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool MJD::operator<=( const MJD& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( operator<(  right ) ||
                operator==( right )   );
    }
 
    bool MJD::operator>=( const MJD& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }

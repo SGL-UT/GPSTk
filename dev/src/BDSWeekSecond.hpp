@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,13 +28,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -53,13 +53,12 @@ namespace gpstk
       /// Constructor.
       BDSWeekSecond(unsigned int w = 0,
                        double s = 0.,
-                       TimeSystem ts = TimeSystem::BDS) throw()
+                       TimeSystem ts = TimeSystem::BDS)
          : WeekSecond(w,s)
       { timeSystem = ts; }
 
       /// Constructor from CommonTime
       BDSWeekSecond( const CommonTime& right )
-         throw( InvalidRequest )
       {
          convertFromCommonTime( right );
       }
@@ -70,12 +69,12 @@ namespace gpstk
       // TD do we want to do this?
       // TD throw here? this would require changing throw spec on TimeTag version
       /// Override routine in TimeTag, allowing only BDS time system
-      void setTimeSystem(const TimeSystem& timeSys) throw()
+      void setTimeSystem(const TimeSystem& timeSys)
       {
          // ?? if(timeSys != TimeSystem::BDS) GPSTK_THROW(InvalidRequest(""));
          timeSystem = TimeSystem::BDS;
       }
-      
+
       // the rest define the week rollover and starting time
 
       /// Return the number of bits in the bitmask used to get the ModWeek from the

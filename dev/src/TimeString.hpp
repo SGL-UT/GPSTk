@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,8 +33,8 @@ namespace gpstk
       /**
        * The TimeTag classes are the "interface" for CommonTime, so
        * when printing a CommonTime object, each of the TimeTag printf()
-       * functions are called to handle the print identifiers that it 
-       * recognizes.  The following is a list of these identifiers and 
+       * functions are called to handle the print identifiers that it
+       * recognizes.  The following is a list of these identifiers and
        * the meaning for each:
        *
        * - ANSITime:
@@ -56,7 +56,7 @@ namespace gpstk
        *   - E     integer GPS Epoch
        *   - F     integer full (13-bit) GPS Week
        *   - G     integer 10-bit GPS Week
-       * 
+       *
        * - GPSWeekSecond:
        *   - w     integer GPS day-of-week
        *   - g     float GPS second-of-week
@@ -88,17 +88,15 @@ namespace gpstk
        *   - P     string TimeSystem
        */
    std::string printTime( const CommonTime& t,
-                          const std::string& fmt )
-      throw( gpstk::StringUtils::StringException );
+                          const std::string& fmt );
 
       /// This function converts the given CommonTime into the templatized
-      /// TimeTag object, before calling the TimeTag's printf(fmt).  If 
+      /// TimeTag object, before calling the TimeTag's printf(fmt).  If
       /// there's an error in conversion, it instead calls printf(fmt, true)
       /// to signal a conversion error.
    template <class TimeTagType>
    std::string printAs( const CommonTime& t,
                         const std::string& fmt )
-      throw( gpstk::StringUtils::StringException )
    {
       TimeTagType ttt;
       try
@@ -116,7 +114,7 @@ namespace gpstk
       /// be printed by the TimeTag's printf(fmt); NB except 'P' (system).
       /// In other words, determine if printAs<T>(t,fmt) will not modify the string.
    template <class TimeTagType>
-   bool willPrintAs( const std::string& fmt ) throw( )
+   bool willPrintAs( const std::string& fmt )
    {
       TimeTagType ttt;
       std::string chars = ttt.getPrintChars();
@@ -133,18 +131,14 @@ namespace gpstk
       /// string \a str formatted according to string \a fmt.
    void scanTime( TimeTag& btime,
                   const std::string& str,
-                  const std::string& fmt )
-      throw( gpstk::InvalidRequest,
-             gpstk::StringUtils::StringException );
-   
+                  const std::string& fmt );
+
    void scanTime( CommonTime& t,
                   const std::string& str,
-                  const std::string& fmt )
-      throw( gpstk::InvalidRequest,
-             gpstk::StringUtils::StringException );
+                  const std::string& fmt );
 
       /** This function is like the other scanTime functions except that
-       *  it allows mixed time formats. 
+       *  it allows mixed time formats.
        *  i.e. Year / 10-bit GPS week / seconds-of-week
        *  The time formats are filled in the following order: GPS Epoch,
        *  year, month, GPS Full Week, GPS 10-bit Week, day-of-week,
@@ -156,9 +150,7 @@ namespace gpstk
        */
    void mixedScanTime( CommonTime& t,
                        const std::string& str,
-                       const std::string& fmt )
-      throw( gpstk::InvalidRequest,
-             gpstk::StringUtils::StringException );
+                       const std::string& fmt );
 } // namespace
 
 #endif // GPSTK_TIMESTRING_HPP

@@ -23,7 +23,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -31,13 +31,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -87,7 +87,7 @@ namespace gpstk {
          /// Constructor from string
       TimeSystemCorrection(std::string str) { this->fromString(str); }
 
-      void fromString(const std::string str) throw(Exception)
+      void fromString(const std::string str)
       {
          std::string STR(gpstk::StringUtils::upperCase(str));
               if(STR == std::string("GPUT")) type = GPUT;
@@ -106,7 +106,7 @@ namespace gpstk {
       }
 
          /// Return readable string version of CorrType
-      std::string asString() const throw()
+      std::string asString() const
       {
          switch(type) {
             case GPUT: return std::string("GPS to UTC (A0,A1)"); break;
@@ -124,7 +124,7 @@ namespace gpstk {
       }
 
          /// Return 4-char string version of CorrType
-      std::string asString4() const throw()
+      std::string asString4() const
       {
          switch(type) {
             case GPUT: return std::string("GPUT"); break;
@@ -141,7 +141,7 @@ namespace gpstk {
       }
 
          /// dump
-      void dump(std::ostream& s) const throw()
+      void dump(std::ostream& s) const
       {
          s << "Time system correction for " << asString4() << ": "
             << asString() << std::scientific << std::setprecision(12);
@@ -210,7 +210,6 @@ namespace gpstk {
          ///     that can be converted by this TimeSystemCorr object.
          /// @throw Exception if this object has not been defined.
       bool convertSystem(const CommonTime& fromTime, CommonTime& toTime) const
-         throw(Exception)
       {
          switch(type) {
             case GPUT:

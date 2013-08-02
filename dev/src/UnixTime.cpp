@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -42,16 +42,14 @@
 namespace gpstk
 {
    UnixTime& UnixTime::operator=( const UnixTime& right )
-      throw()
    {
       tv.tv_sec  = right.tv.tv_sec ;
       tv.tv_usec = right.tv.tv_usec;
       timeSystem = right.timeSystem;
       return *this;
    }
-   
+
    CommonTime UnixTime::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -67,9 +65,8 @@ namespace gpstk
          GPSTK_THROW(ip);
       }
    }
-   
+
    void UnixTime::convertFromCommonTime( const CommonTime& ct )
-      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime for which UnixTimes are valid.
       static const CommonTime MIN_CT = UnixTime(0, 0, TimeSystem::Any);
@@ -82,38 +79,37 @@ namespace gpstk
          InvalidRequest ir("Unable to convert given CommonTime to UnixTime.");
          GPSTK_THROW(ir);
       }
-                             
+
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod, timeSystem );
-      
+
       tv.tv_sec = (jday - MJD_JDAY - UNIX_MJD) * SEC_PER_DAY + sod;
-      
+
          // round to the nearest microsecond
       tv.tv_usec = static_cast<time_t>( fsod * 1e6 + 0.5 ) ;
-      
-      if (tv.tv_usec >= 1000000) 
+
+      if (tv.tv_usec >= 1000000)
       {
-         tv.tv_usec -= 1000000; 
-         ++tv.tv_sec; 
+         tv.tv_usec -= 1000000;
+         ++tv.tv_sec;
       }
    }
-   
+
    std::string UnixTime::printf( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint(rv, getFormatPrefixInt() + "U",
                              "Ulu", tv.tv_sec);
          rv = formattedPrint(rv, getFormatPrefixInt() + "u",
                              "ulu", tv.tv_usec);
          rv = formattedPrint(rv, getFormatPrefixInt() + "P",
-                             "Ps", timeSystem.asString().c_str() );         
-         return rv;         
+                             "Ps", timeSystem.asString().c_str() );
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
       {
@@ -122,20 +118,19 @@ namespace gpstk
    }
 
    std::string UnixTime::printError( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint(rv, getFormatPrefixInt() + "U",
                              "Us", getError().c_str());
          rv = formattedPrint(rv, getFormatPrefixInt() + "u",
-                             "us", getError().c_str());  
+                             "us", getError().c_str());
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
-                             "Ps", getError().c_str());           
-         return rv;         
+                             "Ps", getError().c_str());
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
       {
@@ -144,10 +139,9 @@ namespace gpstk
    }
 
    bool UnixTime::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace gpstk::StringUtils;
-      
+
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
@@ -155,7 +149,7 @@ namespace gpstk
             case 'U':
                tv.tv_sec = asInt( i->second );
                break;
-               
+
             case 'u':
                tv.tv_usec = asInt( i->second );
                break;
@@ -163,18 +157,17 @@ namespace gpstk
             case 'P':
                timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
-               
+
             default:
                   // do nothing
                break;
          };
       }
-      
+
       return true;
    }
-   
+
    bool UnixTime::isValid() const
-      throw()
    {
       UnixTime temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -186,14 +179,12 @@ namespace gpstk
    }
 
    void UnixTime::reset()
-      throw()
    {
       tv.tv_sec = tv.tv_usec = 0;
       timeSystem = TimeSystem::Unknown;
    }
-   
+
    bool UnixTime::operator==( const UnixTime& right ) const
-      throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -210,13 +201,11 @@ namespace gpstk
    }
 
    bool UnixTime::operator!=( const UnixTime& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool UnixTime::operator<( const UnixTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -240,20 +229,17 @@ namespace gpstk
    }
 
    bool UnixTime::operator>( const UnixTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool UnixTime::operator<=( const UnixTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool UnixTime::operator>=( const UnixTime& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }

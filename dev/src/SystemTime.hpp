@@ -50,7 +50,6 @@ namespace gpstk
           * Reads the system clock for the current system time.
           */
       SystemTime()
-         throw()
       {
          setTimeSystem(TimeSystem::UTC);
          update();
@@ -58,7 +57,6 @@ namespace gpstk
 
          /// Virtual Destructor.
       virtual ~SystemTime()
-         throw()
       {}
 
          /**
@@ -66,7 +64,6 @@ namespace gpstk
           * @param right a reference to the SystemTime object to copy.
           */
       SystemTime( const SystemTime& right )
-         throw()
             : UnixTime( right )
       {}
 
@@ -76,8 +73,7 @@ namespace gpstk
           * Update this object to the current system time.
           * @return a reference to this SystemTime
           */
-      SystemTime& update()
-         throw();
+      SystemTime& update();
    };
 
 }

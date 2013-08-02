@@ -18,7 +18,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -26,13 +26,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -52,7 +52,7 @@ namespace gpstk
    {
    public:
 
-         /** 
+         /**
           * @defgroup wsbo WeekSecond Basic Operations
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
@@ -64,19 +64,17 @@ namespace gpstk
       WeekSecond(unsigned int w = 0,
                  double s = 0.,
                  TimeSystem ts = TimeSystem::Unknown)
-         throw()
             : Week(w), sow(s)
       { timeSystem = ts; }
-      
+
          /**
           * Copy Constructor.
           * @param right a reference to the WeekSecond object to copy
           */
       WeekSecond( const WeekSecond& right )
-         throw()
             : Week( right ), sow( right.sow )
       { timeSystem = right.timeSystem; }
-      
+
          /**
           * Alternate Copy Constructor.
           * Takes a const TimeTag reference and copies its contents via
@@ -85,12 +83,11 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       WeekSecond( const TimeTag& right )
-         throw( InvalidRequest )
-      { 
-         convertFromCommonTime( right.convertToCommonTime() ); 
+      {
+         convertFromCommonTime( right.convertToCommonTime() );
       }
-      
-         /** 
+
+         /**
           * Alternate Copy Constructor.
           * Takes a const CommonTime reference and copies its contents via
           * the convertFromCommonTime method.
@@ -98,75 +95,62 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       WeekSecond( const CommonTime& right )
-         throw( InvalidRequest )
       {
          convertFromCommonTime( right );
       }
 
-         /** 
+         /**
           * Assignment Operator.
           * @param right a const reference to the WeekSecond to copy
           * @return a reference to this WeekSecond
           */
-      WeekSecond& operator=( const WeekSecond& right )
-         throw();
-      
+      WeekSecond& operator=( const WeekSecond& right );
+
          /// Virtual Destructor.
       virtual ~WeekSecond()
-         throw()
       {}
          //@}
 
          // The following functions are required by TimeTag.
 
-      virtual CommonTime convertToCommonTime() const
-         throw( InvalidRequest );
+      virtual CommonTime convertToCommonTime() const;
 
-      virtual void convertFromCommonTime( const CommonTime& ct )
-         throw( InvalidRequest );
+      virtual void convertFromCommonTime( const CommonTime& ct );
 
-         /// This function formats this time to a string.  The exceptions 
+         /// This function formats this time to a string.  The exceptions
          /// thrown would only be due to problems parsing the fmt string.
-      virtual std::string printf( const std::string& fmt ) const
-         throw( StringUtils::StringException );
+      virtual std::string printf( const std::string& fmt ) const;
 
          /// This function works similarly to printf.  Instead of filling
          /// the format with data, it fills with error messages.
-      virtual std::string printError( const std::string& fmt ) const
-         throw( StringUtils::StringException );
+      virtual std::string printError( const std::string& fmt ) const;
 
          /**
           * Set this object using the information provided in \a info.
           * @param info the IdToValue object to which this object shall be set.
-          * @return true if this object was successfully set using the 
+          * @return true if this object was successfully set using the
           *  data in \a info, false if not.
           */
-      virtual bool setFromInfo( const IdToValue& info )
-         throw();
-      
+      virtual bool setFromInfo( const IdToValue& info );
+
          /// Return a string containing the characters that this class
          /// understands when printing times.
       virtual std::string getPrintChars() const
-         throw()
-      { 
+      {
          return Week::getPrintChars() + "wg";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
-         throw()
       {
          return Week::getDefaultFormat() + " %010.3g %P";
       }
 
-      virtual bool isValid() const
-         throw();
+      virtual bool isValid() const;
 
-      virtual void reset()
-         throw();
+      virtual void reset();
 
       inline virtual unsigned int getDayOfWeek() const
-         throw()
       {
          return static_cast<unsigned int>(sow) / SEC_PER_DAY;
       }
@@ -179,18 +163,12 @@ namespace gpstk
           *  and false on failure.
           */
          //@{
-      bool operator==( const WeekSecond& right ) const
-         throw();
-      bool operator!=( const WeekSecond& right ) const
-         throw();
-      bool operator<( const WeekSecond& right ) const
-         throw();
-      bool operator>( const WeekSecond& right ) const
-         throw();
-      bool operator<=( const WeekSecond& right ) const
-         throw();
-      bool operator>=( const WeekSecond& right ) const
-         throw();
+      bool operator==( const WeekSecond& right ) const;
+      bool operator!=( const WeekSecond& right ) const;
+      bool operator<( const WeekSecond& right ) const;
+      bool operator>( const WeekSecond& right ) const;
+      bool operator<=( const WeekSecond& right ) const;
+      bool operator>=( const WeekSecond& right ) const;
          //@}
 
       double sow;

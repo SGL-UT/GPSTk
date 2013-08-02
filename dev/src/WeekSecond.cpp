@@ -44,7 +44,6 @@
 namespace gpstk
 {
    WeekSecond& WeekSecond::operator=( const WeekSecond& right )
-      throw()
    {
       Week::operator=(right);
       sow = right.sow;
@@ -52,7 +51,6 @@ namespace gpstk
    }
 
    CommonTime WeekSecond::convertToCommonTime() const
-      throw( InvalidRequest )
    {
       try
       {
@@ -76,7 +74,6 @@ namespace gpstk
    }
 
    void WeekSecond::convertFromCommonTime( const CommonTime& ct )
-      throw( InvalidRequest )
    {
       if(static_cast<JulianDate>(ct).jd < JDayEpoch())
       {
@@ -98,7 +95,6 @@ namespace gpstk
    }
 
    std::string WeekSecond::printf( const std::string& fmt ) const
-      throw( StringUtils::StringException )
    {
       try
       {
@@ -121,7 +117,6 @@ namespace gpstk
    }
 
    std::string WeekSecond::printError( const std::string& fmt ) const
-      throw( StringUtils::StringException )
    {
       try
       {
@@ -144,7 +139,6 @@ namespace gpstk
    }
 
    bool WeekSecond::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace StringUtils;
 
@@ -175,34 +169,29 @@ namespace gpstk
    }
 
    bool WeekSecond::isValid() const
-      throw()
    {
       return ( Week::isValid() &&
                sow < FULLWEEK );
    }
 
    void WeekSecond::reset()
-      throw()
    {
       Week::reset();
       sow = 0.0;
    }
 
    bool WeekSecond::operator==( const WeekSecond& right ) const
-      throw()
    {
       return ( Week::operator==(right) &&
                sow == right.sow );
    }
 
    bool WeekSecond::operator!=( const WeekSecond& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool WeekSecond::operator<( const WeekSecond& right ) const
-      throw()
    {
       if( Week::operator<(right) )
       {
@@ -220,19 +209,16 @@ namespace gpstk
    }
 
    bool WeekSecond::operator>( const WeekSecond& right ) const
-      throw()
    {
       return ( !operator<=( right ) );
    }
 
    bool WeekSecond::operator<=( const WeekSecond& right ) const
-      throw()
    {
       return ( operator<( right ) || operator==( right ) );
    }
 
    bool WeekSecond::operator>=( const WeekSecond& right ) const
-      throw()
    {
       return ( !operator<( right ) );
    }

@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,13 +28,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -72,7 +72,7 @@ namespace gpstk
       };
 
       /// Constructor, including empty constructor
-      TimeSystem(Systems sys = Unknown) throw()
+      TimeSystem(Systems sys = Unknown)
       {
          if(sys < 0 || sys >= count)
             system = Unknown;
@@ -81,7 +81,7 @@ namespace gpstk
       }
 
       /// constructor from int
-      TimeSystem(int i) throw()
+      TimeSystem(int i)
       {
          if(i < 0 || i >= count)
             system = Unknown;
@@ -90,54 +90,53 @@ namespace gpstk
       }
 
       // (copy constructor and operator= are defined by compiler)
-      
+
       /// Return the number of leap seconds between UTC and TAI, that is the
       /// difference in time scales UTC-TAI at an epoch defined by (year, month, day).
       /// NB. Input day in a floating quantity and thus any epoch may be represented;
       /// this is relevant the period 1960 to 1972, when UTC-TAI was not integral.
       /// NB. GPS = TAI - 19sec and so GPS-UTC = getLeapSeconds()-19.
-      static double getLeapSeconds(const int& year,const int& month,const double& day)
-         throw();
+      static double getLeapSeconds(const int& year,const int& month,const double& day);
 
       /// set the time system
-      void setTimeSystem(const Systems& sys) throw();
+      void setTimeSystem(const Systems& sys);
 
       /// get the time system
-      Systems getTimeSystem() const throw()
+      Systems getTimeSystem() const
       { return system; }
 
       /// Return a std::string for each system (these strings are const and static).
       /// @return the std::string
-      std::string asString() const throw()
+      std::string asString() const
       { return Strings[system]; }
 
       /// define system based on input string
       /// @param str input string, expected to match output string for given system
-      void fromString(const std::string str) throw();
-      
+      void fromString(const std::string str);
+
       /// boolean operator==
-      bool operator==(const TimeSystem& right) const throw()
+      bool operator==(const TimeSystem& right) const
       { return system == right.system; }
 
       /// boolean operator< (used by STL to sort)
-      bool operator<(const TimeSystem& right) const throw()
+      bool operator<(const TimeSystem& right) const
       { return system < right.system; }
 
       // the rest follow from Boolean algebra...
       /// boolean operator!=
-      bool operator!=(const TimeSystem& right) const throw()
+      bool operator!=(const TimeSystem& right) const
       { return !operator==(right); }
 
       /// boolean operator>=
-      bool operator>=(const TimeSystem& right) const throw()
+      bool operator>=(const TimeSystem& right) const
       { return !operator<(right); }
 
       /// boolean operator<=
-      bool operator<=(const TimeSystem& right) const throw()
+      bool operator<=(const TimeSystem& right) const
       { return (operator<(right) || operator==(right)); }
 
       /// boolean operator>
-      bool operator>(const TimeSystem& right) const throw()
+      bool operator>(const TimeSystem& right) const
       { return (!operator<(right) && !operator==(right)); }
 
    private:

@@ -20,19 +20,19 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
 namespace gpstk
 {
-      /** Fundamental routine to convert from "Julian day" (= JD + 0.5) 
+      /** Fundamental routine to convert from "Julian day" (= JD + 0.5)
        *  to calendar day.
        * @param jd long integer "Julian day" = JD+0.5
        * @param iyear reference to integer year
        * @param imonth reference to integer month (January == 1)
-       * @param iday reference to integer day of month 
+       * @param iday reference to integer day of month
        *  (1st day of month == 1)
        * @note range of applicability of this routine is from 0JD (4713BC)
        *  to approx 3442448JD (4713AD).
@@ -40,17 +40,16 @@ namespace gpstk
        *  Sky & Telescope Magazine, Vol 82, p. 183, August 1991, and
        *  The Astronomical Almanac, published by the U.S. Naval Observatory.
        */
-   void convertJDtoCalendar( long jd, 
-                             int& iyear, 
-                             int& imonth, 
-                             int& iday )
-      throw();
-   
+   void convertJDtoCalendar( long jd,
+                             int& iyear,
+                             int& imonth,
+                             int& iday );
+
       /** Fundamental routine to convert from calendar day to "Julian day"
        *  (= JD + 0.5)
        * @param iyear reference to integer year
        * @param imonth reference to integer month (January == 1)
-       * @param iday reference to integer day of month 
+       * @param iday reference to integer day of month
        *  (1st day of month == 1)
        * @return jd long integer "Julian day" = JD+0.5
        * @note range of applicability of this routine is from 0JD (4713BC)
@@ -59,11 +58,10 @@ namespace gpstk
        *  Sky & Telescope Magazine, Vol 82, p. 183, August 1991, and
        *  The Astronomical Almanac, published by the U.S. Naval Observatory.
        */
-   long convertCalendarToJD( int iyear, 
+   long convertCalendarToJD( int iyear,
                              int imonth,
-                             int iday ) 
-      throw();
-   
+                             int iday ) ;
+
       /** Fundamental routine to convert seconds of day to H:M:S
        * @param sod seconds of day (input)
        * @param hh reference to integer hour (0 <= hh < 24) (output)
@@ -71,11 +69,10 @@ namespace gpstk
        * @param sec reference to double seconds (0 <= sec < 60.0) (output)
        */
    void convertSODtoTime( double sod,
-                          int& hh, 
-                          int& mm, 
-                          double& sec ) 
-      throw();
-   
+                          int& hh,
+                          int& mm,
+                          double& sec );
+
       /** Fundamental routine to convert H:M:S to seconds of day
        * @param hh integer hour (0 <= hh < 24) (input)
        * @param mm integer minutes (0 <= mm < 60) (input)
@@ -83,9 +80,8 @@ namespace gpstk
        * @return sod seconds of day (input)
        */
    double convertTimeToSOD( int hh,
-                            int mm, 
-                            double sec ) 
-      throw();
+                            int mm,
+                            double sec ) ;
 
 } // namespace
 

@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -61,7 +61,6 @@ namespace gpstk
      };
 
    void TimeSystem::setTimeSystem(const Systems& sys)
-      throw()
    {
       if(sys < 0 || sys >= count)
          system = Unknown;
@@ -70,7 +69,7 @@ namespace gpstk
    }
 
    void TimeSystem::fromString(const string str)
-      throw()
+
    {
       system = Unknown;
       for(int i=0; i<count; i++) {
@@ -94,7 +93,7 @@ namespace gpstk
    // NB. GPS = TAI - 19sec and so GPS-UTC = getLeapSeconds()-19.
    double TimeSystem::getLeapSeconds(const int& year,
                                      const int& month,
-                                     const double& day) throw()
+                                     const double& day)
    {
       // Leap second data --------------------------------------------------------
       // number of changes before leap seconds (1960-1971) - this should never change.

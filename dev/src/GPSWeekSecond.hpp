@@ -20,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -28,13 +28,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -57,8 +57,8 @@ namespace gpstk
    /// special cases:
    ///  getZcount29() returns (getModWeek() << 19) | getZcount()
    ///  getZcount32() returns (getWeek() << 19) | getZcount()
-   ///  
-   ///  setZcount29(int z) sets week = (z >> 19) & 0x3FF; 
+   ///
+   ///  setZcount29(int z) sets week = (z >> 19) & 0x3FF;
    ///                          zcount = z & 0x7FFFF;
    ///  setZcount32(int z) sets week = z >> 19; zcount = z & 07FFFF;
    class GPSWeekSecond : public WeekSecond
@@ -68,20 +68,19 @@ namespace gpstk
       /// Constructor.
       GPSWeekSecond(unsigned int w = 0,
                        double s = 0.,
-                       TimeSystem ts = TimeSystem::GPS) throw()
+                       TimeSystem ts = TimeSystem::GPS)
          : WeekSecond(w,s)
       { timeSystem = ts; }
 
       /// Constructor from CommonTime
       GPSWeekSecond( const CommonTime& right )
-         throw( InvalidRequest )
       {
          convertFromCommonTime( right );
       }
 
       /// Destructor.
-      ~GPSWeekSecond() throw() {}
-      
+      ~GPSWeekSecond() {}
+
       /// Return the number of bits in the bitmask used to get the ModWeek from the
       /// full week.
       int Nbits(void) const

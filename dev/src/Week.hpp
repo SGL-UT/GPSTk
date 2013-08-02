@@ -1,4 +1,4 @@
-/// @file Week.hpp  Pure virtual class used to derive (with WeekSecond) XXXWeekSecond 
+/// @file Week.hpp  Pure virtual class used to derive (with WeekSecond) XXXWeekSecond
 /// for systems XXX (GPS QZS BDS GAL) and GPSWeek (for GPSWeekZcount).
 
 #ifndef GPSTK_WEEK_HPP
@@ -21,7 +21,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -29,13 +29,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -96,28 +96,27 @@ namespace gpstk
 
       /// Return the greatest week value for which a conversion to or
       /// from CommonTime would work.
-      int MAXWEEK(void) const throw()
+      int MAXWEEK(void) const
       {
          static const int mw = (CommonTime::END_LIMIT_JDAY - JDayEpoch())/7;
          return mw;
       }
 
       /// Constructor.
-      Week(int w = 0, TimeSystem ts = TimeSystem::Unknown ) throw()
+      Week(int w = 0, TimeSystem ts = TimeSystem::Unknown )
             : week(w)
       { timeSystem = ts; }
-      
+
       /// Virtual Destructor.
       virtual ~Week()
-         throw()
       {}
-      
+
       /// Assignment Operator.
-      Week& operator=(const Week& right) throw();
-      
+      Week& operator=(const Week& right);
+
          /// @name Comparison Operators.
          //@{
-      inline bool operator==(const Week& right) const throw()
+      inline bool operator==(const Week& right) const
       {
          // Any (wildcard) type exception allowed, otherwise must be same time systems
          if(timeSystem != right.timeSystem &&
@@ -126,37 +125,32 @@ namespace gpstk
 
          return (week == right.week);
       }
-      
+
       inline bool operator!=(const Week& right) const
-         throw(InvalidRequest)
       {
          timeSystemCheck;
          return (week != right.week);
       }
-      
+
       inline bool operator<(const Week& right) const
-         throw(InvalidRequest)
       {
          timeSystemCheck;
          return week < right.week;
       }
-      
+
       inline bool operator<=(const Week& right) const
-         throw( InvalidRequest )
       {
          timeSystemCheck;
          return week <= right.week;
       }
-      
+
       inline bool operator>(const Week& right) const
-         throw( InvalidRequest )
       {
          timeSystemCheck;
          return week > right.week;
       }
-      
+
       inline bool operator>=(const Week& right) const
-         throw( InvalidRequest )
       {
          timeSystemCheck;
          return week >= right.week;
@@ -167,49 +161,42 @@ namespace gpstk
       /// @todo Should the "set" methods return a reference?
          //@{
       inline virtual unsigned int getEpoch() const
-         throw()
       {
          return week >> Nbits();
       }
-      
+
       inline virtual unsigned int getModWeek() const
-         throw()
       {
          return week & bitmask();
       }
-      
-      inline virtual void getEpochModWeek(unsigned int& e, 
+
+      inline virtual void getEpochModWeek(unsigned int& e,
                                           unsigned int& w) const
-         throw()
       {
-         e = getEpoch(); 
+         e = getEpoch();
          w = getModWeek();
       }
-      
+
       inline virtual void setEpoch(unsigned int e)
-         throw()
       {
          week &= bitmask();
          week |= e << Nbits();
       }
 
       inline virtual void setModWeek(unsigned int w)
-         throw()
-      { 
-         week &= ~bitmask(); 
+      {
+         week &= ~bitmask();
          week |= w & bitmask();
       }
-      
+
       inline virtual void setEpochModWeek(unsigned int e,
                                           unsigned int w)
-         throw()
       {
          setEpoch(e);
          setModWeek(w);
       }
 
       inline virtual void adjustToYear(unsigned int y)
-         throw()
       {
          short halfroll = rollover()/2;
          long jd1,jd2;
@@ -229,54 +216,46 @@ namespace gpstk
       }
 
          //@}
-      
-      /// This function formats this time to a string.  The exceptions 
+
+      /// This function formats this time to a string.  The exceptions
       /// thrown would only be due to problems parsing the fmt string.
-      virtual std::string printf( const std::string& fmt ) const
-         throw( StringUtils::StringException );
-      
+      virtual std::string printf( const std::string& fmt ) const;
+
       /// This function works similarly to printf.  Instead of filling
       /// the format with data, it fills with error messages.
-      virtual std::string printError( const std::string& fmt ) const
-         throw( StringUtils::StringException );
+      virtual std::string printError( const std::string& fmt ) const;
 
       /// Set this object using the information provided in \a info.
       /// @param info the IdToValue object to which this object shall be set.
-      /// @return true if this object was successfully set using the 
+      /// @return true if this object was successfully set using the
       ///  data in \a info, false if not.
-      virtual bool setFromInfo(const IdToValue& info)
-         throw();
+      virtual bool setFromInfo(const IdToValue& info);
 
       /// Return a string containing the characters that this class
       /// understands when printing times.
       inline virtual std::string getPrintChars() const
-         throw()
-      { 
+      {
          return "EFGP";
       }
-         
+
       /// Return a string containing the default format to use in printing.
       inline virtual std::string getDefaultFormat() const
-         throw()
       {
          return "%04F";
       }
 
       virtual bool isValid() const
-         throw()
       {
          return ((week >= 0) && (week <= MAXWEEK()));
       }
-      
+
       inline virtual void reset()
-         throw()
       {
          week = 0;
       }
-      
+
       /// Force this interface on this classes descendants.
-      virtual unsigned int getDayOfWeek() const
-         throw() = 0;
+      virtual unsigned int getDayOfWeek() const = 0;
 
       // member data
       int week;
