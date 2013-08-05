@@ -124,19 +124,19 @@ namespace gpstk
    {
       WeekSecond *ptt;
       if(ct.getTimeSystem() == TimeSystem::BDS) {
-         BDSWeekSecond *pbtt = new BDSWeekSecond(ct);
+         BDSWeekSecond *pbtt = new BDSWeekSecond();
          ptt = dynamic_cast<WeekSecond*>(pbtt);
       }
       else if(ct.getTimeSystem() == TimeSystem::GAL) {
-         GALWeekSecond *pbtt = new GALWeekSecond(ct);
+         GALWeekSecond *pbtt = new GALWeekSecond();
          ptt = dynamic_cast<WeekSecond*>(pbtt);
       }
       else if(ct.getTimeSystem() == TimeSystem::QZS) {
-         QZSWeekSecond *pbtt = new QZSWeekSecond(ct);
+         QZSWeekSecond *pbtt = new QZSWeekSecond();
          ptt = dynamic_cast<WeekSecond*>(pbtt);
       }
       else {         // default is GPS
-         GPSWeekSecond *pgtt = new GPSWeekSecond(ct);
+         GPSWeekSecond *pgtt = new GPSWeekSecond();
          ptt = dynamic_cast<WeekSecond*>(pgtt);
       }
       return ptt;
