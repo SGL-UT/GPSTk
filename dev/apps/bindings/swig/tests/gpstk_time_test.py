@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import unittest
 import sys
 import gpstk
@@ -45,12 +47,10 @@ class ScanTimes(unittest.TestCase):
         test('05 06 1985 13:50:02', '%y %m %d %H %M %S', '2455507 46800000 0.000000000000000 UNK')
 
         # ews
-# FIX: causes an InvalidRequest
-        test('0 700 0', '%E %G %g', '')
+        test('0 700 0', '%E %G %g', '2449145 00000000 0.000000000000000 GPS')
 
         # ws
-# FIX: causes an InvalidRequest
-        test('158 200', '%F %g', '')
+        test('158 200', '%F %g', '2445351 00200000 0.000000000000000 GPS')
 
         # wz
         test('200 300', '%F %Z', '2444245 00450000 0.000000000000000 UNK')

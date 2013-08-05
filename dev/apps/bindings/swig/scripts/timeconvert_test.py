@@ -7,14 +7,17 @@ import timeconvert
 default_condition = lambda expected,actual: expected.split() == actual.split()
 
 
-def run_test(test, commands, expected, pass_condition=default_condition):
-    old_stdout = sys.stdout
-    sys.stdout = mystdout = StringIO()
-    timeconvert.main(commands)
-    actual = mystdout.getvalue()
-    sys.stdout = old_stdout
-    fail_message = '\nExpected ouput: \n' + expected + "Actual output: " + actual
-    test.assertTrue(pass_condition(expected, actual), fail_message)
+def run_test(test, commands, expected='', pass_condition=default_condition, raises=None):
+    if raises is None:
+        old_stdout = sys.stdout
+        sys.stdout = mystdout = StringIO()
+        timeconvert.main(commands)
+        actual = mystdout.getvalue()
+        sys.stdout = old_stdout
+        fail_message = '\nExpected ouput: \n' + expected + "Actual output: " + actual
+        test.assertTrue(pass_condition(expected, actual), fail_message)
+    else:
+        test.assertRaises(raises, timeconvert.main, commands)
 
 
 class ANSI_input(unittest.TestCase):
@@ -43,7 +46,7 @@ class civil_input(unittest.TestCase):
 
 class RINEX_input(unittest.TestCase):
     def test(self):
-        run_test(self, ['-R', '05 06 1985 13:50:02'],
+        run_test(self, ['-R', '\"05 06 1985 13:50:02\"'],
         '        Month/Day/Year H:M:S            11/06/2010 13:00:00 GPS\n'
         '        Modified Julian Date            55506.541666667 GPS\n'
         '        GPSweek DayOfWeek SecOfWeek     584 6  565200.000000\n'
@@ -197,18 +200,6 @@ class doy_input(unittest.TestCase):
         '        Zcount: 29-bit (32-bit)         384367370 (384367370)\n')
 
 
-class doy_input_gps_epoch(unittest.TestCase):
-    def test(self):
-        run_test(self, ['-y 1980 6 0'],
-        '        Month/Day/Year H:M:S            01/06/1980 00:00:00 GPS\n'
-        '        Modified Julian Date            44244.000000000 GPS\n'
-        '        GPSweek DayOfWeek SecOfWeek     0 0      0.000000\n'
-        '        FullGPSweek Zcount              0      0\n'
-        '        Year DayOfYear SecondOfDay      1980 006     0.000000\n'
-        '        Unix: Second Microsecond        315964800      0\n'
-        '        Zcount: 29-bit (32-bit)         0 (0)\n')
-
-
 class wz_input_before_epoch(unittest.TestCase):
     def test(self):
         run_test(self, ['-w 1023 604799'],
@@ -219,18 +210,6 @@ class wz_input_before_epoch(unittest.TestCase):
         '        Year DayOfYear SecondOfDay      1980 016  43198.500000\n'
         '        Unix: Second Microsecond        316871998 500000\n'
         '        Zcount: 29-bit (32-bit)         725887 (725887)\n')
-
-
-class wz_input_on_epoch(unittest.TestCase):
-    def test(self):
-        run_test(self, ['-w 1024 0'],
-        '        Month/Day/Year H:M:S            01/06/1980 00:00:00 GPS\n'
-        '        Modified Julian Date            44244.000000000 GPS\n'
-        '        GPSweek DayOfWeek SecOfWeek     0 0      0.000000\n'
-        '        FullGPSweek Zcount              0      0\n'
-        '        Year DayOfYear SecondOfDay      1980 006     0.000000\n'
-        '        Unix: Second Microsecond        315964800      0\n'
-        '        Zcount: 29-bit (32-bit)         0 (0)\n')
 
 
 class formatted_ouput(unittest.TestCase):
