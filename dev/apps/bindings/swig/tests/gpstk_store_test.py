@@ -167,7 +167,6 @@ class Rinex3NavTest(unittest.TestCase):
         dataPoint = data[165]
         self.assertEqual(5153.72985268, dataPoint.Ahalf)
         self.assertEqual(432000.0, dataPoint.Toc)
-        self.assertEqual(32767L, dataPoint.freqNum)
 
 
 class RinexMetTest(unittest.TestCase):

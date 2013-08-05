@@ -22,17 +22,6 @@ Example: ::
 .. py:function:: gpstk.timeSystem()
     :noindex:
 
-Returns a gpstk.TimeSystem object given a string input.
-This is just a more succint way of creating a TimeSystem. ::
-
-    >>> print gpstk.TimeSystem(gpstk.TimeSystem.GPS)
-    GPS
-
-    >>> print gpstk.timeSystem('GPS')
-    GPS
-
-
-
 
 
 .. _fileio_label:

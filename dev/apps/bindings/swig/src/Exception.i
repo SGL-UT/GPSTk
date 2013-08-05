@@ -9,30 +9,52 @@ namespace gpstk {
    }
 }
 
+
+%define CATCHER(NAME)
+   catch(const gpstk:: NAME &e) {
+      SWIG_Python_Raise(
+                        SWIG_NewPointerObj(new gpstk:: NAME (static_cast<const gpstk:: NAME &>(e)),
+                                           SWIGTYPE_p_gpstk__##NAME,
+                                           SWIG_POINTER_OWN),
+                        "NAME",
+                        SWIGTYPE_p_gpstk__##NAME);
+      SWIG_fail;
+   }
+%enddef
+
+
+
 %exception {
    try {
       $action
-   } catch (const gpstk::InvalidRequest &e) {
-      std::string s("Invalid Request: "), s2(e.what());
+   }
+   CATCHER(InvalidParameter)
+   CATCHER(InvalidRequest)
+   CATCHER(AssertionFailure)
+   CATCHER(ObjectNotFound)
+   CATCHER(AccessError)
+   CATCHER(IndexOutOfBoundsException)
+   CATCHER(InvalidArgumentException)
+   CATCHER(ConfigurationException)
+   CATCHER(FileMissingException)
+   CATCHER(SystemSemaphoreException)
+   CATCHER(SystemPipeException)
+   CATCHER(SystemQueueException)
+   CATCHER(OutOfMemory)
+   CATCHER(NullPointerException)
+   CATCHER(UnimplementedException)
+   CATCHER(EndOfFile)
+   catch (const gpstk::Exception &e) {
+      std::string s("GPSTk exception\n"), s2(e.what());
       s = s + s2;
       SWIG_exception(SWIG_RuntimeError, s.c_str());
-   } catch (const gpstk::StringUtils::StringException &e) {
-      std::string s("String Exception: "), s2(e.what());
+   }
+   catch (const std::exception &e) {
+      std::string s("STL exception\n"), s2(e.what());
       s = s + s2;
       SWIG_exception(SWIG_RuntimeError, s.c_str());
-   } catch (const gpstk::EndOfFile &e) {
-      std::string s("End of File: "), s2(e.what());
-      s = s + s2;
-      SWIG_exception(SWIG_IOError, s.c_str());
-   } catch (const gpstk::Exception &e) {
-      std::string s("GPSTk exception: "), s2(e.what());
-      s = s + s2;
-      SWIG_exception(SWIG_RuntimeError, s.c_str());
-   } catch (const std::exception &e) {
-      std::string s("STL exception: "), s2(e.what());
-      s = s + s2;
-      SWIG_exception(SWIG_RuntimeError, s.c_str());
-   } catch (...) {
+   }
+   catch (...) {
       SWIG_exception(SWIG_RuntimeError, "unknown exception");
    }
 }
