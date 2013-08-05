@@ -5,7 +5,7 @@ project (gpstk)
 message ("system = ${CMAKE_SYSTEM}")
 message ("system_name = ${CMAKE_SYSTEM_NAME}")
 
-set (CMAKE_INSTALL_PREFIX /Users/bparsons/git/gpstk)
+set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 set (GPSTK_SO_VERSION 21)
 
  if (UNIX)
