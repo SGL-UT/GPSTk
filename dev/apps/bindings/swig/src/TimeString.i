@@ -10,29 +10,45 @@ namespace gpstk
                           const std::string& fmt )
       throw( gpstk::StringUtils::StringException );
 
-   template <class TimeTagType>
-   std::string printAs( const CommonTime& t,
-                        const std::string& fmt )
-      throw( gpstk::StringUtils::StringException )
-   {
-      TimeTagType ttt;
-      try
-      {
-         ttt.convertFromCommonTime(t);
-         return ttt.printf(fmt);
-      }
-      catch (InvalidRequest& ir)
-      {
-         return ttt.printError(fmt);
-      }
-   } 
+   // template <class TimeTagType>
+   // std::string printAs( const CommonTime& t,
+   //                      const std::string& fmt )
+   //    throw( gpstk::StringUtils::StringException )
+   // {
+   //    TimeTagType ttt;
+   //    try
+   //    {
+   //       ttt.convertFromCommonTime(t);
+   //       return ttt.printf(fmt);
+   //    }
+   //    catch (InvalidRequest& ir)
+   //    {
+   //       return ttt.printError(fmt);
+   //    }
+   // }
+
+
+   // template <class TimeTagType>
+   // bool willPrintAs( const std::string& fmt ) throw( )
+   // {
+   //    TimeTagType ttt;
+   //    std::string chars = ttt.getPrintChars();
+   //    for(size_t i=0; i<chars.length(); i++) {
+   //       if(chars[i] == 'P') continue;
+   //       if(StringUtils::isLike(fmt,TimeTag::getFormatPrefixInt()+chars[i]) ||
+   //          StringUtils::isLike(fmt,TimeTag::getFormatPrefixFloat()+chars[i]))
+   //          return true;
+   //    }
+   //    return false;
+   // }
+
 
    // void scanTime( TimeTag& btime,
    //                const std::string& str,
    //                const std::string& fmt )
    //    throw( gpstk::InvalidRequest,
    //           gpstk::StringUtils::StringException );
-   
+
    // void scanTime( CommonTime& t,
    //                const std::string& str,
    //                const std::string& fmt )
@@ -49,7 +65,7 @@ namespace gpstk
 
 
 %inline %{
-  
+
   gpstk::CommonTime scanTime( const std::string& str,
     const std::string& fmt )
   throw( gpstk::InvalidRequest,
@@ -69,4 +85,3 @@ namespace gpstk
   }
 
 %}
-

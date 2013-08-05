@@ -19,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,15 +45,13 @@ namespace gpstk
 {
    void TimeTag::scanf( const std::string& str,
                         const std::string& fmt )
-      throw( gpstk::InvalidRequest,
-             gpstk::StringUtils::StringException )
    {
       try
       {
             // Get the mapping of character (from fmt) to value (from str).
          IdToValue info;
          getInfo( str, fmt, info );
-         
+
             // Attempt to set this object using the IdToValue object
          if( !setFromInfo( info ) )
          {
@@ -66,11 +64,10 @@ namespace gpstk
          GPSTK_RETHROW( se );
       }
    }
-   
+
    void TimeTag::getInfo( const std::string& str,
                           const std::string& fmt,
                           IdToValue& info )
-      throw( gpstk::StringUtils::StringException ) 
    {
       try
       {
@@ -79,30 +76,30 @@ namespace gpstk
             // Copy the arguments to strings we can modify.
          std::string f = fmt;
          std::string s = str;
-      
+
             // Parse strings...  As we process each part, it's removed from both
             // strings so when we reach 0, we're done
          while( !s.empty() && !f.empty() )
          {
             // Remove everything in f and s up to the first % in f
-            // (these parts of the strings must be identical or this will 
+            // (these parts of the strings must be identical or this will
             // break after it tries to remove it!)
-            while ( !s.empty() && 
-                    !f.empty() && 
+            while ( !s.empty() &&
+                    !f.empty() &&
                     ( f[0] != '%' ) )
             {
                // remove that character now and other whitespace
                s.erase(0,1);
                f.erase(0,1);
             }
-         
+
             // check just in case we hit the end of either string...
             if ( s.empty() || f.empty() )
                break;
-            
+
             // lose the '%' in f...
             f.erase( 0, 1 );
-            
+
             std::string::size_type fieldLength = std::string::npos;
             char delimiter = 0;
 
@@ -117,12 +114,12 @@ namespace gpstk
                // This is where we have a specified field length so we should
                // not throw away any more characters
                fieldLength = asInt( f );
-               
+
                // remove everything else up to the next character
                // (in "%03f", that would be 'f')
                while ( !f.empty() && !isalpha( f[0] ) )
                   f.erase( 0, 1 );
-               
+
                if ( f.empty() )
                   break;
             }
@@ -150,13 +147,13 @@ namespace gpstk
 
             // Copy the next string to be removed.
             std::string value( s.substr( 0, fieldLength ) );
-            
+
             // based on char at f[0], we know what to do...
             info[ f[0] ] = value;
-            
+
                // remove the part of str that we processed
             stripLeading( s, value, 1 );
-            
+
             // remove the character we processed from fmt
             f.erase( 0, 1 );
 

@@ -1,4 +1,10 @@
-#pragma ident "$Id$"
+/// @file ObsID.hpp
+/// gpstk::ObsID - navigation system, receiver, and file specification
+/// independent representation of the types of observation data that can
+/// be collected.  This class is analogous to the RinexObsType class that
+/// is used to represent the observation codes in a RINEX file. It is
+/// intended to support at least everything in section 5.1 of the RINEX 3
+/// specifications.
 
 //============================================================================
 //
@@ -36,16 +42,6 @@
 //
 //=============================================================================
 
-/**
- * @file ObsID.hpp
- * gpstk::ObsID - navigation system, receiver, and file specification
- * independent representation of the types of observation data that can
- * be collected.  This class is analogous to the RinexObsType class that
- * is used to represent the observation codes in a RINEX file. It is
- * intended to support at least everything in section 5.1 of the RINEX 3
- * specifications.
- */
-
 #ifndef OBSID_HPP
 #define OBSID_HPP
 
@@ -61,7 +57,6 @@
 
 namespace gpstk
 {
-   
    class ObsID;
    namespace StringUtils
    {
@@ -103,17 +98,17 @@ namespace gpstk
          cbUnknown,
          cbAny,  ///< Used to match any carrier band
          cbZero, ///< Used with the channel observation type (see RINEx3 section 5.13)
-         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1
-         cbL2,   ///< GPS L2
-         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5
+         cbL1,   ///< GPS L1, Galileo E2-L1-E1, SBAS L1, QZSS L1
+         cbL2,   ///< GPS L2, QZSS L2
+         cbL5,   ///< GPS L5, Galileo E5a, SBAS L5, QZSS L5
          cbG1,   ///< Glonass G1
          cbG2,   ///< Glonass G2
-         cbE5b,  ///< Galileo E5b, Compass E5b
+         cbG3,   ///< Glonass G3
+         cbE5b,  ///< Galileo E5b, BeiDou L7
          cbE5ab, ///< Galileo E5a+b
-         cbE1,   ///< Compass E1
-         cbE2,   ///< Compass E2
-         cbE6,   ///< Galileo E6
-         cbC6,   ///< Compass E6
+         cbE6,   ///< Galileo E6, QZSS LEX
+         cbB1,   ///< BeiDou L1
+         cbB3,   ///< BeiDou L6
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
          cbUndefined,
          cbLast  ///< Used to verify that all items are described at compile time
@@ -148,6 +143,9 @@ namespace gpstk
 
          tcGCA,     ///< Legacy Glonass civil signal
          tcGP,      ///< Legacy Glonass precise signal
+         tcIR3,     ///< Glonass L3 I code
+         tcQR3,     ///< Glonass L3 Q code
+         tcIQR3,    ///< Glonass L3 I+Q combined tracking
 
          tcA,       ///< Galileo L1 PRS code
          tcB,       ///< Galileo OS/CS/SoL code
@@ -163,16 +161,30 @@ namespace gpstk
          tcSQ5,     ///< SBAS L5 Q code
          tcSIQ5,    ///< SBAS L5 I+Q code
 
-         //tcCCA      ///< Compass civil E1     ** TBD
-         tcCI2,     ///< Compass E2 I code
-         tcCQ2,     ///< Compass E2 Q code
-         tcCIQ2,    ///< Compass E2 I code
-         tcCI5,     ///< Compass E5 I+Q code
-         tcCQ5,     ///< Compass E5 Q code
-         tcCIQ5,    ///< Compass E5 I+Q code
-         tcCI6,     ///< Compass E6 I code
-         tcCQ6,     ///< Compass E6 Q code
-         tcCIQ6,    ///< Compass E2 I+Q code
+         tcJCA,     ///< QZSS civil code
+         tcJD1,     ///< QZSS L1C(D)
+         tcJP1,     ///< QZSS L1C(P)
+         tcJX1,     ///< QZSS L1C(D+P)
+         tcJZ1,     ///< QZSS L1-SAIF
+         tcJM2,     ///< QZSS L2C(M)
+         tcJL2,     ///< QZSS L2C(L)
+         tcJX2,     ///< QZSS L2C(M+L)
+         tcJI5,     ///< QZSS L5 in-phase
+         tcJQ5,     ///< QZSS L5 quadrature
+         tcJIQ5,    ///< QZSS L5 I+Q combined tracking
+         tcJI6,     ///< QZSS LEX(6) in-phase
+         tcJQ6,     ///< QZSS LEX(6) quadrature
+         tcJIQ6,    ///< QZSS LEX(6) I+Q combined tracking
+
+         tcCI1,     ///< BeiDou B1 I code
+         tcCQ1,     ///< BeiDou B1 Q code
+         tcCIQ1,    ///< BeiDou B1 I code
+         tcCI7,     ///< BeiDou B2 I+Q code
+         tcCQ7,     ///< BeiDou B2 Q code
+         tcCIQ7,    ///< BeiDou B2 I+Q code
+         tcCI6,     ///< BeiDou B3 I code
+         tcCQ6,     ///< BeiDou B3 Q code
+         tcCIQ6,    ///< BeiDou B3 I+Q code
 
          tcUndefined,
          tcLast     ///< Used to verify that all items are described at compile time
@@ -190,7 +202,8 @@ namespace gpstk
       static std::string validRinexSystems;
 
       /// This map[sys][freq] = valid codes gives valid tracking codes for RINEX
-      /// observations given the system and frequency; e.g.  valid['G'][1]="CSLXPWYMN* "
+      /// observations given the system and frequency;
+      /// eg. valid['G']['1']="CSLXPWYMN* "
       /// The only exception is there is no pseudorange (C) on GPS L1/L2 N (codeless)
       /// NB These tracking code characters are ORDERED, basically 'best' to 'worst'
       static std::map<char, std::map<char, std::string> > validRinexTrackingCodes;
@@ -237,12 +250,6 @@ namespace gpstk
       /// Destructor
       virtual ~ObsID() {};
 
-      /// The next three methods are deprecated
-      /// So deprecated they aren't even defined anymore
-      // static ObservationType newObservationType(const std::string& s);
-      // static CarrierBand newCarrierBand(const std::string& s);
-      // static TrackingCode newTrackingCode(const std::string& s);
-
       // Extend the standard identifiers with a new Rinex 3 style identifier. If
       // the specified id is already defined, an exception is thrown and the
       // existing definitions are not touched. If not then each character of the
@@ -268,7 +275,7 @@ namespace gpstk
       static std::map< ObservationType, char > ot2char;
       static std::map< CarrierBand, char > cb2char;
       static std::map< TrackingCode, char> tc2char;
-     
+
    private:
       static ObsID idCreator(const std::string& id, const std::string& desc="");
 

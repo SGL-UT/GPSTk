@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -40,7 +40,7 @@
  * @file Exception.cpp
  * Exceptions for all of GPSTK, including location information
  */
- 
+
 #include <sstream>
 #include "Exception.hpp"
 
@@ -54,34 +54,30 @@ namespace gpstk
 {
 
    void ExceptionLocation::dump(ostream& s) const
-      throw()
-   { 
-      s << getFileName() << ":" 
+   {
+      s << getFileName() << ":"
 #ifdef __FUNCTION__
-        << getFunctionName() << ":" 
+        << getFunctionName() << ":"
 #endif
-        << getLineNumber(); 
+        << getLineNumber();
    }
 
    Exception::Exception()
-      throw()
    {
    }
 
-   Exception::Exception(const string& errorText, 
+   Exception::Exception(const string& errorText,
                         const unsigned long& errId,
                         const Severity& sever)
-      throw()
    {
       text.push_back(errorText);
       errorId = errId;
       severity = sever;
    }
 
-   Exception::Exception(const char* errorText, 
+   Exception::Exception(const char* errorText,
       const unsigned long& errId,
       const Severity& sever)
-      throw()
    {
       text.push_back(string(errorText));
       errorId = errId;
@@ -89,7 +85,6 @@ namespace gpstk
    }
 
    Exception::Exception(const Exception& e)
-      throw()
          : errorId(e.errorId),
            locations(e.locations),
            severity(e.severity),
@@ -98,7 +93,6 @@ namespace gpstk
    {}
 
    Exception& Exception::operator=(const Exception& e)
-      throw()
    {
       errorId = e.errorId;
       locations = e.locations;
@@ -113,7 +107,6 @@ namespace gpstk
 
    Exception& Exception::addLocation(
       const ExceptionLocation& location)
-      throw()
    {
       locations.push_back(location);
       return *this;
@@ -121,7 +114,6 @@ namespace gpstk
 
    const ExceptionLocation Exception::getLocation(
       const size_t& index) const
-      throw()
    {
       if (index>=getLocationCount())
       {
@@ -134,20 +126,17 @@ namespace gpstk
    }
 
    size_t Exception::getLocationCount() const
-      throw()
    {
       return locations.size();
    }
 
    Exception& Exception::addText(const string& errorText)
-      throw()
    {
       text.push_back(errorText);
       return *this;
    }
 
    string Exception::getText(const size_t& index) const
-      throw()
    {
       if (index>=getTextCount())
       {
@@ -161,13 +150,11 @@ namespace gpstk
    }
 
    size_t Exception::getTextCount() const
-      throw()
    {
       return text.size();
    }
 
    void Exception::dump(ostream& s) const
-      throw()
    {
       int i;
       for (i=0; i<getTextCount(); i++)
@@ -197,7 +184,6 @@ namespace gpstk
    }
 
    string ExceptionLocation::what() const
-      throw()
    {
       ostringstream oss;
       this->dump(oss);
@@ -205,28 +191,24 @@ namespace gpstk
    }
 
    string Exception::what() const
-      throw()
    {
       ostringstream oss;
       this->dump(oss);
       return oss.str();
    }
 
-    ostream& operator<<( ostream& s, 
+    ostream& operator<<( ostream& s,
                          const Exception& e )
-       throw()
-    { 
-       e.dump(s); 
+    {
+       e.dump(s);
        return s;
     }
 
     ostream& operator<<( ostream& s,
                          const ExceptionLocation& e )
-       throw()
     {
        e.dump(s);
        return s;
     }
 
 } // namespace gpstk
-

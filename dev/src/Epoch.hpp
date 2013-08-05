@@ -1,12 +1,4 @@
-#pragma ident "$Id$"
-
-/**
- * @file Epoch.hpp
- * gpstk::Epoch - encapsulates a point in time
- */
-
-#ifndef GPSTK_EPOCH_HPP
-#define GPSTK_EPOCH_HPP
+/// @file Epoch.hpp
 
 //============================================================================
 //
@@ -44,6 +36,9 @@
 //
 //=============================================================================
 
+#ifndef GPSTK_EPOCH_HPP
+#define GPSTK_EPOCH_HPP
+
 #include "MathBase.hpp"
 #include "Exception.hpp"
 #include "StringUtils.hpp"
@@ -59,6 +54,9 @@
 #include "CivilTime.hpp"
 #include "GPSWeekZcount.hpp"
 #include "GPSWeekSecond.hpp"
+#include "BDSWeekSecond.hpp"
+#include "GALWeekSecond.hpp"
+#include "QZSWeekSecond.hpp"
 
 namespace gpstk
 {
@@ -210,7 +208,7 @@ namespace gpstk
           * double mjd (MJD)
           * year, doy, sod (YDSTime)
           * Unix struct timeval (UnixTime)
-          * gps full week and second (GPSWeekSecond)
+          * GPS full week and second (GPSWeekSecond)
           */
       Epoch(const TimeTag& tt = SystemTime())
          throw(EpochException);
@@ -231,7 +229,7 @@ namespace gpstk
           * gps 10-bit week and second and year (GPSEpochWeekSecond + year)
           * gps week and zcount and year (GPSWeekZcount + year)
           */
-      Epoch(const TimeTag& tt,
+      Epoch(const WeekSecond& tt,
             short year)
          throw(EpochException);
 
@@ -406,7 +404,11 @@ namespace gpstk
       inline double sod() const
          throw(EpochException);
 
-         /// Get 10-bit GPS week.
+         /// Get 10-bit GPS week
+      inline short GPSModWeek() const
+         throw(EpochException);
+
+         /// Get 10-bit GPS week, deprecated, use GPSModWeek()
       inline short GPSweek10() const
          throw(EpochException);
 
@@ -436,6 +438,42 @@ namespace gpstk
 
          /// Get full (>10 bits) week 
       inline short GPSweek() const
+         throw(EpochException);
+
+         /// Get BDS second of week.
+      inline double BDSsow() const
+         throw(EpochException);
+   
+         /// Get full BDS week 
+      inline short BDSweek() const
+         throw(EpochException);
+   
+         /// Get mod (short) BDS week
+      inline short BDSModWeek() const
+         throw(EpochException);
+
+         /// Get QZS second of week.
+      inline double QZSsow() const
+         throw(EpochException);
+   
+         /// Get full QZS week 
+      inline short QZSweek() const
+         throw(EpochException);
+   
+         /// Get mod (short) QZS week
+      inline short QZSModWeek() const
+         throw(EpochException);
+
+         /// Get GAL second of week.
+      inline double GALsow() const
+         throw(EpochException);
+   
+         /// Get full GAL week 
+      inline short GALweek() const
+         throw(EpochException);
+   
+         /// Get mod (short) GAL week
+      inline short GALModWeek() const
          throw(EpochException);
 
          /// Get day of year.
@@ -477,7 +515,7 @@ namespace gpstk
           * @param year the "hint" year
           * @return a reference to this object.
           */
-      Epoch& set(const TimeTag& tt,
+      Epoch& set(const WeekSecond& tt,
                  short year)
          throw(EpochException);
       
@@ -658,10 +696,6 @@ namespace gpstk
          /// double tolerance used in comparisons (seconds)
       double tolerance;    
       
-         /// Calculate which GPS Epoch to use for the given week with the
-         /// given year as a hint.
-      short whichGPSEpoch(int week, int year) const
-         throw(EpochException);
          //@}
    };   // end class Epoch
 
@@ -764,11 +798,18 @@ namespace gpstk
       return get<YDSTime>().sod;
    }
    
-      /// Get 10-bit GPS week.
+      /// Get 10-bit GPS week. Deprecated, used GPSModWeek()
    short Epoch::GPSweek10() const
       throw(Epoch::EpochException)
    {
-      return static_cast<short>(get<GPSWeekSecond>().getWeek10());
+      return GPSModWeek();
+   }
+
+      /// Get 10-bit GPS week
+   short Epoch::GPSModWeek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<GPSWeekSecond>().getModWeek());
    }
    
       /// Get normal (19 bit) zcount.
@@ -786,11 +827,9 @@ namespace gpstk
       return e.get<GPSWeekZcount>().zcount;
    }
    
-      /**
-       * Get time as 32 bit Z count.
-       * The 13 MSBs are week modulo 1024, 19 LSBs are seconds of
-       * week in Zcounts.
-       */
+      /// Get time as 32 bit Z count.
+      /// The 13 MSBs are week modulo 1024, 19 LSBs are seconds of
+      /// week in Zcounts.
    unsigned long Epoch::GPSzcount32() const
       throw(Epoch::EpochException)
    {
@@ -819,6 +858,74 @@ namespace gpstk
       return static_cast<short>(get<GPSWeekSecond>().week);
    }
    
+      /// Get BDS second of week.
+   double Epoch::BDSsow() const
+      throw(Epoch::EpochException)
+   {
+      return get<BDSWeekSecond>().sow;
+   }
+   
+      /// Get full BDS week 
+   short Epoch::BDSweek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<BDSWeekSecond>().week);
+   }
+   
+      /// Get mod (short) BDS week
+   short Epoch::BDSModWeek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<BDSWeekSecond>().getModWeek());
+   }
+   
+      /// Get QZS second of week.
+   double Epoch::QZSsow() const
+      throw(Epoch::EpochException)
+   {
+      return get<QZSWeekSecond>().sow;
+   }
+   
+      /// Get full QZS week 
+   short Epoch::QZSweek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<QZSWeekSecond>().week);
+   }
+   
+      /// Get mod (short) QZS week
+   short Epoch::QZSModWeek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<QZSWeekSecond>().getModWeek());
+   }
+   
+      /// Get GAL second of week.
+   double Epoch::GALsow() const
+      throw(Epoch::EpochException)
+   {
+      return get<GALWeekSecond>().sow;
+   }
+   
+      /// Get full GAL week 
+   short Epoch::GALweek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<GALWeekSecond>().week);
+   }
+   
+      /// Get mod (short) GAL week
+   short Epoch::GALModWeek() const
+      throw(Epoch::EpochException)
+   {
+      return static_cast<short>(get<GALWeekSecond>().getModWeek());
+   }
+   
+
+
+
+
+
       /// Get day of year.
    short Epoch::doy() const
       throw(Epoch::EpochException)

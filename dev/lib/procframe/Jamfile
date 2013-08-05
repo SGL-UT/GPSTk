@@ -77,6 +77,7 @@ else
       SolverWMS.cpp
       StochasticModel.cpp
       Synchronize.cpp
+      TypeID.cpp
       Variable.cpp
       XYZ2NED.cpp
       XYZ2NEU.cpp
@@ -155,6 +156,7 @@ else
       SolverWMS.hpp
       StochasticModel.hpp
       Synchronize.hpp
+      TypeID.hpp
       Variable.hpp
       XYZ2NED.hpp
       XYZ2NEU.hpp

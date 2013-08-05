@@ -1,4 +1,4 @@
-/// @file GPSWeek.cpp
+/// @file Week.cpp
 
 //============================================================================
 //
@@ -36,21 +36,19 @@
 //
 //=============================================================================
 
-#include "GPSWeek.hpp"
+#include "Week.hpp"
 #include "TimeConstants.hpp"
 
 namespace gpstk
 {
-   const int GPSWeek::MAX_WEEK = (CommonTime::END_LIMIT_JDAY - GPS_EPOCH_JDAY)/7;
-
-   GPSWeek& GPSWeek::operator=(const GPSWeek& right)
+   Week& Week::operator=(const Week& right)
    {
       week = right.week;
       timeSystem = right.timeSystem;
       return *this;
    }
 
-   std::string GPSWeek::printf( const std::string& fmt ) const
+   std::string Week::printf( const std::string& fmt ) const
    {
       try
       {
@@ -62,7 +60,7 @@ namespace gpstk
          rv = formattedPrint( rv, getFormatPrefixInt() + "F",
                               "Fu", week );
          rv = formattedPrint( rv, getFormatPrefixInt() + "G",
-                              "Gu", getWeek10() );
+                              "Gu", getModWeek() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", timeSystem.asString().c_str() );
          return rv;
@@ -73,7 +71,7 @@ namespace gpstk
       }
    }
 
-   std::string GPSWeek::printError( const std::string& fmt ) const
+   std::string Week::printError( const std::string& fmt ) const
    {
       try
       {
@@ -96,13 +94,11 @@ namespace gpstk
       }
    }
 
-      /**
-       * Set this object using the information provided in \a info.
-       * @param info the IdToValue object to which this object shall be set.
-       * @return true if this object was successfully set using the
-       *  data in \a info, false if not.
-       */
-   bool GPSWeek::setFromInfo( const IdToValue& info )
+   /// Set this object using the information provided in \a info.
+   /// @param info the IdToValue object to which this object shall be set.
+   /// @return true if this object was successfully set using the
+   ///  data in \a info, false if not.
+   bool Week::setFromInfo( const IdToValue& info )
    {
       using namespace gpstk::StringUtils;
 
@@ -118,7 +114,7 @@ namespace gpstk
                week = asInt( i->second );
                break;
             case 'G':
-               setWeek10( asInt( i->second ) );
+               setModWeek( asInt( i->second ) );
                break;
             case 'P':
                timeSystem.fromString(i->second);

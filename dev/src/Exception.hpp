@@ -17,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -78,7 +78,6 @@ namespace gpstk
       ExceptionLocation(const std::string& filename = std::string(),
                         const std::string& funcName = std::string(),
                         const unsigned long& lineNum = 0)
-         throw()
             : fileName(filename), functionName(funcName),
               lineNumber(lineNum)
       { }
@@ -86,29 +85,26 @@ namespace gpstk
          /**
           * Destructor.
           */
-      ~ExceptionLocation() throw() {}
+      ~ExceptionLocation() {}
 
          /// Accessor for name of source file where exception occurred.
-      std::string getFileName() const 
-         throw() 
+      std::string getFileName() const
       { return fileName; }
          /// Accessor for name of function where exception occurred.
-      std::string getFunctionName() const 
-         throw() 
+      std::string getFunctionName() const
       { return functionName; }
          /// Accessor for line of source file where exception occurred.
-      unsigned long getLineNumber() const 
-         throw()
+      unsigned long getLineNumber() const
       { return lineNumber; }
 
          /**
           * Debug output function.
           * @param s stream to output debugging information for this class to.
           */
-      void dump(std::ostream& s) const throw();
+      void dump(std::ostream& s) const;
 
          /// Dump to a string
-      std::string what() const throw();
+      std::string what() const;
 
          /**
           * Output stream operator for ::ExceptionLocation.
@@ -120,8 +116,7 @@ namespace gpstk
           * @return a reference to the stream \c s.
           */
       friend std::ostream& operator<<( std::ostream& s,
-                                       const ExceptionLocation& e )
-         throw();
+                                       const ExceptionLocation& e );
 
    private:
          /// Name of source file where exception occurred.
@@ -131,7 +126,7 @@ namespace gpstk
          /// Line in source file where exception occurred.
       unsigned long lineNumber;
    }; // class ExceptionLocation
-   
+
       /**
        * The Exception class is the base class from which all
        * exception objects thrown in the library are derived. None of
@@ -166,7 +161,7 @@ namespace gpstk
           * Default constructor.
           * Does nothing.
           */
-      Exception() throw();
+      Exception();
 
          /**
           * Full constructor for exception.
@@ -175,10 +170,9 @@ namespace gpstk
           * code.
           * @param severity severity of error.
           */
-      Exception(const std::string& errorText, 
+      Exception(const std::string& errorText,
                 const unsigned long& errorId = 0,
-                const Severity& severity = unrecoverable)
-         throw();
+                const Severity& severity = unrecoverable);
 
 
          /**
@@ -188,24 +182,20 @@ namespace gpstk
           * code.
           * @param severity severity of error.
           */
-      Exception(const char* errorText, 
+      Exception(const char* errorText,
                 const unsigned long& errorId = 0,
-                const Severity& severity = unrecoverable)
-         throw();
+                const Severity& severity = unrecoverable);
 
 
          /// Copy constructor.
-      Exception(const Exception& exception) 
-         throw();
+      Exception(const Exception& exception);
 
          /// Destructor.
-      ~Exception() 
-         throw() 
+      ~Exception()
       {};
 
          /// Assignment operator.
-      Exception& operator=(const Exception& e)
-         throw();
+      Exception& operator=(const Exception& e);
 
          /**
           * Ends the application. Normally, the library only intends
@@ -215,21 +205,18 @@ namespace gpstk
           * if you define the NO_EXCEPTIONS_SUPPORT macro.
           */
       void terminate()
-         throw()
       { exit(1); };
 
-         /// Returns the error ID of the exception. 
-      unsigned long getErrorId() const 
-         throw()
+         /// Returns the error ID of the exception.
+      unsigned long getErrorId() const
       { return errorId; };
 
          /**
-          * Sets the error ID to the specified value. 
+          * Sets the error ID to the specified value.
           * @param errId The identifier you want to associate with
           * this error.
           */
       Exception& setErrorId(const unsigned long& errId)
-         throw()
       { errorId = errId; return *this; };
 
          /**
@@ -240,26 +227,23 @@ namespace gpstk
           *
           * @param location An IExceptionLocation object containing
           * the following:
-          * \li          Function name 
-          * \li          File name 
-          * \li          Line number where the function is called 
+          * \li          Function name
+          * \li          File name
+          * \li          Line number where the function is called
           */
-      Exception& addLocation(const ExceptionLocation& location) 
-         throw();
+      Exception& addLocation(const ExceptionLocation& location);
 
          /**
-          * Returns the ExceptionLocation object at the specified index. 
+          * Returns the ExceptionLocation object at the specified index.
           * @param index If the index is not valid, a 0
           * pointer is returned. (well, not really since someone
           * changed all this bah)
           */
-      const ExceptionLocation getLocation(const size_t& index=0) const
-         throw();
+      const ExceptionLocation getLocation(const size_t& index=0) const;
 
          /// Returns the number of locations stored in the exception
          /// location array.
-      size_t getLocationCount() const
-         throw();
+      size_t getLocationCount() const;
 
          /**
           * If the thrower (that is, whatever creates the exception)
@@ -267,25 +251,22 @@ namespace gpstk
           * the thrower determines it is unrecoverable, 0 is returned.
           */
       bool isRecoverable() const
-         throw()
       { return (severity == recoverable); }
 
          /**
-          * Sets the severity of the exception. 
+          * Sets the severity of the exception.
           * @param sever Use the enumeration Severity to specify
           * the severity of the exception.
           */
-      Exception& setSeverity(const Severity& sever) 
-         throw()
+      Exception& setSeverity(const Severity& sever)
       { severity = sever; return *this; };
 
-         /** 
+         /**
           * Appends the specified text to the text string on the top
           * of the exception text stack.
-          * @param errorText The text you want to append. 
+          * @param errorText The text you want to append.
           */
-      Exception& addText(const std::string& errorText) 
-         throw();
+      Exception& addText(const std::string& errorText);
 
          /**
           * Returns an exception text string from the exception text
@@ -295,27 +276,23 @@ namespace gpstk
           * top of the stack. If you specify an index which is not
           * valid, a 0 pointer is returned.
           */
-      std::string getText(const size_t& index=0) const 
-         throw();
+      std::string getText(const size_t& index=0) const;
 
          /// Returns the number of text strings in the exception text stack.
-      size_t getTextCount() const
-         throw();
+      size_t getTextCount() const;
 
          /// Returns the name of the object's class.
       std::string getName() const
-         throw()
       { return "Exception"; };
 
          /**
           * Debug output function.
           * @param s stream to output debugging information for this class to.
           */
-      void dump(std::ostream& s) const 
-         throw();
+      void dump(std::ostream& s) const;
 
          /// Dump to a string
-      std::string what() const throw();
+      std::string what() const;
 
          /**
           * Output stream operator for ::Exception.
@@ -326,8 +303,7 @@ namespace gpstk
           * @param e ::Exception to "dump".
           * @return a reference to the stream \c s.  */
       friend std::ostream& operator<<( std::ostream& s,
-                                       const Exception& e )
-         throw();
+                                       const Exception& e );
 
    protected:
          /// Error code.
@@ -407,11 +383,11 @@ class child : public parent  \
 { \
 public: \
       /** Default constructor. */ \
-   child() throw()                  : parent() {} \
+   child() : parent() {} \
       /** Copy constructor. */ \
-   child(const child& a) throw()   : parent(a) {} \
+   child(const child& a): parent(a) {} \
       /** Cast constructor. */ \
-   child(const gpstk::Exception& a) throw() : parent(a) {}; \
+   child(const gpstk::Exception& a) : parent(a) {}; \
       /** \
        * Common use constructor. \
        * @param a text description of exception condition. \
@@ -420,7 +396,6 @@ public: \
        */ \
    child(const std::string& a, unsigned long b = 0,\
          gpstk::Exception::Severity c = gpstk::Exception::unrecoverable) \
-         throw() \
          : parent(a, b, c) \
    {};\
       /** \
@@ -431,18 +406,17 @@ public: \
        */ \
    child(const char* a, unsigned long b = 0,\
    gpstk::Exception::Severity c = gpstk::Exception::unrecoverable) \
-   throw() \
    : parent(a, b, c) \
    {};\
       /** Destructor. */ \
-   ~child() throw() {} \
+   ~child() {} \
       /** Returns the name of the exception class. */ \
-   std::string getName() const throw() {return ( # child);} \
+   std::string getName() const {return ( # child);} \
       /** assignment operator for derived exceptions */ \
    child& operator=(const child& kid) \
       { parent::operator=(kid); return *this; } \
       /** ostream operator for derived exceptions */ \
-   friend std::ostream& operator<<(std::ostream& s, const child& c) throw() \
+   friend std::ostream& operator<<(std::ostream& s, const child& c) \
       { c.dump(s); return s; } \
 }
 

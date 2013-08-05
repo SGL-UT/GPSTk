@@ -1,10 +1,12 @@
 %module(directors="1") gpstk_pylib
 %{
-    #include <sstream>
-
     // time:
     #include "../../../src/TimeSystem.hpp"
     #include "../../../src/TimeTag.hpp"
+    #include "../../../src/TimeConstants.hpp"
+    #include "../../../src/TimeConverters.hpp"
+    #include "../../../src/Week.hpp"
+    #include "../../../src/WeekSecond.hpp"
     #include "../../../src/UnixTime.hpp"
     #include "../../../src/ANSITime.hpp"
     #include "../../../src/CivilTime.hpp"
@@ -16,16 +18,17 @@
     #include "../../../src/GPSWeekSecond.hpp"
     #include "../../../src/GPSWeekZcount.hpp"
     #include "../../../src/JulianDate.hpp"
+    #include "../../../src/BDSWeekSecond.hpp"
+    #include "../../../src/GALWeekSecond.hpp"
+    #include "../../../src/QZSWeekSecond.hpp"
     #include "../../../src/MJD.hpp"
     #include "../../../src/SystemTime.hpp"
-    #include "../../../src/TimeConstants.hpp"
-    #include "../../../src/TimeConverters.hpp"
     #include "../../../src/TimeString.hpp"
     #include "../../../src/YDSTime.hpp"
-    #include "../../../src/Exception.hpp"
     #include "../../../src/TimeSystemCorr.hpp"
 
     // util:
+    #include "../../../src/StringUtils.hpp"
     #include "../../../src/geometry.hpp"
     #include "../../../src/gps_constants.hpp"
     #include "../../../src/SatID.hpp"
@@ -190,8 +193,13 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "src/TimeSystem.i"
 %include "../../../src/TimeTag.hpp"
 %include "../../../src/TimeConstants.hpp"
+
+// functions only modifiy reference parameters, not useful in python ATM
+// %include "../../../src/TimeConverters.hpp"
 %ignore gpstk::CommonTime::get;
 %include "../../../src/CommonTime.hpp"
+%include "../../../src/Week.hpp"
+%include "../../../src/WeekSecond.hpp"
 %feature("notabstract") UnixTime;
 %include "../../../src/UnixTime.hpp"
 %feature("notabstract") SystemTime;
@@ -208,11 +216,16 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/GPSWeekZcount.hpp"
 %feature("notabstract") JulianDate;
 %include "../../../src/JulianDate.hpp"
+%feature("notabstract") BDSWeekSecond;
+%include "../../../src/BDSWeekSecond.hpp"
+%feature("notabstract") GALWeekSecond;
+%include "../../../src/GALWeekSecond.hpp"
+%feature("notabstract") QZSWeekSecond;
+%include "../../../src/QZSWeekSecond.hpp"
 %feature("notabstract") MJD;
 %include "../../../src/MJD.hpp"
 %feature("notabstract") YDSTime;
 %include "../../../src/YDSTime.hpp"
-%include "../../../src/TimeConverters.hpp"
 %include "src/TimeString.i"
 %include "../../../src/TimeSystemCorr.hpp"
 
@@ -221,6 +234,7 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 //  Section 3: General/Utils classes
 // =============================================================
 // Utils stuff
+
 %include "../../../src/geometry.hpp"
 %include "../../../src/gps_constants.hpp"
 %include "src/SatID.i"
@@ -228,7 +242,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/ObsID.hpp"
 %include "../../../src/GNSSconstants.hpp"
 %include "src/Triple.i"
-%extend gpstk::Triple { int __len__() {return 3;}}
 %include "src/ReferenceFrame.i"
 %include "../../../src/EllipsoidModel.hpp"
 %include "../../../src/Xvt.hpp"
@@ -269,7 +282,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/OrbElemStore.hpp"
 %include "../../../src/AlmOrbit.hpp"
 %include "../../../src/YumaStream.hpp"
-%rename (toAlmOrbit) gpstk::YumaData::operator AlmOrbit() const;
 %include "../../../src/YumaData.hpp"
 %include "../../../src/GPSAlmanacStore.hpp"
 %template(FileStore_YumaHeader) gpstk::FileStore<gpstk::YumaHeader>;
@@ -289,6 +301,10 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 
 
 // RINEX things:
+%rename (toEngEphemeris) *::operator EngEphemeris() const;
+%rename (toGalEphemeris) *::operator GalEphemeris() const;
+%rename (toGloEphemeris) *::operator GloEphemeris() const;
+%rename (toAlmOrbit) *::operator AlmOrbit() const;
 %include "../../../src/RinexSatID.hpp"
 %include "../../../src/RinexClockBase.hpp"
 %include "../../../src/RinexObsBase.hpp"
@@ -300,7 +316,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/RinexClockData.hpp"
 %include "../../../src/RinexClockStream.hpp"
 
-%rename (toEngEphemeris) gpstk::RinexNavData::operator EngEphemeris() const;
 %include "../../../src/RinexNavBase.hpp"
 %include "../../../src/RinexNavHeader.hpp"
 %include "../../../src/RinexNavStream.hpp"
@@ -311,9 +326,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/RinexMetStream.hpp"
 %include "src/RinexMetData.i"
 
-%rename (toEngEphemeris) gpstk::Rinex3NavData::operator EngEphemeris() const;
-%rename (toGalEphemeris) gpstk::Rinex3NavData::operator GalEphemeris() const;
-%rename (toGloEphemeris) gpstk::Rinex3NavData::operator GloEphemeris() const;
 %include "../../../src/Rinex3NavBase.hpp"
 %include "../../../src/Rinex3NavHeader.hpp"
 %include "../../../src/Rinex3NavStream.hpp"
@@ -345,7 +357,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 
 
 // SEM things:
-%rename (toAlmOrbit) gpstk::SEMData::operator AlmOrbit() const;
 %include "../../../src/SEMBase.hpp"
 %include "../../../src/SEMHeader.hpp"
 %include "../../../src/SEMStream.hpp"
@@ -362,8 +373,6 @@ typedef std::map<RinexMetHeader::RinexMetType, double> RinexMetMap;
 %include "../../../src/ExtractData.hpp"
 
 
-%rename (toEngEphemeris) gpstk::FICData::operator EngEphemeris() const;
-%rename (toAlmOrbit) gpstk::FICData::operator AlmOrbit() const;
 %include "../../../src/FFBinaryStream.hpp"
 %include "../../../src/FICBase.hpp"
 %include "../../../src/FICStreamBase.hpp"

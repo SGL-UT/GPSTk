@@ -83,7 +83,6 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       GPSEphemerisStore.cpp \
 	GPSOrbElemStore.cpp \
       GPSWeek.cpp \
-      GPSWeekSecond.cpp \
       GPSWeekZcount.cpp \
       GPSZcount.cpp \
       HelmertTransform.cpp \
@@ -105,7 +104,7 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       ObsClockModel.cpp \
       ObsEpochMap.cpp \
       ObsID.cpp \
-	  ObsIDInitializer.cpp \
+	ObsIDInitializer.cpp \
       ObsRngDev.cpp \
       OceanLoading.cpp \
 	OrbElem.cpp \
@@ -175,6 +174,8 @@ libgpstk_la_SOURCES = AlmOrbit.cpp \
       TypeID.cpp \
       UnixTime.cpp \
       VectorBase.cpp \
+      Week.cpp \
+      WeekSecond.cpp \
       WxObsMap.cpp \
       X1Sequence.cpp \
       X2Sequence.cpp \
@@ -290,7 +291,6 @@ incl_HEADERS = AllanDeviation.hpp \
       GPSEphemerisStore.hpp \
 	GPSOrbElemStore.hpp \
       GPSWeek.hpp \
-      GPSWeekSecond.hpp \
       GPSWeekZcount.hpp \
       GPSZcount.hpp \
 	GPS_URA.hpp \
@@ -447,6 +447,8 @@ incl_HEADERS = AllanDeviation.hpp \
       VectorBase.hpp \
       VectorBaseOperators.hpp \
       VectorOperators.hpp \
+      Week.hpp \
+      WeekSecond.hpp \      
       WeightBase.hpp \
       WGS84Ellipsoid.hpp \
       WxObsMap.hpp \

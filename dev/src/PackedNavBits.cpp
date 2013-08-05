@@ -470,13 +470,15 @@ namespace gpstk
 
       /*
       */
-   int PackedNavBits::outputPackedBits(std::ostream& s, short numPerLine) const
+   int PackedNavBits::outputPackedBits(std::ostream& s,
+                                       short numPerLine,
+                                       char delimiter ) const
    {
       ios::fmtflags oldFlags = s.flags();
 
       s.setf(ios::uppercase); 
-      int rollover = numPerLine + 1;
-
+      int rollover = numPerLine;
+      
       int numBitInWord = 0;
       int word_count   = 0;
       uint32_t word    = 0;
@@ -488,12 +490,14 @@ namespace gpstk
          numBitInWord++;
          if (numBitInWord >= 32)
          {
-            s << "  0x" << setw(8) << setfill('0') << hex << word;
+            s << delimiter << " 0x" << setw(8) << setfill('0') << hex << word;
             word = 0;
             numBitInWord = 0;
             word_count++;
+            
             //Print "numPerLine" words per line 
-            if (word_count % rollover == 0) s << endl;        
+            if (word_count>0 && 
+                word_count % rollover == 0) s << endl;        
          }
       }
          // Need to check if there is a partial word in the buffer

@@ -39,5 +39,3 @@ SEM Elevation Plotting example
 
 .. literalinclude:: ../examples/sem_plot.py
     :language: python
-
-.. image:: ../examples/sem_plot.png

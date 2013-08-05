@@ -77,7 +77,7 @@ namespace gpstk
    }
 
    Xvt AlmOrbit :: svXvt(const CommonTime& t) const
-      throw()
+      throw(InvalidRequest)
    {
       Xvt sv;
       GPSEllipsoid ell;

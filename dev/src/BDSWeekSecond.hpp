@@ -1,7 +1,7 @@
-/// @file GPSWeekSecond.hpp  Define GPS week and seconds-of-week; inherits WeekSecond
+/// @file BDSWeekSecond.hpp  Define BDS week and seconds-of-week; inherits WeekSecond
 
-#ifndef GPSTK_GPSWEEKSECOND_HPP
-#define GPSTK_GPSWEEKSECOND_HPP
+#ifndef GPSTK_BDSWEEKSECOND_HPP
+#define GPSTK_BDSWEEKSECOND_HPP
 
 //============================================================================
 //
@@ -28,13 +28,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -43,52 +43,65 @@
 
 namespace gpstk
 {
-   /// This class handles GPS Week and Seconds-of-week. It inherits WeekSecond
-   class GPSWeekSecond : public WeekSecond
+   /// This class handles the week portion of the BDS TimeTag classes.
+   /// The BDS week is specified by
+   /// 13-bit ModWeek, rollover at 8192, bitmask 0x1FFF and epoch BDS_EPOCH_JDAY
+   class BDSWeekSecond : public WeekSecond
    {
    public:
 
       /// Constructor.
-      GPSWeekSecond(unsigned int w = 0,
+      BDSWeekSecond(unsigned int w = 0,
                        double s = 0.,
-                       TimeSystem ts = TimeSystem::GPS)
+                       TimeSystem ts = TimeSystem::BDS)
          : WeekSecond(w,s)
       { timeSystem = ts; }
 
       /// Constructor from CommonTime
-      GPSWeekSecond( const CommonTime& right )
+      BDSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
-         timeSystem = TimeSystem::GPS;
+         timeSystem = TimeSystem::BDS;
       }
 
       /// Destructor.
-      ~GPSWeekSecond() {}
+      ~BDSWeekSecond() throw() {}
+
+      // TD do we want to do this?
+      // TD throw here? this would require changing throw spec on TimeTag version
+      /// Override routine in TimeTag, allowing only BDS time system
+      void setTimeSystem(const TimeSystem& timeSys)
+      {
+         // ?? if(timeSys != TimeSystem::BDS) GPSTK_THROW(InvalidRequest(""));
+         timeSystem = TimeSystem::BDS;
+      }
       
+      // the rest define the week rollover and starting time
+
       /// Return the number of bits in the bitmask used to get the ModWeek from the
       /// full week.
       int Nbits(void) const
       {
-         static const int n=10;
+         static const int n=13;
          return n;
       }
 
       /// Return the bitmask used to get the ModWeek from the full week.
       int bitmask(void) const
       {
-         static const int bm=0x3FF;
+         static const int bm=0x1FFF;
          return bm;
       }
 
       /// Return the Julian Day (JDAY) of epoch for this system.
       long JDayEpoch(void) const
       {
-         static const long e=GPS_EPOCH_JDAY;
+         static const long e=BDS_EPOCH_JDAY;
          return e;
       }
 
-   }; // end class GPSWeekSecond
+   }; // end class BDSWeekSecond
 
 } // namespace
 
-#endif // GPSTK_GPSWEEKSECOND_HPP
+#endif // GPSTK_BDSWEEKSECOND_HPP

@@ -23,7 +23,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -31,13 +31,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,9 +45,10 @@
 #ifndef GPSTK_TIMESYSTEMCORRECTION_INCLUDE
 #define GPSTK_TIMESYSTEMCORRECTION_INCLUDE
 
+#include "GNSSconstants.hpp"
 #include "CommonTime.hpp"
 #include "GPSWeekSecond.hpp"
-#include "Exception.hpp"
+#include "CivilTime.hpp"
 
 namespace gpstk {
 
@@ -64,7 +65,10 @@ namespace gpstk {
          SBUT,    ///< SBAS to UTC using A0, A1, incl. provider and UTC ID
          GLUT,    ///< GLO  to UTC using A0 = -TauC , A1 = 0
          GPGA,    ///< GPS  to GAL using A0 = A0G   , A1 = A1G
-         GLGP     ///< GLO  to GPS using A0 = -TauGPS, A1 = 0
+         GLGP,    ///< GLO  to GPS using A0 = -TauGPS, A1 = 0
+         QZGP,    ///< QZS  to GPS using A0, A1
+         QZUT,    ///< QZS  to UTC using A0, A1
+         BDUT,    ///< BDS  to UTC using A0, A1
       };
 
          //// Member data
@@ -83,8 +87,26 @@ namespace gpstk {
          /// Constructor from string
       TimeSystemCorrection(std::string str) { this->fromString(str); }
 
+      void fromString(const std::string str)
+      {
+         std::string STR(gpstk::StringUtils::upperCase(str));
+              if(STR == std::string("GPUT")) type = GPUT;
+         else if(STR == std::string("GAUT")) type = GAUT;
+         else if(STR == std::string("SBUT")) type = SBUT;
+         else if(STR == std::string("GLUT")) type = GLUT;
+         else if(STR == std::string("GPGA")) type = GPGA;
+         else if(STR == std::string("GLGP")) type = GLGP;
+         else if(STR == std::string("QZGP")) type = QZGP;
+         else if(STR == std::string("QZUT")) type = QZUT;
+         else if(STR == std::string("BDUT")) type = BDUT;
+         else {
+            Exception e("Unknown TimeSystemCorrection type: " + str);
+            GPSTK_THROW(e);
+         }
+      }
+
          /// Return readable string version of CorrType
-      std::string asString() const throw(Exception)
+      std::string asString() const
       {
          switch(type) {
             case GPUT: return std::string("GPS to UTC (A0,A1)"); break;
@@ -94,13 +116,15 @@ namespace gpstk {
             case GLUT: return std::string("GLO to UTC (TauC)"); break;
             case GPGA: return std::string("GPS to GAL (A0G,A1G)"); break;
             case GLGP: return std::string("GLO to GPS (TauGPS)"); break;
-			default  : Exception e("Cannot convert correction descriptor to string - unknown type");
-				       GPSTK_THROW(e);
+            case QZGP: return std::string("QZSS to GPS (A0,A1)"); break;
+            case QZUT: return std::string("QZSS to UTC (A0,A1)"); break;
+            case BDUT: return std::string("BDS to UTC (A0,A1)"); break;
+            default:   return std::string("ERROR"); break;
          }
       }
 
          /// Return 4-char string version of CorrType
-      std::string asString4() const throw(Exception)
+      std::string asString4() const
       {
          switch(type) {
             case GPUT: return std::string("GPUT"); break;
@@ -109,25 +133,60 @@ namespace gpstk {
             case GLUT: return std::string("GLUT"); break;
             case GPGA: return std::string("GPGA"); break;
             case GLGP: return std::string("GLGP"); break;
-			default  : Exception e("Cannot convert correction type to string - unknown type");
-				       GPSTK_THROW(e);
+            case QZGP: return std::string("QZGP"); break;
+            case QZUT: return std::string("QZUT"); break;
+            case BDUT: return std::string("BDUT"); break;
+            default:   return std::string("ERROR"); break;
          }
       }
 
-
-      void fromString(const std::string str) throw(Exception)
+         /// dump
+      void dump(std::ostream& s) const
       {
-         std::string STR(gpstk::StringUtils::upperCase(str));
-              if(STR == std::string("GPUT")) type = GPUT;
-         else if(STR == std::string("GAUT")) type = GAUT;
-         else if(STR == std::string("SBUT")) type = SBUT;
-         else if(STR == std::string("GLUT")) type = GLUT;
-         else if(STR == std::string("GPGA")) type = GPGA;
-         else if(STR == std::string("GLGP")) type = GLGP;
-         else {
-            Exception e("Unknown TimeSystemCorrection type: " + str);
-            GPSTK_THROW(e);
+         s << "Time system correction for " << asString4() << ": "
+            << asString() << std::scientific << std::setprecision(12);
+         switch(type) {
+            case TimeSystemCorrection::GPUT:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
+            case TimeSystemCorrection::GAUT:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
+            case TimeSystemCorrection::SBUT:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW
+                 << ", provider " << geoProvider << ", UTC ID = " << geoUTCid;
+               break;
+            case TimeSystemCorrection::GLUT:
+               s << ", -TauC = " << A0;
+               break;
+            case TimeSystemCorrection::GPGA:
+               s << ", A0G = " << A0 << ", A1G = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
+            case TimeSystemCorrection::GLGP:
+               s << ", TauGPS = " << A0 << " = " << A0 * C_MPS
+                 << " m, RefTime = yr/mon/day "
+                 << refYr << "/" << refMon << "/" << refDay;
+               break;
+            case TimeSystemCorrection::QZGP:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
+            case TimeSystemCorrection::QZUT:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
+            case TimeSystemCorrection::BDUT:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
+            default:
+               break;
          }
+         s << std::endl;
       }
 
          /// Equal operator
@@ -142,16 +201,15 @@ namespace gpstk {
          /// the given system and the target system (toTime.system),
          /// and apply it to fromTime, placing the result in the target toTime.
          /// i.e. toTime = (const)fromTime + correction(from => to).
-         /// @param fromTime CommonTime, on input is a time in the given system,
+         /// @param CommonTime fromTime, on input is a time in the given system,
          ///     unchanged on output.
-         /// @param toTime CommonTime, on input this defines the target system and
+         /// @param CommonTime toTime, on input this defines the target system and
          ///     the value is ignored; on output the value is set to "given time plus
          ///     correction" and the system is left as the target system.
          /// @return true if successful, false if the input systems are not those
          ///     that can be converted by this TimeSystemCorr object.
          /// @throw Exception if this object has not been defined.
       bool convertSystem(const CommonTime& fromTime, CommonTime& toTime) const
-         throw(Exception)
       {
          switch(type) {
             case GPUT:
@@ -294,6 +352,76 @@ namespace gpstk {
                          toTime.getTimeSystem() == TimeSystem::GPS)
                {
                   toTime = fromTime - A0;
+                  toTime.setTimeSystem(TimeSystem::GPS);
+                  return true;
+               }
+
+            case QZGP:
+               // ------------------------------------------------- GPS => QZS
+               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
+                    toTime.getTimeSystem() == TimeSystem::QZS)
+               {
+                  toTime = fromTime;
+                  toTime.setTimeSystem(TimeSystem::QZS);
+
+                  return true;
+               }
+               // ------------------------------------------------- UTC => GPS
+               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
+                         toTime.getTimeSystem() == TimeSystem::GPS)
+               {
+                  toTime = fromTime;
+                  toTime.setTimeSystem(TimeSystem::GPS);
+
+                  return true;
+               }
+
+            case QZUT:
+               // ------------------------------------------------- QZS => UTC
+               if(fromTime.getTimeSystem() == TimeSystem::QZS &&
+                    toTime.getTimeSystem() == TimeSystem::UTC)
+               {
+                  // dt = fromTime - refTime
+                  GPSWeekSecond gpsws(refWeek,refSOW);
+                  CommonTime refTime(gpsws.convertToCommonTime());
+                  refTime.setTimeSystem(TimeSystem::QZS);
+                  double dt(fromTime - refTime);
+
+                  toTime = fromTime + A0 + A1*dt;
+                  toTime.setTimeSystem(TimeSystem::UTC);
+
+                  return true;
+               }
+               // ------------------------------------------------- UTC => QZS
+               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
+                         toTime.getTimeSystem() == TimeSystem::QZS)
+               {
+                  // dt = fromTime - refTime
+                  GPSWeekSecond gpsws(refWeek,refSOW);
+                  CommonTime refTime(gpsws.convertToCommonTime());
+                  refTime.setTimeSystem(TimeSystem::UTC);
+                  double dt(fromTime - refTime);
+
+                  toTime = fromTime - A0 - A1*dt;
+                  toTime.setTimeSystem(TimeSystem::QZS);
+
+                  return true;
+               }
+
+            case BDUT:
+               // ------------------------------------------------- BDS => UTC
+               if(fromTime.getTimeSystem() == TimeSystem::BDS &&
+                    toTime.getTimeSystem() == TimeSystem::UTC)
+               {
+                  toTime = fromTime + A0 - A1;
+                  toTime.setTimeSystem(TimeSystem::UTC);
+                  return true;
+               }
+               // ------------------------------------------------- UTC => BDS
+               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
+                         toTime.getTimeSystem() == TimeSystem::BDS)
+               {
+                  toTime = fromTime - A0 + A1;
                   toTime.setTimeSystem(TimeSystem::GPS);
                   return true;
                }

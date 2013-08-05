@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -30,13 +30,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -76,10 +76,9 @@ namespace gpstk
           * Default Constructor.
           * All elements are initialized to zero.
           */
-      UnixTime( int sec = 0, 
+      UnixTime( int sec = 0,
                 int usec = 0,
                 TimeSystem ts = TimeSystem::Unknown )
-         throw()
       { tv.tv_sec = sec;  tv.tv_usec = usec;  timeSystem = ts; }
 
          /** struct timeval Constructor.
@@ -87,20 +86,18 @@ namespace gpstk
           */
       UnixTime( struct timeval t,
                 TimeSystem ts = TimeSystem::Unknown )
-         throw()
       {
          tv.tv_sec = t.tv_sec;  tv.tv_usec = t.tv_usec;  timeSystem = ts;
       }
-      
-         /** 
+
+         /**
           * Copy Constructor.
           * @param right a reference to the UnixTime object to copy
           */
       UnixTime( const UnixTime& right )
-         throw()
             : tv( right.tv )
       { timeSystem = right.timeSystem; }
-      
+
          /**
           * Alternate Copy Constructor.
           * Takes a const TimeTag reference and copies its contents via
@@ -109,12 +106,11 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       UnixTime( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
-      { 
-         convertFromCommonTime( right.convertToCommonTime() ); 
+      {
+         convertFromCommonTime( right.convertToCommonTime() );
       }
-      
-         /** 
+
+         /**
           * Alternate Copy Constructor.
           * Takes a const CommonTime reference and copies its contents via
           * the convertFromCommonTime method.
@@ -122,71 +118,59 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       UnixTime( const CommonTime& right )
-         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
 
-         /** 
+         /**
           * Assignment Operator.
           * @param right a const reference to the UnixTime to copy
           * @return a reference to this UnixTime
           */
-      UnixTime& operator=( const UnixTime& right )
-         throw();
-      
+      UnixTime& operator=( const UnixTime& right );
+
          /// Virtual Destructor.
       virtual ~UnixTime()
-         throw()
       {}
          //@}
 
          // The following functions are required by TimeTag.
-      virtual CommonTime convertToCommonTime() const
-         throw( gpstk::InvalidRequest );
+      virtual CommonTime convertToCommonTime() const;
 
-      virtual void convertFromCommonTime( const CommonTime& ct )
-         throw( gpstk::InvalidRequest );
+      virtual void convertFromCommonTime( const CommonTime& ct );
 
-         /// This function formats this time to a string.  The exceptions 
+         /// This function formats this time to a string.  The exceptions
          /// thrown would only be due to problems parsing the fmt string.
-      virtual std::string printf( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+      virtual std::string printf( const std::string& fmt ) const;
 
          /// This function works similarly to printf.  Instead of filling
          /// the format with data, it fills with error messages.
-      virtual std::string printError( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+      virtual std::string printError( const std::string& fmt ) const;
 
          /**
           * Set this object using the information provided in \a info.
           * @param info the IdToValue object to which this object shall be set.
-          * @return true if this object was successfully set using the 
+          * @return true if this object was successfully set using the
           *  data in \a info, false if not.
           */
-      virtual bool setFromInfo( const IdToValue& info )
-         throw();
-      
+      virtual bool setFromInfo( const IdToValue& info );
+
          /// Return a string containing the characters that this class
          /// understands when printing times.
       virtual std::string getPrintChars() const
-         throw()
-      { 
+      {
          return "UuP";
       }
 
          /// Return a string containing the default format to use in printing.
       virtual std::string getDefaultFormat() const
-         throw()
       {
          return "%U %u %P";
       }
 
-      virtual bool isValid() const
-         throw();
+      virtual bool isValid() const;
 
-      virtual void reset()
-         throw();
+      virtual void reset();
 
          /**
           * @defgroup utco UnixTime Comparison Operators
@@ -196,18 +180,12 @@ namespace gpstk
           *  and false on failure.
           */
          //@{
-      virtual bool operator==( const UnixTime& right ) const
-         throw();
-      virtual bool operator!=( const UnixTime& right ) const
-         throw();
-      virtual bool operator<( const UnixTime& right ) const
-         throw( gpstk::InvalidRequest );
-      virtual bool operator>( const UnixTime& right ) const
-         throw( gpstk::InvalidRequest );
-      virtual bool operator<=( const UnixTime& right ) const
-         throw( gpstk::InvalidRequest );
-      virtual bool operator>=( const UnixTime& right ) const
-         throw( gpstk::InvalidRequest );
+      virtual bool operator==( const UnixTime& right ) const;
+      virtual bool operator!=( const UnixTime& right ) const;
+      virtual bool operator<( const UnixTime& right ) const;
+      virtual bool operator>( const UnixTime& right ) const;
+      virtual bool operator<=( const UnixTime& right ) const;
+      virtual bool operator>=( const UnixTime& right ) const;
          //@}
 
       struct timeval tv;

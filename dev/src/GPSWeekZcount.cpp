@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file GPSWeekZcount.cpp
 
 //============================================================================
 //
@@ -19,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,15 +43,13 @@
 namespace gpstk
 {
    GPSWeekZcount& GPSWeekZcount::operator=( const GPSWeekZcount& right )
-      throw()
    {
       GPSWeek::operator=(right);
       zcount = right.zcount;
       return *this;
    }
-   
+
    CommonTime GPSWeekZcount::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
    {
       try
       {
@@ -72,9 +68,8 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
    }
-   
+
    void GPSWeekZcount::convertFromCommonTime( const CommonTime& ct )
-      throw( gpstk::InvalidRequest )
    {
          /// This is the earliest CommonTime representable by GPSWeekZcount.
      static const CommonTime MIN_CT = GPSWeekZcount(0,0,TimeSystem::Any);
@@ -88,7 +83,7 @@ namespace gpstk
       long day, sod;
       double fsod;
       ct.get( day, sod, fsod, timeSystem );
-      
+
          // find the number of days since the beginning of the GPS Epoch
       day -= GPS_EPOCH_JDAY;
          // find out how many weeks that is
@@ -96,12 +91,11 @@ namespace gpstk
          // find out what the day of week is
       day %= 7;
 
-      zcount = static_cast<long>( day * ZCOUNT_PER_DAY ) 
-         + static_cast<long>( static_cast<double>( sod + fsod ) / 1.5 );      
+      zcount = static_cast<long>( day * ZCOUNT_PER_DAY )
+         + static_cast<long>( static_cast<double>( sod + fsod ) / 1.5 );
    }
 
    std::string GPSWeekZcount::printf( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException )
    {
       try
       {
@@ -121,16 +115,15 @@ namespace gpstk
                               "Cu", getZcount32() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", timeSystem.asString().c_str() );
-         return rv;         
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
       {
          GPSTK_RETHROW( exc );
       }
    }
-   
+
    std::string GPSWeekZcount::printError( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException )
    {
       try
       {
@@ -150,16 +143,15 @@ namespace gpstk
                               "Cs", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", getError().c_str() );
-         return rv;         
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& exc )
       {
          GPSTK_RETHROW( exc );
       }
    }
-   
+
    bool GPSWeekZcount::setFromInfo( const IdToValue& info )
-         throw()
    {
       using namespace gpstk::StringUtils;
 
@@ -176,7 +168,7 @@ namespace gpstk
             case 'Z':
                zcount = asInt( i->second );
                break;
-               
+
             case 'c':
                setZcount29( asInt( i->second ) );
                break;
@@ -186,7 +178,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
 
             default:
@@ -194,39 +186,35 @@ namespace gpstk
                break;
          };
       }
-      
+
       return true;
    }
 
   //inline bool GPSWeekZcount::isValid() const
-  //    throw()
   //{
   //    return ( GPSWeek::isValid() &&
   //             zcount < ZCOUNT_PER_WEEK );
   //}
 
   //void GPSWeekZcount::reset()
-  //    throw()
   //{
   //    GPSWeek::reset();
   //    zcount = 0;
   //}
 
    GPSWeekZcount& GPSWeekZcount::setZcount29(unsigned int z)
-      throw()
    {
       setWeek10( (z >> 19) & bits10 );
       zcount = z & bits19;
       return *this;
    }
-   
+
    GPSWeekZcount& GPSWeekZcount::setZcount32(unsigned int z)
-      throw()
    {
       week = z >> 19;
       zcount = z & bits19;
       return *this;
    }
 
-   
+
 } // namespace

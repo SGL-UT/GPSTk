@@ -44,7 +44,6 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/GPSEphemerisStore.cpp
                     ../../../src/gpstkplatform.h
                     ../../../src/GPSWeek.cpp
-                    ../../../src/GPSWeekSecond.cpp
                     ../../../src/GPSWeekZcount.cpp
                     ../../../src/GPSZcount.cpp
                     ../../../src/JulianDate.cpp
@@ -93,6 +92,8 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/Triple.cpp
                     ../../../src/TropModel.cpp
                     ../../../src/UnixTime.cpp
+                    ../../../src/Week.cpp
+                    ../../../src/WeekSecond.cpp
                     ../../../src/WxObsMap.cpp
                     ../../../src/Xvt.cpp
                     ../../../src/YDSTime.cpp

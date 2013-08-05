@@ -172,7 +172,9 @@ namespace gpstk
           * additional information. 
           * Returns the number of bits in the object.
           */
-      int outputPackedBits(std::ostream& s = std::cout, short numPerLine=4) const;
+      int outputPackedBits(std::ostream& s = std::cout, 
+		           short numPerLine=4,
+			   char delimiter = ' ' ) const;
 
          /*
           * Return true if all bits between start and end are identical

@@ -97,6 +97,15 @@ def main():
     else:
         out_dir = distutils.sysconfig.get_python_lib()
 
+    try:
+        # remove any init files already there
+        os.remove(out_dir + '/__init__.py')
+        os.remove(out_dir + '/cpp/__init__.py')
+        os.remove(out_dir + '/constants/__init__.py')
+        os.remove(out_dir + '/exceptions/__init__.py')
+    except:
+        pass
+
     # add seperator at the end if one is missing
     if out_dir[-1] != '/' and out_dir[-1] != '\\':
         out_dir = out_dir + '/'
@@ -118,6 +127,7 @@ def main():
             os.makedirs(out_dir + '/' + submodule_name + '/')
         f = open(out_dir + '/' + submodule_name + '/__init__.py', 'a')
         f.write('from ..gpstk_pylib import ' + x + '\n')
+        f.close()
 
     for x in namespace:
         if should_be_added(x):
@@ -137,6 +147,7 @@ def main():
                         os.makedirs(out_dir + key)
                     f = open(out_dir + key + '/__init__.py', 'a')
                     f.write('from ..gpstk_pylib import ' + x + '\n')
+                    f.close()
 
                     name = key + '/__init__.py'
                     if name not in files_to_move:

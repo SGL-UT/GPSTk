@@ -1,7 +1,7 @@
-/// @file ObsIDInitializer.hpp This class exists to initialize maps for ObsID.
-/// It was initally an inner class of ObsID but has been exported
-/// so it can be wrapped by SWIG, as SWIG does not support
-/// C++ inner classes as of summer 2013.
+/// @file GALWeekSecond.hpp  Define GAL week and seconds-of-week; inherits WeekSecond
+
+#ifndef GPSTK_GALWEEKSECOND_HPP
+#define GPSTK_GALWEEKSECOND_HPP
 
 //============================================================================
 //
@@ -39,19 +39,58 @@
 //
 //=============================================================================
 
-#ifndef OBSIDINIT_HPP
-#define OBSIDINIT_HPP
+#include "WeekSecond.hpp"
 
-#include "ObsID.hpp"
+namespace gpstk
+{
+   /// This class handles the week portion of the GAL TimeTag classes.
+   /// The GAL week is specified by
+   /// 12-bit ModWeek, rollover at 4096, bitmask 0xFFF and epoch GAL_EPOCH_JDAY
+   class GALWeekSecond : public WeekSecond
+   {
+   public:
 
-namespace gpstk {
+      /// Constructor.
+      GALWeekSecond(unsigned int w = 0,
+                       double s = 0.,
+                       TimeSystem ts = TimeSystem::GAL) throw()
+         : WeekSecond(w,s)
+      { timeSystem = ts; }
 
-  class ObsIDInitializer
+      /// Constructor from CommonTime
+      GALWeekSecond( const CommonTime& right )
       {
-      public:
-         ObsIDInitializer();
-      };
-}
+         convertFromCommonTime( right );
+         timeSystem = TimeSystem::GAL;
+      }
 
-#endif   // OBSIDINIT_HPP
+      /// Destructor.
+      ~GALWeekSecond() throw() {}
+      
+      /// Return the number of bits in the bitmask used to get the ModWeek from the
+      /// full week.
+      int Nbits(void) const
+      {
+         static const int n=12;
+         return n;
+      }
 
+      /// Return the bitmask used to get the ModWeek from the full week.
+      int bitmask(void) const
+      {
+         static const int bm=0xFFF;
+         return bm;
+      }
+
+      /// Return the Julian Day (JDAY) of epoch for this system.
+      long JDayEpoch(void) const
+      {
+         static const long e=GAL_EPOCH_JDAY;
+         return e;
+      }
+
+   }; // end class GALWeekSecond
+
+} // namespace
+
+#endif // GPSTK_GALWEEKSECOND_HPP

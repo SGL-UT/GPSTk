@@ -13,25 +13,13 @@ def now():
     """
     return SystemTime().toCommonTime()
 
-def timeSystem(str='Unknown'):
-    """Returns a TimeSystem object named by the given string.
-    Valid choices are:
-    Unknown, Any, GPS, GLO, GAL, COM, UTC, UT1, TAI, TT.
-    """
 
-    dict = {
-        'Unknown': TimeSystem.Unknown,
-        'Any': TimeSystem.Any,
-        'GPS': TimeSystem.GPS,
-        'GLO': TimeSystem.GLO,
-        'GAL': TimeSystem.GAL,
-        'COM': TimeSystem.COM,
-        'UTC': TimeSystem.UTC,
-        'UT1': TimeSystem.UT1,
-        'TAI': TimeSystem.TAI,
-        'TT': TimeSystem.TT,
-    }
-    return TimeSystem(dict[str])
+def timeSystem(str):
+    try:
+        val = getattr(TimeSystem, str)
+        return TimeSystem(val)
+    except:
+        raise ValueError(str + ' is not a member of gpstk.TimeSystem')
 
 %}
 

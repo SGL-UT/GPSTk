@@ -79,7 +79,8 @@ namespace gpstk
             case systemGlonass:
             case systemGeosync:
             case systemTransit:
-            case systemCompass:           // 3.01
+            case systemQZSS:
+            case systemBeiDou:
             case systemMixed:
                break;
             // Invalidate anything non-RINEX.
@@ -138,7 +139,8 @@ namespace gpstk
             case systemGlonass: return 'R';
             case systemGeosync: return 'S';
             case systemTransit: return 'T';
-            case systemCompass: return 'C';
+            case systemQZSS:    return 'J';
+            case systemBeiDou:  return 'C';
             default:            return '?';
          }
       };
@@ -156,7 +158,8 @@ namespace gpstk
             case systemGlonass: return "GLONASS";
             case systemGeosync: return "Geosync";
             case systemTransit: return "Transit";
-            case systemCompass: return "Compass";
+            case systemQZSS:    return "QZSS";
+            case systemBeiDou:  return "BeiDou";
             default:            return "Unknown";
          }
       };
@@ -173,7 +176,8 @@ namespace gpstk
             case systemGlonass: return "GLO";
             case systemGeosync: return "GEO";
             case systemTransit: return "TRN";     // RINEX ver 2
-            case systemCompass: return "COM";
+            case systemQZSS:    return "QZS";
+            case systemBeiDou:  return "BDS";
             default:            return "Unk";
          }
       };
@@ -219,8 +223,11 @@ namespace gpstk
             case ' ': case 'G': case 'g':
                system = SatID::systemGPS;
                break;
+            case 'J': case 'j':
+               system = SatID::systemQZSS;
+               break;
             case 'C': case 'c':
-               system = SatID::systemCompass;
+               system = SatID::systemBeiDou;
                break;
             default:                   // non-RINEX system character
                Exception e(std::string("Invalid system character \"")

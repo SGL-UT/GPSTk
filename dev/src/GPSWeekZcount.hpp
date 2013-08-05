@@ -22,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -30,13 +30,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -69,19 +69,17 @@ namespace gpstk
       GPSWeekZcount( int w = 0,
                      int z = 0,
                      TimeSystem ts = TimeSystem::Unknown )
-         throw()
             : GPSWeek( w ), zcount( z )
       { timeSystem = ts; }
-      
-         /** 
+
+         /**
           * Copy Constructor.
           * @param right a reference to the GPSWeekZcount object to copy
           */
       GPSWeekZcount( const GPSWeekZcount& right )
-         throw()
             : GPSWeek( right.week ), zcount( right.zcount )
       { timeSystem = right.timeSystem; }
-      
+
          /**
           * Alternate Copy Constructor.
           * Takes a const TimeTag reference and copies its contents via
@@ -90,12 +88,11 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       GPSWeekZcount( const TimeTag& right )
-         throw( gpstk::InvalidRequest )
-      { 
-         convertFromCommonTime( right.convertToCommonTime() ); 
+      {
+         convertFromCommonTime( right.convertToCommonTime() );
       }
-      
-         /** 
+
+         /**
           * Alternate Copy Constructor.
           * Takes a const CommonTime reference and copies its contents via
           * the convertFromCommonTime method.
@@ -103,103 +100,87 @@ namespace gpstk
           * @throw InvalidRequest on over-/under-flow
           */
       GPSWeekZcount( const CommonTime& right )
-         throw( gpstk::InvalidRequest )
       {
          convertFromCommonTime( right );
       }
 
-         /** 
+         /**
           * Assignment Operator.
           * @param right a const reference to the GPSWeekZcount to copy
           * @return a reference to this GPSWeekZcount
           */
-      GPSWeekZcount& operator=( const GPSWeekZcount& right )
-         throw();
-      
+      GPSWeekZcount& operator=( const GPSWeekZcount& right );
+
          /// Virtual Destructor.
       virtual ~GPSWeekZcount()
-         throw()
       {}
          //@}
 
          // The following functions are required by TimeTag.
-      virtual CommonTime convertToCommonTime() const
-         throw( gpstk::InvalidRequest );
+      virtual CommonTime convertToCommonTime() const;
 
-      virtual void convertFromCommonTime( const CommonTime& ct )
-         throw( gpstk::InvalidRequest );
+      virtual void convertFromCommonTime( const CommonTime& ct );
 
-         /// This function formats this time to a string.  The exceptions 
+         /// This function formats this time to a string.  The exceptions
          /// thrown would only be due to problems parsing the fmt string.
-      virtual std::string printf( const std::string& fmt ) const
-         throw( gpstk::StringUtils::StringException );
+      virtual std::string printf( const std::string& fmt ) const;
 
          /// This function works similarly to printf.  Instead of filling
          /// the format with data, it fills with error messages.
-      virtual std::string printError( const std::string& fmt) const
-         throw( gpstk::StringUtils::StringException );
+      virtual std::string printError( const std::string& fmt) const;
 
          /**
           * Set this object using the information provided in \a info.
           * @param info the IdToValue object to which this object shall be set.
-          * @return true if this object was successfully set using the 
+          * @return true if this object was successfully set using the
           *  data in \a info, false if not.
           */
-      virtual bool setFromInfo( const IdToValue& info )
-         throw();
-      
+      virtual bool setFromInfo( const IdToValue& info );
+
          /// Return a string containing the characters that this class
          /// understands when printing times.
       inline virtual std::string getPrintChars() const
-         throw()
-      { 
+      {
          return GPSWeek::getPrintChars() + "wzZcC";
       }
 
          /// Return a string containing the default format to use in printing.
       inline virtual std::string getDefaultFormat() const
-         throw()
       {
          return GPSWeek::getDefaultFormat() + " %06Z %P";
       }
 
       virtual bool isValid() const
-         throw()
       {
-	 return ( GPSWeek::isValid() &&
-		 zcount < ZCOUNT_PER_WEEK );
+	      return ( GPSWeek::isValid() && zcount < ZCOUNT_PER_WEEK );
       }
-      
+
       inline virtual void reset()
-         throw()
       {
-	 GPSWeek::reset();
-	 zcount = 0;
+	      GPSWeek::reset();
+	      zcount = 0;
       }
 
          /// @name Special Zcount-related Methods.
-         /// @note The 29- and 32-bit Zcounts cannot represent time from 
+         /// @note The 29- and 32-bit Zcounts cannot represent time from
          /// GPS weeks over 1023 and 8191 respectively.
          //@{
       inline unsigned int getZcount29() const
-      { 
+      {
          return (getWeek10() << 19) | zcount;
       }
-      
+
       inline unsigned int getZcount32() const
       {
          return (week << 19) | zcount;
       }
-      
-      GPSWeekZcount& setZcount29(unsigned int z)
-         throw();
 
-      GPSWeekZcount& setZcount32(unsigned int z)
-         throw();
+      GPSWeekZcount& setZcount29(unsigned int z);
+
+      GPSWeekZcount& setZcount32(unsigned int z);
          //@}
 
       inline virtual unsigned int getDayOfWeek() const
-         throw()
       {
          return static_cast<unsigned int>(zcount) / ZCOUNT_PER_DAY;
       }
@@ -213,60 +194,52 @@ namespace gpstk
           */
          //@{
      //
-       inline bool operator==( const GPSWeekZcount& right ) const
-         throw()
-       {
-          return ( GPSWeek::operator==(right) &&
-                   zcount == right.zcount );
-       }
-   
-       inline bool operator!=( const GPSWeekZcount& right ) const
-         throw()
-       {
-	  return ( !operator==( right ) );
-       }
+      inline bool operator==( const GPSWeekZcount& right ) const
+      {
+         return ( GPSWeek::operator==(right) && zcount == right.zcount );
+      }
 
-       inline bool operator<( const GPSWeekZcount& right ) const
-         throw()
-       {
-	 if( GPSWeek::operator<(right) )
-	 {
-	   return true;
-	 }
-	 if( GPSWeek::operator>(right) )
-	 {
-	   return false;
-	 }
-	 if( zcount < right.zcount )
-	 {
-	   return true;
-	 }
-	 return false;
-       }
+      inline bool operator!=( const GPSWeekZcount& right ) const
+      {
+   	   return ( !operator==( right ) );
+      }
 
-       inline bool operator>( const GPSWeekZcount& right ) const
-         throw()
-       {
-	 return ( !operator<=( right ) );
-       }
+      inline bool operator<( const GPSWeekZcount& right ) const
+      {
+   	   if( GPSWeek::operator<(right) )
+   	   {
+   	      return true;
+   	   }
+   	   if( GPSWeek::operator>(right) )
+   	   {
+   	      return false;
+   	   }
+   	   if( zcount < right.zcount )
+   	   {
+   	      return true;
+   	   }
+   	   return false;
+      }
 
-       inline bool operator<=( const GPSWeekZcount& right ) const
-         throw()
-       {
-	 return ( operator<( right ) ||
-		  operator==( right ) );
-       }
+      inline bool operator>( const GPSWeekZcount& right ) const
+      {
+   	   return ( !operator<=( right ) );
+      }
 
-       inline bool operator>=( const GPSWeekZcount& right ) const
-         throw()
-       { 
-	 return ( !operator<( right ) );
-       }
+      inline bool operator<=( const GPSWeekZcount& right ) const
+      {
+   	   return ( operator<( right ) || operator==( right ) );
+      }
+
+      inline bool operator>=( const GPSWeekZcount& right ) const
+      {
+   	   return ( !operator<( right ) );
+      }
          //@}
 
       unsigned int zcount;
-   };   
-   
+   };
+
 } // namespace
 
 #endif // GPSTK_GPSWEEKZCOUNT_HPP

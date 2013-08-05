@@ -1,6 +1,4 @@
-#pragma ident "$Id$"
-
-
+/// @file JulianDate.cpp
 
 //============================================================================
 //
@@ -19,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -27,13 +25,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -45,25 +43,23 @@
 namespace gpstk
 {
    JulianDate& JulianDate::operator=( const JulianDate& right )
-      throw()
    {
       jd = right.jd;
       timeSystem = right.timeSystem;
       return *this;
    }
-   
+
    CommonTime JulianDate::convertToCommonTime() const
-      throw( gpstk::InvalidRequest )
    {
       try
       {
          long double temp_jd( jd + 0.5 );
          long jday( static_cast<long>( temp_jd ) );
-         long double sod = 
+         long double sod =
             ( temp_jd - static_cast<long double>( jday ) ) * SEC_PER_DAY;
-         
+
          CommonTime ct;
-         return ct.set( jday, 
+         return ct.set( jday,
                         static_cast<long>( sod ),
                         static_cast<double>( sod - static_cast<long>( sod ) ),
                         timeSystem );
@@ -74,53 +70,50 @@ namespace gpstk
          GPSTK_THROW(ir);
       }
    }
-   
+
    void JulianDate::convertFromCommonTime( const CommonTime& ct )
-      throw()
    {
       long jday, sod;
       double fsod;
       ct.get( jday, sod, fsod, timeSystem );
-     
+
       jd =   static_cast<long double>( jday ) +
-           (   static_cast<long double>( sod ) 
-             + static_cast<long double>( fsod ) ) * DAY_PER_SEC 
+           (   static_cast<long double>( sod )
+             + static_cast<long double>( fsod ) ) * DAY_PER_SEC
            - 0.5;
    }
-   
+
    std::string JulianDate::printf( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "JLf", jd );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", timeSystem.asString().c_str() );
-         return rv;         
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
       {
          GPSTK_RETHROW( se );
       }
    }
-   
+
    std::string JulianDate::printError( const std::string& fmt ) const
-      throw( gpstk::StringUtils::StringException )
    {
       try
       {
          using gpstk::StringUtils::formattedPrint;
          std::string rv( fmt );
-         
+
          rv = formattedPrint( rv, getFormatPrefixFloat() + "J",
                               "Js", getError().c_str() );
          rv = formattedPrint( rv, getFormatPrefixInt() + "P",
                               "Ps", getError().c_str() );
-         return rv;         
+         return rv;
       }
       catch( gpstk::StringUtils::StringException& se )
       {
@@ -129,10 +122,9 @@ namespace gpstk
    }
 
    bool JulianDate::setFromInfo( const IdToValue& info )
-      throw()
    {
       using namespace gpstk::StringUtils;
-      
+
       for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
       {
          switch( i->first )
@@ -142,20 +134,19 @@ namespace gpstk
                break;
 
             case 'P':
-	            timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
 
             default:
                   // do nothing
                break;
          };
-      }     
-      
+      }
+
       return true;
    }
-   
+
    bool JulianDate::isValid() const
-      throw()
    {
       JulianDate temp;
       temp.convertFromCommonTime( convertToCommonTime() );
@@ -165,16 +156,14 @@ namespace gpstk
       }
       return false;
    }
-   
+
    void JulianDate::reset()
-      throw()
    {
       jd = 0.0;
       timeSystem = TimeSystem::Unknown;
    }
 
    bool JulianDate::operator==( const JulianDate& right ) const
-      throw()
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -190,13 +179,11 @@ namespace gpstk
    }
 
    bool JulianDate::operator!=( const JulianDate& right ) const
-      throw()
    {
       return ( !operator==( right ) );
    }
 
    bool JulianDate::operator<( const JulianDate& right ) const
-      throw( gpstk::InvalidRequest )
    {
      /// Any (wildcard) type exception allowed, otherwise must be same time systems
       if ((timeSystem != TimeSystem::Any &&
@@ -215,20 +202,17 @@ namespace gpstk
    }
 
    bool JulianDate::operator>( const JulianDate& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<=( right ) );
    }
 
    bool JulianDate::operator<=( const JulianDate& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( operator<( right ) ||
                operator==( right ) );
    }
 
    bool JulianDate::operator>=( const JulianDate& right ) const
-      throw( gpstk::InvalidRequest )
    {
       return ( !operator<( right ) );
    }
