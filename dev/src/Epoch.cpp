@@ -344,6 +344,7 @@ namespace gpstk
       WeekSecond& ws = const_cast<WeekSecond&>(tt);
       ws.adjustToYear(year);
       set(ws);
+      return *this;
    }
 
    Epoch& Epoch::set(const CommonTime& c)
