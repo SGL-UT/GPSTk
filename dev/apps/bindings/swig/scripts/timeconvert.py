@@ -72,18 +72,20 @@ def main(args=sys.argv[1:]):
     for key in formats:
         input_time = getattr(args, key)  # args.ansi, args.civil, etc.
         if input_time is not None:
-            time_found = True
             try:
                 ct = gpstk.scanTime(input_time, formats[key])
+                time_found = True
             except gpstk.exceptions.InvalidRequest:
-                print ('Input could not be parsed. Check the formatting and '
-                       'ensure that the input is both valid and in quotes.')
-                sys.exit()
+                raise gpstk.exceptions.InvalidRequest('Input could not be parsed.'
+                     '\nCheck the formatting and ensure that the input is both valid and in quotes.'
+                     '\nAlso check if the time is too early/late for these formats.')
+
 
     if not time_found:
-        ct = gpstk.SystemTime()
+        ct = gpstk.SystemTime().toCommonTime()
 
-    ct.setTimeSystem(gpstk.timeSystem('GPS'))
+    timeSystem = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
+    ct.setTimeSystem(gpstk.TimeSystem('GPS'))
 
     if args.add_offset is not None:
         for t in args.add_offset:

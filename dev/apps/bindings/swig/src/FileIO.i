@@ -81,7 +81,7 @@ def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
                x = stream.readData()
                if filterfunction(x):
                   yield x
-            except IOError:
+            except EndOfFile:
                FORMATNAME ## Stream._remove(stream)
                break
     if lazy:

@@ -13,14 +13,6 @@ def now():
     """
     return SystemTime().toCommonTime()
 
-
-def timeSystem(str):
-    try:
-        val = getattr(TimeSystem, str)
-        return TimeSystem(val)
-    except:
-        raise ValueError(str + ' is not a member of gpstk.TimeSystem')
-
 %}
 
 ///////////////////////////////////////////////
