@@ -181,7 +181,10 @@ namespace gpstk
          /// Output the contents of this ephemeris to the given stream.
       void dump(std::ostream& s = std::cout) const
          throw();
-    
+         
+      void prettyDump(std::ostream& s) const;
+      void terseDump(std::ostream& s) const;
+      void terseHeader(std::ostream& s) const;
 
          /// Set the parameters for this ephemeris object.
       GloEphemeris& setRecord( std::string svSys,

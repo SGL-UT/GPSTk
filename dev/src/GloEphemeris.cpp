@@ -27,9 +27,9 @@
 //
 //============================================================================
 
-
+#include <iomanip>
 #include "GloEphemeris.hpp"
-
+#include "TimeString.hpp"
 
 namespace gpstk
 {
@@ -312,11 +312,42 @@ namespace gpstk
         << "Epoch:" << ephTime << ", pos:" << x << std::endl
         << "vel:" << v << ", acc:" << a << std::endl
         << "TauN:" << clkbias << ", GammaN:" << clkdrift << std::endl
-        << "MFTime:" << MFtime<< ", health:" << health << std::endl
+          << "MFTime:" << MFtime<< ", health:" << health << std::endl
         << "freqNum:" << freqNum << ", ageOfInfo:" << ageOfInfo;
 
    }  // End of method 'GloEphemeris::dump(std::ostream& s)'
 
+   void GloEphemeris::prettyDump(std::ostream& s) const
+   {
+      s << "**********************************************" << std::endl;
+      s << "Slot ID     " << std::setw(12) << PRNID << std::endl;
+      s << "Epoch Time  " << printTime(ephTime,"%03j, %02m/%02d/%02y %02H:%02M:%02S") << std::endl;
+      s << "MFTime      " << std::setw(12) << MFtime << " sec of Week" << std::endl;
+      s << "Health      " << std::setw(12) << health << std::endl;
+      s << "Freq. Offset" << std::setw(12) << freqNum << std::endl;
+      s << "Age of Info " << std::setw(12) << ageOfInfo << " days" << std::endl;
+      
+      s << "Position    " << std::setw(12) << x << "m" << std::endl;
+      s << "Velocity    " << std::setw(12) << v << "m/sec" << std::endl;
+      s << "Acceleration" << std::setw(12) << a << "m/sec**2" << std::endl;
+      s << "TauN        " << std::setw(12) << clkbias << "units" << std::endl;
+      s << "GammaN      " << std::setw(12) << clkdrift << "units" << std::endl;
+   }
+
+   void GloEphemeris::terseDump(std::ostream& s) const
+   {
+      s << " " << std::setw(2) << PRNID << " ";
+      s << printTime(ephTime,"%03j, %02m/%02d/%02y %02H:%02M:%02S") << "  ";
+      s << std::setw(6) << MFtime << "  ";
+      s << std::setw(5) << health << "    ";
+      s << std::setw(2) << freqNum << std::endl;
+   }
+
+   void GloEphemeris::terseHeader(std::ostream& s) const
+   {
+      s << "          Epoch time        Msg Time          Freq." << std::endl;
+      s << "Slot DOY mm/dd/yy HH:MM:SS    (SOW)   Health Offset" << std::endl;
+   }
 
       // Set the parameters for this ephemeris object.
    GloEphemeris& GloEphemeris::setRecord( std::string svSys,
