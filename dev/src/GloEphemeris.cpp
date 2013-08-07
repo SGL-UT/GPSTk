@@ -358,7 +358,7 @@ namespace gpstk
                                           Triple acc,
                                           double tau,
                                           double gamma,
-                                          short mftime,
+                                          long mftime,
                                           short h,
                                           short freqnum,
                                           double age,

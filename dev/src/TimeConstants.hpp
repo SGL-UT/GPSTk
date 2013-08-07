@@ -72,10 +72,12 @@ namespace gpstk
    // system-specific constants
 
    // GPS -------------------------------------------
-      /// 'Julian day' of GPS epoch (Jan. 1, 1980).
+      /// 'Julian day' of GPS epoch (Jan. 6, 1980).
    const long GPS_EPOCH_JDAY = 2444245L;
-      /// Modified Julian Date of GPS epoch (Jan. 1, 1980).
-   const long GPS_EPOCH_MJD = 44244L;
+      /// 'Julian date' of GPS epoch (Jan. 6, 1980).
+   const double GPS_EPOCH_JD = 2444244.5;
+      /// Modified Julian Date of GPS epoch (Jan. 6, 1980).
+   const double GPS_EPOCH_MJD = 44244.0;
       /// Weeks per GPS Epoch
    const long GPS_WEEK_PER_EPOCH = 1024L;
 
@@ -90,25 +92,25 @@ namespace gpstk
 
    // GAL -------------------------------------------
       /// 'Julian day' of GAL epoch (Aug 22 1999)
-   const long GAL_EPOCH_JDAY = 2451413L;
+   const double GAL_EPOCH_JD = 2451412.5;
       /// Modified Julian Date of GAL epoch (Aug 22 1999)
-   const long GAL_EPOCH_MJD = 51412L;
+   const double GAL_EPOCH_MJD = 51412.0;
       /// Weeks per GAL Epoch
    const long GAL_WEEK_PER_EPOCH = 4096L;
 
    // QZS -------------------------------------------
       /// 'Julian day' of QZS epoch (Jan. 1, 1980).
-   const long QZS_EPOCH_JDAY = 2444245L;
+   const double QZS_EPOCH_JD = 2444244.5;
       /// Modified Julian Date of QZS epoch (Jan. 1, 1980).
-   const long QZS_EPOCH_MJD = 44244L;
+   const double QZS_EPOCH_MJD = 44244.0;
       /// Weeks per QZS Epoch
    const long QZS_WEEK_PER_EPOCH = 65535L;         // effectively no rollover
 
    // BDS -------------------------------------------
       /// 'Julian day' of BDS epoch (Jan. 1, 2006).
-   const long BDS_EPOCH_JDAY = 2453737L;
+   const double BDS_EPOCH_JD = 2453736.5;
       /// Modified Julian Date of GPS epoch (Jan. 1, 2006).
-   const long BDS_EPOCH_MJD = 53736L;
+   const double BDS_EPOCH_MJD = 53736.0;
       /// Weeks per BDS Epoch
    const long BDS_WEEK_PER_EPOCH = 8192L;
 

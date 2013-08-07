@@ -923,7 +923,9 @@ namespace gpstk
             else if(satSys == "R" || satSys == "S") {
                TauN   =      StringUtils::for2doub(line.substr(22,19));
                GammaN =      StringUtils::for2doub(line.substr(41,19));
-               MFtime = (int)StringUtils::for2doub(line.substr(60,19));
+               MFTraw =      StringUtils::for2doub(line.substr(60,19));
+               MFtime =      (long)MFTraw;
+               
             }
          }
          else if(satSys == "G" || satSys == "E") {
@@ -934,7 +936,11 @@ namespace gpstk
          else if(satSys == "R" || satSys == "S") {
             TauN   =      StringUtils::for2doub(line.substr(23,19));
             GammaN =      StringUtils::for2doub(line.substr(42,19));
-            MFtime = (int)StringUtils::for2doub(line.substr(61,19));
+            MFTraw =      StringUtils::for2doub(line.substr(61,19));
+            MFtime =      (long)MFTraw;
+            
+            
+            
          }
       }
       catch (std::exception &e)

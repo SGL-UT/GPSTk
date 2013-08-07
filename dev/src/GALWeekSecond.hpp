@@ -45,7 +45,7 @@ namespace gpstk
 {
    /// This class handles the week portion of the GAL TimeTag classes.
    /// The GAL week is specified by
-   /// 12-bit ModWeek, rollover at 4096, bitmask 0xFFF and epoch GAL_EPOCH_JDAY
+   /// 12-bit ModWeek, rollover at 4096, bitmask 0xFFF and epoch GAL_EPOCH_JD
    class GALWeekSecond : public WeekSecond
    {
    public:
@@ -82,10 +82,10 @@ namespace gpstk
          return bm;
       }
 
-      /// Return the Julian Day (JDAY) of epoch for this system.
-      long JDayEpoch(void) const
+      /// Return the Julian Date (not jday) of epoch for this system.
+      double JDEpoch(void) const
       {
-         static const long e=GAL_EPOCH_JDAY;
+         static const double e=GAL_EPOCH_JD;
          return e;
       }
 

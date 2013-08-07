@@ -58,7 +58,7 @@ namespace gpstk
          // Appears to have rounding issues on 32-bit platforms
 
          int dow = static_cast<int>( sow / SEC_PER_DAY );
-         int jday = JDayEpoch() + ( 7 * week ) + dow;
+         long jday = static_cast<long>(JDEpoch()+0.5) + ( 7 * week ) + dow;
          double sod(  sow - SEC_PER_DAY * dow );
          CommonTime ct;
          return ct.set( jday,
@@ -75,23 +75,23 @@ namespace gpstk
 
    void WeekSecond::convertFromCommonTime( const CommonTime& ct )
    {
-      if(static_cast<JulianDate>(ct).jd < JDayEpoch())
+      if(static_cast<JulianDate>(ct).jd < JDEpoch())
       {
          InvalidRequest ir("Unable to convert to Week/Second - before Epoch.");
          GPSTK_THROW(ir);
       }
 
-      long day, sod;
+      long jday, sod;
       double fsod;
-      ct.get( day, sod, fsod, timeSystem );
+      ct.get( jday, sod, fsod, timeSystem );
          // find the number of days since the beginning of the Epoch
-      day -= JDayEpoch();
+      jday -= static_cast<long>(JDEpoch()+0.5);
          // find out how many weeks that is
-      week = static_cast<int>( day / 7 );
+      week = static_cast<int>( jday / 7 );
          // find out what the day of week is
-      day %= 7;
+      jday %= 7;
 
-      sow = static_cast<double>( day * SEC_PER_DAY + sod ) + fsod;
+      sow = static_cast<double>( jday * SEC_PER_DAY + sod ) + fsod;
    }
 
    std::string WeekSecond::printf( const std::string& fmt ) const
