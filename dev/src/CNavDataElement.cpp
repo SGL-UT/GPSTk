@@ -175,9 +175,15 @@ namespace gpstk
       s << "Transmit Time:";
       timeDisplay(s, ctXmit);
       s << endl;
-      s << "Epoch Time:   ";
-      timeDisplay(s, ctEpoch);
-      s << endl;
+
+         // Special case for those data elements that do not possess an
+         // epoch time.
+      if (ctEpoch>CommonTime::BEGINNING_OF_TIME)
+      {
+         s << "Epoch Time:   ";
+         timeDisplay(s, ctEpoch);
+         s << endl;
+      }
    }
 
    void CNavDataElement::dumpBody(ostream& s) const

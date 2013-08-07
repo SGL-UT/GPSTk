@@ -115,7 +115,8 @@ namespace gpstk
       A1GGTO    = message35.asSignedDouble(175,13,-51);
       A2GGTO    = message35.asSignedDouble(188, 7,-68);
 
-      ctEpoch   = GPSWeekSecond(WNGGTO, TGGTO, TimeSystem::GPS);
+      if (GNSS_ID>0)
+         ctEpoch   = GPSWeekSecond(WNGGTO, TGGTO, TimeSystem::GPS);
 
       dataLoadedFlag = true;   
    } // end of loadData()

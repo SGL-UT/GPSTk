@@ -45,6 +45,7 @@
 
 #include "CNavDataElementStore.hpp"
 #include "StringUtils.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 using namespace gpstk;
