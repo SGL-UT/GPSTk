@@ -99,7 +99,8 @@ namespace gpstk
       /// from CommonTime would work.
       int MAXWEEK(void) const
       {
-         static const int mw = (CommonTime::END_LIMIT_JDAY - JDEpoch())/7;
+         static const int mw =
+            (CommonTime::END_LIMIT_JDAY - static_cast<long>(JDEpoch()+0.5)) / 7;
          return mw;
       }
 
@@ -206,10 +207,11 @@ namespace gpstk
          short halfroll = rollover()/2;
          long jd1,jd2;
          int iyear,imon,iday,ep1,ep2;
+         const long jdEpoch = static_cast<long>(JDEpoch()+0.5);
          jd1 = convertCalendarToJD(y,1,1);
-         ep1 = (jd1 - JDEpoch())/7/rollover();
+         ep1 = (jd1 - jdEpoch)/7/rollover();
          jd2 = convertCalendarToJD(y,12,31);
-         ep2 = (jd2 - JDEpoch())/7/rollover();
+         ep2 = (jd2 - jdEpoch)/7/rollover();
          unsigned int mw = getModWeek();
 
          if(ep1 == ep2)                      // no rollover in given year
