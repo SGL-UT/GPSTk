@@ -166,7 +166,7 @@ namespace gpstk
       double  TauN;        ///< SV clock bias (sec)
       double  GammaN;      ///< SV relative frequency bias
       double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
-      int     MFtime;      ///< Message frame time (sec of UTC week) <short>
+      long     MFtime;      ///< Message frame time (sec of UTC week) <long>
       short   freqNum;     ///< Frequency number (-7..+12)
       double  ageOfInfo;   ///< Age of oper. information (days)
       //@}

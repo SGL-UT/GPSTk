@@ -195,7 +195,7 @@ namespace gpstk
                                Triple acc,
                                double clkbias,
                                double clkdrift,
-                               short mftime,
+                               long mftime,
                                short h,
                                short freqnum,
                                double ageofinfo,
@@ -209,7 +209,7 @@ namespace gpstk
       short PRNID;         ///< SV PRN ID
       CommonTime ephTime;  ///< Epoch for this ephemeris
       Triple a;            ///< SV acceleration (x,y,z), Earth-fixed [meters]
-      short MFtime;        ///< Message frame time [sec of UTC week]
+      long MFtime;        ///< Message frame time [sec of UTC week]
       short health;        ///< SV health
       short freqNum;       ///< Frequency (channel) number (-7..+12)
       double ageOfInfo;    ///< Age of oper. information [days]
