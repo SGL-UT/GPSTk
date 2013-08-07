@@ -80,10 +80,10 @@ namespace gpstk
          return bm;
       }
 
-      /// Return the Julian Day (JDAY) of epoch for this system.
-      long JDayEpoch(void) const
+      /// Return the Julian Date (not jday) of epoch for this system.
+      double JDEpoch(void) const
       {
-         static const long e=GPS_EPOCH_JDAY;
+         static const double e=GPS_EPOCH_JD;
          return e;
       }
 

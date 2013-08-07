@@ -89,17 +89,17 @@ namespace gpstk
       virtual int rollover(void) const
          { return bitmask()+1; }
 
-      /// Return the Julian Day (JDAY) of epoch for this system.
+      /// Return the Julian Date (not jday) of epoch for this system.
       /// This is pure virtual and must be implemented in the derived class;
-      /// e.g. GPSWeek::JDayEpoch(void)
-      ///   { static const long e=GPS_EPOCH_JDAY; return e; }
-      virtual long JDayEpoch(void) const = 0;
+      /// e.g. GPSWeek::JDEpoch(void)
+      ///   { static const double e=GPS_EPOCH_JD; return e; }
+      virtual double JDEpoch(void) const = 0;
 
       /// Return the greatest week value for which a conversion to or
       /// from CommonTime would work.
       int MAXWEEK(void) const
       {
-         static const int mw = (CommonTime::END_LIMIT_JDAY - JDayEpoch())/7;
+         static const int mw = (CommonTime::END_LIMIT_JDAY - JDEpoch())/7;
          return mw;
       }
 
@@ -207,9 +207,9 @@ namespace gpstk
          long jd1,jd2;
          int iyear,imon,iday,ep1,ep2;
          jd1 = convertCalendarToJD(y,1,1);
-         ep1 = (jd1 - JDayEpoch())/7/rollover();
+         ep1 = (jd1 - JDEpoch())/7/rollover();
          jd2 = convertCalendarToJD(y,12,31);
-         ep2 = (jd2 - JDayEpoch())/7/rollover();
+         ep2 = (jd2 - JDEpoch())/7/rollover();
          unsigned int mw = getModWeek();
 
          if(ep1 == ep2)                      // no rollover in given year
