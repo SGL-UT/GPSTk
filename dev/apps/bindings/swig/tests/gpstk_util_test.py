@@ -115,11 +115,9 @@ class Position_test(unittest.TestCase):
         orig = gpstk.Triple(45.0, 30.0, 12.0)
         p = gpstk.Position.convertSphericalToCartesian(orig)
         q = gpstk.Position.convertCartesianToSpherical(p)
-        expected = '(7.348469228349474, 4.242640687119164, 8.485281374238683)'
-        self.assertEqual(expected, str(p))
-        self.assertAlmostEqual(45.0, q[0])
-        self.assertAlmostEqual(30.0, q[1])
-        self.assertAlmostEqual(12.0, q[2])
+        self.assertAlmostEqual(45.0, q[0], places=4)
+        self.assertAlmostEqual(30.0, q[1], places=4)
+        self.assertAlmostEqual(12.0, q[2], places=4)
 
     def test_cartesian_geodetic(self):
         a = gpstk.PZ90Ellipsoid().a()
@@ -127,12 +125,12 @@ class Position_test(unittest.TestCase):
         orig = gpstk.Position(100000.0, 20000.0, 30000.0)
         p = gpstk.Position.convertCartesianToGeodetic(orig, a, eccSq)
         q = gpstk.Position.convertGeodeticToCartesian(p, a, eccSq)
-        self.assertAlmostEqual(25.33498527029081, p[0])
-        self.assertAlmostEqual(11.30993247402015, p[1])
-        self.assertAlmostEqual(-6269217.08416736, p[2])
-        self.assertAlmostEqual(99999.26269737557, q[0])
-        self.assertAlmostEqual(19999.85253947465, q[1])
-        self.assertAlmostEqual(29999.83821484564, q[2])
+        self.assertAlmostEqual(25.33498527029081, p[0], places=4)
+        self.assertAlmostEqual(11.30993247402015, p[1], places=4)
+        self.assertAlmostEqual(-6269217.08416736, p[2], places=4)
+        self.assertAlmostEqual(99999.26269737557, q[0], places=4)
+        self.assertAlmostEqual(19999.85253947465, q[1], places=4)
+        self.assertAlmostEqual(29999.83821484564, q[2], places=4)
 
     def test_geocentric_geodetic(self):
         a = gpstk.PZ90Ellipsoid().a()
@@ -140,23 +138,23 @@ class Position_test(unittest.TestCase):
         orig = gpstk.Position(40.0, 100.0, 2.5e5, gpstk.Position.Geocentric)
         p = gpstk.Position.convertGeocentricToGeodetic(orig, a, eccSq)
         q = gpstk.Position.convertGeodeticToGeocentric(p, a, eccSq)
-        self.assertAlmostEqual(44.90696703221949, p[0])
-        self.assertAlmostEqual(100.0, p[1])
-        self.assertAlmostEqual(-6118405.153409380, p[2])
-        self.assertAlmostEqual(40.00000265961031, q[0])
-        self.assertAlmostEqual(100.0, q[1])
-        self.assertAlmostEqual(249998.49546297366, q[2])
+        self.assertAlmostEqual(44.90696703221949, p[0], places=4)
+        self.assertAlmostEqual(100.0, p[1], places=4)
+        self.assertAlmostEqual(-6118405.153409380, p[2], places=4)
+        self.assertAlmostEqual(40.00000265961031, q[0], places=4)
+        self.assertAlmostEqual(100.0, q[1], places=4)
+        self.assertAlmostEqual(249998.49546297366, q[2], places=4)
 
     def test_cartesian_geocentric(self):
         orig = gpstk.Triple(4000.0, 5000.0, 7000.0)
         p = gpstk.Position.convertCartesianToGeocentric(orig)
         q = gpstk.Position.convertGeocentricToCartesian(p)
-        self.assertAlmostEqual(47.54984445710891, p[0])
-        self.assertAlmostEqual(51.34019174590962, p[1])
-        self.assertAlmostEqual(9486.832980505136, p[2])
-        self.assertAlmostEqual(orig[0], q[0])
-        self.assertAlmostEqual(orig[1], q[1])
-        self.assertAlmostEqual(orig[2], q[2])
+        self.assertAlmostEqual(47.54984445710891, p[0], places=4)
+        self.assertAlmostEqual(51.34019174590962, p[1], places=4)
+        self.assertAlmostEqual(9486.832980505136, p[2], places=4)
+        self.assertAlmostEqual(orig[0], q[0], places=4)
+        self.assertAlmostEqual(orig[1], q[1], places=4)
+        self.assertAlmostEqual(orig[2], q[2], places=4)
 
     def test_functions(self):
         system = gpstk.Position.Cartesian
@@ -278,7 +276,7 @@ class std_template_test(unittest.TestCase):
         list = [1, 2.2, 'c']  # mismatching types not allowed
         self.assertRaises(TypeError, gpstk.cpp.seqToVector, list)
 
-        list = [1000L, 2000L]  # longs are not templated
+        list = [1000L, 2000L]  # PyLongs are not templated
         self.assertRaises(TypeError, gpstk.cpp.seqToVector, list)
 
     def test_map(self):

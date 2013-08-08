@@ -46,7 +46,7 @@ class civil_input(unittest.TestCase):
 
 class RINEX_input(unittest.TestCase):
     def test(self):
-        run_test(self, ['-R', '\"05 06 1985 13:50:02\"'],
+        run_test(self, ['-R', '05 06 1985 13:50:02'],
         '        Month/Day/Year H:M:S            11/06/2010 13:00:00 GPS\n'
         '        Modified Julian Date            55506.541666667 GPS\n'
         '        GPSweek DayOfWeek SecOfWeek     584 6  565200.000000\n'
