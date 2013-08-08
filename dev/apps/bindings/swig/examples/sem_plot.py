@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """
 A GPSTk example featuring some file input and processing to
 create a plot with matplotlib.
@@ -25,9 +27,9 @@ def main():
     orbit = almOrbits[0]  # the orbit we are interested in
 
     t = gpstk.CommonTime()    # iterator time to start at
-    t.setTimeSystem(gpstk.timeSystem('GPS'))
+    t.setTimeSystem(gpstk.TimeSystem('GPS'))
     t_f = gpstk.CommonTime()  # end time, 1 day later (see below)
-    t_f.setTimeSystem(gpstk.timeSystem('GPS'))
+    t_f.setTimeSystem(gpstk.TimeSystem('GPS'))
     t_f.addDays(1)
     X = []
     Y = []

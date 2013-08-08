@@ -5,6 +5,7 @@ prune lib
 prune oldtests
 prune tests/
 
+include src/*.c
 include src/*.cpp
 include src/*.h
 include src/*.hpp

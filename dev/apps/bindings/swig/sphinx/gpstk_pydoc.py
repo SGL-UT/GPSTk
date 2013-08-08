@@ -52,6 +52,7 @@ def write_page(x):
         class_file.write('\n\n.. autoclass:: ' + x + '\n')
         class_file.write('   :members:\n')
         class_file.write('   :inherited-members:\n')
+        class_file.write('   :undoc-members:\n')
         class_file.close()
     def write_function(x):
         function_file = open(x + '.rst', 'w')

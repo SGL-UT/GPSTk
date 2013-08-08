@@ -56,19 +56,20 @@
 
 %pythoncode {
 def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
-    """This reads from a FORMATNAME file and returns a two-element tuple
+    """
+    This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
 
     Parameters:
     -----------
 
-      lazy:  if the data object sequence should be lazily evaluated.
-             If it is, it will be a generator, otherwise, it will be a list.
+    lazy:  if the data object sequence should be lazily evaluated.
+           If it is, it will be a generator, otherwise, it will be a list.
 
-      filterfunction: a function that takes a FORMATNAME Data object
-                      and returns whether it should be included in the
-                      data output. This is similar to using the filter()
-                      function on the output list, but eliminates the extra step.
+    filterfunction: a function that takes a FORMATNAME Data object
+                    and returns whether it should be included in the
+                    data output. This is similar to using the filter()
+                    function on the output list, but eliminates the extra step.
     """
     import os.path
     if not os.path.isfile(fileName):
@@ -91,17 +92,18 @@ def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
 
 
 def write ## FORMATNAME(fileName, header, data):
-    """Writes a FORMATNAME Header and sequence of FORMATNAME Data objects to a file.
+    """
+    Writes a FORMATNAME Header and sequence of FORMATNAME Data objects to a file.
     Note that this overwrites the file if it already exists.
 
     Parameters:
     -----------
 
-      fileName:  the name of the file to write to.
+    fileName:  the name of the file to write to.
 
-      header:  the FORMATNAME Header object
+    header:  the FORMATNAME Header object
 
-      data:  the sequence of FORMATNAME Data objects
+    data:  the sequence of FORMATNAME Data objects
     """
     s = FORMATNAME ## Stream .out ##FORMATNAME ## Stream (fileName)
     s.writeHeader(header)

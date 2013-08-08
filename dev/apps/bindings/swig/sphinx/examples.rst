@@ -10,7 +10,6 @@ Example 1
 
 
 
-
 Example 2
 **********************************************************
 
@@ -39,3 +38,12 @@ SEM Elevation Plotting example
 
 .. literalinclude:: ../examples/sem_plot.py
     :language: python
+
+
+
+Timeconvert command line tool example
+*****************************************************************************
+
+.. literalinclude:: ../scripts/timeconvert.py
+    :language: python
+

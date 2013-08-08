@@ -37,8 +37,8 @@ Bindings
 Though effort has been taken to reduce the C++-feeling when using these Python
 classes, it is impossible to completely purify the library without creating severe
 maintenance problems. Thus, the user must be aware that the GPSTk is primarily a
-C++ library and some things may require unusual semantics. It is recommended that you avoid using
-some of these unusual classes, such as gpstk.cpp.vector_double (std::vector<double>)
+C++ library and some things may require unusual semantics. It is recommended that
+you avoid using some of these unusual classes, such as gpstk.cpp.vector_double (std::vector<double>)
 as much as a possible. A much better replacement would be a numpy array.
 
 Example of how C++ GPSTk reads and prints a Rinex3Obs file:
@@ -133,8 +133,9 @@ The GPSTk largely only uses the gpstk namespace, which is roughly the gpstk pack
 Exceptions include the submodules created for exceptions and constants.
 
 Note that SWIG is actually set to create a module called gpstk_pylib. To clean up the namespace
-and provide more organization, there are __init__.py files that divide up the namespace (into gpstk, gpstk.constants, etc.)
-and remove unwanted members. You can still access the raw wrapping through gpstk.gpstk_pylib, however.
+and provide more organization, there are __init__.py files that divide up the
+namespace (into gpstk, gpstk.constants, etc.) and remove unwanted members.
+You can still access the raw wrapping through gpstk.gpstk_pylib, however.
 
 
 **Enums:**
@@ -188,36 +189,41 @@ in a few common templated forms (string->char, etc.), but you should avoid
 the use of these whenever possible.
 
 
-When C++ functions deal with arrays, they are automatically converted (since the Python C API already uses arrays),
+When C++ functions deal with arrays, they are automatically converted
+(since the Python C API already uses arrays),
 but when other containers are used, they must be explicitly converted.
-Conversion functions (such as seqToVector for list->std::vector conversion) are defined in the cpp submodule.
+Conversion functions (such as seqToVector for list->std::vector conversion)
+are defined in the cpp submodule.
 
 
 .. warning::
-    Reading documentation can get difficult in dealing with heavily-templated wrapped C++ code. Use these structures as little as possible.
-    If containers are small it might be wise to use the provided functions in gpstk.cpp to convert the containers to native python lists/dicts.
+    Reading documentation can get difficult in dealing with heavily-templated
+    wrapped C++ code. Use these structures as little as possible.
+    If containers are small it might be wise to use the provided functions in
+    gpstk.cpp to convert the containers to native python lists/dicts.
 
 
 
 
 **Exceptions:**
-Exceptions were tricky to get right. In general, most exceptions thrown by calling GPSTk routines should be caught in the
-standard way in Python. ::
+Exceptions were tricky to get right. In general, most exceptions thrown by
+calling GPSTk routines should be caught in the standard way in Python. ::
 
     try:
         a = gpstk.someFunction()
     except gpstk.exceptions.InvalidRequest:
         print 'Could not process data.'
 
-However, there is somewhat of an inconsistency in what exceptions are thrown since they go through several layers of code.
-It's typically best to just check what exactly gets thrown to get safe. Exceptions that are commonly thrown are
-ValueError, IOError, RunTimeError, and any exceptions in the gpstk.exceptions submodule.
+When an exception is thrown by the C++ code, it is propogated to the SWIG
+system which has code (written in Exception.i) that either wraps the exception
+to one of the classes in gpstk.exceptions.
 
 
 
 **Functions that modify a parameter that is passed by reference**
 
-Some C++ functions didn't return a value, but just modify a non-const parameter. For example, from Position.hpp:
+Some C++ functions didn't return a value, but just modify a non-const parameter.
+For example, from Position.hpp:
 
 .. parsed-literal::
     static void convertCartesianToGeocentric(const Triple& xyz, Triple& llr)
