@@ -11,7 +11,6 @@
       gpstk::scanTime(m, str, fmt);
       return m;
    }
-
    gpstk::CommonTime mixedScanTime(const std::string& str, const std::string& fmt)
    {
       gpstk::CommonTime m;

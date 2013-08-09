@@ -62,12 +62,15 @@ ignore_patterns = [
 'PRSolution2_',
 'RinexMetHeader_',
 'RinexObsHeader_',
+'SatID_',
 'Stream',
 'swigregister',
 'TabularSatStore_',
+'TimeSystem_',
 'TimeTag_',
 'TropModel_',
 'VectorBase',
+'weakref_',
 ]
 
 

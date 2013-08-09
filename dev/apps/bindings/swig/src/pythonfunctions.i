@@ -21,11 +21,11 @@ def now():
 // Uses the dump method in the class to get string output
 %define STR_DUMP_HELPER(name)
 %extend gpstk:: ## name {
-     std::string __str__() {
-        std::ostringstream stream;
-        $self->dump(stream);
-        return stream.str();
-    }
+   std::string __str__() {
+      std::ostringstream stream;
+      $self->dump(stream);
+      return stream.str();
+   }
 }
 %enddef
 STR_DUMP_HELPER(AlmOrbit)
@@ -69,11 +69,11 @@ STR_DUMP_HELPER(YumaHeader)
 // Uses the operator<< in the class to get string output
 %define STR_STREAM_HELPER(name)
 %extend gpstk:: ##name {
-    std::string __str__() {
-        std::ostringstream stream;
-        stream << *($self);
-        return stream.str();
-    }
+   std::string __str__() {
+      std::ostringstream stream;
+      stream << *($self);
+      return stream.str();
+   }
 }
 %enddef
 STR_STREAM_HELPER(ReferenceFrame)
@@ -102,9 +102,9 @@ STR_STREAM_HELPER(Xv)
 // Uses gpstk::StringUtils::asString(x) to get string output
 %define AS_STRING_HELPER(name)
 %extend gpstk:: ##name {
-    std::string __str__() {
-        return gpstk::StringUtils::asString(*($self));
-    }
+   std::string __str__() {
+      return gpstk::StringUtils::asString(*($self));
+   }
 }
 %enddef
 AS_STRING_HELPER(ObsID)

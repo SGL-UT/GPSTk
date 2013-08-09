@@ -12,8 +12,9 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
   # 362: operator= ignored
   # 383: operator++ ignored
   # 384: operator-- ignored
+  # 389: operator[] ignored
   # 503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
-set(CMAKE_SWIG_FLAGS "-w362,383,384,503")
+set(CMAKE_SWIG_FLAGS "-w362,383,384,389,503")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 
 set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)

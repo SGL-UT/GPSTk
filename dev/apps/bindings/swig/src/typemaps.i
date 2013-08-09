@@ -1,5 +1,8 @@
 // These typemaps help conversions between C style arrays and Python Lists.
 
+// Note: if any more types needed to get added, it's time to start
+//       using macros to do the job!
+
 // Python Lists -> C arrays:
 //     [PyLong] -> [long]
 %typemap(in) long[ANY](long temp[$1_dim0]) {
@@ -20,7 +23,7 @@
       if (!PyLong_Check(o))
       {
          Py_XDECREF(o);
-         PyErr_SetString(PyExc_ValueError, "Expecting a sequence of longs");
+         PyErr_SetString(PyExc_TypeError, "Expecting a sequence of longs");
          return NULL;
       }
       temp[i] = PyLong_AsLong(o);
@@ -48,7 +51,7 @@
       if (!PyFloat_Check(o))
       {
          Py_XDECREF(o);
-         PyErr_SetString(PyExc_ValueError, "Expecting a sequence of doubles");
+         PyErr_SetString(PyExc_TypeError, "Expecting a sequence of doubles");
          return NULL;
       }
       temp[i] = PyFloat_AsDouble(o);

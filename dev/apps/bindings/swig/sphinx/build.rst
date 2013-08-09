@@ -39,7 +39,7 @@ The build system is fairly complex, thanks to a large amount of auto-generated c
 
 - Compiling object files for the C++ sources
 - Parsing Doxygen comments in C++ source for SWIG to read later
-- SWIG generating the gpstk wrap file (which is well over 100K lines) and the gpstk python wrap file
+- SWIG generating the gpstk wrap file (which is well over 600K lines) and the gpstk python wrap file
 - Compiling and linking the wrapped source with the original object files
 - Auto-generating the init files to set up the package structure
 

@@ -9,7 +9,8 @@ namespace gpstk {
    }
 }
 
-
+// This macro is used to help the C++ exceptions be translated to the python
+// wraps of the exception class - this is not automatically done by SWIG!
 %define CATCHER(NAME)
    catch(const gpstk:: NAME &e) {
       SWIG_Python_Raise(
@@ -23,11 +24,11 @@ namespace gpstk {
 %enddef
 
 
-
 %exception {
    try {
       $action
    }
+   // explicitly handled exceptions:
    CATCHER(InvalidParameter)
    CATCHER(InvalidRequest)
    CATCHER(AssertionFailure)
@@ -44,27 +45,23 @@ namespace gpstk {
    CATCHER(NullPointerException)
    CATCHER(UnimplementedException)
    CATCHER(EndOfFile)
+
+   // other gpstk exceptions:
    catch (const gpstk::Exception &e) {
       std::string s("GPSTk exception\n"), s2(e.what());
       s = s + s2;
       SWIG_exception(SWIG_RuntimeError, s.c_str());
    }
+
+   // STL exceptions:
    catch (const std::exception &e) {
       std::string s("STL exception\n"), s2(e.what());
       s = s + s2;
       SWIG_exception(SWIG_RuntimeError, s.c_str());
    }
+
+   // any other exception:
    catch (...) {
       SWIG_exception(SWIG_RuntimeError, "unknown exception");
    }
-}
-
-%feature("director:except") {
-    if( $error != NULL ) {
-        PyObject *ptype, *pvalue, *ptraceback;
-        PyErr_Fetch( &ptype, &pvalue, &ptraceback );
-        PyErr_Restore( ptype, pvalue, ptraceback );
-        PyErr_Print();
-        Py_Exit(1);
-    }
 }
