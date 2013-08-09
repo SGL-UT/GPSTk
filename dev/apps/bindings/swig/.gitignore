@@ -1,12 +1,13 @@
 gpstk_pylib.py
 
 *.pyc
+*.h
 *.cxx
 *.new
 
-doc
-html
-latex
+doc/
+html/
+latex/
 
 sphinx/_build
 sphinx/_static
