@@ -1,4 +1,4 @@
-  # this file is not added to parent cmakelists.txt files yet
+# this file is not added to parent cmakelists.txt files
 cmake_minimum_required(VERSION 2.8)
 
 find_package(SWIG REQUIRED)
@@ -7,16 +7,16 @@ include(${SWIG_USE_FILE})
 find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(../../../src/)
 
-  # warning disables:
-  # 362: operator= ignored
-  # 383: operator++ ignored
-  # 384: operator-- ignored
-  # 389: operator[] ignored
-  # 503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
+# warning disables:
+# 362: operator= ignored
+# 383: operator++ ignored
+# 384: operator-- ignored
+# 389: operator[] ignored
+# 503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
 set(CMAKE_SWIG_FLAGS "-w362,383,384,389,503")
 set(CMAKE_CXX_FLAGS "-std=c++11")
-
 set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
 swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/AlmOrbit.cpp

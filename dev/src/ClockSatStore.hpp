@@ -31,6 +31,13 @@ namespace gpstk
    /// Output stream operator is used by dump() in TabularSatStore
    std::ostream& operator<<(std::ostream& os, const ClockRecord& rec) throw();
 
+   // This is a helper for SWIG processing - it needs a template instation of the
+   // base type of ClockSatStore before it is used, so this statement must be between
+   // the ClockDataRecord and ClockSatStore declarations.
+   #ifdef SWIG
+   %template(TabularSatStore_ClockRecord) gpstk::TabularSatStore<gpstk::ClockRecord>;
+   #endif
+
    /// Store a table of data vs time for each of several satellites.
    /// The data are stored as ClockRecords, one for each (satellite,time) pair.
    /// The getValue(sat, t) routine interpolates the table for sat at time t and
@@ -56,7 +63,7 @@ namespace gpstk
 
       /// Type of interpolation: 1=linear, 2=Lagrange, 3=numerical derivative?
       int interpType;
-      
+
       /// Order of Lagrange interpolation; should be even, is forced to be even
       /// in setInterpolationOrder (for linear interpolation it is 2).
       unsigned int interpOrder;
@@ -84,7 +91,7 @@ namespace gpstk
       /// Destructor
       virtual ~ClockSatStore() {};
 
-      /// 
+      ///
       bool hasClockAccel() const throw() { return haveClockAccel; }
 
       /// Return value for the given satellite at the given time (usually via

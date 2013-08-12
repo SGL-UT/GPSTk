@@ -63,7 +63,7 @@ namespace gpstk
          UserDefined,///< UserDefined
          DGPS,       ///< Differential GPS data
          RTK,        ///< Real Time Kinematic data
-         INS,        ///< Inertial System data  
+         INS,        ///< Inertial System data
          Last,       ///< used to extend this...
          Placeholder = Last+1000
       };
@@ -157,6 +157,7 @@ namespace gpstk
 
    public:
 
+      #ifndef SWIG
       class Initializer
       {
       public:
@@ -164,6 +165,7 @@ namespace gpstk
       };
 
       static Initializer SourceIDsingleton;
+      #endif
 
    }; // End of class 'SourceID'
 

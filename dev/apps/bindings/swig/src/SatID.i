@@ -1,9 +1,9 @@
 %include "../../../src/SatID.hpp"
 
-%newobject gpstk::SatID::SatID(int p) throw();
+%newobject gpstk::SatID::SatID(int p);
 %extend gpstk::SatID {
-   SatID(int p) throw() {
+   SatID(int p) {
       gpstk::SatID helper;
-      return new gpstk::SatID(p, helper.systemGPS);
+      return new gpstk::SatID(p, gpstk::SatID::systemGPS);
    }
 };

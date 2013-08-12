@@ -80,7 +80,7 @@
    #include "../../../src/GalEphemerisStore.hpp"
    #include "../../../src/GloEphemeris.hpp"
 
-    // RINEX format:
+   // RINEX format:
    #include "../../../src/RinexSatID.hpp"
    #include "../../../src/RinexClockBase.hpp"
    #include "../../../src/RinexObsBase.hpp"
@@ -181,9 +181,8 @@
 %ignore *::operator--;
 
 %include "src/typemaps.i"
-%include "src/std_vector_extra.i" // renamed since std_vector.i part of core swig
-%include "src/std_map_extra.i"
-%include "src/std_set_extra.i"
+%include "src/STLTemplates.i"
+%include "src/STLHelpers.i"
 %include "src/Exception.i"
 
 
@@ -347,13 +346,13 @@
 
 // SP3 format:
 %include "../../../src/TabularSatStore.hpp"
-%include "src/ClockSatStore.i"
+%include "../../../src/ClockSatStore.hpp"
 %include "../../../src/SP3Base.hpp"
 %include "../../../src/SP3SatID.hpp"
 %include "../../../src/SP3Header.hpp"
 %include "../../../src/SP3Data.hpp"
 %include "../../../src/SP3Stream.hpp"
-%include "src/PositionSatStore.i"
+%include "../../../src/PositionSatStore.hpp"
 %include "../../../src/SP3EphemerisStore.hpp"
 %include "../../../src/RinexUtilities.hpp"
 

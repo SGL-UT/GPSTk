@@ -32,6 +32,13 @@ namespace gpstk
    /// Output stream operator is used by dump() in TabularSatStore
    std::ostream& operator<<(std::ostream& os, const PositionRecord& cdr) throw();
 
+   // This is a helper for SWIG processing - it needs a template instation of the
+   // base type of PositionSatStore before it is used, so this statement must be between
+   // the PositionStoreDataRecord and PositionSatStore declarations.
+   #ifdef SWIG
+   %template(TabularSatStore_PositionRecord) gpstk::TabularSatStore<gpstk::PositionRecord>;
+   #endif
+
    /// Store a table of data vs time for each of several satellites.
    /// The data are stored as PositionRecords, one for each (satellite,time) pair.
    /// The getValue(sat, t) routine interpolates the table for sat at time t and
