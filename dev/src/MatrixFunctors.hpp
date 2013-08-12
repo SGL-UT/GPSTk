@@ -1,13 +1,6 @@
-#pragma ident "$Id$"
-
-/**
- * @file MatrixFunctors.hpp
- * Matrix function operators (SVD, LUD, etc)
- */
+/// @file MatrixFunctors.hpp
+/// Matrix function operators (SVD, LUD, etc)
  
-#ifndef GPSTK_MATRIX_FUNCTORS_HPP
-#define GPSTK_MATRIX_FUNCTORS_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -30,7 +23,11 @@
 //
 //============================================================================
 
+#ifndef GPSTK_MATRIX_FUNCTORS_HPP
+#define GPSTK_MATRIX_FUNCTORS_HPP
+
 #include <cmath>
+#include <limits>
 
 namespace gpstk
 {
@@ -79,13 +76,12 @@ namespace gpstk
    public:
       SVD() : iterationMax(30) {}
 
-         /**
-          * Singular Value Decomposition
-          */
+         // Singular Value Decomposition
       template <class BaseClass>
       bool operator() (const ConstMatrixBase<T, BaseClass>& mat)
          throw (MatrixException)
          {
+            const T eps=T(8)*std::numeric_limits<T>::epsilon();
             bool flip=false;
             U = mat;
             if(mat.rows() > mat.cols()) {
@@ -188,7 +184,7 @@ namespace gpstk
                   bool flag = true;
                   for(l = k; ; l--) {
                      nm = l - 1;
-                     if ((ABS(B[l])+anorm) == anorm) {
+                     if (ABS(B[l])/MAX(ABS(B[l]),anorm) < eps) {
                         flag = false;
                         break;
                      }
@@ -196,7 +192,7 @@ namespace gpstk
                         MatrixException e("SVD algorithm has nm==-1");
                         GPSTK_THROW(e);
                      }
-                     if ((ABS(S[nm])+anorm) == anorm) break;
+                     if (ABS(S[nm])/MAX(ABS(S[nm]),anorm) < eps) break;
                      if(l == 0) break; // since l is unsigned...
                   }
                   if (flag) {
@@ -205,7 +201,7 @@ namespace gpstk
                      for(i = l; i <= k; i++) {
                         f = s * B[i];
                         B[i] = c * B[i];
-                        if ((ABS(f) + anorm) == anorm) break;
+                        if (ABS(f)/MAX(ABS(f),anorm) < eps) break;
                         g = S[i];
                         h = RSS(f,g);
                         S[i] = h;
@@ -319,12 +315,11 @@ namespace gpstk
 
          }  // end SVD::operator() - the SVD algorithm
    
-         /** Backsubstitution using SVD.
-           * Solve A*x=b for vector x where A [mxn] has been SVD'ed and is given by
-           * U,W,V (*this); that is A[mxn] = U[mxm]*W[mxn]*VT[nxn]. b has dimension m,
-           * x dimension n. Singular values are NOT edited, except that if s.v. == 0,
-           * 1/0 is replaced by 0. Result is returned as b.
-         */
+         // Backsubstitution using SVD.
+         // Solve A*x=b for vector x where A [mxn] has been SVD'ed and is given by
+         // U,W,V (*this); that is A[mxn] = U[mxm]*W[mxn]*VT[nxn]. b has dimension m,
+         // x dimension n. Singular values are NOT edited, except that if s.v. == 0,
+         // 1/0 is replaced by 0. Result is returned as b.
       template <class BaseClass>
       void backSub(RefVectorBase<T, BaseClass>& b) const 
          throw(MatrixException)
@@ -399,11 +394,9 @@ namespace gpstk
 
    }; // end class SVD
 
-/**
- * Performs the lower/upper triangular decomposition of a matrix PA = LU.
- * The results are put into the matricies L, U, and P (pivot), and sign
- * (representing even (positive) or odd (negative) row swaps.
- */
+// Performs the lower/upper triangular decomposition of a matrix PA = LU.
+// The results are put into the matricies L, U, and P (pivot), and sign
+// (representing even (positive) or odd (negative) row swaps.
    template <class T>
    class LUDecomp
    {
@@ -479,9 +472,8 @@ namespace gpstk
             }
          }  // end LUDecomp()
 
-         /** Compute inverse(m)*v, where *this is LUD(m), via back substitution
-          * Solution overwrites input Vector v
-          */
+         // Compute inverse(m)*v, where *this is LUD(m), via back substitution
+         // Solution overwrites input Vector v
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& v) const
          throw (MatrixException)
@@ -524,9 +516,8 @@ namespace gpstk
          return d;
       }
 
-         /** The matrix in LU-decomposed form: L and U together;
-           * all diagonal elements of L are implied 1.
-           */
+         // The matrix in LU-decomposed form: L and U together;
+         // all diagonal elements of L are implied 1.
          Matrix<T> LU;
          /// The pivot array
          Vector<int> Pivot;
@@ -536,12 +527,30 @@ namespace gpstk
    }; // end class LUDecomp
 
 
-   /**
-    * Compute cholesky decomposition (upper triangular square root) of the
-    * given matrix, which must be positive definite. Positive definite <=>
-    * positive eigenvalues. Note that the UT sqrt is not unique, and that
-    * m = U*transpose(U) (where U=UTsqrt(m)) only if m is symmetric.
-    */
+   // Compute Cholesky decomposition (triangular square root) of the given matrix,
+   // which must be square and positive definite. That is, if M is square and positive
+   // definite, then M = C * transpose(C) where C is the Cholesky decomposition. This
+   // routine computes both the upper (U) and lower (L) triangular C's;
+   // thus M = L * transpose(L) = U * transpose(U).
+   //
+   // NB Note that M = U*UT NOT UT*U; if M = U'T*U' is desired, use U'=transpose(L);
+   // then note the similarity to LU decomposition: M = L*U' = L*LT = U'T*U'.
+   //
+   // Positive definite (PD) implies positive eigenvalues, and the reverse.
+   //
+   // Note that the result is not unique, as any orthogonal transformation R of UT,
+   // including a change in sign, will preserve the result m = U*UT = U*RT*R*UT.
+   //
+   // @code
+   // Matrix<double> M(i,i);     // square and PD
+   ///Cholesky<double> Ch;
+   // Ch(M);
+   // cout << Ch.U << endl << Ch.L << endl;
+   // // note that M = Ch.L * transpose(Ch.L);
+   // // note that M = Ch.U * transpose(Ch.U);
+   // // and that if Matrix<double> Up(transpose(Ch.L)); then
+   // // M = transpose(Up) * Up;
+   // @endcode
    template <class T>
    class Cholesky
    {
@@ -579,7 +588,6 @@ namespace gpstk
             if(j==0) break;      // since j is unsigned
          }
 
-         // L does not = transpose(U);
          P = m;
          L = Matrix<T>(m.rows(),m.cols(),T(0));
          for(j=0; j<=N-1; j++) {
@@ -601,11 +609,10 @@ namespace gpstk
 
       }  // end Cholesky::operator()
 
-         /* Use backsubstition to solve the equation A*x=b where *this Cholesky
-          * has been applied to A, i.e. A = L*transpose(L). The algorithm is in
-          * two steps: since A*x=L*LT*x=b, first solve L*y=b for y, then solve
-          * LT*x=y for x. x is returned as b.
-          */
+      // Use backsubstition to solve the equation A*x=b where *this Cholesky
+      // has been applied to A, i.e. A = L*transpose(L). The algorithm is in
+      // two steps: since A*x=L*LT*x=b, first solve L*y=b for y, then solve
+      // LT*x=y for x. x is returned as b.
       template <class BaseClass2>
       void backSub(RefVectorBase<T, BaseClass2>& b) const
          throw (MatrixException)
@@ -640,13 +647,14 @@ namespace gpstk
 
    }; // end class Cholesky
 
-   /**
-    * Compute the Cholesky decomposition using the Cholesky-Crout algorithm,
-    * which is very fast; if A is the given matrix we will get L, where A = L*LT. 
-    * A must be symetric and positive definite. This is the usual case when
-    * A comes from applying a Least Mean-Square (LMS) or Weighted Least 
-    * Mean-Square (WLMS) method.
-    */
+   // Compute the Cholesky decomposition using the Cholesky-Crout algorithm,
+   // which is very fast; if A is the given matrix we will get L, where A = L*LT. 
+   // A must be symetric and positive definite. This is the usual case when
+   // A comes from applying a Least Mean-Square (LMS) or Weighted Least 
+   // Mean-Square (WLMS) method.
+   //
+   // NB. U here is NOT the same as U in class Cholesky (but L is the same);
+   // here m = transpose(U)*U, but there m = U * transpose(U); see doc for Cholesky.
    template <class T> 
    class CholeskyCrout : public Cholesky<T>
    {
@@ -685,27 +693,25 @@ namespace gpstk
 
    }; // end class CholeskyCrout
 
-/**
- * The Householder transformation is simply an orthogonal transformation
- * designed to make the elements below the diagonal zero. It applies to any
- * matrix.
- */
+
+   // The Householder transformation is simply an orthogonal transformation
+   // designed to make the elements below the diagonal zero. It applies to any
+   // matrix.
    template <class T>
    class Householder
    {
    public:
       Householder() {}
 
-      /** Explicitly perform the transformation, one column at a time, without
-      * actually constructing the transformation matrix. Let y be column k of the
-      * input matrix. y can be zeroed below the diagonal as follows:
-      * let sum=sign(y(k))*sqrt(y*y), and define vector u(k)=y(k)+sum,
-      * u(j)=y(j) (j.gt.k). This defines the transformation matrix as (1-bu*u),
-      * with b=2/u*u=1/sum*u(k). Redefine y(k)=u(k) and apply the transformation to
-      * elements of the input matrix below and to the right of the (k,k) element.
-      * This algorithm for each column k=0,n-1 in turn is equivalent to a single
-      * orthogonal transformation which triangularizes the matrix.
-      */
+      // Explicitly perform the transformation, one column at a time, without
+      // actually constructing the transformation matrix. Let y be column k of the
+      // input matrix. y can be zeroed below the diagonal as follows:
+      // let sum=sign(y(k))*sqrt(y*y), and define vector u(k)=y(k)+sum,
+      // u(j)=y(j) (j.gt.k). This defines the transformation matrix as (1-bu*u),
+      // with b=2/u*u=1/sum*u(k). Redefine y(k)=u(k) and apply the transformation to
+      // elements of the input matrix below and to the right of the (k,k) element.
+      // This algorithm for each column k=0,n-1 in turn is equivalent to a single
+      // orthogonal transformation which triangularizes the matrix.
       template <class BaseClass>
       inline void operator() (const ConstMatrixBase<T, BaseClass>& m)
          throw (MatrixException)
@@ -717,12 +723,12 @@ namespace gpstk
 
             // loop over cols
             const T EPS(1.e-200);
-            for(j=0; (j<A.cols() && j<A.rows()-1); j++) {
+            for(j=0; (j<A.cols()-1 && j<A.rows()-1); j++) {
                sum = T(0);
                // loop over rows at diagonal and below
                for(i=j; i<A.rows(); i++) {
                   v(i) = A(i,j);
-                  A(i,j) = T(0);
+                  A(i,j) = T(0);       // this is optional - below the diag is trash
                   sum += v(i)*v(i);
                }
 
