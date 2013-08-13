@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
 import unittest
-import sys
 import gpstk
-
 
 class CommonTime_Tests(unittest.TestCase):
     def test(self):

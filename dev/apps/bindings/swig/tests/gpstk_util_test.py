@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import unittest
-import sys
 import gpstk
 
 
@@ -23,7 +22,7 @@ class ReferenceFrame_test(unittest.TestCase):
         self.assertEqual('Unknown', str(r))
 
     def test_string_input(self):
-        r = gpstk.ReferenceFrame(gpstk.ReferenceFrame.PZ90)
+        r = gpstk.ReferenceFrame('PZ90')
         self.assertEqual('PZ90', str(r))
 
     def test_constant_input(self):
@@ -47,7 +46,7 @@ class SatID_test(unittest.TestCase):
         b = gpstk.SatID(1, gpstk.SatID.systemLEO)
         self.assertEqual('LEO 1', str(b))
 
-        c = gpstk.SatID(4)  # optional arg should be SatSystems.GPS
+        c = gpstk.SatID(4)  # optional arg should be SatID.systemGPS
         self.assertEqual('GPS 4', str(c))
 
 
@@ -166,6 +165,16 @@ class Position_test(unittest.TestCase):
         self.assertAlmostEqual(86.18592516570916, p.getPhi())
         self.assertAlmostEqual(57.5141089193572, p.geodeticLatitude())
         self.assertAlmostEqual(10000.0, p.X())
+
+    def test_helpers(self):
+        p = gpstk.cartesian(100, 200, 300)
+        self.assertEqual(gpstk.Position.Cartesian, p.getCoordinateSystem())
+        p = gpstk.spherical(45, 60, 100000, model=gpstk.PZ90Ellipsoid())
+        self.assertEqual(gpstk.Position.Spherical, p.getCoordinateSystem())
+        p = gpstk.geodetic(frame=gpstk.ReferenceFrame('WGS84'))
+        self.assertEqual(gpstk.Position.Geodetic, p.getCoordinateSystem())
+        p = gpstk.geocentric(latitude=60, radius=10000)
+        self.assertEqual(gpstk.Position.Geocentric, p.getCoordinateSystem())
 
 
 class ObsID_test(unittest.TestCase):
@@ -373,6 +382,50 @@ class AstronomicalFunctions_test(unittest.TestCase):
         self.assertAlmostEqual(1.49597870e11, gpstk.constants.AU_CONST)
         self.assertAlmostEqual(0.0174532925199432957692369, gpstk.constants.D2R)
         self.assertAlmostEqual(9.80665,  gpstk.constants.EarthGrav)
+
+
+class Positioning_test(unittest.TestCase):
+    def test_moon(self):
+        t = gpstk.CivilTime(2000).toCommonTime()
+        # object way:
+        pos = gpstk.MoonPosition().getPosition(t)
+        self.assertAlmostEqual(-89651219.03579094, pos[0])
+        # functional way:
+        pos = gpstk.moonPosition(t)
+        self.assertAlmostEqual(-89651219.03579094, pos[0])
+
+    def test_sun(self):
+        t = gpstk.CivilTime(2000).toCommonTime()
+        # object way:
+        pos = gpstk.SunPosition().getPosition(t)
+        self.assertAlmostEqual(-136909966557.84602 , pos[0])
+        # functional way:
+        pos = gpstk.sunPosition(t)
+        self.assertAlmostEqual(-136909966557.84602 , pos[0])
+
+
+class Tides_test(unittest.TestCase):
+    def test_pole_tides(self):
+        t = gpstk.CivilTime(2000).toCommonTime()
+        p = gpstk.Position(1000.0, 2000.0, 3000.0)
+        x = 5.0
+        y = 10.0
+        # object way:
+        trip = gpstk.PoleTides().getPoleTide(t, p, x, y)
+        self.assertAlmostEqual(-0.03128457731297798, trip[0])
+        # functional way:
+        trip = gpstk.poleTides(t, p, x, y)
+        self.assertAlmostEqual(-0.03128457731297798, trip[0])
+
+    def test_solid_tides(self):
+        t = gpstk.CivilTime(2000).toCommonTime()
+        p = gpstk.Position(1000.0, 2000.0, 3000.0)
+        # object way:
+        trip = gpstk.SolidTides().getSolidTide(t, p)
+        self.assertAlmostEqual(-2.2479508782610997e-15, trip[0])
+        # functional way:
+        trip = gpstk.solidTides(t, p)
+        self.assertAlmostEqual(-2.2479508782610997e-15, trip[0])
 
 
 if __name__ == '__main__':

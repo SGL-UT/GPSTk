@@ -3,7 +3,6 @@
 
 import gpstk
 import inspect
-import pydoc
 import os
 
 
@@ -27,7 +26,6 @@ def get_dir(x):
 
 
 def get_constructor_doc(x):
-        t = eval(x)
         try:
             lines = eval(x).__init__.__doc__.splitlines()
             output = ""
@@ -103,33 +101,33 @@ def main():
             "This is completely AUTO-GENERATED documentation. All text on the functions and classes "
             "is originally derived from the C++ source files.")
     f.write(desc + '\n\n')
-    f.write(".. py:currentmodule:: gpstk\n\n")
+    f.write('.. py:currentmodule:: gpstk\n\n')
 
-    f.write("\nClasses\n****************\n\n")
+    f.write('\nClasses\n****************\n\n')
     f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in classes:
         write_page(x)
         f.write('   ' + x + '\n')
 
-    f.write("\nFunctions\n****************\n\n")
+    f.write('\nFunctions\n****************\n\n')
     f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in functions:
         write_page(x)
         f.write('   ' + x + '\n')
 
-    f.write("\nExceptions\n****************\n\n")
+    f.write('\nExceptions\n****************\n\n')
     f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in exceptions:
         write_page(x)
         f.write('   ' + x + '\n')
 
-    f.write("\nC++ Standard library wrappers\n*********************************\n\n")
+    f.write('\nC++ Standard library wrappers\n*********************************\n\n')
     f.write('.. toctree::\n   :maxdepth: 1\n\n')
     for x in cpp:
         write_page(x)
         f.write('   ' + x + '\n')
 
-    f.write("\nConstants\n****************\n\n")
+    f.write('\nConstants\n****************\n\n')
     for x in constants:
         f.write('* .. py:data:: ' + x + '\n')
 

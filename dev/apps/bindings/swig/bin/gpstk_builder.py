@@ -22,12 +22,10 @@ If on Windows:
 """
 
 
-import argparse
 import distutils.dir_util
 import distutils.sysconfig
 import inspect
 import os
-import shutil
 import sys
 
 

@@ -2,16 +2,80 @@
 //              Python stuff
 ///////////////////////////////////////////////
 %pythoncode %{
-def now():
-    """Returns the current time (defined by what SystemTime() returns)
+def now(timeSystem=TimeSystem('UTC')):
+    """
+    Returns the current time (defined by what SystemTime() returns)
     in a CommonTime format, in the given TimeSystem.
 
     Parameters:
             -----------
 
-        timeSystem:  the TimeSystem (enum value) to assign to the output
+        timeSystem:  the TimeSystem to assign to the output
     """
-    return SystemTime().toCommonTime()
+    t = SystemTime().toCommonTime()
+    t.setTimeSystem(timeSystem)
+    return t
+
+
+def moonPosition(time):
+    """
+    Returns the current position (A gpstk.Triple) of the moon.
+    This is a functional wrapper on the MoonPosition class.
+    """
+    return MoonPosition().getPosition(time)
+
+
+def sunPosition(time):
+    """
+    Returns the current position (A gpstk.Triple) of the moon.
+    This is a functional wrapper on the MoonPosition class.
+    """
+    return SunPosition().getPosition(time)
+
+
+def poleTides(time, position, x, y):
+    """
+    Returns the effect (a gpstk.Triple) of pole tides (meters)
+    on the given position, in the Up-East-North (UEN) reference frame.
+    This is a functional wrapper on the PoleTides class.
+    """
+    return PoleTides().getPoleTide(time, position, x, y)
+
+def solidTides(time, position):
+    """
+    Returns the effect (a gpstk.Triple) of solid Earth tides (meters)
+    at the given position and epoch, in the Up-East-North (UEN) reference frame.
+    This is a functional wrapper on the SolidTides class.
+    """
+    return SolidTides().getSolidTide(time, position)
+
+
+def cartesian(x=0.0, y=0.0, z=0.0,
+              model=WGS84Ellipsoid(),
+              frame=ReferenceFrame('WGS84')):
+    "Returns a Position in the Cartesian coordinate system."
+    return Position(x, y, z, Position.Cartesian, model, frame)
+
+
+def geodetic(latitude=0.0, longitude=0.0, height=0.0,
+             model=WGS84Ellipsoid(),
+             frame=ReferenceFrame('WGS84')):
+    "Returns a Position in the Geodetic coordinate system."
+    return Position(latitude, longitude, height, Position.Geodetic, model, frame)
+
+
+def spherical(theta=0.0, phi=0.0, radius=0.0,
+              model=WGS84Ellipsoid(),
+              frame=ReferenceFrame('WGS84')):
+    "Returns a Position in the Spherical coordinate system."
+    return Position(theta, phi, radius, Position.Spherical, model, frame)
+
+
+def geocentric(latitude=0.0, longitude=0.0, radius=0.0,
+               model=WGS84Ellipsoid(),
+               frame=ReferenceFrame('WGS84')):
+    "Returns a Position in the Geocentric coordinate system."
+    return Position(latitude, longitude, radius, Position.Geocentric, model, frame)
 
 %}
 
@@ -76,6 +140,7 @@ STR_DUMP_HELPER(YumaHeader)
    }
 }
 %enddef
+STR_STREAM_HELPER(Position)
 STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
 

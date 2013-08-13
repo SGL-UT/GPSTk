@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import gpstk
-import sys
 import unittest
 
 

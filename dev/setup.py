@@ -1,6 +1,3 @@
-import sys
-import shutil
-import os
 from distutils.core import setup, Extension
 
 
@@ -10,6 +7,7 @@ script_names = ['timeconvert.py', 'position_difference.py']
 core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/AlmOrbit.cpp',
             'src/ANSITime.cpp',
+            'src/Antenna.cpp',
             'src/AstronomicalFunctions.cpp',
             'src/Bancroft.cpp',
             'src/BinUtils.cpp',
@@ -38,6 +36,7 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/GPSZcount.cpp',
             'src/JulianDate.cpp',
             'src/MJD.cpp',
+            'src/MoonPosition.cpp',
             'src/ObsEpochMap.cpp',
             'src/ObsID.cpp',
             'src/ObsIDInitializer.cpp',
@@ -69,10 +68,12 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/SEMAlmanacStore.cpp',
             'src/SEMData.cpp',
             'src/SEMHeader.cpp',
+            'src/SolidTides.cpp',
             'src/SP3Data.cpp',
             'src/SP3EphemerisStore.cpp',
             'src/SP3Header.cpp',
             'src/SP3SatID.cpp',
+            'src/SunPosition.cpp',
             'src/SVNumXRef.cpp',
             'src/SystemTime.cpp',
             'src/TimeConverters.cpp',

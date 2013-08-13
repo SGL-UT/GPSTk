@@ -21,6 +21,7 @@ set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
 swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/AlmOrbit.cpp
                     ../../../src/ANSITime.cpp
+                    ../../../src/Antenna.cpp
                     ../../../src/AstronomicalFunctions.cpp
                     ../../../src/BinUtils.cpp
                     ../../../src/BrcClockCorrection.cpp
@@ -49,6 +50,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/GPSZcount.cpp
                     ../../../src/JulianDate.cpp
                     ../../../src/MJD.cpp
+                    ../../../src/MoonPosition.cpp
                     ../../../src/ObsEpochMap.cpp
                     ../../../src/ObsID.cpp
                     ../../../src/ObsIDInitializer.cpp
@@ -80,10 +82,12 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/SEMAlmanacStore.cpp
                     ../../../src/SEMData.cpp
                     ../../../src/SEMHeader.cpp
+                    ../../../src/SolidTides.cpp
                     ../../../src/SP3Data.cpp
                     ../../../src/SP3EphemerisStore.cpp
                     ../../../src/SP3Header.cpp
                     ../../../src/SP3SatID.cpp
+                    ../../../src/SunPosition.cpp
                     ../../../src/SVNumXRef.cpp
                     ../../../src/SystemTime.cpp
                     ../../../src/TimeConverters.cpp

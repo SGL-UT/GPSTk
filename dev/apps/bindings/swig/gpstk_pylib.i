@@ -45,6 +45,7 @@
    #include "../../../src/convhelp.hpp"
    #include "../../../src/VectorBase.hpp"
    #include "../../../src/Vector.hpp"
+   #include "../../../src/Antenna.hpp"
 
    // more specific almanac/epehemeris files:
    #include "../../../src/AstronomicalFunctions.hpp"
@@ -150,6 +151,12 @@
    #include "../../../src/FICStream.hpp"
    #include "../../../src/FICHeader.hpp"
    #include "../../../src/FICData.hpp"
+
+   // Positioning/Tides
+   #include "../../../src/MoonPosition.hpp"
+   #include "../../../src/SunPosition.hpp"
+   #include "../../../src/PoleTides.hpp"
+   #include "../../../src/SolidTides.hpp"
 
    using namespace gpstk;
 %}
@@ -378,6 +385,11 @@
 %include "../../../src/FICStream.hpp"
 %include "../../../src/FICHeader.hpp"
 %include "../../../src/FICData.hpp"
+
+%include "../../../src/MoonPosition.hpp"
+%include "../../../src/SunPosition.hpp"
+%include "../../../src/PoleTides.hpp"
+%include "../../../src/SolidTides.hpp"
 
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions
