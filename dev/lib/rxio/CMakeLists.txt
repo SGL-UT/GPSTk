@@ -23,6 +23,8 @@ RinexConverters.cpp
    
 add_library (rxio SHARED ${rxio_src})
 include_directories (${CMAKE_SOURCE_DIR}/src)
+include_directories (../../src)
+link_directories (../../src)
 install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 target_link_libraries (rxio gpstk)
 install (TARGETS rxio DESTINATION lib)

@@ -66,6 +66,7 @@ SolverPPPFB.cpp
 SolverWMS.cpp
 StochasticModel.cpp
 Synchronize.cpp
+TypeID.cpp
 Variable.cpp
 XYZ2NED.cpp
 XYZ2NEU.cpp
