@@ -170,7 +170,6 @@ set (gpstk_src
       TimeTag.cpp
       Triple.cpp
       TropModel.cpp
-      TypeID.cpp
       UnixTime.cpp
       VectorBase.cpp
       Week.cpp
