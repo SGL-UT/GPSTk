@@ -22,8 +22,7 @@ If on Windows:
 """
 
 
-import distutils.dir_util
-import distutils.sysconfig
+import distutils
 import inspect
 import os
 import sys
@@ -36,6 +35,7 @@ ignore_exact = [
 'DisplayExtendedRinexObsTypes',
 'DisplayStandardRinexObsTypes',
 'FFData',
+'PoleTides',
 'Rinex3NavBase',
 'Rinex3ObsBase',
 'RinexClockBase',
@@ -43,6 +43,7 @@ ignore_exact = [
 'RinexNavBase',
 'RinexObsBase',
 'SEMBase',
+'SolidTides',
 'SP3Base',
 'SwigPyIterator',
 'YumaBase',
@@ -104,7 +105,7 @@ def main():
         os.remove(out_dir + '/cpp/__init__.py')
         os.remove(out_dir + '/constants/__init__.py')
         os.remove(out_dir + '/exceptions/__init__.py')
-    except:
+    except OSError:
         pass
 
     # add seperator at the end if one is missing

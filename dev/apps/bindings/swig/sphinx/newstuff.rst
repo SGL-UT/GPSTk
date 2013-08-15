@@ -20,19 +20,19 @@ Position Functions
 **********************************
 Some helpful functions for creating Position objects more easily (with keyword arguments) were also added:
 
-.. py:function:: gpstk.cartesian([x=0.0, y=0.0, z=0.0, model=WGS84Ellipsoid(), frame=ReferenceFrame('WGS84)'])
+.. py:function:: gpstk.cartesian([x=0.0, y=0.0, z=0.0, model=None, frame=ReferenceFrame('Unknown)'])
     :noindex: ::
 
     >>> print gpstk.spherical(radius=5, theta=45, phi=45)
     45.00000000 deg 45.00000000 deg 5.0000 m
 
-.. autofunction:: gpstk.spherical([theta=0.0, phi=0.0, radius=0.0, model=WGS84Ellipsoid(), frame=ReferenceFrame('WGS84')])
+.. autofunction:: gpstk.spherical([theta=0.0, phi=0.0, radius=0.0, model=None, frame=ReferenceFrame('Unknown')])
     :noindex:
 
-.. autofunction:: gpstk.geodetic([latitude=0.0, longitude=0.0, height=0.0, model=WGS84Ellipsoid(), frame=ReferenceFrame('WGS84')])
+.. autofunction:: gpstk.geodetic([latitude=0.0, longitude=0.0, height=0.0, model=None, frame=ReferenceFrame('Unknown')])
     :noindex:
 
-.. autofunction:: gpstk.geocentric(latitude=0.0, longitude=0.0, radius=0.0, model=WGS84Ellipsoid(), frame=ReferenceFrame('WGS84'))
+.. autofunction:: gpstk.geocentric(latitude=0.0, longitude=0.0, radius=0.0, model=None, frame=ReferenceFrame('Unknown'))
     :noindex:
 
 The next four functions are simply light wrappers over some relatively simple classes.
@@ -41,7 +41,6 @@ for typical python usage.
 
 .. autofunction:: gpstk.moonPosition
     :noindex:
-::
 
     >>> print gpstk.moonPosition(gpstk.now())
     (62424169.398472935, -365987646.51255625, -83100797.60563189)
@@ -55,7 +54,6 @@ for typical python usage.
 
 .. autofunction:: gpstk.solidTides
     :noindex:
-::
 
     >>> print gpstk.solidTides(gpstk.now(), gpstk.geodetic(latitude=29, longitude=95, height=0))
     (0.1601640329929359, -0.0031534542100034955, -0.03016846270875466)

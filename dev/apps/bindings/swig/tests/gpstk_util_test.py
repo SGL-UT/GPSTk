@@ -410,9 +410,6 @@ class Tides_test(unittest.TestCase):
         p = gpstk.Position(1000.0, 2000.0, 3000.0)
         x = 5.0
         y = 10.0
-        # object way:
-        trip = gpstk.PoleTides().getPoleTide(t, p, x, y)
-        self.assertAlmostEqual(-0.03128457731297798, trip[0])
         # functional way:
         trip = gpstk.poleTides(t, p, x, y)
         self.assertAlmostEqual(-0.03128457731297798, trip[0])
@@ -420,9 +417,6 @@ class Tides_test(unittest.TestCase):
     def test_solid_tides(self):
         t = gpstk.CivilTime(2000).toCommonTime()
         p = gpstk.Position(1000.0, 2000.0, 3000.0)
-        # object way:
-        trip = gpstk.SolidTides().getSolidTide(t, p)
-        self.assertAlmostEqual(-2.2479508782610997e-15, trip[0])
         # functional way:
         trip = gpstk.solidTides(t, p)
         self.assertAlmostEqual(-2.2479508782610997e-15, trip[0])

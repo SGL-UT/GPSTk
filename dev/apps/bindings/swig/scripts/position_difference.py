@@ -7,18 +7,18 @@ import numpy as np
 import sys
 
 
-valid_types = ['rinexnav', 'rinex3nav', 'yuma', 'sp3', 'fic']
+valid_types = ['rinexnav', 'rinex3nav', 'yuma', 'sp3', 'fic', 'sem']
 
 
-def triple2array(x):
-    return np.array([x[0], x[1], x[2]])
+def triple2Position(x):
+    return gpstk.Position(x[0], x[1], x[2])
 
 
 # All data read functions should obey this contract:
-#  1. Take filename and prn as parameters
-#  2. Return an object that has a position function ((CommonTime) -> numpy.array)
-#  3. Return an object that has a first_time function (() -> CommonTime)
-#  4. Return an object that has a last_time (() -> CommonTime)
+# 1. Take filename and prn as parameters
+# 2. Return an object that has a position function ((CommonTime) -> numpy.array)
+# 3. Return an object that has a first_time function (() -> CommonTime)
+# 4. Return an object that has a last_time (() -> CommonTime)
 def rinexnav_data(filename, prn):
     header, data = gpstk.readRinexNav(filename, lazy=True)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
@@ -38,7 +38,7 @@ def rinexnav_data(filename, prn):
             return self.gpsStore.getFinalTime()
         def position(self, t):
             triple = self.gpsStore.getXvt(self.satStore, t).getPos()
-            return triple2array(triple)
+            return triple2Position(triple)
     return rinexnav_holder(g, sat)
 
 
@@ -61,7 +61,7 @@ def rinex3nav_data(filename, prn):
             return self.gpsStore.getFinalTime()
         def position(self, t):
             triple = self.gpsStore.getXvt(self.satStore, t).getPos()
-            return triple2array(triple)
+            return triple2Position(triple)
     return rinex3nav_holder(g, sat)
 
 
@@ -80,7 +80,7 @@ def sp3_data(filename, prn):
             return self.sp3Store.getPositionFinalTime(self.satStore)
         def position(self, t):
             triple = self.sp3Store.getPosition(self.satStore, t)
-            return triple2array(triple)
+            return triple2Position(triple)
     return sp3_holder(store, sat)
 
 
@@ -103,33 +103,54 @@ def fic_data(filename, prn):
             return self.gpsStore.getFinalTime()
         def position(self, t):
             triple = self.gpsStore.getXvt(self.satStore, t).getPos()
-            return triple2array(triple)
+            return triple2Position(triple)
     return fic_holder(g, sat)
-
 
 
 def yuma_data(filename, prn):
     header, data = gpstk.readYuma(filename, lazy=True)
+    sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
+    almanac = gpstk.GPSAlmanacStore()
     for d in data:
         if prn == d.PRN:
             orbit = d.toAlmOrbit()
-            break
+            almanac.addAlmanac(orbit)
 
     class yuma_holder:
-        def __init__(self, orbitStore):
-            self.orbitStore = orbitStore
+        def __init__(self, almanacStore, satStore):
+            self.almanacStore = almanacStore
+            self.satStore = satStore
         def first_time(self):
-            t = orbitStore.getTransmitTime()
-            t.addSeconds(-60*60)  # 1 hour before
-            return t
+            return self.almanacStore.getInitialTime()
         def last_time(self):
-            t = orbitStore.getTransmitTime()
-            t.addSeconds(60*60)  # 1 hour after
-            return t
+            return self.almanacStore.getFinalTime()
         def position(self, t):
-            triple = self.orbitStore.getPosition(self.satStore, t)
-            return triple2array(triple)
-    return yuma_holder(orbit)
+            triple = self.almanacStore.getXvt(self.satStore, t).getPos()
+            return triple2Position(triple)
+    return yuma_holder(almanac, sat)
+
+
+def sem_data(filename, prn):
+    header, data = gpstk.readSEM(filename, lazy=True)
+    sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
+    almanac = gpstk.GPSAlmanacStore()
+    for d in data:
+        if prn == d.PRN:
+            orbit = d.toAlmOrbit()
+            almanac.addAlmanac(orbit)
+
+    class sem_holder:
+        def __init__(self, almanacStore, satStore):
+            self.almanacStore = almanacStore
+            self.satStore = satStore
+        def first_time(self):
+            return self.almanacStore.getInitialTime()
+        def last_time(self):
+            return self.almanacStore.getFinalTime()
+        def position(self, t):
+            triple = self.almanacStore.getXvt(self.satStore, t).getPos()
+            return triple2Position(triple)
+    return sem_holder(almanac, sat)
 
 
 # Director function for data reading:
@@ -145,34 +166,36 @@ def read_data(filetype, filename, prn):
 
 
 def main(args=sys.argv[1:]):
-    help = {
-        'prn_id':'The integer PRN ID you are interested in.',
-        'filetype1':'Type for the first file.',
-        'filename1':'File name for the first file.',
-        'filetype2':'Type for the second file.',
-        'filename2':'File name for the second file.',
-        '-v':'Print output locations and error.',
-        '-n':'Don\'t plot the file.',
-        '-d':'Matplotlib will not connect calculated data points in the plot',
-        '-t':'Timestep, in seconds, between plot points.'}
-
     program_description = ('This program takes 2 nav files and '
                             'provides a plot of the magnitude of '
                             'the difference of a given PRN ID.'
                             'Valid file types are ' + str(valid_types) + '.')
 
     parser = argparse.ArgumentParser(description=program_description)
-    parser.add_argument('prn_id', type=int, help=help['prn_id'])
-    parser.add_argument('filetype1', help=help['filetype1'])
-    parser.add_argument('filename1', help=help['filename1'])
-    parser.add_argument('filetype2', help=help['filetype2'])
-    parser.add_argument('filename2', help=help['filename2'])
-    parser.add_argument('-v', '--verbose', action="store_true", help=help['-v'])
-    parser.add_argument('-n', '--noplot', action="store_true", help=help['-n'])
-    parser.add_argument('-d', '--drawdots', action="store_true", help=help['-d'])
-    parser.add_argument('-t', '--timestep', type=int, default=300, help=help['-t'])
+    parser.add_argument('prn_id', type=int,
+                        help='The integer PRN ID you are interested in.')
+    parser.add_argument('filetype1', help='Type for the first file.')
+    parser.add_argument('filename1', help='File name for the first file.')
+    parser.add_argument('filetype2', help='Type for the second file.')
+    parser.add_argument('filename2', help='File name for the second file.')
+    parser.add_argument('-v', '--verbose', action="store_true",
+                        help='Print output locations and error.')
+    parser.add_argument('-n', '--noplot', action="store_true",
+                        help='Don\'t plot the file.')
+    parser.add_argument('-d', '--drawdots', action="store_true",
+                        help='Matplotlib will not connect calculated data '
+                        'points in the plot')
+    parser.add_argument('-t', '--timestep', type=int, default=300,
+                        help='Timestep, in seconds, between plot points.')
+    parser.add_argument('-s', '--save', help='Save the image to <file>.')
+    parser.add_argument('-f', '--format', default='%02H:%02M',
+                        help='Format for x time ticks.')
+
     args = parser.parse_args(args)
 
+
+    def timestr(t):
+        return str(gpstk.CivilTime(t))
 
     def check(filetype, filename):
         if not filetype in valid_types:
@@ -182,9 +205,9 @@ def main(args=sys.argv[1:]):
             sys.exit()
             try:
                 with open('filename'): pass
-            except IOError:
-                print filename, 'cannot be read.\n'
-                sys.exit()
+            except IOError as e:
+                print e
+                sys.exit(filename, 'cannot be read.\n')
 
     check(args.filetype1, args.filename1)
     check(args.filetype2, args.filename2)
@@ -194,49 +217,111 @@ def main(args=sys.argv[1:]):
 
     X = []  # list of x plot values
     Y = []  # list of y plot values
+
     start_time = max(pos1.first_time(), pos2.first_time())
     end_time = min(pos1.last_time(), pos2.last_time())
+
+    if args.verbose:
+        print (args.filename1 + ' ranges from ' + timestr(pos1.first_time())
+              + ' to ' + timestr(pos1.last_time()))
+        print (args.filename2 + ' ranges from ' + timestr(pos2.first_time())
+              + ' to ' + timestr(pos2.last_time()))
+        print 'Earliest time computable:', timestr(start_time)
+        print 'Latest time computable:', timestr(end_time), '\n'
 
     t = start_time
     sum = 0.0
     sumSq = 0.0
     n = 0
+    max_err = 0
     while t < end_time:
         t.addSeconds(args.timestep)
         try:
             p1 = pos1.position(t)
             p2 = pos2.position(t)
-            error = np.linalg.norm(p1 - p2)  # euclidian distance
-            sum += error
-            sumSq += error
-            n += 1
+            error = gpstk.range(p1, p2)
+            max_err = max(max_err, error)
             X.append(t.getDays())
             Y.append(error)
             if args.verbose:
-                print 'Time:', gpstk.CivilTime(t)
+                sum += error
+                sumSq += error*error
+                n += 1
+                print 'Time:', timestr(t)
                 print '\tPosition 1:', p1
                 print '\tPosition 2:', p2
                 print '\tError:', error
         except gpstk.exceptions.InvalidRequest:
             if args.verbose:
-                print 'Can\'t use data at:', gpstk.CivilTime(t)
+                print 'Can\'t use data at:', timestr(t)
 
-    print 'Arithmetic mean of error values: ', sum / n, 'm'
-    print 'Root mean square of error values:', np.sqrt(sumSq / n), 'm'
+    if args.verbose and n > 0:
+        print 'Arithmetic mean of error values: ', sum / n, 'm'
+        print 'Root mean square of error values:', np.sqrt(sumSq / n), 'm'
+
+    fig = plt.figure()
+    title = ('Error for PRN ' + str(args.prn_id) + ' starting '
+        + gpstk.CivilTime(start_time).printf('%02m/%02d/%04Y %02H:%02M:%02S'))
+
+    fig.suptitle(title, fontsize=14, fontweight='bold')
+    ax = fig.add_subplot(111)
+    ax.text(0.90, 0.90, args.filetype1 + ': ' + args.filename1
+        + '\n' + args.filetype2 + ': ' + args.filename2,
+        verticalalignment='bottom', horizontalalignment='right',
+        transform=ax.transAxes)
+    ax.set_xlabel('Time')
+    ax.set_ylabel('Error (meters)')
+    if args.drawdots:
+        plt.plot(X, Y, 'ro')
+    else:
+        plt.plot(X, Y, 'r')
+
+    # sets the y scale
+    plt.ylim([0, 2*max_err])
+
+    # converts common time day (float) -> string
+    def daytostring(x):
+        t = gpstk.CommonTime()
+        t.set(x)
+        return gpstk.CivilTime(t).printf(args.format)
+
+    # sets the text shown per-pixel when viewed interactively
+    def format_coord(x, y):
+        return 'x='+daytostring(x)+', y=%1.4f'%(y)
+    ax.format_coord = format_coord
+
+    # sets x ticks to use the daytostring text
+    locs, labels = plt.xticks()
+    for i in range(len(locs)):
+        labels[i] = daytostring(locs[i])
+    ax.set_xticklabels(labels)
 
     if not args.noplot:
-        fig = plt.figure()
-        title = ('Error for PRN ' + str(args.prn_id)
-               + ' starting ' + str(gpstk.CivilTime(start_time)))
-        fig.suptitle(title, fontsize=14, fontweight='bold')
-        ax = fig.add_subplot(111)
-        ax.set_xlabel('Time (days)')
-        ax.set_ylabel('Error (meters)')
-        if args.drawdots:
-            plt.plot(X, Y, 'ro')
-        else:
-            plt.plot(X, Y, 'r')
         plt.show()
+
+    if args.save is not None:
+        fig.savefig(args.save)
+
+
+def run(prn, filetype1, filename1, filetype2, filename2,
+                        verbose=False, noplot=False, savelocation=None,
+                        drawdots=False, timestep=300, format='%02H:%02M'):
+    """
+    Functional interface to the position_difference script for easier
+    calling. See help on the script (python position_difference.py -h) for more.
+    """
+    commands = [str(prn), filetype1, filename1, filetype2, filename2,
+               '-t', str(timestep), '-f', format]
+    if verbose:
+        commands.append('-v')
+    if noplot:
+        commands.append('-n')
+    if savelocation is not None:
+        commands.append('-s')
+        commands.append(savelocation)
+    if drawdots:
+        commands.append('-d')
+    main(commands)
 
 
 if __name__ == '__main__':

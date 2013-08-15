@@ -114,6 +114,7 @@
    #include "../../../src/Rinex3ClockData.hpp"
    #include "../../../src/Rinex3ClockStream.hpp"
    #include "../../../src/Rinex3EphemerisStore.hpp"
+   #include "../../../src/GloEphemerisStore.hpp"
 
     // SP3 format:
    #include "../../../src/TabularSatStore.hpp"
@@ -309,7 +310,6 @@
 %include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GalEphemerisStore.hpp"
 %include "../../../src/GloEphemeris.hpp"
-%include "../../../src/GloEphemerisStore.hpp"
 
 // RINEX format:
 %include "../../../src/RinexSatID.hpp"
@@ -350,6 +350,8 @@
 %include "../../../src/Rinex3ClockData.hpp"
 %include "../../../src/Rinex3ClockStream.hpp"
 %include "../../../src/Rinex3EphemerisStore.hpp"
+
+%include "../../../src/GloEphemerisStore.hpp"
 
 // SP3 format:
 %include "../../../src/TabularSatStore.hpp"

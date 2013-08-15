@@ -16,7 +16,6 @@ def now(timeSystem=TimeSystem('UTC')):
     t.setTimeSystem(timeSystem)
     return t
 
-
 def moonPosition(time):
     """
     Returns the current position (A gpstk.Triple) of the moon.
@@ -37,7 +36,7 @@ def poleTides(time, position, x, y):
     """
     Returns the effect (a gpstk.Triple) of pole tides (meters)
     on the given position, in the Up-East-North (UEN) reference frame.
-    This is a functional wrapper on the PoleTides class.
+    This is a functional wrapper on the (hidden) PoleTides class.
     """
     return PoleTides().getPoleTide(time, position, x, y)
 
@@ -45,35 +44,31 @@ def solidTides(time, position):
     """
     Returns the effect (a gpstk.Triple) of solid Earth tides (meters)
     at the given position and epoch, in the Up-East-North (UEN) reference frame.
-    This is a functional wrapper on the SolidTides class.
+    This is a functional wrapper on the (hidden) SolidTides class.
     """
     return SolidTides().getSolidTide(time, position)
 
 
 def cartesian(x=0.0, y=0.0, z=0.0,
-              model=WGS84Ellipsoid(),
-              frame=ReferenceFrame('WGS84')):
+              model=None, frame=ReferenceFrame('Unknown')):
     "Returns a Position in the Cartesian coordinate system."
     return Position(x, y, z, Position.Cartesian, model, frame)
 
 
 def geodetic(latitude=0.0, longitude=0.0, height=0.0,
-             model=WGS84Ellipsoid(),
-             frame=ReferenceFrame('WGS84')):
+             model=None, frame=ReferenceFrame('Unknown')):
     "Returns a Position in the Geodetic coordinate system."
     return Position(latitude, longitude, height, Position.Geodetic, model, frame)
 
 
 def spherical(theta=0.0, phi=0.0, radius=0.0,
-              model=WGS84Ellipsoid(),
-              frame=ReferenceFrame('WGS84')):
+              model=None, frame=ReferenceFrame('Unknown')):
     "Returns a Position in the Spherical coordinate system."
     return Position(theta, phi, radius, Position.Spherical, model, frame)
 
 
 def geocentric(latitude=0.0, longitude=0.0, radius=0.0,
-               model=WGS84Ellipsoid(),
-               frame=ReferenceFrame('WGS84')):
+               model=None, frame=ReferenceFrame('Unknown')):
     "Returns a Position in the Geocentric coordinate system."
     return Position(latitude, longitude, radius, Position.Geocentric, model, frame)
 
@@ -97,21 +92,21 @@ STR_DUMP_HELPER(BrcClockCorrection)
 STR_DUMP_HELPER(BrcKeplerOrbit)
 STR_DUMP_HELPER(EngAlmanac)
 STR_DUMP_HELPER(EngEphemeris)
+STR_DUMP_HELPER(EngNav)
 STR_DUMP_HELPER(FICData)
 STR_DUMP_HELPER(FICHeader)
 STR_DUMP_HELPER(GalEphemeris)
-STR_DUMP_HELPER(GalEphemerisStore)
 STR_DUMP_HELPER(GloEphemeris)
-STR_DUMP_HELPER(GPSEphemerisStore)
 STR_DUMP_HELPER(OrbElem)
 STR_DUMP_HELPER(OrbElemStore)
 STR_DUMP_HELPER(Rinex3ClockData)
 STR_DUMP_HELPER(Rinex3ClockHeader)
-STR_DUMP_HELPER(Rinex3EphemerisStore)
 STR_DUMP_HELPER(Rinex3NavData)
 STR_DUMP_HELPER(Rinex3NavHeader)
 STR_DUMP_HELPER(Rinex3ObsData)
 STR_DUMP_HELPER(Rinex3ObsHeader)
+STR_DUMP_HELPER(RinexClockData)
+STR_DUMP_HELPER(RinexClockHeader)
 STR_DUMP_HELPER(RinexMetData)
 STR_DUMP_HELPER(RinexMetHeader)
 STR_DUMP_HELPER(RinexNavData)
@@ -122,11 +117,29 @@ STR_DUMP_HELPER(RinexSatID)
 STR_DUMP_HELPER(SEMData)
 STR_DUMP_HELPER(SEMHeader)
 STR_DUMP_HELPER(SP3Data)
-STR_DUMP_HELPER(SP3EphemerisStore)
 STR_DUMP_HELPER(SP3Header)
 STR_DUMP_HELPER(SP3SatID)
 STR_DUMP_HELPER(YumaData)
 STR_DUMP_HELPER(YumaHeader)
+
+
+// Uses the dump method in the class to get string output
+// for dump methods that have a detail parameter
+%define STR_DUMP_DETAIL_HELPER(name)
+%extend gpstk:: ## name {
+   std::string __str__() {
+      std::ostringstream stream;
+      $self->dump(stream, 1);
+      return stream.str();
+   }
+}
+%enddef
+STR_DUMP_DETAIL_HELPER(ClockSatStore)
+STR_DUMP_DETAIL_HELPER(GalEphemerisStore)
+STR_DUMP_DETAIL_HELPER(GloEphemerisStore)
+STR_DUMP_DETAIL_HELPER(GPSEphemerisStore)
+STR_DUMP_DETAIL_HELPER(Rinex3EphemerisStore)
+STR_DUMP_DETAIL_HELPER(SP3EphemerisStore)
 
 
 
@@ -140,6 +153,7 @@ STR_DUMP_HELPER(YumaHeader)
    }
 }
 %enddef
+STR_STREAM_HELPER(GPSZcount)
 STR_STREAM_HELPER(Position)
 STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
@@ -160,8 +174,6 @@ STR_STREAM_HELPER(Xv)
       return os.str();
    }
 }
-
-
 
 
 // Uses gpstk::StringUtils::asString(x) to get string output
