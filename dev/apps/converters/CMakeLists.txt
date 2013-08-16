@@ -1,15 +1,8 @@
 # apps/converters/CMakeLists.txt
 
-set (PROJECT_SOURCE_DIR "../..")
-
 include_directories(
-${PROJECT_SOURCE_DIR}/src
-${PROJECT_SOURCE_DIR}/lib/rxio
-)
-
-link_directories(
-${PROJECT_SOURCE_DIR}/src
-${PROJECT_SOURCE_DIR}/lib/rxio
+${CMAKE_SOURCE_DIR}/src
+${CMAKE_SOURCE_DIR}/lib/rxio
 )
 
 add_executable(novaRinex novaRinex.cpp)
