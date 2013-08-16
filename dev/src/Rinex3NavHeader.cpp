@@ -1,4 +1,8 @@
-#pragma ident "$Id$"
+/**
+ * @file Rinex3NavHeader.cpp
+ * Encapsulate header of RINEX 3 navigation file, including RINEX 2
+ * compatibility.
+ */
 
 //============================================================================
 //
@@ -36,17 +40,12 @@
 //
 //=============================================================================
 
-/**
- * @file Rinex3NavHeader.cpp
- * Encapsulate header of RINEX 3 navigation file, including RINEX 2
- * compatibility.
- */
-
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
 #include "SystemTime.hpp"
 #include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
+#include "GALWeekSecond.hpp"
 #include "TimeString.hpp"
 #include "Rinex3NavHeader.hpp"
 #include "Rinex3NavStream.hpp"
@@ -250,12 +249,33 @@ namespace gpstk
             tc.geoProvider = strip(line.substr(51,6));
             tc.geoUTCid = asInt(line.substr(57,2));
 
-            if(tc.type == TimeSystemCorrection::GLGP) {
+            if(tc.type == TimeSystemCorrection::GLGP ||
+               tc.type == TimeSystemCorrection::GPUT ||
+               tc.type == TimeSystemCorrection::GPGA ||
+               tc.type == TimeSystemCorrection::QZGP ||
+               tc.type == TimeSystemCorrection::QZUT)
+            {
                GPSWeekSecond gws(tc.refWeek,tc.refSOW);
                CivilTime ct(gws);
                tc.refYr = ct.year;
                tc.refMon = ct.month;
                tc.refDay = ct.day;
+            }
+
+            if(tc.type == TimeSystemCorrection::GAUT) {
+               GALWeekSecond gws(tc.refWeek,tc.refSOW);
+               CivilTime ct(gws);
+               tc.refYr = ct.year;
+               tc.refMon = ct.month;
+               tc.refDay = ct.day;
+            }
+
+            if(tc.type == TimeSystemCorrection::GLUT) {
+               tc.refYr =  1980;
+               tc.refMon = 1;
+               tc.refDay = 6;
+               tc.refWeek = 0;
+               tc.refSOW = 0;
             }
 
             mapTimeCorr[tc.asString4()] = tc;
@@ -268,27 +288,6 @@ namespace gpstk
             leapWeek = asInt(line.substr(12,6));      // R3 only
             leapDay = asInt(line.substr(18,6));       // R3 only
             valid |= validLeapSeconds;
-
-            // leap seconds give the time correction between GPS and UTC(USNO)
-            // GPS = UTC(USNO) + leapSeconds
-            TimeSystemCorrection tc("GPUT");
-            tc.A0 = double(leapSeconds);
-            tc.A1 = 0.0;
-
-            // reference time - convert to week,sow
-            tc.refYr = 0;           // TD ??
-            tc.refMon = 0;
-            tc.refDay = 0;
-            //CivilTime ct(tc.refYr,tc.refMon,tc.refDay,0,0,0.0);
-            //GPSWeekSecond gws(ct);
-            tc.refWeek = 0; // gws.week;
-            tc.refSOW = 0.0; // gws.sow;
-
-            tc.geoProvider = string("    ");
-            tc.geoUTCid = 2;                          // UTC(USNO)
-
-            mapTimeCorr[tc.asString4()] = tc;
-            valid |= validTimeSysCorr;
          }
 
          else if(thisLabel == stringEoH) {                        // "END OF HEADER"
@@ -302,7 +301,7 @@ namespace gpstk
       }
    
       unsigned long allValid;
-      if(version == 3.0 || version == 3.01)
+      if(version >= 3.0)
          allValid = allValid3;
       else if(version >= 2 && version < 3)
          allValid = allValid2;
@@ -545,52 +544,9 @@ namespace gpstk
       s << "---------------------------------- OPTIONAL "
          << "----------------------------------\n";
    
-      map<string,TimeSystemCorrection>::const_iterator tcit;
-      for(tcit=mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit) {
-         s << "Time correction for " << tcit->second.asString4() << " : "
-            << tcit->second.asString() << " " << scientific << setprecision(12);
-         switch(tcit->second.type) {
-            case TimeSystemCorrection::GPUT:
-                   s << ", A0 = " << tcit->second.A0
-                     << ", A1 = " << tcit->second.A1
-                     << ", RefTime = week/sow " << tcit->second.refWeek
-                     << "/" << tcit->second.refSOW;
-               break;
-            case TimeSystemCorrection::GAUT:
-                   s << ", A0 = " << tcit->second.A0
-                     << ", A1 = " << tcit->second.A1
-                     << ", RefTime = week/sow " << tcit->second.refWeek
-                     << "/" << tcit->second.refSOW;
-               break;
-            case TimeSystemCorrection::SBUT:
-                   s << ", A0 = " << tcit->second.A0
-                     << ", A1 = " << tcit->second.A1
-                     << ", RefTime = week/sow " << tcit->second.refWeek
-                     << "/" << tcit->second.refSOW
-                     << ", provider " << tcit->second.geoProvider
-                     << ", UTC ID = " << tcit->second.geoUTCid;
-               break;
-            case TimeSystemCorrection::GLUT:
-                   s << ", -TauC = " << tcit->second.A0;
-               break;
-            case TimeSystemCorrection::GPGA:
-                   s << ", A0G = " << tcit->second.A0
-                     << ", A1G = " << tcit->second.A1
-                     << ", RefTime = week/sow " << tcit->second.refWeek
-                     << "/" << tcit->second.refSOW;
-               break;
-            case TimeSystemCorrection::GLGP:
-                   s << ", TauGPS = " << tcit->second.A0
-                     << " = " << tcit->second.A0 * C_MPS
-                     << " m, RefTime = yr/mon/day "
-                     << tcit->second.refYr
-                     << "/" << tcit->second.refMon
-                     << "/" << tcit->second.refDay;
-               break;
-			default: break; //NB Determine if additional enumeration values need to be handled   
-         }
-         s << endl;
-      }
+      for(map<string,TimeSystemCorrection>::const_iterator tcit
+         = mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit)
+            { tcit->second.dump(s); s << endl; }
 
       map<string,IonoCorr>::const_iterator icit;
       for(icit=mapIonoCorr.begin(); icit != mapIonoCorr.end(); ++icit) {

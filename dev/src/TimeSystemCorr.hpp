@@ -205,22 +205,37 @@ namespace gpstk {
       inline bool operator<(const TimeSystemCorrection& tc)
       { return tc.type < type; }
 
-         /// Given a time in one system (fromTime), compute the correction between
-         /// the given system and the target system (toTime.system),
-         /// and apply it to fromTime, placing the result in the target toTime.
-         /// i.e. toTime = (const)fromTime + correction(from => to).
-         /// @param CommonTime fromTime, on input is a time in the given system,
-         ///     unchanged on output.
-         /// @param CommonTime toTime, on input this defines the target system and
-         ///     the value is ignored; on output the value is set to "given time plus
-         ///     correction" and the system is left as the target system.
-         /// @return true if successful, false if the input systems are not those
-         ///     that can be converted by this TimeSystemCorr object.
-         /// @throw Exception if this object has not been defined.
+      /// Given a time in one system (fromTime), compute the correction between
+      /// the given system and the target system (toTime.system),
+      /// and apply it to fromTime, placing the result in the target toTime.
+      /// i.e. toTime = (const)fromTime + correction(from => to).
+      ///
+      /// In addition to TimeSystemCorr, must account for leap seconds:
+      /// Let dtLS == getLeapSeconds()-19
+      /// NB. GPS = TAI-19sec and so GPS-UTC = getLeapSeconds()-19 == dtLS.
+      /// NB. GLO = UTC = GPS - dtLS
+      /// NB. GLO is actually UTC(SU) Moscow
+      /// NB. GAL = GPS = UTC + dtLS
+      /// NB. BDT = GPS - 15 = UTC + dtLS - 15
+      /// NB. BDT is actually UTC(NTSC) China
+      ///
+      /// @param CommonTime fromTime, on input is a time in the given system,
+      ///     unchanged on output.
+      /// @param CommonTime toTime, on input this defines the target system and
+      ///     the value is ignored; on output the value is set to "given time plus
+      ///     correction" and the system is left as the target system.
+      /// @return true if successful, false if the input systems are not those
+      ///     that can be converted by this TimeSystemCorr object.
+      /// @throw Exception if this object has not been defined.
       bool convertSystem(const CommonTime& fromTime, CommonTime& toTime) const
       {
+         CivilTime ct;
+         double dtLS;
          switch(type) {
             case GPUT:
+               // NB. GPS = TAI-19sec and so GPS-UTC = getLeapSeconds()-19 == dtLS.
+               ct = CivilTime(fromTime);
+               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
                // ------------------------------------------------- GPS => UTC
                if(fromTime.getTimeSystem() == TimeSystem::GPS &&
                     toTime.getTimeSystem() == TimeSystem::UTC)
@@ -231,7 +246,7 @@ namespace gpstk {
                   refTime.setTimeSystem(TimeSystem::GPS);
                   double dt(fromTime - refTime);
 
-                  toTime = fromTime + A0 + A1*dt;
+                  toTime = fromTime - dtLS + A0 + A1*dt;
                   toTime.setTimeSystem(TimeSystem::UTC);
 
                   return true;
@@ -246,7 +261,7 @@ namespace gpstk {
                   refTime.setTimeSystem(TimeSystem::UTC);
                   double dt(fromTime - refTime);
 
-                  toTime = fromTime - A0 - A1*dt;
+                  toTime = fromTime + dtLS - A0 - A1*dt;
                   toTime.setTimeSystem(TimeSystem::GPS);
 
                   return true;
@@ -254,6 +269,9 @@ namespace gpstk {
                break;
 
             case GAUT:
+               // NB. GAL = UTC + dtLS
+               ct = CivilTime(fromTime);
+               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
                // ------------------------------------------------- GAL => UTC
                if(fromTime.getTimeSystem() == TimeSystem::GAL &&
                     toTime.getTimeSystem() == TimeSystem::UTC)
@@ -264,7 +282,7 @@ namespace gpstk {
                   refTime.setTimeSystem(TimeSystem::GAL);
                   double dt(fromTime - refTime);
 
-                  toTime = fromTime + A0 + A1*dt;
+                  toTime = fromTime - dtLS + A0 + A1*dt;
                   toTime.setTimeSystem(TimeSystem::UTC);
 
                   return true;
@@ -280,7 +298,7 @@ namespace gpstk {
                   refTime.setTimeSystem(TimeSystem::UTC);
                   double dt(fromTime - refTime);
 
-                  toTime = fromTime - A0 - A1*dt;
+                  toTime = fromTime + dtLS - A0 - A1*dt;
                   toTime.setTimeSystem(TimeSystem::GAL);
 
                   return true;
@@ -352,11 +370,14 @@ namespace gpstk {
                break;
 
             case GLGP:
+               // NB. GLO = UTC = GPS - dtLS
+               ct = CivilTime(fromTime);
+               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
                // ------------------------------------------------- GPS => GLO
                if(fromTime.getTimeSystem() == TimeSystem::GPS &&
                     toTime.getTimeSystem() == TimeSystem::GLO)
                {
-                  toTime = fromTime + A0;
+                  toTime = fromTime - dtLS + A0;
                   toTime.setTimeSystem(TimeSystem::GLO);
                   return true;
                }
@@ -364,7 +385,7 @@ namespace gpstk {
                else if(fromTime.getTimeSystem() == TimeSystem::GLO &&
                          toTime.getTimeSystem() == TimeSystem::GPS)
                {
-                  toTime = fromTime - A0;
+                  toTime = fromTime + dtLS - A0;
                   toTime.setTimeSystem(TimeSystem::GPS);
                   return true;
                }
@@ -425,11 +446,14 @@ namespace gpstk {
                break;
 
             case BDUT:
+               // NB. BDT = GPS - 15 = UTC + dtLS - 15
+               ct = CivilTime(fromTime);
+               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
                // ------------------------------------------------- BDS => UTC
                if(fromTime.getTimeSystem() == TimeSystem::BDS &&
                     toTime.getTimeSystem() == TimeSystem::UTC)
                {
-                  toTime = fromTime + A0 - A1;
+                  toTime = fromTime - dtLS + 15. + A0 - A1;
                   toTime.setTimeSystem(TimeSystem::UTC);
                   return true;
                }
@@ -437,18 +461,21 @@ namespace gpstk {
                else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
                          toTime.getTimeSystem() == TimeSystem::BDS)
                {
-                  toTime = fromTime - A0 + A1;
+                  toTime = fromTime + dtLS - 15. - A0 + A1;
                   toTime.setTimeSystem(TimeSystem::BDS);
                   return true;
                }
                break;
 
             case BDGP:
+               // NB. BDT = GPS - 15 = UTC + dtLS - 15
+               //ct = CivilTime(fromTime);
+               //dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
                // ------------------------------------------------- GPS => BDS
                if(fromTime.getTimeSystem() == TimeSystem::GPS &&
                     toTime.getTimeSystem() == TimeSystem::BDS)
                {
-                  toTime = fromTime + A0;
+                  toTime = fromTime - 15. + A0;
                   toTime.setTimeSystem(TimeSystem::BDS);
                   return true;
                }
@@ -456,7 +483,7 @@ namespace gpstk {
                else if(fromTime.getTimeSystem() == TimeSystem::BDS &&
                          toTime.getTimeSystem() == TimeSystem::GPS)
                {
-                  toTime = fromTime - A0;
+                  toTime = fromTime + 15. - A0;
                   toTime.setTimeSystem(TimeSystem::GPS);
                   return true;
                }

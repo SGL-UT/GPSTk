@@ -95,8 +95,13 @@ namespace gpstk
       /// difference in time scales UTC-TAI at an epoch defined by (year, month, day).
       /// NB. Input day in a floating quantity and thus any epoch may be represented;
       /// this is relevant the period 1960 to 1972, when UTC-TAI was not integral.
-      /// NB. GPS = TAI - 19sec and so GPS-UTC = getLeapSeconds()-19.
-      static double getLeapSeconds(const int& year,const int& month,const double& day);
+      /// NB. GPS = TAI-19sec and so GPS-UTC = getLeapSeconds()-19 == dtLS.
+      /// NB. GLO = UTC = GPS - dtLS. but not incl. RINEX::TIME SYSTEM CORR::GPUT
+      /// NB. GLO is actually UTC(SU) Moscow
+      /// NB. GAL = GPS = UTC + dtLS this does not incl. RINEX::TIME SYSTEM CORR::GAUT
+      /// NB. BDT = GPS - 15 but this does not include RINEX::TIME SYSTEM CORR::BDUT
+      /// NB. BDT is actually UTC(NTSC) China
+      static double getLeapSeconds(const int& yr, const int& mon, const double& day);
 
       /// set the time system
       void setTimeSystem(const Systems& sys);
