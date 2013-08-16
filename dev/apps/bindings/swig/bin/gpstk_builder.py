@@ -30,46 +30,46 @@ import sys
 
 # Any object that is exactly a string in this list will be ignored
 ignore_exact = [
-'asString',
-'cvar',
-'DisplayExtendedRinexObsTypes',
-'DisplayStandardRinexObsTypes',
-'FFData',
-'PoleTides',
-'Rinex3NavBase',
-'Rinex3ObsBase',
-'RinexClockBase',
-'RinexMetBase',
-'RinexNavBase',
-'RinexObsBase',
-'SEMBase',
-'SolidTides',
-'SP3Base',
-'SwigPyIterator',
-'YumaBase',
+    'asString',
+    'cvar',
+    'DisplayExtendedRinexObsTypes',
+    'DisplayStandardRinexObsTypes',
+    'FFData',
+    'PoleTides',
+    'Rinex3NavBase',
+    'Rinex3ObsBase',
+    'RinexClockBase',
+    'RinexMetBase',
+    'RinexNavBase',
+    'RinexObsBase',
+    'SEMBase',
+    'SolidTides',
+    'SP3Base',
+    'SwigPyIterator',
+    'YumaBase',
 ]
 
 
 # Any object that contains a string in this list will be ignored
 ignore_patterns = [
-'EngNav_',
-'FileStore',
-'ObsID_',
-'ObsIDInitializer',
-'OrbElem_',
-'Position_',
-'PRSolution2_',
-'RinexMetHeader_',
-'RinexObsHeader_',
-'SatID_',
-'Stream',
-'swigregister',
-'TabularSatStore_',
-'TimeSystem_',
-'TimeTag_',
-'TropModel_',
-'VectorBase',
-'weakref_',
+    'EngNav_',
+    'FileStore',
+    'ObsID_',
+    'ObsIDInitializer',
+    'OrbElem_',
+    'Position_',
+    'PRSolution2_',
+    'RinexMetHeader_',
+    'RinexObsHeader_',
+    'SatID_',
+    'Stream',
+    'swigregister',
+    'TabularSatStore_',
+    'TimeSystem_',
+    'TimeTag_',
+    'TropModel_',
+    'VectorBase',
+    'weakref_',
 ]
 
 
@@ -78,6 +78,18 @@ submodules = {
     'cpp' : (
         ['seqToVector', 'vectorToSeq', 'cmap', 'mapToDict', 'dictToMap'],
         ['vector_', 'map_', 'set_']),
+}
+
+override_placements = {
+    'constants':
+        ['sv_accuracy_gps_min_index',
+         'sv_accuracy_gps_nominal_index',
+         'sv_accuracy_gps_max_index',
+         'sv_cnav_accuracy_gps_min_index',
+         'sv_cnav_accuracy_gps_nom_index',
+         'sv_cnav_accuracy_gps_max_index'],
+    'exceptions':
+        []
 }
 
 
@@ -157,11 +169,18 @@ def main():
 
             # if it isn't a type (i.e. class) or function add to constants submodule
             t = eval('gpstk_pylib.' + x)
-            if (type(t) is not type) and (not hasattr(t, '__call__')):
+
+            isAtype = type(t) is type
+            isCallable = hasattr(t, '__call__')
+            isClass = inspect.isclass(t)
+            isException = isClass and issubclass(t, gpstk_pylib.Exception)
+
+            if (not isAtype and not isCallable) or (x in override_placements['constants']):
                 use_global_namespace = False
                 add_to_submodule(x, 'constants')
+
             # if it subclasses gpstk.Exception add to exceptions submodule
-            if inspect.isclass(t) and issubclass(t, gpstk_pylib.Exception) or 'Exception' in x:
+            if  (isClass and isException) or ('Exception' in x) or (x in override_placements['exceptions']):
                 use_global_namespace = False
                 add_to_submodule(x, 'exceptions')
 

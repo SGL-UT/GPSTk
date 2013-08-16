@@ -255,6 +255,7 @@
 %include "src/SatID.i"
 %include "../../../src/ObsIDInitializer.hpp"
 %include "../../../src/ObsID.hpp"
+%ignore gpstk::SV_ACCURACY_GLO_INDEX;  // wrapper added in GPS_URA.i
 %include "../../../src/GNSSconstants.hpp"
 %include "src/Triple.i"
 %include "src/ReferenceFrame.i"
@@ -309,7 +310,7 @@
 
 %include "../../../src/SVNumXRef.hpp"
 %include "../../../src/RinexSatID.hpp"
-%include "../../../src/GPS_URA.hpp"
+%include "src/GPS_URA.i"
 %include "../../../src/BrcClockCorrection.hpp"
 %include "../../../src/BrcKeplerOrbit.hpp"
 %include "../../../src/EngEphemeris.hpp"

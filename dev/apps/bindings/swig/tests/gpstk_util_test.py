@@ -59,9 +59,9 @@ class GNSSconstants_test(unittest.TestCase):
     def test_functions(self):
         self.assertEqual(4, gpstk.getLegacyFitInterval(15, 27))
         sat = gpstk.SatID(1, 1)
-        self.assertEqual(0.190293672798, gpstk.getWavelength(sat, 1))
-        self.assertEqual(1.2833333333333334, gpstk.getBeta(sat, 1, 2))
-        self.assertEqual(0.6469444444444448, gpstk.getAlpha(sat, 1, 2))
+        self.assertAlmostEqual(0.190293672798, gpstk.getWavelength(sat, 1),)
+        self.assertAlmostEqual(1.2833333333333334, gpstk.getBeta(sat, 1, 2))
+        self.assertAlmostEqual(0.6469444444444448, gpstk.getAlpha(sat, 1, 2))
 
 
 class Triple_test(unittest.TestCase):
@@ -99,16 +99,16 @@ class Triple_test(unittest.TestCase):
         expected = gpstk.Triple(4.0, 6.0, 8.0)
         self.assertEqual(expected, gpstk.Triple(2.0, 3.0, 4.0).scale(2.0))
 
-        self.assertEqual(3.905124837953327, t.mag())
-        self.assertEqual(5.345455469884399, t.elvAngle(u))
-        self.assertEqual(0.42837471052408865, t.cosVector(u))
+        self.assertAlmostEqual(3.905124837953327, t.mag())
+        self.assertAlmostEqual(5.345455469884399, t.elvAngle(u))
+        self.assertAlmostEqual(0.42837471052408865, t.cosVector(u))
 
 
 class Position_test(unittest.TestCase):
     def test(self):
         p1 = gpstk.Position(1.5, 6.2, 3.5)
         p2 = gpstk.Position(1.0, 1.8, 0.5)
-        self.assertEqual(5.348831648126533, gpstk.range(p1, p2))
+        self.assertAlmostEqual(5.348831648126533, gpstk.range(p1, p2))
 
     def test_spherical_cartesian(self):
         orig = gpstk.Triple(45.0, 30.0, 12.0)
@@ -175,6 +175,15 @@ class Position_test(unittest.TestCase):
         self.assertEqual(gpstk.Position.Geodetic, p.getCoordinateSystem())
         p = gpstk.geocentric(latitude=60, radius=10000)
         self.assertEqual(gpstk.Position.Geocentric, p.getCoordinateSystem())
+
+
+class GPS_URA_test(unittest.TestCase):
+    def test(self):
+        self.assertEqual(15, gpstk.constants.SV_ACCURACY_GPS_MAX_INDEX_VALUE)
+        self.assertEqual(9, gpstk.accuracy2ura(100.1))
+        self.assertEqual(0.0, gpstk.constants.sv_accuracy_gps_min_index(0))
+        self.assertEqual(2.4, gpstk.constants.sv_accuracy_gps_min_index(1))
+        self.assertRaises(gpstk.exceptions.IndexOutOfBoundsException, gpstk.constants.sv_accuracy_gps_min_index, 16)
 
 
 class ObsID_test(unittest.TestCase):

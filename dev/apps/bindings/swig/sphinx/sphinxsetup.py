@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 import gpstk
 import inspect
 import os
