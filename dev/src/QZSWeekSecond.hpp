@@ -43,9 +43,9 @@
 
 namespace gpstk
 {
-   /// This class handles the week portion of the QZS TimeTag classes.
+   /// This class handles the week and seconds-of-week of the QZS TimeTag classes.
    /// The QZS week is specified by (GPS without the rollover)
-   /// 16-bit ModWeek, rollover at 65535, bitmask 0xFFFF and epoch QZS_EPOCH_JD
+   /// 16-bit ModWeek, rollover at 65535, bitmask 0xFFFF and epoch QZS_EPOCH_MJD
    class QZSWeekSecond : public WeekSecond
    {
    public:
@@ -83,10 +83,10 @@ namespace gpstk
          return bm;
       }
 
-      /// Return the Julian Date (not jday) of epoch for this system.
-      double JDEpoch(void) const
+      /// Return the Modified Julian Date (MJD) of epoch for this system.
+      long MJDEpoch(void) const
       {
-         static const double e=QZS_EPOCH_JD;
+         static const long e=QZS_EPOCH_MJD;
          return e;
       }
 

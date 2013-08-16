@@ -69,6 +69,7 @@ namespace gpstk {
          QZGP,    ///< QZS  to GPS using A0, A1
          QZUT,    ///< QZS  to UTC using A0, A1
          BDUT,    ///< BDS  to UTC using A0, A1
+         BDGP,    ///< BDS  to GPS using A0, A1  // not in RINEX
       };
 
          //// Member data
@@ -99,6 +100,7 @@ namespace gpstk {
          else if(STR == std::string("QZGP")) type = QZGP;
          else if(STR == std::string("QZUT")) type = QZUT;
          else if(STR == std::string("BDUT")) type = BDUT;
+         else if(STR == std::string("BDGP")) type = BDGP;
          else {
             Exception e("Unknown TimeSystemCorrection type: " + str);
             GPSTK_THROW(e);
@@ -109,16 +111,17 @@ namespace gpstk {
       std::string asString() const
       {
          switch(type) {
-            case GPUT: return std::string("GPS to UTC (A0,A1)"); break;
-            case GAUT: return std::string("GAL to UTC (A0,A1)"); break;
-            case SBUT: return std::string("SBAS to UTC (A0, A1, provider, UTC ID)");
+            case GPUT: return std::string("GPS to UTC"); break;
+            case GAUT: return std::string("GAL to UTC"); break;
+            case SBUT: return std::string("SBAS to UTC");
                break;
-            case GLUT: return std::string("GLO to UTC (TauC)"); break;
-            case GPGA: return std::string("GPS to GAL (A0G,A1G)"); break;
-            case GLGP: return std::string("GLO to GPS (TauGPS)"); break;
-            case QZGP: return std::string("QZSS to GPS (A0,A1)"); break;
-            case QZUT: return std::string("QZSS to UTC (A0,A1)"); break;
-            case BDUT: return std::string("BDS to UTC (A0,A1)"); break;
+            case GLUT: return std::string("GLO to UTC"); break;
+            case GPGA: return std::string("GPS to GAL"); break;
+            case GLGP: return std::string("GLO to GPS"); break;
+            case QZGP: return std::string("QZSS to GPS"); break;
+            case QZUT: return std::string("QZSS to UTC"); break;
+            case BDUT: return std::string("BDS to UTC"); break;
+            case BDGP: return std::string("BDS to GPS"); break;
             default:   return std::string("ERROR"); break;
          }
       }
@@ -136,6 +139,7 @@ namespace gpstk {
             case QZGP: return std::string("QZGP"); break;
             case QZUT: return std::string("QZUT"); break;
             case BDUT: return std::string("BDUT"); break;
+            case BDGP: return std::string("BDGP"); break;
             default:   return std::string("ERROR"); break;
          }
       }
@@ -160,15 +164,15 @@ namespace gpstk {
                  << ", provider " << geoProvider << ", UTC ID = " << geoUTCid;
                break;
             case TimeSystemCorrection::GLUT:
-               s << ", -TauC = " << A0;
+               s << ", -TauC = " << A0
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
                break;
             case TimeSystemCorrection::GPGA:
                s << ", A0G = " << A0 << ", A1G = " << A1
                  << ", RefTime = week/sow " << refWeek << "/" << refSOW;
                break;
             case TimeSystemCorrection::GLGP:
-               s << ", TauGPS = " << A0 << " = " << A0 * C_MPS
-                 << " m, RefTime = yr/mon/day "
+               s << ", TauGPS = " << A0 << " sec, RefTime = yr/mon/day "
                  << refYr << "/" << refMon << "/" << refDay;
                break;
             case TimeSystemCorrection::QZGP:
@@ -183,10 +187,14 @@ namespace gpstk {
                s << ", A0 = " << A0 << ", A1 = " << A1
                  << ", RefTime = week/sow " << refWeek << "/" << refSOW;
                break;
+            case TimeSystemCorrection::BDGP:
+               s << ", A0 = " << A0 << ", A1 = " << A1
+                 << ", RefTime = week/sow " << refWeek << "/" << refSOW;
+               break;
             default:
                break;
          }
-         s << std::endl;
+         //s << std::endl;
       }
 
          /// Equal operator
@@ -243,6 +251,7 @@ namespace gpstk {
 
                   return true;
                }
+               break;
 
             case GAUT:
                // ------------------------------------------------- GAL => UTC
@@ -276,6 +285,7 @@ namespace gpstk {
 
                   return true;
                }
+               break;
 
             case SBUT:
                // ------------------------------------------------- SBAS => UTC
@@ -287,6 +297,7 @@ namespace gpstk {
                   Exception e("TimeSystemCorr SBAS <=> UTC has not been implemented");
                   GPSTK_THROW(e);
                }
+               break;
 
             case GLUT:
                // ------------------------------------------------- GLO => UTC
@@ -305,6 +316,7 @@ namespace gpstk {
                   toTime.setTimeSystem(TimeSystem::GLO);
                   return true;
                }
+               break;
 
             case GPGA:
                // ------------------------------------------------- GPS => GAL
@@ -337,6 +349,7 @@ namespace gpstk {
 
                   return true;
                }
+               break;
 
             case GLGP:
                // ------------------------------------------------- GPS => GLO
@@ -355,6 +368,7 @@ namespace gpstk {
                   toTime.setTimeSystem(TimeSystem::GPS);
                   return true;
                }
+               break;
 
             case QZGP:
                // ------------------------------------------------- GPS => QZS
@@ -375,6 +389,7 @@ namespace gpstk {
 
                   return true;
                }
+               break;
 
             case QZUT:
                // ------------------------------------------------- QZS => UTC
@@ -407,6 +422,7 @@ namespace gpstk {
 
                   return true;
                }
+               break;
 
             case BDUT:
                // ------------------------------------------------- BDS => UTC
@@ -422,13 +438,34 @@ namespace gpstk {
                          toTime.getTimeSystem() == TimeSystem::BDS)
                {
                   toTime = fromTime - A0 + A1;
+                  toTime.setTimeSystem(TimeSystem::BDS);
+                  return true;
+               }
+               break;
+
+            case BDGP:
+               // ------------------------------------------------- GPS => BDS
+               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
+                    toTime.getTimeSystem() == TimeSystem::BDS)
+               {
+                  toTime = fromTime + A0;
+                  toTime.setTimeSystem(TimeSystem::BDS);
+                  return true;
+               }
+               // ------------------------------------------------- BDS => GPS
+               else if(fromTime.getTimeSystem() == TimeSystem::BDS &&
+                         toTime.getTimeSystem() == TimeSystem::GPS)
+               {
+                  toTime = fromTime - A0;
                   toTime.setTimeSystem(TimeSystem::GPS);
                   return true;
                }
+               break;
 
             default:
                Exception e("TimeSystemCorrection is not defined.");
                GPSTK_THROW(e);
+               break;
          }
 
          //Exception e(string("Cannot convert time systems: input is ")

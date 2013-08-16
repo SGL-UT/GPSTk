@@ -1,9 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file RinexClockData.cpp
- * Encapsulate RinexClock file data, including I/O
- */
+/// @file RinexClockData.cpp
+/// Encapsulate RinexClock file data, including I/O
 
 #include "RinexClockStream.hpp"
 #include "RinexClockHeader.hpp"
@@ -121,7 +117,7 @@ namespace gpstk
                      asInt(line.substr(18,3)),
                      asInt(line.substr(21,3)),
                      asDouble(line.substr(24,10)),
-                     TimeSystem::Any);                // TD use system from header
+                     TimeSystem::Any);
 
       int n(asInt(line.substr(34,3)));
       bias = asDouble(line.substr(40,19));

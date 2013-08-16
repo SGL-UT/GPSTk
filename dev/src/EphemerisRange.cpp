@@ -61,7 +61,7 @@ namespace gpstk
       const CommonTime& tr_nom,
       const Position& Rx,
       const SatID sat,
-      const XvtStore<SatID>& Eph) throw(Exception)
+      const XvtStore<SatID>& Eph)
    {
       try {
          int nit;
@@ -111,7 +111,7 @@ namespace gpstk
       const double& pr,
       const Position& Rx,
       const SatID sat,
-      const XvtStore<SatID>& Eph) throw(Exception)
+      const XvtStore<SatID>& Eph)
    {
       try {
          CommonTime tt;
@@ -155,7 +155,7 @@ namespace gpstk
       const CommonTime& tr_nom,
       const Position& Rx,
       const SatID sat,
-      const XvtStore<SatID>& Eph) throw(Exception)
+      const XvtStore<SatID>& Eph)
    {
       try {
          gpstk::GPSEllipsoid gm;
@@ -175,7 +175,6 @@ namespace gpstk
       const Position& rx,
       const SatID sat,
       const XvtStore<SatID>& eph)
-      throw(Exception,InvalidRequest)
    {
       try {
          svPosVel = eph.getXvt(sat, tt_nom);

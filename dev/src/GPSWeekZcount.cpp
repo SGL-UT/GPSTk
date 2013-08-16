@@ -54,7 +54,7 @@ namespace gpstk
       try
       {
          int dow = zcount / ZCOUNT_PER_DAY;
-         int jday = GPS_EPOCH_JDAY + ( 7 * week ) + dow;
+         int jday = MJD_JDAY + GPS_EPOCH_MJD + ( 7 * week ) + dow;
          double sod = static_cast<double>( zcount % ZCOUNT_PER_DAY ) * 1.5;
          CommonTime ct;
          return ct.set( jday,
@@ -85,7 +85,7 @@ namespace gpstk
       ct.get( day, sod, fsod, timeSystem );
 
          // find the number of days since the beginning of the GPS Epoch
-      day -= GPS_EPOCH_JDAY;
+      day -= MJD_JDAY + GPS_EPOCH_MJD;
          // find out how many weeks that is
       week = static_cast<int>( day / 7 );
          // find out what the day of week is

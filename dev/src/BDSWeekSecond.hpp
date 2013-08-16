@@ -43,9 +43,9 @@
 
 namespace gpstk
 {
-   /// This class handles the week portion of the BDS TimeTag classes.
+   /// This class handles the week and seconds-of-week of the BDS TimeTag classes.
    /// The BDS week is specified by
-   /// 13-bit ModWeek, rollover at 8192, bitmask 0x1FFF and epoch BDS_EPOCH_JD
+   /// 13-bit ModWeek, rollover at 8192, bitmask 0x1FFF and epoch BDS_EPOCH_MJD
    class BDSWeekSecond : public WeekSecond
    {
    public:
@@ -93,10 +93,10 @@ namespace gpstk
          return bm;
       }
 
-      /// Return the Julian Date (not jday) of epoch for this system.
-      double JDEpoch(void) const
+      /// Return the Modified Julian Date (MJD) of epoch for this system.
+      long MJDEpoch(void) const
       {
-         static const double e=BDS_EPOCH_JD;
+         static const long e=BDS_EPOCH_MJD;
          return e;
       }
 

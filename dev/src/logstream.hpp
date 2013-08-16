@@ -1,17 +1,14 @@
-#pragma ident "$Id$"
-
-/** @file logstream.hpp
- * Writing to a log stream made easy, typesafe, threadsafe and portable.
- * Inspired by Petru Marginean, "Logging in C++," Dr.Dobbs, October 2007.
- */
+/// @file logstream.hpp
+/// Writing to a log stream made easy, typesafe, threadsafe and portable.
+/// Inspired by Petru Marginean, "Logging in C++," Dr.Dobbs, October 2007.
 
 #ifndef LOGSTREAMINCLUDE
 #define LOGSTREAMINCLUDE
 
+#include <cstdio>
 #include <sstream>
 #include <string>
 #include <iostream>
-#include <cstdio>
 
 /// levels that the user may give the log stream output in the output statement,
 /// e.g. LOG(ERROR) << "This is an error message"; DEBUGn levels appear indented

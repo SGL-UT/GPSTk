@@ -41,7 +41,7 @@
 
 namespace gpstk
 {
-   const int GPSWeek::MAX_WEEK = (CommonTime::END_LIMIT_JDAY - GPS_EPOCH_JDAY)/7;
+   const int GPSWeek::MAX_WEEK=(CommonTime::END_LIMIT_JDAY-MJD_JDAY-GPS_EPOCH_MJD)/7;
 
    GPSWeek& GPSWeek::operator=(const GPSWeek& right)
    {

@@ -44,6 +44,8 @@
 namespace gpstk
 {
    /// This class handles GPS Week and Seconds-of-week. It inherits WeekSecond
+   /// The GPS week is specified by
+   /// 10-bit ModWeek, rollover at 1024, bitmask 0x3FF and epoch GPS_EPOCH_MJD
    class GPSWeekSecond : public WeekSecond
    {
    public:
@@ -80,10 +82,10 @@ namespace gpstk
          return bm;
       }
 
-      /// Return the Julian Date (not jday) of epoch for this system.
-      double JDEpoch(void) const
+      /// Return the Modified Julian Date (MJD) of epoch for this system.
+      long MJDEpoch(void) const
       {
-         static const double e=GPS_EPOCH_JD;
+         static const long e=GPS_EPOCH_MJD;
          return e;
       }
 

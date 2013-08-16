@@ -39,7 +39,7 @@
 
 #include "WeekSecond.hpp"
 #include "TimeConstants.hpp"
-#include "JulianDate.hpp"
+#include "MJD.hpp"
 
 namespace gpstk
 {
@@ -58,24 +58,24 @@ namespace gpstk
          // Appears to have rounding issues on 32-bit platforms
 
          int dow = static_cast<int>( sow / SEC_PER_DAY );
-         long jday = static_cast<long>(JDEpoch()+0.5) + ( 7 * week ) + dow;
-         double sod(  sow - SEC_PER_DAY * dow );
+         // NB this assumes MJDEpoch is an integer - what if epoch H:M:S != 0:0:0 ?
+         long jday = MJD_JDAY + MJDEpoch() + (7 * week) + dow;
+         double sod(sow - SEC_PER_DAY * dow);
          CommonTime ct;
          return ct.set( jday,
-                        static_cast<long>( sod ),
-                        sod - static_cast<long>( sod ),
+                        static_cast<long>(sod),
+                        sod - static_cast<long>(sod),
                         timeSystem );
       }
       catch (InvalidParameter& ip)
       {
-         InvalidRequest ir(ip);
-         GPSTK_THROW(ir);
+         GPSTK_RETHROW(ip);
       }
    }
 
    void WeekSecond::convertFromCommonTime( const CommonTime& ct )
    {
-      if(static_cast<JulianDate>(ct).jd < JDEpoch())
+      if(static_cast<MJD>(ct).mjd < MJDEpoch())
       {
          InvalidRequest ir("Unable to convert to Week/Second - before Epoch.");
          GPSTK_THROW(ir);
@@ -85,7 +85,7 @@ namespace gpstk
       double fsod;
       ct.get( jday, sod, fsod, timeSystem );
          // find the number of days since the beginning of the Epoch
-      jday -= static_cast<long>(JDEpoch()+0.5);
+      jday -= MJD_JDAY + MJDEpoch();
          // find out how many weeks that is
       week = static_cast<int>( jday / 7 );
          // find out what the day of week is

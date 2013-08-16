@@ -148,7 +148,7 @@ namespace gpstk
       {
          switch(system)
          {
-            case systemGPS: return (id > 0 && id <= MAX_PRN_GPS);
+            case systemGPS: return (id > 0 && id <= MAX_PRN);
             //case systemGalileo:
             //case systemGlonass:
             //case systemGeosync:

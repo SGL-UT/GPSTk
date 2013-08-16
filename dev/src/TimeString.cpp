@@ -163,9 +163,9 @@ namespace gpstk
             hepoch( false ), hansi( false ), hjulian( false );
 
             // These are to hold data that no one parses.
-         int idow( 0 );
+         int idow(0);
          TimeSystem ts;
-         
+
          for( TimeTag::IdToValue::iterator itr = info.begin();
               itr != info.end(); itr++ )
          {

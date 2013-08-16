@@ -1,12 +1,7 @@
-#pragma ident "$Id$"
-
 /**
  * @file GNSSconstants.hpp
  * Constants as defined in the GPS-ICD-200D and by all RINEX GNSSs
  */
-
-#ifndef GPSTK_GNSS_CONSTANTS_HPP
-#define GPSTK_GNSS_CONSTANTS_HPP
 
 //============================================================================
 //
@@ -43,6 +38,9 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+#ifndef GPSTK_GNSS_CONSTANTS_HPP
+#define GPSTK_GNSS_CONSTANTS_HPP
 
 #include "Exception.hpp"
 #include "SatID.hpp"
@@ -203,8 +201,6 @@ namespace gpstk
    const double L1_MULT_GLO   = 320.4;
       /// GLO L2 multiplier.
    const double L2_MULT_GLO   = 249.2;
-      // GLO Gamma multiplier.
-   //const double GAMMA_GLO = 1.653061224490;      // obsolete: getAlpha(GLO,1,2)
 
       /// Constant for the max array index in SV accuracy table.
    const int SV_ACCURACY_GLO_INDEX_MAX = 15;
@@ -216,16 +212,17 @@ namespace gpstk
                                            9.999999999999e99               };
 
    // ---------------- Galileo ----------------------------------
-      /// GAL L1 carrier frequency in Hz
+      /// GAL L1 (E1) carrier frequency in Hz
    const double L1_FREQ_GAL   = L1_FREQ_GPS;
-      /// GAL L5 carrier frequency in Hz.
+      /// GAL L5 (E5a) carrier frequency in Hz.
    const double L5_FREQ_GAL   = L5_FREQ_GPS;
-      /// GAL L6 carrier frequency in Hz.
+      /// GAL L6 (E6) carrier frequency in Hz.
    const double L6_FREQ_GAL   = 1278.75e6;
-      /// GAL L7 carrier frequency in Hz.
+      /// GAL L7 (E5b) carrier frequency in Hz.
    const double L7_FREQ_GAL   = 1207.140e6;
-      /// GAL L8 carrier frequency in Hz.
+      /// GAL L8 (E5a+E5b) carrier frequency in Hz.
    const double L8_FREQ_GAL   = 1191.795e6;
+
       /// GAL L1 carrier wavelength in meters
    const double L1_WAVELENGTH_GAL  = L1_WAVELENGTH_GPS;
       /// GAL L5 carrier wavelength in meters.
@@ -242,29 +239,45 @@ namespace gpstk
    const double L1_FREQ_GEO   = L1_FREQ_GPS;
       /// GEO L5 carrier frequency in Hz.
    const double L5_FREQ_GEO   = L5_FREQ_GPS;
+
       /// GEO L1 carrier wavelength in meters
    const double L1_WAVELENGTH_GEO  = L1_WAVELENGTH_GPS;
       /// GEO L5 carrier wavelength in meters.
    const double L5_WAVELENGTH_GEO  = L5_WAVELENGTH_GPS;
 
-   // ---------------- COMPASS ----------------------------------
-      /// COM L1 carrier frequency in Hz
-   const double L1_FREQ_COM   = 1589.74e6;
-      /// COM L2 carrier frequency in Hz.
-   const double L2_FREQ_COM   = 1561.098e6;
-      /// COM L6 carrier frequency in Hz.
-   const double L6_FREQ_COM   = 1268.52e6;
-      /// COM L7 carrier frequency in Hz.
-   const double L7_FREQ_COM   = L7_FREQ_GAL;
-      /// COM L1 carrier wavelength in meters
-   const double L1_WAVELENGTH_COM  = 0.188579552631247;
-      /// COM L2 carrier wavelength in meters.
-   const double L2_WAVELENGTH_COM  = 0.192039486310276;
-      /// COM L6 carrier wavelength in meters.
-   const double L6_WAVELENGTH_COM  = 0.236332464604421;
-      /// COM L7 carrier wavelength in meters.
-   const double L7_WAVELENGTH_COM  = L7_WAVELENGTH_GAL;
+   // ---------------- BeiDou ----------------------------------
+      /// BDS L1 (B1) carrier frequency in Hz.
+   const double L1_FREQ_BDS   = 1561.098e6;
+      /// BDS L2 (B2) carrier frequency in Hz.
+   const double L2_FREQ_BDS   = L7_FREQ_GAL;
+      /// BDS L3 (B3) carrier frequency in Hz.
+   const double L3_FREQ_BDS   = 1268.52e6;
 
+      /// BDS L1 carrier wavelength in meters.
+   const double L1_WAVELENGTH_BDS  = 0.192039486310276;
+      /// BDS L2 carrier wavelength in meters.
+   const double L2_WAVELENGTH_BDS  = L7_WAVELENGTH_GAL;
+      /// BDS L3 carrier wavelength in meters.
+   const double L3_WAVELENGTH_BDS  = 0.236332464604421;
+
+   // ---------------- QZSS ----------------------------------
+      /// QZS L1 carrier frequency in Hz.
+   const double L1_FREQ_QZS   = L1_FREQ_GPS;
+      /// QZS L2 carrier frequency in Hz.
+   const double L2_FREQ_QZS   = L2_FREQ_GPS;
+      /// QZS L5 carrier frequency in Hz.
+   const double L5_FREQ_QZS   = L5_FREQ_GPS;
+      /// QZS LEX(6) carrier frequency in Hz.
+   const double L6_FREQ_QZS   = L6_FREQ_GAL;
+
+      /// QZS L1 carrier wavelength in meters.
+   const double L1_WAVELENGTH_QZS   = L1_WAVELENGTH_GPS;
+      /// QZS L2 carrier wavelength in meters.
+   const double L2_WAVELENGTH_QZS   = L2_WAVELENGTH_GPS;
+      /// QZS L5 carrier wavelength in meters.
+   const double L5_WAVELENGTH_QZS   = L5_WAVELENGTH_GPS;
+      /// QZS LEX(6) carrier wavelength in meters.
+   const double L6_WAVELENGTH_QZS   = L6_WAVELENGTH_GAL;
 
    // ---------------- Convenience routines ---------------------
    /// Compute wavelength for the given satellite system (sat.id is ignored) at the
@@ -296,10 +309,16 @@ namespace gpstk
             else if(n == 5) return L5_WAVELENGTH_GEO;
             break;
          case SatID::systemBeiDou:
-                 if(n == 1) return L1_WAVELENGTH_COM;
-            else if(n == 2) return L2_WAVELENGTH_COM;
-            else if(n == 6) return L6_WAVELENGTH_COM;
-            else if(n == 7) return L7_WAVELENGTH_COM;
+            //MGEX data uses 2     if(n == 1) return L1_WAVELENGTH_BDS;
+                 if(n == 2) return L1_WAVELENGTH_BDS;
+            else if(n == 7) return L2_WAVELENGTH_BDS;
+            else if(n == 6) return L3_WAVELENGTH_BDS;
+            break;
+         case SatID::systemQZSS:
+                 if(n == 1) return L1_WAVELENGTH_QZS;
+            else if(n == 2) return L2_WAVELENGTH_QZS;
+            else if(n == 5) return L5_WAVELENGTH_QZS;
+            else if(n == 6) return L6_WAVELENGTH_QZS;
             break;
          default:
             break;
@@ -308,54 +327,15 @@ namespace gpstk
       return 0.0;
    }
 
-
-   /// Compute beta(a,b), the ratio of 2 frequencies fa/fb for the given satellite
+   /// Compute beta(a,b), the ratio of 2 frequencies fb/fa for the given satellite
    /// system (sat.id is ignored). Return 0 if either of the input n's are not valid
    /// RINEX bands (n=1,2,5,6,7,or 8) for the system.
    inline double getBeta(const SatID& sat, const int& na, const int& nb) throw()
    {
-      static const double GPSbeta12=L1_MULT_GPS/L2_MULT_GPS;
-      static const double GPSbeta21=L2_MULT_GPS/L1_MULT_GPS;
-      static const double GPSbeta15=L1_MULT_GPS/L5_MULT_GPS;
-      static const double GPSbeta51=L5_MULT_GPS/L1_MULT_GPS;
-      static const double GPSbeta25=L2_MULT_GPS/L5_MULT_GPS;
-      static const double GPSbeta52=L5_MULT_GPS/L2_MULT_GPS;
-      static const double GLObeta12=L1_MULT_GLO/L2_MULT_GLO;   // 9/7
-      static const double GLObeta21=L2_MULT_GLO/L1_MULT_GLO;   // 7/9
-
-      if(na < 1 || na > 8 || nb < 1 || nb > 8) return 0.0;
-
-      switch(sat.system) {
-         case SatID::systemGPS:
-                 if(na==1 && nb==2) return GPSbeta12;
-            else if(na==2 && nb==1) return GPSbeta21;
-            else if(na==1 && nb==5) return GPSbeta15;
-            else if(na==5 && nb==1) return GPSbeta51;
-            else if(na==2 && nb==5) return GPSbeta25;
-            else if(na==5 && nb==2) return GPSbeta52;
-            break;
-         case SatID::systemGalileo:
-            if(na > 1 && na < 5) break;
-            if(nb > 1 && nb < 5) break;
-            return (getWavelength(sat,nb)/getWavelength(sat,na));
-            break;
-         case SatID::systemGlonass:
-            // NB. this is independent of the frequency channel
-                 if(na==1 && nb==2) return GLObeta12;
-            else if(na==2 && nb==1) return GLObeta21;
-            break;
-         case SatID::systemGeosync:
-                 if(na==1 && nb==5) return GPSbeta15;
-            else if(na==5 && nb==1) return GPSbeta51;
-            break;
-         case SatID::systemBeiDou:
-            if(na==5 || na==8 || nb==5 || nb==8) break;
-            return (getWavelength(sat,nb)/getWavelength(sat,na));
-            break;
-         default:
-            break;
-      }
-      return 0.0;
+      double wla = getWavelength(sat,na);
+      double wlb = getWavelength(sat,nb);
+      if(wla == 0.0 || wlb == 0.0) return 0.0;
+      return wlb/wla;
    }
 
    /// Compute alpha (also called gamma) = (beta^2-1) = ((fa/fb)^2-1)

@@ -1326,14 +1326,12 @@ namespace gpstk
       int NAVSTARNum = 0;
       try
       {
-	NAVSTARNum = svNumXRef.getNAVSTAR(PRNID, bcClock.getEpochTime());
-
-
-        s << setw(2) << " " << NAVSTARNum << "  ";
+	      NAVSTARNum = svNumXRef.getNAVSTAR(PRNID, bcClock.getEpochTime());
+         s << setw(2) << " " << NAVSTARNum << "  ";
       }
       catch(NoNAVSTARNumberFound)
       {
-	s << "  XX  ";
+	      s << "  XX  ";
       }
 
       s << setw(2) << PRNID << " ! ";

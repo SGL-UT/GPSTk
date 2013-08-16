@@ -1,4 +1,3 @@
-/** $Id$
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -19,7 +18,7 @@
 // //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
-*   SVNumXRef.hpp
+/*   SVNumXRef.hpp
 *
 *   Applied Research Laboratories, The University of Texas at Austin
 *   June 2007
