@@ -61,7 +61,7 @@ namespace gpstk
        * than what std::exception provides.  Use GPSTK_THROW()
        * and GPSTK_RETHROW() to throw or rethrow these exceptions
        * to automatically add line and file information to your
-       * exceptions..
+       * exceptions.
        */
 
       /// A class for recording locations (in the source code) of

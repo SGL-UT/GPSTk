@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-
 """
 A GPSTk example featuring more complex processing. You can use the
 sample text file rinex3obs_data.txt. A PRN number that gives useful output is 5.
@@ -16,10 +15,9 @@ For example:
 
 """
 
-from gpstk.constants import C_MPS, GAMMA_GPS, L1_FREQ_GPS, L2_FREQ_GPS
+from gpstk.constants import C_MPS, GAMMA_GPS, L1_FREQ_GPS
 import argparse  # an incredibly useful module for command line processing
 import gpstk
-import sys
 
 # We recommend only using
 #     'import gpstk',
@@ -39,9 +37,6 @@ def main():
         print 'Reading ' + args.rinex3obs_filename + '.'
         header, data = gpstk.readRinex3Obs(args.rinex3obs_filename)  # read in everything
         print header
-
-        indexP1 = header.getObsIndex('P1')
-        indexP2 = header.getObsIndex('P2')
 
         # Now we loop through all the epochs and process the data for each one
         for d in data:

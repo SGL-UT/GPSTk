@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from cStringIO import StringIO
 import sys
 import unittest

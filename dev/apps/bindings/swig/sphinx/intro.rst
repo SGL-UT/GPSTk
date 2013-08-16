@@ -7,8 +7,8 @@ of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
 
 
 
-About
-**********
+About the GPSTk
+*****************
 The GPSTK is a library of support routines designed for use by programmers
 developing applications that read and write (particularly in RINEX format),
 process and otherwise manipulate GPS data. It is characterized by the following:
@@ -24,6 +24,7 @@ http://www.gpstk.org/doxygen/
 
 
 
+
 Getting the Python GPSTk
 ****************************
 Building the GPSTk from source can be a fairly involved process, see :ref:`build_label`
@@ -32,8 +33,8 @@ for the details.
 
 
 
-Bindings
-**********
+About the Python Bindings
+********************************************
 Though effort has been taken to reduce the C++-feeling when using these Python
 classes, it is impossible to completely purify the library without creating severe
 maintenance problems. Thus, the user must be aware that the GPSTk is primarily a
@@ -62,11 +63,21 @@ Example of how C++ GPSTk reads and prints a Rinex3Obs file:
 Compare to the simpler Python GPSTk read process:
 
 .. parsed-literal::
-   # read in the data
+   # read in the header and data
    header, data = readRinex3Obs('rinex3obs_data.txt')
    print header
    for dataObject in data:
        print data
+
+
+
+A Note on Python Versions
+*****************************************
+These bindings were created with Python 2.7 in mind and that is how they are supported
+at the moment. It is likely Python 3.2 or 3.3 will be supported some time in the future.
+
+The standard Python implementation, CPython, must be used. The wrapping makes use
+of the C Python API heavily.
 
 
 
@@ -135,7 +146,8 @@ Exceptions include the submodules created for exceptions and constants.
 Note that SWIG is actually set to create a module called gpstk_pylib. To clean up the namespace
 and provide more organization, there are __init__.py files that divide up the
 namespace (into gpstk, gpstk.constants, etc.) and remove unwanted members.
-You can still access the raw wrapping through gpstk.gpstk_pylib, however.
+You can still access the raw wrapping through gpstk.gpstk_pylib, however. It is
+strongly recommended you ignore the hidden components; they were hidden for a reason!
 
 
 **Enums:**
@@ -188,6 +200,9 @@ for some purpose (i.e. a function takes them as a parameter). They are included
 in a few common templated forms (string->char, etc.), but you should avoid
 the use of these whenever possible.
 
+For the most part, a vector object has the same semantics as a list and a
+map object has the same semantics as a dict.
+
 
 When C++ functions deal with arrays, they are automatically converted
 (since the Python C API already uses arrays),
@@ -206,12 +221,13 @@ are defined in the cpp submodule.
 
 
 **Exceptions:**
+
 Exceptions were tricky to get right. In general, most exceptions thrown by
 calling GPSTk routines should be caught in the standard way in Python. ::
 
     try:
         a = gpstk.someFunction()
-    except gpstk.exceptions.InvalidRequest:
+    except gpstk.exceptions.InvalidRequest:  # the most used exception in the GPSTk
         print 'Could not process data.'
 
 When an exception is thrown by the C++ code, it is propogated to the SWIG
@@ -219,8 +235,16 @@ system which has code (written in Exception.i) that either wraps the exception
 to one of the classes in gpstk.exceptions.
 
 
+**Arrays:**
 
-**Functions that modify a parameter that is passed by reference**
+SWIG typemaps have been written to automatically convert between C style arrays
+and Python lists. Any function that takes a array parameter will accept a list
+and any array return will actually return a list.
+
+This conversion can be done efficently since Python are already backed by C arrays.
+
+
+**Functions that modify a parameter that is passed by reference:**
 
 Some C++ functions didn't return a value, but just modify a non-const parameter.
 For example, from Position.hpp:
