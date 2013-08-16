@@ -12,9 +12,6 @@ message ("system_name = ${CMAKE_SYSTEM_NAME}")
 set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 set (GPSTK_SO_VERSION 21)
 
-set (CMAKE_INSTALL_PREFIX /Users/bparsons/git/gpstk)
-
-
 if (UNIX) # Unix Compiler Options
 	 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
 	 set (STADYN "SHARED") #Dynamic Libraries Enabled

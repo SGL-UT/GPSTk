@@ -757,7 +757,7 @@ int SatPassIterator::next(RinexObsData& robs) throw(Exception)
       bool flag = (SPList[i].spdvector[j].flag != SatPass::BAD);
 
       for(size_t k=0; k<SPList[i].labelForIndex.size(); k++) {
-         RinexObsHeader::RinexObsType ot;
+         RinexObsType ot;
          ot = RinexObsHeader::convertObsType(SPList[i].labelForIndex[k]);
          if(ot == RinexObsHeader::UN) {
          }
