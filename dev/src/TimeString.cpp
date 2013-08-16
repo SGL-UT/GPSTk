@@ -434,8 +434,8 @@ namespace gpstk
             // These variables will hold the values for use later.
          double isow, isod, isec;
          int iweek, ifullweek, idow, iyear, imonth, iday, izcount, idoy,
-            izcount29, ihour, imin, iepoch, iunixsec, iunixusec;
-         TimeSystem ts;
+
+            izcount29, ihour, imin, iepoch;
          
          for( TimeTag::IdToValue::iterator itr = info.begin();
               itr != info.end(); itr++ )

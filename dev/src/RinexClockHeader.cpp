@@ -229,7 +229,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      int i;
+      size_t i;
       string line;
       try {
          line = rightJustify(asString(version,2), 9);
@@ -394,7 +394,7 @@ namespace gpstk
 
    void RinexClockHeader::dump(ostream& os, short detail) const throw()
    {
-      int i;
+      size_t i;
       os << "Dump RinexClock Header:\n";
       os << " Version = " << fixed << setprecision(2) << version
          << " Prgm /" << program << "/ Run By /" << runby << "/" << endl;

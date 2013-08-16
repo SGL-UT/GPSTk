@@ -258,7 +258,8 @@ namespace gpstk
    {
    try {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
-      int i,j,k;
+      int i,k;
+      size_t j;
       string line;
       SP3SatID SVid;
       bool isVerA = (version == SP3a);

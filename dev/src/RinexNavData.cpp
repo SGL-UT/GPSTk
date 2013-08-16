@@ -519,7 +519,7 @@ namespace gpstk
    {
       try
       {
-         double SV_acc, SV_health;
+         double SV_health;
 
          accuracy = gpstk::StringUtils::for2doub(currentLine.substr(3,19));
          SV_health = gpstk::StringUtils::for2doub(currentLine.substr(22,19));

@@ -632,7 +632,7 @@ namespace gpstk
       throw()
    {
       double dval;
-      short i, n, bit1, nword, nbit, lsb;
+      short i, n, bit1, nword, nbit;
       union equ
       {
          uint32_t u;

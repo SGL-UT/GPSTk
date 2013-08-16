@@ -596,8 +596,8 @@ namespace gpstk
          s << "Number of Stations with data : " << numSta << endl;
       if(valid & solnStaNameValid) {
          s << "STA  ";
-         for(i=0; i < numSta; i++)
-            s << setw(5) << clkNameList[i];
+         for(int j=0; j < numSta; j++)
+            s << setw(5) << clkNameList[j];
          s << endl;
       }
       if(valid & numSatsValid)

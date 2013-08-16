@@ -63,6 +63,7 @@ try {
 
    // locals
    int i,iret=0;
+   size_t j;
    CommonTime CurrEpoch = SystemTime();
    SolarSystem eph;
 
@@ -158,8 +159,8 @@ try {
 
    // read the data files
    eph.readASCIIdata(dataFilenames);
-   for(i=0; i<dataFilenames.size(); i++)
-      LOG(VERBOSE) << "Finished reading ASCII data " << dataFilenames[i];
+   for(j=0; j<dataFilenames.size(); j++)
+      LOG(VERBOSE) << "Finished reading ASCII data " << dataFilenames[j];
    LOG(INFO) << "Ephemeris number from data is " << eph.JPLNumber();
 
    // dump to a file

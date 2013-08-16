@@ -114,7 +114,7 @@ bool Stripper::initialize(int argc, char *argv[], bool pretty) throw()
 
 void Stripper::additionalSetup()
 {
-   for (int i = 0; i < navArg.getCount(); i++)
+   for (size_t i = 0; i < navArg.getCount(); i++)
    {
       bool done = false;
       

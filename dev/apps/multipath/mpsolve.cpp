@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
 
          // The fileOption should have a max count of 1 so this loop is unneccesary maybe even dangerous.
          // You still want to use this logic. You don't need the STringUtils namespace anymore as I put that at the top.
-         for (int k=0 ; k<fileOption.getValue().size() ; k++)
+         for (size_t k=0 ; k<fileOption.getValue().size() ; k++)
          {
             string temp = fileOption.getValue()[k];
             beginningDay = StringUtils::word(temp,0,',');
@@ -235,7 +235,7 @@ int main(int argc, char *argv[])
             // The program won't run without an obsFileOption , don't need to check
             if (obsFileOption.getCount()>0)
             {
-               for (int i=0 ; i<obsFileOption.getCount() ; i++)
+               for (size_t i=0 ; i<obsFileOption.getCount() ; i++)
                {
                   FileHunter fhobs(obsFileOption.getValue()[i]);
                   vector<string> obsListNew = fhobs.find(firstDay, lastDay, FileSpec::ascending);
@@ -246,7 +246,7 @@ int main(int argc, char *argv[])
 
             if (navFileOption.getCount()>0)
             {
-               for (int i=0 ; i<navFileOption.getCount() ; i++)
+               for (size_t i=0 ; i<navFileOption.getCount() ; i++)
                {
                   FileHunter fhnav(navFileOption.getValue()[i]);
                   vector<string> navListNew = fhnav.find(firstDay, lastDay, FileSpec::ascending);
@@ -485,7 +485,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-               for (int k=0; k<binOption.getValue().size(); k++)
+               for (size_t k=0; k<binOption.getValue().size(); k++)
                {
                   string temp = binOption.getValue()[k];
                   string lowerWord = StringUtils::word(temp,0,',');
@@ -587,7 +587,7 @@ bool numeric, bool elevation, bool plot)
    {
       std::string angDesc = "azimuth and elevation";
       // Worry about output code later.
-      for (int i=0; i<mstats.stats.size(); i++)
+      for (size_t i=0; i<mstats.stats.size(); i++)
       {
          stDevStats[i] = mstats.stats[i].StdDev();
          meanStats[i] = mstats.stats[i].Average();
@@ -607,7 +607,7 @@ bool numeric, bool elevation, bool plot)
          ostr << "Standard deviation of bins sorted by " << angDesc
             << "." << endl << endl;
 
-         for (int i=0; i<mstats.stats.size(); i++)
+         for (size_t i=0; i<mstats.stats.size(); i++)
          {
             ostr << "From " << setw(3) << mstats.bins[i].lowerBound;
             ostr <<  " to " << setw(3) << mstats.bins[i].upperBound;
@@ -621,7 +621,7 @@ bool numeric, bool elevation, bool plot)
       else
       {
          ostr << "# Bins of " << angDesc << " -- columns are min, max, standard deviation " << endl;
-         for (int i=0; i<mstats.stats.size(); i++)
+         for (size_t i=0; i<mstats.stats.size(); i++)
          {
             ostr << setw(3) << mstats.bins[i].lowerBound << " ";
             ostr << setw(3) << mstats.bins[i].upperBound << " ";
@@ -653,7 +653,7 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
       startHigh=0;
 
                                  // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
-   while (startLow<(elevLow.size()-1))
+   while (startLow<long((elevLow.size()-1)))
    {
       e1slice = elevLow[slice(startLow,2,1)];
       a1slice = azimLow[slice(startLow,2,1)];
@@ -682,7 +682,7 @@ int findIntersection(valarray<double>& elevLow, valarray<double>& azimLow, valar
       startHigh = 0;
 
                                  // This loop and the one below allow each elevation and azimuth angle for passLow to be compared to each elevation and azimuth angle for passHigh
-      while (startHigh<(elevHigh.size()-1))
+      while (startHigh<double((elevHigh.size()-1)))
       {
          e2slice = elevHigh[slice(startHigh,2,1)];
          a2slice = azimHigh[slice(startHigh,2,1)];
@@ -787,8 +787,8 @@ bool launchViewer)
    //sp.setXLabel( "This is a label" );
    sp.setYAxis( 0.0, 90.0 );     // Minimum and maximum for y axis
 
-   for (size_t i = 0; i<azBinSize; i++)
-      for (size_t j = 0; j < elBinSize; j++)
+   for (int i = 0; i<azBinSize; i++)
+      for (int j = 0; j < elBinSize; j++)
    {
       //      if (mstats.stats[i][j].N()>0)
       sp.set( j, i, mstats.stats[i][j].Average() );
@@ -929,7 +929,7 @@ void removeBiases(ObsArray& oa, bool verbose)
    Matrix<int> Hnew(intindex,passList.size());
    Vector<double> ynew(intindex);
 
-   for (size_t m=0 ; m<intindex ; m++)
+   for (int m=0 ; m<intindex ; m++)
    {
       ynew[m]=y[m];
       for (size_t n=0 ; n<passList.size() ; n++)
@@ -954,7 +954,7 @@ void removeBiases(ObsArray& oa, bool verbose)
    {
       if (boolean[n]==1)
       {
-         for (size_t m=0 ; m<intindex ; m++)
+         for (int m=0 ; m<intindex ; m++)
          {
             Hnewnew[m][colind]=Hnew[m][n];
          }
@@ -964,9 +964,9 @@ void removeBiases(ObsArray& oa, bool verbose)
 
    Matrix<double> Hnewnewnew(intindex,colind);
 
-   for (size_t m=0 ; m<intindex ; m++)
+   for (int m=0 ; m<intindex ; m++)
    {
-      for (size_t n=0 ; n<colind ; n++)
+      for (int n=0 ; n<colind ; n++)
       {
          Hnewnewnew[m][n]=Hnewnew[m][n];
       }

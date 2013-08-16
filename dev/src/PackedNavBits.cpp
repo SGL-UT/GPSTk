@@ -159,13 +159,13 @@ namespace gpstk
    {
       uint64_t temp = 0L;       // Set up a temporary variable with a known size
                                 // It needs to be AT LEAST 33 bits.
-      int stop = startBit + numBits;
+      size_t stop = startBit + numBits;
       if (stop>bits.size())
       {
          InvalidParameter exc("Requested bits not present.");
          GPSTK_THROW(exc);
       }
-      for (int i=startBit; i<stop; ++i)
+      for (size_t i=startBit; i<stop; ++i)
       {
          temp <<= 1;
          if (bits[i]) temp++;
@@ -331,12 +331,12 @@ namespace gpstk
    {
       int numPadBlanks = 0;
       int numToCopy = 0;
-      if (numChars < String.length())
+      if (numChars < int(String.length()))
       {
          numPadBlanks = 0;
          numToCopy = numChars;
       }
-      else if (numChars > String.length())
+      else if (numChars > int(String.length()))
       {
          numToCopy = String.length();
          numPadBlanks = numChars - numToCopy;
@@ -445,7 +445,7 @@ namespace gpstk
       int numBitInWord = 0;
       int word_count   = 0;
       uint32_t word    = 0;
-      for(int i = 0; i < bits.size(); ++i)
+      for(size_t i = 0; i < bits.size(); ++i)
       {
          word <<= 1;
          if (bits[i]) word++;
@@ -482,7 +482,7 @@ namespace gpstk
       int numBitInWord = 0;
       int word_count   = 0;
       uint32_t word    = 0;
-      for(int i = 0; i < bits.size(); ++i)
+      for(size_t i = 0; i < bits.size(); ++i)
       {
          word <<= 1;
          if (bits[i]) word++;
@@ -525,9 +525,9 @@ namespace gpstk
 
          // Check for nonsense arguments
       if (endBit==-1 ||
-          endBit>=bits.size()) endBit = bits.size()-1;
+          endBit>=int(bits.size())) endBit = bits.size()-1;
       if (startBit<0) startBit=0;
-      if (startBit>=bits.size()) startBit = bits.size()-1;
+      if (startBit>=int(bits.size())) startBit = bits.size()-1;
 
       for (int i=startBit;i<=endBit;i++)
       {

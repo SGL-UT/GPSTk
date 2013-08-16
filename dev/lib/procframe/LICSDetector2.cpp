@@ -507,7 +507,7 @@ namespace gpstk
       s = LIData[sat].LIEpoch.size();
 
          // Check if we have exceeded maximum window size
-      if(s > maxBufferSize)
+      if(s > size_t(maxBufferSize))
       {
             // Get rid of oldest data, which is at the beginning of deque
          LIData[sat].LIEpoch.pop_front();

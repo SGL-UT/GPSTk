@@ -255,7 +255,7 @@ namespace gpstk
                // scale covariance
                double sig(::sqrt(APV/ndof));
                Matrix<double> Cov(was.getCov());
-               for(int i=0; i<Cov.rows(); i++) for(int j=i; j<Cov.cols(); j++)
+               for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
                   Cov(i,j) = Cov(j,i) = Cov(i,j)*sig;
                // print cov as labelled matrix
                Namelist NL;

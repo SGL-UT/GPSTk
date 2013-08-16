@@ -412,7 +412,7 @@ namespace gpstk
       catch (gpstk::Exception& e)
       {
          std::string text;
-         for(int i=0; i<e.getTextCount(); i++) text += e.getText(i);
+         for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
          FFStreamError err("gpstk::Exception in parseTime(): " + text);
          GPSTK_THROW(err);
       }

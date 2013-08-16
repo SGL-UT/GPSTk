@@ -291,7 +291,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
    bool help=false;
-   int i,j;
+   size_t i,j;
+   int k;
    RinexSatID sat;
    sat.setfill('0');
 
@@ -436,7 +437,7 @@ try {
    // allow user to put all options in a file
    // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+   for(k=1; k<argc; k++) PreProcessArgs(argv[k],Args);
 
    if(Args.size()==0) Args.push_back(string("-h"));
 
@@ -445,15 +446,15 @@ try {
    char **CArgs=new char*[argc];
    if(!CArgs) { cerr << "Failed to allocate CArgs\n"; return -1; }
    CArgs[0] = argv[0];
-   for(j=1; j<argc; j++) {
-      CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
-      strcpy(CArgs[j],Args[j-1].c_str());
+   for(k=1; k<argc; k++) {
+      CArgs[k] = new char[Args[k-1].size()+1];
+      if(!CArgs[k]) { cerr << "Failed to allocate CArgs[k]\n"; return -1; }
+      strcpy(CArgs[k],Args[k-1].c_str());
    }
 
    if(debug) {
       cout << "List passed to parse\n";
-      for(i=0; i<argc; i++) cout << i << " " << CArgs[i] << endl;
+      for(k=0; k<argc; k++) cout << k << " " << CArgs[k] << endl;
    }
    Par.parseOptions(argc, CArgs);
    delete[] CArgs;
@@ -805,7 +806,6 @@ try {
 
       bool again_cfg_file=false;
       bool again_log_file=false;
-      char c;
       string buffer,word;
       while(1) {
          getline(infile,buffer);
@@ -874,7 +874,7 @@ try {
 
       // open nav files and read EphemerisStore
    if(!NavDir.empty())
-      for(int i=0; i<NavFiles.size(); i++)
+      for(size_t i=0; i<NavFiles.size(); i++)
          NavFiles[i] = NavDir + "/" + NavFiles[i];
    FillEphemerisStore(NavFiles, SP3EphList, BCEphList);
    if(SP3EphList.size()) {
@@ -904,7 +904,7 @@ try {
    SSot = RinexObsHeader::convertObsType("SS");
 
       // initialize AT header data
-   int i;
+   size_t i;
    NgoodStations = 0;
    for(i=0; i<=MAXPRN; i++) BoolVec.push_back(false);
    for(i=0; i<Filenames.size(); i++) EstimationFlag.push_back(BoolVec);
@@ -941,14 +941,14 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int Process(void) throw(Exception)
 {
 try {
-   int i,iret;
+   int iret;
    string fname;
    //RinexObsStream instream;
    RinexObsHeader header;
 
       // loop over input file names
    if(verbose) oflog << "\nProcess " << Filenames.size() << " input files:\n";
-   for(ndata=0,nfile=0; nfile<Filenames.size(); nfile++) {
+   for(ndata=0,nfile=0; nfile<int(Filenames.size()); nfile++) {
       if(verbose) oflog << endl;
       fname = Filenames[nfile];
       //instream.clear();
@@ -1033,7 +1033,7 @@ try {
 
       // dump header information
    if(verbose) {
-      int i;
+      size_t i;
       oflog << "File name: " << filename << endl;
       oflog << "Marker name: " << head.markerName << "\n";
       oflog << "Position (XYZ,m) : " << fixed
@@ -1170,7 +1170,8 @@ int ProcessObs(RinexObsStream& ins, string& filename, RinexObsHeader& head)
    throw(Exception)
 {
 try {
-   int i,j,k,npts[MAXPRN+1];
+   int k,npts[MAXPRN+1];
+   size_t i;
    double EL,LA,LO,SR,hours,cr,ob;
    Position LLI;
    CommonTime begin[MAXPRN+1],end[MAXPRN+1];
@@ -1340,7 +1341,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void WriteATHeader(void) throw(Exception)
 {
 try {
-   int i,j;
+   int j;
+   size_t i;
    fout.seekp(0);
    fout << setw(5) << Filenames.size() << " " << setw(5) << NgoodStations
       << " Number (max, good) stations in this file \n";
@@ -1396,7 +1398,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void ReadATHeader(ifstream& ifs, long& N, long& n) throw(Exception)
 {
 try {
-   int i,j;
+   size_t j;
+   int i;
    string line;
 
    EstimationFlag.clear();
@@ -1437,8 +1440,8 @@ try {
    }
    else if(verbose) oflog << "\nOpened AT file " << ATFileName << " for input\n";
 
-   int i,j;
-   int wn,prn,nfile,in;
+   size_t k;
+   int i,j,wn,prn,nfile;
    long N,n;                        // number of sites, number of data/site
    double sow,lat,lon,obq,sr,sig;
    string line;
@@ -1509,7 +1512,7 @@ try {
    ifs.close();
 
    // compute Robust statistics
-   double median,mad,mest,Q1,Q3;
+   double median,mad,Q1,Q3;
    QSort(&rdata[0],rdata.size());
    Robust::Quartiles(&rdata[0],rdata.size(),Q1,Q3);
    mad = Robust::MedianAbsoluteDeviation(&rdata[0],rdata.size(),median);
@@ -1521,9 +1524,9 @@ try {
 	oflog << " Median    = " << setw(11) << setprecision(8) << median << endl;
 	oflog << " MAD       = " << setw(11) << setprecision(8) << mad << endl;
    // count
-   for(n=0,i=0; i<rdata.size(); i++) if(rdata[i] < Q1) n++; else break;
+   for(n=0,k=0; k<rdata.size(); k++) if(rdata[k] < Q1) n++; else break;
 	oflog << " Outliers (low) = " << n << endl;
-   for(n=0,i=rdata.size()-1; i>=0; i--) if(rdata[i] > Q3) n++; else break;
+   for(n=0,k=rdata.size()-1; k>=0; k--) if(rdata[k] > Q3) n++; else break;
 	oflog << " Outliers (high) = " << n << endl;
 
    oflog << setw(9) << setprecision(2) << MinLat << "  Minimum Latitude\n";

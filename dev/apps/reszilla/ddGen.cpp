@@ -264,7 +264,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    // get elevation ranges, if specified
    if (elevBinsOption.getCount())
    {
-      for (int i=0; i<elevBinsOption.getCount(); i++)
+      for (size_t i=0; i<elevBinsOption.getCount(); i++)
       {
          string pr = elevBinsOption.getValue()[i];
          float minElev = asFloat(pr);
@@ -285,7 +285,7 @@ bool DDGen::initialize(int argc, char *argv[]) throw()
    if (ephHealthSource.getCount())
    {
       healthSrcER.verboseLevel = verboseLevel;
-      for (int i=0; i<ephHealthSource.getCount(); i++)
+      for (size_t i=0; i<ephHealthSource.getCount(); i++)
          healthSrcER.read(ephHealthSource.getValue()[i]);
       gpstk::XvtStore<SatID>& ephStoreTemp = *healthSrcER.eph; 
       if (typeid(ephStoreTemp)!=typeid(GPSEphemerisStore))
@@ -379,7 +379,7 @@ void DDGen::process()
 
    EphReader ephReader;
    ephReader.verboseLevel = debugLevel;
-   for (int i=0; i<ephFileOption.getCount(); i++)
+   for (size_t i=0; i<ephFileOption.getCount(); i++)
       ephReader.read(ephFileOption.getValue()[i]);
    gpstk::XvtStore<SatID>& eph = *ephReader.eph;
 
@@ -485,7 +485,7 @@ void DDGen::readObsFile(
    const GPSEllipsoid gm = GPSEllipsoid();
 
    // Walk through each obs file, reading and computing ords along the way.
-   for (int i=0; i<obsFileOption.getCount(); i++)
+   for (size_t i=0; i<obsFileOption.getCount(); i++)
    {
       string fn = (obsFileOption.getValue())[i];
       ObsReader obsReader(fn, debugLevel);

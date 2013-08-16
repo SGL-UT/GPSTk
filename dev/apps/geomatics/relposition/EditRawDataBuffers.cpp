@@ -61,7 +61,7 @@ int OutputRawData(void) throw(Exception);                     // DataOutput.cpp
 int EditRawDataBuffers(void) throw(Exception)
 {
 try {
-   int i,j,k;
+   size_t i;
    map<string,Station>::iterator kt;
    map<GSatID,RawData>::iterator it;
 
@@ -177,7 +177,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int OutputRawDataBuffers(void) throw(Exception)
 {
 try {
-   int i,j,k;
+   int j,k;
+   size_t i;
    map<string,Station>::iterator kt;
    map<GSatID,RawData>::const_iterator it;
 

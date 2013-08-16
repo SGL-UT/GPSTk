@@ -216,7 +216,7 @@ public:
    // vector types only: turn off expansion of arguments ('a,b,c' -> 'a' 'b' and 'c')
    void noExpansion(std::string l)
    {
-      for(int i=0; i<options.size(); i++) {
+      for(size_t i=0; i<options.size(); i++) {
          if(options[i].longOpt == l && (options[i].type == typeVectorString ||
                                         options[i].type == typeVectorSat ||
                                         options[i].type == typeVectorInt))

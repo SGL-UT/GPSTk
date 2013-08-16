@@ -338,7 +338,7 @@ namespace gpstk
       if (v.size() > 0)
       {  
          s << "(" << v[0];
-         for (int i = 1; i < v.size(); i++)
+         for (size_t i = 1; i < v.size(); i++)
          {
             s << ", " << v[i];
          }

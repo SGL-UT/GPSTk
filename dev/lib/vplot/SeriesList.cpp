@@ -128,7 +128,7 @@ namespace vplot
       // columns but the last.
       unsigned int n = (titles.size()/columns) + (titles.size()%columns?1:0);
       // Add the legend segment for each column
-      for(int i=0; i<columns; i++)
+      for(unsigned int i=0; i<columns; i++)
       {
         Frame t(gl.getFrame(0,i));
         drawLegendSegment(t,pointsize,i*n,min(n,(unsigned int)(titles.size()-i*n)));

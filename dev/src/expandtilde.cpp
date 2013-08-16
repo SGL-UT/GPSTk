@@ -31,7 +31,7 @@ void expand_filename(string& filename)
 
 void expand_filename(vector<string>& sarray)
 {
-   for(int i=0; i<sarray.size(); i++) expand_filename(sarray[i]);
+   for(size_t i=0; i<sarray.size(); i++) expand_filename(sarray[i]);
 }
 
 void include_path(string path, string& file)
@@ -48,7 +48,7 @@ void include_path(string path, vector<string>& sarray)
    if(!path.empty()) {
       StringUtils::stripTrailing(path,"/");
       StringUtils::stripTrailing(path,"\\");
-      for(int i=0; i<sarray.size(); i++)
+      for(size_t i=0; i<sarray.size(); i++)
          sarray[i] = path + string("/") + sarray[i];
    }
 }

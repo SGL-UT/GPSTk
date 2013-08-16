@@ -327,7 +327,7 @@ namespace gpstk
       else s << " Leap seconds is NOT valid\n";
       if(commentList.size() > 0) {
          s << "Comments (" << commentList.size() << ") :\n";
-         for(int i=0; i<commentList.size(); i++)
+         for(size_t i=0; i<commentList.size(); i++)
             s << commentList[i] << endl;
       }
       s << "-------------------------------- END OF HEADER -------------------------------\n";

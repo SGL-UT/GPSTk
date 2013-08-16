@@ -51,13 +51,8 @@
 
 
 
-#ifdef __SUNPRO_CC
+
 #include "getopt.h"
-#elif defined (_AIX)
-#include "getopt.h"
-#else
-#include "getopt.h"
-#endif
 
 #include <string>
 #include <vector>

@@ -65,7 +65,7 @@ namespace gpstk
    {
       try {
          int nit;
-         double tof,tof_old,wt,sx,sy;
+         double tof,tof_old;
          GPSEllipsoid ellipsoid;
 
          nit = 0;

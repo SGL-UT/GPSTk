@@ -184,8 +184,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int SolarSystem::readASCIIdata(vector<string>& filenames) throw(Exception)
 {
 try {
-   int i,n;
-   double jd;
+   size_t i;
 
    if(filenames.size() == 0) return 0;
 
@@ -434,7 +433,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int SolarSystem::writeBinaryFile(string filename) throw(Exception)
 {
 try {
-   int i,recLength;
+   int recLength;
+   size_t i;
    string str;
 
    if(EphemerisNumber <= 0) return -4;
@@ -750,7 +750,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void SolarSystem::readBinaryHeader(std::string filename) throw(Exception)
 {
 try {
-   int i,DENUM,recLength;
+   int recLength;
+   size_t i;
    char buffer[100];
    double AU,EMRAT;
    string word;
@@ -1000,7 +1001,8 @@ void SolarSystem::computeState(double tt, SolarSystem::computeID which, double P
    throw(Exception)
 {
 try {
-   int i,j,i0,ncomp,offset;
+   int i,i0,ncomp;
+   size_t j;
 
    for(i=0; i<6; i++) PV[i]=0.0;
    if(which == NONE) return;

@@ -114,7 +114,8 @@ try {
          << "   Median   M-est     MAD\n";
    }
 
-   int i,j,k;
+   int j,k;
+   size_t i;
    map<DDid,DDData>::iterator it;
 
       // -------------------------------------------------------------------
@@ -125,7 +126,7 @@ try {
    for(it = DDDataMap.begin(); it != DDDataMap.end(); it++) {
 
          // is it too small?
-      if(it->second.count.size() < CI.MinDDSeg) {
+      if(int(it->second.count.size()) < CI.MinDDSeg) {
          DDdelete.push_back(it->first);
          continue;
       }
@@ -282,7 +283,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int EditDDResets(const DDid& ddid, DDData& dddata) throw(Exception)
 {
 try {
-   int i,j,ibeg,iend;
+   int j,iend;
+   size_t i, ibeg;
 
    // resets[0] will always be the initial count
    if(dddata.resets.size() <= 1) return 0;
@@ -319,7 +321,7 @@ try {
       else
          j = dddata.resets[i];
 
-      if(j - dddata.resets[i-1] > iend-ibeg) {
+      if(j - dddata.resets[i-1] > iend-int(ibeg)) {
          ibeg = dddata.resets[i-1];
          iend = j;
       }
@@ -358,7 +360,8 @@ try {
    //   << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
    //   << endl;
 
-   int i,j,gappast,gapfuture;
+   int gappast,gapfuture;
+   size_t i,j;
 
    // loop over all counts
    // i is current (good) point, j is the next good point
@@ -397,7 +400,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int EditDDSlips(const DDid& ddid, DDData& dddata, int frequency) throw(Exception)
 {
 try {
-   int i,j,k,n,m,tdcount,tddt,ii,iter;
+   int j,k,n,tddt,ii,iter;
+   size_t i,m;
    double slip,fslip,tol;
    vector<int> slipindex;
    vector<double> td,slipsize;
@@ -601,8 +605,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int EditDDOutliers(const DDid& ddid, DDData& dddata, int frequency) throw(Exception)
 {
 try {
-   int i,j,n,tol;
-   int N,M;                            // number of parameters, number of data
+   int i,j,n;
+   int M;                            // number of parameters, number of data
    int len = int(dddata.count.size()); // length of the buffers
    double median,mad,mest;
    Vector<double> cnt;

@@ -58,7 +58,7 @@ int main(int argv, char **argc)
 	vector <double> timeArray;
 	vector <double> phaseArray;
 	long double time, phase;
-	long unsigned int numPoints, i, numGaps;
+	long unsigned int numPoints, i, numGaps, N, m;
 	
 	// All of the time and clock phase data is read in from the standard input
 	i = 0;
@@ -77,7 +77,6 @@ int main(int argv, char **argc)
 	
 	// Variables used in Overlapping Allan Deviation calculations
 	double Tau, Tau0, sum, sigma1, sigma2;
-	int N, m;
 	
 	// Ensures there are at least the minimum number of points required to do calculations
 	N = numPoints;
@@ -101,7 +100,7 @@ int main(int argv, char **argc)
 		sigma2 = 0;
 		int y=0; //counts number of times a value is added to sigma
 		
-		for(int j=0; j < (N-3*m+1); j=j+1)
+		for(long unsigned int j=0; j < (N-3*m+1); j=j+1)
 		{
 			for(i = j; i <= (j+m-1); i++)
 			{

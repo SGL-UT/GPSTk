@@ -343,7 +343,7 @@ namespace gpstk
    int Rinex3EphemerisStore::addToList(list<Rinex3NavData>& thelist, SatID sysSat)
       const throw()
    {
-      int i,n(0);
+      int n(0);
       if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGPS) {
          list<EngEphemeris> GPSlist;
          n += GPSstore.addToList(GPSlist);

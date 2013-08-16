@@ -405,7 +405,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int EditDDdata(int n) throw(Exception)
 {
 try {
-   int i,k;
+   int k;
+   size_t i;
    double res,median,mad,mest;
    map<DDid,DDData>::iterator it;
 
@@ -459,7 +460,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int ModifyState(int niter) throw(Exception)
 {
 try {
-   int i,j,k;
+   int j,k;
+   size_t i;
 
       // set the State elements to zero for next iteration
    map<string,Station>::const_iterator it;
@@ -576,7 +578,8 @@ try {
    Matrix<double> apCov(N,N,0.0);
    Vector<double> apState(N,0.0);         // most states have apriori value = 0
 
-   int i,j,k,n;
+   int i,j,k;
+   size_t n;
    double ss;
    Position BL;
    map<string,Station>::const_iterator it;
@@ -649,8 +652,8 @@ try {
             // find indexes in state vector of all RZD states for this site
          string stname;
          vector<int> indexes;
-         for(n=0; n<CI.NRZDintervals; n++) {
-            stname = it->first + string("-RZD") + asString(n);
+         for(int ii=0; ii<CI.NRZDintervals; ii++) {
+            stname = it->first + string("-RZD") + asString(ii);
             i = StateNL.index(stname);
             if(i == -1) {
                Exception e("RZD states confused: unable to find state " + stname);
@@ -796,7 +799,8 @@ void EvaluateLSEquation(int count,              // count of current epoch
    throw(Exception)
 {
 try {
-   int i,j,k,n,m,ntrop;
+   int i,j,k,n,ntrop;
+   size_t m;
    double ER,trop,mapf;
    string site1,site2;
    GSatID sat1,sat2;
@@ -999,7 +1003,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int UpdateNominalState(void) throw(Exception)
 {
 try {
-   int n,i,j,k;
+   int i,j,k;
 
    if(Biasfix) {
       // NB when Biasfix, State has dimension NState buf dX has dimension N>NState
@@ -1048,7 +1052,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void OutputIterationResults(bool final) throw(Exception)
 {
 try {
-   int i,N=dX.size();
+   int j,N=dX.size();
+   size_t i;
    format f166(16,6),f206(20,6),f82s(8,2,2);
 
    oflog << "         State label"
@@ -1057,12 +1062,12 @@ try {
          << "     New Solution"
          << "            Sigma"
          << endl;
-   for(i=0; i<N; i++) {
-      oflog << setw(20) << StateNL.getName(i)
-            << " " << f166 << NominalState[i]
-            << " " << f166 << dX[i]
-            << " " << f166 << State[i]
-            << " " << f166 << SQRT(Cov(i,i))
+   for(j=0; j<N; j++) {
+      oflog << setw(20) << StateNL.getName(j)
+            << " " << f166 << NominalState[j]
+            << " " << f166 << dX[j]
+            << " " << f166 << State[j]
+            << " " << f166 << SQRT(Cov(j,j))
             << endl;
    }
 
@@ -1247,7 +1252,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void OutputFinalResults(int iret) throw(Exception)
 {
 try {
-   int i,j,len;
+   int j,k,len;
+   size_t i;
    string site1,site2;
    GSatID sat1,sat2;
    format f133(13,3),f166(16,6);
@@ -1258,24 +1264,24 @@ try {
 
       if(CI.NRZDintervals > 0) {
          oflog << "Residual zenith tropospheric delays (m) with sigma" << endl;
-         for(i=0; i<NState; i++) {
-            DecomposeName(StateNL.getName(i), site1, site2, sat1, sat2);
+         for(k=0; k<NState; k++) {
+            DecomposeName(StateNL.getName(k), site1, site2, sat1, sat2);
             if(site2.substr(0,3) != string("RZD")) continue;
             oflog << site1 << " : trop delay (m) #" << site2.substr(3,site2.size()-3)
-               << " " << f133 << State(i)
-               << " " << f133 << SQRT(Cov(i,i))
+               << " " << f133 << State(k)
+               << " " << f133 << SQRT(Cov(k,k))
                << endl;
          }
          oflog << endl;
       }
 
       oflog << "Biases (cycles) with sigma" << endl;
-      for(i=0; i<NState; i++) {
-         DecomposeName(StateNL.getName(i), site1, site2, sat1, sat2);
+      for(k=0; k<NState; k++) {
+         DecomposeName(StateNL.getName(k), site1, site2, sat1, sat2);
          if(site2.size() ==0 || sat1.id == -1 || sat2.id == -1) continue;
-         oflog << StateNL.getName(i)
-            << " " << f133 << BiasState(i)/wl1
-            << " " << f133 << SQRT(BiasCov(i,i))/wl1
+         oflog << StateNL.getName(k)
+            << " " << f133 << BiasState(k)/wl1
+            << " " << f133 << SQRT(BiasCov(k,k))/wl1
             << endl;
       }
       oflog << endl;
@@ -1294,17 +1300,17 @@ try {
          }
       }
       oflog << setw(len) << "Position" << endl;
-      for(i=0; i<NState; i++) {
-         DecomposeName(StateNL.getName(i), site1, site2, sat1, sat2);
+      for(k=0; k<NState; k++) {
+         DecomposeName(StateNL.getName(k), site1, site2, sat1, sat2);
          if(site2!=string("X") && site2!=string("Y") && site2!=string("Z"))
             continue;
-         oflog << StateNL.getName(i);
+         oflog << StateNL.getName(k);
          for(j=0; j<NState; j++) {
             string site22,site11;
             GSatID sat11,sat22;
             DecomposeName(StateNL.getName(j), site11, site22, sat11, sat22);
             if(site22==string("X") || site22==string("Y") || site22==string("Z"))
-               oflog << scientific << setw(len) << setprecision(6) << Cov(i,j);
+               oflog << scientific << setw(len) << setprecision(6) << Cov(k,j);
          }
          if(site2 == string("X")) oflog << fixed << setw(len)
             << setprecision(6) << Stations[site1].pos.X();

@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
       cout  << "                     sample standard deviation is " 
 	    << secondStats.StdDev() << endl << endl;
 
-      double median,mad,mest,Q1,Q3;
+      double median,mad,Q1,Q3;
 
       QSort(s,N);
       Robust::Quartiles(s,N,Q1,Q3);

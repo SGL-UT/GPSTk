@@ -226,7 +226,7 @@ namespace gpstk
       const float n = 20000;     // number of samples in 1 ms
       // magnitude of the carrier estimate; should be 4.14 for 2 bit
       // quantization, 2.18 for 1 bit. 
-      const float m = 2.18;
+      const float m = 2.18f;
       const float bw = 0.9 * chipRate; // equivalent noise bandwidth (Hz)
 
       const float d = PI/(n*n*m*m*4.0);

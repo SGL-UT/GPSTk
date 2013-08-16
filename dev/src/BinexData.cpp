@@ -777,7 +777,9 @@ namespace gpstk
          default:
                // If the byte count is 0, store "no value"
             result    = 1;
-            buffer[0] = 0x80;
+            unsigned char  nv;
+            nv = 0x80;
+            buffer[0] = nv;
 
       } // switch
       outBuffer.replace(offset, size, buffer, size);

@@ -189,13 +189,13 @@ bool NavSum::initialize(int argc, char* argv[]) throw()
 
    if (prnOption.getCount())
    {
-      for (int i = 0; i < prnOption.getCount(); i++)
+      for (size_t i = 0; i < prnOption.getCount(); i++)
          prnFilterList.push_back(asInt(prnOption.getValue()[i]));
    }
 
    if (blockOption.getCount())
    {
-      for (int i = 0; i < blockOption.getCount(); i++)
+      for (size_t i = 0; i < blockOption.getCount(); i++)
          blockFilterList.push_back(asInt(blockOption.getValue()[i]));
    }
 

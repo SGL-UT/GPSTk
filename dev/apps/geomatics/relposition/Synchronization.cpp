@@ -316,7 +316,7 @@ try {
       << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
       << endl;
 
-   int nc;
+   size_t nc;
    double angle,pwu,prevpwu,shadow;
    double prevwindup = 0.0;
    CommonTime tt;

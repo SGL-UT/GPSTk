@@ -237,7 +237,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 class Segment {
 public:
       // member data
-   int nbeg,nend;          // array indexes of the first and last good points
+   size_t nbeg,nend;       // array indexes of the first and last good points
                            // always maintain these so they point to good data
    int npts;               // number of good points in this Segment
    int nseg;               // segment number - used for data dumps only
@@ -599,7 +599,7 @@ int gpstk::DiscontinuityCorrector(SatPass& svp,
    throw(Exception)
 {
 try {
-   int i,j,iret;
+   int j,iret;
    GDCUnique++;
 
    // --------------------------------------------------------------------------------
@@ -632,7 +632,7 @@ try {
    // fill the new SatPass with the input data
    nsvp.status() = svp.status();
    vector<unsigned short> lli(6),ssi(6);
-   for(i=0; i<svp.size(); i++) {
+   for(size_t i=0; i<svp.size(); i++) {
       for(j=0; j<6; j++) {
          newdata[j] = j < 4 ? svp.data(i,DCobstypes[j]) : 0.0;
          lli[j] = j < 4 ? svp.LLI(i,DCobstypes[j]) : 0;
@@ -689,19 +689,19 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 GDCPass::GDCPass(SatPass& sp, const GDCconfiguration& gdc)
       : SatPass(sp.getSat(), sp.getDT(), sp.getObsTypes())
 {
-   int i,j;
+   size_t j;
    Status = sp.status();
    dt = sp.getDT();
    sat = sp.getSat();
    vector<string> ot = sp.getObsTypes();
-   for(i=0; i<ot.size(); i++) {
+   for(size_t i=0; i<ot.size(); i++) {
       labelForIndex[i] = ot[i];
       indexForLabel[labelForIndex[i]] = i;
    }
 
    vector<double> vdata;
    vector<unsigned short> lli,ssi;
-   for(i=0; i<sp.size(); i++) {
+   for(size_t i=0; i<sp.size(); i++) {
       vdata.clear();
       lli.clear();
       ssi.clear();
@@ -722,7 +722,8 @@ GDCPass::GDCPass(SatPass& sp, const GDCconfiguration& gdc)
 int GDCPass::preprocess(void) throw(Exception)
 {
 try {
-   int i,ilast,Ngood;
+   int ilast,Ngood;
+   size_t i;
    double biasL1,biasL2,dbias;
    list<Segment>::iterator it;
 
@@ -754,7 +755,7 @@ try {
 
       // loop over points in the pass
       // editing obviously bad data and adding segments where necessary
-   for(ilast=-1,i=0; i<size(); i++) {
+   for(ilast=-1, i=0; i<size(); i++) {
 
       // ignore data the caller has marked BAD
       if(!(spdvector[i].flag & OK)) continue;
@@ -853,7 +854,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::linearCombinations(void) throw(Exception)
 {
 try {
-   int i;
+   size_t i;
    double wlr,wlp,wlbias,gfr,gfp;
    list<Segment>::iterator it;
 
@@ -982,7 +983,7 @@ try {
    const double WLobviousNwlLimit=cfg(WLobviousLimit)*cfg(WLSigma);
    const double GFobviousNwlLimit=cfg(GFobviousLimit)*cfg(GFVariation)/wl21;
    bool outlier;
-   int i,j,iret,ibad=0,igood,nok;
+   int j,iret,ibad=0,igood,nok;
    double limit,wlbias;
    list<Segment>::iterator it;
 
@@ -999,7 +1000,7 @@ try {
    nok = 0;
    igood = -1;
    outlier = false;
-   for(i=0; i<size(); i++) {
+   for(size_t i=0; i<size(); i++) {
       if(i < it->nbeg) {
          outlier = false;
          continue;
@@ -1090,9 +1091,9 @@ int GDCPass::firstDifferences(string which) throw(Exception)
 try {
    //if(A1.size() != size()) return FatalProblem;
 
-   int i,iprev=-1;
+   int iprev=-1;
 
-   for(i=0; i<size(); i++) {
+   for(size_t i=0; i<size(); i++) {
       // ignore bad data
       if(!(spdvector[i].flag & OK)) {
          spdvector[i].data[A1] = spdvector[i].data[A2] = 0.0;
@@ -1147,7 +1148,7 @@ try {
    it->npts = 0;
 
    // loop over data, adding to Stats, and counting good points
-   for(int i=it->nbeg; i<=it->nend; i++) {
+   for(size_t i=it->nbeg; i<=it->nend; i++) {
       if(!(spdvector[i].flag & OK)) continue;
       it->WLStats.Add(spdvector[i].data[P1] - it->bias1);
       it->npts++;
@@ -1170,7 +1171,8 @@ void GDCPass::WLsigmaStrip(list<Segment>::iterator& it) throw(Exception)
 try {
    bool outlier,haveslip;
    unsigned short slip;
-   int i,slipindex;
+   int slipindex;
+   size_t i, j;
    double wlbias,nsigma,ave;
 
    // use robust stats on small segments, for big ones stick with conventional
@@ -1179,7 +1181,7 @@ try {
       // 'change the arrays' A1 and A2; they will be overwritten by WLstatSweep
       // but then dumped as DSCWLF...
       // use temp vectors so they can be passed to Robust::MAD and Robust::MEstimate
-      int j,k;
+      int k;
       double median,mad;
       vector<double> vecA1,vecA2;      // use these temp, for Robust:: calls
 
@@ -1322,10 +1324,11 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::WLstatSweep(list<Segment>::iterator& it, int width) throw(Exception)
 {
 try {
-   int iminus,i,iplus;
+   size_t iminus,i,iplus, uwidth;
    double wlbias,test,limit;
    Stats<double> pastStats, futureStats;
 
+   uwidth = width;
    // ignore empty segments
    if(it->npts == 0) return ReturnOK;
    it->WLsweep = true;
@@ -1340,8 +1343,8 @@ try {
    // start with the window 'squashed' to one point - the first one
    iminus = i = iplus = it->nbeg;
 
-   // fill up the future window to size 'width', but don't go beyond the segment
-   while(futureStats.N() < width && iplus <= it->nend) {
+   // fill up the future window to size 'uwidth' (unsigned 'width'), but don't go beyond the segment
+   while(futureStats.N() < uwidth && iplus <= it->nend) {
       if(spdvector[iplus].flag & OK) {                // add only good data
          futureStats.Add(spdvector[iplus].data[P1] - it->bias1);
       }
@@ -1386,14 +1389,14 @@ try {
       futureStats.Subtract(wlbias);
       pastStats.Add(wlbias);
       // ... and move iplus up by one (good) point, ...
-      while(futureStats.N() < width && iplus <= it->nend) {
+      while(futureStats.N() < uwidth && iplus <= it->nend) {
          if(spdvector[iplus].flag & OK) {
             futureStats.Add(spdvector[iplus].data[P1] - it->bias1);
          }
          iplus++;
       }
       // ... and move iminus up by one good point
-      while(pastStats.N() > width && iminus <= it->nend) {// <= nend not really nec.
+      while(pastStats.N() > uwidth && iminus <= it->nend) {// <= nend not really nec.
          if(spdvector[iminus].flag & OK) {
             pastStats.Subtract(spdvector[iminus].data[P1] - it->bias1);
          }
@@ -1416,7 +1419,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::detectWLsmallSlips(void) throw(Exception)
 {
 try {
-   int i,k,nok;
+   int k,nok;
    double wlbias;
    list<Segment>::iterator it;
 
@@ -1429,7 +1432,7 @@ try {
    it->WLStats.Reset();
 
    // loop over the data arrays - all segments
-   i = it->nbeg;
+   size_t i = it->nbeg;
    nok = 0;
    int halfwidth = int(cfg(WLSlipEdge));
    while(i < size())
@@ -1520,7 +1523,8 @@ bool GDCPass::foundWLsmallSlip(list<Segment>::iterator& it, int i)
 {
 try {
    const int minMaxWidth=int(cfg(WLSlipEdge)); // test 4,5, = ~~1/2 WLWindowWidth
-   int j,jp,jm,pass4,pass5,Pass;
+   int j,pass4,pass5,Pass;
+   size_t jp, jm;
 
    // A1 = test = fabs(futureStats.Average() - pastStats.Average());
    // A2 = limit = ::sqrt(futureStats.Variance() + pastStats.Variance());
@@ -1622,7 +1626,8 @@ int GDCPass::fixAllSlips(string which) throw(Exception)
 try {
    // find the largest segment and start there, always combine the largest with its
    // largest neighbor
-   int i,nmax,ifirst;
+   int nmax,ifirst;
+   size_t i;
    list<Segment>::iterator it, kt;
 
    // loop over all segments, erasing empty ones
@@ -1763,7 +1768,7 @@ void GDCPass::WLslipFix(list<Segment>::iterator& left,
 throw(Exception)
 {
 try {
-   int i;
+   size_t i;
 
    GDCUniqueFix++;
 
@@ -1847,8 +1852,9 @@ void GDCPass::GFslipFix(list<Segment>::iterator& left,
 {
 try {
       // use this number of data points on each side of slip
-   const int Npts=int(cfg(GFFixNpts));
-   int i,nb,ne,nl,nr,ilast;
+   const size_t Npts=int(cfg(GFFixNpts));
+   int nl,nr,ilast;
+   size_t nb, ne;
    long n1,nadj;              // slip magnitude (cycles)
    double dn1,dnGFR;
    Stats<double> Lstats,Rstats;
@@ -1860,7 +1866,7 @@ try {
 //    << " R: " << right->bias2 << endl;
    // find Npts points on each side of slip
    nb = left->nend;
-   i = 1;
+   size_t i = 1;
    nl = 0;
    ilast = -1;                               // ilast is last good point before slip
    while(nb > left->nbeg && i < Npts) {
@@ -1996,7 +2002,8 @@ throw(Exception)
 {
 try {
    bool quit;
-   int i,k,in[3];
+   int in[3];
+   size_t i, k;
    double rof,rmsrof[3];
    PolyFit<double> PF[3];
 
@@ -2016,7 +2023,7 @@ try {
          if(PF[in[k]].N() > 0) continue;
 
          // add all the data
-         for(i=nb; i<=ne; i++) {
+         for(i=nb; i<=size_t(ne); i++) {
             if(!(spdvector[i].flag & OK)) continue;
             PF[in[k]].Add(
                // data
@@ -2032,7 +2039,7 @@ try {
 
          // compute RMS residual of fit
          rmsrof[in[k]] = 0.0;
-         for(i=nb; i<=ne; i++) {
+         for(i=nb; i<=size_t(ne); i++) {
             if(!(spdvector[i].flag & OK)) continue;
             rof =    // data minus fit
                spdvector[i].data[L2]
@@ -2100,7 +2107,7 @@ try {
    }  // end while loop
 
    // dump the raw data with all the fits
-   if(cfg(Debug) >= 4) for(i=nb; i<=ne; i++) {
+   if(cfg(Debug) >= 4) for(i=nb; i<=size_t(ne); i++) {
       if(!(spdvector[i].flag & OK)) continue;
       log << "GFE " << GDCUnique << " " << sat
          << " " << GDCUniqueFix
@@ -2190,7 +2197,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::detectGFslips(void) throw(Exception)
 {
 try {
-   int i,iret;
+   int iret;
+   size_t i;
    //temp double bias;
    list<Segment>::iterator it;
 
@@ -2268,7 +2276,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::GFphaseResiduals(list<Segment>::iterator& it) throw(Exception)
 {
 try {
-   int i,j,ndeg,nprev;
+   int ndeg,nprev;
+   size_t i;
    double fit,rbias,prev,tmp;
    Stats<double> rofStats;
 
@@ -2356,7 +2365,8 @@ int GDCPass::detectGFsmallSlips(void) throw(Exception)
 {
 try {
    const int width=int(cfg(GFSlipWidth));
-   int i,j,iplus,inew,ifirst,nok;
+   int i,j,inew,ifirst,nok;
+   size_t iplus;
    list<Segment>::iterator it;
    Stats<double> pastStats,futureStats;
 
@@ -2477,7 +2487,6 @@ bool GDCPass::foundGFoutlier(int i, int inew,
 {
 try {
    if(i < 0 || inew < 0) return false;
-   bool ok;
    double pmag = spdvector[i].data[A1]; // -pastSt.Average();
    double fmag = spdvector[inew].data[A1]; // -futureSt.Average();
    double var = ::sqrt(pastSt.Variance() + futureSt.Variance());
@@ -2532,8 +2541,7 @@ bool GDCPass::foundGFsmallSlip(int i,int nseg,int iend,int ibeg,
 {
 try {
    if(i < 0) return false;
-
-   int j,k;
+   int j, k;
    double mag,pmag,fmag,pvar,fvar;
 
    pmag = fmag = pvar = fvar = 0.0;
@@ -2584,7 +2592,7 @@ try {
    const double STN=cfg(GFSlipStepToNoise); // step (past->future) to noise ratio
    const double MTS=cfg(GFSlipToStep);      // magnitude to step ratio
    const double MTN=cfg(GFSlipToNoise);     // magnitude to noise ratio
-   const int Edge=int(cfg(GFSlipEdge));     // number of points before edge
+   const size_t Edge=int(cfg(GFSlipEdge));     // number of points before edge
    const double RangeCheckLimit = 2*cfg(WLSigma)/(0.83*wl21);
                                                 // 2 * range noise in units of wl21
    const double snr=fabs(pmag-fmag)/::sqrt(pvar+fvar);
@@ -2637,9 +2645,9 @@ try {
       if(fabs(mag) > RangeCheckLimit) {
          double magGFR,mtnGFR;
          Stats<double> pGFRmPh,fGFRmPh;
-         for(j=0; j<pastIn.size(); j++) {
-            if(pastIn[j] > -1) pGFRmPh.Add(spdvector[pastIn[j]].data[L1]);
-            if(futureIn[j] > -1) fGFRmPh.Add(spdvector[futureIn[j]].data[L1]);
+         for(size_t jj=0; jj<pastIn.size(); jj++) {
+            if(pastIn[jj] > -1) pGFRmPh.Add(spdvector[pastIn[jj]].data[L1]);
+            if(futureIn[jj] > -1) fGFRmPh.Add(spdvector[futureIn[jj]].data[L1]);
          }
          magGFR = spdvector[i].data[L1] - (pGFRmPh.Average()+fGFRmPh.Average())/2.0;
          mtnGFR = fabs(magGFR)/::sqrt(pGFRmPh.Variance()+fGFRmPh.Variance());
@@ -2705,12 +2713,11 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::WLconsistencyCheck(void) throw(Exception)
 {
 try {
-   int i,k;
-   const int N=2*int(cfg(WLWindowWidth));
+   const size_t N=2*int(cfg(WLWindowWidth));
    double mag,absmag,factor=wl2/wl21;
 
    // loop over the data and look for points with GFDETECT but not WLDETECT or WLFIX
-   for(i=0; i<size(); i++) {
+   for(size_t i=0; i<size(); i++) {
 
       if(!(spdvector[i].flag & OK)) continue;        // bad
       if(!(spdvector[i].flag & DETECT)) continue;    // no slips
@@ -2718,7 +2725,7 @@ try {
 
       // GF only slip - compute WL stats on both sides
       Stats<double> futureStats,pastStats;
-      k = i;
+      size_t k = i;
       // fill future
       while(k < size() && futureStats.N() < N) {
          if(spdvector[k].flag & OK)                  // data is good
@@ -2800,7 +2807,8 @@ string GDCPass::finish(int iret, SatPass& svp, vector<string>& editCmds)
 {
 try {
    bool ok;
-   int i,ifirst,ilast,npts;
+   int ifirst,ilast,npts;
+   size_t i;
    long N1,N2,prevN1,prevN2;
    double slipL1,slipL2,WLbias,GFbias;
    //SatPassData spd;
@@ -3127,7 +3135,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 string GDCPass::dumpSegments(string label, int level, bool extra) throw(Exception)
 {
 try {
-   int i,ifirst,ilast;
+   size_t i, ifirst, ilast;
    list<Segment>::iterator it;
    string msg;
    ostringstream oss;
@@ -3214,7 +3222,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void GDCPass::deleteSegment(list<Segment>::iterator& it, string msg) throw(Exception)
 {
 try {
-   int i;
+   size_t i;
 
    if(cfg(Debug) >= 6) log << "Delete segment "
       << GDCUnique << " " << sat << " " << it->nseg

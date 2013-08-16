@@ -92,7 +92,7 @@ namespace gpstk
       template<class T> std::set<T> unique(const std::valarray<T> & rhs)
       {
          using namespace std;
-         int i;
+         size_t i;
 
          valarray<T> newArray;
 

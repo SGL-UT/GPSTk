@@ -28,7 +28,7 @@ StochasticModels.cpp
 target_link_libraries(baselib gpstk geomatics)
 
 add_executable(DDBase DDBase.cpp)
-target_link_libraries(DDBase baselib gpstk geomatics)
+target_link_libraries(DDBase geomatics gpstk baselib)
 install (TARGETS DDBase DESTINATION bin)
 
 add_executable(ddmerge ddmerge.cpp)

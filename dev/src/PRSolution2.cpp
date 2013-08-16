@@ -223,7 +223,8 @@ namespace gpstk
    {
       try
       {
-         int iret,jret,i,j,N,Nreject,MinSV,stage;
+         int iret,N,Nreject,MinSV,stage;
+         size_t i, j;
          vector<bool> UseSat, UseSave;
          vector<int> GoodIndexes;
          // Use these to save the 'best' solution within the loop.
@@ -693,7 +694,8 @@ namespace gpstk
       
       try
       {
-         int iret,i,j,n,N;
+         int iret,j,n,N;
+         size_t i;
          double rho,wt,svxyz[3];
          GPSEllipsoid ell;               // WGS84?
          

@@ -181,16 +181,9 @@ set (gpstk_src
       YDSTime.cpp
       YumaAlmanacStore.cpp
       YumaData.cpp
-      convhelp.hpp      
-      geometry.hpp      
-      gps_constants.hpp 
-      gpstkplatform.h   
-      mergePCodeWords.h 
-      stl_helpers.hpp   
-      ${GETOPT_SOURCE}      
+      ${GETOPT_SOURCE}
 )
 
-#add_library (gpstk_static STATIC ${gpstk_src})
 install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
-add_library (gpstk SHARED ${gpstk_src})
+add_library (gpstk ${STADYN} ${gpstk_src})
 install (TARGETS gpstk DESTINATION lib)

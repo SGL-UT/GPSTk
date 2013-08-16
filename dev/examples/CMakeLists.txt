@@ -60,7 +60,7 @@ target_link_libraries(example15 gpstk geomatics)
 #target_link_libraries(example17 gpstk)
 
 add_executable(example18 example18.cpp)
-target_link_libraries(example18 gpstk procframe geomatics)
+target_link_libraries(example18 gpstk geomatics procframe)
 
 
 

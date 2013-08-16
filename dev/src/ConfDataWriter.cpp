@@ -100,7 +100,7 @@ namespace gpstk
 	{
 		string line=var;
 
-      if(var.length()<variableWidth) 
+      if(int(var.length())<variableWidth) 
          line = StringUtils::leftJustify(var,variableWidth);
 
 		if(varComment.length()>0) line += " , " + varComment;
@@ -146,7 +146,7 @@ namespace gpstk
 	{
 		string line=var;
 
-      if(var.length()<variableWidth) 
+      if(int(var.length())<variableWidth) 
          line = StringUtils::leftJustify(var,variableWidth);
 
 		if(varComment.length() > 0) line += " , " + varComment;
@@ -176,7 +176,7 @@ namespace gpstk
 	{
 		string line=var;
 
-      if(var.length()<variableWidth) 
+      if(int(var.length())<variableWidth) 
          line = StringUtils::leftJustify(var,variableWidth);
 
 		if(varComment.length() > 0) line += " , " + varComment;

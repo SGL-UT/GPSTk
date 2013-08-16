@@ -61,8 +61,8 @@ namespace vplot
     if(ssidx == (cvec.size()*dvec.size()))
       ssidx = 0;
 
-    if(ssidx == issidx)
-	; //Throw an error...doing same stuff again
+  //  if(ssidx == issidx)
+	//; //Throw an error...doing same stuff again
 
     return pickNextSS(ssidx++);
   }

@@ -264,7 +264,7 @@ int Robust::RobustPolyFit(double *xd, const double *td, int nd,
 
       const int maxiter=50;
       const double conv_limit=::sqrt(double(nd))*1.e-3;
-      int i,j,k,niter;
+      int i,j,niter;
       double x0=xd[0],t0=td[0],mad,median,conv;
 #ifdef SEQUENTIAL
       double fit,dt;
@@ -400,7 +400,7 @@ double gpstk::ADtest(double *xd, const int nd,
 
    try {
       int i;
-      double med, *save;
+      double *save;
 
       if(save_flag) {
          save = new double[nd];

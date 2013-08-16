@@ -21,7 +21,7 @@ ObsUtils.cpp
 RinexConverters.cpp
 )
    
-add_library (rxio SHARED ${rxio_src})
+add_library (rxio ${STADYN} ${rxio_src})
 include_directories (${CMAKE_SOURCE_DIR}/src)
 include_directories (../../src)
 link_directories (../../src)

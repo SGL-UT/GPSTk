@@ -128,7 +128,6 @@ try {
    LOG(INFO) << " MC * inv\n" << CM * InvMC;
 
    int n;
-   double m;
    for(n=0,i=0; i<M; i++) {                // loop over data in the pass
 
       n++;

@@ -78,7 +78,6 @@ namespace gpstk
       uint32_t output;
       word_num = 0;
       bit_num = 0;
-      int bit16cnt;
       int andBits;
       int i;
    

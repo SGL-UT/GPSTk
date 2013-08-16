@@ -1529,7 +1529,7 @@ namespace gpstk
 
          // Print comments
       s << "*** START OF COMMENTS ***" << endl;
-      for(int i = 0; i < commentList.size(); ++i)
+      for(size_t i = 0; i < commentList.size(); ++i)
       {
          s << commentList[i] << endl;
       }

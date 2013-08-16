@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
       bool verbose=false;
       //char version_out='a';
       SP3Header::Version version_out(SP3Header::SP3a);
-      int i,j,nrec,nfile;
+      int i,j;
+      size_t k,nfile;
       string fileout("sp3.out");
       vector<string> inputFiles;
       vector<string> comments;
@@ -233,8 +234,8 @@ int main(int argc, char *argv[])
       // add comments
       if(comments.size() > 0) {
          // try to keep existing comments
-         for(i=0; i<comments.size(); i++) {
-            if(i > 3) {
+         for(k=0; k<comments.size(); k++) {
+            if(k > 3) {
                cout << "Warning - only 4 comments are allowed in SP3 header.\n";
                break;
             }

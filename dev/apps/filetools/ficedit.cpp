@@ -107,7 +107,7 @@ void FICedit::process()
 {
    list<kill_rec> kills;
 
-   for (int i=0; i<killOpt.getCount(); i++)
+   for (size_t i=0; i<killOpt.getCount(); i++)
    {
       string ks=killOpt.getValue()[i];
       kill_rec kill;

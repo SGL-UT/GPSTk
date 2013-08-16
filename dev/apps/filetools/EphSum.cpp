@@ -174,7 +174,7 @@ void EphSum::process()
    
    vector<string> values;
    values = inputOption.getValue();
-   for (int it=0;it<values.size();++it)
+   for (size_t it=0;it<values.size();++it)
    {
       bool successOnThisFile = false;
          // Leave a record in the output file so we can verify what

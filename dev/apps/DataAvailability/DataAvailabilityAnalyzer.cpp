@@ -249,7 +249,7 @@ bool DataAvailabilityAnalyzer::initialize(int argc, char *argv[]) throw()
    if (smashAdjacentOpt.getCount())
       smashAdjacent = true;
 
-   for (int i=0; i<ignorePrnOpt.getCount(); i++)
+   for (size_t i=0; i<ignorePrnOpt.getCount(); i++)
       ignorePrn.insert(StringUtils::asInt(ignorePrnOpt.getValue()[i]));
 
    oiX = oiTime;
@@ -355,7 +355,7 @@ void DataAvailabilityAnalyzer::spinUp()
 {      
    EphReader ephData;
    ephData.verboseLevel = verboseLevel;
-   for (int i=0; i < ephFileOpt.getCount(); i++)
+   for (size_t i=0; i < ephFileOpt.getCount(); i++)
       ephData.read(ephFileOpt.getValue()[i]);
 
    if (ephData.eph == NULL)

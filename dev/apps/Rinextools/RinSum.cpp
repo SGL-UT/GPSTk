@@ -324,7 +324,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(WARNING) << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(WARNING) << "  " << cmdlineUnrecognized[i];
       LOG(WARNING) << "End of unrecognized arguments";
    }
@@ -513,7 +513,8 @@ int ProcessFiles(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
-   int i,j,k,iret,nfile,nfiles;
+   int iret,nfiles;
+   size_t i,j,k,nfile;
    string tag;
    CommonTime lastObsTime, prevObsTime, firstObsTime;
    RinexSatID sat;
@@ -604,7 +605,7 @@ try {
                  << (sit->second).size() << " observations...";
 
          // find the max size of obs list
-         if((sit->second).size() > nmaxobs) nmaxobs = (sit->second).size();
+         if(int((sit->second).size()) > nmaxobs) nmaxobs = (sit->second).size();
       }
 
       if(pLOGstrm == &cout && !C.brief)
@@ -893,7 +894,7 @@ try {
                if((sit->first) == sysChar) {
                   oss.str("");
                   oss << " " << tabIt->sat << " ";
-                  int obsSize = (Rhead.mapObsTypes.find(sysChar)->second).size();
+                  size_t obsSize = (Rhead.mapObsTypes.find(sysChar)->second).size();
                   for(k = 0; k < obsSize; k++)
                      oss << setw(7) << tabIt->nobs[k];
 

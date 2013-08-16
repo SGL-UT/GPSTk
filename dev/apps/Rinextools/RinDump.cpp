@@ -329,7 +329,8 @@ try {
    expand_filename(C.InputSP3Files);
    expand_filename(C.InputNavFiles);
 
-   int i,j,nread;
+   int nread;
+   size_t i;
    ostringstream ossE;
 
    // -------- SP3 files --------------------------
@@ -463,7 +464,7 @@ try {
    // NB Nav files may set GLOfreqChan
    if(C.SP3EphStore.size() == 0 && C.InputNavFiles.size() > 0) {
       try {
-         for(int nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
+         for(size_t nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
             Rinex3NavStream nstrm(C.InputNavFiles[nfile].c_str());
             if(!nstrm.is_open()) {
                ossE << "Error : failed to open RINEX Nav file "
@@ -786,7 +787,7 @@ void Configuration::SetDefaults(void) throw()
    map1to3Sys["C"] = "COM";   map3to1Sys["COM"] = "C";
 
    string validSys(ObsID::validRinexSystems);
-   for(int i=0; i<validSys.size(); i++) {
+   for(size_t i=0; i<validSys.size(); i++) {
       if(map1to3Sys.count(string(1,validSys[i])) == 0)
          {LOG(WARNING) << "Warning - system \"" << validSys[i]
             << "\" does not have 3-char entry in map1to3Sys";}
@@ -863,7 +864,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       string syss(ObsID::validRinexSystems);
       // build a table
       map<string, map<string, map<string, map<char,string> > > > table;
-      for(int s=0; s<syss.size(); s++)
+      for(size_t s=0; s<syss.size(); s++)
          for(int j=ObsID::cbAny; j<ObsID::cbUndefined; ++j)
             for(int k=ObsID::tcAny; k<ObsID::tcUndefined; ++k)
                for(int i=ObsID::otAny; i<ObsID::otUndefined; ++i)
@@ -897,7 +898,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       map<string, map<string, map<char,string> > >::iterator jt;
       map<string, map<char,string> >::iterator kt;
       // find field lengths
-      int len2(4),len3(5),len4(6);  // 3-char len4(7);        // 4-char
+      size_t len2(4),len3(5),len4(6);  // 3-char len4(7);        // 4-char
       for(it=table.begin(); it!=table.end(); ++it)
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
             for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
@@ -912,7 +913,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       LOG(INFO) << "     " << leftJustify("    ",len2)
                 << " " << center("     ",len3)
                 << "  range   phase          Strength";
-      for(int i=0; i<syss.size(); ++i) {
+      for(size_t i=0; i<syss.size(); ++i) {
          it = table.find(RinexSatID(string(1,syss[i])).systemString3());
          if(it == table.end()) continue;
          if(i > 0) {LOG(INFO) << "";}
@@ -1022,7 +1023,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(WARNING) << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(WARNING) << "  " << cmdlineUnrecognized[i];
       LOG(WARNING) << "End of unrecognized arguments";
    }
@@ -1183,7 +1184,8 @@ string Configuration::BuildCommandLine(void) throw()
 //------------------------------------------------------------------------------------
 int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 {
-   int i,n;
+   int n;
+   size_t i;
    vector<string> fld;
    ostringstream oss,ossx;       // oss for Errors, ossx for Warnings and info
 
@@ -1351,7 +1353,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          // are the codes allowed?
          msg = mapSysCodes[fld[0]];
          bool ok(true);
-         for(int j=0; j<fld[1].size(); j++)
+         for(size_t j=0; j<fld[1].size(); j++)
             if(msg.find(fld[1][j],0) == string::npos) { ok = false; break; }
          if(ok) mapSysCodes[fld[0]] = fld[1];
       }
@@ -1393,7 +1395,8 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    static const int width=13;
-   int i,j,k,iret,nfile,nfiles;
+   int iret,nfiles;
+   size_t i,j,k,nfile;
    string tag;
    RinexSatID sat;
    Rinex3ObsStream ostrm;
@@ -1818,7 +1821,7 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
 // Parse combo given by lab, and if valid save in C.Combos
 bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 {
-   int i,j;
+   size_t i,j;
    string sys,obsid;
    RinexSatID sat;
    Configuration& C(Configuration::Instance());
@@ -2126,7 +2129,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
 
    // sum up the terms
    value = 0.0;      // member
-   for(int i=0; i<sysConsts[sys1].size(); i++) {
+   for(size_t i=0; i<sysConsts[sys1].size(); i++) {
       // convert the string to a RinexObsID
       string obsid(sysObsids[sys1][i]);
       if(obsid.size() == 4 && obsid[0] != sys1[0]) {     // system does not match
@@ -2144,7 +2147,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
       // find which code to use
       vector<RinexObsID> allObsIDs;
       if(obsid[3] == '*') {                              // try every possibility
-         for(int j=0; j<C.mapSysCodes[sys3].size(); j++) {
+         for(size_t j=0; j<C.mapSysCodes[sys3].size(); j++) {
             string oi(obsid.substr(0,3)+string(1,C.mapSysCodes[sys3][j]));
             if(isValidRinexObsID(oi))
                allObsIDs.push_back(RinexObsID(oi));
@@ -2156,7 +2159,7 @@ double LinCom::Compute(const RinexSatID sat, Rinex3ObsHeader& Rhead,
       // find the index of the ObsID in the header
       double data(0.0);
       vector<RinexObsID>::const_iterator jt;
-      for(int k=0; k<allObsIDs.size(); k++) {
+      for(size_t k=0; k<allObsIDs.size(); k++) {
          string oi(sys1 + allObsIDs[k].asString());
          jt = find(Rhead.mapObsTypes[sys1].begin(),
                    Rhead.mapObsTypes[sys1].end(), allObsIDs[k]);
@@ -2245,7 +2248,7 @@ ostream& operator<<(ostream& os, LinCom& lc) throw()
    while(it != lc.sysConsts.end()) {
       string sys = it->first;
       oss << "  Sys " << sys << ":";
-      for(int i=0; i<it->second.size(); ++i)
+      for(size_t i=0; i<it->second.size(); ++i)
          oss << (i==0 ? " " : " + ") << lc.sysConsts[sys][i]
             << " * " << lc.sysObsids[sys][i];
       ++it;

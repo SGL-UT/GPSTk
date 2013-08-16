@@ -73,7 +73,7 @@ namespace gpstk
       
          /// Add to the store directly
       void addEOPData(const CommonTime& utc,const EOPData& data)
-         throw();
+         throw(InvalidRequest);
 
          /// Get the data at the given epoch and return it.
       EOPData getEOPData(const CommonTime& utc) const

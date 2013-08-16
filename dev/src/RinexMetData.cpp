@@ -79,7 +79,7 @@ namespace gpstk
     line += rightJustify(asString<short>(civtime.second),2);
 
     for (int i = 0;
-         (i < strm.header.obsTypeList.size()) && (i < maxObsPerLine);
+         (i < int(strm.header.obsTypeList.size())) && (i < maxObsPerLine);
          i++)
     {
       RinexMetHeader::RinexMetType thistype = strm.header.obsTypeList[i];
@@ -96,7 +96,7 @@ namespace gpstk
     // Do we need continuation lines?
     if (strm.header.obsTypeList.size() > maxObsPerLine)
     {
-      for (int i = maxObsPerLine;
+      for (size_t i = maxObsPerLine;
            i < strm.header.obsTypeList.size();
            i++)
       {
@@ -171,7 +171,7 @@ namespace gpstk
     try
     {
       for (int i = 0;
-           (i < maxObsPerLine) && (i < hdr.obsTypeList.size());
+           (i < maxObsPerLine) && (i < int(hdr.obsTypeList.size()));
            i++)
       {
         int currPos = 7*i + 18;
@@ -194,7 +194,7 @@ namespace gpstk
       int currentElements = data.size();
       for (int i = currentElements;
            (i < (maxObsPerContinuationLine + currentElements)) &&
-             (i < hdr.obsTypeList.size());
+             (i < int(hdr.obsTypeList.size()));
            i++)
       {
         int currPos = 7*((i - maxObsPerLine) % maxObsPerContinuationLine) + 4;

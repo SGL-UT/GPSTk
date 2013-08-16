@@ -71,9 +71,8 @@ int main(int argc, char* argv[])
       m.dumpErrors(cout);
       m.displayUsage(cout);
    }
-   int i;
   
-   for (i=0;(i < fileOption.getCount());i++)
+   for (size_t i=0;(i < fileOption.getCount());i++)
    {
       RinexObsStream ros(fileOption.getValue()[i].c_str());
       CommonTime nextTime;

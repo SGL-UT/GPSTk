@@ -257,7 +257,7 @@ namespace gpstk
       std::list<double> phaseList( limitsPhaseList );
 
          // Get maximum size
-      int maxSize( codeList.size() );
+      size_t maxSize( codeList.size() );
       if( maxSize < phaseList.size() ) maxSize = phaseList.size();
 
          // This will prevent further storage of input data when calling
@@ -289,7 +289,7 @@ namespace gpstk
          double phaseLimit( 1000000.0 );
 
             // If 'maxSize > 0', let's do the other iterations
-         for (int i = 0; i < maxSize; i++)
+         for (size_t i = 0; i < maxSize; i++)
          {
 
                // Update current limits, if available

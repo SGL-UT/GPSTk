@@ -40,7 +40,8 @@ int CommandLine::ProcessCommandLine(int argc, char** argv, string PrgmDesc,
    throw(Exception)
 {
 try {
-   int i,j,k;
+   int j;
+   size_t k;
    string option,word;
 
    // if caller has set LOGlevel to DEBUG already, set debug here
@@ -95,8 +96,8 @@ try {
    if(debug >= 0) {
       ostringstream oss;
       oss << "CommandLine argument list passed to parser:" << endl;
-      for(j=0; j<Args.size(); j++)
-         oss << " arg[" << j << "] = " << Args[j] << endl;
+      for(k=0; k<Args.size(); k++)
+         oss << " arg[" << k << "] = " << Args[k] << endl;
 
       word = oss.str();
       stripTrailing(word,'\n');
@@ -133,14 +134,14 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void CommandLine::DumpConfiguration(ostream& os) throw(Exception)
 {
 try {
-   int i,j;
+   size_t i, j;
    double d;
    string str;
    RinexSatID sat;
    vector<string> values;
 
    // first determine the max size of the string '--option'
-   int maxoptsize(0);
+   size_t maxoptsize(0);
    for(i=0; i<options.size(); i++) {
       j = options[i].longOpt.length();
       if(j > maxoptsize) maxoptsize = j;
@@ -246,7 +247,7 @@ bool CommandLine::ValidateCommandLine(string& msg) throw(Exception)
 {
 try {
    bool isValid(true);
-   int i,j;
+   size_t i,j;
    string tag("Error (CommandLine): option ");
    ostringstream oss;
 
@@ -334,12 +335,13 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void CommandLine::BuildSyntaxPage(void) throw(Exception)
 {
 try {
-   int i,j,k;
+   int k;
+   size_t i, j;
    double d;
    string option,deflt;
 
    // first determine the max size of the string '--option <arg>'
-   int maxoptsize(0);
+   size_t maxoptsize(0);
    for(i=0; i<options.size(); i++) {
       j = options[i].longOpt.length() + options[i].arg.length() + 7;
       if(j > maxoptsize) maxoptsize = j;
@@ -432,7 +434,7 @@ try {
    static bool ignore_once=false;              // ignore one argument
    static bool process_undoc=false;
    static int process_undoc_index=-1;
-   int i,k;
+   size_t i;
    string msg,sarg(in_arg);
 
    if(sarg == string()) return;
@@ -558,7 +560,6 @@ try {
       }
 
       bool again_cfg_file=false;
-      char c;
       string buffer,word;
       while(1) {
          getline(infile,buffer);
@@ -649,7 +650,7 @@ void expand_args(vector<string>& oldvalues, vector<string>& newvalues, string& m
 try {
    string arg;
 
-   for(int k=0; k<oldvalues.size(); k++) {         // first split values on ','
+   for(size_t k=0; k<oldvalues.size(); k++) {         // first split values on ','
       while(!(arg = stripFirstWord(oldvalues[k],',')).empty()) {
          if(arg.substr(0,1) == "@") {              // list file
             // remove the '@'
@@ -683,7 +684,7 @@ void CommandLine::Parse(vector<string>& Args, string& Errors, vector<string>& Un
    throw(Exception)
 {
 try {
-   int i,j;
+   size_t i,j;
    string arg,val;
 
    // parse args, saving values -----------------------
@@ -779,7 +780,7 @@ string CommandLine::SyntaxPage(void) throw(Exception)
 {
 try {
    if(syntaxPageBuilt == 2) {
-      if(options.size() > 0) for(int i=0; i<options.size(); i++)
+      if(options.size() > 0) for(size_t i=0; i<options.size(); i++)
          syntaxPage += options[i].syntax + "\n";
       stripTrailing(syntaxPage,'\n');
       syntaxPageBuilt = 3;
@@ -797,7 +798,7 @@ void CommandLine::Postprocess(string& Errors, vector<string>& Unrecog)
    throw(Exception)
 {
 try {
-   int i,j,k;
+   size_t i, k;
    RinexSatID sat;
    string msg,errStr;
    vector<string> values;

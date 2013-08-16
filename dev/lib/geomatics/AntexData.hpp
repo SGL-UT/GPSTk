@@ -217,7 +217,7 @@ namespace gpstk
 
       /// number of frequencies stored, equal to number of keys in map
       /// from "# OF FREQUENCIES" record
-      unsigned int nFreq;
+      int nFreq;
 
       /// delta azimuth (degrees) stored in azimZenMap
       /// equal to 0 if there is no azimuth dependence

@@ -189,7 +189,7 @@ namespace gpstk
       if(oi==ni) return ident<double>(n);
       
       Matrix<double> T(n,n,0.0);
-      for( int i = 0; i < n; i++ )
+      for( size_t i = 0; i < n; i++ )
       {
          if( i != ni )
          {
@@ -215,9 +215,9 @@ namespace gpstk
       
       if( n<1 || oi>=n || ni>=n ) validInput = false;
       
-      for(int i=0;i<iv.size();i++)
+      for(size_t i=0;i<iv.size();i++)
       {
-         if(iv[i]<0 || iv[i]>=n) 
+         if(iv[i]<0 || iv[i]>=int(n)) 
          {
             validInput = false;
             break;
@@ -233,7 +233,7 @@ namespace gpstk
       if(oi==ni) return ident<double>(n);
 
       Matrix<double> T(n,n,0.0);
-      for( int i = 0; i < n; i++ )
+      for( size_t i = 0; i < n; i++ )
       {
          std::vector<int>::iterator it = find(iv.begin(),iv.end(),i);
          if(it==iv.end()) 

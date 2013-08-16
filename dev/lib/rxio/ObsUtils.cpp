@@ -318,7 +318,7 @@ namespace gpstk
       MDPEpoch me;
       CommonTime t0(CommonTime::BEGINNING_OF_TIME);
 
-      for (int i=0; i < ats.channels.size(); i++)
+      for (size_t i=0; i < ats.channels.size(); i++)
       {
          const ATSData::ChannelBlock& cb = ats.channels[i];
          short week = static_cast<short>(cb.absTime / FULLWEEK);

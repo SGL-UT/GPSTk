@@ -533,7 +533,8 @@ namespace gpstk
       if(v.size()==1) return v[0];
       if(v.size()==2) return (v[0]+v[1])/T(2);
       // insert sort
-      int i,j;
+      int j;
+      size_t i;
       T x;
       std::vector<T> w(v);
       for(i=0; i<v.size(); i++) {

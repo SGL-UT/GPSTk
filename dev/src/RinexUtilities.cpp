@@ -423,7 +423,7 @@ try {
 
    // build a hash with key = start time, value = filename
    multimap<CommonTime,string> hash;
-   for(int n=0; n<files.size(); n++) {
+   for(size_t n=0; n<files.size(); n++) {
       try {
          RinexObsHeader header;
          RinexObsStream rostream(files[n].c_str());
@@ -476,7 +476,7 @@ string sortRinex3ObsFiles(vector<string>& files)
 	{
 	   // build a hash with key = start time, value = filename
 	   multimap<CommonTime,string> hash;
-	   for(int n = 0; n < files.size(); n++)
+	   for(size_t n = 0; n < files.size(); n++)
 	   {
 			try {
 	         Rinex3ObsHeader header;
@@ -538,7 +538,7 @@ int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
 		int nread = 0;
 		RinexNavHeader rnh;
 		RinexNavData rne;
-		for(int i = 0; i < files.size(); i++)
+		for(size_t i = 0; i < files.size(); i++)
 		{
 			if(files[i].empty())
             {

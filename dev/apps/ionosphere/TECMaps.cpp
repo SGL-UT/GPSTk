@@ -230,7 +230,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
    bool help=false;
-   int i,j;
+   size_t i,j;
+   int k;
    RinexSatID sat;
    sat.setfill('0');
 
@@ -415,7 +416,7 @@ try {
    // allow user to put all options in a file
    // could also scan for debug here
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+   for(k=1; k<argc; k++) PreProcessArgs(argv[k],Args);
 
    if(Args.size()==0) Args.push_back(string("-h"));
 
@@ -424,10 +425,10 @@ try {
    char **CArgs=new char*[argc];
    if(!CArgs) { cerr << "Failed to allocate CArgs\n"; return -1; }
    CArgs[0] = argv[0];
-   for(j=1; j<argc; j++) {
-      CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
-      strcpy(CArgs[j],Args[j-1].c_str());
+   for(k=1; k<argc; k++) {
+      CArgs[k] = new char[Args[k-1].size()+1];
+      if(!CArgs[k]) { cerr << "Failed to allocate CArgs[k]\n"; return -1; }
+      strcpy(CArgs[k],Args[k-1].c_str());
    }
 
    //if(debug) {
@@ -855,7 +856,6 @@ try {
       }
 
       bool again_cfg_file=false;
-      char c;
       string buffer,word;
       while(1) {
          getline(infile,buffer);
@@ -910,7 +910,7 @@ try {
 
       // open nav files and read EphemerisStore
    if(!NavDir.empty())
-      for(int i=0; i<NavFiles.size(); i++)
+      for(size_t i=0; i<NavFiles.size(); i++)
          NavFiles[i] = NavDir + "/" + NavFiles[i];
    FillEphemerisStore(NavFiles, SP3EphList, BCEphList);
    if(SP3EphList.size()) {
@@ -955,7 +955,7 @@ try {
                if(words.size() == 0) break;
                if(debug) {
                   oflog << "Biases file:";
-                  for(int i=0; i<words.size(); i++) oflog << " " << words[i];
+                  for(size_t i=0; i<words.size(); i++) oflog << " " << words[i];
                   oflog << endl;
                }
                if(words[0] == string("IonoBias,")) break; // first line
@@ -1033,7 +1033,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int ProcessStations(void) throw(Exception)
 {
 try {
-   int iret,nfile;
+   int iret;
+   size_t nfile;
 
    if(verbose) oflog << "\nProcess " << Stations.size()
       << " input files / Stations:\n";
@@ -1082,7 +1083,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void ProcessObsAndComputeMap(void) throw(Exception)
 {
 try {
-   int iret,nfile,ngood,nepochs=0;
+   int iret,ngood,nepochs=0;
+   size_t nfile;
    vector<ObsData> AllObs; // ObsData vector, passed into ProcessObs and Compute
 
       // loop over all epochs in all files
@@ -1270,7 +1272,7 @@ try {
 
       // dump header information
    if(verbose) {
-      int i;
+      size_t i;
       oflog << "File name: " << S.filename << "  ";
       oflog << "Marker name: " << S.header.markerName << "\n";
       oflog << "Antenna position:    " << setprecision(3) << S.header.antennaPosition
@@ -1356,7 +1358,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int ProcessObs(Station& S, vector<ObsData>& obsvec) throw(Exception)
 {
 try {
-   int i,k,n;
+   int k,n;
+   size_t i;
    double EL,AZ,LA,LO,SR,VR,TP,bias,obliq;
    double la,lo;
    RinexSatID sat;

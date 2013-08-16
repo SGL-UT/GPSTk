@@ -56,7 +56,7 @@ namespace gpstk
    {
          //We use names.size() as our upper bound so we can
          //dynamically load new reference frames into this class
-      if(index < Unknown || index >= names.size())
+      if(index < Unknown || index >= int(names.size()))
          frame = Unknown;
       else
          frame = (FramesEnum)index;

@@ -45,7 +45,7 @@ namespace gpstk
 
       Matrix<double> sdMat(n-1, n, 0.0);
 
-      for(int j = 0; j< sdMat.rows(); j++)
+      for(size_t j = 0; j< sdMat.rows(); j++)
       {
          sdMat(j,i) = -1.0;
          if(j<i) sdMat(j,j) = 1.0;  

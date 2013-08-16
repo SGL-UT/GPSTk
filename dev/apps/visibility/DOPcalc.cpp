@@ -142,7 +142,7 @@ bool DOPCalc::initialize(int argc, char *argv[]) throw()
    FFIdentifier::debugLevel = debugLevel;
    
       // read in ephemeris data
-   for (int i=0; i<ephFileOpt.getCount(); i++)
+   for (size_t i=0; i<ephFileOpt.getCount(); i++)
       ephReader.read(ephFileOpt.getValue()[i]);
 
       // grab the station number (needed to process smooth data)
@@ -370,7 +370,7 @@ void DOPCalc::readObsFile(const CommandOptionWithAnyArg& obsFileOpt,
                           ObsEpochMap &obsEpochMap)
 {
       // read in obs data from each input file
-   for (int i=0; i<obsFileOpt.getCount(); i++)
+   for (size_t i=0; i<obsFileOpt.getCount(); i++)
    {
       string fileName = obsFileOpt.getValue()[i];
       ObsReader obsReader(fileName, verboseLevel);

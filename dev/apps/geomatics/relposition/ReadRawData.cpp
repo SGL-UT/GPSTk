@@ -84,7 +84,8 @@ void ComputeSolutionEpoch(void) throw(Exception);
 int ReadAndProcessRawData(void) throw(Exception)
 {
 try {
-   int iret,nfile,ntotal;
+   int iret,ntotal;
+   size_t nfile;
 
    if(CI.Verbose) oflog << "BEGIN ReadAndProcessRawData()"
       << " at total time " << fixed << setprecision(3)
@@ -287,7 +288,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int FindEarliestTime(void) throw(Exception)
 {
 try {
-   int iret,nfile;
+   int iret;
+   size_t nfile;
 
    EarliestTime = CommonTime::END_OF_TIME;
 

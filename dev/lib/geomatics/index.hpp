@@ -49,7 +49,7 @@
 // i.e. j = index(v,t); implies v[j] == t. Return -1 if t is not found.
 template<class T> int index(const std::vector<T> v, const T& t) 
 {
-   for(int i=0; i<v.size(); i++) {
+   for(size_t i=0; i<v.size(); i++) {
       if(v[i] == t) return i;
    }
    return -1;

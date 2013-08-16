@@ -136,7 +136,7 @@ double StochasticWeight(OWid & owid, int count) throw(Exception)
 {
 try {
    int j;
-   double cosine,dph;
+   double cosine;
 
    j = index(Stations[owid.site].RawDataBuffers[owid.sat].count,count);
    if(j == -1) {
@@ -193,7 +193,8 @@ try {
    unsigned int m=DNL.size();
    if(m==0) return;
 
-   int i,j,in,jn,kn;
+   int jn,kn;
+   size_t i, in;
    string site1,site2;
    GSatID sat1,sat2;
    vector<double> d;    // weights of one-way data

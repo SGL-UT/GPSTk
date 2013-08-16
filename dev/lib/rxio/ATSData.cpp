@@ -211,7 +211,7 @@ namespace gpstk
              << " numChan:" << (int)numChan
              << " numSubChan:" << (int)numSubChan
              << endl;
-      for (int i = 0; i < channels.size(); i++)
+      for (size_t i = 0; i < channels.size(); i++)
       {
          const ChannelBlock& cb = channels[i];
          if (detail)

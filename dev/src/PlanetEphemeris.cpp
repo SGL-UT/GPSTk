@@ -217,8 +217,7 @@ namespace gpstk
    {
       try 
       {
-         int i,n;
-         double jd;
+         size_t i;
 
          if(filenames.size() == 0) return 0;
 
@@ -498,7 +497,8 @@ namespace gpstk
    {
       try 
       {
-         int i,recLength;
+         int recLength;
+         size_t i;
          string str;
 
          if(EphemerisNumber <= 0) return -4;
@@ -810,7 +810,8 @@ namespace gpstk
    {
       try 
       {
-         int i,DENUM,recLength;
+         int j, recLength;
+         size_t i;
          char buffer[100];
          double AU,EMRAT;
          string word;
@@ -901,12 +902,12 @@ namespace gpstk
          // ----------------------------------------------------------------
          // the second header record: 400 values from the const array
          double d;
-         for(i=0; i<400; i++) 
+         for(j=0; j<400; j++) 
          {
             readBinary((char *)&d,sizeof(double));
-            if(i < Nconst) 
+            if(j < Nconst) 
             {
-               constants[stripTrailing(consts_names[i])] = d;
+               constants[stripTrailing(consts_names[j])] = d;
             }
          }
          // pad
@@ -1078,7 +1079,7 @@ namespace gpstk
       throw(Exception)
    {
       try {
-         int i,j,i0,ncomp,offset;
+         int i,j,i0,ncomp;
 
          for(i=0; i<6; i++) PV[i]=0.0;
          if(which == NONE) return;
@@ -1119,10 +1120,10 @@ namespace gpstk
             U[0] = 0; U[1] = 1; //U[2] = 4*T;
 
             // generate the Chebyshevs
-            for(j=2; j<N; j++) 
+            for(unsigned int k=2; k<N; k++) 
             {
-               C[j] = 2*T*C[j-1] - C[j-2];
-               U[j] = 2*T*U[j-1] + 2*C[j-1] - U[j-2];
+               C[k] = 2*T*C[k-1] - C[k-2];
+               U[k] = 2*T*U[k-1] + 2*C[k-1] - U[k-2];
             }
 
             // compute P and V

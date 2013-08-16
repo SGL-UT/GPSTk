@@ -305,7 +305,6 @@ namespace gpstk
       struct nrlmsise_output output;
       struct nrlmsise_input input; 
       struct nrlmsise_flags flags;
-      struct ap_array aph;
 
       //* Get the J2000 to TOD transformation
       Matrix<double> N = ReferenceFrames::J2kToTODMatrix(utc);

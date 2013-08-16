@@ -97,7 +97,8 @@ try {
    if(CI.Verbose) oflog << "BEGIN RemoveClockJumps()" << endl;
 
    bool jump;
-   int i,n,iprev;
+   int n,iprev;
+   size_t i;
    double curr,prev = 0,prevprev,fdiff,sdiff,prevsdiff,frac,offset;
    CommonTime tt;
    map<int,double> jumps;

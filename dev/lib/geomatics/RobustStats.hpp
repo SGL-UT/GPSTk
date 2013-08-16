@@ -431,7 +431,7 @@ namespace gpstk {
       throw(Exception)
    {
       try {
-         T tv, m, mold, sum, sumw, *wt, weight, *t;
+         T tv, m, mold, sum, sumw, *wt, weight;
          T tol=0.000001;
          int i, n, N=10;      // N is the max number of iterations
 

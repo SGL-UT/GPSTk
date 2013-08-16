@@ -156,7 +156,7 @@ namespace gpstk
 
    void Exception::dump(ostream& s) const
    {
-      int i;
+      size_t i;
       for (i=0; i<getTextCount(); i++)
       {
          s << "text " << i << ":" << this->getText(i) << endl;

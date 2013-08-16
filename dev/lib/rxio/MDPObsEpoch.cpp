@@ -69,7 +69,6 @@ namespace gpstk
       throw()
    {
       string str;
-      unsigned short ustemp;
       unsigned char svsobs = (numSVs & 0x0f);
       svsobs <<= 4;
       svsobs |= ((unsigned char)obs.size() & 0x0f);
@@ -115,7 +114,7 @@ namespace gpstk
       bool obsError=false;
 
       obs.erase(obs.begin(), obs.end());
-      for(int j=0; j<obsSVs; j++)
+      for(size_t j=0; j<obsSVs; j++)
       {
          if (str.length() < myObsLength)
          {

@@ -234,10 +234,10 @@ namespace gpstk
 
    Vector<double> KeplerOrbit::Stack(Vector<double> r,Vector<double> v)
    {
-      const int n = r.size() + v.size();
+      const size_t n = r.size() + v.size();
       Vector<double> rv(n,0.0);
 
-      for(int i=0;i<n;i++)
+      for(size_t i=0;i<n;i++)
       {
          if(i<r.size())
          {

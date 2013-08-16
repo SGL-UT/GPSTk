@@ -268,7 +268,8 @@ try
       return 0;
    }
 
-  int i, j, ii;
+  int ii, i;
+  size_t j;
 
    // parse command line
    i = 1;
@@ -311,7 +312,7 @@ try
    if (ExPRN.size() > 0)
    {
       lofs << " Exclude satellite PRNs";
-      for(i=0; i<ExPRN.size(); i++) lofs << " " << ExPRN[i];
+      for(i=0; i<int(ExPRN.size()); i++) lofs << " " << ExPRN[i];
       lofs << "." << endl;
    }
 
@@ -438,10 +439,10 @@ try
 
    // compute away
    dlon = 360.0/double(MaxNLon);
-   for (j=0; j<nt; j++)             // LOOP OVER TIMES
+   for (j=0; j<size_t(nt); j++)             // LOOP OVER TIMES
    {
       SVs.clear();                  // clear SV position array
-      for (i=0; i<Sats.size(); i++) // LOOP OVER SVs -- get positions at each time step
+      for (i=0; i<int(Sats.size()); i++) // LOOP OVER SVs -- get positions at each time step
       {
         if (ephmode)  // ephemeris mode
         {
@@ -471,7 +472,7 @@ try
       StepWorstG = StepWorstP = StepWorstH = StepWorstV = StepWorstT = 0.;
       StepWorstN = 10000.;
 
-      for (i=0; i<Grid.size(); i++) // LOOP OVER GRID POSITIONS
+      for (i=0; i<int(Grid.size()); i++) // LOOP OVER GRID POSITIONS
       {
         if ( j == 0 ) // set up grid position vector only on first time step
         {
@@ -1030,7 +1031,7 @@ try
    {
       bool wtd;
       double W,f;
-      int i;
+      size_t i;
       for (i=0; i<Grid.size(); i++)
       {
          W = 1.0;
@@ -1187,7 +1188,7 @@ try
 
    if (Grid.size() == 0) return 0;
 
-   int i;
+   size_t i;
 
    for (i=0; i<Grid.size(); i++)
    {
@@ -1254,7 +1255,7 @@ try
 
    if (Grid.size() == 0) return 0;
 
-   int i;
+   size_t i;
 
    for (i=0; i<Grid.size(); i++)
    {
@@ -1293,7 +1294,7 @@ try
    // circumference of an ellipse is approx PI*a*sqrt(2*(2-e^2))
    Grid.clear();
    int nlat,nlon;
-   double lat,lon,radius,dlat,dlon,dist,d;
+   double lat,lon,radius,dlat,dlon;
    Position p;
    // nlat = half circumference (NS) / spacing
    nlat = int(PI*WGS84.a()*SQRT(2*(2-WGS84.eccSquared()))/(2.0*GridSpace));
@@ -1343,7 +1344,7 @@ void ComputeDOPs(CommonTime& tt, GridData& gd, vector<Position>& SVs, M4& R)
 {
 try
 {
-   int j,k,n,Nsvs;
+   int j,n,Nsvs;
    double elev,rawrange;
 
    Position Rx(gd.lat,gd.lon,0.0,Position::Geodetic); // grid position

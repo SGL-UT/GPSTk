@@ -63,7 +63,8 @@ int ComputeRAIMSolution(ObsFile& of, CommonTime& tt, vector<SatID>& Sats, ofstre
    throw(Exception)
 {
 try {
-   int nsvs,i,iret;
+   int nsvs,iret;
+   size_t i;
    double PR;
    vector<double> Ranges;
    format f166(16,6),f62(6,2),f51(5,1),f82s(8,2,true);
@@ -178,7 +179,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void RAIMedit(ObsFile& of, vector<SatID>& Sats) throw(Exception)
 {
 try {
-   int i;
+   size_t i;
    Station& st=Stations[of.label];
 
    if(!st.PRS.Valid) {

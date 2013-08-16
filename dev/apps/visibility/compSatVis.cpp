@@ -524,7 +524,7 @@ void compSatVis::generateHeader( gpstk::CommonTime currT )
    fprintf(logfp,"Program arguments:\n");
    fprintf(logfp,"  Navigation file         : ");
    vector<std::string> values = nFileNameOpt.getValue();
-   for (int i=0; i<nFileNameOpt.getCount(); ++i) 
+   for (size_t i=0; i<nFileNameOpt.getCount(); ++i) 
       fprintf(logfp,"%s  ",values[i].c_str());
    fprintf(logfp,"\n");
    fprintf(logfp,"  Day of interest         : %s\n",printTime(currT,tform).c_str());

@@ -175,7 +175,7 @@ namespace gpstk
     
    void FICData::dump(ostream& s) const 
    {
-      int n;
+      size_t n;
       s << "FIC BlockNumber: " << blockNum << endl
         << " floats:   " << flush;
       for(n = 0; n< f.size(); n++)
@@ -1115,8 +1115,8 @@ namespace gpstk
          gpstk::EngEphemeris eph;
             // gotta transfer data in vector<long> to long[].
          long foo[30];
-         int count = 0;
-         for(int count = 2; count < i.size(); count++)
+         size_t count = 0;
+         for(size_t count = 2; count < i.size(); count++)
          {
             foo[count-2] = i[count];            
          }

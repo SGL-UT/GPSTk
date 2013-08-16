@@ -713,7 +713,7 @@ namespace gpstk
              (numObsForSat[lastPRN].size() != obsTypeList.size()))
          {
             for(int i = numObsForSat[lastPRN].size();
-                (i < obsTypeList.size()) &&
+                (i < int(obsTypeList.size())) &&
                    ( (i % maxObsPerLine) < maxObsPerLine); i++)
             {
                numObsForSat[lastPRN].push_back(asInt(line.substr((i%maxObsPerLine)*6+6,6)));
@@ -730,7 +730,7 @@ namespace gpstk
             }
             vector<int> numObsList;
             for(int i = 0;
-                   (i < obsTypeList.size()) && (i < maxObsPerLine); i++)
+                   (i < int(obsTypeList.size())) && (i < maxObsPerLine); i++)
             {
                numObsList.push_back(asInt(line.substr(i*6+6,6)));
             }
@@ -835,7 +835,7 @@ namespace gpstk
       throw(FFStreamError)
    {
       RinexObsType ot(RegisteredRinexObsTypes[0]);   // Unknown type
-      for(int i=0; i<RegisteredRinexObsTypes.size(); i++) {
+      for(size_t i=0; i<RegisteredRinexObsTypes.size(); i++) {
          if(RegisteredRinexObsTypes[i].type == oneObs) {
             ot = RegisteredRinexObsTypes[i];
             break;
@@ -882,7 +882,7 @@ namespace gpstk
 
    void RinexObsHeader::dump(ostream& s) const
    {
-      int i,j;
+      size_t i,j;
       s << "---------------------------------- REQUIRED ----------------------------------\n";
       string str;
       str = system.systemChar();
@@ -977,7 +977,7 @@ namespace gpstk
       if(t.empty()) return -1;
       // throw if t="UN" ?
       // check that it is not duplicated
-      for(int i=0; i<RinexObsHeader::RegisteredRinexObsTypes.size(); i++) {
+      for(size_t i=0; i<RinexObsHeader::RegisteredRinexObsTypes.size(); i++) {
          if(RinexObsHeader::RegisteredRinexObsTypes[i].type == t) { return 1; }
       }
       RinexObsType ot;
@@ -995,7 +995,7 @@ namespace gpstk
       s << "The list of standard Rinex obs types:\n";
       s << "  OT Description          Units\n";
       s << "  -- -------------------- ---------\n";
-      for(int i=0; i<RinexObsHeader::StandardRinexObsTypes.size(); i++) {
+      for(size_t i=0; i<RinexObsHeader::StandardRinexObsTypes.size(); i++) {
          string line;
          line = string("  ")+RinexObsHeader::StandardRinexObsTypes[i].type;
          line += leftJustify(string(" ")+RinexObsHeader::StandardRinexObsTypes[i].description,21);
@@ -1010,7 +1010,7 @@ namespace gpstk
       s << "The list of available extended Rinex obs types:\n";
       s << "  OT Description          Units     Required input (EP=ephemeris,PS=Rx Position)\n";
       s << "  -- -------------------- --------- ------------------\n";
-      for(int i=RinexObsHeader::StandardRinexObsTypes.size();
+      for(size_t i=RinexObsHeader::StandardRinexObsTypes.size();
                i<RinexObsHeader::RegisteredRinexObsTypes.size(); i++) {
          string line;
          line = string("  ")+RinexObsHeader::RegisteredRinexObsTypes[i].type;

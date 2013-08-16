@@ -402,8 +402,7 @@ namespace gpstk
       throw(FileMissingException)
    {
       bool ok;
-      int n,mjd;
-      double fracmjd;
+      int mjd;
       string line,word;
 
       ifstream inpf(filename.c_str());

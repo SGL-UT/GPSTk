@@ -199,7 +199,7 @@ namespace gpstk
    string asBin(unsigned v, const unsigned n)
    {
       char *s = new char[n+1];
-      for (int i=0; i<n; i++,v=v>>1)
+      for (size_t i=0; i<n; i++,v=v>>1)
          if (v&1)
             s[i] = '1';
          else
@@ -280,7 +280,7 @@ namespace gpstk
           << endl;
 
       oss << hex;
-      for(int i = 1; i < subframe.size(); i++)
+      for(size_t i = 1; i < subframe.size(); i++)
       {
          if ((i % 5) == 1)
             oss << getName() << i << ": ";

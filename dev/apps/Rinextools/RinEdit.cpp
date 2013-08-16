@@ -269,7 +269,8 @@ int Initialize(string& errors) throw(Exception)
 {
 try {
    bool isValid(true);
-   int i,j;
+   int j;
+   size_t i;
    Configuration& C(Configuration::Instance());
    errors = string("");
    ostringstream ossE;
@@ -332,7 +333,8 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    static const int width=13;
-   int i,j,k,iret,nfile,nfiles;
+   int iret,nfiles;
+   size_t i,nfile;
    string tag;
    RinexSatID sat;
    ostringstream oss;
@@ -637,7 +639,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
-   int iret, i;
+   size_t i;
    string sys;
    vector<string> flds;
    Rinex3ObsData::DataMap::iterator kt;
@@ -831,7 +833,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(WARNING) << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(WARNING) << "  " << cmdlineUnrecognized[i];
       LOG(WARNING) << "End of unrecognized arguments";
    }
@@ -1038,7 +1040,8 @@ string Configuration::BuildCommandLine(void) throw()
 //------------------------------------------------------------------------------------
 int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 {
-   int i,n;
+   int n;
+   size_t i;
    vector<string> fld;
    ostringstream oss,ossx;       // oss for Errors, ossx for Warnings and info
 
@@ -1148,7 +1151,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 void Configuration::parseEditCmds(vector<string>& vec, const string lab,
                                                            ostringstream& os) throw()
 {
-   for(int i=0; i<vec.size(); i++) {
+   for(size_t i=0; i<vec.size(); i++) {
       EditCmd ec(lab,vec[i]);
       if(ec.isValid()) vecCmds.push_back(ec);
       else os << "Error: invalid argument in " << lab << " cmd: >" << vec[i] << "<\n";

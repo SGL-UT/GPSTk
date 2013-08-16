@@ -334,7 +334,7 @@ namespace gpstk
          << endl;
       if(!sinexCode.empty())
          s << "SINEX code: " << sinexCode << endl;
-      for(int i=0; i<commentList.size(); i++) {
+      for(size_t i=0; i<commentList.size(); i++) {
          //if(i==0) s << "Comments:\n";
          s << "Comment " << setw(2) << i+1 << ": " << commentList[i] << endl;
       }
@@ -450,7 +450,7 @@ namespace gpstk
          GPSTK_THROW(fse);
       }
 
-      int i;
+      size_t i;
       string line;
       map<int, antennaPCOandPCVData>::const_iterator it;
       map<double, zenOffsetMap>::const_iterator jt;
@@ -697,7 +697,7 @@ namespace gpstk
          type = stripTrailing(stripLeading(line.substr(0,20)));
          // determine if satellite
          isRxAntenna = true;
-         for(int i=0; i<AntexData::SatelliteTypes.size(); i++)
+         for(size_t i=0; i<AntexData::SatelliteTypes.size(); i++)
             if(type == AntexData::SatelliteTypes[i]) { isRxAntenna = false; break; }
          serialNo = stripTrailing(stripLeading(line.substr(20,20)));
          satCode = stripTrailing(stripLeading(line.substr(40,10)));
@@ -901,7 +901,7 @@ namespace gpstk
       catch (Exception& e)
       {
          string text;
-         for(int i=0; i<e.getTextCount(); i++) text += e.getText(i);
+         for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
          FFStreamError err("Exception in parseTime(): " + text);
          GPSTK_THROW(err);
       }

@@ -164,8 +164,8 @@ namespace gpstk
       double ea;              // eccentric anomaly //
       double delea;           // delta eccentric anomaly during iteration */
       double elapte;          // elapsed time since Toe
-      double elaptc;          // elapsed time since Toc
-      double dtc,dtr,q,sinea,cosea;
+      //double elaptc;          // elapsed time since Toc
+      double q,sinea,cosea;
       double GSTA,GCTA;
       double amm;
       double meana;           // mean anomaly

@@ -151,7 +151,7 @@ namespace gpstk
 
          if(refCS==false) continue;
 
-         for(int i=0;i<dataMap[source].satellite.size();i++)
+         for(size_t i=0;i<dataMap[source].satellite.size();i++)
          {
             dataMap[source].csflag[i] = refCS;     // refCS=true
          }
@@ -172,7 +172,7 @@ namespace gpstk
       SourceSatDataMap::const_iterator it = dataMap.find(source);
       if(it==dataMap.end()) return;
       
-      for(int i = 0; i< it->second.satellite.size();i++)
+      for(size_t i = 0; i< it->second.satellite.size();i++)
       {
 
          SatID sat(it->second.satellite[i]);
@@ -310,7 +310,7 @@ namespace gpstk
 
       int index(-1);
 
-      for(int i=0;i<satellite.size();i++)
+      for(size_t i=0;i<satellite.size();i++)
       {
          if(satellite[i]==sat)
          {
@@ -329,7 +329,7 @@ namespace gpstk
    {
 
       map<SatID,int> satCS,satNoCS;
-      for(int i=0;i<satellite.size();i++)
+      for(size_t i=0;i<satellite.size();i++)
       {
          if(csflag[i]==true) satCS[satellite[i]]=i;
          else                satNoCS[satellite[i]]=i;
@@ -397,7 +397,7 @@ namespace gpstk
    {
 
       int index(-1);
-      for(int i=0;i<satellite.size();i++)
+      for(size_t i=0;i<satellite.size();i++)
       {
          if(satellite[i]==oldSat)
          {
@@ -431,7 +431,7 @@ namespace gpstk
 
          s << StringUtils::asString(it->first) << endl;
 
-         for(int i=0;i<it->second.satellite.size();i++)
+         for(size_t i=0;i<it->second.satellite.size();i++)
          {
             s << setw(5)<< i << " " 
                << StringUtils::asString(it->second.satellite[i])<<"  "

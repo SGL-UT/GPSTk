@@ -110,7 +110,7 @@ double mad(vector<double>& v)
       return 0;
 
    double med = median(v);
-   for(int i=0; i < v.size(); i++)
+   for(size_t i=0; i < v.size(); i++)
       v[i] = std::abs(v[i]- med);
 
    return median(v);
@@ -128,7 +128,7 @@ void OrdStats::process()
    // get elevation ranges, if specified
    if (elevBinsOption.getCount())
    {
-      for (int i=0; i<elevBinsOption.getCount(); i++)
+      for (size_t i=0; i<elevBinsOption.getCount(); i++)
       {
          string pr = elevBinsOption.getValue()[i];
          float minElev = asFloat(pr);

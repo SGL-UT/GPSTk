@@ -136,7 +136,7 @@ namespace gpstk {
             lines.push_back(word);
          }
 
-         for(int i=0; i<lines.size(); i++) {
+         for(size_t i=0; i<lines.size(); i++) {
             line = lines[i];
             if(line.empty()) continue;
             // split line into words

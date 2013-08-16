@@ -74,7 +74,7 @@ try {
 
    if(CI.OutputRawFile.empty()) return 0;
 
-   int i;
+   size_t i;
    CommonTime tt;
    map<string,Station>::const_iterator it;
    map<GSatID,RawData>::const_iterator jt;
@@ -173,7 +173,7 @@ try {
       }
    }
 
-   int i;
+   size_t i;
    double wlb;
    CommonTime tt;
    format f166(16,6);
@@ -226,7 +226,7 @@ try {
 
    if(CI.OutputDDDFile.empty()) return 0;
 
-   int i;
+   size_t i;
    double wlb;
    CommonTime tt;
    map<DDid,DDData>::const_iterator it;
@@ -291,7 +291,7 @@ try {
 
    if(CI.OutputClkFile.empty()) return 0;
 
-   int i;
+   size_t i;
    CommonTime tt;
    map<string,Station>::const_iterator it;
    format f166(16,6),f92(9,2,2),f96(9,6);

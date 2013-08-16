@@ -117,7 +117,7 @@ void OrdEdit::process()
    //-- Get ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
-   for (int i=0; i<ephSourceOpt.getCount(); i++)
+   for (size_t i=0; i<ephSourceOpt.getCount(); i++)
       ephReader.read(ephSourceOpt.getValue()[i]);
    gpstk::XvtStore<SatID>& eph = *ephReader.eph;  
    
@@ -133,7 +133,7 @@ void OrdEdit::process()
    //-- get which PRNs to be excluded
    bool excludePRNs = false;
    bool includePRNs = false;
-   for (int index = 0; index < prnOpt.getCount(); index++)
+   for (size_t index = 0; index < prnOpt.getCount(); index++)
    {
       int prn = asInt(prnOpt.getValue()[index]);
       if (prn < 0)
@@ -153,7 +153,7 @@ void OrdEdit::process()
    }
    else if (excludePRNs)
    {
-      for (int index = 0; index < prnOpt.getCount(); index++)
+      for (size_t index = 0; index < prnOpt.getCount(); index++)
       {
          int prn = asInt(prnOpt.getValue()[index]);
          if (prn < 0)
@@ -169,7 +169,7 @@ void OrdEdit::process()
    else if (includePRNs)
    {   
       set<int> includeSet;  
-      for (int index = 0; index < prnOpt.getCount(); index++)
+      for (size_t index = 0; index < prnOpt.getCount(); index++)
       {
          int prn = asInt(prnOpt.getValue()[index]);
          includeSet.insert(prn);
@@ -185,7 +185,7 @@ void OrdEdit::process()
    }
    
    //-- get which PRNs from which to ignore warts
-   for (int i=0; i < wartsOpt.getCount(); i++)
+   for (size_t i=0; i < wartsOpt.getCount(); i++)
    {
       int prn = asInt(wartsOpt.getValue()[i]);
       if (prn < 0)

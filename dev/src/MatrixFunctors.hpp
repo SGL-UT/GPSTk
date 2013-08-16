@@ -413,7 +413,7 @@ namespace gpstk
                GPSTK_THROW(e);
             }
 
-            size_t N=m.rows(),i,j,k,n,imax;
+            size_t N=m.rows(),i,j,k,imax;
             T big,t,d;
             Vector<T> V(N,T(0));
 

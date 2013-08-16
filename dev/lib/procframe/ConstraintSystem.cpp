@@ -124,7 +124,7 @@ namespace gpstk
          vars.push_back(*it);
       }
       
-      for(int i=0; i<vars.size(); i++)
+      for(size_t i=0; i<vars.size(); i++)
       {
          VariableDataMap dataMap;
          for(int k=0;k<size;k++)

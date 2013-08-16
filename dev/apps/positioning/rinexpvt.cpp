@@ -312,7 +312,7 @@ void RINEXPVTSolution::process()
     //
     if (peOption.getCount()>0)
     {
-       for (int i=0; i<peOption.getCount(); i++)
+       for (size_t i=0; i<peOption.getCount(); i++)
        {
           sp3store.loadFile(peOption.getValue()[i].c_str());
           if (logfileOn)
@@ -409,7 +409,6 @@ void RINEXPVTSolution::process()
 
     while (roffs >> rod)
     {
-	    double T, P, H;
 
 	       // Find a weather point.
 	    while ( (gotMet) &&

@@ -1,62 +1,72 @@
+# Minimum Required CMake Version
 cmake_minimum_required(VERSION 2.8)
 
+# Project Name
 project (gpstk)
 
+# System Variables
 message ("system = ${CMAKE_SYSTEM}")
 message ("system_name = ${CMAKE_SYSTEM_NAME}")
 
+# Installation Path Prefix - Change to desired location
 set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 set (GPSTK_SO_VERSION 21)
 
- if (UNIX)
+set (CMAKE_INSTALL_PREFIX /Users/bparsons/git/gpstk)
+
+
+if (UNIX) # Unix Compiler Options
 	 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
-	 if (APPLE)
+	 set (STADYN "SHARED") #Dynamic Libraries Enabled
+	 if (APPLE) # Apple Compiler Options
 	 	set (CMAKE_SHARED_LIBRARY_SUFFIX .dylib)
 		set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
 	 endif (APPLE)
-elseif (WIN32)
-	if (MSVC12)
-		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_CRT_SECURE_NO_DEPRECATE -wd4274 -wd4503")
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES /EHsc /GR -wd4274 -wd4503")
-	elseif (MSVC10)
-		set (include_directories("C:\Program Files (x86)\GnuWin32\lib"))
-		set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_CRT_SECURE_NO_DEPRECATE -wd4274 -wd4503")
-		set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2 -DWIN32 -D_CRT_SECURE_NO_DEPRECATE -D_USE_MATH_DEFINES /EHsc /GR -wd4274 -wd4503")
-	endif (MSVC12)		
+elseif (WIN32) # Windows Compiler Options
+	set (STADYN "STATIC") #Static Libraries Enabled
+	if (MSVC11) # Compiler Options for Microsoft Visual Studio 11 (2012)
+		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
+		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800")
+	elseif (MSVC10) # Compiler Options for Microsoft Visual Studio 10 (2010)
+		include_directories("C:/Program\ Files\ (x86)/GnuWin32/include")
+		link_directories("C:/Program\ Files\ (x86)/GnuWin32/lib")
+		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
+		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800")
+	endif (MSVC11)		
 endif(UNIX)
 
 # use, i.e. don't skip the full RPATH for the build tree
-SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set (CMAKE_SKIP_BUILD_RPATH FALSE)
 
 # when building, don't use the install RPATH already
 # (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+set (CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 
 # the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-ENDIF("${isSystemDir}" STREQUAL "-1")
+list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if ("${isSystemDir}" STREQUAL "-1")
+   set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif ("${isSystemDir}" STREQUAL "-1")
 
-
-
-if (NOT ${CMAKE_COMPILER_IS_GNUCC} )
+# NEED_GETOPT flag for Sources
+if (NOT "${CMAKE_COMPILER_IS_GNUCC}" )
 	set(NEED_GETOPT TRUE)
-endif(NOT ${CMAKE_COMPILER_IS_GNUCC} )
+endif(NOT "${CMAKE_COMPILER_IS_GNUCC}" )
 
 #Debug script - uncomment for printing of all cmake variables
-get_cmake_property(_variableNames VARIABLES)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")
-endforeach()
+#get_cmake_property(_variableNames VARIABLES)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
 
+# GPSTk Subdirectories
 add_subdirectory (src)
 add_subdirectory (lib)
 add_subdirectory (apps)

@@ -336,7 +336,7 @@ namespace gpstk
                GPSTK_THROW(ir);
             }
 
-            if(dtable.size() < 2*nhalf) {
+            if(int(dtable.size()) < 2*nhalf) {
                InvalidRequest ir("Inadequate data for satellite "
                    + gpstk::StringUtils::asString(sat) + printTime(ttag,fmt));
                GPSTK_THROW(ir);

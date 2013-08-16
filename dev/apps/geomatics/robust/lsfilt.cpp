@@ -121,9 +121,9 @@ int main(int argc, char **argv)
    try {
       bool help,domin=false,domax=false,verbose=true;
       int i,j,k,col=1,xcol=-1,deg=11,npts=99,prec=3;
+      size_t ii;
       double min,max;
       string filename;
-      ostream *pout;
 
       help = (argc <= 1);
       for(i=1; i<argc; i++) {
@@ -217,7 +217,7 @@ int main(int argc, char **argv)
 
       const int BUFF_SIZE=1024;
       char buffer[BUFF_SIZE];
-      int nd,nxd;
+      size_t nd,nxd;
       double d,xd;
       string stuff;
       vector<double> data,xdata,fdata;
@@ -296,9 +296,9 @@ int main(int argc, char **argv)
       //   cout << " " << setw(2) << i << " " << coeffs[i] << endl;
 
       cout << fixed << setprecision(prec);
-      for(i=0; i<data.size(); i++) {
-         int NL = i<nl ? i : nl;
-         int NR = i+nr > data.size()-1 ? data.size()-i-1 : nr;
+      for(ii=0; ii<data.size(); ii++) {
+         int NL = int(ii)<nl ? ii : nl;
+         int NR = ii+nr > data.size()-1 ? data.size()-ii-1 : nr;
          double *ptr = &coeffs[0];
          if(NL != nl || NR != nr) {                // data does not cover i-nl to i+nr
             cshort = vector<double>(NL+NR+1,0.0);
@@ -310,15 +310,15 @@ int main(int argc, char **argv)
          // compute the filtered value at i
          d = 0.0;
          for(k=-NL; k<=NR; k++) {
-            j = i+k;
+            j = ii+k;
             //if(j < 0 || j >= data.size()) continue;
             d += *ptr * data[j];
             ptr++;
          }
 
-         cout << " " << i;
-         if(xcol > -1) cout << " " << xdata[i];
-         cout << " " << data[i] << " " << d << " " << data[i]-d << endl;
+         cout << " " << ii;
+         if(xcol > -1) cout << " " << xdata[ii];
+         cout << " " << data[ii] << " " << d << " " << data[ii]-d << endl;
       }
 
       // compute and print run time

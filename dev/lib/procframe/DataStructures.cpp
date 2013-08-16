@@ -3280,11 +3280,13 @@ in matrix and number of types do not match") );
       {
          RinexSatID sat(it->first);
 
+
          typeValueMap tvMap;
 
          map<std::string,std::vector<RinexObsID> > mapObsTypes(roh.mapObsTypes);
          const vector<RinexObsID> types = mapObsTypes[sat.toString().substr(0,1)];
-         for(int i=0; i<types.size(); i++)
+
+         for(size_t i=0; i<types.size(); i++)
          {
             TypeID type = ConvertToTypeID(types[i],sat);
 

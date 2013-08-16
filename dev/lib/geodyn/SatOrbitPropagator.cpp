@@ -273,7 +273,7 @@ namespace gpstk
       }
       curT = 0;
       curState.resize(state.size(),0.0);
-      for(int i=0;i<state.size();i++)
+      for(size_t i=0;i<state.size();i++)
       {
          curState(i) = state(i);
       }

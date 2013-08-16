@@ -16,10 +16,8 @@ libgeodyn_la_SOURCES = AtmosphericDrag.cpp \
 	  IERSConventions.cpp \
 	  JGM3GravityModel.cpp \
 	  KeplerOrbit.cpp \
-	  LEOSatOrbit.cpp \
 	  MoonForce.cpp \
 	  Msise00Drag.cpp \
-	  NavSatOrbit.cpp \
 	  PvtStore.cpp \
 	  ReferenceFrames.cpp \
 	  RelativityEffect.cpp \
@@ -50,10 +48,8 @@ incl_HEADERS = ASConstant.hpp \
 	  Integrator.hpp \
 	  JGM3GravityModel.hpp \
 	  KeplerOrbit.hpp \
-	  LEOSatOrbit.hpp \
 	  MoonForce.hpp \
 	  Msise00Drag.hpp \
-	  NavSatOrbit.hpp \
 	  PvtStore.hpp \
 	  ReferenceFrames.hpp \
 	  RelativityEffect.hpp \

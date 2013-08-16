@@ -220,7 +220,7 @@ namespace gpstk
             
                // counting variables            vector<string>::size_type i,j;
             
-            for(int i = 0; i < toReturn.size(); i++)
+            for(size_t i = 0; i < toReturn.size(); i++)
             {
                   // search for the next entries
                   
@@ -269,7 +269,7 @@ namespace gpstk
                   // then add it if it's in the correct time range.
                   // this is why we need to enter an empty string to 
                   // seed toReturn
-               for(int j = 0; j < newEntries.size(); j++)
+               for(size_t j = 0; j < newEntries.size(); j++)
                {
                   try
                   {

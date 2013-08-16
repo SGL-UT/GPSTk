@@ -133,7 +133,7 @@ namespace vdraw
   {
     int i = stream;
     // Huffman bits, 5 per 0xFFFF and 5 for whats left
-    i += 5*(stream>>16 + (stream&0xFFFF?1:0));
+    i += 5*((stream>>16) + (stream&0xFFFF?1:0));
     i += 4; // Adler-32 checksum
     i += 2; // zlib bytes
     i += 12*(stream/0x2000 + (stream%0x2000?1:0)); //Chunk bits (if split)

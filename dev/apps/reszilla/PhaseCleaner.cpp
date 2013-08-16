@@ -383,14 +383,14 @@ void PhaseCleaner::getSlips(
          for (k = al.begin(); k != al.end(); k++)
          {
             // Make sure to start on a valid arc
-            if (k->size() < minArcLen || k->len() < minArcTime)
+            if (int(k->size()) < minArcLen || int(k->len()) < minArcTime)
                continue;
 
             const Arc& arc0 = *k;
 
             // Find the next valid arc
             for (k++; k != al.end(); k++)
-               if (k->len() > minArcTime && k->size() > minArcLen)
+               if (int(k->len()) > minArcTime && int(k->size()) > minArcLen)
                   break;
 
             if (k == al.end())
@@ -842,14 +842,14 @@ void PhaseCleanerA::getSlips(
          for (k = al.begin(); k != al.end(); k++)
          {
             // Make sure to start on a valid arc
-            if (k->len() < minArcTime || k->size() < minArcLen)
+            if (int(k->len()) < minArcTime || int(k->size()) < minArcLen)
                continue;
 
             const Arc& arc0 = *k;
 
             // Find the next valid arc
             for (k++; k != al.end(); k++)
-               if (k->len() > minArcTime && k->size() > minArcLen)
+               if (int(k->len()) > minArcTime && int(k->size()) > minArcLen)
                   break;
 
             if (k == al.end())

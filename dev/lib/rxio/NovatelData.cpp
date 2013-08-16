@@ -760,8 +760,8 @@ namespace gpstk
                              + double(data[3]);
             // could the pseudorange ever be negative?
             if(data[2] & 0x00000008L)     // 2s complement
-               Pr = -double((data[2] & 0x0000000FL) ^ 0x0000000FL) * 4294967296.
-                    - double(data[3]                ^ 0xFFFFFFFFL  + 1);
+               Pr = - double((data[2] & 0x0000000FL) ^ 0x0000000FL) * 4294967296.
+                    - double((data[3]                ^ 0xFFFFFFFFL)  + 1);
 
             double SdPh     =     int(data[4] & 0x0000000FL);
 

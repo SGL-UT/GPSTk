@@ -138,7 +138,8 @@ int main(int argc, char **argv)
 {
 try {
    totaltime = clock();
-   int iret,nfile,reading,nread;
+   int iret,reading,nread;
+   size_t nfile;
 
       // Title and description
    Title = PrgmName + ", part of the GPS ToolKit, Ver " + PrgmVers + ", Run ";
@@ -196,7 +197,7 @@ catch (...) { cout << "Unknown exception in main." << endl; }
 int ReadFile(int nfile, int reading) throw(Exception)
 {
 try {
-   int i,iret;
+   int iret;
    RinexObsData rodata;
    RinexObsStream ifstr;
 
@@ -331,7 +332,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int ProcessOneEntireEpoch(RinexObsData& roe, int reading) throw(Exception)
 {
 try {
-   int i,j;
+   int j;
+   size_t i;
    double dt;
 
       // stay within time limits
@@ -473,7 +475,7 @@ int InterpolateAndOutput(void) throw(Exception)
 try {
    bool Lagrange;
    int i,ipts;
-   double PDOP,GDOP,rms,err,dt,Dt,delt,xx,yy,zz,tt;
+   double err,dt,Dt,delt,xx,yy,zz,tt;
    CommonTime t0,ttag;
    RinexObsData psdata;
    vector<double> times,X,Y,Z,T;
@@ -652,7 +654,6 @@ int AfterReadingFiles(int reading) throw(Exception)
 {
 try {
    int i,j,iret=0;
-   double dt;
 
    if(reading == 1) {
 
@@ -724,7 +725,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 {
 try {
    bool help=false;
-   int i,j;
+   int j;
+   size_t i;
       // defaults
    PIC.Debug = false;
    PIC.DumpMap = false;
@@ -1074,7 +1076,6 @@ try {
       }
 
       bool again_cfg_file=false;
-      char c;
       string buffer,word;
       while(1) {
          getline(infile,buffer);

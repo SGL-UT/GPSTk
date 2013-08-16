@@ -97,7 +97,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int Initialize(void) throw(Exception)
 {
 try {
-   int i,j;
+   size_t i;
    // global pEph will point to one of these
    static GPSEphemerisStore BCEphList;
    static SP3EphemerisStore SP3EphList;

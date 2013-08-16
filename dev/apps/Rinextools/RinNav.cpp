@@ -217,7 +217,6 @@ try {
    include_path(C.Navpath, C.InputNavFiles);
    expand_filename(C.InputNavFiles);
 
-   int i,j,nread;
    ostringstream ossE;
 
    // -------- save errors and output
@@ -312,7 +311,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(WARNING) << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(WARNING) << "  " << cmdlineUnrecognized[i];
       LOG(WARNING) << "End of unrecognized arguments";
    }
@@ -402,7 +401,8 @@ string Configuration::BuildCommandLine(void) throw()
 //------------------------------------------------------------------------------------
 int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 {
-   int i,n;
+   int n;
+   size_t i;
    vector<string> fld;
    ostringstream oss,ossx;       // oss for Errors, ossx for Warnings and info
 
@@ -505,7 +505,8 @@ int ProcessFiles(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
-   int i,nread,nfile,nfiles;
+   int nread,nfiles;
+   size_t nfile;
    Rinex3NavHeader Rheadout,Rhead;
 
    for(nfiles=0,nfile=0; nfile<C.InputNavFiles.size(); nfile++) {

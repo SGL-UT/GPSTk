@@ -238,7 +238,7 @@ namespace gpstk
       s << "Reference antenna: type " << refAntType
          << ", serial no. " << refAntSerNum << endl;
 
-      for(int i=0; i<commentList.size(); i++) {
+      for(size_t i=0; i<commentList.size(); i++) {
          if(i==0) s << "Comments:\n";
          s << "Comment " << setw(2) << i+1 << ": " << commentList[i] << endl;
       }

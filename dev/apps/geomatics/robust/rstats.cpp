@@ -62,8 +62,7 @@ int main(int argc, char **argv)
    try {
       bool help,nostats=false,plot=false,qplot=false,domin=false,domax=false;
       bool doKS=false,dobeg=false,doend=false,doseq=false;
-      size_t pos;
-      int i,j,k,col=1,xcol=-1,fit=0,prec=3,width=0,windwid(0);
+      int i,j,col=1,xcol=-1,fit=0,prec=3,width=0,windwid(0);
       unsigned int brief=0;
       double sigout=0.0,min,max,beg,end,dht(0.0),ddt(0.0);
       string filename,label=string();
@@ -246,7 +245,7 @@ int main(int argc, char **argv)
       // read input file -------------------------------------------------------
       const int BUFF_SIZE=1024;
       char buffer[BUFF_SIZE];
-      int nd,nxd;
+      size_t nd,nxd;
       double d,xd;
       string stuff;
       vector<double> data,wts,xdata;
@@ -385,7 +384,7 @@ int main(int argc, char **argv)
             t0 = xdata[0];
             *pout << "#Xdata, Data, fit, resid, weight (" << data.size() << " pts):"
                << fixed << setprecision(prec) << endl;
-            for(i=0; i<data.size(); i++) {
+            for(i=0; i<int(data.size()); i++) {
                eval = savedata[0] + coef[0];
                tt = xdata[i]-t0;
                for(j=1; j<fit; j++) { eval += coef[j]*tt; tt *= (xdata[i]-t0); }
@@ -413,7 +412,7 @@ int main(int argc, char **argv)
          cstats.Reset();
          cout << "Data and sequential stats ([lab] [xdata] data n ave std)\n";
          cout << fixed << setprecision(prec);
-         for(i=0; i<data.size(); i++) {
+         for(i=0; i<int(data.size()); i++) {
             cstats.Add(data[i]);
             if(!label.empty()) cout << label << " ";
             if(xdata.size()>0) cout << xdata[i] << " ";
@@ -464,7 +463,7 @@ int main(int argc, char **argv)
       }
 
       cstats.Reset();
-      for(i=0; i<data.size(); i++) {
+      for(i=0; i<int(data.size()); i++) {
          //cout << "WTD " << i << fixed << setprecision(8)
             //<< " " << data[i] << " " << wts[i] << endl;
          cstats.Add(data[i],wts[i]);
@@ -540,7 +539,7 @@ int main(int argc, char **argv)
          double OH = Q3 + sigout*1.5*(Q3-Q1); // normally 2.5*Q3 - 1.5*Q1;
          double OL = Q1 - sigout*1.5*(Q3-Q1); // normally 2.5*Q1 - 1.5*Q3;
          vector<int> outhi,outlo;
-         for(i=0; i<data.size(); i++) {
+         for(i=0; i<int(data.size()); i++) {
             if(data[i] > OH)
                outhi.push_back(i);
             else if(data[i] < OL)
@@ -552,12 +551,12 @@ int main(int argc, char **argv)
             << endl << "     n  " << (xdata.size() > 0 ? "x-value" : "")
             << "   value  val/outlim" << endl;
          // NB data and xdata have been sorted together
-         for(j=1,i=0; i<outlo.size(); i++,j++) {
+         for(j=1,i=0; i<int(outlo.size()); i++,j++) {
             cout << " OTL " << j << " ";
             if(xdata.size() > 0) cout << xdata[outlo[i]] << " ";
             cout << data[outlo[i]] << " " << data[outlo[i]]/OL << endl;
          }
-         for(i=0; i<outhi.size(); i++,j++) {
+         for(i=0; i<int(outhi.size()); i++,j++) {
             cout << " OTH " << j << " ";
             if(xdata.size() > 0) cout << xdata[outhi[i]] << " ";
             cout << data[outhi[i]] << " " << data[outhi[i]]/OH << endl;
@@ -577,8 +576,8 @@ int main(int argc, char **argv)
          else cout << "Output q-q data to file qplot.out (plot column 2 vs 1)\n";
 
          TSS.Reset();         // use TSS to get slope and intercept of q-q fit to line
-         for(i=0; i<data.size(); i++) TSS.Add(xdata[i],data[i]);
-         for(i=0; i<data.size(); i++)
+         for(i=0; i<int(data.size()); i++) TSS.Add(xdata[i],data[i]);
+         for(i=0; i<int(data.size()); i++)
             *pout << xdata[i] << " " << data[i]
                << " " << TSS.Intercept() + TSS.Slope()*xdata[i]
                << endl;

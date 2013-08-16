@@ -172,7 +172,8 @@ try {
       << double(clock()-totaltime)/double(CLOCKS_PER_SEC) << " seconds."
       << endl;
 
-   int ib,iret;
+   int iret;
+   size_t ib;
    list<TTSegment>::iterator ttit;
 
    if(CI.TimeTableFile.size() > 0) {
@@ -337,7 +338,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int ComputeBaselineTimeTable(const string& bl) throw(Exception)
 {
 try {
-   int i,j;
+   int j;
+   size_t i;
    map<SDid,SDData>::const_iterator it;
    list<TTSegment> SegList;
 
@@ -395,7 +397,8 @@ int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
    throw(Exception)
 {
 try {
-   int i,j,k;
+   size_t i,j;
+   int k;
    static const int MinSize = 10;
    double elevi,elevj;
    GSatID sat;

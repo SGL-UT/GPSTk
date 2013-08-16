@@ -250,7 +250,7 @@ void OrdGen::process()
    // Get the ephemeris data
    EphReader ephReader;
    ephReader.verboseLevel = verboseLevel;
-   for (int i=0; i<ephFileOption.getCount(); i++)
+   for (size_t i=0; i<ephFileOption.getCount(); i++)
       ephReader.read(ephFileOption.getValue()[i]);
    gpstk::XvtStore<SatID>& eph = *ephReader.eph;
 
@@ -263,7 +263,7 @@ void OrdGen::process()
    // Get the weather data...
    MetReader metReader;
    metReader.verboseLevel = verboseLevel;
-   for (int i=0; i<metFileOption.getCount(); i++)
+   for (size_t i=0; i<metFileOption.getCount(); i++)
       metReader.read(metFileOption.getValue()[i]);
    WxObsData& wod = metReader.wx;
 
@@ -295,7 +295,7 @@ void OrdGen::process()
 
    // Walk through each obs file, reading and computing ords along the way.
    bool first=true;
-   for (int i=0; i<obsFileOption.getCount(); i++)
+   for (size_t i=0; i<obsFileOption.getCount(); i++)
    {
       string fn = (obsFileOption.getValue())[i];
       ObsReader obsReader(fn, debugLevel);

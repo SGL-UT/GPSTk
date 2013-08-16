@@ -253,7 +253,7 @@ namespace gpstk
 
          // read data
          bool isC(head.version==SP3Header::SP3c);
-         bool haveRec,goNext,haveP,haveV,haveEP,haveEV,predP,predC;
+         bool goNext,haveP,haveV,haveEP,haveEV,predP,predC;
          int i;
          CommonTime ttag;
          SatID sat;

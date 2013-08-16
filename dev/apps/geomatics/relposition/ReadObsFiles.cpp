@@ -62,7 +62,8 @@ int ReadNextObs(ObsFile& of) throw(Exception);
 void ReadAllObsHeaders(void) throw(Exception)
 {
 try {
-   int i,j,k;
+   int k;
+   size_t i,j;
    if(CI.Verbose) oflog << "BEGIN ReadAllObsHeaders()" << endl;
 
       // open all obs files and read headers
@@ -232,7 +233,6 @@ try {
       // read the next observation epoch
       // decimate to even multiples of DataInterval
    while(1) {
-      int iret;
       try {
          if(CI.Debug) oflog << "ReadNextObs for file " << of.name << endl;
          if(!of.getNext) return 1;

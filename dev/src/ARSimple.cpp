@@ -47,7 +47,7 @@ namespace gpstk
       const size_t n = ambFloat.size();
 
       Vector<double> ambFixed(n,0.0);
-      for(int i = 0; i < ambFloat.size(); i++)
+      for(size_t i = 0; i < ambFloat.size(); i++)
       {
          const double threshold = 3.0 * std::sqrt(ambCov(i,i));
 

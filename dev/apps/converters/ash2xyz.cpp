@@ -341,7 +341,7 @@ protected:
 					double yCurrL1;
 					double yCurrL2;
 					double a = 1.000/(numPoints + 1);
-					for (int index = 2; index < tpVec.size(); index++)
+					for (size_t index = 2; index < tpVec.size(); index++)
 					{
 						double xCurrL1 = tpVec[index].second.first;    // L1, cycles
 						double xCurrL2 = tpVec[index].second.second;   // L2, cycles
@@ -435,7 +435,7 @@ protected:
                                 (gpstk::L1_FREQ_GPS/gpstk::L2_FREQ_GPS) - 1); // m					
 					double yCurr;
 					double a = 1.000/(numPoints + 1);
-					for (int index = 1; index < rpVec.size(); index++)
+					for (size_t index = 1; index < rpVec.size(); index++)
 					{
 						double xCurr;
 						xCurr = (rpVec[index].first - rpVec[index].second)/

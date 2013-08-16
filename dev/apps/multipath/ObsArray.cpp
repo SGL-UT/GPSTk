@@ -83,7 +83,7 @@ namespace gpstk
                        const std::vector<std::string>& navList)
    {
       // First check for existance of input files
-      for (int i=0; i< obsList.size(); i++)
+      for (size_t i=0; i< obsList.size(); i++)
       {
          if (!FileUtils::fileAccessCheck(obsList[i]))
          {
@@ -92,7 +92,7 @@ namespace gpstk
          }
       }
 
-      for (int i=0; i< navList.size(); i++)
+      for (size_t i=0; i< navList.size(); i++)
       {
          if (!FileUtils::fileAccessCheck(navList[i]))
          {
@@ -108,7 +108,7 @@ namespace gpstk
       Triple antPos;
       double dR;
 
-      for (int i=0; i< obsList.size(); i++)
+      for (size_t i=0; i< obsList.size(); i++)
       {
          //RinexObsHeader roh;
          long numEpochsObs = 0;

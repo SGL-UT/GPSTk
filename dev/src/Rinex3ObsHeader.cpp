@@ -439,7 +439,7 @@ namespace gpstk
          int obsWritten = 0;
          line = ""; // make sure the line contents are reset.
 
-         for(int i=0; i<R2ObsTypes.size(); i++) {
+         for(size_t i=0; i<R2ObsTypes.size(); i++) {
             string val;
             // the first line needs to have the # of obs
             if(obsWritten == 0)
@@ -475,7 +475,7 @@ namespace gpstk
 
             vector<RinexObsID> ObsTypeList = mapIter->second;
 
-            for(int i = 0; i < ObsTypeList.size(); i++)
+            for(size_t i = 0; i < ObsTypeList.size(); i++)
             {
                // the first line needs to have the GNSS type and # of obs
                if(obsWritten == 0)
@@ -611,7 +611,7 @@ namespace gpstk
 //    cout << "past validReceiverOffset" << endl;
       if(valid & validSystemDCBSapplied)
       {
-         for(int i = 0; i < infoDCBS.size(); i++)
+         for(size_t i = 0; i < infoDCBS.size(); i++)
          {
            line  = leftJustify(infoDCBS[i].satSys,  1);
            line += string(1, ' ');
@@ -627,7 +627,7 @@ namespace gpstk
 //    cout << "past validSystemDCBSapplied" << endl;
       if(valid & validSystemPCVSapplied)
       {
-         for(int i = 0; i < infoPCVS.size(); i++)
+         for(size_t i = 0; i < infoPCVS.size(); i++)
          {
            line  = leftJustify(infoPCVS[i].satSys,  1);
            line += string(1, ' ');
@@ -815,7 +815,8 @@ namespace gpstk
             if(version >= 3)
                vec = numObs;
             else {                                                // fill in zeros for version 2
-               int i,j;
+               int j;
+               size_t i;
                string sys(string(1,sat.systemChar()));
                map<string, map<string, RinexObsID> >::const_iterator jt(mapSysR2toR3ObsID.find(sys));
                const map<string, RinexObsID> mapVec(jt->second);
@@ -1481,7 +1482,7 @@ namespace gpstk
 
          // given systems and list of R2ObsTypes, compute mapObsTypes and mapSysR2toR3ObsID
          mapSysR2toR3ObsID.clear();
-         for(int i=0; i<syss.size(); i++) {
+         for(size_t i=0; i<syss.size(); i++) {
             const string s(syss[i]);
             vector<RinexObsID> obsids;
             bool isPrecise(
@@ -1489,7 +1490,7 @@ namespace gpstk
                find(R2ObsTypes.begin(),R2ObsTypes.end(),"P2") != R2ObsTypes.end()
             );
             // loop over R2 obs types
-            for(int j=0; j<R2ObsTypes.size(); ++j) {
+            for(size_t j=0; j<R2ObsTypes.size(); ++j) {
                string ot(R2ObsTypes[j]), obsid;
 
                // GPS+GLO 1+2
@@ -1586,7 +1587,7 @@ namespace gpstk
             string sys;
             sys = sat.systemChar();
             vector<int> vec;
-            for(int i=0; i<R2ObsTypes.size(); i++) {
+            for(size_t i=0; i<R2ObsTypes.size(); i++) {
                if(mapSysR2toR3ObsID[sys][R2ObsTypes[i]].asString() == string("   "))
                   ;
                else
@@ -1694,7 +1695,7 @@ namespace gpstk
    // Compute map of obs types for use in writing version 2 header and data, call before writing
    void Rinex3ObsHeader::PrepareVer2Write(void) throw()
    {
-      int i;
+      size_t i;
 
       version = 2.11;
       valid |= Rinex3ObsHeader::validWaveFact;
@@ -1774,7 +1775,7 @@ namespace gpstk
 
    void Rinex3ObsHeader::dump(ostream& s) const
    {
-      int i,j;
+      size_t i;
 
       string str;
       if(fileSysSat.system == SatID::systemMixed)
@@ -2064,7 +2065,7 @@ namespace gpstk
          // Extract a copy of the vector of observations types
       vector<RinexObsID> vecObs(it->second);
 
-      int index(0);
+      size_t index(0);
       bool found(false);
       while( !found && index < vecObs.size() )
       {

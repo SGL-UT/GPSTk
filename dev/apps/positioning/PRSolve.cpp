@@ -431,7 +431,7 @@ try {
          << " RINEX observation file" << (nfiles > 1 ? "s.":".");
 
       // output final results
-      for(int i=0; i<C.SolObjs.size(); ++i) {
+      for(size_t i=0; i<C.SolObjs.size(); ++i) {
          LOG(INFO) << "\n ----- Final output " << C.SolObjs[i].Descriptor << " -----";
          C.SolObjs[i].FinalOutput();
       }
@@ -468,7 +468,8 @@ int Initialize(string& errors) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    bool isValid(true);
-   int i,j,nfile,nread,nrec;
+   int nread,nrec;
+   size_t i,j,nfile;
    ostringstream ossE;
    CommonTime typtime;        // typical time for the dataset
 
@@ -955,7 +956,8 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    bool firstepoch(true);
-   int i,j,k,iret,nfile,nfiles;
+   int k,iret,nfiles;
+   size_t i,j,nfile;
    Position PrevPos(C.knownPos);
    Rinex3ObsStream ostrm;
 
@@ -1401,7 +1403,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(INFO) << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(INFO) << "  " << cmdlineUnrecognized[i];
       LOG(INFO) << "End of unrecognized arguments";
    }
@@ -1755,7 +1757,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 void Configuration::BuildSolDescriptors(ostringstream& oss) throw()
 {
    bool ok;
-   int i,j,k;
+   size_t i,j,k;
    vector<string> fld,subfld,codfld;
 
    // check and save explicit input solution descriptors
@@ -1982,7 +1984,7 @@ void Configuration::setWeather(const CommonTime& ttag) throw(Exception)
 //------------------------------------------------------------------------------------
 void SolutionObject::ParseDescriptor(void) throw()
 {
-   int i,j,k;
+   size_t i,j;
    Configuration& C(Configuration::Instance());
 
    vector<string> flds(split(Descriptor,':'));
@@ -2042,7 +2044,7 @@ void SolutionObject::SetDefaults(void) throw()
    // specify systems
    // syss ~ vec<1-char string> ~ G,R,E,C,S; must have at least one member
    RinexSatID sat;
-   for(int i=0; i<syss.size(); i++) {
+   for(size_t i=0; i<syss.size(); i++) {
       sat.fromString(syss[i]);               // 1-char string
       prs.SystemIDs.push_back(sat.system);
       LOG(DEBUG) << " Add system " << syss[i] << " = " << sat << " to SystemIDs";
@@ -2057,7 +2059,7 @@ void SolutionObject::SetDefaults(void) throw()
 bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    throw()
 {
-   int i,j,k,m,n;
+   size_t i,j,k;
    Configuration& C(Configuration::Instance());
    vector<string> obstypes;
 
@@ -2119,8 +2121,8 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
       }
       else {                                 // different f3, and must sort k..j-1
          string codes(syscodes[currf3.substr(0,1)]);
-         for(int n=0; n<codes.size(); n++)   // loop over the codes one at a time
-            for(int m=k; m<j; m++)              // loop over obstypes k..j-1
+         for(size_t n=0; n<codes.size(); n++)   // loop over the codes one at a time
+            for(size_t m=k; m<j; m++)              // loop over obstypes k..j-1
                if(codes[n] == obstypes[m][3]) {    // is there a match?
                   tempot.push_back(obstypes[m]);      // save it
                   mapSysFreqObsIDs[sys][fre].push_back(obstypes[m]);
@@ -2164,7 +2166,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
 //------------------------------------------------------------------------------------
 string SolutionObject::dump(int level, string msg1, string msg2) throw()
 {
-   int i,j;
+   size_t i,j;
    ostringstream oss;
    Configuration& C(Configuration::Instance());
 
@@ -2179,7 +2181,7 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
             oss << " " << C.map1to3Sys[s] << ":L" << f << ":";
             if(mapSysFreqObsIDs[s][f].size() == 0)
                oss << "NA";
-            else for(int k=0; k<mapSysFreqObsIDs[s][f].size(); k++)
+            else for(size_t k=0; k<mapSysFreqObsIDs[s][f].size(); k++)
                oss << (k==0?"":",") << mapSysFreqObsIDs[s][f][k].substr(1,3);
                   //<< "(" << mapObsIndex[mapSysFreqObsIDs[s][f][k]] << ")";
          }
@@ -2236,7 +2238,8 @@ void SolutionObject::CollectData(const RinexSatID& sat,
 {
    if(!isValid) return;
 
-   int i,j,k,n;
+   int k,n;
+   size_t i,j;
 
    string sys(1,sat.systemChar());                          // satellite's system
    if(mapSysFreqObsIDs.find(sys) == mapSysFreqObsIDs.end()) // this sys not needed
@@ -2501,7 +2504,8 @@ int SolutionObject::WriteORDs(const CommonTime& time) throw(Exception)
    try {
       Configuration& C(Configuration::Instance());
 
-      int i,j;
+      size_t i;
+      int j;
       double clk;
       for(i=0; i<Satellites.size(); i++) {
          if(Satellites[i].id < 0) continue;
@@ -2557,7 +2561,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
             Matrix<double> Cov(statsNEUresid.getCov());  // cov from NEU stats
 
             // scale the covariance
-            for(int i=0; i<Cov.rows(); i++) for(int j=i; j<Cov.cols(); j++)
+            for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
                Cov(i,j) = Cov(j,i) = Cov(i,j)*apv;
 
             // print this covariance as labelled matrix

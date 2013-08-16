@@ -341,7 +341,7 @@ private:
    /// The number of coefficients in a single record. This will determine the
    /// binary record size
    int Ncoeff;
-   int Nconst;           ///< number of constants in the header (see map constants)
+   size_t Nconst;           ///< number of constants in the header (see map constants)
    std::string label[3]; ///< lines under group 1010
    double startJD;       ///< JD of the start of the first record in the file
    double endJD;         ///< JD of the end of the last record in the file

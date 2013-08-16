@@ -19,7 +19,6 @@ namespace gpstk
       // cast the stream to be an RinexClockStream
       RinexClockStream& strm = dynamic_cast<RinexClockStream&>(ffs);
 
-      int i;
       string line;
 
       line = datatype;
@@ -126,7 +125,7 @@ namespace gpstk
       if(n > 2) {
          strm.formattedGetLine(line,true);
          stripTrailing(line);
-         if(line.length() < (n-2)*20-1) {
+         if(int(line.length()) < (n-2)*20-1) {
             FFStreamError e("Short line : " + line);
             GPSTK_THROW(e);
          }

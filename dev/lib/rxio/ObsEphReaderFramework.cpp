@@ -133,7 +133,7 @@ namespace gpstk
       // Read in all the ephemeris data
       ephReader.verboseLevel = verboseLevel;
       FFIdentifier::debugLevel = debugLevel;
-      for (int i=0; i<ephFiles.size(); i++)
+      for (size_t i=0; i<ephFiles.size(); i++)
          ephReader.read(ephFiles[i]);
       gpstk::XvtStore<SatID>& eph = *ephReader.eph;
 

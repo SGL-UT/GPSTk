@@ -164,7 +164,7 @@ namespace gpstk
       EpochData::const_iterator its = it;
       EpochData::const_iterator ite = it;
 
-      if(allData.size()> 2*half)
+      if(int(allData.size())> 2*half)
       {
          int ileft = half;
          for(int i = 0; i < half; i++)

@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
 
   cout << "Scanning over prnSet." << endl;
   set<int> prnSet;
-  int index;
+  size_t index;
   for (index = 0; index < prnOpt.getCount(); index++)
     {
       int prn = asInt(prnOpt.getValue()[index]);
@@ -150,7 +150,7 @@ int main(int argc, char *argv[])
 
   // get the ephemeris source(s)
   EphReader ephReader;
-  for (int i=0; i<ephFiles.getCount(); i++)
+  for (size_t i=0; i<ephFiles.getCount(); i++)
     {
       ephReader.read(ephFiles.getValue()[i]);
       cout << "File read by EphReader." << endl;

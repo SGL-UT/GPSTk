@@ -148,8 +148,8 @@ int CommandInput::GetCmdInput(int argc, char **argv) throw(Exception)
 {
 try {
    help = false;
-   int i,j;
-   double tmp;
+   size_t i,j;
+   int k;
    string msg;
    vector<string> values,field;
 
@@ -483,7 +483,7 @@ try {
    // allow user to put all options in a file
    // PreProcessArgs pulls out help, Debug, Verbose
    vector<string> Args;
-   for(j=1; j<argc; j++) PreProcessArgs(argv[j],Args);
+   for(k=1; k<argc; k++) PreProcessArgs(argv[k],Args);
 
    if(Args.size()==0)
       help = true;
@@ -493,19 +493,19 @@ try {
    char **CArgs=new char*[argc];
    if(!CArgs) { cerr << "Failed to allocate CArgs\n"; return -1; }
    CArgs[0] = argv[0];
-   for(j=1; j<argc; j++) {
-      CArgs[j] = new char[Args[j-1].size()+1];
-      if(!CArgs[j]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
-      strcpy(CArgs[j],Args[j-1].c_str());
+   for(k=1; k<argc; k++) {
+      CArgs[k] = new char[Args[k-1].size()+1];
+      if(!CArgs[k]) { cerr << "Failed to allocate CArgs[j]\n"; return -1; }
+      strcpy(CArgs[k],Args[k-1].c_str());
    }
 
    if(Debug) {
       cout << "Argument list passed to parser:\n";
-      for(j=0; j<argc; j++) cout << j << " " << CArgs[j] << endl;
+      for(k=0; k<argc; k++) cout << k << " " << CArgs[k] << endl;
    }
 
    Par.parseOptions(argc, CArgs);
-   for(j=1; j<argc; j++) delete[] CArgs[j];
+   for(k=1; k<argc; k++) delete[] CArgs[k];
    delete[] CArgs;
 
    // check for errors on the command line
@@ -1097,7 +1097,6 @@ try {
       }
 
       bool again_cfg_file=false;
-      char c;
       string buffer,word;
       while(1) {
          getline(infile,buffer);
@@ -1167,7 +1166,8 @@ int CommandInput::ValidateCmdInput(void) throw(Exception)
 {
 try {
    bool ok=true,flag;
-   int i,n;
+   int n;
+   size_t i;
    string site1,site2,msg;
    vector<string> fixed,notfixed;
    map<string,Station>::iterator it;
@@ -1369,7 +1369,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void CommandInput::Dump(std::ostream& ofs) const throw(Exception)
 {
 try {
-   int i;
+   size_t i;
    ofs << "Summary of command line input:" << endl;
    if(Validate) ofs << " ------------ validate: this run will quit after "
       << "validating the input ---------" << endl;

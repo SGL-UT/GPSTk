@@ -32,7 +32,7 @@ VLayout.cpp
 ViewerManager.cpp
 )
     
-add_library (vdraw SHARED ${vdraw_src})
+add_library (vdraw ${STADYN} ${vdraw_src})
 include_directories (${CMAKE_SOURCE_DIR}/lib/geomatics)
 install (DIRECTORY . DESTINATION include/gpstk FILES_MATCHING PATTERN "*.hpp" PATTERN "*.h")
 install (TARGETS vdraw DESTINATION lib)

@@ -244,7 +244,7 @@ namespace gpstk
       int firstSpec = -1;
       bool touched = false;
 
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          CommandOption *opt = optionVec[i];
 
@@ -273,7 +273,7 @@ namespace gpstk
       string errstr("One of the following options must be specified: ");
       bool found = false;
 
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          if (optionVec[i]->getCount())
             found = true;
@@ -292,7 +292,7 @@ namespace gpstk
    {
       CommandOption *rv = NULL;
 
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          if (optionVec[i]->getCount())
          {
@@ -309,7 +309,7 @@ namespace gpstk
       string errstr("The following options must be used together: ");
       bool found = false, notFound = false;
 
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          if (optionVec[i]->getCount())
             found = true;
@@ -329,7 +329,7 @@ namespace gpstk
    unsigned long CommandOptionAllOf::getCount() const
    {
       unsigned long rv = 0;
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          if (optionVec[i]->getCount() == 0)
             return 0;
@@ -361,7 +361,7 @@ namespace gpstk
       string rv;
       if (optionVec.size() > 1)
          rv += "(";
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          if (i) rv += ",";
          rv += optionVec[i]->getOptionString();
@@ -375,7 +375,7 @@ namespace gpstk
    unsigned long CommandOptionGroupOr::getCount() const
    {
       unsigned long rv = 0;
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
          rv += optionVec[i]->getCount();
 
       return rv;
@@ -384,7 +384,7 @@ namespace gpstk
    unsigned long CommandOptionGroupAnd::getCount() const
    {
       unsigned long rv = 0;
-      for (int i = 0; i < optionVec.size(); i++)
+      for (size_t i = 0; i < optionVec.size(); i++)
       {
          if (optionVec[i]->getCount() == 0)
             return 0;

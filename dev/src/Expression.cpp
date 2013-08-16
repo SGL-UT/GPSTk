@@ -413,7 +413,7 @@ namespace gpstk
          return;
       }
       
-      int totalResolved = countResolvedTokens();
+      size_t totalResolved = countResolvedTokens();
 
       while (totalResolved<tList.size())
       {

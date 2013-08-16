@@ -73,7 +73,8 @@ bool ElevationMask(double elevation, double azimuth) throw(Exception);
 int DoubleDifference(void) throw(Exception)
 {
 try {
-   int n,i,j,k;
+   int j,k;
+   size_t i,n;
       // map to hold all buffered single differences for one baseline
    map<SDid,RawData> SDmap;
 
@@ -164,7 +165,8 @@ void ComputeSingleDifferences(string baseline, map<SDid,RawData>& SDmap)
    throw(Exception)
 {
 try {
-   int i,j,beg,end;
+   int beg,end;
+   size_t i,j;
    GSatID sat;
 
       // decompose the baseline
@@ -256,7 +258,7 @@ int ComputeDoubleDifferences(map<SDid,RawData>& SDmap) throw(Exception)
 {
 try {
    bool frst,ok;
-   int i,j,k,indx,count = 0,ddsign;
+   int indx,count = 0,ddsign;
    long nn1,nn2;
    double ddL1,ddL2,ddER,ddP1,ddP2,dd,db1,db2;
    CommonTime tt,ttnext;   // ttnext is the time of the next reference satellite switch
@@ -318,7 +320,7 @@ try {
          indx = Inext[sid];
 
             // end of buffer has been reached
-         if(Inext[sid] >= SDmap[sid].count.size()) continue;
+         if(Inext[sid] >= int(SDmap[sid].count.size())) continue;
 
          if(sid == ref) continue;                     // ignore the reference
 
@@ -411,7 +413,7 @@ try {
       frst = true;
       ok = false;
       for(it=SDmap.begin(); it != SDmap.end(); it++) {
-         if(Inext[it->first] < SDmap[it->first].count.size()) {
+         if(Inext[it->first] < int(SDmap[it->first].count.size())) {
             if(frst || it->second.count[Inext[it->first]] < count) {
                count = it->second.count[Inext[it->first]];
                frst = false;

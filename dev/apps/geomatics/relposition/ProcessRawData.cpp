@@ -301,7 +301,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void EditRawData(ObsFile& obsfile) throw(Exception)
 {
 try {
-   int i;
+   size_t i;
 
    Station& st=Stations[obsfile.label];
 

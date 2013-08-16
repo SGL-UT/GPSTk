@@ -41,7 +41,7 @@ namespace gpstk
       // Add to the store directly
    void EOPDataStore::addEOPData(const CommonTime& utc,
                                   const EOPDataStore::EOPData& d)
-      throw()
+      throw(InvalidRequest)
    {
       if(!(utc.getTimeSystem()==TimeSystem::UTC)) throw Exception();
 
@@ -163,7 +163,6 @@ namespace gpstk
          
          istrm >> mjd >> xp >> yp >> UT1mUTC;
 
-         double tmp;
          for(int i=0;i<12;i++) istrm >> temp;
 
          istrm >> dPsi >> dEps;

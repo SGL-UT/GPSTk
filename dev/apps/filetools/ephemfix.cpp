@@ -139,7 +139,7 @@ void FICFixer::spinUp()
    list<long> blockList;
    blockList.push_back(62);
 
-   for (int i=0; i<almFileOpt.getCount(); i++ )
+   for (size_t i=0; i<almFileOpt.getCount(); i++ )
    {
       string almFilename = almFileOpt.getValue()[i];
       if (verboseLevel || debugLevel)
@@ -178,7 +178,7 @@ void FICFixer::spinUp()
 void FICFixer::process()
 {
    // scan and correct files
-   for (int i=0;i<ephFileOpt.getCount(); i++)
+   for (size_t i=0;i<ephFileOpt.getCount(); i++)
    {
       string fn=ephFileOpt.getValue()[i];
       FFIdentifier id(fn);

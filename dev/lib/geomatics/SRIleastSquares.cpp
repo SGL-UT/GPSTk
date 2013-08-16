@@ -307,7 +307,7 @@ int SRIleastSquares::dataUpdate(Vector<double>& D,
    // TD disallow Robust and Sequential ? why?
 
 try {
-   int i,j,iret;
+   int i,iret;
    double big,small;
    Vector<double> f(M),Xsol(N),NominalX,Res(M),Wts(M,1.0),OldWts(M,1.0);
    Matrix<double> Partials(M,N),MeasCov(M,M);

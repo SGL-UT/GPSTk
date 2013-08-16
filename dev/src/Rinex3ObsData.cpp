@@ -153,7 +153,7 @@ namespace gpstk
       }  // write out data
       else if( rod.epochFlag == 0 || rod.epochFlag == 1 || rod.epochFlag == 6 )
       {
-         int i;
+         size_t i;
          const int maxObsPerLine(5);
 
             // loop over satellites in R3 obs data
@@ -323,7 +323,7 @@ namespace gpstk
          while(itr != obs.end()) {
             line = itr->first.toString();
 
-            for(int i=0; i < itr->second.size(); i++) {
+            for(size_t i=0; i < itr->second.size(); i++) {
                RinexDatum thisData = itr->second[i];
                line += rightJustify(asString(thisData.data,3),14);
 
@@ -439,7 +439,7 @@ namespace gpstk
          catch(Exception& e)
          {
             string text;
-            for(int i=0; i<e.getTextCount(); i++) text += e.getText(i);
+            for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
             FFStreamError err("gpstk::Exception in parseTime(): " + text);
             GPSTK_THROW(err);
          }
@@ -620,14 +620,14 @@ namespace gpstk
             // If the last Obs are the ones missing, it won't necessarily be padded
             // with spaces, so the parser will break.  This adds the padding to let
             // the parser do its job and interpret spaces as zeroes.
-            int minSize = 3 + 16*size;
+            size_t minSize = 3 + 16*size;
             if(line.size() < minSize)
                line += string(minSize-line.size(), ' ');
 
             // get the data (# entries in ObsType map of maps from header)
             vector<RinexDatum> data;
             for(int i = 0; i < size; i++) {
-               int pos = 3 + 16*i;
+               size_t pos = 3 + 16*i;
                RinexDatum tempData;
                tempData.data = asDouble(line.substr(pos   , 14));
                if( line.size() > pos+14 )
@@ -706,7 +706,7 @@ namespace gpstk
    }
    catch (gpstk::Exception& e) {
      string text;
-     for(int i=0; i<e.getTextCount(); i++) text += e.getText(i);
+     for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
      FFStreamError err("gpstk::Exception in parseTime(): " + text);
      GPSTK_THROW(err);
    }
@@ -751,7 +751,7 @@ namespace gpstk
          DataMap::const_iterator jt;
          for(jt = obs.begin(); jt != obs.end(); jt++) {
             s << " " << (jt->first).toString() << ":" << fixed << setprecision(3);
-            for(int i = 0; i < jt->second.size(); i++)
+            for(size_t i = 0; i < jt->second.size(); i++)
             {
                s << " " << setw(12) << jt->second[i].data
                   << "/" << jt->second[i].lli << "/" << jt->second[i].ssi;
@@ -786,7 +786,7 @@ namespace gpstk
          RinexSatID sat(jt->first);
          const vector<RinexObsID> types(head.mapObsTypes[sat.toString().substr(0,1)]);
          os << " " << sat.toString() << fixed << setprecision(3);
-         for(int i=0; i<jt->second.size(); i++)
+         for(size_t i=0; i<jt->second.size(); i++)
             os << " " << setw(13) << jt->second[i].data
                << "/" << jt->second[i].lli
                << "/" << jt->second[i].ssi

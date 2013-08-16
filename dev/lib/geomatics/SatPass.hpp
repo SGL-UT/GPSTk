@@ -202,7 +202,7 @@ public:
    /// @return the vector of strings giving RINEX obs types
    std::vector<std::string> getObsTypes(void) throw() {
       std::vector<std::string> v;
-      for(int i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
+      for(size_t i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
       return v;
    }
 
@@ -227,7 +227,7 @@ public:
 
    /// @return the earliest time of good data in this SatPass data
    CommonTime getFirstGoodTime(void) const throw() {
-      for(int j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
+      for(size_t j=0; j<spdvector.size(); j++) if(spdvector[j].flag & OK) {
          return time(j);
       }
       return CommonTime::END_OF_TIME;
@@ -392,7 +392,7 @@ protected:
             data.resize(right.data.size());
             lli.resize(right.lli.size());
             ssi.resize(right.ssi.size());
-            int i;
+            size_t i;
             for(i=0; i<right.data.size(); i++) data[i] = right.data[i];
             for(i=0; i<right.lli.size(); i++) lli[i] = right.lli[i];
             for(i=0; i<right.ssi.size(); i++) ssi[i] = right.ssi[i];
@@ -544,7 +544,7 @@ public:
    /// @return the earliest time of good data in this SatPass list
    CommonTime getFirstGoodTime(void) const throw() {
       CommonTime ttag = LastTime;
-      for(int i=0; i<SPList.size(); i++)
+      for(size_t i=0; i<SPList.size(); i++)
          if(SPList[i].getFirstGoodTime() < ttag)
             ttag = SPList[i].getFirstGoodTime();
       return ttag;
@@ -553,7 +553,7 @@ public:
    /// @return the latest time of good data in this SatPass list
    CommonTime getLastGoodTime(void) const throw() {
       CommonTime ttag = FirstTime;
-      for(int i=0; i<SPList.size(); i++)
+      for(size_t i=0; i<SPList.size(); i++)
          if(SPList[i].getLastGoodTime() > ttag)
             ttag = SPList[i].getLastGoodTime();
       return ttag;

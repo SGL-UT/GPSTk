@@ -119,10 +119,10 @@ int main(int argc, char *argv[])
       // add comments
       if(comments.size() > 0) {
          // try to keep existing comments
-         for(i=0; i<4-comments.size(); i++)
+         for(i=0; i<4-int(comments.size()); i++)
             comments.push_back(sp3header.comments[i]);
          sp3header.comments.clear();
-         for(i=0; i<comments.size(); i++) {
+         for(i=0; i<int(comments.size()); i++) {
             sp3header.comments.push_back(comments[i]);
          }
       }

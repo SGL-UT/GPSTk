@@ -145,7 +145,6 @@ int main(int argc, char **argv)
    try {
 
       int i,n,nobs,nnav;
-      double dt;
 
       // get the current system time
       time_t timer;
@@ -318,7 +317,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void InitializeHeaders(RinexObsHeader& roh, RinexNavHeader& rnh) throw(Exception)
 {
 try {
-   int i;
+   size_t i;
    // observation header
    roh.version = 2.1;
    roh.fileType = "Observation";
@@ -517,7 +516,8 @@ int UpdateHeader(string& TempFile, string& OutputFile, RinexObsHeader& rh)
    throw(Exception)
 {
 try {
-   int i,j;
+   int j;
+   size_t i;
 
    // update header
    if(FillOptionalHeader) {
@@ -644,7 +644,8 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GetCommandInput(int argc, char **argv) throw(Exception)
 {
 try {
-   int i,j;
+   int j;
+   size_t i;
    vector<string> values;
 
    // --------------------------------------------------------------------------------
@@ -1074,7 +1075,6 @@ try {
       }
 
       bool again_cfg_file=false;
-      char c;
       string buffer,word;
       while(1) {
          getline(infile,buffer);
@@ -1125,7 +1125,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 void DumpCommandLine(ostream& ofs) throw(Exception)
 {
 try {
-   int i;
+   size_t i;
 
    ofs << "Summary of command line input:" << endl;
    ofs << " Debug is " << (Debug ? "on":"off") << endl;

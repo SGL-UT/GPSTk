@@ -97,7 +97,7 @@ namespace gpstk
 
          // Lagrange interpolation
          rec.sigAcc = rec.Acc = Triple(0,0,0);        // default
-         double dt(ttag-ttag0), err, slope;           // dt in seconds
+         double dt(ttag-ttag0), err;           // dt in seconds
          if(haveVelocity) {
             for(i=0; i<3; i++) {
                // interpolate the positions
@@ -166,7 +166,7 @@ namespace gpstk
 
          if(getTableInterval(sat, ttag, Nhalf, it1, it2, true)) {
             // exact match
-            for(i=0; i<Nhalf; i++) ++it1;
+            for(unsigned int i=0; i<Nhalf; i++) ++it1;
             PositionRecord rec(it1->second);
             return rec.Pos;
          }
@@ -185,7 +185,7 @@ namespace gpstk
 
          // interpolate
          Triple pos;
-         double dt(ttag-ttag0), err, slope;
+         double dt(ttag-ttag0), err;
          for(i=0; i<3; i++)
             pos[i] = LagrangeInterpolation(times,P[i],dt,err);
 
@@ -211,7 +211,7 @@ namespace gpstk
 
          bool isExact(getTableInterval(sat, ttag, Nhalf, it1, it2, haveVelocity));
          if(isExact && haveVelocity) {
-            for(int i=0; i<Nhalf; i++) ++it1;
+            for(unsigned int i=0; i<Nhalf; i++) ++it1;
             PositionRecord rec(it1->second);
             return rec.Vel;
          }
@@ -271,7 +271,7 @@ namespace gpstk
          bool isExact(getTableInterval(sat,ttag,Nhalf,it1,it2,haveAcceleration));
          if(isExact && haveAcceleration) {
             // exact match, and have acceleration data
-            for(int i=0; i<Nhalf; i++) ++it1;
+            for(unsigned int i=0; i<Nhalf; i++) ++it1;
             PositionRecord rec(it1->second);
             return rec.Acc;
          }

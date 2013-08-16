@@ -376,7 +376,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 ostream& operator<<(ostream& os, const LabelledVector& nlp)
 {
 try {
-   int i;
+   size_t i;
    string s;
    //ofstream savefmt; 
    //savefmt.copyfmt(os);
@@ -392,7 +392,7 @@ try {
 
    // print each label
    for(i=0; i<nlp.NL.size(); i++) {
-      if(nlp.NL.getName(i).size() > nlp.wid)
+      if(nlp.NL.getName(i).size() > size_t(nlp.wid))
          s = leftJustify(nlp.NL.getName(i),nlp.wid);
       else
          s = rightJustify(nlp.NL.getName(i),nlp.wid);
@@ -421,7 +421,8 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 ostream& operator<<(ostream& os, const LabelledMatrix& nlp)
 {
 try {
-   int i,j,n,nspace;
+   int nspace;
+   size_t i, j, n;
    string s;
    const Namelist *pNLcol = &nlp.NLcols;
    const Namelist *pNLrow = &nlp.NLrows;
@@ -443,14 +444,14 @@ try {
       else
          s = rightJustify(string(""),nlp.wid);
       os << s << " ";
-      if(nlp.msg.size() > 0 && nlp.msg.size() < nlp.wid)
+      if(nlp.msg.size() > 0 && nlp.msg.size() < size_t(nlp.wid))
          os << rightJustify(string(""),nlp.wid-nlp.msg.size());   // space
    }
       // print column labels
    if(nlp.rc != 1) { // but not if 'rows only'
       n = (nlp.M.cols() < pNLcol->size() ? nlp.M.cols() : pNLcol->size());
       for(i=0; i<n; i++) {
-         if(pNLcol->getName(i).size() > nlp.wid)
+         if(pNLcol->getName(i).size() > size_t(nlp.wid))
             s = leftJustify(pNLcol->getName(i),nlp.wid);
          else
             s = rightJustify(pNLcol->getName(i),nlp.wid);
@@ -463,7 +464,7 @@ try {
    if(nlp.form == 1) os << fixed;
    if(nlp.form == 2) os << scientific;
 
-   if(nlp.msg.size() > nlp.wid) nspace = nlp.msg.size()-nlp.wid;
+   if(nlp.msg.size() > size_t(nlp.wid)) nspace = nlp.msg.size()-nlp.wid;
    else nspace = 0;
 
       // print one row per line
@@ -472,7 +473,7 @@ try {
       if(nspace) os << rightJustify(string(""),nspace);           // space
          // print row labels
       if(nlp.rc != 2) { // but not if 'columns only'
-         if(pNLrow->getName(i).size() > nlp.wid)
+         if(pNLrow->getName(i).size() > size_t(nlp.wid))
             s = leftJustify(pNLrow->getName(i),nlp.wid);
          else
             s = rightJustify(pNLrow->getName(i),nlp.wid);

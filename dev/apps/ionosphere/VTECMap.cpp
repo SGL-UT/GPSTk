@@ -93,7 +93,6 @@ try {
    int i,j,ishift,jshift,k;
 
    if(gridtype == UniformSpace) {
-      int ii;
       Position ptx1,ptx2,pty1,pty2,pt3,DeltaX,DeltaY;
 
          // azimuth = 0 : x1
@@ -184,7 +183,8 @@ void VTECMap::OutputGrid(ostream& os)
 //------------------------------------------------------------------------------------
 void VTECMap::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 {
-   int i,j,k,n;
+   int i,j,n;
+   size_t k;
       // first compute the average value
    n = 0;
    ave = 0.0;
@@ -211,12 +211,12 @@ void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data, double b
    if(gridLon > 180.0) gridLon -= 360.0;
    gridLon *= DEG_TO_RAD;
 
-   double destLat, destLon,dLat,dLon;
+   double destLat, destLon,dLon;
    double sg,cg,sd,dist,range,bear,d;
    vector<double> vtec,xtmp,ytmp,sigma;
 
       // loop over all data
-   for(int k=0; k<data.size(); k++) {
+   for(size_t k=0; k<data.size(); k++) {
       //if(data[k].elevation < MinElevation) continue;   // here?
       destLat = data[k].latitude * DEG_TO_RAD;
       destLon = data[k].longitude * DEG_TO_RAD;
@@ -266,7 +266,7 @@ void VTECMap::ComputeGridValue(GridData& gridpt, vector<ObsData>& data, double b
 double VTECMap::ChiSqPlane(vector<double>& z, vector<double>& x, vector<double>& y,
    vector<double>& sigma)
 {
-   int k;
+   size_t k;
 
    double invSigma,XinvSigma,YinvSigma,ZinvSigma;
    double s,sx,sy,sz,sxx,sxy,syy,sxz,syz;

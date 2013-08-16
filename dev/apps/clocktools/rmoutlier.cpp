@@ -71,7 +71,6 @@ int main(int argv, char **argc)
 	double dataA[2];
 	double dataB[2];
 	unsigned long int i = 0;
-	double ff;
 	
 	// convert phase data to fractional frequency data
 	for(i = 0; i < phase.size(); i++)

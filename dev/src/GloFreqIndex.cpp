@@ -153,7 +153,7 @@ namespace gpstk
                cout << "There are " << length << " passes recorded." << endl;
             double navg      = 0.0;
             double totweight = 0.0;
-            for (int j = 0; j < iter->second.size(); j++)
+            for (size_t j = 0; j < iter->second.size(); j++)
             {
                if (verbose != 0)
                {
@@ -212,7 +212,7 @@ namespace gpstk
       // Scrub out large phase shifts, > maxDist; don't keep those points.
 
       // Keep good del-phi and del-y = del-R - lambda0*del-phi for G1.
-      for (int i = 1; i < r1.size(); i++)
+      for (size_t i = 1; i < r1.size(); i++)
       {
          double dp = L1_WAVELENGTH_GLO*(p1[i] - p1[i-1]);
          if (fabs(dp) < maxDist) // keep the point
@@ -223,7 +223,7 @@ namespace gpstk
       }
 
       // Keep good del-phi and del-y = del-R - lambda0*del-phi for G2.
-      for (int i = 1; i < r2.size(); i++)
+      for (size_t i = 1; i < r2.size(); i++)
       {
          double dp = L2_WAVELENGTH_GLO*(p2[i] - p2[i-1]);
          if (fabs(dp) < maxDist) // keep the point
@@ -238,7 +238,7 @@ namespace gpstk
 
       double med1 = median<double>(dy1);
 
-      for (int i = 0; i < dy1.size(); i++)
+      for (size_t i = 0; i < dy1.size(); i++)
       {
          double spread = ::log10(fabs(dy1[i]-med1));
          if (spread < maxRPshift)
@@ -249,7 +249,7 @@ namespace gpstk
 
       double med2 = median<double>(dy2);
 
-      for (int i = 0; i < dy2.size(); i++)
+      for (size_t i = 0; i < dy2.size(); i++)
       {
          double spread = ::log10(fabs(dy2[i]-med2));
          if (spread < maxRPshift)

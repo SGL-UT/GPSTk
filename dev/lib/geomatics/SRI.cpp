@@ -376,9 +376,9 @@ using namespace StringUtils;
          }
 
          // loop over new names, copying data from input into the new SRI
-         for(int i=0; i<S.names.size(); i++) {
+         for(size_t i=0; i<S.names.size(); i++) {
             Z(I+i) = S.Z(i);
-            for(int j=0; j<S.names.size(); j++)
+            for(size_t j=0; j<S.names.size(); j++)
                R(I+i,I+j) = S.R(i,j);
          }
 
@@ -506,10 +506,10 @@ using namespace StringUtils;
          return;
       }
 
-      if(n >= R.rows())
+      if(n >= int(R.rows()))
          return;
 
-      for(unsigned int i=0; i<n; i++) {
+      for(int i=0; i<n; i++) {
          for(unsigned int j=i; j<R.cols(); j++) 
             R(i,j) = 0.0;
          Z(i) = 0.0;
@@ -759,7 +759,7 @@ using namespace StringUtils;
          Z = Vector<double>(R*newX);
          names = newNL;
 */
-         unsigned int i,j,k;
+         size_t i,j,k;
             // create a vector of indexes and corresponding values
          vector<int> indx;
          vector<double> value;
@@ -780,8 +780,8 @@ using namespace StringUtils;
          }
             // move the X(in) terms to the data vector on the RHS
          for(k=0; k<m; k++)
-            for(i=0; i<indx[k]; i++)
-               Z(i) -= R(i,indx[k])*value[k];
+            for( int ii=0; ii<indx[k]; ii++)
+               Z(ii) -= R(ii,indx[k])*value[k];
 
             // first remove the rows in indx
          bool skip;

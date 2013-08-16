@@ -58,8 +58,8 @@ namespace vplot
     if(midx == (mcvec.size()*mvec.size()))
       midx = 0;
 
-    if(midx == imidx)
-	;  //Throw an error...doing same stuff again
+  //  if(midx == imidx)
+	//;  //Throw an error...doing same stuff again
 
     return pickNextMarker(midx++);
   }

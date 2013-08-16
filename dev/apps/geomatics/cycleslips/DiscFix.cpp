@@ -255,7 +255,7 @@ int main(int argc, char **argv)
       }
 
          // loop over input files
-      for(int nfile=0; nfile<config.InputObsName.size(); nfile++) {
+      for(size_t nfile=0; nfile<config.InputObsName.size(); nfile++) {
          iret = ReadFile(nfile);
          if(iret < 0) break;
       }   // end loop over input files
@@ -325,7 +325,7 @@ int ReadFile(int nfile) throw(Exception)
 
          // check that file contains C1/P1,P2,L1,L2
       inC1 = inP1 = inP2 = inL1 = inL2 = -1;
-      for(int j=0; j<rhead.obsTypeList.size(); j++) {
+      for(size_t j=0; j<rhead.obsTypeList.size(); j++) {
          if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("C1")) inC1=j;
          if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L1")) inL1=j;
          if(rhead.obsTypeList[j] == RinexObsHeader::convertObsType("L2")) inL2=j;
@@ -402,8 +402,8 @@ int ProcessOneEntireEpoch(RinexObsData& roe) throw(Exception)
 {
    try {
       bool ok;
-      int i,j,k,iret;
-      double dt;
+      int j,k,iret;
+      size_t i;
       string datastr;
       GSatID sat;
       unsigned short flag;
@@ -672,7 +672,7 @@ void ProcessSatPass(int in) throw(Exception)
       SPList[in].status() = 2;              // status == 2 means 'processed'.
 
       // --------- output editing commands ----------------
-      for(int i=0; i<EditCmds.size(); i++)
+      for(size_t i=0; i<EditCmds.size(); i++)
          config.ofout << EditCmds[i] << endl;
 
       // --------- smooth pseudorange and debias phase ----
@@ -714,7 +714,7 @@ int AfterReadingFiles(void) throw(Exception)
             << config.estdt[0] << " seconds." << endl;
 
       // process all the passes that have not been processed yet
-      for(int i=0; i<SPList.size(); i++) {
+      for(size_t i=0; i<SPList.size(); i++) {
          if(SPList[i].status() <= 1) {
             ProcessSatPass(i);
             if(!orfstr)                         // not writing out to RINEX
@@ -743,7 +743,7 @@ void WriteToRINEXfile(void) throw(Exception)
 {
    if(!orfstr) return;
    try {
-      int in,n;
+      size_t in;
       CommonTime targetTime=CommonTime::END_OF_TIME;
       static CommonTime WriteEpoch(CommonTime::BEGINNING_OF_TIME);
 
@@ -852,7 +852,8 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
 {
    try {
       bool first;
-      int in,n;
+      size_t in;
+      int n;
       unsigned short flag;
       //string str;
       GSatID sat;
@@ -970,7 +971,8 @@ void WriteRINEXdata(CommonTime& WriteEpoch, const CommonTime targetTime) throw(E
 //------------------------------------------------------------------------------------
 void PrintSPList(ostream& os, string msg, vector<SatPass>& v, bool doPrintTime)
 {
-   int i,j,gap;
+   int j,gap;
+   size_t i;
    GSatID sat;
    map<GSatID,int> lastSP;
    map<GSatID,int>::const_iterator kt;
@@ -1006,7 +1008,8 @@ int GetCommandLine(int argc, char **argv) throw(Exception)
 {
    try {
    bool help=false,DChelp=false,DChelpall=false;
-   int i,j;
+   int j;
+   size_t i;
       // defaults
    config.WriteASAP = true;   // this is not in the input...
    config.verbose = false;
@@ -1559,7 +1562,6 @@ void PreProcessArgs(const char *arg, vector<string>& Args) throw(Exception)
          }
 
          bool again_cfg_file=false;
-         char c;
          string buffer,word;
          while(1) {
             getline(infile,buffer);

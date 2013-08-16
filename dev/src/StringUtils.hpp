@@ -2464,7 +2464,7 @@ namespace gpstk
          std::string::size_type leng = (length > 0 ? length : 1);
 
          // i will be minimum length required with prec==1: force leng if necessary
-         int i = (int(leng) - int(elen) - 4);
+         size_t i = (int(leng) - int(elen) - 4);
          if(showPlus) i--;
          if(i > 0 && leng < i) leng = std::string::size_type(i);
 

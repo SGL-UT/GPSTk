@@ -594,7 +594,7 @@ void SRIFilter::SrifSU(Matrix<T>& R,
    }
 
    const T EPS=-T(1.e-200);
-   int i, j, k;
+   size_t i, j, k;
    T sum, beta, delta, diag;
 
 try {
