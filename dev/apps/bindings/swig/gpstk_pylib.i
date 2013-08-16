@@ -153,6 +153,13 @@
    #include "../../../src/FICHeader.hpp"
    #include "../../../src/FICData.hpp"
 
+   // MSC format:
+   #include "../../../src/MSCBase.hpp"
+   #include "../../../src/MSCHeader.hpp"
+   #include "../../../src/MSCData.hpp"
+   #include "../../../src/MSCStream.hpp"
+   #include "../../../src/MSCStore.hpp"
+
    // Positioning/Tides
    #include "../../../src/MoonPosition.hpp"
    #include "../../../src/SunPosition.hpp"
@@ -387,6 +394,14 @@
 %include "../../../src/FICStream.hpp"
 %include "../../../src/FICHeader.hpp"
 %include "../../../src/FICData.hpp"
+
+// MSC format:
+%include "../../../src/MSCBase.hpp"
+%include "../../../src/MSCHeader.hpp"
+%include "../../../src/MSCData.hpp"
+%include "../../../src/MSCStream.hpp"
+%template(FileStore_MSCHeader) gpstk::FileStore<gpstk::MSCHeader>;
+%include "../../../src/MSCStore.hpp"
 
 %include "../../../src/MoonPosition.hpp"
 %include "../../../src/SunPosition.hpp"

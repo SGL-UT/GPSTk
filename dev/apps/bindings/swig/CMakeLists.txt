@@ -3,11 +3,14 @@ cmake_minimum_required(VERSION 2.8)
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
+message(STATUS "Building using swig at: ${SWIG_EXECUTABLE}")
 
 find_package(PythonLibs)
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(../../../src/)
+message(STATUS "Building against python include path: ${PYTHON_INCLUDE_PATH}")
+message(STATUS "Building against python library: ${PYTHON_LIBRARIES}")
 
 # warning disables:
 # 362: operator= ignored
@@ -51,6 +54,8 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/JulianDate.cpp
                     ../../../src/MJD.cpp
                     ../../../src/MoonPosition.cpp
+                    ../../../src/MSCData.cpp
+                    ../../../src/MSCStore.cpp
                     ../../../src/ObsEpochMap.cpp
                     ../../../src/ObsID.cpp
                     ../../../src/ObsIDInitializer.cpp

@@ -84,7 +84,7 @@ class SP3Test(unittest.TestCase):
         self.assertAlmostEqual(-483028.55, p[1])
         self.assertAlmostEqual(-19921938.297000002, p[2])
 
-    def test_fileIO(self):
+    def test_stream(self):
         header, data = gpstk.readSP3('sp3_data.txt')
         self.assertEqual(' IGS', header.agency)
         self.assertEqual(96, header.numberOfEpochs)
@@ -99,7 +99,7 @@ class SP3Test(unittest.TestCase):
 
 
 class SEMTest(unittest.TestCase):
-    def test_fileIO(self):
+    def test_stream(self):
         header, data = gpstk.readSEM('sem_data.txt', lazy=False)
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
@@ -108,7 +108,7 @@ class SEMTest(unittest.TestCase):
         self.assertEqual(16, dataPoint.PRN)
         self.assertAlmostEqual(0.00711489, dataPoint.ecc)
 
-    def test_fileIO_lazy(self):
+    def test_stream_lazy(self):
         header, gen = gpstk.readSEM('sem_data.txt', lazy=True)
         data = [x for x in gen]
         self.assertEqual(31, len(data))
@@ -124,7 +124,7 @@ class SEMTest(unittest.TestCase):
 
 
 class YumaTest(unittest.TestCase):
-    def test_fileIO(self):
+    def test_stream(self):
         header, data = gpstk.readYuma('yuma_data.txt', lazy=False)
         self.assertEqual(30, len(data))
         dataPoint = data[10]
@@ -133,14 +133,14 @@ class YumaTest(unittest.TestCase):
         self.assertAlmostEqual(0.006191730499, dataPoint.ecc)
         self.assertEqual(377L, dataPoint.week)
 
-    def test_fileIO_lazy(self):
+    def test_stream_lazy(self):
         header, gen = gpstk.readYuma('yuma_data.txt', lazy=True)
         data = [x for x in gen]
         self.assertEqual(30, len(data))
 
 
 class Rinex3ObsTest(unittest.TestCase):
-    def test_fileIO(self):
+    def test_stream(self):
         header, data = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=False)
         self.assertEqual(0L, header.numSVs)
         self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
@@ -154,14 +154,14 @@ class Rinex3ObsTest(unittest.TestCase):
         expectedTime.setTimeSystem(gpstk.TimeSystem(gpstk.TimeSystem.GPS))
         self.assertEqual(expectedTime, dataPoint.time)
 
-    def test_fileIO_lazy(self):
+    def test_stream_lazy(self):
         header, gen = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=True)
         data = [x for x in gen]
         self.assertEqual(120, len(data))
 
 
 class Rinex3NavTest(unittest.TestCase):
-    def test_fileIO(self):
+    def test_stream(self):
         header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
         self.assertEqual('06/10/2004 00:00:26', header.date)
         self.assertEqual(166, len(data))
@@ -171,7 +171,7 @@ class Rinex3NavTest(unittest.TestCase):
 
 
 class RinexMetTest(unittest.TestCase):
-    def test_fileIO(self):
+    def test_stream(self):
         header, data = gpstk.readRinexMet('rinexmet_data.txt')
         self.assertEqual('06/09/2004 23:58:58', header.date)
         self.assertEqual(96, len(data))
@@ -182,7 +182,7 @@ class RinexMetTest(unittest.TestCase):
 
 
 class FICTest(unittest.TestCase):
-    def test_fileIO(self):
+    def test_stream(self):
         isblock9 = (lambda x: x.blockNum == 9)
         header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9)
         self.assertEqual(420, len(data))
@@ -198,6 +198,24 @@ class FICTest(unittest.TestCase):
         xvt= g.getXvt(sat, t)
         self.assertAlmostEqual(6887269.410901967, xvt.x[0])
         self.assertAlmostEqual(1036.316911617130, xvt.v[1])
+
+
+class MSCTest(unittest.TestCase):
+    def test_stream(self):
+        header, data = gpstk.readMSC('msc_data.txt')
+        dataPoint = data[0]
+        xvt = dataPoint.getXvt(dataPoint.time)
+        self.assertAlmostEqual(-1111111.3059100616, xvt.x[0])
+        self.assertAlmostEqual(0.0222, xvt.v[1])
+        self.assertEqual('AAA    ', dataPoint.mnemonic)
+        self.assertEqual(11111, dataPoint.station)
+
+    def test_store(self):
+        store = gpstk.MSCStore()
+        store.loadFile('msc_data.txt')
+        xvt = store.getXvt('11111', store.getInitialTime())
+        self.assertAlmostEqual(-1111111.295, xvt.x[0])
+        self.assertAlmostEqual(0.0222, xvt.v[1])
 
 
 if __name__ == '__main__':

@@ -21,7 +21,7 @@ Position Functions
 Some helpful functions for creating Position objects more easily (with keyword arguments) were also added:
 
 .. py:function:: gpstk.cartesian([x=0.0, y=0.0, z=0.0, model=None, frame=ReferenceFrame('Unknown)'])
-    :noindex: ::
+    :noindex:
 
     >>> print gpstk.spherical(radius=5, theta=45, phi=45)
     45.00000000 deg 45.00000000 deg 5.0000 m
@@ -162,6 +162,9 @@ The following functions use this pattern:
 .. py:function:: gpstk.readSP3(filename[, lazy=False, filterfunction=lamba x: True])
     :noindex:
 
+.. py:function:: gpstk.readMSC(filename[, lazy=False, filterfunction=lamba x: True])
+    :noindex:
+
 .. py:function:: gpstk.readYuma(filename[, lazy=False, filterfunction=lamba x: True])
     :noindex:
 
@@ -196,4 +199,7 @@ The following functions use this pattern:
     :noindex:
 
 .. py:function:: gpstk.writeYuma(filename, header, data)
+    :noindex:
+
+.. py:function:: gpstk.writeMSC(filename, header, data)
     :noindex:
