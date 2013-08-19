@@ -6,10 +6,10 @@ ${CMAKE_SOURCE_DIR}/lib/geomatics
 )
 
 add_executable(convertSSEph convertSSEph.cpp)
-target_link_libraries(convertSSEph gpstk geomatics)
+target_link_libraries(convertSSEph geomatics)
 install (TARGETS convertSSEph DESTINATION bin)
 
 add_executable(testSSEph testSSEph.cpp)
-target_link_libraries(testSSEph gpstk geomatics)
+target_link_libraries(testSSEph geomatics)
 install (TARGETS testSSEph DESTINATION bin)
 

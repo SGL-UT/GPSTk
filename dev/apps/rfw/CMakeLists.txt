@@ -6,5 +6,5 @@ ${CMAKE_SOURCE_DIR}/lib/rxio
 )
 
 add_executable(rfw rfw.cpp FDStreamBuff.cpp TCPStreamBuff.cpp)
-target_link_libraries(rfw gpstk rxio)
+target_link_libraries(rfw rxio)
 install (TARGETS rfw DESTINATION bin)

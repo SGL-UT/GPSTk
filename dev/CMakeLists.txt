@@ -13,11 +13,16 @@ set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 set (GPSTK_SO_VERSION 21)
 
 if (UNIX) # Unix Compiler Options
-	 set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
 	 set (STADYN "SHARED") #Dynamic Libraries Enabled
 	 if (APPLE) # Apple Compiler Options
 	 	set (CMAKE_SHARED_LIBRARY_SUFFIX .dylib)
 		set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
+	 elseif (${CMAKE_SYSTEM_NAME} MATCHES "SunOS") # Solaris Compiler Options
+	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt")
+	 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -compat=5 -erroff=hidevf,wvarhidemem,badargtype2w -lgen -lnsl -lsocket")
+	 else (APPLE)
+	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
 	 endif (APPLE)
 elseif (WIN32) # Windows Compiler Options
 	set (STADYN "STATIC") #Static Libraries Enabled

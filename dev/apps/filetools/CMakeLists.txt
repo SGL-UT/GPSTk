@@ -26,7 +26,7 @@ target_link_libraries(ficedit gpstk)
 install (TARGETS ficedit DESTINATION bin)
 
 add_executable(ephemfix ephemfix.cpp)
-target_link_libraries(ephemfix gpstk rxio)
+target_link_libraries(ephemfix rxio)
 install (TARGETS ephemfix DESTINATION bin)
 
 add_executable(rinexelvstrip RinexElvStrip.cpp)

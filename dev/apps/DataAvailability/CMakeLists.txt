@@ -6,5 +6,5 @@ ${CMAKE_SOURCE_DIR}/lib/rxio
 )
 
 add_executable(daa daa.cpp DataAvailabilityAnalyzer.cpp)
-target_link_libraries(daa gpstk rxio)
+target_link_libraries(daa rxio)
 install (TARGETS daa DESTINATION bin)

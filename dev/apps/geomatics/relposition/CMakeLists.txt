@@ -25,13 +25,13 @@ ComputeRAIMSolution.cpp
 EditRawDataBuffers.cpp
 StochasticModels.cpp
 )
-target_link_libraries(baselib gpstk geomatics)
+target_link_libraries(baselib geomatics)
 
 add_executable(DDBase DDBase.cpp)
-target_link_libraries(DDBase geomatics gpstk baselib)
+target_link_libraries(DDBase baselib)
 install (TARGETS DDBase DESTINATION bin)
 
 add_executable(ddmerge ddmerge.cpp)
-target_link_libraries(ddmerge baselib gpstk geomatics)
+target_link_libraries(ddmerge baselib)
 install (TARGETS ddmerge DESTINATION bin)
 

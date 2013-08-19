@@ -21,37 +21,35 @@ add_executable(example4 example4.cpp)
 target_link_libraries(example4 gpstk)
 
 add_executable(example5 example5.cpp)
-target_link_libraries(example5 gpstk procframe)
+target_link_libraries(example5 procframe)
 
 add_executable(example6 example6.cpp)
-target_link_libraries(example6 gpstk procframe)
+target_link_libraries(example6 procframe)
 
 add_executable(example7 example7.cpp)
-target_link_libraries(example7 gpstk procframe)
+target_link_libraries(example7 procframe)
 
 add_executable(example8 example8.cpp)
-target_link_libraries(example8 gpstk procframe)
+target_link_libraries(example8 procframe)
 
 add_executable(example9 example9.cpp)
-target_link_libraries(example9 gpstk procframe)
+target_link_libraries(example9 procframe)
 
 add_executable(example10 example10.cpp)
-target_link_libraries(example10 gpstk procframe)
-
+target_link_libraries(example10 procframe)
 add_executable(example11 example11.cpp)
-target_link_libraries(example11 gpstk vdraw vplot)
+target_link_libraries(example11 gpstk vplot)
 
 add_executable(example12 example12.cpp)
 target_link_libraries(example12 gpstk)
 
 add_executable(example13 example13.cpp)
-target_link_libraries(example13 gpstk vdraw vplot)
+target_link_libraries(example13 gpstk vplot)
 
 add_executable(example14 example14.cpp)
-target_link_libraries(example14 gpstk procframe)
-
+target_link_libraries(example14 procframe)
 add_executable(example15 example15.cpp)
-target_link_libraries(example15 gpstk geomatics)
+target_link_libraries(example15 geomatics)
 
 #add_executable(example16 example16.cpp)
 #target_link_libraries(example16 gpstk)
@@ -60,7 +58,7 @@ target_link_libraries(example15 gpstk geomatics)
 #target_link_libraries(example17 gpstk)
 
 add_executable(example18 example18.cpp)
-target_link_libraries(example18 gpstk geomatics procframe)
+target_link_libraries(example18 geomatics procframe)
 
 
 
