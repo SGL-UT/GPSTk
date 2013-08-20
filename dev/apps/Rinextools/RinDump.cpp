@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file RinDump.cpp
 /// Read Rinex observation files (version 2 or 3) and dump data observations, linear
 /// combinations or other computed quantities in tabular form.
@@ -79,10 +77,12 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.3 1/28/13"));
+string Version(string("1.3 1/28/13 rev"));
 // TD
 // VI LAT LON not implemented
-// GLO nav not implemented
+// Code selection is not implemented - where to replace C1* with C1W ?
+// option to use pos from PRSolve as ref
+// GPS nav and GLO nav
 // make R2 compatible - pos, ...
 // debiasing the output....
 //    combo only, phase SI VI IF GF WL NL + RP IR...explicit?
@@ -284,7 +284,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) {LOG(INFO) << errs; }        // Warnings are here too
+      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -329,7 +329,7 @@ try {
    expand_filename(C.InputSP3Files);
    expand_filename(C.InputNavFiles);
 
-   int nread,j;
+   int nread;
    size_t i;
    ostringstream ossE;
 
@@ -499,7 +499,7 @@ try {
                }
                C.haveEph = true;
 
-               C.GPSNavStore.addEphemeris(EngEphemeris(ndata));
+               C.GPSNavStore.addEphemeris(ndata);
                nread++;
             }
 
@@ -525,8 +525,8 @@ try {
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
-      if(::fabs(s-sow) > 1.0) {LOG(WARNING) << "Warning : decimation reference time "
-         << "(--start) is not an even GPS-seconds-of-week mark.";}
+      if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
+         << "(--start) is not an even GPS-seconds-of-week mark.";
       C.decTime = static_cast<CommonTime>(
          GPSWeekSecond(static_cast<GPSWeekSecond>(C.decTime).week,0.0));
    }
@@ -610,11 +610,11 @@ try {
    }
 
    // -------- parse combos and save valid ones in C.Combos
-   for(j=C.InputCombos.size()-1; j>=0; j--) {
+   for(i=C.InputCombos.size()-1; i>=0; i--) {
       LinCom lc;
-      if(! lc.ParseAndSave(C.InputCombos[j])) {
-         ossE << "Warning : Invalid linear combination " << C.InputCombos[j] << "\n";
-         C.InputCombos.erase(C.InputCombos.begin()+j);
+      if(! lc.ParseAndSave(C.InputCombos[i])) {
+         ossE << "Warning : Invalid linear combination " << C.InputCombos[i] << "\n";
+         C.InputCombos.erase(C.InputCombos.begin()+i);
       }
    }
 
@@ -673,18 +673,31 @@ try {
       }
 
       if(C.knownPos.getCoordinateSystem() != Position::Unknown) {
-         LOG(INFO) << "# Refpos "
-            << C.knownPos.printf("XYZ(m): %.3x %.3y %.3z = LLH: %.9A %.9L %.3h");
+         LOG(INFO) << "# Refpos " << C.knownPos.printf(
+                              "XYZ(m): %.3x %.3y %.3z = LLH(ddm): %.9AN %.9LE %.3h");
       }
 
       if(C.Combos.size() > 0) {
          oss << "# Linear combinations";
          for(i=0; i<C.Combos.size(); i++) {
-            oss << " " << C.Combos[i].label; // Don't list systems
+            oss << " " << C.Combos[i].label; // Don't list systems << " (";
+            //map<string,vector<double> >::const_iterator jt;
+            //for(jt=C.Combos[i].sysConsts.begin();
+            //    jt!=C.Combos[i].sysConsts.end(); ++jt)
+            //       oss << (jt==C.Combos[i].sysConsts.begin() ? "":" ")
+            //          << C.map1to3Sys[jt->first];
+            //oss << ")";
          }
          LOG(INFO) << oss.str();  oss.str("");
+         // TEMP
+         //for(i=0; i<C.Combos.size(); i++) LOG(INFO) << C.Combos[i];
       }
    }
+
+   //if(!C.haveObs && !C.haveNonObs && !C.haveRCL && !C.haveCombo && !C.havePOS) {
+   //   ossE << "Error : No data has been specified for output.";
+   //   isValid = false;
+   //}
 
    if(C.InputObsFiles.size() == 0) {
       ossE << "Error : No valid input files have been specified.";
@@ -778,19 +791,21 @@ void Configuration::SetDefaults(void) throw()
    mapSysCodes.insert(make_pair(string("GLO"),string("PC")));
    mapSysCodes.insert(make_pair(string("GAL"),string("ABCIQXZ")));
    mapSysCodes.insert(make_pair(string("GEO"),string("CIQX")));
-   mapSysCodes.insert(make_pair(string("COM"),string("IQX")));
+   mapSysCodes.insert(make_pair(string("BDS"),string("IQX")));
+   mapSysCodes.insert(make_pair(string("QZS"),string("CSLXZ")));
 
    map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
    map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
    map1to3Sys["E"] = "GAL";   map3to1Sys["GAL"] = "E";
    map1to3Sys["S"] = "GEO";   map3to1Sys["GEO"] = "S";
-   map1to3Sys["C"] = "COM";   map3to1Sys["COM"] = "C";
+   map1to3Sys["C"] = "BDS";   map3to1Sys["BDS"] = "C";
+   map1to3Sys["J"] = "QZS";   map3to1Sys["QZS"] = "J";
 
    string validSys(ObsID::validRinexSystems);
    for(size_t i=0; i<validSys.size(); i++) {
       if(map1to3Sys.count(string(1,validSys[i])) == 0)
-         {LOG(WARNING) << "Warning - system \"" << validSys[i]
-            << "\" does not have 3-char entry in map1to3Sys";}
+         LOG(WARNING) << "Warning - system \"" << validSys[i]
+            << "\" does not have 3-char entry in map1to3Sys";
       else
          vecAllSys.push_back(map1to3Sys[string(1,validSys[i])]);
    }
@@ -816,8 +831,11 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(iret == -3) return iret;      // invalid command line
 
    // help: print syntax page and quit
-   if(opts.hasHelp() || typehelp || combohelp) {LOG(INFO) << cmdlineUsage;}
+   if(opts.hasHelp() || typehelp || combohelp) {
+      LOG(INFO) << Title;
+      LOG(INFO) << cmdlineUsage;
       //return 1; // return below
+   }
 
    if(combohelp) {
       LOG(INFO) << fixed << setprecision(1) <<
@@ -916,7 +934,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       for(size_t i=0; i<syss.size(); ++i) {
          it = table.find(RinexSatID(string(1,syss[i])).systemString3());
          if(it == table.end()) continue;
-         if(i > 0) {LOG(INFO) << "";}
+         if(i > 0) LOG(INFO) << "";
          for(jt=it->second.begin(); jt!=it->second.end(); ++jt)
             for(kt=jt->second.begin(); kt!=jt->second.end(); ++kt) {
                LOG(INFO) << " " << it->first // GPS
@@ -1022,10 +1040,11 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
-      LOG(WARNING) << "Warning - unrecognized arguments:";
-      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
-         LOG(WARNING) << "  " << cmdlineUnrecognized[i];
-      LOG(WARNING) << "End of unrecognized arguments";
+      ostringstream oss;
+      oss << "Warning - unrecognized arguments:";
+      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+         oss << " >" << cmdlineUnrecognized[i] << "<";
+      LOG(WARNING) << oss.str();
    }
 
    // fatal errors
@@ -1112,11 +1131,11 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "sys", "s", true, false, &InputSyss,
             "# Define or restrict values used in --dat and --combo",
             "System(s) (GNSSs) <s>=S[,S], where S=RINEX system");
-   opts.Add(0, "code", "s:c", true, false, &InputCodes, "                    "
-            "RINEX systems are GPS,GLO,GAL,GEO or SBAS,COM",
+   opts.Add(0, "code", "s:c", true, false, &InputCodes, "                     "
+            "RINEX systems are GPS,GLO,GAL,GEO|SBAS,BDS,QZS",
             "System <s> allowed tracking codes <c>, in order [see --typehelp]");
-   opts.Add(0, "freq", "f", true, false, &InputFreqs, "                    "
-            "Defaults: GPS:PYMNIQSLXWCN, GLO:PC, GAL:ABCIQXZ, GEO:CIQX, COM:IQX",
+   opts.Add(0, "freq", "f", true, false, &InputFreqs, "                     "
+      "Defaults: GPS:PYMNIQSLXWCN, GLO:PC, GAL:ABCIQXZ, GEO:CIQX, BDS:IQX, QZS:CSLXZ",
             "Frequencies to use in solution [e.g. 1, 12, 5, 15]");
 
    opts.Add(0, "eph", "fn", true, false, &InputSP3Files,
@@ -1460,12 +1479,12 @@ try {
 
          // write file name and header line(s)
          if(C.havePOS)
-            {LOG(INFO) << "# wk secs-of-wk POS" 
+            LOG(INFO) << "# wk secs-of-wk POS" 
                << " Sol-Desc        X            Y           Z"
-               << "     SYS Clk[...] Nsats PDOP GDOP RMS";}
+               << "     SYS Clk[...] Nsats PDOP GDOP RMS";
                
          if(C.haveRCL)
-           { LOG(INFO) << "# wk secs-of-wk RCL clock_bias(m)";}
+            LOG(INFO) << "# wk secs-of-wk RCL clock_bias(m)";
 
          if(C.haveObs || C.haveNonObs || C.haveCombo) {
             oss.str("");
@@ -1607,8 +1626,8 @@ try {
          else {
             if(C.haveObs || C.haveNonObs || C.haveCombo) {
                // dump receiver clock offset
-               if(C.haveRCL) {LOG(INFO) << line << " RCL " << fixed << setprecision(3)
-                  << setw(width) << Rdata.clockOffset * C_MPS;}
+               if(C.haveRCL) LOG(INFO) << line << " RCL " << fixed << setprecision(3)
+                  << setw(width) << Rdata.clockOffset * C_MPS;
 
                // clear CER store
                if(C.haveNonObs) C.mapSatCER.clear();
@@ -1765,8 +1784,8 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
             C.mapSatCER[sat] = CER;
          }
          catch(Exception& e) {
-            if(!C.noHeader) {LOG(WARNING) << "# Warning - no ephemeris for ("
-                  << tag << ") sat " << sat;}
+            if(!C.noHeader) LOG(WARNING) << "# Warning - no ephemeris for ("
+                  << tag << ") sat " << sat;
             return data;
          }
       }

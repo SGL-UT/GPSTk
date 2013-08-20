@@ -1,12 +1,7 @@
-#pragma ident "$Id$"
-
 /**
  * @file Rinex3ObsData.hpp
  * Encapsulate RINEX observation file data, including I/O
  */
-
-#ifndef RINEX3OBSDATA_HPP
-#define RINEX3OBSDATA_HPP
 
 //============================================================================
 //
@@ -44,6 +39,9 @@
 //
 //=============================================================================
 
+#ifndef RINEX3OBSDATA_HPP
+#define RINEX3OBSDATA_HPP
+
 #include <vector>
 #include <list>
 #include <map>
@@ -52,7 +50,6 @@
 #include "FFStream.hpp"
 #include "Rinex3ObsBase.hpp"
 #include "Rinex3ObsHeader.hpp"
-
 
 namespace gpstk
 {
@@ -80,19 +77,17 @@ namespace gpstk
    {
    public:
 
-
          /// Constructor.
       Rinex3ObsData() : time(gpstk::CommonTime::BEGINNING_OF_TIME)
          {}
 
-
          /// Destructor
       virtual ~Rinex3ObsData() {}
+
 
          /// Map from RinexSatID to RinexDatum; order of the data matches the
          /// order of RinexObsIDs in the header
       typedef std::map<RinexSatID, std::vector<RinexDatum> > DataMap;
-
 
          /// Time corresponding to the observations
       CommonTime time;
@@ -206,7 +201,8 @@ namespace gpstk
           *             RINEX file.
           */
       CommonTime parseTime( const std::string& line,
-                            const Rinex3ObsHeader& hdr ) const
+                            const Rinex3ObsHeader& hdr,
+                            const TimeSystem& ts) const
          throw( FFStreamError );
 
 

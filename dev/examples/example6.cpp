@@ -118,7 +118,7 @@ int main(void)
       bceStore.addEphemeris(rNavData);
    }
 
-   bceStore.SearchPast();  // This is the default
+   bceStore.SearchUser();  // This is the default
 
       // BAHR station nominal position
    Position nominalPos(3633909.1016, 4425275.5033, 2799861.2736);

@@ -1,10 +1,6 @@
-#pragma ident "$Id$"
-
-/**
- * @file PRSolution.cpp
- * Pseudorange navigation solution, either a simple solution using all the given data,
- * or a solution including editing via a RAIM algorithm.
- */
+/// @file PRSolution.cpp
+/// Pseudorange navigation solution, either a simple solution using all the
+/// given data, or a solution including editing via a RAIM algorithm.
  
 //============================================================================
 //
@@ -41,7 +37,7 @@ using namespace gpstk;
 
 namespace gpstk
 {
-   const string PRSolution::calfmt = string("%04Y/%02m/%02d %02H:%02M:%02S");
+   const string PRSolution::calfmt = string("%04Y/%02m/%02d %02H:%02M:%02S %P");
    const string PRSolution::gpsfmt = string("%4F %10.3g");
    const string PRSolution::timfmt = gpsfmt + string(" ") + calfmt;
 
@@ -59,8 +55,9 @@ namespace gpstk
                                      Matrix<double>& SVP) const
       throw()
    {
-      int j,noeph(0),N,NSVS;
-      size_t i;
+      LOG(DEBUG) << "PreparePRSolution at time " << printTime(Tr,timfmt);
+
+      int i,j,noeph(0),N,NSVS;
       CommonTime tx;
       Xvt PVT;
 
@@ -82,9 +79,11 @@ namespace gpstk
             Sats[i].id = -Sats[i].id;                 // don't have system - mark it
             continue;
          }
+            LOG(DEBUG) << " Count sat " << RinexSatID(Sats[i]);
          ++N;                                         // count good sat
       }
 
+            LOG(DEBUG) << "Sats.size is " << Sats.size();
       SVP = Matrix<double>(Sats.size(),4,0.0);        // define the matrix to return
       if(N <= 0) return 0;                            // nothing to do
       NSVS = 0;                                       // count good sats w/ ephem
@@ -98,12 +97,21 @@ namespace gpstk
                << RinexSatID(Sats[i]) << " at time " << printTime(Tr,timfmt);
             continue;
          }
+            LOG(DEBUG) << " Process sat " << RinexSatID(Sats[i]);
 
          // first estimate of transmit time
          tx = Tr;
+
+         // must align time systems.
+         // know system of Tr, and must assume system of pEph(sat) is system(sat).
+         // pEph must do calc in its sys, so must transform Tr to system(sat).
+         // convert time system of tx to that of Sats[i]
+
          tx -= Pseudorange[i]/C_MPS;
          try {
+            LOG(DEBUG) << " go to getXvt with time " << printTime(tx,timfmt);
             PVT = pEph->getXvt(Sats[i], tx);          // get ephemeris range, etc
+            LOG(DEBUG) << " returned from getXvt";
          }
          catch(InvalidRequest& e) {
             LOG(DEBUG) << "Warning - PRSolution ignores satellite (no ephemeris) "
@@ -112,6 +120,9 @@ namespace gpstk
             Sats[i].id = -::abs(Sats[i].id);
             ++noeph;
             continue;
+         }
+         catch(Exception& e) {
+            LOG(DEBUG) << "Oops - Exception " << e.getText();
          }
 
          // update transmit time and get ephemeris range again
@@ -181,8 +192,7 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      int iret(0),k,n;
-      size_t i, j;
+      int iret(0),i,j,k,n;
       double rho,wt,svxyz[3];
       GPSEllipsoid ellip;
 
@@ -409,8 +419,8 @@ namespace gpstk
          } while(1);    // end iteration loop
          LOG(DEBUG) << "Out of iteration loop";
 
-         if(TropFlag) {LOG(DEBUG) << "Trop correction not applied at time "
-                                 << printTime(T,timfmt);}
+         if(TropFlag) LOG(DEBUG) << "Trop correction not applied at time "
+                                 << printTime(T,timfmt);
 
          // compute slopes
          MaxSlope = 0.0;
@@ -468,8 +478,9 @@ namespace gpstk
       throw(Exception)
    {
       try {
-         int iret,N;
-         size_t i, j;
+         LOG(DEBUG) << "RAIMCompute at time " << printTime(Tr,gpsfmt);
+
+         int iret,i,j,N;
          vector<int> GoodIndexes;
          // use these to save the 'best' solution within the loop.
          // BestRMS marks the 'Best' set as unused.
@@ -494,6 +505,7 @@ namespace gpstk
          N = PreparePRSolution(Tr, Sats, Syss, Pseudorange, pEph, SVP);
 
          if(LOGlevel >= ConfigureLOG::Level("DEBUG")) {
+            LOG(DEBUG) << "Prepare returns " << N;
             ostringstream oss;
             oss << "RAIMCompute: after PrepareAS(): Satellites:";
             for(i=0; i<Sats.size(); i++) {
@@ -758,15 +770,11 @@ namespace gpstk
       try {
          Matrix<double> PTP(transpose(Partials)*Partials);
          Matrix<double> Cov(inverseLUD(PTP));
-
          PDOP = SQRT(Cov(0,0)+Cov(1,1)+Cov(2,2));
-
          TDOP = 0.0;
-         for(size_t i=3; i<Cov.rows(); i++) TDOP += Cov(i,i);
+         for(int i=3; i<Cov.rows(); i++) TDOP += Cov(i,i);
          TDOP = SQRT(TDOP);
-
          GDOP = RSS(PDOP,TDOP);
-
          return 0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
@@ -802,7 +810,7 @@ namespace gpstk
          << " " << setw(16) << (&Vec==&PRSNullVector ? Solution(1) : Vec(1))
          << " " << setw(16) << (&Vec==&PRSNullVector ? Solution(2) : Vec(2))
          << fixed << setprecision(3);
-      for(size_t i=0; i<SystemIDs.size(); i++) {
+      for(int i=0; i<SystemIDs.size(); i++) {
          RinexSatID sat(1,SystemIDs[i]);
          oss << " " << sat.systemString3() << " " << setw(11) << Solution(3+i);
       }
@@ -834,7 +842,7 @@ namespace gpstk
       // tag CLK timetag SYS clk [SYS clk SYS clk ...] endtag
       oss << tag << " CLK " << printTime(currTime,gpsfmt)
          << fixed << setprecision(3);
-      for(size_t i=0; i<SystemIDs.size(); i++) {
+      for(int i=0; i<SystemIDs.size(); i++) {
          RinexSatID sat(1,SystemIDs[i]);
          oss << " " << sat.systemString3() << " " << setw(11) << Solution(3+i);
       }
@@ -863,7 +871,7 @@ namespace gpstk
          << " " << setw(2) << NIterations
          << scientific << setprecision(2)
          << " " << setw(8) << Convergence;
-      for(size_t i=0; i<SatelliteIDs.size(); i++) {
+      for(int i=0; i<SatelliteIDs.size(); i++) {
          RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
          oss << " " << (SatelliteIDs[i].id < 0 ? "-" : " ") << rs;
       }
@@ -920,4 +928,5 @@ namespace gpstk
    const Vector<double> PRSolution::PRSNullVector;
 
 } // namespace gpstk
+
 

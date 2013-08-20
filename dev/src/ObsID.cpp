@@ -59,6 +59,13 @@ namespace gpstk
    // string containing the system characters for all valid RINEX systems.
    std::string ObsID::validRinexSystems;
 
+   // maps between 1-char and 3-char system id
+   std::map<std::string, std::string> ObsID::map1to3sys;
+   std::map<std::string, std::string> ObsID::map3to1sys;
+
+   // string containing the frequency digits for all valid RINEX systems.
+   std::string ObsID::validRinexFrequencies;
+
    // object that forces initialization of the maps
    ObsIDInitializer singleton;
 

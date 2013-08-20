@@ -53,7 +53,7 @@ namespace gpstk
       /// Constructor.
       BDSWeekSecond(unsigned int w = 0,
                        double s = 0.,
-                       TimeSystem ts = TimeSystem::BDS)
+                       TimeSystem ts = TimeSystem::BDT)
          : WeekSecond(w,s)
       { timeSystem = ts; }
 
@@ -61,7 +61,7 @@ namespace gpstk
       BDSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
-         timeSystem = TimeSystem::BDS;
+         timeSystem = TimeSystem::BDT;
       }
 
       /// Destructor.
@@ -69,11 +69,11 @@ namespace gpstk
 
       // TD do we want to do this?
       // TD throw here? this would require changing throw spec on TimeTag version
-      /// Override routine in TimeTag, allowing only BDS time system
+      /// Override routine in TimeTag, allowing only BDT time system
       void setTimeSystem(const TimeSystem& timeSys)
       {
-         // ?? if(timeSys != TimeSystem::BDS) GPSTK_THROW(InvalidRequest(""));
-         timeSystem = TimeSystem::BDS;
+         // ?? if(timeSys != TimeSystem::BDT) GPSTK_THROW(InvalidRequest(""));
+         timeSystem = TimeSystem::BDT;
       }
       
       // the rest define the week rollover and starting time

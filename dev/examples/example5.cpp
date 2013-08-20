@@ -231,7 +231,7 @@ void example5::spinUp()
    while (rNavFile >> rNavData) bceStore.addEphemeris(rNavData);
    
       // Setting the criteria for looking up ephemeris
-   bceStore.SearchPast();  // This is the default
+   bceStore.SearchUser();  // This is the default
 
       // This is set to true if the former computed positon will be used as
       // a priori position

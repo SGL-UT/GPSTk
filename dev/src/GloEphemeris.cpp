@@ -1,9 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file GloEphemeris.cpp
- * Ephemeris data for GLONASS.
- */
+/// @file GloEphemeris.cpp
+/// Ephemeris data for GLONASS.
 
 //============================================================================
 //
@@ -303,17 +299,17 @@ namespace gpstk
 
 
 
-      // Output the contents of this ephemeris to the given stream
+      // Output the contents of this ephemeris to the given stream as a single line.
    void GloEphemeris::dump(std::ostream& s) const
       throw()
    {
 
-      s << "Sys:" << satSys << ", PRN:" << PRNID << std::endl
-        << "Epoch:" << ephTime << ", pos:" << x << std::endl
-        << "vel:" << v << ", acc:" << a << std::endl
-        << "TauN:" << clkbias << ", GammaN:" << clkdrift << std::endl
-          << "MFTime:" << MFtime<< ", health:" << health << std::endl
-        << "freqNum:" << freqNum << ", ageOfInfo:" << ageOfInfo;
+      s << "Sys:" << satSys << ", PRN:" << PRNID
+        << ", Epoch:" << ephTime << ", pos:" << x
+        << ", vel:" << v << ", acc:" << a
+        << ", TauN:" << clkbias << ", GammaN:" << clkdrift
+         << ", MFTime:" << MFtime<< ", health:" << health
+        << ", freqNum:" << freqNum << ", ageOfInfo:" << ageOfInfo;
 
    }  // End of method 'GloEphemeris::dump(std::ostream& s)'
 
@@ -321,7 +317,8 @@ namespace gpstk
    {
       s << "**********************************************" << std::endl;
       s << "Slot ID     " << std::setw(12) << PRNID << std::endl;
-      s << "Epoch Time  " << printTime(ephTime,"%03j, %02m/%02d/%02y %02H:%02M:%02S") << std::endl;
+      s << "Epoch Time  " << printTime(ephTime,"%03j, %02m/%02d/%02y %02H:%02M:%02S")
+                          << std::endl;
       s << "MFTime      " << std::setw(12) << MFtime << " sec of Week" << std::endl;
       s << "Health      " << std::setw(12) << health << std::endl;
       s << "Freq. Offset" << std::setw(12) << freqNum << std::endl;

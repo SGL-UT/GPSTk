@@ -32,6 +32,8 @@ else
       AstronomicalFunctions.cpp
       Bancroft.cpp
       BasicFramework.cpp
+      BDSEphemeris.cpp
+      BDSEphemerisStore.cpp
       BinexData.cpp
       BinUtils.cpp
       BLQDataReader.cpp
@@ -94,6 +96,7 @@ else
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
       GPSAlmanacStore.cpp
+      GPSEphemeris.cpp
       GPSEphemerisStore.cpp
       GPSOrbElemStore.cpp
       GPSWeek.cpp
@@ -129,6 +132,8 @@ else
       OrbElemICE.cpp
       OrbElemLNav.cpp
       OrbElemRinex.cpp
+      OrbitEph.cpp
+      OrbitEphStore.cpp
       PackedNavBits.cpp
       PlanetEphemeris.cpp
       PoleTides.cpp
@@ -137,6 +142,8 @@ else
       PowerSum.cpp
       PRSolution.cpp
       PRSolution2.cpp
+      QZSEphemeris.cpp
+      QZSEphemerisStore.cpp
       RACRotation.cpp
       ReferenceFrame.cpp
       Rinex3ClockData.cpp
@@ -214,6 +221,9 @@ else
       Bancroft.hpp
       BaseDistribution.hpp
       BasicFramework.hpp
+      BDSEphemerisStore.hpp
+      BDSEphemeris.hpp
+      BDSWeekSecond.hpp
       BinexData.hpp
       BinexFilterOperators.hpp
       BinexStream.hpp
@@ -295,6 +305,7 @@ else
       FIRDifferentiator5thOrder.hpp
       GalEphemeris.hpp
       GalEphemerisStore.hpp
+      GALWeekSecond.hpp
       GaussianDistribution.hpp
       GenXSequence.hpp
       GloEphemeris.hpp
@@ -303,10 +314,12 @@ else
       GNSSconstants.hpp
       GPSAlmanacStore.hpp
       GPSEllipsoid.hpp	
+      GPSEphemeris.hpp
       GPSEphemerisStore.hpp
-      GPSOrbElemStore.hpp	
+      GPSOrbElemStore.hpp
       GPS_URA.hpp
       GPSWeek.hpp	
+      GPSWeekSecond.hpp
       GPSWeekZcount.hpp	
       GPSZcount.hpp	
       HelmertTransform.hpp	
@@ -358,6 +371,8 @@ else
       OrbElemLNav.hpp
       OrbElemStore.hpp
       OrbElemRinex.hpp	
+      OrbitEph.hpp
+      OrbitEphStore.hpp
       ORDEpoch.hpp
       PackedNavBits.hpp	
       PCodeConst.hpp	
@@ -370,6 +385,9 @@ else
       PRSolution.hpp
       PRSolution2.hpp	
       PZ90Ellipsoid.hpp	
+      QZSEphemeris.hpp
+      QZSEphemerisStore.hpp
+      QZSWeekSecond.hpp
       RACRotation.hpp	
       ReferenceFrame.hpp	
       Rinex3ClockBase.hpp	

@@ -163,7 +163,6 @@ try {
 
          // prepare for RAIM solution
       Stations[ObsFileList[i].label].PRS.RMSLimit = CI.PRSrmsLimit;
-      Stations[ObsFileList[i].label].PRS.Algebraic = CI.PRSalgebra;
       Stations[ObsFileList[i].label].PRS.MaxNIterations = CI.PRSnIter;
       Stations[ObsFileList[i].label].PRS.Convergence = CI.PRSconverge;
       Stations[ObsFileList[i].label].PRS.Solution.resize(4);

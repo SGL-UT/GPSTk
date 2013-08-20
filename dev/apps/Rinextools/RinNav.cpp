@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file RinNav.cpp
 /// Read RINEX navigation files (version 2 or 3) and write out as a single RINEX nav
 /// file; optionally write a summary of the contents to the screen.
@@ -63,7 +61,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.1 2/2/12"));
+string Version(string("1.0 9/1/11 rev"));
 // TD
 // END TD
 
@@ -176,7 +174,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) {LOG(INFO) << errs;  }       // Warnings are here too
+      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -466,7 +464,8 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          if(fld[0] == "GAL" || fld[0] == "E") mapSysOutputFile[string("E")] = fld[1];
          if(fld[0] == "GEO" || fld[0] == "SBAS" || fld[0] == "S")
                                               mapSysOutputFile[string("S")] = fld[1];
-         if(fld[0] == "COM" || fld[0] == "C") mapSysOutputFile[string("C")] = fld[1];
+         if(fld[0] == "BDS" || fld[0] == "C") mapSysOutputFile[string("C")] = fld[1];
+         if(fld[0] == "QZS" || fld[0] == "J") mapSysOutputFile[string("J")] = fld[1];
       }
    }
    for(i=0; i<output2Strs.size(); i++) {
@@ -485,7 +484,8 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          if(fld[0] == "GAL" || fld[0] == "E") mapSysOutput2File[string("E")] = fld[1];
          if(fld[0] == "GEO" || fld[0] == "SBAS" || fld[0] == "S")
                                               mapSysOutput2File[string("S")] = fld[1];
-         if(fld[0] == "COM" || fld[0] == "C") mapSysOutput2File[string("C")] = fld[1];
+         if(fld[0] == "BDS" || fld[0] == "C") mapSysOutput2File[string("C")] = fld[1];
+         if(fld[0] == "QZS" || fld[0] == "J") mapSysOutput2File[string("J")] = fld[1];
       }
    }
 
@@ -510,33 +510,8 @@ try {
    Rinex3NavHeader Rheadout,Rhead;
 
    for(nfiles=0,nfile=0; nfile<C.InputNavFiles.size(); nfile++) {
-
+      
       string filename(C.InputNavFiles[nfile]);
-
-      // load filename
-      /*
-      nread = C.NavStore.loadFile(filename,C.verbose,LOGstrm);
-      if(nread == -1) {        // -1 failed to open file
-         LOG(WARNING) << C.NavStore.what;
-         continue;
-      }
-      else if(nread == -2) {   // -2 failed to read header
-         LOG(WARNING) << "Warning : Failed to read header: " << C.NavStore.what
-            << "\n Header dump follows.";
-         C.NavStore.Rhead.dump(LOGstrm);
-         continue;
-      }
-      else if(nread == -3) {   // -3 failed to read data
-         LOG(WARNING) << " Warning : Failed to read nav data (Exception "
-            << C.NavStore.what << "); dump follows.";
-         C.NavStore.Rdata.dump(LOGstrm);
-         continue;
-      }
-
-      LOG(VERBOSE) << "Opened input file " << filename;
-
-      Rhead = C.NavStore.Rhead;
-      */
 
       // loop over the nav records
       try {
@@ -556,6 +531,14 @@ try {
                << "\nHeader dump follows.";
             Rhead.dump(LOGstrm);
             continue;
+         }
+         if(C.debug > -1) {
+            LOG(DEBUG) << "Dump RINEX header:";
+            Rhead.dump(LOGstrm);
+         }
+         else if(C.verbose) {
+            LOG(VERBOSE) << "Input header for RINEX file " << filename;
+            Rhead.dump(LOGstrm);
          }
 
          // add to store's FileStore
@@ -585,18 +568,21 @@ try {
             if(!strm.good() || strm.eof()) break;
 
             nread++;
-            if(C.verbose) Rdata.dump(LOGstrm);
+            if(C.debug > -1) Rdata.dump(LOGstrm);
 
-            C.NavStore.addEphemeris(Rdata);
+            try {
+               C.NavStore.addEphemeris(Rdata);
+            }
+            catch(Exception& e) {
+               LOG(ERROR) << "Error - exception in addEphemeris: " << e.what();
+               GPSTK_RETHROW(e);
+            }
          }
 
          nfiles++;
          LOG(VERBOSE) << "Read " << nread << " records from file " << filename;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
-
-      LOG(VERBOSE) << "Input header for RINEX file " << filename;
-      if(C.verbose) Rhead.dump(LOGstrm);
 
       // save header
       if(nfiles == 1) {
@@ -623,8 +609,8 @@ try {
          {
             if(Rheadout.mapIonoCorr.find(icit->first) == Rheadout.mapIonoCorr.end()) {
                Rheadout.mapIonoCorr[icit->first] = icit->second;
-               if(icit->second.type ==  IonoCorr::GPSA
-                  || icit->second.type ==  IonoCorr::GPSB)
+               if(icit->second.type == IonoCorr::GPSA
+                  || icit->second.type == IonoCorr::GPSB)
                      Rheadout.valid |= Rinex3NavHeader::validIonoCorrGPS;
                else
                   Rheadout.valid |= Rinex3NavHeader::validIonoCorrGal;
@@ -651,23 +637,26 @@ try {
    int NGLO(C.NavStore.size(SatID::systemGlonass));
    int NGAL(C.NavStore.size(SatID::systemGalileo));
    int NGEO(C.NavStore.size(SatID::systemGeosync));
-   int NCOM(C.NavStore.size(SatID::systemBeiDou));
-   LOG(VERBOSE) << "RinNav has stored " << Neph << " navigation records.";
-   if(NGPS) {LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";}
-   if(NGLO) {LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";}
-   if(NGAL) {LOG(VERBOSE) <<"RinNav has stored " << NGAL << " GAL navigation records.";}
-   if(NGEO) {LOG(VERBOSE) <<"RinNav has stored " << NGEO << " GEO navigation records.";}
-   if(NCOM) {LOG(VERBOSE) <<"RinNav has stored " << NCOM << " COM navigation records.";}
+   int NBDS(C.NavStore.size(SatID::systemBeiDou));
+   int NQZS(C.NavStore.size(SatID::systemQZSS));
+   LOG(VERBOSE) << "\nRinNav has stored " << Neph << " navigation records.";
+   if(NGPS) LOG(VERBOSE) <<"RinNav has stored " << NGPS << " GPS navigation records.";
+   if(NGLO) LOG(VERBOSE) <<"RinNav has stored " << NGLO << " GLO navigation records.";
+   if(NGAL) LOG(VERBOSE) <<"RinNav has stored " << NGAL << " GAL navigation records.";
+   if(NGEO) LOG(VERBOSE) <<"RinNav has stored " << NGEO << " GEO navigation records.";
+   if(NBDS) LOG(VERBOSE) <<"RinNav has stored " << NBDS << " BDS navigation records.";
+   if(NQZS) LOG(VERBOSE) <<"RinNav has stored " << NQZS << " QZS navigation records.";
 
    int Nsys(0);
    if(NGPS > 0) Nsys++;
    if(NGLO > 0) Nsys++;
    if(NGAL > 0) Nsys++;
    if(NGEO > 0) Nsys++;
-   if(NCOM > 0) Nsys++;
+   if(NBDS > 0) Nsys++;
+   if(NQZS > 0) Nsys++;
 
    // dump merged header
-   LOG(VERBOSE) << "Output (merged) header:";
+   LOG(VERBOSE) << "\nOutput (merged) header:";
    if(C.verbose) Rheadout.dump(LOGstrm);
 
    // get full list of Rinex3NavData
@@ -675,7 +664,7 @@ try {
    C.NavStore.addToList(theFullList);
 
    // N... is what was read; n... will be what is kept
-   int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nBDS(0);
+   int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nBDS(0), nQZS(0);
 
    // must edit out any excluded sats
    list<Rinex3NavData>::const_iterator listit;
@@ -694,20 +683,25 @@ try {
             case SatID::systemGalileo: nGAL++; break;
             case SatID::systemGeosync: nGEO++; break;
             case SatID::systemBeiDou:  nBDS++; break;
+            case SatID::systemQZSS:    nQZS++; break;
             default: break;
          }
       }
    }
    else {
-      neph = Neph; nGPS = NGPS; nGLO = NGLO; nGAL = NGAL; nGEO = NGEO; nBDS = NCOM;
+      neph = Neph;
+      nGPS = NGPS; nGLO = NGLO; nGAL = NGAL;
+      nGEO = NGEO; nBDS = NBDS; nQZS = NQZS;
       theList = theFullList;
    }
+
    int nsys(0);
    if(nGPS > 0) nsys++;
    if(nGLO > 0) nsys++;
    if(nGAL > 0) nsys++;
    if(nGEO > 0) nsys++;
    if(nBDS > 0) nsys++;
+   if(nQZS > 0) nsys++;
    if(nsys == 0 || neph == 0) {
       LOG(WARNING) << "Warning - no data to output.";
       return nfiles;
@@ -748,6 +742,7 @@ try {
          else if(nGAL > 0) sys = string("E");
          else if(nGEO > 0) sys = string("S");
          else if(nBDS > 0) sys = string("C");
+         else if(nQZS > 0) sys = string("J");
       }
       rhead.setFileSystem(sys);
 
@@ -763,11 +758,12 @@ try {
       ostrm.close();
 
       //if(sys == "M") LOG(VERBOSE) << "Wrote " << neph << " records for all systems";
-      if(sys == "G") {LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";}
-      if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
-      if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
-      if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
-      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nBDS << " records for COM";}
+      if(sys == "G") LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";
+      if(sys == "R") LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";
+      if(sys == "E") LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";
+      if(sys == "S") LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";
+      if(sys == "C") LOG(VERBOSE) << "Wrote " << nBDS << " records for BDS";
+      if(sys == "J") LOG(VERBOSE) << "Wrote " << nQZS << " records for QZS";
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 3 file " << filename;
    }
 
@@ -805,6 +801,7 @@ try {
          else if(nGAL > 0) sys = string("E");
          else if(nGEO > 0) sys = string("S");
          else if(nBDS > 0) sys = string("C");
+         else if(nQZS > 0) sys = string("J");
       }
       rhead.setFileSystem(sys);
 
@@ -820,11 +817,12 @@ try {
       ostrm.close();
 
       //if(sys == "M") LOG(VERBOSE) << "Wrote " << neph << " records for all systems";
-      if(sys == "G") {LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";}
-      if(sys == "R") {LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";}
-      if(sys == "E") {LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";}
-      if(sys == "S") {LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";}
-      if(sys == "C") {LOG(VERBOSE) << "Wrote " << nBDS << " records for COM";}
+      if(sys == "G") LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";
+      if(sys == "R") LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";
+      if(sys == "E") LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";
+      if(sys == "S") LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";
+      if(sys == "C") LOG(VERBOSE) << "Wrote " << nBDS << " records for BDS";
+      if(sys == "C") LOG(VERBOSE) << "Wrote " << nQZS << " records for QZS";
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 2 file " << filename;
    }
 

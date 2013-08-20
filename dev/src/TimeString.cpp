@@ -56,7 +56,7 @@ namespace gpstk
          if(willPrintAs<CivilTime>(rv))
             rv = printAs<CivilTime>( t, rv );
          if(willPrintAs<GPSWeekSecond>(rv)) {
-            if(t.getTimeSystem() == TimeSystem::BDS)
+            if(t.getTimeSystem() == TimeSystem::BDT)
                rv = printAs<BDSWeekSecond>( t, rv );
             else if(t.getTimeSystem() == TimeSystem::GAL)
                rv = printAs<GALWeekSecond>( t, rv );
@@ -123,7 +123,7 @@ namespace gpstk
    WeekSecond* ptrToWeekSecond(CommonTime& ct)
    {
       WeekSecond *ptt;
-      if(ct.getTimeSystem() == TimeSystem::BDS) {
+      if(ct.getTimeSystem() == TimeSystem::BDT) {
          BDSWeekSecond *pbtt = new BDSWeekSecond();
          ptt = dynamic_cast<WeekSecond*>(pbtt);
       }

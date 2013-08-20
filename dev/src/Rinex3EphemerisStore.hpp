@@ -1,9 +1,6 @@
-#pragma ident "$Id$"
-
-/**
- * @file Rinex3EphemerisStore.hpp
- * Read and store RINEX formated navigation message (Rinex3Nav) data.
- */
+/// @file Rinex3EphemerisStore.hpp
+/// Read and store RINEX formated navigation message (Rinex3Nav) data, following
+/// the RINEX 3.02 spec. Support for GNSS GPS, GAL, GLO, BDS, QZS (GEO TBD).
 
 //============================================================================
 //
@@ -22,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -30,13 +27,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -52,6 +49,8 @@
 
 #include "Exception.hpp"
 #include "CommonTime.hpp"
+#include "BDSWeekSecond.hpp"
+#include "GPSWeekSecond.hpp"
 #include "SatID.hpp"
 #include "Xvt.hpp"
 #include "Rinex3NavHeader.hpp"
@@ -59,11 +58,10 @@
 #include "TimeSystemCorr.hpp"
 
 #include "FileStore.hpp"
-#include "GPSEphemerisStore.hpp"
+
+#include "OrbitEphStore.hpp"
 #include "GloEphemerisStore.hpp"
-#include "GalEphemerisStore.hpp"
 //#include "GeoEphemerisStore.hpp"
-//#include "COMEphemerisStore.hpp"
 
 namespace gpstk
 {
@@ -78,20 +76,15 @@ namespace gpstk
       /// FileStore for the Rinex3Nav input files
       FileStore<Rinex3NavHeader> NavFiles;
 
-      /// Ephemeris store for GPS nav messages (stored as EngEphemeris)
-      GPSEphemerisStore GPSstore;
+      /// Ephemeris store for orbit-based nav messages (stored as descendents of
+      /// OrbitEph), including systems GPS, Galileo, BeiDou, and QZSS
+      OrbitEphStore ORBstore;
 
       /// Ephemeris store for Glonass nav messages (stored as GloRecord)
       GloEphemerisStore GLOstore;
 
-      /// Ephemeris store for Galileo nav messages (stored as GalRecord)
-      GalEphemerisStore GALstore;
-
       /// Ephemeris store for Geosync nav messages (stored as GeoRecord)
       //GeoEphemerisStore GEOstore;
-
-      /// Ephemeris store for COMPASS nav messages (stored as ComRecord)
-      //ComEphemerisStore COMstore;
 
    public:
 
@@ -112,18 +105,18 @@ namespace gpstk
 
    // member functions:
 
-      Rinex3EphemerisStore() throw()
+      Rinex3EphemerisStore()
       {
-         bool flag = GPSstore.getOnlyHealthyFlag();    // default is GPS default
+         bool flag = ORBstore.getOnlyHealthyFlag();    // default is ORB default
          GLOstore.setCheckHealthFlag(flag);
-         GALstore.setOnlyHealthyFlag(flag);
       }
 
       /// destructor
       virtual ~Rinex3EphemerisStore()
       { }
-
+      
    // XvtStore interface:
+
       /// Returns the position, velocity, and clock offset of the indicated
       /// object in ECEF coordinates (meters) at the indicated time.
       /// @param[in] sat the satellite of interest
@@ -132,189 +125,154 @@ namespace gpstk
       /// @throw InvalidRequest If the request can not be completed for any
       ///    reason, this is thrown. The text may have additional
       ///    information as to why the request failed.
-      virtual Xvt getXvt(const SatID& sat, const CommonTime& ttag)
-         const throw(InvalidRequest);
+      virtual Xvt getXvt(const SatID& sat, const CommonTime& ttag) const;
 
       /// Dump information about the store to an ostream.
       /// @param[in] os ostream to receive the output; defaults to std::cout
       /// @param[in] detail integer level of detail to provide; allowed values are
-      ///    0: number of satellites, time step and time limits
+      ///    0: number of satellites, time step and time limits (default)
       ///    1: above plus flags, gap and interval values, and number of data/sat
       ///    2: above plus all the data tables
-      virtual void dump(std::ostream& os=std::cout, short detail=0)
-         const throw()
-      {
-         // may have to re-write this...
-         os << "Dump Rinex3EphemerisStore:" << std::endl;
-         // dump the time system corrections
-         std::map<std::string,TimeSystemCorrection>::const_iterator tcit;
-         for(tcit=mapTimeCorr.begin(); tcit != mapTimeCorr.end(); ++tcit) {
-            os << "Time correction for " << tcit->second.asString4() << " : "
-               << tcit->second.asString() << " " << std::scientific << std::setprecision(12);
-            switch(tcit->second.type) {
-               case TimeSystemCorrection::GPUT:
-                    os << ", A0 = " << tcit->second.A0
-                        << ", A1 = " << tcit->second.A1
-                        << ", RefTime = week/sow " << tcit->second.refWeek
-                        << "/" << tcit->second.refSOW;
-                  break;
-               case TimeSystemCorrection::GAUT:
-                    os << ", A0 = " << tcit->second.A0
-                        << ", A1 = " << tcit->second.A1
-                        << ", RefTime = week/sow " << tcit->second.refWeek
-                        << "/" << tcit->second.refSOW;
-                  break;
-               case TimeSystemCorrection::SBUT:
-                    os << ", A0 = " << tcit->second.A0
-                        << ", A1 = " << tcit->second.A1
-                        << ", RefTime = week/sow " << tcit->second.refWeek
-                        << "/" << tcit->second.refSOW
-                        << ", provider " << tcit->second.geoProvider
-                        << ", UTC ID = " << tcit->second.geoUTCid;
-                  break;
-               case TimeSystemCorrection::GLUT:
-                    os << ", -TauC = " << tcit->second.A0;
-                  break;
-               case TimeSystemCorrection::GPGA:
-                    os << ", A0G = " << tcit->second.A0
-                        << ", A1G = " << tcit->second.A1
-                        << ", RefTime = week/sow " << tcit->second.refWeek
-                        << "/" << tcit->second.refSOW;
-                  break;
-               case TimeSystemCorrection::GLGP:
-                    os << ", TauGPS = " << tcit->second.A0
-                        << " = " << tcit->second.A0 * C_MPS
-                        << " m, RefTime = yr/mon/day "
-                        << tcit->second.refYr
-                        << "/" << tcit->second.refMon
-                        << "/" << tcit->second.refDay;
-                  break;
-				  default: break; //NB Determine if additional enumeration values need to be handled
-            }
-            os << std::endl;
-         }
-
-         NavFiles.dump(os, detail);
-
-         GPSstore.dump(os, detail);
-         GLOstore.dump(os, detail);
-         GALstore.dump(os, detail);
-         //if(GEOstore.size()) GEOstore.dump(os, detail);
-         //if(COMstore.size()) COMstore.dump(os, detail);
-         os << "End dump Rinex3EphemerisStore." << std::endl;
-      }
+      virtual void dump(std::ostream& os=std::cout, short detail=0) const;
 
       /// Edit the dataset, removing data outside the indicated time interval
       /// @param[in] tmin defines the beginning of the time interval
       /// @param[in] tmax defines the end of the time interval
-      virtual void edit(const CommonTime& tmin,
-                        const CommonTime& tmax = CommonTime::END_OF_TIME) throw()
+      virtual void edit(const CommonTime& tmin, 
+                        const CommonTime& tmax = CommonTime::END_OF_TIME)
       {
-         if (GPSstore.size()) GPSstore.edit(tmin, tmax);
-         if (GLOstore.size()) GLOstore.edit(tmin, tmax);
-         if (GALstore.size()) GALstore.edit(tmin, tmax);
-         //GEOstore.edit(tmin, tmax);
-         //COMstore.edit(tmin, tmax);
+         if(ORBstore.size()) ORBstore.edit(tmin, tmax);
+         if(GLOstore.size()) GLOstore.edit(tmin, tmax);
+         //if(GEOstore.size()) GEOstore.edit(tmin, tmax);
       }
 
       /// Clear the dataset, meaning remove all data
-      virtual void clear(void) throw()
+      virtual void clear(void)
       {
          NavFiles.clear();
-         GPSstore.clear();
+         ORBstore.clear();
          GLOstore.clear();
-         GALstore.clear();
          //GEOstore.clear();
-         //COMstore.clear();
       }
 
       /// Return time system of this store. NB this is needed only to satisfy the
       /// XvtStore virtual interface; the system stores (GPSstore, GLOstore, etc)
       /// will be used internally to determine time system.
-      virtual TimeSystem getTimeSystem(void) const throw()
+      virtual TimeSystem getTimeSystem(void) const
          { return TimeSystem::Any; }
 
-      /// Determine the earliest time for which this object can successfully
+      /// Determine the earliest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return the earliest time in the table
       /// @throw InvalidRequest if the object has no data.
-      virtual CommonTime getInitialTime() const throw(InvalidRequest);
+      virtual CommonTime getInitialTime(void) const;
 
-      /// Determine the latest time for which this object can successfully
+      /// Determine the latest time for which this object can successfully 
       /// determine the Xvt for any object.
       /// @return the latest time in the table
       /// @throw InvalidRequest if the object has no data.
-      virtual CommonTime getFinalTime() const throw(InvalidRequest);
+      virtual CommonTime getFinalTime(void) const;
 
       /// Return true if IndexType=SatID is present in the data tables
-      virtual bool isPresent(const SatID& sat) const throw()
+      virtual bool isPresent(const SatID& sat) const
       {
          switch(sat.system) {
-            case SatID::systemGPS:     return GPSstore.isPresent(sat);
-            case SatID::systemGlonass: return GLOstore.isPresent(sat);
-            case SatID::systemGalileo: return GALstore.isPresent(sat);
-            //case SatID::systemGeosync: return GEOstore.isPresent(sat);
-            //case SatID::systemCompass: return COMstore.isPresent(sat);
-            default: return false;
+            case SatID::systemGPS:
+            case SatID::systemGalileo:
+            case SatID::systemBeiDou:
+            case SatID::systemQZSS:
+               return ORBstore.isPresent(sat);
+            case SatID::systemGlonass:
+               return GLOstore.isPresent(sat);
+            //case SatID::systemGeosync:
+               //return GEOstore.isPresent(sat);
+            default:
+               return false;
          }
          return false;
       }
 
       /// Return true if velocity is present in the data tables
-      virtual bool hasVelocity() const throw()
-         {  return true; }
+      virtual bool hasVelocity(void) const
+         { return true; }
 
    // end of XvtStore interface
 
+      /// Determine the earliest time for which this object can successfully 
+      /// determine the Xvt for this satellite or system (sat.id == -1).
+      /// @param SatID sat satellite, or system if sat.id==-1
+      /// @return the earliest time in the table
+      /// @throw InvalidRequest if the object has no data.
+      virtual CommonTime getInitialTime(const SatID& sat) const;
+
+      /// Determine the latest time for which this object can successfully 
+      /// determine the Xvt for this satellite or system (sat.id == -1).
+      /// @param SatID sat satellite, or system if sat.id==-1
+      /// @return the latest time in the table
+      /// @throw InvalidRequest if the object has no data.
+      virtual CommonTime getFinalTime(const SatID& sat) const;
+
       /// add a Rinex3NavData to the store
-      /// @param Rdata data to be added
+      /// @param Rinex3NavData Rdata data to be added
       /// @return true if data was added, false otherwise
-      bool addEphemeris(const Rinex3NavData& Rdata) throw();
+      bool addEphemeris(const Rinex3NavData& Rdata);
 
       /// add filename and header to FileStore
-      /// @param filename file name to be added
-      /// @param Rhead header to be added
-      void addFile(const std::string& filename, Rinex3NavHeader& head) throw()
+      /// @param string filename file name to be added
+      /// @param Rinex3NavHeader head header to be added
+      void addFile(const std::string& filename, Rinex3NavHeader& head)
       { NavFiles.addFile(filename,head); }
 
       /// load a RINEX navigation file
-      /// @param filename name of the RINEX navigation file to read
-      /// @param dump if true, dump header and nav data as read, default false
-      /// @param stream to which dump is written, default cout
+      /// @param string filename name of the RINEX navigation file to read
+      /// @param bool dump if true, dump header and nav data as read, default false
+      /// @param ostream stream to which dump is written, default cout
       /// @return -1 failed to open file,
       ///         -2 failed to read header (this->Rhead),
       ///         -3 failed to read data (this->Rdata),
       ///        >=0 number of nav records read
       /// @throw some other problem
-      int loadFile(const std::string& filename, bool dump=false, std::ostream& s=std::cout)
-         throw(gpstk::Exception);
+      int loadFile(const std::string& filename, bool dump=false,
+                    std::ostream& s=std::cout);
 
       /// use to access the data records in the store in bulk
       int addToList(std::list<Rinex3NavData>& theList,
-                    SatID sysSat=SatID(-1,SatID::systemMixed))
-         const throw();
+                    SatID sysSat=SatID(-1,SatID::systemMixed)) const;
 
-      /// get the number of records, optionally by system
-      int size(SatID::SatelliteSystem sys = SatID::systemMixed) const throw()
+      /// get the number of records or ephemerides for the given satellite;
+      /// an overload size(SatID::SatelliteSystem) gives the total per system.
+      /// @param SatID sat satellite
+      /// @return the number of records or ephemerides
+      int size(const SatID sat) const
       {
          int n(0);
-         if(sys==SatID::systemMixed || sys==SatID::systemGPS)
-            n += GPSstore.size();
-         if(sys==SatID::systemMixed || sys==SatID::systemGlonass)
+         SatID::SatelliteSystem sys = sat.system;
+
+         if(sys == SatID::systemMixed || sys == SatID::systemGPS ||
+            sys == SatID::systemGalileo || sys == SatID::systemBeiDou ||
+            sys == SatID::systemQZSS)
+            n += ORBstore.size(sat);
+
+         if(sys == SatID::systemMixed || sys == SatID::systemGlonass)
             n += GLOstore.size();
-         if(sys==SatID::systemMixed || sys==SatID::systemGalileo)
-            n += GALstore.size();
-         //if(sys==SatID::systemMixed || sys==SatID::systemGeosync)
+
+         //if(sys == SatID::systemMixed || sys == SatID::systemGeosync)
          //   n += GEOstore.size();
-         //if(sys==SatID::systemMixed || sys==SatID::systemCompass)
-         //   n += COMstore.size();
+
          return n;
       }
+
+      /// get the number of records by system; default is systemMixed,
+      /// which returns the overall total
+      /// @param SatID::SatelliteSystem GNSS of interest
+      /// @return the number of records or ephemerides in this system
+      int size(const SatID::SatelliteSystem sys = SatID::systemMixed) const
+         { return size(SatID(-1,sys)); }
 
       /// Add to the map of time system corrections. Overwrite the existing
       /// correction of the same type, if it exists.
       /// @return true if an existing correction was overwritten.
-      bool addTimeCorr(const TimeSystemCorrection& tsc) throw()
+      bool addTimeCorr(const TimeSystemCorrection& tsc)
       {
          // true if this type already exists
          bool overwrite(mapTimeCorr.find(tsc.asString4()) != mapTimeCorr.end());
@@ -326,10 +284,10 @@ namespace gpstk
       }
 
       /// Delete from the map of time system corrections.
-      /// @param typestr type of TimeSystemCorrection, as a string,
+      /// @param type of TimeSystemCorrection, as a string,
       ///                   i.e. TimeSystemCorrection::asString4()
       /// @return true if an existing correction was deleted.
-      bool delTimeCorr(const std::string& typestr) throw()
+      bool delTimeCorr(const std::string& typestr)
       {
          std::map<std::string, TimeSystemCorrection>::iterator it;
          it = mapTimeCorr.find(typestr);
@@ -346,56 +304,93 @@ namespace gpstk
       ///     and GLUT (GLO to UTC(SU), from CORR TO SYSTEM TIME)
       /// compute GLGP (GLO to GPS) by assuming all UTC's are equivalent.
       /// @return the number of new TimeSystemCorrection's
-      int expandTimeCorrMap(void) throw()
+      int expandTimeCorrMap(void)
       {
          int n(0);
          std::map<std::string, TimeSystemCorrection>::iterator it,jt;
 
-         // currently there are only two possibilities : GPGA and GLGP
          // GLGP : GLO to GPS
-         it = mapTimeCorr.find(std::string("GPUT"));
-         jt = mapTimeCorr.find(std::string("GLUT"));
-         if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
-            && mapTimeCorr.find(std::string("GLGP")) == mapTimeCorr.end())
-         {
-            TimeSystemCorrection tc("GLGP");
-            tc.A0 = jt->second.A0 - it->second.A0;
-            tc.A1 = jt->second.A1 - it->second.A1; // probably zeros
-            tc.refYr = jt->second.refYr;           // take ref time from GLO
-            tc.refMon = jt->second.refMon;
-            tc.refDay = jt->second.refDay;
-            tc.refWeek = jt->second.refWeek;
-            tc.refSOW = jt->second.refSOW;
-            tc.refSOW = jt->second.refSOW;
-            tc.geoProvider = jt->second.geoProvider;  // blank
-            tc.geoUTCid = 0;                          // NA
-            mapTimeCorr[tc.asString4()] = tc;
-            n++;
+         if(mapTimeCorr.find(std::string("GLGP")) == mapTimeCorr.end()) {
+            it = mapTimeCorr.find(std::string("GPUT"));
+            jt = mapTimeCorr.find(std::string("GLUT"));
+            if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
+               && mapTimeCorr.find(std::string("GLGP")) == mapTimeCorr.end())
+            {
+               TimeSystemCorrection tc("GLGP");
+               tc.A0 = jt->second.A0 - it->second.A0;
+               tc.A1 = jt->second.A1 - it->second.A1; // probably zeros
+               tc.refYr = it->second.refYr;
+               tc.refMon = it->second.refMon;
+               tc.refDay = it->second.refDay;
+               tc.refWeek = jt->second.refWeek;
+               tc.refSOW = jt->second.refSOW;
+               tc.geoProvider = jt->second.geoProvider;  // blank
+               tc.geoUTCid = 0;                          // NA
+               mapTimeCorr[tc.asString4()] = tc;
+               n++;
+            }
          }
 
          // GPGA : GPS to GAL
-         it = mapTimeCorr.find(std::string("GAUT"));
-         jt = mapTimeCorr.find(std::string("GPUT"));
-         if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
-            && mapTimeCorr.find(std::string("GPGA")) == mapTimeCorr.end())
-         {
-            TimeSystemCorrection tc("GPGA");
-            tc.A0 = jt->second.A0 - it->second.A0;
-            tc.A1 = jt->second.A1 - it->second.A1;
-            tc.refYr = it->second.refYr;           // take ref time from GAL
-            tc.refMon = it->second.refMon;
-            tc.refDay = it->second.refDay;
-            tc.refWeek = it->second.refWeek;
-            tc.refSOW = it->second.refSOW;
-            tc.refSOW = it->second.refSOW;
-            tc.geoProvider = it->second.geoProvider;  // blank
-            tc.geoUTCid = 0;                          // NA
-            mapTimeCorr[tc.asString4()] = tc;
-            n++;
+         if(mapTimeCorr.find(std::string("GPGA")) == mapTimeCorr.end()) {
+            it = mapTimeCorr.find(std::string("GAUT"));
+            jt = mapTimeCorr.find(std::string("GPUT"));
+            if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
+               && mapTimeCorr.find(std::string("GPGA")) == mapTimeCorr.end())
+            {
+               TimeSystemCorrection tc("GPGA");
+               tc.A0 = jt->second.A0 - it->second.A0;
+               tc.A1 = jt->second.A1 - it->second.A1;
+               tc.refYr = it->second.refYr;           // take ref time from GAL
+               tc.refMon = it->second.refMon;
+               tc.refDay = it->second.refDay;
+               tc.refWeek = it->second.refWeek;
+               tc.refSOW = it->second.refSOW;
+               tc.geoProvider = it->second.geoProvider;  // blank
+               tc.geoUTCid = 0;                          // NA
+               mapTimeCorr[tc.asString4()] = tc;
+               n++;
+            }
+         }
+
+         // BDGP : BDS to GPS
+         if(mapTimeCorr.find(std::string("BDGP")) == mapTimeCorr.end()) {
+            it = mapTimeCorr.find(std::string("GPUT"));
+            jt = mapTimeCorr.find(std::string("BDUT"));
+            if(it != mapTimeCorr.end() && jt != mapTimeCorr.end()
+               && mapTimeCorr.find(std::string("BDGP")) == mapTimeCorr.end())
+            {
+               TimeSystemCorrection tc("BDGP");
+               tc.A0 = jt->second.A0 - it->second.A0;
+               tc.A1 = jt->second.A1 - it->second.A1;
+               tc.refYr = it->second.refYr;
+               tc.refMon = it->second.refMon;
+               tc.refDay = it->second.refDay;
+               BDSWeekSecond bws(jt->second.refWeek,jt->second.refSOW);
+               GPSWeekSecond gws(bws);
+               tc.refWeek = gws.week;
+               tc.refSOW = gws.sow;
+               tc.geoProvider = jt->second.geoProvider;  // blank
+               tc.geoUTCid = 7;
+               mapTimeCorr[tc.asString4()] = tc;
+               n++;
+            }
          }
 
          return n;
       }
+
+      /// Utility routine for getXvt and addEphemeris to test time systems and
+      /// convert if necessary. Convert ttag to the target time system, using the
+      /// first appropriate correction in mapTimeCorr, and return it.
+      /// If no correction is found, ttag is unchanged and an exception is thrown.
+      CommonTime correctTimeSystem(const CommonTime ttag,
+                                   const TimeSystem targetSys) const;
+
+      /// Find the appropriate time system correction object in the collection for the
+      /// given time systems, and dump it to a string and return that string.
+      std::string dumpTimeSystemCorrection(const TimeSystem fromSys,
+                                           const TimeSystem toSys) const;
 
       /// Get integration step for GLONASS Runge-Kutta algorithm (seconds)
       double getGLOStep(void) const
@@ -405,30 +400,29 @@ namespace gpstk
       void setGLOStep(double step)
          { GLOstore.setIntegrationStep(step); }
 
-      /// Get flag that causes unhealthy ephemerides to be excluded (GPS/GLO/GAL)
+      /// Get flag that causes unhealthy (Orbit-based) ephemerides to be excluded
       bool getOnlyHealthyFlag(void) const
-         { return GPSstore.getOnlyHealthyFlag(); }
+      {
+         return ORBstore.getOnlyHealthyFlag();
+      }
 
-      /// Set flag that causes unhealthy ephemerides to be excluded (GPS/GLO/GAL)
+      /// Set flag that causes unhealthy ephemerides to be excluded
       void setOnlyHealthyFlag(bool flag)
       {
-         GPSstore.setOnlyHealthyFlag(flag);
+         ORBstore.setOnlyHealthyFlag(flag);
          GLOstore.setCheckHealthFlag(flag);
-         GALstore.setOnlyHealthyFlag(flag);
       }
 
-      /// use findNearEphemeris() in the getSat...() routines (GPS/GAL)
-      void SearchNear(void) throw()
+      /// use findNearEphemeris() in the getSat...() routines (Orbit-based systems)
+      void SearchNear(void)
       {
-         GPSstore.SearchNear();
-         GALstore.SearchNear();
+         ORBstore.SearchNear();
       }
 
-      /// use findEphemeris() in the getSat...() routines (the default) (GPS/GAL)
-      void SearchPast(void) throw()
+      /// use findEphemeris() in the getSat...() routines (the default) (Orbits)
+      void SearchUser(void)
       {
-         GPSstore.SearchPast();
-         GALstore.SearchPast();
+         ORBstore.SearchUser();
       }
 
    }; // end class Rinex3EphemerisStore

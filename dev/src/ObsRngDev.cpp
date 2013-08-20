@@ -188,9 +188,9 @@ namespace gpstk
       if (typeid(eph) == typeid(GPSEphemerisStore))
       {
          const GPSEphemerisStore& bce = dynamic_cast<const GPSEphemerisStore&>(eph);
-         const EngEphemeris& eph = bce.findEphemeris(svid, obstime);
-         iodc = eph.getIODC();
-         health = eph.getHealth();
+         const GPSEphemeris& eph = bce.findEphemeris(svid, obstime);
+         iodc = eph.IODC;
+         health = eph.health;
       }
 
       if (debug)

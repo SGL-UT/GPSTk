@@ -1,12 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file Rinex3NavData.hpp
- * Encapsulates RINEX 3 Navigation data
- */
-
-#ifndef GPSTK_RINEXNAVDATA_HPP
-#define GPSTK_RINEXNAVDATA_HPP
+/// @file Rinex3NavData.hpp
+/// Encapsulates RINEX ver 3.02 Navigation data
 
 //============================================================================
 //
@@ -44,6 +37,9 @@
 //
 //=============================================================================
 
+#ifndef GPSTK_RINEXNAVDATA_HPP
+#define GPSTK_RINEXNAVDATA_HPP
+
 #include <list>
 #include <string>
 
@@ -52,11 +48,10 @@
 #include "FFStream.hpp"
 #include "Rinex3NavBase.hpp"
 #include "Rinex3NavStream.hpp"
-#include "EngEphemeris.hpp"
-#include "GalEphemeris.hpp"
+#include "EngEphemeris.hpp"         // GPS only, deprecated
 #include "GloEphemeris.hpp"
 #include "RinexSatID.hpp"
-#include "OrbElem.hpp"
+#include "RinexNavData.hpp"
 
 namespace gpstk
 {
@@ -73,69 +68,53 @@ namespace gpstk
    class Rinex3NavData : public Rinex3NavBase
    {
    public:
-
-
          /** Constructor
           * @warning CHECK THE PRNID TO SEE IF THIS DATA IS VALID BEFORE
           *          USING!!!.
           */
-
       Rinex3NavData(void)
         : time(CommonTime::BEGINNING_OF_TIME), PRNID(-1), fitint(4)
       {}
 
-         /// Initializes the nav data with an OrbElemRinex
-      Rinex3NavData(const OrbElem* oeb);
-
-         /// Initializes the nav data with an EngEphemeris
-      Rinex3NavData(const EngEphemeris& ee);
-
-      
-         /// Initializes the nav data with a GalEphemeris
-      Rinex3NavData(const GalEphemeris& ge);
-
-      
          /// Initializes the nav data with a GloEphemeris
       Rinex3NavData(const GloEphemeris& gloe);
 
+         /// Create from a RinexNavData (for backward compatibility)
+      Rinex3NavData(const RinexNavData& rnd);
+
+         /// deprecated; use GPSEphemeris, GPS-only.
+         /// Initializes the nav data with an EngEphemeris
+      Rinex3NavData(const EngEphemeris& ee);
 
          /// Destructor
       virtual ~Rinex3NavData() {}
 
-
-         // The next five lines are our common interface.
-
          /// Rinex3NavData is "data" so this function always returns true.
       virtual bool isData(void) const {return true;}
-
 
          /// A debug output function.
          /// Prints the PRN id and the IODC for this record.
       virtual void dump(std::ostream& s) const;
 
-
-         /// Converts this Rinex3NavData to an EngEphemeris object.
+         /// deprecated; use GPSEphemeris, GPS-only.
+         /// Converts Rinex3NavData to an EngEphemeris object.
       operator EngEphemeris() const throw();
-
-
-         /// Converts this Rinex3NavData to a GalEphemeris object.
-      operator GalEphemeris() const throw();
-
 
          /// Converts this Rinex3NavData to a GloEphemeris object.
       operator GloEphemeris() const throw();
-
 
          /// Converts the (non-CommonTime) data to an easy list
          /// for comparison operators.
       std::list<double> toList() const;
 
-
          /// Sort on time, then satellite; for use with Rinex3EphemerisStore
       bool operator<(const Rinex3NavData& right) const
       {
-         if(time == right.time) return (sat < right.sat);
-         return (time < right.time);
+         CommonTime t(time),r(right.time);
+         t.setTimeSystem(TimeSystem::Any);
+         r.setTimeSystem(TimeSystem::Any);
+         if(t == r) return (sat < right.sat);
+         return (t < r);
       }
 
 
@@ -166,7 +145,7 @@ namespace gpstk
       double  TauN;        ///< SV clock bias (sec)
       double  GammaN;      ///< SV relative frequency bias
       double  MFTraw;      ///< Message frame time (sec of UTC week) <double>
-      long     MFtime;      ///< Message frame time (sec of UTC week) <long>
+      long    MFtime;      ///< Message frame time (sec of UTC week) <long>
       short   freqNum;     ///< Frequency number (-7..+12)
       double  ageOfInfo;   ///< Age of oper. information (days)
       //@}
@@ -190,8 +169,8 @@ namespace gpstk
       double  af0;         ///< SV clock error (sec)
       double  af1;         ///< SV clock drift (sec/sec)
       double  af2;         ///< SV clock drift rate (sec/sec**2)
-      double  Tgd;         ///< Group delay differential (sec) (GPS)
-      double  BGDa, BGDb;  ///< SV clock params for E5a/E1 and E5b/E1 combos (Galileo)
+      double  Tgd;         ///< Group delay diff. (sec) (GPS, BDS:B1/B3 GAL:E5a/E1)
+      double  Tgd2;        ///< Group delay differential (sec) (BDS:B2/B3 GAL:E5b/E1)
       //@}
 
       /** @name HarmonicPerturbations */
@@ -268,9 +247,7 @@ namespace gpstk
          throw(StringUtils::StringException, FFStreamError);
          //@}
 
-
    protected:
-
 
          /** This function retrieves a RINEX 3 NAV record from the given
           *  FFStream.
@@ -288,7 +265,6 @@ namespace gpstk
          /// Outputs the record to the FFStream \a s.
       virtual void reallyPutRecord(FFStream& s) const 
          throw(std::exception, FFStreamError, StringUtils::StringException);
-
 
    }; // End of class 'Rinex3NavData'
 

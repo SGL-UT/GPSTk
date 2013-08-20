@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file RinEdit.cpp
 /// Read Rinex observation files (version 2 or 3) and edit them, writing the edited
 /// data to a new RINEX file.
@@ -60,12 +58,15 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 8/1/11"));
+string Version(string("1.0 8/1/11 rev"));
 // TD
 // option to replace input with output?
 // include optional fmt input for t in edit cmds - is this feasible?
 // if given a 4-char OT and SV, check their consistency
+// OK - test it.  implement DO - how? copy and edit, or clear and copy?
+// OK - test it.  edit header when DS (alone) or DO appear ... how?
 // how to handle aux header data if its first - OF not yet opened
+// END TD
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -79,7 +80,6 @@ public:
    RinexSatID sat;   // satellite
    RinexObsID obs;   // observation type
    CommonTime ttag;  // associated time tag
-   
    int sign;         // sign +1,0,-1
    int idata;        // integer e.g. SSI or LLI
    double data;      // data e.g. bias value
@@ -212,7 +212,7 @@ int main(int argc, char **argv)
 {
    // get the (single) instance of the configuration
    Configuration& C(Configuration::Instance());
-   
+
 try {
    int iret;
    clock_t totaltime(clock());
@@ -235,7 +235,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) {LOG(INFO) << errs; }        // Warnings are here too
+      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -309,8 +309,8 @@ try {
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
-      if(::fabs(s-sow) > 1.0) {LOG(WARNING) << "Warning : decimation reference time "
-         << "(--start) is not an even GPS-seconds-of-week mark.";}
+      if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
+         << "(--start) is not an even GPS-seconds-of-week mark.";
       C.decTime = static_cast<CommonTime>(
          GPSWeekSecond(static_cast<GPSWeekSecond>(C.decTime).week,0.0));
    }
@@ -523,7 +523,6 @@ try {
             }
          }
 
-
          // copy data to output
          RDout = Rdata;
          if(mungeData) {               // must edit RDout.obs
@@ -583,18 +582,18 @@ int ProcessOneEpoch(Rinex3ObsHeader& Rhead, Rinex3ObsHeader& RHout,
       int iret(0);
       RinexSatID sat;
       CommonTime now(Rdata.time);         // TD what if its aux data w/o an epoch?
-      now.setTimeSystem(TimeSystem::Any); // Defined "Any" timesystem for comparison
+
       // if aux header data, either output or skip
       if(RDout.epochFlag > 1) {           // aux header data
          if(C.HDda) return 1;
          return 0;
       }
+
       else {                              // regular data
          vector<EditCmd>::iterator it, jt;
 
          // for cmds with ttag <= now either execute and delete, or move to current
          it = C.vecCmds.begin();
-	 
          while(it != C.vecCmds.end()) {
             if(it->ttag <= now || ::fabs(it->ttag - now) < C.timetol) {
 	       // execute command;
@@ -639,7 +638,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
-   size_t i;
+   int iret, i;
    string sys;
    vector<string> flds;
    Rinex3ObsData::DataMap::iterator kt;
@@ -1169,7 +1168,6 @@ EditCmd::EditCmd(const string intypestr, const string inarg) throw(Exception)
 
       type = INVALID;                                 // defaults
       ttag = CommonTime::BEGINNING_OF_TIME;
-      
       sign = idata = 0;
       data = 0.0;
 

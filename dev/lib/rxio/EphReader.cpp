@@ -157,7 +157,8 @@ namespace gpstk
       FICData data;
       while (fs >> data)
          if (data.blockNum==9) // Only look at the eng ephemeris
-            bce->addEphemeris(data);
+            bce->addEphemeris(EngEphemeris(data));
+            // TODO replace EngEphemeris (deprecated) with GPSEphemeris
 
       if (verboseLevel>1)
          cout << "Read " << fn << " as FIC nav."<< endl;

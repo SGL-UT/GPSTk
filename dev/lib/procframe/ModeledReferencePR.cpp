@@ -870,9 +870,11 @@ ModeledReferencePR object." );
          const GPSEphemerisStore& bce =
                                  dynamic_cast<const GPSEphemerisStore&>(Eph);
 
-         const EngEphemeris& eph = bce.findEphemeris(sat,Tr);
+         //const EngEphemeris& eph = bce.findEphemeris(sat,Tr);
+         const GPSEphemeris& eph = bce.findEphemeris(sat,Tr);
 
-         return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
+         //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
+         return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
 
       }
       catch(...)

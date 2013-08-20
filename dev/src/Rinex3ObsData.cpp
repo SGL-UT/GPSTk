@@ -1,4 +1,5 @@
-#pragma ident "$Id$"
+/// @file Rinex3ObsData.cpp
+/// Encapsulate RINEX 3 observation file data, including I/O.
 
 //============================================================================
 //
@@ -35,11 +36,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file Rinex3ObsData.cpp
- * Encapsulate RINEX 3 observation file data, including I/O.
- */
 
 #include <algorithm>
 #include "StringUtils.hpp"
@@ -223,8 +219,7 @@ namespace gpstk
        *                obtained from corresponding RINEX Observation Header
        *                using method 'Rinex3ObsHeader::getObsIndex()'.
        */
-   RinexDatum Rinex3ObsData::getObs( const SatID& sat,
-                                                    int index ) const
+   RinexDatum Rinex3ObsData::getObs( const SatID& sat, int index ) const
       throw(InvalidRequest)
    {
 
@@ -256,8 +251,7 @@ namespace gpstk
       * @param type String representing the observation type.
       * @param hdr  RINEX Observation Header for current RINEX file.
       */
-   RinexDatum Rinex3ObsData::getObs( const SatID& sat,
-                                                    std::string type,
+   RinexDatum Rinex3ObsData::getObs( const SatID& sat, std::string type,
                                              const Rinex3ObsHeader& hdr ) const
       throw(InvalidRequest)
    {
@@ -498,7 +492,6 @@ namespace gpstk
             //strm.formattedGetLine(line);           // get a line
             //line.resize(80, ' ');                  // pad just in case
             sat = satIndex[isv];                   // sat for this data
-//cout << "Dat " << sat;
             satsys = asString(sat.systemChar());   // system for this sat
             vector<RinexDatum> data;
             // loop over data in the line
@@ -521,11 +514,9 @@ namespace gpstk
                   tempData.data = asDouble(line.substr(line_ndx*16,   14));
                   tempData.lli =     asInt(line.substr(line_ndx*16+14, 1));
                   tempData.ssi =     asInt(line.substr(line_ndx*16+15, 1));
-//cout << " " << R2ot << "(" << R3ot << ") = " << fixed << setprecision(3) << tempData.data;
                   data.push_back(tempData);
                }
             }
-//cout << endl;
             rod.obs[sat] = data;
 
          }  // end loop over sats to read obs data
@@ -587,7 +578,8 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      time = parseTime(line, strm.header);
+      time = parseTime(line, strm.header, strm.timesystem);
+
       numSVs = asInt(line.substr(32,3));
 
       if(line.size() > 41)
@@ -660,7 +652,8 @@ namespace gpstk
 
 
    CommonTime Rinex3ObsData::parseTime(const string& line,
-                                       const Rinex3ObsHeader& hdr) const
+                                       const Rinex3ObsHeader& hdr,
+                                       const TimeSystem& ts) const
       throw(FFStreamError)
    {
    try {
@@ -695,20 +688,20 @@ namespace gpstk
       CommonTime rv = CivilTime(year,month,day,hour,min,sec).convertToCommonTime();
       if(ds != 0) rv += ds;
 
-      rv.setTimeSystem(hdr.firstObs.getTimeSystem());
+      rv.setTimeSystem(ts);
 
       return rv;
    }
    // string exceptions for substr are caught here
    catch (std::exception &e) {
-     FFStreamError err("std::exception: " + string(e.what()));
-     GPSTK_THROW(err);
+      FFStreamError err("std::exception: " + string(e.what()));
+      GPSTK_THROW(err);
    }
    catch (gpstk::Exception& e) {
-     string text;
+      string text;
      for(size_t i=0; i<e.getTextCount(); i++) text += e.getText(i);
-     FFStreamError err("gpstk::Exception in parseTime(): " + text);
-     GPSTK_THROW(err);
+      FFStreamError err("gpstk::Exception in parseTime(): " + text);
+      GPSTK_THROW(err);
    }
    }  // end parseTime
 
@@ -790,7 +783,7 @@ namespace gpstk
             os << " " << setw(13) << jt->second[i].data
                << "/" << jt->second[i].lli
                << "/" << jt->second[i].ssi
-               << "/" << asString(types[i])
+               << "/" << types[i].asString()
                ;
          os << endl;
       }

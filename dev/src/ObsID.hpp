@@ -108,6 +108,7 @@ namespace gpstk
          cbE5ab, ///< Galileo E5a+b
          cbE6,   ///< Galileo E6, QZSS LEX
          cbB1,   ///< BeiDou L1
+         cbB2,   ///< BeiDou L7
          cbB3,   ///< BeiDou L6
          cbL1L2, ///< Combined L1L2 (like an ionosphere free obs)
          cbUndefined,
@@ -198,12 +199,20 @@ namespace gpstk
       ObsID(ObservationType ot, CarrierBand cb, TrackingCode tc)
          : type(ot), band(cb), code(tc) {};
 
-      /// This string contains the system characters for all valid RINEX systems.
+      /// This string contains the system characters for all RINEX systems.
       static std::string validRinexSystems;
+
+      /// These maps transform between 1-char and 3-char system descriptors,
+      /// e.g. map1to3sys["G"] = "GPS" and map3to1sys["GPS"] = "G"
+      static std::map<std::string, std::string> map1to3sys;
+      static std::map<std::string, std::string> map3to1sys;
+
+      /// This string contains the (1-digit) frequency code for all RINEX systems.
+      static std::string validRinexFrequencies;
 
       /// This map[sys][freq] = valid codes gives valid tracking codes for RINEX
       /// observations given the system and frequency;
-      /// eg. valid['G']['1']="CSLXPWYMN* "
+      /// eg. validRinexTrackingCodes['G']['1']="CSLXPWYMN* "
       /// The only exception is there is no pseudorange (C) on GPS L1/L2 N (codeless)
       /// NB These tracking code characters are ORDERED, basically 'best' to 'worst'
       static std::map<char, std::map<char, std::string> > validRinexTrackingCodes;

@@ -24,148 +24,47 @@
 
 #include "ReferenceFrame.hpp"
 
+using namespace std;
+
 namespace gpstk
 {
-      //this is needed to remove undefined reference errors caused by class static members.
-   std::map<ReferenceFrame::FramesEnum, std::string> ReferenceFrame::names;
+   // Static initialization of const std::strings for asString().
+   // Must parallel enum Frames in ReferenceFrames.hpp.
+   // NB: DO NOT use std::map here; on some systems initialization fails.
+   const string ReferenceFrame::Strings[count] =
+     {
+       string("Unknown"),
+       string("WGS84"),          // WGS84, assumed to be the latest version
+       string("WGS84(G730)"),    // WGS84, GPS week 730 version
+       string("WGS84(G873)"),    // WGS84, GPS week 873 version
+       string("WGS84(G1150)"),   // WGS84, GPS week 1150 version
+       string("ITRF"),           // ITRF, assumed to be the latest version
+       string("PZ90"),           // PZ90 (GLONASS) assumed to be the latest version
+       string("PZ90KGS")         // PZ90 (KGS) the "original"
+     };
 
-      // Force the execution of the initialize() method.
-   bool ReferenceFrame::initFlag = ReferenceFrame::initialize();
-   
-   ReferenceFrame::ReferenceFrame(FramesEnum e)
+   ReferenceFrame::ReferenceFrame(const string str) throw()
    {
-      setReferenceFrame((int)e);
-   }
-   
-   ReferenceFrame::ReferenceFrame(int index)
-   {
-      setReferenceFrame(index);
-   }
-   
-   ReferenceFrame::ReferenceFrame(const std::string str)
-   {
-      setReferenceFrame(str);
-   }
-   
-   ReferenceFrame::ReferenceFrame(const char str[])
-   {
-      setReferenceFrame(str);
-   }
-   
-   void ReferenceFrame::setReferenceFrame(const int index)
-   {
-         //We use names.size() as our upper bound so we can
-         //dynamically load new reference frames into this class
-      if(index < Unknown || index >= int(names.size()))
-         frame = Unknown;
-      else
-         frame = (FramesEnum)index;
-   }
-   
-   void ReferenceFrame::setReferenceFrame(const std::string& name)
-   {
-      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter;
-      for(iter = names.begin(); iter != names.end(); ++iter)
-      {
-         if(iter->second == name)
-         {
-            frame = iter->first;
+      frame = Unknown;
+      for(int i=0; i<count; i++) {
+         if(Strings[i] == str) {
+            frame = static_cast<Frames>(i);
             return;
          }
       }
-      frame = Unknown;
    }
-   
-   void ReferenceFrame::setReferenceFrame(const char name[])
-   {
-      setReferenceFrame((std::string)name);
-   }
-   
-   ReferenceFrame::FramesEnum ReferenceFrame::getFrame() const
+
+   void ReferenceFrame::setReferenceFrame(const Frames& frm)
       throw()
    {
-      return frame;
+      if(frm < 0 || frm >= count)
+         frame = Unknown;
+      else
+         frame = frm;
    }
-   
-   ReferenceFrame& ReferenceFrame::createReferenceFrame(const char str[])
-   {
-      std::string name(str);
-      return createReferenceFrame(name);
-   }
-   
-   ReferenceFrame& ReferenceFrame::createReferenceFrame(std::string& name)
-   {
-      std::map<ReferenceFrame::FramesEnum, std::string>::const_iterator iter;
-      for(iter= names.begin(); iter != names.end(); ++iter)
-      {
-         if(iter->second == name)
-         {
-            frame = iter->first;
-            return (*this);
-         }
-      }
-         //The specified frame does not exist, create it
-      int size = names.size();
-      names[(FramesEnum)size] = name;
-      frame = (FramesEnum)size;
-      return (*this);
-   }
-   
-   std::string& ReferenceFrame::asString() const
-   {
-      return names[frame];
-   }
-   
-   bool ReferenceFrame::operator==(const ReferenceFrame& right) const
-      throw()
-   {
-      return (frame == right.frame);
-   }
-   
-   bool ReferenceFrame::operator!=(const ReferenceFrame& right) const
-      throw()
-   {
-         //If frame == right.frame, only need to check one to know if both are Unknown
-      return (frame != right.frame);
-   }
-   
-   bool ReferenceFrame::operator>(const ReferenceFrame& right) const
-      throw()
-   {
-      return (frame > right.frame);
-   }
-   
-   bool ReferenceFrame::operator<(const ReferenceFrame& right) const
-      throw()
-   {
-      return (frame < right.frame);
-   }
-   
-   bool ReferenceFrame::operator>=(const ReferenceFrame& right) const
-      throw()
-   {
-      return (frame >= right.frame);
-   }
-   
-   bool ReferenceFrame::operator<=(const ReferenceFrame& right) const
-      throw()
-   {
-      return (frame <= right.frame);
-   }
-   
-   bool ReferenceFrame::initialize()
-   {
-      names[Unknown] = "Unknown";
-      names[WGS84] = "WGS84";
-      names[PZ90] = "PZ90";
-      return true;
-   }
-   
-      //Prints the name of the reference frame to the specified
-      //ostream.
-   std::ostream& operator<<(std::ostream& os,
-                              const ReferenceFrame& rf)
+
+   ostream& operator<<(ostream os, const ReferenceFrame& rf)
    {
       return os << rf.asString();
    }
-}
+}   // end namespace

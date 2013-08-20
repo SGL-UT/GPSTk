@@ -1,13 +1,6 @@
-#pragma ident "$Id$"
-
-/**
- * @file Rinex3NavHeader.hpp
- * Encapsulate header of RINEX 3 navigation file, including RINEX 2
- * compatibility.
- */
-
-#ifndef GPSTK_RINEX3NAVHEADER_HPP
-#define GPSTK_RINEX3NAVHEADER_HPP
+/// @file Rinex3NavHeader.hpp
+/// Encapsulate header of RINEX 3 navigation file, including RINEX 2
+/// compatibility.
 
 //============================================================================
 //
@@ -26,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -34,16 +27,19 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+#ifndef GPSTK_RINEX3NAVHEADER_HPP
+#define GPSTK_RINEX3NAVHEADER_HPP
 
 #include <iostream>
 #include <string>
@@ -85,21 +81,20 @@ public:
    IonoCorr(std::string str) { this->fromString(str); }
 
       /// Return string version of CorrType
-   std::string asString() const throw(Exception)
+   std::string asString() const throw()
    {
       switch(type) {
          case GAL: return std::string("GAL"); break;
          case GPSA: return std::string("GPSA"); break;
          case GPSB: return std::string("GPSB"); break;
-         default  : Exception e("Unrecognized IonoCorr type");
-         GPSTK_THROW(e);
       }
+      return std::string("ERROR");
    }
 
    void fromString(const std::string str) throw(Exception)
    {
       std::string STR(gpstk::StringUtils::upperCase(str));
-      if(STR == std::string("GAL")) type = GAL;
+           if(STR == std::string("GAL")) type = GAL;
       else if(STR == std::string("GPSA")) type = GPSA;
       else if(STR == std::string("GPSB")) type = GPSB;
       else {
@@ -128,7 +123,7 @@ class Rinex3NavHeader : public Rinex3NavBase
 
       /// Constructor
    Rinex3NavHeader(void)
-      : valid(0), version(3.0)
+      : valid(0), version(3.02)
    {}
 
       /// Destructor
@@ -210,7 +205,8 @@ class Rinex3NavHeader : public Rinex3NavBase
    };
 
 
-       /** @name HeaderValues */
+
+      /** @name HeaderValues */
       //@{
 
    double version;                 ///< RINEX Version

@@ -312,8 +312,8 @@ void OrdEdit::process()
             iter++;
             try
             {
-              const EngEphemeris& eph = bce.findEphemeris(satId, ordEpoch.time);
-              ord.health =  eph.getHealth();
+              const GPSEphemeris& eph = bce.findEphemeris(satId, ordEpoch.time);
+              ord.health =  eph.health;
               if (ord.health.is_valid() && ord.health != 0)
                 ordEpoch.removeORD(satId);
             }

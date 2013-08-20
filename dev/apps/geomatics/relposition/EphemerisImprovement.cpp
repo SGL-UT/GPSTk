@@ -69,7 +69,7 @@ try {
    if(dynamic_cast<GPSEphemerisStore*>(pEph)) {
 
       GPSEphemerisStore& BCE = dynamic_cast<GPSEphemerisStore&>(*pEph);
-      list<EngEphemeris> EphList;
+      list<GPSEphemeris> EphList;
 
       oflog << "EphemerisStore is broadcast ephemeris" << endl;
       //BCE.dump(1,oflog);
@@ -80,10 +80,10 @@ try {
       GSatID sat;
       map<GSatID,long> IODEmap;
       map<GSatID,long>::iterator Imapit;
-      list<EngEphemeris>::const_iterator it;
+      list<GPSEphemeris>::const_iterator it;
       // dump the list of ephemerides, and build a map of sat,IODE
       for(i=0,it=EphList.begin(); it != EphList.end(); it++,i++) {
-         short prn = it->getPRNID();
+         short prn = it->satID.id;
          sat = GSatID(prn,SatID::systemGPS);
          if(IODEmap.find(sat) == IODEmap.end()) {
             IODEmap[sat] = -1;
@@ -114,8 +114,8 @@ try {
                // BEFORE that of the ephemeris it is replacing.
                // This means findEphemeris will now always find the 'best' ephemeris,
                // whereas findNearEphemeris used to fill that purpose.
-               const EngEphemeris& eph = BCE.findEphemeris(sat,tt);
-               i = eph.getIODE();
+               const GPSEphemeris& eph = BCE.findEphemeris(sat,tt);
+               i = eph.IODE;
                if(IODEmap[sat] == -1) {
                   //oflog << "Satellite " << sat
                   //      << " starts with ephemeris IODE " << i

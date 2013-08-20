@@ -194,15 +194,14 @@ namespace gpstk
 
       double sigma(1000000.0);
 
-      EngEphemeris engEph;
-
       try
       {
             // Look if this satellite is present in ephemeris
-         engEph = bcEph->findEphemeris(sat, time);
+         const GPSEphemeris& engEph = bcEph->findEphemeris(sat, time);
 
             // If so, get the IURA
-         iura = engEph.getAccFlag();
+         //iura = engEph.getAccFlag();
+         iura = engEph.accuracyFlag;
 
       }
       catch(...)

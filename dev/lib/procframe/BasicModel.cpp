@@ -338,7 +338,8 @@ namespace gpstk
 
          bce.findEphemeris(sat,Tr);
 
-         return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
+         //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
+         return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
       }
       catch(...)
       {

@@ -95,7 +95,6 @@ try {
    {
       PRSolution dummy;
       PRSrmsLimit = dummy.RMSLimit; // 6.5;
-      PRSalgebra = dummy.Algebraic; // false;
       PRSnIter = dummy.MaxNIterations; // 10;
       PRSconverge = dummy.ConvergenceLimit; // 1.e-9;
       PRSMinElevation = 10.0;
@@ -401,10 +400,6 @@ try {
       " --PRSslopeLimit <sl>  PRS: RAIM residual limit in m ("
       + asString(PRSslopeLimit,2) + ")");
    dashprsslope.setMaxCount(1);
-
-   CommandOptionNoArg dashprsalg(0,"PRSalgebra",
-      " --PRSalgebra          PRS: Use algebraic algorithm (don't)");
-   dashprsalg.setMaxCount(1);
 
    CommandOption dashprselev(CommandOption::hasArgument, CommandOption::stdType,
       0,"PRSMinElev"," --PRSMinElev <elev>   PRS: Reject data below elevation "
@@ -811,11 +806,6 @@ try {
       PRSconverge = asDouble(values[0]);
       if(help) cout << " Input: set PRS convergence limit to  "
          << scientific << setprecision(2) << PRSconverge << endl;
-   }
-   if(dashprsalg.getCount()) {
-      PRSalgebra = true;
-      if(help) cout << " Input: use algebraic algorithm in pseudorange solution"
-         << endl;
    }
    if(dashprselev.getCount()) {
       values = dashprselev.getValue();
@@ -1443,8 +1433,7 @@ try {
    ofs << "  Loose : " << scientific << setprecision(2) << LooseConstraint << endl;
    ofs << "  Tight : " << scientific << setprecision(2) << TightConstraint << endl;
    ofs << " Pseudorange solution: iterations " << PRSnIter
-      << ", convergence " << scientific << setprecision(2) << PRSconverge
-      << ", " << (PRSalgebra ? "" : "do not ") << "use algebra," << endl
+      << ", convergence " << scientific << setprecision(2) << PRSconverge << endl
       << "  RMS residual limit " << fixed << PRSrmsLimit
       << "  RAIM Slope limit " << PRSslopeLimit
       << ", elevation mask " << PRSMinElevation

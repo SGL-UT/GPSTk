@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file RinSum.cpp
 /// Read Rinex observation files (version 2 or 3) and output a summary of the content.
 
@@ -61,9 +59,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("3.3 1/31/12"));
-// TD
-// END TD
+string Version(string("3.2 7/1/11 rev"));
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -93,6 +89,8 @@ private:
       defaultstopStr = string("[End of dataset]");
       beginTime = CommonTime::BEGINNING_OF_TIME;
       endTime = CommonTime::END_OF_TIME;
+      beginTime.setTimeSystem(TimeSystem::Any);
+      endTime.setTimeSystem(TimeSystem::Any);
       userfmt = gpsfmt;
       help = verbose = brief = nohead = notab = gpstime = sorttime = vistab = false;
       debug = -1;
@@ -122,6 +120,7 @@ public:
    string defaultstopStr,stopStr;
    CommonTime beginTime,endTime;
    vector<RinexSatID> exSats;
+   vector<RinexSatID> onlySats;
 
    // end of command line input
 
@@ -206,7 +205,7 @@ try {
                     << "\n------- end errors -----------";
          break;
       }
-      if(!errs.empty()) {LOG(INFO) << errs;  }       // Warnings are here too
+      if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
 
       iret = ProcessFiles();                       // iret == number of files
 
@@ -250,7 +249,7 @@ try {
    if(C.InputObsFiles.size() > 1) {
       C.msg = sortRinex3ObsFiles(C.InputObsFiles);
       if(!C.msg.empty())
-         {LOG(ERROR) << C.msg;}
+         LOG(ERROR) << C.msg;
    }
 
    // -------- save errors and output
@@ -285,6 +284,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 
    // help: print syntax page and quit
    if(opts.hasHelp()) {
+      LOG(INFO) << Title;
       LOG(INFO) << cmdlineUsage;
       return 1;
    }
@@ -348,7 +348,10 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       oss << "------ End configuration summary ------";
       LOG(VERBOSE) << oss.str();
    }
-   if(!cmdlineExtras.empty()) {LOG(INFO) << "\n" << cmdlineExtras;}
+   if(!cmdlineExtras.empty()) {
+      stripTrailing(cmdlineExtras,'\n');
+      LOG(INFO) << cmdlineExtras;
+   }
 
    return 0;
 
@@ -387,6 +390,8 @@ string Configuration::BuildCommandLine(void) throw()
             "Stop processing data at this epoch");
    opts.Add(0, "exSat", "sat", true, false, &exSats, "",
             "Exclude satellite (or system) <sat> e.g. G24,R");
+   opts.Add(0, "onlySat", "sat", true, false, &onlySats, "",
+            "Include ONLY satellites (or systems) <sat> e.g. G,R");
 
    opts.Add(0, "timefmt", "fmt", false, false, &userfmt, "# Output:",
             "Format for time tags (see GPSTK::Epoch::printf) in output");
@@ -462,9 +467,11 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       if(!ok)
          oss << "Error : invalid time or format in --" << (i==0 ? "start" : "stop")
             << " " << (i==0 ? startStr : stopStr) << endl;
-      else
-         ossx << (i==0 ? "   Begin time --begin" : "   End time --end") << " is "
+      else {
+         (i==0 ? beginTime : endTime).setTimeSystem(TimeSystem::Any);
+         ossx << (i==0 ? "Begin time --begin" : "End time --end") << " is "
             << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+"\n");
+      }
    }
 
    // open the log file (so warnings, configuration summary, etc can go there) -----
@@ -479,6 +486,19 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
    }
    LOG(INFO) << Title;
 
+   // check consistency of exSat and onlySat; note you CAN have --only R --ex R10,R07
+   if(exSats.size() > 0 && onlySats.size() > 0) {
+      for(i=0; i<onlySats.size(); i++) {
+         RinexSatID sat(onlySats[i]);
+         RinexSatID sys(-1,sat.system);
+         if((find(exSats.begin(), exSats.end(), sat) != exSats.end()) ||
+            (find(exSats.begin(), exSats.end(), sys) != exSats.end()))
+            oss << "Error : satellite " << asString(sat)
+               << " found in both --exSat and --onlySat" << endl;
+      }
+   }
+
+   // gaps and vis options
    if(vres < 0) {
       ossx << "Warning - Option --vis, must have n positive\n";
       vres = 0;
@@ -544,8 +564,8 @@ try {
       istrm.exceptions(ios::failbit);
 
       // output file name
-      if(!C.brief) {LOG(INFO) << "+++++++++++++ " << C.PrgmName
-            << " summary of Rinex obs file " << filename << " +++++++++++++";}
+      if(!C.brief) LOG(INFO) << "+++++++++++++ " << C.PrgmName
+            << " summary of Rinex obs file " << filename << " +++++++++++++";
 
       // get file size
       istrm.seekg(0,ios::end);
@@ -565,7 +585,7 @@ try {
 
       // output file name and header
       if(C.brief) {
-         if(nfile > 0) {LOG(INFO) << "";}
+         if(nfile > 0) LOG(INFO) << "";
          LOG(INFO) << "File name: " << filename
             << " (RINEX ver. " << Rhead.version << ")";
          LOG(INFO) << "Marker name: " << Rhead.markerName;
@@ -582,8 +602,8 @@ try {
 
       if(!Rhead.isValid()) {
          LOG(INFO) << "Abort: header is invalid.";
-         if(!C.brief) {LOG(INFO) << "\n+++++++++++++ End of RinSum summary of "
-                     << filename << " +++++++++++++";}
+         if(!C.brief) LOG(INFO) << "\n+++++++++++++ End of RinSum summary of "
+                     << filename << " +++++++++++++";
          continue;
       }
 
@@ -596,7 +616,7 @@ try {
       firstObsTime = CommonTime::BEGINNING_OF_TIME;
 
       // initialize for all systems in the header
-      map<std::string,vector<RinexObsID> >::const_iterator sit;
+      map<std::string,vector<RinexObsID> >::const_iterator sit;   // used below often
       for(sit=Rhead.mapObsTypes.begin(); sit != Rhead.mapObsTypes.end(); ++sit) {
          // Initialize the vectors contained in the map
          totals[(sit->first)[0]] = vector<int>((sit->second).size());
@@ -609,7 +629,7 @@ try {
       }
 
       if(pLOGstrm == &cout && !C.brief)
-         {LOG(INFO) << "\nReading the observation data...";}
+         LOG(INFO) << "\nReading the observation data...";
 
       // loop over epochs ---------------------------------------------
       while(1) {
@@ -657,8 +677,8 @@ try {
 
          // if aux header data, either output or skip
          if(Rdata.epochFlag > 1) {
-            if(C.debug > -1) {for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
-               LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];}
+            if(C.debug > -1) for(j=0; j<Rdata.auxHeader.commentList.size(); j++)
+               LOG(DEBUG) << "Comment: " << Rdata.auxHeader.commentList[j];
             ncommentblocks++;
             continue;
          }
@@ -693,12 +713,21 @@ try {
          Rinex3ObsData::DataMap::const_iterator it;
          for(it=Rdata.obs.begin(); it != Rdata.obs.end(); ++it) {
             const RinexSatID& sat(it->first);
+
+            // is sat included?
+            if(C.onlySats.size() > 0 &&
+                  find(C.onlySats.begin(), C.onlySats.end(), sat) == C.onlySats.end()
+                     && find(C.onlySats.begin(), C.onlySats.end(),
+                        RinexSatID(-1,sat.system)) == C.onlySats.end())
+               continue;
+
             // is sat excluded?
             if(find(C.exSats.begin(), C.exSats.end(), sat) != C.exSats.end())
                continue;
             // check for all sats of this system
-            else if(find(C.exSats.begin(), C.exSats.end(), RinexSatID(-1,sat.system))
-                  != C.exSats.end()) continue;
+            else if(find(C.exSats.begin(), C.exSats.end(),
+                     RinexSatID(-1,sat.system)) != C.exSats.end())
+               continue;
 
             const vector<RinexDatum>& vecData(it->second);
 
@@ -757,7 +786,7 @@ try {
                   << " " << vecData[index].ssi;
 
             } // end loop over observations
-            if(C.debug > -1) {LOG(DEBUG) << oss.str();}
+            if(C.debug > -1) LOG(DEBUG) << oss.str();
 
          }  // end loop over satellites
 
@@ -788,14 +817,16 @@ try {
                   }
                }
             }
-            else if(dt == 0)
-               {LOG(WARNING) << "Warning - repeated time tag at "
-                    << printTime(lastObsTime,C.longfmt);}
-            else
+            else if(dt == 0) {
+               LOG(WARNING) << "Warning - repeated time tag at "
+                    << printTime(lastObsTime,C.longfmt);
+            }
+            else {
                LOG(WARNING) << "Warning - time tags out of order: "
                     << printTime(prevObsTime,C.longfmt) << " > "
                     << printTime(lastObsTime,C.longfmt);
                     //<< " " << scientific << setprecision(4) << dt;
+            }
          }
          prevObsTime = lastObsTime;
 
@@ -821,7 +852,7 @@ try {
             << dt << " seconds.";
       LOG(INFO) << "Computed first epoch: " << printTime(firstObsTime,C.longfmt);
       LOG(INFO) << "Computed last  epoch: " << printTime(lastObsTime,C.longfmt);
-
+      
       // compute time span of dataset in days/hours/minutes/seconds
       oss.str("");
       oss << "Computed time span: ";
@@ -840,7 +871,6 @@ try {
       LOG(INFO) << "Computed file size: " << filesize << " bytes.";
 
       // Reusing secs, as it is equivalent to the original expression
-      // i = 1+int(0.5+(lastObsTime-firstObsTime)/dt);
       i = 1+int(0.5 + secs / dt);
 
       LOG(INFO) << "There were " << nepochs << " epochs ("
@@ -863,7 +893,6 @@ try {
          LOG(INFO) << "\n      Summary of data available in this file: "
                << "(Spans are based on times and interval)";
          string fmt(C.gpstime ? C.gpsfmt : C.calfmt);
-         map<std::string,vector<RinexObsID> >::const_iterator sit;
          j = 0;
          for(sit=Rhead.mapObsTypes.begin(); sit != Rhead.mapObsTypes.end(); ++sit)
          {
@@ -877,14 +906,15 @@ try {
             if(i == 0) continue;
 
             // print the table
-            if(++j > 1) {LOG(INFO) << "";}
+            if(++j > 1) LOG(INFO) << "";
             LOG(INFO) << "System " << sit->first <<" = "<< sat.systemString() << ":";
             oss.str("");
             oss << " Sat\\OT:";
 
             // print line of RINEX 3 codes
             for(k=0; k < (sit->second).size(); k++)
-               oss << setw(k==0?4:7) << asString((sit->second)[k]);
+               //oss << setw(k==0?4:7) << asString((sit->second)[k]);
+               oss << setw(k==0?4:7) << (sit->second)[k].asString();
             LOG(INFO) << oss.str() << "   Span             Begin time - End time";
 
             // print the table
@@ -927,29 +957,54 @@ try {
          LOG(INFO) << oss.str();
 
          // output obs types
-         map<std::string,vector<RinexObsID> >::const_iterator sysIter;
-         for(sysIter= Rhead.mapObsTypes.begin(); sysIter != Rhead.mapObsTypes.end(); ++sysIter) {
-            string sysCode = (sysIter->first);
+         sit = Rhead.mapObsTypes.begin();
+         for( ; sit != Rhead.mapObsTypes.end(); ++sit) {
+            string sysCode = (sit->first);
             vector<RinexObsID>& vec = Rhead.mapObsTypes[sysCode];
+
+            // is this system found in the list of sats?
+            map<char, vector<int> >::const_iterator totalsIter;
+            totalsIter = totals.find(sysCode[0]);
+            const vector<int>& vectot = totalsIter->second;
+            for(i=0,k=0; k<vectot.size(); k++) i += vectot[k];
+            if(i == 0) continue;    // no, skip it
 
             oss.str("");
             oss << "System " << RinexSatID(sysCode).systemString3()
                << " Obs types(" << vec.size() << "): ";
 
-            for(i=0; i<vec.size(); i++) oss << " " << asString(vec[i]);
+            for(i=0; i<vec.size(); i++) oss << " " << vec[i].asString();
+
+            // if RINEX ver. 2, then add ver 2 obstypes in parentheses
+            if(Rhead.version < 3) {
+               oss << " [v2:";
+               for(i=0; i<vec.size(); i++) {
+                  map<string,RinexObsID>::iterator it;
+                  for(it = Rhead.mapSysR2toR3ObsID[sysCode].begin();
+                        it != Rhead.mapSysR2toR3ObsID[sysCode].end(); ++it) {
+                     if(it->second == vec[i]) {
+                        oss << " " << it->first;
+                        break;
+                     }
+                  }
+               }
+               oss << "]";
+            }
+
             LOG(INFO) << oss.str();
          }
       }
 
       // gaps
       if(C.gapdt > 0.0) {
+         // summary of gaps using count
          oss.str("");
          oss << "\nSummary of gaps in the data in this file, assuming dt = "
             << C.gapdt << " sec.\n";
          if(C.gapdt != dt) oss << " WARNING - computed dt does not match input dt\n";
          oss << " First epoch = " << printTime(firstObsTime,C.longfmt)
             << " and last epoch = " << printTime(lastObsTime,C.longfmt) << endl;
-         oss << "     Sat   beg - end (count,size) ... "
+         oss << "    Sat    beg - end (count,size) ... "
             << "[count = # of dt's from first epoch]\n";
 
          // print for timetags = all sats
@@ -959,6 +1014,7 @@ try {
          for(i=1; i<=k-2; i+=2) oss << " (" << C.gapcount[i]+1    // begin of gap
             << "," << C.gapcount[i+1]-C.gapcount[i]-1 << ")";     // size
          oss << endl;
+
          //oss << "DUMP ";
          //for(i=0; i<C.gapcount.size(); i++) oss << " " << C.gapcount[i]
          //         << "(" << int(C.gapcount[i]/double(C.vres)) << ")";
@@ -973,11 +1029,45 @@ try {
                oss << " (" << tabIt->gapcount[i]+1             // begin count of gap
                   << "," << tabIt->gapcount[i+1]-tabIt->gapcount[i]-1 << ")"; // size
             oss << endl;
+
             //oss << "DUMP ";
             //for(i=0; i<tabIt->gapcount.size();i++)
             //   oss << " " << tabIt->gapcount[i]
             //      << "(" << int(tabIt->gapcount[i]/double(C.vres)) << ")";
             //oss << "\n";
+         }
+
+         tag = oss.str(); stripTrailing(tag,"\n");
+         LOG(INFO) << tag;
+
+         // summary of gaps using sow
+         oss.str("");
+         double t(static_cast<GPSWeekSecond>(firstObsTime).sow), d(C.gapdt);
+         oss << "\nSummary of gaps in the data in this file, assuming dt = "
+            << C.gapdt << " sec.\n";
+         if(C.gapdt != dt) oss << " WARNING - computed dt does not match input dt\n";
+         oss << " First epoch = " << printTime(firstObsTime,C.longfmt)
+            << " and last epoch = " << printTime(lastObsTime,C.longfmt) << endl;
+         oss << "    Sat      beg -      end (sow,number of missing points)\n";
+
+         // print for timetags = all sats
+         k = C.gapcount.size()-1;               // size() is at least 2
+         oss << "GAP ALL " << fixed << setprecision(1) << setw(8) << t+d*C.gapcount[0]
+            << " - " << setw(8) << t+d*C.gapcount[k];
+         for(i=1; i<=k-2; i+=2) oss << " (" << t+d*(C.gapcount[i]+1)// begin of gap
+            << "," << C.gapcount[i+1]-C.gapcount[i]-1 << ")";     // size
+         oss << endl;
+
+         // loop over sats
+         for(tabIt = table.begin(); tabIt != table.end(); ++tabIt) {
+            k = tabIt->gapcount.size() - 1;
+            oss << "GAP " << tabIt->sat << " " << fixed << setprecision(1)
+               << setw(8) << t+d*tabIt->gapcount[0]
+               << " - " << setw(8) << t+d*tabIt->gapcount[k];
+            for(i=1; i<=k-2; i+=2)
+               oss << " (" << t+d*(tabIt->gapcount[i]+1)        // begin sow of gap
+                  << "," << tabIt->gapcount[i+1]-tabIt->gapcount[i]-1 << ")"; // size
+            oss << endl;
          }
 
          tag = oss.str(); stripTrailing(tag,"\n");
@@ -992,23 +1082,9 @@ try {
                << " seconds.\n";
             oss << " First epoch = " << printTime(firstObsTime,C.longfmt)
                << " and last epoch = " << printTime(lastObsTime,C.longfmt) << endl;
-            // TD print a time scale
-            // count scale for now
-            //oss << "       "; for(i=0; i<10; i++) oss<<i<< "         "; oss<< "\n";
-            //oss << "       0"; for(i=0; i<10; i++) oss << "1234567890"; oss << "\n";
             oss << "VIS ALL ";
             bool isOn(false);
             for(k=0,i=0; i<C.gapcount.size()-1; i+=2) {
-               //j = int(double(C.gapcount[i]-k)/dn + 0.5);
-               //if(j > 0) { oss << string(j,' '); isOn = false; }
-               //k = C.gapcount[i];
-               //j = int(double(C.gapcount[i+1]-k)/dn + 0.5);
-               //if(j > 0) {
-                  //if(isOn) { oss << "x"; j--; }
-                  //oss << string(j,'X');
-                  //isOn = true;
-               //}
-               //k = C.gapcount[i+1];
                j = int(double(C.gapcount[i]/dn));
                if(j-k > 0) { oss << string(j-k,' '); k = j; isOn = false; }
                j = int(double(C.gapcount[i+1]/dn));
@@ -1039,7 +1115,8 @@ try {
                   // satellite 'off'
                   j = int(double(tabIt->gapcount[i]/dn));
                   if(!first) {
-                     vtab.insert(multimap<int, string>::value_type(kk, string("-")+asString(tabIt->sat)));
+                     vtab.insert(multimap<int, string>::value_type(  
+                                       kk, string("-")+asString(tabIt->sat)));
                      //ossvt << " " << kk << "-,";
                      kk = j;
                   }
@@ -1052,7 +1129,8 @@ try {
                   }
                   // satellite 'on'
                   j = int(double(tabIt->gapcount[i+1]/dn));
-                  vtab.insert(multimap<int, string>::value_type(kk, string("+")+asString(tabIt->sat)));
+                  vtab.insert(multimap<int, string>::value_type(  
+                                    kk, string("+")+asString(tabIt->sat)));
                   //ossvt << " " << kk << "+,";
                   kk = j;
                   jj = j-k;
@@ -1063,7 +1141,8 @@ try {
                      k = j;
                   }
                }
-               vtab.insert(multimap<int, string>::value_type(kk, string("-")+asString(tabIt->sat)));
+               vtab.insert(multimap<int, string>::value_type(  
+                                 kk, string("-")+asString(tabIt->sat)));
                //oss << "-" << kk;
                LOG(INFO) << oss.str();
                //LOG(INFO) << ossvt.str() << " " << kk << "-";
@@ -1080,10 +1159,6 @@ try {
                CommonTime ttag(firstObsTime);
                vector<string> sats;
                multimap<int,string>::const_iterator vt;
-               //temp
-               //for(vt = vtab.begin(); vt != vtab.end(); ++vt)
-               //   LOG(INFO) << "VTAB " << vt->first << " " << vt->second;
-               //end temp
                vt = vtab.begin();
                while(vt != vtab.end()) {
                   while(vt != vtab.end() && vt->first == k) {
@@ -1130,67 +1205,26 @@ try {
                   << " END";
             }
 
-            // differences
-            /*
-            LOG(INFO) << "\nVisibility of pairs of sats - for differencing\n"
-               << "DIF sat sat Beg: count week    sow   End: count week    "
-               << "sow   Len: count seconds";
-            dn = 1;     // temp?
-            // loop over pairs of sats
-            tabIt = table.begin();
-            for(tabIt = table.begin(); tabIt != table.end(); ++tabIt) {
-               vector<TableData>::iterator tabJt;
-               for(++(tabJt = tabIt); tabJt != table.end(); ++tabJt) {
-                  i = j = 0;
-                  while(i < tabIt->gapcount.size() && j < tabJt->gapcount.size()) {
-                     int bi(tabIt->gapcount[i]/dn);
-                     int ei(tabIt->gapcount[i+1]/dn);
-                     int bj(tabJt->gapcount[j]/dn);
-                     int ej(tabJt->gapcount[j+1]/dn);
-                     if(bj > ei) { i += 2; continue; }
-                     if(bi > ej) { j += 2; continue; }
-                     int b(bi > bj ? bi : bj);
-                     int e(ei > ej ? ej : ei);
-                     if(e > b) {
-                        oss.str("");
-                        CommonTime ttag(firstObsTime + b*dn*C.gapdt);
-                        oss << "DIF " << asString(tabIt->sat)
-                           << " " << asString(tabJt->sat)
-                           << " Beg: " << setw(5) << b
-                           << " " << printTime(ttag,"%4F %8.1g");
-                        ttag = firstObsTime + e*dn*C.gapdt;
-                        oss << " End: " << setw(5) << e
-                           << " " << printTime(ttag,"%4F %8.1g")
-                           << " Len: " << setw(5) << e-b+1
-                           << fixed << setprecision(1)
-                           << " " << setw(7) << (e-b)*dn*C.gapdt;
-                        LOG(INFO) << oss.str();
-                     }
-                     // go to next
-                     i += 2;
-                     j += 2;
-                  }
-               }
-            }
-            */
-
          }  // end if C.vres > 0 (user chose vis output)
       }
 
       // Warnings
       if((Rhead.valid & Rinex3ObsHeader::validInterval)
                                           && fabs(dt-Rhead.interval) > 1.e-3)
-         {LOG(INFO) << " Warning - Computed interval is " << setprecision(2)
+         LOG(INFO) << " Warning - Computed interval is " << setprecision(2)
                << dt << " sec, while input header has " << setprecision(2)
-               << Rhead.interval << " sec.";}
+               << Rhead.interval << " sec.";
 
-      if(fabs(firstObsTime-Rhead.firstObs) > 1.e-8)
-         {LOG(INFO) << " Warning - Computed first time does not agree with header";}
+      if(C.beginTime == CommonTime::BEGINNING_OF_TIME
+            && fabs(firstObsTime-Rhead.firstObs) > 1.e-8)
+         LOG(INFO) << " Warning - Computed first time does not agree with header";
 
-      if((Rhead.valid & Rinex3ObsHeader::validLastTime)
-                                          && fabs(lastObsTime-Rhead.lastObs) > 1.e-8)
-         {LOG(INFO) << " Warning - Computed last time does not agree with header";}
+      if(C.endTime == CommonTime::END_OF_TIME
+            && (Rhead.valid & Rinex3ObsHeader::validLastTime)
+            && fabs(lastObsTime-Rhead.lastObs) > 1.e-8)
+         LOG(INFO) << " Warning - Computed last time does not agree with header";
 
+      // look for empty systems
       for(sit=Rhead.mapObsTypes.begin(); sit != Rhead.mapObsTypes.end(); ++sit) {
          map<char,vector<int> >::const_iterator totIt(totals.find(sit->first[0]));
          const vector<int>& vec(totIt->second);
@@ -1198,13 +1232,53 @@ try {
             i += vec[k];
          if(i == 0) {
             RinexSatID sat(sit->first);
-            if(find(C.exSats.begin(), C.exSats.end(),
-                  RinexSatID(-1,sat.system)) == C.exSats.end())
-               {LOG(INFO) << " Warning - System " << sit->first << " = "
-                  << sat.systemString() << " should be removed from the header.";}
+            if( (find(C.exSats.begin(), C.exSats.end(),
+                 RinexSatID(-1,sat.system)) == C.exSats.end()) // sys not excluded
+                 &&
+                (C.onlySats.size() > 0 &&
+                    find(C.onlySats.begin(), C.onlySats.end(), // only system
+                    RinexSatID(-1,sat.system)) != C.onlySats.end()) )
+               LOG(INFO) << " Warning - System " << sit->first << " = "
+                  << sat.systemString() << " should be removed from the header.";
          }
       }
+      
+      // look for obs types that are completely empty
+      // sit declared above map<std::string,vector<RinexObsID> >::const_iterator sit;
+      for(sit=Rhead.mapObsTypes.begin(); sit != Rhead.mapObsTypes.end(); ++sit) {
+         // loop over obs types in header - systems first
+         RinexSatID sat(sit->first);
+         map<char, vector<int> >::const_iterator totalsIter;
+         totalsIter = totals.find((sit->first)[0]);
 
+         // this vector is printed after "TOTAL" above
+         const vector<int>& totvec = totalsIter->second;
+
+         // compute grand total first - skip if this system has no data at all
+         for(i=0,k=0; k<totvec.size(); k++) i += totvec[k];
+         if(i == 0) continue;
+
+         for(k=0; k<totvec.size(); k++)
+            if(totvec[k] == 0) {
+               tag = string();
+               if(Rhead.version < 3) {
+                  RinexObsID obsid(sit->first+asString((sit->second)[k]));
+                  map<string,RinexObsID>::iterator it;
+                  for(it = Rhead.mapSysR2toR3ObsID[sit->first].begin();
+                      it != Rhead.mapSysR2toR3ObsID[sit->first].end(); ++it)
+                     if(it->second == obsid) {
+                        tag = string(", ") + it->first + string(" in ver.2");
+                        break;
+                     }
+               }
+               LOG(INFO) << " Warning - Obs type "
+                  << sit->first << asString((sit->second)[k])
+                  << " (" << sat.systemString()
+                  << " " << asString((sit->second)[k]) << tag
+                  << ") should be removed from header";
+            }
+      }
+         
       // failure due to critical error
       if(iret < 0) break;
 

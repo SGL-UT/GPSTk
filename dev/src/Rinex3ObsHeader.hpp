@@ -25,7 +25,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,13 +33,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -62,28 +62,6 @@ namespace gpstk
   /** @addtogroup Rinex3Obs */
   //@{
 
-
-   /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
-   struct Rinex3CorrInfo
-   {
-      std::string satSys,  ///< 1-char SV system (G/R/E/S)
-                  name,    ///< program name used to apply corrections
-                  source;  ///< source of corrections (URL)
-   };
-
-// Guards are here since an identical struct is used in RinexObsHeader and Rinex3NavHeader
-   #ifndef GPSTK_EXTRAWAVEFACT
-   #define GPSTK_EXTRAWAVEFACT
-   /// RINEX 2 extra "WAVELENGTH FACT" lines
-   struct ExtraWaveFact
-   {
-      /// List of Sats with this wavelength factor
-      std::vector<SatID> satList;
-      /// vector of wavelength factor values
-      short wavelengthFactor[2];
-   };
-   #endif  // GPSTK_EXTRAWAVEFACT
-
   /**
    * This class models the header for a RINEX 3 Observation File.
    * @sa gpstk::Rinex3ObsData and gpstk::Rinex3ObsStream.
@@ -95,7 +73,7 @@ namespace gpstk
    public:
 
       /// A Simple Constructor.
-      Rinex3ObsHeader() : valid(0)
+      Rinex3ObsHeader() : valid(0), validEoH(false)
          {}
 
       /// Clear (empty out) header
@@ -108,6 +86,7 @@ namespace gpstk
          wavelengthFactor[0] = wavelengthFactor[1] = 1;
          extraWaveFactList.clear();
          valid  = 0;
+         validEoH = false;
          numObs = 0;
          lastPRN.id = -1;
       }
@@ -143,8 +122,9 @@ namespace gpstk
       static const std::string stringSystemDCBSapplied; ///< "SYS / DCBS APPLIED"
       static const std::string stringSystemPCVSapplied; ///< "SYS / PCVS APPLIED"
       static const std::string stringSystemScaleFac;    ///< "SYS / SCALE FACTOR"
-      static const std::string stringSystemPhaseShift;  ///< "SYS / PHASE SHIFTS"
+      static const std::string stringSystemPhaseShift;  ///< "SYS / PHASE SHIFT"
       static const std::string stringGlonassSlotFreqNo; ///< "GLONASS SLOT / FRQ #"
+      static const std::string stringGlonassCodPhsBias; ///< "GLONASS COD/PHS/BIS"
       static const std::string stringLeapSeconds;       ///< "LEAP SECONDS"
       static const std::string stringNumSats;           ///< "# OF SATELLITES"
       static const std::string stringPrnObs;            ///< "PRN / # OF OBS"
@@ -159,11 +139,11 @@ namespace gpstk
          validComment           =        0x4, ///< "COMMENT"               optional
          validMarkerName        =        0x8, ///< "MARKER NAME"
          validMarkerNumber      =       0x10, ///< "MARKER NUMBER"         optional
-         validMarkerType        =       0x20, ///< "MARKER TYPE"           optional R3
+         validMarkerType        =       0x20, ///< "MARKER TYPE"                    R3
          validObserver          =       0x40, ///< "OBSERVER / AGENCY"
          validReceiver          =       0x80, ///< "REC # / TYPE / VERS"
          validAntennaType       =      0x100, ///< "ANT # / TYPE"
-         validAntennaPosition   =      0x200, ///< "APPROX POSITION XYZ"   optional R3+moving
+         validAntennaPosition   =      0x200, ///< "APPROX POSITION XYZ"   req except optional R3+moving
          validAntennaDeltaHEN   =      0x400, ///< "ANTENNA: DELTA H/E/N"
          validAntennaDeltaXYZ   =      0x800, ///< "ANTENNA: DELTA X/Y/Z"  optional R3
          validAntennaPhaseCtr   =     0x1000, ///< "ANTENNA: PHASECENTER"  optional R3
@@ -173,7 +153,7 @@ namespace gpstk
          validCenterOfMass      =    0x10000, ///< "CENTER OF MASS: XYZ"   optional R3
          validNumObs            =    0x20000, ///< "# / TYPES OF OBSERV"            R2 only
          validSystemObsType     =    0x20000, ///< "SYS / # / OBS TYPES"            R3
-         validWaveFact          =    0x40000, ///< "WAVELENGTH FACT L1/2"           R2 only
+         validWaveFact          =    0x40000, ///< "WAVELENGTH FACT L1/2"  optional R2 only
          validSigStrengthUnit   =    0x40000, ///< "SIGNAL STRENGTH UNIT"  optional R3
          validInterval          =    0x80000, ///< "INTERVAL"              optional
          validFirstTime         =   0x100000, ///< "TIME OF FIRST OBS"
@@ -182,20 +162,43 @@ namespace gpstk
          validSystemDCBSapplied =   0x800000, ///< "SYSTEM DCBS APPLIED"   optional R3
          validSystemPCVSapplied =  0x1000000, ///< "SYSTEM PCVS APPLIED"   optional R3
          validSystemScaleFac    =  0x2000000, ///< "SYSTEM SCALE FACTOR"   optional R3
-         validSystemPhaseShift  =  0x4000000, ///< "SYS / PHASE SHIFTS"             R3.01
-         validGlonassFreqNo     =  0x8000000, ///< "GLONASS SLOT / FRQ #"  optional R3.01
-         validLeapSeconds       = 0x10000000, ///< "LEAP SECONDS"          optional
-         validNumSats           = 0x20000000, ///< "# OF SATELLITES"       optional
-         validPrnObs            = 0x40000000, ///< "PRN / # OF OBS"        optional
-         validEoH               = 0x80000000, ///< "END OF HEADER"
-
+         validSystemPhaseShift  =  0x4000000, ///< "SYS / PHASE SHIFT"              R3.01,3.02
+         validGlonassFreqNo     =  0x8000000, ///< "GLONASS SLOT / FRQ #"           R3.01
+         validGlonassCodPhsBias = 0x10000000, ///< "GLONASS COD/PHS/BIS"            R3.02
+         validLeapSeconds       = 0x20000000, ///< "LEAP SECONDS"          optional
+         validNumSats           = 0x40000000, ///< "# OF SATELLITES"       optional
+         validPrnObs            = 0x80000000, ///< "PRN / # OF OBS"        optional
+         //do away with this  validEoH               =0x100000000, ///< "END OF HEADER"
+   
          /// This mask is for all required valid fields
-         allValid2 = 0x801207CB,
-         //allValid30 = 0x801207CB,  // case for static receivers - AntennaPosition present
-         allValid30 = 0x801205CB,    // case for moving receivers -- make default
-         allValid301 = 0x841205CB
+         allValid2              = 0x001207CB, // RINEX 2
+
+         //allValid30           = 0x001207EB, // RINEX 3.0 for static receivers - AntennaPosition present
+         allValid30             = 0x001205EB, // RINEX 3.0 for moving receivers -- make default
+
+         //allValid301            = 0x0C1205CB, // RINEX 3.01
+         //allValid302            = 0x1C1205CB, // RINEX 3.02
+         // NB 19Jun2013 MGEX data does not include GLONASS SLOT and GLONASS COD/PHS/BIS records
+         allValid301            = 0x041205CB, // RINEX 3.01
+         allValid302            = 0x041205CB, // RINEX 3.02
+      };
+   
+      /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
+      struct Rinex3CorrInfo
+      {
+         std::string satSys,  ///< 1-char SV system (G/R/E/S)
+                     name,    ///< program name used to apply corrections
+                     source;  ///< source of corrections (URL)
       };
 
+      /// RINEX 2 extra "WAVELENGTH FACT" lines
+      struct ExtraWaveFact
+      {
+         /// List of Sats with this wavelength factor
+         std::vector<SatID> satList;
+         /// vector of wavelength factor values
+         short wavelengthFactor[2];
+      };
 
       /// Storage for R2 <-> R3 conversion of obstypes during reallyGet/Put
       /// Vector of strings containing ver 2 obs types (e.g. "C1" "L2") defined in reallyGet;
@@ -255,10 +258,12 @@ namespace gpstk
       RinexObsID sysPhaseShiftObsID;               ///< save ObsID for cont. "PHASE SHIFT" R3.01
       std::map<std::string, std::map<RinexObsID, std::map<RinexSatID,double> > > sysPhaseShift;
       std::map<RinexSatID,int> GlonassFreqNo;      ///< "GLONASS SLOT / FRQ #"    (optional) R3.01
+      std::map<RinexObsID,double> GlonassCodePhaseBias; ///< "GLONASS COD/PHS/BIS"            R3.02
       int leapSeconds;                             ///< LEAP SECONDS              (optional)
       short numSVs;                                ///< # OF SATELLITES           (optional)
       std::map<RinexSatID,std::vector<int> > numObsForSat; ///< PRN / # OF OBS         (optional)
       unsigned long valid;                         ///< bits set when header rec.s present & valid
+      bool validEoH;                               ///< true if found END OF HEADER
       std::string satSysTemp,                      ///< save the syschar while reading ScaleFactor
                   satSysPrev;                      ///< recall the prev sat. sys for cont. lines
       int numObs,                                  ///< save OBS # / TYPES and Sys / SCALE FACTOR
@@ -306,7 +311,15 @@ namespace gpstk
 
       /// Return boolean : is this a valid Rinex header?
       bool isValid() const
-         { return ((valid & allValid30) == allValid30); }
+      {
+         if(!validEoH) return false;
+         unsigned long allValid;
+         if(     version < 3.00) allValid = allValid2;
+         else if(version < 3.01) allValid = allValid30;
+         else if(version < 3.02) allValid = allValid301;  
+         else                    allValid = allValid302;
+         return ((valid & allValid) == allValid);
+      }
 
       /// Compute map of obs types for use in writing version 2 header and data
       void PrepareVer2Write(void) throw();

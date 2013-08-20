@@ -542,8 +542,8 @@ void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
                const SatID& svid = oeIter->first;
                SvObsEpoch& soe = oeIter->second;
                
-               EngEphemeris ephTemp = bce.findEphemeris(svid, t);
-               short health =  ephTemp.getHealth();
+               GPSEphemeris ephTemp = bce.findEphemeris(svid, t);
+               short health =  ephTemp.health;
                if (health != 0)
                   obsEpoch.erase(oeIter++);
                else

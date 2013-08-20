@@ -69,7 +69,7 @@ namespace gpstk
 
       /// Default constructor
       Rinex3ObsStream()
-         : headerRead(false)
+         : headerRead(false), timesystem(TimeSystem::GPS)
             {};
 
 
@@ -80,7 +80,8 @@ namespace gpstk
        */
       Rinex3ObsStream( const char* fn,
                         std::ios::openmode mode = std::ios::in )
-         : FFTextStream(fn, mode), headerRead(false) {};
+         : FFTextStream(fn, mode), headerRead(false), timesystem(TimeSystem::GPS)
+         {};
 
 
       /** Common constructor.
@@ -90,7 +91,9 @@ namespace gpstk
        */
       Rinex3ObsStream( const std::string fn,
                         std::ios::openmode mode = std::ios::in )
-         : FFTextStream(fn.c_str(), mode), headerRead(false) {};
+         : FFTextStream(fn.c_str(), mode), headerRead(false),
+           timesystem(TimeSystem::GPS)
+         {};
 
 
       /// Destructor
@@ -108,6 +111,7 @@ namespace gpstk
          FFTextStream::open(fn, mode);
          headerRead = false;
          header = Rinex3ObsHeader();
+         timesystem = TimeSystem::GPS;
       }
 
 
@@ -126,6 +130,8 @@ namespace gpstk
       /// The header for this file.
       Rinex3ObsHeader header;
 
+      /// Time system for epochs in this file
+      TimeSystem timesystem;
 
       /// Check if the input stream is the kind of Rinex3ObsStream
       static bool IsRinex3ObsStream(std::istream& i)

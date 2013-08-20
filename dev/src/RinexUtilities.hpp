@@ -1,4 +1,5 @@
-#pragma ident "$Id$"
+/// @file RinexUtilities.hpp
+/// Miscellaneous RINEX-related utilities.
 
 //============================================================================
 //
@@ -35,11 +36,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file RinexUtilities.hpp
- * Miscellaneous RINEX-related utilities for use with geomatics lib.
- */
 
 #ifndef GPSTK_RINEX_UTILITIES_INCLUDE
 #define GPSTK_RINEX_UTILITIES_INCLUDE

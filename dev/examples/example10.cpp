@@ -161,7 +161,7 @@ int main(void)
       bceStore.addEphemeris(rNavData);
    }
 
-   bceStore.SearchPast();  // This is the default
+   bceStore.SearchUser();  // This is the default
 
    ////
 

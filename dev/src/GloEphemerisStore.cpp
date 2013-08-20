@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /**
  * @file GloEphemerisStore.cpp
  * Get GLONASS broadcast ephemeris data information
@@ -27,7 +25,6 @@
 //
 //============================================================================
 
-
 #include "GloEphemerisStore.hpp"
 #include "TimeString.hpp"
 
@@ -39,7 +36,6 @@ namespace gpstk
 
       // Add ephemeris information from a Rinex3NavData object.
    bool GloEphemerisStore::addEphemeris(const Rinex3NavData& data)
-      throw()
    {
 
          // If enabled, check SV health before entering here (health = 0 -> OK)
@@ -83,7 +79,6 @@ namespace gpstk
        */
    Xvt GloEphemerisStore::getXvt( const SatID& sat,
                                   const CommonTime& epoch ) const
-      throw( InvalidRequest )
    {
       // TD is this too strict?
       if(epoch.getTimeSystem() != initialTime.getTimeSystem())
@@ -168,33 +163,30 @@ namespace gpstk
        * given in km, km/s and km/(s*s), respectively.
        */
    void GloEphemerisStore::dump( std::ostream& s, short detail ) const
-      throw()
    {
-      static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
+      static const string fmt("%04Y/%02m/%02d %02H:%02M:%02S %P");
       s << "Dump of GloEphemerisStore:\n";
 
-      if (detail == 0 )
-      {
-        s << " Span is " << (initialTime == CommonTime::END_OF_TIME
-                                      ? "End_time" : printTime(initialTime, fmt))
-          << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
-                                      ? "Begin_time" : printTime(finalTime, fmt))
-          << " with " << pe.size() << " entries."
-          << std::endl;
-      }
-      else
-      {
-      if (pe.size()) s << "Dump every record:\nweek   sow      = year/mn/dy hr:mi:sc Sys Sat   "
-         << "X                   Y                   Z                   "
-         << "VX                  VY                  VZ                  "
-         << "AX                  AY                  AZ                  "
-         << "TauN                GammaN            MFtime Hlth fNo AgeInfo\n";
+      //if(detail == 0 ) {
+      s << " Span is " << (initialTime == CommonTime::END_OF_TIME
+                                    ? "End_time" : printTime(initialTime, fmt))
+        << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
+                                    ? "Begin_time" : printTime(finalTime, fmt))
+        << " with " << pe.size() << " entries; checkHealthFlag is "
+        << (checkHealthFlag ? "T":"F") << std::endl;
+
+      //}
+      //else
+      if(detail > 0) {
+         if(pe.size())
+            s << "Dump every record:\nweek   sow      = year/mn/dy hr:mi:sc Sys Sat   "
+            << "X                   Y                   Z                   "
+            << "VX                  VY                  VZ                  "
+            << "AX                  AY                  AZ                  "
+            << "TauN                GammaN            MFtime Hlth fNo AgeInfo\n";
 
          // Iterate through all items in the 'pe' GloEphMap
-        for( GloEphMap::const_iterator it = pe.begin();
-           it != pe.end();
-           ++it )
-        {
+         for( GloEphMap::const_iterator it = pe.begin(); it != pe.end(); ++it ) {
 
             // Then, iterate through corresponding 'TimeGloMap'
           for( TimeGloMap::const_iterator tgmIter = (*it).second.begin();
@@ -237,9 +229,10 @@ namespace gpstk
 
         }  // End of 'for( GloEphMap::const_iterator it = pe.begin(); ...'
 
-        s << "  End of GloEphemerisStore data." << std::endl << std::endl;
-
       }  // End of 'else', i.e., detail != 0
+
+      s << "  End of GloEphemerisStore data." << std::endl;
+
 
    }; // End of method 'GloEphemerisStore::dump()'
 
@@ -251,7 +244,6 @@ namespace gpstk
        */
    void GloEphemerisStore::edit( const CommonTime& tmin,
                                  const CommonTime& tmax )
-      throw()
    {
 
          // Create a working copy
@@ -310,7 +302,6 @@ namespace gpstk
       // @return The initial time
       // @throw InvalidRequest This is thrown if the object has no data.
    CommonTime GloEphemerisStore::getInitialTime() const
-      throw(InvalidRequest)
    {
 
          // Check if the data map is empty
@@ -330,7 +321,6 @@ namespace gpstk
       // @return The final time
       // @throw InvalidRequest This is thrown if the object has no data.
    CommonTime GloEphemerisStore::getFinalTime() const
-      throw(InvalidRequest)
    {
 
          // Check if the data map is empty
@@ -344,6 +334,31 @@ namespace gpstk
 
    }; // End of method 'GloEphemerisStore::getFinalTime()'
 
+   // Compute initial time for the given satellite
+   CommonTime GloEphemerisStore::getInitialTime(const SatID& sat) const
+   {
+      CommonTime ret(CommonTime::END_OF_TIME);
+      GloEphMap::const_iterator svmap = pe.find(sat);
+      if(svmap != pe.end()) {
+         const TimeGloMap& tgm = svmap->second;
+         TimeGloMap::const_iterator it = tgm.begin();
+         ret = it->first;
+      }
+      return ret;
+   }
+
+   // Compute final time for the given satellite
+   CommonTime GloEphemerisStore::getFinalTime(const SatID& sat) const
+   {
+      CommonTime ret(CommonTime::BEGINNING_OF_TIME);
+      GloEphMap::const_iterator svmap = pe.find(sat);
+      if(svmap != pe.end()) {
+         const TimeGloMap& tgm = svmap->second;
+         TimeGloMap::const_reverse_iterator rit = tgm.rbegin();
+         ret = rit->first;
+      }
+      return ret;
+   }
 
       /* Find the corresponding GLONASS ephemeris for the given epoch.
        *
@@ -355,9 +370,7 @@ namespace gpstk
        */
    const GloEphemeris& GloEphemerisStore::findEphemeris( const SatID& sat,
                                                 const CommonTime& epoch ) const
-      throw( InvalidRequest )
    {
-
          // Check that the given epoch is within the available time limits.
          // We have to add a margin of 15 minutes (900 seconds).
       if ( epoch <  (initialTime - 900.0) ||
@@ -416,7 +429,7 @@ namespace gpstk
 
 
       // Return true if the given SatID is present in the store
-   bool GloEphemerisStore::isPresent(const SatID& id) const throw()
+   bool GloEphemerisStore::isPresent(const SatID& id) const
    {
 
          // Look for the satellite in the 'pe' (GloEphMap) data structure.
@@ -436,7 +449,6 @@ namespace gpstk
 
 
    int GloEphemerisStore::addToList(std::list<GloEphemeris>& v) const
-      throw()
    {
       int n = 0;
       for(GloEphMap::const_iterator it = pe.begin(); it != pe.end(); ++it )

@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
          bool foundSome = false;
          for(i=1; i<33; i++) {            // for each PRN ...
             SatID sat(i,SatID::systemGPS);
-            try { EngEphemeris ee = BCEph.findEphemeris(sat, tt); }
+            try { GPSEphemeris ee = BCEph.findEphemeris(sat, tt); }
             catch(InvalidRequest& nef) { continue; }
 
             if(sp3header.satList.find(sat) == sp3header.satList.end()) {
@@ -260,7 +260,7 @@ int main(int argc, char *argv[])
             long iode;
             SatID sat(i,SatID::systemGPS);
             Xvt xvt;
-            EngEphemeris ee;
+            GPSEphemeris ee;
 
             try { ee = BCEph.findEphemeris(sat, tt); }
             catch(InvalidRequest& nef) { continue; }
@@ -285,7 +285,7 @@ int main(int argc, char *argv[])
             sp3data.clk = (xvt.clkdrift - ee.svRelativity(tt)) * 1000000.0;
 
             //if(version_out == 'c') for(j=0; j<4; j++) sp3data.sig[j]=...
-            iode = ee.getIODE();
+            iode = ee.IODE;
             if(IODEmap[sat] == -1) IODEmap[sat] = iode;
             if(IODEmap[sat] != iode) {
                sp3data.orbitManeuverFlag = true;

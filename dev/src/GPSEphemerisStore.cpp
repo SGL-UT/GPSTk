@@ -1,4 +1,8 @@
-#pragma ident "$Id$"
+/// @file GPSEphemerisStore.cpp
+/// Class for storing and/or computing position, velocity, and clock data using
+/// tables of <SatID, <time, GPSEphemeris> >. Inherits OrbitEphStore, which includes
+/// initial and final times and search methods. GPSEphemeris inherits OrbitEph and
+/// adds health and accuracy information, which this class makes use of.
 
 //============================================================================
 //
@@ -17,7 +21,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -25,423 +29,259 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file GPSEphemerisStore.cpp
- * Store GPS broadcast ephemeris information, and access by satellite and time
- */
 
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 
-#include "StringUtils.hpp"
 #include "GPSEphemerisStore.hpp"
-#include "MathBase.hpp"
-#include "CivilTime.hpp"
-#include "TimeString.hpp"
+#include "GPSWeekSecond.hpp"
 
 using namespace std;
-using namespace gpstk;
-using gpstk::StringUtils::asString;
+using namespace gpstk::StringUtils;
 
 namespace gpstk
 {
-
-//--------------------------------------------------------------------------
-
-   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
+   //-----------------------------------------------------------------------------
+   // See notes in the .hpp. This function is designed to be called AFTER all elements
+   // are loaded. It can then make adjustments to time relationships based on
+   // inter-comparisons between sets of elements that cannot be performed until the
+   // ordering has been determined.
+   void GPSEphemerisStore::rationalize(void)
    {
-      short ref;
-      return getXvt(sat, t, ref);
-   }
+      // loop over satellites
+      SatTableMap::iterator it;
+      for (it = satTables.begin(); it != satTables.end(); it++) {
+         TimeOrbitEphTable& table = it->second;
+         TimeOrbitEphTable::iterator ei;
+         TimeOrbitEphTable::iterator eiPrev;
+         bool begin = true;
+         double previousOffset = 0.0;
+         bool previousIsOffset = false;
+         bool currentIsOffset = false;
 
-//--------------------------------------------------------------------------
+         //string tForm = "%02H:%02M:%02S";
 
-   Xvt GPSEphemerisStore::getXvt(const SatID& sat, const CommonTime& t, short& ref) const
-      throw( InvalidRequest )
-   {
-      try
-      {
-         // test for GPS satellite system in sat?
-         const EngEphemeris& eph = findEphemeris(sat,t);
-         ref = eph.getIODC();
-         Xvt sv = eph.svXvt(t);
-         return sv;
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
-   }
-
-//--------------------------------------------------------------------------
-
-   const EngEphemeris&
-   GPSEphemerisStore::findEphemeris(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      try
-      {
-         validSatSystem(sat);
-
-         return strictMethod ? findUserEphemeris(sat, t) : findNearEphemeris(sat, t);
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
-   }
-
-//--------------------------------------------------------------------------
-
-   short GPSEphemerisStore::getSatHealth(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      try
-      {
-         validSatSystem(sat);
-
-         // test for GPS satellite system in sat?
-         const EngEphemeris& eph = findEphemeris(sat, t);
-         short health = eph.getHealth();
-         return health;
-      }
-      catch(InvalidRequest& ir)
-      {
-         GPSTK_RETHROW(ir);
-      }
-   } // end of GPSEphemerisStore::getHealth()
-
-//--------------------------------------------------------------------------
-
-   void GPSEphemerisStore::dump(std::ostream& s, short detail) const
-      throw()
-   {
-      UBEMap::const_iterator it;
-      static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
-
-      s << "Dump of GPSEphemerisStore:\n";
-      if (detail==0)
-      {
-         s << " Span is " << (initialTime == CommonTime::END_OF_TIME
-                                      ? "End_time" : printTime(initialTime,fmt))
-           << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
-                                      ? "Begin_time" : printTime(finalTime,fmt))
-           << " with " << ubeSize() << " entries."
-           << std::endl;
-      } // end if-block
-      else
-      {
-         for (it = ube.begin(); it != ube.end(); it++)
+         // Scan the map for this SV looking for uploads.  Uploads are identifed by
+         // Toe values that are offset from an even hour.
+         OrbitEph* oePrev = 0;
+         for (ei = table.begin(); ei != table.end(); ei++)
          {
-            const EngEphMap& em = it->second;
-            s << "  BCE map for satellite " << it->first
-              << " has " << em.size() << " entries." << std::endl;
-            EngEphMap::const_iterator ei;
+            currentIsOffset = false;      // start with this assumption
+            OrbitEph* oe = ei->second;
+            long Toe = (long) (static_cast<GPSWeekSecond> (oe->ctToe)).sow;
+            double currentOffset = Toe % 3600;
 
-            for (ei=em.begin(); ei != em.end(); ei++) {
-               if (detail==1){
-                  s << "PRN " << setw(2) << it->first
-                    << " TOE " << printTime(ei->second.getEpochTime(),"%4F %10.3g %P")
-                    << " TOC " << fixed << setw(10) << setprecision(3)
-                    << ei->second.getToc()
-                    << " HOW " << setw(10) << ei->second.getHOWTime(2)
-                    << " KEY " << printTime(ei->first,"%4F %10.3g %P")
-                    << std::endl;}
-               else
-                  ei->second.dump(s);
+            //cout << "Top of For Loop.  oe->beginValid = "
+            // << printTime(oe->beginValid,tForm);
+            //cout << ", currentOffset =" << currentOffset << endl;
 
-            } //end inner for-loop
+            if ( (currentOffset)!=0) {
+               currentIsOffset = true;
 
-         } // end outer for-loop
-   
-         s << "  End of GPSEphemerisStore data." << std::endl << std::endl;
+               //cout << "*** Found an offset" << endl;
+               //cout << " currentIsOffest: " << currentIsOffset;
+               //cout << " previousIsOffest: " << previousIsOffset;
+               //cout << " current, previous Offset = " << currentOffset
+               // << ", " << previousOffset << endl;
 
-      } //end else-block
+               // If this set is offset AND the previous set is offset AND
+               // the two offsets are the same, then this is the SECOND
+               // set of elements in an upload.  In that case the OrbitEph
+               // load routines have conservatively set the beginning time
+               // of validity to the transmit time because there was no
+               // way to prove this was the second data set.  Since we can
+               // now prove its second by observing the ordering, we can
+               // adjust the beginning of validity as needed.
+               // Since the algorithm is dependent on the message
+               // format, this must be done in OrbitEph.
+               // IMPORTANT NOTE:  We also need to adjust the
+               // key in the map, which is based on the beginning
+               // of validity.  However, we can't do it in this
+               // loop without destroying the integrity of the
+               // iterator.  This is handled later in a second
+               // loop.  See notes on the second loop, below.
+               if (previousIsOffset &&
+                   currentIsOffset  &&
+                   currentOffset==previousOffset)
+               {
+                  //cout << "*** Adjusting beginValid" << endl;
+                  oe->adjustValidity();
+               }
 
-   } // end GPSEphemerisStore::dump
+                  // If the previous set is not offset, then
+                  // we've found an upload
+                  // For that matter, if previous IS offset, but
+                  // the current offset is different than the
+                  // previous, then it is an upload.
+               if (!previousIsOffset ||
+                   (previousIsOffset && (currentOffset!=previousOffset) ) )
+               {
+                     // Record the offset for later reference
+                  previousOffset = currentOffset;
 
-//--------------------------------------------------------------------------
-// Keeps only one ephemeris with a given IODC/time.
-// It should keep the one with the latest transmit time.
-//--------------------------------------------------------------------------
+                     // Adjust the ending time of validity of any elements
+                     // broadcast BEFORE the new upload such that they
+                     // end at the beginning validity of the upload.
+                     // That beginning validity value should already be
+                     // set to the transmit time (or earliest transmit
+                     // time found) by OrbitEph and GPSEphemerisStore.addOrbitEph( )
+                     // This adjustment is consistent with the IS-GPS-XXX
+                     // rules that a new upload invalidates previous elements.
+                     // Note that this may be necessary for more than one
+                     // preceding set of elements.
+                  if (!begin)
+                  {
+                     //cout << "*** Adjusting endValid Times" << endl;
+                     TimeOrbitEphTable::iterator ri;
+                     // We KNOW it exists in the map
+                     ri = table.find(oePrev->beginValid);
+                     bool done = false;
+                     while (!done)
+                     {
+                        OrbitEph* oeRev = ri->second;
+                        //cout << "Testing Toe of " << printTime(oeRev->ctToe,"%02H:%02M:%02S");
+                        //cout << " with endValid of " << printTime(oeRev->endValid,"%02H:%02M:%02S") << endl;
 
-   bool GPSEphemerisStore::addEphemeris(const EngEphemeris& eph)
-      throw()
-   {
-      // if not healthy and taking only healthy, skip this one
-      if(eph.getHealth() != 0 && onlyHealthy)
-         return false;
+                           // If the current set of elements has an ending
+                           // validity prior to the upload, then do NOT
+                           // adjust the ending and set done to true.
+                        if (oeRev->endValid <= oe->beginValid) done = true;
 
-      bool rc = false;
-      CommonTime t = eph.getEphemerisEpoch();
-      t -= 0.5*3600.0*eph.getFitInterval();
+                           // Otherwise, adjust the ending validity to
+                           // match the begin of the upload.
+                         else oeRev->endValid = oe->beginValid;
 
-      CommonTime endEff(0.L);
-      endEff = eph.getEphemerisEpoch() + 0.5*3600.0*eph.getFitInterval();
+                           // If we've reached the beginning of the map, stop.
+                           // Otherwise, decrement and test again.
+                        if (ri!=table.begin()) ri--;
+                         else done = true;
+                     }
+                  }
+               }
+            }
 
-      EngEphMap& eem = ube[eph.getPRNID()];
-      EngEphMap::iterator sfi = eem.find(t);
+               // Update condition flags for next loop
+            previousIsOffset = currentIsOffset;
+            oePrev = oe;           // May need this for next loop.
+            begin = false;
+            //cout << "Bottom of For loop.  currentIsOffset: " << currentIsOffset <<
+            //        ", previousIsOffset: " << previousIsOffset << endl;
+         } //end inner for-loop
 
-      if ( sfi == eem.end())
-      {
-         eem[t] = eph;
-         rc = true;
-      }
-      else
-      {
-         // Store the new eph only if it has a later transmit time
-
-         EngEphemeris& current = sfi->second;
-
-         if (eph.getTransmitTime() > current.getTransmitTime())
+            // The preceding process has left some elements in a condition
+            // when the beginValid value != the key in the map.  This
+            // must be addressed, but the map key is a const (by definition).
+            // We have to search the map for these disagreements.  When found,
+            // the offending item need to be copied out of the map, the
+            // existing entry deleted, the item re-entered with the new key.
+            // Since it is unsafe to modify a map while traversing the map,
+            // each time this happens, we have to reset the loop process.
+            //
+            // NOTE: Simplistically, we could restart the loop at the
+            // beginning each time.  HOWEVER, we sometimes load a long
+            // period in a map (e.g. a year).  At one upload/day, that
+            // would mean ~365 times, each time one day deeper into the map.
+            // As an alternate, we use the variable loopStart to note how
+            // far we scanned prior to finding a problem and manipulating
+            // the map.  Then we can restart at that point.
+         bool done = false;
+         CommonTime loopStart = CommonTime::BEGINNING_OF_TIME;
+         while (!done)
          {
-            //if (eph.getIODC() != current.getIODC())
-            //cerr << "Weird: prn:" << setw(2) << eph.getPRNID()
-            //<< ", Toe:" << eph.getToe()
-            //<< ", New IODC:" << eph.getIODC()
-            //<< ", New TTx:" << eph.getTot()
-            //<< ", Old IODC:" << current.getIODC()
-            //<< ", Old TTx:" << current.getTot()
-            //<< endl;
-            current = eph;
-            rc = true;
-         }
-      }
+            ei = table.lower_bound(loopStart);
+            while (ei!=table.end())
+            {
+              OrbitEph* oe = ei->second;
+              if (ei->first!=oe->beginValid)
+              {
+                 OrbitEph* oeAdj= oe->clone();       // Adjustment was done in
+                                                   // first loop above.
+                 delete ei->second;                // oe becomes invalid.
+                 table.erase(ei);                     // Remove the map entry.
+                 table[oeAdj->beginValid] = oeAdj->clone(); // Add back to map
+                 break;            // exit this while loop without finishing
+              }
+              loopStart = ei->first; // Scanned this far successfully, so
+                                     // save this as a potential restart point.
+              ei++;
+              if (ei==table.end()) done = true;   // Successfully completed
+                                               // the loop w/o finding any
+                                               // mismatches.  We're done.
+            }
+        }
 
-      // In any case, update the initial and final times
+           // Well, not quite done.  We need to update the initial/final
+           // times of the map.
+        const TimeOrbitEphTable::iterator Cei = table.begin( );
+        initialTime = Cei->second->beginValid;
+        const TimeOrbitEphTable::reverse_iterator rCei = table.rbegin();
+        finalTime   = rCei->second->endValid;
 
-
-      if (rc)
-      {
-        if (t<initialTime)
-          initialTime = t;
-        if (endEff>finalTime)
-          finalTime = endEff;
-      }
-      return rc;
+      } // end outer for-loop
    }
 
-//-----------------------------------------------------------------------------
-
-   void GPSEphemerisStore::edit(const CommonTime& tmin, const CommonTime& tmax)
-      throw()
+   //-----------------------------------------------------------------------------
+   // Add a GPSEphemeris object to this collection, converting the given RINEX 3
+   // navigation data. Returns false if the satellite is not GPS.
+   // @param rnd Rinex3NavData
+   // @return true if GPSEphemeris was added, false otherwise
+   // @return pointer to the new object, NULL if data could not be added.
+   OrbitEph* GPSEphemerisStore::addEphemeris(const Rinex3NavData& rnd)
    {
-      for(UBEMap::iterator i = ube.begin(); i != ube.end(); i++)
-      {
-         EngEphMap& eMap = i->second;
+      try {
+         if(rnd.satSys != "G")                  // ignore non-GPS
+            return NULL;
 
-         EngEphMap::iterator lower = eMap.lower_bound(tmin);
-         if (lower != eMap.begin())
-            eMap.erase(eMap.begin(), lower);
+         GPSEphemeris *ptr = new GPSEphemeris();// create a new object
 
-         EngEphMap::iterator upper = eMap.upper_bound(tmax);
-         if (upper != eMap.end())
-            eMap.erase(upper, eMap.end());
+         if(!ptr->load(rnd))                    // load it
+            return NULL;
+
+         // and add it to the store
+         OrbitEph *oeptr = dynamic_cast<OrbitEph*>(ptr);
+         OrbitEphStore::addEphemeris(oeptr);
+
+         return oeptr;
       }
-
-      initialTime = tmin;
-      finalTime   = tmax;
+      catch(Exception& e) { GPSTK_RETHROW(e); }
    }
 
-//-----------------------------------------------------------------------------
-
-   unsigned GPSEphemerisStore::ubeSize() const
-      throw()
+   //-----------------------------------------------------------------------------
+   // Add all ephemerides to an existing list<GPSEphemeris>.
+   // @return the number of ephemerides added.
+   int GPSEphemerisStore::addToList(list<GPSEphemeris>& gpslist, const int PRN) const
    {
-      unsigned counter = 0;
-      for(UBEMap::const_iterator i = ube.begin(); i != ube.end(); i++)
-         counter += i->second.size();
-      return counter;
-   }
+      // get the list from OrbitEphStore
+      list<OrbitEph*> oelst;
+      OrbitEphStore::addToList(oelst);
 
-//-----------------------------------------------------------------------------
-
-   const EngEphemeris&
-   GPSEphemerisStore::findUserEphemeris(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      validSatSystem(sat);
-
-      UBEMap::const_iterator prn_i = ube.find(sat.id);
-      if (prn_i == ube.end())
-      {
-         InvalidRequest e("No ephemeris for satellite " + asString(sat));
-         GPSTK_THROW(e);
-      }
-
-      const EngEphMap& em = prn_i->second;
-      CommonTime t1, t2, Tot = CommonTime::BEGINNING_OF_TIME;
-      EngEphMap::const_iterator it = em.end();
-
-      // Find eph with (Toe-(fitint/2)) > t - 4 hours
-      // Use 4 hours b/c it's the default fit interval.
-      // Backup one ephemeris to make sure you get the
-      // correct one in case of fit intervals greater 
-      // than 4 hours.
-      EngEphMap::const_iterator ei = em.upper_bound(t - 4 * 3600); 
-      if (!em.empty() && ei != em.begin() )
-      {
-         ei--;
-      }
-      
-      for (; ei != em.end(); ei++)
-      {
-         const EngEphemeris& current = ei->second;
-         // t1 = Toe-(fitint / 2)
-         t1 = ei->first;
-         // t2 = HOW time
-         t2 = current.getTransmitTime();
-
-         // Ephemerides are ordered by fit interval.  
-         // If the start of the fit interval is in the future, 
-         // this and any more ephemerides are not the one you are
-         // looking for.
-         if( t1 > t ) 
+      // pull out the GPS ones
+      int n(0);
+      list<OrbitEph*>::const_iterator it;
+      for(it = oelst.begin(); it != oelst.end(); ++it) {
+         OrbitEph *ptr = *it;
+         if((ptr->satID).system == SatID::systemGPS &&
+            (PRN == 0 || (ptr->satID).id == PRN))
          {
-            break;
-         }
-         
-         double dt1 = t - t1;
-         double dt2 = t - t2;
-//cout << "time t " << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
-//cout << "time t1 " << (static_cast<CivilTime>(t1)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
-//cout << "time t2 " << (static_cast<CivilTime>(t2)).printf("%02m/%02d/%04Y %02H:%02M:%02S") << " // ";
-//cout << "dt1 " << fixed << setprecision(3) << dt1 << " and dt2 " << dt2 << endl;
-         if (dt1 >= 0 &&                           // t is after start of fit interval
-             dt1 < current.getFitInterval() * 3600 &&  // t is within the fit interval
-             dt2 >= 0 &&                           // t is after Tot
-             t2 > Tot )                            // this eph has the latest Tot
-         {
-            it = ei;
-            Tot = t2;
-         }
-      }
-
-      if (it == em.end())
-      {
-         string mess = "No eph found for satellite " + asString(sat) + " at "
-            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
-         InvalidRequest e(mess);
-         GPSTK_THROW(e);
-      }
-
-      return it->second;
-   }
-
-//-----------------------------------------------------------------------------
-
-   const EngEphemeris&
-   GPSEphemerisStore::findNearEphemeris(const SatID& sat, const CommonTime& t) const
-      throw( InvalidRequest )
-   {
-      validSatSystem(sat);
-
-      UBEMap::const_iterator prn_i = ube.find(sat.id);
-      if (prn_i == ube.end())
-      {
-         InvalidRequest e("No ephemeris for satellite " + asString(sat));
-         GPSTK_THROW(e);
-      }
-
-      const EngEphMap& em = prn_i->second;
-      double dt2min = -1;
-      CommonTime tstart, how;
-      EngEphMap::const_iterator it = em.end();
-
-      // Find eph with (Toe-(fitint/2)) > t - 4 hours
-      // Use 4 hours b/c it's the default fit interval.
-      // Backup one ephemeris to make sure you get the
-      // correct one in case of fit intervals greater 
-      // than 4 hours.
-      EngEphMap::const_iterator ei = em.upper_bound(t - 4 * 3600); 
-      if (!em.empty() && ei != em.begin() )
-      {
-         ei--;
-      }
-      
-      for (; ei != em.end(); ei++)
-      {
-         const EngEphemeris& current = ei->second;
-         // tstart = Toe-(fitint / 2)
-         tstart = ei->first;
-         // how = HOW time
-         how = current.getTransmitTime();
-
-         // Ephemerides are ordered by time of start of fit interval.  
-         // If the start of the fit interval is in the future, 
-         // this and any more ephemerides are not the one you are
-         // looking for.
-         if( tstart > t ) break;
-         
-         double dt1 = t - tstart;
-         double dt2 = t - how;
-         if (dt1 >= 0 &&                           // t is after start of fit interval
-             dt1 <= current.getFitInterval()*3600 &&  // t is within the fit interval
-             (dt2min == -1 || fabs(dt2) < dt2min))  // t is closest to HOW
-         {
-            it = ei;
-            dt2min = fabs(dt2);
-         }
-      }
-
-      if (it == em.end())
-      {
-         string mess = "No eph found for satellite " + asString(sat) + " at "
-            + (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y %02H:%02M:%02S %P");
-         InvalidRequest e(mess);
-         GPSTK_THROW(e);
-      }
-      return it->second;
-   }
-
-//-----------------------------------------------------------------------------
-
-   int GPSEphemerisStore::addToList(std::list<EngEphemeris>& v) const
-      throw()
-   {
-      int n = 0;
-      UBEMap::const_iterator prn_i;
-      for (prn_i = ube.begin(); prn_i != ube.end(); prn_i++)
-      {
-         const EngEphMap& em = prn_i->second;
-         EngEphMap::const_iterator ei;
-         for (ei = em.begin(); ei != em.end(); ei++)
-         {
-            v.push_back(ei->second);
+            GPSEphemeris *gpsptr = dynamic_cast<GPSEphemeris*>(ptr);
+            GPSEphemeris gpseph(*gpsptr);
+            gpslist.push_back(gpseph);
             n++;
          }
       }
+
       return n;
    }
 
-//-----------------------------------------------------------------------------
-
-   const GPSEphemerisStore::EngEphMap&
-   GPSEphemerisStore::getEphMap( const SatID& sat ) const
-      throw( InvalidRequest )
-   {
-      validSatSystem(sat);
-
-      UBEMap::const_iterator prn_i = ube.find(sat.id);
-      if (prn_i == ube.end())
-      {
-         InvalidRequest e("No ephemeris for satellite " + asString(sat));
-         GPSTK_THROW(e);
-      }
-      return(prn_i->second);
-   }
-   
 } // namespace

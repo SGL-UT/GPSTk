@@ -69,15 +69,16 @@ namespace gpstk
       vector<double> vWeight;
       vector<SatID> vAvailableSV;
       vector<SatID> vRejectedSV;
-      EngEphemeris engEph;
+      //EngEphemeris engEph;
       bool validFlag(true);
 
       for (i=0; i<N; i++)
       {
          try
          {
-            engEph = bcEph.findEphemeris(Satellites(i), time);
-            iura = engEph.getAccFlag();
+            GPSEphemeris engEph = bcEph.findEphemeris(Satellites(i), time);
+            //iura = engEph.getAccFlag();
+            iura = engEph.accuracyFlag;
          }
          catch(...)
          {

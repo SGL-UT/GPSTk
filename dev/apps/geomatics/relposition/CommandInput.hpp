@@ -83,7 +83,6 @@ public:
       // for configuration of pseudorange solution
    double PRSrmsLimit;
    double PRSslopeLimit;
-   bool PRSalgebra;
    //bool PRSresidCrit;      // no
    //bool PRSreturnatonce    // no
    int PRSnIter;

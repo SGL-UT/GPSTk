@@ -27,243 +27,116 @@
 
 #include <iostream>
 #include <string>
-#include <map>
 
-#include "Exception.hpp"
+namespace gpstk {
 
-namespace gpstk{
-   
-   /**
-    * Coordinate Reference Frame Class
-    * 
-    * The ReferenceFrame class defines what is essentially a smart enum which
-    * can be expanded at runtime that labels classes such as position and
-    * Xvt with what coordinate reference frame is used to derive their
-    * location on the earth.
-    */
-   
-   class ReferenceFrame{
-      public:
-      
-         ///Defines a set of known ReferenceFrame values.
-      enum FramesEnum{
-         Unknown = 0,   /**< Reference frame is unknown*/
-         WGS84,   /**< The WGS84 Reference Frame*/
-         PZ90   /**< The PZ90 Reference Frame*/
+   /// This class encapsulates ECEF reference systems or frames, with std::string I/O.
+   class ReferenceFrame
+   {
+   public:
+
+      /// list of reference frames supported by this class
+      enum Frames
+      {
+         // add new frames BEFORE count, then add to Strings[] in ReferenceFrame.cpp
+         // and make parallel to this enum.
+
+         // Unknown MUST BE FIRST, and MUST = 0
+         Unknown=0,  ///< unknown frame
+         WGS84,      ///< WGS84, assumed to be the latest version
+         WGS84G730,  ///< WGS84, GPS week 730 version
+         WGS84G873,  ///< WGS84, GPS week 873 version
+         WGS84G1150, ///< WGS84, GPS week 1150 version
+         ITRF,       ///< ITRF, assumed to be the latest version
+         PZ90,       ///< PZ90 (GLONASS)
+         PZ90KGS,    ///< PZ90 the "original"
+         // count MUST BE LAST
+         count        ///< the number of frames - not a frame
       };
-      
-      /**
-       * Create a new ReferenceFrame with the specified FramesEnum.
-       * 
-       * @param e The FramesEnum of the new ReferenceFrame.
-       */
-         //This is needed for some reason, without it you get undefined reference errors
-         //when compiling.
-      ReferenceFrame(FramesEnum e);
-      
-      /**
-       * Create a new ReferenceFrame with the specified index/FramesEnum.
-       * 
-       * If the specified index is greater than the size of the current names map,
-       * this constructor sets itself to ReferenceFrame::Unknown.
-       * 
-       * @param index The FramesEnum or int index of the new ReferenceFrame.
-       */
-      ReferenceFrame(int index = 0);
-      
-      /**
-       * Creates a new ReferenceFrame and looks up the given name in the names map.
-       * 
-       * If the the given name does not exist, the ReferenceFrame is set to
-       * ReferenceFrame::Unknown.
-       * 
-       * @param str A c-string to look up.
-       */
-      ReferenceFrame(const char str[]);
-      
-      /**
-       * Creates a new ReferenceFrame and looks up the given name in the names map.
-       * 
-       * If the given name does not exist, this constructor sets itself to
-       * ReferenceFrame::Unknown.
-       * 
-       * @param str The name of the ReferenceFrame to look up in the names map.
-       */
-      ReferenceFrame(const std::string str);
-      
-      /**
-       * Virtual Destructor, does nothing.
-       */
-      virtual ~ReferenceFrame() {   };
-      
-      /**
-       * Sets the current ReferenceFrame to the index/FramesEnum specified.
-       * 
-       * If the index/FramesEnum given is outside the current map bounds, this
-       * ReferenceFrame is set to ReferenceFrame::Unknown.
-       * 
-       * @param index The index/FramesEnum to set this ReferenceFrame to.
-       */
-      void setReferenceFrame(const int index);
-      
-      /**
-       * Sets the current ReferenceFrame to the string specified.
-       * 
-       * If the string does not exist in the names map, this ReferenceFrame is
-       * set to ReferenceFrame::Unknown.
-       * 
-       * @param name The c-string name of the ReferenceFrame to set this to.
-       */
-      void setReferenceFrame(const char name[]);
-      
-      /**
-       * Sets the current ReferenceFrame to the string specified.
-       * 
-       * If the string does not exist in the names map, this ReferenceFrame is
-       * set to ReferenceFrame::Unknown.
-       */
-      void setReferenceFrame(const std::string& name);
-      
-      /**
-       * Gets the current value of this ReferenceFrame and returns it.
-       * 
-       * @return The FramesEnum associated with this ReferenceFrame.
-       */
-      FramesEnum getFrame() const
-         throw();
-      
-      /**
-       * Gets the name of this ReferenceFrame from the names map.
-       * 
-       * @return The string from the names map that corresponds to the value of this ReferenceFrame.
-       */
-      std::string& asString() const;
-      
-      /**
-       * Creates a new entry in the names map.
-       * 
-       * This effectively extends the ReferenceFrame enum at runtime for the duration of
-       * the program. If the given name already exists, this method does not add a new
-       * entry and simply returns the existing value.
-       * 
-       * @param str The c-string name of the ReferenceFrame to create.
-       * 
-       * @return A reference to the ReferenceFrame after creation.
-       */
-      ReferenceFrame& createReferenceFrame(const char str[]);
-      
-      /**
-       * Creates a new entry in the names map.
-       * 
-       * This effectively extends the ReferenceFrame enum at runtime for the duration of
-       * the program. If the given name already exists, this method does not add a new
-       * entry and simply returns the existing value.
-       * 
-       * @param name The name of the ReferenceFrame value to create.
-       * 
-       * @return A reference to the new ReferenceFrame after creation.
-       */
-      ReferenceFrame& createReferenceFrame(std::string& name);
-      
-      /**
-       * Compares the frame value of both ReferenceFrames for equality.
-       * 
-       * Two ReferenceFrames are considered to be equal if the integer value of thier
-       * FramesEnum is the same.
-       * 
-       * @param right The ReferenceFrame to compare to.
-       * 
-       * @return true if the right ReferenceFrame has the same FramesEnum value.
-       */
-      bool operator==(const ReferenceFrame& right) const
-         throw();
-      
-      /**
-       * Compares the frame value of both ReferenceFrames for inequality.
-       * 
-       * This is the equivalent to !( this == right )
-       * 
-       * @param right The ReferenceFrame to compare to.
-       * 
-       * @return true if the right ReferenceFrame does NOT have the same FramesEnum value.
-       */
-      bool operator!=(const ReferenceFrame& right) const
-         throw();
-      
-      /**
-       * Checks if this ReferenceFrame's value is greater than the right's value.
-       * 
-       * @param right The ReferenceFrame to compare to.
-       * 
-       * @return true if this ReferenceFrame's FrameEnum value is greater than the right's value.
-       */
-      bool operator>(const ReferenceFrame& right) const
-         throw();
-      
-      /**
-       * Checks if this ReferenceFrame's value is less than the right's value.
-       * 
-       * @param right The ReferenceFrame to compare to.
-       * 
-       * @return true if this ReferenceFrame's FrameEnum value is less than the right's value.
-       */
-      bool operator<(const ReferenceFrame& right) const
-         throw();
-      
-      /**
-       * Checks if this ReferenceFrame's value is greater than or equal to the right's value.
-       * 
-       * @param right The ReferenceFrame to compare to.
-       * 
-       * @return true if this ReferenceFrame's FrameEnum value is greater than or equal to the right's value.
-       */
-      bool operator>=(const ReferenceFrame& right) const
-         throw();
-      
-      /**
-       * Checks if this ReferenceFrame's value is less than or equal to the right's value.
-       * 
-       * @param right The ReferenceFrame to compare to.
-       * 
-       * @return true if this ReferenceFrame's FrameEnum value is less than or equal to the right's value.
-       */
-      bool operator<=(const ReferenceFrame& right) const
-         throw();
-      
-      private:
-      /**
-       * Sets up the static names map.
-       * 
-       * This method adds the default map values to the names map. It should 
-       * not be run directly.
-       */
-      static bool initialize();
-      static bool initFlag;
 
-      /**
-       * The FramesEnum value of this ReferenceFrame.
-       * 
-       * This value represents which frame this ReferenceFrame is. It is also used
-       * as the index to it's name in the names map.
-       */
-      FramesEnum frame;
-      /**
-       * The static map of ReferenceFrame names.
-       * 
-       * This map is used in all bounds checking such that 
-       */
-      static std::map<FramesEnum, std::string> names;
-   };   //End of ReferenceFrame class
+      /// Constructor, including empty constructor
+      ReferenceFrame(Frames f=Unknown) throw()
+      {
+         if(f < 0 || f >= count)
+            frame = Unknown;
+         else
+            frame = f;
+      }
+
+      /// Constructor from string
+      ReferenceFrame(const std::string str) throw();
+
+      // TD is this required?
+      ///// Constructor from int
+      //ReferenceFrame(int i) throw()
+      //{
+      //   if(i < 0 || i >= count)
+      //      frame = Unknown;
+      //   else
+      //      frame = static_cast<Frames>(i);
+      //}
+
+      // copy constructor and operator= defined by the compiler
+
+      /// Define using input value of Frames enum.
+      void setReferenceFrame(const Frames& f) throw();
+
+      /// Return the value of Frames enum for this object.
+      Frames getReferenceFrame() const throw()
+      { return frame; }
+
+      /// Return std::string for each system (these strings are const and static).
+      /// @return std::string description of the frame.
+      std::string asString() const throw()
+      { return Strings[frame]; }
+
+      /// define system based on input string
+      /// @param str input std::string, expected to match output string for a given
+      /// frame.
+      void fromString(const std::string str) throw()
+      { frame = ReferenceFrame(str).frame; }
+
+      /// boolean operator==
+      bool operator==(const ReferenceFrame& right) const throw()
+      { return frame == right.frame; }
+
+      /// boolean operator< (used by STL for sorting)
+      bool operator<(const ReferenceFrame& right) const throw()
+      { return frame < right.frame; }
+
+      // the rest follow from Boolean algebra...
+      /// boolean operator!=
+      bool operator!=(const ReferenceFrame& right) const throw()
+      { return !operator==(right); }
+
+      /// boolean operator>=
+      bool operator>=(const ReferenceFrame& right) const throw()
+      { return !operator<(right); }
+
+      /// boolean operator<=
+      bool operator<=(const ReferenceFrame& right) const throw()
+      { return (operator<(right) || operator==(right)); }
+
+      /// boolean operator>
+      bool operator>(const ReferenceFrame& right) const throw()
+      { return (!operator<(right) && !operator==(right)); }
+
+   private:
+
+      /// this reference frame == element of Frames enum
+      Frames frame;
+
+      /// set of string labels for Frames; MUST be parallel to enum Frames
+      static const std::string Strings[];
+
+   }; // end ReferenceFrame class
    
-   /**
-    * Outputs the name of this ReferenceFrame to the given ostream.
-    * 
-    * @param os The output stream to print to.
-    * @param rf The ReferenceFrame to print to os.
-    * 
-    * @return The reference to the ostream passed to this operator.
-    */
-   std::ostream& operator<<(std::ostream& os, const ReferenceFrame& rf);
-}   //End of gpstk namespace
+   /// Write name (asString()) of a ReferenceFrame to an output stream.
+   /// @param os the output stream
+   /// @param ts the ReferenceFrame to be written
+   /// @return The reference to the ostream passed to this operator.
+   std::ostream& operator<<(std::ostream& os, const ReferenceFrame& f);
 
-#endif   //End of ReferenceFrame Header
+}   // end of gpstk namespace
+
+#endif // GPSTK_REFERENCE_FRAME_HPP

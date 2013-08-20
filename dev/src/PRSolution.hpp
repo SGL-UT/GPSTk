@@ -1,11 +1,7 @@
-#pragma ident "$Id$"
-
-/**
- * @file PRSolution.hpp
- * Pseudorange navigation solution, either a simple solution using all the given data,
- * or a solution including editing via a RAIM algorithm.
- */
-
+/// @file PRSolution.hpp
+/// Pseudorange navigation solution, either a simple solution using all the
+/// given data, or a solution including editing via a RAIM algorithm.
+ 
 #ifndef PRS_POSITION_SOLUTION_HPP
 #define PRS_POSITION_SOLUTION_HPP
 
@@ -26,7 +22,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -58,6 +54,7 @@ namespace gpstk
       Vector<double> sumInfoState;
 
    public:
+
       // ctor
       WtdAveStats(void) : N(0)
          { lab[0]="ECEF_X";  lab[1]="ECEF_Y"; lab[2]="ECEF_Z"; }
@@ -119,15 +116,21 @@ namespace gpstk
             os << "Simple statistics on " << msg << std::endl
                << std::fixed << std::setprecision(3);
             if(N > 0) {
-               os << "  " << lab[0] << " N: " << S[0].N() << std::fixed << std::setprecision(4)
+               os << "  " << lab[0] << " N: " << S[0].N()
+                  << std::fixed << std::setprecision(4)
                   << " Ave: " << S[0].Average() << " Std: " << S[0].StdDev()
-                  << " Min: " << S[0].Minimum() << " Max: " << S[0].Maximum() << std::endl;
-               os << "  " << lab[1] << " N: " << S[1].N() << std::fixed << std::setprecision(4)
+                  << " Min: " << S[0].Minimum() << " Max: " << S[0].Maximum()
+                  << std::endl;
+               os << "  " << lab[1] << " N: " << S[1].N()
+                  << std::fixed << std::setprecision(4)
                   << " Ave: " << S[1].Average() << " Std: " << S[1].StdDev()
-                  << " Min: " << S[1].Minimum() << " Max: " << S[1].Maximum() << std::endl;
-               os << "  " << lab[2] << " N: " << S[2].N() << std::fixed << std::setprecision(4)
+                  << " Min: " << S[1].Minimum() << " Max: " << S[1].Maximum()
+                  << std::endl;
+               os << "  " << lab[2] << " N: " << S[2].N()
+                  << std::fixed << std::setprecision(4)
                   << " Ave: " << S[2].Average() << " Std: " << S[2].StdDev()
-                  << " Min: " << S[2].Minimum() << " Max: " << S[2].Maximum() << std::endl;
+                  << " Min: " << S[2].Minimum() << " Max: " << S[2].Maximum()
+                  << std::endl;
 
                os << "Weighted average " << msg << std::endl;
                Matrix<double> Cov(inverseSVD(sumInfo));
@@ -147,8 +150,6 @@ namespace gpstk
    class PRSMemory {
    public:
 
-      //Vector<double> Solution; //, sumInfoState;
-      //Matrix<double> Covariance; //, sumInfo;
       WtdAveStats was;
       double APV;
       int ndata,nsol,ndof;
@@ -255,7 +256,7 @@ namespace gpstk
                // scale covariance
                double sig(::sqrt(APV/ndof));
                Matrix<double> Cov(was.getCov());
-               for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
+               for(int i=0; i<Cov.rows(); i++) for(int j=i; j<Cov.cols(); j++)
                   Cov(i,j) = Cov(j,i) = Cov(i,j)*sig;
                // print cov as labelled matrix
                Namelist NL;
@@ -264,8 +265,8 @@ namespace gpstk
                LM.scientific().setprecision(3).setw(14);
 
                os << "Covariance: " << msg << std::endl << LM << std::endl;
-               os << "APV: " << msg << std::fixed << std::setprecision(3) << " sigma = "
-                  << sig << " meters with "
+               os << "APV: " << msg << std::fixed << std::setprecision(3)
+                  << " sigma = " << sig << " meters with "
                   << ndof << " degrees of freedom.";
             }
             else os << " Not enough data for covariance.";
@@ -313,12 +314,7 @@ namespace gpstk
          /// Constructor
       PRSolution() throw() : RMSLimit(6.5),
                              SlopeLimit(1000.),
-                             Algebraic(false),
-                             ResidualCriterion(true),
-                             ReturnAtOnce(false),
                              NSatsReject(-1),
-                             Debug(false),
-                             pDebugStream(&std::cout),
                              MaxNIterations(10),
                              ConvergenceLimit(3.e-7),
                              Valid(false),
@@ -336,34 +332,11 @@ namespace gpstk
       /// Slope limit (dimensionless).
       double SlopeLimit;
 
-      /// Use an algebraic (if true) or linearized least squares (if false) algorithm.
-      bool Algebraic;
-
-      /** Use a rejection criterion based on RMS residual of fit (true)
-       * or RMS distance from an a priori position. If false, member Vector Solution
-       * must be defined as this a priori position when RAIMCompute() is called.
-       */
-      bool ResidualCriterion;
-
-      /** Return as soon as a solution meeting the limit requirements is found
-       * (this makes it a non-RAIM algorithm).
-       */
-      bool ReturnAtOnce;
-
       /// Maximum number of satellites that may be rejected in the RAIM algorithm;
       /// if this = -1, as many as possible will be rejected (RAIM requires at least 5
       /// satellites). A (single) non-RAIM solution can be obtained by setting this
       /// to 0 before calling RAIMCompute().
       int NSatsReject;
-
-      /// If true, RAIMCompute() will output solution information to *pDebugStream.
-      bool Debug;
-
-      /// Pointer to an ostream, default &std::cout; if Debug is true, RAIMCompute()
-      /// will print all preliminary solutions to this stream.
-      std::ostream *pDebugStream;
-
-      // TD optional: measurement covariance matrix
 
       /// Maximum number of iterations allowed in the linearized least squares
       /// algorithm.
@@ -563,7 +536,6 @@ namespace gpstk
       ///                     of the data is done.
       /// @param pEph        pointer to gpstk::XvtStore to be used in the algorithm.
       /// @param pTropModel  pointer to gpstk::TropModel for trop correction.
-      ///
       /// @return Return values:
       ///  1  solution is ok, but may be degraded; check TropFlag, RMSFlag, SlopeFlag
       ///  0  ok
@@ -578,7 +550,8 @@ namespace gpstk
                       const std::vector<double>& Pseudorange,
                       const Matrix<double>& invMC,
                       const XvtStore<SatID> *pEph,
-                      TropModel *pTropModel) throw(Exception);
+                      TropModel *pTropModel)
+         throw(Exception);
 
       /// Compute DOPs using the partials matrix from the last successful solution.
       /// RAIMCompute(), if successful, calls this before returning.
@@ -629,3 +602,4 @@ namespace gpstk
 } // namespace gpstk
 
 #endif
+

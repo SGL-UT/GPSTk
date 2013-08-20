@@ -36,8 +36,10 @@
 //
 //=============================================================================
 
+#include <cmath>
 #include "TimeSystem.hpp"
 #include "TimeConverters.hpp"
+#include "Exception.hpp"
 
 using namespace std;
 
@@ -54,9 +56,10 @@ namespace gpstk
        string("GLO"),
        string("GAL"),
        string("QZS"),
-       string("BDS"),
+       string("BDT"),
        string("UTC"),
        string("TAI"),
+       string("TT"),
        string("TRT"),
      };
 
@@ -195,4 +198,125 @@ namespace gpstk
       return 0.0;
    }
 
+   // Compute the conversion (in seconds) from one time system (inTS) to another
+   // (outTS), given the year and month of the time to be converted.
+   // Result is to be added to the first time (inTS) to yield the converted (outTS),
+   // that is t(outTS) = t(inTS) + correction(inTS,outTS).
+   // NB. the caller must not forget to change to outTS after adding this correction.
+   // @param TimeSystem inTS, input system
+   // @param TimeSystem outTS, output system
+   // @param int year, year of the time to be converted.
+   // @param int month, month (1-12) of the time to be converted.
+   // @return double dt, correction (sec) to be added to t(in) to yield t(out).
+   // @throw if input system(s) are invalid or Unknown.
+   double TimeSystem::Correction(const TimeSystem& inTS, const TimeSystem& outTS,
+                                 const int& year, const int& month, const double& day)
+   {
+      double dt(0.0);
+
+      // identity
+      if(inTS == outTS)
+         return dt;
+
+      // cannot convert unknowns
+      if(inTS == Unknown || outTS == Unknown) {
+         Exception e("Cannot compute correction for TimeSystem::Unknown");
+         GPSTK_THROW(e);
+      }
+
+      // compute TT-TDB here; ref Astronomical Almanac B7
+      double TDBmTT(0.0);
+      if(inTS == TDB || outTS == TDB) {
+         int iday = int(day);
+         long jday = convertCalendarToJD(year, month, iday) ;
+         double frac(day-iday);
+         double TJ2000(jday-2451545.5+frac);     // t-J2000
+         //       0.0001657 sec * sin(357.53 + 0.98560028 * TJ2000 deg)
+         frac = ::fmod(0.017201969994578 * TJ2000, 6.2831853071796);
+         TDBmTT = 0.0001657 * ::sin(6.240075674 + frac);
+         //        0.000022 sec * sin(246.11 + 0.90251792 * TJ2000 deg)
+         frac = ::fmod(0.015751909262251 * TJ2000, 6.2831853071796);
+         TDBmTT += 0.000022  * ::sin(4.295429822 + frac);
+      }
+
+      // -----------------------------------------------------------
+      // conversions: first convert inTS->TAI ...
+      // TAI = GPS + 19s
+      // TAI = UTC + getLeapSeconds()
+      // TAI = TT - 32.184s
+      // TAI = BDT + 34s since GPS = BDT + 15s
+      if(inTS == GPS)         // GPS -> TAI
+         dt = 19.;
+      else if(inTS == UTC |   // UTC -> TAI
+              //inTS == BDT |   // BDT -> TAI           // TD is this right?
+              inTS == GLO)    // GLO -> TAI
+         dt = getLeapSeconds(year, month, day);
+      else if(inTS == BDT)    // BDT -> TAI         // RINEX 3.02 seems to say this
+         dt = 34.;
+      else if(inTS == TAI)    // TAI
+         ;
+      else if(inTS == TT)     // TT -> TAI
+         dt = -32.184;
+      else if(inTS == TDB)    // TDB -> TAI
+         dt = -32.184 + TDBmTT;
+      else if(inTS == GLO)    // TD
+         dt = 0.0;
+      else if(inTS == GAL)    // TD
+         dt = 0.0;
+      else {                              // other
+         Exception e("Invalid input TimeSystem " + inTS.asString());
+         GPSTK_THROW(e);
+      }
+
+      // -----------------------------------------------------------
+      // ... then convert TAI->outTS
+      // GPS = TAI - 19s
+      // UTC = TAI - getLeapSeconds()
+      // TT = TAI + 32.184s
+      // BDT = TAI - getLeapSeconds()
+      if(outTS == GPS)        // TAI -> GPS
+         dt -= 19.;
+      else if(outTS == UTC |  // TAI -> UTC
+              //outTS == BDT |  // TAI -> BDT
+              outTS == GLO)   // TAI -> GLO
+         dt -= getLeapSeconds(year, month, day);
+      else if(outTS == BDT)   // TAI -> BDT
+         dt -= 34.;
+      else if(outTS == TAI)   // TAI
+         ;
+      else if(outTS == TT)    // TAI -> TT
+         dt += 32.184;
+      else if(outTS == TDB)   // TAI -> TDB
+         dt += 32.184 - TDBmTT;
+      else if(outTS == GLO)   // TD
+         dt = 0.0;
+      else if(outTS == GAL)   // TD
+         dt = 0.0;
+      else {                              // other
+         Exception e("Invalid output TimeSystem " + outTS.asString());
+         GPSTK_THROW(e);
+      }
+
+      return dt;
+   }
+
+/*
+   // Correction with CommonTime input
+   double TimeSystem::Correction(const TimeSystem& inTS, const TimeSystem& outTS,
+                                 const CommonTime& ct)
+   {
+      CivilTime civt(ct);
+      return Correction(inTS, outTS, civt.year, civt.month, civt.day);
+   }
+
+   // Convert the time system of the given CommonTime to the given system.
+   // @param  ct the time to be converted
+   // @param  ts the target time system
+   // @throw if input system(s) are invalid.
+   void TimeSystem::convertToTimeSystem(CommonTime& ct, const TimeSystem& ts)
+   {
+      double dt = Correction(ct.getTimeSystem(), ts, ct);
+      ct += dt;
+   }
+*/
 }   // end namespace

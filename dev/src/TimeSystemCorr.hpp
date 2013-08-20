@@ -68,12 +68,13 @@ namespace gpstk {
          GLGP,    ///< GLO  to GPS using A0 = -TauGPS, A1 = 0
          QZGP,    ///< QZS  to GPS using A0, A1
          QZUT,    ///< QZS  to UTC using A0, A1
-         BDUT,    ///< BDS  to UTC using A0, A1
-         BDGP,    ///< BDS  to GPS using A0, A1  // not in RINEX
+         BDUT,    ///< BDT  to UTC using A0, A1
+         BDGP,    ///< BDT  to GPS using A0, A1  // not in RINEX
       };
 
          //// Member data
       CorrType type;
+      TimeSystem frTS,toTS;
       double A0, A1;
       long refWeek,refSOW;       ///< reference time for polynominal (week,sow)
       long refYr,refMon,refDay;  ///< reference time (yr,mon,day) for RINEX ver 2 GLO
@@ -83,7 +84,9 @@ namespace gpstk {
                                  ///<  5=UTC(Europe), 6=UTC(CRL)]
 
          /// Empty constructor
-      TimeSystemCorrection() : type(Unknown) { }
+      TimeSystemCorrection()
+         : type(Unknown), frTS(TimeSystem::Unknown), toTS(TimeSystem::Unknown)
+         { }
 
          /// Constructor from string
       TimeSystemCorrection(std::string str) { this->fromString(str); }
@@ -91,16 +94,37 @@ namespace gpstk {
       void fromString(const std::string str)
       {
          std::string STR(gpstk::StringUtils::upperCase(str));
-              if(STR == std::string("GPUT")) type = GPUT;
-         else if(STR == std::string("GAUT")) type = GAUT;
-         else if(STR == std::string("SBUT")) type = SBUT;
-         else if(STR == std::string("GLUT")) type = GLUT;
-         else if(STR == std::string("GPGA")) type = GPGA;
-         else if(STR == std::string("GLGP")) type = GLGP;
-         else if(STR == std::string("QZGP")) type = QZGP;
-         else if(STR == std::string("QZUT")) type = QZUT;
-         else if(STR == std::string("BDUT")) type = BDUT;
-         else if(STR == std::string("BDGP")) type = BDGP;
+         if(STR == std::string("GPUT"))
+            { type = GPUT; frTS = TimeSystem::GPS; toTS = TimeSystem::UTC; }
+
+         else if(STR == std::string("GAUT"))
+            { type = GAUT; frTS = TimeSystem::GAL; toTS = TimeSystem::UTC; }
+
+         else if(STR == std::string("SBUT"))
+            // TD ??
+            { type = SBUT; frTS = TimeSystem::GPS; toTS = TimeSystem::UTC; }
+
+         else if(STR == std::string("GLUT"))
+            { type = GLUT; frTS = TimeSystem::GLO; toTS = TimeSystem::UTC; }
+            
+         else if(STR == std::string("GPGA"))
+            { type = GPGA; frTS = TimeSystem::GPS; toTS = TimeSystem::GAL; }
+            
+         else if(STR == std::string("GLGP"))
+            { type = GLGP; frTS = TimeSystem::GLO; toTS = TimeSystem::GPS; }
+            
+         else if(STR == std::string("QZGP"))
+            { type = QZGP; frTS = TimeSystem::QZS; toTS = TimeSystem::GPS; }
+            
+         else if(STR == std::string("QZUT"))
+            { type = QZUT; frTS = TimeSystem::QZS; toTS = TimeSystem::UTC; }
+            
+         else if(STR == std::string("BDUT"))
+            { type = BDUT; frTS = TimeSystem::BDT; toTS = TimeSystem::UTC; }
+            
+         else if(STR == std::string("BDGP"))
+            { type = BDGP; frTS = TimeSystem::BDT; toTS = TimeSystem::GPS; }
+            
          else {
             Exception e("Unknown TimeSystemCorrection type: " + str);
             GPSTK_THROW(e);
@@ -118,10 +142,10 @@ namespace gpstk {
             case GLUT: return std::string("GLO to UTC"); break;
             case GPGA: return std::string("GPS to GAL"); break;
             case GLGP: return std::string("GLO to GPS"); break;
-            case QZGP: return std::string("QZSS to GPS"); break;
-            case QZUT: return std::string("QZSS to UTC"); break;
-            case BDUT: return std::string("BDS to UTC"); break;
-            case BDGP: return std::string("BDS to GPS"); break;
+            case QZGP: return std::string("QZS to GPS"); break;
+            case QZUT: return std::string("QZS to UTC"); break;
+            case BDUT: return std::string("BDT to UTC"); break;
+            case BDGP: return std::string("BDT to GPS"); break;
             default:   return std::string("ERROR"); break;
          }
       }
@@ -205,288 +229,189 @@ namespace gpstk {
       inline bool operator<(const TimeSystemCorrection& tc)
       { return tc.type < type; }
 
-      /// Given a time in one system (fromTime), compute the correction between
-      /// the given system and the target system (toTime.system),
-      /// and apply it to fromTime, placing the result in the target toTime.
-      /// i.e. toTime = (const)fromTime + correction(from => to).
-      ///
-      /// In addition to TimeSystemCorr, must account for leap seconds:
-      /// Let dtLS == getLeapSeconds()-19
-      /// NB. GPS = TAI-19sec and so GPS-UTC = getLeapSeconds()-19 == dtLS.
-      /// NB. GLO = UTC = GPS - dtLS
-      /// NB. GLO is actually UTC(SU) Moscow
-      /// NB. GAL = GPS = UTC + dtLS
-      /// NB. BDT = GPS - 15 = UTC + dtLS - 15
-      /// NB. BDT is actually UTC(NTSC) China
-      ///
-      /// @param CommonTime fromTime, on input is a time in the given system,
-      ///     unchanged on output.
-      /// @param CommonTime toTime, on input this defines the target system and
-      ///     the value is ignored; on output the value is set to "given time plus
-      ///     correction" and the system is left as the target system.
-      /// @return true if successful, false if the input systems are not those
-      ///     that can be converted by this TimeSystemCorr object.
-      /// @throw Exception if this object has not been defined.
-      bool convertSystem(const CommonTime& fromTime, CommonTime& toTime) const
+      /// Return true if this object provides the correction necessary to convert
+      /// between the two given time systems. Throw if the time systems are the
+      /// same or either is TimeSystem::Unknown.
+      /// @param ts1 and ts2  TimeSystems of interest
+      /// @return true if this object will convert ts1 <=> ts2
+      /// @throw if either TimeSystem is Unknown, or if they are identical
+      bool isConverterFor(const TimeSystem& ts1, const TimeSystem& ts2) const
       {
-         CivilTime ct;
-         double dtLS;
+         if(ts1 == ts2) {
+            Exception e("Identical time systems");
+            GPSTK_THROW(e);
+         }
+         if(ts1 == TimeSystem::Unknown || ts2 == TimeSystem::Unknown) {
+            Exception e("Unknown time systems");
+            GPSTK_THROW(e);
+         }
+         if((ts1 == frTS && ts2 == toTS) || (ts2 == frTS && ts1 == toTS)) {
+            return true;
+         }
+         return false;
+      }
+
+      /// Compute the conversion (in seconds) at the given time for this object
+      /// (TimeSystemCorrection). The caller must ensure that the input time has the
+      /// appropriate TimeSystem, it will determine the sign of the correction; it is
+      /// such that it should ALWAYS be ADDED to the input time.
+      /// For example, suppose this object is a "GPUT" (GPS=>UTC) correction. Then
+      ///    ct(GPS) + Correction(ct) will yield ct(UTC), and
+      ///    ct(UTC) + Correction(ct) will yield ct(GPS).
+      ///    [That is, Correction(ct) in the two cases differ in sign]
+      /// Throw an Exception if the TimeSystem of the input does not match either of
+      /// the systems in this object.
+      /// @param CommonTime ct, the time at which to compute the correction; the
+      ///        TimeSystem of ct will determine the sign of the correction.
+      /// @return the correction (sec) to be added to ct to change its TimeSystem
+      /// @throw if the input TimeSystem matches neither system in this object.
+      double Correction(const CommonTime& ct) const
+      {
+         double corr(0.0), dt;
+         TimeSystem fromTS(ct.getTimeSystem());
+         GPSWeekSecond gpsws;
+         CommonTime refTime;
+         Exception e("Unable to compute correction - wrong TimeSystem");
+         Exception eSBAS("TimeSystemCorr SBAS <=> UTC has not been implemented");
+
          switch(type) {
             case GPUT:
-               // NB. GPS = TAI-19sec and so GPS-UTC = getLeapSeconds()-19 == dtLS.
-               ct = CivilTime(fromTime);
-               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
-               // ------------------------------------------------- GPS => UTC
-               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
-                    toTime.getTimeSystem() == TimeSystem::UTC)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::GPS);
-                  double dt(fromTime - refTime);
+               if(fromTS != TimeSystem::GPS && fromTS != TimeSystem::UTC)
+                  { GPSTK_THROW(e); }
 
-                  toTime = fromTime - dtLS + A0 + A1*dt;
-                  toTime.setTimeSystem(TimeSystem::UTC);
+               // dt = fromTime - refTime
+               gpsws = GPSWeekSecond(refWeek,refSOW);
+               refTime = gpsws.convertToCommonTime();
+               refTime.setTimeSystem(fromTS);
+               dt = ct - refTime;
 
-                  return true;
-               }
-               // ------------------------------------------------- UTC => GPS
-               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                         toTime.getTimeSystem() == TimeSystem::GPS)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::UTC);
-                  double dt(fromTime - refTime);
+               if(fromTS == TimeSystem::GPS)             // GPS => UTC
+                  corr = -A0-A1*dt;
+               else                                      // UTC => GPS
+                  corr = A0+A1*dt;
 
-                  toTime = fromTime + dtLS - A0 - A1*dt;
-                  toTime.setTimeSystem(TimeSystem::GPS);
-
-                  return true;
-               }
                break;
 
             case GAUT:
-               // NB. GAL = UTC + dtLS
-               ct = CivilTime(fromTime);
-               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
-               // ------------------------------------------------- GAL => UTC
-               if(fromTime.getTimeSystem() == TimeSystem::GAL &&
-                    toTime.getTimeSystem() == TimeSystem::UTC)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::GAL);
-                  double dt(fromTime - refTime);
+               if(fromTS != TimeSystem::GAL && fromTS != TimeSystem::UTC)
+                  { GPSTK_THROW(e); }
 
-                  toTime = fromTime - dtLS + A0 + A1*dt;
-                  toTime.setTimeSystem(TimeSystem::UTC);
+               // dt = fromTime - refTime
+               gpsws = GPSWeekSecond(refWeek,refSOW);
+               refTime = gpsws.convertToCommonTime();
+               refTime.setTimeSystem(fromTS);
+               dt = ct - refTime;
 
-                  return true;
-               }
-               // ------------------------------------------------- UTC => GAL
-               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                         toTime.getTimeSystem() == TimeSystem::GAL)
-               {
-                  // TBD
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::UTC);
-                  double dt(fromTime - refTime);
+               if(fromTS == TimeSystem::GAL)             // GAL => UTC
+                  corr = A0+A1*dt;
+               else                                      // UTC => GAL
+                  corr = -A0-A1*dt;
 
-                  toTime = fromTime + dtLS - A0 - A1*dt;
-                  toTime.setTimeSystem(TimeSystem::GAL);
-
-                  return true;
-               }
                break;
 
             case SBUT:
-               // ------------------------------------------------- SBAS => UTC
-               if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                    toTime.getTimeSystem() == TimeSystem::UTC)
-               {
-                  // TBD
-                  // depends on provider and UT ID
-                  Exception e("TimeSystemCorr SBAS <=> UTC has not been implemented");
-                  GPSTK_THROW(e);
-               }
+               GPSTK_THROW(eSBAS);
                break;
 
             case GLUT:
-               // ------------------------------------------------- GLO => UTC
-               if(fromTime.getTimeSystem() == TimeSystem::GLO &&
-                    toTime.getTimeSystem() == TimeSystem::UTC)
-               {
-                  toTime = fromTime + A0;
-                  toTime.setTimeSystem(TimeSystem::UTC);
-                  return true;
-               }
-               // ------------------------------------------------- UTC => GLO
-               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                         toTime.getTimeSystem() == TimeSystem::GLO)
-               {
-                  toTime = fromTime - A0;
-                  toTime.setTimeSystem(TimeSystem::GLO);
-                  return true;
-               }
+               if(fromTS != TimeSystem::GLO && fromTS != TimeSystem::UTC)
+                  { GPSTK_THROW(e); }
+
+               if(fromTS == TimeSystem::GLO)             // GLO => UTC
+                  corr = A0;
+               else                                      // UTC => GLO
+                  corr = -A0;
+
                break;
 
             case GPGA:
-               // ------------------------------------------------- GPS => GAL
-               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
-                    toTime.getTimeSystem() == TimeSystem::GAL)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::GPS);
-                  double dt(fromTime - refTime);
+               if(fromTS != TimeSystem::GPS && fromTS != TimeSystem::GAL)
+                  { GPSTK_THROW(e); }
 
-                  toTime = fromTime + A0 + A1*dt;
-                  toTime.setTimeSystem(TimeSystem::GAL);
+               // dt = fromTime - refTime
+               gpsws = GPSWeekSecond(refWeek,refSOW);
+               refTime = gpsws.convertToCommonTime();
+               refTime.setTimeSystem(fromTS);
+               dt = ct - refTime;
 
-                  return true;
-               }
-               // ------------------------------------------------- GAL => GPS
-               else if(fromTime.getTimeSystem() == TimeSystem::GAL &&
-                         toTime.getTimeSystem() == TimeSystem::GPS)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::GAL);
-                  double dt(fromTime - refTime);
+               if(fromTS == TimeSystem::GPS)             // GPS => GAL
+                  corr = A0+A1*dt;
+               else                                      // GAL => GPS
+                  corr = -A0-A1*dt;
 
-                  toTime = fromTime - A0 - A1*dt;
-                  toTime.setTimeSystem(TimeSystem::GPS);
-
-                  return true;
-               }
                break;
 
             case GLGP:
-               // NB. GLO = UTC = GPS - dtLS
-               ct = CivilTime(fromTime);
-               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
-               // ------------------------------------------------- GPS => GLO
-               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
-                    toTime.getTimeSystem() == TimeSystem::GLO)
-               {
-                  toTime = fromTime - dtLS + A0;
-                  toTime.setTimeSystem(TimeSystem::GLO);
-                  return true;
-               }
-               // ------------------------------------------------- GLO => GPS
-               else if(fromTime.getTimeSystem() == TimeSystem::GLO &&
-                         toTime.getTimeSystem() == TimeSystem::GPS)
-               {
-                  toTime = fromTime + dtLS - A0;
-                  toTime.setTimeSystem(TimeSystem::GPS);
-                  return true;
-               }
+               if(fromTS != TimeSystem::GLO && fromTS != TimeSystem::GPS)
+                  { GPSTK_THROW(e); }
+
+               if(fromTS == TimeSystem::GLO)             // GLO => GPS
+                  corr = A0;
+               else                                      // GPS => GLO
+                  corr = -A0;
+
                break;
 
             case QZGP:
-               // ------------------------------------------------- GPS => QZS
-               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
-                    toTime.getTimeSystem() == TimeSystem::QZS)
-               {
-                  toTime = fromTime;
-                  toTime.setTimeSystem(TimeSystem::QZS);
+               if(fromTS != TimeSystem::QZS && fromTS != TimeSystem::GPS)
+                  { GPSTK_THROW(e); }
 
-                  return true;
-               }
-               // ------------------------------------------------- UTC => GPS
-               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                         toTime.getTimeSystem() == TimeSystem::GPS)
-               {
-                  toTime = fromTime;
-                  toTime.setTimeSystem(TimeSystem::GPS);
+               if(fromTS == TimeSystem::QZS)             // QZS => GPS
+                  corr = 0.0;    // TD?
+               else                                      // GPS => QZS
+                  corr = 0.0;    // TD?
 
-                  return true;
-               }
                break;
 
             case QZUT:
-               // ------------------------------------------------- QZS => UTC
-               if(fromTime.getTimeSystem() == TimeSystem::QZS &&
-                    toTime.getTimeSystem() == TimeSystem::UTC)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::QZS);
-                  double dt(fromTime - refTime);
+               if(fromTS != TimeSystem::QZS && fromTS != TimeSystem::UTC)
+                  { GPSTK_THROW(e); }
 
-                  toTime = fromTime + A0 + A1*dt;
-                  toTime.setTimeSystem(TimeSystem::UTC);
+               // dt = fromTime - refTime
+               gpsws = GPSWeekSecond(refWeek,refSOW);
+               refTime = gpsws.convertToCommonTime();
+               refTime.setTimeSystem(fromTS);
+               dt = ct - refTime;
 
-                  return true;
-               }
-               // ------------------------------------------------- UTC => QZS
-               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                         toTime.getTimeSystem() == TimeSystem::QZS)
-               {
-                  // dt = fromTime - refTime
-                  GPSWeekSecond gpsws(refWeek,refSOW);
-                  CommonTime refTime(gpsws.convertToCommonTime());
-                  refTime.setTimeSystem(TimeSystem::UTC);
-                  double dt(fromTime - refTime);
+               if(fromTS == TimeSystem::QZS)             // QZS => UTC
+                  corr = A0+A1*dt;
+               else                                      // UTC => QZS
+                  corr = -A0-A1*dt;
 
-                  toTime = fromTime - A0 - A1*dt;
-                  toTime.setTimeSystem(TimeSystem::QZS);
-
-                  return true;
-               }
                break;
 
             case BDUT:
-               // NB. BDT = GPS - 15 = UTC + dtLS - 15
-               ct = CivilTime(fromTime);
-               dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
-               // ------------------------------------------------- BDS => UTC
-               if(fromTime.getTimeSystem() == TimeSystem::BDS &&
-                    toTime.getTimeSystem() == TimeSystem::UTC)
-               {
-                  toTime = fromTime - dtLS + 15. + A0 - A1;
-                  toTime.setTimeSystem(TimeSystem::UTC);
-                  return true;
-               }
-               // ------------------------------------------------- UTC => BDS
-               else if(fromTime.getTimeSystem() == TimeSystem::UTC &&
-                         toTime.getTimeSystem() == TimeSystem::BDS)
-               {
-                  toTime = fromTime + dtLS - 15. - A0 + A1;
-                  toTime.setTimeSystem(TimeSystem::BDS);
-                  return true;
-               }
+               if(fromTS != TimeSystem::BDT && fromTS != TimeSystem::UTC)
+                  { GPSTK_THROW(e); }
+
+               // dt = fromTime - refTime
+               gpsws = GPSWeekSecond(refWeek,refSOW);
+               refTime = gpsws.convertToCommonTime();
+               refTime.setTimeSystem(fromTS);
+               dt = ct - refTime;
+
+               if(fromTS == TimeSystem::BDT)             // BDT => UTC
+                  corr = A0+A1*dt;
+               else                                      // UTC => BDT
+                  corr = -A0-A1*dt;
+
                break;
 
             case BDGP:
-               // NB. BDT = GPS - 15 = UTC + dtLS - 15
-               //ct = CivilTime(fromTime);
-               //dtLS = TimeSystem::getLeapSeconds(ct.year, ct.month, ct.day) - 19.;
-               // ------------------------------------------------- GPS => BDS
-               if(fromTime.getTimeSystem() == TimeSystem::GPS &&
-                    toTime.getTimeSystem() == TimeSystem::BDS)
-               {
-                  toTime = fromTime - 15. + A0;
-                  toTime.setTimeSystem(TimeSystem::BDS);
-                  return true;
-               }
-               // ------------------------------------------------- BDS => GPS
-               else if(fromTime.getTimeSystem() == TimeSystem::BDS &&
-                         toTime.getTimeSystem() == TimeSystem::GPS)
-               {
-                  toTime = fromTime + 15. - A0;
-                  toTime.setTimeSystem(TimeSystem::GPS);
-                  return true;
-               }
+               if(fromTS != TimeSystem::BDT && fromTS != TimeSystem::GPS)
+                  { GPSTK_THROW(e); }
+
+               // dt = fromTime - refTime
+               gpsws = GPSWeekSecond(refWeek,refSOW);
+               refTime = gpsws.convertToCommonTime();
+               refTime.setTimeSystem(fromTS);
+               dt = ct - refTime;
+
+               if(fromTS == TimeSystem::BDT)             // BDT => GPS
+                  corr = A0;
+               else                                      // GPS => BDT
+                  corr = -A0;
+
                break;
 
             default:
@@ -495,12 +420,7 @@ namespace gpstk {
                break;
          }
 
-         //Exception e(string("Cannot convert time systems: input is ")
-         //            + fromTime.getTimeSystem().asString() + string(" => ")
-         //            + toTime.getTimeSystem().asString()
-         //            + string(", but conversion object is ") + asString());
-         //GPSTK_THROW(e);
-         return false;
+         return corr;
       }
 
    }; // End of class 'TimeSystemCorrection'

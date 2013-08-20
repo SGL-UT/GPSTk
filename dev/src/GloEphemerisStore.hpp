@@ -1,9 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file GloEphemerisStore.hpp
- * Get GLONASS broadcast ephemeris data information
- */
+/// @file GloEphemerisStore.hpp
+/// Get GLONASS broadcast ephemeris data information
 
 #ifndef GPSTK_GLOEPHEMERISSTORE_HPP
 #define GPSTK_GLOEPHEMERISSTORE_HPP
@@ -30,7 +26,6 @@
 //
 //============================================================================
 
-
 #include <iostream>
 #include "XvtStore.hpp"
 #include "GloEphemeris.hpp"
@@ -39,7 +34,6 @@
 #include "Vector.hpp"
 #include "YDSTime.hpp"
 #include "TimeSystemCorr.hpp"
-
 
 namespace gpstk
 {
@@ -64,12 +58,10 @@ namespace gpstk
 
          /// Default constructor
       GloEphemerisStore()
-         throw()
          : initialTime(CommonTime::END_OF_TIME),
            finalTime(CommonTime::BEGINNING_OF_TIME),
            step(1.0), checkHealthFlag(false)
       { };
-
 
          /** Common constructor
           *
@@ -78,22 +70,17 @@ namespace gpstk
           */
       GloEphemerisStore( double rkStep,
                          double checkHealth )
-         throw()
          : initialTime(CommonTime::END_OF_TIME),
            finalTime(CommonTime::BEGINNING_OF_TIME),
            step(rkStep), checkHealthFlag(checkHealth)
       { };
 
-
          /// Destructor
       virtual ~GloEphemerisStore() {};
 
-
          /// Add ephemeris information from a Rinex3NavData object.
          /// @return true unless the data was not added.
-      bool addEphemeris(const Rinex3NavData& data)
-         throw();
-
+      bool addEphemeris(const Rinex3NavData& data);
 
          /** Returns the position, velocity and clock offset of the indicated
           *  satellite in ECEF coordinates (meters) at the indicated time,
@@ -109,14 +96,11 @@ namespace gpstk
           *  as to why the request failed.
           */
       Xvt getXvt( const SatID& sat,
-                  const CommonTime& epoch ) const
-         throw( InvalidRequest );
-
+                  const CommonTime& epoch ) const;
 
          /// Get integration step for Runge-Kutta algorithm.
       double getIntegrationStep() const
       { return step; };
-
 
          /** Set integration step for Runge-Kutta algorithm.
           *
@@ -125,11 +109,9 @@ namespace gpstk
       GloEphemerisStore& setIntegrationStep( double rkStep )
       { step = rkStep; return (*this); };
 
-
          /// Get whether satellite health bit will be used or not.
       bool getCheckHealthFlag() const
       { return checkHealthFlag; };
-
 
          /** Set whether satellite health bit will be used or not.
           *
@@ -137,7 +119,6 @@ namespace gpstk
           */
       GloEphemerisStore& setCheckHealthFlag( bool checkHealth )
       { checkHealthFlag = checkHealth; return (*this); };
-
 
          /** A debugging function that outputs in human readable form,
           *  all data stored in this object.
@@ -148,9 +129,7 @@ namespace gpstk
           * @warning GLONASS position, velocity and acceleration information are
           * given in km, km/s and km/(s*s), respectively.
           */
-      virtual void dump(std::ostream& s = std::cout, short detail = 0) const
-         throw();
-
+      virtual void dump(std::ostream& s = std::cout, short detail = 0) const;
 
          /** Edit the dataset, removing data outside the indicated time interval
           * 
@@ -158,21 +137,18 @@ namespace gpstk
           * @param[in] tmax   Defines the end of the time interval
           */
       virtual void edit( const CommonTime& tmin,
-                         const CommonTime& tmax = CommonTime::END_OF_TIME )
-         throw();
-
+                         const CommonTime& tmax = CommonTime::END_OF_TIME );
 
          /// Clear the dataset, meaning remove all data
-      virtual void clear(void) throw()
+      virtual void clear(void)
       { pe.clear();
         initialTime = CommonTime::END_OF_TIME;
         finalTime = CommonTime::BEGINNING_OF_TIME;
         return;
       };
 
-
          /// Return time system (NB assumed always to be GLONASS)
-      virtual TimeSystem getTimeSystem(void) const throw()
+      virtual TimeSystem getTimeSystem(void) const
       { return TimeSystem::GLO; }
 
          /** Determine the earliest time for which this object can successfully
@@ -182,9 +158,7 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual CommonTime getInitialTime() const
-         throw(InvalidRequest);
-
+      virtual CommonTime getInitialTime() const;
 
          /** Determine the latest time for which this object can successfully
           *  determine the Xvt for any object.
@@ -193,23 +167,25 @@ namespace gpstk
           *
           * @throw InvalidRequest This is thrown if the object has no data.
           */
-      virtual CommonTime getFinalTime() const
-         throw(InvalidRequest);
+      virtual CommonTime getFinalTime() const;
 
+      /// Compute initial time for the given satellite
+      CommonTime getInitialTime(const SatID& sat) const;
+
+      /// Compute final time for the given satellite
+      CommonTime getFinalTime(const SatID& sat) const;
 
          /// Return true if velocity data is present in the store. GLONASS
          /// ephemeris data always include velocity.
-      virtual bool hasVelocity() const throw()
+      virtual bool hasVelocity() const
       { return true; };
 
-
          /// Return true if the given SatID is present in the store
-      virtual bool isPresent(const SatID& id) const throw();
+      virtual bool isPresent(const SatID& id) const;
 
          /// Return the number of satellites present in the store
-      int size(void) const throw()
+      int size(void) const
       { return pe.size(); }
-
 
          /** Find the corresponding GLONASS ephemeris for the given epoch.
           *
@@ -220,9 +196,7 @@ namespace gpstk
           * @throw InvalidRequest object thrown when no ephemeris is found.
           */
       const GloEphemeris& findEphemeris( const SatID& sat,
-                                         const CommonTime& epoch ) const
-         throw( InvalidRequest );
-
+                                         const CommonTime& epoch ) const;
 
          /** Find the corresponding GLONASS ephemeris for the given epoch.
           *
@@ -238,9 +212,7 @@ namespace gpstk
           */
       const GloEphemeris& findUserEphemeris( const SatID& sat,
                                              const CommonTime& t ) const
-         throw( InvalidRequest )
       { return findEphemeris(sat, t); };
-
 
          /** Find the corresponding GLONASS ephemeris for the given epoch.
           *
@@ -256,38 +228,29 @@ namespace gpstk
           */
       const GloEphemeris& findNearEphemeris( const SatID& sat,
                                              const CommonTime& t ) const
-         throw( InvalidRequest )
       { return findEphemeris(sat, t); };
 
       /// Add all ephemerides to an existing list<GloEphemeris>.
       /// @return the number of ephemerides added.
-      int addToList( std::list<GloEphemeris>& v ) const
-         throw();
-
+      int addToList( std::list<GloEphemeris>& v ) const;
 
    private:
-
 
          /// The map of SVs and Xvt's
       GloEphMap pe;
 
-
          /// Earliest epoch of data available
       CommonTime initialTime;
-
 
          /// Latest epoch of data available
       CommonTime finalTime;
 
-
          /// Integration step for Runge-Kutta algorithm (1 second by default)
       double step;
-
 
          /// Flag signaling if satellites will be screened out according to
          /// their health bit (by default it is false)
       bool checkHealthFlag;
-
 
    };  // End of class 'GloEphemerisStore'
 

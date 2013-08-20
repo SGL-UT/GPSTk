@@ -1,4 +1,8 @@
-#pragma ident "$Id$"
+/**
+ * @file RinexObsID.cpp
+ * gpstk::RinexObsID - Identifies types of observations
+ */
+
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -16,7 +20,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -24,23 +28,20 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
-/**
- * @file RinexObsID.cpp
- * gpstk::RinexObsID - Identifies types of observations
- */
-
 #include "RinexObsID.hpp"
+#include "RinexSatID.hpp"
+#include "StringUtils.hpp"
 
 namespace gpstk
 {
@@ -53,13 +54,13 @@ namespace gpstk
       }
       try {
          ObsID obsid(strID);
-         *this = RinexObsID(obsid);
+         *this = RinexObsID(obsid.type, obsid.band, obsid.code);
+         //*this = RinexObsID(obsid);
       }
       catch(InvalidParameter& ip) { GPSTK_RETHROW(ip); }
    }
 
-   RinexObsID::RinexObsID(const RinexObsType& rot)
-      : ObsID()
+   RinexObsID::RinexObsID(const RinexObsType& rot) : ObsID()
    {
       // Note that the choice of tracking code for L1, L2, S1, S2 are arbitrary
       // since they are ambiguous in the rinex 2 specifications
@@ -115,13 +116,17 @@ namespace gpstk
    // SBAS
    //       L1   C                                    S 1 C
    //       L5   I,Q,X                                S 5 IQX
-   // COM
-   //       E1   -                                    C 1 -
-   //       E2   I,Q,X                                C 2 IQX
-   //       E5b  I,Q,X                                C 7 IQX
-   //       E6   I,Q,X                                C 6 IQX
+   // BDS
+   //       B1   I,Q,X                                C 1 IQX
+   //       B2   I,Q,X                                C 7 IQX
+   //       B3   I,Q,X                                C 6 IQX
+   // QZSS
+   //       L1   C,S,L,X,Z                            J 1 CSLXZ
+   //       L2   S,L,X                                J 2 SLX
+   //       L5   I,Q,X                                J 5 IQX
+   //       L6   S,L,X                                J 6 SLX
 
-   // Determine if the given ObsID is valid. If the input string is 3
+   // Determine if the given ObsID is valid. If the input string is 3 
    // characters long, the system is assumed to be GPS. If this string is 4
    // characters long, the first character is the system designator as
    // described in the Rinex 3 specification.
@@ -165,4 +170,55 @@ namespace gpstk
       return true;
    }
 
-}
+   std::ostream& RinexObsID::dumpCheck(std::ostream& s) throw(Exception)
+   {
+      try {
+         const std::string types("CLDS");
+         std::map<char,std::string>::const_iterator it;
+
+         for(int i=0; i<ObsID::validRinexSystems.size(); i++) {
+            char csys = ObsID::validRinexSystems[i];
+            std::string sys = ObsID::validRinexSystems.substr(i,1);
+            RinexSatID sat(sys);
+            std::string system(sat.systemString());
+
+            s << "System " << sys << " = " << system << ", frequencies ";
+            for(it = ObsID::validRinexTrackingCodes[sys[0]].begin();
+               it != ObsID::validRinexTrackingCodes[sys[0]].end(); ++it)
+               s << it->first;
+            s << std::endl;
+
+            for(it = ObsID::validRinexTrackingCodes[sys[0]].begin();
+               it != ObsID::validRinexTrackingCodes[sys[0]].end(); ++it)
+            {
+               s << "   " << system << "(" << sys << "), freq " << it->first
+                  << ", codes '" << it->second << "'" << std::endl;
+               std::string codes(it->second), str;
+               for(int j=0; j<codes.size(); ++j) {
+                  std::ostringstream oss1;
+                  for(int k=0; k<types.size(); ++k) {
+                     str = std::string(1,types[k]) + std::string(1,it->first)
+                           + std::string(1,codes[j]);
+                     std::ostringstream oss;
+                     if(!isValidRinexObsID(str,csys))
+                        oss << str << " " << "-INVALID-";
+                     else {
+                        RinexObsID robsid(sys+str);
+                        oss << str << " " << robsid;
+                     }
+                     oss1 << " " << StringUtils::leftJustify(oss.str(),34);
+                  }
+                  s << StringUtils::stripTrailing(oss1.str()) << std::endl;
+               }
+            }
+         }
+      }
+      catch(Exception& e) {
+         s << "Exception: " << e.what() << std::endl;
+         GPSTK_RETHROW(e);
+      }
+
+      return s;
+   }
+
+}  // end namespace

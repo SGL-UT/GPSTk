@@ -1,12 +1,5 @@
-#pragma ident "$Id$"
-
-/**
- * @file GloEphemeris.hpp
- * Ephemeris data for GLONASS.
- */
-
-#ifndef GPSTK_GLOEPHEMERIS_HPP
-#define GPSTK_GLOEPHEMERIS_HPP
+/// @file GloEphemeris.hpp
+/// Ephemeris data for GLONASS.
 
 //============================================================================
 //
@@ -30,6 +23,8 @@
 //
 //============================================================================
 
+#ifndef GPSTK_GLOEPHEMERIS_HPP
+#define GPSTK_GLOEPHEMERIS_HPP
 
 #include <iostream>
 #include "Triple.hpp"
@@ -38,7 +33,6 @@
 #include "PZ90Ellipsoid.hpp"
 #include "Vector.hpp"
 #include "YDSTime.hpp"
-
 
 namespace gpstk
 {
@@ -155,7 +149,7 @@ namespace gpstk
 
 
          /// Get the MFTime parameter.
-      short getMFtime() const
+      long getMFtime() const
          throw()
       { return MFtime; }
 

@@ -149,7 +149,7 @@ int main(void)
       bceStore.addEphemeris(rNavData);
    }
 
-   bceStore.SearchPast();  // This is the default
+   bceStore.SearchUser();  // This is the default
 
       // EBRE station nominal position
    Position nominalPos(4833520.3800, 41536.8300, 4147461.2800);

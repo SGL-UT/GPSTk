@@ -261,7 +261,9 @@ void EphSum::process()
    
    string tform = "%04F %6.0g %02m/%02d/%02y %03j %02H:%02M:%02S";
    
-   GPSEphemerisStore::EngEphMap eemap, eemapXmit;
+   //GPSEphemerisStore::EngEphMap eemap, eemapXmit;
+   map<CommonTime, GPSEphemeris> eemap;
+   map<CommonTime, GPSEphemeris>::const_iterator ci;
    long maxprn = gpstk::MAX_PRN;
    
    bool singleSV = false; 
@@ -273,13 +275,15 @@ void EphSum::process()
    }
    for (int i=1;i<=maxprn;++i) 
    {
-      GPSEphemerisStore::EngEphMap::const_iterator ci;
+      //GPSEphemerisStore::EngEphMap::const_iterator ci;
       SatID sat = SatID( i, SatID::systemGPS);
-      try
-      {
-         eemap = ges.getEphMap( sat );
-      }
-      catch(InvalidRequest)
+      int sizeprn = ges.size(sat);
+      //try
+      //{
+      //   eemap = ges.getEphMap( sat );
+      //}
+      //catch(InvalidRequest)
+      if(sizeprn == 0)
       {
          // simply go on to the next PRN
          if (!singleSV || (singleSV && i==singlePRNID))
@@ -289,24 +293,40 @@ void EphSum::process()
          }
          continue;
       }
-      countByPRN[i] = eemap.size();
+      countByPRN[i] = sizeprn; // eemap.size();
  
       if (singleSV && singlePRNID!=i) continue;
       
+      // get list for this prn
+      list<GPSEphemeris> lst;
+      ges.addToList(lst, i);
+      // loop over the list, creating the map
+      eemap.clear();
+      for(list<GPSEphemeris>::const_iterator it = lst.begin(); it != lst.end(); ++it)
+      {
+         GPSEphemeris eph(*it);
+         CommonTime tkey = (xmitOption.getCount() > 0 ? eph.ctToe : eph.transmitTime);
+         eemap.insert(make_pair(tkey,eph));
+      }
+
 	  // sort by time of transmission (default is TOE) 
+     /*
       if (xmitOption.getCount() > 0)
       {
-         eemapXmit.clear();
-         for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
+         //eemapXmit.clear();
+         eemap.clear();
+         
+         //for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
          {
             EngEphemeris ee = ci ->second;
             CommonTime xmit = ee.getTransmitTime();
-            eemapXmit.insert(make_pair(xmit,ee));
+            //eemapXmit.insert(make_pair(xmit,ee));
+            eemap.insert(make_pair(xmit,ee));
          } 
          
-         eemap = eemapXmit;
+         //eemap = eemapXmit;
       }
-      
+     */
 
          // Header
       fprintf(logfp,"#\n");
@@ -314,7 +334,7 @@ void EphSum::process()
       fprintf(logfp,"#PRN !               Xmit                !             Toe/Toc               !            End of Eff             !  IODC   Health\n");
       for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
       {
-         EngEphemeris ee = ci->second;
+         GPSEphemeris ee = ci->second;
 
 	    /*
 	     * Calculating end of effectvity is a challenge.  IS-GPS-200 20.3.4.4
@@ -333,8 +353,8 @@ void EphSum::process()
 	     * to the most recent even two hour epoch and considered the beginning time
 	     * of effectivity for end of effectivity. 
 	    */
-         CommonTime begEff = ee.getTransmitTime();
-	 CommonTime epochTime = ee.getEphemerisEpoch();
+         CommonTime begEff = ee.transmitTime;
+	 CommonTime epochTime = ee.ctToe;
 	 long TWO_HOURS = 7200;
          long epochRemainder = (long) static_cast<GPSWeekSecond>(epochTime).sow % TWO_HOURS;
 	 long  xmitRemainder = (long) static_cast<GPSWeekSecond>(begEff).sow % TWO_HOURS;
@@ -343,18 +363,18 @@ void EphSum::process()
 	    begEff = begEff - xmitRemainder;
 	 }
 
-	 short fitIntervalHours = ee.getFitInterval();
+	 short fitIntervalHours = ee.fitDuration; // ee.getFitInterval();
 	 short ONE_HOUR = 3600;
 	 CommonTime endEff = begEff + ONE_HOUR * fitIntervalHours;
 
          fprintf(logfp,"  %02d ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
                i,
-               printTime(ee.getTransmitTime(),tform).c_str(),
-               printTime(ee.getEphemerisEpoch(),tform).c_str(),
+               printTime(ee.transmitTime,tform).c_str(),
+               printTime(ee.ctToe,tform).c_str(),
                printTime(endEff,tform).c_str(),
-               ee.getIODC(),
-               ee.getHealth(),
-               ee.getHealth());
+               ee.IODC,
+               ee.health,
+               ee.health);
          //fprintf(logfp,"    |                                   | %s |\n",
          //      ee.getEpochTime().printf(tform).c_str());
       }

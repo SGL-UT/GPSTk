@@ -213,14 +213,6 @@ namespace gpstk
 
             mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
-
-            // TD need to generate a GLGP with this and leapSeconds
-            // TAI = GPS + 19sec
-            // GPS = UTC + leapSeconds
-            // GLO = UTC - tauC
-            // so
-            // GPS = UTC + leapSeconds = GLO + tauC + leapSeconds
-            // GLO = GPS - tauC - leapSeconds;
          }
          else if(thisLabel == stringDUTC) {     // "D-UTC A0,A1,T,W,S,U"  // R2.11 GEO
             TimeSystemCorrection tc("SBUT");
@@ -328,7 +320,7 @@ namespace gpstk
    
       strm.header = (*this);
    
-      int j;
+      int i,j;
       unsigned long allValid;
       if(version >= 3.0)
          allValid = allValid3;
@@ -519,7 +511,8 @@ namespace gpstk
    //--------------------------------------------------------------------------
    void Rinex3NavHeader::dump(ostream& s) const
    {
-         
+      int i;
+   
       s << "---------------------------------- REQUIRED "
          << "----------------------------------\n";
    

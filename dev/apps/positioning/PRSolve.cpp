@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /// @file PRSolve.cpp
 /// Read Rinex observation files (version 2 or 3) and ephemeris store, and compute a
 /// a pseudorange-only position solution.
@@ -21,7 +19,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -49,6 +47,7 @@
 #include "Epoch.hpp"
 #include "TimeString.hpp"
 #include "GPSWeekSecond.hpp"
+#include "ObsID.hpp"
 
 #include "RinexSatID.hpp"
 #include "RinexObsID.hpp"
@@ -80,18 +79,27 @@
 
 #include "Stats.hpp"
 #include "Namelist.hpp"
+#include "HelmertTransform.hpp"
 
 #include "PRSolution.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
-using namespace StringUtils;
+using namespace gpstk::StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("4.3 8/3/12"));
+string Version(string("5.0 8/1/13 rev"));
+// TD
+// Trop. test all trop models, w and w/o --ref
+// Why does Neill triple the total time !? is this b/c of bad at elev 0?
+// Replace descriptor tracking codes with those actually in header
+// Add option to fix (remove) millisecond clock jumps - make portable
+// Test met
+// Does --wt work?
+// Implement Rx PCOs, and add input switches to turn off sat/rx pco correction
 
-// forward declaration
+// forward declarations
 class SolutionObject;
 
 //------------------------------------------------------------------------------------
@@ -106,6 +114,9 @@ public:
    // Create, parse and process command line options and user input
    int ProcessUserInput(int argc, char **argv) throw();
 
+   // Create and output help message for --sol
+   void SolDescHelp(void);
+
    // Design the command line
    string BuildCommandLine(void) throw();
 
@@ -113,8 +124,8 @@ public:
    // return -4 if log file could not be opened
    int ExtraProcessing(string& errors, string& extras) throw();
 
-   // Build solution descriptors from the input - separate routine b/c its complicated
-   void BuildSolDescriptors(ostringstream& oss) throw();
+   // Build candidate solution descriptors from the input
+   //void BuildCandidateSolDescriptors(ostringstream& oss) throw();
 
    // update weather in the trop model using the Met store
    void setWeather(const CommonTime& ttag) throw(Exception);
@@ -153,6 +164,7 @@ public:
    double decimate;           // decimate input data
    double elevLimit;          // limit sats to elevation mask
    bool forceElev;            // use elevLimit even without --ref
+   bool searchUser;           // use SearchUser() for BCE, else SearchNear()
    vector<RinexSatID> exclSat;// exclude satellites
 
    bool SPSout,ORDout;        // output autonomous solutions? ORDs?
@@ -164,9 +176,7 @@ public:
    string refPosStr;          // temp used to parse --ref input
 
    vector<string> inSolDesc;  // input: strings sys,freq,code e.g. GPS+GLO,1+2,PC
-   string inSolSys;           // input: systems to compute: GPS,GLO,GPS+GLO,etc
-   vector<string> inSolCode;  // input: codes (RINEX track char) to select, in order
-   vector<string> inSolFreq;  // input: frequency (e.g. 1,2,5,12,25,12+15) to process
+   bool SOLhelp;              // print more help info
 
    // config for PRSolution
    bool weight;               // build a measurement covariance if true
@@ -190,11 +200,11 @@ public:
    XvtStore<SatID> *pEph;
    SP3EphemerisStore SP3EphStore;
    Rinex3EphemerisStore RinEphStore;
-   //GPSEphemerisStore GPSEphStore;
-   //GloEphemerisStore GLOEphStore;
    list<RinexMetData> MetStore;
    map<RinexSatID,double> P1C1bias;
    map<RinexSatID,int> GLOfreqChannel;
+   int PZ90ITRFold, PZ90WGS84old;   // Helmert transforms before 20 Sept 07
+   int PZ90ITRF, PZ90WGS84;         // Helmert transforms after 20 Sept 07
 
    // trop models
    TropModel *pTrop;          // to pass to PRS
@@ -204,11 +214,7 @@ public:
    double defaultTemp,defaultPress,defaultHumid;
 
    // solutions to build
-   vector<string> vecSys;           // list of systems allowed
-   map<string,string> mapSysCodes;  // map of system:allowed codes e.g. GLO:PC
-   map<string,string> defMapSysCodes;  // map of system:default codes
-   vector<string> SolDesc;          // strings sys,freq,code e.g. GPS+GLO,1+2,PWXC+PC
-   vector<SolutionObject> SolObjs;  // solution objects to process
+   vector<SolutionObject> SolObjs;     // solution objects to process
 
    // reference position and rotation matrix
    Position knownPos;         // position derived from --ref
@@ -216,10 +222,8 @@ public:
 
    // useful stuff
    string msg;                      // temp used everywhere
-   map<string,string> map1to3Sys;   // [G]=GPS [R]=GLO etc
-   map<string,string> map3to1Sys;   // [GPS]=G [GLO]=R etc
-   // vector of 1-char strings containing systems needed in all solutions: G,R,E,C,S
-   vector<string> allsyss;
+   // vector of 1-char strings containing systems needed in all solutions: G,R,E,C,S,J
+   vector<string> allSystemChars;
 
    // constants
    static const double beta12GPS, beta12GLO, beta15GPS, beta25GPS;
@@ -244,6 +248,194 @@ const double Configuration::alpha25GPS = beta25GPS*beta25GPS-1.0;
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
+// Encapsulate one observation datum that will be input to PRSolution, including a
+// string that comes from the solution descriptor, constants in the linear combination
+// and RinexObsID observation types matching those available in RINEX header.
+// e.g. GPS:1:PC => "G1PC" => 1.0 * GC1P or GC1C
+//      GPS:12:PC => "G12PC" => a+1/a * GC1P/C , -1/a * GC2P/C   a=alpha(G,12)
+// SolutionObject contains a vector of these:
+// e.g. GPS:12:PC+GLO:12:PC => "G12PC" + "R12PC" =>
+//        (a+1/a * GC1P/C, -1/a * GC2P/C) + (a+1/a * RC1P/C, -1/a * RC2P/C)
+// Used within SolutionObject only; assumes valid input everywhere!
+class SolutionData {
+public:
+   // short string version of descriptor, e.g. GPS:12:PC  =>  G12PC
+   string sfcodes;
+   // vector of constants in linear combination, parallel to obsids
+   // probably (a+1)/a and -1/a where a is alpha(freq1,freq2)
+   vector<double> consts;
+   // vector of RinexObsIDs in linear combination, parallel to consts
+   vector<vector<string> > obsids;
+   // vector of indexes into the RinexObsData map for each obsids
+   vector<vector<int> > indexes;
+
+   // For use in ComputeData()
+   // ObsIDs actually used - parallel to consts - passed to DAT output
+   vector<string> usedobsids;
+   // raw pseudoranges
+   vector<double> RawPR;
+   // computed pseudorange and iono delay
+   double PR, RI;
+
+   // default and only constructor; input must NOT have + but may have dual freq
+   SolutionData(const string& desc)
+   {
+      vector<string> fields = split(desc,':');
+      sfcodes = ObsID::map3to1sys[fields[0]];   // first char of sfcodes
+      char csys(sfcodes[0]);
+      sfcodes += fields[1];                     // 1 or 2 freq chars
+      sfcodes += fields[2];
+   }
+
+   // Destructor
+   ~SolutionData() {}
+
+   // get the system as 1-char string
+   string getSys(void) { return string(1,sfcodes[0]); }
+
+   // get the freqs as string
+   string getFreq(void)
+   {
+      if(isDigitString(sfcodes.substr(1,2)))
+         return sfcodes.substr(1,2);
+      return sfcodes.substr(1,1);
+   }
+
+   // get codes
+   string getCodes(void)
+   {
+      if(isDigitString(sfcodes.substr(1,2)))
+         return sfcodes.substr(3);
+      return sfcodes.substr(2);
+   }
+
+   // dump
+   string asString(void)
+   {
+      int i,j;
+      ostringstream oss;
+      oss << "(" << sfcodes << ")";
+      oss << " " << ObsID::map1to3sys[sfcodes.substr(0,1)];
+      for(i=0; i<consts.size(); i++) {
+         oss << " [c=" << fixed << setprecision(3) << consts[i];
+         for(j=0; j<obsids[i].size(); j++)
+            oss << (j==0 ? " o=":",") << obsids[i][j];
+         oss << "]";
+      }
+      return oss.str();
+   }
+
+   // define the consts and obsids vectors, given the obstype map from RINEX header
+   bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
+   {
+      int i,j,k;
+      string sys1=getSys();
+      string frs=getFreq();
+      string codes=getCodes();
+
+      for(i=0; i<frs.size(); i++) {       // loop over frequencies
+         // add place holders now
+         consts.push_back(1.0);
+         vector<string> vs;
+         obsids.push_back(vs);
+         vector<int> vi;
+         indexes.push_back(vi);
+
+         for(j=0; j<codes.size(); j++) {  // loop over codes
+            // the desired ObsID
+            string obsid = string("C") + string(1,frs[i]) + string(1,codes[j]);
+
+            // now loop over available RinexObsTypes : map<1-char sys, string RObsID>
+            map<string,vector<RinexObsID> >::const_iterator it;
+            for(it=mapObsTypes.begin(); it != mapObsTypes.end(); ++it) {
+               if(it->first != sys1) continue;                 // wrong system
+
+               // loop over obs types
+               const vector<RinexObsID>& vecROID(it->second);
+               for(k=0; k<vecROID.size(); k++) {
+                  if(vecROID[k].asString() == obsid) {         // found it
+                     obsids[i].push_back(obsid);
+                     indexes[i].push_back(k);
+                  }
+               }
+            }  // end loop over RINEX obs types in header
+         }  // end loop over codes
+      }  // end loop over freqs
+
+      // no obs ids found, for either frequency
+      if(obsids[0].size() == 0 || (obsids.size() > 1 && obsids[1].size() == 0))
+         return false;
+
+      // compute constants
+      if(obsids.size() > 1) {
+         int na(asInt(frs.substr(0,1)));
+         int nb(asInt(frs.substr(1,1)));
+         RinexSatID sat(sys1);
+         sat.fromString(sys1);
+         double alpha = getAlpha(sat,na,nb);
+         if(alpha == 0.0) return false;
+         consts[1] = -1.0/alpha;
+         consts[0] = 1.0 - consts[1];
+      }
+
+      return true;
+   }  // end ChooseObsIDs()
+
+   // compute the actual datum, for the given satellite, given the RinexObsData vector
+   // remember which ObsIDs were actually used, in usedobsids
+   // return true if the data could be computed
+   bool ComputeData(const RinexSatID& sat, const vector<RinexDatum>& vrd)
+   {
+      usedobsids.clear();
+      RawPR.clear();
+      PR = RI = 0.0;
+
+      string sys1=getSys();
+      if(sys1[0] != sat.systemChar())              // wrong system
+         return false;
+
+      string frs=getFreq();
+      for(int i=0; i<frs.size(); i++) {            // loop over frequencies
+         RawPR.push_back(0.0);                     // placeholder = 0 == missing
+         usedobsids.push_back(string("---"));      // placeholder == none
+         for(int j=0; j<indexes[i].size(); j++) {  // loop over codes (RINEX indexes)
+            int k = indexes[i][j];
+            if(vrd[k].data == 0.0)                 // data is no good
+               continue;
+            usedobsids[i] = obsids[i][j];          // use this ObsID
+            RawPR[i] = vrd[k].data;                // use this data
+            PR += RawPR[i] * consts[i];            // compute (dual-freq) PR
+            break;
+         }
+      }
+
+      // missing data?
+      if(RawPR[0]==0.0 || (frs.size()>1 && RawPR[1]==0.0)) return false;
+
+      // iono delay
+      if(consts.size() > 1) RI = consts[2]*(RawPR[0] - RawPR[1]);
+
+      return true;
+   }  // end ComputeData()
+
+   // compute and return a string of the form fc[fc] (freq code freq code) giving
+   // the frequency and code of the data actually used by ComputeData. If no data
+   // was available, then use '-' for the code.
+   string usedString(void)
+   {
+      string msg;
+      string frs = getFreq();
+      for(int i=0; i<frs.size(); i++) {
+         msg += frs[i];
+         msg += (usedobsids.size() > i ? usedobsids[i].substr(2,1) : "?");
+      }
+      return msg;
+   }
+
+}; // end class SolutionData
+
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
 // Object to encapsulate everything for one solution (system:freq:code)
 class SolutionObject {
 public:
@@ -254,56 +446,57 @@ public:
    // Destructor
    ~SolutionObject() throw() { }
 
+   // static function to determine consistency of input descriptor
+   // msg returns explanation
+   static bool ValidateDescriptor(string desc, string& msg);
+
    // check validity of input descriptor, set default values
    void Initialize(const string& desc) throw()
    {
-      nepochs = 0;
+      if(!ValidateDescriptor(desc, Descriptor)) {
+         isValid = false;
+         return;
+      }
+      isValid = true;
+
+      // parse desc into systems, freqs, codes, etc
       Descriptor = desc;
       ParseDescriptor();
 
-      // TD test for validity?
-      isValid = true;
+      nepochs = 0;
 
+      // for initialization of constants and PRSolution
       Configuration& C(Configuration::Instance());
-      b12["G"] = -1.0/C.alpha12GPS;
-      a12["G"] = 1.0 - b12["G"];
-      b15["G"] = -1.0/C.alpha15GPS;
-      a15["G"] = 1.0 - b15["G"];
-      b25["G"] = -1.0/C.alpha25GPS;
-      a25["G"] = 1.0 - b25["G"];
 
-      b12["R"] = -1.0/C.alpha12GLO;
-      a12["R"] = 1.0 - b12["R"];
-      a15["R"] = b15["R"] = a25["R"] = b25["R"] = 0.0;
+      // set defaults in PRSolution
+      prs.RMSLimit = C.RMSLimit;
+      prs.SlopeLimit = C.SlopeLimit;
+      prs.NSatsReject = C.maxReject;
+      prs.MaxNIterations = C.nIter;
+      prs.ConvergenceLimit = C.convLimit;
 
-      // others TBD
-      a12["E"] = b12["E"] = a15["E"] = b15["E"] = a25["E"] = b25["E"] = 0.0;
-      a12["S"] = b12["S"] = a15["S"] = b15["S"] = a25["S"] = b25["S"] = 0.0;
-      a12["C"] = b12["C"] = a15["C"] = b15["C"] = a25["C"] = b25["C"] = 0.0;
+      // specify systems in PRSolution
+      // sysChars ~ vec<1-char string> ~ G,R,E,C,S; must have at least one member
+      RinexSatID sat;
+      for(int i=0; i<sysChars.size(); i++) {
+         sat.fromString(sysChars[i]);               // 1-char string
+         prs.SystemIDs.push_back(sat.system);
+         LOG(DEBUG) << " Add sys " << sysChars[i] << " = " << sat
+            << " to PRS::SystemIDs";
+      }
 
-      //LOG(INFO) << fixed << setprecision(6)
-      //   << " beta12GPS = " << C.beta12GPS << "\n"
-      //   << " beta12GLO = " << C.beta12GLO << "\n"
-      //   << " beta15GPS = " << C.beta15GPS << "\n"
-      //   << " beta25GPS = " << C.beta25GPS << "\n"
-      //   << " alpha12GPS = " << C.alpha12GPS << "\n"
-      //   << " alpha12GLO = " << C.alpha12GLO << "\n"
-      //   << " alpha15GPS = " << C.alpha15GPS << "\n"
-      //   << " alpha25GPS = " << C.alpha25GPS << "\n"
-      //   << " GPS a12 b12 " << a12["G"] << " " << b12["G"] << "\n"
-      //   << " GLO a12 b12 " << a12["R"] << " " << b12["R"] << "\n"
-      //   << " GPS a15 b15 " << a15["G"] << " " << b15["G"] << "\n"
-      //   << " GPS a25 b25 " << a25["G"] << " " << b25["G"];
+      // initialize apriori solution
+      if(C.knownPos.getCoordinateSystem() != Position::Unknown)
+         prs.memory.fixAPSolution(C.knownPos.X(),C.knownPos.Y(),C.knownPos.Z());
+
+      return;
    }
 
-   // parse descriptor into member data 'freqs', 'syss', and 'syscodes'
+   // parse descriptor into member data and 'sysChars'
    void ParseDescriptor(void) throw();
 
-   // set defaults, mostly from configuration
-   void SetDefaults(void) throw();
-
    // Given a RINEX header, verify that the necessary ObsIDs are present, and
-   // define an ordered set of ObsIDs for each slot required.
+   // define an ordered set of ObsIDs for each component and SolutionData required.
    // Return true if enough ObsIDs are found to compute the solution.
    bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes) throw();
 
@@ -334,9 +527,6 @@ public:
 
 // member data
 
-   // linear combination constants
-   map<string,double> a12, b12, a15, b15, a25, b25;
-
    // true unless descriptor is not valid, or required ObsIDs are not available
    bool isValid;
 
@@ -345,26 +535,14 @@ public:
    // giving the preferred ObsID (sys/C/freq/attr) to use as the data
    string Descriptor;
 
-   // frequency combinations needed in this solution, e.g. "12" "15" or "12,15"
-   vector<string> freqs;
-   // string contining all the frequencies without repetition
-   string ufreqs;
+   // vector of SolutionData, one for each data component required in solution (1+).
+   vector<SolutionData> vecSolData;
 
-   // vector of 1-char strings containing systems needed in this solution: G,R,E,C,S
-   vector<string> syss;
-   // vector of satellite systems parallel to syss
-   vector<SatID::SatelliteSystem> Syss;
+   // vector of 1-char strings containing systems needed in this solution: G,R,E,C,S,J
+   vector<string> sysChars;
 
-   // map of 1-char system strings to strings containing attribute characters,
-   // in order, of ObsIDs needed in this solution, e.g. [G]=CWXP
-   map<string,string> syscodes;
-
-   // list of ObsIDs needed for this solution and available from RINEX header
-   // for each system and frequency
-   map<string, map<string, vector<string> > > mapSysFreqObsIDs;
-
-   // map of ObsIDs to indexes in RINEX header mapObsTypes, also RINEX data vector
-   map<string, int> mapObsIndex;
+   // vector of SatID::SatelliteSystem satellite systems parallel to sysChars
+   vector<SatID::SatelliteSystem> satSyss;
 
    // data for PR solution algorithm
    bool hasData;                             // true if enough data for solution
@@ -409,8 +587,8 @@ try {
    // build title = first line of output
    C.Title = C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
       + ", Run " + printTime(wallclkbeg,C.calfmt);
-   cout << C.Title << endl;
-
+   //cout << C.Title << endl;
+   
    for(;;) {
       // get information from the command line
       // iret -2 -3 -4
@@ -431,7 +609,7 @@ try {
          << " RINEX observation file" << (nfiles > 1 ? "s.":".");
 
       // output final results
-      for(size_t i=0; i<C.SolObjs.size(); ++i) {
+      for(int i=0; i<C.SolObjs.size(); ++i) {
          LOG(INFO) << "\n ----- Final output " << C.SolObjs[i].Descriptor << " -----";
          C.SolObjs[i].FinalOutput();
       }
@@ -468,8 +646,7 @@ int Initialize(string& errors) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    bool isValid(true);
-   int nread,nrec;
-   size_t i,j,nfile;
+   int i,j,nfile,nread,nrec;
    ostringstream ossE;
    CommonTime typtime;        // typical time for the dataset
 
@@ -529,33 +706,20 @@ try {
       isValid = false;
    }
 
-   // -------- RINEX clock files --------------------------
-   // Read RINEX clock files for clock (only) store.
-   // This will set the clock store to use RINEX clock rather than SP3.
-   // Read clock files before SP3, in case there are none and SP3 clock to be used.
-   if(C.InputClkFiles.size() > 0) {
-      try {
-         for(nread=0,nfile=0; nfile<C.InputClkFiles.size(); nfile++) {
-            LOG(VERBOSE) << "Load Clock file " << C.InputClkFiles[nfile];
-            C.SP3EphStore.loadRinexClockFile(C.InputClkFiles[nfile]);
-            nread++;
-         }
-      }
-      catch(Exception& e) {
-         ossE << "Error : failed to read RINEX clock files: " << e.getText(0) << endl;
-         isValid = false;
-      }
-
-      LOG(VERBOSE) << "Read " << nread << " RINEX clock files into store.\n"
-         << "RINEX clock file store contains " << C.SP3EphStore.ndataClock()
-         << " data.";
-   }
-   else LOG(VERBOSE) << "No RINEX clock files";
-
    // -------- SP3 files --------------------------
+   // if Rinex clock files are to be loaded, tell the SP3 reader so
+   bool useSP3clocks(C.InputClkFiles.size() == 0);
+
    // read ephemeris files and fill store
    // first sort them on start time; this for ultra-rapid files, which overlap in time
    if(C.InputSP3Files.size() > 0) {
+      if(!useSP3clocks) {
+         // if RINEX clocks are to be loaded, ignore the clock in the SP3 files
+         C.SP3EphStore.rejectBadClocks(false);
+         // this causes the store to ignore the SP3 clock; read RINEX clock later
+         C.SP3EphStore.useRinexClockData();
+      }
+
       ostringstream os;
       multimap<CommonTime,string> startNameMap;
       for(nfile=0; nfile<C.InputSP3Files.size(); nfile++) {
@@ -567,7 +731,7 @@ try {
                isValid = false;
                continue;
             }
-
+         
             strm.exceptions(ios_base::failbit);
             strm >> header;
          }
@@ -599,9 +763,32 @@ try {
                << e.getText(0) << endl;
             isValid = false;
          }
-
+         
       }
    }
+
+   // -------- RINEX clock files --------------------------
+   // Read RINEX clock files for clock (only) store.
+   // This will set the clock store to use RINEX clock rather than SP3.
+   // Read clock files before SP3, in case there are none and SP3 clock to be used.
+   if(C.InputClkFiles.size() > 0) {
+      try {
+         for(nread=0,nfile=0; nfile<C.InputClkFiles.size(); nfile++) {
+            LOG(VERBOSE) << "Load Clock file " << C.InputClkFiles[nfile];
+            C.SP3EphStore.loadRinexClockFile(C.InputClkFiles[nfile]);
+            nread++;
+         }
+      }
+      catch(Exception& e) {
+         ossE << "Error : failed to read RINEX clock files: " << e.getText(0) << endl;
+         isValid = false;
+      }
+
+      LOG(VERBOSE) << "Read " << nread << " RINEX clock files into store.\n"
+         << "RINEX clock file store contains " << C.SP3EphStore.ndataClock()
+         << " data.";
+   }
+   else LOG(VERBOSE) << "No RINEX clock files";
 
    // ------------- configure and dump SP3 and clock stores -----------------
    if(isValid && C.SP3EphStore.ndata() > 0) {
@@ -609,10 +796,18 @@ try {
       LOG(VERBOSE) << "SP3 Ephemeris store contains "
          << C.SP3EphStore.ndata() << " data";
 
-      // set to linear interpolation - TD input?
-      C.SP3EphStore.setClockLinearInterp();
+      // set to linear interpolation, as this is best estimate for clocks - TD input?
+      C.SP3EphStore.setClockLinearInterp();     // changes 'interp order' to 1
+
+      vector<SatID> sats(C.SP3EphStore.getSatList());
+      RinexSatID sat(sats[sats.size()-1]);
+      double dtp = C.SP3EphStore.getPositionTimeStep(sat);
+      double dtc = C.SP3EphStore.getClockTimeStep(sat);
+      LOG(VERBOSE) << "\nEphemeris Store time intervals for " << sat
+         << " are " << dtp << " (pos), and " << dtc << " (clk)";
 
       // set gap checking - don't b/c TimeStep may vary GPS/GLO
+      // TD this is a problem
       //C.SP3EphStore.setClockGapInterval(C.SP3EphStore.getClockTimeStep()+1.);
       //C.SP3EphStore.setClockMaxInterval(2*C.SP3EphStore.getClockTimeStep()+1.);
 
@@ -620,12 +815,11 @@ try {
       C.SP3EphStore.rejectPredPositions(true);
       C.SP3EphStore.rejectPredClocks(true);
 
-      // set gap checking  TD be sure InterpolationOrder is set first
+      // set gap checking  NB be sure InterpolationOrder is set first
       C.SP3EphStore.setPositionInterpOrder(10);
-      //C.SP3EphStore.setPosGapInterval(C.SP3EphStore.getPositionTimeStep()+1.);
-      //C.SP3EphStore.setPosMaxInterval(
-      //   (C.SP3EphStore.getInterpolationOrder()-1)
-      //      * C.SP3EphStore.getPositionTimeStep() + 1.);
+      C.SP3EphStore.setPosGapInterval(dtp+1.);
+      C.SP3EphStore.setPosMaxInterval(
+         (C.SP3EphStore.getInterpolationOrder()-1) * dtp + 1.);
 
       // dump the SP3 ephemeris store; while looping, check the GLO freq channel
       LOG(VERBOSE) << "\nDump clock and position stores, including file stores";
@@ -636,7 +830,6 @@ try {
       // dump a list of satellites, with counts, times and GLO channel
       C.msg = "";
       LOG(INFO) << "\nDump ephemeris sat list with count, times and GLO channel.";
-      vector<SatID> sats(C.SP3EphStore.getSatList());
       for(i=0; i<sats.size(); i++) {                           // loop over sats
          // check for some GLO channel - can't compute b/c we don't have data yet
          if(sats[i].system == SatID::systemGlonass) {
@@ -646,7 +839,7 @@ try {
                //LOG(WARNING) << "Warning - no input GLONASS frequency channel "
                //   << "for satellite " << RinexSatID(sats[i]);
                // set it to zero
-               C.GLOfreqChannel.insert(map<RinexSatID, int>::value_type(sats[i], 0));
+               C.GLOfreqChannel.insert(map<RinexSatID,int>::value_type(sats[i],0));
                it = C.GLOfreqChannel.find(sats[i]);
             }
             C.msg = string(" frch ") + rightJustify(asString(it->second),2);
@@ -658,15 +851,6 @@ try {
             << " End: " << printTime(C.SP3EphStore.getFinalTime(sats[i]),C.longfmt)
             << C.msg;
       }  // end loop over sats
-
-      RinexSatID sat(sats[0]);
-      LOG(VERBOSE) << "\nEphemeris Store time intervals for " << sat
-         << " are " << C.SP3EphStore.getPositionTimeStep(sat)
-         << " (pos), and " << C.SP3EphStore.getClockTimeStep(sat) << " (clk)";
-      sat = RinexSatID(sats[sats.size()-1]);
-      LOG(VERBOSE) << "Ephemeris Store time intervals for " << sat
-         << " are " << C.SP3EphStore.getPositionTimeStep(sat)
-         << " (pos), and " << C.SP3EphStore.getClockTimeStep(sat) << " (clk)";
    }
 
    // -------- Nav files --------------------------
@@ -708,9 +892,18 @@ try {
 
          // expand the network of time system corrections
          C.RinEphStore.expandTimeCorrMap();
+
+         // set search method
+         if(C.searchUser) C.RinEphStore.SearchUser();
+         else             C.RinEphStore.SearchNear();
       }
       catch(Exception& e) {
          ossE << "Error : while reading RINEX nav files: " << e.what() << endl;
+         isValid = false;
+      }
+
+      if(nread == 0) {
+         ossE << "Error : Unable to read any RINEX nav files." << endl;
          isValid = false;
       }
 
@@ -719,10 +912,16 @@ try {
             << nrec << " records, into store.";
          LOG(VERBOSE) << "GPS ephemeris store contains "
             << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
+         LOG(VERBOSE) << "GAL ephemeris store contains "
+            << C.RinEphStore.size(SatID::systemGalileo) << " ephemerides.";
+         LOG(VERBOSE) << "BDS ephemeris store contains "
+            << C.RinEphStore.size(SatID::systemBeiDou) << " ephemerides.";
+         LOG(VERBOSE) << "QZS ephemeris store contains "
+            << C.RinEphStore.size(SatID::systemQZSS) << " ephemerides.";
          LOG(VERBOSE) << "GLO ephemeris store contains "
             << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
-         // TD temp? debug?
-         C.RinEphStore.dump(LOGstrm);
+         // dump the entire store
+         C.RinEphStore.dump(LOGstrm,(C.debug > -1 ? 2:0));
       }
    }
 
@@ -768,9 +967,10 @@ try {
                << C.MetStore.size() << " records:";
             if(C.MetStore.size() > 0) {
                it = C.MetStore.begin();
-               if(C.MetStore.size() == 1)
-                  {LOG(VERBOSE) << "  Met store is at single time "
-                     << printTime(it->time,C.longfmt);}
+               if(C.MetStore.size() == 1) {
+                  LOG(VERBOSE) << "  Met store is at single time "
+                     << printTime(it->time,C.longfmt);
+               }
                else {
                   LOG(VERBOSE) << "  Met store starts at time "
                      << printTime(it->time,C.longfmt);
@@ -835,7 +1035,7 @@ try {
 
             word = stripFirstWord(line);  // get sat
             if(word.empty()) continue;
-
+            
             try { sat.fromString(word); }
             catch(Exception& e) { continue; }
             if(sat.system == SatID::systemUnknown || sat.id == -1) continue;
@@ -845,9 +1045,10 @@ try {
             if(!isScientificString(word)) continue;
             double bias(asDouble(word)*C_MPS*1.e-9);  // ns to m
 
-            if(C.P1C1bias.find(sat) != C.P1C1bias.end())
-               {LOG(WARNING) << "Warning : satellite " << sat
-                  << " is duplicated in P1-C1 bias file(s)";}
+            if(C.P1C1bias.find(sat) != C.P1C1bias.end()) {
+               LOG(WARNING) << "Warning : satellite " << sat
+                  << " is duplicated in P1-C1 bias file(s)";
+            }
             else {
                C.P1C1bias.insert(map<RinexSatID,double>::value_type(sat,bias));
                LOG(DEBUG) << " Found P1-C1 bias for sat " << sat
@@ -864,8 +1065,8 @@ try {
       C.decTime = C.beginTime;
       double s,sow(static_cast<GPSWeekSecond>(C.decTime).sow);
       s = int(C.decimate * int(sow/C.decimate));
-      if(::fabs(s-sow) > 1.0) { LOG(WARNING) << "Warning : decimation reference time "
-         << "(--start) is not an even GPS-seconds-of-week mark."; }
+      if(::fabs(s-sow) > 1.0) LOG(WARNING) << "Warning : decimation reference time "
+         << "(--start) is not an even GPS-seconds-of-week mark.";
    }
 
    // ------ compute rotation matrix for knownPos
@@ -907,36 +1108,89 @@ try {
    else
       C.pTrop->setDayOfYear(100);
 
-   // ------------ build SolutionObjects from solution descriptors SolDesc -----
+   // Choose transforms to be used; dump the available Helmert Tranformations
+   LOG(INFO) << "\nAvailable Helmert Tranformations:";
+   for(i=0; i<HelmertTransform::stdCount; i++) {
+      const HelmertTransform& ht(HelmertTransform::stdTransforms[i]);
+      // pick the ones to use
+      C.msg = "";
+      if(ht.getFromFrame() != ReferenceFrame::PZ90)
+         ;
+      else if(ht.getToFrame() == ReferenceFrame::ITRF) {
+         if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
+            { C.PZ90ITRF = i; C.msg = "\n  [use this for PZ90-ITRF]"; }
+         else
+            { C.PZ90ITRFold = i; C.msg = "\n  [use this for PZ90-ITRF old]"; }
+      }
+      else if(ht.getToFrame() == ReferenceFrame::WGS84) {
+         if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
+            { C.PZ90WGS84 = i; C.msg = "\n  [use this for PZ90-WGS84]"; }
+         else
+            { C.PZ90WGS84old = i; C.msg = "\n  [use this for PZ90-WGS84 old]"; }
+      }
+
+      LOG(INFO) << i << " " << ht.asString() << C.msg;
+   }
+   LOG(INFO) << "End of Available Helmert Tranformations.\n";
+
+   // ----- build SolutionObjects from solution descriptors inSolDesc -----
    // these may be invalid, or there may not be data for them -> invalid
-   for(j=0,i=0; i<C.SolDesc.size(); i++) {
-      LOG(DEBUG) << "Build solution object from descriptor " << C.SolDesc[i];
-      SolutionObject so(C.SolDesc[i]);
-      if(!so.isValid) {
-         LOG(WARNING) << "Warning : solution descriptor " << C.SolDesc[i]
-            << " is invalid - ignore";
+   for(j=0,i=0; i<C.inSolDesc.size(); i++) {
+      string msg;
+      LOG(DEBUG) << "Build solution object from descriptor " << C.inSolDesc[i];
+      if(!SolutionObject::ValidateDescriptor(C.inSolDesc[i],msg)) {
+         LOG(WARNING) << "Warning : --sol " << msg;
          continue;
       }
 
-      so.SetDefaults();    // NB. requires C.knownPos and so.syss
+      // create a solution object
+      SolutionObject SO(C.inSolDesc[i]);
+      if(!SO.isValid) {
+         LOG(WARNING) << "Warning : solution descriptor " << C.inSolDesc[i]
+            << " could not be created - ignore";
+         continue;
+      }
 
-      C.SolObjs.push_back(so);
-      LOG(DEBUG) << "Initial solution #" << ++j << " " << C.SolDesc[i];
+      // is there ephemeris for each system?
+      bool ok=true;
+      for(int k=0; k<SO.sysChars.size(); k++) {
+         RinexSatID sat;
+         sat.fromString(SO.sysChars[k]);
+         LOG(INFO) << " Found system " << SO.sysChars[k]
+            << " with " << C.RinEphStore.size(sat.system) << " ephemerides.";
+         if((C.pEph == &C.RinEphStore && C.RinEphStore.size(sat.system) == 0) ||
+            (C.pEph == &C.SP3EphStore && C.SP3EphStore.ndata(sat.system) == 0)) {
+            LOG(WARNING) << "Warning - no ephemeris found for system "
+               << ObsID::map1to3sys[SO.sysChars[k]] << ", in solution descriptor "
+               << C.inSolDesc[i] << " => invalidate.";
+            ok = false;
+         }
+      }
+      if(!ok) continue;
+
+      // save the SolutionObject
+      C.SolObjs.push_back(SO);
+      LOG(DEBUG) << "Initial solution #" << ++j << " " << C.inSolDesc[i];
+   }  // end loop over input solution descriptors
+
+   if(C.SolObjs.size() == 0) {
+      LOG(ERROR) << "Error: No valid solution descriptors";
+      isValid = false;
    }
 
-   // keep a list of all systems used, for convenience
-   C.allsyss.clear();
+   // keep a list of all system characters used, for convenience
+   C.allSystemChars.clear();
    for(i=0; i<C.SolObjs.size(); i++) {
-      for(j=0; j<C.SolObjs[i].syss.size(); j++) {
-         if(find(C.allsyss.begin(), C.allsyss.end(), C.SolObjs[i].syss[j])
-                                                               == C.allsyss.end())
-            C.allsyss.push_back(C.SolObjs[i].syss[j]);
+      for(j=0; j<C.SolObjs[i].sysChars.size(); j++) {
+         if(find(C.allSystemChars.begin(), C.allSystemChars.end(),
+               C.SolObjs[i].sysChars[j]) == C.allSystemChars.end())
+            C.allSystemChars.push_back(C.SolObjs[i].sysChars[j]);
       }
    }
    if(C.debug > -1) {
       ostringstream oss;
       oss << "List of all systems needed for solutions";
-      for(i=0; i<C.allsyss.size(); i++) oss << " " << C.allsyss[i];
+      for(i=0; i<C.allSystemChars.size(); i++) oss << " " << C.allSystemChars[i];
       LOG(DEBUG) << oss.str();
    }
 
@@ -956,8 +1210,7 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    bool firstepoch(true);
-   int k,iret,nfiles;
-   size_t i,j,nfile;
+   int i,j,k,iret,nfile,nfiles;
    Position PrevPos(C.knownPos);
    Rinex3ObsStream ostrm;
 
@@ -993,6 +1246,8 @@ try {
       if(C.verbose) {
          LOG(VERBOSE) << "Input header for RINEX file " << filename;
          Rhead.dump(LOGstrm);
+         LOG(VERBOSE) << "Time system for RINEX file " << filename
+            << " is " << istrm.timesystem.asString();
       }
 
       // does header include C1C (for DCB correction)?
@@ -1060,21 +1315,23 @@ try {
          firstepoch = false;
       }
 
-      // figure out where the desired pseudoranges are ----------------
-      LOG(INFO) << "Solutions to be computed for this file:";
+      // Dump the solution descriptors and needed conversions ---------
+      LOG(INFO) << "\nSolutions to be computed for this file:";
       for(i=0; i<C.SolObjs.size(); ++i) {
          bool ok(C.SolObjs[i].ChooseObsIDs(Rhead.mapObsTypes));
          //LOG(INFO) << (ok ? "    ":" NO ") << i+1 << " " << C.SolObjs[i].dump(0);
          LOG(INFO) << C.SolObjs[i].dump(0);
+         if(C.verbose) for(j=0; j<C.SolObjs[i].sysChars.size(); j++) {
+            TimeSystem ts;
+            if(C.SolObjs[i].sysChars[j] == "G") ts = TimeSystem::GPS;
+            if(C.SolObjs[i].sysChars[j] == "R") ts = TimeSystem::GLO;
+            if(C.SolObjs[i].sysChars[j] == "E") ts = TimeSystem::GAL;
+            if(C.SolObjs[i].sysChars[j] == "C") ts = TimeSystem::BDT;
+            if(C.SolObjs[i].sysChars[j] == "S") ts = TimeSystem::GPS;
+            if(C.SolObjs[i].sysChars[j] == "J") ts = TimeSystem::QZS;
+            LOG(INFO) << C.RinEphStore.dumpTimeSystemCorrection(istrm.timesystem,ts);
+         }
       }
-
-      //GPSWeekSecond g(1577,345600.);
-      //CommonTime c(g); //,d(g.convertToCommonTime());
-      // e=static_cast<CommonTime>(g);
-      //LOG(INFO) << "GPSWS->CT " << printTime(g,"g %F %10.3g = g %Y,%m,%d,%H,%M,%S")
-      //         << " = " << printTime(c,"c %F %10.3g = c %Y,%m,%d,%H,%M,%S")
-      //         //<< " = " << printTime(d,"d %F %10.3g = d %Y,%m,%d,%H,%M,%S")
-      //         ;
 
       // loop over epochs ---------------------------------------------
       while(1) {
@@ -1144,8 +1401,11 @@ try {
             string sys(asString(sat.systemChar()));
 
             // is this system excluded?
-            if(find(C.allsyss.begin(),C.allsyss.end(),sys) == C.allsyss.end()) {
-               LOG(DEBUG) << " Sat " << sat << " : system " << sys << " is excluded.";
+            if(find(C.allSystemChars.begin(),C.allSystemChars.end(),sys)
+                  == C.allSystemChars.end())
+            {
+               LOG(DEBUG) << " Sat " << sat << " : system " << sys
+                  << " is not needed.";
                continue;
             }
 
@@ -1210,7 +1470,8 @@ try {
          LOG(INFO) << "";
 
          // compute the solution(s) --------------------------
-         if(C.verbose) C.msg = printTime(Rdata.time,"DAT "+C.gpsfmt);   // tag for DAT
+         // tag for DAT
+         if(C.verbose) C.msg = printTime(Rdata.time,"DAT "+C.gpsfmt);
 
          // compute and print the solution(s) ----------------
          for(i=0; i<C.SolObjs.size(); ++i) {
@@ -1218,8 +1479,8 @@ try {
             if(!C.SolObjs[i].isValid) continue;
 
             // dump the "DAT" record
-            if(C.verbose) {LOG(VERBOSE)
-               << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);}
+            if(C.verbose) LOG(VERBOSE)
+               << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);
 
             // compute the solution
             j = C.SolObjs[i].ComputeSolution(Rdata.time);
@@ -1314,13 +1575,13 @@ void Configuration::SetDefaults(void) throw()
 
    decimate = elevLimit = 0.0;
    forceElev = false;
+   searchUser = false;
    defaultstartStr = string("[Beginning of dataset]");
    defaultstopStr = string("[End of dataset]");
    beginTime = gpsBeginTime = GPSWeekSecond(0,0.,TimeSystem::Any);
    endTime = CommonTime::END_OF_TIME;
 
-   inSolSys = string("GPS,GLO,GPS+GLO");
-   inSolFreq.push_back(string("12"));
+   SOLhelp = false;
 
    TropType = string("NewB");
    TropPos = TropTime = false;
@@ -1344,33 +1605,89 @@ void Configuration::SetDefaults(void) throw()
    help = verbose = false;
    debug = -1;
 
-   // not for command line, but for processing of command line
-   vecSys.push_back(string("GPS"));
-   vecSys.push_back(string("GLO"));
-   vecSys.push_back(string("GAL"));
-   vecSys.push_back(string("GEO"));
-   vecSys.push_back(string("COM"));
-
-   //map<string,string> defMapSysCodes;   // map of system, default codes e.g. GLO/PC
-   // TD shouldn't these come from ObsID?
-   defMapSysCodes.insert(map<string,string>::value_type(
-      string("GPS"),string("PYWLMIQSXCN")));
-   defMapSysCodes.insert(map<string,string>::value_type(
-      string("GLO"),string("PC")));
-   defMapSysCodes.insert(map<string,string>::value_type(
-      string("GAL"),string("ABCIQXZ")));
-   defMapSysCodes.insert(map<string,string>::value_type(
-      string("GEO"),string("IQXC")));
-   defMapSysCodes.insert(map<string,string>::value_type(
-      string("COM"),string("IQX")));
-
-   map1to3Sys["G"] = "GPS";   map3to1Sys["GPS"] = "G";
-   map1to3Sys["R"] = "GLO";   map3to1Sys["GLO"] = "R";
-   map1to3Sys["E"] = "GAL";   map3to1Sys["GAL"] = "E";
-   map1to3Sys["S"] = "GEO";   map3to1Sys["GEO"] = "S";
-   map1to3Sys["C"] = "COM";   map3to1Sys["COM"] = "C";
-
 }  // end Configuration::SetDefaults()
+
+//------------------------------------------------------------------------------------
+void Configuration::SolDescHelp(void)
+{
+   // build the table
+   string systs(ObsID::validRinexSystems);
+   string freqs(ObsID::validRinexFrequencies);
+   string codes;
+   string space("   ");
+   int i,j,k;
+   // first find the length of the longest codes entry for each system
+   map<char,int> syslen;
+   for(i=0; i<systs.size(); i++) {
+      for(k=0, j=0; j<freqs.size(); j++) {
+         codes = ObsID::validRinexTrackingCodes[systs[i]][freqs[j]];
+         strip(codes,' '); strip(codes,'*');
+         // GPS C1N and C2N are not allowed
+         if(systs[i] == 'G' && (freqs[j] == '1' || freqs[j] == '2')) strip(codes,'N');
+         if(codes.length() > k) k=codes.length();
+      }
+      syslen[systs[i]] = k;
+   }
+   string table;
+   table = space + string("Valid PR tracking codes for systems and frequencies:\n");
+   string head;
+   for(i=0; i<systs.size(); i++) {
+      head += (i==0 ? space+string("freq| ") : string(" | "));
+      codes = ObsID::map1to3sys[string(1,systs[i])];
+      head += center(codes,syslen[systs[i]]);
+   }
+   //head += string("\n") + space + string(head.size()-space.size()+1,'-');
+   table += head + string("\n");
+   for(i=0; i<freqs.size(); i++) {
+      table += space + string("  ") + string(1,freqs[i]);
+      for(j=0; j<systs.size(); j++) {
+         codes = ObsID::validRinexTrackingCodes[systs[j]][freqs[i]];
+         strip(codes,' '); strip(codes,'*');
+         // GPS C1N and C2N are not allowed
+         if(systs[i] == 'G' && (freqs[j] == '1' || freqs[j] == '2')) strip(codes,'N');
+         if(codes.empty()) codes = string("---");
+         table += string(" | ") + center(codes,syslen[systs[j]]);
+      }
+      if(i < freqs.size()-1) table += string("\n");
+   }
+
+   ostringstream os;
+   os << "=== Help for Solution Descriptors, option --sol <S:F:C> ===\n"
+      << " The --sol option is repeatable, so all --sol solutions, if valid,\n"
+      << "   will be computed and output in one run of the program.\n\n"
+      << " Solution descriptors are of the form S:F:C where\n"
+      << "   S is a system, one of:";
+   for(i=0; i<systs.size(); i++) os <<" "<< ObsID::map1to3sys[string(1,systs[i])];
+   //os << " or";
+   //for(i=0; i<systs.size(); i++) os <<" "<< systs[i];
+   os << endl;
+   os << "   F is a frequency, one of:";
+   for(i=0; i<freqs.size(); i++) os << " " << freqs[i];
+   os << endl;
+   os << "   C is an ordered set of one or more tracking codes, for example WPC\n"
+      << "   These must be consistent - not all F and C apply to all systems.\n\n";
+   os << " The S:F:C are the RINEX codes used to identify pseudorange "
+      << "observations." << endl;
+   os << table << endl << endl;
+   os << " Example solution descriptors are GPS:1:P  GLO:3:I  BDS:7:Q\n"
+      << "   These are single-frequency solutions, that is the GPS:1:P solution\n"
+      << "   will use GPS L1 P-code pseudorange data to find a solution.\n"
+      << " Dual frequency solutions are allowed; they combine data of different\n"
+      << "   frequencies to eliminate the ionospheric delay, for example\n"
+      << "   GPS:12:PC is the usual L1/L2-ionosphere-corrected GPS solution.\n"
+      << " Triple frequency solutions are not supported.\n\n"
+      << " More that one tracking code may be provided, for example GPS:12:PC\n"
+      << "  This tells PRSolve to prefer P, but if it is not available, use C.\n\n"
+      << " Finally, combined solutions may be specified, in which different\n"
+      << "  data types, even from different systems, are used together.\n"
+      << "  The component descriptors are combined using a '+'. For example\n"
+      << "    GPS:12:PC+GLO:12:PC\n"
+      << "  describes a dual frequency solution that uses both GPS and GLO\n"
+      << "  L1/L2 P-code (or C/A) data in a single solution algorithm.\n";
+
+   LOG(INFO) << Title;
+   LOG(INFO) << os.str();
+}
 
 //------------------------------------------------------------------------------------
 int Configuration::ProcessUserInput(int argc, char **argv) throw()
@@ -1390,9 +1707,20 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(iret == -2) return iret;      // bad alloc
    if(iret == -3) return iret;      // invalid command line
 
+   // SOLhelp: print explanation of Solution Descriptors
+   if(SOLhelp) {
+      SolDescHelp();
+      return 1;
+   }
+
    // help: print syntax page and quit
    if(opts.hasHelp()) {
+      LOG(INFO) << Title;
       LOG(INFO) << cmdlineUsage;
+      //{
+      //   LOG(INFO) << "Valid RINEX observation IDs:";
+      //   RinexObsID::dumpCheck(LOGstrm);
+      //}
       return 1;
    }
 
@@ -1403,7 +1731,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(INFO) << "Warning - unrecognized arguments:";
-      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
+      for(int i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(INFO) << "  " << cmdlineUnrecognized[i];
       LOG(INFO) << "End of unrecognized arguments";
    }
@@ -1490,7 +1818,7 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "eph", "fn", true, false, &InputSP3Files,"",
             "Input Ephemeris+clock (SP3 format) file name(s)");
    opts.Add(0, "nav", "fn", true, false, &InputNavFiles, "",
-            "Input RINEX nav file name(s)");
+            "Input RINEX nav file name(s) (also cf. --BCEpast)");
 
    opts.Add(0, "clk", "fn", true, false, &InputClkFiles,
             "# Other (optional) input files",
@@ -1529,25 +1857,14 @@ string Configuration::BuildCommandLine(void) throw()
             "Apply elev mask (--elev, w/o --ref) using sol. at prev. time tag");
    opts.Add(0, "exSat", "sat", true, false, &exclSat, "",
             "Exclude this satellite [eg. G24 | R | R23,G31]");
+   opts.Add(0, "BCEpast", "", false, false, &searchUser, "",
+            "Use 'User' find-ephemeris-algorithm (else nearest) (--nav only)");
 
-   opts.Add(0, "sol", "s:f:c", true, false, &inSolDesc, "# Solution Descriptors"
-            "  [NB. --sol causes --sys, --code and --freq to be ignored]",
-            "Explicit descriptor <sys:freq:code> e.g. GPS+GLO:12:PWC+PC");
-   opts.Add(0, "sys", "s", true, false, &inSolSys,"",
-            "Compute solutions for system(s) (GNSSs) <s>=S[,S,S+S], etc.");
-   opts.Add(0, "code", "s:c", true, false, &inSolCode, "                    "
-            "Allowed systems s: GPS,GLO,GAL,GEO(SBAS),COM",
-            "System <s> preferred tracking codes <c>, in order [cf RINEX]");
-   // make up a string of default codes
-   string defcode = "Defaults: GPS:"+defMapSysCodes["GPS"]
-                           +", GLO:"+defMapSysCodes["GLO"]
-                           +", GAL:"+defMapSysCodes["GAL"]
-                           +", GEO:"+defMapSysCodes["GEO"]
-                           +", COM:"+defMapSysCodes["COM"];
-   opts.Add(0, "freq", "f", true, false, &inSolFreq,
-            "                    " + defcode,
-            //"Defaults: GPS:PYMIQSLXWCN, GLO:PC, GAL:ABCIQXZ, GEO:CIQX, COM:IQX",
-            "Frequencies (L<f>) to use in solution [e.g. 1 12 12+15]");
+   opts.Add(0, "sol", "S:F:C", true, false, &inSolDesc,
+            "# Solution Descriptors <S:F:C> define data used in solution algorithm",
+            "Specify data System:Freqs:Codes to be used to generate solution(s)");
+   opts.Add(0, "SOLhelp", "", false, false, &SOLhelp, "",
+            "Show more information on --sol <Solution Descriptor>");
 
    opts.Add(0, "wt", "", false, false, &weight,
             "# Solution Algorithm:",
@@ -1664,6 +1981,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
             Epoch ep;
             ep.scanf(msg,(n==2 ? fmtGPS : fmtCAL));
             (i==0 ? beginTime : endTime) = static_cast<CommonTime>(ep);
+            (i==0 ? beginTime : endTime).setTimeSystem(TimeSystem::Any);
          }
          catch(Exception& e) { ok = false; LOG(INFO) << "excep " << e.what(); }
       }
@@ -1718,8 +2036,9 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       }
    }
 
-   // build descriptors (sys,freq,code) of output solution ------------------------
-   BuildSolDescriptors(oss);
+   //// build descriptors (sys,freq,code) of output solution ------------------------
+   //BuildCandidateSolDescriptors(oss);
+   // Build Solution objects from input solution descriptors ------------------------
 
    // open the log file (so warnings, configuration summary, etc can go there) -----
    logstrm.open(LogFile.c_str(), ios::out);
@@ -1752,181 +2071,6 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
    return 0;
 
 } // end Configuration::ExtraProcessing(string& errors) throw()
-
-//------------------------------------------------------------------------------------
-void Configuration::BuildSolDescriptors(ostringstream& oss) throw()
-{
-   bool ok;
-   size_t i,j,k;
-   vector<string> fld,subfld,codfld;
-
-   // check and save explicit input solution descriptors
-   if(inSolDesc.size() > 0) {       // user has input explicit solution descriptors
-      // ignore other input
-      inSolSys = string();
-      inSolFreq.clear();
-      inSolCode.clear();
-
-      // check them and save the good ones
-      for(i=0; i<inSolDesc.size(); ++i) {
-         fld = split(inSolDesc[i],':');
-         if(fld.size() != 3)                       // wrong number of fields
-            oss << "Error : invalid arg in --sol : " << inSolDesc[i] << endl;
-         else {
-            ok = true;
-
-            // check the freq(s) first
-            subfld = split(fld[1],'+');            // fld[1] ~ 12 1+2 15 12+15
-            for(j=0; j<subfld.size(); j++) {       // subfld ~ 12 1 2 15
-               if(subfld[j].size() > 2) {
-                  oss << "Error : only single or dual frequency allowed in --sol : "
-                     << subfld[j] << endl;
-                  ok = false;
-               }
-               for(k=0; k<subfld[j].size(); k++) {
-                  if(subfld[j][k] != '1' &&
-                     subfld[j][k] != '2' && subfld[j][k] != '5') {
-                        oss << "Error : invalid frequency in --sol " << subfld[j]
-                           << endl;
-                     ok = false;
-                  }
-               }
-            }
-
-            // check the system(s) and code(s)
-            subfld = split(fld[0],'+');
-            codfld = split(fld[2],'+');
-
-            // same number of systems/codes?
-            if(subfld.size() != codfld.size()) {
-               oss << "Error : in --sol, each system must have codes : "
-                  << inSolDesc[i] << " e.g. GPS+GLO,12,PWC+PC\n";
-               ok = false;
-            }
-
-            // check the code(s)
-            else for(j=0; j<subfld.size(); j++) {
-               msg = defMapSysCodes[subfld[j]];    // all allowed for this sys
-               for(k=0; k<codfld[j].size(); k++) {
-                  if(msg.find(codfld[j][k]) == string::npos) {
-                     oss << "Error : code " << codfld[j][k]
-                        << " is not allowed for system " << subfld[j] << endl;
-                     ok = false;
-                  }
-               }
-            }
-            if(ok) SolDesc.push_back(inSolDesc[i]);
-         }
-      }
-
-      return;           // all other --sys --freq --code input is ignored
-   }
-
-   // process and check --sys
-   vector<string> inSystems;
-   if(!inSolSys.empty()) {
-      fld = split(inSolSys,',');
-
-      for(i=0; i<fld.size(); i++) {
-         ok = true;
-         subfld = split(fld[i],'+');
-         for(j=0; j<subfld.size(); j++) {
-            if(find(vecSys.begin(),vecSys.end(),subfld[j]) == vecSys.end()) {
-               oss << "Error : invalid system in --sys : " << subfld[j] << endl;
-               ok = false;
-            }
-         }
-         if(ok) inSystems.push_back(fld[i]);
-      }
-   }
-
-   // process and check --code
-   if(inSolCode.size() == 0)                 // take all defaults
-      mapSysCodes = defMapSysCodes;
-
-   else for(i=0; i<inSolCode.size(); i++) {  // check and process input
-      fld = split(inSolCode[i],':');
-      ok = true;
-
-      // wrong number of fields
-      if(fld.size() != 2) {
-         oss << "Error : invalid arg in '--code S:C' : " << inSolCode[i]
-                  << " (NB. use ':' not ',' e.g. GPS:PYWXC)" << endl;
-         ok = false;
-      }
-
-      upperCase(fld[0]);
-      upperCase(fld[1]);
-      if(find(vecSys.begin(),vecSys.end(),fld[0]) == vecSys.end()) {
-         // system is not found
-         oss << "Error : invalid system in --code : " << fld[0] << endl;
-         ok = false;
-      }
-
-      // check the codes
-      msg = defMapSysCodes[fld[0]];       // all allowed for this sys
-      for(j=0; j<fld[1].size(); j++) {
-         string::size_type pos(0);
-         if(msg.find(fld[1][j],pos) == string::npos) {
-            oss << "Error : code " << fld[1][j] << " is not allowed for system "
-               << fld[0] << endl;
-            ok = false;
-         }
-      }
-
-      // ok - use either input or default
-      if(ok) mapSysCodes[fld[0]] = fld[1];
-      else   mapSysCodes[fld[0]] = defMapSysCodes[fld[0]];
-   }
-
-   // process and check --freq
-   vector<string> inFreqs;
-   for(i=0; i<inSolFreq.size(); i++) {
-      fld = split(inSolFreq[i],'+');
-
-      ok = true;
-      for(j=0; j<fld.size(); j++) {
-         if(fld[j].size() > 2) {
-            oss << "Error : only single or dual frequency allowed in --freq : "
-               << inSolFreq[i] << endl;
-            ok = false;
-         }
-         else for(k=0; k<fld[j].size(); k++) {
-            if(fld[j][k] != '1' && fld[j][k] != '2' && fld[j][k] != '5') {
-               oss << "Error : invalid frequency in --freq : " << fld[j][k] << endl;
-               ok = false;
-            }
-            else LOG(DEBUG) << "  Accept frequency " << fld[j][k];
-         }
-      }
-      if(ok) {
-         inFreqs.push_back(inSolFreq[i]);
-         LOG(DEBUG) << " Accept frequency combo " << inSolFreq[i];
-      }
-   }
-
-   // do we have input?  always yes, since there are defaults...
-   if(inSystems.size()==0 || inFreqs.size() == 0) {
-      oss << "Error : without --sol, both --sys and --freq must be given"
-         << endl;
-      return;
-   }
-
-   // build descriptors
-   for(i=0; i<inSystems.size(); ++i) {
-      fld = split(inSystems[i],'+');
-
-      for(j=0; j<inFreqs.size(); ++j) {   // for each frequency
-         // desc = sys:freq:code e.g. GPS+GLO:1+2:PC+PC
-         string ds(inSystems[i] + ":" + inFreqs[j] + ":" + mapSysCodes[fld[0]]);
-         // append codes for other systems
-         for(k=1; k<fld.size(); k++)  ds += "+" + mapSysCodes[fld[k]];
-         // save it
-         SolDesc.push_back(ds);
-      }
-   }
-
-}  // end void Configuration::BuildSolDescriptors(ostringstream& oss) throw()
 
 //------------------------------------------------------------------------------------
 // update weather in the trop model using the Met store
@@ -1982,183 +2126,117 @@ void Configuration::setWeather(const CommonTime& ttag) throw(Exception)
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
-void SolutionObject::ParseDescriptor(void) throw()
+// handles mixed system descriptors (desc+desc) by split and call itself
+// return true if system/freq/codes are consistent
+bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
 {
-   size_t i,j;
-   Configuration& C(Configuration::Instance());
+   stripLeading(desc);
+   stripTrailing(desc);
+   if(desc.empty()) return false;
 
-   vector<string> flds(split(Descriptor,':'));
-
-   freqs = split(flds[1],'+');               // flds[1] ~ '12' '15' or '12+15'
-   // TD require single or dual frequency?
-
-   // build a list (string) of unique frequencies
-   ufreqs = string("");
-   for(i=0; i<freqs.size(); i++)
-      for(j=0; j<freqs[i].size(); j++)
-         if(ufreqs.find(freqs[i][j]) == string::npos)
-            ufreqs += string(1,freqs[i][j]);
-
-   map<string,string>::const_iterator it(C.map1to3Sys.begin());
-   for( ; it != C.map1to3Sys.end(); ++it)
-      replaceAll(flds[0],it->second,it->first);
-   syss = split(flds[0],'+');                // syss ~ vec<char> ~ G,R,E,C,S
-
-   for(i=0; i<syss.size(); i++) {            // Syss ~ vec<SatID::sys> parallel syss
-      RinexSatID sat(syss[i]);
-      Syss.push_back(sat.system);
+   int i,j;
+   vector<string> fields = split(desc,'+');
+   if(fields.size() > 1) {
+      for(i=0; i<fields.size(); i++)
+         if(! ValidateDescriptor(fields[i],msg))
+            return false;
+      return true;
    }
 
-   vector<string> code(split(flds[2],'+'));  // code ~ vec<str> parallel to syss
-   syscodes.clear();
-   for(i=0; i<syss.size(); i++)              // build a little map [G]=PWXC
-      syscodes.insert(map<string,string>::value_type(syss[i],code[i]));
+   // Now we can assumes descriptor is single system and does NOT contain +
+   fields = split(desc,':');
 
-   // build empty mapSysFreqObsIDs   e.g. map[G][1] = vector<ObsIDs>
-   mapSysFreqObsIDs.clear();
-   for(i=0; i<syss.size(); i++) {            // loop over systems
-      map<string, vector<string> > sysmap;
-      mapSysFreqObsIDs.insert(
-         map<string,map<string,vector<string> > >::value_type(syss[i],sysmap));
-      for(j=0; j<ufreqs.size(); j++) {       // loop over unique frequencies
-         vector<string> vec;
-         mapSysFreqObsIDs[syss[i]].insert(
-            map<string,vector<string> >::value_type(ufreqs.substr(j,1),vec));
-         LOG(DEBUG) << "Build mapSysFreqObsIDs[" << syss[i]
-                     << "][" << ufreqs.substr(j,1) << "]";
+   // test system
+   string sys(fields[0]);
+   string sys1(ObsID::map3to1sys[sys]);
+   if(!sys1.size() || ObsID::validRinexSystems.find_first_of(sys1[0])==string::npos) {
+      msg = desc + " : invalid system /" + sys + "/";
+      return false;
+   }
+   char csys(sys1[0]);
+
+   // test freq(s) and code(s)
+   if(fields[1].size() > 2) {
+      msg = desc + " : only 1 or 2 frequencies allowed";
+      return false;
+   }
+
+   for(i=0; i<fields[1].size(); i++) {
+      if(ObsID::validRinexTrackingCodes[csys].find(fields[1][i]) ==
+         ObsID::validRinexTrackingCodes[csys].end())
+      {
+         msg = desc + string(" : invalid frequency /") + fields[1][i] + string("/");
+         return false;
+      }
+      string codes = ObsID::validRinexTrackingCodes[csys][fields[1][i]];
+      // GPS C1N and C2N are not allowed
+      if(csys == 'G' && (fields[1][i] == '1'||fields[1][i] == '2')) strip(codes,'N');
+      for(j=0; j<fields[2].size(); j++) {
+         if(codes.find_first_of(fields[2][j]) == string::npos) {
+            msg = desc + string(" : invalid code /") + fields[2][j] + string("/");
+            return false;
+         }
       }
    }
+
+   return true;
 }
 
 //------------------------------------------------------------------------------------
-void SolutionObject::SetDefaults(void) throw()
+// parse descriptor into member data and 'sysChars'
+// called by Initialize() which is called by c'tor
+// assumes descriptor has been validated.
+void SolutionObject::ParseDescriptor(void) throw()
 {
-   Configuration& C(Configuration::Instance());
+   int i,j,k;
+   vector<string> fields;
 
-   prs.RMSLimit = C.RMSLimit;
-   prs.SlopeLimit = C.SlopeLimit;
-   prs.NSatsReject = C.maxReject;
-   prs.MaxNIterations = C.nIter;
-   prs.ConvergenceLimit = C.convLimit;
+   sysChars.clear();          // sysChars ~ vec<string> ~ G,R,E,C,S
+   satSyss.clear();           // satSyss ~ vec<SatID::sys> parallel sysChars
 
-   // specify systems
-   // syss ~ vec<1-char string> ~ G,R,E,C,S; must have at least one member
-   RinexSatID sat;
-   for(size_t i=0; i<syss.size(); i++) {
-      sat.fromString(syss[i]);               // 1-char string
-      prs.SystemIDs.push_back(sat.system);
-      LOG(DEBUG) << " Add system " << syss[i] << " = " << sat << " to SystemIDs";
-   }
+   // split into components on '+'
+   vector<string> descs(split(Descriptor,"+"));
+   for(i=0; i<descs.size(); i++) {           // loop over component descriptors
 
-   // initialize apriori solution
-   if(C.knownPos.getCoordinateSystem() != Position::Unknown)
-      prs.memory.fixAPSolution(C.knownPos.X(),C.knownPos.Y(),C.knownPos.Z());
+      // create a SolutionData object for each component, of form SYS:F:Codes
+      // vector<SolutionData> vecSolData;
+      SolutionData sd(descs[i]);
+      LOG(INFO) << "Parser(" << i << "): " << sd.asString();
+
+      string sys1(sd.getSys()), sys3(ObsID::map3to1sys[sys1]), frs(sd.getFreq());
+
+      // system
+      if(find(sysChars.begin(),sysChars.end(),sys1) == sysChars.end()) {
+         sysChars.push_back(sys1);           // add to sysChars
+         RinexSatID sat(sys1);
+         satSyss.push_back(sat.system);      // and add to satSyss
+      }
+
+      vecSolData.push_back(sd);
+
+   }  // end loop over component descriptors
 }
 
 //------------------------------------------------------------------------------------
+// Given a RINEX header, verify that the necessary ObsIDs are present, and
+// define an ordered set of ObsIDs for each required SolutionData.
+// Return true if enough ObsIDs are found (in header) to compute the solution.
 bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    throw()
 {
-   size_t i,j,k;
+   int i,j,k,m,n;
    Configuration& C(Configuration::Instance());
    vector<string> obstypes;
 
    isValid = true;
-   mapObsIndex.clear();    // build map<string, int> , e.g. [C1C]=17
 
-   // loop over systems, then obs types
-   map<std::string,vector<RinexObsID> >::const_iterator sit;
-   for(sit=mapObsTypes.begin(); sit != mapObsTypes.end(); ++sit) {
-      string sys(sit->first);                                  // sys ~ G,R,E,C,S
-      // skip if system not found
-      if(find(syss.begin(),syss.end(),sys) == syss.end())
-         continue;
-
-      // loop over obs types
-      const vector<RinexObsID>& vec(mapObsTypes[sys]);
-      for(j=0; j<vec.size(); j++) {
-         string ot(vec[j].asString());                            // e.g. C1P
-         // reject this obs type?
-         if(ot[0] != 'C' ||                                       // not a pseudorange
-            ufreqs.find(ot[1],0) == string::npos ||               // freq not found
-            syscodes[sit->first].find(ot[2],0) == string::npos)   // code not found
-               continue;
-
-         obstypes.push_back(sys+ot);                  // keep this one
-         mapObsIndex[sys+ot] = j;                     // save index for RINEX data
+   for(i=0; i<vecSolData.size(); i++) {
+      if(!vecSolData[i].ChooseObsIDs(mapObsTypes)) {
+         isValid = false;
+         return false;
       }
+      //LOG(INFO) << " Chooser: " << vecSolData[i].asString();
    }
-
-   // alphabetize
-   sort(obstypes.begin(),obstypes.end());
-
-   // further sort on last character, but according to syscodes[sys]
-   // poor man's sort(iter,iter,op()) b/c I don't know how to call it....
-   string currf3,f3,sys,fre;                 // current first 3 characters
-   vector<string> tempot;
-   for(j=0; j<=obstypes.size()+1; j++) {     // note one more than obstypes.size()
-      if(j>=obstypes.size())
-         f3 = string("END");                 // this will -> finish up
-      else
-         f3 = obstypes[j].substr(0,3);       // first three char. - already sorted
-
-      if(currf3.empty()) {                   // new first three
-         currf3 = f3;
-         sys = currf3.substr(0,1);
-         fre = currf3.substr(2,1);
-         k = j;
-      }
-      else if(f3 == currf3)                  // same first three - wait
-         ;
-      else if(j-1 == k) {                    // different f3, but only one saved
-         tempot.push_back(obstypes[k]);
-         mapSysFreqObsIDs[sys][fre].push_back(obstypes[k]);
-         if(j == obstypes.size()) break;
-         currf3 = obstypes[j].substr(0,3);
-         sys = currf3.substr(0,1);
-         fre = currf3.substr(2,1);
-         k = j;
-      }
-      else {                                 // different f3, and must sort k..j-1
-         string codes(syscodes[currf3.substr(0,1)]);
-         for(size_t n=0; n<codes.size(); n++)   // loop over the codes one at a time
-            for(size_t m=k; m<j; m++)              // loop over obstypes k..j-1
-               if(codes[n] == obstypes[m][3]) {    // is there a match?
-                  tempot.push_back(obstypes[m]);      // save it
-                  mapSysFreqObsIDs[sys][fre].push_back(obstypes[m]);
-               }
-
-         if(j == obstypes.size()) break;
-         currf3 = obstypes[j].substr(0,3);
-         sys = currf3.substr(0,1);
-         fre = currf3.substr(2,1);
-         k = j;
-      }
-   }
-
-   obstypes = tempot;
-
-   // check that there are obs types for each sys/freq
-   ostringstream oss;
-   if(C.debug > -1) oss << " Dump mapSysFreqObsIDs:";
-   for(i=0; i<syss.size(); i++) {
-      string s(syss[i]);
-      for(j=0; j<ufreqs.size(); j++) {
-         string f(ufreqs.substr(j,1));
-         if(C.debug > -1) oss << " " << C.map1to3Sys[s] << ":L" << f;
-         if(mapSysFreqObsIDs[s][f].size() == 0) {
-            //LOG(WARNING) << "Warning : No 'C' (PR) ObsIDs available for "
-            //   << C.map1to3Sys[s] << ",L" << f << " in solution " << Descriptor;
-            isValid = false;
-            if(C.debug > -1) oss << ":NA";
-         }
-         else if(C.debug > -1) {
-            for(k=0; k<mapSysFreqObsIDs[s][f].size(); k++)
-               oss << (k==0 ? ":":",") << mapSysFreqObsIDs[s][f][k];
-         }
-      }
-   }
-   LOG(DEBUG) << oss.str();
 
    return isValid;
 }
@@ -2166,26 +2244,15 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
 //------------------------------------------------------------------------------------
 string SolutionObject::dump(int level, string msg1, string msg2) throw()
 {
-   size_t i,j;
+   int i,j;
    ostringstream oss;
    Configuration& C(Configuration::Instance());
 
    oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
 
    if(level == 0) {
-      // add the RinexObsIDs
-      for(i=0; i<syss.size(); i++) {
-         string s(syss[i]);
-         for(j=0; j<ufreqs.size(); j++) {
-            string f(1,ufreqs[j]);
-            oss << " " << C.map1to3Sys[s] << ":L" << f << ":";
-            if(mapSysFreqObsIDs[s][f].size() == 0)
-               oss << "NA";
-            else for(size_t k=0; k<mapSysFreqObsIDs[s][f].size(); k++)
-               oss << (k==0?"":",") << mapSysFreqObsIDs[s][f][k].substr(1,3);
-                  //<< "(" << mapObsIndex[mapSysFreqObsIDs[s][f][k]] << ")";
-         }
-      }
+      for(i=0; i<vecSolData.size(); i++)
+         oss << " [" << i << "]" << vecSolData[i].asString();
    }
 
    else if(level >= 1) {
@@ -2238,89 +2305,20 @@ void SolutionObject::CollectData(const RinexSatID& sat,
 {
    if(!isValid) return;
 
-   int k,n;
-   size_t i,j;
-
-   string sys(1,sat.systemChar());                          // satellite's system
-   if(mapSysFreqObsIDs.find(sys) == mapSysFreqObsIDs.end()) // this sys not needed
-      return;
-
-   UsedObsIDs.erase(sat);        // just in case
-   map<string,double> RawPRs;    // e.g. ["1"] = PR(L1)
-   map<string,string> used;      // e.g. ["1"] = "1W";
-
-   // pull out the raw data for each frequency
-   for(i=0; i<ufreqs.size(); i++) {
-      string f(1,ufreqs[i]);            // freq as a string e.g. "1"
-
-      // loop over RinexObsIDs for this sys,f
-      for(k=-1,j=0; j<mapSysFreqObsIDs[sys][f].size(); j++) {
-         // n = index into vrd
-         n = mapObsIndex[mapSysFreqObsIDs[sys][f][j]];
-         // is it good?
-         if(vrd[n].data == 0) continue;
-         // save n and the index (j) into mapSysFreqObsIDs[sys][f]
-         k = j;
-         break;
-      }
-
-      // save this PR and the freq/code that it came from
-      RawPRs[f] = (k == -1 ? 0.0 : vrd[n].data);
-      used[f] = (k == -1 ? f+"-" : mapSysFreqObsIDs[sys][f][k].substr(2,2));
-   }
-
-   // build the PR (possibly a linear combination, possibly more than one)
-   // usually, PR = iono-free pseudorange, and RI = ionospheric delay, built from
-   // the two pseudoranges at different frequencies.
-   for(i=0; i<freqs.size(); i++) {
-      bool ok;
-      double PR,RI(0),Rone(0),Rtwo(0);
-      if(freqs[i].size() == 1) {
-         PR = RawPRs[freqs[i]];
+   for(int i=0; i<vecSolData.size(); i++) {
+      if(vecSolData[i].ComputeData(sat,vrd)) {
+         // add to data for this solution
+         Satellites.push_back(sat);
+         PRanges.push_back(vecSolData[i].PR);
+         Elevations.push_back(elev);
+         ERanges.push_back(ER);
+         RIono.push_back(vecSolData[i].RI);
+         R1.push_back(vecSolData[i].RawPR[0]);
+         if(vecSolData[i].RawPR.size() > 1) R2.push_back(vecSolData[i].RawPR[1]);
+         else R2.push_back(0.0);
          UsedObsIDs.insert(
-            multimap<RinexSatID,string>::value_type(sat,used[freqs[i]]));
-         ok = (used[freqs[i]] != freqs[i]+"-");
+            multimap<RinexSatID,string>::value_type(sat,vecSolData[i].usedString()));
       }
-      else if(freqs[i] == "12" || freqs[i] == "21") {
-         PR = a12[sys]*RawPRs["1"] + b12[sys]*RawPRs["2"];
-         RI = (RawPRs["1"]-RawPRs["2"])*b12[sys];
-         Rone = RawPRs["1"];
-         Rtwo = RawPRs["2"];
-         UsedObsIDs.insert(
-            multimap<RinexSatID,string>::value_type(sat,used["1"]+used["2"]));
-         ok = (used["1"] != "1-" && used["2"] != "2-");
-      }
-      else if(freqs[i] == "15" || freqs[i] == "51") {
-         PR = a15[sys]*RawPRs["1"] + b15[sys]*RawPRs["5"];
-         RI = (RawPRs["1"]-RawPRs["5"])*b15[sys];
-         Rone = RawPRs["1"];
-         Rtwo = RawPRs["5"];
-         UsedObsIDs.insert(
-            multimap<RinexSatID,string>::value_type(sat,used["1"]+used["5"]));
-         ok = (used["1"] != "1-" && used["5"] != "5-");
-      }
-      else if(freqs[i] == "25" || freqs[i] == "52") {
-         PR = a25[sys]*RawPRs["2"] + b25[sys]*RawPRs["5"];
-         RI = (RawPRs["2"]-RawPRs["5"])*b25[sys];
-         Rone = RawPRs["2"];
-         Rtwo = RawPRs["5"];
-         UsedObsIDs.insert(
-            multimap<RinexSatID,string>::value_type(sat,used["2"]+used["5"]));
-         ok = (used["2"] != "2-" && used["5"] != "5-");
-      }
-      // TD else three-freq ?
-      else ok=false;   // throw?
-
-      if(!ok) continue;
-
-      // add to data for this solution
-      Satellites.push_back(sat);
-      PRanges.push_back(PR);
-      Elevations.push_back(elev);
-      ERanges.push_back(ER);
-      RIono.push_back(RI);
-      R1.push_back(Rone);
-      R2.push_back(Rtwo);
    }
 }
 
@@ -2332,8 +2330,13 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
       int i,n,iret;
       Configuration& C(Configuration::Instance());
 
-      LOG(DEBUG) << "ComputeSolution for " << Descriptor
+      // is there data?
+      if(Satellites.size() < 4) {
+         LOG(VERBOSE) << "Solution algorithm failed, not enough data"
+            << " for " << Descriptor
             << " at time " << printTime(ttag,C.longfmt);
+         return -3;
+      }
 
       // compute the inverse measurement covariance
       Matrix<double> invMCov;       // default is empty
@@ -2355,23 +2358,25 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
       // get the straight solution --------------------------------------
       if(C.SPSout) {
          Matrix<double> SVP;
-         iret = prs.PreparePRSolution(ttag, Satellites, Syss, PRanges, C.pEph, SVP);
+         iret=prs.PreparePRSolution(ttag, Satellites, satSyss, PRanges, C.pEph, SVP);
 
          if(iret > -3) {
             Vector<double> APSol(5,0.0),Resid,Slopes;
             if(prs.hasMemory) APSol = prs.memory.APSolution;
-            iret = prs.SimplePRSolution(ttag, Satellites, SVP, invMCov, C.pTrop,
-               prs.MaxNIterations, prs.ConvergenceLimit, Syss, APSol, Resid, Slopes);
+            iret = prs.SimplePRSolution(ttag, Satellites, SVP,
+                                        invMCov, C.pTrop,
+                                        prs.MaxNIterations, prs.ConvergenceLimit,
+                                        satSyss, APSol, Resid, Slopes);
          }
 
-         if(iret < 0) {LOG(VERBOSE) << "SimplePRS failed "
+         if(iret < 0) { LOG(VERBOSE) << "SimplePRS failed "
             << (iret==-4 ? "to find ANY ephemeris" :
                (iret==-3 ? "to find enough satellites with data" :
                (iret==-2 ? "because the problem is singular" :
               /*iret==-1*/ "because the algorithm failed to converge")))
             << " for " << Descriptor
-            << " at time " << printTime(ttag,C.longfmt);}
-
+            << " at time " << printTime(ttag,C.longfmt);
+         }
          else {
             // at this point we have a good solution
 
@@ -2379,12 +2384,12 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
             LOG(INFO) << prs.outputString(string("SPS ")+Descriptor,iret);
 
             if(prs.RMSFlag || prs.SlopeFlag || prs.TropFlag)
-               {LOG(WARNING) << "Warning for " << Descriptor
+               LOG(WARNING) << "Warning for " << Descriptor
                   << " - possible degraded SPS solution at "
                   << printTime(ttag,C.longfmt) << " due to"
                   << (prs.RMSFlag ? " large RMS":"")           // NB strings are used
                   << (prs.SlopeFlag ? " large slope":"")       // in PRSplot.pl
-                  << (prs.TropFlag ? " missed trop. corr.":"");}
+                  << (prs.TropFlag ? " missed trop. corr.":"");
 
             // compute residuals using known position, output XYZ resids, NEU resids
             if(C.knownPos.getCoordinateSystem() != Position::Unknown && iret >= 0) {
@@ -2414,7 +2419,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
       }
 
       // get the RAIM solution ------------------------------------------
-      iret = prs.RAIMCompute(ttag, Satellites, Syss, PRanges, invMCov, C.pEph,
+      iret = prs.RAIMCompute(ttag, Satellites, satSyss, PRanges, invMCov, C.pEph,
                               C.pTrop);
 
       if(iret < 0) {
@@ -2434,21 +2439,21 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
       LOG(INFO) << prs.outputString(string("RPF ")+Descriptor,iret);
 
       if(prs.RMSFlag || prs.SlopeFlag || prs.TropFlag)
-         {LOG(WARNING) << "Warning for " << Descriptor
+         LOG(WARNING) << "Warning for " << Descriptor
             << " - possible degraded RPF solution at "
             << printTime(ttag,C.longfmt) << " due to"
             << (prs.RMSFlag ? " large RMS":"")           // NB these strings are used
             << (prs.SlopeFlag ? " large slope":"")       // in PRSplot.pl
-            << (prs.TropFlag ? " missed trop. corr.":"");}
+            << (prs.TropFlag ? " missed trop. corr.":"");
 
       // dump pre-fit residuals
       if(prs.hasMemory && ++nepochs > 1)
-         {LOG(VERBOSE) << "RPF " << Descriptor << " PFR"
+         LOG(VERBOSE) << "RPF " << Descriptor << " PFR"
             << " " << printTime(ttag,C.gpsfmt)              // time
             << fixed << setprecision(3)
             << " " << ::sqrt(prs.memory.getAPV())           // sig(APV)
             << " " << setw(2) << prs.PreFitResidual.size()  // n resids
-            << " " << prs.PreFitResidual;}                  // pre-fit residuals
+            << " " << prs.PreFitResidual;                   // pre-fit residuals
 
       // compute residuals using known position, and output XYZ resids, NEU resids
       if(C.knownPos.getCoordinateSystem() != Position::Unknown && iret >= 0) {
@@ -2504,8 +2509,7 @@ int SolutionObject::WriteORDs(const CommonTime& time) throw(Exception)
    try {
       Configuration& C(Configuration::Instance());
 
-      size_t i;
-      int j;
+      int i,j;
       double clk;
       for(i=0; i<Satellites.size(); i++) {
          if(Satellites[i].id < 0) continue;
@@ -2541,6 +2545,11 @@ void SolutionObject::FinalOutput(void) throw(Exception)
 {
    try {
       Configuration& C(Configuration::Instance());
+   
+      if(prs.memory.getN() <= 0) {
+         LOG(INFO) << " No data!";
+         return;
+      }
 
       prs.memory.dump(LOGstrm,Descriptor+" RAIM solution");
       LOG(INFO) << "\n";
@@ -2561,7 +2570,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
             Matrix<double> Cov(statsNEUresid.getCov());  // cov from NEU stats
 
             // scale the covariance
-            for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
+            for(int i=0; i<Cov.rows(); i++) for(int j=i; j<Cov.cols(); j++)
                Cov(i,j) = Cov(j,i) = Cov(i,j)*apv;
 
             // print this covariance as labelled matrix
