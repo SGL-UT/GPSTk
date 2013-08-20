@@ -1,7 +1,7 @@
-/// @file GalEphemerisStore.cpp
+/// @file QZSEphemerisStore.cpp
 /// Class for storing and/or computing position, velocity, and clock data using
-/// tables of <SatID, <time, GalEphemeris> >. Inherits OrbitEphStore, which includes
-/// initial and final times and search methods. GalEphemeris inherits OrbitEph and
+/// tables of <SatID, <time, QZSEphemeris> >. Inherits OrbitEphStore, which includes
+/// initial and final times and search methods. QZSEphemeris inherits OrbitEph and
 /// adds health and accuracy information, which this class makes use of.
 
 //============================================================================
@@ -44,8 +44,8 @@
 #include <fstream>
 #include <iomanip>
 
-#include "GalEphemerisStore.hpp"
-#include "GALWeekSecond.hpp"
+#include "QZSEphemerisStore.hpp"
+#include "QZSWeekSecond.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -57,23 +57,23 @@ namespace gpstk
    // are loaded. It can then make adjustments to time relationships based on
    // inter-comparisons between sets of elements that cannot be performed until the
    // ordering has been determined.
-   void GalEphemerisStore::rationalize(void)
+   void QZSEphemerisStore::rationalize(void)
    {
    }
 
    //-----------------------------------------------------------------------------
-   // Add a GalEphemeris object to this collection, converting the given RINEX
-   // navigation data. Returns false if the satellite is not GAL.
+   // Add a QZSEphemeris object to this collection, converting the given RINEX
+   // navigation data. Returns false if the satellite is not QZS.
    // @param rnd Rinex3NavData
-   // @return true if GalEphemeris was added, false otherwise
+   // @return true if QZSEphemeris was added, false otherwise
    // @return pointer to the new object, NULL if data could not be added.
-   OrbitEph* GalEphemerisStore::addEphemeris(const Rinex3NavData& rnd)
+   OrbitEph* QZSEphemerisStore::addEphemeris(const Rinex3NavData& rnd)
    {
       try {
-         if(rnd.satSys != "E")                  // ignore non-GAL
+         if(rnd.satSys != "J")                  // ignore non-QZS
             return NULL;
 
-         GalEphemeris *ptr = new GalEphemeris();  // create a new object
+         QZSEphemeris *ptr = new QZSEphemeris();  // create a new object
 
          if(!ptr->load(rnd))                    // load it
             return NULL;
@@ -88,25 +88,25 @@ namespace gpstk
    }
 
    //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<GalEphemeris>.
+   // Add all ephemerides to an existing list<QZSEphemeris>.
    // @return the number of ephemerides added.
-   int GalEphemerisStore::addToList(list<GalEphemeris>& gallist, const int PRN) const
+   int QZSEphemerisStore::addToList(list<QZSEphemeris>& qzslist, const int PRN) const
    {
       // get the list from OrbitEphStore
       list<OrbitEph*> oelst;
       OrbitEphStore::addToList(oelst);
 
-      // pull out the Gal ones
+      // pull out the QZS ones
       int n(0);
       list<OrbitEph*>::const_iterator it;
       for(it = oelst.begin(); it != oelst.end(); ++it) {
          OrbitEph *ptr = *it;
-         if((ptr->satID).system == SatID::systemGalileo &&
+         if((ptr->satID).system == SatID::systemQZSS &&
             (PRN == 0 || (ptr->satID).id == PRN))
          {
-            GalEphemeris *galptr = dynamic_cast<GalEphemeris*>(ptr);
-            GalEphemeris galeph(*galptr);
-            gallist.push_back(galeph);
+            QZSEphemeris *qzsptr = dynamic_cast<QZSEphemeris*>(ptr);
+            QZSEphemeris qzseph(*qzsptr);
+            qzslist.push_back(qzseph);
             n++;
          }
       }
