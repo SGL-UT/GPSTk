@@ -69,7 +69,7 @@ namespace gpstk {
          QZGP,    ///< QZS  to GPS using A0, A1
          QZUT,    ///< QZS  to UTC using A0, A1
          BDUT,    ///< BDS  to UTC using A0, A1
-         BDGP    ///< BDS  to GPS using A0, A1  // not in RINEX
+         BDGP,    ///< BDS  to GPS using A0, A1  // not in RINEX
       };
 
          //// Member data

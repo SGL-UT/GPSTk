@@ -329,7 +329,7 @@ try {
    expand_filename(C.InputSP3Files);
    expand_filename(C.InputNavFiles);
 
-   int nread;
+   int nread,j;
    size_t i;
    ostringstream ossE;
 
@@ -610,11 +610,11 @@ try {
    }
 
    // -------- parse combos and save valid ones in C.Combos
-   for(i=C.InputCombos.size()-1; i>=0; i--) {
+   for(j=C.InputCombos.size()-1; j>=0; j--) {
       LinCom lc;
-      if(! lc.ParseAndSave(C.InputCombos[i])) {
-         ossE << "Warning : Invalid linear combination " << C.InputCombos[i] << "\n";
-         C.InputCombos.erase(C.InputCombos.begin()+i);
+      if(! lc.ParseAndSave(C.InputCombos[j])) {
+         ossE << "Warning : Invalid linear combination " << C.InputCombos[j] << "\n";
+         C.InputCombos.erase(C.InputCombos.begin()+j);
       }
    }
 

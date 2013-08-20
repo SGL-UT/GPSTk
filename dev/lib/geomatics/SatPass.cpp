@@ -824,7 +824,7 @@ int SatPassFromRinexFiles(vector<string>& filenames,
    // sort the file names on the begin time in the header
    if(filenames.size() > 1) sortRinexObsFiles(filenames);
 
-   int nfiles = 0;
+   int nfiles = 0,k;
    size_t i, j;
    vector<double> data(obstypes.size(),0.0);
    vector<unsigned short> ssi(obstypes.size(),0);
@@ -916,24 +916,24 @@ int SatPassFromRinexFiles(vector<string>& filenames,
 
             // add the data to the SatPass
             do {
-               i = SPList[satit->second].addData(obsdata.time,obstypes,data,lli,ssi);
-               if(i < 0) {             // failure
-                  if(i == -1) {        // gap
+               k = SPList[satit->second].addData(obsdata.time,obstypes,data,lli,ssi);
+               if(k < 0) {             // failure
+                  if(k == -1) {        // gap
                      SatPass newSP(sat,dt,obstypes);
                      SPList.push_back(newSP);
                      indexForSat[sat] = SPList.size()-1;
                      satit = indexForSat.find(sat);
                   }
-                  else if(i == -2) {   // time tag out of order
+                  else if(k == -2) {   // time tag out of order
                      Exception e("Time tags out of order in the RINEX file "
                            + filename);
                          //+ " at time " + obsdata.time.printf("%4F %10.3g"));
                      GPSTK_THROW(e);
                   }
-                  //else if(i == -3) {   // sat not found (RinexObsData form only)
+                  //else if(k == -3) {   // sat not found (RinexObsData form only)
                   //}
                }
-            } while(i < 0);
+            } while(k < 0);
 
          } // end loop over satellites
 
