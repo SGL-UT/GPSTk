@@ -534,7 +534,7 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    int iret,nfiles;
-   size_t i,j,k,nfile;
+   int i,j,k,nfile;
    string tag;
    CommonTime lastObsTime, prevObsTime, firstObsTime;
    RinexSatID sat;
