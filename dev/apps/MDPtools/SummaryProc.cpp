@@ -390,7 +390,9 @@ void MDPSummaryProcessor::process(const gpstk::MDPPVTSolution& msg)
    }
    else
    {
-      double dt = msg.time - prevPvt.time;
+      double dt;
+      if(prevPvt.time==CommonTime::BEGINNING_OF_TIME) dt=0.0;
+      else dt = msg.time - prevPvt.time;
       if (std::abs(dt - pvtRateEst) > 1e-3 && dt>0)
       {
          if (verboseLevel)
