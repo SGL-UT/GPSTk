@@ -64,9 +64,8 @@ class GloEphemerisTest(unittest.TestCase):
         g.setRecord('mySys', 1, gpstk.CommonTime(), gpstk.Triple(100, 200, 300),
             gpstk.Triple(10, 20, 30), gpstk.Triple(1, 2, 3),
             0.0,  0.0, 1, 2, 3, 1.1, 1.0)
-        expected = ("Sys:mySys, PRN:1\nEpoch:0000000 00000000 0.000000000000000 UNK"
-            ", pos:(100, 200, 300)\nvel:(10, 20, 30), acc:(1, 2, 3)\nTauN:0, GammaN:0\n"
-            "MFTime:1, health:2\nfreqNum:3, ageOfInfo:1.1")
+        expected = ("Sys:mySys, PRN:1, Epoch:0000000 00000000 0.000000000000000 UNK, pos:(100, 200, 300), "
+            "vel:(10, 20, 30), acc:(1, 2, 3), TauN:0, GammaN:0, MFTime:1, health:2, freqNum:3, ageOfInfo:1.1")
         self.assertEqual(expected, str(g))
 
 
@@ -183,21 +182,21 @@ class RinexMetTest(unittest.TestCase):
 
 class FICTest(unittest.TestCase):
     def test_stream(self):
-        isblock9 = (lambda x: x.blockNum == 9)
+        isblock9 = (lambda x: x.blockNum == 62)
         header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9)
-        self.assertEqual(420, len(data))
+        self.assertEqual(96, len(data))
 
-        g = gpstk.GPSEphemerisStore()
+        g = gpstk.GPSAlmanacStore()
         for d in data:
-            g.addEphemeris(d.toEngEphemeris())
+            g.addAlmanac(d.toAlmOrbit())
 
         sat = gpstk.SatID(4, gpstk.SatID.systemGPS)
         sys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
         t = gpstk.CivilTime(2012, 11, 10, 2, 0, 0, sys)
         t = t.toCommonTime()
         xvt= g.getXvt(sat, t)
-        self.assertAlmostEqual(6887269.410901967, xvt.x[0])
-        self.assertAlmostEqual(1036.316911617130, xvt.v[1])
+        self.assertAlmostEqual(6888490.4337890595, xvt.x[0])
+        self.assertAlmostEqual(1036.1894772036476, xvt.v[1])
 
 
 class MSCTest(unittest.TestCase):

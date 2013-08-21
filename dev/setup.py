@@ -10,6 +10,8 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/Antenna.cpp',
             'src/AstronomicalFunctions.cpp',
             'src/Bancroft.cpp',
+            'src/BDSEphemeris.cpp'
+            'src/BDSEphemerisStore.cpp'
             'src/BinUtils.cpp',
             'src/BrcClockCorrection.cpp',
             'src/BrcKeplerOrbit.cpp',
@@ -17,7 +19,7 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/ClockSatStore.cpp',
             'src/CommonTime.cpp',
             'src/EngAlmanac.cpp',
-            'src/EngEphemeris.cpp',
+            'src/EngEphemeris.cpp'
             'src/EngNav.cpp',
             'src/Exception.cpp',
             'src/ExtractData.cpp',
@@ -25,12 +27,13 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/FFStream.cpp',
             'src/FICData.cpp',
             'src/FICHeader.cpp',
-            'src/GalEphemeris.cpp',
-            'src/GalEphemerisStore.cpp',
+            'src/GalEphemeris.cpp'
+            'src/GalEphemerisStore.cpp'
             'src/GloEphemeris.cpp',
-            'src/GloEphemerisStore.cpp',
+            'src/GloEphemerisStore.cpp'
             'src/GPSAlmanacStore.cpp',
-            'src/GPSEphemerisStore.cpp',
+            'src/GPSEphemeris.cpp'
+            'src/GPSEphemerisStore.cpp'
             'src/GPSWeek.cpp',
             'src/GPSWeekZcount.cpp',
             'src/GPSZcount.cpp',
@@ -44,10 +47,14 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/ObsIDInitializer.cpp',
             'src/OrbElem.cpp',
             'src/OrbElemRinex.cpp',
+            'src/OrbitEph.cpp'
+            'src/OrbitEphStore.cpp'
             'src/PoleTides.cpp',
             'src/Position.cpp',
             'src/PositionSatStore.cpp',
             'src/PRSolution2.cpp',
+            'src/QZSEphemeris.cpp'
+            'src/QZSEphemerisStore.cpp'
             'src/ReferenceFrame.cpp',
             'src/Rinex3ClockData.cpp',
             'src/Rinex3ClockHeader.cpp',
@@ -58,6 +65,7 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/Rinex3ObsHeader.cpp',
             'src/RinexClockData.cpp',
             'src/RinexClockHeader.cpp',
+            'src/RinexEphemerisStore.cpp'
             'src/RinexMetData.cpp',
             'src/RinexMetHeader.cpp',
             'src/RinexNavData.cpp',

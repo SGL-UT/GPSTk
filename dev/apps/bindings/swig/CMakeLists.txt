@@ -26,6 +26,8 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/ANSITime.cpp
                     ../../../src/Antenna.cpp
                     ../../../src/AstronomicalFunctions.cpp
+                    ../../../src/BDSEphemeris.cpp
+                    ../../../src/BDSEphemerisStore.cpp
                     ../../../src/BinUtils.cpp
                     ../../../src/BrcClockCorrection.cpp
                     ../../../src/BrcKeplerOrbit.cpp
@@ -46,6 +48,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/GloEphemeris.cpp
                     ../../../src/GloEphemerisStore.cpp
                     ../../../src/GPSAlmanacStore.cpp
+                    ../../../src/GPSEphemeris.cpp
                     ../../../src/GPSEphemerisStore.cpp
                     ../../../src/gpstkplatform.h
                     ../../../src/GPSWeek.cpp
@@ -61,10 +64,14 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/ObsIDInitializer.cpp
                     ../../../src/OrbElem.cpp
                     ../../../src/OrbElemRinex.cpp
+                    ../../../src/OrbitEph.cpp
+                    ../../../src/OrbitEphStore.cpp
                     ../../../src/PoleTides.cpp
                     ../../../src/Position.cpp
                     ../../../src/PositionSatStore.cpp
                     ../../../src/PRSolution2.cpp
+                    ../../../src/QZSEphemeris.cpp
+                    ../../../src/QZSEphemerisStore.cpp
                     ../../../src/ReferenceFrame.cpp
                     ../../../src/Rinex3ClockData.cpp
                     ../../../src/Rinex3ClockHeader.cpp
@@ -75,6 +82,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/Rinex3ObsHeader.cpp
                     ../../../src/RinexClockData.cpp
                     ../../../src/RinexClockHeader.cpp
+                    ../../../src/RinexEphemerisStore.cpp
                     ../../../src/RinexMetData.cpp
                     ../../../src/RinexMetHeader.cpp
                     ../../../src/RinexNavData.cpp

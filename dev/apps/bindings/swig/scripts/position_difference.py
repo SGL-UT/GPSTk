@@ -88,10 +88,10 @@ def fic_data(filename, prn):
     isblock9 = (lambda x: x.blockNum == 9)
     header, data = gpstk.readFIC(filename, lazy=True, filterfunction=isblock9)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
-    g = gpstk.GPSEphemerisStore()
+    g = gpstk.GPSAlmanacStore()
     for d in data:
-        ephem = d.toEngEphemeris()
-        g.addEphemeris(ephem)
+        orbit = d.toAlmOrbit()
+        g.addAlmanac(orbit)
 
     class fic_holder:
         def __init__(self, gpsStore, satStore):
@@ -161,7 +161,7 @@ def read_data(filetype, filename, prn):
     possibles.update(locals())
     func = possibles.get(func_name)
     if func is None:
-        raise Exception(func + ' is not an implemented function.')
+        raise NotImplementedError(func + ' is not an implemented function.')
     return func(filename, prn)
 
 

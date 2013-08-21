@@ -75,10 +75,9 @@
    #include "../../../src/GPS_URA.hpp"
    #include "../../../src/BrcClockCorrection.hpp"
    #include "../../../src/BrcKeplerOrbit.hpp"
+
+   // Ephemeris:
    #include "../../../src/EngEphemeris.hpp"
-   #include "../../../src/GPSEphemerisStore.hpp"
-   #include "../../../src/GalEphemeris.hpp"
-   #include "../../../src/GalEphemerisStore.hpp"
    #include "../../../src/GloEphemeris.hpp"
 
    // RINEX format:
@@ -115,6 +114,21 @@
    #include "../../../src/Rinex3ClockStream.hpp"
    #include "../../../src/Rinex3EphemerisStore.hpp"
    #include "../../../src/GloEphemerisStore.hpp"
+
+   // Ephemeris stores:
+   #include "../../../src/OrbitEph.hpp"
+   #include "../../../src/BDSEphemeris.hpp"
+   #include "../../../src/GalEphemeris.hpp"
+   #include "../../../src/GPSEphemeris.hpp"
+   #include "../../../src/QZSEphemeris.hpp"
+   #include "../../../src/OrbitEphStore.hpp"
+   #include "../../../src/BDSEphemerisStore.hpp"
+   #include "../../../src/GalEphemerisStore.hpp"
+   #include "../../../src/GalEphemerisStore.hpp"
+   #include "../../../src/GPSEphemerisStore.hpp"
+   #include "../../../src/GPSEphemerisStore.hpp"
+   #include "../../../src/QZSEphemerisStore.hpp"
+   #include "../../../src/RinexEphemerisStore.hpp"
 
     // SP3 format:
    #include "../../../src/TabularSatStore.hpp"
@@ -313,11 +327,16 @@
 %include "src/GPS_URA.i"
 %include "../../../src/BrcClockCorrection.hpp"
 %include "../../../src/BrcKeplerOrbit.hpp"
+
+// Ephemeris:
+%include "../../../src/OrbitEph.hpp"
+%include "../../../src/BDSEphemeris.hpp"
 %include "../../../src/EngEphemeris.hpp"
-%include "../../../src/GPSEphemerisStore.hpp"
 %include "../../../src/GalEphemeris.hpp"
-%include "../../../src/GalEphemerisStore.hpp"
+%include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GloEphemeris.hpp"
+%include "../../../src/GPSEphemeris.hpp"
+%include "../../../src/QZSEphemeris.hpp"
 
 // RINEX format:
 %include "../../../src/RinexSatID.hpp"
@@ -359,7 +378,16 @@
 %include "../../../src/Rinex3ClockStream.hpp"
 %include "../../../src/Rinex3EphemerisStore.hpp"
 
+// Ephemeris stores:
+%include "../../../src/OrbitEphStore.hpp"
+%include "../../../src/BDSEphemerisStore.hpp"
+%include "../../../src/GalEphemerisStore.hpp"
+%include "../../../src/GalEphemerisStore.hpp"
 %include "../../../src/GloEphemerisStore.hpp"
+%include "../../../src/GPSEphemerisStore.hpp"
+%include "../../../src/QZSEphemerisStore.hpp"
+%template (FileStore_RinexNavHeader) gpstk::FileStore<gpstk::RinexNavHeader>;
+%include "../../../src/RinexEphemerisStore.hpp"
 
 // SP3 format:
 %include "../../../src/TabularSatStore.hpp"
