@@ -448,7 +448,9 @@ void RINEXPVTSolution::process()
 	      }
 
  		  RinexObsData::RinexObsTypeMap otmap = (*it).second;
+                try{
                   svpos = virtualEphStore->getXvt((*it).first,rod.time);
+
                 double elevation = aprioriPositionXYZ.elvAngle(svpos.x);
                 double azimuth =  aprioriPositionXYZ.azAngle(svpos.x);
 
@@ -521,7 +523,9 @@ void RINEXPVTSolution::process()
 
                    }
                 } // If above elevation mask
-
+              } catch (Exception e) {
+                cerr <<"Missing " << (*it).first << " - Skipping" << endl;
+              }
              }
 
                 // Log file output
@@ -557,8 +561,7 @@ void RINEXPVTSolution::process()
                    logStream << "0 NV" << endl;
              }
 
-             prSolver.RAIMCompute(rod.time,satVec,rangeVec, *virtualEphStore, \
-	   		            &ggTropModel);
+
 	       }
           catch (Exception e) {
              cerr << e << endl;
@@ -566,7 +569,8 @@ void RINEXPVTSolution::process()
           catch (...) {
              cerr << "Unknown exception occured." << endl;
           }
-
+        prSolver.RAIMCompute(rod.time,satVec,rangeVec, *virtualEphStore, \
+                    &ggTropModel);
 	       if (prSolver.isValid())
           {
                 // Output epoch tag
