@@ -20,7 +20,7 @@ def triple2Position(x):
 # 3. Return an object that has a first_time function (() -> CommonTime)
 # 4. Return an object that has a last_time (() -> CommonTime)
 def rinexnav_data(filename, prn):
-    header, data = gpstk.readRinexNav(filename, lazy=True)
+    header, data = gpstk.readRinexNav(filename)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
     g = gpstk.GPSEphemerisStore()
     for d in data:
@@ -43,7 +43,7 @@ def rinexnav_data(filename, prn):
 
 
 def rinex3nav_data(filename, prn):
-    header, data = gpstk.readRinex3Nav(filename, lazy=True)
+    header, data = gpstk.readRinex3Nav(filename)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
     g = gpstk.GPSEphemerisStore()
     for d in data:
@@ -86,12 +86,12 @@ def sp3_data(filename, prn):
 
 def fic_data(filename, prn):
     isblock9 = (lambda x: x.blockNum == 9)
-    header, data = gpstk.readFIC(filename, lazy=True, filterfunction=isblock9)
+    header, data = gpstk.readFIC(filename, filterfunction=isblock9)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
-    g = gpstk.GPSAlmanacStore()
+    g = gpstk.GPSEphemerisStore()
     for d in data:
-        orbit = d.toAlmOrbit()
-        g.addAlmanac(orbit)
+        ephem = gpstk.Rinex3NavData(d.toEngEphemeris())
+        g.GPSEphemerisStore(ephem)
 
     class fic_holder:
         def __init__(self, gpsStore, satStore):
@@ -108,7 +108,7 @@ def fic_data(filename, prn):
 
 
 def yuma_data(filename, prn):
-    header, data = gpstk.readYuma(filename, lazy=True)
+    header, data = gpstk.readYuma(filename)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
     almanac = gpstk.GPSAlmanacStore()
     for d in data:
@@ -131,7 +131,7 @@ def yuma_data(filename, prn):
 
 
 def sem_data(filename, prn):
-    header, data = gpstk.readSEM(filename, lazy=True)
+    header, data = gpstk.readSEM(filename)
     sat = gpstk.SatID(prn, gpstk.SatID.systemGPS)
     almanac = gpstk.GPSAlmanacStore()
     for d in data:

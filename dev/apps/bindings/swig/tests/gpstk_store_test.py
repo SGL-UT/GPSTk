@@ -84,7 +84,7 @@ class SP3Test(unittest.TestCase):
         self.assertAlmostEqual(-19921938.297000002, p[2])
 
     def test_stream(self):
-        header, data = gpstk.readSP3('sp3_data.txt')
+        header, data = gpstk.readSP3('sp3_data.txt', strict=True)
         self.assertEqual(' IGS', header.agency)
         self.assertEqual(96, header.numberOfEpochs)
         dataPoint = data[15]
@@ -99,18 +99,18 @@ class SP3Test(unittest.TestCase):
 
 class SEMTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readSEM('sem_data.txt', lazy=False)
+        header, gen = gpstk.readSEM('sem_data.txt')
+        data = list(gen)
+        self.assertEqual(31, len(data))
+
+    def test_stream_strict(self):
+        header, data = gpstk.readSEM('sem_data.txt', strict=True)
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
         self.assertEqual(31, len(data))
         dataPoint = data[15]
         self.assertEqual(16, dataPoint.PRN)
         self.assertAlmostEqual(0.00711489, dataPoint.ecc)
-
-    def test_stream_lazy(self):
-        header, gen = gpstk.readSEM('sem_data.txt', lazy=True)
-        data = [x for x in gen]
-        self.assertEqual(31, len(data))
 
     def test_almanac_store(self):
         s = gpstk.SEMAlmanacStore()
@@ -124,7 +124,12 @@ class SEMTest(unittest.TestCase):
 
 class YumaTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readYuma('yuma_data.txt', lazy=False)
+        header, gen = gpstk.readYuma('yuma_data.txt')
+        data = list(gen)
+        self.assertEqual(30, len(data))
+
+    def test_stream_lazy(self):
+        header, data = gpstk.readYuma('yuma_data.txt', strict=True)
         self.assertEqual(30, len(data))
         dataPoint = data[10]
         self.assertAlmostEqual(0.0, dataPoint.AF1)
@@ -132,15 +137,10 @@ class YumaTest(unittest.TestCase):
         self.assertAlmostEqual(0.006191730499, dataPoint.ecc)
         self.assertEqual(377L, dataPoint.week)
 
-    def test_stream_lazy(self):
-        header, gen = gpstk.readYuma('yuma_data.txt', lazy=True)
-        data = [x for x in gen]
-        self.assertEqual(30, len(data))
-
 
 class Rinex3ObsTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=False)
+        header, data = gpstk.readRinex3Obs('rinex3obs_data.txt', strict=True)
         self.assertEqual(0L, header.numSVs)
         self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
         self.assertEqual(120, len(data))
@@ -154,24 +154,33 @@ class Rinex3ObsTest(unittest.TestCase):
         self.assertEqual(expectedTime, dataPoint.time)
 
     def test_stream_lazy(self):
-        header, gen = gpstk.readRinex3Obs('rinex3obs_data.txt', lazy=True)
-        data = [x for x in gen]
+        header, gen = gpstk.readRinex3Obs('rinex3obs_data.txt', strict=False)
+        data = list(gen)
         self.assertEqual(120, len(data))
 
 
 class Rinex3NavTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
+        header, data = gpstk.readRinex3Nav('rinex3nav_data.txt', strict=True)
         self.assertEqual('06/10/2004 00:00:26', header.date)
         self.assertEqual(166, len(data))
         dataPoint = data[165]
         self.assertEqual(5153.72985268, dataPoint.Ahalf)
         self.assertEqual(432000.0, dataPoint.Toc)
 
+        self.assertAlmostEqual(5153.72985268, dataPoint.Ahalf)
+        self.assertEqual(432000.0, dataPoint.Toc)
+
+        # checks converstion to Engineering ephemeris and getting a xvt from it
+        eng = dataPoint.toEngEphemeris()
+        xvt = eng.svXvt(eng.getTransmitTime())
+        self.assertAlmostEqual(4793694.728073199, xvt.x[0])
+        self.assertAlmostEqual(2028.248716131878, xvt.v[1])
+
 
 class RinexMetTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinexMet('rinexmet_data.txt')
+        header, data = gpstk.readRinexMet('rinexmet_data.txt', strict=True)
         self.assertEqual('06/09/2004 23:58:58', header.date)
         self.assertEqual(96, len(data))
         dataPoint = data[95]
@@ -181,14 +190,14 @@ class RinexMetTest(unittest.TestCase):
 
 
 class FICTest(unittest.TestCase):
-    def test_stream(self):
-        isblock9 = (lambda x: x.blockNum == 62)
-        header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9)
+    def test_almanac(self):
+        isblock62 = (lambda x: x.blockNum == 62)
+        header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock62, strict=True)
         self.assertEqual(96, len(data))
-
         g = gpstk.GPSAlmanacStore()
         for d in data:
-            g.addAlmanac(d.toAlmOrbit())
+            orbit = d.toAlmOrbit()
+            g.addAlmanac(orbit)
 
         sat = gpstk.SatID(4, gpstk.SatID.systemGPS)
         sys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
@@ -198,11 +207,27 @@ class FICTest(unittest.TestCase):
         self.assertAlmostEqual(6888490.4337890595, xvt.x[0])
         self.assertAlmostEqual(1036.1894772036476, xvt.v[1])
 
+    def test_ephemeris(self):
+        isblock9 = (lambda x: x.blockNum == 9)
+        header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9, strict=True)
+        g = gpstk.GPSEphemerisStore()
+        for d in data:
+            ephem = gpstk.Rinex3NavData(d.toEngEphemeris())
+            g.addEphemeris(ephem)
+
+        sat = gpstk.SatID(4, gpstk.SatID.systemGPS)
+        sys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
+        t = gpstk.CivilTime(2012, 11, 10, 2, 0, 0, sys)
+        t = t.toCommonTime()
+        xvt= g.getXvt(sat, t)
+        self.assertAlmostEqual(6887268.768807452, xvt.x[0])
+        self.assertAlmostEqual(1036.3167828001287, xvt.v[1])
+
 
 class MSCTest(unittest.TestCase):
     def test_stream(self):
         header, data = gpstk.readMSC('msc_data.txt')
-        dataPoint = data[0]
+        dataPoint = data.next()
         xvt = dataPoint.getXvt(dataPoint.time)
         self.assertAlmostEqual(-1111111.3059100616, xvt.x[0])
         self.assertAlmostEqual(0.0222, xvt.v[1])
@@ -215,6 +240,39 @@ class MSCTest(unittest.TestCase):
         xvt = store.getXvt('11111', store.getInitialTime())
         self.assertAlmostEqual(-1111111.295, xvt.x[0])
         self.assertAlmostEqual(0.0222, xvt.v[1])
+
+
+class GLONASS_test(unittest.TestCase):
+    pass
+    # def test_dataobjects(self):
+        # header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
+        # g =
+        # gloEphems = [d.toGloEphemeris() for d in data]
+        # self.assertEqual(1, gloEphems[0].getPRNID())
+        # print gloEphems[0]
+
+        # engEphems = [d.toEngEphemeris() for d in data]
+        # print engEphems[0]
+
+
+    # def test_store(self):
+    #     g = gpstk.GloEphemerisStore()
+    #     header, data = gpstk.readRinex3Nav('/home/jking/GLONASS/BEphemeris/lhaz2950.12n')
+    #     # header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
+    #     for d in data:
+    #         # print d
+    #         g.addEphemeris(d)
+
+        # print g
+        # s = gpstk.SatID(7)
+        # t = g.getInitialTime()
+        # for i in range(10000):
+        #     t.addSeconds(60*5)
+        #     try:
+        #         x= g.getXvt(s, t)
+        #         print x
+        #     except gpstk.exceptions.InvalidRequest:
+        #         pass
 
 
 if __name__ == '__main__':

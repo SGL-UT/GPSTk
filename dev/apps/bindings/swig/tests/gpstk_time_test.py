@@ -22,6 +22,36 @@ class CommonTime_Tests(unittest.TestCase):
         b = gpstk.CommonTime(gpstk.TimeSystem('GLO'))
         self.assertRaises(gpstk.exceptions.InvalidRequest, a.__sub__, b)
 
+    def test_times_gen(self):
+        start = gpstk.CommonTime()
+        start.addSeconds(100)
+        end = gpstk.CommonTime()
+        end.addSeconds(900)
+        times = gpstk.times(start, end, seconds=200)
+        self.assertEqual(100, times.next().getSecondOfDay())
+        self.assertEqual(300, times.next().getSecondOfDay())
+        self.assertEqual(500, times.next().getSecondOfDay())
+        self.assertEqual(700, times.next().getSecondOfDay())
+        self.assertEqual(900, times.next().getSecondOfDay())
+        self.assertRaises(StopIteration, times.next)
+
+    def test_times_list(self):
+        start = gpstk.CommonTime()
+        start.addSeconds(100)
+        end = gpstk.CommonTime()
+        end.addSeconds(900)
+        times = list(gpstk.times(start, end, seconds=200))
+        self.assertEqual(100, times[0].getSecondOfDay())
+        self.assertEqual(300, times[1].getSecondOfDay())
+        self.assertEqual(500, times[2].getSecondOfDay())
+        self.assertEqual(700, times[3].getSecondOfDay())
+        self.assertEqual(900, times[4].getSecondOfDay())
+
+        times = list(gpstk.times(start, end))
+        self.assertEqual(2, len(times))
+        self.assertEqual(times[0], start)
+        self.assertEqual(times[1], end)
+
 
 class ScanTimes(unittest.TestCase):
     def test_scanTime(self):

@@ -16,10 +16,39 @@ def now(timeSystem=TimeSystem('UTC')):
     t.setTimeSystem(timeSystem)
     return t
 
+
+def times(starttime, endtime, seconds=0.0, days=0):
+    """
+    Returns a generator expression of CommonTime objects between (or equal to)
+    starttime and endtime.
+
+    You may specify a timestep in seconds (floating/integral type)
+    and/or days (integral type). Not specifying a timestep will
+    return a generator that yields the starttime and endtime parameters.
+    The timestep must be positive, or a gpstk.exceptions.InvalidRequest
+    will be raised.
+    """
+    if (seconds < 0.0) or (days < 0):
+        raise InvalidRequest('Negative time steps may not be used.')
+        return
+
+    if (seconds == 0.0) and (days == 0):
+        # empty generator:
+        yield starttime
+        yield endtime
+        return
+
+    t = CommonTime(starttime)
+    while t <= endtime:
+        yield CommonTime(t)
+        t.addSeconds(seconds)
+        t.addDays(days)
+
+
 def moonPosition(time):
     """
     Returns the current position (A gpstk.Triple) of the moon.
-    This is a functional wrapper on the MoonPosition class.
+    This is a functional wrapper on the moonPosition class.
     """
     return MoonPosition().getPosition(time)
 

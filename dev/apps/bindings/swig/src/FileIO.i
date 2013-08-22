@@ -55,7 +55,7 @@
 }
 
 %pythoncode {
-def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
+def read ## FORMATNAME(fileName, strict=False, filterfunction=lambda x: True):
     """
     This reads from a FORMATNAME file and returns a two-element tuple
     of the header and the sequence of data objects.
@@ -63,8 +63,8 @@ def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
     Parameters:
     -----------
 
-    lazy:  if the data object sequence should be lazily evaluated.
-           If it is, it will be a generator, otherwise, it will be a list.
+    strict:  if the data object sequence should be strictly evaluated.
+           If it is, it will be a list, otherwise, it will be a generator.
 
     filterfunction: a function that takes a FORMATNAME Data object
                     and returns whether it should be included in the
@@ -85,10 +85,12 @@ def read ## FORMATNAME(fileName, lazy=False, filterfunction=lambda x: True):
             except EndOfFile:
                FORMATNAME ## Stream._remove(stream)
                break
-    if lazy:
-        return (header, read ##FORMATNAME ## Data (fileName))
+
+    data = read ##FORMATNAME ## Data (fileName)
+    if strict:
+        return (header, list(data))
     else:
-        return (header, [x for x in read ## FORMATNAME ## Data (fileName)])
+        return (header, data)
 
 
 def write ## FORMATNAME(fileName, header, data):

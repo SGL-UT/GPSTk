@@ -1,7 +1,6 @@
 New Functions
 ==================
 
-
 Time Functions
 **********************************
 
@@ -15,6 +14,33 @@ derived from calling SystemTime(). ::
 
     >>> print gpstk.now()
     2456490 72040524 0.000665000000000 UTC
+
+
+.. py:function:: gpstk.times(starttime, endtime[, seconds=0.0, days=0])
+    :noindex:
+
+This returns a generator of CommonTime objects that starts at starttime and advances
+by the seconds and days parameter each time. Special cases (no timestep parameters,
+negative parameters) are documented in the function's docstring and the quick reference section. ::
+
+    >>> start = gpstk.now()
+    >>> # wait a few seconds...
+    >>> end = gpstk.now()
+    >>> times = list(gpstk.times(start, end, seconds=1.0))
+    >>> for t in times:
+    ...     print t
+
+    2456527 60045625 0.000057000000000 UTC
+    2456527 60046625 0.000057000000000 UTC
+    2456527 60047625 0.000057000000000 UTC
+    2456527 60048625 0.000057000000000 UTC
+    2456527 60049625 0.000057000000000 UTC
+    2456527 60050625 0.000057000000000 UTC
+    2456527 60051625 0.000057000000000 UTC
+    2456527 60052625 0.000057000000000 UTC
+    2456527 60053625 0.000057000000000 UTC
+
+
 
 Position Functions
 **********************************
@@ -32,7 +58,7 @@ Some helpful functions for creating Position objects more easily (with keyword a
 .. autofunction:: gpstk.geodetic([latitude=0.0, longitude=0.0, height=0.0, model=None, frame=ReferenceFrame('Unknown')])
     :noindex:
 
-.. autofunction:: gpstk.geocentric(latitude=0.0, longitude=0.0, radius=0.0, model=None, frame=ReferenceFrame('Unknown'))
+.. autofunction:: gpstk.geocentric([latitude=0.0, longitude=0.0, radius=0.0, model=None, frame=ReferenceFrame('Unknown')])
     :noindex:
 
 The next four functions are simply light wrappers over some relatively simple classes.
@@ -83,13 +109,23 @@ And to write an SP3 file... ::
 
 In this case, header is a SP3Header. Data is a list of SP3Data objects.
 
-If you want a true stream behavior (i.e. lazy evaluation) for data input,
-you can use the optional lazy keyword argument for the read methods,
-which will return a generator of data objects instead of a list.
+By default, the data returned is a generator expression - which means
+it closely mimics the C++ stream in that it only returns an object when it is
+needed. If you want a strictly evaluated list (all of the objects sit in memory)
+you can use the strict=True keyword argument or just translate the generator to
+a list yourself using the list() initializer with the generator as the argument.
+
+A common paradigm is to loop over all elements in the data and process them.
+As an example, to print all the data sets in a RINEX 3 Nav file: ::
+
+    header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
+    for d in data:
+        print d
+
 
 For example: ::
 
-    >>> header, data = gpstk.readYuma('yuma_data.txt', lazy=True)
+    >>> header, data = gpstk.readYuma('yuma_data.txt')
 
     >>> print type(data)
     <type 'generator'>
@@ -117,7 +153,7 @@ For example, to get a generator of Rinex3NavData objects with only the PRNID of 
 
     >>> isPRN3 = (lambda x: x.PRNID == 3)
 
-    >>> header, data = gpstk.readRinex3Nav('rinex3nav_data.txt', lazy=True, filterfunction=isPRN3)
+    >>> header, data = gpstk.readRinex3Nav('rinex3nav_data.txt', filterfunction=isPRN3)
 
     >>> print data.next()
     Sat: G03 TOE: 1274 367200.000 TOC: 1274 367200.000 codeflags:   1 L2Pflag:   0 IODC:  902 IODE:  134 HOWtime: 362376 FitInt:  4.000
@@ -147,7 +183,7 @@ The following formats use this pattern (all read/write semantics are identical):
 Miscellaneous
 ****************************
 
-Several of the constants in GPS_URA.hpp were simply arrays. These could not be converted
+Several of the constants in GPS_URA.hpp were C-style arrays. These could not be converted
 directly to Python lists (without code duplication), so functions were added that gave
 access to the underlying array.
 
