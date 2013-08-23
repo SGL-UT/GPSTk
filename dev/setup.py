@@ -103,7 +103,8 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             ]
 
 
-desc = """The goal of the GPSTk project is to provide an open source library
+desc = """
+The goal of the GPSTk project is to provide an open source library
 and suite of applications to the satellite navigation community--to free
 researchers to focus on research, not lower level coding.
 

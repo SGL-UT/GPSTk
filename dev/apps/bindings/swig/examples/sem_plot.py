@@ -16,34 +16,33 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    # Read in data:
-    header, dataSets = gpstk.readSEM('sem_data.txt')
+    # Read in data, strict=True makes dataSets a list rather than a generator:
+    header, dataSets = gpstk.readSEM('sem_data.txt', strict=True)
 
     # Write the data back to a different file (their contents should match):
     gpstk.writeSEM('sem_data.txt.new', header, dataSets)
 
-    # Rranslate the data to AlmOrbits:
-    almOrbits = [data.toAlmOrbit() for data in dataSets]
-    orbit = almOrbits[0]  # the orbit we are interested in
+    # Read the orbit out of the data:
+    orbit = dataSets[0].toAlmOrbit()  # alm orbit of first data point
 
-    t = gpstk.CommonTime()    # iterator time to start at
-    t.setTimeSystem(gpstk.TimeSystem('GPS'))
-    t_f = gpstk.CommonTime()  # end time, 1 day later (see below)
-    t_f.setTimeSystem(gpstk.TimeSystem('GPS'))
-    t_f.addDays(1)
+    austin = gpstk.Position(30, 97, 0, gpstk.Position.Geodetic)  # Austin, TX
+
+    starttime = gpstk.CommonTime()    # iterator time to start at
+    starttime.setTimeSystem(gpstk.TimeSystem('GPS'))
+    endtime = gpstk.CommonTime()  # end time, 1 day later (see below)
+    endtime.setTimeSystem(gpstk.TimeSystem('GPS'))
+    endtime.addDays(1)
+
     X = []
     Y = []
 
     # Step through a day, adding plot points:
-    dt = 1000  # time step, in seconds
-    austin = gpstk.Position(30, 97, 0, gpstk.Position.Geodetic)  # Austin, TX
-    while t < t_f:
+    for t in gpstk.times(starttime, endtime, seconds=1000):
         xvt = orbit.svXvt(t)
         location = gpstk.Position(xvt.x)
         elevation = austin.elevation(location)
         X.append(t.getDays())
         Y.append(elevation)
-        t.addSeconds(dt)
 
     # Make the plot
     fig = plt.figure()

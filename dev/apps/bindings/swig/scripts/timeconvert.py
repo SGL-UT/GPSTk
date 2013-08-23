@@ -12,44 +12,28 @@ def main(args=sys.argv[1:]):
                            'All year values are four digit years.')
     parser = argparse.ArgumentParser(description=program_description)
 
-    help_messages = {
-        'ansi'  : '\"ANSI-Second\"',
-        'civil' : '\"Month(numeric) DayOfMonth Year Hour:Minute:Second\"',
-        'rinex' : '\"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second\"',
-        'ews'           : '\"GPSEpoch 10bitGPSweek SecondOfWeek\"',
-        'ws'            : '\"FullGPSWeek SecondOfWeek\"',
-        'wz'            : '\"FullGPSWeek Zcount\"',
-        'z29'           : '\"29bitZcount\"',
-        'z32'           : '\"32bitZcount\"',
-        'julian'        : '\"JulianDate\"',
-        'mjd'           : '\"ModifiedJulianDate\"',
-        'unixtime'      : '\"UnixSeconds UnixMicroseconds\"',
-        'doy'           : '\"Year DayOfYear SecondsOfDay\"',
-        'output_format' : 'Time format to use on output',
-        'add_offset'    : 'add NUM seconds to specified time',
-        'sub_offset'    : 'subtract NUM seconds to specified time'
-    }
-
     group = parser.add_mutually_exclusive_group()
-    group.add_argument('-A', '--ansi',     help=help_messages['ansi'])
-    group.add_argument('-c', '--civil',    help=help_messages['civil'])
-    group.add_argument('-R', '--rinex',    help=help_messages['rinex'])
-    group.add_argument('-o', '--ews',      help=help_messages['ews'])
-    group.add_argument('-f', '--ws',       help=help_messages['ws'])
-    group.add_argument('-w', '--wz',       help=help_messages['wz'])
-    group.add_argument(      '--z29',      help=help_messages['z29'])
-    group.add_argument('-Z', '--z32',      help=help_messages['z32'])
-    group.add_argument('-j', '--julian',   help=help_messages['julian'])
-    group.add_argument('-m', '--mjd',      help=help_messages['mjd'])
-    group.add_argument('-u', '--unixtime', help=help_messages['unixtime'])
-    group.add_argument('-y', '--doy',      help=help_messages['doy'])
+    group.add_argument('-A', '--ansi', help='\"ANSI-Second\"')
+    group.add_argument('-c', '--civil',
+                       help='\"Month(numeric) DayOfMonth Year Hour:Minute:Second\"')
+    group.add_argument('-R', '--rinex',
+                       help='\"Year(2-digit) Month(numeric) DayOfMonth Hour Minute Second\"')
+    group.add_argument('-o', '--ews', help='\"GPSEpoch 10bitGPSweek SecondOfWeek\"')
+    group.add_argument('-f', '--ws', help='\"FullGPSWeek SecondOfWeek\"')
+    group.add_argument('-w', '--wz', help='\"FullGPSWeek Zcount\"')
+    group.add_argument(      '--z29', help='\"29bitZcount\"')
+    group.add_argument('-Z', '--z32', help='\"32bitZcount\"')
+    group.add_argument('-j', '--julian', help='\"JulianDate\"')
+    group.add_argument('-m', '--mjd', help='\"ModifiedJulianDate\"')
+    group.add_argument('-u', '--unixtime', help='\"UnixSeconds UnixMicroseconds\"')
+    group.add_argument('-y', '--doy', help='\"Year DayOfYear SecondsOfDay\"')
 
-    parser.add_argument('-F', '--output_format', help=help_messages['output_format'])
+    parser.add_argument('-F', '--output_format', help='Time format to use on output')
 
-    parser.add_argument('-a', '--add_offset', help=help_messages['add_offset'],
-                        type=int, nargs='+')
-    parser.add_argument('-s', '--sub_offset', help=help_messages['sub_offset'],
-                        type=int, nargs='+')
+    parser.add_argument('-a', '--add_offset', type=int, nargs='+',
+                        help='add NUM seconds to specified time')
+    parser.add_argument('-s', '--sub_offset', type=int, nargs='+',
+                        help='subtract NUM seconds to specified time')
     args = parser.parse_args(args)
 
     # these format keys must match the long arg names

@@ -18,40 +18,46 @@
 %define STREAM_HELPER(FORMATNAME)
 %extend gpstk:: ## FORMATNAME ## Stream {
 
-    static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(std::string fileName) {
-        FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str());
-        return s;
-    }
+   // methods for the stream itself:
+   static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(const std::string fileName) {
+      FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str());
+      return s;
+   }
 
-    static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(std::string fileName) {
-        FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
-        return s;
-    }
+   static gpstk:: ## FORMATNAME ## Stream* out ## FORMATNAME ## Stream(const std::string fileName) {
+      FORMATNAME ## Stream * s = new FORMATNAME ## Stream (fileName.c_str(), std::ios::out|std::ios::trunc);
+      return s;
+   }
 
-    static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr) {
+   static void _remove(gpstk:: ## FORMATNAME ## Stream * ptr) {
       delete ptr;
-    }
+   }
 
-    gpstk:: ## FORMATNAME ## Header readHeader() {
-        gpstk:: ##FORMATNAME ## Header head;
-        (*($self)) >> head;
-        return head;
-    }
-    gpstk:: ## FORMATNAME ## Data readData() {
-        gpstk:: ## FORMATNAME ##Data data;
-        if( (*($self)) >> data ) {
-           return data;
-        } else {
-            gpstk::EndOfFile e(" FORMATNAME ## Stream reached an EOF.");
-            GPSTK_THROW(e);
-        }
-    }
-    void writeHeader(const gpstk:: ## FORMATNAME ## Header & head) {
-        (*($self)) << head;
-    }
-    void writeData(const gpstk:: ## FORMATNAME ## Data & data) {
-        (*($self)) << data;
-    }
+   // reader functions:
+   gpstk:: ## FORMATNAME ## Header readHeader() {
+      gpstk:: ##FORMATNAME ## Header head;
+      (*($self)) >> head;
+      return head;
+   }
+
+   gpstk:: ## FORMATNAME ## Data readData() {
+      gpstk:: ## FORMATNAME ##Data data;
+      if( (*($self)) >> data ) {
+         return data;
+      } else {
+         gpstk::EndOfFile e(" FORMATNAME ## Stream reached an EOF.");
+         GPSTK_THROW(e);
+      }
+   }
+
+   // write functions:
+   void writeHeader(const gpstk:: ## FORMATNAME ## Header & head) {
+      (*($self)) << head;
+   }
+
+   void writeData(const gpstk:: ## FORMATNAME ## Data & data) {
+      (*($self)) << data;
+   }
 }
 
 %pythoncode {
