@@ -62,53 +62,23 @@ namespace gpstk
    }
 
    //-----------------------------------------------------------------------------
-   // Add a BDSEphemeris object to this collection, converting the given RINEX
-   // navigation data. Returns false if the satellite is not BDS.
-   // @param rnd Rinex3NavData
-   // @return true if BDSEphemeris was added, false otherwise
-   // @return pointer to the new object, NULL if data could not be added.
-   OrbitEph* BDSEphemerisStore::addEphemeris(const Rinex3NavData& rnd)
-   {
-      try {
-         if(rnd.satSys != "C")                  // ignore non-BDS
-            return NULL;
-
-         BDSEphemeris *ptr = new BDSEphemeris();  // create a new object
-
-         if(!ptr->load(rnd))                    // load it
-            return NULL;
-
-         // and add it to the store
-         OrbitEph *oeptr = dynamic_cast<OrbitEph*>(ptr);
-         OrbitEphStore::addEphemeris(oeptr);
-
-         return oeptr;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
-
-   //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<BDSEphemeris>.
+   // Add all ephemerides to an existing list<BDSEphemeris> for given satellite
+   // If sat.id is -1 (the default), all ephemerides are added.
    // @return the number of ephemerides added.
-   int BDSEphemerisStore::addToList(list<BDSEphemeris>& bdslist, const int PRN) const
+   int BDSEphemerisStore::addToList(list<BDSEphemeris>& bdslist, SatID sat) const
    {
       // get the list from OrbitEphStore
       list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst);
+      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemBeiDou));
 
-      // pull out the BDS ones
       int n(0);
       list<OrbitEph*>::const_iterator it;
       for(it = oelst.begin(); it != oelst.end(); ++it) {
          OrbitEph *ptr = *it;
-         if((ptr->satID).system == SatID::systemBeiDou &&
-            (PRN == 0 || (ptr->satID).id == PRN))
-         {
-            BDSEphemeris *bdsptr = dynamic_cast<BDSEphemeris*>(ptr);
-            BDSEphemeris bdseph(*bdsptr);
-            bdslist.push_back(bdseph);
-            n++;
-         }
+         BDSEphemeris *bdsptr = dynamic_cast<BDSEphemeris*>(ptr);
+         BDSEphemeris bdseph(*bdsptr);
+         bdslist.push_back(bdseph);
+         n++;
       }
 
       return n;

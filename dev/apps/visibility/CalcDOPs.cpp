@@ -834,7 +834,7 @@ try
       {
          FICData& r = *itr;
          EngEphemeris ee(r);
-         ges.addEphemeris(ee);
+         ges.addEphemeris(RinexNavData(ee));
       }
       itr++;
    }
@@ -884,7 +884,7 @@ try
       {
          FICData& r = *itr;
          EngEphemeris ee(r);
-         ges.addEphemeris(ee);
+         ges.addEphemeris(RinexNavData(ee));
       }
       itr++;
    }
@@ -910,7 +910,8 @@ try
    while (RNFileIn >> rne)
    {
       EngEphemeris ee(rne);
-      ges.addEphemeris(ee);            // add to stack for ephemeris mode
+      //ges.addEphemeris(ee);            // add to stack for ephemeris mode
+      ges.addEphemeris(RinexNavData(ee));
                                        // health bit checked in ComputeDOPs
 
       AlmOrbit ao = ConvertEEtoAO(ee); // convert to almanac for almanac mode

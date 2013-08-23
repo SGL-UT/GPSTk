@@ -98,11 +98,18 @@ namespace gpstk
       /// second set following the upload.
       void rationalize(void);
 
-      /// Add a GPSEphemeris object to this collection, converting the given RINEX 3
-      /// navigation data. Returns false if the satellite is not GPS.
-      /// @param rnd Rinex3NavData
-      /// @return pointer to the new object, NULL if data could not be added.
-      virtual OrbitEph* addEphemeris(const Rinex3NavData& rnd);
+      /// Add a GPSEphemeris object to this collection
+      /// @return pointer to the new object, or NULL if it could not be added
+      virtual GPSEphemeris* addEphemeris(const GPSEphemeris& gpseph)
+      {
+         try {
+            GPSEphemeris neweph(gpseph);
+            OrbitEph *oeptr = dynamic_cast<OrbitEph*>(&neweph);
+            oeptr = OrbitEphStore::addEphemeris(oeptr);
+            return dynamic_cast<GPSEphemeris*>(oeptr);
+         }
+         catch(Exception& e) { GPSTK_RETHROW(e); }
+      }
 
       /// Find a GPSEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
@@ -131,10 +138,11 @@ namespace gpstk
          return gpseph;
       }
 
-      /// Add all ephemerides, for the given PRN, to an existing list<GPSEphemeris>
-      /// If PRN is zero (the default), all ephemerides are added.
+      /// Add all ephemerides to an existing list<GPSEphemeris> for given satellite
+      /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
-      int addToList(std::list<GPSEphemeris>& gpslist, const int PRN=0) const;
+      int addToList(std::list<GPSEphemeris>& gpslist,
+                        SatID sat=SatID(-1,SatID::systemGPS)) const;
 
    }; // end class GPSEphemerisStore
 

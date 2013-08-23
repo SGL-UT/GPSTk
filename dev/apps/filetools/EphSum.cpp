@@ -1,4 +1,3 @@
-#pragma ident "$Id$"
 /**
 *  Given a PRN ID and a date (DOY, Year), one or more navigation
 *  message data file(s) and assemble a summary of all ephemerides relevant
@@ -196,8 +195,8 @@ void EphSum::process()
          
             while (RNFileIn >> rnd)
             {
-               EngEphemeris ee(rnd);
-               ges.addEphemeris(ee);
+               //EngEphemeris ee(rnd);
+               ges.addEphemeris(rnd);
             }
             successOnThisFile = true;
             fprintf(logfp," - Success(RINEX)\n");
@@ -230,7 +229,7 @@ void EphSum::process()
                if (ficd.blockNum==9)
                {
                   EngEphemeris ee(ficd);
-                  ges.addEphemeris(ee);
+                  ges.addEphemeris(RinexNavData(ee));
                   recNum9++;
                }
                recNum++;
@@ -299,7 +298,7 @@ void EphSum::process()
       
       // get list for this prn
       list<GPSEphemeris> lst;
-      ges.addToList(lst, i);
+      ges.addToList(lst, sat);
       // loop over the list, creating the map
       eemap.clear();
       for(list<GPSEphemeris>::const_iterator it = lst.begin(); it != lst.end(); ++it)

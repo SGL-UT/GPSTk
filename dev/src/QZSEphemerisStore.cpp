@@ -62,53 +62,23 @@ namespace gpstk
    }
 
    //-----------------------------------------------------------------------------
-   // Add a QZSEphemeris object to this collection, converting the given RINEX
-   // navigation data. Returns false if the satellite is not QZS.
-   // @param rnd Rinex3NavData
-   // @return true if QZSEphemeris was added, false otherwise
-   // @return pointer to the new object, NULL if data could not be added.
-   OrbitEph* QZSEphemerisStore::addEphemeris(const Rinex3NavData& rnd)
-   {
-      try {
-         if(rnd.satSys != "J")                  // ignore non-QZS
-            return NULL;
-
-         QZSEphemeris *ptr = new QZSEphemeris();  // create a new object
-
-         if(!ptr->load(rnd))                    // load it
-            return NULL;
-
-         // and add it to the store
-         OrbitEph *oeptr = dynamic_cast<OrbitEph*>(ptr);
-         OrbitEphStore::addEphemeris(oeptr);
-
-         return oeptr;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
-
-   //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<QZSEphemeris>.
+   // Add all ephemerides to an existing list<QZSEphemeris> for given satellite
+   // If sat.id is -1 (the default), all ephemerides are added.
    // @return the number of ephemerides added.
-   int QZSEphemerisStore::addToList(list<QZSEphemeris>& qzslist, const int PRN) const
+   int QZSEphemerisStore::addToList(list<QZSEphemeris>& qzslist, SatID sat) const
    {
       // get the list from OrbitEphStore
       list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst);
+      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemQZSS));
 
-      // pull out the QZS ones
       int n(0);
       list<OrbitEph*>::const_iterator it;
       for(it = oelst.begin(); it != oelst.end(); ++it) {
          OrbitEph *ptr = *it;
-         if((ptr->satID).system == SatID::systemQZSS &&
-            (PRN == 0 || (ptr->satID).id == PRN))
-         {
-            QZSEphemeris *qzsptr = dynamic_cast<QZSEphemeris*>(ptr);
-            QZSEphemeris qzseph(*qzsptr);
-            qzslist.push_back(qzseph);
-            n++;
-         }
+         QZSEphemeris *qzsptr = dynamic_cast<QZSEphemeris*>(ptr);
+         QZSEphemeris qzseph(*qzsptr);
+         qzslist.push_back(qzseph);
+         n++;
       }
 
       return n;

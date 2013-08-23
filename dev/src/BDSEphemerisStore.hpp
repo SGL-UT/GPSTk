@@ -79,12 +79,6 @@ namespace gpstk
       /// Notes regarding the rationalize() function.
       void rationalize(void);
 
-      /// Add a BDSEphemeris object to this collection, converting the given RINEX
-      /// navigation data. Returns false if the satellite is not Galileo.
-      /// @param rnd Rinex3NavData
-      /// @return pointer to the new object, NULL if data could not be added.
-      virtual OrbitEph* addEphemeris(const Rinex3NavData& rnd);
-
       /// Find a BDSEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
       /// @param sat the satellite of interest
@@ -112,10 +106,11 @@ namespace gpstk
          return bdseph;
       }
 
-      /// Add all ephemerides, for the given PRN, to an existing list<BDSEphemeris>
-      /// If PRN is zero (the default), all ephemerides are added.
+      /// Add all ephemerides to an existing list<BDSEphemeris> for given satellite
+      /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
-      int addToList(std::list<BDSEphemeris>& bdslist, const int PRN=0) const;
+      int addToList(std::list<BDSEphemeris>& bdslist,
+                        SatID sat=SatID(-1,SatID::systemBeiDou)) const;
 
    }; // end class BDSEphemerisStore
 

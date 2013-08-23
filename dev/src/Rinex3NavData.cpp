@@ -40,15 +40,20 @@
 #include "Rinex3NavData.hpp"
 
 #include "CivilTime.hpp"
+#include "GPSWeekSecond.hpp"
+#include "GALWeekSecond.hpp"
+#include "BDSWeekSecond.hpp"
+#include "QZSWeekSecond.hpp"
 #include "TimeString.hpp"
 #include "GNSSconstants.hpp"
+#include "StringUtils.hpp"
 
 namespace gpstk
 {
    using namespace StringUtils;
    using namespace std;
 
-   // Create from a RinexNavData (for backward compatibility)
+   // Create from a RINEX version 2 RinexNavData (for backward compatibility)
    Rinex3NavData::Rinex3NavData(const RinexNavData& rnd)
    {
       // Epoch
@@ -94,6 +99,123 @@ namespace gpstk
       OMEGAdot = rnd.OMEGAdot;
       idot = rnd.idot;
       fitint = rnd.fitint;
+   }
+
+   // Private helper routine for constructors from OrbitEph-based Ephemerides
+   void Rinex3NavData::loadFrom(const OrbitEph *oeptr)
+   {
+      time = oeptr->ctToc;
+      sat = RinexSatID(oeptr->satID);
+      satSys = string(1,sat.systemChar());
+      PRNID = sat.id;
+
+      //Toc = static_cast<GPSWeekSecond>(oeptr->ctToe).getSOW();
+      af0 = oeptr->af0;
+      af1 = oeptr->af1;
+      af2 = oeptr->af2;
+
+      //Toe = static_cast<GPSWeekSecond(oeptr->ctToe).getSOW();
+      M0 = oeptr->M0;
+      dn = oeptr->dn;
+      ecc = oeptr->ecc;
+      Ahalf = SQRT(oeptr->A);
+      OMEGA0 = oeptr->OMEGA0;
+      i0 = oeptr->i0;
+      w = oeptr->w;
+      OMEGAdot = oeptr->OMEGAdot;
+      idot = oeptr->idot;
+
+      Cuc = oeptr->Cuc;
+      Cus = oeptr->Cus;
+      Crc = oeptr->Crc;
+      Crs = oeptr->Crs;
+      Cic = oeptr->Cic;
+      Cis = oeptr->Cis;
+   }
+
+   // Initializes the nav data with a GPSEphemeris
+   Rinex3NavData::Rinex3NavData(const GPSEphemeris& gpseph)
+   {
+      loadFrom(dynamic_cast<const OrbitEph*>(&gpseph));
+
+      Toc = static_cast<GPSWeekSecond>(gpseph.ctToc).getSOW();
+      Toe = static_cast<GPSWeekSecond>(gpseph.ctToe).getSOW();
+      HOWtime = gpseph.HOWtime;
+      weeknum = static_cast<GPSWeekSecond>(gpseph.transmitTime).getWeek();
+
+      accuracy = gpseph.accuracyFlag;
+      health = gpseph.health;
+
+      codeflgs = gpseph.codeflags;
+      L2Pdata = gpseph.L2Pdata;
+      IODC = gpseph.IODC;
+      IODE = gpseph.IODE;
+
+      Tgd = gpseph.Tgd;
+      Tgd2 = 0.0;
+
+      fitint = gpseph.fitint;
+   }
+
+   // Initializes the nav data with a GalEphemeris
+   Rinex3NavData::Rinex3NavData(const GalEphemeris& galeph)
+   {
+      loadFrom(dynamic_cast<const OrbitEph*>(&galeph));
+
+      Toc = static_cast<GALWeekSecond>(galeph.ctToc).getSOW();
+      Toe = static_cast<GALWeekSecond>(galeph.ctToe).getSOW();
+      HOWtime = galeph.HOWtime;
+      weeknum = static_cast<GPSWeekSecond>(galeph.transmitTime).getWeek();
+
+      IODnav = galeph.IODnav;
+      health = galeph.health;
+      accuracy = galeph.accuracy;
+      Tgd = galeph.Tgda;
+      Tgd2 = galeph.Tgdb;
+      datasources = galeph.datasources;
+   }
+
+   // Initializes the nav data with a BDSEphemeris
+   Rinex3NavData::Rinex3NavData(const BDSEphemeris& bdseph)
+   {
+      loadFrom(dynamic_cast<const OrbitEph*>(&bdseph));
+
+      Toc = static_cast<BDSWeekSecond>(bdseph.ctToc).getSOW();
+      Toe = static_cast<BDSWeekSecond>(bdseph.ctToe).getSOW();
+      HOWtime = bdseph.HOWtime;
+      weeknum = static_cast<BDSWeekSecond>(bdseph.transmitTime).getWeek();
+
+      //Cis = -Cis;       // really? Rinex3.02 A13 misprint?
+      IODC = bdseph.IODC;
+      IODE = bdseph.IODE;
+      health = bdseph.health;
+      accuracy = bdseph.accuracy;
+      Tgd = bdseph.Tgd13;
+      Tgd2 = bdseph.Tgd23;
+   }
+
+   // Initializes the nav data with a QZSEphemeris
+   Rinex3NavData::Rinex3NavData(const QZSEphemeris& qzseph)
+   {
+      loadFrom(dynamic_cast<const OrbitEph*>(&qzseph));
+
+      Toc = static_cast<QZSWeekSecond>(qzseph.ctToc).getSOW();
+      Toe = static_cast<QZSWeekSecond>(qzseph.ctToe).getSOW();
+      HOWtime = qzseph.HOWtime;
+      weeknum = static_cast<QZSWeekSecond>(qzseph.transmitTime).getWeek();
+
+      PRNID -= 192;                    // RINEX stores PRN minus 192
+      sat = RinexSatID(PRNID,SatID::systemQZSS);
+      IODC = qzseph.IODC;
+      IODE = qzseph.IODE;
+      health = qzseph.health;
+      accuracy = qzseph.accuracy;
+      Tgd = qzseph.Tgd;
+
+      codeflgs = qzseph.codeflags;
+      L2Pdata = qzseph.L2Pdata;
+
+      fitint = qzseph.fitint;
    }
 
    // Deprecated; used GPSEphemeris.
@@ -259,8 +381,8 @@ namespace gpstk
          // SBAS and GLO only have 3 records
          if(satSys == "S" || satSys == "R") return;
 
-         // GPS BDS and GAL have 7 records, put 4-7
-         if(satSys == "G" || satSys == "C" || satSys == "E")
+         // GPS QZS BDS and GAL have 7 records, put 4-7
+         if(satSys == "G" || satSys == "C" || satSys == "E" || satSys == "J")
             for(int i=4; i<=7; i++) putRecord(i, strm);
       }
       catch(exception& e) {
@@ -272,24 +394,48 @@ namespace gpstk
 
    }  // End of method 'Rinex3NavData::reallyPutRecord(FFStream& ffs)'
 
-
       // A debug output function.
       // Prints the PRN id and the IODC for this record.
    void Rinex3NavData::dump(ostream& s) const
    {
-      s << "Rinex3NavData for sat: " << satSys
+      s << "Rinex3NavData dump: "
+         << satSys << setfill('0') << setw(2) << PRNID << setfill(' ')
+         << static_cast<CivilTime>(time).printf(" TOC %Y/%02m/%02d %02H:%02M:%02S")
+         << fixed << setprecision(3)
+         << " wk " << weeknum << " HOW " << HOWtime << " Toe " << Toe << endl;
+      s << " Toc " << Toc << scientific << setprecision(12)
+         << " af0 " << af0 << " af1 " << af1 << " af2 " << af2
+         << " Tgd " << Tgd << " Tgd2 " << Tgd2 << endl;
+      s << " M0 " << M0 << " Ecc " << ecc << " sqrtA " << Ahalf << " OM " << OMEGA0
+         << endl;
+      s << " i0 " << i0 << " om " << w << " dOMdt " << OMEGAdot << " didt " << idot
+         << endl;
+      s << " Cuc " << Cuc << " Cus " << Cus << " Crc " << Crc << " Crs " << Crs
+         << " Cic " << Cic << " Cis " << Cis << endl;
+
+      if(satSys == "G" || satSys == "J")          // GPS QZSS
+         s << " health " << health << " acc " << accuracy << " fit " << fitint
+            << " IODE " << IODE << " IODC " << IODC
+            << " codeflags " << codeflgs << " L2P " << L2Pdata << endl;
+      //else if(satSys == "R")     // GLONASS
+      else if(satSys == "E")     // Galileo
+         s << " IODnav " << IODnav << " datasources " << datasources << endl;
+      //else if(satSys == "C")     // BeiDou
+   }
+
+   string Rinex3NavData::dumpString(void) const
+   {
+      ostringstream s;
+      s << "RND " << satSys
          << setfill('0') << setw(2) << PRNID << setfill(' ');
-      if(satSys == "G")          // GPS
+      if(satSys == "G" || satSys == "J")          // GPS or QZSS
          s << " TOE: " << setw(4) << weeknum
            << " " << fixed << setw(10) << setprecision(3) << Toe
-           << " TOC: " << printTime(time,"%4F %10.3g")
-           << " codeflags: " << setw(3) << codeflgs
-           << " L2Pflag: " << setw(3) << L2Pdata
-           << " IODC: " << setw(4) << int(IODC)
-           << " IODE: " << setw(4) << int(IODE)      // IODE should be int
-           << " HOWtime: " << setw(6) << HOWtime     // HOW should be double
-           << " FitInt: " << setw(6) << fitint
-           << endl;
+           << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
+           << " HOWtime: " << setw(6) << HOWtime
+           << " IODE/C: " << int(IODE) << "/" << int(IODC) << " hlth: " << health
+           << " cflgs: " << codeflgs << " L2P: " << L2Pdata
+           << " fit: " << fitint;
       else if(satSys == "R")     // GLONASS
          s << " freq: " << setw(2) << freqNum
            << " hlth: " << setw(2) << health
@@ -297,8 +443,7 @@ namespace gpstk
            << " MFtime: " << setw(6) << MFtime
            << " TauN: " << scientific << setw(19) << setprecision(12) << TauN
            << " GammaN: " << setw(19) << GammaN
-           << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo
-           << endl;
+           << " AOI: " << fixed << setprecision(2) << setw(4) << ageOfInfo;
       else if(satSys == "S")     // Geosync (SBAS)
          s << " URAm: " << setw(2) << freqNum
            << " hlth: " << setw(2) << health
@@ -306,36 +451,26 @@ namespace gpstk
            << " MFtime: " << setw(6) << MFtime
            << " aGf0: " << scientific << setw(19) << setprecision(12) << TauN
            << " aGf1: " << setw(19) << GammaN
-           << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo
-           << endl;
+           << " IODN " << fixed << setprecision(2) << setw(4) << ageOfInfo;
       else if(satSys == "E")   // Galileo
          s << " TOE: " << setw(4) << weeknum
            << " " << fixed << setw(10) << setprecision(3) << Toe
-           << " TOC: " << printTime(time,"%4F %10.3g")
-           << " IODC: " << setw(4) << int(IODC)
-           << " IODE: " << setw(4) << int(IODE)      // IODE should be int
-           << " HOWtime: " << setw(6) << HOWtime     // HOW should be double
-           << endl;
+           << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
+           << " HOWtime: " << setw(6) << HOWtime
+           << " IODnav: " << int(IODnav) << " hlth: " << health
+           << " datasources " << datasources;
       else if(satSys == "C")   // BeiDou
          s << " TOE: " << setw(4) << weeknum
            << " " << fixed << setw(10) << setprecision(3) << Toe
-           << " TOC: " << printTime(time,"%4F %10.3g")
-           << " IODC: " << setw(4) << int(IODC)
-           << " IODE: " << setw(4) << int(IODE)      // IODE should be int
-           << " HOWtime: " << setw(6) << HOWtime     // HOW should be double
-           << endl;
-      else if(satSys == "J")   // QZSS
-         s << " TOE: " << setw(4) << weeknum
-           << " " << fixed << setw(10) << setprecision(3) << Toe
-           << " TOC: " << printTime(time,"%4F %10.3g")
-           << " IODC: " << setw(4) << int(IODC)
-           << " IODE: " << setw(4) << int(IODE)      // IODE should be int
-           << " HOWtime: " << setw(6) << HOWtime     // HOW should be double
-           << endl;
+           << " TOC: " << printTime(time,"%4Y %02m %02d %02H %02M %06.3f %P")
+           << " HOWtime: " << setw(6) << HOWtime
+           << " IODE/C: " << int(IODE) << "/" << int(IODC);
       else
-         s << " (Rinex3NavData::dump finds unknown system: " << satSys << ")" << endl;
+         s << " (unknown system: " << satSys << ")";
 
-   }  // End of method 'Rinex3NavData::dump(ostream& s)'
+      return s.str();
+
+   }  // End of method 'Rinex3NavData::asString
 
       // Deprecated; use GPSEphemeris.
       // Converts this Rinex3NavData to an EngEphemeris object.
@@ -423,17 +558,115 @@ namespace gpstk
                       M0, dn, dndot, ecc, A, Ahalf, Adot, OMEGA0, i0, 
                       w, OMEGAdot, idot);
 
-      ee.haveSubframe[0] = true;    //need to be true to perform certain EngEphemeris functions
+      ee.haveSubframe[0] = true;    // need to be true to perform certain EngEphemeris functions
       ee.haveSubframe[1] = true;    // examples: ee.dump(), ee.setAccuracy()
       ee.haveSubframe[2] = true;
 
       ee.setAccuracy(accuracy);
 
-      return ee;
+     return ee;
 
    }  // End of 'Rinex3NavData::operator EngEphemeris()'
 
-      // Converts this Rinex3NavData to a GloEphemeris object.
+   // Private helper routine for casts from this to OrbitEph-based Ephemerides
+   void Rinex3NavData::castTo(OrbitEph *oeptr) const
+   {
+      try {
+         // Glonass and Geosync do not have a orbit-based ephemeris
+         if(satSys == "R" || satSys == "S") {
+            oeptr->dataLoadedFlag = false;
+            return;
+         }
+
+         // Overhead
+         RinexSatID sat;
+         sat.fromString(satSys + StringUtils::asString(PRNID));
+         oeptr->satID = SatID(sat);
+         //obsID = ?? ObsID obsID; // Defines carrier and tracking code
+         oeptr->ctToe = time;
+
+         // clock model
+         oeptr->af0 = af0;
+         oeptr->af1 = af1;
+         oeptr->af2 = af2;
+   
+         // Major orbit parameters
+         oeptr->M0 = M0;
+         oeptr->dn = dn;
+         oeptr->ecc = ecc;
+         oeptr->A = Ahalf * Ahalf;
+         oeptr->OMEGA0 = OMEGA0;
+         oeptr->i0 = i0;
+         oeptr->w = w;
+         oeptr->OMEGAdot = OMEGAdot;
+         oeptr->idot = idot;
+         // modern nav msg
+         oeptr->dndot = 0.;
+         oeptr->Adot = 0.;
+   
+         // Harmonic perturbations
+         oeptr->Cuc = Cuc;
+         oeptr->Cus = Cus;
+         oeptr->Crc = Crc;
+         oeptr->Crs = Crs;
+         oeptr->Cic = Cic;
+         oeptr->Cis = Cis;
+   
+         oeptr->dataLoadedFlag = true;
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+   }
+
+      // Casts Rinex3NavData to a GPSEphemeris object.
+   Rinex3NavData::operator GPSEphemeris() const throw()
+   {
+      GPSEphemeris gpse;
+
+      // fill the OrbitEph parts
+      OrbitEph* ptr = dynamic_cast<OrbitEph*>(&gpse);
+      castTo(ptr);                                 //sets dataLoadedFlag
+
+      // is it right?
+      if(gpse.satID.system != SatID::systemGPS)
+         gpse.dataLoadedFlag = false;
+
+      if(!gpse.dataLoadedFlag)
+         return gpse;          // throw?
+
+      // get the epochs right
+      CommonTime ct = time;
+      unsigned int year = static_cast<CivilTime>(ct).year;
+
+      // Get week for clock, to build Toc
+      double dt = Toc - HOWtime;
+      int week = weeknum;
+      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      gpse.ctToc = GPSWeekSecond(week, Toc, TimeSystem::GPS);
+      gpse.ctToc.setTimeSystem(TimeSystem::GPS);
+
+      // now load the GPS-specific parts
+      gpse.IODC = IODC;
+      gpse.IODE = IODE;
+      gpse.health = health;
+      gpse.accuracyFlag = accuracy;
+      gpse.Tgd = Tgd;
+
+      gpse.HOWtime = HOWtime;
+      week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
+      gpse.transmitTime = GPSWeekSecond(week, static_cast<double>(HOWtime),
+         TimeSystem::GPS);
+
+      gpse.codeflags = codeflgs;
+      gpse.L2Pdata = L2Pdata;
+
+      // NB IODC must be set first...
+      gpse.fitint = fitint;
+      gpse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
+
+      return gpse;
+   }
+
+      // Casts this Rinex3NavData to a GloEphemeris object.
    Rinex3NavData::operator GloEphemeris() const throw()
    {
 
@@ -455,6 +688,160 @@ namespace gpstk
       return gloe;
 
    }  // End of 'Rinex3NavData::operator GloEphemeris()'
+
+      // Casts Rinex3NavData to a GalEphemeris object.
+   Rinex3NavData::operator GalEphemeris() const throw()
+   {
+      GalEphemeris gale;
+
+      // fill the OrbitEph parts
+      OrbitEph *ptr = dynamic_cast<OrbitEph*>(&gale);
+      castTo(ptr);                                          // sets dataLoadedFlag
+
+      // is it right?
+      if(gale.satID.system != SatID::systemGalileo)
+         gale.dataLoadedFlag = false;
+
+      if(!gale.dataLoadedFlag)
+         return gale;          // throw?
+
+      // get the epochs right
+      CommonTime ct = time;
+      unsigned int year = static_cast<CivilTime>(ct).year;
+
+      // Get week for clock, to build Toc
+      double dt = Toc - HOWtime;
+      int week = weeknum;
+      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      //MGEX NB MGEX data has GPS week numbers in all systems except BeiDou,
+      //MGEX so must implement temporary fixes: use GPS Toc for GAL and QZSS
+      //MGEX GALWeekSecond galws = GALWeekSecond(week, Toc, TimeSystem::GAL);
+      //MGEX galws.adjustToYear(year);
+      //MGEX gale.ctToc = CommonTime(galws);
+      CommonTime gpstoc = GPSWeekSecond(week, Toc, TimeSystem::GPS);    //MGEX
+      gale.ctToc = gpstoc;                                              //MGEX
+      gale.ctToc.setTimeSystem(TimeSystem::GAL);
+
+      // now load the Galileo-specific parts
+      gale.IODnav = IODnav;
+      gale.health = health;
+      gale.accuracy = accuracy;
+      gale.Tgda = Tgd;
+      gale.Tgdb = Tgd2;
+      gale.datasources = datasources;
+      gale.fitDuration = 4;
+
+      gale.HOWtime = HOWtime;
+      week = static_cast<GALWeekSecond>(gale.ctToe).getWeek();
+      gale.transmitTime = GALWeekSecond(week, static_cast<double>(HOWtime),
+                                       TimeSystem::GAL);
+      gale.adjustValidity();
+
+      return gale;
+   }
+
+      // Casts Rinex3NavData to a BDSEphemeris object.
+   Rinex3NavData::operator BDSEphemeris() const throw()
+   {
+      BDSEphemeris bdse;
+
+      // fill the OrbitEph parts
+      OrbitEph* ptr = dynamic_cast<OrbitEph*>(&bdse);
+      castTo(ptr);                                    // set dataLoadedFlag
+
+      // is it right?
+      if(bdse.satID.system != SatID::systemBeiDou)
+         bdse.dataLoadedFlag = false;
+
+      if(!bdse.dataLoadedFlag)
+         return bdse;          // throw?
+
+      // get the epochs right
+      CommonTime ct = time;
+      unsigned int year = static_cast<CivilTime>(ct).year;
+
+      // Get week for clock, to build Toc
+      double dt = Toc - HOWtime;
+      int week = weeknum;
+      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      BDSWeekSecond bdsws = BDSWeekSecond(week, Toc, TimeSystem::BDT);
+      bdsws.adjustToYear(year);
+      bdse.ctToc = CommonTime(bdsws);
+
+      // now load the BDS-specific parts
+      //bdse.Cis = -Cis;     // really? RINEX 3.02 misprint?
+      bdse.IODC = IODC;
+      bdse.IODE = IODE;
+      bdse.health = health;
+      bdse.accuracy = accuracy;
+      bdse.Tgd13 = Tgd;
+      bdse.Tgd23 = Tgd2;
+
+      bdse.HOWtime = HOWtime;
+      week = static_cast<BDSWeekSecond>(bdse.ctToe).getWeek();
+      bdse.transmitTime = BDSWeekSecond(week, static_cast<double>(HOWtime),
+                                       TimeSystem::BDT);
+      bdse.adjustValidity();
+
+      return bdse;
+   }
+
+      // Casts Rinex3NavData to a QZSEphemeris object.
+   Rinex3NavData::operator QZSEphemeris() const throw()
+   {
+      QZSEphemeris qzse;
+
+      // fill the OrbitEph parts
+      castTo(dynamic_cast<OrbitEph*>(&qzse));
+
+      // is it right?
+      if(qzse.satID.system != SatID::systemQZSS)
+         qzse.dataLoadedFlag = false;
+
+      if(!qzse.dataLoadedFlag)
+         return qzse;          // throw?
+
+      // get the epochs right
+      CommonTime ct = time;
+      unsigned int year = static_cast<CivilTime>(ct).year;
+
+      // Get week for clock, to build Toc
+      double dt = Toc - HOWtime;
+      int week = weeknum;
+      if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+      QZSWeekSecond qzsws = QZSWeekSecond(week, Toc, TimeSystem::QZS);
+      qzsws.adjustToYear(year);
+      qzse.ctToc = CommonTime(qzsws);
+
+      //MGEX NB MGEX data has GPS week numbers in all systems except BeiDou,
+      //MGEX so must implement temporary fixes: use GPS Toc for QZS and QZSS
+      CommonTime gpstoc = GPSWeekSecond(week, Toc, TimeSystem::GPS);    //MGEX
+      qzse.ctToc = gpstoc;                                              //MGEX
+
+      qzse.ctToc.setTimeSystem(TimeSystem::QZS);
+
+      // now load the QZSS-specific parts
+      qzse.satID = SatID(qzse.satID.id + 192, SatID::systemQZSS);
+      qzse.IODC = IODC;
+      qzse.IODE = IODE;
+      qzse.health = health;
+      qzse.accuracy = accuracy;
+      qzse.Tgd = Tgd;
+
+      qzse.HOWtime = HOWtime;
+      week = static_cast<QZSWeekSecond>(qzse.ctToe).getWeek();
+      qzse.transmitTime = QZSWeekSecond(week, static_cast<double>(HOWtime),
+                                          TimeSystem::QZS);
+
+      qzse.codeflags = codeflgs;
+      qzse.L2Pdata = L2Pdata;
+
+      // NB IODC must be set first...
+      qzse.fitint = fitint;
+      qzse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
+
+      return qzse;
+   }
 
 
       // Converts the (non-CommonTime) data to an easy list
@@ -546,13 +933,11 @@ namespace gpstk
          line += doubleToScientific(GammaN,19,12,2);
          line += doubleToScientific((double)MFtime,19,12,2);
       }
-      else if(satSys == "G" || satSys == "E") {
+      else if(satSys == "G" || satSys == "E" || satSys == "J" || satSys == "C") {
          line += doubleToScientific(af0,19,12,2);
          line += doubleToScientific(af1,19,12,2);
          line += doubleToScientific(af2,19,12,2);
       }
-      //else if(satSys == "C") 
-      //else if(satSys == "J") 
 
       strm << stripTrailing(line) << endl;
       strm.lineNumber++;
@@ -586,7 +971,7 @@ namespace gpstk
                line += doubleToScientific(ax,19,12,2);
                line += doubleToScientific((double)health,19,12,2);
             }
-            else if(satSys == "G") {                  // GPS
+            else if(satSys == "G" || satSys == "C" || satSys == "J") {// GPS,BDS,QZS
                line += doubleToScientific(IODE,19,12,2);
                line += doubleToScientific(Crs,19,12,2);
                line += doubleToScientific(dn,19,12,2);
@@ -610,7 +995,7 @@ namespace gpstk
                else
                   line += doubleToScientific(accCode,19,12,2);
             }
-            else {
+            else {                                    // GPS,GAL,BDS,QZS
                line += doubleToScientific(Cuc,19,12,2);
                line += doubleToScientific(ecc,19,12,2);
                line += doubleToScientific(Cus,19,12,2);
@@ -619,16 +1004,16 @@ namespace gpstk
          }
 
          else if(nline == 3) {
-            if(satSys == "R" || satSys == "S") {
+            if(satSys == "R" || satSys == "S") {      // GLO GEO
                line += doubleToScientific(pz,19,12,2);
                line += doubleToScientific(vz,19,12,2);
                line += doubleToScientific(az,19,12,2);
                if(satSys == "R")
                   line += doubleToScientific(ageOfInfo,19,12,2);
-               else                    // GEO
+               else                             // GEO
                   line += doubleToScientific(IODN,19,12,2);
             }
-            else {
+            else {                                    // GPS,GAL,BDS,QZS
                line += doubleToScientific(Toe,19,12,2);
                line += doubleToScientific(Cic,19,12,2);
                line += doubleToScientific(OMEGA0,19,12,2);
@@ -636,7 +1021,9 @@ namespace gpstk
             }
          }
 
-         else if(nline == 4) {
+         // SBAS and GLO end here
+
+         else if(nline == 4) {                        // GPS,GAL,BDS,QZS
             line += doubleToScientific(i0,19,12,2);
             line += doubleToScientific(Crc,19,12,2);
             line += doubleToScientific(w,19,12,2);
@@ -652,19 +1039,22 @@ namespace gpstk
             else if(HOWtime - Toe < -(HALFWEEK))
                wk--;
 
-            line += doubleToScientific(idot,19,12,2);
-            if(satSys == "G") {                         // GPS
+            if(satSys == "G" || satSys == "J") {      // GPS QZS
+               line += doubleToScientific(idot,19,12,2);
                line += doubleToScientific((double)codeflgs,19,12,2);
-            }
-            else if(satSys == "E") {                    // GAL
-               line += doubleToScientific((double)datasources,19,12,2);
-            }
-
-            line += doubleToScientific(wk,19,12,2);
-            if(satSys == "G") {                         // GPS
+               line += doubleToScientific(wk,19,12,2);
                line += doubleToScientific((double)L2Pdata,19,12,2);
             }
-            else if(satSys == "E") {                     // GAL
+            else if(satSys == "E") {                  // GAL
+               line += doubleToScientific(idot,19,12,2);
+               line += doubleToScientific((double)datasources,19,12,2);
+               line += doubleToScientific(wk,19,12,2);
+               line += doubleToScientific((double) 0,19,12,2);
+            }
+            else if(satSys == "C") {                  // BDS
+               line += doubleToScientific(idot,19,12,2);
+               line += doubleToScientific((double) 0,19,12,2);
+               line += doubleToScientific(wk,19,12,2);
                line += doubleToScientific((double) 0,19,12,2);
             }
          }
@@ -673,11 +1063,11 @@ namespace gpstk
             line += doubleToScientific(accuracy,19,12,2);
             line += doubleToScientific((double)health,19,12,2);
 
-            if(satSys == "G") {                        // GPS
+            if(satSys == "G" || satSys == "J") {       // GPS, QZS
                line += doubleToScientific(Tgd,19,12,2);
                line += doubleToScientific(IODC,19,12,2);
             }
-            else if(satSys == "E") {                   // GAL
+            else if(satSys == "E" || satSys == "C") {  // GAL, BDS
                line += doubleToScientific(Tgd,19,12,2);
                line += doubleToScientific(Tgd2,19,12,2);
             }
@@ -686,11 +1076,14 @@ namespace gpstk
          else if(nline == 7) {
             line += doubleToScientific(HOWtime,19,12,2);
 
-            if(satSys == "G") {
+            if(satSys == "G" || satSys == "J") {
                line += doubleToScientific(fitint,19,12,2);
             }
             else if(satSys == "E") {
-               line += doubleToScientific(0.0,19,12,2);
+               ;
+            }
+            else if(satSys == "C") {
+               line += doubleToScientific(IODC,19,12,2);
             }
          }
 
@@ -790,7 +1183,7 @@ namespace gpstk
                }
             }
          }
-         else if(satSys == "G" || satSys == "E") {
+         else if(satSys == "G" || satSys == "E" || satSys == "C" || satSys == "J") {
             af0 = StringUtils::for2doub(line.substr(23,19));
             af1 = StringUtils::for2doub(line.substr(42,19));
             af2 = StringUtils::for2doub(line.substr(61,19));
@@ -867,7 +1260,6 @@ namespace gpstk
                Cic    = StringUtils::for2doub(line.substr(n,19)); n+=19;
                OMEGA0 = StringUtils::for2doub(line.substr(n,19)); n+=19;
                Cis    = StringUtils::for2doub(line.substr(n,19));
-               if(satSys == "C") Cis = -Cis;
             }
             else if(satSys == "R" || satSys == "S") {
                pz        = StringUtils::for2doub(line.substr(n,19)); n+=19;
@@ -902,6 +1294,7 @@ namespace gpstk
          }
 
          else if(nline == 6) {
+            Tgd2 = 0.0;
             if(satSys == "G" || satSys == "J") {
                accuracy =       StringUtils::for2doub(line.substr(n,19)); n+=19;
                health   = short(StringUtils::for2doub(line.substr(n,19))); n+=19;

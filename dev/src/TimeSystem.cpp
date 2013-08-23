@@ -244,7 +244,7 @@ namespace gpstk
       // TAI = GPS + 19s
       // TAI = UTC + getLeapSeconds()
       // TAI = TT - 32.184s
-      // TAI = BDT + 34s since GPS = BDT + 15s
+      // TAI = BDT + 34s, since GPS = BDT + 15s
       if(inTS == GPS)         // GPS -> TAI
          dt = 19.;
       else if(inTS == UTC |   // UTC -> TAI
@@ -259,8 +259,6 @@ namespace gpstk
          dt = -32.184;
       else if(inTS == TDB)    // TDB -> TAI
          dt = -32.184 + TDBmTT;
-      else if(inTS == GLO)    // TD
-         dt = 0.0;
       else if(inTS == GAL)    // TD
          dt = 0.0;
       else {                              // other
@@ -273,7 +271,7 @@ namespace gpstk
       // GPS = TAI - 19s
       // UTC = TAI - getLeapSeconds()
       // TT = TAI + 32.184s
-      // BDT = TAI - getLeapSeconds()
+      // BDT = TAI - 34s
       if(outTS == GPS)        // TAI -> GPS
          dt -= 19.;
       else if(outTS == UTC |  // TAI -> UTC
@@ -288,8 +286,6 @@ namespace gpstk
          dt += 32.184;
       else if(outTS == TDB)   // TAI -> TDB
          dt += 32.184 - TDBmTT;
-      else if(outTS == GLO)   // TD
-         dt = 0.0;
       else if(outTS == GAL)   // TD
          dt = 0.0;
       else {                              // other

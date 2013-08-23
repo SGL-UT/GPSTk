@@ -1,14 +1,7 @@
-#pragma ident "$Id$"
-
-
-
 /**
  * @file RinexNavData.hpp
  * Encapsulates RINEX Navigation data
  */
-
-#ifndef RINEXNAVDATA_HPP
-#define RINEXNAVDATA_HPP
 
 //============================================================================
 //
@@ -46,10 +39,8 @@
 //
 //=============================================================================
 
-
-
-
-
+#ifndef RINEXNAVDATA_HPP
+#define RINEXNAVDATA_HPP
 
 #include <list>
 
@@ -58,6 +49,7 @@
 #include "FFStream.hpp"
 #include "RinexNavBase.hpp"
 #include "EngEphemeris.hpp"
+#include "GPSEphemeris.hpp"
 
 namespace gpstk
 {
@@ -102,6 +94,10 @@ namespace gpstk
           * Converts this RinexNavData to an EngEphemeris object.
           */
       operator EngEphemeris() const throw();
+
+      /// Convert this RinexNavData to a GPSEphemeris object.
+      /// for backward compatibility only - use Rinex3NavData
+      operator GPSEphemeris() const;
 
          /**
           * Converts the (non-CommonTime) data to a list for easy
@@ -249,6 +245,5 @@ namespace gpstk
    //@}
 
 } // namespace
-
 
 #endif

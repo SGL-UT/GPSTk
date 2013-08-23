@@ -60,30 +60,36 @@ namespace gpstk
       TimeSystem ts = TimeSystem::GPS;
       switch(Rdata.sat.system) {
          case SatID::systemGPS:
-         case SatID::systemGalileo:
-         case SatID::systemBeiDou:
-         case SatID::systemQZSS:
-            OrbitEph *ptr;
-            if(     Rdata.satSys == "G") {
-               ptr = new GPSEphemeris();
-               ts = TimeSystem::GPS;
-            }
-            else if(Rdata.satSys == "E") {
-               ptr = new GalEphemeris();
-               ts = TimeSystem::GAL;
-            }
-            else if(Rdata.satSys == "C") {
-               ptr = new BDSEphemeris();
-               ts = TimeSystem::BDT;
-            }
-            else if(Rdata.satSys == "J") {
-               ptr = new QZSEphemeris();
-               ts = TimeSystem::QZS;
-            }
-            Rdata.time = correctTimeSystem(Rdata.time, ts);
-            ptr->load(Rdata);
-            return ORBstore.addEphemeris(ptr);
+         {
+            Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::GPS);
+            GPSEphemeris eph(Rdata);
+            return ORBstore.addEphemeris(dynamic_cast<OrbitEph*>(&eph));
             break;
+         }
+
+         case SatID::systemGalileo:
+         {
+            Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::GAL);
+            GalEphemeris eph(Rdata);
+            return ORBstore.addEphemeris(dynamic_cast<OrbitEph*>(&eph));
+            break;
+         }
+
+         case SatID::systemBeiDou:
+         {
+            Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::BDT);
+            BDSEphemeris eph(Rdata);
+            return ORBstore.addEphemeris(dynamic_cast<OrbitEph*>(&eph));
+            break;
+         }
+
+         case SatID::systemQZSS:
+         {
+            Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::QZS);
+            QZSEphemeris eph(Rdata);
+            return ORBstore.addEphemeris(dynamic_cast<OrbitEph*>(&eph));
+            break;
+         }
 
          case SatID::systemGlonass:
             Rdata.time = correctTimeSystem(Rdata.time, TimeSystem::GLO);
@@ -188,7 +194,7 @@ namespace gpstk
          << " to " << toSys.asString() << " : ";
 
       if(toSys == fromSys) {
-         oss << "time strings are the same";
+         oss << "time systems are the same";
          return oss.str();
       }
 
@@ -310,14 +316,21 @@ namespace gpstk
 
       NavFiles.dump(os, detail);
 
-      os << "Dump of GPS/GAL/BDS/QZS ephemeris store:\n";
-      ORBstore.dump(os, detail);
+      if(ORBstore.size()) {
+         os << "Dump of GPS/GAL/BDS/QZS ephemeris store:\n";
+         ORBstore.dump(os, detail);
+      }
 
-      os << "Dump of GLO ephemeris store:\n";
-      GLOstore.dump(os, detail);
+      if(GLOstore.size()) {
+         os << "Dump of GLO ephemeris store:\n";
+         GLOstore.dump(os, detail);
+      }
 
-      //os << "Dump of GEO ephemeris store:\n";
-      //GEOstore.dump(os, detail);
+      //if(GEOstore.size()) {
+         //os << "Dump of GEO ephemeris store:\n";
+         //GEOstore.dump(os, detail);
+      //}
+
       os << "End dump of Rinex3EphemerisStore\n";
    }
 
@@ -457,29 +470,66 @@ namespace gpstk
    }
 
    // use to access the data records in the store in bulk
-   int Rinex3EphemerisStore::addToList(list<Rinex3NavData>& thelist, SatID sysSat)
+   int Rinex3EphemerisStore::addToList(list<Rinex3NavData>& theList, SatID sysSat)
       const
    {
       int i,n(0);
-      if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGPS) {
-         // TD this is a problem...
+
+      // pure fussiness
+      const bool keepAll(sysSat.system == SatID::systemMixed);
+      const bool keepGPS(keepAll || sysSat.system==SatID::systemGPS);
+      const bool keepGAL(keepAll || sysSat.system==SatID::systemGalileo);
+      const bool keepGLO(keepAll || sysSat.system==SatID::systemGlonass);
+      const bool keepBDS(keepAll || sysSat.system==SatID::systemBeiDou);
+      const bool keepQZS(keepAll || sysSat.system==SatID::systemQZSS);
+      const bool keepGEO(keepAll || sysSat.system==SatID::systemGeosync);
+      const bool keepOrb(keepAll || keepGPS || keepGAL || keepBDS || keepQZS);
+
+      if(keepOrb) {
+         list<OrbitEph*> OElist;
+         ORBstore.addToList(OElist);
+
+         list<OrbitEph*>::const_iterator it;
+         for(it=OElist.begin(); it != OElist.end(); ++it) {
+            OrbitEph *ptr = *it;
+            if((ptr->satID).system == SatID::systemGPS && keepGPS) {
+               GPSEphemeris *sysptr = dynamic_cast<GPSEphemeris*>(ptr);
+               theList.push_back(Rinex3NavData(*sysptr));
+               n++;
+            }
+            else if((ptr->satID).system == SatID::systemGalileo && keepGAL) {
+               GalEphemeris *sysptr = dynamic_cast<GalEphemeris*>(ptr);
+               theList.push_back(Rinex3NavData(*sysptr));
+               n++;
+            }
+            else if((ptr->satID).system == SatID::systemBeiDou && keepBDS) {
+               BDSEphemeris *sysptr = dynamic_cast<BDSEphemeris*>(ptr);
+               theList.push_back(Rinex3NavData(*sysptr));
+               n++;
+            }
+            else if((ptr->satID).system == SatID::systemQZSS && keepQZS) {
+               QZSEphemeris *sysptr = dynamic_cast<QZSEphemeris*>(ptr);
+               theList.push_back(Rinex3NavData(*sysptr));
+               n++;
+            }
+         }
       }
-      if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGlonass) {
+      if(keepGLO) {
          list<GloEphemeris> GLOlist;
          n += GLOstore.addToList(GLOlist);
 
          list<GloEphemeris>::const_iterator it;
          for(it=GLOlist.begin(); it != GLOlist.end(); ++it)
-            thelist.push_back(Rinex3NavData(*it));
+            theList.push_back(Rinex3NavData(*it));
       }
       /*
-      if(sysSat.system==SatID::systemMixed || sysSat.system==SatID::systemGeosync) {
+      if(keepGEO) {
          list<GeoRecord> GEOlist;
          n += GEOstore.addToList(GEOlist);
 
          list<GeoRecord>::const_iterator it;
          for(it=GEOlist.begin(); it != GEOlist.end(); ++it)
-            thelist.push_back(Rinex3NavData(*it));
+            theList.push_back(Rinex3NavData(*it));
       }
       */
       return n;

@@ -48,6 +48,7 @@
 
 #include "MathBase.hpp"
 #include "GNSSconstants.hpp"
+#include "CivilTime.hpp"
 #include "GPSWeekSecond.hpp"
 #include "GALWeekSecond.hpp"
 #include "BDSWeekSecond.hpp"
@@ -274,6 +275,44 @@ namespace gpstk {
       return (REL_CONST * ecc * SQRT(Ak) * ::sin(ea));
    }
 
+   // Dump the overhead information as a string containing a single line.
+   // @throw Invalid Request if the required data has not been stored.
+   string OrbitEph::asString(void) const
+   {
+      if(!dataLoadedFlag)
+         GPSTK_THROW(InvalidRequest("Data not loaded"));
+
+      try {
+         ostringstream os;
+         string sys;
+         switch(satID.system) {
+            case SatID::systemGPS: sys = "G"; break;
+            case SatID::systemGalileo: sys = "E"; break;
+            case SatID::systemBeiDou: sys = "C"; break;
+            case SatID::systemQZSS: sys = "J"; break;
+            default:
+               os << "EPH Error - invalid satellite system "
+                  << SatID::convertSatelliteSystemToString(satID.system) << endl;
+               return os.str();
+         }
+
+         CivilTime ct;
+         os << "EPH " << sys << setfill('0') << setw(2) << satID.id << setfill(' ');
+         ct = CivilTime(beginValid);
+         os << printTime(ct," | %4Y %3j %02H:%02M:%02S |");
+         ct = CivilTime(ctToe);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(ctToc);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(endValid);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+
+         return os.str();
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e);
+      }
+   }
+
    // Utility routine for dump(); override if GPSWeekSecond is not right
    string OrbitEph::timeDisplay(const CommonTime& t, bool showHead) const
    {
@@ -373,6 +412,7 @@ namespace gpstk {
          << setw(16) << Cuc << " rad" << endl;
    }
 
+/*
    // Define this OrbitEph by converting the given RINEX navigation data.
    // NB this will be both overridden and called by the derived classes
    // NB currently has fixes for MGEX data.
@@ -471,6 +511,7 @@ namespace gpstk {
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
+*/
 
    // Output object to stream
    ostream& operator<<(ostream& os, const OrbitEph& eph)

@@ -152,7 +152,7 @@ void VisSupport::readFICNavData( const CommandOptionWithAnyArg& navFileNameOpt,
          EngEphemeris ee(r);
          if (checkIOD(ee))
          {
-            BCEphList.addEphemeris( ee );
+            BCEphList.addEphemeris(RinexNavData(ee));
          }
       }
       if ( r.blockNum == 62)
@@ -186,7 +186,7 @@ void VisSupport::readRINEXNavData(
       EngEphemeris ee(r);
       if (checkIOD(ee))
       { 
-         BCEphList.addEphemeris( ee );
+         BCEphList.addEphemeris(RinexNavData(ee));
       }
       ritr++;
    }

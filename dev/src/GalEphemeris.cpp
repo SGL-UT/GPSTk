@@ -42,6 +42,8 @@
 #include <string>
 #include "Exception.hpp"
 #include "SVNumXRef.hpp"
+#include "TimeString.hpp"
+#include "CivilTime.hpp"
 #include "GALWeekSecond.hpp"
 
 #include "GalEphemeris.hpp"
@@ -113,8 +115,7 @@ namespace gpstk
             << "HOW time     : " << setw(6) << HOWtime << " (sec of GAL week "
             << setw(4) << static_cast<GALWeekSecond>(ctToe).getWeek() << ")" << endl
             << "TransmitTime : " << OrbitEph::timeDisplay(transmitTime) << endl
-            << "IODNav: " << IODnav
-            << fixed << setprecision(2) << setfill('0')
+            << "IODNav: " << IODnav << fixed << setprecision(2)
             << "  Accuracy : " << getAccuracy() << " meters"
             << "  fitDuration: " << setw(2) << fitDuration << " hours" << endl
             << "Healthy?     : 0x" << hex << setw(2) << health << dec << " :"
@@ -138,35 +139,40 @@ namespace gpstk
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
 
-   // Define this GalEphemeris by converting the given RINEX navigation data.
-   // NB this both overrides and calls the OrbitEph version.
-   // @param rnd Rinex3NavData
-   // @return true if GalEphemeris was defined, false otherwise
-   bool GalEphemeris::load(const Rinex3NavData& rnd)
+   // Dump the overhead information as a string containing a single line.
+   // @throw Invalid Request if the required data has not been stored.
+   string GalEphemeris::asString(void) const
    {
+      if(!dataLoadedFlag)
+         GPSTK_THROW(InvalidRequest("Data not loaded"));
       try {
-         if(rnd.satSys != "E") return false;    // OrbitEph::load will also do this...
-
-         // load the OrbitEph parts
-         if(!OrbitEph::load(rnd)) return false;
-
-         // now load the Galileo-specific parts
-         IODnav = rnd.IODnav;
-         health = rnd.health;
-         accuracy = rnd.accuracy;
-         Tgda = rnd.Tgd;
-         Tgdb = rnd.Tgd2;
-         datasources = rnd.datasources;
-         fitDuration = 4;
-
-         HOWtime = rnd.HOWtime;
-         int week = static_cast<GALWeekSecond>(ctToe).getWeek();
-         transmitTime = GALWeekSecond(week, static_cast<double>(HOWtime),
-            TimeSystem::GAL);
-
-         return true;
+         ostringstream os;
+         CivilTime ct;
+         os << "EPH E" << setfill('0') << setw(2) << satID.id << setfill(' ');
+         ct = CivilTime(beginValid);
+         os << printTime(ct," | %4Y %3j %02H:%02M:%02S |");
+         ct = CivilTime(ctToe);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(ctToc);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(endValid);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(transmitTime);
+         os << printTime(ct," %3j %02H:%02M:%02S | ");
+         os << setw(3) << IODnav;
+            //<< " | " << fixed << setprecision(2) << getAccuracy()
+         os << " | 0x" << hex << setw(3) <<setfill('0')<< health <<dec<<setfill(' ');
+         os << " | "
+            << ((datasources & 0x5) ? "E15b" : "")       // 1 or 4
+            << ((datasources & 0x2) ? "E5a " : "")
+            //<< ((datasources & 0x4) ? "E5b " : "")
+            << ((datasources & 0x100) ? " a1" : "")
+            << ((datasources & 0x200) ? " b1" : "")
+            << " |";
+         return os.str();
       }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
+      catch(Exception& e) { GPSTK_RETHROW(e);
+      }
    }
 
 } // end namespace

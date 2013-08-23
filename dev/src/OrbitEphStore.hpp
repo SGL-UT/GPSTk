@@ -53,7 +53,7 @@
 #include "SatID.hpp"
 #include "CommonTime.hpp"
 #include "XvtStore.hpp"
-#include "Rinex3NavData.hpp"
+//#include "Rinex3NavData.hpp"
 
 namespace gpstk
 {
@@ -218,14 +218,25 @@ namespace gpstk
 
       /// Add an OrbitEph object to this collection.
       /// @param eph pointer to the OrbitEph to add
-      /// @return true if OrbitEph was added, false otherwise
-      virtual bool addEphemeris(const OrbitEph* eph);
+      /// @return pointer to new OrbitEph if it successful, NULL otherwise
+      virtual OrbitEph* addEphemeris(const OrbitEph* eph);
 
       /// Add an OrbitEph object to this collection, converting the given RINEX
       /// navigation data.
       /// @param rnd Rinex3NavData
       /// @return pointer to the new object, NULL if data could not be added.
-      virtual OrbitEph* addEphemeris(const Rinex3NavData& rnd);
+      //virtual OrbitEph* addEphemeris(const Rinex3NavData& rnd);
+
+      /// Return true if OrbitEph with the same sat and time already exists in table.
+      bool isPresent(const SatID& sat, const CommonTime& t) const
+      {
+         if(satTables.find(sat) == satTables.end())
+            return false;
+         const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+         if(table.find(t) == table.end())
+            return false;
+         return true;
+      }
 
       /// Explanation of find() function for OrbitEphStore
       /// The findUserOrbitEph() funtion does the best possible job of emulating the
@@ -265,8 +276,11 @@ namespace gpstk
       }
 
       /// Add all ephemerides to an existing list<OrbitEph>.
+      /// If SatID sat is given, limit selections to sat's satellite system, plus if
+      /// sat's id is not -1, limit to sat's id as well.
       /// @return the number of ephemerides added.
-      virtual int addToList(std::list<OrbitEph*>& v) const;
+      virtual int addToList(std::list<OrbitEph*>& v,
+                           SatID sat=SatID(-1,SatID::systemUnknown)) const;
 
       /// use findNearOrbitEph() in getXvt() and getSatHealth()
       void SearchNear(void)
@@ -313,6 +327,8 @@ namespace gpstk
 
       /// string used to format times, used in dump() and exceptions.
       static const std::string fmt;
+
+      std::string message;
 
    protected:
 

@@ -232,53 +232,23 @@ namespace gpstk
    }
 
    //-----------------------------------------------------------------------------
-   // Add a GPSEphemeris object to this collection, converting the given RINEX 3
-   // navigation data. Returns false if the satellite is not GPS.
-   // @param rnd Rinex3NavData
-   // @return true if GPSEphemeris was added, false otherwise
-   // @return pointer to the new object, NULL if data could not be added.
-   OrbitEph* GPSEphemerisStore::addEphemeris(const Rinex3NavData& rnd)
-   {
-      try {
-         if(rnd.satSys != "G")                  // ignore non-GPS
-            return NULL;
-
-         GPSEphemeris *ptr = new GPSEphemeris();// create a new object
-
-         if(!ptr->load(rnd))                    // load it
-            return NULL;
-
-         // and add it to the store
-         OrbitEph *oeptr = dynamic_cast<OrbitEph*>(ptr);
-         OrbitEphStore::addEphemeris(oeptr);
-
-         return oeptr;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
-
-   //-----------------------------------------------------------------------------
-   // Add all ephemerides to an existing list<GPSEphemeris>.
+   // Add all ephemerides to an existing list<GPSEphemeris> for given satellite
+   // If sat.id is -1 (the default), all ephemerides are added.
    // @return the number of ephemerides added.
-   int GPSEphemerisStore::addToList(list<GPSEphemeris>& gpslist, const int PRN) const
+   int GPSEphemerisStore::addToList(list<GPSEphemeris>& gpslist, SatID sat) const
    {
       // get the list from OrbitEphStore
       list<OrbitEph*> oelst;
-      OrbitEphStore::addToList(oelst);
+      OrbitEphStore::addToList(oelst,SatID(-1,SatID::systemGPS));
 
-      // pull out the GPS ones
       int n(0);
       list<OrbitEph*>::const_iterator it;
       for(it = oelst.begin(); it != oelst.end(); ++it) {
          OrbitEph *ptr = *it;
-         if((ptr->satID).system == SatID::systemGPS &&
-            (PRN == 0 || (ptr->satID).id == PRN))
-         {
-            GPSEphemeris *gpsptr = dynamic_cast<GPSEphemeris*>(ptr);
-            GPSEphemeris gpseph(*gpsptr);
-            gpslist.push_back(gpseph);
-            n++;
-         }
+         GPSEphemeris *gpsptr = dynamic_cast<GPSEphemeris*>(ptr);
+         GPSEphemeris gpseph(*gpsptr);
+         gpslist.push_back(gpseph);
+         n++;
       }
 
       return n;

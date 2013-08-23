@@ -155,6 +155,8 @@ namespace gpstk
          return static_cast<unsigned int>(sow) / SEC_PER_DAY;
       }
 
+      inline double getSOW() const { return sow; }
+
          /**
           * @defgroup wsco WeekSecond Comparison Operators
           * All comparison operators have a parameter "right" which corresponds

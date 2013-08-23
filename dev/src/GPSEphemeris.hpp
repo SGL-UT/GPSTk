@@ -91,6 +91,10 @@ namespace gpstk
       /// @throw Invalid Request if the required data has not been stored.
       virtual void adjustValidity(void);
       
+      /// Dump the overhead information as a string containing a single line.
+      /// @throw Invalid Request if the required data has not been stored.
+      virtual std::string asString(void) const;
+
       /// Dump the overhead information to the given output stream.
       /// @throw Invalid Request if the required data has not been stored.
       virtual void dumpHeader(std::ostream& os = std::cout) const;
@@ -98,12 +102,6 @@ namespace gpstk
       /// Dump the orbit, etc information to the given output stream.
       /// @throw Invalid Request if the required data has not been stored.
       virtual void dumpBody(std::ostream& os = std::cout) const;
-
-      /// Define this GPSEphemeris by converting the given RINEX 3 navigation data.
-      /// NB this both overrides and calls the OrbitEph version.
-      /// @param rnd Rinex3NavData
-      /// @return true if GPSEphemeris was defined, false otherwise
-      virtual bool load(const Rinex3NavData& rnd);
 
       /// Compute the fit duration in hours, and adjust the times of validity, given
       /// the fit interval flag. NB IODC must be set before calling
@@ -127,6 +125,7 @@ namespace gpstk
       short codeflags;           ///< L2 codes
       short L2Pdata;             ///< L2 P data flag
       short fitDuration;         ///< duration of validity
+      short fitint;              ///< for RINEX
 
    private:
       /// Get the fit interval in hours from the fit interval flag and the IODC

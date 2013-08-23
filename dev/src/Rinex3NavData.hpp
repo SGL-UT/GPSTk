@@ -50,6 +50,10 @@
 #include "Rinex3NavStream.hpp"
 #include "EngEphemeris.hpp"         // GPS only, deprecated
 #include "GloEphemeris.hpp"
+#include "GPSEphemeris.hpp"
+#include "GalEphemeris.hpp"
+#include "BDSEphemeris.hpp"
+#include "QZSEphemeris.hpp"
 #include "RinexSatID.hpp"
 #include "RinexNavData.hpp"
 
@@ -82,15 +86,30 @@ namespace gpstk
          /// Create from a RinexNavData (for backward compatibility)
       Rinex3NavData(const RinexNavData& rnd);
 
-         /// deprecated; use GPSEphemeris, GPS-only.
          /// Initializes the nav data with an EngEphemeris
+         /// EngEphemeris is deprecated; use GPSEphemeris
       Rinex3NavData(const EngEphemeris& ee);
+
+         /// Initializes the nav data with a GPSEphemeris
+      Rinex3NavData(const GPSEphemeris& gpseph);
+
+         /// Initializes the nav data with a GalEphemeris
+      Rinex3NavData(const GalEphemeris& galeph);
+
+         /// Initializes the nav data with a BDSEphemeris
+      Rinex3NavData(const BDSEphemeris& bdseph);
+
+         /// Initializes the nav data with a QZSEphemeris
+      Rinex3NavData(const QZSEphemeris& qzseph);
 
          /// Destructor
       virtual ~Rinex3NavData() {}
 
          /// Rinex3NavData is "data" so this function always returns true.
       virtual bool isData(void) const {return true;}
+
+         /// Write selected info (system dependent) as a single line
+      std::string dumpString(void) const;
 
          /// A debug output function.
          /// Prints the PRN id and the IODC for this record.
@@ -100,8 +119,20 @@ namespace gpstk
          /// Converts Rinex3NavData to an EngEphemeris object.
       operator EngEphemeris() const throw();
 
+         /// Converts Rinex3NavData to a GPSEphemeris object.
+      operator GPSEphemeris() const throw();
+
          /// Converts this Rinex3NavData to a GloEphemeris object.
       operator GloEphemeris() const throw();
+
+         /// Converts Rinex3NavData to a GalEphemeris object.
+      operator GalEphemeris() const throw();
+
+         /// Converts Rinex3NavData to a BDSEphemeris object.
+      operator BDSEphemeris() const throw();
+
+         /// Converts Rinex3NavData to a QZSEphemeris object.
+      operator QZSEphemeris() const throw();
 
          /// Converts the (non-CommonTime) data to an easy list
          /// for comparison operators.
@@ -165,7 +196,7 @@ namespace gpstk
 
       /** @name ClockInformation */
       //@{
-      double  Toc;         ///< Time of ephemeris (sec of week)
+      double  Toc;         ///< Time of clock (sec of week)
       double  af0;         ///< SV clock error (sec)
       double  af1;         ///< SV clock drift (sec/sec)
       double  af2;         ///< SV clock drift rate (sec/sec**2)
@@ -208,7 +239,6 @@ namespace gpstk
 
    private:
 
-
          /** Parses string \a currentLine to obtain PRN id and epoch.
           *  @param strm RINEX Nav stream
           */
@@ -246,6 +276,12 @@ namespace gpstk
       void putRecord(const int& n, Rinex3NavStream& strm) const
          throw(StringUtils::StringException, FFStreamError);
          //@}
+
+         /// Helper routine for constructors of this from OrbitEph-based Ephemerides
+      void loadFrom(const OrbitEph *oeptr);
+
+         /// Helper routine for casts from this to OrbitEph-based Ephemerides
+      void castTo(OrbitEph *oeptr) const;
 
    protected:
 

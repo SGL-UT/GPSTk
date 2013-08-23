@@ -108,36 +108,4 @@ namespace gpstk
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
 
-   // Define this BDSEphemeris by converting the given RINEX navigation data.
-   // NB this both overrides and calls the OrbitEph version.
-   // @param rnd Rinex3NavData
-   // @return true if BDSEphemeris was defined, false otherwise
-   bool BDSEphemeris::load(const Rinex3NavData& rnd)
-   {
-      try {
-         if(rnd.satSys != "C") return false;    // OrbitEph::load will also do this...
-
-         // load the OrbitEph parts
-         if(!OrbitEph::load(rnd)) return false;
-
-         //Cis = -Cis;       // really? Rinex3.02 A13
-
-         // now load the BeiDou-specific parts
-         IODC = rnd.IODC;
-         IODE = rnd.IODE;
-         health = rnd.health;
-         accuracy = rnd.accuracy;
-         Tgd13 = rnd.Tgd;
-         Tgd23 = rnd.Tgd2;
-
-         HOWtime = rnd.HOWtime;
-         int week = static_cast<BDSWeekSecond>(ctToe).getWeek();
-         transmitTime = BDSWeekSecond(week, static_cast<double>(HOWtime),
-            TimeSystem::BDT);
-
-         return true;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
-
 } // end namespace

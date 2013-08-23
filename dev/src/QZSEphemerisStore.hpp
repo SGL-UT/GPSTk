@@ -79,12 +79,6 @@ namespace gpstk
       /// Notes regarding the rationalize() function.
       void rationalize(void);
 
-      /// Add a QZSEphemeris object to this collection, converting the given RINEX
-      /// navigation data. Returns false if the satellite is not QZS.
-      /// @param rnd Rinex3NavData
-      /// @return pointer to the new object, NULL if data could not be added.
-      virtual OrbitEph* addEphemeris(const Rinex3NavData& rnd);
-
       /// Find a QZSEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
       /// @param sat the satellite of interest
@@ -112,10 +106,11 @@ namespace gpstk
          return qzseph;
       }
 
-      /// Add all ephemerides, for the given PRN, to an existing list<QZSEphemeris>
-      /// If PRN is zero (the default), all ephemerides are added.
+      /// Add all ephemerides to an existing list<QZSEphemeris> for given satellite
+      /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
-      int addToList(std::list<QZSEphemeris>& qzslist, const int PRN=0) const;
+      int addToList(std::list<QZSEphemeris>& qzslist,
+                        SatID sat=SatID(-1,SatID::systemQZSS)) const;
 
    }; // end class QZSEphemerisStore
 

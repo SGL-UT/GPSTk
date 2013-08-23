@@ -53,7 +53,7 @@
 #include "ObsID.hpp"
 #include "SatID.hpp"
 #include "Xvt.hpp"
-#include "Rinex3NavData.hpp"
+//#include "Rinex3NavData.hpp"
 
 namespace gpstk
 {
@@ -134,6 +134,10 @@ namespace gpstk
          endValid = ctToe + 7200.0;
       }
       
+      /// Dump the overhead information as a string containing a single line.
+      /// @throw Invalid Request if the required data has not been stored.
+      virtual std::string asString(void) const;
+
       /// Utility routine for dumpBody(); return the time in the appropriate time
       /// system as a string.  Override for other than GPS time systems
       /// @param CommonTime t time to display
@@ -161,7 +165,7 @@ namespace gpstk
       /// NB currently has fixes for MGEX data.
       /// @param rnd Rinex3NavData
       /// @return true if OrbitEph was defined, false otherwise
-      virtual bool load(const Rinex3NavData& rnd);
+      //virtual bool load(const Rinex3NavData& rnd);
 
    // member data
      

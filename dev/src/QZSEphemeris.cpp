@@ -153,41 +153,4 @@ namespace gpstk
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
 
-   // Define this QZSEphemeris by converting the given RINEX navigation data.
-   // NB this both overrides and calls the OrbitEph version.
-   // @param rnd Rinex3NavData
-   // @return true if QZSEphemeris was defined, false otherwise
-   bool QZSEphemeris::load(const Rinex3NavData& rnd)
-   {
-      try {
-         if(rnd.satSys != "J") return false;    // OrbitEph::load will also do this...
-
-         // load the OrbitEph parts
-         if(!OrbitEph::load(rnd)) return false;
-
-         // RINEX stores PRN minus 192
-         satID = SatID(satID.id + 192, satID.system);
-
-         // now load the QZSS-specific parts
-         IODC = rnd.IODC;
-         IODE = rnd.IODE;
-         health = rnd.health;
-         accuracy = rnd.accuracy;
-         Tgd = rnd.Tgd;
-
-         HOWtime = rnd.HOWtime;
-         int week = static_cast<QZSWeekSecond>(ctToe).getWeek();
-         transmitTime = QZSWeekSecond(week, static_cast<double>(HOWtime),
-            TimeSystem::QZS);
-
-         codeflags = rnd.codeflgs;
-         L2Pdata = rnd.L2Pdata;
-
-         setFitIntervalFlag(int(rnd.fitint));  // calls adjustValidity();
-
-         return true;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
-
 } // end namespace

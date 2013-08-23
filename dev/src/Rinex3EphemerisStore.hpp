@@ -236,8 +236,11 @@ namespace gpstk
                     std::ostream& s=std::cout);
 
       /// use to access the data records in the store in bulk
+      /// Add all Rinex3NavData in this store to the given list. If sat is defined,
+      /// (its default is (-1,mixed)), then add only objects of sat's system,
+      /// further if sat.id is not -1, add only records for that sat.
       int addToList(std::list<Rinex3NavData>& theList,
-                    SatID sysSat=SatID(-1,SatID::systemMixed)) const;
+                    SatID sat=SatID(-1,SatID::systemMixed)) const;
 
       /// get the number of records or ephemerides for the given satellite;
       /// an overload size(SatID::SatelliteSystem) gives the total per system.

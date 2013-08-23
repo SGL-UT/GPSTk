@@ -94,12 +94,6 @@ namespace gpstk
       /// @throw Invalid Request if the required data has not been stored.
       virtual void dumpBody(std::ostream& os = std::cout) const;
 
-      /// Define this BDSEphemeris by converting the given RINEX navigation data.
-      /// NB this both overrides and calls the OrbitEph version.
-      /// @param rnd Rinex3NavData
-      /// @return true if BDSEphemeris was defined, false otherwise
-      virtual bool load(const Rinex3NavData& rnd);
-
    // member data
       CommonTime transmitTime;   ///< Time of transmission
       long HOWtime;              ///< Time (seconds-of-week) of handover word (txmit)

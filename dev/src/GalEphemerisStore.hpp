@@ -79,11 +79,20 @@ namespace gpstk
       /// Notes regarding the rationalize() function.
       void rationalize(void);
 
-      /// Add a GalEphemeris object to this collection, converting the given RINEX
-      /// navigation data. Returns false if the satellite is not Galileo.
-      /// @param rnd Rinex3NavData
+      /// Add a GalEphemeris object to this collection
       /// @return pointer to the new object, NULL if data could not be added.
-      virtual OrbitEph* addEphemeris(const Rinex3NavData& rnd);
+      virtual GalEphemeris* addEphemeris(const GalEphemeris& galeph)
+      {
+         try {
+            GalEphemeris neweph(galeph);
+
+            OrbitEph *oeptr = dynamic_cast<OrbitEph*>(&neweph);
+            oeptr = OrbitEphStore::addEphemeris(oeptr);
+            return dynamic_cast<GalEphemeris*>(oeptr);
+         }
+         catch(Exception& e) { GPSTK_RETHROW(e); }
+      }
+
 
       /// Find a GalEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
@@ -94,7 +103,7 @@ namespace gpstk
       /// ephemeris is not found.
       const GalEphemeris& findEphemeris(const SatID& sat, const CommonTime& t) const
       {
-         if(sat.system != SatID::systemBeiDou) {
+         if(sat.system != SatID::systemGalileo) {
             InvalidRequest e("Invalid satellite system");
             GPSTK_THROW(e);
          }
@@ -112,10 +121,11 @@ namespace gpstk
          return galeph;
       }
 
-      /// Add all ephemerides, for the given PRN, to an existing list<GalEphemeris>
-      /// If PRN is zero (the default), all ephemerides are added.
+      /// Add all ephemerides to an existing list<GalEphemeris> for given satellite.
+      /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
-      int addToList(std::list<GalEphemeris>& gallist, const int PRN=0) const;
+      int addToList(std::list<GalEphemeris>& gallist,
+                        SatID sat=SatID(-1,SatID::systemGalileo)) const;
 
    }; // end class GalEphemerisStore
 

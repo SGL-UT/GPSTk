@@ -43,6 +43,8 @@
 #include "Exception.hpp"
 #include "SVNumXRef.hpp"
 #include "GPSWeekSecond.hpp"
+#include "CivilTime.hpp"
+#include "TimeString.hpp"
 
 #include "GPSEphemeris.hpp"
 
@@ -85,6 +87,33 @@ namespace gpstk
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
       
+   // Dump the overhead information as a string containing a single line.
+   // @throw Invalid Request if the required data has not been stored.
+   string GPSEphemeris::asString(void) const
+   {
+      if(!dataLoadedFlag)
+         GPSTK_THROW(InvalidRequest("Data not loaded"));
+      try {
+         ostringstream os;
+         CivilTime ct;
+         os << "EPH G" << setfill('0') << setw(2) << satID.id << setfill(' ');
+         ct = CivilTime(beginValid);
+         os << printTime(ct," | %4Y %3j %02H:%02M:%02S |");
+         ct = CivilTime(ctToe);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(ctToc);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(endValid);
+         os << printTime(ct," %3j %02H:%02M:%02S |");
+         ct = CivilTime(transmitTime);
+         os << printTime(ct," %3j %02H:%02M:%02S | ");
+         os << setw(3) << IODE << " | " << setw(3) << IODC << " | " << health;
+         return os.str();
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e);
+      }
+   }
+
    // Dump the overhead information to the given output stream.
    // @throw Invalid Request if the required data has not been stored.
    void GPSEphemeris::dumpHeader(std::ostream& os) const
@@ -133,41 +162,6 @@ namespace gpstk
             << "IODC: " << IODC << "   IODE: " << IODE << "   health: " << health
             << " (0=good)   codeflags: " << codeflags << "   L2Pdata: " << L2Pdata
             << endl;
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
-   }
-
-   // Define this GPSEphemeris by converting the given RINEX 3 navigation data.
-   // NB this both overrides and calls the OrbitEph version.
-   // @param rnd Rinex3NavData
-   // @return true if GPSEphemeris was defined, false otherwise
-   bool GPSEphemeris::load(const Rinex3NavData& rnd)
-   {
-      try {
-         if(rnd.satSys != "G") return false;    // OrbitEph::load will also do this...
-
-         // load the OrbitEph parts
-         if(!OrbitEph::load(rnd)) return false;
-
-         // now load the GPS-specific parts
-         IODC = rnd.IODC;
-         IODE = rnd.IODE;
-         health = rnd.health;
-         accuracyFlag = rnd.accuracy;
-         Tgd = rnd.Tgd;
-
-         HOWtime = rnd.HOWtime;
-         int week = static_cast<GPSWeekSecond>(ctToe).getWeek();
-         transmitTime = GPSWeekSecond(week, static_cast<double>(HOWtime),
-            TimeSystem::GPS);
-
-         codeflags = rnd.codeflgs;
-         L2Pdata = rnd.L2Pdata;
-
-         // NB IODC must be set first...
-         setFitIntervalFlag(int(rnd.fitint));  // calls adjustValidity();
-
-         return true;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }

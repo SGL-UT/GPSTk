@@ -601,7 +601,8 @@ protected:
          		
    	   		if (makeEngEphemeris(engEph, ephPageStore[ni]))
       			{
-	         		gpsEphStore.addEphemeris(engEph);
+                  // EngEphemeris deprecated, use GPSEphemeris
+	         		gpsEphStore.addEphemeris(RinexNavData(engEph));
    	      		ephPageStore[ni].clear();
       			}
 				} 	// for (int s=1; s<=3; s++)

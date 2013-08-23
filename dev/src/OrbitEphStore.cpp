@@ -191,8 +191,9 @@ namespace gpstk
    //---------------------------------------------------------------------------------
    // Keeps only one OrbitEph for a given satellite and Toe.
    // If keys are repeated, keep the one with the earliest transmit time.
-   bool OrbitEphStore::addEphemeris(const OrbitEph* eph)
+   OrbitEph* OrbitEphStore::addEphemeris(const OrbitEph* eph)
    {
+      OrbitEph *ret(0);
       try {
          // is the satellite found in the table? If not, create one
          if(satTables.find(eph->satID) == satTables.end()) {
@@ -204,9 +205,10 @@ namespace gpstk
 
             // if map is empty, load object and return
          if(toet.size() == 0) {
-            toet[eph->beginValid] = eph->clone();
-            updateTimeLimits(eph);
-            return true;
+            ret = eph->clone();
+            toet[eph->beginValid] = ret;
+            updateTimeLimits(ret);
+            return ret;
          }
 
          // Search for beginValid in current keys.
@@ -216,7 +218,8 @@ namespace gpstk
          if(it != toet.end()) {
             // is a duplicate found in the table?
             if(it->second->ctToe == eph->ctToe) {
-               return false;
+               message = string("duplicate Toe");
+               return ret;
             }
             else {
                // Found matching beginValid but different Toe - This shouldn't happen
@@ -239,9 +242,10 @@ namespace gpstk
             if(it->second->ctToe == eph->ctToe) {
                toet.erase(it);
             }
-            toet[eph->beginValid] = eph->clone();
-            updateTimeLimits(eph);
-            return true;
+            ret = eph->clone();
+            toet[eph->beginValid] = ret;
+            updateTimeLimits(ret);
+            return ret;
          }
 
          if(it==toet.end()) {
@@ -249,11 +253,12 @@ namespace gpstk
             // get last item in map and check Toe
             TimeOrbitEphTable::reverse_iterator rit = toet.rbegin();
             if(rit->second->ctToe != eph->ctToe) {
-               toet[eph->beginValid] = eph->clone();
-               updateTimeLimits(eph);
-               return true;
+               ret = eph->clone();
+               toet[eph->beginValid] = ret;
+               updateTimeLimits(ret);
             }
-            return false;
+            else message = string("Toe matches last");
+            return ret;
          }
 
          // candidate is "In the middle"
@@ -261,9 +266,10 @@ namespace gpstk
          // same OrbitEph as candidate
          if(it->second->ctToe == eph->ctToe) {
             toet.erase(it);
-            toet[eph->beginValid] = eph->clone();
-            updateTimeLimits(eph);
-            return true;
+            ret = eph->clone();
+            toet[eph->beginValid] = ret;
+            updateTimeLimits(ret);
+            return ret;
          }
 
          // Two cases:
@@ -273,16 +279,18 @@ namespace gpstk
          // Already checked for it==toet.beginValid() earlier
          it--;
          if(it->second->ctToe != eph->ctToe) {
-            toet[eph->beginValid] = eph->clone();
-            updateTimeLimits(eph);
-            return true;
+            ret = eph->clone();
+            toet[eph->beginValid] = ret;
+            updateTimeLimits(ret);
          }
-         return false;
+         else message = string("Late transmit copy");
+         return ret;
       }
       catch(Exception& e) { GPSTK_RETHROW(e) }
 
-   }  // end bool OrbitEphStore::addEphemeris(const OrbitEph* eph)
+   }  // end OrbitEph* OrbitEphStore::addEphemeris(const OrbitEph* eph)
 
+/*
    // Add an OrbitEph object to this collection,
    // converting the given RINEX navigation data.
    // @param rnd Rinex3NavData input data
@@ -308,7 +316,7 @@ namespace gpstk
       catch(Exception& e) { GPSTK_RETHROW(e) }
 
    }  // end bool addEphemeris(const Rinex3NavData& rnd)
-
+*/
    //---------------------------------------------------------------------------------
    void OrbitEphStore::edit(const CommonTime& tmin, const CommonTime& tmax)
    {
@@ -496,13 +504,20 @@ namespace gpstk
 
    //---------------------------------------------------------------------------------
    // Add all ephemerides to an existing list<OrbitEph>.
+   // If SatID sat is given, limit selections to sat's satellite system, plus if
+   // sat's id is not -1, limit to sat's id as well.
    // @return the number of ephemerides added.
-   int OrbitEphStore::addToList(list<OrbitEph*>& v) const
+   int OrbitEphStore::addToList(list<OrbitEph*>& v, SatID sat) const
    {
       int n = 0;
       SatTableMap::const_iterator it;
       for (it = satTables.begin(); it != satTables.end(); it++)
       {
+         if(sat.system != SatID::systemUnknown) {
+            if(it->first.system != sat.system) continue;
+            if(sat.id != -1 && it->first.id != sat.id) continue;
+         }
+
          const TimeOrbitEphTable& em = it->second;
          TimeOrbitEphTable::const_iterator ei;
          for(ei = em.begin(); ei != em.end(); ei++) {

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -185,6 +183,80 @@ namespace gpstk
       ee.setAccuracy(accuracy);
 
       return ee;
+   }
+
+   // Convert this RinexNavData to a GPSEphemeris object.
+   // for backward compatibility only - use Rinex3NavData
+   RinexNavData::operator GPSEphemeris() const
+   {
+      GPSEphemeris gpse;
+      try {
+         // Overhead
+         gpse.satID = SatID(PRNID, SatID::systemGPS);
+         gpse.ctToe = time;
+
+         // clock model
+         gpse.af0 = af0;
+         gpse.af1 = af1;
+         gpse.af2 = af2;
+   
+         // Major orbit parameters
+         gpse.M0 = M0;
+         gpse.dn = dn;
+         gpse.ecc = ecc;
+         gpse.A = Ahalf * Ahalf;
+         gpse.OMEGA0 = OMEGA0;
+         gpse.i0 = i0;
+         gpse.w = w;
+         gpse.OMEGAdot = OMEGAdot;
+         gpse.idot = idot;
+         // modern nav msg
+         gpse.dndot = 0.;
+         gpse.Adot = 0.;
+   
+         // Harmonic perturbations
+         gpse.Cuc = Cuc;
+         gpse.Cus = Cus;
+         gpse.Crc = Crc;
+         gpse.Crs = Crs;
+         gpse.Cic = Cic;
+         gpse.Cis = Cis;
+   
+         gpse.dataLoadedFlag = true;
+
+         // get the epochs right
+         CommonTime ct = time;
+         unsigned int year = static_cast<CivilTime>(ct).year;
+
+         // Get week for clock, to build Toc
+         double dt = Toc - HOWtime;
+         int week = weeknum;
+         if(dt < -HALFWEEK) week++; else if(dt > HALFWEEK) week--;
+         gpse.ctToc = GPSWeekSecond(week, Toc, TimeSystem::GPS);
+         gpse.ctToc.setTimeSystem(TimeSystem::GPS);
+
+         // now load the GPS-specific parts
+         gpse.IODC = IODC;
+         gpse.IODE = IODE;
+         gpse.health = health;
+         gpse.accuracyFlag = accuracy;
+         gpse.Tgd = Tgd;
+
+         gpse.HOWtime = HOWtime;
+         week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
+         gpse.transmitTime = GPSWeekSecond(week, static_cast<double>(HOWtime),
+            TimeSystem::GPS);
+
+         gpse.codeflags = codeflgs;
+         gpse.L2Pdata = L2Pdata;
+
+         // NB IODC must be set first...
+         gpse.fitint = fitint;
+         gpse.setFitIntervalFlag(int(fitint));  // calls adjustValidity();
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+
+      return gpse;
    }
 
    list<double> RinexNavData::toList() const

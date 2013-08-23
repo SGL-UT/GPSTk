@@ -99,12 +99,6 @@ namespace gpstk
       /// @throw Invalid Request if the required data has not been stored.
       virtual void dumpBody(std::ostream& os = std::cout) const;
 
-      /// Define this QZSEphemeris by converting the given RINEX navigation data.
-      /// NB this both overrides and calls the OrbitEph version.
-      /// @param rnd Rinex3NavData
-      /// @return true if QZSEphemeris was defined, false otherwise
-      virtual bool load(const Rinex3NavData& rnd);
-
       /// Compute the fit duration in hours, and adjust the times of validity, given
       /// the fit interval flag.
       /// @param fitint fit interval flag
@@ -126,6 +120,7 @@ namespace gpstk
       short codeflags;           ///< L2 codes
       short L2Pdata;             ///< L2 P data flag
       short fitDuration;         ///< fit interval flag (0=2hrs, 1>4hrs) IS-QZSS 8.1.1
+      short fitint;              ///< for RINEX
 
    private:
       /// Get the fit interval in hours from the fit interval flag

@@ -129,9 +129,9 @@ void Stripper::additionalSetup()
          if (verboseLevel)
             cout << "Loading RINEX nav data from "
                  << navArg.getValue()[i] << endl;
-         ephs.addEphemeris(static_cast<EngEphemeris>(rnd));
+         ephs.addEphemeris(rnd);
          while (rns >> rnd)
-            ephs.addEphemeris(static_cast<EngEphemeris>(rnd));
+            ephs.addEphemeris(rnd);
       }
       
       if (done)
@@ -149,14 +149,14 @@ void Stripper::additionalSetup()
                  << navArg.getValue()[i] << endl;
          try
          {
-            ephs.addEphemeris(static_cast<EngEphemeris>(ficd));
+            ephs.addEphemeris(RinexNavData(static_cast<EngEphemeris>(ficd)));
          }
          catch (WrongBlockNumber& e) {}
          while (fics >> ficd)
          {
             try
             {
-               ephs.addEphemeris(static_cast<EngEphemeris>(ficd));
+               ephs.addEphemeris(RinexNavData(static_cast<EngEphemeris>(ficd)));
             }
             catch (WrongBlockNumber& e) {}
          }

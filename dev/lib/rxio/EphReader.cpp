@@ -157,7 +157,7 @@ namespace gpstk
       FICData data;
       while (fs >> data)
          if (data.blockNum==9) // Only look at the eng ephemeris
-            bce->addEphemeris(EngEphemeris(data));
+            bce->addEphemeris(RinexNavData(EngEphemeris(data)));
             // TODO replace EngEphemeris (deprecated) with GPSEphemeris
 
       if (verboseLevel>1)
@@ -259,7 +259,7 @@ namespace gpstk
                EngEphemeris engEph;
                if (makeEngEphemeris(engEph, ephPageStore[ni]))
                {
-                  bce->addEphemeris(engEph);
+                  bce->addEphemeris(RinexNavData(engEph));
                   ephPageStore[ni].clear();
                }
             }

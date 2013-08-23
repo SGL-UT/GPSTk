@@ -51,7 +51,7 @@
 #include "Rinex3ObsHeader.hpp"
 #include "Rinex3NavStream.hpp"
 #include "Rinex3NavHeader.hpp"
-#include "Rinex3NavStream.hpp"
+#include "Rinex3NavData.hpp"
 
 #include "SP3Stream.hpp"
 #include "SP3Header.hpp"
@@ -201,46 +201,29 @@ bool isRinexNavFile(const string& file)
    {
       RinexNavHeader header;
       RinexNavStream rnstream;
-      try
-      {
+      try {
          rnstream.open(file.c_str(),ios::in);
          if(!rnstream)
             return false;
          rnstream.exceptions(fstream::failbit);
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;}
-      try
-      {
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false;}
+      try {
          rnstream >> header;
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
+
       rnstream.close();
       return true;
    }
-   catch(Exception& e)
-   {
-      GPSTK_RETHROW(e);
-   }
-   catch(exception& e)
-   {
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }
-   catch(...)
-   {
+   catch(...) {
       Exception e("Unknown exception");
       GPSTK_THROW(e);
    }
@@ -253,33 +236,20 @@ bool isRinex3NavFile(const string& file)
    {
       Rinex3NavHeader header;
       Rinex3NavStream rnstream;
-      try
-      {
+      try {
          rnstream.open(file.c_str(),ios::in);
          if(!rnstream)
             return false;
          rnstream.exceptions(fstream::failbit);
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
-      try
-      {
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
+      try {
          rnstream >> header;
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
+
       rnstream.close();
       return true;
    }
@@ -306,49 +276,30 @@ bool isRinexObsFile(const string& file)
    {
       RinexObsHeader header;
       RinexObsStream rostream;
-      try
-      {
+      try {
          rostream.open(file.c_str(),ios::in);
          if(!rostream)
             return false;
          rostream.exceptions(fstream::failbit);
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
 
-      try
-      {
+      try {
          rostream >> header;
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
 
       rostream.close();
       return true;
    }
-   catch(Exception& e)
-   {
-      GPSTK_RETHROW(e);
-   }
-   catch(exception& e)
-   {
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }
-   catch(...)
-   {
+   catch(...) {
       Exception e("Unknown exception");
       GPSTK_THROW(e);
    }
@@ -361,49 +312,30 @@ bool isRinex3ObsFile(const string& file)
    {
       Rinex3ObsHeader header;
       Rinex3ObsStream rostream;
-      try
-      {
+      try {
          rostream.open(file.c_str(),ios::in);
          if(!rostream)
             return false;
          rostream.exceptions(fstream::failbit);
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
 
-      try
-      {
+      try {
          rostream >> header;
       }
-      catch(Exception& e)
-      {
-         return false;
-      }
-      catch(exception& e)
-      {
-         return false;
-      }
+      catch(Exception& e) { return false; }
+      catch(exception& e) { return false; }
 
       rostream.close();
       return true;
    }
-   catch(Exception& e)
-   {
-      GPSTK_RETHROW(e);
-   }
-   catch(exception& e)
-   {
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }
-   catch(...)
-   {
+   catch(...) {
       Exception e("Unknown exception");
       GPSTK_THROW(e);
    }
@@ -487,11 +419,12 @@ string sortRinex3ObsFiles(vector<string>& files)
                msg += "Error - Invalid header in file " + files[n] + "\n";
                continue;
             }
-            hash.insert(multimap<CommonTime, string>::value_type(header.firstObs, files[n]));
+            hash.insert(
+               multimap<CommonTime, string>::value_type(header.firstObs, files[n])
+            );
 
          }
-         catch(Exception& e)
-         {
+         catch(Exception& e) {
             msg += "Exception: " + e.what() + "\n";
             continue;
          }
@@ -505,17 +438,12 @@ string sortRinex3ObsFiles(vector<string>& files)
          it++;
       }
    }
-   catch(Exception& e)
-   {
-      GPSTK_RETHROW(e);
-   }
-   catch(exception& e)
-   {
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }
-   catch(...)
-   {
+   catch(...) {
       Exception e("Unknown exception");
       GPSTK_THROW(e);
    }
@@ -524,83 +452,59 @@ string sortRinex3ObsFiles(vector<string>& files)
 }
 
 //------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
 int FillEphemerisStore(const vector<string>& files, SP3EphemerisStore& PE,
-      GPSEphemerisStore& BCE)
+                                                     GPSEphemerisStore& BCE)
 {
    try
    {
       int nread = 0;
-      RinexNavHeader rnh;
-      RinexNavData rne;
-      for(size_t i = 0; i < files.size(); i++)
-      {
-         if(files[i].empty()) {
+      Rinex3NavHeader rnh;
+      Rinex3NavData rne;
+      for(size_t nfile = 0; nfile < files.size(); nfile++) {
+         if(files[nfile].empty()) {
             Exception e("File name is empty");
             GPSTK_THROW(e);
          }
-         RinexNavStream strm(files[i].c_str());
-         if(!strm) {
-            Exception e("Could not open file " + files[i]);
-            GPSTK_THROW(e);
-         }
-         strm.close();
-         if(isRinexNavFile(files[i]))
-         {
-            RinexNavStream RNFileIn(files[i].c_str());
-            RNFileIn.exceptions(fstream::failbit);
-            try
-            {
-               RNFileIn >> rnh;
-               while (RNFileIn >> rne)
-               {
+
+         if(isRinex3NavFile(files[nfile]) || isRinexNavFile(files[nfile])) {
+            Rinex3NavStream instrm(files[nfile].c_str());
+            instrm.exceptions(fstream::failbit);
+            try {
+               instrm >> rnh;
+               while (instrm >> rne) {
                   // check health...
                   if(rne.health == 0)
                      BCE.addEphemeris(rne);
                }
                nread++;
             }
-            catch(Exception& e)
-            {
-               //cerr << "Caught Exception while reading Rinex Nav file " << files[i]
-               //   << " :\n" << e << endl;
-               //continue;
+            catch(Exception& e) {
                GPSTK_RETHROW(e);
             }
          }
-         else if(isSP3File(files[i]))
-         {
-            try
-            {
-               PE.loadFile(files[i]);
+
+         else if(isSP3File(files[nfile])) {
+            try {
+               PE.loadFile(files[nfile]);
+               nread++;
             }
-            catch(Exception& e)
-            {
-               //cerr << "Caught Exception while reading SP3 Nav file " << files[i]
-               //   << " :\n" << e << endl;
-               //continue;
-               GPSTK_RETHROW(e);
-            }
-            nread++;
+            catch(Exception& e) { GPSTK_RETHROW(e); }
          }
-         else
-            {
-                Exception e("File " + files[i] + " is neither BCE nor PE file.");
+         else {
+            Exception e("File " + files[nfile]
+                  + " is neither Rinex Nav nor SP3 file.");
             GPSTK_THROW(e);
-            }
+         }
       }
       return nread;
    }
-   catch(Exception& e)
-   {
-      GPSTK_RETHROW(e);
-   }
-   catch(exception& e)
-   {
+   catch(Exception& e) { GPSTK_RETHROW(e); }
+   catch(exception& e) {
       Exception E("std except: "+string(e.what()));
       GPSTK_THROW(E);
    }
-   catch(...)
-   {
+   catch(...) {
       Exception e("Unknown exception");
       GPSTK_THROW(e);
    }

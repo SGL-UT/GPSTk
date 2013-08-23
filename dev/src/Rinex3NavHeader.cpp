@@ -242,6 +242,8 @@ namespace gpstk
             tc.geoUTCid = asInt(line.substr(57,2));
 
             if(tc.type == TimeSystemCorrection::GLGP ||
+               tc.type == TimeSystemCorrection::GLUT ||        // TD ?
+               tc.type == TimeSystemCorrection::BDUT ||        // TD ?
                tc.type == TimeSystemCorrection::GPUT ||
                tc.type == TimeSystemCorrection::GPGA ||
                tc.type == TimeSystemCorrection::QZGP ||
@@ -262,13 +264,13 @@ namespace gpstk
                tc.refDay = ct.day;
             }
 
-            if(tc.type == TimeSystemCorrection::GLUT) {
-               tc.refYr =  1980;
-               tc.refMon = 1;
-               tc.refDay = 6;
-               tc.refWeek = 0;
-               tc.refSOW = 0;
-            }
+            //if(tc.type == TimeSystemCorrection::GLUT) {
+            //   tc.refYr =  1980;
+            //   tc.refMon = 1;
+            //   tc.refDay = 6;
+            //   tc.refWeek = 0;
+            //   tc.refSOW = 0;
+            //}
 
             mapTimeCorr[tc.asString4()] = tc;
             valid |= validTimeSysCorr;
@@ -428,10 +430,10 @@ namespace gpstk
             if(version >= 3) {
                line = tc.asString4() + " ";
                line += doubleToScientific(tc.A0,17,10,2);
-               if(tc.type == TimeSystemCorrection::GLUT
-                           || tc.type == TimeSystemCorrection::GLGP)
-                  line += doubleToScientific(0.0,16,9,2);
-               else
+               //if(tc.type == TimeSystemCorrection::GLUT
+               //            || tc.type == TimeSystemCorrection::GLGP)
+               //   line += doubleToScientific(0.0,16,9,2);
+               //else
                   line += doubleToScientific(tc.A1,16,9,2);
 
                line += rightJustify(asString<long>(tc.refSOW),7);
@@ -440,11 +442,12 @@ namespace gpstk
                if(tc.type == TimeSystemCorrection::SBUT) {
                   line += rightJustify(tc.geoProvider,6);
                   line += " ";
-                  line += rightJustify(asString<int>(tc.geoUTCid),2);
-                  line += " ";
                }
                else
-                  line += string(10,' ');
+                  line += string(7,' ');
+
+               line += rightJustify(asString<int>(tc.geoUTCid),2);
+               line += " ";
 
                line += leftJustify(stringTimeSysCorr,20);
             }
