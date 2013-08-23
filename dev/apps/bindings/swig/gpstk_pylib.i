@@ -158,6 +158,7 @@
    #include "../../../src/CheckPRData.hpp"
    #include "../../../src/PRSolution2.hpp"
    #include "../../../src/ExtractData.hpp"
+   #include "../../../src/Expression.hpp"
 
    // FIC format:
    #include "../../../src/FFBinaryStream.hpp"
@@ -333,7 +334,6 @@
 %include "../../../src/BDSEphemeris.hpp"
 %include "../../../src/EngEphemeris.hpp"
 %include "../../../src/GalEphemeris.hpp"
-%include "../../../src/GalEphemeris.hpp"
 %include "../../../src/GloEphemeris.hpp"
 %include "../../../src/GPSEphemeris.hpp"
 %include "../../../src/QZSEphemeris.hpp"
@@ -415,6 +415,8 @@
 %include "../../../src/TropModel.hpp"
 %include "../../../src/PRSolution2.hpp"
 %include "../../../src/ExtractData.hpp"
+%ignore gpstk::Expression::print(std::ostream& ostr) const;
+%include "../../../src/Expression.hpp"
 
 // FIC format:
 %include "../../../src/FFBinaryStream.hpp"

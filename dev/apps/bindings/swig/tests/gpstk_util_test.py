@@ -195,6 +195,7 @@ class ObsID_test(unittest.TestCase):
 class Vector_test(unittest.TestCase):
     def test_standard_double(self):
         v = gpstk.vector(5, 3.0)  # 3 3 3 3 3
+        self.assertEqual(5, len(v))
         self.assertAlmostEqual(3.0, v[0])
         self.assertAlmostEqual(3.0, v[1])
         self.assertAlmostEqual(3.0, v[2])
@@ -229,9 +230,11 @@ class Vector_test(unittest.TestCase):
 
     def test_iter(self):
         v = gpstk.vector(3, 2.5)
+        # also tests access by index ability
         i = 0
         for x in v:
             self.assertAlmostEqual(v[i], x)
+            self.assertAlmostEqual(v[i], 2.5)
             i += 1
 
 
@@ -428,6 +431,32 @@ class Tides_test(unittest.TestCase):
         p = gpstk.Position(1000.0, 2000.0, 3000.0)
         trip = gpstk.solidTides(t, p)
         self.assertAlmostEqual(-2.2479508782610997e-15, trip[0])
+
+
+class Expression_test(unittest.TestCase):
+    def test_class(self):
+        e = gpstk.Expression('1 + 1')
+        self.assertAlmostEqual(2.0, e.evaluate())
+
+        e = gpstk.Expression('1.12*(4.0/2.0 - 0.1)')
+        self.assertAlmostEqual(2.128, e.evaluate())
+
+        e = gpstk.Expression('1 + 2*x')
+        e.set('x', 5.5)
+        self.assertAlmostEqual(12.0, e.evaluate())
+
+        e = gpstk.Expression('L1 + L2')
+        e.setGPSConstants();
+        self.assertAlmostEqual(2803020000.0, e.evaluate())
+
+    def test_function(self):
+        self.assertAlmostEqual(2.0, gpstk.eval('1 + 1'))
+        self.assertAlmostEqual(2.128, gpstk.eval('1.12*(4.0/2.0 - 0.1)'))
+        self.assertAlmostEqual(12.0, gpstk.eval('1 + 2*x', x=5.5))
+        self.assertAlmostEqual(2803020000.0, gpstk.eval('L1 + L2'))
+
+        e = gpstk.Expression('1 + 2*x')
+        self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
 
 
 if __name__ == '__main__':

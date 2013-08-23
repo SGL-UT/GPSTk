@@ -165,9 +165,6 @@ class Rinex3NavTest(unittest.TestCase):
         self.assertEqual('06/10/2004 00:00:26', header.date)
         self.assertEqual(166, len(data))
         dataPoint = data[165]
-        self.assertEqual(5153.72985268, dataPoint.Ahalf)
-        self.assertEqual(432000.0, dataPoint.Toc)
-
         self.assertAlmostEqual(5153.72985268, dataPoint.Ahalf)
         self.assertEqual(432000.0, dataPoint.Toc)
 
@@ -243,7 +240,37 @@ class MSCTest(unittest.TestCase):
 
 
 class GLONASS_test(unittest.TestCase):
-    pass
+    def test(self):
+        pass
+        # header, data = gpstk.readRinex3Nav('/home/jking/GLONASS/BEphemeris/thti2200.12n')
+        # dataPoint = data.next()
+
+        # ephem = dataPoint.toEngEphemeris()
+        # time = ephem.getTransmitTime()
+        # xvt = ephem.svXvt(time)
+        # print time
+        # print xvt
+
+        # ephem = dataPoint.toGloEphemeris()
+        # time = ephem.getEphemerisEpoch()
+        # time.setTimeSystem(gpstk.TimeSystem('GLO'))
+        # xvt = ephem.svXvt(time)
+        # print time
+        # print xvt
+
+
+
+        # from glob import glob
+        # files = glob('/home/jking/GLONASS/BEphemeris/*.12n')[:1]
+        # g = gpstk.GloEphemerisStore()
+        # for f in files:
+        #     header, data = gpstk.readRinex3Nav(f)
+        #     for d in data:
+        #         g.addEphemeris(d)
+
+        # print g
+
+
     # def test_dataobjects(self):
         # header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
         # g =

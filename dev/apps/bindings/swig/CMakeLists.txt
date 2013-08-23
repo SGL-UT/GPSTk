@@ -38,6 +38,7 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../src/EngEphemeris.cpp
                     ../../../src/EngNav.cpp
                     ../../../src/Exception.cpp
+                    ../../../src/Expression.cpp
                     ../../../src/ExtractData.cpp
                     ../../../src/FFData.cpp
                     ../../../src/FFStream.cpp

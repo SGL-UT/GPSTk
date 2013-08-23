@@ -3,6 +3,7 @@
 import unittest
 import gpstk
 
+
 class CommonTime_Tests(unittest.TestCase):
     def test(self):
         a = gpstk.CommonTime()
@@ -24,28 +25,28 @@ class CommonTime_Tests(unittest.TestCase):
 
     def test_times_gen(self):
         start = gpstk.CommonTime()
-        start.addSeconds(100)
+        start.addSeconds(100.0)
         end = gpstk.CommonTime()
-        end.addSeconds(900)
-        times = gpstk.times(start, end, seconds=200)
-        self.assertEqual(100, times.next().getSecondOfDay())
-        self.assertEqual(300, times.next().getSecondOfDay())
-        self.assertEqual(500, times.next().getSecondOfDay())
-        self.assertEqual(700, times.next().getSecondOfDay())
-        self.assertEqual(900, times.next().getSecondOfDay())
+        end.addSeconds(900.0)
+        times = gpstk.times(start, end, seconds=200.0)
+        self.assertEqual(100.0, times.next().getSecondOfDay())
+        self.assertEqual(300.0, times.next().getSecondOfDay())
+        self.assertEqual(500.0, times.next().getSecondOfDay())
+        self.assertEqual(700.0, times.next().getSecondOfDay())
+        self.assertEqual(900.0, times.next().getSecondOfDay())
         self.assertRaises(StopIteration, times.next)
 
     def test_times_list(self):
         start = gpstk.CommonTime()
-        start.addSeconds(100)
+        start.addSeconds(100.0)
         end = gpstk.CommonTime()
-        end.addSeconds(900)
-        times = list(gpstk.times(start, end, seconds=200))
-        self.assertEqual(100, times[0].getSecondOfDay())
-        self.assertEqual(300, times[1].getSecondOfDay())
-        self.assertEqual(500, times[2].getSecondOfDay())
-        self.assertEqual(700, times[3].getSecondOfDay())
-        self.assertEqual(900, times[4].getSecondOfDay())
+        end.addSeconds(900.0)
+        times = list(gpstk.times(start, end, seconds=200.0))
+        self.assertEqual(100.0, times[0].getSecondOfDay())
+        self.assertEqual(300.0, times[1].getSecondOfDay())
+        self.assertEqual(500.0, times[2].getSecondOfDay())
+        self.assertEqual(700.0, times[3].getSecondOfDay())
+        self.assertEqual(900.0, times[4].getSecondOfDay())
 
         times = list(gpstk.times(start, end))
         self.assertEqual(2, len(times))
@@ -156,9 +157,9 @@ class Time_Comparisons(unittest.TestCase):
         t1.addDays(3)
 
         t2 = gpstk.CommonTime(timeSystem)
-        t2.addSeconds(2*gpstk.constants.SEC_PER_DAY)  # add 2 days
-        t2 += (2*gpstk.constants.SEC_PER_DAY)  # add 2 more days
-        t2 -= (1*gpstk.constants.SEC_PER_DAY)  # subtract a day
+        t2.addSeconds(2 * gpstk.constants.SEC_PER_DAY)  # add 2 days
+        t2 += (2 * gpstk.constants.SEC_PER_DAY)  # add 2 more days
+        t2 -= (1 * gpstk.constants.SEC_PER_DAY)  # subtract a day
 
         self.assertEqual(False, t1 < t2)
         self.assertEqual(True, t1 <= t2,)

@@ -123,30 +123,8 @@ As an example, to print all the data sets in a RINEX 3 Nav file: ::
         print d
 
 
-For example: ::
 
-    >>> header, data = gpstk.readYuma('yuma_data.txt')
-
-    >>> print type(data)
-    <type 'generator'>
-
-    >>> print data.next()
-    PRN = 1
-    week = 377
-    SV_health = 0
-    ecc = 0.006598
-    Toa = 319488
-    i_offset = 0.0468284
-    OMEGAdot = -7.50888e-09
-    Ahalf = 5153.68
-    OMEGA0 = -0.564433
-    w = -1.78141
-    M0 = 0.466845
-    AF0 = 8.96454e-05
-    AF1 = 3.63798e-12
-    xmit_time = 0
-
-You can use add a filter to the read on the data objects using the filterfunction keyword argument.
+You can also add a filter to the read on the data objects using the filterfunction keyword argument.
 By default, it simply returns True, which includes all data objects in the output.
 
 For example, to get a generator of Rinex3NavData objects with only the PRNID of 3, you could use: ::

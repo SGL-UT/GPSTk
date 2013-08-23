@@ -101,6 +101,15 @@ def geocentric(latitude=0.0, longitude=0.0, radius=0.0,
     "Returns a Position in the Geocentric coordinate system."
     return Position(latitude, longitude, radius, Position.Geocentric, model, frame)
 
+
+def eval(expr, **kwargs):
+    e = Expression(expr)
+    e.setGPSConstants()
+    for key in kwargs:
+        e.set(key, kwargs[key])
+    return e.evaluate()
+
+
 %}
 
 ///////////////////////////////////////////////
@@ -150,6 +159,21 @@ STR_DUMP_HELPER(SP3Header)
 STR_DUMP_HELPER(SP3SatID)
 STR_DUMP_HELPER(YumaData)
 STR_DUMP_HELPER(YumaHeader)
+
+
+
+// Uses the print method in the class to get string output
+%define STR_PRINT_HELPER(name)
+%extend gpstk:: ## name {
+   std::string __str__() {
+      std::ostringstream stream;
+      $self->print(stream);
+      return stream.str();
+   }
+}
+%enddef
+STR_PRINT_HELPER(Expression)
+
 
 
 // Uses the dump method in the class to get string output

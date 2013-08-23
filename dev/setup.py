@@ -22,6 +22,7 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/EngEphemeris.cpp'
             'src/EngNav.cpp',
             'src/Exception.cpp',
+            'src/Expression.cpp',
             'src/ExtractData.cpp',
             'src/FFData.cpp',
             'src/FFStream.cpp',
