@@ -1316,7 +1316,7 @@ namespace gpstk
       else if(label == stringGlonassSlotFreqNo)
       {
          //map<RinexSatID,int> GlonassFreqNo;
-         int nsat;
+         int nsat, tmp;
          RinexSatID sat;
          string str(strip(line.substr(0,3)));
          nsat = asInt(str);         // not used!
@@ -1325,7 +1325,8 @@ namespace gpstk
             if(str.empty()) break;
             sat = RinexSatID(str);
             str = strip(line.substr(8+i*7,2));
-            GlonassFreqNo.insert(make_pair(sat,asInt(str)));
+            tmp = asInt(str);
+            GlonassFreqNo.insert(make_pair(sat,tmp));
          }
 
          valid |= validGlonassFreqNo;

@@ -17,6 +17,8 @@ set (gpstk_src
       AstronomicalFunctions.cpp
       Bancroft.cpp
       BasicFramework.cpp
+      BDSEphemeris.cpp
+      BDSEphemerisStore.cpp
       BinexData.cpp
       BinUtils.cpp
       BLQDataReader.cpp
@@ -79,6 +81,7 @@ set (gpstk_src
       GloEphemerisStore.cpp
       GloFreqIndex.cpp
       GPSAlmanacStore.cpp
+      GPSEphemeris.cpp
       GPSEphemerisStore.cpp
       GPSOrbElemStore.cpp
       GPSWeek.cpp
@@ -114,6 +117,8 @@ set (gpstk_src
       OrbElemICE.cpp
       OrbElemLNav.cpp
       OrbElemRinex.cpp
+      OrbitEph.cpp
+      OrbitEphStore.cpp
       PackedNavBits.cpp
       PlanetEphemeris.cpp
       PoleTides.cpp
@@ -122,6 +127,8 @@ set (gpstk_src
       PowerSum.cpp
       PRSolution.cpp
       PRSolution2.cpp
+      QZSEphemeris.cpp
+      QZSEphemerisStore.cpp
       RACRotation.cpp
       ReferenceFrame.cpp
       Rinex3ClockData.cpp
@@ -133,6 +140,7 @@ set (gpstk_src
       Rinex3ObsHeader.cpp
       RinexClockData.cpp
       RinexClockHeader.cpp
+      RinexEphemerisStore.cpp
       RinexMetData.cpp
       RinexMetHeader.cpp
       RinexNavData.cpp
