@@ -610,11 +610,11 @@ try {
    }
 
    // -------- parse combos and save valid ones in C.Combos
-   for(i=C.InputCombos.size()-1; i>=0; i--) {
+   for(int j=int(C.InputCombos.size()-1); j>=0; j--) {
       LinCom lc;
-      if(! lc.ParseAndSave(C.InputCombos[i])) {
-         ossE << "Warning : Invalid linear combination " << C.InputCombos[i] << "\n";
-         C.InputCombos.erase(C.InputCombos.begin()+i);
+      if(! lc.ParseAndSave(C.InputCombos[j])) {
+         ossE << "Warning : Invalid linear combination " << C.InputCombos[j] << "\n";
+         C.InputCombos.erase(C.InputCombos.begin()+j);
       }
    }
 
@@ -803,11 +803,13 @@ void Configuration::SetDefaults(void) throw()
 
    string validSys(ObsID::validRinexSystems);
    for(size_t i=0; i<validSys.size(); i++) {
-      if(map1to3Sys.count(string(1,validSys[i])) == 0)
+      if(map1to3Sys.count(string(1,validSys[i])) == 0) {
          LOG(WARNING) << "Warning - system \"" << validSys[i]
             << "\" does not have 3-char entry in map1to3Sys";
-      else
+      }
+      else {
          vecAllSys.push_back(map1to3Sys[string(1,validSys[i])]);
+      }
    }
 
 }  // end Configuration::SetDefaults()

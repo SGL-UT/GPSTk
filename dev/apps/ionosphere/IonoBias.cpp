@@ -1526,7 +1526,7 @@ try {
    // count
    for(n=0,k=0; k<rdata.size(); k++) if(rdata[k] < Q1) n++; else break;
 	oflog << " Outliers (low) = " << n << endl;
-   for(n=0,k=rdata.size()-1; k>=0; k--) if(rdata[k] > Q3) n++; else break;
+   for(n=0,i=int(rdata.size()-1); i>=0; i--) if(rdata[i] > Q3) n++; else break;
 	oflog << " Outliers (high) = " << n << endl;
 
    oflog << setw(9) << setprecision(2) << MinLat << "  Minimum Latitude\n";
