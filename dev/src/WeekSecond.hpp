@@ -57,6 +57,7 @@ namespace gpstk
           * Default and Copy Constructors, Assignment Operator and Destructor.
           */
          //@{
+
          /**
           * Default Constructor.
           * All elements are initialized to zero.
@@ -117,35 +118,6 @@ namespace gpstk
 
       virtual void convertFromCommonTime( const CommonTime& ct );
 
-         /// This function formats this time to a string.  The exceptions
-         /// thrown would only be due to problems parsing the fmt string.
-      virtual std::string printf( const std::string& fmt ) const;
-
-         /// This function works similarly to printf.  Instead of filling
-         /// the format with data, it fills with error messages.
-      virtual std::string printError( const std::string& fmt ) const;
-
-         /**
-          * Set this object using the information provided in \a info.
-          * @param info the IdToValue object to which this object shall be set.
-          * @return true if this object was successfully set using the
-          *  data in \a info, false if not.
-          */
-      virtual bool setFromInfo( const IdToValue& info );
-
-         /// Return a string containing the characters that this class
-         /// understands when printing times.
-      virtual std::string getPrintChars() const
-      {
-         return Week::getPrintChars() + "wg";
-      }
-
-         /// Return a string containing the default format to use in printing.
-      virtual std::string getDefaultFormat() const
-      {
-         return Week::getDefaultFormat() + " %010.3g %P";
-      }
-
       virtual bool isValid() const;
 
       virtual void reset();
@@ -157,13 +129,11 @@ namespace gpstk
 
       inline double getSOW() const { return sow; }
 
-         /**
-          * @defgroup wsco WeekSecond Comparison Operators
-          * All comparison operators have a parameter "right" which corresponds
-          *  to the WeekSecond object to the right of the symbol.
-          * All comparison operators are const and return true on success
-          *  and false on failure.
-          */
+      /// @defgroup wsco WeekSecond Comparison Operators
+      /// All comparison operators have a parameter "right" which corresponds
+      /// to the WeekSecond object to the right of the symbol.
+      /// All comparison operators are const and return true on success
+      /// and false on failure.
          //@{
       bool operator==( const WeekSecond& right ) const;
       bool operator!=( const WeekSecond& right ) const;

@@ -79,6 +79,19 @@ namespace gpstk
       /// Notes regarding the rationalize() function.
       void rationalize(void);
 
+      /// Add a QZSEphemeris object to this collection
+      /// @return pointer to the new object, or NULL if it could not be added
+      virtual QZSEphemeris* addEphemeris(const QZSEphemeris& gpseph)
+      {
+         try {
+            QZSEphemeris neweph(gpseph);
+            OrbitEph *oeptr = dynamic_cast<OrbitEph*>(&neweph);
+            oeptr = OrbitEphStore::addEphemeris(oeptr);
+            return dynamic_cast<QZSEphemeris*>(oeptr);
+         }
+         catch(Exception& e) { GPSTK_RETHROW(e); }
+      }
+
       /// Find a QZSEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
       /// @param sat the satellite of interest

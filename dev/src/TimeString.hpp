@@ -52,12 +52,21 @@ namespace gpstk
        *   - S     integer second-of-minute
        *   - f     float second-of-minute
        *
-       * - GPSWeek:
+       * - Week (GPS/BDS/GAL/QZS):
        *   - E     integer GPS Epoch
        *   - F     integer full (13-bit) GPS Week
-       *   - G     integer 10-bit GPS Week
+       *   - G     integer mod (10-bit) GPS Week
+       *   - R     integer BDS Epoch
+       *   - D     integer full BDS Week
+       *   - e     integer mod BDS Week
+       *   - T     integer GAL Epoch
+       *   - L     integer full GAL Week
+       *   - l     integer mod GAL Week
+       *   - V     integer QZS Epoch
+       *   - I     integer full QZS Week
+       *   - i     integer mod QZS Week - same as I
        *
-       * - GPSWeekSecond:
+       * - WeekSecond (GPS/BDS/GAL/QZS):
        *   - w     integer GPS day-of-week
        *   - g     float GPS second-of-week
        *

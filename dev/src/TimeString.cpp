@@ -55,16 +55,8 @@ namespace gpstk
             rv = printAs<ANSITime>( t, rv );
          if(willPrintAs<CivilTime>(rv))
             rv = printAs<CivilTime>( t, rv );
-         if(willPrintAs<GPSWeekSecond>(rv)) {
-            if(t.getTimeSystem() == TimeSystem::BDT)
-               rv = printAs<BDSWeekSecond>( t, rv );
-            else if(t.getTimeSystem() == TimeSystem::GAL)
-               rv = printAs<GALWeekSecond>( t, rv );
-            else if(t.getTimeSystem() == TimeSystem::QZS)
-               rv = printAs<QZSWeekSecond>( t, rv );
-            else                       // default is TimeSystem::GPS
-               rv = printAs<GPSWeekSecond>( t, rv );
-         }
+         if(willPrintAs<GPSWeekSecond>(rv))
+            rv = printAs<GPSWeekSecond>( t, rv );
          if(willPrintAs<GPSWeekZcount>(rv))
             rv = printAs<GPSWeekZcount>( t, rv );
          if(willPrintAs<JulianDate>(rv))
@@ -75,6 +67,12 @@ namespace gpstk
             rv = printAs<UnixTime>( t, rv );
          if(willPrintAs<YDSTime>(rv))
             rv = printAs<YDSTime>( t, rv );
+         if(willPrintAs<GALWeekSecond>(rv))
+            rv = printAs<GALWeekSecond>( t, rv );
+         if(willPrintAs<BDSWeekSecond>(rv))
+            rv = printAs<BDSWeekSecond>( t, rv );
+         if(willPrintAs<QZSWeekSecond>(rv))
+            rv = printAs<QZSWeekSecond>( t, rv );
       
          return rv;
       }
@@ -118,30 +116,6 @@ namespace gpstk
       }
    }
    
-   // helper routine for scanTime and mixedScanTime; all WeekSecond derived classes
-   // should be here.
-   WeekSecond* ptrToWeekSecond(CommonTime& ct)
-   {
-      WeekSecond *ptt;
-      if(ct.getTimeSystem() == TimeSystem::BDT) {
-         BDSWeekSecond *pbtt = new BDSWeekSecond();
-         ptt = dynamic_cast<WeekSecond*>(pbtt);
-      }
-      else if(ct.getTimeSystem() == TimeSystem::GAL) {
-         GALWeekSecond *pbtt = new GALWeekSecond();
-         ptt = dynamic_cast<WeekSecond*>(pbtt);
-      }
-      else if(ct.getTimeSystem() == TimeSystem::QZS) {
-         QZSWeekSecond *pbtt = new QZSWeekSecond();
-         ptt = dynamic_cast<WeekSecond*>(pbtt);
-      }
-      else {         // default is GPS
-         GPSWeekSecond *pgtt = new GPSWeekSecond();
-         ptt = dynamic_cast<WeekSecond*>(pgtt);
-      }
-      return ptt;
-   }
-
    void scanTime( CommonTime& t,
                   const string& str,
                   const string& fmt )
@@ -160,7 +134,10 @@ namespace gpstk
             hzcount( false ), hdoy( false ), hzcount29( false ), 
             hzcount32( false ), hhour( false ), hmin( false ), hsec( false ),
             hsod( false ), hunixsec( false ), hunixusec( false ), 
-            hepoch( false ), hansi( false ), hjulian( false );
+            hepoch( false ), hansi( false ), hjulian( false ),
+            hbdsw( false ), hqzsw( false ), hgalw( false ),
+            hbdsfw( false ), hqzsfw( false ), hgalfw( false ),
+            hbdse( false ), hqzse( false ), hgale( false);
 
             // These are to hold data that no one parses.
          int idow(0);
@@ -293,6 +270,17 @@ namespace gpstk
                   hepoch = true;
                   break;
 
+               case 'R': hepoch = hbdse = true; break;
+               case 'T': hepoch = hgale = true; break;
+               case 'V': hepoch = hqzse = true; break;
+
+               case 'D': hfullweek = hbdsfw = true; break;
+               case 'e': hweek = hbdsw = true; break;
+               case 'L': hfullweek = hgalfw = true; break;
+               case 'l': hweek = hgalw = true; break;
+               case 'I': hfullweek = hqzsfw = true; break;
+               case 'i': hweek = hqzsw = true; break;
+
                default:
                   {
                      // do nothing
@@ -345,8 +333,11 @@ namespace gpstk
 
          if ( (hepoch && hweek) || hfullweek )
          {
-            // NB system has been set either on input or above under case 'P'
-            WeekSecond* ptt = ptrToWeekSecond(t);
+            WeekSecond* ptt;
+            if(hbdse || hbdsfw || hbdsw) ptt = new BDSWeekSecond();
+            else if(hqzse || hqzsfw || hqzsw) ptt = new QZSWeekSecond();
+            else if(hgale || hgalfw || hgalw) ptt = new GALWeekSecond();
+            else ptt = new GPSWeekSecond();
             ptt->setFromInfo(info);
             if( hdow && !hsow )
             {
@@ -425,7 +416,10 @@ namespace gpstk
             hzcount( false ), hdoy( false ), hzcount29( false ), 
             hhour( false ), hmin( false ), hsec( false ),
             hsod( false ), hepoch( false ), hunixsec( false ),
-            hunixusec( false );
+            hunixusec( false ),
+            hbdsw( false ), hqzsw( false ), hgalw( false ),
+            hbdsfw( false ), hqzsfw( false ), hgalfw( false ),
+            hbdse( false ), hqzse( false ), hgale( false);
 
             // MJD, Julian Date, ANSI time, Unix time, and 32-bit Zcounts
             // are treated as stand-alone types and are not mixed with others
@@ -576,6 +570,17 @@ namespace gpstk
                   iepoch = asInt(itr->second);
                   break;
 
+               case 'R': hepoch = hbdse = true; iepoch = asInt(itr->second); break;
+               case 'T': hepoch = hgale = true; iepoch = asInt(itr->second); break;
+               case 'V': hepoch = hqzse = true; iepoch = asInt(itr->second); break;
+
+               case 'D': hfullweek = hbdsfw = true; break;
+               case 'e': hweek = hbdsw = true; break;
+               case 'L': hfullweek = hgalfw = true; break;
+               case 'l': hweek = hgalw = true; break;
+               case 'I': hfullweek = hqzsfw = true; break;
+               case 'i': hweek = hqzsw = true; break;
+
                default:
                      // do nothing
                   break;
@@ -583,6 +588,9 @@ namespace gpstk
             };
          }
 
+         bool hbds(hbdse || hbdsfw || hbdsw);
+         bool hgal(hgale || hgalfw || hgalw);
+         bool hqzs(hqzse || hqzsfw || hqzsw);
 
             // We'll copy this time to 't' after all of the processing.
          CommonTime ct;
@@ -592,7 +600,11 @@ namespace gpstk
             // precise.
          if( hepoch ) 
          {
-            WeekSecond *ptt = ptrToWeekSecond(ct);
+            WeekSecond *ptt;
+            if(hbds) ptt = new BDSWeekSecond(ct);
+            else if(hqzs) ptt = new QZSWeekSecond(ct);
+            else if(hgal) ptt = new GALWeekSecond(ct);
+            else ptt = new GPSWeekSecond(ct);
             ptt->setEpoch( iepoch );
             ct = ptt->convertToCommonTime();
          }
@@ -613,21 +625,33 @@ namespace gpstk
 
          if( hfullweek )
          {
-            WeekSecond *ptt = ptrToWeekSecond(ct);
+            WeekSecond *ptt;
+            if(hbds) ptt = new BDSWeekSecond(ct);
+            else if(hqzs) ptt = new QZSWeekSecond(ct);
+            else if(hgal) ptt = new GALWeekSecond(ct);
+            else ptt = new GPSWeekSecond(ct);
             ptt->week = ifullweek;
             ct = ptt->convertToCommonTime();
          }
          
          if( hweek )
          {
-            WeekSecond *ptt = ptrToWeekSecond(ct);
+            WeekSecond *ptt;
+            if(hbds) ptt = new BDSWeekSecond(ct);
+            else if(hqzs) ptt = new QZSWeekSecond(ct);
+            else if(hgal) ptt = new GALWeekSecond(ct);
+            else ptt = new GPSWeekSecond(ct);
             ptt->setModWeek(iweek);
             ct = ptt->convertToCommonTime();
          }
          
          if( hdow )
          {
-            WeekSecond *ptt = ptrToWeekSecond(ct);
+            WeekSecond *ptt;
+            if(hbds) ptt = new BDSWeekSecond(ct);
+            else if(hqzs) ptt = new QZSWeekSecond(ct);
+            else if(hgal) ptt = new GALWeekSecond(ct);
+            else ptt = new GPSWeekSecond(ct);
             ptt->sow = static_cast<double>(idow) * SEC_PER_DAY;
             ct = ptt->convertToCommonTime();
          }
@@ -676,7 +700,11 @@ namespace gpstk
          
          if( hsow )
          {
-            WeekSecond *ptt = ptrToWeekSecond(ct);
+            WeekSecond *ptt;
+            if(hbds) ptt = new BDSWeekSecond(ct);
+            else if(hqzs) ptt = new QZSWeekSecond(ct);
+            else if(hgal) ptt = new GALWeekSecond(ct);
+            else ptt = new GPSWeekSecond(ct);
             ptt->sow = isow;
             ct = ptt->convertToCommonTime();
          }

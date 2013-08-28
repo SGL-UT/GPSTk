@@ -61,7 +61,6 @@ namespace gpstk
       QZSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
-         timeSystem = TimeSystem::QZS;
       }
 
       /// Destructor.
@@ -88,6 +87,106 @@ namespace gpstk
       {
          static const long e=QZS_EPOCH_MJD;
          return e;
+      }
+
+      /// Return a string containing the characters that this class
+      /// understands when printing times.
+      virtual std::string getPrintChars() const
+      {
+         return "VIiwgP";
+      }
+
+      /// Return a string containing the default format to use in printing.
+      virtual std::string getDefaultFormat() const
+      {
+         return "%I %g %P";
+      }
+
+      /// This function formats this time to a string.  The exceptions
+      /// thrown would only be due to problems parsing the fmt string.
+      virtual std::string printf(const std::string& fmt) const
+      {
+         try {
+            using gpstk::StringUtils::formattedPrint;
+
+            std::string rv = fmt;
+            rv = formattedPrint( rv, getFormatPrefixInt() + "V",
+                                 "Vu", getEpoch() );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
+                                 "Iu", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "i",
+                                 "iu", getModWeek() );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                                 "wu", getDayOfWeek() );
+            rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
+                                 "gf", sow );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                                 "Ps", timeSystem.asString().c_str() );
+            return rv;
+         }
+         catch(gpstk::StringUtils::StringException& e)
+         { GPSTK_RETHROW(e); }
+      }
+
+      /// This function works similarly to printf.  Instead of filling
+      /// the format with data, it fills with error messages.
+      virtual std::string printError(const std::string& fmt) const
+      {
+         try {
+            using gpstk::StringUtils::formattedPrint;
+            std::string rv = fmt;
+
+            rv = formattedPrint( rv, getFormatPrefixInt() + "V",
+                                 "Vs", "BadQZSepoch");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "I",
+                                 "Is", "BadQZSfweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "i",
+                                 "is", "BadQZSmweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                                 "wu", "BadQZSdow");
+            rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
+                                 "gf", "BadQZSsow");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                                 "Ps", "BadQZSsys");
+            return rv;
+         }
+         catch(gpstk::StringUtils::StringException& e)
+         { GPSTK_RETHROW(e); }
+      }
+
+      /// Set this object using the information provided in \a info.
+      /// @param info the IdToValue object to which this object shall be set.
+      /// @return true if this object was successfully set using the
+      ///  data in \a info, false if not.
+      bool setFromInfo( const IdToValue& info )
+      {
+         using namespace gpstk::StringUtils;
+
+         for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
+         {
+               // based on the character, we know what to do...
+            switch ( i->first )
+            {
+               case 'V':
+                  setEpoch( asInt( i->second ) );
+                  break;
+               case 'I':
+                  week = asInt( i->second );
+                  break;
+               case 'i':
+                  setModWeek( asInt( i->second ) );
+                  break;
+               case 'P':
+                  timeSystem.fromString(i->second);
+                  break;
+               default:
+                     // do nothing
+                  break;
+            };
+
+         } // end of for loop
+
+         return true;
       }
 
    }; // end class QZSWeekSecond

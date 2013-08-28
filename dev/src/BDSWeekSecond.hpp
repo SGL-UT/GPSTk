@@ -61,21 +61,11 @@ namespace gpstk
       BDSWeekSecond( const CommonTime& right )
       {
          convertFromCommonTime( right );
-         timeSystem = TimeSystem::BDT;
       }
 
       /// Destructor.
       ~BDSWeekSecond() throw() {}
 
-      // TD do we want to do this?
-      // TD throw here? this would require changing throw spec on TimeTag version
-      /// Override routine in TimeTag, allowing only BDT time system
-      void setTimeSystem(const TimeSystem& timeSys)
-      {
-         // ?? if(timeSys != TimeSystem::BDT) GPSTK_THROW(InvalidRequest(""));
-         timeSystem = TimeSystem::BDT;
-      }
-      
       // the rest define the week rollover and starting time
 
       /// Return the number of bits in the bitmask used to get the ModWeek from the
@@ -98,6 +88,106 @@ namespace gpstk
       {
          static const long e=BDS_EPOCH_MJD;
          return e;
+      }
+
+      /// Return a string containing the characters that this class
+      /// understands when printing times.
+      virtual std::string getPrintChars() const
+      {
+         return "RDewgP";
+      }
+
+      /// Return a string containing the default format to use in printing.
+      virtual std::string getDefaultFormat() const
+      {
+         return "%D %g %P";
+      }
+
+      /// This function formats this time to a string.  The exceptions
+      /// thrown would only be due to problems parsing the fmt string.
+      virtual std::string printf(const std::string& fmt) const
+      {
+         try {
+            using gpstk::StringUtils::formattedPrint;
+
+            std::string rv = fmt;
+            rv = formattedPrint( rv, getFormatPrefixInt() + "R",
+                                 "Ru", getEpoch() );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "D",
+                                 "Du", week );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "e",
+                                 "eu", getModWeek() );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                                 "wu", getDayOfWeek() );
+            rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
+                                 "gf", sow );
+            rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                                 "Ps", timeSystem.asString().c_str() );
+            return rv;
+         }
+         catch(gpstk::StringUtils::StringException& e)
+         { GPSTK_RETHROW(e); }
+      }
+
+      /// This function works similarly to printf.  Instead of filling
+      /// the format with data, it fills with error messages.
+      virtual std::string printError(const std::string& fmt) const
+      {
+         try {
+            using gpstk::StringUtils::formattedPrint;
+            std::string rv = fmt;
+
+            rv = formattedPrint( rv, getFormatPrefixInt() + "R",
+                                 "Rs", "BadBDSepoch");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "D",
+                                 "Ds", "BadBDSfweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "e",
+                                 "es", "BadBDSmweek");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "w",
+                                 "wu", "BadBDSdow");
+            rv = formattedPrint( rv, getFormatPrefixFloat() + "g",
+                                 "gf", "BadBDSsow");
+            rv = formattedPrint( rv, getFormatPrefixInt() + "P",
+                                 "Ps", "BadBDSsys");
+            return rv;
+         }
+         catch(gpstk::StringUtils::StringException& e)
+         { GPSTK_RETHROW(e); }
+      }
+
+      /// Set this object using the information provided in \a info.
+      /// @param info the IdToValue object to which this object shall be set.
+      /// @return true if this object was successfully set using the
+      ///  data in \a info, false if not.
+      bool setFromInfo( const IdToValue& info )
+      {
+         using namespace gpstk::StringUtils;
+
+         for( IdToValue::const_iterator i = info.begin(); i != info.end(); i++ )
+         {
+               // based on the character, we know what to do...
+            switch ( i->first )
+            {
+               case 'R':
+                  setEpoch( asInt( i->second ) );
+                  break;
+               case 'D':
+                  week = asInt( i->second );
+                  break;
+               case 'e':
+                  setModWeek( asInt( i->second ) );
+                  break;
+               case 'P':
+                  timeSystem.fromString(i->second);
+                  break;
+               default:
+                     // do nothing
+                  break;
+            };
+
+         } // end of for loop
+
+         return true;
       }
 
    }; // end class BDSWeekSecond

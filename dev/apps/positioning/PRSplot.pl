@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: PRSplot.pl 72 2011-11-02 21:14:41Z btolman $
+# $Id$
 use strict;
 use warnings;
 
@@ -161,8 +161,7 @@ sub Run {
       not $self->{dop} and not $self->{sats} and not $self->{scatter})
    {
       if(not $self->{quiet}) {
-         foreach(@{$self->{solns}}) { print "Found description: $_\n"; }
-         print "Warning - no plots selected (--pos|clk|rms|dop|scatter).\n";
+         print "No plots selected! (pos|clk|rms|dop|scatter)\n";
       }
       return;
    }
@@ -311,8 +310,9 @@ sub ProcessData {
    }
    my @blines = split /\n/,$buffer;
 
-   # get the (descriptor), average solution and covariance
+   # get the descriptor, and average solution and covariance
    my ($n,$desc);
+   my %lineno = ();
    foreach (0..$#blines) {          # loop over lines, starting at end
       if($blines[$#blines-$_] =~ m/Weighted average/ and
          $blines[$#blines-$_] =~ m/RAIM solution/)
@@ -321,30 +321,41 @@ sub ProcessData {
          $desc = $blines[$#blines-$_];
          $desc =~ s/Weighted average //;
          $desc =~ s/ RAIM solution//;
-         if($self->{desc} eq "") {
-            #$self->{desc} = $desc;
-            push @{$self->{solns}},$desc;
-         }
-         else {
-            next unless $blines[$#blines-$_] =~ m/ $self->{desc} /;
-            if(not $self->{quiet}) { print "Descriptor is $self->{desc}\n"; }
-            last;
-         }
+
+         $lineno{$desc} = $n;
+         push @{$self->{solns}},$desc;
       }
-      if($blines[$#blines-$_] =~ m/^RPF/) {
-         if($self->{desc} eq "") {
-            $self->{desc} = $desc;
-            if(not $self->{quiet}) { print "Descriptor is $self->{desc}\n"; }
-         }
+
+      if($blines[$#blines-$_] =~ m/^RPF/) {  # past (before) all final output
          last;
       }
    }
+
+   # no lines "Weighted average (descriptor) RAIM solution" were found - error
    if(not defined $n) {
       push @{$self->{errors}}, "Error - file is incomplete. Abort.";
       $self->Errors();
       return 'fail';
    }
 
+   # now decide which to use, based on user input ---------------------
+   my $i=0;
+   print "Valid descriptors:\n";
+   foreach(keys %lineno){
+      print " -d $i  OR  --desc $_\n";
+      $i++;
+   }
+   if($self->{desc} eq "") {
+      $self->{desc} = (keys %lineno)[0];
+   }
+   elsif($self->{desc} =~ m/^\d+$/) {
+      $self->{desc} = (keys %lineno)[$self->{desc}];
+   }
+   #else { print "Its a descript $self->{desc}\n"; }
+   print "Chosen descriptor is $self->{desc}\n";
+   $n = $lineno{$desc};
+
+   # pull out weighted average solution and covariance ---------------------
    my ($no,$sX,$sY,$sZ);
    my @fields = split /\s+/,$blines[$n+1];
    my $X = $fields[1];
@@ -354,33 +365,42 @@ sub ProcessData {
    $self->{debug} and print "X,Y,Z,N is $X,$Y,$Z,$N\n";
 
    ($no,$sX,$no,$no) = split /\s+/,$blines[$n+3];
-   if($sX eq "ECEF_X") {                                 # PRSolve
-      ($no,$no,$sX,$no,$no) = split /\s+/,$blines[$n+4];
-      #print "sX is $sX\n";
-      ($no,$no,$no,$sY,$no) = split /\s+/,$blines[$n+5];
-      #print "sY is $sY\n";
-      ($no,$no,$no,$no,$sZ) = split /\s+/,$blines[$n+6];
-      #print "sZ is $sZ\n";
-   }
-   else  {                                               # GPSPRSolve
-      #print "sX is $sX\n";
-      ($no,$no,$sY,$no) = split /\s+/,$blines[$n+4];
-      #print "sY is $sY\n";
-      ($no,$no,$no,$sZ) = split /\s+/,$blines[$n+5];
-      #print "sZ is $sZ\n";
-   }
-   $sX=sqrt($sX*$N);
-   $sY=sqrt($sY*$N);
-   $sZ=sqrt($sZ*$N);
+   ($no,$no,$sX,$no,$no) = split /\s+/,$blines[$n+4];
+   #print "sX is $sX\n";
+   ($no,$no,$no,$sY,$no) = split /\s+/,$blines[$n+5];
+   #print "sY is $sY\n";
+   ($no,$no,$no,$no,$sZ) = split /\s+/,$blines[$n+6];
+   #print "sZ is $sZ\n";
+   $sX=sqrt($sX);
+   $sY=sqrt($sY);
+   $sZ=sqrt($sZ);
 
    if(not $self->{quiet}) {
       print "Weighted average position solution: ($N epochs)\n";
       print sprintf(" X %14.4f +/- %.4f m\n",$X,$sX);
       print sprintf(" Y %14.4f +/- %.4f m\n",$Y,$sY);
       print sprintf(" Z %14.4f +/- %.4f m\n",$Z,$sZ);
+
+      foreach (9..$n) {
+         if($blines[$#blines-$n-$_] =~ m/Weighted average/ and
+            $blines[$#blines-$n-$_] =~ m/NEU position residuals/)
+         {
+            my ($nr,$ea,$up);
+            ($no,$nr,$ea,$up) = split /\s+/,$blines[$#blines-$n-$_+1];
+            ($no,$no,$sX,$no,$no) = split /\s+/,$blines[$#blines-$n-$_+4];
+            ($no,$no,$no,$sY,$no) = split /\s+/,$blines[$#blines-$n-$_+5];
+            ($no,$no,$no,$no,$sZ) = split /\s+/,$blines[$#blines-$n-$_+6];
+            print "Weighted average NEU residual: ($N epochs)\n";
+            print sprintf(" N %8.4f +/- %.4f m\n",$nr,sqrt($sX));
+            print sprintf(" E %8.4f +/- %.4f m\n",$ea,sqrt($sY));
+            print sprintf(" U %8.4f +/- %.4f m\n",$up,sqrt($sZ));
+            last;
+         }
+      }
    }
 
    # process the file --------------------------------
+   # put data to be plotted into $self->{pdata}
    $N = 0;
    my ($sow,$Nbad) = (0,0);
    $self->{pdata} = ();
@@ -631,7 +651,7 @@ sub Plot {
       print FPIPE "set autoscale y2\n";
       print FPIPE "set ytics nomirror\n";
       print FPIPE "set y2tics\n";
-      print FPIPE "set ylabel \"RMS residual (meters) or Number Sats\"\n";
+      print FPIPE "set ylabel \"RMS residual (m) or Number Sats\"\n";
       print FPIPE "set y2label \"RAIM Slope (meters)\"\n";
    }
    if($arg eq 'sats') {

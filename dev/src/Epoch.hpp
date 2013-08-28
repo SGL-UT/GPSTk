@@ -598,8 +598,14 @@ namespace gpstk
           * @code
           *  1 of...           and 1 of....         optional...
           *  %C
-          *  %G                %w %g %Z                %Y %y
-          *  %F                %w %g %Z
+          *  %G                %w %g %Z                %Y %y %E    (GPS)
+          *  %e                %w %g                   %Y %y %R    (BDS)
+          *  %l                %w %g                   %Y %y %T    (GAL)
+          *  %i                %w %g                   %Y %y %V    (QZS)
+          *  %F                %w %g %Z                            (GPS)
+          *  %D                %w %g                               (BDS)
+          *  %L                %w %g                               (GAL)
+          *  %I                %w %g                               (QZS)
           *  %m %B %b          %a %A %d             %Y %y %H %M %S
           *  %Q
           *  %j                                      %Y %y %s
@@ -658,9 +664,21 @@ namespace gpstk
           * \li \%M   minute()
           * \li \%S   (short)second()
           * \li \%f   second()
-          * \li \%G   GPS10bitweek()
-          * \li \%F   GPSfullweek()
-          * \li \%g   GPSsecond() or GPSsow()
+          * \li \%E   GPS getEpoch()
+          * \li \%G   GPS getModWeek()
+          * \li \%F   GPS getWeek()
+          * \li \%g   GPS/BDS/GAL/QZS sow() or getSOW()
+          * \li \%Z   GPSzcount()
+          * \li \%z   GPSzcountFloor()
+          * \li \%R   BDS getEpoch()
+          * \li \%D   BDS getWeek()
+          * \li \%e   BDS getModWeek()
+          * \li \%T   GAL getEpoch()
+          * \li \%L   GAL getWeek()
+          * \li \%l   GAL getModWeek()
+          * \li \%V   QZS getEpoch()
+          * \li \%I   QZS getWeek()
+          * \li \%i   QZS getModWeek()
           * \li \%s   DOYsecond()
           * \li \%Q   MJDdate()
           * \li \%w   dayOfWeek() or GPSday()
@@ -669,8 +687,6 @@ namespace gpstk
           * \li \%a   DayOfWeekAbbrevName[dayOfWeek()]
           * \li \%A   DayOfWeekName[dayOfWeek()]
           * \li \%j   DOYday() or DOY()
-          * \li \%Z   GPSzcount()
-          * \li \%z   GPSzcountFloor()
           * \li \%U   unixTime().tv_sec
           * \li \%u   unixTime().tv_usec
           * \li \%C   fullZcount()
@@ -921,11 +937,6 @@ namespace gpstk
       return static_cast<short>(get<GALWeekSecond>().getModWeek());
    }
    
-
-
-
-
-
       /// Get day of year.
    short Epoch::doy() const
       throw(Epoch::EpochException)

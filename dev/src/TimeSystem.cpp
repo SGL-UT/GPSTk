@@ -244,15 +244,14 @@ namespace gpstk
       // TAI = GPS + 19s
       // TAI = UTC + getLeapSeconds()
       // TAI = TT - 32.184s
-      // TAI = BDT + 34s, since GPS = BDT + 15s
       if(inTS == GPS)         // GPS -> TAI
          dt = 19.;
       else if(inTS == UTC |   // UTC -> TAI
-              //inTS == BDT |   // BDT -> TAI           // TD is this right?
+              inTS == BDT |   // BDT -> TAI           // TD is this right?
               inTS == GLO)    // GLO -> TAI
          dt = getLeapSeconds(year, month, day);
-      else if(inTS == BDT)    // BDT -> TAI         // RINEX 3.02 seems to say this
-         dt = 34.;
+      //else if(inTS == BDT)    // BDT -> TAI         // RINEX 3.02 seems to say this
+      //   dt = 34.;
       else if(inTS == TAI)    // TAI
          ;
       else if(inTS == TT)     // TT -> TAI
@@ -271,15 +270,14 @@ namespace gpstk
       // GPS = TAI - 19s
       // UTC = TAI - getLeapSeconds()
       // TT = TAI + 32.184s
-      // BDT = TAI - 34s
       if(outTS == GPS)        // TAI -> GPS
          dt -= 19.;
       else if(outTS == UTC |  // TAI -> UTC
-              //outTS == BDT |  // TAI -> BDT
+              outTS == BDT |  // TAI -> BDT
               outTS == GLO)   // TAI -> GLO
          dt -= getLeapSeconds(year, month, day);
-      else if(outTS == BDT)   // TAI -> BDT
-         dt -= 34.;
+      //else if(outTS == BDT)   // TAI -> BDT
+      //   dt -= 34.;
       else if(outTS == TAI)   // TAI
          ;
       else if(outTS == TT)    // TAI -> TT
@@ -296,23 +294,4 @@ namespace gpstk
       return dt;
    }
 
-/*
-   // Correction with CommonTime input
-   double TimeSystem::Correction(const TimeSystem& inTS, const TimeSystem& outTS,
-                                 const CommonTime& ct)
-   {
-      CivilTime civt(ct);
-      return Correction(inTS, outTS, civt.year, civt.month, civt.day);
-   }
-
-   // Convert the time system of the given CommonTime to the given system.
-   // @param  ct the time to be converted
-   // @param  ts the target time system
-   // @throw if input system(s) are invalid.
-   void TimeSystem::convertToTimeSystem(CommonTime& ct, const TimeSystem& ts)
-   {
-      double dt = Correction(ct.getTimeSystem(), ts, ct);
-      ct += dt;
-   }
-*/
 }   // end namespace

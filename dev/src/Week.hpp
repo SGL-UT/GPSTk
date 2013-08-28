@@ -168,12 +168,12 @@ namespace gpstk
 
       inline virtual unsigned int getModWeek() const
       {
-         return week & bitmask();
+         return (week & bitmask());
       }
       
       inline virtual unsigned int getEpoch() const
       {
-         return week >> Nbits();
+         return (week >> Nbits());
       }
       
       inline virtual void getEpochModWeek(unsigned int& e,
@@ -223,20 +223,6 @@ namespace gpstk
 
          //@}
       
-      /// This function formats this time to a string.  The exceptions 
-      /// thrown would only be due to problems parsing the fmt string.
-      virtual std::string printf( const std::string& fmt ) const;
-      
-      /// This function works similarly to printf.  Instead of filling
-      /// the format with data, it fills with error messages.
-      virtual std::string printError( const std::string& fmt ) const;
-
-      /// Set this object using the information provided in \a info.
-      /// @param info the IdToValue object to which this object shall be set.
-      /// @return true if this object was successfully set using the
-      ///  data in \a info, false if not.
-      virtual bool setFromInfo(const IdToValue& info);
-
       /// Return a string containing the characters that this class
       /// understands when printing times.
       inline virtual std::string getPrintChars() const
