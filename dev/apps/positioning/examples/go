@@ -1,19 +1,21 @@
 #!/bin/bash
 
-# mixed systems, with SP3 ephemeris, all in GPS time
+# mixed systems, with SP3 ephemeris, all in GPS time ---------------------
 ../PRSolve --verbose --obs ARL82660.09o \
    --eph igs15502.sp3,igs15503.sp3,igs15504.sp3 \
    --eph igl15502.sp3,igl15503.sp3,igl15504.sp3 \
    --clk igs15502.clk_30s,igs15503.clk_30s,igs15504.clk_30s \
    --clk esa15502.clk,esa15503.clk,esa15504.clk \
    --ref -740311.8581,-5457066.4731,3207249.3343:%x,%y,%z \
-   --sol GPS:12:WC,GLO:12:PC,GPS+GLO:12:WC+PC
+   --sol GPS:12:WC,GLO:12:PC,GPS+GLO:12:WC+PC "$@"
 
 # plot results
 ../PRSplot.pl --desc GPS+GLO:12:WC+PC --tag RNE pos clk dop rms
 ../PRSplot.pl --desc GPS+GLO:12:WC+PC --tag RNE scatter
+../PRSplot.pl --desc GPS:12:WC --tag RNE pos clk dop rms
+../PRSplot.pl --desc GLO:12:PC --tag RNE pos clk dop rms
    
-# GPS broadcast ephemeris only
+# GPS broadcast ephemeris only ---------------------
 ../PRSolve --verbose --log prs-gps-brc.log \
    --obs ARL82660.09o --nav ARL82660.09N \
    --ref -740311.8581,-5457066.4731,3207249.3343:%x,%y,%z \
@@ -22,7 +24,7 @@
 # plot results
 ../PRSplot.pl --file prs-gps-brc.log --tag RNE pos clk dop rms
 
-# GLO broadcast ephemeris only - data in GPS time but result in PZ90 frame.
+# GLO broadcast ephemeris only - data in GPS time but result in PZ90 frame. ---------
 ../PRSolve --verbose --log prs-glo-brc.log \
    --obs wtzz0200.12o --nav wtzz0200.12g \
    --sol GLO:12:PC --elev 10 \
@@ -32,8 +34,25 @@
 ../PRSplot.pl --file prs-glo-brc.log --tag RNE pos clk dop rms
 
 # mixed GPS+GLO using only broadcast ephemeris
-# ** not yet, requires Helmert transform PZ90 -> WGS84 **
-#../PRSolve --verbose --log prs-gpsglo-brc.log \
-#   --obs wtzz0200.12o --nav wtzz0200.12g,wtzz0200.12n \
-#   --sol GPS+GLO:12:WX+PC --elev 10 \
-#   --ref 4075576.9521,931852.4505,4801567.0552
+# GPS + GLO
+../PRSolve --verbose --log prs.glo.log \
+   --obs gmsd2000.13o --nav brdm2000.13p \
+   --sol GPS:12:PWC --sol GLO:12:PC --sol GPS:12:PWC+GLO:12:PC \
+   --ref -3607666.0807,4147869.1195,3223718.2887 \
+   "$@"
+#
+
+../PRSplot.pl --file prs.glo.log -d 0 pos clk rms
+../PRSplot.pl --file prs.glo.log -d 1 pos clk rms
+../PRSplot.pl --file prs.glo.log -d 2 pos clk rms
+
+# mixed GPS+GLO+GAL using only broadcast ephemeris
+# GPS + GLO + GAL
+../PRSolve --verbose --log prs.gal.log \
+   --obs gmsd2000.13o --nav brdm2000.13p \
+   --sol GLO:12:PC+GPS:12:PWC+GAL:15:X \
+   --ref -3607666.0807,4147869.1195,3223718.2887 \
+   "$@"
+#
+
+../PRSplot.pl --file prs.gal.log pos clk rms

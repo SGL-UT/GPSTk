@@ -161,7 +161,7 @@ sub Run {
       not $self->{dop} and not $self->{sats} and not $self->{scatter})
    {
       if(not $self->{quiet}) {
-         print "No plots selected! (pos|clk|rms|dop|scatter)\n";
+         print "No plots selected! (pos|clk|rms|dop|sats|scatter)\n";
       }
       return;
    }
@@ -274,7 +274,9 @@ sub ProcessInput {
 
    # initialize stuff
    @{$self->{pdata}} = ();
-   @{$self->{solns}} = ();
+   @{$self->{clkdata}} = ();
+   @{$self->{ndata}} = ();
+   @{$self->{solns}} = {};
 
    # wgnuplot on windows won't pipe
    if($^O eq 'MSWin32') { $self->{dirty} = 1; }
@@ -400,10 +402,9 @@ sub ProcessData {
    }
 
    # process the file --------------------------------
-   # put data to be plotted into $self->{pdata}
-   $N = 0;
-   my ($sow,$Nbad) = (0,0);
-   $self->{pdata} = ();
+   # put data to be plotted into $self->{pdata}, clocks into $self->{clkdata}
+   # and numbers of sats into $self->{ndata}
+   my ($sow,$Nbad) = ('0',0);
    $self->{week} = -1;
    $self->{rejects} = {};
 
@@ -418,35 +419,44 @@ sub ProcessData {
 
    # stuff for $self->{pdata}
    my ($nsv,$rej,$x,$y,$z,$rms,$slope,$gdop,$pdop)=(0,0,0,0,0,0,0,0,0);
-   my @clocks = ();
-   my @clocklabels = ();
-   $sow = '0';
+   my (@sysc,@syss) = ();
    foreach(@blines) {
       chomp;
       s/^\s+//;
 
       # epoch is complete - blank line and status is on - save data in lines
       if($_ eq '' and $sow ne '0') {
-         # sow nsv x y z rms slope gdop pdop clk clk...
+         # sow nsv nrej x y z rms slope gdop pdop
          push @{$self->{pdata}},join(' ',($sow, $nsv, $rej, $x, $y, $z,
-                   $rms, $slope, $gdop, $pdop, @clocklabels, @clocks));
-         #print "Save line: ", ${$self->{pdata}}[$N],"\n";
-         $N++;
+                   $rms, $slope, $gdop, $pdop));
 
          # prepare for next epoch
-         $sow='0'; @clocks=(); @clocklabels=();
+         $sow='0';
          next;
       }
 
       next unless m/ $desc /;    # must be our solution
       next if m/ PFR /;          # for now...
-      next if m/ DAT /;          # for now...
       $self->{debug} and print "Good line (tag $tag) >$_<\n";
 
       @fields = split /\s+/, $_;
 
+      # get systems characters and strings from SOLN line
+      if($fields[0] eq 'SOLN') {
+         my @tmp = ();
+         my %seen = ();
+         @tmp = ($_ =~ /\[\d+\]\((\D)\d/gi);
+         foreach $i (@tmp) { unless($seen{$i}) { $seen{$i}=1; push(@sysc,$i); } }
+         @tmp = ();
+         %seen = ();
+         @tmp = ($_ =~ /\) (\D\D\D) \[/gi);
+         foreach $i (@tmp) { unless($seen{$i}) { $seen{$i}=1; push(@syss,$i); } }
+         #print "Systems @sysc\n";
+         #print "Systems @syss\n";
+      }
+
       # time
-      if($fields[0] eq 'RPF' and $fields[2] eq 'NAV') {
+      if($fields[0] eq 'RPF' and $fields[2] eq 'DAT') {
          next if(defined $self->{begweek} and $fields[3] < $self->{begweek});
          last if(defined $self->{endweek} and $fields[3] > $self->{endweek});
          next if($fields[4] < $self->{beg});
@@ -460,16 +470,13 @@ sub ProcessData {
 
       # get clocks
       if($fields[0] eq 'RPF' and $fields[2] eq 'NAV') {
-         @clocks = @clocklabels = ();
          $n=8;
          while(1) {
             last if($fields[$n] =~ m/\(/ or $n > $#fields);
-            push @clocklabels, $fields[$n];
-            push @clocks, $fields[$n+1];
+            my $str = "$fields[$n] $sow $fields[$n+1]";      # sys sow clkbias
+            push @{$self->{clkdata}}, $str;
             $n += 2;
          }
-         if(not defined $self->{nclks}) { $self->{nclks} = ($n-8)/2; }
-         $self->{debug} and print "clocks : ",join(' ',(@clocklabels,@clocks)),"\n";
       }
 
       # get position and rejects
@@ -503,26 +510,48 @@ sub ProcessData {
 
       # get rest
       if($fields[0] eq 'RPF' and $fields[2] eq 'RMS') {
-         $nsv = $fields[6];
-         $rej = $fields[5];
+         $nsv = $fields[5];
+         #$rej = $fields[5];
          if($self->{no4} and $nsv <= 4) {
             $Nbad++;
             $self->{rejects}->{'4svs'}++;
             $sow = '0';
             next;
          }
-         $rms = $fields[7];
-         $slope = $fields[11];
-         $gdop = $fields[10];
-         $pdop = $fields[9];
+         $rms = $fields[6];
+         $slope = $fields[10];
+         $gdop = $fields[9];
+         $pdop = $fields[8];
+
+         # get number of satellites per system, good and bad
+         my ($sys,%ngood,%nbad);
+         for(14..$#fields) {
+            last if($fields[$_] =~ m/^\(/);
+            if($fields[$_] =~ m/^-/) {       # rejected sat
+               $sys = substr($fields[$_],1,1);
+               $nbad{$sys}++;
+            }
+            else {                           # good sat
+               $sys = substr($fields[$_],0,1);
+               $ngood{$sys}++;
+            }
+         }
+
+         foreach $sys (keys %ngood) {
+            my $str = "$sys $sow $ngood{$sys} good";      # sys sow n good
+            push @{$self->{ndata}}, $str;
+         }
+         foreach $sys (keys %nbad) {
+            my $str = "$sys $sow $nbad{$sys} bad";        # sys sow n bad
+            push @{$self->{ndata}}, $str;
+         }
       }
    }
 
-   if($N == 0) {
+   if(scalar @{$self->{pdata}} == 0) {
       push @{$self->{errors}},
          "No data to plot! (Are tag or desc not found in file?) Abort.";
    }
-   #print "Lines:\n",join("\n",@{$self->{pdata}}),"\n";
 
    if(not $self->{quiet}) {
       if($Nbad) {
@@ -553,6 +582,8 @@ sub ProcessData {
    }
 
    if(@{$self->{errors}}) { $self->Errors(); return 'fail'; }
+   #TEMP foreach $i (@{$self->{clkdata}}) { print "CLK $i\n"; }
+
    return;
 }
 
@@ -576,8 +607,7 @@ sub Plot {
       if(not $self->{quiet}) { print "Write to gnuplot file prsplot$arg.gp\n"; }
    }
    else {
-      if(not open(FPIPE,
-            "| $self->{gnuplot} -persist -geometry $geo > /dev/null 2>&1")) {
+      if(not open(FPIPE, "| $self->{gnuplot} --persist > /dev/null 2>&1")) {
          push @{$self->{errors}}, "Can't open pipe to gnuplot";
          $self->Errors();
          return 'fail';
@@ -585,7 +615,7 @@ sub Plot {
    }
 
    #----------------------------------------------
-   if($^O eq 'linux') {
+   if($^O eq 'linux' or $^O eq 'darwin') {
       #print FPIPE "set term x11 enhanced font 'luxi sans,17'\n";
       #ubuntu gnuplot 4.3
       my ($ox,$oy,$sx,$sy);
@@ -604,7 +634,12 @@ sub Plot {
       #print "GEO $geo $sx X $sy + $ox + $oy\n";
       my $wtitle = uc($arg) . " '$self->{desc}' $self->{file}";
       if($self->{png} eq '') {
-         print FPIPE "set term wxt enhanced size $sx,$sy title \"$wtitle\"\n";
+         if($^O eq 'darwin') {
+            print FPIPE "set term qt enhanced size $sx,$sy title \"$wtitle\"\n";
+         }
+         else {
+            print FPIPE "set term wxt enhanced size $sx,$sy title \"$wtitle\"\n";
+         }
          print FPIPE "set mouse\n";
          print FPIPE "#set term pngcairo enhanced size $sx,$sy "
             . "font \"$self->{font}\"\n";
@@ -627,10 +662,19 @@ sub Plot {
                            "PRSolve Solution $self->{desc} in $self->{file}\"\n";
       print FPIPE "set ylabel \"Meters\"\n";
    }
+   my @clksys = ();
    if($arg eq 'clk') {
+      # get systems and count data
+      my %seen;
+      foreach my $i (@{$self->{clkdata}}) {
+         my ($sys,$sow,$val) = split /\s+/,$i;
+         unless($seen{$sys}) { $seen{$sys}=1; push(@clksys,$sys); }
+      }
+      #print "Clock systems @clksys\n";
+
       print FPIPE "set title \"Clock Bias Solution\\n" .
                            "PRSolve Solution $self->{desc} in file $self->{file}\"\n";
-      if($self->{nclks} > 1) {
+      if(scalar @clksys > 1) {
          print FPIPE "set autoscale y2\n";
          print FPIPE "set ytics nomirror\n";
          print FPIPE "set y2tics\n";
@@ -654,7 +698,15 @@ sub Plot {
       print FPIPE "set ylabel \"RMS residual (m) or Number Sats\"\n";
       print FPIPE "set y2label \"RAIM Slope (meters)\"\n";
    }
+   #my @nsys = ();
    if($arg eq 'sats') {
+      ## get systems and count data
+      #my %seen;
+      #foreach my $i (@{$self->{ndata}}) {
+      #   my ($sys,$sow,$val,$gb) = split /\s+/,$i;
+      #   unless($seen{$sys}) { $seen{$sys}=1; push(@nsys,$sys); }
+      #}
+      ##print "N systems @nsys\n";
       print FPIPE "set title \"Satellites: number used and number rejected\"\n";
       print FPIPE "set ylabel \"Number of satellites\"\n";
    }
@@ -681,20 +733,19 @@ sub Plot {
       $N += 3;
    }
    if($arg eq 'clk') {
-      #print "$self->{pdata}[0]\n";
-      my @fields = split /\s+/,$self->{pdata}[0];
-      my $nclks = $self->{nclks};
-      my @lab;
-      for(1..$nclks) { push @lab,$fields[9+$_]; }
-      #print "Clock labels are ",join(' ',@lab),"\n";
-      print FPIPE "set ylabel \"$lab[0] Clock (meters)\"\n";
-      if($nclks > 1)  { print FPIPE "set y2label \"Other Clock(s) (meters)\"\n"; }
+      print FPIPE "set ylabel \"$clksys[0] Clock (meters)\"\n";
+      my $nclks = scalar @clksys;
+      if($nclks > 1)  {
+         my ($labs,$olabs) = (join(' ',@clksys),'');
+         for(1..$nclks-1) { $olabs .= " " . $clksys[$_]; }
+         #print "Clock labels are $labs , $olabs\n";
+         print FPIPE "set y2label \"$olabs Clock (meters)\"\n";
+      }
+      $axes = '';
       for(0..$nclks-1) {
-         my $n = 11+$nclks+$_;
-         print FPIPE "$plot using 1:$n $axes t \"$lab[$_]\" with linespoints ps $ps";
+         print FPIPE "$plot using 1:2 $axes t \"$clksys[$_]\" with lines";
          $plot = ", ''";
-         $axes = '';
-         $N++;
+         $axes = 'axes x1y2';
       }
    }
    if($arg eq 'rms') {
@@ -716,12 +767,57 @@ sub Plot {
       $plot = ", ''";
       print FPIPE "$plot using 1:3 t \"rejected\" with linespoints lt 3 pt 7";
       $N = 2;
+
+      #my $nn = scalar @nsys;
+      #if($nn > 1)  {
+      #   my ($labs,$olabs) = (join(' ',@nsys),'');
+      #   for(1..$nn-1) { $olabs .= $nsys[$_]; }
+      #   print "N labels are $labs , $olabs\n";
+      #   print FPIPE "set y2label \"$olabs Clock (meters)\"\n";
+      #}
+      #$axes = '';
+      #for(0..$nn-1) {
+      #   print FPIPE "$plot using 1:2 $axes t \"$nsys[$_]\" with lines";
+      #   $plot = ", ''";
+      #   $axes = 'axes x1y2';
+      #}
+      ##my @fields = split /\s+/,$self->{pdata}[0];
+      ##my $nsys = $self->{nclks};
+      ##my @lab;
+      ##for(0..$nsys-1) { push @lab,$fields[10+2*$nsys+3*$_]; }
+      ###print "labs @lab\n";
+      ##for(0..$nsys-1) {
+      ##   my $n = 14+$nsys+3*$_;
+      ##   my $m = $n+1;
+      ##   #print "lab and n $lab[$_] $n\n";
+      ##   print FPIPE "$plot using 1:$n t \"+$lab[$_]\" with lines";
+      ##   $N++;
+      ##   print FPIPE "$plot using 1:$m t \"-$lab[$_]\" with lines";
+      ##   $N++;
+      ##}
    }
    print FPIPE "\n";
 
-   foreach(1..$N) {
-      foreach (@{$self->{pdata}}) { print FPIPE "$_\n"; }
-      print FPIPE "e\n";
+   if($arg eq 'clk') {
+      foreach(@clksys) {
+         foreach my $i (@{$self->{clkdata}}) {
+            my ($sys,$sow,$val) = split /\s+/,$i;
+            next if($sys ne $_);
+            print FPIPE "$sow $val $sys\n";
+         }
+         print FPIPE "e\n";
+      }
+      #foreach(1..$N) {
+      #   foreach (@{$self->{clkdata}}) {
+      #   }
+      #   print FPIPE "e\n";
+      #}
+   }
+   else {
+      foreach(1..$N) {
+         foreach (@{$self->{pdata}}) { print FPIPE "$_\n"; }
+         print FPIPE "e\n";
+      }
    }
 
    close FPIPE;
@@ -739,8 +835,7 @@ sub Plot {
             . "-e \"pause -1 \\\"Close prsplot$arg window\\\" -e exit";
       }
       else {
-         system "$self->{gnuplot} -persist -geometry $geo prsplot$arg.gp "
-            . "> /dev/null 2>&1";
+         system "$self->{gnuplot} --persist prsplot$arg.gp " . "> /dev/null 2>&1";
       }
    }
 
@@ -858,7 +953,7 @@ sub Scatter {
                . "-e \"pause -1 \\\"Close $file window\\\" -e exit";
          }
          else {
-            system "$self->{gnuplot} -persist -geometry $geo $file > /dev/null 2>&1";
+            system "$self->{gnuplot} --persist $file > /dev/null 2>&1";
          }
       }
    }

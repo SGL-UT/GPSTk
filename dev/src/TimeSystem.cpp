@@ -244,7 +244,8 @@ namespace gpstk
       // TAI = GPS + 19s
       // TAI = UTC + getLeapSeconds()
       // TAI = TT - 32.184s
-      if(inTS == GPS)         // GPS -> TAI
+      if(inTS == GPS ||       // GPS -> TAI
+         inTS == GAL)         // GAL -> TAI
          dt = 19.;
       else if(inTS == UTC |   // UTC -> TAI
               inTS == BDT |   // BDT -> TAI           // TD is this right?
@@ -258,8 +259,6 @@ namespace gpstk
          dt = -32.184;
       else if(inTS == TDB)    // TDB -> TAI
          dt = -32.184 + TDBmTT;
-      else if(inTS == GAL)    // TD
-         dt = 0.0;
       else {                              // other
          Exception e("Invalid input TimeSystem " + inTS.asString());
          GPSTK_THROW(e);
@@ -270,7 +269,8 @@ namespace gpstk
       // GPS = TAI - 19s
       // UTC = TAI - getLeapSeconds()
       // TT = TAI + 32.184s
-      if(outTS == GPS)        // TAI -> GPS
+      if(outTS == GPS ||      // TAI -> GPS
+         outTS == GAL)        // TAI -> GAL
          dt -= 19.;
       else if(outTS == UTC |  // TAI -> UTC
               outTS == BDT |  // TAI -> BDT

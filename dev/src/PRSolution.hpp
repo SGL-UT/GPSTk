@@ -155,16 +155,17 @@ namespace gpstk
       int ndata,nsol,ndof;
 
       /// if true, use the given APriori position instead of the current solution
+      /// define by calling void fixAPSolution(X,Y,Z)
       bool fixedAPriori;
       Triple fixedAPrioriPos;
+
+      /// vector or systems to be used in APSolution - this must not change
+      /// define by calling setAPsystems(vector<SatID::SatelliteSystems>)
+      std::vector<SatID::SatelliteSystem> APsysIDs;
+
       /// Caller is responsible for setting APSolution before first call, if desired;
       /// after that SimplePRSolution() and RAIMCompute() will update it.
       Vector<double> APSolution;
-
-      /// Vector<double> of 'pre-fit' residuals, computed by the solution routines,
-      /// but only if APrioriSol is defined; equal to Partials*APrioriSol-Resid
-      /// where Resid is the data residual vector on the first iteration.
-      Vector<double> PreFitResid;
 
       /// constructor
       PRSMemory() throw() { reset(); }
@@ -181,6 +182,15 @@ namespace gpstk
          was.reset();
       }
 
+      /// Define the systems, including their order, that will be in the apriori sol
+      void setAPsystems(std::vector<SatID::SatelliteSystem> sys)
+      {
+         if(sys.size() == 0) 
+            GPSTK_THROW(Exception("Cannot have zero systems in setAPsystems"));
+         APsysIDs = sys;
+         APSolution.resize(3+APsysIDs.size());
+      }
+
       /// Fix the apriori solution to the given constant value (XYZ,m)
       void fixAPSolution(const double& X, const double& Y, const double& Z) throw()
       {
@@ -188,6 +198,23 @@ namespace gpstk
          fixedAPrioriPos[1] = Y;
          fixedAPrioriPos[2] = Z;
          fixedAPriori = true;
+      }
+
+      /// Get the apriori solution, given the systems in the current epoch's data
+      Vector<double> getAprioriSolution(std::vector<SatID::SatelliteSystem> syss)
+      {
+         if(APSolution.size() == 3 + syss.size())
+            return APSolution;
+
+         // must cut down the vector
+         int i,j;
+         Vector<double> aps(3+syss.size(),0.0);
+         for(i=0; i<3; i++) aps[i] = APSolution[i];
+         for(j=3,i=0; i<APsysIDs.size(); i++) {
+            if(std::find(syss.begin(),syss.end(),APsysIDs[i]) != syss.end())
+               aps[j++] = APSolution[3+i];
+         }
+         return aps;
       }
 
       /// get the aposteriori variance of unit weight; return zero if not enough
@@ -397,6 +424,9 @@ namespace gpstk
       PRSMemory memory;
 
       /// Prefit residuals; only valid if memory exists b/c it needs apriori solution.
+      /// Vector<double> of 'pre-fit' residuals, computed by the solution routines,
+      /// but only if APrioriSol is defined; equal to Partials*(Sol-APrioriSol)-Resid
+      /// where Resid is the data residual vector on the first iteration.
       Vector<double> PreFitResidual;
 
       /// Root mean square residual of fit (except when RMSDistanceFlag is set,
@@ -490,11 +520,6 @@ namespace gpstk
       ///                     in the computation. On output, systems actually used
       ///                     stored in member SystemIDs; this determines order of
       ///                     clock biases in Solution.
-      /// @param APSol       gpstk::Vector<double> solution (ECEF X,Y,Z, clock biases
-      ///                     for systems [parallel to Syss], all in meters),
-      ///                     containing an apriori solution (perhaps all 0's).
-      ///                     On output member Solution contains the final solution,
-      ///                     and member Covariance contains its covariance.
       /// Output:  (these will be resized within the function)
       /// @param Resids      gpstk::Vector<double> post-fit range residuals for each
       ///                     satellite (m), the length of this Vector is the number
@@ -514,7 +539,6 @@ namespace gpstk
                            const int& niterLimit,
                            const double& convLimit,
                            const std::vector<SatID::SatelliteSystem>& Syss,
-                           const Vector<double>& APSol,
                            Vector<double>& Resids,
                            Vector<double>& Slopes) throw(Exception);
 

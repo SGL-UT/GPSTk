@@ -79,11 +79,11 @@ namespace gpstk
             Sats[i].id = -Sats[i].id;                 // don't have system - mark it
             continue;
          }
-            LOG(DEBUG) << " Count sat " << RinexSatID(Sats[i]);
+         LOG(DEBUG) << " Count sat " << RinexSatID(Sats[i]);
          ++N;                                         // count good sat
       }
 
-            LOG(DEBUG) << "Sats.size is " << Sats.size();
+      LOG(DEBUG) << "Sats.size is " << Sats.size();
       SVP = Matrix<double>(Sats.size(),4,0.0);        // define the matrix to return
       if(N <= 0) return 0;                            // nothing to do
       NSVS = 0;                                       // count good sats w/ ephem
@@ -97,7 +97,7 @@ namespace gpstk
                << RinexSatID(Sats[i]) << " at time " << printTime(Tr,timfmt);
             continue;
          }
-            LOG(DEBUG) << " Process sat " << RinexSatID(Sats[i]);
+         LOG(DEBUG) << " Process sat " << RinexSatID(Sats[i]);
 
          // first estimate of transmit time
          tx = Tr;
@@ -170,7 +170,6 @@ namespace gpstk
                                     const int& niterLimit,
                                     const double& convLimit,
                                     const vector<SatID::SatelliteSystem>& Syss,
-                                    const Vector<double>& APSol,
                                     Vector<double>& Resids,
                                     Vector<double>& Slopes)
       throw(Exception)
@@ -196,7 +195,7 @@ namespace gpstk
       double rho,wt,svxyz[3];
       GPSEllipsoid ellip;
 
-      Valid = false;
+      Valid = Mixed = false;
 
       try {
          // -----------------------------------------------------------
@@ -226,6 +225,7 @@ namespace gpstk
 
          // dimension of the solution vector (3 pos + 1 clk/sys)
          const int dim(3 + mySyss.size());
+         if(dim > 4) Mixed = true;
 
          // require number of good satellites to be >= number unknowns (no RAIM here)
          if(Nsvs < dim) return -3;
@@ -266,14 +266,16 @@ namespace gpstk
          int n_iterate(0), niter_limit(niterLimit < 2 ? 2 : niterLimit);
          double converge(0.0);
 
-         // start with apriori
-         if(APSol.size() == 0) Solution = Vector<double>(dim,0.0);
-         else {
-            // TD what if size is wrong?
-            Solution = APSol;
-
+         // start with solution = apriori
+         Vector<double> APSolution;
+         if(hasMemory) {
+            APSolution = Solution = memory.getAprioriSolution(mySyss);
             LOG(DEBUG) << " apriori solution (" << Solution.size() << ") is [ "
                << fixed << setprecision(3) << Solution << " ]";
+         }
+         else {
+            Solution = Vector<double>(dim,0.0);
+            LOG(DEBUG) << " no memory - no apriori solution";
          }
 
          // -----------------------------------------------------------
@@ -380,13 +382,14 @@ namespace gpstk
             // weight matrix = measurement covariance inverse
             if(invMC.rows() > 0) Covariance = PT * iMC * P;
             else                 Covariance = PT * P;
-            LOG(DEBUG) << "Computed inverse cov";
 
             // invert using SVD
             try {
                Covariance = inverseSVD(Covariance);
             }
             catch(SingularMatrixException& sme) { return -2; }
+            LOG(DEBUG) << "InvCov (" << Covariance.rows() << "x" << Covariance.cols()
+               << ")\n" << fixed << setprecision(4) << Covariance;
 
             // generalized inverse
             if(invMC.rows() > 0) G = Covariance * PT * iMC;
@@ -394,7 +397,8 @@ namespace gpstk
 
             // PG is used for Slope computation
             PG = P * G;
-            LOG(DEBUG) << "Computed PG";
+            LOG(DEBUG) << "PG (" << PG.rows() << "x" << PG.cols()
+               << ")\n" << fixed << setprecision(4) << PG;
 
             n_iterate++;                        // increment number iterations
 
@@ -422,32 +426,34 @@ namespace gpstk
          if(TropFlag) LOG(DEBUG) << "Trop correction not applied at time "
                                  << printTime(T,timfmt);
 
-         // compute slopes
+         // compute slopes and find max member
          MaxSlope = 0.0;
          Slopes = 0.0;
          if(iret == 0) for(j=0,i=0; i<Sats.size(); i++) {
             if(Sats[i].id <= 0) continue;
 
-            for(int k=0; k<dim; k++) Slopes(j) += G(k,j)*G(k,j);  // TD why k<4? dim?
+            // NB when one (few) sats have their own clock, PG(j,j) = 1 (nearly 1)
+            // and slope is inf (large)
+            if(::fabs(1.0-PG(j,j)) < 1.e-8) continue;
+
+            for(int k=0; k<dim; k++) Slopes(j) += G(k,j)*G(k,j); // TD dim=4 here?
             Slopes(j) = SQRT(Slopes(j)*double(n-dim)/(1.0-PG(j,j)));
-
             if(Slopes(j) > MaxSlope) MaxSlope = Slopes(j);
-
             j++;
          }
 
          // compute pre-fit residuals
-         if(APSol.size() != 0)
-            PreFitResidual = P*(Solution-APSol) - Resids;
+         if(hasMemory)
+            PreFitResidual = P*(Solution-APSolution) - Resids;
 
          // Compute RMS residual (member)
          RMSResidual = RMS(Resids);
 
          // Find the maximum slope (member)
-         MaxSlope = 0.0;
-         for(i=0; i<Slopes.size(); i++)
-            if(Slopes(i) > MaxSlope)
-               MaxSlope = Slopes[i];
+         //MaxSlope = 0.0;
+         //for(i=0; i<Slopes.size(); i++)
+         //   if(Slopes(i) > MaxSlope)
+         //      MaxSlope = Slopes[i];
 
          // save to member data
          currTime = T;
@@ -578,10 +584,6 @@ namespace gpstk
                   LOG(DEBUG) << oss.str();
                }
 
-               // define apriroi solution    // TD clocks??
-               Vector<double> APSol(4,0.0);
-               if(hasMemory) APSol = memory.APSolution;
-
                // ----------------------------------------------------------------
                // Compute a solution given the data; ignore ranges for marked
                // satellites. Fill Vector 'Slopes' with slopes for each unmarked
@@ -592,7 +594,7 @@ namespace gpstk
                //       -3  not enough good data
                //       -4  no ephemeris
                iret = SimplePRSolution(Tr, Sats, SVP, invMC, pTropModel,
-                       MaxNIterations, ConvergenceLimit, Syss, APSol, Resids, Slopes);
+                       MaxNIterations, ConvergenceLimit, Syss, Resids, Slopes);
 
                LOG(DEBUG) << " RAIM: SimplePRS returns " << iret;
                if(iret <= 0 && iret > BestIret) BestIret = iret;
@@ -695,6 +697,12 @@ namespace gpstk
             TropFlag = BestTropFlag;
             iret = BestIret;
 
+            if(iret==0) {
+               DOPCompute();        // compute DOPs
+               if(hasMemory)        // update memory
+                  memory.add(Solution,Covariance,PreFitResidual,Partials,invMeasCov);
+            }
+
             // must add zeros to state, covariance and partials if these don't match
             if(Syss.size() != BestSyss.size()) {
                N = 3+Syss.size();
@@ -704,13 +712,14 @@ namespace gpstk
 
                // build a little map of indexes; note systems are sorted alike
                vector<int> indexes;
-               for(j=0,i=0; i<Syss.size(); i++)
+               for(j=0,i=0; i<Syss.size(); i++) {
                   indexes.push_back(Syss[i] == BestSyss[j] ? j++ : -1);
+               }
 
-               // copy over position part
+               // copy over position and position,clk parts
                for(i=0; i<3; i++) {
                   Solution(i) = BestSol(i);
-                  for(j=0; j<Partials.rows(); j++) Partials(i,j) = BestPartials(i,j);
+                  for(j=0; j<Partials.rows(); j++) Partials(j,i) = BestPartials(j,i);
                   for(j=0; j<3; j++) Covariance(i,j) = BestCov(i,j);
                   for(j=0; j<indexes.size(); j++) {
                      Covariance(i,3+j)=(indexes[j]==-1 ? 0.:BestCov(i,3+indexes[j]));
@@ -744,14 +753,8 @@ namespace gpstk
             if(BestRMS >= RMSLimit) { iret = 1; RMSFlag = true; }
             if(TropFlag) iret = 1;
             Valid = true;
-
-            // compute DOPs
-            DOPCompute();
-
-            // update memory
-            if(hasMemory)
-               memory.add(Solution, Covariance, PreFitResidual, Partials, invMeasCov);
          }
+         else if(iret == -1) Valid = false;
 
          LOG(DEBUG) << " RAIM exit with ret value " << iret
                      << " and Valid " << (Valid ? "T":"F");
@@ -856,10 +859,19 @@ namespace gpstk
    {
       ostringstream oss;
 
-      // tag RMS timetag NSVdrop Nsv RMS Slope niter conv
+      // remove duplicates and minus from satellite list
+      vector<RinexSatID> sats;
+      for(int i=0; i<SatelliteIDs.size(); i++) {
+         RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
+         if(find(sats.begin(),sats.end(),rs) == sats.end())
+            sats.push_back(rs);
+      }
+
+      //# tag RMS week  sec.of.wk nsat rmsres    tdop    pdop    gdop slope it
+      //                converg   sats... (return) [N]V"
       oss << tag << " RMS " << printTime(currTime,gpsfmt)
-         << " " << setw(2) << SatelliteIDs.size()-Nsvs
-         << " " << setw(2) << Nsvs
+         //<< " " << setw(2) << SatelliteIDs.size()-Nsvs
+         << " " << setw(2) << sats.size()
          << fixed << setprecision(3)
          << " " << setw(8) << RMSResidual
          << setprecision(2)
@@ -871,9 +883,8 @@ namespace gpstk
          << " " << setw(2) << NIterations
          << scientific << setprecision(2)
          << " " << setw(8) << Convergence;
-      for(int i=0; i<SatelliteIDs.size(); i++) {
-         RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
-         oss << " " << (SatelliteIDs[i].id < 0 ? "-" : " ") << rs;
+      for(int i=0; i<sats.size(); i++) {
+         oss << " " << sats[i];
       }
       oss << outputValidString(iret);
 
@@ -928,5 +939,4 @@ namespace gpstk
    const Vector<double> PRSolution::PRSNullVector;
 
 } // namespace gpstk
-
 

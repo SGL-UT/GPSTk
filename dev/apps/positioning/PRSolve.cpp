@@ -90,14 +90,6 @@ using namespace gpstk::StringUtils;
 
 //------------------------------------------------------------------------------------
 string Version(string("5.0 8/1/13 rev"));
-// TD
-// Trop. test all trop models, w and w/o --ref
-// Why does Neill triple the total time !? is this b/c of bad at elev 0?
-// Replace descriptor tracking codes with those actually in header
-// Add option to fix (remove) millisecond clock jumps - make portable
-// Test met
-// Does --wt work?
-// Implement Rx PCOs, and add input switches to turn off sat/rx pco correction
 
 // forward declarations
 class SolutionObject;
@@ -123,9 +115,6 @@ public:
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
    int ExtraProcessing(string& errors, string& extras) throw();
-
-   // Build candidate solution descriptors from the input
-   //void BuildCandidateSolDescriptors(ostringstream& oss) throw();
 
    // update weather in the trop model using the Met store
    void setWeather(const CommonTime& ttag) throw(Exception);
@@ -154,7 +143,7 @@ public:
    vector<string> InputMetFiles; // RINEX met file names
    vector<string> InputDCBFiles; // differential code bias C1-P1 file names
 
-   string Obspath,SP3path,Clkpath,Navpath,Metpath,DCBpath,ANTpath;      // paths
+   string Obspath,SP3path,Clkpath,Navpath,Metpath,DCBpath;              // paths
 
    // times derived from --start and --stop
    string defaultstartStr,startStr;
@@ -225,10 +214,6 @@ public:
    // vector of 1-char strings containing systems needed in all solutions: G,R,E,C,S,J
    vector<string> allSystemChars;
 
-   // constants
-   static const double beta12GPS, beta12GLO, beta15GPS, beta25GPS;
-   static const double alpha12GPS, alpha12GLO, alpha15GPS, alpha25GPS;
-
 }; // end class Configuration
 
 //------------------------------------------------------------------------------------
@@ -237,14 +222,6 @@ const string Configuration::PrgmName = string("PRSolve");
 const string Configuration::calfmt = string("%04Y/%02m/%02d %02H:%02M:%02S");
 const string Configuration::gpsfmt = string("%4F %10.3g");
 const string Configuration::longfmt = calfmt + " = %4F %w %10.3g %P";
-const double Configuration::beta12GPS = L1_MULT_GPS/L2_MULT_GPS;
-const double Configuration::beta12GLO = 9./7.;
-const double Configuration::beta15GPS = L1_MULT_GPS/L5_MULT_GPS;
-const double Configuration::beta25GPS = L2_MULT_GPS/L5_MULT_GPS;
-const double Configuration::alpha12GPS = beta12GPS*beta12GPS-1.0;
-const double Configuration::alpha12GLO = beta12GLO*beta12GLO-1.0;
-const double Configuration::alpha15GPS = beta15GPS*beta15GPS-1.0;
-const double Configuration::alpha25GPS = beta25GPS*beta25GPS-1.0;
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -520,7 +497,8 @@ public:
    int ComputeSolution(const CommonTime& t) throw(Exception);
 
    // Write out ORDs - call after ComputeSolution
-   int WriteORDs(const CommonTime& t) throw(Exception);
+   // pass it iret from ComputeSolution
+   int WriteORDs(const CommonTime& t, const int iret) throw(Exception);
 
    // Output final results
    void FinalOutput(void) throw(Exception);
@@ -803,8 +781,10 @@ try {
       RinexSatID sat(sats[sats.size()-1]);
       double dtp = C.SP3EphStore.getPositionTimeStep(sat);
       double dtc = C.SP3EphStore.getClockTimeStep(sat);
-      LOG(VERBOSE) << "\nEphemeris Store time intervals for " << sat
+      LOG(VERBOSE) << "\nSP3 Ephemeris Store time intervals for " << sat
          << " are " << dtp << " (pos), and " << dtc << " (clk)";
+      LOG(VERBOSE) << "SP3 Ephemeris store time system "
+         << C.SP3EphStore.getTimeSystem().asString();
 
       // set gap checking - don't b/c TimeStep may vary GPS/GLO
       // TD this is a problem
@@ -1485,8 +1465,8 @@ try {
             // compute the solution
             j = C.SolObjs[i].ComputeSolution(Rdata.time);
 
-            // write ORDs, if solution is good
-            if(C.ORDout && j==0) C.SolObjs[i].WriteORDs(Rdata.time);
+            // write ORDs, even if solution is not good
+            if(C.ORDout) C.SolObjs[i].WriteORDs(Rdata.time,j);
          }
 
          // write to output RINEX ----------------------------
@@ -1717,6 +1697,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(opts.hasHelp()) {
       LOG(INFO) << Title;
       LOG(INFO) << cmdlineUsage;
+      //// temp TEMP
       //{
       //   LOG(INFO) << "Valid RINEX observation IDs:";
       //   RinexObsID::dumpCheck(LOGstrm);
@@ -1784,8 +1765,8 @@ string Configuration::BuildCommandLine(void) throw()
 "   NAV  X Y Z SYS clock_bias [SYS clock_bias ...]\n"
 "   POS  X Y Z\n"
 "   CLK  SYS clock_bias [SYS clock_bias ...]\n"
-"   RMS  Nrej Ngood RMS TDOP PDOP GDOP Slope niter conv SAT [SAT ...]\n"
-"   DAT  Ngood Nsats <SAT>:<freq><code> ... (list of sats with freq+code found)\n"
+"   RMS  Nsats RMS TDOP PDOP GDOP Slope niter conv SAT [SAT ...]\n"
+"   DAT  Ngood Ndata <SAT>:<freq><code> ... (list of sats with freq+code found)\n"
 " and where\n"
 "   X Y Z = position solution, or solution residuals, depending on TAG;\n"
 "           RNE and SNE yield North-East-Up residuals, at --ref position\n"
@@ -1896,6 +1877,8 @@ string Configuration::BuildCommandLine(void) throw()
             "Output autonomous pseudorange solution [tag SPS, no RAIM]");
    opts.Add(0, "ORDs", "fn", false, false, &OutputORDFile, "",
             "Write ORDs (Observed Range Deviations) to file <fn> [--ref req'd]");
+   //opts.Add(0, "memory", "", false, false, &doMemory, "",
+   //         "Keep information between epochs, output APV etc.");
    opts.Add(0, "timefmt", "f", false, false, &userfmt, "",
             "Format for time tags in output");
 
@@ -2035,10 +2018,6 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          pTrop->setWeather(defaultTemp,defaultPress,defaultHumid);
       }
    }
-
-   //// build descriptors (sys,freq,code) of output solution ------------------------
-   //BuildCandidateSolDescriptors(oss);
-   // Build Solution objects from input solution descriptors ------------------------
 
    // open the log file (so warnings, configuration summary, etc can go there) -----
    logstrm.open(LogFile.c_str(), ios::out);
@@ -2361,12 +2340,13 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
          iret=prs.PreparePRSolution(ttag, Satellites, satSyss, PRanges, C.pEph, SVP);
 
          if(iret > -3) {
-            Vector<double> APSol(5,0.0),Resid,Slopes;
-            if(prs.hasMemory) APSol = prs.memory.APSolution;
+            //Vector<double> APSol(5,0.0),Resid,Slopes;
+            Vector<double> Resid,Slopes;
+            //if(prs.hasMemory) APSol = prs.memory.getAprioriSolution(satSyss);
             iret = prs.SimplePRSolution(ttag, Satellites, SVP,
                                         invMCov, C.pTrop,
                                         prs.MaxNIterations, prs.ConvergenceLimit,
-                                        satSyss, APSol, Resid, Slopes);
+                                        satSyss, Resid, Slopes);
          }
 
          if(iret < 0) { LOG(VERBOSE) << "SimplePRS failed "
@@ -2504,7 +2484,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
 }
 
 //------------------------------------------------------------------------------------
-int SolutionObject::WriteORDs(const CommonTime& time) throw(Exception)
+int SolutionObject::WriteORDs(const CommonTime& time, const int iret) throw(Exception)
 {
    try {
       Configuration& C(Configuration::Instance());
@@ -2532,6 +2512,7 @@ int SolutionObject::WriteORDs(const CommonTime& time) throw(Exception)
             //<< " " << setw(12) << PRanges[i]
             //<< " " << setw(12) << ERanges[i]
             << " " << Descriptor
+            << " " << iret
             << endl;
       }
 
