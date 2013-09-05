@@ -425,7 +425,8 @@ string Configuration::BuildCommandLine(void) throw()
 //------------------------------------------------------------------------------------
 int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 {
-   int i,n;
+   int n;
+   size_t i;
    vector<string> fld;
    ostringstream oss,ossx;       // oss for Errors, ossx for Warnings and info
 
@@ -534,7 +535,7 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    int iret,nfiles;
-   int i,j,k,nfile;
+   size_t i,k, j, nfile;
    string tag;
    CommonTime lastObsTime, prevObsTime, firstObsTime;
    RinexSatID sat;

@@ -2725,7 +2725,7 @@ try {
 
       // GF only slip - compute WL stats on both sides
       Stats<double> futureStats,pastStats;
-      int k = i;
+      size_t k = i;
       // fill future
       while(k < size() && futureStats.N() < N) {
          if(spdvector[k].flag & OK)                  // data is good

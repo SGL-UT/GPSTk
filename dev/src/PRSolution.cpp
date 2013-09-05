@@ -57,7 +57,8 @@ namespace gpstk
    {
       LOG(DEBUG) << "PreparePRSolution at time " << printTime(Tr,timfmt);
 
-      int i,j,noeph(0),N,NSVS;
+      int j,noeph(0),N,NSVS;
+      size_t i;
       CommonTime tx;
       Xvt PVT;
 
@@ -191,7 +192,8 @@ namespace gpstk
          GPSTK_THROW(e);
       }
 
-      int iret(0),i,j,k,n;
+      int iret(0),k,n;
+      size_t i, j;
       double rho,wt,svxyz[3];
       GPSEllipsoid ellip;
 
@@ -486,7 +488,8 @@ namespace gpstk
       try {
          LOG(DEBUG) << "RAIMCompute at time " << printTime(Tr,gpsfmt);
 
-         int iret,i,j,N;
+         int iret,N;
+         size_t i,j;
          vector<int> GoodIndexes;
          // use these to save the 'best' solution within the loop.
          // BestRMS marks the 'Best' set as unused.
@@ -775,7 +778,7 @@ namespace gpstk
          Matrix<double> Cov(inverseLUD(PTP));
          PDOP = SQRT(Cov(0,0)+Cov(1,1)+Cov(2,2));
          TDOP = 0.0;
-         for(int i=3; i<Cov.rows(); i++) TDOP += Cov(i,i);
+         for(size_t i=3; i<Cov.rows(); i++) TDOP += Cov(i,i);
          TDOP = SQRT(TDOP);
          GDOP = RSS(PDOP,TDOP);
          return 0;
@@ -813,7 +816,7 @@ namespace gpstk
          << " " << setw(16) << (&Vec==&PRSNullVector ? Solution(1) : Vec(1))
          << " " << setw(16) << (&Vec==&PRSNullVector ? Solution(2) : Vec(2))
          << fixed << setprecision(3);
-      for(int i=0; i<SystemIDs.size(); i++) {
+      for(size_t i=0; i<SystemIDs.size(); i++) {
          RinexSatID sat(1,SystemIDs[i]);
          oss << " " << sat.systemString3() << " " << setw(11) << Solution(3+i);
       }
@@ -845,7 +848,7 @@ namespace gpstk
       // tag CLK timetag SYS clk [SYS clk SYS clk ...] endtag
       oss << tag << " CLK " << printTime(currTime,gpsfmt)
          << fixed << setprecision(3);
-      for(int i=0; i<SystemIDs.size(); i++) {
+      for(size_t i=0; i<SystemIDs.size(); i++) {
          RinexSatID sat(1,SystemIDs[i]);
          oss << " " << sat.systemString3() << " " << setw(11) << Solution(3+i);
       }
@@ -861,7 +864,7 @@ namespace gpstk
 
       // remove duplicates and minus from satellite list
       vector<RinexSatID> sats;
-      for(int i=0; i<SatelliteIDs.size(); i++) {
+      for(size_t i=0; i<SatelliteIDs.size(); i++) {
          RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
          if(find(sats.begin(),sats.end(),rs) == sats.end())
             sats.push_back(rs);
@@ -883,7 +886,7 @@ namespace gpstk
          << " " << setw(2) << NIterations
          << scientific << setprecision(2)
          << " " << setw(8) << Convergence;
-      for(int i=0; i<sats.size(); i++) {
+      for(size_t i=0; i<sats.size(); i++) {
          oss << " " << sats[i];
       }
       oss << outputValidString(iret);

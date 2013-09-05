@@ -638,7 +638,8 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
-   int iret, i;
+   int iret;
+   size_t i;
    string sys;
    vector<string> flds;
    Rinex3ObsData::DataMap::iterator kt;

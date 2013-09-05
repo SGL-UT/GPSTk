@@ -289,7 +289,7 @@ public:
    // dump
    string asString(void)
    {
-      int i,j;
+      size_t i,j;
       ostringstream oss;
       oss << "(" << sfcodes << ")";
       oss << " " << ObsID::map1to3sys[sfcodes.substr(0,1)];
@@ -305,7 +305,7 @@ public:
    // define the consts and obsids vectors, given the obstype map from RINEX header
    bool ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    {
-      int i,j,k;
+      size_t i,j,k;
       string sys1=getSys();
       string frs=getFreq();
       string codes=getCodes();
@@ -372,10 +372,10 @@ public:
          return false;
 
       string frs=getFreq();
-      for(int i=0; i<frs.size(); i++) {            // loop over frequencies
+      for(size_t i=0; i<frs.size(); i++) {            // loop over frequencies
          RawPR.push_back(0.0);                     // placeholder = 0 == missing
          usedobsids.push_back(string("---"));      // placeholder == none
-         for(int j=0; j<indexes[i].size(); j++) {  // loop over codes (RINEX indexes)
+         for(size_t j=0; j<indexes[i].size(); j++) {  // loop over codes (RINEX indexes)
             int k = indexes[i][j];
             if(vrd[k].data == 0.0)                 // data is no good
                continue;
@@ -402,7 +402,7 @@ public:
    {
       string msg;
       string frs = getFreq();
-      for(int i=0; i<frs.size(); i++) {
+      for(size_t i=0; i<frs.size(); i++) {
          msg += frs[i];
          msg += (usedobsids.size() > i ? usedobsids[i].substr(2,1) : "?");
       }
@@ -455,7 +455,7 @@ public:
       // specify systems in PRSolution
       // sysChars ~ vec<1-char string> ~ G,R,E,C,S; must have at least one member
       RinexSatID sat;
-      for(int i=0; i<sysChars.size(); i++) {
+      for(size_t i=0; i<sysChars.size(); i++) {
          sat.fromString(sysChars[i]);               // 1-char string
          prs.SystemIDs.push_back(sat.system);
          LOG(DEBUG) << " Add sys " << sysChars[i] << " = " << sat
@@ -587,7 +587,7 @@ try {
          << " RINEX observation file" << (nfiles > 1 ? "s.":".");
 
       // output final results
-      for(int i=0; i<C.SolObjs.size(); ++i) {
+      for(size_t i=0; i<C.SolObjs.size(); ++i) {
          LOG(INFO) << "\n ----- Final output " << C.SolObjs[i].Descriptor << " -----";
          C.SolObjs[i].FinalOutput();
       }
@@ -624,7 +624,8 @@ int Initialize(string& errors) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    bool isValid(true);
-   int i,j,nfile,nread,nrec;
+   int nread,nrec;
+   size_t i,j,nfile;
    ostringstream ossE;
    CommonTime typtime;        // typical time for the dataset
 
@@ -1133,7 +1134,7 @@ try {
 
       // is there ephemeris for each system?
       bool ok=true;
-      for(int k=0; k<SO.sysChars.size(); k++) {
+      for(size_t k=0; k<SO.sysChars.size(); k++) {
          RinexSatID sat;
          sat.fromString(SO.sysChars[k]);
          LOG(INFO) << " Found system " << SO.sysChars[k]
@@ -1190,7 +1191,8 @@ int ProcessFiles(void) throw(Exception)
 try {
    Configuration& C(Configuration::Instance());
    bool firstepoch(true);
-   int i,j,k,iret,nfile,nfiles;
+   int k,iret,nfiles;
+   size_t i,j,nfile;
    Position PrevPos(C.knownPos);
    Rinex3ObsStream ostrm;
 
@@ -1595,7 +1597,8 @@ void Configuration::SolDescHelp(void)
    string freqs(ObsID::validRinexFrequencies);
    string codes;
    string space("   ");
-   int i,j,k;
+   size_t i,j, k;
+   
    // first find the length of the longest codes entry for each system
    map<char,int> syslen;
    for(i=0; i<systs.size(); i++) {
@@ -1712,7 +1715,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    // output warning / error messages
    if(cmdlineUnrecognized.size() > 0) {
       LOG(INFO) << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          LOG(INFO) << "  " << cmdlineUnrecognized[i];
       LOG(INFO) << "End of unrecognized arguments";
    }
@@ -2113,7 +2116,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
    stripTrailing(desc);
    if(desc.empty()) return false;
 
-   int i,j;
+   size_t i,j;
    vector<string> fields = split(desc,'+');
    if(fields.size() > 1) {
       for(i=0; i<fields.size(); i++)
@@ -2167,7 +2170,7 @@ bool SolutionObject::ValidateDescriptor(const string desc, string& msg)
 // assumes descriptor has been validated.
 void SolutionObject::ParseDescriptor(void) throw()
 {
-   int i,j,k;
+   size_t i;
    vector<string> fields;
 
    sysChars.clear();          // sysChars ~ vec<string> ~ G,R,E,C,S
@@ -2203,7 +2206,7 @@ void SolutionObject::ParseDescriptor(void) throw()
 bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    throw()
 {
-   int i,j,k,m,n;
+   size_t i;
    Configuration& C(Configuration::Instance());
    vector<string> obstypes;
 
@@ -2223,7 +2226,8 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
 //------------------------------------------------------------------------------------
 string SolutionObject::dump(int level, string msg1, string msg2) throw()
 {
-   int i,j;
+   int j;
+   size_t i;
    ostringstream oss;
    Configuration& C(Configuration::Instance());
 
@@ -2284,7 +2288,7 @@ void SolutionObject::CollectData(const RinexSatID& sat,
 {
    if(!isValid) return;
 
-   for(int i=0; i<vecSolData.size(); i++) {
+   for(size_t i=0; i<vecSolData.size(); i++) {
       if(vecSolData[i].ComputeData(sat,vrd)) {
          // add to data for this solution
          Satellites.push_back(sat);
@@ -2489,7 +2493,8 @@ int SolutionObject::WriteORDs(const CommonTime& time, const int iret) throw(Exce
    try {
       Configuration& C(Configuration::Instance());
 
-      int i,j;
+      int j;
+      size_t i;
       double clk;
       for(i=0; i<Satellites.size(); i++) {
          if(Satellites[i].id < 0) continue;
@@ -2551,7 +2556,7 @@ void SolutionObject::FinalOutput(void) throw(Exception)
             Matrix<double> Cov(statsNEUresid.getCov());  // cov from NEU stats
 
             // scale the covariance
-            for(int i=0; i<Cov.rows(); i++) for(int j=i; j<Cov.cols(); j++)
+            for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
                Cov(i,j) = Cov(j,i) = Cov(i,j)*apv;
 
             // print this covariance as labelled matrix

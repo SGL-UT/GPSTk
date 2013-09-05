@@ -111,7 +111,7 @@ bool GloDump::initialize(int argc, char *argv[])
 
    if (slotOption.getCount())
    {
-      for (int i = 0; i < slotOption.getCount(); i ++)
+      for (size_t i = 0; i < slotOption.getCount(); i ++)
       {
             slotFilterList.push_back(atol(slotOption.getValue()[i].c_str()));
       }

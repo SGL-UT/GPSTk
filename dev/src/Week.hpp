@@ -204,7 +204,7 @@ namespace gpstk
 
       inline virtual void adjustToYear(unsigned int y)
       {
-         short halfroll = rollover()/2;
+         unsigned short halfroll = rollover()/2;
          long jd1,jd2;
          int iyear,imon,iday,ep1,ep2;
          jd1 = convertCalendarToJD(y,1,1);

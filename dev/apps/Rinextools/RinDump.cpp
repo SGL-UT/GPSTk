@@ -1044,7 +1044,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    if(cmdlineUnrecognized.size() > 0) {
       ostringstream oss;
       oss << "Warning - unrecognized arguments:";
-      for(int i=0; i<cmdlineUnrecognized.size(); i++)
+      for(size_t i=0; i<cmdlineUnrecognized.size(); i++)
          oss << " >" << cmdlineUnrecognized[i] << "<";
       LOG(WARNING) << oss.str();
    }

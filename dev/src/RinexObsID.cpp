@@ -132,7 +132,7 @@ namespace gpstk
    // described in the Rinex 3 specification.
    bool isValidRinexObsID(const std::string& strID)
    {
-      int i(strID.length()-3);
+      size_t i(strID.length()-3);
       if(i < 0 || i > 1)
          return false;
 
@@ -176,7 +176,7 @@ namespace gpstk
          const std::string types("CLDS");
          std::map<char,std::string>::const_iterator it;
 
-         for(int i=0; i<ObsID::validRinexSystems.size(); i++) {
+         for(size_t i=0; i<ObsID::validRinexSystems.size(); i++) {
             char csys = ObsID::validRinexSystems[i];
             std::string sys = ObsID::validRinexSystems.substr(i,1);
             RinexSatID sat(sys);
@@ -194,9 +194,9 @@ namespace gpstk
                s << "   " << system << "(" << sys << "), freq " << it->first
                   << ", codes '" << it->second << "'" << std::endl;
                std::string codes(it->second), str;
-               for(int j=0; j<codes.size(); ++j) {
+               for(size_t j=0; j<codes.size(); ++j) {
                   std::ostringstream oss1;
-                  for(int k=0; k<types.size(); ++k) {
+                  for(size_t k=0; k<types.size(); ++k) {
                      str = std::string(1,types[k]) + std::string(1,it->first)
                            + std::string(1,codes[j]);
                      std::ostringstream oss;

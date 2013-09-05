@@ -207,7 +207,8 @@ namespace gpstk
             return APSolution;
 
          // must cut down the vector
-         int i,j;
+         int j;
+         size_t i;
          Vector<double> aps(3+syss.size(),0.0);
          for(i=0; i<3; i++) aps[i] = APSolution[i];
          for(j=3,i=0; i<APsysIDs.size(); i++) {
@@ -283,7 +284,7 @@ namespace gpstk
                // scale covariance
                double sig(::sqrt(APV/ndof));
                Matrix<double> Cov(was.getCov());
-               for(int i=0; i<Cov.rows(); i++) for(int j=i; j<Cov.cols(); j++)
+               for(size_t i=0; i<Cov.rows(); i++) for(size_t j=i; j<Cov.cols(); j++)
                   Cov(i,j) = Cov(j,i) = Cov(i,j)*sig;
                // print cov as labelled matrix
                Namelist NL;
