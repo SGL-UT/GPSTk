@@ -42,7 +42,7 @@ namespace gpstk
 #ifdef _MSC_VER
 #define ABS(x)  ::abs(x)
 #define SQRT(x) ::sqrt(x)
-#define MAX(x,y) ::max(x,y)
+#define MAX(x,y) std::max(x,y)
 #else
 #define ABS(x)  std::abs(x)
 #define SQRT(x) std::sqrt(x)

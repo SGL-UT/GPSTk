@@ -1,5 +1,5 @@
 # Minimum Required CMake Version
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 2.8.4)
 
 # Project Name
 project (gpstk)
@@ -10,7 +10,6 @@ message ("system_name = ${CMAKE_SYSTEM_NAME}")
 
 # Installation Path Prefix - Change to desired location
 set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
-set (GPSTK_SO_VERSION 21)
 
 if (UNIX) # Unix Compiler Options
 	 set (STADYN "SHARED") #Dynamic Libraries Enabled
@@ -25,11 +24,12 @@ if (UNIX) # Unix Compiler Options
 	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
 	 endif (APPLE)
 elseif (WIN32) # Windows Compiler Options
-	set (STADYN "STATIC") #Static Libraries Enabled
 	if (MSVC11) # Compiler Options for Microsoft Visual Studio 11 (2012)
+		set (STADYN "STATIC") #Static Libraries Enabled
 		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
 		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800")
 	elseif (MSVC10) # Compiler Options for Microsoft Visual Studio 10 (2010)
+		set (STADYN "STATIC") #Static Libraries Enabled
 		include_directories("C:/Program\ Files\ (x86)/GnuWin32/include")
 		link_directories("C:/Program\ Files\ (x86)/GnuWin32/lib")
 		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
