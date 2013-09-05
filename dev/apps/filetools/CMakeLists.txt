@@ -29,6 +29,10 @@ add_executable(ephemfix ephemfix.cpp)
 target_link_libraries(ephemfix rxio)
 install (TARGETS ephemfix DESTINATION bin)
 
+add_executable(glodump GloDump.cpp)
+target_link_libraries(glodump gpstk)
+install (TARGETS glodump DESTINATION bin)
+
 add_executable(rinexelvstrip RinexElvStrip.cpp)
 target_link_libraries(rinexelvstrip gpstk)
 install (TARGETS rinexelvstrip DESTINATION bin)
