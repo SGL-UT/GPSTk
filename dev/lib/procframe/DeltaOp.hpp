@@ -132,6 +132,8 @@ namespace gpstk
          /// Default constructor. By default, it will difference prefitC data
          /// and will delete satellites present in reference station data but
          /// missing in input data.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       DeltaOp()
          : deleteMissingSats(true), updateCSFlag(true)
       { diffTypes.insert(TypeID::prefitC); };
@@ -151,6 +153,7 @@ namespace gpstk
           *                  will be deleted from the later (this is the
           *                  default behaviour).
           */
+    
       DeltaOp( const satTypeValueMap& gData,
                const bool& delSats = true )
          : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
@@ -321,7 +324,7 @@ namespace gpstk
          : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
            diffTypes(diffSet)
       { };
-
+#pragma clang diagnostic pop
 
          /** Method to set the satTypeValueMap data object holding reference
           *  station data.

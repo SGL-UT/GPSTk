@@ -77,11 +77,12 @@ namespace gpstk
       double m(13.0);
       double d(yds.doy);
 
-         // Hours of day (decimal)
+       // Hours of day (decimal)
       double h(yds.sod/3600.0);
 
          // Fraction of day
       double frofday (yds.sod/86400.0);
+#pragma unused(y,m,d,frofday)
 
          // Compute Julian Day, including decimals
       double jd(JulianDate(t).jd);

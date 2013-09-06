@@ -109,8 +109,10 @@ namespace gpstk
       virtual bool isData() const {return true;}
 
          /// Debug output function.
-      virtual void dump(std::ostream& s=std::cout, bool includeC=true) const throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       virtual void dump(std::ostream& s=std::cout, bool includeC=true) const throw();
+#pragma clang diagnostic pop
          ///@name data members
          //@{
       char RecType;    ///< Data type indicator. P position, V velocity, * epoch

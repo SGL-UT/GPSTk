@@ -86,6 +86,8 @@ using namespace gpstk;
 //------------------------------------------------------------------------------
 DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
    throw()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    : timeFormat("%Y %j %02H:%02M:%04.1f"),
      BasicFramework(
         applName,
@@ -165,6 +167,7 @@ DataAvailabilityAnalyzer::DataAvailabilityAnalyzer(const std::string& applName)
      epochRate(0), epochCounter(0), allMissingCounter(0), 
      totalSvEpochCounter(0), expectedSvEpochCounter(0), receivedSvEpochCounter(0),
      anyMissingCounter(0), haveAntennaPos(false)
+#pragma clang diagnostic pop
 {
    obsIntervalOpt.setMaxCount(1);
 

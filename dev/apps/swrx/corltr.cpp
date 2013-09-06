@@ -51,9 +51,10 @@ class Corltr : public BasicFramework
 {
 public:
    Corltr() throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 private:
    virtual void process();
 
@@ -79,12 +80,14 @@ private:
    bool peakOnly;
 };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 Corltr::Corltr() throw() :
    BasicFramework("corltr", "A program to test out local replica generation and correlation."),
    timeStep(50e-9), bands(2), steps(4092), peakOnly(false), interFreq(0.42e6)
 {}
+#pragma clang diagnostic pop
 
 
 bool Corltr::initialize(int argc, char *argv[]) throw()
@@ -208,6 +211,7 @@ bool Corltr::initialize(int argc, char *argv[]) throw()
 
    string code =   lowerCase(word(val, 0, delim));
    int    band =       asInt(word(val, 1, delim));
+#pragma unused(band)
    int    prn =        asInt(word(val, 2, delim));
           offset =  asDouble(word(val, 3, delim)) * 1e-6;
           doppler = asDouble(word(val, 4, delim));

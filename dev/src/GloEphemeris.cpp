@@ -436,7 +436,7 @@ namespace gpstk
       double vy( inState(3) );          // Y velocity
       double  z( inState(4) );          // Z coordinate
       double vz( inState(5) );          // Z velocity
-
+#pragma unused(vx,vy,vz)
 
       double r2( x*x + y*y + z*z );
       double r( std::sqrt(r2) );

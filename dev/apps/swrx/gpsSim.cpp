@@ -65,9 +65,10 @@ class GpsSim : public BasicFramework
 {
 public:
    GpsSim() throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
    // How many samples are taken in one base period
    double samples_per_period;
    double rx_sample_rate;
@@ -113,7 +114,8 @@ protected:
    virtual void process();
 };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 GpsSim::GpsSim() throw() :
    BasicFramework("gpsSim", "A simple simulation of a the GPS signal."),
    periods_to_generate(4096),
@@ -130,6 +132,7 @@ GpsSim::GpsSim() throw() :
    codeOnly(false),
    gain(1)
 {}
+#pragma clang diagnostic pop
 
 bool GpsSim::initialize(int argc, char *argv[]) throw()
 {

@@ -113,7 +113,8 @@ namespace gpstk
 			: FFTextStream(file.c_str(), std::ios::out)
 		{ writeHeader(); };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
 		   /// Method to open a configuration data file to be written.
 		virtual void open(const char* fn);
 
@@ -121,7 +122,7 @@ namespace gpstk
 		   /// Method to open a configuration data file to be written.
 		virtual void open(const std::string& fn)
 		{ open( fn.c_str() ); };
-
+#pragma clang diagnostic pop
 
          /// Write a common header for all of the configuration data files
          /// written by this class. 

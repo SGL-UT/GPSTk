@@ -64,9 +64,10 @@ class DDGen : public gpstk::BasicFramework
 {
 public:
    DDGen() throw();
-   
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp();
    virtual void process();
@@ -98,7 +99,8 @@ private:
    void filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem);
    
 };
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
@@ -116,7 +118,7 @@ DDGen::DDGen() throw()
      ephFileOption('e', "eph",  "Where to get the ephemeris data.  Acceptable "
                 "formats include " + EphReader::formatsUnderstood() + ".", true)
 {}
-
+#pragma clang diagnostic pop
 //-----------------------------------------------------------------------------
 // Here the command line options parsed and used to configure the program
 //-----------------------------------------------------------------------------
@@ -541,7 +543,7 @@ void DDGen::filterObs(const XvtStore<SatID>& eph, ObsEpochMap &oem)
             {
                const SatID& svid = oeIter->first;
                SvObsEpoch& soe = oeIter->second;
-               
+#pragma unused(soe)
                GPSEphemeris ephTemp = bce.findEphemeris(svid, t);
                short health =  ephTemp.health;
                if (health != 0)

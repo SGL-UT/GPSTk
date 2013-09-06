@@ -55,7 +55,8 @@
 namespace gpstk
 {
    using namespace std;
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    OrbElemLNav::OrbElemLNav()
       :OrbElem(),
        codeflags(0), health(0), L2Pdata(0),
@@ -63,7 +64,7 @@ namespace gpstk
        Tgd(0.0), fitint(0),
        AODO(0)
    {}
-
+#pragma clang diagnostic pop
    OrbElemLNav::OrbElemLNav(  const long  SF1[10],
                               const long  SF2[10],
                               const long  SF3[10],

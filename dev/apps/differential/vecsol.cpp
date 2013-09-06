@@ -465,6 +465,7 @@ Triple permanentTide(double const phi)
 	int const MaxSats(30);    // Same
 
 	const double gamma((L1_FREQ_GPS / L2_FREQ_GPS) * (L1_FREQ_GPS / L2_FREQ_GPS));
+#pragma unused(gamma)
 	const double L1_F2(L1_FREQ_GPS * L1_FREQ_GPS), L2_F2(L2_FREQ_GPS * L2_FREQ_GPS);
 	const double LDIF_F2(L1_F2 - L2_F2);
 	// Weights for adding L1 and L2 pseudo-ranges into metric iono free
@@ -830,7 +831,7 @@ Triple permanentTide(double const phi)
 
 					// The clock offset problem for
 					// Javad / Pinnacle:
-					double rr1, rr2;
+					double rr1 = 0.0, rr2 = 0.0;
 					// Range rates:
 					if (javad1) 
 					    rr1 = CER1.svPosVel.v.dot(CER1.cosines);
@@ -912,6 +913,7 @@ Triple permanentTide(double const phi)
 					    // Construct inter-sat diffs
 					    bool reject(false);
 					    FixType fix(FIX_NONE);
+#pragma unused(fix)
 					    vector <double> DDobs(3);
 					    DDobs[1] = rdiffL1 - ref_rdiffL1;
 					    DDobs[2] = rdiffL2 - ref_rdiffL2;

@@ -38,7 +38,8 @@ using namespace std;
 using namespace gpstk;
 using namespace gpstk::StringUtils;
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 MDPSummaryProcessor::MDPSummaryProcessor(gpstk::MDPStream& in, std::ofstream& out)
    : MDPProcessor(in, out),
@@ -64,7 +65,7 @@ MDPSummaryProcessor::MDPSummaryProcessor(gpstk::MDPStream& in, std::ofstream& ou
    elevBins.push_back(elevationPair(60,90));
    processBad = true;
 }
-
+#pragma clang diagnostic pop
 
 //-----------------------------------------------------------------------------
 MDPSummaryProcessor::~MDPSummaryProcessor()

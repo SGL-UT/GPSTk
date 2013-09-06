@@ -260,6 +260,7 @@ public:
       vector<string> fields = split(desc,':');
       sfcodes = ObsID::map3to1sys[fields[0]];   // first char of sfcodes
       char csys(sfcodes[0]);
+#pragma unused(csys)
       sfcodes += fields[1];                     // 1 or 2 freq chars
       sfcodes += fields[2];
    }
@@ -1301,6 +1302,7 @@ try {
       LOG(INFO) << "\nSolutions to be computed for this file:";
       for(i=0; i<C.SolObjs.size(); ++i) {
          bool ok(C.SolObjs[i].ChooseObsIDs(Rhead.mapObsTypes));
+#pragma unused(ok)
          //LOG(INFO) << (ok ? "    ":" NO ") << i+1 << " " << C.SolObjs[i].dump(0);
          LOG(INFO) << C.SolObjs[i].dump(0);
          if(C.verbose) for(j=0; j<C.SolObjs[i].sysChars.size(); j++) {
@@ -1542,6 +1544,7 @@ int routine(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
+#pragma unused(C)
 
    return 0;
 }
@@ -2208,6 +2211,7 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
 {
    size_t i;
    Configuration& C(Configuration::Instance());
+#pragma unused(C)
    vector<string> obstypes;
 
    isValid = true;
@@ -2230,6 +2234,7 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
    size_t i;
    ostringstream oss;
    Configuration& C(Configuration::Instance());
+#pragma unused(C)
 
    oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
 

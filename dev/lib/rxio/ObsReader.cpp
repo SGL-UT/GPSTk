@@ -52,7 +52,9 @@ using namespace std;
 
 namespace gpstk
 {
-   //----------------------------------------------------------------------
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    //----------------------------------------------------------------------
    ObsReader::ObsReader(const string& str, int debug)
       throw(FileMissingException)
       : fn(str), inputType(str), debugLevel(debug), epochCount(0), msid(0),
@@ -95,7 +97,7 @@ namespace gpstk
          ashs.exceptions(fstream::failbit);
       }
    };
-
+#pragma clang diagnostic pop
 
    //----------------------------------------------------------------------
    ObsEpoch ObsReader::getObsEpoch()

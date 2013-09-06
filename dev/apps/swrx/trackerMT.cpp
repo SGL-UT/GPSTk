@@ -86,8 +86,10 @@ class RxSim : public BasicFramework
 {
 public:
    RxSim() throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
+#pragma clang diagnostic pop
    void function(EMLTracker *tr, int dp, int *count,
                      complex<double> s, NavFramer *nf);
 
@@ -111,14 +113,15 @@ private:
    int numTrackers;
 };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
    cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6),
    fakeL2(false), gain(1), timeLimit(9e99),iadMax(20460)
 {}
-
+#pragma clang diagnostic pop
 
 bool RxSim::initialize(int argc, char *argv[]) throw()
 {

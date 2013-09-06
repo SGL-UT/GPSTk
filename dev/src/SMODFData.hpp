@@ -62,9 +62,11 @@ namespace gpstk
    {
    public:
       /// constructor
-      SMODFData() : PRNID(0), time(gpstk::CommonTime::BEGINNING_OF_TIME) 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+       SMODFData() : PRNID(0), time(gpstk::CommonTime::BEGINNING_OF_TIME)
       {}
-
+#pragma clang diagnostic pop
       /// destructor
       virtual ~SMODFData() {}
 

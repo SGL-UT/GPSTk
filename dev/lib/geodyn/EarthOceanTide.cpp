@@ -238,8 +238,6 @@ namespace gpstk
       double dc[12]={0.0},ds[12]={0.0};
       getOceanTide(mjdUtc,dc,ds);
 
-      int a = 0;
-
    }
 
 }  // End of namespace 'gpstk'

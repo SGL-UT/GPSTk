@@ -138,7 +138,8 @@ namespace gpstk
          throw(FFStreamError)
       {
          T temp = data;
-         writeData((char*)&data, sizeof(T));
+#pragma unused(temp)
+          writeData((char*)&data, sizeof(T));
          return;
       } // end of writeData(FFStream& strm, const T& data)
 

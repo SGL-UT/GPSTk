@@ -241,7 +241,7 @@ namespace vplot
       n = std::sprintf(buffer,axis_style.label_format.c_str(),value);
       // This returns -1 if it fails, i.e. label_format was bad.
     }
-    const char * c;
+    const char * c = NULL;
     if(n<0) // No label_format, or it failed
     {
       double pval = (value<0?-value:value);

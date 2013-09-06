@@ -65,13 +65,14 @@ namespace gpstk
       TimeNamedFileStream() 
          : omode(std::ios::in), debugLevel(0)
       {};
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       TimeNamedFileStream(
          const std::string fs,
          std::ios::openmode mode = std::ios::in)
          : filespec(fs), omode(mode), debugLevel(0)
       {};
-      
+#pragma clang diagnostic pop
       virtual ~TimeNamedFileStream(void) {};
 
 

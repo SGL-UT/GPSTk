@@ -52,7 +52,10 @@ public:
    // A subclass to help keep track of the subframes found
    struct Subframe
    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       Subframe() : words(10), complete(false) {}
+
       double t;
       size_t ni;
       gpstk::CodeIndex ci;
@@ -69,7 +72,7 @@ public:
       const char* checkWords() const;
    };
    std::list<Subframe> subframes;
-
+#pragma clang diagnostic pop
 private:
    // This buffer holds 5 300 bit subframes of nav data
    std::bitset<5 * 300> navBuffer;
@@ -85,7 +88,8 @@ private:
 
    std::list<Subframe> candidates;
    
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
    // This is used to indicate that we have found a TLM and HOW
    // that have passed parity
    bool inSync;
@@ -95,7 +99,7 @@ private:
    gpstk::CodeIndex tlmIndex;
    uint32_t how;
 };
-
+#pragma clang diagnostic pop
 std::ostream& operator<<(std::ostream& s, const NavFramer::Subframe& sf);
 
 #endif

@@ -43,9 +43,10 @@ class CodeDump : public BasicFramework
 {
 public:
    CodeDump() throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 private:
    virtual void process();
 

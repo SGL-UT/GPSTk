@@ -66,7 +66,8 @@ public:
         output("tmp%03j_%04Y.raw", std::ios::app|std::ios::out)
    {}
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       CommandOptionWithAnyArg inputOpt(
@@ -164,7 +165,7 @@ public:
 
       return true;
    }
-   
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp()
    {}

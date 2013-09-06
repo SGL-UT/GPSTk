@@ -207,6 +207,7 @@ namespace gpstk
          unsigned short halfroll = rollover()/2;
          long jd1,jd2;
          int iyear,imon,iday,ep1,ep2;
+#pragma unused(iyear,imon,iday)
          jd1 = convertCalendarToJD(y,1,1);
          ep1 = (jd1 - MJD_JDAY - MJDEpoch())/7/rollover();
          jd2 = convertCalendarToJD(y,12,31);

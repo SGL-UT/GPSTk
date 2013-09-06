@@ -167,7 +167,8 @@ void PhaseCleaner::selectMasters(
       {
          const CommonTime& t = i->first;
          Obs& obs = i->second;
-
+#pragma unused(obs)
+          
          SvElevationMap::iterator j = pem.find(t);
          if (j == pem.end())
          {
@@ -378,7 +379,8 @@ void PhaseCleaner::getSlips(
       {
          const SatID& prn = j->first;
          const ArcList& al = j->second;
-
+#pragma unused(prn)
+          
          ArcList::const_iterator k;
          for (k = al.begin(); k != al.end(); k++)
          {
@@ -699,12 +701,15 @@ void PhaseCleanerA::debias(SvElevationMap& pem)
    for (PraSvPrOt::iterator i = pot.begin(); i != pot.end(); i++)
    {
       const ObsID& rot = i->first;
+#pragma unused(rot)
+       
       PraSvPair& praSv = i->second;
       for (PraSvPair::iterator j = praSv.begin(); j != praSv.end(); j++)
       {
          const SatIdPair& svPair = j->first;
          ArcList& pral = j->second;
-
+#pragma unused(svPair)
+          
          pral.splitOnGaps(maxGapTime);
          pral.computeTD();
          pral.splitOnTD(noiseThreshold);
@@ -836,6 +841,8 @@ void PhaseCleanerA::getSlips(
       for (PraSvPair::const_iterator j = pp.begin(); j != pp.end(); j++)
       {
          const SatIdPair& svPair = j->first;
+#pragma unused(svPair)
+          
          const ArcList& al = j->second;
 
          ArcList::const_iterator k;

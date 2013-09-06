@@ -80,6 +80,7 @@ MDPSubframeProcessor::~MDPSubframeProcessor()
       for (peh_itr = peHist.begin(); peh_itr != peHist.end(); peh_itr++)
       {
          const RangeCarrierPair& rcp=peh_itr->first;
+#pragma unused(rcp)
          Histogram h=peh_itr->second;
          out << right << setw(9) << h.bins[br];
       }

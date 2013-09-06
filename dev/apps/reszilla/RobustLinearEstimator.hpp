@@ -55,7 +55,8 @@ typedef std::vector< DoubleDouble > DoubleDoubleVec;
 class RobustLinearEstimator
 {
 public:
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    RobustLinearEstimator()
       :a(0), b(0), abdev(0), stripPercent(0.995),
       sumX(0), sumY(0), sumXX(0), sumXY(0),
@@ -63,7 +64,7 @@ public:
        baseX(0),
        valid(false)
    {};
-
+#pragma clang diagnostic pop
    void process(const DoubleDoubleVec& d);
    void process(DoubleDoubleVec::const_iterator b,
                 DoubleDoubleVec::const_iterator e);

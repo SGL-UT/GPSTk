@@ -57,11 +57,13 @@ namespace gpstk
    class EpochClockModel : public ObsClockModel
    {
    public:
-      EpochClockModel(double sigma = 2, 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+      EpochClockModel(double sigma = 2,
                       double elmask = 0, 
                       SvMode mode = ALWAYS)
          : ObsClockModel(sigma, elmask, mode), valid(false), clkc(0){}
-
+#pragma clang diagnostic pop
       virtual double getOffset(const gpstk::CommonTime& t) const
          throw(gpstk::InvalidArgumentException) 
       {

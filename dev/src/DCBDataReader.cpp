@@ -72,7 +72,8 @@ namespace gpstk
             
             double dcbVal = StringUtils::asDouble(line.substr(26,9));      
             double dcbRMS = StringUtils::asDouble(line.substr(38,9));
-
+#pragma unused(dcbRMS)
+             
             if(station.length() < 4)       // this is satellite DCB data
             {
 

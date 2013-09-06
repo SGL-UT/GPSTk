@@ -73,7 +73,8 @@ public:
       timeOptions.addOption(&timeOption);
       timeOptions.addOption(&eTimeOption);
    }
-   
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char* argv[]) throw()
    {
       if (!gpstk::BasicFramework::initialize(argc, argv))
@@ -91,7 +92,7 @@ public:
       }
       return true;
    }
-   
+#pragma clang diagnostic pop
 protected:
    virtual void process()
    {
@@ -110,7 +111,6 @@ protected:
        
 	    FileStream f((*itr).c_str());
             f.exceptions(std::ios::failbit);
-            int n = 0;
             FileData temp;
             while (f >> temp)
             {

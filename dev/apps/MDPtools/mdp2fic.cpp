@@ -66,6 +66,8 @@ using namespace gpstk;
 class MDP2FIC : public gpstk::LoopedFramework
 {
 public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    MDP2FIC(const std::string& applName)
       throw()
       : LoopedFramework(applName, "Converts an MDP stream to FIC."),
@@ -76,7 +78,9 @@ public:
       navFileOpt.setMaxCount(1);
       mdpFileOpt.setMaxCount(1);
    }
-
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       if (!LoopedFramework::initialize(argc,argv)) return false;
@@ -121,7 +125,7 @@ public:
       
       return true;
    }
-   
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp()
    {
@@ -165,7 +169,7 @@ protected:
       long sow = static_cast<GPSWeekSecond>(nav.getHOWTime()).sow;
       if ( sow >604800)
          return;
-
+#pragma unused(week)
       NavIndex ni(RangeCarrierPair(nav.range, nav.carrier), nav.prn);
       
       AlmMap::iterator a;

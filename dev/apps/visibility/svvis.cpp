@@ -94,9 +94,10 @@ public:
       "Compute when satellites are visible at a given point on the earth"),
      timeFormat("%4Y %03j %02H:%02M:%02S")
    {};
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp() {};
 

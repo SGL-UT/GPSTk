@@ -60,7 +60,8 @@ namespace gpstk
    long OrbElemICE::TWO_HOURS = 7200;
    long OrbElemICE::NINTY_MINUTES = 5400;
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    OrbElemICE::OrbElemICE()
       :OrbElem(),
        URAed(0), URAned0(0), URAned1(0),
@@ -71,7 +72,7 @@ namespace gpstk
      ctTop.setTimeSystem(TimeSystem::GPS);
      transmitTime.setTimeSystem(TimeSystem::GPS);
    }
-
+#pragma clang diagnostic pop
       // See IS-GPS-200 30.3.3.1.1.4
       //     IS-GPS-705 20.3.3.1.1.4
       //     IS-GPS-800 3.5.3.5

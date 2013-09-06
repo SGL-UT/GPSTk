@@ -63,8 +63,10 @@ namespace gpstk
    class AshtechData : public FFData, public CRCDataStatus
    {
    public:
-      AshtechData() throw() : checksum(0), ascii(false){}
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+       AshtechData() throw() : checksum(0), ascii(false){}
+#pragma clang diagnostic pop
       // Returns whether or not this AshtechData is valid.
       bool isValid() const {return good();}
 

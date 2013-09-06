@@ -94,13 +94,14 @@ namespace gpstk
    {
       set(tt);
    }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    Epoch::Epoch(const CommonTime& ct)
       throw()
          : tolerance(EPOCH_TOLERANCE),
            core(ct)
    {}
-
+#pragma clang diagnostic pop
       /** 
        * TimeTag + Year Constructor.
        * Set the current time using the given year as a hint.

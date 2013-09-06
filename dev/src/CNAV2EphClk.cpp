@@ -200,7 +200,8 @@ namespace gpstk
       else if (timeDiff > HALFWEEK) epochWeek--;
 
       double accuracy1 = gpstk::ura2CNAVaccuracy(URAoe);
-     
+#pragma unused(sflag,accuracy1)
+       
      // deleted because algorithms in -705 and -800 have changed
      // double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, GPSWeekSecond(epochWeek, TOWCount, TimeSystem::GPS), GPSWeekSecond(epochWeek, Top, TimeSystem::GPS));
 
@@ -448,7 +449,9 @@ namespace gpstk
       os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
          << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
-
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
 
    static void shortcut(ostream & os, const long HOW )
    {
@@ -483,7 +486,8 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
-
+#pragma clang diagnostic pop
+    
    void CNAV2EphClk :: dump(ostream& s) const
       throw()
    { 

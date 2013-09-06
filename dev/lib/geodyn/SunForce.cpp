@@ -111,12 +111,12 @@ namespace gpstk
 
       CivilTime time(2000,1,1,0,0,0.0);
       double mjd = static_cast<Epoch>(time).MJD();
+#pragma unused(mjd)
 
       Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::Sun);
 
       cout << posSun << endl;
 
-      int a =0;
    }
 
 }  // End of namespace 'gpstk'

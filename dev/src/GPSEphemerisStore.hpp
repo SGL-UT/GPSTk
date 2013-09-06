@@ -100,7 +100,9 @@ namespace gpstk
 
       /// Add a GPSEphemeris object to this collection
       /// @return pointer to the new object, or NULL if it could not be added
-      virtual GPSEphemeris* addEphemeris(const GPSEphemeris& gpseph)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       virtual GPSEphemeris* addEphemeris(const GPSEphemeris& gpseph)
       {
          try {
             GPSEphemeris neweph(gpseph);
@@ -110,7 +112,7 @@ namespace gpstk
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
-
+#pragma clang diagnostic pop
       /// Find a GPSEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
       /// @param sat the satellite of interest
@@ -141,11 +143,13 @@ namespace gpstk
       /// Add all ephemerides to an existing list<GPSEphemeris> for given satellite
       /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
-      int addToList(std::list<GPSEphemeris>& gpslist,
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       int addToList(std::list<GPSEphemeris>& gpslist,
                         SatID sat=SatID(-1,SatID::systemGPS)) const;
 
    }; // end class GPSEphemerisStore
-
+#pragma clang diagnostic pop
    //@}
 
 } // namespace

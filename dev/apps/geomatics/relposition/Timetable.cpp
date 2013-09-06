@@ -76,10 +76,11 @@ public:
    int length;       // length (in data points)
    double minelev;   // minimum elevation in this segment
    double maxelev;   // maximum elevation in this segment
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    TTSegment(void) : start(-1),stop(-1),length(0),minelev(0.0),maxelev(0.0),
                      usestart(-1),usestop(-1) {}
-
+#pragma clang diagnostic pop
    double metric(void) const
    { return (double(length)/100.0 + 100.0*(minelev+maxelev)/90.0); }
 
@@ -515,7 +516,7 @@ int TimeTableAlgorithm(list<TTSegment>& TTS, list<TTSegment>& TTab) throw(Except
 {
 try {
    bool keep;
-   int i,beg,end;
+   int i,beg=0,end;
    int begcount,endcount;
    list<TTSegment>::iterator ttit,ttjt;
    typedef pair<int,int> seg;
@@ -570,7 +571,7 @@ try {
          oflog << "Found the begin time: " << *ttit << endl;
          TTab.push_back(*ttit);
          beg = ttit->stop;
-         TTS.erase(ttit);
+        TTS.erase(ttit);
          break;
       }
    }

@@ -199,6 +199,8 @@ namespace gpstk
           *  0 if OK
           *  -1 if problems arose
           */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual int Compute( const Vector<double>& prefitResiduals,
                            const Matrix<double>& designMatrix,
                            const Matrix<double>& weightMatrix )
@@ -227,7 +229,7 @@ namespace gpstk
                            const Matrix<double>& designMatrix,
                            const Vector<double>& weightVector )
          throw(InvalidSolver);
-
+#pragma clang diagnostic pop
 
          /** Returns a reference to a gnnsSatTypeValue object after
           *  solving the previously defined equation system.

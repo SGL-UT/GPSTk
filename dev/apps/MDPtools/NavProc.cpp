@@ -37,7 +37,8 @@ using namespace std;
 using namespace gpstk;
 using namespace gpstk::StringUtils;
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 MDPNavProcessor::MDPNavProcessor(MDPStream& in, std::ofstream& out)
    : MDPProcessor(in, out),
@@ -61,7 +62,7 @@ MDPNavProcessor::MDPNavProcessor(MDPStream& in, std::ofstream& out)
       bins.push_back(Histogram::BinRange(60, 99));
    }
 }
-
+#pragma clang diagnostic pop
 
 //-----------------------------------------------------------------------------
 MDPNavProcessor::~MDPNavProcessor()

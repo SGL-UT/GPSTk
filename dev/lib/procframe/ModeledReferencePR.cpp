@@ -872,7 +872,8 @@ ModeledReferencePR object." );
 
          //const EngEphemeris& eph = bce.findEphemeris(sat,Tr);
          const GPSEphemeris& eph = bce.findEphemeris(sat,Tr);
-
+#pragma unused(eph)
+          
          //return ( bce.findEphemeris(sat,Tr).getTgd() * C_MPS );
          return ( bce.findEphemeris(sat,Tr).Tgd * C_MPS );
 

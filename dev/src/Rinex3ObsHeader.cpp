@@ -1883,7 +1883,7 @@ namespace gpstk
       s << "Time of first obs "
          << printTime(firstObs,"%04Y/%02m/%02d %02H:%02M:%06.3f %P") << endl;
 
-      unsigned long allValid;
+      unsigned long allValid = 0;
       if     (version == 3.0)   allValid = allValid30;
       else if(version == 3.01)  allValid = allValid301;
       else if(version == 3.02)  allValid = allValid302;

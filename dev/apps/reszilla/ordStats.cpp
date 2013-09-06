@@ -72,7 +72,8 @@ private:
 
 };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
@@ -90,7 +91,7 @@ OrdStats::OrdStats() throw()
                  " default is to not use such data."),
      statsOnlyOption('\0',"stats-only","Only output stats to stdout.")
 {}
-
+#pragma clang diagnostic pop
 
 
 double median(vector<double>& v)
@@ -286,6 +287,7 @@ void OrdStats::process()
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
          const CommonTime& t = iter->first;
+#pragma unused(t)
          ORDEpoch::ORDMap::const_iterator pi;
          for (pi = iter->second.ords.begin(); 
               pi != iter->second.ords.end(); pi++)
@@ -304,6 +306,7 @@ void OrdStats::process()
       for (iter = oem.begin(); iter != oem.end(); iter++)
       {
          const CommonTime& t = iter->first;
+#pragma unused(t)
          ORDEpoch::ORDMap::const_iterator pi;
          for (pi = iter->second.ords.begin(); 
              pi != iter->second.ords.end(); pi++)
@@ -331,6 +334,7 @@ void OrdStats::process()
       }
       char b1[200];
       char zero = good.Average() < good.StdDev()/sqrt((float)good.N())?'0':' ';
+#pragma unused(zero)
       double max = std::max(std::abs(good.Maximum()),
                    std::abs(good.Minimum()));
       sprintf(b1, ">r %2d-%2d  %8.5f  %8.3f    %8.5f  %8.3f  %7d  %6d  %6.2f  %6.2f",

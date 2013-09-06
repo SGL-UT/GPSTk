@@ -100,7 +100,8 @@ namespace gpstk
          : FFTextStream(fn.c_str(), std::ios::in)
       { loadData(); };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
          /// Method to open AND load DCB data file.
       virtual void open(const char* fn);
 
@@ -108,7 +109,7 @@ namespace gpstk
          /// Method to open AND load DCB data file. It doesn't
          /// clear data previously loaded.
       virtual void open(const std::string& fn);
-
+#pragma clang diagnostic pop
 
          /// Get DCB data of a satellite
          /// @param    sat   the satellite you desired

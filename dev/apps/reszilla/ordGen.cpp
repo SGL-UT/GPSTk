@@ -122,7 +122,8 @@ private:
 
    CommandOptionWithAnyArg obsFileOption, ephFileOption, metFileOption;
 };
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the defaults
 //-----------------------------------------------------------------------------
@@ -139,7 +140,7 @@ OrdGen::OrdGen() throw()
                     "format only).")
 {}
 
-
+#pragma clang diagnostic pop
 //-----------------------------------------------------------------------------
 // Here the command line options are set up, parsed, and used to configure
 // the program.

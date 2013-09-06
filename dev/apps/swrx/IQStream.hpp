@@ -40,6 +40,8 @@ namespace gpstk
    class IQStream : public FFBinaryStream
    {
    public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       IQStream()
          : debugLevel(0),
            frameCounter(0),
@@ -59,7 +61,7 @@ namespace gpstk
            bands(1),
            frameBuffer(NULL)
       { init(); }
-
+#pragma clang diagnostic pop
 
       /// destructor per the coding standards
       virtual ~IQStream()

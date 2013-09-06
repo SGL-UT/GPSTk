@@ -136,7 +136,8 @@ namespace gpstk
     
       long beginFitSOW = TOWCount;
       short beginFitWk = TOWWeek;
-
+#pragma unused(sflag,beginFitSOW,beginFitWk)
+       
          // NOTE: TOWCount actually points to the beginning time of
          // the next 18 second frame.  Therefore, to obtain the
          // transmit time of the beginning of THIS message, we subtract 18 sec.

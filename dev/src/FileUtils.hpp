@@ -90,7 +90,6 @@ namespace gpstk
 #ifdef __sun
          mkdirp(path.c_str(), mode);
 #else
-         int rc = 0;
          std::string::size_type i = 0;
 
          while ((i = path.find('/',i+1)) != std::string::npos)

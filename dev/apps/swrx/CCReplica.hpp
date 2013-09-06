@@ -38,7 +38,8 @@
 class CCReplica
 {
 public:
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    // Note that this object is responsible for destroying the codeGenPtr
    // object
    CCReplica(double tickSize, double codeFreq, double carrierFreq, gpstk::CodeGenerator* code)
@@ -53,7 +54,7 @@ public:
         cyclesPerTick(tickSize * carrierFreq),
         codeGenPtr(code)
    {};
-
+#pragma clang diagnostic pop
    ~CCReplica()
    { if (codeGenPtr) delete codeGenPtr;}
 

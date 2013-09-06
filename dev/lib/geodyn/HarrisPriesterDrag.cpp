@@ -779,6 +779,7 @@ namespace gpstk
       double az = accl(2);
 
       int a = 0;
+#pragma unused(ay,ax,az,den,a)
    }
    
    void HarrisPriesterDrag::updateF107(double f107)
@@ -821,6 +822,7 @@ namespace gpstk
       Vector<double> r_tod = N * r;
 
       double rmag = norm(r_tod);
+#pragma unused(rmag)
       
       //* Satellite true altitude
       Position pos(r_tod(0), r_tod(1), r_tod(2), Position::Cartesian);

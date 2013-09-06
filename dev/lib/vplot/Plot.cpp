@@ -86,6 +86,7 @@ namespace vplot
     double bottom = innerFrame.actualY() - frame->actualY();
     double top = frame->getHeight() - bottom - innerFrame.getHeight();
     double right = frame->getWidth() - left - innerFrame.getWidth();
+#pragma unused(top,right)
 
     // Draw axis
     Axis x(0,0,innerFrame.getWidth(),Axis::EAST,minx,minx+width);

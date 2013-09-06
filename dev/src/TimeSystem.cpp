@@ -163,7 +163,8 @@ namespace gpstk
 
       // last year in leaps
       static const int MAXYEAR = leaps[NLEAPS-1].year;
-
+#pragma unused(MAXYEAR)
+       
       // END static data -----------------------------------------------------
 
       // search for the input year, month

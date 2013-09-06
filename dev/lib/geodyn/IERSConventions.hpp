@@ -158,10 +158,11 @@ namespace gpstk
    /// Precession matrix by IAU 1976 model
    Matrix<double> iauPmat76(const CommonTime& TT);
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
    static double iauNut80Args(const CommonTime& TT,double& eps, double& dpsi,double& deps)
       throw(Exception);
-
+#pragma clang diagnostic pop
 
    // IAU1976/1980 model (IERS conventions 1996)
    void J2kToECEFMatrix(const CommonTime& UTC, 

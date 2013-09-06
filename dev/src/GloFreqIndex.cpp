@@ -279,7 +279,7 @@ namespace gpstk
       double sx2 = line2.StdDevX();
       double sy1 = line1.StdDevY();
       double sy2 = line2.StdDevY();
-
+#pragma unused(a1,a2,sx1,sx2,sy1,sy2)
       // Compute float values of index from slopes.
 
       if (1.0-m1 == 0.0) // don't divide by zero (G1)

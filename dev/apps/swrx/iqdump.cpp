@@ -41,9 +41,10 @@ class IQDump : public BasicFramework
 {
 public:
    IQDump() throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void process();
 

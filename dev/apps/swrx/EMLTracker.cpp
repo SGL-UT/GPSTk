@@ -31,6 +31,8 @@ using namespace std;
 /// param codeSpacing the correlator spacing (in sec) that will be used for 
 /// the code. This class will quantize this value to the closest number
 /// of ticks.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
    GenericTracker(localReplica),
    ticksPerChip(static_cast<unsigned>(1.0/localReplica.chipsPerTick)),
@@ -58,7 +60,7 @@ EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
       localReplica.codeGenPtr->getSyncIndex() / localReplica.chipsPerTick);
    iadCountDefault = iadCountMax;
 };
-
+#pragma clang diagnostic pop
 
 bool EMLTracker::process(complex<double> in)
 {

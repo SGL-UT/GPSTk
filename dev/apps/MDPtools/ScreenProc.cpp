@@ -425,6 +425,7 @@ void MDPScreenProcessor::drawChan(int chan)
    const gpstk::RangeCode rc = ni.first.first;
    const gpstk::CarrierCode cc = ni.first.second;
 
+#pragma unused(rc,cc)
    string iodc=rightJustify(int2x(eph.getIODC()), 4);
    writeAt(win, row, iodcCol, iodc);
 }

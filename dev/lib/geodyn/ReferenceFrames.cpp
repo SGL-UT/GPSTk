@@ -607,6 +607,7 @@ namespace gpstk
    double ReferenceFrames::earthRotationAngleRate3(const double& mjdTT)
    {
       double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
+#pragma unused(T)
       double dera = ( -5.9e-15 ) * D2PI / 86400.0;
 
       return dera;
@@ -732,6 +733,7 @@ namespace gpstk
          cout<<setprecision(12)<<ecefPosVel(i)<<endl;
 
       int a =0;
+#pragma unused(a)
 
       /*
       std::string fileHeader = "de405/header.405";
@@ -1210,8 +1212,9 @@ namespace gpstk
       const double R_equ = ASConstant::R_Earth; //Equator radius [m]
       const double e2 = f*(2.0-f);          // Square of eccentricity
       const double e = std::sqrt(e2);
+#pragma unused(e)
 
-      const double  eps     = 1.0e3*std::numeric_limits<double>::epsilon();;   // Convergence criterion 
+      const double  eps     = 1.0e3*std::numeric_limits<double>::epsilon();;   // Convergence criterion
       const double  epsRequ = eps*R_equ;
 
 

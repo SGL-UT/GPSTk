@@ -99,7 +99,8 @@ namespace gpstk
       double y = static_cast<double>( yy ),
          m = static_cast<double>( mm ),
          d = static_cast<double>( dd );
-
+#pragma unused(d)
+       
          // In the conversion from the Julian Calendar to the Gregorian
          // Calendar the day after October 4, 1582 was October 15, 1582.
          //

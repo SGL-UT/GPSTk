@@ -53,7 +53,9 @@ using namespace std;
 
 namespace gpstk
 {
-   //---------------------------------------------------------------------------
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    //---------------------------------------------------------------------------
    MDPSelftestStatus::MDPSelftestStatus()
       throw() :
       selfTestTime(gpstk::CommonTime::BEGINNING_OF_TIME),
@@ -66,7 +68,8 @@ namespace gpstk
 
 
    //---------------------------------------------------------------------------
-   string MDPSelftestStatus::encode() const
+#pragma clang diagnostic pop
+    string MDPSelftestStatus::encode() const
       throw()
    {
       string str;

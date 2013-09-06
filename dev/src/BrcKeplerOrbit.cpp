@@ -753,7 +753,8 @@ namespace gpstk
       os << "   " << (static_cast<YDSTime>(t)).printf("%3j   %5.0s  ") 
          << (static_cast<CivilTime>(t)).printf("%02m/%02d/%04Y   %02H:%02M:%02S");
    }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
    static void shortcut(ostream & os, const long HOW )
    {
       short DOW, hour, min, sec;
@@ -787,12 +788,12 @@ namespace gpstk
          << ":" << setw(2) << sec
          << setfill(' ');
    }
-
+#pragma clang diagnostic pop
    void BrcKeplerOrbit::dump(ostream& s) const
       throw()
    {
       ios::fmtflags oldFlags = s.flags();
-   
+#pragma unused(oldFlags)
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);

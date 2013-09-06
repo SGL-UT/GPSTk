@@ -140,7 +140,9 @@ namespace gpstk
    bool CNavDataElementStore::addDataElement(const CNavDataElement& cnde)
    {
       bool rc = false;
-      SatID sid = cnde.satID; 
+#pragma unused(rc)
+       
+       SatID sid = cnde.satID;
       DataElementMap& dem = deMap[sid];
 
          // If the map is empty, load object and return

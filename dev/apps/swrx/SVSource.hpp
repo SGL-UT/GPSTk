@@ -46,7 +46,8 @@
 class SVSource
 {
 public:
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    SVSource (int SVPRNID, int bandArg) :
       zchips_per_sample(1),
       doppler(0),
@@ -72,7 +73,7 @@ public:
          case 2: carrier_multiplier = gpstk::L2_MULT_GPS; break;
       }
    }
-
+#pragma clang diagnostic pop
 
    std::complex<double> getSample() const
    {

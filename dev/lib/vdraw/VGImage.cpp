@@ -74,7 +74,7 @@ namespace vdraw
     double bh=bitmap.y2-bitmap.y1;
 
     Bitmap::CMType which;
-    int w, h;
+    int w = 0, h = 0;
     InterpolatedColorMap icm;
     ColorMap cm;
 

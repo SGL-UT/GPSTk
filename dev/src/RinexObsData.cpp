@@ -224,7 +224,8 @@ namespace gpstk
 
                // Check if it is a number; if not, an exception will be thrown
             short tempNumSat = asInt(line.substr(29,3));
-
+#pragma unused(tempNumSat)
+             
          }
          catch(...)
          {

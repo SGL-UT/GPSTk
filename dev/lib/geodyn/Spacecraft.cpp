@@ -271,6 +271,7 @@ namespace gpstk
           |                  |
       */
       const int np=p.size();
+#pragma unused(np)
 
       Matrix<double> phiMatrix(6,6,0.0);
 

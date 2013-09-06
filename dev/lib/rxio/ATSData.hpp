@@ -87,8 +87,10 @@ namespace gpstk
       /** Dump some debugging information to the given ostream.
        * @param out the ostream to write to
        */
-      void dump(std::ostream& out, int detail=0) const throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       void dump(std::ostream& out, int detail=0) const throw();
+#pragma clang diagnostic pop
       struct SubChannelBlock 
       {
          double pseudorange;

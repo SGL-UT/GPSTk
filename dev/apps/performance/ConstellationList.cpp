@@ -81,8 +81,10 @@ public:
    ConstellationList(const std::string& applName,
               const std::string& applDesc) throw();
    ~ConstellationList() {}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void process();
    gpstk::CommandOptionWithAnyArg inputOption;
@@ -120,7 +122,8 @@ int main( int argc, char*argv[] )
    }
    return 0;
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 ConstellationList::ConstellationList(const std::string& applName,
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
@@ -137,6 +140,7 @@ ConstellationList::ConstellationList(const std::string& applName,
    yearOption.setMaxCount(1);
    DOYOption.setMaxCount(1);
 }
+#pragma clang diagnostic pop
 
 bool ConstellationList::initialize(int argc, char *argv[])
    throw()

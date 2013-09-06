@@ -111,12 +111,13 @@ const char* NavFramer::Subframe::checkWords() const
    return good.c_str();
 }
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 NavFramer::NavFramer()
    : prevNavCount(0), navIndex(0), howCurrent(false),inSync(false),
      codeIndex(5*300), eightBaker(0x8b), bitLength(20e-3)
 {}
-
+#pragma clang diagnostic pop
 
 long int NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
 {

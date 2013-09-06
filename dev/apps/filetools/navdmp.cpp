@@ -70,8 +70,10 @@ class NavDump : public BasicFramework
 {
 public:
    NavDump(char* arg0);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char* argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void process();
       // additional setup will get filtering options from the user
@@ -110,7 +112,8 @@ private:
    bool isRinexInput;
    bool isTerse;
 };
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 NavDump::NavDump(char* arg0)
       : BasicFramework(arg0, "Prints the contents of an FIC or RINEX file into a human readable file and allows filtering of the data."),
         inputFileOption('i',
@@ -144,7 +147,7 @@ NavDump::NavDump(char* arg0)
    isRinexInput = false;
    isTerse = false;
 }
-
+#pragma clang diagnostic pop
 void NavDump::printCurrentFilter()
 {
    cout << "Current filtering options:" << endl

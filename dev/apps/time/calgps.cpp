@@ -98,7 +98,8 @@ void plotMonth(short month, short year,
    CivilTime thatDay(lastDOM);
    GPSWeekSecond gws2(thatDay);
    int gpsweek2 = gws2.week;
-
+#pragma unused(gpsweek1,gpsweek2)
+    
    TextStyle ts(ft.getHeight()*.5, (int) TextStyle::BOLD, Color::BLACK, 
                 TextStyle::SANSSERIF);
    if (printYear)
@@ -408,8 +409,11 @@ int main(int argc, char* argv[])
       if (vgs != 0)
       {
 	delete vgs;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdelete-non-virtual-dtor"
 	delete frame;
 	delete layout;
+#pragma clang diagnostic pop
       }
       
    }

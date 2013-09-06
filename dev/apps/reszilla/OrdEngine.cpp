@@ -44,7 +44,8 @@ using namespace std;
 using namespace gpstk;
 using namespace gpstk::StringUtils;
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 // ---------------------------------------------------------------------
 OrdEngine::OrdEngine(
    const XvtStore<SatID>& e,
@@ -74,7 +75,7 @@ OrdEngine::OrdEngine(
    tm.setReceiverHeight(geo.getAltitude()); 
    tm.setReceiverLatitude(geo.getGeodeticLatitude());		//Geodetic or Geocentric?
 }
-
+#pragma clang diagnostic pop
 inline double getAlpha(const ObsID& a, const ObsID& b) throw()
 {
    SatID system;

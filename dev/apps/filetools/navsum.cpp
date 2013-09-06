@@ -60,8 +60,10 @@ class NavSum : public BasicFramework
 {
 public:
    NavSum(char* arg0);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char* argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void process();
       // additional setup will get filtering options from the user
@@ -115,7 +117,8 @@ const int NavSum::BLK109 = 1;
 const int NavSum::BLK62 = 2;
 const int NavSum::BLK162 = 3;
 const string NavSum::blockStr[]   = {"  9", "109", " 62", "162"};
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 NavSum::NavSum(char* arg0)
       : BasicFramework(arg0, "Lists the block contents of a FIC file and prints"
                         " summary count information."),
@@ -158,7 +161,7 @@ NavSum::NavSum(char* arg0)
       totalsBySVID[cnt][BLK162] = 0;
    }
 }
-
+#pragma clang diagnostic pop
 void NavSum::printCurrentFilter()
 {
    cout << "Current filtering options:" << endl

@@ -516,7 +516,8 @@ namespace gpstk
       {
          double xdif1( grdfac[i] - static_cast<int>(grdfac[i]) );
          double xdif( ABS(grdfac[i] - static_cast<int>(grdfac[i])) );
-
+#pragma unused(xdif1)
+          
          if (xdif > 1e-4)
          {
             FFStreamError e("Irregular Ionex data grid.");

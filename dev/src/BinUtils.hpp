@@ -388,7 +388,9 @@ namespace gpstk
          return xc;
       }
          //@}
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-function"
+       
          /**
           * Count the set bits in an 32-bit unsigned integer.
           * Originated due to need in EngNav::checkParity
@@ -413,7 +415,7 @@ namespace gpstk
 
          return c;
       }
-
+#pragma clang diagnostic pop
    } // end namespace BinUtils
 } // end namespace gpstk
 

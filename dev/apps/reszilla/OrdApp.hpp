@@ -53,9 +53,10 @@ public:
    OrdApp(
       const std::string& applName, 
       const std::string& appDesc) throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
    void write(std::ofstream& ofs, const gpstk::ORDEpoch& ordEpoch) throw();
    gpstk::ORDEpoch read(std::ifstream& ifs) throw();
    

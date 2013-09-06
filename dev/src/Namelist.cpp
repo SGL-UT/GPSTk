@@ -378,6 +378,7 @@ ostream& operator<<(ostream& os, const LabelledVector& nlp)
 try {
    size_t i;
    int nlp_size;
+#pragma unused(nlp_size)
    string s;
    //ofstream savefmt; 
    //savefmt.copyfmt(os);

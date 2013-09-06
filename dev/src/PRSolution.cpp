@@ -266,7 +266,8 @@ namespace gpstk
          // prepare for iteration loop
          // iterate at least twice so that trop model gets evaluated
          int n_iterate(0), niter_limit(niterLimit < 2 ? 2 : niterLimit);
-         double converge(0.0);
+#pragma unused(niter_limit)
+          double converge(0.0);
 
          // start with solution = apriori
          Vector<double> APSolution;

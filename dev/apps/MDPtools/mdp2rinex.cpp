@@ -65,9 +65,10 @@ public:
          applName, "Converts an MDP stream to RINEX."),
         anyNav(false)
    {}
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-   
+#pragma clang diagnostic pop
 protected:
 
    virtual void process();
@@ -279,6 +280,7 @@ void MDP2Rinex::process(MDPNavSubframe& nav)
    short sfid = nav.getSFID();
 
    short week = static_cast<GPSWeekSecond>(nav.time).week;
+#pragma unused(week)
    long sow = nav.getHOWTime();
    if (sow > FULLWEEK)
    {

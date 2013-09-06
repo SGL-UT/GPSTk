@@ -49,6 +49,8 @@ using namespace gpstk;
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 OrdApp::OrdApp(
    const string& applName,
    const string& appDesc)
@@ -58,7 +60,7 @@ OrdApp::OrdApp(
      headerWritten(false),
      outputClockInNs(false)
 {}
-
+#pragma clang diagnostic pop
 
 //-----------------------------------------------------------------------------
 // Here the command line options parsed and used to configure the program

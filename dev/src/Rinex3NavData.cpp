@@ -526,6 +526,7 @@ namespace gpstk
       ee.IODE    = short(IODE);      
       ee.fitint  = (fitint > 4) ? 1 : 0;
       double toe = Toe; //?????
+#pragma unused(toe)
       
       //Needed for modernized nav quatities
       double A = Ahalf * Ahalf;
@@ -636,7 +637,8 @@ namespace gpstk
       // get the epochs right
       CommonTime ct = time;
       unsigned int year = static_cast<CivilTime>(ct).year;
-
+#pragma unused(year)
+       
       // Get week for clock, to build Toc
       double dt = Toc - HOWtime;
       int week = weeknum;
@@ -708,7 +710,8 @@ namespace gpstk
       // get the epochs right
       CommonTime ct = time;
       unsigned int year = static_cast<CivilTime>(ct).year;
-
+#pragma unused(year)
+       
       // Get week for clock, to build Toc
       double dt = Toc - HOWtime;
       int week = weeknum;

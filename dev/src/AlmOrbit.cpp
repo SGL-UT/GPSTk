@@ -70,9 +70,9 @@ namespace gpstk
                         double aw, double aM0, double aAF0, double aAF1,
                         long aToa, long axmit_time, short aweek,
                         short aSV_health)
-         : ecc(aEcc), i_offset(ai_offset), OMEGAdot(aOMEGAdot), Ahalf(aAhalf),
+         : PRN(prn), ecc(aEcc), i_offset(ai_offset), OMEGAdot(aOMEGAdot), Ahalf(aAhalf),
            OMEGA0(aOMEGA0), w(aw), M0(aM0), AF0(aAF0), AF1(aAF1), Toa(aToa),
-           xmit_time(axmit_time), week(aweek), SV_health(aSV_health), PRN(prn)
+           xmit_time(axmit_time), week(aweek), SV_health(aSV_health) 
    {
    }
 

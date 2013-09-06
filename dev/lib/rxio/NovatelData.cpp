@@ -799,6 +799,7 @@ namespace gpstk
             int Frequency    = int((TrackStatus & 0x00100000L) >> 20); // 0:L1 1:L2
             // CodeType is 0: CA 1: P 2: Pcodeless
             int CodeType   = int((TrackStatus & 0x00600000L) >> 21);
+#pragma unused(TrackState,Channel,ParityKnown)
 
             if(!PhaseLock || !CodeLock) continue;
 
@@ -935,6 +936,7 @@ namespace gpstk
                // CodeType is 0CA 1P 2Pcodeless
                int CodeType   = int((TrackStatus & 0x03800000L) >> 23);
                bool HalfCycle = bool(TrackStatus & 0x10000000L);
+#pragma unused(TrackState,Channel,HalfCycle)
 
                if(!PhaseLock || !CodeLock) continue;        // data is not reliable
 
@@ -1066,6 +1068,7 @@ namespace gpstk
                // CodeType is 0CA 1P 2Pcodeless
                int CodeType   = int((TrackStatus & 0x03800000L) >> 23);
                bool HalfCycle = bool(TrackStatus & 0x10000000L);
+#pragma unused(TrackState,Channel,HalfCycle)
 
                if(!PhaseLock || !CodeLock) continue;        // data is not reliable
 

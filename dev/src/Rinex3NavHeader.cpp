@@ -322,7 +322,7 @@ namespace gpstk
    
       strm.header = (*this);
    
-      int i,j;
+      int j;
       unsigned long allValid;
       if(version >= 3.0)
          allValid = allValid3;
@@ -514,7 +514,6 @@ namespace gpstk
    //--------------------------------------------------------------------------
    void Rinex3NavHeader::dump(ostream& s) const
    {
-      int i;
    
       s << "---------------------------------- REQUIRED "
          << "----------------------------------\n";

@@ -54,7 +54,9 @@ using namespace gpstk;
 class MDPTool : public gpstk::BasicFramework
 {
 public:
-   MDPTool(const std::string& applName)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    MDPTool(const std::string& applName)
       throw()
       : timeFormat("%4Y %3j %02H:%02M:%04.1f"),
         BasicFramework(
@@ -115,7 +117,9 @@ public:
       tstOpt.setMaxCount(1);
       styleOpt.setMaxCount(1);
    }
-
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       CommandOptionWithAnyArg timeFormatOpt(
@@ -274,7 +278,7 @@ public:
 
       return true;
    }
-   
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp()
    {

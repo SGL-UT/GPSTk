@@ -105,9 +105,10 @@ public:
         tolerance(10000)
       
    {};
-   
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-      
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp();
 
@@ -378,7 +379,8 @@ void FICFixer::scanFIC(const string& fn)
        
             // tracking number is unimportant in this app, just pick 1
             short track = 1;
-            engEphTemp.addSubframe(&(ficDataTemp.i[2]),  gpsWkTemp, 
+#pragma unused(track)
+            engEphTemp.addSubframe(&(ficDataTemp.i[2]),  gpsWkTemp,
                                    prnTemp, trackTemp);
             engEphTemp.addSubframe(&(ficDataTemp.i[12]), gpsWkTemp, 
                                    prnTemp, trackTemp);

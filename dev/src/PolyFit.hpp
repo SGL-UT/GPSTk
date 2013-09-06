@@ -80,8 +80,10 @@ namespace gpstk
    {
    public:
          /// Empty constructor
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       PolyFit() : n_(0), Inverted(false), Singular(true), Npts(0) {}
-
+#pragma clang diagnostic pop
          /// Constructor given an initial size.
       PolyFit(unsigned int n) : n_(n), Inverted(false), Singular(true), Npts(0)
       {

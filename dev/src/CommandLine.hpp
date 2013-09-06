@@ -112,9 +112,11 @@ private:
 public:
    // -------------- member functions -------------------------------------
    // constructor
-   CommandLine(void)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    CommandLine(void)
       : help(false),debug(-1),verbose(false),syntaxPageBuilt(0) { }
-
+#pragma clang diagnostic pop
    // destructor
    ~CommandLine(void) { }
 

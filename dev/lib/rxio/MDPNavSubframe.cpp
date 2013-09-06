@@ -235,6 +235,7 @@ namespace gpstk
             curr = ~curr & 0x3fffffff;
          }
          bool D30 = getd30(prev);
+#pragma unused(D30)
          unsigned receivedParity = curr & 0x3f;
          unsigned computedParity = EngNav::computeParity(curr, prev, cooked);
          if (debugLevel>3)

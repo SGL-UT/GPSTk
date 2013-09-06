@@ -72,7 +72,8 @@ public:
       : InOutFramework<MDPStream, MDPStream>(
          applName, "Edits a MDP file based on various criteria.")
    {}
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       // set up options. note that nothing is required
@@ -212,7 +213,7 @@ public:
 
       return true;
    }
-
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp()
    {}
@@ -441,11 +442,9 @@ private:
    CommonTime tStart, tEnd;
    set<int> prnSetToToss;
    unsigned int recordStart, recordEnd;
-   unsigned long msgCount, fcErrorCount;
+   unsigned long msgCount;
    double minSNR;
-   unsigned short firstFC, lastFC;
    MDPHeader header;
-   
 };
 
 

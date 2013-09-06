@@ -93,7 +93,8 @@ namespace gpstk
             word[w] = decodeVar<uint32_t>(str);
 
          unsigned cksum = decodeVar<uint16_t>(str);
-         clear(ios_base::goodbit);
+#pragma unused(cksum)
+          clear(ios_base::goodbit);
       }
    }
 

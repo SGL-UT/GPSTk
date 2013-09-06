@@ -1588,6 +1588,7 @@ try {
       // Read the rest of the AT file
    int wn,prn,nfile,in;
    double sow,lat,lon,obq,sr,sig,d2=0;
+#pragma unused(d2)
    string stationID;
    vector<string> words;
    pair<string,int> Comp;

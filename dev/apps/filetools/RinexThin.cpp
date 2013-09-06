@@ -77,6 +77,7 @@ int main(int argc, char* argv[])
       RinexObsStream ros(fileOption.getValue()[i].c_str());
       CommonTime nextTime;
       bool firstRecord=true;
+#pragma unused(firstRecord)
 
       RinexObsData data;
       RinexObsStream out(fileOutput.getValue()[i].c_str(), ios::out|ios::trunc);

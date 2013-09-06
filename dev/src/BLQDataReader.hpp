@@ -120,7 +120,8 @@ namespace gpstk
          : FFTextStream(fn.c_str(), std::ios::in)
       { loadData(); };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
          /// Method to open AND load ocean tide harmonics data file. It doesn't
          /// clear data previously loaded.
       virtual void open(const char* fn);
@@ -130,7 +131,7 @@ namespace gpstk
          /// clear data previously loaded.
       virtual void open(const std::string& fn);
 
-
+#pragma clang diagnostic pop
          /// Method to clear all previously loaded ocean tide harmonics data.
       virtual BLQDataReader& clearData()
       { OceanTidesData.clear(); return (*this); };

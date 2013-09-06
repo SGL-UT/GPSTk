@@ -77,12 +77,13 @@ public:
       {
          outputFileOption.setMaxCount(1);
       }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char* argv[]) throw()
       {
          return gpstk::BasicFramework::initialize(argc, argv);
       }
-
+#pragma clang diagnostic pop
 protected:
    virtual void process() = 0;
 

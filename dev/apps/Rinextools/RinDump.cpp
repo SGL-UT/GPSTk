@@ -109,8 +109,10 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
-
+#pragma clang diagnostic pop
    /// parse input string
    bool ParseAndSave(const string& str, bool save=true) throw();
 
@@ -721,6 +723,7 @@ int routine(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
+#pragma unused(C)
 
    return 0;
 }
@@ -1746,6 +1749,7 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
       double data(0);
       string sys(1,sat.systemChar());              // system of this sat
       Configuration& C(Configuration::Instance());
+#pragma unused(C)
 
       if(tag.size() == 4 && tag[0] != sys[0])
          return 0;                                 // system does not match

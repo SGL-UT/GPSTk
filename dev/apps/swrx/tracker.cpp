@@ -63,13 +63,16 @@ class RxSim : public BasicFramework
 {
 public:
    RxSim() throw();
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void process();
 
 private:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunused-private-field"
    CCReplica* cc;
    EMLTracker* tr;
    int band;
@@ -83,8 +86,9 @@ private:
    IQStream *input;
    unsigned iadMax;
 };
-
-
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
@@ -92,7 +96,7 @@ RxSim::RxSim() throw() :
    fakeL2(false), gain(1), timeLimit(9e99),iadMax(20460)
 {}
 
-
+#pragma clang diagnostic pop
 bool RxSim::initialize(int argc, char *argv[]) throw()
 {
    using namespace gpstk::StringUtils;

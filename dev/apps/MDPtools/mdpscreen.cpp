@@ -49,6 +49,8 @@ using namespace gpstk;
 class MDPTool : public BasicFramework
 {
 public:
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    MDPTool(const std::string& applName)
       throw()
       : BasicFramework(applName, "A curses based near-real-time display of an "
@@ -59,7 +61,9 @@ public:
                     "is to use stdin. Use the rfw program to get input from "
                     "a device")
    {}
-
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       if (!BasicFramework::initialize(argc,argv)) 
@@ -96,6 +100,7 @@ public:
 
       return true;
    }
+#pragma clang diagnostic pop
    
 protected:
    virtual void spinUp()

@@ -62,6 +62,8 @@ namespace gpstk
           * @return
           *  Number of satellites with PC combination data available
           */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual int getData( const Rinex3ObsData& rinexData,
                            const Rinex3ObsHeader& hdr )
          throw(InvalidRequest)
@@ -74,7 +76,7 @@ namespace gpstk
 
       }; // End of method 'ExtractPC::getData()'
 
-
+#pragma clang diagnostic pop
          /// Some Rinex data files provide C1 instead of P1. Use this method
          /// in those cases.
       virtual ExtractPC& useC1()

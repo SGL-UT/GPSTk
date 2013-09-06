@@ -62,8 +62,10 @@ class DataAvailabilityAnalyzer : public gpstk::BasicFramework
 {
 public:
    DataAvailabilityAnalyzer(const std::string& applName) throw();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-   
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp();
    virtual void process();
@@ -140,9 +142,11 @@ public:
    // and when there is an obs that is missing. 
    struct InView
    {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       InView() : up(false), aboveMask(false), smashCount(0), span(0), health(0),
                  expectedCount(0), receivedCount(0) {};
-
+#pragma clang diagnostic pop
       void update(
          short prn,
          const gpstk::CommonTime& time,

@@ -72,7 +72,8 @@ private:
    CommonTime tStart, tEnd;
 };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 // The constructor basically just sets up all the command line options
 //-----------------------------------------------------------------------------
@@ -104,7 +105,7 @@ OrdEdit::OrdEdit() throw()
             " \"yyyy ddd HH:MM:SS\" ")
    
 {}
-
+#pragma clang diagnostic pop
 //-----------------------------------------------------------------------------
 bool OrdEdit::initialize(int argc, char *argv[]) throw()
 {

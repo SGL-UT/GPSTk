@@ -176,7 +176,7 @@ namespace gpstk
          // user, but it WILL enforce this relationship.
       long frameCount = sf1TransmitSOW / 30;
       long SF1HOWTime = (frameCount * 30) + 6;
-
+#pragma unused(SF1HOWTime)
          // Convert subframe 1 parameters
       subframeStore[0][0] = sf1Lead[0];
       subframeStore[0][1] = sf1Lead[1];
@@ -291,6 +291,7 @@ namespace gpstk
       CommonTime TocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
 
       short fiti = static_cast<short>(ficked[14]);
+#pragma unused(fiti)
       short fitHours = getLegacyFitInterval(IODC, fitint);
       long beginFitSOW = Toe - (fitHours/2)*3600;
       long endFitSOW = Toe + (fitHours/2)*3600;
@@ -993,7 +994,8 @@ namespace gpstk
       codeflags = cflags;
       short accFlag = acc;
       double accuracy = gpstk::ura2accuracy(accFlag);
-      health    = svhealth;
+#pragma unused(accuracy)
+       health    = svhealth;
       L2Pdata   = l2pdata;
       IODC      = iodc;
       IODE      = iode;

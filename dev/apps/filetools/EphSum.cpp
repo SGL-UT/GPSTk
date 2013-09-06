@@ -71,9 +71,11 @@ public:
    EphSum(const std::string& applName,
               const std::string& applDesc) throw();
    ~EphSum() {}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char *argv[]) throw();
    bool checkIOD( const gpstk::EngEphemeris ee, FILE* logfp );
-   
+#pragma clang diagnostic pop
 protected:
    virtual void process();
    gpstk::CommandOptionWithAnyArg inputOption;

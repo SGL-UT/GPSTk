@@ -52,7 +52,10 @@ class format {
    int wide;
    int prec;
 public:
-   explicit format(int w, int p, int f=1) : wide(w),prec(p),form(f) {}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    explicit format(int w, int p, int f=1) : wide(w),prec(p),form(f) {}
+#pragma clang diagnostic pop
    format& scientific() { form=2; return *this; }
    format& sci() { form=2; return *this; }
    format& fixed() { form=1; return *this; }

@@ -53,7 +53,8 @@
 namespace gpstk
 {
    using namespace std;
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    OrbElemCNAV::OrbElemCNAV()
       :OrbElemICE(),
        L1Health(0), L2Health(0), ITOW(0),
@@ -66,7 +67,7 @@ namespace gpstk
       ctMsg11.setTimeSystem(TimeSystem::GPS);
       ctMsgClk.setTimeSystem(TimeSystem::GPS);
    }
-
+#pragma clang diagnostic pop
    OrbElemCNAV::OrbElemCNAV( const ObsID& obsIDArg,
                              const SatID& satIDArg,
                              const PackedNavBits& message10,

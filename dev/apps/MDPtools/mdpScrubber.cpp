@@ -75,7 +75,8 @@ public:
          "applies a half cycle bias to the phase data when the nav data was inverted."),
         ca(ccL1, rcCA), y1(ccL1, rcYcode), y2(ccL2, rcYcode), fc(0), lateNav(9)
    {}
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       CommandOptionWithAnyArg 
@@ -90,7 +91,7 @@ public:
 
       return true;
    }
-
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp(){}
    virtual void process();
@@ -194,6 +195,7 @@ void MDPScrubber::processObs()
    newObs.obs.clear();
    
    MDPObsEpoch::ObsMap& obsmap = obs.obs;
+    #pragma unused(obsmap)
    MDPObsEpoch::ObsMap::iterator j;
    for (j=obs.obs.begin(); j != obs.obs.end(); j++)
    {

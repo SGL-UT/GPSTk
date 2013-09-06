@@ -67,7 +67,9 @@ using namespace gpstk;
 class Ashtech2XYZ : public gpstk::BasicFramework
 {
 public:
-   Ashtech2XYZ(const string& applName) throw()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    Ashtech2XYZ(const string& applName) throw()
       : BasicFramework(applName,"Processes Ashtech Z(Y)-12 observation and "
          "ephemeris data and outputs satellite positions and ionospheric "
          "corrections."),
@@ -92,7 +94,9 @@ public:
       weekOpt.setMaxCount(1);
       offsetOpt.setMaxCount(1);
 	}
-
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
    {
       using std::basic_ios;
@@ -200,7 +204,7 @@ public:
 		// successful exit
 		return true;
    }
-	   
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp()
    {}

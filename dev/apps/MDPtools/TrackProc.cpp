@@ -62,6 +62,7 @@ void MDPTrackProcessor::process(const gpstk::MDPObsEpoch& oe)
    }
 
    int prn=oe.prn;
+#pragma unused(prn)
    int chan=oe.channel;
 
    // make a set of the obs that this epoch has

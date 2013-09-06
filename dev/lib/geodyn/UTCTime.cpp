@@ -154,6 +154,7 @@ namespace gpstk
    {
 
       double t, tt, t1, t2, t3, t4, t5, t24, t25, t29, t30, t31 ;
+#pragma unused(t31)
 
       t = ((jdno-2451545) + fjdno)/(365250.0) ;
       tt = t*t ;
@@ -356,8 +357,6 @@ namespace gpstk
       
       cout<<setw(20)<<setprecision(8)<<utc2-utc<<endl;
       
-      int a = 0;
-
    }
 
    

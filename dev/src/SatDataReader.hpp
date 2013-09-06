@@ -106,7 +106,8 @@ namespace gpstk
           */
       SatDataReader(const std::string& fn) : FFTextStream(fn.c_str(), std::ios::in)
       { loadData(); }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
 
          /// Method to open AND load satellite data file.
       virtual void open(const char* fn);
@@ -114,7 +115,7 @@ namespace gpstk
 
          /// Method to open AND load satellite data file.
       virtual void open(const std::string& fn);
-
+#pragma clang diagnostic pop
 
          /// Method to clear all previously loaded satellite data.
       virtual SatDataReader& clearData()

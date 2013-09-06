@@ -1345,7 +1345,7 @@ namespace gpstk
       double test = 0.00043;
       double ltest = 12;
       double pl, p;
-      double zi;
+      double zi = 0.0;
       double z;
       double cl, cl2;
       double ca, cd;
@@ -2527,7 +2527,7 @@ namespace gpstk
 
     /* LPOLY */
    double Msise00Drag::dfa=0.0;
-   double Msise00Drag::plg[4][9]={0.0};
+   double Msise00Drag::plg[4][9]={{0.0}};
    double Msise00Drag::ctloc=0.0;
    double Msise00Drag::stloc=0.0;
    double Msise00Drag::c2tloc=0.0;

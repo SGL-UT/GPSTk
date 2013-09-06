@@ -256,10 +256,12 @@ namespace gpstk
       // member functions
 
       /// Constructor.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       AntexData() : validFrom(CommonTime::BEGINNING_OF_TIME),
                     validUntil(CommonTime::END_OF_TIME),
                     valid(0), PRN(0), SVN(0), nFreq(0), absolute(true) {}
-
+#pragma clang diagnostic pop
       /// Destructor
       virtual ~AntexData() {}
 
@@ -335,8 +337,10 @@ namespace gpstk
 
       /// Dump AntexData. Set detail = 0 for type, serial no., sat codes only;
       /// = 1 for all information except phase center offsets, = 2 for all data.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual void dump(std::ostream& s, int detail=0) const;
-
+#pragma clang diagnostic pop
    protected:
       /// Find zenith angles bracketing the input zenith angle within the given map,
       /// and the corresponding PCOs.

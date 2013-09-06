@@ -46,7 +46,8 @@ namespace gpstk
    class WtdAveStats {
    private:
       unsigned int N;
-      double APV;
+        //unused
+      //double APV;
       std::string msg;
       std::string lab[3];
       Stats<double> S[3];
@@ -340,7 +341,9 @@ namespace gpstk
    {
    public:
          /// Constructor
-      PRSolution() throw() : RMSLimit(6.5),
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+       PRSolution() throw() : RMSLimit(6.5),
                              SlopeLimit(1000.),
                              NSatsReject(-1),
                              MaxNIterations(10),
@@ -348,7 +351,7 @@ namespace gpstk
                              Valid(false),
                              hasMemory(true)
          {};
-
+#pragma clang diagnostic pop
       /// Return the status of solution
       bool isValid() const throw() { return Valid; }
 

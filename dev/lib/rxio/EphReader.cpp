@@ -238,6 +238,7 @@ namespace gpstk
                   return;
 
                short week = static_cast<GPSWeekSecond>(nav.time).week;
+#pragma unused(week)
                long sow = nav.getHOWTime();
                if (sow > FULLWEEK)
                {

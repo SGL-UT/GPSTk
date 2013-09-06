@@ -81,6 +81,8 @@ namespace gpstk
 
       /// Add a QZSEphemeris object to this collection
       /// @return pointer to the new object, or NULL if it could not be added
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual QZSEphemeris* addEphemeris(const QZSEphemeris& gpseph)
       {
          try {
@@ -91,7 +93,7 @@ namespace gpstk
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
-
+#pragma clang diagnostic pop
       /// Find a QZSEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
       /// @param sat the satellite of interest
@@ -122,11 +124,13 @@ namespace gpstk
       /// Add all ephemerides to an existing list<QZSEphemeris> for given satellite
       /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       int addToList(std::list<QZSEphemeris>& qzslist,
                         SatID sat=SatID(-1,SatID::systemQZSS)) const;
 
    }; // end class QZSEphemerisStore
-
+#pragma clang diagnostic pop
    //@}
 
 } // namespace

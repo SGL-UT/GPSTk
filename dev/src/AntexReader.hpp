@@ -183,7 +183,10 @@ namespace gpstk
       AntexReader(const std::string& fn)
          : FFTextStream( fn.c_str(), std::ios::in )
       { fileName = fn; loadHeader(); };
-
+       
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       
 
          /// Method to open and load Antex file header data.
       virtual void open(const char* fn);
@@ -191,7 +194,7 @@ namespace gpstk
 
          /// Method to open and load Antex file header data.
       virtual void open(const std::string& fn);
-
+#pragma clag diagnostic pop
 
          /** Method to get antenna data from a given model. Just the model,
           *  without including the radome

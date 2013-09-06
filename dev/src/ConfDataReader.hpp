@@ -185,7 +185,8 @@ namespace gpstk
            fallback2Default(false)
       { loadData(); };
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
          /// Method to open AND load configuration data file.
       virtual void open(const char* fn);
 
@@ -193,7 +194,7 @@ namespace gpstk
          /// Method to open AND load configuration data file.
       virtual void open(const std::string& fn)
       { open( fn.c_str() ); };
-
+#pragma clang diagnostic pop
 
          /** Method to get the value of a given variable as a string
           *

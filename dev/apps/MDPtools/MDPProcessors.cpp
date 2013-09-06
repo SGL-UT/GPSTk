@@ -48,7 +48,8 @@ using namespace gpstk;
 gpstk::MDPStream d1;
 std::ofstream d2;
 
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 MDPProcessor::MDPProcessor() :
       timeFormat("%4Y/%03j/%02H:%02M:%04.1f"),
       stopTime(gpstk::CommonTime::END_OF_TIME),
@@ -68,7 +69,7 @@ MDPProcessor::MDPProcessor(gpstk::MDPStream& in, std::ofstream& out) :
       pvtOut(false), obsOut(false), navOut(false), tstOut(false),
       followEOF(false)
 {}
-
+#pragma clang diagnostic pop
 void MDPProcessor::process()
 {
    MDPHeader header;

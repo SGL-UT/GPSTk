@@ -54,7 +54,8 @@
 namespace gpstk
 {
    using namespace std;
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    PackedNavBits::PackedNavBits()
                  :bits(900),
                   bits_used(0),
@@ -62,7 +63,7 @@ namespace gpstk
    {
       transmitTime.setTimeSystem(TimeSystem::GPS);
    }
-
+#pragma clang diagnostic pop
    PackedNavBits::PackedNavBits(const SatID& satSysArg, 
                                 const ObsID& obsIDArg,
                                 const CommonTime& transmitTimeArg)

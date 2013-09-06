@@ -516,6 +516,7 @@ namespace gpstk
       double h   = 1.0;
       gpstk::Vector<double> y0(1,0.0); 
       int dim      = 1;
+#pragma unused(dim)
       gpstk::Vector<double> y(1,0.0);   // = {0.0};
       
       this->setStepSize(0.01);
@@ -539,8 +540,6 @@ namespace gpstk
          y[0] = 0.0;
       }
       
-      int a =0;
-
    }  // End of method 'RungeKuttaFehlberg::test()'
 
 

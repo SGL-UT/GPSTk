@@ -129,6 +129,7 @@ void VisSupport::readFICNavData( const CommandOptionWithAnyArg& navFileNameOpt,
 {
       // Get name of the navigation file (could be more than one)
    int nFiles = navFileNameOpt.getCount();
+#pragma unused(nFiles)
    vector<std::string> fullNames = navFileNameOpt.getValue();
    FileFilterFrame<FICStream, FICData> input(fullNames);
 
@@ -177,6 +178,7 @@ void VisSupport::readRINEXNavData(
       // Process the RINEX data
    FileFilterFrame<RinexNavStream, RinexNavData> rinput(fullName);
    int numRec = 0;
+#pragma unused(numRec)
    list<RinexNavData>& rnavList = rinput.getData();
    list<RinexNavData>::iterator ritr = rnavList.begin();
    while (ritr != rnavList.end())

@@ -111,7 +111,7 @@ namespace gpstk
 
                   double ionMap = gridStore.iono_mapping_function(elevation,
                                                                   mapType);
-                  
+#pragma unused(ionMap)
                   ionL1 = gridStore.getIonoL1(elevation, tecval, mapType);
                }
                catch(InvalidRequest& e)

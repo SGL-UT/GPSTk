@@ -364,6 +364,7 @@ int ReadFile(int nfile) throw(Exception)
 
          // loop over epochs in the file
       bool first=true;
+#pragma unused(first)
       int iret;
       RinexObsData rodata;
       while(1) {

@@ -160,7 +160,8 @@ namespace gpstk
       s << endl
         << endl;
       ios::fmtflags oldFlags = s.flags();
-
+#pragma unused(oldFlags)
+       
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);

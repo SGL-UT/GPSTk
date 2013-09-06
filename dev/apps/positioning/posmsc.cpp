@@ -13,9 +13,11 @@ class PosMSC : public BasicFramework
 {
 public:
    PosMSC(char *arg0);
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char *argv[])
       throw();
-
+#pragma clang diagnostic pop
 protected:
    virtual void process();
 
@@ -28,7 +30,8 @@ private:
 
    MSCStore mscs;
 };
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 PosMSC::PosMSC(char* arg0)
       : BasicFramework(arg0, "Produce a position using a MSC file, station ID,"
                        " and a time."),
@@ -48,7 +51,7 @@ PosMSC::PosMSC(char* arg0)
    listFormatsOption.setMaxCount(1);
    outputFormatOption.setMaxCount(1);
 }
-
+#pragma clang diagnostic pop
 bool PosMSC::initialize(int argc, char *argv[])
    throw()
 {

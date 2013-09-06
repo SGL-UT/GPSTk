@@ -500,6 +500,7 @@ namespace gpstk
 
       a = p/(1.0-e*e);
       double n = std::sqrt( GM / std::fabs(a*a*a) );
+#pragma unused(n)
 
       // Mean anomaly and time of perihelion passage
 

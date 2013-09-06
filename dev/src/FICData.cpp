@@ -303,7 +303,6 @@ namespace gpstk
             // the IODC/IODE values are scaled by 2**10
             // in FIC and have to unscaled.
          iod = (short) (f[ndx[j]] / 2048);
-         iod = iod;
          os << "0x";
          os.fill('0');
          if (j==0) os.width(3);           // IODC is longer
@@ -1115,7 +1114,6 @@ namespace gpstk
          gpstk::EngEphemeris eph;
             // gotta transfer data in vector<long> to long[].
          long foo[30];
-         size_t count = 0;
          for(size_t count = 2; count < i.size(); count++)
          {
             foo[count-2] = i[count];            

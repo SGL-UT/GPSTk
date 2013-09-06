@@ -82,7 +82,8 @@ namespace gpstk
 
    // member functions
    public:
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
       /// Default constructor
       TabularSatStore() throw()
          : havePosition(false), haveVelocity(false),
@@ -90,7 +91,7 @@ namespace gpstk
            checkDataGap(false), checkInterval(false),
            storeTimeSystem(TimeSystem::Any)
       {}
-
+#pragma clang diagnostic pop
       /// Destructor
       virtual ~TabularSatStore() {};
 

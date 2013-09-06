@@ -55,12 +55,14 @@ namespace gpstk
       
       bool is_open() const { return handle >= 0; }
       void close();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual FDStreamBuff* setbuf(char* p, const int len);
   
       // We limit this stream to be sequential
       std::streampos seekoff(std::streamoff, std::ios::seekdir, int)
       { return EOF; }
-
+#pragma clang diagnostic pop
       void dump(std::ostream& out) const;
 
       struct Buffer

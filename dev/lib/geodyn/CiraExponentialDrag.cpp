@@ -63,6 +63,7 @@ namespace gpstk
       double ax = accl(0);
       double ay = accl(1);
       double az = accl(2);
+#pragma unused(den,ax,ay,az)
    }
 
       /* Compute the atmospheric density using an exponential atmosphere model.
@@ -83,6 +84,7 @@ namespace gpstk
       // Transform r from J2000 to TOD
       Vector<double> r_tod = N*r;
       double rmag = norm(r_tod);
+#pragma unused(rmag)
       
       Position geoidPos(r_tod(0),r_tod(1),r_tod(3),Position::Cartesian);
       double height = geoidPos.getAltitude()/1000.0;              //  convert to [km]

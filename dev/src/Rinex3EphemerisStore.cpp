@@ -58,6 +58,8 @@ namespace gpstk
    {
       Rinex3NavData Rdata(inRdata);
       TimeSystem ts = TimeSystem::GPS;
+#pragma unused(ts)
+       
       switch(Rdata.sat.system) {
          case SatID::systemGPS:
          {
@@ -473,7 +475,7 @@ namespace gpstk
    int Rinex3EphemerisStore::addToList(list<Rinex3NavData>& theList, SatID sysSat)
       const
    {
-      int i,n(0);
+      int n(0);
 
       // pure fussiness
       const bool keepAll(sysSat.system == SatID::systemMixed);
@@ -484,7 +486,8 @@ namespace gpstk
       const bool keepQZS(keepAll || sysSat.system==SatID::systemQZSS);
       const bool keepGEO(keepAll || sysSat.system==SatID::systemGeosync);
       const bool keepOrb(keepAll || keepGPS || keepGAL || keepBDS || keepQZS);
-
+#pragma unused(keepGEO)
+       
       if(keepOrb) {
          list<OrbitEph*> OElist;
          ORBstore.addToList(OElist);

@@ -243,12 +243,14 @@ namespace gpstk
           * @param flag1      Cycle slip flag in L1.
           * @param flag2      Cycle slip flag in L2.
           */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual double getSmoothing( const SatID& sat,
                                    const double& code,
                                    const double& phase,
                                    const double& flag1,
                                    const double& flag2 );
-
+#pragma clang diagnostic pop
 
          /// This method is out of reach in this class.
       virtual PCSmoother& setCodeType(const TypeID& dummy)

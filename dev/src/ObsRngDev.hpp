@@ -74,8 +74,10 @@ namespace gpstk
        * Creates an empty, useless object to facilitate STL containers of this
        * object.
        */
-      ObsRngDev() throw() : wonky(false), obstime(CommonTime::END_OF_TIME) {};
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+       ObsRngDev() throw() : wonky(false), obstime(CommonTime::END_OF_TIME) {};
+#pragma clang diagnostic pop
       /**
        * constructor.
        * Creates an ORD, with no ionospheric correction and a default

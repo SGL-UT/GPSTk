@@ -159,7 +159,8 @@ protected:
       constraintToSolver(sys,gdsMap);
 
    }
-   
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual void updateRefSat( const SatSourceMap& refsatSource,
                                const SourceSatMap& sourceRefsat )
    {
@@ -167,7 +168,7 @@ protected:
    }
 
 };
-
+#pragma clang diagnostic pop
 const string APP_NAME = "MyApp";
 const string APP_VERSION = "1.0.0";
 const string APP_DESC = 

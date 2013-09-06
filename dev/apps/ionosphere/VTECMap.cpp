@@ -396,7 +396,7 @@ void F0F2Map::ComputeMap(CommonTime& epoch, vector<ObsData>& data, double bias)
 double VTECMap::VTECtoF0F2(int method, double vtec, CommonTime& epoch, double lon)
 {
 try {
-   double fof2,tau,dt;
+   double fof2,tau = 0.0,dt;
    static CommonTime computeTime=CommonTime::BEGINNING_OF_TIME;
    const double con[4]={0.019600827088077529, -1.549245071973630372,
       29.890989537102175433, 237.467144625490760745};

@@ -54,7 +54,9 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
-   OrbElem::OrbElem()
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    OrbElem::OrbElem()
       :dataLoadedFlag(false),
        ctToe(CommonTime::BEGINNING_OF_TIME),
        ctToc(CommonTime::BEGINNING_OF_TIME),
@@ -67,7 +69,7 @@ namespace gpstk
       beginValid.setTimeSystem(TimeSystem::GPS);
       endValid.setTimeSystem(TimeSystem::GPS);
    }
-
+#pragma clang diagnostic pop
 
     bool OrbElem::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
@@ -412,7 +414,8 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       ios::fmtflags oldFlags = s.flags();
-
+#pragma unused(oldFlags)
+       
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);

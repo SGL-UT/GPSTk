@@ -65,7 +65,8 @@ int main(int argc, char **argv)
       int i,j,col=1,xcol=-1,fit=0,prec=3,width=0,windwid(0);
       unsigned int brief=0;
       double sigout=0.0,min,max,beg,end,dht(0.0),ddt(0.0);
-      string filename,label=string();
+#pragma unused(windwid,dht,ddt)
+       string filename,label=string();
       ostream *pout;
 
       // process command line --------------------------------------------------

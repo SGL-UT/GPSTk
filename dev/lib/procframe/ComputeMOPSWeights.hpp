@@ -259,10 +259,12 @@ namespace gpstk
           * @param sat           Satellite
           *
           */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
       virtual double getWeight( const SatID& sat,
                                 typeValueMap& tvMap )
          throw(InvalidWeights);
-
+#pragma clang diagnostic pop
 
          // Compute ionospheric sigma^2 according to Appendix J.2.3
          // and Appendix A.4.4.10.4 in MOPS-C

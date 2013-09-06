@@ -74,7 +74,9 @@ using namespace gpstk;
 class Ashtech2MDP : public InOutFramework<AshtechStream, MDPStream>
 {
 public:
-   Ashtech2MDP(const string& applName)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
+    Ashtech2MDP(const string& applName)
       throw()
       : week(-1),
         InOutFramework<AshtechStream,MDPStream>(
@@ -82,7 +84,9 @@ public:
            "MDP format. This makes for a good input to mdp2rinex for generating "
            "RINEX data from ashtech data.")
    {}
-
+#pragma clang diagnostic pop
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw()
     {
        CommandOptionWithNumberArg weekOption(
@@ -135,7 +139,7 @@ public:
 
       return true;
    }
-   
+#pragma clang diagnostic pop
 protected:
    virtual void spinUp()
    {}

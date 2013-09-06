@@ -67,8 +67,10 @@ public:
    compStaVis(const std::string& applName,
               const std::string& applDesc) throw();
    ~compStaVis() {}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char *argv[]) throw();
-   
+#pragma clang diagnostic pop
 protected:
    virtual void process();
 
@@ -176,7 +178,8 @@ int main( int argc, char*argv[] )
    }
    return 0;
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 compStaVis::compStaVis(const std::string& applName, 
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
@@ -208,7 +211,7 @@ compStaVis::compStaVis(const std::string& applName,
    epochCount = 0;
    evalStartTimeSet = false;
 }
-
+#pragma clang diagnostic pop
 bool compStaVis::initialize(int argc, char *argv[])
    throw()
 {

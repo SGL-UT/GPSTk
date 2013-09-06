@@ -75,6 +75,7 @@ try {
       //BCE.dump(1,oflog);
 
       long i, neph = BCE.addToList(EphList);
+#pragma unused(neph)
       //oflog << "There are " << neph << " ephemerides in the list:" << endl;
 
       GSatID sat;
@@ -142,6 +143,7 @@ try {
    if(dynamic_cast<SP3EphemerisStore*>(pEph)) {
 
       SP3EphemerisStore& SP3E = dynamic_cast<SP3EphemerisStore&>(*pEph);
+#pragma unused(SP3E)
 
       oflog << "EphemerisStore is SP3 ephemeris" << endl;
    }

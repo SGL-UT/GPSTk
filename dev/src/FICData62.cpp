@@ -87,7 +87,7 @@ namespace gpstk
       i.push_back( fic162.i[14] );
 
 
-      short maxNdx;
+      short maxNdx = 0;
       switch (format)
       {
          case 4: maxNdx = 20; break;

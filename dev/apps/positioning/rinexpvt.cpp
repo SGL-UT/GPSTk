@@ -108,7 +108,8 @@ double carrierPhaseSmooth(SatID sat, double range, double phase,
     return smoothedRange[sat];
 
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 RINEXPVTSolution::RINEXPVTSolution(char *arg0)
     : BasicFramework(arg0, "GPSTk PVT Generator\n\nThis application generates user positions based on RINEX observations.\n\nNOTE: Although the -n and -p arguments appear as optional below, one of the two must be used. An ephemeris source must be specified.\n\nNOTE: Although -z argument appears as optional below, in this release it is always turn on, but implementation will occur in a later release."),
       obsOption('o', "obs-file", "RINEX Obs File.", true),
@@ -162,7 +163,7 @@ RINEXPVTSolution::RINEXPVTSolution(char *arg0)
 
     logFileName = obsFileName = metFileName = "";
   }
-
+#pragma clang diagnostic pop
 
 bool RINEXPVTSolution::initialize(int argc, char *argv[])
     throw()

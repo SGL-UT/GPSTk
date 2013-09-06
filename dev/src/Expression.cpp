@@ -119,7 +119,8 @@ namespace gpstk
       
       return value;
    }
-   
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    Expression::Token::Token(std::string iValue, int iPriority, 
                             bool isOp=false)
          :
@@ -127,7 +128,7 @@ namespace gpstk
          expNode(0), isOperator(isOp)
    {
    }
-
+#pragma clang diagnostic pop
    void Expression::Token::print(std::ostream& ostr)
    {
       ostr <<" Value '" << value;

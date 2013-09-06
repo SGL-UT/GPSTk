@@ -2733,11 +2733,11 @@ try {
          k++;
       }
       // fill past
-      k = i-1;
-      while(k >= 0 && pastStats.N() < N) {
-         if(spdvector[k].flag & OK)                  // data is good
-            pastStats.Add(spdvector[k].data[P1]);          // wlbias
-         k--;
+      int j = i-1;
+      while(j >= 0 && pastStats.N() < N) {
+         if(spdvector[j].flag & OK)                  // data is good
+            pastStats.Add(spdvector[j].data[P1]);          // wlbias
+         j--;
       }
 
       // is there a WL slip here?
@@ -2945,6 +2945,7 @@ try {
       double wlp = wl1p * spdvector[i].data[L1] + wl2p * spdvector[i].data[L2];
          // geo-free range (m)
       double gfr = gf1r * spdvector[i].data[P1] + gf2r * spdvector[i].data[P2];
+#pragma unused(gfr)
          // geo-free phase (m)
       double gfp = gf1p * spdvector[i].data[L1] + gf2p * spdvector[i].data[L2];
       if(i == ifirst) {

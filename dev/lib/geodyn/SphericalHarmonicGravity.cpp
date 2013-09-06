@@ -42,6 +42,8 @@ namespace gpstk
        * @param n Desired degree.
        * @param m Desired order.
        */
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
    SphericalHarmonicGravity::SphericalHarmonicGravity(int n, int m)
       : desiredDegree(n),
         desiredOrder(m),
@@ -57,7 +59,7 @@ namespace gpstk
       //Sn0.resize(gmData.maxDegree, 0.0);
 
    }
-
+#pragma clang diagnostic pop
    
       /* Evaluates the two harmonic functions V and W.
        * @param r ECI position vector.
@@ -500,8 +502,6 @@ namespace gpstk
 
       cout<<setprecision(12)<<a<<endl;
       cout<<da_dr<<endl;
-
-      int aaa = 0;
 
    }  // End of method 'SphericalHarmonicGravity::test()'
 

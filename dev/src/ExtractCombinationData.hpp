@@ -68,11 +68,12 @@ namespace gpstk
           *    The indexes are obtained from the RINEX Observation Header
           *    using method 'Rinex3ObsHeader::getObsIndex()'.
           */
-      virtual int getData( const Rinex3ObsData& rinexData,
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       virtual int getData( const Rinex3ObsData& rinexData,
                            int indexObs1,
                            int indexObs2 )
          throw(InvalidRequest);
-
 
          /** Get a combination of observations from a Rinex3ObsData object
           *
@@ -89,6 +90,7 @@ namespace gpstk
                            std::string type2,
                            const Rinex3ObsHeader& hdr )
          throw(InvalidRequest);
+#pragma clang diagnostic pop
 
 
          /// Destructor

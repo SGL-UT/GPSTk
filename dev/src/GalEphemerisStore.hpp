@@ -81,7 +81,9 @@ namespace gpstk
 
       /// Add a GalEphemeris object to this collection
       /// @return pointer to the new object, NULL if data could not be added.
-      virtual GalEphemeris* addEphemeris(const GalEphemeris& galeph)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       virtual GalEphemeris* addEphemeris(const GalEphemeris& galeph)
       {
          try {
             GalEphemeris neweph(galeph);
@@ -92,7 +94,7 @@ namespace gpstk
          }
          catch(Exception& e) { GPSTK_RETHROW(e); }
       }
-
+#pragma clang diagnostic pop
 
       /// Find a GalEphemeris for the indicated satellite at time t, using the
       /// OrbitEphStore::find() routine, which considers the current search method.
@@ -124,11 +126,13 @@ namespace gpstk
       /// Add all ephemerides to an existing list<GalEphemeris> for given satellite.
       /// If sat.id is -1 (the default), all ephemerides are added.
       /// @return the number of ephemerides added.
-      int addToList(std::list<GalEphemeris>& gallist,
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
+       int addToList(std::list<GalEphemeris>& gallist,
                         SatID sat=SatID(-1,SatID::systemGalileo)) const;
 
    }; // end class GalEphemerisStore
-
+#pragma clang diagnostic pop
    //@}
 
 } // namespace

@@ -420,7 +420,7 @@ namespace gpstk
             hbdsw( false ), hqzsw( false ), hgalw( false ),
             hbdsfw( false ), hqzsfw( false ), hgalfw( false ),
             hbdse( false ), hqzse( false ), hgale( false);
-
+#pragma unused(hunixsec,hunixusec)
             // MJD, Julian Date, ANSI time, Unix time, and 32-bit Zcounts
             // are treated as stand-alone types and are not mixed with others
             // if detected.

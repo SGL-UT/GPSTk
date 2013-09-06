@@ -383,7 +383,7 @@ namespace vdraw
         << bw << " " << bh << " scale" << endl;
 
       Bitmap::CMType which;
-      int w, h, osw, osh;
+      int w = 0, h = 0, osw, osh;
       InterpolatedColorMap icm;
       ColorMap cm;
 

@@ -68,8 +68,10 @@ public:
    compSatVis(const std::string& applName,
               const std::string& applDesc) throw();
    ~compSatVis() {}
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    virtual bool initialize(int argc, char *argv[]) throw();
-   
+#pragma clang diagnostic pop
 protected:
    virtual void process();
 
@@ -169,7 +171,8 @@ int main( int argc, char*argv[] )
    }
    return 0;
 }
-
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wreorder"
 compSatVis::compSatVis(const std::string& applName, 
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
@@ -201,7 +204,7 @@ compSatVis::compSatVis(const std::string& applName,
    
    epochCount = 0;
 }
-
+#pragma clang diagnostic pop
 bool compSatVis::initialize(int argc, char *argv[])
    throw()
 {
@@ -574,6 +577,7 @@ void compSatVis::generateTrailer( )
         sslCI!=staStatsList.end(); ++sslCI)
    {
       int staNum = sslCI->first;
+#pragma unused(staNum)
       StaStats ss = sslCI->second;
       if (ss.atLeastOneEntry()) 
       {

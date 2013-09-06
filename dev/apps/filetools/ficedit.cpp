@@ -77,9 +77,10 @@ public:
       inputOpt.setMaxCount(1);
       outputOpt.setMaxCount(1);
    };
-   
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Woverloaded-virtual"
    bool initialize(int argc, char *argv[]) throw();
-      
+#pragma clang diagnostic pop
 protected:
    virtual void process();
 
@@ -145,8 +146,8 @@ void FICedit::process()
    FICData d;
    while (input >> d)
    {
-      short week;
-      double sow;
+      short week = 0;
+      double sow = 0.0;
       short prn=-1;
       switch (d.blockNum)
       {
