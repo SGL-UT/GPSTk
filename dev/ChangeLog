@@ -2,11 +2,248 @@
 
 
 
+Version 2.2   Friday, September 6, 2013
+
+   General modifications
+   ---------------------
+   - Version 2.2 is comprised of Git revision number 4daf3c5 to Git revision number e3f25a0
+   - Fully functional CMake cross-platform build system has been finished and tested for the GPSTk.
+   		- Using CMake, the GPSTk now supports IDEs in addition to current supported platforms.
+   		- Newly supported IDEs:
+   			- Visual Studio 2010 IDE (32-bit)
+   			- Visual Studio 2012 IDE (32-bit & 64-bit)
+   			- XCode (32-bit & 64-bit)
+   - Basic RINEX 3.02 Framework has been added, still developmental and subject to change
+   - Basic Python Interface Bindings have been added, still developmental and subject to change 
+   		- Additional Information: http://www.gpstk.org/pythondoc/
+   - Minor modifications to Jamfiles, Makefiles, and source code 
+     for clean compilation (no warnings or errors) & compatibility with the latest 
+	 Cygwin, Windows 7 VS, Solaris 10 Sparc, and Mac OX X Lion (10.7.5).
+   - The next planned release, GPSTk v2.3, will be a minor upgrade that will introduce a new function-oriented dirctory structure.
+   - This release includes new/modified source code comments for improved
+     readability.
+
+   Modifications by Author
+   ---------------------
+	Brent Renfro (17):
+	      First change to capture/crack CNAV from MDP
+	      New classes to crack CNAV messages into engineering units.
+	      Updated SVNumXRef to reflect launch of SVN 66 and decommision of SVN35
+	      Improvements to support CNAV data tests
+	      =Clarifying label in PackedNavBits.dump()
+	      =Clarifying label in PackedNavBits.dump() - AGAIN
+	      Resolving a merge issue (we hope)
+	      Refined validity calculations, improved dumpTerse()
+	      Removing dead code
+	      Fixing low-rate-of-occurrence errors in CNAV crackers
+	      Adding L2CPhasing flag to CNAV class
+	      Fixing output format and returning #bits used
+	      Adjusting multi-row rollover
+	      Adding CNAV pos/vel changes
+	      Adding formatted output to GloEphemeris
+	      Fixing problem with lack of epoch time in CNavGGTO
+	      Adding new utility to dump GLOANSS Rinex nav files
+
+	Brian Tolman (22):
+	      Fix the dangling-else problem on MacOSx for logstream, and undo unnecessary added brackets from commit b7ef28941
+	      Clarify Lagrange interpolation routines and documentation.
+	      Small changes to refine and correct SP3 interpolation
+	      Add several new systems to TimeSystem and Time classes.
+	      Modify ObsID, adding several new entries, for Rinex3.02
+	      Fix bug in LagrangeInterpolation; thanks Sara Farese.
+	      Fix 2 bugs in getEpoch and scanTime
+	      One file omitted in my last commit
+	      Fix bug in scanTime when scanning into undefined time.
+	      Fix missing return value.
+	      Fix bug in WeekSecond related to GPS epoch in TimeConstants.
+	      Minor fixes to go along with previous commit.
+	      Improve SVD convergence and fix bug in Householder.
+	      Fix bug in TimeSystemCorr, trivial change to WeekSecond classes.
+	      Move leap second correction into the TimeSystemCorr::correct.
+	      size_t is unsigned; changing index from int to size_t is not always a good idea
+	      Redesign orbit-based ephemerides and time systems for R3.02
+	      Changes omitted in the last commit
+	      Undoing this leads to a seg fault
+	      Remove all reference to RinexNav in OrbitEph classes.
+	      Give each xxxWeekSecond their own format specifiers.
+	      Small changes to complete the examples
+
+
+	Bryan Parsons (30):
+	      Added commit id for RC2.1
+	      Changes to fix compile issues from prior commits
+	      Minor fix submitted by Anthony Hughes - Replace EllipsoidModel with const GeoidModel
+	      Reverting convhelp.hpp back to original code after commit change
+	      Code Cleanup: Removed DebugUtils class and all references
+	      Code Cleanup: Removed DebugUtils from repo
+	      Build system fixes
+	      Major CMake Build System Changes for Linux OS
+	      Additional Build System Tweaks
+	      Cmake Build Changes for Cygwin
+	      Build System cleanup for recent commits
+	      Small CMake adjustment
+	      CMake Build Changes for VS10 (32-bit) & VS12 (32-|64-bit)
+	      CMake adjustment
+	      Another small fix for CMake Build
+	      More CMake tweaks
+	      CMake Build Changes for Solaris Sparc
+	      Fixing Mac OSX error from prior commit.  Initialization of function is required in TabularSatStore.hpp for Clang compiler
+	      Jamfile edited to reflect removal and addition of new files
+	      Brackets added to if statements to remove dangling else warning in Clang
+	      Additional tweaks to LOG file and brackets for dangling else warnings in Clang
+	      Major Cmake Build Changes for Mac OSX     
+	      Rinexpvt design flaw patch
+	      MDPtools patch - Brian Tolman
+	      CMake Adjustments for Linux and Solaris
+	      CMake Mac OSX tweaks
+	      CMake tweaks for added files
+	      Cygwin CMake tweaks
+	      CMake Visual Studio tweaks
+	      CMake XCode clean-up and tweaks
+
+	Jon Little (8):
+	      Added a variation of ComputeAtTransmitTime that estimates pseudorange as opposed to requiring it
+	      Ignoring what should be ignored
+	      Ignoring what should be ignored
+	      I'm not bparsons
+	      Fixing file modes
+	      Removed TypeID.hpp, since its now in procframe
+	      Moving TypeID back here
+	      more fixage of file perms
+
+	Josh King (1):
+	      Fixing MFtime from short to long
+
+	Sean Lewis (118):
+	      Initial work on time module and timeconvert python port
+	      Improved python binding for time module
+	      Finished implementation of gpstk_time python bindings and test programs
+	      Simplified time comparision test syntax with eval()
+	      gpstk_time bindings formatting changes
+	      More work on python bindings - gpstk_util module created
+	      ObsID implemented in python bindings - inner class Initializer exported to ObsIDInitializer
+	      Python modules collapsed into single gpstk module
+	      Deleted old, unused SWIG binding files
+	      Deleted rest of old/unused SWIG bindings
+	      TimeString.scanTime moved to gpstk.i
+	      Undefined methods commented out
+	      Fixed const-related bug in FileStore
+	      Reorganized python SWIG bindings to multiple files but a single module
+	      CivilTime comment error fixed
+	      Minor changes to let SWIG process library
+	      Improved python testing/enum semantics
+	      Vector zero-releated members removed for SWIG compilation
+	      Python binding structure reworked to a single module
+	      Simplified Python constructor/enum mappings
+	      Python binding directory structure reworked and documentation added
+	      Improved Python documentation system
+	      Added distutils system to build python module
+	      Removed math utilities from python bindings
+	      Moved inner-class exceptions into global namespace so SWIG can wrap them
+	      Python test coverage improved
+	      EngEphemeris updated to deal with non-nested exception change
+	      Added typemaps, fixed broken ignores
+	      Removed CMake build for Python bindings
+	      More python binding testings
+	      Added timeconvert module to python bindings
+	      Removed doc.py step of python build process
+	      Python doxygen creates full index now
+	      Fixes to python binding of Position class
+	      Removed timecony from python examples
+	      Added SEM support to python
+	      Python setup generates docs now
+	      Updated references to exceptions moved to gpstk namespace
+	      Added ObsIDInitializer to build system
+	      Temporary fix to python setup script
+	      Added dummy doc file for python
+	      Python build switched back to CMake
+	      Documentation typo fixed in SystemTime
+	      Some constant initialization changed to let SWIG wrap it
+	      Python timeconvert moved to examples
+	      Wrapped AstronomicalFunctions for python
+	      Minor documentation errors fixed
+	      Headers removed from python CMakeLists
+	      Cleaned up python SWIG files
+	      Undefined method in OrbElem removed.
+	      Duplicate definition in TabularSatStore removed
+	      Added string/concatentation support for the python vector
+	      Python File IO and __str__ support improved
+	      Python SEM file IO/plot example added
+	      Python examples and testing updated
+	      SWIG things added to gitignore
+	      Minor style changes to python tests/examples
+	      Fixed SEMData::dump to output to the correct stream.
+	      Reworked python build to hide certain objects
+	      Cleaned up python examples/tests
+	      Added more python ignores
+	      Python Rinex3Obs support added
+	      Python module_builder now builds to user-given target
+	      Improved python build script
+	      Rinex3ObsData::RinexDatum pulled into gpstk namespace so SWIG can wrap it.
+	      Updated a reference to RinexDatum
+	      Updated another reference to RinexDatum
+	      More file support added for python
+	      Duplicate method signature removed
+	      Rinex3ObsHeader inner classes moved to gpstk namespace.
+	      Added module system to python bindings
+	      Added more __str__ and vector support for Python
+	      Added RinexUtilities functions for python
+	      Removed an undefined function in RinexUtilities.hpp
+	      Cleaned up some python tests and renamed test files.
+	      Pulled out RinexObsHeader inner classes so SWIG can wrap them.
+	      Pulled out Rinex3NavHeader  inner classes so SWIG can wrap them.
+	      Pulled out Rinex3ClockHeader/RinexObsData inner classes so SWIG can wrap them.
+	      Updated python examples
+	      Added python wrappers for RinexMet clases
+	      RinexMetHeader inner classes pulled out so SWIG can wrap them.
+	      Sphinx documentation system added for python bindings.
+	      Python test cleanup for lazy file reading.
+	      Renamed python documentation files and added more sphinx docs.
+	      Wrote more python examples and documentation.
+	      Fixed Rinex3MetData data access in Python.
+	      Distutils release/packaging added for python bindings.
+	      Updated file location of gpstk_builder.py script.
+	      Updated python documentation and examples.
+	      Cleaned up STL python wrappers and improved auto-gen doc pages.
+	      Fixed off-by-one file IO errors in python; added FIC support.
+	      Added position difference script and added file input filter parameter.
+	      Added typemaps for C arrays -> Python lists.
+	      Added 4th example for Python bindings.
+	      Fixed python distutils build by adding gpstk header file.
+	      Updated Python bindings to use new time class structure.
+	      Added missing Exception for AlmOrbit::svXvt.
+	      Cleaned up Python exception handling.
+	      Exception specifiers removed from time-related files.
+	      Added python testing for CommonTime.
+	      Extraneous backslashes fixed in CivilTime.
+	      Updated python time test code and added python gpstk exception support.
+	      Minor fixes to python testing.
+	      Fixed some slightly broken Python tests.
+	      Updated python distutils build and minor fixes.
+	      Python binding files cleaned up.
+	      Added appropriate git ignores to sphinx documentation.
+	      Refactored Python binding files to eliminate header duplication.
+	      Added Python wrappers for Moon/Sun positioning and Pole/Solid Tides.
+	      Fixed some broken exception specifiers for Brc classes.
+	      Minor fixes to python build and position difference script.
+	      Added MSC file bindings for Python.
+	      Cleaned up Python examples.
+	      Added python wrappers for some constant arrays in GPS_URA.hpp.
+	      Updated python bindings to use new Ephemeris & EphemerisStore classes.
+	      Python API changes to FileIO and time API.
+	      Python binding formatting changes.
+	      Python support for Expression evaluation added. 
+
+
+   	#################################################
+
+
+
 Version 2.1   Tuesday, June 25, 2013
 
    General modifications
    ---------------------
-   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number 4daf4c5
+   - Version 2.1 is comprised of SVN revision number 3143 to Git revision number 4daf3c5 
    - A number of modifications were made to Jamfiles, Makefiles, and source code 
      for clean compilation (no warnings or errors) & compatibility with the latest 
 	 Cygwin, Windows 7 VS, Solaris 10 Sparc, and Mac OX X Lion (10.7.5).
