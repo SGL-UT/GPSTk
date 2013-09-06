@@ -2,11 +2,11 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.67)
-AC_INIT([GPSTK], [2.1], [http://www.gpstk.org/], [gpstk])
+AC_INIT([GPSTK], [2.2], [http://www.gpstk.org/], [gpstk])
 AM_INIT_AUTOMAKE([1.10 foreign])
 
 #gpstk 2.1 -> libgpstk.so.21.0, etc...
-GPSTK_MAJOR_VERSION=21
+GPSTK_MAJOR_VERSION=22
 GPSTK_MINOR_VERSION=0
 GPSTK_SO_VERSION=$GPSTK_MAJOR_VERSION:$GPSTK_MINOR_VERSION:0
 AC_SUBST(GPSTK_SO_VERSION)

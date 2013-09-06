@@ -27,13 +27,13 @@ elseif (WIN32) # Windows Compiler Options
 	if (MSVC11) # Compiler Options for Microsoft Visual Studio 11 (2012)
 		set (STADYN "STATIC") #Static Libraries Enabled
 		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
-		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800")
+		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068"))
 	elseif (MSVC10) # Compiler Options for Microsoft Visual Studio 10 (2010)
 		set (STADYN "STATIC") #Static Libraries Enabled
 		include_directories("C:/Program\ Files\ (x86)/GnuWin32/include")
 		link_directories("C:/Program\ Files\ (x86)/GnuWin32/lib")
 		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
-		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800")
+		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068"))
 	endif (MSVC11)		
 endif(UNIX)
 
