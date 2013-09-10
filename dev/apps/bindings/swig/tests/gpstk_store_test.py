@@ -204,22 +204,6 @@ class FICTest(unittest.TestCase):
         self.assertAlmostEqual(6888490.4337890595, xvt.x[0])
         self.assertAlmostEqual(1036.1894772036476, xvt.v[1])
 
-    def test_ephemeris(self):
-        isblock9 = (lambda x: x.blockNum == 9)
-        header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock9, strict=True)
-        g = gpstk.GPSEphemerisStore()
-        for d in data:
-            ephem = gpstk.Rinex3NavData(d.toEngEphemeris())
-            g.addEphemeris(ephem)
-
-        sat = gpstk.SatID(4, gpstk.SatID.systemGPS)
-        sys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
-        t = gpstk.CivilTime(2012, 11, 10, 2, 0, 0, sys)
-        t = t.toCommonTime()
-        xvt= g.getXvt(sat, t)
-        self.assertAlmostEqual(6887268.768807452, xvt.x[0])
-        self.assertAlmostEqual(1036.3167828001287, xvt.v[1])
-
 
 class MSCTest(unittest.TestCase):
     def test_stream(self):
@@ -237,69 +221,6 @@ class MSCTest(unittest.TestCase):
         xvt = store.getXvt('11111', store.getInitialTime())
         self.assertAlmostEqual(-1111111.295, xvt.x[0])
         self.assertAlmostEqual(0.0222, xvt.v[1])
-
-
-class GLONASS_test(unittest.TestCase):
-    def test(self):
-        pass
-        # header, data = gpstk.readRinex3Nav('/home/jking/GLONASS/BEphemeris/thti2200.12n')
-        # dataPoint = data.next()
-
-        # ephem = dataPoint.toEngEphemeris()
-        # time = ephem.getTransmitTime()
-        # xvt = ephem.svXvt(time)
-        # print time
-        # print xvt
-
-        # ephem = dataPoint.toGloEphemeris()
-        # time = ephem.getEphemerisEpoch()
-        # time.setTimeSystem(gpstk.TimeSystem('GLO'))
-        # xvt = ephem.svXvt(time)
-        # print time
-        # print xvt
-
-
-
-        # from glob import glob
-        # files = glob('/home/jking/GLONASS/BEphemeris/*.12n')[:1]
-        # g = gpstk.GloEphemerisStore()
-        # for f in files:
-        #     header, data = gpstk.readRinex3Nav(f)
-        #     for d in data:
-        #         g.addEphemeris(d)
-
-        # print g
-
-
-    # def test_dataobjects(self):
-        # header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
-        # g =
-        # gloEphems = [d.toGloEphemeris() for d in data]
-        # self.assertEqual(1, gloEphems[0].getPRNID())
-        # print gloEphems[0]
-
-        # engEphems = [d.toEngEphemeris() for d in data]
-        # print engEphems[0]
-
-
-    # def test_store(self):
-    #     g = gpstk.GloEphemerisStore()
-    #     header, data = gpstk.readRinex3Nav('/home/jking/GLONASS/BEphemeris/lhaz2950.12n')
-    #     # header, data = gpstk.readRinex3Nav('rinex3nav_data.txt')
-    #     for d in data:
-    #         # print d
-    #         g.addEphemeris(d)
-
-        # print g
-        # s = gpstk.SatID(7)
-        # t = g.getInitialTime()
-        # for i in range(10000):
-        #     t.addSeconds(60*5)
-        #     try:
-        #         x= g.getXvt(s, t)
-        #         print x
-        #     except gpstk.exceptions.InvalidRequest:
-        #         pass
 
 
 if __name__ == '__main__':

@@ -79,7 +79,7 @@ class ScanTimes(unittest.TestCase):
         test('0 700 0', '%E %G %g', '2449145 00000000 0.000000000000000 GPS')
 
         # ws
-        test('158 200', '%F %g', '2445351 00200000 0.000000000000000 GPS')
+        test('158 200', '%F %g', '2445351 00000000 0.000000000000000 GPS')
 
         # wz
         test('200 300', '%F %Z', '2444245 00450000 0.000000000000000 UNK')
@@ -114,9 +114,9 @@ class Conversion_Tests(unittest.TestCase):
         self.assertEqual('1234567789 GLO', str(a))
         self.assertEqual('2454876 84589000 0.000000000000000 GLO', str(b))
         self.assertEqual('54875.979039352 GLO', str(c))
-        self.assertEqual('1518 516589.000 GPS', str(d))
+        self.assertEqual('1518 516589.000000 GLO', str(d))
         self.assertEqual('02/13/2009 23:29:49 GLO', str(e))
-        self.assertEqual('1518 516589.000 QZS', str(f))
+        self.assertEqual('1518 516589.000000 GLO', str(f))
 
 
 class TimeSystem_Tests(unittest.TestCase):
