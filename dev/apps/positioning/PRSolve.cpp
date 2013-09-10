@@ -1454,8 +1454,8 @@ try {
          LOG(INFO) << "";
 
          // compute the solution(s) --------------------------
-         // tag for DAT
-         if(C.verbose) C.msg = printTime(Rdata.time,"DAT "+C.gpsfmt);
+         // tag for DAT - required for PRSplot
+         C.msg = printTime(Rdata.time,"DAT "+C.gpsfmt);
 
          // compute and print the solution(s) ----------------
          for(i=0; i<C.SolObjs.size(); ++i) {
@@ -1463,8 +1463,7 @@ try {
             if(!C.SolObjs[i].isValid) continue;
 
             // dump the "DAT" record
-            if(C.verbose) LOG(VERBOSE)
-               << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);
+            LOG(INFO) << C.SolObjs[i].dump((C.debug > -1 ? 2:1), "RPF", C.msg);
 
             // compute the solution
             j = C.SolObjs[i].ComputeSolution(Rdata.time);
