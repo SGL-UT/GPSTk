@@ -348,7 +348,7 @@ namespace gpstk
 	 // The end of validity is calculated from the fit interval
 	 // and the Toe.  In RINEX, the fit duration in hours is
 	 // stored in the file.
-      long endFitSOW = Toe + fitDuration*3600;
+      long endFitSOW = Toe + (fitDuration/2)*3600;
       short endFitWk = epochWeek;
       if (endFitSOW >= FULLWEEK)
       {
