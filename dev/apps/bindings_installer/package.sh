@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 build() {
     cd ../..
@@ -24,6 +24,12 @@ build() {
 
     cd ../../../..
     python setup.py sdist --formats=zip,gztar
+
+    cd apps/bindings/swig/sphinx
+    make html
+    cd _build
+    tar -cvzf pythondoc.tar.gz html
+    mv -f pythondoc.tar.gz ../../../../../dist/pythondoc.tar.gz
 }
 
 build

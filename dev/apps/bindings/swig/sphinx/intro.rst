@@ -136,6 +136,10 @@ However, some elements of C++ do not have clear analogues in Python; as such, so
 compromises had to be made to allow for clean python programming without a complete
 rework of the well-established C++ API.
 
+These are important to recognize because they present technical reasons why some
+things seem odd; the bindings were written in a way that had to be maintainable above all else.
+Any changes for the sake of the Python API could not duplicate code.
+
 
 **Namespaces:**
 
@@ -150,7 +154,7 @@ You can still access the raw wrapping through gpstk.gpstk_pylib, however. It is
 strongly recommended you ignore the hidden components; they were hidden for a reason!
 
 
-**Enums:**
+**Enumerations:**
 
 Many classes use enums extensively (see: ObsID), especially in their constructors
 to specify options. These enums are simply wrapped to integer values. A enum
@@ -241,7 +245,7 @@ SWIG typemaps have been written to automatically convert between C style arrays
 and Python lists. Any function that takes a array parameter will accept a list
 and any array return will actually return a list.
 
-This conversion can be done efficently since Python are already backed by C arrays.
+This conversion can be done efficiently since Python are already backed by C arrays.
 
 
 **Functions that modify a parameter that is passed by reference:**

@@ -10,4 +10,3 @@ include src/*.cpp
 include src/*.h
 include src/*.hpp
 include apps/bindings/swig/scripts/*.py
-include apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.h

@@ -375,12 +375,12 @@ namespace gpstk
    }
 
    std::string __str__() {
-      std::ostringstream os;
+      std::ostringstream ss;
       size_t i;
       for(i = 0; i < $self->size() - 1; i++)
-         os << (*($self))[i] << ", ";
-      os << (*($self))[i];
-      return os.str();
+         ss << (*($self))[i] << ", ";
+      ss << (*($self))[i];
+      return ss.str();
    }
 
 }

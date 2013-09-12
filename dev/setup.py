@@ -10,8 +10,8 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/Antenna.cpp',
             'src/AstronomicalFunctions.cpp',
             'src/Bancroft.cpp',
-            'src/BDSEphemeris.cpp'
-            'src/BDSEphemerisStore.cpp'
+            'src/BDSEphemeris.cpp',
+            'src/BDSEphemerisStore.cpp',
             'src/BinUtils.cpp',
             'src/BrcClockCorrection.cpp',
             'src/BrcKeplerOrbit.cpp',
@@ -19,7 +19,7 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/ClockSatStore.cpp',
             'src/CommonTime.cpp',
             'src/EngAlmanac.cpp',
-            'src/EngEphemeris.cpp'
+            'src/EngEphemeris.cpp',
             'src/EngNav.cpp',
             'src/Exception.cpp',
             'src/Expression.cpp',
@@ -28,13 +28,13 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/FFStream.cpp',
             'src/FICData.cpp',
             'src/FICHeader.cpp',
-            'src/GalEphemeris.cpp'
-            'src/GalEphemerisStore.cpp'
+            'src/GalEphemeris.cpp',
+            'src/GalEphemerisStore.cpp',
             'src/GloEphemeris.cpp',
-            'src/GloEphemerisStore.cpp'
+            'src/GloEphemerisStore.cpp',
             'src/GPSAlmanacStore.cpp',
-            'src/GPSEphemeris.cpp'
-            'src/GPSEphemerisStore.cpp'
+            'src/GPSEphemeris.cpp',
+            'src/GPSEphemerisStore.cpp',
             'src/GPSWeek.cpp',
             'src/GPSWeekZcount.cpp',
             'src/GPSZcount.cpp',
@@ -48,14 +48,14 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/ObsIDInitializer.cpp',
             'src/OrbElem.cpp',
             'src/OrbElemRinex.cpp',
-            'src/OrbitEph.cpp'
-            'src/OrbitEphStore.cpp'
+            'src/OrbitEph.cpp',
+            'src/OrbitEphStore.cpp',
             'src/PoleTides.cpp',
             'src/Position.cpp',
             'src/PositionSatStore.cpp',
             'src/PRSolution2.cpp',
-            'src/QZSEphemeris.cpp'
-            'src/QZSEphemerisStore.cpp'
+            'src/QZSEphemeris.cpp',
+            'src/QZSEphemerisStore.cpp',
             'src/ReferenceFrame.cpp',
             'src/Rinex3ClockData.cpp',
             'src/Rinex3ClockHeader.cpp',
@@ -66,7 +66,7 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             'src/Rinex3ObsHeader.cpp',
             'src/RinexClockData.cpp',
             'src/RinexClockHeader.cpp',
-            'src/RinexEphemerisStore.cpp'
+            'src/RinexEphemerisStore.cpp',
             'src/RinexMetData.cpp',
             'src/RinexMetHeader.cpp',
             'src/RinexNavData.cpp',
@@ -104,30 +104,15 @@ core_lib =  ['apps/bindings_installer/gpstk/gpstk_pylibPYTHON_wrap.cxx',
             ]
 
 
-desc = """
-The goal of the GPSTk project is to provide an open source library
-and suite of applications to the satellite navigation community--to free
-researchers to focus on research, not lower level coding.
-
-The GPSTk provides a wide array of functions that solve processing problems
-associated with GPS such as processing or using standard formats such as RINEX.
-The libraries are the basis for the more advanced applications distributed
-as part of the GPSTk suite. The GPSTk is sponsored by Space and Geophysics
-Laboratory, within the Applied Research Laboratories at the University of
-Texas at Austin (ARL:UT).
-
-GPSTk is the by-product of GPS research conducted at
-ARL:UT since before the first satellite launched in 1978; it is the combined
-effort of many software engineers and scientists. In 2003, the research staff
-at ARL:UT decided to open source much of their basic GPS processing software
-as the GPSTk.
-"""
+# long description (markdown formatted)
+with open('README') as file:
+    long_description = file.read()
 
 
 def main():
       setup(name='gpstk',
             version='2.2',
-            long_description=desc,
+            long_description=long_description,
             description='The GPS Toolkit',
             author='Applied Research Laboratories at the University of Texas at Austin',
             author_email='gpstk@arlut.utexas.edu',
@@ -135,7 +120,7 @@ def main():
             package_dir={'gpstk': 'apps/bindings_installer/gpstk'},
             ext_modules=[Extension(name='gpstk._gpstk_pylib',
                                    sources=core_lib,
-                                   extra_compile_args=['-std=c++11', '-w'],
+                                   extra_compile_args=['-w', '-std=c++11'],
                                    language='c++')],
             packages=['gpstk', 'gpstk.cpp', 'gpstk.constants', 'gpstk.exceptions'],
             scripts=map(lambda x: 'apps/bindings/swig/scripts/' + x, script_names))

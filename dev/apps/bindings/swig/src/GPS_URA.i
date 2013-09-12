@@ -19,7 +19,9 @@
 %define CHECK_BOUNDS(MAX)
    if (index > MAX)
    {
-      std::string message = "Index " + std::to_string(index) + " is greater than the max allowed index of " + std::to_string(MAX) + ".";
+      std::ostringstream ss;
+      ss << "Index " << index << " is greater than the max allowed index of " << MAX << ".";
+      std::string message = ss.str();
       gpstk::IndexOutOfBoundsException e(message);
       GPSTK_THROW(e);
    }
