@@ -81,8 +81,66 @@ namespace gpstk
    {
       try {
          OrbitEph::adjustValidity();   // for dataLoaded check
-         beginValid = ctToe - fitDuration*1800.0;     // hours*3600/2
-         endValid = ctToe + fitDuration*1800.0;
+
+	      // Beginning of Validity
+               // New concept.  Admit the following.
+	      //  (a.) The collection system may not capture the data at earliest transmit.
+	      //  (b.) The collection system may not capture the three SFs consecutively.
+	      // Consider a couple of IS-GPS-200 promises,
+	      //  (c.) By definition, beginning of validity == beginning of transmission.
+	      //  (d.) Except for uploads, cutovers will only happen on hour boundaries
+	      //  (e.) Cutovers can be detected by non-even Toc.
+	      //  (f.) Even uploads will cutover on a frame (30s) boundary.
+               // Therefore,
+	      //   1.) If Toc is NOT even two hour interval, pick lowest HOW time,
+	      //   round back to even 30s.  That's the earliest Xmit time we can prove.
+	      //   NOTE: For the case where this is the SECOND SF 1/2/3 after an upload,
+	      //   this may yield a later time as such a SF 1/2/3 will be on a even
+	      //   hour boundary.  Unfortunately, we have no way of knowing whether
+	      //   this item is first or second after upload without additional information
+	      //   2.) If Toc IS even two hour interval, pick time from SF 1,
+	      //   round back to nearest EVEN two hour boundary.  This assumes collection
+	      //   SOMETIME in first hour of transmission.  Could be more
+	      //   complete by looking at fit interval and IODC to more accurately
+	      //   determine earliest transmission time.
+         long longToc = static_cast<GPSWeekSecond>(ctToc).getSOW();
+         long XmitWeek = static_cast<GPSWeekSecond>(transmitTime).getWeek();
+         double XmitSOW = 0.0;
+         if ( (longToc % 7200) != 0)     // NOT an even two hour change
+         {
+            long Xmit = HOWtime - (HOWtime % 30);
+	         XmitSOW = (double) Xmit;
+         }
+         else
+         {
+            long Xmit = HOWtime - HOWtime % 7200;
+	         XmitSOW = (double) Xmit;
+         }
+         beginValid = GPSWeekSecond( XmitWeek, XmitSOW, TimeSystem::GPS );
+
+	      // End of Validity.
+	      // The end of validity is calculated from the fit interval
+	      // and the Toe.  The fit interval is either trivial
+	      // (if fit interval flag==0, fit interval is 4 hours)
+	      // or a look-up table based on the IODC.
+	      // Round the Toe value to the hour to elminate confusion
+	      // due to possible "small offsets" indicating uploads
+         long epochWeek = static_cast<GPSWeekSecond>(ctToe).getWeek();
+         double Toe = static_cast<GPSWeekSecond>(ctToe).getSOW();
+         long ToeOffset = (long) Toe % 3600;
+         double adjToe = Toe;                  // Default case
+         if (ToeOffset)
+         {
+            adjToe += 3600.0 - (double)ToeOffset;  // If offset, then adjust to remove
+         }
+         long endFitSOW = adjToe + (fitDuration/2)*3600;
+         short endFitWk = epochWeek;
+         if (endFitSOW >= FULLWEEK)
+         {
+            endFitSOW -= FULLWEEK;
+            endFitWk++;
+         }
+         endValid = GPSWeekSecond(endFitWk, endFitSOW, TimeSystem::GPS);
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }

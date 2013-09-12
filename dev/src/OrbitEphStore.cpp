@@ -88,6 +88,7 @@ namespace gpstk
       SatTableMap::const_iterator it;
 
       os << "Dump of " << getName() << " (detail level=" << detail << "):\n";
+      os << "  Search method is " << (strictMethod ? "User" : "Past") << endl;
 
       // all detail levels: Overall time limits and size
       os << " BCE table for all satellites has " << size() << " entries;"
@@ -465,8 +466,8 @@ namespace gpstk
 
       // First, try to find the elements that were actually being broadcast at the
       // time of interest. That will ALWAYS be the most correct response.
-      const OrbitEph* oep = findUserOrbitEph(sat, t);
-      if(oep) return oep;
+      //const OrbitEph* oep = findUserOrbitEph(sat, t);
+      //if(oep) return oep;
 
       // No OrbitEph in store for requested sat time
       // Define reference to the relevant map of orbital elements

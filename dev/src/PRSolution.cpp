@@ -864,18 +864,22 @@ namespace gpstk
       ostringstream oss;
 
       // remove duplicates and minus from satellite list
+      int nsvs(0);
       vector<RinexSatID> sats;
-      for(size_t i=0; i<SatelliteIDs.size(); i++) {
-         RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
-         if(find(sats.begin(),sats.end(),rs) == sats.end())
+      for(int i=0; i<SatelliteIDs.size(); i++) {
+         //RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
+         RinexSatID rs(SatelliteIDs[i]);
+         if(find(sats.begin(),sats.end(),rs) == sats.end()) {
+            if(rs.id > 0) nsvs++;
             sats.push_back(rs);
+         }
       }
 
       //# tag RMS week  sec.of.wk nsat rmsres    tdop    pdop    gdop slope it
       //                converg   sats... (return) [N]V"
       oss << tag << " RMS " << printTime(currTime,gpsfmt)
          //<< " " << setw(2) << SatelliteIDs.size()-Nsvs
-         << " " << setw(2) << sats.size()
+         << " " << setw(2) << nsvs
          << fixed << setprecision(3)
          << " " << setw(8) << RMSResidual
          << setprecision(2)
@@ -887,8 +891,11 @@ namespace gpstk
          << " " << setw(2) << NIterations
          << scientific << setprecision(2)
          << " " << setw(8) << Convergence;
-      for(size_t i=0; i<sats.size(); i++) {
-         oss << " " << sats[i];
+      for(int i=0; i<sats.size(); i++) {
+         if(sats[i].id < 0)
+            oss << " -" << RinexSatID(::abs(sats[i].id),sats[i].system);
+         else
+            oss << " " << sats[i];
       }
       oss << outputValidString(iret);
 

@@ -655,7 +655,7 @@ namespace gpstk
 
       gpse.HOWtime = HOWtime;
       week = static_cast<GPSWeekSecond>(gpse.ctToe).getWeek();
-      gpse.transmitTime = GPSWeekSecond(week, static_cast<double>(HOWtime),
+      gpse.transmitTime = GPSWeekSecond(weeknum, static_cast<double>(HOWtime),
          TimeSystem::GPS);
 
       gpse.codeflags = codeflgs;
@@ -1161,7 +1161,7 @@ namespace gpstk
          // specify the time system based on satellite system
          time.setTimeSystem(TimeSystem::Any);
          if(satSys == "G") time.setTimeSystem(TimeSystem::GPS);
-         if(satSys == "R") time.setTimeSystem(TimeSystem::UTC);   // R3.02 Table A10
+         if(satSys == "R") time.setTimeSystem(TimeSystem::GLO);
          if(satSys == "E") time.setTimeSystem(TimeSystem::GAL);
          if(satSys == "C") time.setTimeSystem(TimeSystem::BDT);
          if(satSys == "J") time.setTimeSystem(TimeSystem::QZS);
