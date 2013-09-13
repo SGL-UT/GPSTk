@@ -22,7 +22,7 @@ If on Windows:
 """
 
 
-import distutils
+import distutils.sysconfig
 import inspect
 import os
 import sys
