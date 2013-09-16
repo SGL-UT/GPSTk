@@ -173,14 +173,14 @@ namespace gpstk
          /// This mask is for all required valid fields
          allValid2              = 0x001207CB, // RINEX 2
 
-         //allValid30           = 0x001207EB, // RINEX 3.0 for static receivers - AntennaPosition present
-         allValid30             = 0x001205EB, // RINEX 3.0 for moving receivers -- make default
+         //allValid30           = 0x001207CB, // RINEX 3.0 for static receivers - AntennaPosition present
+         allValid30             = 0x001205CB, // RINEX 3.0 for moving receivers -- make default
 
-         //allValid301            = 0x0C1205CB, // RINEX 3.01
-         //allValid302            = 0x1C1205CB, // RINEX 3.02
+         //allValid301            = 0x0C1205AB, // RINEX 3.01
+         //allValid302            = 0x1C1205AB, // RINEX 3.02
          // NB 19Jun2013 MGEX data does not include GLONASS SLOT and GLONASS COD/PHS/BIS records
-         allValid301            = 0x041205CB, // RINEX 3.01
-         allValid302            = 0x041205CB // RINEX 3.02
+         allValid301            = 0x041205AB, // RINEX 3.01
+         allValid302            = 0x041205AB, // RINEX 3.02
       };
    
       /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
