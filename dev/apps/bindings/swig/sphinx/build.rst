@@ -4,35 +4,40 @@ Installation
 ======================
 There are two ways to build and install the GPSTk python bindings on your system:
 
-1. Download an archive file and run the setup.py script. This only requires a C++ compiler. Most users should use this, there is no
-   loss in efficiency in this option, it only eliminates some system-independent parsing steps.
-2. Clone the git repo and use CMake and your system's local build tool. This requires SWIG and a C++ compiler. To generate
-   the docstrings, this also requires Doxygen and you must also run several included python scripts.
-   Developers of the GPSTk and users that wish to be on the bleeding edge might prefer this option.
+1. Install using pre-compiled binaries. This is the easiest option for most users.
+
+2. Download an archive file and run the setup.py script. This requires a C++ compiler.
+
+3. Clone the git repo and use CMake and your system's local build tool. This requires CMake, SWIG and a C++ compiler.
+   To generate the docstrings, this also requires Doxygen and you must also run several included python scripts.
+   Developers of the GPSTk and users that wish to be on the bleeding edge should use this option.
 
 
-Building with setup.py [user build/install]
+Installing Using Binaries
+********************************************
+At this point in time, no pre-compiled binaries are provided yet.
+
+
+Installing with setup.py [user build]
 ********************************************************
 
-Extract the archive somewhere. Open a terminal, change into the directory that was extracted and run: ::
+First download extract the source archive at TODO:ADD_LINK , the run one of the following commands:
 
-    python setup.py install
-
-On a Unix system you will likely need root so use: ::
-
-    sudo python setup.py install
-
-If no root is available you can do a user local install with: ::
+For a Unix-like system that installs only for the current user: ::
 
     python setup.py install --prefix=~/.local
 
+For a Unix-like system that installs for the system: ::
 
-.. note:: gpstk/apps/bindings_installer/swig/package.sh runs the developer build system
-          below and produces the files used by distutils in setup.py. This is used by developers
-          to package the files and create archives/binaries more easily.
+    sudo python setup.py install
+
+For a Windows system using Python 2.7: ::
+
+    setup.py install
 
 
-Building with CMake [developer build/install]
+
+Installing with CMake [developer build]
 ******************************************************
 
 The build system is fairly complex, thanks to a large amount of auto-generated code procedures:
@@ -64,7 +69,9 @@ First clone to git repo to your home directory (or wherever you want), then: ::
     make
     python gpstk_builder.py  ~/.local/lib/python2.7/site-packages/
 
-If you frequently rebuild it, it might be a good idea to but the last few (usually the last 3) commands above in a bash alias/function/script.
+.. note:
+        :file:`gpstk/dev/bindings_intaller/devinstall.sh` runs these commands
+
 
 You can also run gpstk_builder.py (the final command above) without any arguments to build to the system default.
 
@@ -82,8 +89,3 @@ Additionally, the html documentation can be built/viewed with sphinx by: ::
     cd ~/gpstk/dev/apps/bindings/swig/sphinx
     make html
     firefox _build/html/index.html
-
-Binary files
-*************************
-In the future, we plan to release binary installers that will include the Python bindings of the GPSTk,
-but for the time being, it must be built from source.

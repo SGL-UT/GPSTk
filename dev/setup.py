@@ -122,8 +122,7 @@ def main():
                                    sources=core_lib,
                                    extra_compile_args=['-w', '-std=c++11'],
                                    language='c++')],
-            packages=['gpstk', 'gpstk.cpp', 'gpstk.constants', 'gpstk.exceptions'],
-            scripts=map(lambda x: 'apps/bindings/swig/scripts/' + x, script_names))
+            packages=['gpstk', 'gpstk.cpp', 'gpstk.constants', 'gpstk.exceptions'])
 
 if __name__ == '__main__':
       main()

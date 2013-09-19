@@ -1,7 +1,7 @@
 #!/bin/bash
 
 build() {
-    cd ../..
+    cd ../.. # in gpstk/dev
     # doxygen
 
     cd apps/bindings/swig
@@ -22,14 +22,21 @@ build() {
     mv -f gpstk/constants ../../../bindings_installer/gpstk
     mv -f gpstk/exceptions ../../../bindings_installer/gpstk
 
-    cd ../../../..
+    cd ../../../.. # in gpstk/dev
     python setup.py sdist --formats=zip,gztar
 
     cd apps/bindings/swig/sphinx
     make html
-    cd _build
-    tar -cvzf pythondoc.tar.gz html
-    mv -f pythondoc.tar.gz ../../../../../dist/pythondoc.tar.gz
+    cd _build/html
+    zip ../../../../../../dist/gpstkpythondoc.zip *
+
+
+    cd ../../../../../.. # in gpstk/dev
+
+    cd dist
+    py2dsc gpstk-2.2.tar.gz
+    cd deb_dist/gpstk-2.2/
+    dpkg-buildpackage -rfakeroot -uc -us
 }
 
 build

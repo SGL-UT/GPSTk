@@ -44,6 +44,6 @@ SEM Elevation Plotting example
 Timeconvert command line tool example
 *****************************************************************************
 
-.. literalinclude:: ../scripts/timeconvert.py
+.. literalinclude:: ../examples/timeconvert.py
     :language: python
 

@@ -9,4 +9,3 @@ include src/*.c
 include src/*.cpp
 include src/*.h
 include src/*.hpp
-include apps/bindings/swig/scripts/*.py

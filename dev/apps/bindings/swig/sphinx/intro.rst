@@ -19,9 +19,8 @@ process and otherwise manipulate GPS data. It is characterized by the following:
 - Includes full implementation of the RINEX (Receiver Independent Exchange Format) I/O.
 
 
-As the GPSTk is primarily a C++ library, it's API reference should still be used:
-http://www.gpstk.org/doxygen/
-
+The official GPSTk homepage is at http://www.gpstk.org/
+The original C++ API is documented at http://www.gpstk.org/doxygen/
 
 
 
@@ -73,7 +72,7 @@ Compare to the simpler Python GPSTk read process:
 
 A Note on Python Versions
 *****************************************
-These bindings were created with Python 2.7 in mind and that is how they are supported
+These bindings were created with **Python 2.7** in mind and that is how they are supported
 at the moment. It is likely Python 3.2 or 3.3 will be supported some time in the future.
 
 The standard Python implementation, CPython, must be used. The wrapping makes use
@@ -234,7 +233,7 @@ calling GPSTk routines should be caught in the standard way in Python. ::
     except gpstk.exceptions.InvalidRequest:  # the most used exception in the GPSTk
         print 'Could not process data.'
 
-When an exception is thrown by the C++ code, it is propogated to the SWIG
+When an exception is thrown by the C++ code, it is propagated to the SWIG
 system which has code (written in Exception.i) that either wraps the exception
 to one of the classes in gpstk.exceptions.
 
