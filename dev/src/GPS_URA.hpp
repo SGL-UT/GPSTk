@@ -166,7 +166,7 @@ namespace gpstk
       throw( InvalidRequest )
    {
       short ndx = ura+SV_CNAV_INDEX_OFFSET;
-      if(ndx < 0 || ndx >= SV_CNAV_NOMINAL_MAX_INDEX)
+      if(ndx < 0 || ndx > SV_CNAV_NOMINAL_MAX_INDEX)
       {
          InvalidRequest exc("URA index out of range");
          GPSTK_THROW(exc);
@@ -179,7 +179,7 @@ namespace gpstk
       throw( InvalidRequest )
    {
       short ndx = ura+SV_CNAV_INDEX_OFFSET;
-      if(ndx < 0 || ndx >= SV_CNAV_NOMINAL_MAX_INDEX)
+      if(ndx < 0 || ndx > SV_CNAV_NOMINAL_MAX_INDEX)
       {
          InvalidRequest exc("URA index out of range");
          GPSTK_THROW(exc);
