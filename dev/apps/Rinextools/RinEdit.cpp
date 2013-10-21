@@ -332,8 +332,6 @@ int ProcessFiles(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
-   static const int width=13;
-#pragma unused(width)
    int iret,nfiles;
    size_t i,nfile;
    string tag;
@@ -639,8 +637,6 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
-   int iret;
-#pragma unused(iret)
    size_t i;
    string sys;
    vector<string> flds;
@@ -726,10 +722,6 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
       // TD what if entire system is deleted
       else if(it->type == EditCmd::DS) {
          if(it->sign == -1) return 1;                 // delete the (-) command
-
-         if(it->sign == 0 && it->ttag == CommonTime::BEGINNING_OF_TIME)
-               return 0;                              // handled above where I->0
-
          // find the SV
          kt = Rdata.obs.find(it->sat);
          if(kt != Rdata.obs.end()) {                  // found the SV
@@ -939,7 +931,7 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "TB", "t[:f]", false, false, &startStr,
             "# Time related [t,f are strings, time t conforms to format f;"
             " cf. gpstk::Epoch.]\n# Default t(f) is 'week,sec-of-week'(%F,%g)"
-            " OR 'y,m,d,h,m,s'(%Y,%m,%d,%H,%M,%s)\n"
+            " OR 'y,m,d,h,m,s'(%Y,%m,%d,%H,%M,%S)\n"
             " --OF <f,t>        At RINEX time <t>, close output file and open "
                "another named <f> ()",
             "Start time: Reject data before this time");
