@@ -1526,7 +1526,20 @@ namespace gpstk
             );
             // loop over R2 obs types
             for(size_t j=0; j<R2ObsTypes.size(); ++j) {
-               string ot(R2ObsTypes[j]), obsid;
+               string ot(R2ObsTypes[j]), obsid, type, tc;
+               bool isPrecise(find(R2ObsTypes.begin(),R2ObsTypes.end(),
+                              string(s+"P"+ot[1])) != R2ObsTypes.end());
+
+               // GPS L2
+               // C2    L2 S2 D2  =>  C2X     L2X S2X D2X   (C2 not P2)
+               //    P2 L2 S2 D2  =>      C2W L2W S2W D2W   (P2 not C2)
+               // C2 P2 L2 S2 D2  =>  C2X C2W L2W S2W D2W   (C2 and P2)
+               if(s=="G" && ot[1]=='2') {
+                  if(ot[0] == 'C') { type = "C"; tc = "X"; }         // C2
+                  else if(ot[0] == 'P') { type = "C"; tc = "W"; }    // P2
+                  else { type = ot[0]; tc = (isPrecise ? "W":"X"); } // L2 S2 D2
+                  obsid = string(s+type+string(1,ot[1])+tc);
+               }
 
                // GPS+GLO 1+2
                // GPS and GLO (but GPS w/ wavelengthFactor -> tracking code N)
@@ -1536,8 +1549,7 @@ namespace gpstk
                // C2 L2 S2 D2     =>  C2C L2C S2C D2C          (C2 not P2)
                // P2 L2 S2 D2     =>  C2P L2P S2P D2P          (P2 not C2)
                // C2 P2 L2 S2 D2  =>  C2C C2P L2P S2P D2P
-               if((s=="G" || s=="R") && (ot[1]=='1' || ot[1]=='2')) {
-                  string type,tc;
+               else if((s=="G" || s=="R") && (ot[1]=='1' || ot[1]=='2')) {
                   if(ot[0] == 'C') { type = tc = "C"; }              // C1
                   else if(ot[0] == 'P') { type = "C"; tc = "P"; }    // P12
                   else { type = ot[0]; tc = (isPrecise ? "P":"C"); } // L12 S12 D12
@@ -1563,8 +1575,8 @@ namespace gpstk
                // GPS 5
                // C5 L5 S5 D5     =>  C5X L5X S5X D5X
                else if(s == "G" && ot[1] == '5') {
-                  if(ot == "C5") obsid = string("GC5X");            // C5
-                  else obsid = string(s+ot+(isPrecise ? "X" : "C"));// L5 S5 D5
+                  if(ot == "C5") obsid = string("GC5X");       // C5
+                  else obsid = string(s+ot+"X");               // L5 S5 D5
                }
 
                // GAL
@@ -1787,9 +1799,11 @@ namespace gpstk
                string allCodes(ObsID::validRinexTrackingCodes[mit->first[0]][lab[1]]);
 
                //cout << " ObsID " << lab;
-                    if(lab == string("C1C")) R2ot = string("C1");
-               else if(lab == string("C2C")) R2ot = string("C2");
-               else if(lab.substr(0,2) == "C5") R2ot = string("C5");    // R2 has C5 but not P5
+                    if(lab == string("C1C"))                      R2ot = string("C1");
+               else if(lab == string("C2X") && mit->first == "G") R2ot = string("C2");
+               else if(lab == string("C2C") && mit->first == "R") R2ot = string("C2");
+               // R2 has C5 but not P5
+               else if(lab.substr(0,2) == "C5")                   R2ot = string("C5");
                else if(lab[0] == 'C')        R2ot = string("P")+string(1,lab[1]);
                else                          R2ot = lab.substr(0,2);
                //cout << " => R2ot " << R2ot << endl;
