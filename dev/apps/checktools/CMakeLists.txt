@@ -1,9 +1,5 @@
 # apps/checktools/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-)
-
 add_executable(rowcheck rowcheck.cpp)
 target_link_libraries(rowcheck gpstk)
 install (TARGETS rowcheck DESTINATION bin)

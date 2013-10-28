@@ -1,10 +1,5 @@
 # apps/MDPtools/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-${CMAKE_SOURCE_DIR}/lib/rxio
-)
-
 add_library(mdplib STATIC
 BELogEntry.cpp
 MDPProcessors.cpp
@@ -14,7 +9,7 @@ NavProc.cpp
 SubframeProc.cpp
 UniqueAlmStore.cpp
 )
-target_link_libraries(mdplib rxio)
+target_link_libraries(mdplib gpstk)
 
 add_executable(mdptool mdptool.cpp CNAVMessageAsm.cpp)
 target_link_libraries(mdptool mdplib)

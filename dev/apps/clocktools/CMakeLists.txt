@@ -1,9 +1,5 @@
 # apps/clocktools/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-)
-
 add_executable(dallandev dallandev.cpp)
 target_link_libraries(dallandev gpstk)
 install (TARGETS dallandev DESTINATION bin)

@@ -68,8 +68,37 @@ endif(NOT "${CMAKE_COMPILER_IS_GNUCC}" )
 #    message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach()
 
+#Recursively search through lib and group the following file types
+file(GLOB_RECURSE Foo_SOURCES "lib/*.cpp")
+file(GLOB_RECURSE Foo_SOURCES2 "lib/*.c")
+file(GLOB_RECURSE Foo_HEADERS "lib/*.h")
+file(GLOB_RECURSE Foo_HEADERS2 "lib/*.hpp")
+
+#Map out the directory structure of lib
+set (Foo_INCLUDE_DIRS "")
+foreach (_headerFile ${Foo_HEADERS})
+    get_filename_component(_dir ${_headerFile} PATH)
+    list (APPEND Foo_INCLUDE_DIRS ${_dir})
+endforeach()
+
+foreach (_headerFile ${Foo_HEADERS2})
+    get_filename_component(_dir ${_headerFile} PATH)
+    list (APPEND Foo_INCLUDE_DIRS ${_dir})
+endforeach()
+list(REMOVE_DUPLICATES Foo_INCLUDE_DIRS)
+
+#include the mapped lib directory structure
+include_directories(${Foo_INCLUDE_DIRS})
+
+#Create the gpstk library
+add_library (gpstk ${STADYN} ${Foo_SOURCES} ${Foo_SOURCES2})
+
+#Install the gpstk library and headers
+install (TARGETS gpstk DESTINATION lib)
+install (FILES ${Foo_HEADERS} ${Foo_HEADERS2} DESTINATION include/gpstk )
+
+
 # GPSTk Subdirectories
-add_subdirectory (src)
-add_subdirectory (lib)
 add_subdirectory (apps)
 add_subdirectory (examples)
+

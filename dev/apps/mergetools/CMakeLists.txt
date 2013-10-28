@@ -1,8 +1,5 @@
 # apps/mergetools/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-)
 
 add_executable(mergeRinObs mergeRinObs.cpp)
 target_link_libraries(mergeRinObs gpstk)

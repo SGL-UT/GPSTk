@@ -1,10 +1,5 @@
 # apps/geomatics/relposition/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-${CMAKE_SOURCE_DIR}/lib/geomatics
-)
-
 add_library(baselib STATIC
 DataStructures.cpp
 CommandInput.cpp
@@ -25,7 +20,7 @@ ComputeRAIMSolution.cpp
 EditRawDataBuffers.cpp
 StochasticModels.cpp
 )
-target_link_libraries(baselib geomatics)
+target_link_libraries(baselib gpstk)
 
 add_executable(DDBase DDBase.cpp)
 target_link_libraries(DDBase baselib)

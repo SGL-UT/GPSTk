@@ -1,6 +1,0 @@
-add_subdirectory(geodyn)
-add_subdirectory(geomatics)
-add_subdirectory(procframe)
-add_subdirectory(rxio)
-add_subdirectory(vdraw)
-add_subdirectory(vplot)

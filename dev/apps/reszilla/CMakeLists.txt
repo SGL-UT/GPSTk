@@ -1,11 +1,5 @@
 # apps/reszilla/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-${CMAKE_SOURCE_DIR}/lib/rxio
-${CMAKE_SOURCE_DIR}/lib/geomatics
-)
-
 add_library(rlib STATIC
 DDEpoch.cpp
 PhaseCleaner.cpp
@@ -16,7 +10,7 @@ CycleSlipList.cpp
 OrdApp.cpp
 OrdEngine.cpp
 )
-target_link_libraries(rlib rxio geomatics)
+target_link_libraries(rlib gpstk)
 
 
 add_executable(ordGen ordGen.cpp)

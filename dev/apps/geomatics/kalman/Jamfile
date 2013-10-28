@@ -1,8 +1,0 @@
-# $Id$
-
-SubDir TOP apps geomatics kalman ;
-
-GPSLinkLibraries mergeSRI tkalm : gpstk geomatics ;
-
-GPSMain mergeSRI : mergeSRI.cpp ;
-GPSMain tkalm : tkalm.cpp ;

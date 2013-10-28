@@ -1,10 +1,5 @@
 # apps/filetools/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-${CMAKE_SOURCE_DIR}/lib/rxio
-)
-
 add_executable(navdmp navdmp.cpp)
 target_link_libraries(navdmp gpstk)
 install (TARGETS navdmp DESTINATION bin)
@@ -26,7 +21,7 @@ target_link_libraries(ficedit gpstk)
 install (TARGETS ficedit DESTINATION bin)
 
 add_executable(ephemfix ephemfix.cpp)
-target_link_libraries(ephemfix rxio)
+target_link_libraries(ephemfix gpstk)
 install (TARGETS ephemfix DESTINATION bin)
 
 add_executable(glodump GloDump.cpp)

@@ -1,9 +1,5 @@
 # apps/difftools/CMakeLists.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-)
-
 add_executable(rowdiff rowdiff.cpp)
 target_link_libraries(rowdiff gpstk)
 install (TARGETS rowdiff DESTINATION bin)

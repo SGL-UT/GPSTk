@@ -1,9 +1,5 @@
 # apps/positioning/CMakeListt.txt
 
-include_directories(
-${CMAKE_SOURCE_DIR}/src
-)
-
 add_executable(rinexpvt rinexpvt.cpp)
 target_link_libraries(rinexpvt gpstk)
 install (TARGETS rinexpvt DESTINATION bin)
