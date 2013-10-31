@@ -175,8 +175,8 @@ namespace gpstk
          // This method hasn't a clue about the accuracy of the SOW input by the
          // user, but it WILL enforce this relationship.
       long frameCount = sf1TransmitSOW / 30;
-      long SF1HOWTime = (frameCount * 30) + 6;
-#pragma unused(SF1HOWTime)
+      //long SF1HOWTime = (frameCount * 30) + 6;
+
          // Convert subframe 1 parameters
       subframeStore[0][0] = sf1Lead[0];
       subframeStore[0][1] = sf1Lead[1];
@@ -290,8 +290,7 @@ namespace gpstk
       CommonTime ToeCT = GPSWeekSecond(epochWeek, Toe, TimeSystem::GPS);
       CommonTime TocCT = GPSWeekSecond(epochWeek, Toc, TimeSystem::GPS);
 
-      short fiti = static_cast<short>(ficked[14]);
-#pragma unused(fiti)
+      //short fiti = static_cast<short>(ficked[14]);
       short fitHours = getLegacyFitInterval(IODC, fitint);
       long beginFitSOW = Toe - (fitHours/2)*3600;
       long endFitSOW = Toe + (fitHours/2)*3600;
@@ -993,9 +992,8 @@ namespace gpstk
       weeknum   = fullweek;
       codeflags = cflags;
       short accFlag = acc;
-      double accuracy = gpstk::ura2accuracy(accFlag);
-#pragma unused(accuracy)
-       health    = svhealth;
+      //double accuracy = gpstk::ura2accuracy(accFlag);
+      health    = svhealth;
       L2Pdata   = l2pdata;
       IODC      = iodc;
       IODE      = iode;

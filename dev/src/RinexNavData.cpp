@@ -226,9 +226,8 @@ namespace gpstk
 
          // get the epochs right
          CommonTime ct = time;
-         unsigned int year = static_cast<CivilTime>(ct).year;
-#pragma unused(year)
-          
+         //unsigned int year = static_cast<CivilTime>(ct).year;
+
          // Get week for clock, to build Toc
          double dt = Toc - HOWtime;
          int week = weeknum;

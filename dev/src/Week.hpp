@@ -204,14 +204,13 @@ namespace gpstk
 
       inline virtual void adjustToYear(unsigned int y)
       {
-         unsigned short halfroll = rollover()/2;
          long jd1,jd2;
-         int iyear,imon,iday,ep1,ep2;
-#pragma unused(iyear,imon,iday)
+         int ep1,ep2;
          jd1 = convertCalendarToJD(y,1,1);
          ep1 = (jd1 - MJD_JDAY - MJDEpoch())/7/rollover();
          jd2 = convertCalendarToJD(y,12,31);
          ep2 = (jd2 - MJD_JDAY - MJDEpoch())/7/rollover();
+         unsigned int halfroll = rollover()/2;
          unsigned int mw = getModWeek();
 
          if(ep1 == ep2)                      // no rollover in given year

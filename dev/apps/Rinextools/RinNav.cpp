@@ -29,14 +29,12 @@
 #include <vector>
 #include <map>
 #include <list>
-//#include <algorithm>
 #include <iostream>
 #include <fstream>
 
 // GPSTK
 #include "Exception.hpp"
 #include "StringUtils.hpp"
-//#include "GNSSconstants.hpp"
 #include "singleton.hpp"
 #include "expandtilde.hpp"
 #include "logstream.hpp"
@@ -45,7 +43,6 @@
 #include "CommonTime.hpp"
 #include "Epoch.hpp"
 #include "TimeString.hpp"
-//#include "GPSWeekSecond.hpp"
 
 #include "RinexSatID.hpp"
 
@@ -61,9 +58,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 9/1/11 rev"));
-// TD
-// END TD
+string Version(string("2.0 9/1/13"));
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
@@ -376,11 +371,11 @@ string Configuration::BuildCommandLine(void) throw()
    opts.Add(0, "exSat", "sat", true, false, &exclSat, "",
             "Exclude satellite [system] from output [e.g. G17,R]");
 
-   opts.Add(0, "out", "[sys,]fn", false, false, &outputStrs,
-            "# Output [sys may be char (G,R,E,S,C) or 3-char (GPS,GLO,...)]:",
-            "Output [system sys only] to RINEX ver. 3 file fn");
-   opts.Add(0, "out2", "[sys,]fn", false, false, &output2Strs, "",
-            "Version 2 output [system sys only] to RINEX file fn");
+   opts.Add(0, "out", "[sys:]fn", true, false, &outputStrs,
+            "# Output [sys may be 1(G,R,E,S,C,J: R2 G,R only) or 3(GPS,...)-char]:",
+            "Output [system <sys> only] to RINEX ver. 3 file fn");
+   opts.Add(0, "out2", "[sys:]fn", true, false, &output2Strs, "",
+            "Version 2 output [system <sys> only] to RINEX file fn");
    opts.Add(0, "timefmt", "fmt", false, false, &userfmt, "",
             "Format for time tags (see GPSTK::Epoch::printf) in output");
    opts.Add(0, "ver2", "", false, false, &outver2, "",
@@ -450,7 +445,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
    // output file names
    for(i=0; i<outputStrs.size(); i++) {
       msg = outputStrs[i];
-      fld = split(msg,',');
+      fld = split(msg,':');
       if(fld.size() <= 0 || fld.size() > 2) {
          oss << "Error : invalid --out argument : " << msg;
          continue;
@@ -466,11 +461,12 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
                                               mapSysOutputFile[string("S")] = fld[1];
          if(fld[0] == "BDS" || fld[0] == "C") mapSysOutputFile[string("C")] = fld[1];
          if(fld[0] == "QZS" || fld[0] == "J") mapSysOutputFile[string("J")] = fld[1];
+         LOG(VERBOSE) << "Input system " << fld[0] << " and output file " << fld[1];
       }
    }
    for(i=0; i<output2Strs.size(); i++) {
       msg = output2Strs[i];
-      fld = split(msg,',');
+      fld = split(msg,':');
       if(fld.size() <= 0 || fld.size() > 2) {
          oss << "Error : invalid --out2 argument : " << msg;
          continue;
@@ -505,90 +501,44 @@ int ProcessFiles(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
-   int nread,nfiles;
-   size_t nfile;
+   int nread;
    Rinex3NavHeader Rheadout,Rhead;
 
-   for(nfiles=0,nfile=0; nfile<C.InputNavFiles.size(); nfile++) {
+   size_t nfiles(0);
+   for(size_t nfile=0; nfile<C.InputNavFiles.size(); nfile++) {
       
       string filename(C.InputNavFiles[nfile]);
 
-      // loop over the nav records
-      try {
-         Rinex3NavStream strm;
-         Rinex3NavData Rdata;
-
-         strm.open(filename.c_str(), ios::in);
-         if(!strm.is_open()) {
-            LOG(WARNING) << "Warning - File " << filename << " could not be opened.";
-            continue;
-         }
-         strm.exceptions(ios::failbit);
-
-         try { strm >> Rhead; }
-         catch(Exception& e) {
-            LOG(WARNING) << "Warning - Failed to read header: " << e.what()
-               << "\nHeader dump follows.";
-            Rhead.dump(LOGstrm);
-            continue;
-         }
-         if(C.debug > -1) {
-            LOG(DEBUG) << "Dump RINEX header:";
-            Rhead.dump(LOGstrm);
-         }
-         else if(C.verbose) {
-            LOG(VERBOSE) << "Input header for RINEX file " << filename;
-            Rhead.dump(LOGstrm);
-         }
-
-         // add to store's FileStore
-         C.NavStore.addFile(filename,Rhead);
-
-         // read the data
-         nread = 0;
-         while(1) {
-            // read the record
-            try { strm >> Rdata; }
-            catch(Exception& e) {
-               LOG(WARNING) << "Warning - Failed to read nav data: " << e.what()
-                  << "\nData dump follows.";
-               Rdata.dump(LOGstrm);
-               break;
-            }
-            catch(exception& e) {
-               LOG(WARNING) << "Warning - std excep: " << e.what()
-                  << " while reading nav data.";
-               break;
-            }
-            catch(...) {
-               LOG(WARNING) << "Warning - unknown exception  while reading nav data.";
-               break;
-            }
-
-            if(!strm.good() || strm.eof()) break;
-
-            nread++;
-            if(C.debug > -1) Rdata.dump(LOGstrm);
-
-            try {
-               C.NavStore.addEphemeris(Rdata);
-            }
-            catch(Exception& e) {
-               LOG(ERROR) << "Error - exception in addEphemeris: " << e.what();
-               GPSTK_RETHROW(e);
-            }
-         }
-
-         nfiles++;
-         LOG(VERBOSE) << "Read " << nread << " records from file " << filename;
+      // load filename
+      nread = C.NavStore.loadFile(filename,(C.debug>-1),LOGstrm);
+      if(nread == -1) {        // -1 failed to open file
+         LOG(WARNING) << C.NavStore.what;
+         continue;
       }
-      catch(Exception& e) { GPSTK_RETHROW(e); }
+      else if(nread == -2) {   // -2 failed to read header
+         LOG(WARNING) << "Warning : Failed to read header: " << C.NavStore.what
+            << "\n Header dump follows.";
+         C.NavStore.Rhead.dump(LOGstrm);
+         continue;
+      }
+      else if(nread == -3) {   // -3 failed to read data
+         LOG(WARNING) << " Warning : Failed to read nav data (Exception "
+            << C.NavStore.what << "); dump follows.";
+         C.NavStore.Rdata.dump(LOGstrm);
+         continue;
+      }
+      else nfiles++;
+
+      LOG(VERBOSE) << "Opened input file " << filename;
+
+      Rhead = C.NavStore.Rhead;
 
       // save header
       if(nfiles == 1) {
          Rheadout = Rhead; // C.NavStore.Rhead;
          Rheadout.fileProgram = C.PrgmName + string(" ") + Version;
       }
+
       // merge headers
       else {
          // add Time Correction records from Rhead to Rheadout
@@ -621,12 +571,14 @@ try {
    }  // end loop over files
 
    if(nfiles == 0) {
-      LOG(WARNING) << "Failed to read any files.";
+      LOG(WARNING) << "Warning - Failed to read any files.";
       return -1;
    }
+   else
+      LOG(INFO) << "Read " << nfiles << " input RINEX Nav files.\n";
 
    // dump store
-   C.NavStore.dump(LOGstrm,1);
+   C.NavStore.dump(LOGstrm,(C.debug>-1 ? 1 : 0));
 
    // stay within time limits
    C.NavStore.edit(C.beginTime,C.endTime);
@@ -661,18 +613,19 @@ try {
 
    // get full list of Rinex3NavData
    list<Rinex3NavData> theList,theFullList;
+   list<Rinex3NavData>::const_iterator listit;
    C.NavStore.addToList(theFullList);
 
    // N... is what was read; n... will be what is kept
    int neph(0), nGPS(0), nGLO(0), nGAL(0), nGEO(0), nBDS(0), nQZS(0);
 
    // must edit out any excluded sats
-   list<Rinex3NavData>::const_iterator listit;
    if(C.exclSat.size() > 0) {
       for(listit = theFullList.begin(); listit != theFullList.end(); ++listit) {
          // skip excluded sats/systems
          if(vectorindex(C.exclSat,listit->sat) != -1 ||
-            vectorindex(C.exclSat,RinexSatID(-1,listit->sat.system)) != -1) continue;
+            vectorindex(C.exclSat,RinexSatID(-1,listit->sat.system)) != -1)
+               continue;
          // keep it
          theList.push_back(*listit);
          // count it
@@ -706,16 +659,27 @@ try {
       LOG(WARNING) << "Warning - no data to output.";
       return nfiles;
    }
+   else LOG(INFO) << " Found " << nsys << " systems and " << neph << " records.";
 
    // sort on time, then sat
    theList.sort();
 
-   // output store to file(s)
+   // dump
+   LOG(VERBOSE) << "Dump records to be written";
+   if(C.verbose)
+      for(listit = theList.begin(); listit != theList.end(); ++listit)
+         LOG(VERBOSE) << listit->dumpString();
+
+   if(C.mapSysOutputFile.size() == 0)
+      LOG(INFO) << "No output of RINEX 3 Navigation data selected.";
+
+   // output store to file(s) -----------------------------------------------
    // version 3
    map<string, string>::const_iterator it;
    for(it = C.mapSysOutputFile.begin(); it != C.mapSysOutputFile.end(); ++it) {
       string sys(it->first);
       string filename(it->second);
+      neph = 0;
 
       Rinex3NavStream ostrm;
       ostrm.open(filename.c_str(),ios::out);
@@ -730,8 +694,8 @@ try {
       // prepare header
       Rinex3NavHeader rhead(Rheadout);
       // set version; NB set the version before calling setFileSystem()
-      if(rhead.version < 3.01)
-         rhead.version = 3.01;  // this necessary? shouldn't Rinex3NavHeader do it?
+      if(rhead.version < 3.02)
+         rhead.version = 3.02;  // this necessary? shouldn't Rinex3NavHeader do it?
 
       // reset the file system
       // set system to mixed if more than one store
@@ -751,21 +715,26 @@ try {
 
       LOG(DEBUG) << "Dump records to be written";
       for(listit = theList.begin(); listit != theList.end(); ++listit) {
-         if(C.debug > -1) listit->dump(LOGstrm);   // dump it
-         ostrm << *listit;                         // write it
+         if(listit->sat.system != rhead.fileSysSat.system) continue;
+         if(C.debug > -1) listit->dump(LOGstrm);     // dump it
+         ostrm << *listit;             // write it
+         neph++;
       }
 
       ostrm.close();
 
-      //if(sys == "M") LOG(VERBOSE) << "Wrote " << neph << " records for all systems";
-      if(sys == "G") LOG(VERBOSE) << "Wrote " << nGPS << " records for GPS";
-      if(sys == "R") LOG(VERBOSE) << "Wrote " << nGLO << " records for GLO";
-      if(sys == "E") LOG(VERBOSE) << "Wrote " << nGAL << " records for GAL";
-      if(sys == "S") LOG(VERBOSE) << "Wrote " << nGEO << " records for GEO";
-      if(sys == "C") LOG(VERBOSE) << "Wrote " << nBDS << " records for BDS";
-      if(sys == "J") LOG(VERBOSE) << "Wrote " << nQZS << " records for QZS";
+      //if(sys == "M") LOG(VERBOSE) << "Had " << neph << " records for all systems";
+      if(sys == "G") LOG(VERBOSE) << "Had " << nGPS << " records for GPS";
+      if(sys == "R") LOG(VERBOSE) << "Had " << nGLO << " records for GLO";
+      if(sys == "E") LOG(VERBOSE) << "Had " << nGAL << " records for GAL";
+      if(sys == "S") LOG(VERBOSE) << "Had " << nGEO << " records for GEO";
+      if(sys == "C") LOG(VERBOSE) << "Had " << nBDS << " records for BDS";
+      if(sys == "J") LOG(VERBOSE) << "Had " << nQZS << " records for QZS";
       LOG(VERBOSE) << "Wrote " << neph << " records to RINEX ver 3 file " << filename;
    }
+
+   if(C.mapSysOutput2File.size() == 0)
+      LOG(INFO) << "No output of RINEX 2 Navigation data selected.";
 
    // version 2
    for(it = C.mapSysOutput2File.begin(); it != C.mapSysOutput2File.end(); ++it) {

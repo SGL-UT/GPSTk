@@ -108,10 +108,9 @@ namespace gpstk {
       double ea;              // eccentric anomaly
       double delea;           // delta eccentric anomaly during iteration
       double elapte;          // elapsed time since Toe
-      double elaptc;          // elapsed time since Toc
-      double dtc,dtr,q,sinea,cosea;
-#pragma unused(elaptc,dtr,dtc)
-       
+      //double elaptc;          // elapsed time since Toc
+      //double dtc,dtr;
+      double q,sinea,cosea;
       double GSTA,GCTA;
       double amm;
       double meana;           // mean anomaly
@@ -256,9 +255,7 @@ namespace gpstk {
 
       // Compute A at time of interest
       double Ak = A + Adot*elapte;                 // LNAV: Adot==0
-      double dnA = dn + 0.5*dndot*elapte;          // LNAV: dndot==0
-#pragma unused(dnA)
-       
+      //double dnA = dn + 0.5*dndot*elapte;          // LNAV: dndot==0
       double Ahalf = SQRT(A);
       double amm = (sqrtgm / (A*Ahalf)) + dn;      // Eqn specifies A0 not Ak
       double meana,F,G,delea;

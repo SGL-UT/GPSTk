@@ -135,7 +135,7 @@ public:
 // const members of Configuration
 const string Configuration::PrgmName = string("RinSum");
 const string Configuration::calfmt = string("%04Y/%02m/%02d %02H:%02M:%02S");
-const string Configuration::gpsfmt = string("%4F %w %10.3g");
+const string Configuration::gpsfmt = string("%4F %w %10.3g %P");
 const string Configuration::longfmt = calfmt + " = " + gpsfmt;
 
 //------------------------------------------------------------------------------------
@@ -668,9 +668,10 @@ try {
          }
 
          lastObsTime = Rdata.time;
-         lastObsTime.setTimeSystem(TimeSystem::Any);  // TD why?
-         if(firstObsTime == CommonTime::BEGINNING_OF_TIME)
+         lastObsTime.setTimeSystem(Rhead.firstObs.getTimeSystem());
+         if(firstObsTime == CommonTime::BEGINNING_OF_TIME) {
             firstObsTime = lastObsTime;
+         }
 
          //LOG(INFO) << "";
          LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
@@ -1116,8 +1117,8 @@ try {
                   // satellite 'off'
                   j = int(double(tabIt->gapcount[i]/dn));
                   if(!first) {
-                     vtab.insert(multimap<int, string>::value_type(  
-                                       kk, string("-")+asString(tabIt->sat)));
+                     vtab.insert(multimap<int, string>::value_type(
+                           kk, string("-")+asString(tabIt->sat)));
                      //ossvt << " " << kk << "-,";
                      kk = j;
                   }
@@ -1130,8 +1131,8 @@ try {
                   }
                   // satellite 'on'
                   j = int(double(tabIt->gapcount[i+1]/dn));
-                  vtab.insert(multimap<int, string>::value_type(  
-                                    kk, string("+")+asString(tabIt->sat)));
+                  vtab.insert(multimap<int, string>::value_type(
+                        kk, string("+")+asString(tabIt->sat)));
                   //ossvt << " " << kk << "+,";
                   kk = j;
                   jj = j-k;
@@ -1142,8 +1143,8 @@ try {
                      k = j;
                   }
                }
-               vtab.insert(multimap<int, string>::value_type(  
-                                 kk, string("-")+asString(tabIt->sat)));
+               vtab.insert(multimap<int, string>::value_type(
+                     kk, string("-")+asString(tabIt->sat)));
                //oss << "-" << kk;
                LOG(INFO) << oss.str();
                //LOG(INFO) << ossvt.str() << " " << kk << "-";

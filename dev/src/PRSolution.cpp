@@ -266,8 +266,7 @@ namespace gpstk
          // prepare for iteration loop
          // iterate at least twice so that trop model gets evaluated
          int n_iterate(0), niter_limit(niterLimit < 2 ? 2 : niterLimit);
-#pragma unused(niter_limit)
-          double converge(0.0);
+         double converge(0.0);
 
          // start with solution = apriori
          Vector<double> APSolution;
@@ -418,7 +417,7 @@ namespace gpstk
                iret = 0;
                break;
             }
-            if(n_iterate >= niterLimit || converge > 1.e10) {        // failure: quit
+            if(n_iterate >= niter_limit || converge > 1.e10) {       // failure: quit
                iret = -1;
                break;
             }
@@ -863,23 +862,25 @@ namespace gpstk
    {
       ostringstream oss;
 
-      // remove duplicates and minus from satellite list
-      int nsvs(0);
-      vector<RinexSatID> sats;
-      for(int i=0; i<SatelliteIDs.size(); i++) {
-         //RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
-         RinexSatID rs(SatelliteIDs[i]);
-         if(find(sats.begin(),sats.end(),rs) == sats.end()) {
-            if(rs.id > 0) nsvs++;
-            sats.push_back(rs);
+      // remove duplicates from satellite list, and find "any good data" ones
+      // this gets tricky since there may be >1 datum from one satellite
+      // in the following, good means 1+ good data exist; bad means all data bad
+      int i;
+      vector<RinexSatID> sats,goodsats;
+      for(i=0; i<SatelliteIDs.size(); i++) {
+         RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
+         if(find(sats.begin(),sats.end(),rs) == sats.end())
+            sats.push_back(rs);           // all satellites
+         if(SatelliteIDs[i].id > 0) {
+            if(find(goodsats.begin(),goodsats.end(),rs) == goodsats.end())
+               goodsats.push_back(rs);    // good satellites
          }
       }
 
       //# tag RMS week  sec.of.wk nsat rmsres    tdop    pdop    gdop slope it
       //                converg   sats... (return) [N]V"
       oss << tag << " RMS " << printTime(currTime,gpsfmt)
-         //<< " " << setw(2) << SatelliteIDs.size()-Nsvs
-         << " " << setw(2) << nsvs
+         << " " << setw(2) << goodsats.size()
          << fixed << setprecision(3)
          << " " << setw(8) << RMSResidual
          << setprecision(2)
@@ -892,10 +893,10 @@ namespace gpstk
          << scientific << setprecision(2)
          << " " << setw(8) << Convergence;
       for(int i=0; i<sats.size(); i++) {
-         if(sats[i].id < 0)
-            oss << " -" << RinexSatID(::abs(sats[i].id),sats[i].system);
-         else
+         if(find(goodsats.begin(),goodsats.end(),sats[i]) != goodsats.end())
             oss << " " << sats[i];
+         else
+            oss << " -" << sats[i];
       }
       oss << outputValidString(iret);
 

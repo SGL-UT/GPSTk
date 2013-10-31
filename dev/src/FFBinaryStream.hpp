@@ -137,8 +137,7 @@ namespace gpstk
       template <class T> void writeData(const T& data)
          throw(FFStreamError)
       {
-         T temp = data;
-#pragma unused(temp)
+         //T temp = data;
           writeData((char*)&data, sizeof(T));
          return;
       } // end of writeData(FFStream& strm, const T& data)

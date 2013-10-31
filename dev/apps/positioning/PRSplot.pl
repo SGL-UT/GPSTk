@@ -1,5 +1,4 @@
 #!/usr/bin/perl
-# $Id$
 use strict;
 use warnings;
 
@@ -511,7 +510,6 @@ sub ProcessData {
       # get rest
       if($fields[0] eq 'RPF' and $fields[2] eq 'RMS') {
          $nsv = $fields[5];
-         #$rej = $fields[5];
          if($self->{no4} and $nsv <= 4) {
             $Nbad++;
             $self->{rejects}->{'4svs'}++;
@@ -536,6 +534,7 @@ sub ProcessData {
                $ngood{$sys}++;
             }
          }
+         $rej = scalar keys %nbad;
 
          foreach $sys (keys %ngood) {
             my $str = "$sys $sow $ngood{$sys} good";      # sys sow n good

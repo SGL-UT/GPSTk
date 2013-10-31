@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 /**
  * @file Rinex3ObsHeader.cpp
  * Encapsulate header of Rinex observation file, including I/O

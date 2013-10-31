@@ -89,7 +89,7 @@ using namespace gpstk;
 using namespace gpstk::StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("5.0 8/1/13 rev"));
+string Version(string("5.0 8/1/13"));
 
 // forward declarations
 class SolutionObject;

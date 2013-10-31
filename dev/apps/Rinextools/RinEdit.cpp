@@ -58,7 +58,8 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.0 8/1/11 rev"));
+#include "svn_version.hpp"
+string Version(string("1.0 8/1/11 rev") + string(SVNversion()));
 // TD
 // option to replace input with output?
 // include optional fmt input for t in edit cmds - is this feasible?

@@ -126,7 +126,7 @@ namespace gpstk
       // Leap seconds history
       // ***** This table must be updated for new leap seconds **************
       static const struct {
-         int year, month, nleap;
+         unsigned int year, month, nleap;
       } leaps[] = {
          { 1972,  1, 10 },
          { 1972,  7, 11 },
@@ -162,9 +162,8 @@ namespace gpstk
       static const int NLEAPS = sizeof(leaps)/sizeof(leaps[0]);
 
       // last year in leaps
-      static const int MAXYEAR = leaps[NLEAPS-1].year;
-#pragma unused(MAXYEAR)
-       
+      //static const int MAXYEAR = leaps[NLEAPS-1].year;
+
       // END static data -----------------------------------------------------
 
       // search for the input year, month

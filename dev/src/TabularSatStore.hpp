@@ -751,10 +751,6 @@ namespace gpstk
 
    };
 
-   /// Non-member Operator overload for handling of gpstk::Xvt object
-   inline std::ostream& operator<<(std::ostream &os, const gpstk::Xvt &obj)
-      { return os; } //NB may need additional code
-
       //@}
 
 }  // End of namespace gpstk

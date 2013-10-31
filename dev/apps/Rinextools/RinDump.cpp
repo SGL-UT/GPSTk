@@ -77,7 +77,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.3 1/28/13 rev"));
+string Version(string("1.4 10/31/13"));
 // TD
 // VI LAT LON not implemented
 // Code selection is not implemented - where to replace C1* with C1W ?
@@ -282,8 +282,8 @@ try {
       // read stores, check input etc
       string errs;
       if((iret = Initialize(errs)) != 0) {
-         LOG(ERROR) << "------- Input is not valid: ----------\n" << errs
-                    << "\n------- end errors -----------";
+         LOG(ERROR) << "#------- Input is not valid: ----------\n" << errs
+                    << "\n#------- end errors -----------";
          break;
       }
       if(!errs.empty()) LOG(INFO) << errs;         // Warnings are here too
@@ -293,7 +293,15 @@ try {
       break;      // mandatory
    }
 
-   if(iret >= 0 && !C.noHeader) {
+   if(iret < 0) {
+      if(iret == -2) { LOG(INFO) << "Error - Memory error."; }
+      else if(iret == -3) { LOG(INFO) << "Error - invalid command line"; }
+      else if(iret == -4) { LOG(INFO) << "Error - log file could not be opened"; }
+      else if(iret == -5) ; //{ LOG(INFO) << "Error - invalid input"; }
+      else { LOG(INFO) << "Error - some other error code"; }
+      return iret;
+   }
+   else if(iret >= 0 && !C.noHeader) {
       // print elapsed time
       totaltime = clock()-totaltime;
       Epoch wallclkend;
@@ -305,7 +313,7 @@ try {
       LOG(INFO) << oss.str();
    }
 
-   return iret;
+   return 0;
 }
 catch(FFStreamError& e) { cerr << "FFStreamError: " << e.what(); }
 catch(Exception& e) { cerr << "Exception: " << e.what(); }
@@ -576,8 +584,8 @@ try {
       bool needPos(false);
       for(i=0; i<C.InputTags.size(); i++) {
          string tag(C.InputTags[i]);
-         if(tag == "RNG" || tag == "ELE" || tag == "AZI" || tag == "TRP"
-               || tag == "LAT" || tag == "LON") {
+         if(tag == "RNG" || tag == "ELE" || tag == "AZI"
+               || tag == "TRP" || tag == "LAT" || tag == "LON") {
             ossE << "Error : Rx-dependent data " << tag << " requires --ref input\n";
             isValid = false;
          }
@@ -709,6 +717,7 @@ try {
    // -------- save errors and output
    errors = ossE.str();
    stripTrailing(errors,'\n');
+   errors.insert(0,"# ");
    replaceAll(errors,"\n","\n# ");
 
    if(!isValid) return -5;
@@ -716,19 +725,6 @@ try {
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end Initialize()
-
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-int routine(void) throw(Exception)
-{
-try {
-   Configuration& C(Configuration::Instance());
-#pragma unused(C)
-
-   return 0;
-}
-catch(Exception& e) { GPSTK_RETHROW(e); }
-}  // end routine()
 
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
@@ -1058,7 +1054,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
       replaceAll(cmdlineErrors,"\n","\n ");
       LOG(ERROR) << "Errors found on command line:\n " << cmdlineErrors
          << "\nEnd of command line errors.";
-      return 1;
+      return -3;
    }
 
    // success: dump configuration summary
@@ -1167,10 +1163,10 @@ string Configuration::BuildCommandLine(void) throw()
             "Stop processing data at this epoch");
    opts.Add(0, "decimate", "dt", false, false, &decimate, "",
             "Decimate data to time interval dt (0: no decimation)");
-   opts.Add(0, "debias", "type,lim", false, false, &typeLimit, "",
+   opts.Add(0, "debias", "type,lim", true, false, &typeLimit, "",
             "Debias jumps in data larger than limit (0: no debias)");
-   opts.Add(0, "debias0", "type", false, false, &typeLimit0, "",
-            "Toggle initial debias of data ()");
+   opts.Add(0, "debias0", "type", true, false, &typeLimit0, "",
+            "Toggle initial debias of data <type> ()");
 
    opts.Add(0, "ref", "p[:f]", false, false, &refPosStr, "# Other input",
             "Known position, default fmt f '%x,%y,%z', for resids, elev and ORDs");
@@ -1255,6 +1251,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
       static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
       msg = (i==0 ? startStr : stopStr);
       if(msg == (i==0 ? defaultstartStr : defaultstopStr)) continue;
+      CommonTime ct;
 
       bool ok(true);
       bool hasfmt(msg.find('%') != string::npos);
@@ -1263,19 +1260,17 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          fld = split(msg,':');
          if(fld.size() != 2) { ok = false; }
          else try {
-            Epoch ep;
             stripLeading(fld[0]," \t");
             stripLeading(fld[1]," \t");
-            ep.scanf(fld[0],fld[1]);
-            (i==0 ? beginTime : endTime) = static_cast<CommonTime>(ep);
+            scanTime(ct,fld[0],fld[1]);
+            (i==0 ? beginTime : endTime) = ct;
          }
          catch(Exception& e) { ok = false; LOG(INFO) << "excep " << e.what(); }
       }
       else if(n == 2 || n == 6) {        // try the defaults
          try {
-            Epoch ep;
-            ep.scanf(msg,(n==2 ? fmtGPS : fmtCAL));
-            (i==0 ? beginTime : endTime) = static_cast<CommonTime>(ep);
+            scanTime(ct,msg,(n==2 ? fmtGPS : fmtCAL));
+            (i==0 ? beginTime : endTime) = ct;
          }
          catch(Exception& e) { ok = false; LOG(INFO) << "excep " << e.what(); }
       }
@@ -1477,8 +1472,7 @@ try {
             oss.str("");
             oss << "# Header ObsIDs " << sat.systemString3() //<< " " << kt->first
                << " (" << kt->second.size() << "):";
-            for(i=0; i<kt->second.size(); i++) oss << " " << asString(kt->second[i]);
-               //<< asString(static_cast<ObsID>(kt->second[i]));
+            for(i=0; i<kt->second.size(); i++) oss << " " << kt->second[i].asString();
             LOG(INFO) << oss.str();
          }
 
@@ -1546,13 +1540,13 @@ try {
 
          // stay within time limits
          if(Rdata.time < C.beginTime) {
-            LOG(DEBUG) << " RINEX data timetag " << printTime(C.beginTime,C.longfmt)
-               << " is before begin time.";
+            LOG(DEBUG) << " RINEX data timetag " << printTime(Rdata.time,C.longfmt)
+               << " is before begin time " << printTime(C.beginTime,C.longfmt);
             continue;
          }
          if(Rdata.time > C.endTime) {
-            LOG(DEBUG) << " RINEX data timetag " << printTime(C.endTime,C.longfmt)
-               << " is after end time.";
+            LOG(DEBUG) << " RINEX data timetag " << printTime(Rdata.time,C.longfmt)
+               << " is after end time " << printTime(C.endTime,C.longfmt);
             break;
          }
 
@@ -1630,7 +1624,7 @@ try {
          // epochFlag is for regular data
          else {
             if(C.haveObs || C.haveNonObs || C.haveCombo) {
-               // dump receiver clock offset
+               // dump receiver clock offset - its own line
                if(C.haveRCL) LOG(INFO) << line << " RCL " << fixed << setprecision(3)
                   << setw(width) << Rdata.clockOffset * C_MPS;
 
@@ -1674,6 +1668,7 @@ try {
                   const vector<RinexDatum>& vrdata(it->second);
 
                   // output the sat ID
+                  ok = false;                // reuse ok
                   oss.str("");
                   oss << " " << sat << fixed << setprecision(3);
 
@@ -1694,6 +1689,7 @@ try {
                         data = getNonObsData(tag, sat, Rdata.time);
 
                      oss << " " << setw(width) << data;
+                     if(data != 0.0) ok=true;
                   }
 
                   // output linear combinations
@@ -1703,6 +1699,7 @@ try {
                      if(C.Combos[i].removeBias(sat))
                         resets.push_back(C.Combos[i].label);
                      oss << " " << setw(width) << C.Combos[i].value;
+                     if(C.Combos[i].value != 0.0) ok=true;
                   }
 
                   // output resets
@@ -1711,7 +1708,7 @@ try {
                      oss << " " << resets[i];
 
                   // output the complete line
-                  LOG(INFO) << line << oss.str();
+                  if(ok) LOG(INFO) << line << oss.str();
 
                }  // end loop over satellites
             }  // end if haveObs
@@ -1748,8 +1745,6 @@ double getObsData(string tag, RinexSatID sat, Rinex3ObsHeader& Rhead,
    try {
       double data(0);
       string sys(1,sat.systemChar());              // system of this sat
-      Configuration& C(Configuration::Instance());
-#pragma unused(C)
 
       if(tag.size() == 4 && tag[0] != sys[0])
          return 0;                                 // system does not match
@@ -1790,7 +1785,7 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
             C.mapSatCER[sat] = CER;
          }
          catch(Exception& e) {
-            if(!C.noHeader) LOG(WARNING) << "# Warning - no ephemeris for ("
+            if(!C.noHeader) LOG(VERBOSE) << "# Warning - no ephemeris for ("
                   << tag << ") sat " << sat;
             return data;
          }

@@ -177,6 +177,12 @@ namespace gpstk
                case 'e':
                   setModWeek( asInt( i->second ) );
                   break;
+               case 'w':
+                  sow = static_cast<double>(asInt(i->second))*SEC_PER_DAY;
+                  break;
+               case 'g':
+                  sow = asDouble( i->second );
+                  break;
                case 'P':
                   timeSystem.fromString(i->second);
                   break;
