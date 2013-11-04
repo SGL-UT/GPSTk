@@ -64,12 +64,15 @@
 #include "SP3Stream.hpp"
 
 #include "SP3EphemerisStore.hpp"
-#include "GPSEphemerisStore.hpp"
-//#include "GLOEphemerisStore.hpp"
+#include "Rinex3EphemerisStore.hpp"
+//#include "GPSEphemerisStore.hpp"
+//#include "GloEphemerisStore.hpp"
 
 #include "TropModel.hpp"
 #include "EphemerisRange.hpp"
 #include "Position.hpp"
+
+#include "svn_version.hpp"
 
 //------------------------------------------------------------------------------------
 using namespace std;
@@ -77,7 +80,8 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("1.4 10/31/13"));
+string Version(string("1.4 10/31/13")
+               + string(" rev") + string(SVNversion()));
 // TD
 // VI LAT LON not implemented
 // Code selection is not implemented - where to replace C1* with C1W ?
@@ -109,10 +113,8 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
    LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
-#pragma clang diagnostic pop
+
    /// parse input string
    bool ParseAndSave(const string& str, bool save=true) throw();
 
@@ -194,6 +196,7 @@ public:
    string userfmt;            // user's time format for output
    string TropStr;            // temp used to parse --trop
    double IonoHt;             // ionospheric height
+   double elevlimit;          // limit on elevation angle (degrees) requires ELE input
 
    // end of command line input
 
@@ -206,8 +209,9 @@ public:
    // stores
    XvtStore<SatID> *pEph;
    SP3EphemerisStore SP3EphStore;
-   GPSEphemerisStore GPSNavStore;
-   //GLOEphemerisStore GLONavStore;      // not used - yet
+   Rinex3EphemerisStore RinEphStore;
+   //GPSEphemerisStore GPSNavStore;
+   //GloEphemerisStore GLONavStore;      // not used - yet
    map<RinexSatID,int> GLOfreqChan;    // either user input or Nav files
 
    // trop models
@@ -339,8 +343,7 @@ try {
    expand_filename(C.InputSP3Files);
    expand_filename(C.InputNavFiles);
 
-   int nread;
-   size_t i;
+   size_t i, nfile, nread, nrec;
    ostringstream ossE;
 
    // -------- SP3 files --------------------------
@@ -381,9 +384,9 @@ try {
    // read sorted ephemeris files and fill store
    nread = 0;        // use for both SP3 and RINEXnav
    try {
-      if(isValid) for(i=0; i<C.InputSP3Files.size(); i++) {
-         LOG(DEBUG) << "Load SP3 file " << C.InputSP3Files[i];
-         C.SP3EphStore.loadSP3File(C.InputSP3Files[i]);
+      if(isValid) for(nfile=0; nfile<C.InputSP3Files.size(); nfile++) {
+         LOG(DEBUG) << "Load SP3 file " << C.InputSP3Files[nfile];
+         C.SP3EphStore.loadSP3File(C.InputSP3Files[nfile]);
          nread++; C.haveEph=true;
       }
    }
@@ -461,8 +464,9 @@ try {
    }
 
    // assign pEph // TD add GLONav later
-   if(C.SP3EphStore.size())
+   if(C.SP3EphStore.size()) {
       C.pEph = &C.SP3EphStore;
+   }
 
    // currently only have one type of ephemeris store - eph or nav
    if(C.SP3EphStore.size() && C.InputNavFiles.size() > 0) {
@@ -474,58 +478,74 @@ try {
    // NB Nav files may set GLOfreqChan
    if(C.SP3EphStore.size() == 0 && C.InputNavFiles.size() > 0) {
       try {
-         for(size_t nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
-            Rinex3NavStream nstrm(C.InputNavFiles[nfile].c_str());
-            if(!nstrm.is_open()) {
-               ossE << "Error : failed to open RINEX Nav file "
-                  << C.InputNavFiles[nfile] << endl;
-               isValid = false;
+         // configure - input?
+         C.RinEphStore.setOnlyHealthyFlag(true);   // keep only healthy ephemerides
+
+         for(nrec=0,nread=0,nfile=0; nfile < C.InputNavFiles.size(); nfile++) {
+            string filename(C.InputNavFiles[nfile]);
+            int n(C.RinEphStore.loadFile(filename,(C.debug > -1),LOGstrm));
+            if(n == -1) {        // failed to open
+               LOG(WARNING) << C.RinEphStore.what;
                continue;
             }
-            nstrm.exceptions(ios_base::failbit);
-
-            Rinex3NavHeader nhead;
-            Rinex3NavData ndata;
-
-            // read header
-            try { nstrm >> nhead; }
-            catch(Exception& e) {
-               ossE << "Warning : Failed to read header of nav file "
-                  << C.InputNavFiles[nfile] << ":\n  " << e.getText(0);
+            else if(n == -2) {   // failed to read header
+               LOG(WARNING) << "Warning - Failed to read header: "
+                  << C.RinEphStore.what << "\nHeader dump follows.";
+               C.RinEphStore.Rhead.dump(LOGstrm);
+               continue;
+            }
+            else if(n == -3) {   // failed to read data
+               LOG(WARNING) << "Warning - Failed to read data: "
+                  << C.RinEphStore.what << "\nData dump follows.";
+               C.RinEphStore.Rdata.dump(LOGstrm);
                continue;
             }
 
-            if(C.debug > -1) {
-               LOG(DEBUG) << "Read header of file " << C.InputNavFiles[nfile];
-               nhead.dump(LOGstrm);
-            }
+            nrec += n;           // number of records read
+            nread += 1;
 
-            while(nstrm >> ndata) {
-               if(C.debug > -1) ndata.dump(LOGstrm);
-               if(ndata.satSys == "R") {
-                  RinexSatID sat(ndata.PRNID,SatID::systemGlonass);
-                  C.GLOfreqChan.insert(
-                     map<RinexSatID, int>::value_type(sat,ndata.freqNum));
-               }
-               C.haveEph = true;
+            //if(C.verbose) {
+            //   LOG(VERBOSE) << "Read " << n << " ephemeris data from file "
+            //      << filename << "; header follows.";
+            //   C.RinEphStore.Rhead.dump(LOGstrm);
+            //}
+         }  // end loop over InputNavFiles
 
-               C.GPSNavStore.addEphemeris(ndata);
-               nread++;
-            }
+         // expand the network of time system corrections
+         C.RinEphStore.expandTimeCorrMap();
 
-            nstrm.close();
-
-            if(C.debug > -1) {
-               LOG(DEBUG) << "Dump GPSNavStore";
-               C.GPSNavStore.dump(LOGstrm, 1);
-            }
-         }
-
-         C.pEph = &C.GPSNavStore;
+         // set search method
+         C.RinEphStore.SearchUser(); //C.RinEphStore.SearchNear();
       }
       catch(Exception& e) {
-         ossE << "Error : failed to read RINEX nav files: " << e.what() << endl;
+         ossE << "Error : while reading RINEX nav files: " << e.what() << endl;
          isValid = false;
+      }
+
+      if(nread == 0) {
+         ossE << "Error : Unable to read any RINEX nav files." << endl;
+         isValid = false;
+      }
+
+      if(isValid) {
+         //LOG(VERBOSE) << "Read " << nread << " RINEX navigation files, containing "
+         //   << nrec << " records, into store.";
+         //LOG(VERBOSE) << "GPS ephemeris store contains "
+         //   << C.RinEphStore.size(SatID::systemGPS) << " ephemerides.";
+         //LOG(VERBOSE) << "GAL ephemeris store contains "
+         //   << C.RinEphStore.size(SatID::systemGalileo) << " ephemerides.";
+         //LOG(VERBOSE) << "BDS ephemeris store contains "
+         //   << C.RinEphStore.size(SatID::systemBeiDou) << " ephemerides.";
+         //LOG(VERBOSE) << "QZS ephemeris store contains "
+         //   << C.RinEphStore.size(SatID::systemQZSS) << " ephemerides.";
+         //LOG(VERBOSE) << "GLO ephemeris store contains "
+         //   << C.RinEphStore.size(SatID::systemGlonass) << " satellites.";
+         // dump the entire store
+         //int level=0;
+         //if(C.verbose) level=2; else if(C.debug > -1) level=3;
+         //C.RinEphStore.dump(LOGstrm,level);
+         C.haveEph=true;
+         C.pEph = &C.RinEphStore;
       }
    }
 
@@ -744,6 +764,7 @@ void Configuration::SetDefaults(void) throw()
    TropStr = TropType + string(",") + asString(defaultTemp,1) + string(",")
       + asString(defaultPress,1) + string(",") + asString(defaultHumid,1);
    IonoHt = 400.0;
+   elevlimit = 0.0;
 
    userfmt = gpsfmt;
    help = verbose = noHeader = false;
@@ -775,7 +796,8 @@ void Configuration::SetDefaults(void) throw()
    LinComTags.push_back("GF");  debLimit["GF"] = 10.;   debLimit0["GF"] = true;
    LinComTags.push_back("WL");  debLimit["WL"] = 0.0;   debLimit0["WL"] = false;
    LinComTags.push_back("NL");  debLimit["NL"] = 0.0;   debLimit0["NL"] = false;
-   LinComTags.push_back("MW");  debLimit["MW"] = 10.;   debLimit0["MW"] = true;
+   LinComTags.push_back("WLC");  debLimit["WLC"] = 10.;   debLimit0["WLC"] = true;
+   LinComTags.push_back("NLC");  debLimit["NLC"] = 10.;   debLimit0["NLC"] = true;
 
    haveEph = haveRef = false;
    haveCombo = haveRCL = havePOS = haveObs = haveNonObs = false;
@@ -865,8 +887,9 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
 "              e.g. WL:C:12 = [beta*C1X - C2X]/(beta-1)\n"
 "  NL:t:ij   Narrow-lane combinations\n"
 "              e.g. NL:C:12 = [beta*C1X + C2X]/(beta+1)\n"
-"  MW:ij     Melbourne-Wubbena combination (note no type), == (WL:P - NL:R)\n"
-"              e.g. MW:12 = [WL:L:12] - [NL:C:12]\n"
+"  WLC:ij     Melbourne-Wubbena combination (note no type), == (WL:P - NL:R)\n"
+"              e.g. WLC:12 = [WL:L:12] - [NL:C:12]\n"
+"  NLC:ij     'Narrow lane' combination (note no type), == (NL:P - WL:R)\n"
 "# An explicit linear combination given with option --combo co[co[co...]]\n"
 "     Here c is a number, with sign, and\n"
 "          o is a 3- or 4-char RINEX observation ID (system character optional).\n"
@@ -1167,6 +1190,8 @@ string Configuration::BuildCommandLine(void) throw()
             "Debias jumps in data larger than limit (0: no debias)");
    opts.Add(0, "debias0", "type", true, false, &typeLimit0, "",
             "Toggle initial debias of data <type> ()");
+   opts.Add(0, "elevlim", "lim", false, false, &elevlimit, "",
+            "Limit output to data with elevation angle > lim degrees [ELE req'd]");
 
    opts.Add(0, "ref", "p[:f]", false, false, &refPosStr, "# Other input",
             "Known position, default fmt f '%x,%y,%z', for resids, elev and ORDs");
@@ -1667,8 +1692,11 @@ try {
                   // access the data
                   const vector<RinexDatum>& vrdata(it->second);
 
+                  // don't output all zero's, or elev > elevlimit
+                  ok = false;                // reuse ok; if one datum is good, output
+                  bool badele(false);
+
                   // output the sat ID
-                  ok = false;                // reuse ok
                   oss.str("");
                   oss << " " << sat << fixed << setprecision(3);
 
@@ -1690,7 +1718,10 @@ try {
 
                      oss << " " << setw(width) << data;
                      if(data != 0.0) ok=true;
+                     if(tag==string("ELE") && C.elevlimit > 0.0 && data < C.elevlimit)
+                        badele = true;
                   }
+                  if(badele) continue;    // don't compute lincombos due to removeBias
 
                   // output linear combinations
                   vector<string> resets;     // check for reset of bias on any lc
@@ -1776,7 +1807,6 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
    try {
       double data(0);
       Configuration& C(Configuration::Instance());
-
       // need the CER for this sat?
       if(C.mapSatCER.find(sat) == C.mapSatCER.end()) {
          CorrectedEphemerisRange CER;
@@ -1854,7 +1884,7 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
 
    vector<string> fld(split(lab,':'));       // split into fields on :
 
-   string tag(fld[0]);                       // LinCom tag ~ SI,VI,IF,GF,MW,etc
+   string tag(fld[0]);                       // LinCom tag ~ SI,VI,IF,GF,WLC,NLC,etc
    if(find(C.LinComTags.begin(), C.LinComTags.end(), tag) == C.LinComTags.end())
       return false;                          // tag is not in the list
 
@@ -2042,18 +2072,18 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
       if(sysConsts.size() == 0 || sysObsids.size() == 0) return false;
    }
 
-   else if(tag == string("MW")) {            // MW:ij
+   else if(tag == string("WLC")) {            // MW:ij
       if(fld.size() == 1) {                  // MW alone : ij from --freq
          for(i=0; i<C.InputFreqs.size(); i++) {
             sysConsts.clear(); sysObsids.clear();
             if(C.InputFreqs[i].size() == 2)  // only take dual freqs
-               if(! this->ParseAndSave("MW:"+C.InputFreqs[i]))
+               if(! this->ParseAndSave("WLC:"+C.InputFreqs[i]))
                   return false;
          }
          return true;
       }
       else if(fld.size() != 2)
-         return false;                       // not MW and not MW:ij
+         return false;                       // not WLC and not WLC:ij
 
       LOG(DEBUG2) << "Parse construct " << ("WL:L:"+fld[1]);
       LinCom tempLC;
@@ -2069,6 +2099,43 @@ bool LinCom::ParseAndSave(const string& lab, bool save) throw()
       }
       LOG(DEBUG2) << "Parse construct " << ("NL:C:"+fld[1]);
       if(!tempLC.ParseAndSave("NL:C:"+fld[1],false))   // NL range - don't save
+         return false;
+      for(i=0; i<C.InputSyss.size(); i++) {            // loop over systems
+         sys = C.map3to1Sys[C.InputSyss[i]];
+         for(j=0; j<tempLC.sysConsts[sys].size(); j++) {
+            sysConsts[sys].push_back(-tempLC.sysConsts[sys][j]);   // note minus
+            sysObsids[sys].push_back(tempLC.sysObsids[sys][j]);
+         }
+      }
+      LOG(DEBUG2) << "Parse finish construct " << tag;
+   }
+   else if(tag == string("NLC")) {            // NLC:ij
+      if(fld.size() == 1) {                  // NLC alone : ij from --freq
+         for(i=0; i<C.InputFreqs.size(); i++) {
+            sysConsts.clear(); sysObsids.clear();
+            if(C.InputFreqs[i].size() == 2)  // only take dual freqs
+               if(! this->ParseAndSave("NLC:"+C.InputFreqs[i]))
+                  return false;
+         }
+         return true;
+      }
+      else if(fld.size() != 2)
+         return false;                       // not NLC and not NLC:ij
+
+      LOG(DEBUG2) << "Parse construct " << ("NL:L:"+fld[1]);
+      LinCom tempLC;
+      if(!tempLC.ParseAndSave("NL:L:"+fld[1],false))   // NL phase - don't save
+         return false;
+      // copy out results
+      for(i=0; i<C.InputSyss.size(); i++) {            // loop over systems
+         sys = C.map3to1Sys[C.InputSyss[i]];
+         for(j=0; j<tempLC.sysConsts[sys].size(); j++) {
+            sysConsts[sys].push_back(tempLC.sysConsts[sys][j]);
+            sysObsids[sys].push_back(tempLC.sysObsids[sys][j]);
+         }
+      }
+      LOG(DEBUG2) << "Parse construct " << ("WL:C:"+fld[1]);
+      if(!tempLC.ParseAndSave("WL:C:"+fld[1],false))   // WL range - don't save
          return false;
       for(i=0; i<C.InputSyss.size(); i++) {            // loop over systems
          sys = C.map3to1Sys[C.InputSyss[i]];
