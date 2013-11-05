@@ -58,8 +58,8 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-#include "svn_version.hpp"
-string Version(string("1.0 8/1/11 rev") + string(SVNversion()));
+
+string Version(string("2.2 10/31/13"));
 // TD
 // option to replace input with output?
 // include optional fmt input for t in edit cmds - is this feasible?
@@ -221,7 +221,7 @@ try {
    wallclkbeg.setLocalTime();
 
    // build title = first line of output
-   C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver " + Version
+   C.Title = "# " + C.PrgmName + ", part of the GPS Toolkit, Ver 2.2"
       + ", Run " + printTime(wallclkbeg,C.calfmt);
    
    for(;;) {
