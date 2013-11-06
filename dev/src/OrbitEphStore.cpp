@@ -53,10 +53,6 @@
 #include "RinexSatID.hpp"  // for dump
 
 #include "OrbitEphStore.hpp"
-#include "GPSEphemeris.hpp"
-//#include "GalEphemeris.hpp"
-//#include "BDSEphemeris.hpp"
-//#include "QZSEphemeris.hpp"
 
 using namespace std;
 using namespace gpstk::StringUtils;
@@ -69,6 +65,8 @@ namespace gpstk
       try {
          // get the appropriate OrbitEph
          const OrbitEph *eph = findOrbitEph(sat,t);
+         if(!eph)
+            GPSTK_THROW(InvalidRequest("No OrbitEph for satellite " + asString(sat)));
 
          // no consideration is given to health here (OrbitEph does not have health);
          // derived classes should override isHealthy()
@@ -88,7 +86,6 @@ namespace gpstk
       SatTableMap::const_iterator it;
 
       os << "Dump of " << getName() << " (detail level=" << detail << "):\n";
-      os << "  Search method is " << (strictMethod ? "User" : "Past") << endl;
 
       // all detail levels: Overall time limits and size
       os << " BCE table for all satellites has " << size() << " entries;"
@@ -97,6 +94,7 @@ namespace gpstk
          << " to " << (finalTime == CommonTime::BEGINNING_OF_TIME
                                    ? "Begin_time" : printTime(finalTime,fmt))
          << endl;
+      os << " Search method is " << (strictMethod ? "User" : "Past") << endl;
 
       // detail 0: done
       if(detail == 0)
@@ -291,33 +289,6 @@ namespace gpstk
 
    }  // end OrbitEph* OrbitEphStore::addEphemeris(const OrbitEph* eph)
 
-/*
-   // Add an OrbitEph object to this collection,
-   // converting the given RINEX navigation data.
-   // @param rnd Rinex3NavData input data
-   // @return true if OrbitEph was added, false otherwise
-   OrbitEph* OrbitEphStore::addEphemeris(const Rinex3NavData& rnd)
-   {
-      try {
-         OrbitEph *ptr = new OrbitEph();  // create a new object
-
-         // Note that instead of the above line, could do this: RinexEphemerisStore?
-         //OrbitEph *ptr;
-         //if(rnd.satSys == "G") ptr = new GPSEphemeris();
-         //else if(rnd.satSys == "E") ptr = new GalEphemeris();
-         //else if(rnd.satSys == "C") ptr = new BDSEphemeris();
-         //else if(rnd.satSys == "J") ptr = new QZSEphemeris();
-         //else ptr = new OrbitEph();
-
-         ptr->load(rnd);                  // load it with RINEX data
-         addEphemeris(ptr);               // add it to the store
-
-         return ptr;                      // return the pointer
-      }
-      catch(Exception& e) { GPSTK_RETHROW(e) }
-
-   }  // end bool addEphemeris(const Rinex3NavData& rnd)
-*/
    //---------------------------------------------------------------------------------
    void OrbitEphStore::edit(const CommonTime& tmin, const CommonTime& tmax)
    {
@@ -374,6 +345,12 @@ namespace gpstk
          n = it->second.size();
       }
       return n;
+   }
+
+   //---------------------------------------------------------------------------------
+   // see GPSEphemerisStore::rationalize()
+   void OrbitEphStore::rationalize(void)
+   {
    }
 
    //---------------------------------------------------------------------------------
@@ -460,28 +437,27 @@ namespace gpstk
    const OrbitEph* OrbitEphStore::findNearOrbitEph(const SatID& sat,
                                                    const CommonTime& t) const
    {
+
         // Check for any OrbitEph for this SV
       if(satTables.find(sat) == satTables.end())
          return NULL;
 
-      // First, try to find the elements that were actually being broadcast at the
-      // time of interest. That will ALWAYS be the most correct response.
-      //const OrbitEph* oep = findUserOrbitEph(sat, t);
-      //if(oep) return oep;
-
       // No OrbitEph in store for requested sat time
       // Define reference to the relevant map of orbital elements
       const TimeOrbitEphTable& table = getTimeOrbitEphMap(sat);
+
+      TimeOrbitEphTable::const_iterator itNext = table.find(t);
+      if(itNext != table.end())               // exact match
+         return itNext->second;
 
       // Three cases:
       // 1. t is within a gap within the store
       // 2. t is before all OrbitEph in the store
       // 3. t is after all OrbitEph in the store
 
-      // Attempt to find next in store after t
-      TimeOrbitEphTable::const_iterator itNext = table.lower_bound(t);
-      // Test for case 2
-      if(itNext == table.begin())
+      // lower_bound returns the first element with key >= t
+      itNext = table.lower_bound(t);
+      if(itNext == table.begin())             // Test for case 2
          return itNext->second;
 
        // Test for case 3
@@ -490,14 +466,14 @@ namespace gpstk
          return rit->second;
       }
 
-      // case 1: itNext is not the beginning, so safe to decrement
-      CommonTime nextBeginValid = itNext->first;
+      // case 1: it is not the beginning, so safe to decrement
+      CommonTime nextTOE = itNext->second->ctToe;
       TimeOrbitEphTable::const_iterator itPrior = itNext;
       itPrior--;
-      CommonTime lastEndValid = itPrior->second->endValid;
-      double diffToNext = nextBeginValid - t;
-      double diffFromLast = t - lastEndValid;
-      if(diffToNext>diffFromLast)
+      CommonTime lastTOE = itPrior->second->ctToe;
+      double diffToNext = nextTOE - t;
+      double diffFromLast = t - lastTOE;
+      if(diffToNext > diffFromLast)
          return itPrior->second;
 
       return itNext->second;

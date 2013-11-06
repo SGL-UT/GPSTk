@@ -72,13 +72,16 @@
 #include "EphemerisRange.hpp"
 #include "Position.hpp"
 
+#include "svn_version.hpp"
+
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("2.2 10/31/13"));
+string Version(string("2.2 10/31/13")
+               + string(" rev") + string(SVNversion()));
 // TD
 // VI LAT LON not implemented
 // Code selection is not implemented - where to replace C1* with C1W ?
@@ -1657,7 +1660,6 @@ try {
                Rinex3ObsData::DataMap::const_iterator it;
                for(it=Rdata.obs.begin(); it!=Rdata.obs.end(); ++it) {
                   sat = it->first;
-
                   // output this sat?
                   if(C.InputSats.size() > 0 &&
                         find(C.InputSats.begin(), C.InputSats.end(), sat)
@@ -1813,7 +1815,8 @@ double getNonObsData(string tag, RinexSatID sat, const CommonTime& time)
          }
          catch(Exception& e) {
             if(!C.noHeader) LOG(VERBOSE) << "# Warning - no ephemeris for ("
-                  << tag << ") sat " << sat;
+                  << tag << ") sat " << sat
+                  << " at time " << printTime(time,C.longfmt);
             return data;
          }
       }
