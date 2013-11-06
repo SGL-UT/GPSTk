@@ -72,16 +72,13 @@
 #include "EphemerisRange.hpp"
 #include "Position.hpp"
 
-#include "svn_version.hpp"
-
 //------------------------------------------------------------------------------------
 using namespace std;
 using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("2.2 10/31/13")
-               + string(" rev") + string(SVNversion()));
+string Version(string("2.2 10/31/13"));
 // TD
 // VI LAT LON not implemented
 // Code selection is not implemented - where to replace C1* with C1W ?
