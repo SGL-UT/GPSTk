@@ -348,12 +348,6 @@ namespace gpstk
    }
 
    //---------------------------------------------------------------------------------
-   // see GPSEphemerisStore::rationalize()
-   void OrbitEphStore::rationalize(void)
-   {
-   }
-
-   //---------------------------------------------------------------------------------
    // The goal of this routine is to find the set of orbital elements that would have
    // been used by a receiver in real-time. That is to say, the most recently
    // broadcast elements (assuming receiver has visibility to the given satellite).
