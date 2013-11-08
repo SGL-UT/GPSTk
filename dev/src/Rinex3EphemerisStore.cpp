@@ -232,7 +232,6 @@ namespace gpstk
       double dt = TimeSystem::Correction(fromSys, targetSys,
                               civt.year, civt.month, civt.day);
       toReturn += dt;
-      toReturn.setTimeSystem(targetSys);
       // the corrected timetag: now only the system, not the value, matters
       toReturn.setTimeSystem(targetSys);
 
@@ -247,9 +246,9 @@ namespace gpstk
       }
 
       // failure
-      InvalidRequest e("Unable to convert time systems from "
-         + ttag.getTimeSystem().asString() + " to " + targetSys.asString());
-      GPSTK_THROW(e);
+      //InvalidRequest e("Unable to convert time systems from "
+      //   + ttag.getTimeSystem().asString() + " to " + targetSys.asString());
+      //GPSTK_THROW(e);
 
       return toReturn;      // never reached, satisfy some compilers
    }
