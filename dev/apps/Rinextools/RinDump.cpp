@@ -734,8 +734,10 @@ try {
    // -------- save errors and output
    errors = ossE.str();
    stripTrailing(errors,'\n');
-   errors.insert(0,"# ");
-   replaceAll(errors,"\n","\n# ");
+   if(!C.noHeader && !errors.empty()) {
+      errors.insert(0,"# ");
+      replaceAll(errors,"\n","\n# ");
+   }
 
    if(!isValid) return -5;
    return 0;
@@ -1556,7 +1558,6 @@ try {
          // normal EOF
          if(!istrm.good() || istrm.eof()) { iret = 0; break; }
 
-         //LOG(INFO) << "";
          LOG(DEBUG) << " Read RINEX data: flag " << Rdata.epochFlag
             << ", timetag " << printTime(Rdata.time,C.longfmt);
 
