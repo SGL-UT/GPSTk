@@ -167,7 +167,8 @@ int main(int argc, char *argv[])
              "%d/%d/%d %d:%d:%lf",&mm,&dd,&yy,&hh,&minu,&ss);
       tS=CivilTime((short)yy, (short)mm, (short)dd, (short)hh, 
                        (short)minu, (double)ss, TimeSystem::GPS);
-      cout << tS << endl;
+      tStart = tS.convertToCommonTime();
+      cout << tStart << endl;
     }
   else
     {
