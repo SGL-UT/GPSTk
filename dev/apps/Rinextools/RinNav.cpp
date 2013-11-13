@@ -58,7 +58,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("2.0 9/1/13"));
+string Version(string("2.2 10/31/13"));
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data

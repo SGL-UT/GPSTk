@@ -59,7 +59,7 @@ using namespace gpstk;
 using namespace StringUtils;
 
 //------------------------------------------------------------------------------------
-string Version(string("3.2 7/1/11 rev"));
+string Version(string("2.2 10/31/13"));
 
 //------------------------------------------------------------------------------------
 // Object for command line input and global data
