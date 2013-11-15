@@ -44,9 +44,8 @@
 
 #include "SP3Stream.hpp"
 
-#include "RinexNavStream.hpp"
-#include "RinexNavData.hpp"
-
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavData.hpp"
 #include "FICStream.hpp"
 #include "FICData.hpp"
 
@@ -121,9 +120,9 @@ namespace gpstk
       if (verboseLevel>2)
          cout << "Reading " << fn << " as RINEX nav."<< endl;
          
-      RinexNavStream rns(fn.c_str(), ios::in);
+      Rinex3NavStream rns(fn.c_str(), ios::in);
       rns.exceptions(ifstream::failbit);
-      RinexNavData rnd;
+      Rinex3NavData rnd;
       while (rns >> rnd)
          bce->addEphemeris(rnd);
 
@@ -157,7 +156,7 @@ namespace gpstk
       FICData data;
       while (fs >> data)
          if (data.blockNum==9) // Only look at the eng ephemeris
-            bce->addEphemeris(RinexNavData(EngEphemeris(data)));
+            bce->addEphemeris(Rinex3NavData(EngEphemeris(data)));
             // TODO replace EngEphemeris (deprecated) with GPSEphemeris
 
       if (verboseLevel>1)
@@ -260,7 +259,7 @@ namespace gpstk
                EngEphemeris engEph;
                if (makeEngEphemeris(engEph, ephPageStore[ni]))
                {
-                  bce->addEphemeris(RinexNavData(engEph));
+                  bce->addEphemeris(Rinex3NavData(engEph));
                   ephPageStore[ni].clear();
                }
             }

@@ -168,12 +168,12 @@ int main(int argc, char *argv[])
       tS=CivilTime((short)yy, (short)mm, (short)dd, (short)hh, 
                        (short)minu, (double)ss, TimeSystem::GPS);
       tStart = tS.convertToCommonTime();
-      cout << tStart << endl;
+      cout << tS << endl;
     }
   else
     {
       //extra code b/c sscanf reads in int's but CivilTime needs shorts
-      cout << ephStore.getInitialTime() << endl;
+      //cout << ephStore.getInitialTime() << endl;
       CommonTime tFile(ephStore.getInitialTime());	  
       short year = static_cast<CivilTime>(tFile).year;
       short month = static_cast<CivilTime>(tFile).month;
@@ -183,7 +183,7 @@ int main(int argc, char *argv[])
       double ss = static_cast<CivilTime>(tFile).second;
       tS = CivilTime(year,month,day,hour,minute,ss, TimeSystem::GPS);
       tStart = tS.convertToCommonTime();
-      cout << tStart << endl;
+      cout << tS << endl;
     }
 
   if (endTimeOpt.getCount())
@@ -195,7 +195,7 @@ int main(int argc, char *argv[])
       tE = CivilTime((short)yy, (short)mm, (short)dd, (short)hh, (short)minu, 
                      (double)ss, TimeSystem::GPS);
       tEnd = tE.convertToCommonTime();
-      cout << tEnd << endl;
+      cout << tE << endl;
     }
   else
     {
@@ -209,11 +209,10 @@ int main(int argc, char *argv[])
       double ss = static_cast<CivilTime>(tFile).second;
       tE = CivilTime(year,month,day,hour,minute,ss, TimeSystem::GPS);
       tEnd = tE.convertToCommonTime();
-      cout << tEnd << endl;
+      cout << tE << endl;
     }
 
   CommonTime t = tStart;
-
   while (t <= tEnd)
     {
       for(set<int>::iterator i = prnSet.begin(); i != prnSet.end(); i++ )
@@ -238,19 +237,19 @@ int main(int argc, char *argv[])
                        << " "  << setw(8) << "-"
                        << " "  << setw(8) << "-"
                        << " "  << setw(15) << "-" << endl;	
-                }
-              else
-                {
-                  cout << right << fixed << setprecision(3)
-                       << " "  << setw(8) << antXvt.x.azAngle(xvt.x)
-                       << " "  << setw(8) << antXvt.x.elvAngle(xvt.x)
-                       << " "  << setw(15) 
-                       << xvt.preciseRho(antXvt.x, ellipsoid, correction) << endl;
+            }
+          else
+            {
+              cout << right << fixed << setprecision(3)
+                   << " "  << setw(8) << antXvt.x.azAngle(xvt.x)
+                   << " "  << setw(8) << antXvt.x.elvAngle(xvt.x)
+                   << " "  << setw(15) 
+                   << xvt.preciseRho(antXvt.x, ellipsoid, correction) << endl;
                 }
             }
           catch(...)
             {
-              ;
+
             }
         }
 
