@@ -283,6 +283,7 @@ bool compSatVis::initialize(int argc, char *argv[])
       // time and set the flag.
    evalStartTimeSet = false;
    evalStartTime=CommonTime::BEGINNING_OF_TIME;
+   evalStartTime.setTimeSystem(TimeSystem::GPS);
    if (evalStartTimeOpt.getCount()!=0) 
    {
       if (debugLevel) cout << "Reading start time from command line." << endl;
@@ -299,6 +300,7 @@ bool compSatVis::initialize(int argc, char *argv[])
       // time and set the flag.
    evalEndTimeSet = false;
    evalEndTime=CommonTime::END_OF_TIME;
+   evalEndTime.setTimeSystem(TimeSystem::GPS);
    if (evalEndTimeOpt.getCount()!=0) 
    {
       if (debugLevel) cout << "Reading end time from command line." << endl;
@@ -312,7 +314,7 @@ bool compSatVis::initialize(int argc, char *argv[])
 
 void compSatVis::printNavFileReferenceTime(FILE* logfp)
 {
-   string tform2 = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M:%02S";
+   string tform2 = "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M:%02S %P";
    CommonTime t;
    
       // If the user did not specify a start time for the evaulation, find the
@@ -466,17 +468,19 @@ void compSatVis::process()
    if (debugLevel) cout << "Setting evaluation start time: ";
    startT = evalStartTime;
    if (!evalStartTimeSet) startT = setStartTime();
-   if (debugLevel) cout << printTime(startT, "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
+   startT.setTimeSystem(TimeSystem::Any);
+   if (debugLevel) cout << printTime(startT, "%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M %P.") << endl;
    
       // If no end time commanded, compute for 23h 56m (GPS ground track repeat)
    if (debugLevel) cout << "Setting evaluation end time: ";
    siderealDay = true;
    endT = startT + ( (double) SEC_PER_DAY - 240.0);
    if (evalEndTimeSet) endT = evalEndTime;
+   endT.setTimeSystem(TimeSystem::Any);
    if ((int)(endT-startT)!=(int)(SEC_PER_DAY-240)) siderealDay = false;
    if (debugLevel) 
    {
-      cout << printTime(endT,"%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M.") << endl;
+      cout << printTime(endT,"%02m/%02d/%02y DOY %03j, GPS Week %F, DOW %w, %02H:%02M %P.") << endl;
       cout << "Sidereal Day flag : " << siderealDay << endl;
    }
    CommonTime currT = startT;   
