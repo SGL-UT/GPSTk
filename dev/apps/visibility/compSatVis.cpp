@@ -87,9 +87,13 @@ protected:
    gpstk::CommandOptionWithAnyArg includeStation;
    gpstk::CommandOptionWithTimeArg evalStartTimeOpt;
    gpstk::CommandOptionWithTimeArg evalEndTimeOpt;
+   gpstk::CommandOptionWithAnyArg compDopOpt; 
    std::list<long> blocklist;
    
    FILE *logfp;
+
+   FILE *DOPfp;
+   bool compDop; 
 
    static const int FIC_ALM;
    static const int FIC_EPH;
@@ -181,6 +185,7 @@ compSatVis::compSatVis(const std::string& applName,
            nFileNameOpt('n',"nav","Name of navigation file" , true),
            outputOpt('o', "output-file", "Name of the output file to write.", true),
            mscFileName('c',"mscfile","Name of MS coordinates files", true),
+           compDopOpt('S',"SDOP","Compute SDOP and output to file",false),
            minElvOpt('e', "minelv","Minimum elevation angle.", false),
            excludeStation('x',"exclude","Exclude station",false),
            includeStation('i',"include","Include station",false),
@@ -201,6 +206,7 @@ compSatVis::compSatVis(const std::string& applName,
    evalStartTimeSet = false;
    evalEndTimeOpt.setMaxCount(1);
    evalEndTimeSet = false;
+   compDopOpt.setMaxCount(1);
    
    epochCount = 0;
 }
@@ -307,6 +313,20 @@ bool compSatVis::initialize(int argc, char *argv[])
       std::vector<CommonTime> tvalues = evalEndTimeOpt.getTime();
       evalEndTime = tvalues[0];
       evalEndTimeSet = true;
+   }
+
+      // If the user specified the "Compute spacecraft DOP" option, then
+      // open the output file to which the DOP values are to be written.
+   compDop = false;
+   if (compDopOpt.getCount()) compDop = true;
+   if (compDop)
+   {
+      DOPfp = fopen( compDopOpt.getValue().front().c_str(),"wt");
+      if (DOPfp==0) 
+      {
+         cout << "Failed to open DOP output file. Exiting." << endl;
+         return false;
+      }
    }
    
    return true;   
@@ -519,7 +539,7 @@ void compSatVis::process()
    generateTrailer( );
   
    fclose(logfp);
-   
+   fclose(DOPfp); 
 }
 
 void compSatVis::generateHeader( gpstk::CommonTime currT )
@@ -692,31 +712,63 @@ void compSatVis::computeVisibility( gpstk::CommonTime currT )
       }
       fprintf(logfp,"   Max,   Min\n");
    }
+   if (compDop && currT==startT)
+   {
+      fprintf(DOPfp," Spacecraft DOP by epoch\n");
+      fprintf(DOPfp,"  PRN, ");
+      for (int pi=1;pi<=gpstk::MAX_PRN;++pi)
+      {
+         if (SVAvail[pi]) fprintf(DOPfp," %4d,",pi);
+      }
+      fprintf(DOPfp,"   Max,   Min\n");
+   }
    
    if (detailPrint) fprintf(logfp,"%s, ",printTime(currT,"%02H:%02M").c_str());
+   if (compDop) fprintf(DOPfp,"%s, ",printTime(currT,"%02H:%02M").c_str());
 
       // Now count number of Stations visible to each SV
    int maxNum = 0;
    int minNum = stationPositions.size() + 1; 
+   int maxDOP = 0;
+   int minDOP = 32700; 
    StaPosList::const_iterator splCI;
    DiscreteVisibleCounts& dvc0 = dvcList.find(0)->second;
-   
+
+   vector<Position> staPosVector;
    for (PRNID=1;PRNID<=gpstk::MAX_PRN;++PRNID)
    {
       if (!SVAvail[PRNID]) continue;
       int numVis = 0;
+      staPosVector.clear();
       for (splCI =stationPositions.begin();
            splCI!=stationPositions.end();
            ++splCI)
       {
          Position staPos = splCI->second;
          double elv = staPos.elvAngle( SVpos[PRNID] );
-         if (elv>=minimumElevationAngle) numVis++;
+         if (elv>=minimumElevationAngle)
+         {
+            numVis++;
+            staPosVector.push_back(staPos); 
+         }
       }
       if (detailPrint) fprintf(logfp,"   %2d,",numVis);
       if (numVis>maxNum) maxNum = numVis;
       if (numVis<minNum) minNum = numVis;
-      
+
+         // Compute DOP (if option requested)
+      if (compDop)
+      {     
+         VisSupport::M4 Rtemp = VisSupport::calculateObserverVectors(SVpos[PRNID]);
+         double valDOP = VisSupport::computeDOP(SVpos[PRNID],
+                                    staPosVector,
+                                    Rtemp,
+                                    minimumElevationAngle, true);
+          int iValDop = (int) valDOP;
+          fprintf(DOPfp," %4d,",iValDop);
+          if (iValDop>maxDOP) maxDOP = iValDop;
+          if (iValDop<minDOP) minDOP = iValDop; 
+      }                           
       StaStatsList::iterator sslI = staStatsList.find( PRNID );
       if (sslI==staStatsList.end())
       {
@@ -731,4 +783,5 @@ void compSatVis::computeVisibility( gpstk::CommonTime currT )
       dvc0.addCount(numVis);
    }
    if (detailPrint) fprintf(logfp,"    %2d,    %2d\n",maxNum,minNum);
+   if (compDop) fprintf(DOPfp,"  %4d,  %4d\n",maxDOP,minDOP); 
 }

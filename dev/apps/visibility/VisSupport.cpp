@@ -286,3 +286,101 @@ bool VisSupport::checkIOD( const EngEphemeris ee )
    return(true);
 }
 
+   //------------------------------------------------------------------------
+   // Added November 2013.  Support method for computeDOP below.
+   // computeDOP assumes the unit vectors associated with the
+   // observer are available in a matrix.   This would only need 
+   // to be done ONCE for an observing station fixed in ECEF, but it will need
+   // to be done every time for a observing satellite.  Therefore, it
+   // was broken into a separate method so the caller could organize
+   // and optimize as appropriate.   
+VisSupport::M4 VisSupport::calculateObserverVectors(const Position& observer)
+{
+   VisSupport::M4 Rtemp;
+   double ca,sa,co,so;
+
+   ca = std::cos(observer.geodeticLatitude()*DEG_TO_RAD);
+   sa = std::sin(observer.geodeticLatitude()*DEG_TO_RAD);
+   co = std::cos(observer.longitude()*DEG_TO_RAD);
+   so = std::sin(observer.longitude()*DEG_TO_RAD);
+
+   Rtemp(0,0) = ca*co ; Rtemp(0,1) = ca*so ; Rtemp(0,2) = sa ; Rtemp(0,3) = 0.0;
+   Rtemp(1,0) = -so   ; Rtemp(1,1) = co    ; Rtemp(1,2) = 0.0; Rtemp(1,3) = 0.0;
+   Rtemp(2,0) = -sa*co; Rtemp(2,1) = -sa*so; Rtemp(2,2) = ca ; Rtemp(2,3) = 0.0;
+   Rtemp(3,0) = 0.0   ; Rtemp(3,1) = 0.0   ; Rtemp(3,2) = 0.0; Rtemp(3,3) = 1.0;
+
+   return Rtemp;
+}
+
+   //------------------------------------------------------------------------
+   // Added November 2013.  We wanted to look at the idea of spacecraft DOP
+   // (SDOP) or inverse DOP in compSatVis. That is, given an SV and a
+   // collection of stations, how strong is the geometry?
+   // It was placed here so it could be reused in compSatVis for traditional
+   // DOP in the future.
+double VisSupport::computeDOP(const Position& observer, 
+                const vector<Position>& sources,
+                const VisSupport::M4& observerVectors, 
+                const double elevLimit,
+                const bool invert)
+{
+try
+{
+   int j,n,Nsources;
+   double elev,rawrange;
+
+   Nsources = sources.size();
+   
+   // if there aren't 4 sources, we can't go on
+   if (Nsources < 4)
+   {
+      return(-1.0);
+   }
+
+   // construct direction cosine matrix and solution covariance
+   // BlueBook vol 1 p 414  or  GPS 2ed (Misra & Enge) p 203
+
+   Matrix<double> DC(Nsources,4), COV(4,4);
+   n = 0;                                     // number of visible SVs
+   for (j=0; j<Nsources; j++)
+   {
+      if (invert)
+         elev = sources[j].elevationGeodetic(observer);
+       else
+         elev = observer.elevationGeodetic(sources[j]);
+      if (elev <= elevLimit) continue;              // TD Elevation limit input
+
+      rawrange = range(observer,sources[j]);            // geometric range
+
+      DC(n,0) = (observer.X()-sources[j].X())/rawrange; // direction cosines
+      DC(n,1) = (observer.Y()-sources[j].Y())/rawrange; // (G matrix of Misra & Enge)
+      DC(n,2) = (observer.Z()-sources[j].Z())/rawrange;
+      DC(n,3) = 1;
+
+      n++;                                    // increase counter for # visible SVs
+   }
+
+   // if there aren't 4 sources above the elevation limit we can't continue
+   if (n < 4)
+   {
+      return(-1.0);
+   }
+   DC = Matrix<double>(DC,0,0,n,4);       // trim the unnecessary zeros
+
+   DC = DC * transpose(observerVectors);                // transform to UENT (G~ matrix)
+
+   COV = transpose(DC) * DC;              // (G~^T * G~)
+   COV = inverseSVD(COV);                 // (G~^T * G~)^-1
+
+   double vdop = ::sqrt(COV(0,0));            // pick off the various DOPs
+   double hdop = ::sqrt(COV(1,1) + COV(2,2));
+   double tdop = ::sqrt(COV(3,3));
+   double pdop = ::sqrt(COV(0,0) + COV(1,1) + COV(2,2));
+   double gdop = ::sqrt(COV(0,0) + COV(1,1) + COV(2,2) + COV(3,3));
+   double nsvs = n;
+
+   return(pdop);
+}
+catch(Exception& e) { GPSTK_RETHROW(e); }
+}
+

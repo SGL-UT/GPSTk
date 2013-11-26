@@ -32,11 +32,15 @@
 #include <iostream>
 #include <string>
 #include <list>
+#include <vector>
+
 
 #include "StringUtils.hpp"
 #include "CommandOption.hpp"
 #include "FileFilterFrame.hpp"
 #include "Position.hpp"
+#include "Matrix.hpp"
+#include "geometry.hpp"
 
 // rinex
 #include "RinexNavStream.hpp"
@@ -99,6 +103,25 @@ namespace gpstk
                              gpstk::SP3EphemerisStore&       SP3EphList );
 
       bool checkIOD( const gpstk::EngEphemeris ee );
+      
+      class M4 : public Matrix<double> // trick to declare a 4x4 double array of Matrix
+      {
+      public:
+         M4() : Matrix<double>(4,4) {};
+      }; 
+
+   // Note:  observerVectors is a vector of XYZ->UENT coordinate transform
+   //        4x4 matrices.  See calculateObserverVectors below.
+   // Note:  The invert flag is used in the case where we are considering
+   //        the SV to be the OBSERVER.  In this case, the elevation angle
+   //        will need to be calculated in the opposite direction from normal.
+      double computeDOP(const Position& observer, 
+                const std::vector<Position>& sources,
+                const VisSupport::M4& observerVectors,
+                const double elevLimit,
+                const bool invert);
+                
+      M4 calculateObserverVectors(const Position& observer);
 
    } // namespace VisSupport
 
