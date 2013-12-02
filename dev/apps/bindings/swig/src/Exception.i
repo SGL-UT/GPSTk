@@ -1,7 +1,7 @@
 %include "exception.i"
 
 %rename(__str__) gpstk::Exception::what() const;
-%include "../../../src/Exception.hpp"
+%include "../../../lib/Utilities/Exception.hpp"
 
 namespace gpstk {
    namespace StringUtils  {

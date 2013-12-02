@@ -3,7 +3,7 @@
 %ignore gpstk::Triple::operator*(double right, const Triple& rhs);
 %ignore gpstk::Triple::theArray;
 
-%include "../../../src/Triple.hpp"
+%include "../../../lib/Math/Triple.hpp"
 
 // C++ extensions:
 %extend gpstk::Triple {
