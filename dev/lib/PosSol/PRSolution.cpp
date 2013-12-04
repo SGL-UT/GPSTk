@@ -865,7 +865,7 @@ namespace gpstk
       // remove duplicates from satellite list, and find "any good data" ones
       // this gets tricky since there may be >1 datum from one satellite
       // in the following, good means 1+ good data exist; bad means all data bad
-      int i;
+      size_t i;
       vector<RinexSatID> sats,goodsats;
       for(i=0; i<SatelliteIDs.size(); i++) {
          RinexSatID rs(::abs(SatelliteIDs[i].id), SatelliteIDs[i].system);
@@ -892,7 +892,7 @@ namespace gpstk
          << " " << setw(2) << NIterations
          << scientific << setprecision(2)
          << " " << setw(8) << Convergence;
-      for(int i=0; i<sats.size(); i++) {
+      for(size_t i=0; i<sats.size(); i++) {
          if(find(goodsats.begin(),goodsats.end(),sats[i]) != goodsats.end())
             oss << " " << sats[i];
          else

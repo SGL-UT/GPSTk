@@ -126,7 +126,7 @@ namespace gpstk
       // Leap seconds history
       // ***** This table must be updated for new leap seconds **************
       static const struct {
-         unsigned int year, month, nleap;
+         int year, month, nleap;
       } leaps[] = {
          { 1972,  1, 10 },
          { 1972,  7, 11 },
