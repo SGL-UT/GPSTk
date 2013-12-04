@@ -178,7 +178,7 @@ namespace gpstk
          //allValid302            = 0x1C1205AB, // RINEX 3.02
          // NB 19Jun2013 MGEX data does not include GLONASS SLOT and GLONASS COD/PHS/BIS records
          allValid301            = 0x041205AB, // RINEX 3.01
-         allValid302            = 0x041205AB, // RINEX 3.02
+         allValid302            = 0x041205AB // RINEX 3.02
       };
    
       /// RINEX 3 DCBS/PCVS info (for differential code bias and phase center variations corr.)
