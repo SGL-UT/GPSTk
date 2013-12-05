@@ -38,7 +38,7 @@ Brian Tolman (11):
       Remove throw where it should not be
       Remove stray # in headless mode
 
-Bryan Parsons (14):
+Bryan Parsons (15):
       Update Windows Installer file
       Copied Readme to additional location for Gitlab use
       Additional tweaks for Rinex files
@@ -53,12 +53,15 @@ Bryan Parsons (14):
       Tweaks to windows RC2.3 build
       Tweak for Solaris Sparc RC2.3 build
       Tweaks for MacOSX RC2.3 build
+      Tweaks in preparation for RC2.3 Release
 
 Jon C. Little (1):
       Removing the exec bit from a readme
 
-Jon Little (1):
+Jon Little (3):
       Fixing some file modes
+      To encourage _not_ poluting the source tree, don't ignore the transient files that cmake creates and uses
+      Merge branch 'master' of repositories.arlut.utexas.edu:bparsons/gpstk
 
 Sean Lewis (5):
       Added python binding test runner.
@@ -66,6 +69,8 @@ Sean Lewis (5):
       Python binding built fixed (source file list repaired).
       Python gpstk_builder.py script default install location fixed.
       Developer Documentation added for python bindings.
+
+
 
 
 	#################################################
