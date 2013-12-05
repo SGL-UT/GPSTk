@@ -140,4 +140,5 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../lib/TimeHandling/YDSTime.cpp
                     ../../../lib/GNSSEph/YumaAlmanacStore.cpp
                     ../../../lib/FileHandling/Yuma/YumaData.cpp
+		    ../../../lib/GNSSEph/EphemerisRange.cpp
                     )
