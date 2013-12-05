@@ -75,6 +75,7 @@
    #include "../../../lib/GNSSEph/GPS_URA.hpp"
    #include "../../../lib/GNSSEph/BrcClockCorrection.hpp"
    #include "../../../lib/GNSSEph/BrcKeplerOrbit.hpp"
+   #include "../../../lib/GNSSEph/EphemerisRange.hpp"
 
    // Ephemeris:
    #include "../../../lib/GNSSEph/EngEphemeris.hpp"
@@ -328,6 +329,7 @@
 %include "src/GPS_URA.i"
 %include "../../../lib/GNSSEph/BrcClockCorrection.hpp"
 %include "../../../lib/GNSSEph/BrcKeplerOrbit.hpp"
+%include "../../../lib/GNSSEph/EphemerisRange.hpp"
 
 // Ephemeris:
 %include "../../../lib/GNSSEph/OrbitEph.hpp"
