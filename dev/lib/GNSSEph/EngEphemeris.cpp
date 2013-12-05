@@ -174,7 +174,7 @@ namespace gpstk
          //   :18/:48 for SF 3
          // This method hasn't a clue about the accuracy of the SOW input by the
          // user, but it WILL enforce this relationship.
-      long frameCount = sf1TransmitSOW / 30;
+      //long frameCount = sf1TransmitSOW / 30;
       //long SF1HOWTime = (frameCount * 30) + 6;
 
          // Convert subframe 1 parameters

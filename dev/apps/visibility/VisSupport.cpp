@@ -372,12 +372,13 @@ try
    COV = transpose(DC) * DC;              // (G~^T * G~)
    COV = inverseSVD(COV);                 // (G~^T * G~)^-1
 
-   double vdop = ::sqrt(COV(0,0));            // pick off the various DOPs
-   double hdop = ::sqrt(COV(1,1) + COV(2,2));
-   double tdop = ::sqrt(COV(3,3));
+   //double vdop = ::sqrt(COV(0,0));            // pick off the various DOPs
+   //double hdop = ::sqrt(COV(1,1) + COV(2,2));
+   //double tdop = ::sqrt(COV(3,3));
+   //double gdop = ::sqrt(COV(0,0) + COV(1,1) + COV(2,2) + COV(3,3));
+   //double nsvs = n;
+
    double pdop = ::sqrt(COV(0,0) + COV(1,1) + COV(2,2));
-   double gdop = ::sqrt(COV(0,0) + COV(1,1) + COV(2,2) + COV(3,3));
-   double nsvs = n;
 
    return(pdop);
 }

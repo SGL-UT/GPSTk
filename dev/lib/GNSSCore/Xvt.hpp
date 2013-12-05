@@ -119,7 +119,6 @@ namespace gpstk
 
    //@}
 
-}  // end namespace gpstk
 
 /**
  * Output operator for Xvt
@@ -127,5 +126,6 @@ namespace gpstk
  * @param xvt Xvt that is sent to \c os
  */
 std::ostream& operator<<(std::ostream& os, const gpstk::Xvt& xvt) throw();
+}  // end namespace gpstk
 
 #endif // GPSTK_XVT_INCLUDE
