@@ -4,10 +4,5 @@
 *.so.*
 *.so
 *.pyc
-CMakeFiles
-cmake_install.cmake
-CMakeCache.txt
-Makefile
-
 MANIFEST
 dist
