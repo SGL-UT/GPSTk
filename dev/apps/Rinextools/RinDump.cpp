@@ -110,7 +110,7 @@ public:
    map<string, vector<string> > sysObsids;    // parallel vector of RinexObsIDs
 
    /// Constructor
-   LinCom() throw() : value(0), limit0(false), label(string("Undef")) { }
+   LinCom() throw() : label(string("Undef")),value(0), limit0(false)  { }
 
    /// parse input string
    bool ParseAndSave(const string& str, bool save=true) throw();

@@ -1520,10 +1520,10 @@ namespace gpstk
          for(size_t i=0; i<syss.size(); i++) {
             const string s(syss[i]);
             vector<RinexObsID> obsids;
-            bool isPrecise(
-               find(R2ObsTypes.begin(),R2ObsTypes.end(),"P1") != R2ObsTypes.end() ||
-               find(R2ObsTypes.begin(),R2ObsTypes.end(),"P2") != R2ObsTypes.end()
-            );
+            //bool isPrecise(
+            //   find(R2ObsTypes.begin(),R2ObsTypes.end(),"P1") != R2ObsTypes.end() ||
+            //   find(R2ObsTypes.begin(),R2ObsTypes.end(),"P2") != R2ObsTypes.end()
+            //); //Unused, commenting out for now
             // loop over R2 obs types
             for(size_t j=0; j<R2ObsTypes.size(); ++j) {
                string ot(R2ObsTypes[j]), obsid, type, tc;
