@@ -2,11 +2,80 @@
 
 
 
+Version 2.3   Thursday, December 5, 2013
+
+   General modifications
+   ---------------------
+   - GPSTk Library merger & Directory Restructure
+      - Core Library and Auxiliary Libraries have been merged into single GPSTk Library
+        - Core Library code (src) have been merged into lib directory
+        - Code has been reorganized into function-oriented directories
+   - CMake is now the build system of the GPSTk
+      - Jam and Autotools build files have been deprecated and removed
+   - Linux 32-bit & Cygwin are no longer supported platforms
+   - Bug fixes for multiple applications
+   - This release includes new/modified source code comments for improved readability.
+   - The next planned release, GPSTk v2.4, will be a major upgrade that will introduce a new testing infrastructure, as well as further code reorganization.
+
+   Modifications by Author
+   ---------------------
+Brent Renfro (4):
+      Fixing end-of-fit interval error
+      Fixed range bound error. URA=15 was not allowed but is valid
+      Fixing TimeSystem problem in compSatVis
+      Adding SDOP calculation to compSatVis
+
+Brian Tolman (11):
+      DAT record should not be verbose
+      Restore begin and end time for GPS, fix PRSolve bug.
+      MARKER TYPE is not a required header record
+      Thanks to Felipe Nievinski
+      Correct a few small bugs in Rinextools, and clean up many unused variables
+      RinDump: added Glonass nav, changed MW to WLC and added NLC
+      Small omission from last commit
+      Fix seg fault when ephemeris is not found, replace with throw
+      Satisfy some compilers
+      Remove throw where it should not be
+      Remove stray # in headless mode
+
+Bryan Parsons (14):
+      Update Windows Installer file
+      Copied Readme to additional location for Gitlab use
+      Additional tweaks for Rinex files
+      Minor modification to RinDump
+      CMake Linux Tweak
+      Bug fix for WhereSat
+      Major merge and reorganization of src and lib, new lib folder contains function oriented folder structure.  Jam and autotools files have been removed.  CMake now recursively searches through lib for source files, and no longer needs CMakeLists per folder.
+      Updating previous commit to new lib
+      Small Rinextools changes
+      More Wheresat bug fixes
+      Update Python files to match source code restructure
+      Tweaks to windows RC2.3 build
+      Tweak for Solaris Sparc RC2.3 build
+      Tweaks for MacOSX RC2.3 build
+
+Jon C. Little (1):
+      Removing the exec bit from a readme
+
+Jon Little (1):
+      Fixing some file modes
+
+Sean Lewis (5):
+      Added python binding test runner.
+      Updated Python test cases to match changes to C++ time classes.
+      Python binding built fixed (source file list repaired).
+      Python gpstk_builder.py script default install location fixed.
+      Developer Documentation added for python bindings.
+
+
+	#################################################
+
+
+
 Version 2.2   Friday, September 6, 2013
 
    General modifications
    ---------------------
-   - Version 2.2 is comprised of Git revision number 4daf3c5 to Git revision number e3f25a0
    - Fully functional CMake cross-platform build system has been finished and tested for the GPSTk.
    		- Using CMake, the GPSTk now supports IDEs in addition to current supported platforms.
    		- Newly supported IDEs:

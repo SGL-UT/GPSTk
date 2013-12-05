@@ -433,7 +433,6 @@ WARN_LOGFILE           =
 # with spaces.
 
 INPUT                  = . \
-                         ./src/README
 
 # If the value of the INPUT tag contains directories, you can use the
 # FILE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -459,7 +458,6 @@ RECURSIVE              = YES
 EXCLUDE                = ./tests \
                          ./examples \
                          ./apps \
-                         ./R3 \
                          ./apps/bindings
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or directories
@@ -958,7 +956,7 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by
 # the preprocessor.
 
-INCLUDE_PATH           = ./src
+INCLUDE_PATH           = ./lib
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
