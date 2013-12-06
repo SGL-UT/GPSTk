@@ -28,6 +28,7 @@ include_directories(../../../lib/AstroEph
                     ../../../lib/PosSol
                     ../../../lib/ProcLib
                     ../../../lib/RefTime
+		    ../../../lib/Rxio
                     ../../../lib/TimeHandling
                     ../../../lib/Utilities )
 
@@ -141,4 +142,15 @@ swig_add_module(gpstk_pylib python gpstk_pylib.i
                     ../../../lib/GNSSEph/YumaAlmanacStore.cpp
                     ../../../lib/FileHandling/Yuma/YumaData.cpp
 		    ../../../lib/GNSSEph/EphemerisRange.cpp
+		    ../../../lib/Rxio/EphReader.cpp
+		    ../../../lib/Rxio/MDPNavSubframe.cpp
+		    ../../../lib/Rxio/MDPHeader.cpp
+		    ../../../lib/Rxio/MDPObsEpoch.cpp
+		    ../../../lib/Rxio/MDPPVTSolution.cpp
+		    ../../../lib/Rxio/MDPSelftestStatus.cpp
+		    ../../../lib/Rxio/RinexConverters.cpp
+		    ../../../lib/Rxio/FFIdentifier.cpp
+		    ../../../lib/Rxio/NovatelData.cpp
+		    ../../../lib/Rxio/AshtechData.cpp
+		    ../../../lib/FileHandling/SMODFData.cpp
                     )

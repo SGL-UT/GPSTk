@@ -76,6 +76,7 @@
    #include "../../../lib/GNSSEph/BrcClockCorrection.hpp"
    #include "../../../lib/GNSSEph/BrcKeplerOrbit.hpp"
    #include "../../../lib/GNSSEph/EphemerisRange.hpp"
+   #include "../../../lib/Rxio/EphReader.hpp"
 
    // Ephemeris:
    #include "../../../lib/GNSSEph/EngEphemeris.hpp"
@@ -330,6 +331,7 @@
 %include "../../../lib/GNSSEph/BrcClockCorrection.hpp"
 %include "../../../lib/GNSSEph/BrcKeplerOrbit.hpp"
 %include "../../../lib/GNSSEph/EphemerisRange.hpp"
+%include "../../../lib/Rxio/EphReader.hpp"
 
 // Ephemeris:
 %include "../../../lib/GNSSEph/OrbitEph.hpp"
