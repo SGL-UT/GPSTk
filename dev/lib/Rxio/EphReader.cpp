@@ -70,7 +70,7 @@ namespace gpstk
 // ---------------------------------------------------------------------
 // ---------------------------------------------------------------------
    void EphReader::read(const std::string& fn)
-      throw(FileMissingException)
+      throw(FileMissingException,FFStreamError)
    {
       FFIdentifier ffid(fn);
       

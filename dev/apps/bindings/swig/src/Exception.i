@@ -2,6 +2,7 @@
 
 %rename(__str__) gpstk::Exception::what() const;
 %include "../../../lib/Utilities/Exception.hpp"
+%include "../../../lib/FileHandling/FFStreamError.hpp"
 
 namespace gpstk {
    namespace StringUtils  {
@@ -45,6 +46,7 @@ namespace gpstk {
    CATCHER(NullPointerException)
    CATCHER(UnimplementedException)
    CATCHER(EndOfFile)
+   CATCHER(FFStreamError)
 
    // other gpstk exceptions:
    catch (const gpstk::Exception &e) {

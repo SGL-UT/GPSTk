@@ -72,6 +72,10 @@ ignore_patterns = [
     'weakref_',
 ]
 
+# Specific exceptions to the ignore_patterns list
+ignore_pattern_exceptions = [
+    'FFStreamError',
+]
 
 # submodule_name -> (list of exact names, list of pattern names)
 submodules = {
@@ -95,7 +99,7 @@ override_placements = {
 
 def should_be_added(name):
     for pattern in ignore_patterns:
-        if pattern in name:
+        if pattern in name and name not in ignore_pattern_exceptions:
             return False
     if name in ignore_exact:
         return False
