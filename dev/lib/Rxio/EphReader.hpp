@@ -53,6 +53,7 @@
 #include "XvtStore.hpp"
 #include "SatID.hpp"
 #include "GPSWeekSecond.hpp"
+#include "FFStreamError.hpp"
 
 namespace gpstk
 {
