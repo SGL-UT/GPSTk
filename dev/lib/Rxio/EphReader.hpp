@@ -63,13 +63,13 @@ namespace gpstk
          : verboseLevel(0), eph(NULL) {};
 
       EphReader(const std::string& fn) 
-         throw(FileMissingException)
+	 throw(FileMissingException,FFStreamError)
          : verboseLevel(0), eph(NULL) { read(fn); };
    
       int verboseLevel;
 
       void read(const std::string& fn)
-         throw(FileMissingException);
+         throw(FileMissingException,FFStreamError);
 
       std::vector<std::string> filesRead;
 
