@@ -157,24 +157,49 @@ namespace gpstk
 	 //   SOMETIME in first hour of transmission.  Could be more
 	 //   complete by looking at fit interval and IODC to more accurately
 	 //   determine earliest transmission time.
+	 //
+	 //   3.) SPECIAL CASE to address oddity in IGS brdc aggregate files. 
+	 //   At the beginning of day, it appears the some stations report 
+	 //   the last set of the previous day with a "transmit time" of 0 SOD 
+	 //   and a Toc of 0 SOD.  This is errant nonsense, but its in the data.
+	 //   I suspect someone's "daily file writer" is dumping out the last 
+	 //   SF 1/2/3 of the previous day with the earliest valid time for the
+	 //   current day. 
+	 //   SO - If the "transmit time" claims 0 SOD with the Toc of 0 SOD, we'll
+	 //   nudge the "tranmist time" back into the previous day. 
       long longToc = (long) Toc;
+
+         // Case 3 check
+      long adjHOWtime = HOWtime;
+      if ((longToc % SEC_PER_DAY) == 0 &&
+          (HOWtime % SEC_PER_DAY) == 0 &&
+           longToc == HOWtime            )
+      {
+         adjHOWtime = HOWtime - 30;
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;  
+            fullXmitWeekNum--;     
+         }
+      }
+      
       double XmitSOW = 0.0;
       if ( (longToc % 7200) != 0)     // NOT an even two hour change
       {
-         long Xmit = HOWtime - (HOWtime % 30);
-	 XmitSOW = (double) Xmit;
+         long Xmit = adjHOWtime - (adjHOWtime % 30);
+         XmitSOW = (double) Xmit;
       }
       else
       {
-         long Xmit = HOWtime - HOWtime % 7200;
-	 XmitSOW = (double) Xmit;
+         long Xmit = adjHOWtime - adjHOWtime % 7200;
+         XmitSOW = (double) Xmit;
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
 
       // Determine Transmit Time
       // Transmit time is the actual time this
       // SF 1/2/3 sample was collected
-      long Xmit = HOWtime - (HOWtime % 30);
+      long Xmit = adjHOWtime - (adjHOWtime % 30);
       transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
 
          // Fully qualified Toe and Toc
@@ -311,16 +336,41 @@ namespace gpstk
 	 //   SOMETIME in first hour of transmission.  Could be more
 	 //   complete by looking at fit interval and IODC to more accurately
 	 //   determine earliest transmission time.
+	 //
+	 //   3.) SPECIAL CASE to address oddity in IGS brdc aggregate files. 
+	 //   At the beginning of day, it appears the some stations report 
+	 //   the last set of the previous day with a "transmit time" of 0 SOD 
+	 //   and a Toc of 0 SOD.  This is errant nonsense, but its in the data.
+	 //   I suspect someone's "daily file writer" is dumping out the last 
+	 //   SF 1/2/3 of the previous day with the earliest valid time for the
+	 //   current day. 
+	 //   SO - If the "transmit time" claims 0 SOD with the Toc of 0 SOD, we'll
+	 //   nudge the "tranmist time" back into the previous day. 
       long longToc = (long) Toc;
+
+         // Case 3 check
+      long adjHOWtime = HOWtime;
+      if ((longToc % SEC_PER_DAY) == 0 &&
+          (HOWtime % SEC_PER_DAY) == 0 &&
+           longToc == HOWtime            )
+      {
+         adjHOWtime = HOWtime - 30;  
+         if (adjHOWtime<0)
+         {
+            adjHOWtime += FULLWEEK;  
+            fullXmitWeekNum--;     
+         }
+      }
+      
       double XmitSOW = 0.0;
       if ( (longToc % 7200) != 0)     // NOT an even two hour change
       {
-         long Xmit = HOWtime - (HOWtime % 30);
+         long Xmit = adjHOWtime - (adjHOWtime % 30);
          XmitSOW = (double) Xmit;
       }
       else
       {
-         long Xmit = HOWtime - HOWtime % 7200;
+         long Xmit = adjHOWtime - adjHOWtime % 7200;
          XmitSOW = (double) Xmit;
       }
       beginValid = GPSWeekSecond( fullXmitWeekNum, XmitSOW, TimeSystem::GPS );
@@ -328,7 +378,7 @@ namespace gpstk
       // Determine Transmit Time
       // Transmit time is the actual time this
       // SF 1/2/3 sample was collected
-      long Xmit = HOWtime - (HOWtime % 30);
+      long Xmit = adjHOWtime - (adjHOWtime % 30);
       transmitTime = GPSWeekSecond( fullXmitWeekNum, (double)Xmit, TimeSystem::GPS );
 
          // Fully qualified Toe and Toc

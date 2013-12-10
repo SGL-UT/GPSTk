@@ -48,19 +48,23 @@
 #include "FileFilterFrame.hpp"
 #include "BasicFramework.hpp"
 #include "StringUtils.hpp"
-#include "GPSEphemerisStore.hpp"
 #include "CommonTime.hpp"
 #include "TimeString.hpp"
 #include "GPSWeekSecond.hpp"
+
+// OrbElem
+#include "OrbElemFIC9.hpp"
+#include "OrbElemRinex.hpp"
+#include "GPSOrbElemStore.hpp"
 
 // fic
 #include "FICStream.hpp"
 #include "FICHeader.hpp"
 #include "FICData.hpp"
 
-#include "RinexNavStream.hpp"
-#include "RinexNavData.hpp"
-#include "RinexNavHeader.hpp"
+#include "Rinex3NavStream.hpp"
+#include "Rinex3NavData.hpp"
+#include "Rinex3NavHeader.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -81,12 +85,13 @@ protected:
    gpstk::CommandOptionWithAnyArg inputOption;
    gpstk::CommandOptionWithAnyArg outputOption;
    gpstk::CommandOptionWithAnyArg prnOption;
-   gpstk::CommandOptionNoArg  	  xmitOption; // added 3/18/2009
+   gpstk::CommandOptionNoArg      noRationalizeOption;
 
    FILE *logfp;
    FILE *out2fp; 
-   GPSEphemerisStore ges;
+   GPSOrbElemStore ges;
    
+   bool readARinexFile;
    int numFICErrors;
 };
 
@@ -125,12 +130,13 @@ EphSum::EphSum(const std::string& applName,
            inputOption('i', "input-file", "The name of the navigation message file(s) to read.", true),
            outputOption('o', "output-file", "The name of the output file to write.", true),
            prnOption('p', "PRNID","The PRN ID of the SV to process (default is all SVs)",false),
-           xmitOption('x', "xmit", "List in order of transmission (default is TOE.", false)
+           noRationalizeOption('n',"noRat","Do not rationalize the data store",false),
+           readARinexFile(false)
 {
    inputOption.setMaxCount(60);
    outputOption.setMaxCount(1);
    prnOption.setMaxCount(1);
-   xmitOption.setMaxCount(1);
+   noRationalizeOption.setMaxCount(1);
    numFICErrors = 0;
 }
 
@@ -168,6 +174,8 @@ bool EphSum::initialize(int argc, char *argv[])
 
 void EphSum::process()
 {
+   string tform = "%04F %6.0g %02m/%02d/%02y %03j %02H:%02M:%02S";
+   
    int countByPRN[gpstk::MAX_PRN+1];
    for (int i1=0;i1<=gpstk::MAX_PRN;++i1) countByPRN[i1] = 0;
    
@@ -179,26 +187,47 @@ void EphSum::process()
    {
       bool successOnThisFile = false;
          // Leave a record in the output file so we can verify what
-         // ephemeris files were processed.
+         // ephemeris file(s) were processed.
       fprintf(logfp,"# Processing input specification: %s",
                    values[it].c_str());
       // 
       // Try processing as a RINEX file
+      /* debug */
+      fprintf(logfp,"\n");
       try
       {
-         RinexNavHeader rnh;
-         RinexNavData rnd;
+         Rinex3NavHeader rnh;
+         Rinex3NavData rnd;
          
-         RinexNavStream RNFileIn( values[it].c_str() );
+         Rinex3NavStream RNFileIn( values[it].c_str() );
          if (RNFileIn)
          {
             RNFileIn.exceptions(fstream::failbit);
             RNFileIn >> rnh;
-         
+
+            int recNum = 0;          
             while (RNFileIn >> rnd)
             {
-               //EngEphemeris ee(rnd);
-               ges.addEphemeris(rnd);
+               OrbElemRinex oer(rnd);
+         /* debug          
+         fprintf(logfp,"  %02d ! %s ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
+               oer.satID.id,
+               printTime(oer.beginValid,tform).c_str(),
+               printTime(oer.transmitTime,tform).c_str(),
+               printTime(oer.ctToe,tform).c_str(),
+               printTime(oer.endValid,tform).c_str(),
+               oer.IODC,
+               oer.health,
+               oer.health);
+          /* end debug */
+          
+               ges.addOrbElem(oer);
+               recNum++;
+               readARinexFile = true;         // At least read one record successfully
+               if (debugLevel)
+               {
+                  cout << "Processed rec#  " << recNum << endl;
+               }
             }
             successOnThisFile = true;
             fprintf(logfp," - Success(RINEX)\n");
@@ -206,12 +235,17 @@ void EphSum::process()
       }
       catch(gpstk::Exception& exc)
       {
+         if (debugLevel)
+         {
+            cout << "Caught exception during Rinex read." << endl;
+            cout << "Exception: " << exc << endl;
+         }
          // do nothing
       }
-      //if (successOnThisFile) cout << "Succeeded reading RINEX" << endl; 
+      if (debugLevel && successOnThisFile) cout << "Succeeded reading RINEX" << endl; 
          
          // If RINEX failed, try as FIC input file
-      if (!successOnThisFile)
+      if (!readARinexFile)
       {
       try
       {
@@ -230,22 +264,28 @@ void EphSum::process()
             {
                if (ficd.blockNum==9)
                {
-                  EngEphemeris ee(ficd);
-                  ges.addEphemeris(RinexNavData(ee));
+                  OrbElemFIC9 oef(ficd);
+                  ges.addOrbElem(oef);
                   recNum9++;
                }
                recNum++;
-               //cout << "Processed rec#, rec9#  " << recNum << ", " << recNum9 << ", " << endl; 
+               if (debugLevel)
+               {
+                  cout << "Processed rec#, rec9#  " << recNum << ", " << recNum9 << ", " << endl; 
+               }
             }
          }
          successOnThisFile = true;
          fprintf(logfp," - Success(FIC)\n");
-         //if (successOnThisFile) cout << "Succeeded reading FIC" << endl; 
+         if (debugLevel && successOnThisFile) cout << "Succeeded reading FIC" << endl; 
       }
       catch(gpstk::Exception& exc)
       {
-         //cout << "Caught exception during FIC read." << endl;
-         //cout << "Exception: " << exc << endl;
+         if (debugLevel)
+         {
+            cout << "Caught exception during FIC read." << endl;
+            cout << "Exception: " << exc << endl;
+         }
          // do nothing
       }
       }
@@ -260,9 +300,25 @@ void EphSum::process()
       exit(1);
    }
    
-   string tform = "%04F %6.0g %02m/%02d/%02y %03j %02H:%02M:%02S";
+   //string tform = "%04F %6.0g %02m/%02d/%02y %03j %02H:%02M:%02S";
+
+   if (debugLevel)
+   {
+      cout << "Above decision branch for rationalize()." << endl;
+   }
+   if (noRationalizeOption.getCount()==0)
+   {
+      if (debugLevel)
+      {
+         cout << "Calling rationlize()" << endl;
+      }
+      ges.rationalize();
+      if (debugLevel)
+      {
+         cout << "Back from rationlize()" << endl;
+      }
+   }
    
-   //GPSEphemerisStore::EngEphMap eemap, eemapXmit;
    map<CommonTime, GPSEphemeris> eemap;
    map<CommonTime, GPSEphemeris>::const_iterator ci;
    long maxprn = gpstk::MAX_PRN;
@@ -276,108 +332,63 @@ void EphSum::process()
    }
    for (int i=1;i<=maxprn;++i) 
    {
-      //GPSEphemerisStore::EngEphMap::const_iterator ci;
       SatID sat = SatID( i, SatID::systemGPS);
-      int sizeprn = ges.size(sat);
-      //try
-      //{
-      //   eemap = ges.getEphMap( sat );
-      //}
-      //catch(InvalidRequest)
-      if(sizeprn == 0)
+
+      try
       {
-         // simply go on to the next PRN
-         if (!singleSV || (singleSV && i==singlePRNID))
-         {
-            fprintf(logfp,"#\n");
-            fprintf(logfp,"#PRN: %02d,  # of eph: NONE\n",i);
-         }
-         continue;
-      }
-      countByPRN[i] = sizeprn; // eemap.size();
+            // get list for this prn
+         const GPSOrbElemStore::OrbElemMap& oemap = ges.getOrbElemMap(sat);
+
+         int sizeprn = oemap.size();
+         countByPRN[i] = sizeprn;
  
-      if (singleSV && singlePRNID!=i) continue;
+         if (singleSV && singlePRNID!=i) continue;
       
-      // get list for this prn
-      list<GPSEphemeris> lst;
-      ges.addToList(lst, sat);
-      // loop over the list, creating the map
-      eemap.clear();
-      for(list<GPSEphemeris>::const_iterator it = lst.begin(); it != lst.end(); ++it)
-      {
-         GPSEphemeris eph(*it);
-         CommonTime tkey = (xmitOption.getCount() > 0 ? eph.ctToe : eph.transmitTime);
-         eemap.insert(make_pair(tkey,eph));
-      }
+            // Header
+         fprintf(logfp,"#\n");
+         fprintf(logfp,"#PRN: %02d,  # of eph: %02d\n", i, sizeprn);
+         fprintf(logfp,"#PRN !           Begin Valid             ");
+         fprintf(logfp,     "!               Xmit                ");
+         fprintf(logfp,     "!             Toe/Toc               ");
+         fprintf(logfp,     "!            End of Eff             ");
+         fprintf(logfp,     "!  IODC   Health\n");
 
-	  // sort by time of transmission (default is TOE) 
-     /*
-      if (xmitOption.getCount() > 0)
-      {
-         //eemapXmit.clear();
-         eemap.clear();
-         
-         //for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
+         GPSOrbElemStore::OrbElemMap::const_iterator ci;
+         for (ci=oemap.begin();ci!=oemap.end();ci++)
          {
-            EngEphemeris ee = ci ->second;
-            CommonTime xmit = ee.getTransmitTime();
-            //eemapXmit.insert(make_pair(xmit,ee));
-            eemap.insert(make_pair(xmit,ee));
-         } 
-         
-         //eemap = eemapXmit;
+            const OrbElem* ee = ci->second;
+            if (readARinexFile)
+            {
+               const OrbElemRinex* eel = dynamic_cast<const OrbElemRinex*>(ee); 
+   
+               fprintf(logfp,"  %02d ! %s ! %s ! %s ! %s ! 0x%03X  0x%02d %02d \n",
+                     eel->satID.id,
+                     printTime(eel->beginValid,tform).c_str(),
+                     printTime(eel->transmitTime,tform).c_str(),
+                     printTime(eel->ctToe,tform).c_str(),
+                     printTime(eel->endValid,tform).c_str(),
+                     eel->IODC,
+                     eel->health,eel->health);
+            }
+            else  // for FIC
+            {
+               const OrbElemLNav* eel = dynamic_cast<const OrbElemLNav*>(ee); 
+   
+               fprintf(logfp,"  %02d ! %s ! %s ! %s ! %s ! 0x%03X  0x%02d %02d \n",
+                     eel->satID.id,
+                     printTime(eel->beginValid,tform).c_str(),
+                     printTime(eel->transmitTime,tform).c_str(),
+                     printTime(eel->ctToe,tform).c_str(),
+                     printTime(eel->endValid,tform).c_str(),
+                     eel->IODC,
+                     eel->health,eel->health);
+            }
+         }
       }
-     */
-
-         // Header
-      fprintf(logfp,"#\n");
-      fprintf(logfp,"#PRN: %02d,  # of eph: %02d\n", i, (int) eemap.size());
-      fprintf(logfp,"#PRN !               Xmit                !             Toe/Toc               !            End of Eff             !  IODC   Health\n");
-      for (ci=eemap.begin(); ci!=eemap.end(); ++ci)
+      catch(InvalidRequest exc)
       {
-         GPSEphemeris ee = ci->second;
-
-	    /*
-	     * Calculating end of effectvity is a challenge.  IS-GPS-200 20.3.4.4
-	     * states "The start of the transmission interval for each data set corresponds
-	     * to the beginning of the curve fit interval for the data set."  HOWEVER,
-	     * Table 20-XI Note 4 and Table 20-XII Note 5 state "The first data set of a
-	     * new upload may be cut-in at any time and therefore the trasmission iterval
-	     * may be less than the specified value."
-	     *
-	     * A new upload implies a two hour transmission interval and a 4 hour curve
-	     * fit.  In addition, it has been emprically observed that the period of
-	     * transmission for a new upload always starts prior to the Toe.  Therefore,
-	     * if the Toe is NOT an even two-hour epoch AND the transmit time is 
-	     * not an even two hour epoch, then it is likely the first ephemeris of a 
-	     * new upload.  In such a case, the transmit time can be rounded BACK
-	     * to the most recent even two hour epoch and considered the beginning time
-	     * of effectivity for end of effectivity. 
-	    */
-         CommonTime begEff = ee.transmitTime;
-	 CommonTime epochTime = ee.ctToe;
-	 long TWO_HOURS = 7200;
-         long epochRemainder = (long) static_cast<GPSWeekSecond>(epochTime).sow % TWO_HOURS;
-	 long  xmitRemainder = (long) static_cast<GPSWeekSecond>(begEff).sow % TWO_HOURS;
-	 if (epochRemainder != 0 && xmitRemainder != 0)
-	 {
-	    begEff = begEff - xmitRemainder;
-	 }
-
-	 short fitIntervalHours = ee.fitDuration; // ee.getFitInterval();
-	 short ONE_HOUR = 3600;
-	 CommonTime endEff = begEff + ONE_HOUR * fitIntervalHours;
-
-         fprintf(logfp,"  %02d ! %s ! %s ! %s ! 0x%03X  0x%02X %02d \n",
-               i,
-               printTime(ee.transmitTime,tform).c_str(),
-               printTime(ee.ctToe,tform).c_str(),
-               printTime(endEff,tform).c_str(),
-               ee.IODC,
-               ee.health,
-               ee.health);
-         //fprintf(logfp,"    |                                   | %s |\n",
-         //      ee.getEpochTime().printf(tform).c_str());
+         countByPRN[i] = 0;
+         continue;
       }
    }
    
