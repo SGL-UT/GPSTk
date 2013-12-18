@@ -122,7 +122,7 @@ namespace gpstk
       /// ephemeris is not found.
       const GPSEphemeris& findEphemeris(const SatID& sat, const CommonTime& t) const
       {
-         if(sat.system != SatID::systemBeiDou) {
+         if(sat.system != SatID::systemGPS) {
             InvalidRequest e("Invalid satellite system");
             GPSTK_THROW(e);
          }
