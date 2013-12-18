@@ -86,6 +86,7 @@ int main(int argc, char *argv[])
       SP3Data sp3data;
 
       for(i=1; i<argc; i++) {
+
          if(argv[i][0] == '-') {
             string arg(argv[i]);
             if(arg == string("--outputC")) {
@@ -106,6 +107,7 @@ int main(int argc, char *argv[])
                int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
                double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
                begTime=GPSWeekSecond(wk,sow);
+	       begTime.setTimeSystem(TimeSystem::GPS);
                if(verbose) cout << " Begin time "
                   << printTime(begTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                   << endl;
@@ -115,6 +117,7 @@ int main(int argc, char *argv[])
                int wk=StringUtils::asInt(StringUtils::stripFirstWord(arg,','));
                double sow=StringUtils::asDouble(StringUtils::stripFirstWord(arg,','));
                endTime=GPSWeekSecond(wk,sow);
+	       endTime.setTimeSystem(TimeSystem::GPS);
                if(verbose) cout << " End time   "
                   << printTime(endTime,"%Y/%02m/%02d %2H:%02M:%06.3f = %F/%10.3g")
                   << endl;
@@ -173,6 +176,13 @@ int main(int argc, char *argv[])
    
       }
 
+      if (verbose) 
+      {
+         cout << "Number of ephemerides loaded: " << BCEph.size() << endl;
+	 cout << " Initial time: " << printTime(BCEph.getInitialTime(),"%03j.%02H:%02M:%02S, %P") << endl;
+	 cout << "   Final time: " << printTime(BCEph.getFinalTime(),"%03j.%02H:%02M:%02S, %P") << endl;
+      }
+
       // time limits, if not given by user
       if(begTime == CommonTime::BEGINNING_OF_TIME)
          begTime = BCEph.getInitialTime();
@@ -210,12 +220,16 @@ int main(int argc, char *argv[])
       // this is a pain....
       sp3header.numberOfEpochs = 0;
       tt = begTime;
+
       while(tt < endTime) {
          bool foundSome = false;
          for(i=1; i<33; i++) {            // for each PRN ...
             SatID sat(i,SatID::systemGPS);
             try { GPSEphemeris ee = BCEph.findEphemeris(sat, tt); }
-            catch(InvalidRequest& nef) { continue; }
+            catch(InvalidRequest& nef) 
+	    {
+               continue; 
+	    }
 
             if(sp3header.satList.find(sat) == sp3header.satList.end()) {
                sp3header.satList[sat] = 0;        // sat accuracy = ?
@@ -253,6 +267,7 @@ int main(int argc, char *argv[])
       for(j=0; j<4; j++) sp3data.sig[j]=0;   // sigma = ?
 
       tt = begTime;
+      tt.setTimeSystem(TimeSystem::Any);
       while(tt < endTime) {
          bool epochOut=false;
 
