@@ -68,37 +68,59 @@ endif(NOT "${CMAKE_COMPILER_IS_GNUCC}" )
 #    message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach()
 
-# Recursively search through lib and group the following file types
-file(GLOB_RECURSE SOURCES "lib/*.cpp")
-file(GLOB_RECURSE SOURCES2 "lib/*.c")
-file(GLOB_RECURSE HEADERS "lib/*.h")
-file(GLOB_RECURSE HEADERS2 "lib/*.hpp")
+# Recursively search through core/lib and group the following file types
+file(GLOB_RECURSE CORE_SRC "core/lib/*.cpp")
+file(GLOB_RECURSE CORE_SRC2 "core/lib/*.c")
+file(GLOB_RECURSE CORE_HDRS "core/lib/*.h")
+file(GLOB_RECURSE CORE_HDRS2 "core/lib/*.hpp")
 
-# ap out the directory structure of lib for includes
-set (INCLUDE_DIRS "")
-foreach (_headerFile ${HEADERS})
+# Recursively search through ext/lib and group the following file types
+file(GLOB_RECURSE EXT_SRC "ext/lib/*.cpp")
+file(GLOB_RECURSE EXT_SRC2 "ext/lib/*.c")
+file(GLOB_RECURSE EXT_HDRS "ext/lib/*.h")
+file(GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp")
+
+# Map out the directory structure of core/lib for includes
+set (CORE_INCLUDE_DIRS "")
+foreach (_headerFile ${CORE_HDRS})
     get_filename_component(_dir ${_headerFile} PATH)
-    list (APPEND INCLUDE_DIRS ${_dir})
+    list (APPEND CORE_INCLUDE_DIRS ${_dir})
 endforeach()
 
-foreach (_headerFile ${HEADERS2})
+foreach (_headerFile ${CORE_HDRS2})
     get_filename_component(_dir ${_headerFile} PATH)
-    list (APPEND INCLUDE_DIRS ${_dir})
+    list (APPEND CORE_INCLUDE_DIRS ${_dir})
 endforeach()
-list(REMOVE_DUPLICATES INCLUDE_DIRS)
+list(REMOVE_DUPLICATES CORE_INCLUDE_DIRS)
 
-# Include the mapped lib directory structure
-include_directories(${INCLUDE_DIRS})
+# Include the mapped /corelib directory structure
+include_directories(${CORE_INCLUDE_DIRS})
 
-# Create the gpstk library
-add_library (gpstk ${STADYN} ${SOURCES} ${SOURCES2})
+# Map out the directory structure of ext/lib for includes
+set (EXT_INCLUDE_DIRS "")
+foreach (_headerFile ${EXT_HDRS})
+    get_filename_component(_dir ${_headerFile} PATH)
+    list (APPEND EXT_INCLUDE_DIRS ${_dir})
+endforeach()
 
-# Install the gpstk library and headers
+foreach (_headerFile ${EXT_HDRS2})
+    get_filename_component(_dir ${_headerFile} PATH)
+    list (APPEND EXT_INCLUDE_DIRS ${_dir})
+endforeach()
+list(REMOVE_DUPLICATES EXT_INCLUDE_DIRS)
+
+# Include the mapped ext/lib directory structure
+include_directories(${EXT_INCLUDE_DIRS})
+
+# Create the gpstk library using core and ext source files
+add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2})
+
+# Install the gpstk library and core/ext headers
 install (TARGETS gpstk DESTINATION lib)
-install (FILES ${HEADERS} ${HEADERS2} DESTINATION include/gpstk )
-
+install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION ext )
 
 # GPSTk Subdirectories
-add_subdirectory (apps)
+add_subdirectory (core)
+add_subdirectory (ext)
 add_subdirectory (examples)
 
