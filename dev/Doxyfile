@@ -457,8 +457,9 @@ RECURSIVE              = YES
 
 EXCLUDE                = ./tests \
                          ./examples \
-                         ./apps \
-                         ./apps/bindings
+                         ./core/apps \
+                         ./ext/apps \
+                         ./ext/apps/bindings
 
 # The EXCLUDE_SYMLINKS tag can be used select whether or not files or directories
 # that are symbolic links (a Unix filesystem feature) are excluded from the input.
@@ -506,7 +507,7 @@ IMAGE_PATH             =
 # to standard output.  If FILTER_PATTERNS is specified, this tag will be
 # ignored.
 
-INPUT_FILTER           = apps/bindings/
+INPUT_FILTER           = /ext/apps/bindings/
 
 # The FILTER_PATTERNS tag can be used to specify filters on a per file pattern
 # basis.  Doxygen will compare the file name with each pattern and apply the
@@ -956,7 +957,8 @@ SEARCH_INCLUDES        = YES
 # contain include files that are not input files but should be processed by
 # the preprocessor.
 
-INCLUDE_PATH           = ./lib
+INCLUDE_PATH           = ./ext/lib \
+                         ./core/lib 
 
 # You can use the INCLUDE_FILE_PATTERNS tag to specify one or more wildcard
 # patterns (like *.h and *.hpp) to filter out the header-files in the
