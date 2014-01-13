@@ -4,12 +4,22 @@ cmake_minimum_required(VERSION 2.8.4)
 # Project Name
 project (gpstk)
 
+#----------------------------------------
 # System Variables
+#----------------------------------------
+
 message ("system = ${CMAKE_SYSTEM}")
 message ("system_name = ${CMAKE_SYSTEM_NAME}")
 
+#----------------------------------------
 # Installation Path Prefix - Change to desired location
+#----------------------------------------
+
 set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
+
+#----------------------------------------
+# Set Compiler options
+#----------------------------------------
 
 if (UNIX) #Unix Compiler Options
 	 set (STADYN "SHARED") #Dynamic Libraries Enabled
@@ -37,6 +47,10 @@ elseif (WIN32) #Windows Compiler Options
 	endif (MSVC11)		
 endif(UNIX)
 
+#----------------------------------------
+# Set Build path options
+#----------------------------------------
+
 # Use, i.e. don't skip the full RPATH for the build tree
 set (CMAKE_SKIP_BUILD_RPATH FALSE)
 
@@ -50,23 +64,32 @@ set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib")
 # which point to directories outside the build tree to the install RPATH
 set (CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-
 # The RPATH to be used when installing, but only if it's not a system directory
 list (FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib" isSystemDir)
 if ("${isSystemDir}" STREQUAL "-1")
    set (CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}:$ORIGIN/../lib")
 endif ("${isSystemDir}" STREQUAL "-1")
 
+#----------------------------------------
 # NEED_GETOPT flag for Sources
+#----------------------------------------
+
 if (NOT "${CMAKE_COMPILER_IS_GNUCC}" )
 	set(NEED_GETOPT TRUE)
 endif(NOT "${CMAKE_COMPILER_IS_GNUCC}" )
 
+#----------------------------------------
 # Debug script - uncomment for printing of all cmake variables
+#----------------------------------------
+
 #get_cmake_property(_variableNames VARIABLES)
 #foreach (_variableName ${_variableNames})
 #    message(STATUS "${_variableName}=${${_variableName}}")
 #endforeach()
+
+#----------------------------------------
+# Recursively build core and ext lib
+#----------------------------------------
 
 # Recursively search through core/lib and group the following file types
 file(GLOB_RECURSE CORE_SRC "core/lib/*.cpp")
@@ -115,11 +138,17 @@ include_directories(${EXT_INCLUDE_DIRS})
 # Create the gpstk library using core and ext source files
 add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2})
 
+#----------------------------------------
 # Install the gpstk library and core/ext headers
+#----------------------------------------
+
 install (TARGETS gpstk DESTINATION lib)
 install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION ext )
 
-# GPSTk Subdirectories
+#----------------------------------------
+# Add sub-directories
+#----------------------------------------
+
 add_subdirectory (core)
 add_subdirectory (ext)
 add_subdirectory (examples)
