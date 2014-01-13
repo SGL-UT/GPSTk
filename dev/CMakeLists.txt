@@ -143,7 +143,7 @@ add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2})
 #----------------------------------------
 
 install (TARGETS gpstk DESTINATION lib)
-install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION ext )
+install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
 
 #----------------------------------------
 # Add sub-directories
