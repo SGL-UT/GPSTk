@@ -153,3 +153,22 @@ add_subdirectory (core)
 add_subdirectory (ext)
 add_subdirectory (examples)
 
+#----------------------------------------
+# Experimental stuff to have cmake build debs for us
+# To use this, run "make package"
+#----------------------------------------
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "GPSTk libraries and applications for GNSS processing.")
+SET(CPACK_PACKAGE_VENDOR "ARL:UT SGL")
+SET(CPACK_PACKAGE_CONTACT "Bryan Parsons")
+SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README")
+SET(CPACK_PACKAGE_VERSION_MAJOR "2")
+SET(CPACK_PACKAGE_VERSION_MINOR "3")
+SET(CPACK_PACKAGE_VERSION_PATCH "1")
+SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY "OFF")
+
+SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.13)")
+SET(CPACK_DEBIAN_SECTION "stable")
+SET(CPACK_DEBIAN_PACKAGE_SECTION "science")
+
+SET(CPACK_GENERATOR "DEB;TGZ")
+INCLUDE(CPack)
