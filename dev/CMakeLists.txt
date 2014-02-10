@@ -71,14 +71,6 @@ if ("${isSystemDir}" STREQUAL "-1")
 endif ("${isSystemDir}" STREQUAL "-1")
 
 #----------------------------------------
-# NEED_GETOPT flag for Sources
-#----------------------------------------
-
-if (NOT "${CMAKE_COMPILER_IS_GNUCC}" )
-	set(NEED_GETOPT TRUE)
-endif(NOT "${CMAKE_COMPILER_IS_GNUCC}" )
-
-#----------------------------------------
 # Debug script - uncomment for printing of all cmake variables
 #----------------------------------------
 
@@ -119,10 +111,27 @@ list(REMOVE_DUPLICATES CORE_INCLUDE_DIRS)
 # Include the mapped /corelib directory structure
 include_directories(${CORE_INCLUDE_DIRS})
 
+
+# Clunky way to remove getopt.h from being installed on sane systems
+# There _has_ to be better way to do this
+if ("${CMAKE_COMPILER_IS_GNUCC}")
+  #message("FILES:"  "${EXT_HDRS}")
+  foreach (_headerFile ${EXT_HDRS})
+    get_filename_component(_name ${_headerFile} NAME)
+    #message("_name:" ${_name})
+    if (${_name} MATCHES "getopt.h")
+      list (REMOVE_ITEM EXT_HDRS ${_headerFile})
+    endif()
+  endforeach()
+endif()
+#message("FILES:"  "${EXT_HDRS}")
+
+
 # Map out the directory structure of ext/lib for includes
 set (EXT_INCLUDE_DIRS "")
 foreach (_headerFile ${EXT_HDRS})
     get_filename_component(_dir ${_headerFile} PATH)
+    get_filename_component(_name ${_headerFile} NAME)
     list (APPEND EXT_INCLUDE_DIRS ${_dir})
 endforeach()
 
@@ -145,6 +154,7 @@ add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2})
 install (TARGETS gpstk DESTINATION lib)
 install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
 
+
 #----------------------------------------
 # Add sub-directories
 #----------------------------------------
@@ -165,6 +175,10 @@ SET(CPACK_PACKAGE_VERSION_MAJOR "2")
 SET(CPACK_PACKAGE_VERSION_MINOR "3")
 SET(CPACK_PACKAGE_VERSION_PATCH "1")
 SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY "OFF")
+
+SET(CPACK_SOURCE_STRIP_FILES 1)
+SET(CPACK_STRIP_FILES 1)
+SET(CPACK_SOURCE_IGNORE_FILES "getopt\\\\.h") #This doesn't seem to be working...
 
 SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libc6 (>= 2.13)")
 SET(CPACK_DEBIAN_SECTION "stable")
