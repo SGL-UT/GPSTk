@@ -22,29 +22,31 @@ set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 #----------------------------------------
 
 if (UNIX) #Unix Compiler Options
-	 set (STADYN "SHARED") #Dynamic Libraries Enabled
-	 if (APPLE) #Apple Compiler Options
-	 	set (CMAKE_SHARED_LIBRARY_SUFFIX .dylib)
-		set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
-	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
-	 elseif (${CMAKE_SYSTEM_NAME} MATCHES "SunOS") #Solaris Compiler Options
-	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt")
-	 	set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -compat=5 -erroff=hidevf,wvarhidemem,badargtype2w -lgen -lnsl -lsocket")
-	 else (APPLE)
-	 	set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
-	 endif (APPLE)
+  set (STADYN "SHARED") #Dynamic Libraries Enabled
+  if (APPLE) #Apple Compiler Options
+    set (CMAKE_SHARED_LIBRARY_SUFFIX .dylib)
+    set (CMAKE_INSTALL_NAME_DIR "${CMAKE_INSTALL_PREFIX}/lib")
+    set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
+  elseif (${CMAKE_SYSTEM_NAME} MATCHES "SunOS")
+    if (NOT CMAKE_COMPILER_IS_GNUCC) #Solaris Compiler Options
+      set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -mt")
+      set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -compat=5 -erroff=hidevf,wvarhidemem,badargtype2w")
+    endif ()
+  else ()
+    set (CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared")
+  endif ()
 elseif (WIN32) #Windows Compiler Options
-	if (MSVC11) #Compiler Options for Microsoft Visual Studio 11 (2012)
-		set (STADYN "STATIC") #Static Libraries Enabled
-		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
-		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068")
-	elseif (MSVC10) #Compiler Options for Microsoft Visual Studio 10 (2010)
-		set (STADYN "STATIC") #Static Libraries Enabled
-		include_directories("C:/Program\ Files\ (x86)/GnuWin32/include")
-		link_directories("C:/Program\ Files\ (x86)/GnuWin32/lib")
-		add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
-		/wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068")
-	endif (MSVC11)		
+  if (MSVC11) #Compiler Options for Microsoft Visual Studio 11 (2012)
+    set (STADYN "STATIC") #Static Libraries Enabled
+    add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
+      /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068")
+  elseif (MSVC10) #Compiler Options for Microsoft Visual Studio 10 (2010)
+    set (STADYN "STATIC") #Static Libraries Enabled
+    include_directories("C:/Program\ Files\ (x86)/GnuWin32/include")
+    link_directories("C:/Program\ Files\ (x86)/GnuWin32/lib")
+    add_definitions (/MP /D_SCL_SECURE_NO_WARNINGS /D_CRT_SECURE_NO_WARNINGS /D_USE_MATH_DEFINES /EHsc /GR /wd"4274" 
+      /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068")
+  endif (MSVC11)		
 endif(UNIX)
 
 #----------------------------------------
@@ -124,21 +126,21 @@ if (NOT WIN32)
       list (REMOVE_ITEM EXT_HDRS ${_headerFile})
     endif()
   endforeach()
-  message("FILES:"  "${EXT_HDRS}")
+  #message("FILES:"  "${EXT_HDRS}")
 endif()
 
 
 # Map out the directory structure of ext/lib for includes
 set (EXT_INCLUDE_DIRS "")
 foreach (_headerFile ${EXT_HDRS})
-    get_filename_component(_dir ${_headerFile} PATH)
-    get_filename_component(_name ${_headerFile} NAME)
-    list (APPEND EXT_INCLUDE_DIRS ${_dir})
+   get_filename_component(_dir ${_headerFile} PATH)
+   get_filename_component(_name ${_headerFile} NAME)
+   list (APPEND EXT_INCLUDE_DIRS ${_dir})
 endforeach()
 
 foreach (_headerFile ${EXT_HDRS2})
-    get_filename_component(_dir ${_headerFile} PATH)
-    list (APPEND EXT_INCLUDE_DIRS ${_dir})
+   get_filename_component(_dir ${_headerFile} PATH)
+   list (APPEND EXT_INCLUDE_DIRS ${_dir})
 endforeach()
 list(REMOVE_DUPLICATES EXT_INCLUDE_DIRS)
 
