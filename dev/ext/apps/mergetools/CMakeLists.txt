@@ -1,11 +1,5 @@
 # apps/mergetools/CMakeLists.txt
 
-if (CMAKE_SYSTEM_NAME MATCHES "SunOS")
-  target_link_libraries(mergeRinObs gen)
-  target_link_libraries(mergeRinMet gen)
-  target_link_libraries(mergeRinNav gen)
-endif()
-
 
 add_executable(mergeRinObs mergeRinObs.cpp)
 target_link_libraries(mergeRinObs gpstk)
@@ -18,4 +12,10 @@ install (TARGETS mergeRinNav DESTINATION bin)
 add_executable(mergeRinMet mergeRinMet.cpp)
 target_link_libraries(mergeRinMet gpstk)
 install (TARGETS mergeRinMet DESTINATION bin)
+
+if (CMAKE_SYSTEM_NAME MATCHES "SunOS")
+  target_link_libraries(mergeRinObs gen)
+  target_link_libraries(mergeRinMet gen)
+  target_link_libraries(mergeRinNav gen)
+endif()
 
