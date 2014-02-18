@@ -10,7 +10,7 @@
 #           Run make install to install GPSTk
 #           Echo a list of the installed files
 #
-# usage:    ./script_cmake [-h] [-b] [-i] [-c] [-v] [-r <path>] [-s <path>]
+# usage:    ./script_cmake.sh [-h] [-b] [-i] [-c] [-v] [-r <path>] [-s <path>]
 #
 # OPTIONS:
 #    -h     help,          Show this message
