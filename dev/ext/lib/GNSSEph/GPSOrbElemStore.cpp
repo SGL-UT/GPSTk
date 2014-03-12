@@ -557,8 +557,13 @@ namespace gpstk
          double previousOffset = 0.0;
          bool previousIsOffset = false; 
          bool currentIsOffset = false;
+         bool previousBeginAdjusted = false;
+         bool adjustedBegin = false;
+         CommonTime prevOrigBeginValid; 
 
-         //string tForm = "%02H:%02M:%02S";
+         string tForm = "%03j.%02H:%02M:%02S";
+         SatID sid = it->first;
+         //cout << " Scannning PRN ID: " << sid.id << endl;
 
             // Scan the map for this SV looking for 
             // uploads.  Uploads are identifed by 
@@ -571,6 +576,8 @@ namespace gpstk
             OrbElem* oe = ei->second;
             long Toe = (long) (static_cast<GPSWeekSecond> (oe->ctToe)).sow;
             double currentOffset = Toe % 3600;
+            
+            CommonTime currOrigBeginValid = oe->beginValid;
 
             //cout << "Top of For Loop.  oe->beginValid = " << printTime(oe->beginValid,tForm);
             //cout << ", currentOffset =" << currentOffset << endl;
@@ -580,8 +587,8 @@ namespace gpstk
                currentIsOffset = true; 
 
                //cout << "*** Found an offset" << endl;
-               //cout << " currentIsOffest: " << currentIsOffset; 
-               //cout << " previousIsOffest: " << previousIsOffset; 
+               //cout << " currentIsOffset: " << currentIsOffset; 
+               //cout << " previousIsOffset: " << previousIsOffset; 
                //cout << " current, previous Offset = " << currentOffset << ", " << previousOffset << endl; 
             
                   // If this set is offset AND the previous set is offset AND
@@ -605,12 +612,16 @@ namespace gpstk
                    currentIsOffset  &&
                    currentOffset==previousOffset)
                {
-                 //cout << "*** Adjusting beginValid" << endl; 
+                 //cout << "*** Adjusting beginValid.  Initial value: "
+                 //     << printTime(oe->beginValid,tForm); 
                  oe->adjustBeginningValidity();
+                 adjustedBegin = true;
+                 //cout << ", Adjusted value: " 
+                 //     << printTime(oe->beginValid,tForm) << endl;
                }
                
                   // If the previous set is not offset, then 
-                  // we've found an upload
+                  // we've found an upload.
                   // For that matter, if previous IS offset, but 
                   // the current offset is different than the
                   // previous, then it is an upload.
@@ -635,6 +646,24 @@ namespace gpstk
                      //cout << "*** Adjusting endValid Times" << endl;
                      OrbElemMap::iterator ri;
                      ri = em.find(oePrev->beginValid);     // We KNOW it exists in the map
+                        // Actuall, there is a really, odd rare case where it 
+                        // DOES NOT exist in the map.  That case is the case 
+                        // in which we modified the begin valid time of oePrev
+                        // in the previous iteration of the loop.  
+                     if (ri==em.end() && previousBeginAdjusted)
+                     {
+                        //cout << "*** Didn't find oePrev->beginValid(), but prev beginValid changed.";
+                        //cout << "  Testing the prevOrigBeginValid value." << endl;
+                        ri = em.find(prevOrigBeginValid);
+                        if (ri==em.end())
+                        {
+                           //cout << "Still didn't find a valid key.  Abort rationalization for this SV." << endl;
+                           continue;    // Abort rationalization for this SV with no further changes.
+                        }
+                        //cout << "  Successfully found the previous object." << endl;
+                     }
+                     
+                     
                      bool done = false;
                      while (!done)
                      {
@@ -662,6 +691,17 @@ namespace gpstk
             
                // Update condition flags for next loop
             previousIsOffset = currentIsOffset;
+
+               // If beginValid was adjusted for THIS oe, set
+               // the flag previousBeginAdjusted so we have that
+               // information to inform the next iteration.  However,
+               // do not let the flag persist beyond one iteration
+               // unless adjustedBegin is set again. 
+            previousBeginAdjusted = false;
+            if (adjustedBegin) previousBeginAdjusted = true;
+            adjustedBegin = false;
+            prevOrigBeginValid = currOrigBeginValid; 
+            
             oePrev = oe;           // May need this for next loop.
             begin = false; 
             //cout << "Bottom of For loop.  currentIsOffset: " << currentIsOffset <<
@@ -694,11 +734,13 @@ namespace gpstk
               OrbElem* oe = ei->second;
               if (ei->first!=oe->beginValid)
               {
+                 //cout << "Removing an element.....";
                  OrbElem* oeAdj= oe->clone();       // Adjustment was done in 
                                                    // first loop above.
                  delete ei->second;                // oe becomes invalid.
                  em.erase(ei);                     // Remove the map entry.
                  em[oeAdj->beginValid] = oeAdj->clone(); // Add back to map
+                 //cout << "...restored the element." << endl;
                  break;            // exit this while loop without finishing
               }
               loopStart = ei->first; // Scanned this far successfully, so
@@ -718,6 +760,7 @@ namespace gpstk
         finalTime   = rCei->second->endValid;
 
       } // end outer for-loop
+      //cout << "Exiting GPSOrbElem.rationalize()" << endl; 
    }
 
 
