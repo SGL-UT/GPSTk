@@ -45,6 +45,7 @@
 #include "BDSWeekSecond.hpp"
 
 #include "BDSEphemeris.hpp"
+#include "TimeString.hpp"
 
 using namespace std;
 
@@ -107,5 +108,24 @@ namespace gpstk
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
+
+   void BDSEphemeris::dumpTerse(std::ostream& os) const
+   {
+      string tform = "%03j %02H:%02M:%02S";
+      try
+      {
+	 os << " " << setw(3) << satID.id << " ! ";     
+         os << printTime(transmitTime,tform) << " ! " 
+	    << printTime(ctToe,tform) << " ! "
+	    << printTime(endValid,tform) << " !"
+	    << fixed << setprecision(2)
+	    << setw(6) << getAccuracy() << "!"
+	    << setw(4) << IODC << "!"
+	    << setw(4) << IODC << "!"
+	    << setw(6) << health << "!" << endl;
+      }
+      catch(Exception& e) { GPSTK_RETHROW(e); }
+   }
+
 
 } // end namespace
