@@ -93,6 +93,7 @@ namespace gpstk
       /// Dump the orbit, etc information to the given output stream.
       /// @throw Invalid Request if the required data has not been stored.
       virtual void dumpBody(std::ostream& os = std::cout) const;
+      virtual void dumpTerse(std::ostream& os=std::cout) const;
 
    // member data
       CommonTime transmitTime;   ///< Time of transmission
