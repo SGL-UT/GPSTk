@@ -130,7 +130,7 @@ namespace gpstk
 	    << fixed << setprecision(2)
 	    << setw(6) << getAccuracy() << "!"
 	    << setw(4) << IODC << "!"
-	    << setw(4) << IODC << "!"
+	    << setw(4) << IODE << "!"
 	    << setw(6) << health << "!" << endl;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
