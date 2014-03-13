@@ -75,13 +75,22 @@ namespace gpstk
    }
 
    // adjustBeginningValidity determines the beginValid and endValid times.
+   // Note that this is currently a "best guess" based on observation of Beidou
+   // operation. The concept of a fit interval is mentioned in the ICD, but the 
+   // fit interval is undefined. 
+   //   - It appears the Toe is aligned with the beginning of transmit.
+   //   - It is assumed data should not be used prior to transmit.  
+   //   - The transmission period appears to be one hour.
+   //   - It is assumed that the data will be good for another hour
+   //     in order to support SV position determination for 
+   //     users that cannot collect navigation message continuously.
    // @throw Invalid Request if the required data has not been stored.
    void BDSEphemeris::adjustValidity(void)
    {
       try {
          OrbitEph::adjustValidity();   // for dataLoaded check
-         beginValid = ctToe - fitDuration*1800.0;     // hours*3600/2
-         endValid = ctToe + fitDuration*1800.0;
+         beginValid = ctToe;
+         endValid = ctToe + 3600.0;
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
