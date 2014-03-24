@@ -89,6 +89,13 @@ namespace gpstk
       /// adjustBeginningValidity determines the beginValid and endValid times.
       /// @throw Invalid Request if the required data has not been stored.
       virtual void adjustValidity(void);
+
+      /// Compute satellite position at the given time.
+      /// This is overriden from OrbitEph due to fact that BDS
+      /// includes GEO orbits.  The BDS ICD contains a slightly 
+      /// modified algorithm for deriving positions for these satellites.
+      /// @throw Invalid Request if the required data has not been stored.
+      Xvt svXvt(const CommonTime& t) const;
       
       /// Dump the orbit, etc information to the given output stream.
       /// @throw Invalid Request if the required data has not been stored.
