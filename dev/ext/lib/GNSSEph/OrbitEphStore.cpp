@@ -225,8 +225,8 @@ namespace gpstk
                string str = "Unexpected matching beginValid time but not Toe, for "
                   + asString(eph->satID)
                   + ", beginValid= " + printTime(eph->beginValid,fmt)
-                  + ", Toe(map)= " + printTime(eph->ctToe,fmt)
-                  + ", Toe(candidate)= "+ printTime(eph->ctToe," %6.0g.");
+                  + ", Toe(map)= " + printTime(it->second->ctToe,fmt)
+                  + ", Toe(candidate)= "+ printTime(eph->ctToe,fmt);
                InvalidParameter ir(str);
                GPSTK_THROW(ir);
             }
