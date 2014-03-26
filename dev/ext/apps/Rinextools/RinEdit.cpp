@@ -333,6 +333,8 @@ int ProcessFiles(void) throw(Exception)
 {
 try {
    Configuration& C(Configuration::Instance());
+   C.beginTime.setTimeSystem(TimeSystem::GPS);
+   C.endTime.setTimeSystem(TimeSystem::GPS);
    static const int width=13;
 #pragma unused(width)
    int iret,nfiles;
