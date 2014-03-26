@@ -123,7 +123,7 @@ namespace gpstk
          msg << "Version         " << setw(8) << (valid & validVersion        ) << endl;
          msg << "Run By          " << setw(8) << (valid & validRunBy          ) << endl;
          msg << "Marker Name     " << setw(8) << (valid & validMarkerName     ) << endl;
-         msg << "Marker Type     " << setw(8) << (valid & validMarkerType     ) << endl;
+         //msg << "Marker Type     " << setw(8) << (valid & validMarkerType     ) << endl;
          msg << "Observer        " << setw(8) << (valid & validObserver       ) << endl;
          msg << "Receiver        " << setw(8) << (valid & validReceiver       ) << endl;
          msg << "Antenna Type    " << setw(8) << (valid & validAntennaType    ) << endl;
@@ -134,9 +134,12 @@ namespace gpstk
             msg << "Sys Obs Type    " << setw(8) << (valid & validSystemObsType  ) << endl;
          if(version <  3)
             msg << "Wave Fact       " << setw(8) << (valid & validWaveFact) << endl;
-         msg << "Sys Phs Shft    " << setw(8) << (valid & validSystemPhaseShift)<< endl;
-         msg << "GLO Freq No     " << setw(8) << (valid & validGlonassFreqNo  ) << endl;
-         msg << "GLO Cod-Phs Bias" << setw(8) << (valid & validGlonassCodPhsBias) << endl;
+         if(version >= 3.01)
+            msg << "Sys Phs Shft    " << setw(8) << (valid & validSystemPhaseShift)<< endl;
+         if(version >= 3.01)
+            msg << "GLO Freq No     " << setw(8) << (valid & validGlonassFreqNo  ) << endl;
+         if(version >= 3.02)
+            msg << "GLO Cod-Phs Bias" << setw(8) << (valid & validGlonassCodPhsBias) << endl;
          msg << "Interval        " << setw(8) << (valid & validInterval       ) << endl;
          msg << "First Time      " << setw(8) << (valid & validFirstTime      ) << endl;
          msg << "End Header      " << setw(8) << (validEoH ? "true":"false"   );    // no endl
@@ -171,18 +174,18 @@ namespace gpstk
       if(valid & validComment          ) n += commentList.size();
       if(valid & validMarkerName       ) n++;
       if(valid & validMarkerNumber     ) n++;
-      if(valid & validMarkerType       ) n++;
+      if(version >= 3 && (valid & validMarkerType)) n++;
       if(valid & validObserver         ) n++;
       if(valid & validReceiver         ) n++;
       if(valid & validAntennaType      ) n++;
       if(valid & validAntennaPosition  ) n++;
       if(valid & validAntennaDeltaHEN  ) n++;
-      if(valid & validAntennaDeltaXYZ  ) n++;
-      if(valid & validAntennaPhaseCtr  ) n++;
-      if(valid & validAntennaBsightXYZ ) n++;
-      if(valid & validAntennaZeroDirAzi) n++;
-      if(valid & validAntennaZeroDirXYZ) n++;
-      if(valid & validCenterOfMass     ) n++;
+      if(version >= 3 && (valid & validAntennaDeltaXYZ)) n++;
+      if(version >= 3 && (valid & validAntennaPhaseCtr)) n++;
+      if(version >= 3 && (valid & validAntennaBsightXYZ)) n++;
+      if(version >= 3 && (valid & validAntennaZeroDirAzi)) n++;
+      if(version >= 3 && (valid & validAntennaZeroDirXYZ)) n++;
+      if(version >= 3 && (valid & validCenterOfMass)) n++;
       if(version < 3 && (valid & validNumObs))
          n += 1 + (obsTypeList.size()-1)/9;
       if(version >= 3 && (valid & validSystemObsType))
@@ -191,17 +194,17 @@ namespace gpstk
          n++;
          if(extraWaveFactList.size()) n += (extraWaveFactList.size()-1)/7;
       }
-      if(valid & validSigStrengthUnit  ) n++;
+      if(version >= 3 && (valid & validSigStrengthUnit)) n++;
       if(valid & validInterval         ) n++;
       if(valid & validFirstTime        ) n++;
       if(valid & validLastTime         ) n++;
       if(valid & validReceiverOffset   ) n++;
-      if(valid & validSystemDCBSapplied) n++;
-      if(valid & validSystemPCVSapplied) n++;
-      if(valid & validSystemScaleFac   ) n++;
-      if(valid & validSystemPhaseShift ) n++;        // one per system at least
-      if(valid & validGlonassFreqNo    ) n++;
-      if(valid & validGlonassCodPhsBias) n++;
+      if(version >= 3 && (valid & validSystemDCBSapplied)) n++;
+      if(version >= 3 && (valid & validSystemPCVSapplied)) n++;
+      if(version >= 3 && (valid & validSystemScaleFac)) n++;
+      if(version >= 3.01 && (valid & validSystemPhaseShift)) n++;        // one per system at least
+      if(version >= 3.01 && (valid & validGlonassFreqNo)) n++;  // TODO: continuation lines...
+      if(version >= 3.02 && (valid & validGlonassCodPhsBias)) n++;
       if(valid & validLeapSeconds      ) n++;
       if(valid & validNumSats          ) n++;
       if(valid & validPrnObs           )
@@ -297,7 +300,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validMarkerNumber" << endl;
-      if(valid & validMarkerType)
+      if(version >= 3 && (valid & validMarkerType))
       {
          line  = leftJustify(markerType, 20);
          line += string(40, ' ');
@@ -363,7 +366,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validAntennaDeltaHEN" << endl;
-      if(valid & validAntennaDeltaXYZ)
+      if(version >= 3 && (valid & validAntennaDeltaXYZ))
       {
          line  = rightJustify(asString(antennaDeltaXYZ[0], 4), 14);
          line += rightJustify(asString(antennaDeltaXYZ[1], 4), 14);
@@ -375,7 +378,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validAntennaDeltaXYZ" << endl;
-      if(valid & validAntennaPhaseCtr)
+      if(version >= 3 && (valid & validAntennaPhaseCtr))
       {
          line  =  leftJustify(antennaSatSys , 1);
          line += string(1, ' ');
@@ -390,7 +393,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validAntennaPhaseCtr" << endl;
-      if(valid & validAntennaBsightXYZ)
+      if(version >= 3 && (valid & validAntennaBsightXYZ))
       {
          line  = rightJustify(asString(antennaBsightXYZ[0], 4), 14);
          line += rightJustify(asString(antennaBsightXYZ[1], 4), 14);
@@ -402,7 +405,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validAntennaBsightXYZ" << endl;
-      if(valid & validAntennaZeroDirAzi)
+      if(version >= 3 && (valid & validAntennaZeroDirAzi))
       {
          line  = rightJustify(asString(antennaZeroDirAzi, 4), 14);
          line += string(46, ' ');
@@ -412,7 +415,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validAntennaZeroDirAzi" << endl;
-      if(valid & validAntennaZeroDirXYZ)
+      if(version >= 3 && (valid & validAntennaZeroDirXYZ))
       {
          line  = rightJustify(asString(antennaZeroDirXYZ[0], 4), 14);
          line += rightJustify(asString(antennaZeroDirXYZ[1], 4), 14);
@@ -424,7 +427,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validAntennaZeroDirXYZ" << endl;
-      if(valid & validCenterOfMass)
+      if(version >= 3 && (valid & validCenterOfMass))
       {
          line  = rightJustify(asString(centerOfMass[0], 4), 14);
          line += rightJustify(asString(centerOfMass[1], 4), 14);
@@ -563,7 +566,7 @@ namespace gpstk
          }
       }
 //    cout << "past validWaveFact" << endl;
-      if(valid & validSigStrengthUnit && version >= 3)
+      if(version >= 3 && valid & validSigStrengthUnit)
       {
          line  = leftJustify(sigStrengthUnit, 20);
          line += string(40, ' ');
@@ -613,7 +616,7 @@ namespace gpstk
          strm.lineNumber++;
       }
 //    cout << "past validReceiverOffset" << endl;
-      if(valid & validSystemDCBSapplied)
+      if(version >= 3 && (valid & validSystemDCBSapplied))
       {
          for(size_t i = 0; i < infoDCBS.size(); i++)
          {
@@ -629,7 +632,7 @@ namespace gpstk
          }
       }
 //    cout << "past validSystemDCBSapplied" << endl;
-      if(valid & validSystemPCVSapplied)
+      if(version >= 3 && (valid & validSystemPCVSapplied))
       {
          for(size_t i = 0; i < infoPCVS.size(); i++)
          {
@@ -645,7 +648,7 @@ namespace gpstk
          }
       }
 //    cout << "past validSystemPCVSapplied" << endl;
-      if(valid & validSystemScaleFac)
+      if(version >= 3 && (valid & validSystemScaleFac))
       {
          static const int maxObsPerLine = 12;
 
@@ -707,7 +710,7 @@ namespace gpstk
          }
       }
 //    cout << "past validSystemScaleFac" << endl;
-      if(valid & validSystemPhaseShift && version >= 3)
+      if(version >= 3.01 && (valid & validSystemPhaseShift))
       {
          //map<string, map<RinexObsID, map<RinexSatID,double> > > sysPhaseShift;
          map<string, map<RinexObsID, map<RinexSatID,double> > >::const_iterator it;
@@ -763,7 +766,7 @@ namespace gpstk
          }
       }
     //cout << "past validSystemPhaseShift" << endl;
-      if(valid & validGlonassFreqNo)
+      if(version >= 3.01 && (valid & validGlonassFreqNo))
       {
          //map<RinexSatID,int> GlonassFreqNo;
          int n(0),nsat(GlonassFreqNo.size());
@@ -786,7 +789,7 @@ namespace gpstk
          }
       }
 //    cout << "past validGlonassFreqNo" << endl;
-      if(valid & validGlonassCodPhsBias)
+      if(version >= 3.02 && (valid & validGlonassCodPhsBias))
       {
          map<RinexObsID,double>::const_iterator it;
          const string labs[4]={"C1C","C1P","C2C","C2P"};
@@ -1870,7 +1873,7 @@ namespace gpstk
         << ",  File type " << fileType << ",  System " << str << "." << endl;
       s << "Prgm: " << fileProgram << ",  Run: " << date
          << ",  By: " << fileAgency << endl;
-      s << "Marker name: " << markerName << ", ";
+      //s << "Marker name: " << markerName << ", ";
       s << "Marker type: " << markerType << "." << endl;
       s << "Observer : " << observer << ",  Agency: " << agency << endl;
       s << "Rec#: " << recNo << ",  Type: " << recType
@@ -1915,7 +1918,8 @@ namespace gpstk
          if(!(valid & validRunBy)) s << " Pgm / Run By / Date\n";
          if(!(valid & validMarkerName)) s << " Marker Name\n";
          //if(version >= 3 && !(valid & validMarkerType)) s << "Marker Type\n";
-         // Not actually required in 3.02 - see note in table A2 of R3.02 doc
+         // Not defined in R2 and not required in > 3, see Table A2 in R3 doc: 
+         // "Record required except for GEODETIC and NON_GEODETIC marker types"
          if(!(valid & validObserver)) s << " Observer / Agency\n";
          if(!(valid & validReceiver)) s << " Receiver # / Type\n";
          if(!(valid & validAntennaType)) s << " Antenna Type\n";
@@ -1924,9 +1928,8 @@ namespace gpstk
          if(version < 3 && !(valid & validNumObs)) s << " # / TYPES OF OBSERV\n";
          if(version >= 3 && !(valid & validSystemObsType  )) s << " Sys / # / Obs Type\n";
          if(!(valid & validFirstTime)) s << " Time of First Obs\n";
-         if(!(valid & validSystemPhaseShift)) s << " Sys / Phase Shifts\n";
          if(version >= 3.01 && !(valid & validSystemPhaseShift)) s << " SYS / PHASE SHIFT\n";
-         if(version >= 3.02 && !(valid & validGlonassFreqNo)) s << " GLONASS SLOT / FRQ #\n";
+         if(version >= 3.01 && !(valid & validGlonassFreqNo)) s << " GLONASS SLOT / FRQ #\n";
          if(version >= 3.02 && !(valid & validGlonassCodPhsBias)) s << " GLONASS COD/PHS/BIS\n";
          if(!(validEoH)) s << " END OF HEADER\n";
          s << "END Invalid header records." << endl;
