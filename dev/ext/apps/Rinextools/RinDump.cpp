@@ -308,7 +308,7 @@ try {
       Epoch wallclkend;
       wallclkend.setLocalTime();
       ostringstream oss;
-      oss << C.PrgmName << " timing: processing " << fixed << setprecision(3)
+      oss << "# " << C.PrgmName << " timing: processing " << fixed << setprecision(3)
          << double(totaltime)/double(CLOCKS_PER_SEC) << " sec, wallclock: "
          << setprecision(0) << (wallclkend-wallclkbeg) << " sec.";
       LOG(INFO) << oss.str();

@@ -1,4 +1,7 @@
-#pragma ident "$Id$"
+/**
+ * @file Rinex3ObsHeader.cpp
+ * Encapsulate header of Rinex observation file, including I/O
+ */
 
 //============================================================================
 //
@@ -6,7 +9,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 3.0 of the License, or
+//  by the Free Software Foundation; either version 2.1 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -35,11 +38,6 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-/**
- * @file Rinex3ObsHeader.cpp
- * Encapsulate header of Rinex observation file, including I/O
- */
 
 #include <sstream>
 #include <algorithm>
@@ -252,6 +250,7 @@ namespace gpstk
          line += leftJustify(str, 20);
          line += stringVersion;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
 //    cout << "past validVersion" << endl;
@@ -307,16 +306,20 @@ namespace gpstk
          line += string(40, ' ');
          line += stringMarkerType;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validMarkerType" << endl;
       if(valid & validObserver)
       {
          line  = leftJustify(observer, 20);
          line += leftJustify(agency  , 40);
          line += stringObserver;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validObserver" << endl;
       if(valid & validReceiver)
       {
          line  = leftJustify(recNo  , 20);
@@ -324,8 +327,10 @@ namespace gpstk
          line += leftJustify(recVers, 20);
          line += stringReceiver;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validReceiver" << endl;
       if(valid & validAntennaType)
       {
          line  = leftJustify(antNo  , 20);
@@ -333,8 +338,10 @@ namespace gpstk
          line += string(20, ' ');
          line += stringAntennaType;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validAntennaType" << endl;
       if(valid & validAntennaPosition)
       {
          line  = rightJustify(asString(antennaPosition[0], 4), 14);
@@ -343,8 +350,10 @@ namespace gpstk
          line += string(18, ' ');
          line += stringAntennaPosition;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validAntennaPosition" << endl;
       if(valid & validAntennaDeltaHEN)
       {
          line  = rightJustify(asString(antennaDeltaHEN[0], 4), 14);
@@ -353,8 +362,10 @@ namespace gpstk
          line += string(18, ' ');
          line += stringAntennaDeltaHEN;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validAntennaDeltaHEN" << endl;
       if(version >= 3 && (valid & validAntennaDeltaXYZ))
       {
          line  = rightJustify(asString(antennaDeltaXYZ[0], 4), 14);
@@ -363,8 +374,10 @@ namespace gpstk
          line += string(18, ' ');
          line += stringAntennaDeltaXYZ;
          strm << line << endl;
+//       cout << "Line >" << line << "<" << endl;
          strm.lineNumber++;
       }
+//    cout << "past validAntennaDeltaXYZ" << endl;
       if(version >= 3 && (valid & validAntennaPhaseCtr))
       {
          line  =  leftJustify(antennaSatSys , 1);
@@ -696,18 +709,21 @@ namespace gpstk
             }
          }
       }
+//    cout << "past validSystemScaleFac" << endl;
       if(version >= 3.01 && (valid & validSystemPhaseShift))
       {
          //map<string, map<RinexObsID, map<RinexSatID,double> > > sysPhaseShift;
          map<string, map<RinexObsID, map<RinexSatID,double> > >::const_iterator it;
          for(it=sysPhaseShift.begin(); it!=sysPhaseShift.end(); ++it) {
             string sys(it->first);
+       //cout << "Phase shift for system " << sys << endl;
             map<RinexObsID, map<RinexSatID,double> >::const_iterator jt(it->second.begin());
             if(jt == it->second.end()) {
                line  = sys;
                line += string(60-line.length(), ' ');
                line += stringSystemPhaseShift;
                strm << line << endl;
+       //cout << "Line >" << line << "<" << endl;
                strm.lineNumber++;
             }
             else for( ; jt!=it->second.end(); ++jt) {
@@ -1735,9 +1751,6 @@ namespace gpstk
       tsys  =          line.substr(48,  3) ;
 
       ts.fromString(tsys);
-      if(ts == TimeSystem::Unknown) {
-        ts = TimeSystem::GPS;
-      }
 
       return CivilTime(year, month, day, hour, min, sec, ts);
    } // end parseTime
@@ -1905,7 +1918,7 @@ namespace gpstk
          if(!(valid & validRunBy)) s << " Pgm / Run By / Date\n";
          if(!(valid & validMarkerName)) s << " Marker Name\n";
          //if(version >= 3 && !(valid & validMarkerType)) s << "Marker Type\n";
-         // Not defined in R2 and not required in > 3, see Table A2 in R3 doc: 
+         // Not defined in R2 and not required in > 3, see Table A2 in R3 doc:
          // "Record required except for GEODETIC and NON_GEODETIC marker types"
          if(!(valid & validObserver)) s << " Observer / Agency\n";
          if(!(valid & validReceiver)) s << " Receiver # / Type\n";
