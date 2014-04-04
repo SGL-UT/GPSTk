@@ -18,6 +18,13 @@ message ("system_name = ${CMAKE_SYSTEM_NAME}")
 set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 
 #----------------------------------------
+# Core Only Switch - Only Build Core Library Code
+#                  - Default is False
+#----------------------------------------
+
+option (CORE_ONLY OFF)
+
+#----------------------------------------
 # Set Compiler options
 #----------------------------------------
 
@@ -92,10 +99,12 @@ file(GLOB_RECURSE CORE_HDRS "core/lib/*.h")
 file(GLOB_RECURSE CORE_HDRS2 "core/lib/*.hpp")
 
 # Recursively search through ext/lib and group the following file types
-file(GLOB_RECURSE EXT_SRC "ext/lib/*.cpp")
-file(GLOB_RECURSE EXT_SRC2 "ext/lib/*.c")
-file(GLOB_RECURSE EXT_HDRS "ext/lib/*.h")
-file(GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp")
+if (NOT CORE_ONLY)
+  file(GLOB_RECURSE EXT_SRC "ext/lib/*.cpp")
+  file(GLOB_RECURSE EXT_SRC2 "ext/lib/*.c")
+  file(GLOB_RECURSE EXT_HDRS "ext/lib/*.h")
+  file(GLOB_RECURSE EXT_HDRS2 "ext/lib/*.hpp")
+endif()
 
 # Map out the directory structure of core/lib for includes
 set (CORE_INCLUDE_DIRS "")
@@ -131,31 +140,42 @@ endif()
 
 
 # Map out the directory structure of ext/lib for includes
-set (EXT_INCLUDE_DIRS "")
-foreach (_headerFile ${EXT_HDRS})
-   get_filename_component(_dir ${_headerFile} PATH)
-   get_filename_component(_name ${_headerFile} NAME)
-   list (APPEND EXT_INCLUDE_DIRS ${_dir})
-endforeach()
+if (NOT CORE_ONLY)
+  set (EXT_INCLUDE_DIRS "")
+  foreach (_headerFile ${EXT_HDRS})
+     get_filename_component(_dir ${_headerFile} PATH)
+     get_filename_component(_name ${_headerFile} NAME)
+     list (APPEND EXT_INCLUDE_DIRS ${_dir})
+  endforeach()
 
-foreach (_headerFile ${EXT_HDRS2})
-   get_filename_component(_dir ${_headerFile} PATH)
-   list (APPEND EXT_INCLUDE_DIRS ${_dir})
-endforeach()
-list(REMOVE_DUPLICATES EXT_INCLUDE_DIRS)
+  foreach (_headerFile ${EXT_HDRS2})
+     get_filename_component(_dir ${_headerFile} PATH)
+     list (APPEND EXT_INCLUDE_DIRS ${_dir})
+  endforeach()
+  list(REMOVE_DUPLICATES EXT_INCLUDE_DIRS)
 
-# Include the mapped ext/lib directory structure
-include_directories(${EXT_INCLUDE_DIRS})
+  # Include the mapped ext/lib directory structure
+  include_directories(${EXT_INCLUDE_DIRS})
+endif()
 
-# Create the gpstk library using core and ext source files
-add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2})
+
+if (CORE_ONLY)
+  add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2})
+else ()
+  # Create the gpstk library using core and ext source files
+  add_library (gpstk ${STADYN} ${CORE_SRC} ${CORE_SRC2} ${EXT_SRC} ${EXT_SRC2})
+endif()
 
 #----------------------------------------
 # Install the gpstk library and core/ext headers
 #----------------------------------------
 
 install (TARGETS gpstk DESTINATION lib)
-install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
+if (CORE_ONLY)
+  install (FILES ${CORE_HDRS} ${CORE_HDRS2} DESTINATION include )
+else ()
+  install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
+endif ()
 
 
 #----------------------------------------

@@ -1,4 +1,4 @@
-%include "../../../lib/GNSSEph/SatID.hpp"
+%include "../../../../dev/ext/lib/GNSSEph/SatID.hpp"
 
 %newobject gpstk::SatID::SatID(int p);
 %extend gpstk::SatID {

@@ -5,7 +5,7 @@
 
 This reads every file in the gpstk/dev/doc/xml (where doxygen places its xml)
 and uses doxy2swig.py to create docstring output for a SWIG .i file. These
-files are placed in gpstk/dev/apps/bindings/swig/doc. doc.i is auto-generated
+files are placed in gpstk/python/bindings/swig/doc. doc.i is auto-generated
 to include all of these new files in the doc/ folder.
 
 Usage:
@@ -53,7 +53,7 @@ def generate_docs():
     # yes, it's a magic number below.
     # gpstk_folder should be the path ending with 'gpstk/'
     # the number is the number of chars to cut off from this file's path
-    gpstk_folder = os.path.realpath(__file__)[:-45]
+    gpstk_folder = os.path.realpath(__file__)[:-43]
     xml_files = glob.glob(gpstk_folder + 'dev/doc/xml/*.xml')
     num_files = len(xml_files)
     if num_files == 0:

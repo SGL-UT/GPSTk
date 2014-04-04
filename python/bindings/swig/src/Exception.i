@@ -1,8 +1,8 @@
 %include "exception.i"
 
 %rename(__str__) gpstk::Exception::what() const;
-%include "../../../lib/Utilities/Exception.hpp"
-%include "../../../lib/FileHandling/FFStreamError.hpp"
+%include "../../../../dev/ext/lib/Utilities/Exception.hpp"
+%include "../../../../dev/ext/lib/FileHandling/FFStreamError.hpp"
 
 namespace gpstk {
    namespace StringUtils  {
