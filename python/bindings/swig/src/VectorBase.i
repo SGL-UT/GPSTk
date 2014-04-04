@@ -5,4 +5,4 @@
 %ignore gpstk::RefVectorBaseHelper::operator() (size_t i);
 %ignore gpstk::RefVectorBaseHelper::zeroize();
 
-%include "../../../lib/Math/Vector/VectorBase.hpp"
+%include "../../../../dev/ext/lib/Math/Vector/VectorBase.hpp"

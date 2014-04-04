@@ -14,7 +14,7 @@
 %ignore gpstk::SV_CNAV_ACCURACY_GPS_NOM_INDEX;
 %ignore gpstk::SV_CNAV_ACCURACY_GPS_MAX_INDEX;
 
-%include "../../../lib/GNSSEph/GPS_URA.hpp"
+%include "../../../../dev/ext/lib/GNSSEph/GPS_URA.hpp"
 
 %define CHECK_BOUNDS(MAX)
    if (index > MAX)

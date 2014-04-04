@@ -10,12 +10,13 @@
 #           Run make install to install GPSTk
 #           Echo a list of the installed files
 #
-# usage:    ./script_cmake.sh [-h] [-b] [-i] [-v] [-r <path>] [-s <path>]
+# usage:    ./script_cmake.sh [-h] [-b] [-i] [-v] [-c] [-r <path>] [-s <path>]
 #
 # OPTIONS:
 #    -h     help,          Show this message
 #    -b     clean_build,   rm -rf gpstk_root/build
 #    -i     clean_install, rm -rf gpstk_install
+#    -c     core_only,     only builds core library code
 #    -v     graphviz,      generate dependency graph (.DOT and .PDF files)
 #    -r     gpstk_root,    default = ~/git/gpstk/dev, path to GPSTk top-level CMakeLists.txt file (and source tree)
 #    -s     gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install, to contain ./bin, ./lib, and ./include
@@ -30,7 +31,7 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-h] [-b] [-i] [-v] [-r <path>] [-s <path>] [-g <path>]
+usage:     $0 [-h] [-b] [-i] [-d] [-p] [-v] [-c] [-r <path>] [-s <path>] [-g <path>]
 
 purpose:   This script is for use with CMake and building GPSTk.
 
@@ -38,9 +39,12 @@ OPTIONS:
    -h      help,          Show this message
    -b      clean_build,   rm -rf gpstk_root/build
    -i      clean_install, rm -rf gpstk_install
+   -d      build_doxygen, build doxygen files
+   -p      build_python,  build python swig bindings (autobuilds doxygen)
+   -c      core_only,     only builds core library code 
    -v      graphviz,      generate dependency graph (.DOT and .PDF files)
    -r      gpstk_root,    default = ~/git/gpstk/dev, path to GPSTK top-level CMakeLists.txt file (and source tree)
-   -s      gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install, to contain ./bin, ./lib, and ./include
+   -s      gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install, to contain ./bin, ./lib, and ./include 
   
 
 EOF
@@ -57,12 +61,27 @@ gpstk_root=
 clean_build=
 clean_install=
 graphviz=
+core_only=
+build_python=
+build_doxygen=
+
+#----------------------------------------
+# initialize Color Codes
+#----------------------------------------
+
+green='\e[1;32m'
+red='\e[1;31m'
+normal='\e[0m'
+white='\e[1;37m'
+cyan='\e[1;36m'
+purple='\e[1;35m'
+brown='\e[1;33m'
 
 #----------------------------------------
 # Parse input arguments
 #----------------------------------------
 
-while getopts ":r:s:g:bivch" option; do
+while getopts ":r:s:g:bidpvche" option; do
 
   case $option in
 
@@ -86,8 +105,20 @@ while getopts ":r:s:g:bivch" option; do
       clean_install=1
       ;;
 
+    d)
+      build_doxygen=1
+      ;;
+
+    p)
+      build_python=1
+      ;;
+
     v)
       graphviz=1
+      ;;
+
+    c)
+      core_only=1
       ;;
 
     \?)
@@ -145,6 +176,30 @@ if [ -z $graphviz ]
         echo "$0: Input arg: graphviz      = $graphviz (default)"
     else
         echo "$0: Input arg: graphviz      = $graphviz (user provided)"
+fi
+
+if [ -z $core_only ]
+    then
+        core_only=0
+        echo "$0: Input arg: core_only     = $core_only (default)"
+    else
+        echo "$0: Input arg: core_only     = $core_only (user provided)"
+fi
+
+if [ -z $build_doxygen ]
+    then
+        build_doxygen=0
+        echo "$0: Input arg: build_doxygen = $build_doxygen (default)"
+    else
+        echo "$0: Input arg: build_doxygen = $build_doxygen (user provided)"
+fi
+
+if [ -z $build_python ]
+    then
+        build_python=0
+        echo "$0: Input arg: build_python  = $build_python (default)"
+    else
+        echo "$0: Input arg: build_python  = $build_python (user provided)"
 fi
 
 #----------------------------------------
@@ -213,6 +268,7 @@ echo "$0: Paths: Exporting install paths..."
 
 export gpstk=$gpstk_install
 
+
 #----------------------------------------
 # CMake
 #----------------------------------------
@@ -233,8 +289,18 @@ if [ $graphviz -eq 0 ]
         cmake_command=$cmake_command" --graphviz=$path_graphviz/gpstk_graphviz.dot"
 fi
 
+# Update CMake command if optional core_only switch was selected.
+if [ $core_only -eq 0 ]
+    then
+        echo "$0: Options: core_only build library = FALSE"
+    else
+        echo "$0: Options: core_only build library = TRUE"
+        cmake_command=$cmake_command" -DCORE_ONLY=ON"
+fi
+
 # Specify path of top-level CmakeLists.txt file
 cmake_command=$cmake_command" $gpstk_root"
+
 
 # Evaluate CMake command string from the build directory
 echo "$0: Calling CMake as: $cmake_command"
@@ -253,6 +319,41 @@ if [ $graphviz -eq 0 ]
     else
         echo "$0: Options: generate graphviz PDF = TRUE"
         dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
+fi
+
+#----------------------------------------
+# Doxygen
+#----------------------------------------
+
+# Build Doxygen Files
+if [ $build_doxygen -eq 0 ] && [build_python -eq 0 ]
+    then
+        echo "$0: Options: generate doxygen files = FALSE"
+    else
+        echo "$0: Options: generate doxygen files = TRUE"
+        
+        cd $gpstk_root
+        doxygen
+fi
+
+#----------------------------------------
+# Python Bindings
+#----------------------------------------
+
+# Build Python Swig Bindings
+# Can only be called AFTER the doxygen command is executed
+if [ $build_python -eq 0 ]
+    then
+        echo "$0: Options: build python bindings = FALSE"
+    else
+        echo "$0: Options: build python bindings = TRUE"
+        cd $gpstk_root
+        cd ../python/bindings/swig
+        python docstring_generator.py
+        cd bin
+        cmake ..
+        make -j$num_cores
+        python gpstk_builder.py  ~/.local/lib/python2.7/site-packages/
 fi
 
 #----------------------------------------

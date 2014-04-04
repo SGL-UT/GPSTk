@@ -6,9 +6,7 @@ There are two ways to build and install the GPSTk python bindings on your system
 
 1. Install using pre-compiled binaries. This is the easiest option for most users.
 
-2. Download an archive file and run the setup.py script. This requires a C++ compiler.
-
-3. Clone the git repo and use CMake and your system's local build tool. This requires CMake, SWIG and a C++ compiler.
+2. Clone the git repo and use CMake and your system's local build tool. This requires CMake, SWIG and a C++ compiler.
    To generate the docstrings, this also requires Doxygen and you must also run several included python scripts.
    Developers of the GPSTk and users that wish to be on the bleeding edge should use this option.
 
@@ -16,25 +14,6 @@ There are two ways to build and install the GPSTk python bindings on your system
 Installing Using Binaries
 ********************************************
 At this point in time, no pre-compiled binaries are provided yet.
-
-
-Installing with setup.py [user build]
-********************************************************
-
-First download extract the source archive at TODO:ADD_LINK , the run one of the following commands:
-
-For a Unix-like system that installs only for the current user: ::
-
-    python setup.py install --prefix=~/.local
-
-For a Unix-like system that installs for the system: ::
-
-    sudo python setup.py install
-
-For a Windows system using Python 2.7: ::
-
-    setup.py install
-
 
 
 Installing with CMake [developer build]
@@ -63,7 +42,6 @@ First clone to git repo to your home directory (or wherever you want), then: ::
     doxygen
     cd ~/gpstk/dev/apps/bindings/swig
     python docstring_generator.py
-    mkdir bin
     cd bin
     cmake ..
     make

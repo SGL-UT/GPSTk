@@ -12,7 +12,7 @@
 %ignore gpstk::Position::convertGeocentricToGeodetic(const Triple& llr, Triple& geodeticllr, const double A, const double eccSq) throw();
 %ignore gpstk::Position::convertGeodeticToGeocentric(const Triple& geodeticllh, Triple& llr, const double A, const double eccSq) throw();
 
-%include "../../../lib/GNSSCore/Position.hpp"
+%include "../../../../dev/ext/lib/GNSSCore/Position.hpp"
 
 %extend gpstk::Position {
    static gpstk::Triple convertSphericalToCartesian(const gpstk::Triple& tpr) {
