@@ -2,7 +2,7 @@
 %ignore gpstk::scanTime(CommonTime& btime, const std::string& str, const std::string& fmt);
 %ignore gpstk::mixedScanTime(CommonTime& btime, const std::string& str, const std::string& fmt);
 
-%include "../../../lib/TimeHandling/TimeString.hpp"
+%include "../../../../dev/ext/lib/TimeHandling/TimeString.hpp"
 
 %inline %{
    gpstk::CommonTime scanTime(const std::string& str, const std::string& fmt)

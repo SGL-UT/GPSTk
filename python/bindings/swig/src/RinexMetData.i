@@ -1,5 +1,5 @@
 %ignore gpstk::RinexMetData::data;
-%include "../../../lib/FileHandling/RINEX/RinexMetData.hpp"
+%include "../../../../dev/ext/lib/FileHandling/RINEX/RinexMetData.hpp"
 
 %extend gpstk::RinexMetData {
    double _lookup_data(int x) {

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 build() {
-    cd ../.. # in dev
+    cd ../../dev/ # in dev
     doxygen
-    cd ~/gpstk/ext/dev/apps/bindings/swig
+    cd ~/git/gpstk/python/bindings/swig
     python docstring_generator.py
     cd bin
     cmake ..
