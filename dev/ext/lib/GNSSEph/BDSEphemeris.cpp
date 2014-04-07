@@ -157,19 +157,12 @@ namespace gpstk
    {
       if(!dataLoadedFlag)
          GPSTK_THROW(InvalidRequest("Data not loaded"));
-
-      //debug
-      cout << "satID.id, time = " << satID.id 
-           << printTime(t,", %02H:%02M") << endl;
       
          // If the PRN ID is greatet than 5, assume this
          // is a MEO or IGSO SV and use the standard OrbitEph
          // version of svXvt
       if (satID.id>5) return(OrbitEph::svXvt(t));
 
-
-      cout << "Calculating as a GEO" << endl;
-      
          // If PRN ID is in the range 1-5, treat this as a GEO
          // 
          // The initial calculations are identical to the standard
@@ -205,12 +198,8 @@ namespace gpstk
       // Compute time since ephemeris & clock epochs
       elapte = t - ctToe;
 
-      // Compute A at time of interest (LNAV: Adot==0)
-      double Ak = A + Adot * elapte;
-
-      // Compute mean motion (LNAV: dndot==0)
-      double dnA = dn + 0.5*dndot*elapte;
-      amm  = (sqrtgm / (A*Ahalf)) + dnA;     // Eqn specifies A0, not Ak
+      // Compute mean motion
+      amm  = (sqrtgm / (A*Ahalf)) + dn;
 
       // In-plane angles
       //     meana - Mean anomaly
@@ -228,8 +217,6 @@ namespace gpstk
          ea = ea + delea;
          loop_cnt++;
       } while ((fabs(delea) > 1.0e-11) && (loop_cnt <= 20));
-
-      cout << "ea, delea, loop_cnt : " << ea << ", " << delea << ", " << loop_cnt << endl;
 
       // Compute clock corrections
       sv.relcorr = svRelativity(t);
@@ -256,30 +243,20 @@ namespace gpstk
       c2al  = ::cos(talat);
       s2al  = ::sin(talat);
 
-      cout << "truea, alat : " << truea << ", " << alat << endl;
-
       du  = c2al * Cuc +  s2al * Cus;
       dr  = c2al * Crc +  s2al * Crs;
       di  = c2al * Cic +  s2al * Cis;
 
       // U = updated argument of lat, R = radius, AINC = inclination
       U    = alat + du;
-      R    = Ak*G  + dr;
+      R    = A*G  + dr;
       AINC = i0 + tdrinc * elapte  +  di;
-
-      cout << "u(k), r(k), di : " << U << ", " << R << ", " << di << endl;
-
 
       // At this point, the ICD formulation diverges to something 
       // different. 
       //  Longitude of ascending node (ANLON)
       ANLON = OMEGA0 + OMEGAdot * elapte
                      - ell.angVelocity() * ToeSOW;
-      cout << "OMEGA0, OMEGAdot, elapte, angVel, ToeSOW =" << endl;
-      cout << OMEGA0 << ", " << OMEGAdot << ", " << elapte
-           << ", " << ell.angVelocity() << ", " << ToeSOW << endl;
-      cout << "ANLON  = " << ANLON << endl;
-      cout << "AINC = " << AINC << endl;
 
       // In plane location
       cosu = ::cos(U);
@@ -298,9 +275,6 @@ namespace gpstk
       yGK  =  xip*san  +  yip*cinc*can;
       zGK  =              yip*sinc;
 
-      cout << " xip, yip " << xip << ", " << yip << endl;
-      cout << " xGK, yGK, zGK " << xGK << ", "  << yGK << ", "  << zGK << endl;
-
       // Rz matrix
       double angleZ = ell.angVelocity() * elapte;
       double cosZ = ::cos(angleZ);
@@ -309,30 +283,30 @@ namespace gpstk
          // Initiailize 3X3 with all 0.0
       gpstk::Matrix<double> matZ(3,3); 
       // Row,Col
-      matZ(0,0) =   1.0;
-      matZ(0,1) =   0.0;
+      matZ(0,0) =  cosZ;
+      matZ(0,1) =  sinZ;
       matZ(0,2) =   0.0;
-      matZ(1,0) =   0.0;
-      matZ(1,1) =  cosZ;
-      matZ(1,2) =  sinZ;
+      matZ(1,0) = -sinZ;
+      matZ(1,1) =  cosZ; 
+      matZ(1,2) =   0.0;
       matZ(2,0) =   0.0;
-      matZ(2,1) = -sinZ;
-      matZ(2,2) =  cosZ;
+      matZ(2,1) =   0.0;
+      matZ(2,2) =   1.0; 
 
       // Rx matrix
       double angleX = -5.0 * PI/180.0;    /// This is a constant.  Should set it once
       double cosX = ::cos(angleX);
       double sinX = ::sin(angleX); 
       gpstk::Matrix<double> matX(3,3);
-      matX(0,0) =  cosX;
-      matX(0,1) =  sinX;
+      matX(0,0) =   1.0;
+      matX(0,1) =   0.0;
       matX(0,2) =   0.0;
-      matX(1,0) = -sinX;
-      matX(1,1) =  cosX; 
-      matX(1,2) =   0.0;
+      matX(1,0) =   0.0;
+      matX(1,1) =  cosX;
+      matX(1,2) =  sinX;
       matX(2,0) =   0.0;
-      matX(2,1) =   0.0;
-      matX(2,2) =   1.0; 
+      matX(2,1) = -sinX;
+      matX(2,2) =  cosX;
 
       // Matrix (single column) of xGK, yGK, zGK
       gpstk::Matrix<double> inertialPos(3,1);
@@ -346,19 +320,6 @@ namespace gpstk
       sv.x[0] = result(0,0);
       sv.x[1] = result(1,0);
       sv.x[2] = result(2,0);
-
-         // Debug
-      cout << "ANLON  = " << ANLON << endl;
-      cout << "Input  = " << inertialPos << endl;
-      cout << "Result = " << result << endl; 
-      double iMag = ::sqrt(inertialPos(0,0) * inertialPos(0,0) + 
-                         inertialPos(1,0) * inertialPos(1,0) + 
-                         inertialPos(2,0) * inertialPos(2,0) ); 
-      double rMag = ::sqrt(result(0,0) * result(0,0) + 
-                         result(1,0) * result(1,0) + 
-                         result(2,0) * result(2,0) ); 
-      cout << "mag input " << iMag << ", mag result " << rMag << endl;
-      
 
       // Compute velocity of rotation coordinates
       // This is zero out for the time being while awaiting 
