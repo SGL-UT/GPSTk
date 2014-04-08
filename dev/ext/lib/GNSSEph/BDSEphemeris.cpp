@@ -321,35 +321,87 @@ namespace gpstk
       sv.x[1] = result(1,0);
       sv.x[2] = result(2,0);
 
-      // Compute velocity of rotation coordinates
-      // This is zero out for the time being while awaiting 
-      // work on deriving the apporpriate equations. 
-      /*
-      dek = amm * Ak / R;
-      dlk = Ahalf * q * sqrtgm / (R*R);
-      div = tdrinc - 2.0e0 * dlk * (Cic  * s2al - Cis * c2al);
-      domk = OMEGAdot - ell.angVelocity();
+      // derivatives of true anamoly and arg of latitude
+      dek = amm / G; 
+      dlk =  Ahalf * q * sqrtgm / (R*R);
+
+      // in-plane, cross-plane, and radial derivatives
+      div = tdrinc - 2.0e0 * dlk * (Cis  * c2al - Cic * s2al);
       duv = dlk*(1.e0+ 2.e0 * (Cus*c2al - Cuc*s2al));
-      drv = Ak * lecc * dek * sinea - 2.e0 * dlk * (Crc * s2al - Crs * c2al);
+      drv = A * lecc * dek * sinea + 2.e0 * dlk * (Crs * c2al - Crc * s2al);
+
+      //
       dxp = drv*cosu - R*sinu*duv;
       dyp = drv*sinu + R*cosu*duv;
 
-      // Calculate veloc
-      ities
-      vxef = dxp*can - xip*san*domk - dyp*cinc*san
-               + yip*(sinc*san*div - cinc*can*domk);
-      vyef = dxp*san + xip*can*domk + dyp*cinc*can
-               - yip*(sinc*can*div + cinc*san*domk);
-      vzef = dyp*sinc + yip*cinc*div;
+      // Time-derivative of Rz matrix
+      gpstk::Matrix<double> dmatZ(3,3);
+      // Row,Col
+      dmatZ(0,0) =  sinZ * -ell.angVelocity();
+      dmatZ(0,1) = -cosZ * -ell.angVelocity();
+      dmatZ(0,2) =   0.0;
+      dmatZ(1,0) =  cosZ * -ell.angVelocity();
+      dmatZ(1,1) =  sinZ * -ell.angVelocity();
+      dmatZ(1,2) =   0.0;
+      dmatZ(2,0) =   0.0;
+      dmatZ(2,1) =   0.0;
+      dmatZ(2,2) =   0.0;
+
+      // Time-derivative of X,Y,Z in interial form
+      gpstk::Matrix<double> dIntPos(3,1);
+      dIntPos(0,0) = - xip * san * OMEGAdot
+                     + dxp * can
+                     - yip * (cinc * can * OMEGAdot
+                             -sinc * san * div )
+                     - dyp * cinc * san;
+      dIntPos(1,0) =   xip * can * OMEGAdot
+                     + dxp * san
+                     - yip * (cinc * san * OMEGAdot
+                             +sinc * can * div )
+                     + dyp * cinc * can;
+      dIntPos(2,0) = yip * cinc * div + dyp * sinc;
+
+      /*
+      cout << "dIntPos : " << dIntPos(0,0) 
+                           << ", " << dIntPos(1,0)
+                           << ", " << dIntPos(2,0) << endl;
+      double vMag = ::sqrt(dIntPos(0,0)*dIntPos(0,0) + 
+                           dIntPos(1,0)*dIntPos(1,0) +                    
+                           dIntPos(2,0)*dIntPos(2,0) );
+      cout << " dIntPos Mag: " << vMag << endl;     
+      cout << "dmatZ : " << dmatZ(0,0) 
+                   << ", " << dmatZ(0,1)
+                   << ", " << dmatZ(0,2) << endl; 
+      cout << "dmatZ : " << dmatZ(1,0) 
+                   << ", " << dmatZ(1,1)
+                   << ", " << dmatZ(1,2) << endl; 
+      cout << "dmatZ : " << dmatZ(2,0) 
+                   << ", " << dmatZ(2,1)
+                   << ", " << dmatZ(2,2) << endl; 
+      */
+      gpstk::Matrix<double> vresult(3,1);
+      vresult =  matZ * matX * dIntPos + 
+                dmatZ * matX * inertialPos;
+
+      /* debug
+      gpstk::Matrix<double> firstHalf(3,1);
+      firstHalf = matZ * matX * dIntPos;
+      gpstk::Matrix<double> secondHalf(3,1);
+      secondHalf = dmatZ * matX * inertialPos;
+
+      cout << "firstHalf: " << firstHalf(0,0)
+                    << ", " << firstHalf(1,0)
+                    << ", " << firstHalf(2,0) << endl;
+      cout << "secondHalf: " << secondHalf(0,0)
+                    << ", " << secondHalf(1,0)
+                    << ", " << secondHalf(2,0) << endl;
+      end debug */
      
       // Move results into output variables
-      sv.v[0] = vxef;
-      sv.v[1] = vyef;
-      sv.v[2] = vzef;
-      */
-      sv.v[0] = 0.0;
-      sv.v[1] = 0.0;
-      sv.v[2] = 0.0;
+      sv.v[0] = vresult(0,0);
+      sv.v[1] = vresult(1,0);
+      sv.v[2] = vresult(2,0);
+      
       return sv;
    }
 
