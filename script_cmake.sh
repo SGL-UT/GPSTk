@@ -326,7 +326,7 @@ fi
 #----------------------------------------
 
 # Build Doxygen Files
-if [ $build_doxygen -eq 0 ] && [build_python -eq 0 ]
+if [ $build_doxygen -eq 0 ] && [ $build_python -eq 0 ]
     then
         echo "$0: Options: generate doxygen files = FALSE"
     else
