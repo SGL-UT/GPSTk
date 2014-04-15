@@ -217,12 +217,11 @@ namespace gpstk
 
 	 // End of Validity.
 	 // The end of validity is calculated from the fit interval
-	 // and the Toe.  The fit interval is either trivial
-	 // (if fit interval flag==0, fit interval is 4 hours)
-	 // or a look-up table based on the IODC.
+	 // and the Toe.  Since this is RINEX, the fit interval is
+	 // already supposed to be stated in hours.   
 	 // Round the Toe value to the hour to elminate confusion
 	 // due to possible "small offsets" indicating uploads
-      short fitHours = getLegacyFitInterval(IODC, fitDuration);
+      short fitHours = fitDuration;
       long  ToeOffset = (long) Toe % 3600;
       double adjToe = Toe;                  // Default case
       if (ToeOffset)
