@@ -122,7 +122,7 @@ namespace gpstk
       throw()
    {
       UBEMap::const_iterator it;
-      static const string fmt("%4F %10.3g = %04Y/%02m/%02d %02H:%02M:%02S %P");
+      static const string fmt("%04Y/%02m/%02d %02H:%02M:%02S %P");
 
       s << "Dump of GPSOrbElemStore:\n";
       if (detail==0)
@@ -148,9 +148,10 @@ namespace gpstk
                const OrbElem* oe = ei->second;
                s << "PRN " << setw(2) << it->first
                  << " TOE " << printTime(oe->ctToe,fmt)
-                 << " TOC " << fixed << setw(10) << setprecision(3)
-                 << oe->ctToe
+                 << " TOC " << printTime(oe->ctToc,fmt)
                  << " KEY " << printTime(ei->first,fmt);
+               s << " begVal: " << printTime(oe->beginValid,fmt)
+                 << "q endVal: " << printTime(oe->endValid,fmt); 
                 
                s << std::endl;
             } //end inner for-loop */
