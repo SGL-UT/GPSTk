@@ -1,6 +1,3 @@
-#pragma ident "$Id$"
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -37,11 +34,6 @@
 //
 //=============================================================================
 
-
-
-
-
-
 #include "FileFilterFrameWithHeader.hpp"
 
 #include "RinexObsData.hpp"
@@ -59,9 +51,9 @@ class ROWDiff : public DiffFrame
 {
 public:
    ROWDiff(char* arg0)
-         : DiffFrame(arg0,
-                      std::string("RINEX Obs"))
-      {}
+      : DiffFrame(arg0,
+                  std::string("RINEX Obs"))
+   {}
 
 protected:
    virtual void process();
@@ -72,8 +64,8 @@ void ROWDiff::process()
    gpstk::FileFilterFrameWithHeader<RinexObsStream, RinexObsData, RinexObsHeader>
       ff1(inputFileOption.getValue()[0]), ff2(inputFileOption.getValue()[1]);
 
-      // no data?  FIX make this program faster.. if one file
-      // doesn't exist, there's little point in reading any.
+   // no data?  FIX make this program faster.. if one file
+   // doesn't exist, there's little point in reading any.
    if (ff1.emptyHeader())
       cerr << "No header information for " << inputFileOption.getValue()[0]
            << endl;
@@ -87,7 +79,7 @@ void ROWDiff::process()
       exit(1);
    }
 
-      // determine whether the two input files have the same observation types
+   // determine whether the two input files have the same observation types
    RinexObsHeader header1, header2;
    RinexObsStream ros1(inputFileOption.getValue()[0]), ros2(inputFileOption.getValue()[1]);
 
@@ -101,24 +93,24 @@ void ROWDiff::process()
       vector<RinexObsType> types1 = header1.obsTypeList;
       vector<RinexObsType>::iterator i = types1.begin();
       while (i != types1.end())
-	{
-      cout << gpstk::RinexObsHeader::convertObsType(*i) << ' ';
-      i++;
-	}
+      {
+         cout << gpstk::RinexObsHeader::convertObsType(*i) << ' ';
+         i++;
+      }
       cout << endl;
 
       cout << "The second file has ";
       vector<RinexObsType> types2 = header2.obsTypeList;
       vector<RinexObsType>::iterator j = types2.begin();
       while (j != types2.end())
-	{
-      cout << gpstk::RinexObsHeader::convertObsType(*j) << ' ';
-      j++;
-	}
+      {
+         cout << gpstk::RinexObsHeader::convertObsType(*j) << ' ';
+         j++;
+      }
       cout << endl;
    }
 
-      // find the obs data intersection
+   // find the obs data intersection
    RinexObsHeaderTouchHeaderMerge merged;
 
    merged(ff1.frontHeader());
@@ -143,14 +135,16 @@ void ROWDiff::process()
 
    if (difflist.first.empty() && difflist.second.empty())
    {
-        //Indicate to the user, before exiting, that rowdiff
-        //performed properly and no differenes were found.
-     cout << "For the observation types that were compared, "
-          << "no differences were found." << endl;
-     exit(0);
+      //Indicate to the user, before exiting, that rowdiff
+      //performed properly and no differenes were found.
+      cout << "For the observation types that were compared, "
+           << "no differences were found." << endl;
+      exit(0);
    }
 
    list<RinexObsData>::iterator firstitr = difflist.first.begin();
+   if (verboseLevel)
+      cout << "Differences of epochs in both files:" << endl;
    while (firstitr != difflist.first.end())
    {
       bool matched = false;
@@ -172,9 +166,9 @@ void ROWDiff::process()
                spoi = seconditr->obs.find(fpoi->first);
                for (m = intersection.begin(); m != intersection.end(); m++)
                {
-                     // no need to do a find, we're using the merged
-                     // set of obses which guarantees that we have the
-                     // obs in this record
+                  // no need to do a find, we're using the merged
+                  // set of obses which guarantees that we have the
+                  // obs in this record
                   double diff = (fpoi->second[*m]).data;
                   if (spoi != seconditr->obs.end())
                      diff -= (spoi->second[*m]).data;
@@ -198,6 +192,10 @@ void ROWDiff::process()
    }
 
    list<RinexObsData>::iterator itr = difflist.first.begin();
+
+   cout << endl;
+   if (verboseLevel)
+      cout << "Epochs only in first file:" << endl;
    while (itr != difflist.first.end())
    {
       (*itr).dump(cout << '<');
@@ -205,7 +203,8 @@ void ROWDiff::process()
    }
 
    cout << endl;
-
+   if (verboseLevel)
+        cout << "Epochs only in second file:" << endl;
    itr = difflist.second.begin();
    while (itr != difflist.second.end())
    {
