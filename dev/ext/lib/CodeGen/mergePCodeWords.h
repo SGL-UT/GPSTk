@@ -1,14 +1,12 @@
 #pragma ident "$Id$"
 
-
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -24,16 +22,28 @@
 //
 //============================================================================
 
-
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 /*
 *   mergePCodeWords - Helper function used in X2Sequence and GenXSequence
-
          Given two bit-packed integers, merge the lower portion of the
          first and the higher portion of the second into a new bit-packed
          integer.  The first_bit argument defines the most significant
          bit of the merged word.  The bits are numbered from 0 - MAX_BIT-1.
 */
+
 #include "gpstkplatform.h"
 
 #ifndef MERGEPCODEWORDS_H

@@ -1,21 +1,12 @@
 #pragma ident "$Id$"
 
-
-/**
- * @file NovatelData.hpp
- * gpstk::NovatelData - container for Novatel data, with methods to convert to Rinex
- */
-
-#ifndef GPSTK_NOVATEL_DATA_HPP
-#define GPSTK_NOVATEL_DATA_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -45,10 +36,13 @@
 //
 //=============================================================================
 
+/**
+ * @file NovatelData.hpp
+ * gpstk::NovatelData - container for Novatel data, with methods to convert to Rinex
+ */
 
-
-
-
+#ifndef GPSTK_NOVATEL_DATA_HPP
+#define GPSTK_NOVATEL_DATA_HPP
 
 #include <ostream>
 #include "Exception.hpp"

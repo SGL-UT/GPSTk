@@ -36,9 +36,15 @@
 //
 //=============================================================================
 
+/**
+ * @file LinearClockModel.hpp
+ * This model is just a moving average of clock models over time. It
+ * really is quite bad and shouldn't be used at this time. Be warned!
+ */
+
 #ifndef LINEARCLOCKMODEL_HPP
 #define LINEARCLOCKMODEL_HPP
-
+ 
 #include <map>
 
 #include "Exception.hpp"
@@ -46,11 +52,7 @@
 #include "ObsClockModel.hpp"
 #include "ORDEpoch.hpp"
 
-/**
- * @file LinearClockModel.hpp
- * This model is just a moving average of clock models over time. It
- * really is quite bad and shouldn't be used at this time. Be warned!
- */
+
 
 namespace gpstk
 {

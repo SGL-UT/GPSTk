@@ -1,28 +1,12 @@
 #pragma ident "$Id$"
 
-/**
- * @file EngEphemeris.hpp
- * Ephemeris data encapsulated in engineering terms
- */
-
-/**
-*   This is one of four classes designed to contain GPS navigation message data.  The classes are
-*      EngEphemeris -  Legacy GPS navigation message data from subframes 1,2,3 ( L1 C/A, L1 P(Y), L2 P(Y) )
-*      CNAVEphemeris - GPS Civil navigation message data from Message Type 10/11 (L2C and L5)
-*      CNAVClock - GPS Civil navigation message data from the "clock" portion of Message Types 30-37 (L2C and L5)
-*      CNAV2EphClock - GPS Civil navigation message from subframe 2 of the L1C message
-*/
-
-#ifndef GPSTK_EngEphemeris_HPP
-#define GPSTK_EngEphemeris_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -33,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -51,6 +35,22 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file EngEphemeris.hpp
+ * Ephemeris data encapsulated in engineering terms
+ */
+
+/**
+*   This is one of four classes designed to contain GPS navigation message data.  The classes are
+*      EngEphemeris -  Legacy GPS navigation message data from subframes 1,2,3 ( L1 C/A, L1 P(Y), L2 P(Y) )
+*      CNAVEphemeris - GPS Civil navigation message data from Message Type 10/11 (L2C and L5)
+*      CNAVClock - GPS Civil navigation message data from the "clock" portion of Message Types 30-37 (L2C and L5)
+*      CNAV2EphClock - GPS Civil navigation message from subframe 2 of the L1C message
+*/
+
+#ifndef GPSTK_EngEphemeris_HPP
+#define GPSTK_EngEphemeris_HPP
 
 #include <string>
 #include <iostream>

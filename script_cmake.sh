@@ -16,7 +16,10 @@
 #    -h     help,          Show this message
 #    -b     clean_build,   rm -rf gpstk_root/build
 #    -i     clean_install, rm -rf gpstk_install
+#    -d     build_doxygen, build doxygen files
+#    -p     build_python,  build python swig bindings (autobuilds doxygen)
 #    -c     core_only,     only builds core library code
+#    -t     test_switch,   initialize test framework
 #    -v     graphviz,      generate dependency graph (.DOT and .PDF files)
 #    -r     gpstk_root,    default = ~/git/gpstk/dev, path to GPSTk top-level CMakeLists.txt file (and source tree)
 #    -s     gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install, to contain ./bin, ./lib, and ./include
@@ -31,7 +34,7 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-h] [-b] [-i] [-d] [-p] [-v] [-c] [-r <path>] [-s <path>] [-g <path>]
+usage:     $0 [-h] [-b] [-i] [-d] [-p] [-v] [-c] [-t] [-r <path>] [-s <path>] [-g <path>]
 
 purpose:   This script is for use with CMake and building GPSTk.
 
@@ -42,6 +45,7 @@ OPTIONS:
    -d      build_doxygen, build doxygen files
    -p      build_python,  build python swig bindings (autobuilds doxygen)
    -c      core_only,     only builds core library code 
+   -t      test_switch,   initialize test framework
    -v      graphviz,      generate dependency graph (.DOT and .PDF files)
    -r      gpstk_root,    default = ~/git/gpstk/dev, path to GPSTK top-level CMakeLists.txt file (and source tree)
    -s      gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install, to contain ./bin, ./lib, and ./include 
@@ -64,6 +68,7 @@ graphviz=
 core_only=
 build_python=
 build_doxygen=
+test_switch=
 
 #----------------------------------------
 # initialize Color Codes
@@ -81,7 +86,7 @@ brown='\e[1;33m'
 # Parse input arguments
 #----------------------------------------
 
-while getopts ":r:s:g:bidpvche" option; do
+while getopts ":r:s:g:bidpvcthe" option; do
 
   case $option in
 
@@ -119,6 +124,10 @@ while getopts ":r:s:g:bidpvche" option; do
 
     c)
       core_only=1
+      ;;
+
+    t)
+      test_switch=1
       ;;
 
     \?)
@@ -184,6 +193,14 @@ if [ -z $core_only ]
         echo "$0: Input arg: core_only     = $core_only (default)"
     else
         echo "$0: Input arg: core_only     = $core_only (user provided)"
+fi
+
+if [ -z $test_switch ]
+    then
+        test_switch=0
+        echo "$0: Input arg: test_switch   = $test_switch (default)"
+    else
+        echo "$0: Input arg: test_switch   = $test_switch (user provided)"
 fi
 
 if [ -z $build_doxygen ]
@@ -298,6 +315,15 @@ if [ $core_only -eq 0 ]
         cmake_command=$cmake_command" -DCORE_ONLY=ON"
 fi
 
+# Update CMake command if optional test switch was selected.
+if [ $test_switch -eq 0 ]
+    then
+        echo "$0: Options: test_switch test framework = FALSE"
+    else
+        echo "$0: Options: test_switch test framework = TRUE"
+        cmake_command=$cmake_command" -DTEST_SWITCH=ON"
+fi
+
 # Specify path of top-level CmakeLists.txt file
 cmake_command=$cmake_command" $gpstk_root"
 
@@ -326,7 +352,7 @@ fi
 #----------------------------------------
 
 # Build Doxygen Files
-if [ $build_doxygen -eq 0 ] && [ $build_python -eq 0 ]
+if [ $build_doxygen -eq 0 ]
     then
         echo "$0: Options: generate doxygen files = FALSE"
     else
@@ -341,11 +367,19 @@ fi
 #----------------------------------------
 
 # Build Python Swig Bindings
-# Can only be called AFTER the doxygen command is executed
+# Checks to see if Doxygen built /dev/doc folder exists, if not it builds it
 if [ $build_python -eq 0 ]
     then
         echo "$0: Options: build python bindings = FALSE"
     else
+        if [ -d $gpstk_root"/doc" ]
+        then
+            echo "Doxygen Files Found"
+        else
+            echo "Doxygen Files Not Found, Building now..."
+            cd $gpstk_root
+            doxygen            
+        fi
         echo "$0: Options: build python bindings = TRUE"
         cd $gpstk_root
         cd ../python/bindings/swig
@@ -424,6 +458,12 @@ echo ""
 echo "$0: ...done."
 echo ""
 echo ""
+
+if [ $test_switch -eq 1 ]
+  then
+    cd $gpstk_root/build
+    ctest -v
+fi
 
 #----------------------------------------
 # The End

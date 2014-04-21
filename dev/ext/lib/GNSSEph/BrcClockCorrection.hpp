@@ -1,22 +1,12 @@
 #pragma ident "$Id$"
 
-/**
- * @file BrcClockCorrection.hpp
- * GNSS Broadcast clock correction data encapsulated in engineering terms
- * BrcClockCorrection is designed to address all the navigation message
- * formats that are based on a second-order clock model.
- */
-
-#ifndef GPSTK_BRCLOCKCORRECTION_HPP
-#define GPSTK_BRCLOCKCORRECTION_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -27,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -35,16 +25,26 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file BrcClockCorrection.hpp
+ * GNSS Broadcast clock correction data encapsulated in engineering terms
+ * BrcClockCorrection is designed to address all the navigation message
+ * formats that are based on a second-order clock model.
+ */
+
+#ifndef GPSTK_BRCLOCKCORRECTION_HPP
+#define GPSTK_BRCLOCKCORRECTION_HPP
 
 #include "EngNav.hpp"
 #include "Exception.hpp"
