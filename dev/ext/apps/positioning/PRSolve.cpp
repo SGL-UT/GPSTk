@@ -1,6 +1,4 @@
-/// @file PRSolve.cpp
-/// Read Rinex observation files (version 2 or 3) and ephemeris store, and compute a
-/// a pseudorange-only position solution.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -8,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -23,6 +21,24 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+/// @file PRSolve.cpp
+/// Read Rinex observation files (version 2 or 3) and ephemeris store, and compute a
+/// a pseudorange-only position solution.
 
 // system
 #include <string>

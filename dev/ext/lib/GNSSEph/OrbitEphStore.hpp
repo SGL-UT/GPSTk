@@ -1,10 +1,4 @@
-/// @file OrbitEphStore.hpp
-/// Class for storing and/or computing position, velocity, and clock data using
-/// tables of <SatID, <time, OrbitEph> >, initial and final times and search methods.
-/// Note this class may be used as is, using OrbitEph rather than its descendants,
-/// without health or accuracy information; however most likely the user will
-/// define a class that inherits this and uses one the classes derived from OrbitEph,
-/// for example GPSEphemerisStore and GPSEphemeris.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -12,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -41,6 +35,14 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file OrbitEphStore.hpp
+/// Class for storing and/or computing position, velocity, and clock data using
+/// tables of <SatID, <time, OrbitEph> >, initial and final times and search methods.
+/// Note this class may be used as is, using OrbitEph rather than its descendants,
+/// without health or accuracy information; however most likely the user will
+/// define a class that inherits this and uses one the classes derived from OrbitEph,
+/// for example GPSEphemerisStore and GPSEphemeris.
 
 #ifndef GPSTK_ORBITEPHSTORE_HPP
 #define GPSTK_ORBITEPHSTORE_HPP

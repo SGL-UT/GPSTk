@@ -1,6 +1,4 @@
-/// @file Rinex3NavHeader.hpp
-/// Encapsulate header of RINEX 3 navigation file, including RINEX 2
-/// compatibility.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -8,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -37,6 +35,10 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file Rinex3NavHeader.hpp
+/// Encapsulate header of RINEX 3 navigation file, including RINEX 2
+/// compatibility.
 
 #ifndef GPSTK_RINEX3NAVHEADER_HPP
 #define GPSTK_RINEX3NAVHEADER_HPP

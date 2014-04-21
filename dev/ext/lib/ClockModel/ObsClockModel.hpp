@@ -6,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -36,6 +36,16 @@
 //
 //=============================================================================
 
+/**
+ * @file ObsClockModel.hpp
+ * Yet another abstract class used to define an interface to a model that
+ * accepts GPS observation datat and determines a clock model from it. It
+ * mainly adds the ability to specify the characteristcs of the observations
+ * that are to be accpeted into the model. It also defines a function that
+ * accepts Observed Range Deviations and computes the mean of these (that
+ * meet the selection criteria) as an estimate of the receiver clock.
+ */
+
 #ifndef OBSCLOCKMODEL_HPP
 #define OBSCLOCKMODEL_HPP
 
@@ -46,16 +56,6 @@
 #include "Stats.hpp"
 #include "ClockModel.hpp"
 #include "ORDEpoch.hpp"
-
-/**
- * @file ObsClockModel.hpp
- * Yet another abstract class used to define an interface to a model that
- * accepts GPS observation datat and determines a clock model from it. It
- * mainly adds the ability to specify the characteristcs of the observations
- * that are to be accpeted into the model. It also defines a function that
- * accepts Observed Range Deviations and computes the mean of these (that
- * meet the selection criteria) as an estimate of the receiver clock.
- */
 
 
 namespace gpstk
