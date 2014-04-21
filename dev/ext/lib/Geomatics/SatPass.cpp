@@ -829,8 +829,8 @@ int SatPassFromRinexFiles(vector<string>& filenames,
                           vector<string>& obstypes,
                           double dt,
                           vector<SatPass>& SPList,
-                          CommonTime beginTime,
-                          CommonTime endTime)
+                          CommonTime beginTime=gpstk::CommonTime::BEGINNING_OF_TIME,
+                          CommonTime endTime=gpstk::CommonTime::END_OF_TIME)
    throw(Exception)
 {
    if(filenames.size() == 0) return -1;
