@@ -1,12 +1,4 @@
-/// @file OrbitEph.hpp Encapsulates the "least common denominator" orbit parameters
-/// that determine a satellite ephemeris, that is, clock model, Kepler orbit elements
-/// plus harmonic perturbations with time of ephemeris, satellite ID, and begin and
-/// end times of validity.
-/// Although it can also be used alone, this class is most often to be used as a base
-/// class for a fuller implementation of the ephemeris and clock, by adding health
-/// and accuracy information, fit interval, ionospheric correction terms and data
-/// flags. It serves as the base class for broadcast ephemerides for GPS, QZSS,
-/// Galileo, and BeiDou, with RINEX Navigation input, among others.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -14,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -43,6 +35,16 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file OrbitEph.hpp Encapsulates the "least common denominator" orbit parameters
+/// that determine a satellite ephemeris, that is, clock model, Kepler orbit elements
+/// plus harmonic perturbations with time of ephemeris, satellite ID, and begin and
+/// end times of validity.
+/// Although it can also be used alone, this class is most often to be used as a base
+/// class for a fuller implementation of the ephemeris and clock, by adding health
+/// and accuracy information, fit interval, ionospheric correction terms and data
+/// flags. It serves as the base class for broadcast ephemerides for GPS, QZSS,
+/// Galileo, and BeiDou, with RINEX Navigation input, among others.
 
 #ifndef GPSTK_ORBITEPH_HPP
 #define GPSTK_ORBITEPH_HPP

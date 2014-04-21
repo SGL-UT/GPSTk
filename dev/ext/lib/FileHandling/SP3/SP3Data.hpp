@@ -1,20 +1,12 @@
 #pragma ident "$Id$"
 
-/**
- * @file SP3Data.hpp
- * Encapsulate SP3 file data, versions a,b,c, including I/O
- */
-
-#ifndef GPSTK_SP3DATA_HPP
-#define GPSTK_SP3DATA_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -43,6 +35,14 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file SP3Data.hpp
+ * Encapsulate SP3 file data, versions a,b,c, including I/O
+ */
+
+#ifndef GPSTK_SP3DATA_HPP
+#define GPSTK_SP3DATA_HPP
 
 #include "SP3SatID.hpp"
 #include "SP3Base.hpp"

@@ -1,4 +1,4 @@
-#pragma ident "$Id: SolidEarthTides.cpp 278 2009-08-20 15:07:42Z BrianTolman $"
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -6,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -21,20 +21,20 @@
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
+
 //============================================================================
 //
-// This software developed by Applied Research Laboratories at the University
-// of Texas at Austin, under contract to an agency or agencies within the U.S. 
-// Department of Defense. The U.S. Government retains all rights to use,
-// duplicate, distribute, disclose, or release this software. 
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
 //
-// Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024 
 //
 // DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
 /**
  * @file SolidEarthTides.cpp
  * Implement the formula for the displacement of a point fixed to the solid Earth

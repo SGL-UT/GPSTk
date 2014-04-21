@@ -6,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -36,13 +36,13 @@
 //
 //=============================================================================
 
-#ifndef ASHTECHPBEN_HPP
-#define ASHTECHPBEN_HPP
-
 /**
  * @file AshtechPBEN.hpp
  * gpstk::AshtechPBEN - class for storing ashtech nav solution record
  */
+
+#ifndef ASHTECHPBEN_HPP
+#define ASHTECHPBEN_HPP
 
 #include "AshtechData.hpp"
 

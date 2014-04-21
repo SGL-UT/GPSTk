@@ -1,12 +1,4 @@
-/// @file OrbElem.cpp Encapsulates the "least common denominator" orbit parameters
-/// that determine a satellite ephemeris, that is, clock model, Kepler orbit elements
-/// plus harmonic perturbations with time of ephemeris, satellite ID, and begin and
-/// end times of validity.
-/// Although it can also be used alone, this class is most often to be used as a base
-/// class for a fuller implementation of the ephemeris and clock, by adding health
-/// and accuracy information, fit interval, ionospheric correction terms and data
-/// flags. It serves as the base class for broadcast ephemerides for GPS, QZSS,
-/// Galileo, and BeiDou, with RINEX Navigation input, among others.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -14,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -25,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -33,19 +25,28 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S.
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software.
+//duplicate, distribute, disclose, or release this software. 
 //
-//Pursuant to DoD Directive 523024
+//Pursuant to DoD Directive 523024 
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
 //                           release, distribution is unlimited.
 //
 //=============================================================================
 
-#include "OrbitEph.hpp"
+/// @file OrbElem.cpp Encapsulates the "least common denominator" orbit parameters
+/// that determine a satellite ephemeris, that is, clock model, Kepler orbit elements
+/// plus harmonic perturbations with time of ephemeris, satellite ID, and begin and
+/// end times of validity.
+/// Although it can also be used alone, this class is most often to be used as a base
+/// class for a fuller implementation of the ephemeris and clock, by adding health
+/// and accuracy information, fit interval, ionospheric correction terms and data
+/// flags. It serves as the base class for broadcast ephemerides for GPS, QZSS,
+/// Galileo, and BeiDou, with RINEX Navigation input, among others.
 
+#include "OrbitEph.hpp"
 #include "MathBase.hpp"
 #include "GNSSconstants.hpp"
 #include "CivilTime.hpp"

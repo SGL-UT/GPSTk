@@ -25,6 +25,13 @@ set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
 option (CORE_ONLY OFF)
 
 #----------------------------------------
+# Test Switch - Initialize Test Mode
+#                  - Default is False
+#----------------------------------------
+
+option (TEST_SWITCH OFF)
+
+#----------------------------------------
 # Set Compiler options
 #----------------------------------------
 
@@ -55,6 +62,14 @@ elseif (WIN32) #Windows Compiler Options
       /wd"4503" /wd"4290" /wd"4267" /wd"4250" /wd"4244" /wd"4101" /wd"4800" /wd"4068")
   endif (MSVC11)		
 endif(UNIX)
+
+#----------------------------------------
+# Test Switch
+#----------------------------------------
+
+if (TEST_SWITCH)
+  enable_testing()
+endif()
 
 #----------------------------------------
 # Set Build path options
@@ -185,6 +200,10 @@ endif ()
 add_subdirectory (core)
 add_subdirectory (ext)
 add_subdirectory (examples)
+if (TEST_SWITCH)
+  add_subdirectory(tests)
+endif()
+
 
 #----------------------------------------
 # Experimental stuff to have cmake build debs for us

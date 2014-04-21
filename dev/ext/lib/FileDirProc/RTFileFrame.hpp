@@ -1,22 +1,12 @@
 #pragma ident "$Id$"
 
-
-
-/**
- * @file RTFileFrame.hpp
- * Realtime file frame
- */
-
-#ifndef GPSTK_RTFILEFRAME_HPP
-#define GPSTK_RTFILEFRAME_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -46,10 +36,13 @@
 //
 //=============================================================================
 
+/**
+ * @file RTFileFrame.hpp
+ * Realtime file frame
+ */
 
-
-
-
+#ifndef GPSTK_RTFILEFRAME_HPP
+#define GPSTK_RTFILEFRAME_HPP
 
 #include <sys/types.h>
 #include <sys/stat.h>

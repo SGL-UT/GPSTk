@@ -6,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -36,6 +36,12 @@
 //
 //=============================================================================
 
+/**
+ * @file EpochClockModel.hpp
+ * Finally a concrete class. This model just uses an epoch of ORDs to determine
+ * the clock offset at that point in time.
+ */
+
 #ifndef EPOCHCLOCKMODEL_HPP
 #define EPOCHCLOCKMODEL_HPP
 
@@ -45,12 +51,6 @@
 
 #include "ObsClockModel.hpp"
 #include "ORDEpoch.hpp"
-
-/**
- * @file EpochClockModel.hpp
- * Finally a concrete class. This model just uses an epoch of ORDs to determine
- * the clock offset at that point in time.
- */
 
 namespace gpstk
 {

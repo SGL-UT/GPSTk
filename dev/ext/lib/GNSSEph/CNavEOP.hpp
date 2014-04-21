@@ -1,13 +1,4 @@
-#pragma ident "$Id:$"
-
-/**
- * @file CnavEOP.hpp
- * Designed to support loading CNAV EOP data
- * (Message Type 32)
- */
-
-#ifndef GPSTK_CNAVEOP_HPP
-#define GPSTK_CNAVEOP_HPP
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -15,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -27,7 +18,7 @@
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
 //  
-//  Copyright 2013, The University of Texas at Austin
+//  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
 
@@ -44,6 +35,15 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file CnavEOP.hpp
+ * Designed to support loading CNAV EOP data
+ * (Message Type 32)
+ */
+
+#ifndef GPSTK_CNAVEOP_HPP
+#define GPSTK_CNAVEOP_HPP
 
 #include <string>
 #include <iostream>

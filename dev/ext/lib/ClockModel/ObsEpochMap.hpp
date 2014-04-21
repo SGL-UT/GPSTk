@@ -6,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -36,14 +36,13 @@
 //
 //=============================================================================
 
-#ifndef GPSTK_OBSEPOCHMAP_HPP
-#define GPSTK_OBSEPOCHMAP_HPP
-
 /**
  * @file ObsEpochMap.hpp
  * A class encapsulating observation data
  */
 
+#ifndef GPSTK_OBSEPOCHMAP_HPP
+#define GPSTK_OBSEPOCHMAP_HPP
 
 #include <map>
 #include <iostream>

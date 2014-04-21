@@ -1,25 +1,12 @@
 #pragma ident "$Id$"
 
-/**
-  *  @file OrbElemRinex.hpp
-  *  Contains the "engineering units" contents of a set of subframe 1/2/3 GPS
-  *  navigation message data as created from a record in a Rinex navigation
-  *  message file.
-  *  This class inherits from the OrbElem class and provides both the capability
-  *  to load an OrbElem from a set of Rinex data and storage for the Rinex-specific
-  *  parts of the Rinex file.
-  */ 
-
-#ifndef GPSTK_ORBELEMRINEX_HPP
-#define GPSTK_ORBELEMRINEX_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -30,7 +17,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//
+//  
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -48,6 +35,19 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+  *  @file OrbElemRinex.hpp
+  *  Contains the "engineering units" contents of a set of subframe 1/2/3 GPS
+  *  navigation message data as created from a record in a Rinex navigation
+  *  message file.
+  *  This class inherits from the OrbElem class and provides both the capability
+  *  to load an OrbElem from a set of Rinex data and storage for the Rinex-specific
+  *  parts of the Rinex file.
+  */ 
+
+#ifndef GPSTK_ORBELEMRINEX_HPP
+#define GPSTK_ORBELEMRINEX_HPP
 
 #include <string>
 #include <iostream>

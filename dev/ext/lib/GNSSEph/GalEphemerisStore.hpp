@@ -1,8 +1,4 @@
-/// @file GalEphemerisStore.hpp
-/// Class for storing and/or computing position, velocity, and clock data using
-/// tables of <SatID, <time, GalEphemeris> >. Inherits OrbitEphStore, which includes
-/// initial and final times and search methods. GalEphemeris inherits OrbitEph and
-/// adds health and accuracy information, which this class makes use of.
+#pragma ident "$Id$"
 
 //============================================================================
 //
@@ -10,7 +6,7 @@
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -39,6 +35,12 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/// @file GalEphemerisStore.hpp
+/// Class for storing and/or computing position, velocity, and clock data using
+/// tables of <SatID, <time, GalEphemeris> >. Inherits OrbitEphStore, which includes
+/// initial and final times and search methods. GalEphemeris inherits OrbitEph and
+/// adds health and accuracy information, which this class makes use of.
 
 #ifndef GPSTK_GALORBITEPHSTORE_HPP
 #define GPSTK_GALORBITEPHSTORE_HPP

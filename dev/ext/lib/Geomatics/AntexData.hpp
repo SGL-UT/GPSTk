@@ -1,23 +1,12 @@
 #pragma ident "$Id$"
 
-/**
- * @file AntexData.hpp
- * Encapsulate data from ANTEX (Antenna Exchange) format files, including both
- * receiver and satellite antennas, ANTEX file I/O, discrimination between different
- * satellite antennas based on system, PRN and time, and computation of phase center
- * offsets and variations.
- */
-
-#ifndef ANTEX_DATA_HPP
-#define ANTEX_DATA_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -46,6 +35,17 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file AntexData.hpp
+ * Encapsulate data from ANTEX (Antenna Exchange) format files, including both
+ * receiver and satellite antennas, ANTEX file I/O, discrimination between different
+ * satellite antennas based on system, PRN and time, and computation of phase center
+ * offsets and variations.
+ */
+
+#ifndef ANTEX_DATA_HPP
+#define ANTEX_DATA_HPP
 
 #include <string>
 #include <vector>

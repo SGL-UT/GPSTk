@@ -1,20 +1,12 @@
 #pragma ident "$Id$"
 
-/**
- * @file AntexHeader.hpp
- * Encapsulate header of ANTEX antenna file, including I/O
- */
-
-#ifndef GPSTK_ANTEX_HEADER_HPP
-#define GPSTK_ANTEX_HEADER_HPP
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
 //
 //  The GPSTk is free software; you can redistribute it and/or modify
 //  it under the terms of the GNU Lesser General Public License as published
-//  by the Free Software Foundation; either version 2.1 of the License, or
+//  by the Free Software Foundation; either version 3.0 of the License, or
 //  any later version.
 //
 //  The GPSTk is distributed in the hope that it will be useful,
@@ -43,6 +35,14 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
+
+/**
+ * @file AntexHeader.hpp
+ * Encapsulate header of ANTEX antenna file, including I/O
+ */
+
+#ifndef GPSTK_ANTEX_HEADER_HPP
+#define GPSTK_ANTEX_HEADER_HPP
 
 #include <string>
 #include <vector>
