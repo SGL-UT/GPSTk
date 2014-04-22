@@ -4,6 +4,7 @@ Installation of the GPSTk library and applications
 This INSTALL file has these sections
 
 Introduction
+Building and Installing using the GPSTk script
 Building and Installing in a UNIX-like Environment using CMake
 Building and Installing in OSX using CMake - Terminal
 Building and Installing in OSX using CMake - Xcode IDE
@@ -29,6 +30,46 @@ Introduction
 
    For more information about building the GPSTk, see the website at
    http://www.gpstk.org/
+
+Building and Installing in a UNIX-like Environment using CMake
+------------------------------------------------------------
+
+This section describes build and installation under the following environments.
+
+   - Linux, Solaris, Mac OSx
+
+The following procedure will build and install the GPSTk.
+
+   1. Ensure that prerequisites such as cmake have been installed.
+
+   2. Download the GPSTk distribution.
+
+   3. Extract the GPSTk tarball. For example, using GNU tar
+
+         $ tar xvzf gpstk.tar.gz
+
+   4. Navigate to the root GPSTk directory
+
+   5. Run the GPSTk script with the desired parameters
+
+      Build and Installation using default paths
+
+         $ ./script_gpstk.sh
+
+      Add optional parameters for additional functionality
+
+         $ ./script_gpstk.sh [-h] [-b] [-i] [-v] [-c] [-r <path>] [-s <path>]
+
+         -b     clean_build,   rm -rf gpstk_root/build
+         -i     clean_install, rm -rf gpstk_install
+         -d     build_doxygen, build doxygen files
+         -p     build_python,  build python swig bindings (autobuilds doxygen)
+         -c     core_only,     only builds core library code
+         -t     test_switch,   initialize test framework
+         -v     graphviz,      generate dependency graph (.DOT and .PDF files)
+         -r     gpstk_root,    default = ~/git/gpstk/dev, path to GPSTk top-level CMakeLists.txt file (and source tree)
+         -s     gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install
+
 
 
 Building and Installing in a UNIX-like Environment using CMake
