@@ -563,7 +563,7 @@ namespace gpstk
          CommonTime prevOrigBeginValid; 
 
          string tForm = "%03j.%02H:%02M:%02S";
-         SatID sid = it->first;
+         //SatID sid = it->first;
          //cout << " Scannning PRN ID: " << sid.id << endl;
 
             // Scan the map for this SV looking for 

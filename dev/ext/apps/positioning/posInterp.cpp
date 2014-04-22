@@ -115,10 +115,10 @@ typedef struct posInterpConfiguration {
 // data input from command line
 PIConfig PIC;
 // data used in program
-const double F1=L1_MULT_GPS;
-const double F2=L2_MULT_GPS;
-const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
-const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
+//const double F1=L1_MULT_GPS;
+//const double F2=L2_MULT_GPS;
+//const double if1r=1.0/(1.0-(F2/F1)*(F2/F1));
+//const double if2r=1.0/(1.0-(F1/F2)*(F1/F2));
 clock_t totaltime;
 string Title;
 RinexObsStream ofstr;      // output Rinex files
