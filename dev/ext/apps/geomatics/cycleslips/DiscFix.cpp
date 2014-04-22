@@ -166,7 +166,7 @@ map<GSatID,int> SatToCurrentIndexMap;
 
 // Limits, etc.
 
-static const double dtTol = 0.25; // 1/4 sec tolerance used in epoch processing
+//static const double dtTol = 0.25; // 1/4 sec tolerance used in epoch processing
 
 //------------------------------------------------------------------------------------
 // Prototypes

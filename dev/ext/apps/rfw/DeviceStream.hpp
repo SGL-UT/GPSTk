@@ -228,7 +228,7 @@ namespace gpstk
       }
       else  // Use standard input/output
       {
-         if (mode && ios::out)
+         if (mode & ios::out)
          {
             T::copyfmt(cout);
             T::clear(cin.rdstate());
