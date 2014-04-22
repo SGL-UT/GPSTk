@@ -2,6 +2,87 @@
 
 
 
+Version 2.4   Tuesday, April 22, 2014
+
+   General modifications
+   ---------------------
+   - Core & Ext Folder Structure implemented
+      - Core Folder
+         - Location of Core GPSTk Code base, fully reviewed and tested.
+         - Currently, no code resides in this directory, as code review and testing are currently ongoing.
+      - Ext Folder
+         - GPSTk Developer Sandbox Code base
+         - Code that is in development, prototyped, or does not meet criteria for Core Code base.
+   - Python Bindings Relocated and Repaired
+   - Doxygen build Repaired
+   - New Initial CMake Testing framework
+      - Currently in Development
+      - No actual tests are being utilized at this time, only the framework
+   - New GPSTk Script
+      - Build and Install GPSTk Code
+         - Automatically Identifies and Utilizes multiple processors for increased build speed.
+         - Can be set to build only the Core Code base (Currently broken, as no code resides in Core folder)
+      - Build Doxygen Documentation
+      - Build Python Bindings
+      - Utilize Test Framework
+   - Code Header's have been standardized and updated to include GNU LGPL v3.0
+   - This release includes new/modified source code comments for improved readability.
+   - Various Bug Fixes
+
+   Modifications by Author
+   ---------------------
+Andrew Joplin (4):
+      Added EphemerisRange.hpp to python bindings
+      Added EphReader.hpp to python bindings
+      Added FFStreamError to python bindings
+      EphReader.hpp: forgot an include
+
+Brent Renfro (14):
+      Fixes for Odd IGS brdc aggregate files.
+      fixing SatSystem bug in GPSEphemeriStore. updating bc2sp3.cpp
+      Adding a printTerse message
+      Correction to rationalize()
+      Change BDSEphemeris begin/end valid based on exmaination of operationel data
+      Correct error in printTerse output
+      Tweaks to BDS ephemeris based on processing 2013 data
+      Improved error message on exception
+      Fixed GEO position determination
+      Merge branch 'master' of repositories.arlut.utexas.edu:sgl/gpstk
+      Add velocities to BDSEphemeris.cpp
+      Update to status as of 4/14/2014
+      Improving optional debug printout
+      Correcting fit Interval to fit duration
+
+Bryan Parsons (14):
+      Phase 1 of GPSTk to SGLTk Migration, with Python CMake updated
+      Base CMakeLists.txt clean-up
+      CMakeLists.txt tweak
+      GPSTk CMake build/install automation script, modified version of SGLTk script.
+      script change
+      Script update
+      RinEdit bug fix
+      Code updated from submitted patches
+      Moved python bindings folder to main GPSTk folder, fixed Python build code and re-added gpstk_builder.py, updated and fixed Doxygen, added doxygen and python option to main script_cmake.py
+      Deprecated setup.py in favor of cmake and shell script
+      Script bug fix
+      Script updated with additional options - doxygen, python, and test.  Headers have been updated for all applicable code to reflect updated LGP License 3.0.
+      Mac OSX Maverick Tweaks
+      Additional Mac OSX tweaks
+
+Jon Little (5):
+      Fixing the file modes. The execute bit got set on basically every file. Someone's development environment is messed up
+      Added some clumsy cmake magic to prevent installing getopt.h on gcc systems
+      Hopefully made the getop.h handling a little smarter
+      Continuing to make things build on solaris with older gcc
+      It appears that some variants of cmake are sensitive to the ordering of target_link_libraries
+
+
+
+      
+	#################################################
+
+
+
 Version 2.3   Thursday, December 5, 2013
 
    General modifications
