@@ -31,7 +31,7 @@ Introduction
    For more information about building the GPSTk, see the website at
    http://www.gpstk.org/
 
-Building and Installing in a UNIX-like Environment using CMake
+Building and Installing in a UNIX-like Environment using the GPSTk script
 ------------------------------------------------------------
 
 This section describes build and installation under the following environments.
