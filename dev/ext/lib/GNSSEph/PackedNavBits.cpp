@@ -351,9 +351,13 @@ namespace gpstk
       {
          char ch = String[i];
          bool valid = false;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
          if ( ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= ':') || (' ' == ch) ||
             ('"' == ch) || ('\'' == ch) || ('+' == ch) || ('-' <= ch && ch <= '/') ||
             (0xF8 == ch) ) valid = true;
+#pragma clang diagnostic pop
+
          if (!valid)
          {
             InvalidParameter exc("Invalid character '<< ch <<' in text string. ");
