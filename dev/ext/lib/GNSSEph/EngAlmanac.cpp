@@ -74,7 +74,7 @@ namespace gpstk
 
       wn_t = wn_lsf = 0;
 
-      alm_wk = 0;
+      alm_wk = wn_a = 0;
 
       dn = 0;
 
@@ -136,6 +136,7 @@ namespace gpstk
                health[i] = static_cast<char>( ficked[7 + i] );
                // manually crack the t_oa and WNa
             t_oa = ((subframe[2] >> 14) & 0xFF) * 4096;
+            wn_a = static_cast<int>(ficked[7]);
             convert8bit(gpsWeek, &ficked[7]);
             alm_wk = static_cast<int>(ficked[7]);
             break;
@@ -520,7 +521,7 @@ namespace gpstk
       s << endl << "           Page 25 Health, AS, & SV config" << endl << endl;
 
       s << "Toa:    " << setfill(' ') << setw(8) << t_oa
-        << ", week: " << setw(5) << alm_wk << endl << endl
+        << ", week: " << setw(5) << wn_a << " (" << alm_wk << ")" << endl << endl
         << "PRN   health  AS  cfg    PRN   health  AS  cfg" << endl;
       string bits[33];
 

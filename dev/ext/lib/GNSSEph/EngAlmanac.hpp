@@ -304,8 +304,9 @@ namespace gpstk
                                       second */
       int wn_lsf;                  /**< week number of last/next leap
                                       second */
-      short alm_wk;                /**< GPS Week of the Almanac from the last
-                                      page of orbital data */
+      short wn_a;                  /**< The 8 bit GPS week of the Almanac from SF5, PG 25 */
+      short alm_wk;                /**< wn_a plus the upper bits from
+                                      a full week number. */
       unsigned char dn;            /**< reference day # of future leap
                                       second */
       SVBitsMap health;            /**< satellite health array */
