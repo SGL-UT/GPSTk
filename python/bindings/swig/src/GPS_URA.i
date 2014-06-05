@@ -1,5 +1,5 @@
 // Wrappers on the GPS_URA arrays that SWIG can't use.
-// Also wraps a simlar array from GNSSconstants.hpp
+// Also wraps a similar array from GNSSconstants.hpp
 // (it puts them in PyObject double* wrappers, which are useless in Python)
 // For each array:
 //  - add an ignore

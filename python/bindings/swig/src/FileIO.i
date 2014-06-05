@@ -16,7 +16,7 @@
 //
 
 %define STREAM_HELPER(FORMATNAME)
-%extend gpstk:: ## FORMATNAME ## Stream {
+%extend gpstk:: ## FORMATNAME ## Stream { 
 
    // methods for the stream itself:
    static gpstk:: ## FORMATNAME ## Stream* in ## FORMATNAME ## Stream(const std::string fileName) {
