@@ -184,12 +184,15 @@ void GloDump::process()
    {
       Rinex3NavData& r = *itr;
       GloEphemeris ge(r);
-      if (first && terseFlag)
-         ge.terseHeader(out);
-      if (terseFlag) ge.terseDump(out);
-      else ge.prettyDump(out);
-      recCount++;
-      
+                            // If the file is multi-GNSS,
+      if (r.satSys=="R")    // only dump GLONASS messages 
+      {
+         if (first && terseFlag)
+            ge.terseHeader(out);
+         if (terseFlag) ge.terseDump(out);
+         else ge.prettyDump(out);
+         recCount++;
+      }
       itr++;
       first = false;
    }
