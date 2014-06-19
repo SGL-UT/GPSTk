@@ -47,7 +47,7 @@
    #include "../../../dev/ext/lib/Math/Vector/Vector.hpp"
    #include "../../../dev/ext/lib/Procframe/Antenna.hpp"
 
-   // more specific almanac/epehemeris files:
+   // more specific almanac/ephemeris files:
    #include "../../../dev/ext/lib/AstroEph/AstronomicalFunctions.hpp"
    #include "../../../dev/ext/lib/GNSSEph/XvtStore.hpp"
    #include "../../../dev/ext/lib/GNSSCore/PZ90Ellipsoid.hpp"
