@@ -27,6 +27,9 @@ import inspect
 import os
 import sys
 
+cwd = os.getcwd()
+os.chdir(os.path.join(cwd, '..', 'build'))
+sys.path.append(os.getcwd())
 
 # Any object that is exactly a string in this list will be ignored
 ignore_exact = [
@@ -131,6 +134,7 @@ def main():
 
     # Create gpstk __init__.py file
     import gpstk_pylib
+
     namespace = dir(gpstk_pylib)
     out_file = open('__init__.py', 'w')
     out_file.write('"""The GPS Toolkit - an open source library to the satellite navigation community.\n"""\n')
