@@ -582,7 +582,7 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
                   out << "WITH" << endl;
                }
                   //if the times are all the same and you have not yet seen the same entry then you set pastCurrent to true
-               if(mm.second.getBeginTime() == navP.second.getBeginTime() && mm.second.getBeginTime() == navP.second.getBeginTime() && !pastCurrent)
+               if(mm.second.getBeginTime() == navP.second.getBeginTime() && mm.second.getEndTime() == navP.second.getEndTime() && !pastCurrent)
                {
                   pastCurrent = true;
                }
@@ -635,7 +635,7 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
                   out << "WITH" << endl;
                }
                   //if the times are all the same and you have not yet seen the same entry then you set pastCurrent to true
-               if(pp.second.getBeginTime() == prnN.second.getBeginTime() && pp.second.getBeginTime() == prnN.second.getBeginTime() && !pastCurrent)
+               if(pp.second.getBeginTime() == prnN.second.getBeginTime() && pp.second.getEndTime() == prnN.second.getEndTime() && !pastCurrent)
                {
                   pastCurrent = true;
                }
