@@ -107,6 +107,7 @@ class XRefNode
       gpstk::CommonTime getBeginTime() const;
       gpstk::CommonTime getEndTime() const;
       bool isApplicable( gpstk::CommonTime dt ) const;
+      std::string toString() const;
 
    protected:
       int Num;
@@ -142,6 +143,7 @@ class SVNumXRef
       bool NAVSTARIDAvailable( const int PRNID, const gpstk::CommonTime dt = SystemTime() ) const;
       bool BlockTypeAvailable( const int NAVSTARID ) const;
       bool NAVSTARIDActive( const int NAVSTARID, const gpstk::CommonTime dt = SystemTime() ) const;
+      int dump(std::ostream& out=std::cout, bool checkOverlap=false) const;
 
    protected:
       std::multimap<int,XRefNode> NtoPMap;
