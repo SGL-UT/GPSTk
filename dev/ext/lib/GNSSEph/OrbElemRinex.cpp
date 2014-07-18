@@ -249,10 +249,10 @@ namespace gpstk
       dndot = 0.0;
 
          // Health
-         // OrbElemFIC9 stores the full 8 bits health from the legacy
-	 // navigation message.  OrElemn only stores the true/false,
+         // OrbElemRinex stores the full 8 bits health from the legacy
+	 // navigation message.  OrbElem only stores the true/false,
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = (healthy==0);
+      healthy = (health==0);
 
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used).
@@ -418,10 +418,10 @@ namespace gpstk
       dndot = 0.0;
 
          // Health
-         // OrbElemFIC9 stores the full 8 bits health from the legacy
-	 // navigation message.  OrElemn only stores the true/false,
+         // OrbElemRinex stores the full 8 bits health from the legacy
+	 // navigation message.  OrbElem only stores the true/false,
 	 // use/don't use based on whether the 8 bit health is 0 or non-zero
-      healthy = (healthy==0);
+      healthy = (health==0);
 
          // After all this is done, declare that data has been loaded
 	 // into this object (so it may be used).
