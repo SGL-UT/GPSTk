@@ -103,7 +103,7 @@ namespace gpstk
           * All numerical elements default to zero, "Unknown" for time frame.
           * @see CommonTime::set()
           */
-      explicit CommonTime(TimeSystem timeSystem = TimeSystem::Unknown )
+      explicit CommonTime(const TimeSystem& timeSystem = TimeSystem::Unknown )
       { set( 0, 0, 0.0, timeSystem ); }
 
          /**
@@ -137,7 +137,7 @@ namespace gpstk
       CommonTime& set( long day,
                        long sod,
                        double fsod = 0.0,
-                       TimeSystem timeSystem = TimeSystem::Unknown );
+                       const TimeSystem& timeSystem = TimeSystem::Unknown );
 
          /**
           * Set method that accepts values for day and seconds of day.  It also
@@ -146,7 +146,7 @@ namespace gpstk
           */
       CommonTime& set( long day,
                        double sod = 0.0,
-                       TimeSystem timeSystem = TimeSystem::Unknown );
+                       const TimeSystem& timeSystem = TimeSystem::Unknown );
 
          /**
           * Set method that accepts a value for day.  It also checks the
@@ -154,7 +154,7 @@ namespace gpstk
           * out of bounds.
           */
       CommonTime& set( double day,
-                       TimeSystem timeSys = TimeSystem::Unknown );
+                       const TimeSystem& timeSys = TimeSystem::Unknown );
 
          /**
           * Set internal values method.  Set the data members of this object
@@ -164,7 +164,7 @@ namespace gpstk
       CommonTime& setInternal( long day = 0,
                                long msod = 0,
                                double fsod = 0.0,
-                               TimeSystem timeSys = TimeSystem::Unknown );
+                               const TimeSystem& timeSys = TimeSystem::Unknown );
 
          /**
           * Set method for internal variable m_timeSystem.
@@ -352,7 +352,7 @@ namespace gpstk
       CommonTime( long day,
                   long sod,
                   double fsod,
-                  TimeSystem timeSystem = TimeSystem::Unknown )
+                  const TimeSystem& timeSystem = TimeSystem::Unknown )
       { set( day, sod, fsod, timeSystem ); }
 
          /**

@@ -64,7 +64,7 @@ namespace gpstk
           * All elements are initialized to zero.
           */
      ANSITime( time_t t = 0,
-               TimeSystem ts = TimeSystem::Unknown )
+               const TimeSystem& ts = TimeSystem::Unknown )
         : time(t)
       { timeSystem = ts; }
 
@@ -73,7 +73,7 @@ namespace gpstk
           * @param right a reference to the ANSITime object to copy
           */
       ANSITime( const ANSITime& right )
-	: time( right.time )
+        : time( right.time )
       { timeSystem = right.timeSystem; }
 
          /**

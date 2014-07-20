@@ -75,7 +75,7 @@ namespace gpstk
       };
 
       /// Constructor, including empty constructor
-      TimeSystem(Systems sys = Unknown)
+      TimeSystem(const Systems sys = Unknown)
       {
          if(sys < 0 || sys >= count)
             system = Unknown;
@@ -108,7 +108,7 @@ namespace gpstk
 
       /// define system based on input string
       /// @param str input string, expected to match output string for given system
-      void fromString(const std::string str);
+      void fromString(const std::string& str);
 
       /// boolean operator==
       bool operator==(const TimeSystem& right) const
@@ -146,7 +146,7 @@ namespace gpstk
       /// NB. BDT = GPS - 15 but this does not include RINEX::TIME SYSTEM CORR::BDUT
       /// NB. BDT is actually UTC(NTSC) China
       /// @param  yr, mon, day give the day of interest
-      static double getLeapSeconds(const int& yr, const int& mon, const double& day);
+      static double getLeapSeconds(const int yr, const int mon, const double day);
 
       /// Compute the conversion (in seconds) from one time system (inTS) to another
       /// (outTS), given the year and month of the time to be converted.
@@ -160,7 +160,7 @@ namespace gpstk
       /// @return double dt, correction (sec) to be added to t(in) to yield t(out).
       /// @throw if input system(s) are invalid or Unknown.
       static double Correction(const TimeSystem& inTS, const TimeSystem& outTS,
-                               const int& year, const int& month, const double& day);
+                               const int year, const int month, const double day);
 
    private:
 

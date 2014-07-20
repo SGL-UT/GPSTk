@@ -60,7 +60,7 @@ namespace gpstk
       {}
 
          /// Constructor
-      TimeTag( TimeSystem ts )
+      TimeTag( const TimeSystem& ts )
       { timeSystem = ts; }
 
          /// Virtual Destructor.

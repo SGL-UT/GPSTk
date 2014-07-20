@@ -73,8 +73,7 @@ namespace gpstk
          system = sys;
    }
 
-   void TimeSystem::fromString(const string str)
-
+   void TimeSystem::fromString(const string& str)
    {
       system = Unknown;
       for(int i=0; i<count; i++) {
@@ -96,9 +95,9 @@ namespace gpstk
    // NB. Input day in a floating quantity and thus any epoch may be represented;
    // this is relevant the period 1960 to 1972, when UTC-TAI was not integral.
    // NB. GPS = TAI - 19sec and so GPS-UTC = getLeapSeconds()-19.
-   double TimeSystem::getLeapSeconds(const int& year,
-                                     const int& month,
-                                     const double& day)
+   double TimeSystem::getLeapSeconds(const int year,
+                                     const int month,
+                                     const double day)
    {
       // Leap second data --------------------------------------------------------
       // number of changes before leap seconds (1960-1971) - this should never change.
@@ -210,8 +209,11 @@ namespace gpstk
    // @param int month, month (1-12) of the time to be converted.
    // @return double dt, correction (sec) to be added to t(in) to yield t(out).
    // @throw if input system(s) are invalid or Unknown.
-   double TimeSystem::Correction(const TimeSystem& inTS, const TimeSystem& outTS,
-                                 const int& year, const int& month, const double& day)
+   double TimeSystem::Correction(const TimeSystem& inTS,
+                                 const TimeSystem& outTS,
+                                 const int year,
+                                 const int month,
+                                 const double day)
    {
       double dt(0.0);
 
