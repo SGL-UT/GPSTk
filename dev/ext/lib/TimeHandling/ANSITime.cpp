@@ -173,12 +173,13 @@ namespace gpstk
 
    bool ANSITime::operator==( const ANSITime& right ) const
    {
-     /// Any (wildcard) type exception allowed, otherwise must be same time systems
-     if ((timeSystem != TimeSystem::Any &&
-          right.timeSystem != TimeSystem::Any) &&
-	 timeSystem != right.timeSystem)
+      /// Any (wildcard) type exception allowed, otherwise must be same time systems
+      if ((timeSystem != TimeSystem::Any &&
+           right.timeSystem != TimeSystem::Any) &&
+           timeSystem != right.timeSystem)
+      {
          return false;
-
+      }
       if( fabs(double(time - right.time)) < CommonTime::eps )
       {
          return true;

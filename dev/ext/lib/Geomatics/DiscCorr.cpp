@@ -303,7 +303,7 @@ public:
    static const unsigned short GFDETECT;
    static const unsigned short GFFIX;
 
-   explicit GDCPass(SatPass& sp, const GDCconfiguration& gdc);
+   explicit GDCPass(const SatPass& sp, const GDCconfiguration& gdc);
 
    //~GDCPass(void) { };
 
@@ -700,7 +700,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // class GDCPass member functions
 //------------------------------------------------------------------------------------
-GDCPass::GDCPass(SatPass& sp, const GDCconfiguration& gdc)
+GDCPass::GDCPass(const SatPass& sp, const GDCconfiguration& gdc)
       : SatPass(sp.getSat(), sp.getDT(), sp.getObsTypes())
 {
    size_t j;

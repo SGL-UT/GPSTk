@@ -76,7 +76,7 @@ double SatPass::maxGap = 1800;         // maximum gap (seconds) allowed within p
 string SatPass::outFormat = string("%4F %10.3g");  // GPS week, seconds of week
 
 // constructors
-SatPass::SatPass(GSatID insat, double indt) throw()
+SatPass::SatPass(const GSatID& insat, double indt) throw()
 {
    vector<string> defaultObsTypes;
    defaultObsTypes.push_back("L1");
@@ -87,12 +87,14 @@ SatPass::SatPass(GSatID insat, double indt) throw()
    init(insat, indt, defaultObsTypes);
 }
 
-SatPass::SatPass(GSatID insat, double indt, vector<string> obstypes) throw()
+SatPass::SatPass(const GSatID& insat, double indt,
+                 const vector<string>& obstypes) throw()
 {
    init(insat, indt, obstypes);
 }
 
-void SatPass::init(GSatID insat, double indt, vector<string> obstypes) throw()
+void SatPass::init(const GSatID& insat, double indt,
+                   const vector<string>& obstypes) throw()
 {
    sat = insat;
    dt = indt;
@@ -126,7 +128,8 @@ SatPass& SatPass::operator=(const SatPass& right) throw()
    return *this;
 }
 
-int SatPass::addData(const CommonTime tt, vector<string>& ots, vector<double>& data)
+int SatPass::addData(const CommonTime& tt,
+                     const vector<string>& ots, const vector<double>& data)
    throw(Exception)
 {
    vector<unsigned short> lli(data.size(),0),ssi(data.size(),0);
@@ -137,12 +140,12 @@ int SatPass::addData(const CommonTime tt, vector<string>& ots, vector<double>& d
 // return -2 time tag out of order, data not added
 //        -1 gap is larger than MaxGap, data not added
 //       >=0 (success) index of the added data
-int SatPass::addData(const CommonTime tt,
-                         vector<string>& obstypes,
-                         vector<double>& data,
-                         vector<unsigned short>& lli,
-                         vector<unsigned short>& ssi,
-                         unsigned short flag) throw(Exception)
+int SatPass::addData(const CommonTime& tt,
+                     const vector<string>& obstypes,
+                     const vector<double>& data,
+                     const vector<unsigned short>& lli,
+                     const vector<unsigned short>& ssi,
+                     unsigned short flag) throw(Exception)
 {
    // check that data, lli and ssi have the same length - throw
    if(data.size() != lli.size() || data.size() != ssi.size()) {
@@ -316,64 +319,35 @@ void SatPass::smooth(bool smoothPR, bool debiasPH, string& msg) throw(Exception)
 }
 
 // -------------------------- get and set routines ----------------------------
-double& SatPass::data(unsigned int i, std::string type) throw(Exception)
+
+double& SatPass::data(unsigned int i, const std::string& type) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in data() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in data() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].data[it->second];
+   validateDataIndex(i, "data()");
+   return spdvector[i].data[findDataObsIndex(type, "data()")];
 }
 
 double& SatPass::timeoffset(unsigned int i) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in timeoffset() " + asString(i));
-      GPSTK_THROW(e);
-   }
+   validateDataIndex(i, "timeoffset()");
    return spdvector[i].toffset;
 }
 
-unsigned short& SatPass::LLI(unsigned int i, std::string type) throw(Exception)
+unsigned short& SatPass::LLI(unsigned int i, const std::string& type) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in LLI() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in LLI() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].lli[it->second];
+   validateDataIndex(i, "LLI()");
+   return spdvector[i].lli[findDataObsIndex(type, "LLI()")];
 }
 
-unsigned short& SatPass::SSI(unsigned int i, std::string type) throw(Exception)
+unsigned short& SatPass::SSI(unsigned int i, const std::string& type) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in SSI() " + asString(i));
-      GPSTK_THROW(e);
-   }
-   map<string, unsigned int>::const_iterator it;
-   if((it = indexForLabel.find(type)) == indexForLabel.end()) {
-      Exception e("Invalid obs type in SSI() " + type);
-      GPSTK_THROW(e);
-   }
-   return spdvector[i].ssi[it->second];
+   validateDataIndex(i, "SSI()");
+   return spdvector[i].ssi[findDataObsIndex(type, "SSI()")];
 }
 
 // ---------------------------------- set routines ----------------------------
 void SatPass::setFlag(unsigned int i, unsigned short f) throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in setFlag() " + asString(i));
-      GPSTK_THROW(e);
-   }
+   validateDataIndex(i, "setFlag()");
 
    if(spdvector[i].flag != BAD && f == BAD) ngood--;
    if(spdvector[i].flag == BAD && f != BAD) ngood++;
@@ -382,22 +356,16 @@ void SatPass::setFlag(unsigned int i, unsigned short f) throw(Exception)
 
 // ---------------------------------- get routines ----------------------------
 // get value of flag at one index
-unsigned short SatPass::getFlag(unsigned int i) throw(Exception)
+unsigned short SatPass::getFlag(unsigned int i) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("Invalid index in getFlag() " + asString(i));
-      GPSTK_THROW(e);
-   }
+   validateDataIndex(i, "getFlag()");
    return spdvector[i].flag;
 }
 
 // get one element of the count array of this SatPass
 unsigned int SatPass::getCount(unsigned int i) const throw(Exception)
 {
-   if(i >= spdvector.size()) {
-      Exception e("invalid in getCount() " + asString(i));
-      GPSTK_THROW(e);
-   }
+   validateDataIndex(i, "getCount()");
    return spdvector[i].ndt;
 }
 
@@ -405,10 +373,7 @@ unsigned int SatPass::getCount(unsigned int i) const throw(Exception)
 // return the time corresponding to the given index in the data array
 CommonTime SatPass::time(unsigned int i) const throw(Exception)
 {
-   if(i > spdvector.size()) {
-      Exception e("invalid in time() " + asString(i));
-      GPSTK_THROW(e);
-   }
+   validateDataIndex(i, "time()");
    // computing toff first is necessary to avoid a rare bug in CommonTime..
    double toff = spdvector[i].ndt * dt + spdvector[i].toffset;
    return (firstTime + toff);

@@ -68,7 +68,7 @@ namespace gpstk
                  int hr = 0,
                  int mn = 0,
                  double s = 0.0,
-                 TimeSystem ts = TimeSystem::Unknown )
+                 const TimeSystem& ts = TimeSystem::Unknown )
 	    : year(yr), month(mo), day(dy), hour(hr), minute(mn), second(s)
       { timeSystem = ts; }
 

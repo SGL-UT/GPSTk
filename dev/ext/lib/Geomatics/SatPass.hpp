@@ -74,7 +74,7 @@ public:
    /// NB. dt MUST be correct.
    /// @param sat the satellite from which this data comes
    /// @param dt  the nominal time spacing (seconds) of the data
-   SatPass(GSatID sat, double dt) throw();
+   SatPass(const GSatID& sat, double dt) throw();
 
    /// Constructor from a list of strings <=> RINEX obs types to be read
    /// NB. The number of obstypes determines the size of the SatPass object;
@@ -86,7 +86,8 @@ public:
    /// @param dt  the nominal time spacing (seconds) of the data
    /// @param obstypes  a vector of strings, each string being a 2-character
    ///                  RINEX observation type, e.g. "L1", "P2", to be stored.
-   SatPass(GSatID sat, double dt, std::vector<std::string> obstypes) throw();
+   SatPass(const GSatID& sat, double dt,
+           const std::vector<std::string>& obstypes) throw();
 
    // d'tor, copy c'tor are built by compiler; so is operator= but don't use it!
    SatPass& operator=(const SatPass& right) throw();
@@ -104,8 +105,9 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const CommonTime tt, std::vector<std::string>& obstypes,
-                                  std::vector<double>& data) throw(Exception);
+   int addData(const CommonTime& tt,
+               const std::vector<std::string>& obstypes,
+               const std::vector<double>& data) throw(Exception);
 
    /// Add vector of data, identified by obstypes (same as used in c'tor) at tt,
    /// Flag, lli and ssi are set using input (parallel to data).
@@ -119,11 +121,12 @@ public:
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///        -1 if a gap is found (no data is added),
    ///        -2 if time tag is out of order (no data is added)
-   int addData(const CommonTime tt, std::vector<std::string>& obstypes,
-                                  std::vector<double>& data,
-                                  std::vector<unsigned short>& lli,
-                                  std::vector<unsigned short>& ssi,
-                                  unsigned short flag=SatPass::OK)
+   int addData(const CommonTime& tt,
+               const std::vector<std::string>& obstypes,
+               const std::vector<double>& data,
+               const std::vector<unsigned short>& lli,
+               const std::vector<unsigned short>& ssi,
+               unsigned short flag=SatPass::OK)
       throw(Exception);
 
    /// Add data as found in RinexObsData. No action if this->sat is not found.
@@ -165,29 +168,40 @@ public:
    /// Access the status; l-value may be assigned SP.status() = 1;
    int& status(void) throw() { return Status; }
 
+   /// Access the status as const r-value
+   int status(void) const throw() { return Status; }
+
    /// Access the data for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the data of the given type at the given index
-   double& data(unsigned int i, std::string type) throw(Exception);
+   double& data(unsigned int i, const std::string& type) throw(Exception);
+   double data(unsigned int i, const std::string& type) const throw(Exception) {
+     return data(i, type); }
 
    /// Access the time offset from the nominal time (i.e. timetag) at one index
    /// (epoch), as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @return the time offset from nominal at the given index
    double& timeoffset(unsigned int i) throw(Exception);
+   double timeoffset(unsigned int i) const throw(Exception) {
+     return timeoffset(i); }
 
    /// Access the LLI for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the LLI of the given type at the given index
-   unsigned short& LLI(unsigned int i, std::string type) throw(Exception);
+   unsigned short& LLI(unsigned int i, const std::string& type) throw(Exception);
+   unsigned short LLI(unsigned int i, const std::string& type) const throw(Exception) {
+     return LLI(i, type); }
 
    /// Access the ssi for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the SSI of the given type at the given index
-   unsigned short& SSI(unsigned int i, std::string type) throw(Exception);
+   unsigned short& SSI(unsigned int i, const std::string& type) throw(Exception);
+   unsigned short SSI(unsigned int i, const std::string& type) const throw(Exception) {
+     return SSI(i, type); }
 
    // -------------------------------- set routines ----------------------------
 
@@ -214,20 +228,24 @@ public:
 
    /// get the list of obstypes
    /// @return the vector of strings giving RINEX obs types
-   std::vector<std::string> getObsTypes(void) throw() {
-      std::vector<std::string> v;
-      for(size_t i=0; i<labelForIndex.size(); i++) v.push_back(labelForIndex[i]);
+   std::vector<std::string> getObsTypes(void) const throw() {
+      std::vector<std::string> v(labelForIndex.size());
+      std::map<unsigned, std::string>::const_iterator it;
+      for (it=labelForIndex.begin(); it!=labelForIndex.end(); ++it)
+      {
+         v[it->first] = it->second;
+      }
       return v;
    }
 
    /// get the flag at one index
    /// @param  i    index of the data of interest
    /// @return the flag for the given index
-   unsigned short getFlag(unsigned int i) throw(Exception);
+   unsigned short getFlag(unsigned int i) const throw(Exception);
 
    /// @return the earliest time in this SatPass data
    CommonTime getFirstTime(void) const throw() { return firstTime; }
-   
+
    /// Reset the first and last times for the pass. This should be necessary only
    /// when the timeoffset's have been altered...use with caution.
    /// @param  tt   new first time
@@ -257,7 +275,7 @@ public:
 
    /// get the satellite of this SatPass
    /// @return the satellite of this SatPass data
-   GSatID getSat(void) const throw() { return sat; }
+   const GSatID& getSat(void) const throw() { return sat; }
 
    /// get the time interval of this SatPass
    /// @return the nominal time step (seconds) in this data
@@ -447,13 +465,41 @@ protected:
    // --------------- private member functions ------------------------
 
    /// called by constructors to initialize - see doc for them.
-   void init(GSatID sat, double dt, std::vector<std::string> obstypes) throw();
+   void init(const GSatID& sat, double dt,
+             const std::vector<std::string>& obstypes) throw();
 
    /// add a complete SatPassData at time tt
    /// @return n>=0 if data was added successfully, n is the index of the new data
    ///            -1 if a gap is found (no data is added),
    ///            -2 if time tag is out of order (no data is added)
    int push_back(const CommonTime tt, SatPassData& spd) throw();
+
+
+   /// Check that supplied index is within valid range of data samples
+   inline void validateDataIndex(unsigned int i,
+                                 const std::string& method) const
+                                 throw(Exception)
+   {
+      if (i >= spdvector.size()) {
+         Exception e("Invalid index in " + method
+                        + " " + StringUtils::asString(i));
+         GPSTK_THROW(e);
+      }
+   }
+
+   /// Convert supplied observation type into index, checking validity
+   inline unsigned findDataObsIndex(const std::string& type,
+                                    const std::string& method) const
+                                    throw(Exception)
+   {
+      const std::map<std::string, unsigned int>::const_iterator it
+                                       = indexForLabel.find(type);
+      if (it == indexForLabel.end()) {
+         Exception e("Invalid obs type in " + method + " " + type);
+         GPSTK_THROW(e);
+      }
+      return it->second;
+   }
 
    /// get a complete SatPassData at count i
    struct SatPassData getData(unsigned int i) const throw(Exception);
