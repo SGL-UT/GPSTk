@@ -144,7 +144,7 @@ namespace gpstk
       /// Obliquity of the ecliptic, J2000 in degrees
       static const double EPS = 23.43929111;
 
-   };
+   }  // End of 'namespace ASConstant'
 
 }  // End of 'namespace gpstk'
 
