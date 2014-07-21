@@ -194,8 +194,7 @@ namespace gpstk
       {
          try
          { 
-            FFStream& r = dynamic_cast<FFStream&>(i);
-            #pragma unused(r)
+            (void)dynamic_cast<FFStream&>(i);
          }
          catch(...)
          {

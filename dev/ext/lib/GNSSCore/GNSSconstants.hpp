@@ -58,11 +58,11 @@ namespace gpstk
 
    // ---------------- independent of GNSS ----------------------
       /// GPS value of PI; also specified by GAL
-   const double PI        = 3.1415926535898;
+   const double PI        = 3.141592653589793238462643383280;
       /// GPS value of PI*2
-   const double TWO_PI    = 6.2831853071796;
+   const double TWO_PI    = 6.283185307179586476925286766559;
       /// GPS value of PI**0.5
-   const double SQRT_PI   = 1.7724539;
+   const double SQRT_PI   = 1.772453850905516027298167483341;
       /// relativity constant (sec/sqrt(m))
    const double REL_CONST = -4.442807633e-10;
       /// m/s, speed of light; this value defined by GPS but applies to GAL and GLO.
