@@ -326,9 +326,21 @@ double& SatPass::data(unsigned int i, const std::string& type) throw(Exception)
    return spdvector[i].data[findDataObsIndex(type, "data()")];
 }
 
+double SatPass::data(unsigned int i, const std::string& type) const throw(Exception)
+{
+   validateDataIndex(i, "data() const");
+   return spdvector[i].data[findDataObsIndex(type, "data() const")];
+}
+
 double& SatPass::timeoffset(unsigned int i) throw(Exception)
 {
    validateDataIndex(i, "timeoffset()");
+   return spdvector[i].toffset;
+}
+
+double SatPass::timeoffset(unsigned int i) const throw(Exception)
+{
+   validateDataIndex(i, "timeoffset() const");
    return spdvector[i].toffset;
 }
 
@@ -338,10 +350,22 @@ unsigned short& SatPass::LLI(unsigned int i, const std::string& type) throw(Exce
    return spdvector[i].lli[findDataObsIndex(type, "LLI()")];
 }
 
+unsigned short SatPass::LLI(unsigned int i, const std::string& type) const throw(Exception)
+{
+   validateDataIndex(i, "LLI() const");
+   return spdvector[i].lli[findDataObsIndex(type, "LLI() const")];
+}
+
 unsigned short& SatPass::SSI(unsigned int i, const std::string& type) throw(Exception)
 {
    validateDataIndex(i, "SSI()");
    return spdvector[i].ssi[findDataObsIndex(type, "SSI()")];
+}
+
+unsigned short SatPass::SSI(unsigned int i, const std::string& type) const throw(Exception)
+{
+   validateDataIndex(i, "SSI() const");
+   return spdvector[i].ssi[findDataObsIndex(type, "SSI() const")];
 }
 
 // ---------------------------------- set routines ----------------------------

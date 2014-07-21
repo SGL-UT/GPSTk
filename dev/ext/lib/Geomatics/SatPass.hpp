@@ -176,32 +176,28 @@ public:
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the data of the given type at the given index
    double& data(unsigned int i, const std::string& type) throw(Exception);
-   double data(unsigned int i, const std::string& type) const throw(Exception) {
-     return data(i, type); }
+   double data(unsigned int i, const std::string& type) const throw(Exception);
 
    /// Access the time offset from the nominal time (i.e. timetag) at one index
    /// (epoch), as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @return the time offset from nominal at the given index
    double& timeoffset(unsigned int i) throw(Exception);
-   double timeoffset(unsigned int i) const throw(Exception) {
-     return timeoffset(i); }
+   double timeoffset(unsigned int i) const throw(Exception);
 
    /// Access the LLI for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the LLI of the given type at the given index
    unsigned short& LLI(unsigned int i, const std::string& type) throw(Exception);
-   unsigned short LLI(unsigned int i, const std::string& type) const throw(Exception) {
-     return LLI(i, type); }
+   unsigned short LLI(unsigned int i, const std::string& type) const throw(Exception);
 
    /// Access the ssi for one obs type at one index, as either l-value or r-value
    /// @param  i    index of the data of interest
    /// @param  type observation type (e.g. "L1") of the data of interest
    /// @return the SSI of the given type at the given index
    unsigned short& SSI(unsigned int i, const std::string& type) throw(Exception);
-   unsigned short SSI(unsigned int i, const std::string& type) const throw(Exception) {
-     return SSI(i, type); }
+   unsigned short SSI(unsigned int i, const std::string& type) const throw(Exception);
 
    // -------------------------------- set routines ----------------------------
 
