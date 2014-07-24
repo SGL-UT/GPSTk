@@ -58,6 +58,7 @@
    void writeData(const gpstk:: ## FORMATNAME ## Data & data) {
       (*($self)) << data;
    }
+
 }
 
 %pythoncode {
@@ -118,6 +119,7 @@ def write ## FORMATNAME(fileName, header, data):
     for d in data:
         s.writeData(d)
     FORMATNAME ## Stream ._remove(s)
+
 }
 %enddef
 
@@ -131,3 +133,56 @@ STREAM_HELPER(RinexObs)
 STREAM_HELPER(SEM)
 STREAM_HELPER(SP3)
 STREAM_HELPER(Yuma)
+
+
+/* class FORMATNAME ## Dataset(list): */
+/*     def __init__(self, times, typecodes, data=None): */
+/*         list.__init__(self,data) */
+
+/*         self.startTime = times[0] */
+/*         self.__header = FORMATNAME ## Header() */
+/*         for gnssSys in typecodes: */
+/*             self.__header.mapObsTypes[gnssSys] = [FORMATNAME ## ID("%s" % tc) for tc in typecodes[gnssSys])] */
+        
+/*         for i,t in enumerate(times): */
+/*             datum = FORMATNAME ## Data() */
+/*             datum.time = t */
+/*             datum.epochFlag = 0 */
+/*             datum.clockOffset = 0. */
+/*             datum.numSVs = 0 */
+/*             self.append(datum) */
+
+/*     def writeEpoch(self,satID,index,typecode,data,ssi=0,lli=0): */
+/*         sid = FORMATNAME ## SatID(satID) */
+/*         if sid not in self[index].obs: self[index].obs = [] */
+/*         smap = self[index].obs[sid] */
+/*         rd = vrd[self.__header.getObsIndex(typecode)] */
+/*         rd.data, rd.ssi, rd.lli = data, ssi, lli */
+
+%inline %{
+    void writeEpochs(std::vector<gpstk::Rinex3ObsData>& rodarr
+                     , const gpstk::Rinex3ObsHeader& roh
+                     , const gpstk::RinexSatID& svid
+                     , const std::vector<double>& data
+                     , const std::vector<int>& where
+                     , const int rotidx) {
+
+      int i = 0;
+      // gpstk::RinexDatum rd;
+      for(std::vector<int>::const_iterator it=where.begin(); it != where.end(); ++it, ++i) {
+
+        // check if there is any sv entries at this epoch and create one if necessary
+        if (rodarr[*it].obs.find(svid) == rodarr[*it].obs.end()) {
+          std::map<std::string , std::vector<RinexObsID> >::const_iterator kt = roh.mapObsTypes.find("G");
+          if (kt == roh.mapObsTypes.end()) { return; }
+          rodarr[*it].obs[svid] = gpstk::Rinex3ObsData::DataMap::mapped_type (kt->second.size());
+          rodarr[*it].numSVs++;
+        }
+        
+        // rd.data = data[i];
+        rodarr[*it].obs[svid][rotidx].data = data[i];
+      }
+    }
+%}
+
+

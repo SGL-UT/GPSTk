@@ -8,6 +8,7 @@
 %template(vector_RinexDatum) std::vector<gpstk::RinexDatum>;
 %template(vector_RinexSatID) std::vector<gpstk::RinexSatID>;
 %template(vector_RinexObsID) std::vector<gpstk::RinexObsID>;
+%template(vector_Rinex3ObsData) std::vector<gpstk::Rinex3ObsData>;
 
 
 //////////////////////////////////////////////////
@@ -30,8 +31,10 @@
 %template(map_char_string) std::map<char, std::string>;
 %template(map_char_int)    std::map<char, int>;
 
-%template(map_RinexSatID_vector_RinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
+/* %template(map_RinexObsType_RinexDatum) std::map<gpstk::RinexObsType, gpstk::RinexDatum>; */
+/* %template(map_RinexSatID_RinexObsTypeMap) std::map<gpstk::SatID, std::map<gpstk::RinexObsType, gpstk::RinexDatum> >; */
 %template(map_string_vector_RinexObsID) std::map<std::string, std::vector<gpstk::RinexObsID> >;
+%template(map_RinexSatID_vector_RinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
 
 %template(map_ObsID_double) std::map< gpstk::ObsID,double >;
 
