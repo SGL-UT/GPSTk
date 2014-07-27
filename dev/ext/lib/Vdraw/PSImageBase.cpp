@@ -394,7 +394,7 @@ namespace vdraw
       ostr << bitmap.x1 << " " << ((ll)?bitmap.y1:(canvasHeight-bitmap.y1)) << " translate" << endl
         << bw << " " << bh << " scale" << endl;
 
-      Bitmap::CMType which;
+      Bitmap::CMType which = Bitmap::CM;
       int w = 0, h = 0, osw, osh;
       InterpolatedColorMap icm;
       ColorMap cm;

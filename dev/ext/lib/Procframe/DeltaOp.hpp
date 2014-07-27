@@ -143,11 +143,9 @@ namespace gpstk
          /// Default constructor. By default, it will difference prefitC data
          /// and will delete satellites present in reference station data but
          /// missing in input data.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
       DeltaOp()
-         : deleteMissingSats(true), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); };
+         : updateCSFlag(true), deleteMissingSats(true)
+      { diffTypes.insert(TypeID::prefitC); }
 
 
          /** Common constructor taking a satTypeValueMap as reference
@@ -167,8 +165,8 @@ namespace gpstk
     
       DeltaOp( const satTypeValueMap& gData,
                const bool& delSats = true )
-         : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); };
+         : refData(gData), updateCSFlag(true), deleteMissingSats(delSats)
+      { diffTypes.insert(TypeID::prefitC); }
 
 
          /** Common constructor taking a satTypeValueMap as reference
@@ -188,8 +186,8 @@ namespace gpstk
       DeltaOp( const satTypeValueMap& gData,
                const TypeID& difftype,
                const bool& delSats = true )
-         : refData(gData), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(difftype); };
+         : refData(gData), updateCSFlag(true), deleteMissingSats(delSats)
+      { diffTypes.insert(difftype); }
 
 
          /** Common constructor taking a satTypeValueMap as reference
@@ -209,9 +207,9 @@ namespace gpstk
       DeltaOp( const satTypeValueMap& gData,
                const TypeIDSet& diffSet,
                const bool& delSats = true )
-         : refData(gData), deleteMissingSats(delSats), updateCSFlag(true),
+         : refData(gData), updateCSFlag(true), deleteMissingSats(delSats),
            diffTypes(diffSet)
-      { };
+      { }
 
 
          /** Common constructor taking a gnssSatTypeValue as reference
@@ -230,8 +228,8 @@ namespace gpstk
           */
       DeltaOp( const gnssSatTypeValue& gData,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); };
+         : refData(gData.body), updateCSFlag(true), deleteMissingSats(delSats)
+      { diffTypes.insert(TypeID::prefitC); }
 
 
          /** Common constructor taking a gnssSatTypeValue as reference
@@ -251,8 +249,8 @@ namespace gpstk
       DeltaOp( const gnssSatTypeValue& gData,
                const TypeID& difftype,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(difftype); };
+         : refData(gData.body), updateCSFlag(true), deleteMissingSats(delSats)
+      { diffTypes.insert(difftype); }
 
 
          /** Common constructor taking a gnssSatTypeValue as reference
@@ -272,9 +270,9 @@ namespace gpstk
       DeltaOp( const gnssSatTypeValue& gData,
                const TypeIDSet& diffSet,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
+         : refData(gData.body), updateCSFlag(true), deleteMissingSats(delSats),
            diffTypes(diffSet)
-      { };
+      { }
 
 
          /** Common constructor taking a gnssRinex as reference station data.
@@ -292,8 +290,8 @@ namespace gpstk
           */
       DeltaOp( const gnssRinex& gData,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(TypeID::prefitC); };
+         : refData(gData.body), updateCSFlag(true), deleteMissingSats(delSats)
+      { diffTypes.insert(TypeID::prefitC); }
 
 
          /** Common constructor taking a gnssRinex as reference station data.
@@ -312,8 +310,8 @@ namespace gpstk
       DeltaOp( const gnssRinex& gData,
                const TypeID& difftype,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true)
-      { diffTypes.insert(difftype); };
+         : refData(gData.body), updateCSFlag(true), deleteMissingSats(delSats)
+      { diffTypes.insert(difftype); }
 
 
          /** Common constructor taking a gnssRinex as reference station data.
@@ -332,10 +330,9 @@ namespace gpstk
       DeltaOp( const gnssRinex& gData,
                const TypeIDSet& diffSet,
                const bool& delSats = true )
-         : refData(gData.body), deleteMissingSats(delSats), updateCSFlag(true),
+         : refData(gData.body), updateCSFlag(true), deleteMissingSats(delSats),
            diffTypes(diffSet)
-      { };
-#pragma clang diagnostic pop
+      { }
 
          /** Method to set the satTypeValueMap data object holding reference
           *  station data.
@@ -344,7 +341,7 @@ namespace gpstk
           *                   station data.
           */
       virtual DeltaOp& setRefData(const satTypeValueMap& gData)
-      { refData = gData; return (*this); };
+      { refData = gData; return (*this); }
 
 
          /** Method to set the gnssSatTypeValue data object holding reference
@@ -354,7 +351,7 @@ namespace gpstk
           *                   station data.
           */
       virtual DeltaOp& setRefData(const gnssSatTypeValue& gData)
-      { return setRefData( gData.body ); };
+      { return setRefData( gData.body ); }
 
 
          /** Method to set the gnssRinex data object holding reference
@@ -364,13 +361,13 @@ namespace gpstk
           *                   station data.
           */
       virtual DeltaOp& setRefData(const gnssRinex& gData)
-      { return setRefData( gData.body ); };
+      { return setRefData( gData.body ); }
 
 
          /// Method to get the satTypeValueMap data object holding reference
          /// station data.
       virtual satTypeValueMap getRefData(void) const
-      { return refData; };
+      { return refData; }
 
 
          /** Method to set if satellites present in reference station data but
@@ -381,13 +378,13 @@ namespace gpstk
           *                      deleted (true) or not (false).
           */
       virtual DeltaOp& setDeleteMissingSats(const bool& deleteSats)
-      { deleteMissingSats = deleteSats; return (*this); };
+      { deleteMissingSats = deleteSats; return (*this); }
 
 
          /// Method to get the deleteMissingSats field value, i.e., if missing
          /// satellites will be deleted (returns true) or not (returns false).
       virtual bool getDeleteMissingSats(void) const
-      { return deleteMissingSats; };
+      { return deleteMissingSats; }
 
 
          /** Method to set the data values to be differenced.
@@ -398,7 +395,7 @@ namespace gpstk
           * is not what you want, see method addDiffType.
           */
       virtual DeltaOp& setDiffType(const TypeID& difftype)
-      { diffTypes.clear(); diffTypes.insert(difftype); return (*this); };
+      { diffTypes.clear(); diffTypes.insert(difftype); return (*this); }
 
 
          /** Method to add a data value type to be differenced.
@@ -407,7 +404,7 @@ namespace gpstk
           *                      being differenced.
           */
       virtual DeltaOp& addDiffType(const TypeID& difftype)
-      { diffTypes.insert(difftype); return (*this); };
+      { diffTypes.insert(difftype); return (*this); }
 
 
          /** Method to set a set of data values to be differenced.
@@ -418,7 +415,7 @@ namespace gpstk
           * is not what you want, see method addDiffType.
           */
       virtual DeltaOp& setDiffTypeSet(const TypeIDSet& diffSet)
-      { diffTypes.clear(); diffTypes = diffSet; return (*this); };
+      { diffTypes.clear(); diffTypes = diffSet; return (*this); }
 
 
          /** Method to add a set of data value types to be differenced.
@@ -431,7 +428,7 @@ namespace gpstk
 
          /// Method to get the set of data value types to be differenced.
       virtual TypeIDSet getDiffTypeSet(void) const
-      { return diffTypes; };
+      { return diffTypes; }
 
 
          /** Returns a reference to a satTypeValueMap object after differencing
@@ -452,7 +449,7 @@ namespace gpstk
           */
       virtual gnssSatTypeValue& Process(gnssSatTypeValue& gData)
          throw(ProcessingException)
-      { Process(gData.body); return gData; };
+      { Process(gData.body); return gData; }
 
 
          /** Returns a reference to a gnnsRinex object after differencing
@@ -463,7 +460,7 @@ namespace gpstk
           */
       virtual gnssRinex& Process(gnssRinex& gData)
          throw(ProcessingException)
-      { Process(gData.body); return gData; };
+      { Process(gData.body); return gData; }
 
 
          /// Returns a string identifying this object.
@@ -471,7 +468,7 @@ namespace gpstk
 
 
          /// Destructor.
-      virtual ~DeltaOp() {};
+      virtual ~DeltaOp() {}
 
 
    private:

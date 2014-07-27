@@ -613,7 +613,7 @@ namespace gpstk
          varNum++;
       }
       
-      if(varNum!=convertMat.rows() || varNum!=convertMat.cols())
+      if(varNum != (int)convertMat.rows() || varNum != (int)convertMat.cols())
       {
          Exception e("The size of input doesn't match.");
          GPSTK_THROW(e);

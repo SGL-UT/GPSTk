@@ -98,7 +98,7 @@ namespace gpstk
          }
          catch(std::exception& exc)
          {
-            if (gcount() != length && eof())
+            if (gcount() != (std::streamsize)length && eof())
             {
                EndOfFile err("EOF encountered");
                GPSTK_THROW(err);

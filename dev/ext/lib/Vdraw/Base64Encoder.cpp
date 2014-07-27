@@ -54,7 +54,7 @@ namespace vdraw
     int end = (int)str.size() - remainder;
     std::string s((end/3+(remainder?1:0))*4,(char)0);
     int x = 0;
-    long buffer;
+    long buffer = 0;
     // Every 3 bytes can be encoded in 4x 6-bit characters
     for(int i=0;i<end;i+=3)
     {

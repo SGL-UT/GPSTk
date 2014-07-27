@@ -683,7 +683,8 @@ namespace gpstk
          bool hclat=false, hrad=false;
          bool htheta=false, hphi=false;
             // store input values
-         double x,y,z,glat,lon,ht,clat,rad,theta,phi;
+         double x=0.0, y=0.0, z=0.0, glat=0.0, lon=0.0, ht=0.0, clat=0.0,
+                rad=0.0, theta=0.0, phi=0.0;
             // copy format and input string to parse
          string f = fmt;
          string s = str;

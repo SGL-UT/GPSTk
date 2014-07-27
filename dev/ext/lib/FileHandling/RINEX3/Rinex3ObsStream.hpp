@@ -138,8 +138,7 @@ namespace gpstk
       {
          try
          {
-            Rinex3ObsStream& r = dynamic_cast<Rinex3ObsStream&>(i);
-#pragma unused(r)
+            (void)dynamic_cast<Rinex3ObsStream&>(i);
          }
          catch(...)
          {
