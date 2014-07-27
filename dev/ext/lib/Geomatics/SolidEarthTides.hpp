@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -96,4 +94,3 @@ gpstk::Triple computePolarTides(gpstk::Position site,
    throw(gpstk::Exception);
 
 #endif // SOLID_EARTH_TIDES_INCLUDE
-

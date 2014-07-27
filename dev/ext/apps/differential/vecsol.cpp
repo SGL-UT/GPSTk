@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -1345,5 +1343,3 @@ Triple permanentTide(double const phi)
 	exit(0);
  
     }
-
-

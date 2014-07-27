@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -519,4 +517,3 @@ namespace gpstk
    }  // End of method 'SphericalHarmonicGravity::test()'
 
 }  // End of namespace 'gpstk'
-

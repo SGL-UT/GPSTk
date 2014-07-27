@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -169,6 +167,3 @@ void xTestRationalize::process()
    oeStore.dump(out, 2);
 
 }
-
-
-

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -324,6 +322,3 @@ void MinSfTest::testXvt( short PRN, gpstk::DayTime dt )
       fp << "   0x" << setw(3) << setfill('0') << uppercase << hex << IODCMin << dec;
       fp << setfill(' ') << endl;
 }
-
-
-

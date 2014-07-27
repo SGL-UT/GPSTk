@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -140,5 +138,3 @@ namespace gpstk
 }  // End of namespace 'gsptk'
 
 #endif   // GPSTK_SOLAR_RADIATION_PRESSURE_HPP
-
-
