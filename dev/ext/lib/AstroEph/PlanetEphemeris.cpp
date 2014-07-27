@@ -296,7 +296,6 @@ namespace gpstk
          int ntot=0;                      // counts the total number of lines
          int n=0;                         // counts the lines within a set of coefficients
          int nc=0;                        // count coefficients within a record
-         int rec;
          vector<double> data_vector;
          while(1) 
          {
@@ -312,8 +311,8 @@ namespace gpstk
 
             if(n == 0) 
             {
-               rec = asInt(stripFirstWord(line));           // 1st word is the record number
-               int ncc = asInt(stripFirstWord(line));       // 2nd word is ncoeff
+               (void)stripFirstWord(line);           // 1st word is the record number
+               const int ncc = asInt(stripFirstWord(line));       // 2nd word is ncoeff
                if(ncc != Ncoeff) 
                {
                   Exception e("readASCIIdata finds conflicting sizes in header ("
@@ -717,7 +716,7 @@ namespace gpstk
          }
 
          // define computeID's for target and center
-         computeID TARGET,CENTER;
+         computeID TARGET = NONE, CENTER = NONE;
 
          if(target <= Sun)                        TARGET = computeID(target-1);
          else if(target == SolarSystemBarycenter) TARGET = NONE;
@@ -728,7 +727,7 @@ namespace gpstk
          else if(center == EarthMoonBarycenter)   CENTER = EMBARY;
 
          // Earth and Moon need special treatment
-         double PVMOON[6],PVEMBARY[6],Eratio,Mratio;
+         double PVMOON[6], PVEMBARY[6], Eratio, Mratio=0.0;
 
          // special cases of Earth AND Moon: Moon result is always geocentric
          if(target == Earth && center == Moon)    TARGET = NONE;
@@ -747,7 +746,7 @@ namespace gpstk
          }
 
          // compute states for target and center
-         double PVTARGET[6],PVCENTER[6];
+         double PVTARGET[6] = {0.0}, PVCENTER[6] = {0.0};
          computeState(tt, TARGET, PVTARGET);
          computeState(tt, CENTER, PVCENTER);
 

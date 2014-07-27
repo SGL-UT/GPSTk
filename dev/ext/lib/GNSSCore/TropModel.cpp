@@ -893,7 +893,7 @@ namespace gpstk
    // the interpolation routine
    static double NB_Interpolate(double lat, int doy, TableEntry entry)
    {
-      const double *pave, *pamp;
+      const double *pave = NULL, *pamp = NULL;
       double ret, day=double(doy);
 
          // assign pointer to the right array

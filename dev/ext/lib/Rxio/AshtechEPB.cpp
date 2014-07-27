@@ -90,8 +90,7 @@ namespace gpstk
             for (int w=1; w<=10; w++)
                word[s][w] = decodeVar<uint32_t>(str);
 
-         unsigned cksum = decodeVar<uint16_t>(str);
-#pragma unused(cksum)
+          (void)decodeVar<uint16_t>(str);   // ignore checksum
           clear(ios_base::goodbit);
       }
    }

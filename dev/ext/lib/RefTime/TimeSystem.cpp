@@ -248,8 +248,8 @@ namespace gpstk
       if(inTS == GPS ||       // GPS -> TAI
          inTS == GAL)         // GAL -> TAI
          dt = 19.;
-      else if(inTS == UTC |   // UTC -> TAI
-              inTS == BDT |   // BDT -> TAI           // TD is this right?
+      else if(inTS == UTC ||  // UTC -> TAI
+              inTS == BDT ||  // BDT -> TAI           // TD is this right?
               inTS == GLO)    // GLO -> TAI
          dt = getLeapSeconds(year, month, day);
       //else if(inTS == BDT)    // BDT -> TAI         // RINEX 3.02 seems to say this
@@ -273,8 +273,8 @@ namespace gpstk
       if(outTS == GPS ||      // TAI -> GPS
          outTS == GAL)        // TAI -> GAL
          dt -= 19.;
-      else if(outTS == UTC |  // TAI -> UTC
-              outTS == BDT |  // TAI -> BDT
+      else if(outTS == UTC || // TAI -> UTC
+              outTS == BDT || // TAI -> BDT
               outTS == GLO)   // TAI -> GLO
          dt -= getLeapSeconds(year, month, day);
       //else if(outTS == BDT)   // TAI -> BDT

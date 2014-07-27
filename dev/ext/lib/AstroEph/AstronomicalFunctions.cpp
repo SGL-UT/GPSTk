@@ -83,18 +83,10 @@ namespace gpstk
        */
    double UTC2SID(const CommonTime& t)
    {
-      YDSTime yds(t);
-
-      double y(yds.year-1.0);
-      double m(13.0);
-      double d(yds.doy);
+      const YDSTime yds(t);
 
        // Hours of day (decimal)
       double h(yds.sod/3600.0);
-
-         // Fraction of day
-      double frofday (yds.sod/86400.0);
-#pragma unused(y,m,d,frofday)
 
          // Compute Julian Day, including decimals
       double jd(JulianDate(t).jd);

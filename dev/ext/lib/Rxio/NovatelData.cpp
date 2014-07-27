@@ -789,15 +789,14 @@ namespace gpstk
 
             // break out the TrackStatus
             // cf. Table 5-6, pg 95 of OEM2 manual
-            int TrackState   = int( TrackStatus & 0x0000000FL);
-            int Channel      = int((TrackStatus & 0x000001F0L) >>  4);
+            //const int TrackState   = int( TrackStatus & 0x0000000FL);
+            //const int Channel      = int((TrackStatus & 0x000001F0L) >>  4);
             bool PhaseLock   = bool(TrackStatus & 0x00000200L);
-            bool ParityKnown = bool(TrackStatus & 0x00000400L);
+            //const bool ParityKnown = bool(TrackStatus & 0x00000400L);
             bool CodeLock    = bool(TrackStatus & 0x00000800L);
             int Frequency    = int((TrackStatus & 0x00100000L) >> 20); // 0:L1 1:L2
             // CodeType is 0: CA 1: P 2: Pcodeless
             int CodeType   = int((TrackStatus & 0x00600000L) >> 21);
-#pragma unused(TrackState,Channel,ParityKnown)
 
             if(!PhaseLock || !CodeLock) continue;
 
@@ -926,15 +925,14 @@ namespace gpstk
 
                // break out the TrackStatus
                // cf. Table 56, pg 199 of OEM4 manual
-               int TrackState = int( TrackStatus & 0x0000001FL);
-               int Channel    = int((TrackStatus & 0x000003E0L) >>  5);
+               //const int TrackState = int( TrackStatus & 0x0000001FL);
+               //const int Channel    = int((TrackStatus & 0x000003E0L) >>  5);
                bool PhaseLock = bool(TrackStatus & 0x00000400L);
                bool CodeLock  = bool(TrackStatus & 0x00001000L);
                int Frequency  = int((TrackStatus & 0x00600000L) >> 21); // 0:L1 1:L2
                // CodeType is 0CA 1P 2Pcodeless
                int CodeType   = int((TrackStatus & 0x03800000L) >> 23);
-               bool HalfCycle = bool(TrackStatus & 0x10000000L);
-#pragma unused(TrackState,Channel,HalfCycle)
+               //const bool HalfCycle = bool(TrackStatus & 0x10000000L);
 
                if(!PhaseLock || !CodeLock) continue;        // data is not reliable
 
@@ -1030,6 +1028,7 @@ namespace gpstk
                Doppler /= 256.;        // Hz
                Pr /= 128.;             // m
                Ph /= 256.;             // cycles
+#ifdef GPSTK_NOVATEL_UNUSED
                double SdPr;
                switch(SdPrCode) {      // this is just a code
                   // ref table on pg 203 of OEM4 manual
@@ -1051,6 +1050,7 @@ namespace gpstk
                   case 15: SdPr = 152.000; break; // m
                   default: SdPr =    0.00; break;
                }
+#endif  // GPSTK_NOVATEL_UNUSED
                SdPh = (SdPh + 1)/512.; // cycles
                locktime /= 32.;        // seconds
                SNR += 20.;             // dB-Hz
@@ -1058,15 +1058,14 @@ namespace gpstk
 
                // break out the TrackStatus
                // cf. Table 56, pg 199 of OEM4 manual
-               int TrackState = int( TrackStatus & 0x0000001FL);
-               int Channel    = int((TrackStatus & 0x000003E0L) >>  5);
+               //const int TrackState = int( TrackStatus & 0x0000001FL);
+               //const int Channel    = int((TrackStatus & 0x000003E0L) >>  5);
                bool PhaseLock = bool(TrackStatus & 0x00000400L);
                bool CodeLock  = bool(TrackStatus & 0x00001000L);
                int Frequency  = int((TrackStatus & 0x00600000L) >> 21); // 0:L1 1:L2
                // CodeType is 0CA 1P 2Pcodeless
                int CodeType   = int((TrackStatus & 0x03800000L) >> 23);
-               bool HalfCycle = bool(TrackStatus & 0x10000000L);
-#pragma unused(TrackState,Channel,HalfCycle)
+               //const bool HalfCycle = bool(TrackStatus & 0x10000000L);
 
                if(!PhaseLock || !CodeLock) continue;        // data is not reliable
 
