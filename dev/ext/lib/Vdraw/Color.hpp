@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -273,4 +271,3 @@ namespace vdraw
 } // namespace vdraw
 
 #endif //VDRAW_COLOR_H
-

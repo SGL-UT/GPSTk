@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 // expandtilde.hpp Expand tilde (~) in filenames.
 
 #ifndef EXPAND_TILDE_INCLUDE

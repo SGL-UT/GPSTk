@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -78,4 +76,3 @@ namespace vdraw
   const double A5_HEIGHT_PTS=595.3;
 
 } // namespace vdraw
-

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -70,4 +68,3 @@ class xMatrix: public CPPUNIT_NS :: TestFixture
 };	
 		
 #endif
-

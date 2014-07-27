@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -197,5 +195,3 @@ T RMS(const ConstVectorBase<T, BaseClass>& l)
 }  // namespace
 
 #endif
-
-

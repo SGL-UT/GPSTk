@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -124,4 +122,3 @@ double gpstk::Xvt::preciseRho(const Triple& rxPos,
    return rho;
 
 } // end of preciseRho()
-

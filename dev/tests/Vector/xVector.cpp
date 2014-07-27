@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -100,4 +98,3 @@ void xVector :: operatorTest (void)
    v1 = v1&&v3;
    CPPUNIT_ASSERT_EQUAL((size_t)27,v1.size());
 }
-

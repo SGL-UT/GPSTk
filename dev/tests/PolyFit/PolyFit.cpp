@@ -1,1 +1,0 @@
-#pragma ident "$Id$"

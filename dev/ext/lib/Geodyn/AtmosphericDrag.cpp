@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -205,6 +203,3 @@ namespace gpstk
    }  // End of method 'AtmosphericDrag::doCompute()'
 
 }  // End of namespace 'gpstk'
-
-
-

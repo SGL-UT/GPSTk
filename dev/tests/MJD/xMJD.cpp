@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -152,4 +150,3 @@ void xMJD :: printfTest (void)
    CPPUNIT_ASSERT_EQUAL(GPS1.printError("%08Q %02P"),(std::string)"ErrorBadTime ErrorBadTime");
    CPPUNIT_ASSERT_EQUAL(UTC1.printError("%08Q %02P"),(std::string)"ErrorBadTime ErrorBadTime");
 }
-

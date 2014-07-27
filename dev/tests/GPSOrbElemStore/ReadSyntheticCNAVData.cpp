@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -397,5 +395,3 @@ void ReadSyntheticCNAVData::process()
    }  // End of read loop
 
 }
-
-

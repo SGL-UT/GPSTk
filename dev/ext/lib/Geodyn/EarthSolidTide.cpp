@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -384,7 +382,3 @@ namespace gpstk
 
 
 }	// End of namespace 'gpstk'
-
-
-
-
