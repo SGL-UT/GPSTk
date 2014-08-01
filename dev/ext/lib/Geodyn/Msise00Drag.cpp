@@ -860,15 +860,15 @@ namespace gpstk
          g0(ap[6],p)*std::pow(ex,12.0))*(1.0-std::pow(ex,8.0))/(1.0-ex)))/sumex(ex);
    }
 
-   double Msise00Drag::globe7(double *p, struct nrlmsise_input *input, struct nrlmsise_flags *flags) 
+   double Msise00Drag::globe7(double *p, struct nrlmsise_input *input,
+                              struct nrlmsise_flags *flags) 
    {
       /*       CALCULATE G(L) FUNCTION 
       *       Upper Thermosphere Parameters */
       double t[15];
       int i,j;
-      int sw9=1;
+      int sw9=1;      // unused (is it somehow informative?)
       double apd;
-      double xlong;
       double tloc;
       double c, s, c2, c4, s2;
       double sr = 7.2722E-5;
@@ -876,7 +876,6 @@ namespace gpstk
       double dr = 1.72142E-2;
       double hr = 0.2618;
       double cd32, cd18, cd14, cd39;
-      double p32, p18, p14, p39;
       double df;
       double f1, f2;
       double tinf;
@@ -889,7 +888,6 @@ namespace gpstk
          sw9=1;
       else if (flags->sw[9]<0)
          sw9=-1;
-      xlong = input->g_long;
 
       /* calculate legendre polynomials */
       c = std::sin(input->g_lat * dgtr);
@@ -938,10 +936,6 @@ namespace gpstk
       cd18 = std::cos(2.0*dr*(input->doy-p[17]));
       cd14 = std::cos(dr*(input->doy-p[13]));
       cd39 = std::cos(2.0*dr*(input->doy-p[38]));
-      p32=p[31];
-      p18=p[17];
-      p14=p[13];
-      p39=p[38];
 
       /* F10.7 EFFECT */
       df = input->f107 - input->f107A;
@@ -1116,7 +1110,6 @@ namespace gpstk
       double t[14];
       double tt;
       double cd32, cd18, cd14, cd39;
-      double p32, p18, p14, p39;
       int i,j;
       double dr=1.72142E-2;
       double dgtr=1.74533E-2;
@@ -1134,10 +1127,6 @@ namespace gpstk
       cd18 = std::cos(2.0*dr*(input->doy-p[17]));
       cd14 = std::cos(dr*(input->doy-p[13]));
       cd39 = std::cos(2.0*dr*(input->doy-p[38]));
-      p32=p[31];
-      p18=p[17];
-      p14=p[13];
-      p39=p[38];
 
       /* F10.7 */
       t[0] = p[21]*dfa;
@@ -1438,7 +1427,7 @@ namespace gpstk
       */
       double za;
       int i, j;
-      double ddum, z;
+      double z;
       double zn1[5] = {120.0, 110.0, 100.0, 90.0, 72.5};
       double tinf;
       int mn1 = 5;
@@ -1760,7 +1749,7 @@ namespace gpstk
 
       /* temperature */
       z = std::sqrt(input->alt*input->alt);
-      ddum = densu(z,1.0, tinf, tlb, 0.0, 0.0, &output->t[1], ptm[5], s, mn1, zn1, meso_tn1, meso_tgn1);
+      (void)densu(z,1.0, tinf, tlb, 0.0, 0.0, &output->t[1], ptm[5], s, mn1, zn1, meso_tn1, meso_tgn1);
       if (flags->sw[0]) 
       {
          for(i=0;i<9;i++)

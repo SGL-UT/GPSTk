@@ -417,9 +417,9 @@ namespace gpstk
       double dera2 = earthRotationAngleRate2(UTC.asTT().MJD());
       double dera3 = earthRotationAngleRate3(UTC.asTT().MJD());
 
-      double cs1[3][3]={{0,1,0},{-1,0,0},{0,0,0}};		
-      double cs2[3][3]={{-1,0,0},{0,-1,0},{0,0,0}};	
-      double cs3[3][3]={{0,-1,0},{1,0,0},{0,0,0}};	
+      double cs1[3][3]={{0,1,0},{-1,0,0},{0,0,0}};
+      double cs2[3][3]={{-1,0,0},{0,-1,0},{0,0,0}};
+      double cs3[3][3]={{0,-1,0},{1,0,0},{0,0,0}};
 
       Matrix<double> s1(3,3,0.0),s2(3,3,0.0),s3(3,3,0.0);
       s1 = &cs1[0][0];
@@ -502,9 +502,9 @@ namespace gpstk
       double dera2 = earthRotationAngleRate2(UTC.asTT().MJD());
       double dera3 = earthRotationAngleRate3(UTC.asTT().MJD());
 
-      double cs1[3][3]={{0,1,0},{-1,0,0},{0,0,0}};		
-      double cs2[3][3]={{-1,0,0},{0,-1,0},{0,0,0}};	
-      double cs3[3][3]={{0,-1,0},{1,0,0},{0,0,0}};	
+      double cs1[3][3]={{0,1,0},{-1,0,0},{0,0,0}};
+      double cs2[3][3]={{-1,0,0},{0,-1,0},{0,0,0}};
+      double cs3[3][3]={{0,-1,0},{1,0,0},{0,0,0}};
 
       Matrix<double> s1(3,3,0.0),s2(3,3,0.0),s3(3,3,0.0);
       s1 = &cs1[0][0];
@@ -586,42 +586,41 @@ namespace gpstk
       return era;
    }
 
-      /*Earth rotation angle first order rate.
+      /** Earth rotation angle first order rate.
        *  @param mjdTT         Modified Julian Date in TT
        *  @return              d(GAST)/d(t) in [rad]
        */
    double ReferenceFrames::earthRotationAngleRate1(const double& mjdTT)
    {
-      double T = (mjdTT + (JD_TO_MJD - DJ00) )/36525.0;
-      double dera = (1.002737909350795 + 5.9006e-11 * T - 5.9e-15 * T * T ) 
-         * D2PI / 86400.0;
+      const double T = (mjdTT + (JD_TO_MJD - DJ00) )/36525.0;
+      const double dera = (1.002737909350795 + 5.9006e-11 * T
+                                 - 5.9e-15 * T * T ) * D2PI / 86400.0;
 
       return dera;
    }
 
 
-      /*Earth rotation angle second order rate .
+      /** Earth rotation angle second order rate .
        * @param   Modified Julian Date in TT
        * @return  d(GAST)2/d(t)2 in [rad]
        */
    double ReferenceFrames::earthRotationAngleRate2(const double& mjdTT)
    {
-      double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
-      double dera = (5.9006e-11 - 5.9e-15 * T) * D2PI / 86400.0;
+      const double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
+      const double dera = (5.9006e-11 - 5.9e-15 * T) * D2PI / 86400.0;
 
       return dera;
    }
 
 
-      /*Earth rotation angle third order rate.
+      /** Earth rotation angle third order rate.
        * @param   Modified Julian Date in TT
        * @return  d(GAST)3/d(t)3 in [rad]
        */
    double ReferenceFrames::earthRotationAngleRate3(const double& mjdTT)
    {
-      double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
-#pragma unused(T)
-      double dera = ( -5.9e-15 ) * D2PI / 86400.0;
+      //double T = ( mjdTT + (JD_TO_MJD - DJ00) ) / 36525.0;
+      const double dera = ( -5.9e-15 ) * D2PI / 86400.0;
 
       return dera;
    }
@@ -744,9 +743,6 @@ namespace gpstk
 
       for(int i=0;i<6;i++)
          cout<<setprecision(12)<<ecefPosVel(i)<<endl;
-
-      int a =0;
-#pragma unused(a)
 
       /*
       std::string fileHeader = "de405/header.405";
@@ -1224,8 +1220,6 @@ namespace gpstk
       const double f = ASConstant::f_Earth; //sqrt(0.00669437999013);
       const double R_equ = ASConstant::R_Earth; //Equator radius [m]
       const double e2 = f*(2.0-f);          // Square of eccentricity
-      const double e = std::sqrt(e2);
-#pragma unused(e)
 
       const double  eps     = 1.0e3*std::numeric_limits<double>::epsilon();;   // Convergence criterion
       const double  epsRequ = eps*R_equ;

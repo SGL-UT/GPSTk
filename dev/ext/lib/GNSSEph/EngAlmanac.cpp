@@ -99,10 +99,9 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
 
-      short svid = (subframe[3] >> 22) & 0x3F;
-      short sfid = (subframe[2] >> 8) & 0x7;
-      long tow = ((subframe[2] >> 13) & 0x1ffff) * 6;
-#pragma unused(svid,sfid,tow)
+      //short svid = (subframe[3] >> 22) & 0x3F;
+      //short sfid = (subframe[2] >> 8) & 0x7;
+      //long tow = ((subframe[2] >> 13) & 0x1ffff) * 6;
        
       switch(pat)
       {

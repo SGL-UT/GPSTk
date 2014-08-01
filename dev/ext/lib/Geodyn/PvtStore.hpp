@@ -81,12 +81,9 @@ namespace gpstk
       } Pvt;
 
          /// Default constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
       PvtStore(std::string desc = "PvtData", ReferenceFrame frame = Unknown)
-         : dataDesc(desc), dataFrame(frame) 
+         : dataFrame(frame), dataDesc(desc)
       {}
-#pragma clang diagnostic pop
          /// Default deconstructor
       virtual ~PvtStore() {}
       

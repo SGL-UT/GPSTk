@@ -166,8 +166,7 @@ namespace gpstk
    double UTCTime::ctatv(long jdno, double fjdno)
    {
 
-      double t, tt, t1, t2, t3, t4, t5, t24, t25, t29, t30, t31 ;
-#pragma unused(t31)
+      double t, tt, t1, t2, t3, t4, t5, t24, t25, t29, t30;
 
       t = ((jdno-2451545) + fjdno)/(365250.0) ;
       tt = t*t ;

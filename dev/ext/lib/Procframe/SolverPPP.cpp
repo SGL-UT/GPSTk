@@ -398,7 +398,7 @@ covariance matrix.");
          satTypeValueMap dummy(gData.body.extractTypeID(TypeID::weight));
 
             // Check if weights match
-         if ( dummy.numSats() == numCurrentSV )
+         if ( dummy.numSats() == (size_t)numCurrentSV )
          {
 
                // If we have weights information, let's load it

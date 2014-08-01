@@ -83,7 +83,7 @@ namespace gpstk
                                                    const Vector<double>& prefit)
    {
       // Fist, we check the size of inputs
-      const int size = varSet.size();
+      const size_t size = varSet.size();
 
       if( prefit.size()!=size )
       {
@@ -119,7 +119,7 @@ namespace gpstk
                                                    const Matrix<double>& design)
    {
       // Fist, we check the size of inputs
-      const int size = varSet.size();
+      const size_t size = varSet.size();
       
       if( (prefit.size()!=size) || design.rows()!=size || design.cols()!=size)
       {
@@ -140,7 +140,7 @@ namespace gpstk
       for(size_t i=0; i<vars.size(); i++)
       {
          VariableDataMap dataMap;
-         for(int k=0;k<size;k++)
+         for(size_t k=0; k<size; k++)
          {
             if(design[i][k]!=0.0) dataMap[ vars[k] ] = design[i][k];
          }

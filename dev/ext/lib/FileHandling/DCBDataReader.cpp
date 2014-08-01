@@ -81,9 +81,8 @@ namespace gpstk
             
             string station = StringUtils::strip(line.substr(6,4));
             
-            double dcbVal = StringUtils::asDouble(line.substr(26,9));      
-            double dcbRMS = StringUtils::asDouble(line.substr(38,9));
-#pragma unused(dcbRMS)
+            const double dcbVal = StringUtils::asDouble(line.substr(26,9));
+            //const double dcbRms = StringUtils::asDouble(line.substr(38,9));
              
             if(station.length() < 4)       // this is satellite DCB data
             {
