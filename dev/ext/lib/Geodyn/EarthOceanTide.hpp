@@ -59,16 +59,13 @@ namespace gpstk
    {
    public:
          /// Default constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
       EarthOceanTide()
-         : minX(0.05), 
-           maxN(4), 
+         : maxN(4),
+           minX(0.05), 
            isLoaded(false)
       {
          fileName = "InputData\\Earth\\OT_CSRC.TID";
       }
-#pragma clang diagnostic pop
          /// Default destructor
       ~EarthOceanTide(){}
 

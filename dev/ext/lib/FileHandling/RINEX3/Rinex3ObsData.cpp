@@ -90,8 +90,8 @@ namespace gpstk
       }
 
          // write satellite ids to 'line'
-      const int maxPrnsPerLine = 12;
-      int satsWritten = 0;
+      const size_t maxPrnsPerLine = 12;
+      size_t satsWritten = 0;
 
       Rinex3ObsData::DataMap::const_iterator itr(rod.obs.begin());
 

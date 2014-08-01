@@ -262,7 +262,7 @@ namespace gpstk
     sensorTypeList.clear();
     sensorPosList.clear();
 
-    int numObs;
+    int numObs = 0;
 
     while (!(valid & validEoH))
     {

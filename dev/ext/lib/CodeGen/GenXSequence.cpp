@@ -68,7 +68,7 @@ namespace gpstk
       lengthOfSequence = initialLengthOfSequence;
       maxOfSequence = lengthOfSequence + maxDelay;
    
-      uint32_t output;
+      uint32_t output = 0;
       word_num = 0;
       bit_num = 0;
       int andBits;

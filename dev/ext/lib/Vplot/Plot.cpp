@@ -94,11 +94,10 @@ namespace vplot
   {
     Frame innerFrame = getPlotArea(frame);
 
-    double left = innerFrame.actualX() - frame->actualX();
-    double bottom = innerFrame.actualY() - frame->actualY();
-    double top = frame->getHeight() - bottom - innerFrame.getHeight();
-    double right = frame->getWidth() - left - innerFrame.getWidth();
-#pragma unused(top,right)
+    const double left = innerFrame.actualX() - frame->actualX();
+    const double bottom = innerFrame.actualY() - frame->actualY();
+    //const double top = frame->getHeight() - bottom - innerFrame.getHeight();
+    //const double right = frame->getWidth() - left - innerFrame.getWidth();
 
     // Draw axis
     Axis x(0,0,innerFrame.getWidth(),Axis::EAST,minx,minx+width);

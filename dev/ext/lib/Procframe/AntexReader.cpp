@@ -293,7 +293,7 @@ namespace gpstk
             std::string freqString( strip( line.substr(3,3) ) );
 
                // Set frequency type
-            Antenna::frequencyType freq;
+            Antenna::frequencyType freq = Antenna::G01;
 
             if( freqString == "G01" ) freq = Antenna::G01;
             else if( freqString == "G02" ) freq = Antenna::G02;
@@ -396,7 +396,7 @@ namespace gpstk
             std::string freqString( strip( line.substr(3,3) ) );
 
                // Set frequency type
-            Antenna::frequencyType freq;
+            Antenna::frequencyType freq = Antenna::G01;
 
             if( freqString == "G01" ) freq = Antenna::G01;
             else if( freqString == "G02" ) freq = Antenna::G02;

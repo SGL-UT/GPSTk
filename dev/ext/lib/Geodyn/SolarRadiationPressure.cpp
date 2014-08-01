@@ -65,8 +65,6 @@ namespace gpstk
       
       // Mean Radious of Sun, Moon and Earth
       const double R_sun = ASConstant::R_Sun;
-      const double R_moon = ASConstant::R_Moon;
-#pragma unused(R_moon)
       const double R_earth = ASConstant::R_Earth;
 
       Vector<double> e_Sun = r_Sun/norm(r_Sun);   // Sun direction unit vector
@@ -154,10 +152,7 @@ namespace gpstk
 
          //////////////////////////////////////////////////////////////////////////
 
-         double r_sun_mag = norm(r_Sun);
-#pragma unused(r_sun_mag)
          double r_mag = norm(r);
-         
          Vector<double> d = r_Sun-r;            // vector from sc to sun
          double dmag = norm(d);               
 
@@ -207,13 +202,12 @@ namespace gpstk
       Vector<double> d = r-r_Sun;
       double dmag = norm(d);
       double dcubed = dmag * dmag * dmag;
-      double au2 = ASConstant::AU * ASConstant::AU;
-      
-      double P_STK = 4.5344321837439e-06; //4.560E-6
-#pragma unused(au2,P_STK)
 
-      
-      //double factor = CR * (area/mass) * P_STK * au2 / dcubed;
+#ifdef GPSTK_SOLRADPRESS_UNUSED
+      double au2 = ASConstant::AU * ASConstant::AU;
+      double P_STK = 4.5344321837439e-06; //4.560E-6
+      double factor = CR * (area/mass) * P_STK * au2 / dcubed;
+#endif  // GPSTK_SOLRADPRESS_UNUSED
       
       double Ls = 3.823e26; //* STK [W]
       double factor = reflectCoeff * (crossArea/dryMass) * Ls 
@@ -234,8 +228,6 @@ namespace gpstk
        */
    double SolarRadiationPressure::partial_illumination(Vector<double> r, Vector<double> r_Sun )
    {
-      double r_sun_mag = norm(r_Sun);
-#pragma unused(r_sun_mag)
       double r_mag = norm(r);
 
       double R_sun = ASConstant::R_Sun;
@@ -295,10 +287,6 @@ namespace gpstk
       double dcubed = dmag * dmag *dmag;
 
       Vector<double> temp1 = d / dcubed;         //  detRJ/detRJ^3
-
-      double smag = norm(r_sun);
-      double scubed = smag * smag * smag;
-#pragma unused(scubed)
 
       double muod3 = factor / dcubed;
       double jk = 3.0 * muod3/dmag/dmag; 

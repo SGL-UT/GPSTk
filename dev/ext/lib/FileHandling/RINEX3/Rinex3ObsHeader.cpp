@@ -1318,10 +1318,10 @@ namespace gpstk
       else if(label == stringGlonassSlotFreqNo)
       {
          //map<RinexSatID,int> GlonassFreqNo;
-         int nsat, tmp;
+         int tmp;
          RinexSatID sat;
          string str(strip(line.substr(0,3)));
-         nsat = asInt(str);         // not used!
+
          for(i=0; i<8; i++) {
             str = strip(line.substr(4+i*7,3));
             if(str.empty()) break;

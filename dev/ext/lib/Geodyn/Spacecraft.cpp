@@ -282,8 +282,6 @@ namespace gpstk
           | dv_dr0   dv_dv0  |
           |                  |
       */
-      const int np=p.size();
-#pragma unused(np)
 
       Matrix<double> phiMatrix(6,6,0.0);
 

@@ -355,17 +355,14 @@ namespace gpstk
    {
    public:
          /// Constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
        PRSolution() throw() : RMSLimit(6.5),
                              SlopeLimit(1000.),
                              NSatsReject(-1),
                              MaxNIterations(10),
                              ConvergenceLimit(3.e-7),
-                             Valid(false),
-                             hasMemory(true)
-         {};
-#pragma clang diagnostic pop
+                             hasMemory(true),
+                             Valid(false)
+         {}
       /// Return the status of solution
       bool isValid() const throw() { return Valid; }
 

@@ -208,7 +208,6 @@ namespace gpstk
    {
       std::ifstream fstk(stkFile.c_str());
 
-      int  numData = 0;
       bool bData = false;
 
       std::string buf;
@@ -216,7 +215,7 @@ namespace gpstk
       {   
          if(buf.substr(0,19) == "NUM_OBSERVED_POINTS")
          {
-            numData = StringUtils::asInt(buf.substr(20));
+            (void)StringUtils::asInt(buf.substr(20));
             continue;
          }
          else if(buf.substr(0,14) == "BEGIN OBSERVED")

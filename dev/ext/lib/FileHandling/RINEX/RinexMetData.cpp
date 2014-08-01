@@ -92,7 +92,7 @@ namespace gpstk
     }
 
     // Do we need continuation lines?
-    if (strm.header.obsTypeList.size() > maxObsPerLine)
+    if ((int)strm.header.obsTypeList.size() > maxObsPerLine)
     {
       for (size_t i = maxObsPerLine;
            i < strm.header.obsTypeList.size();
@@ -137,7 +137,7 @@ namespace gpstk
 
     // this is to see whether or not we expect an EOF
     // when we read this next line
-    if (hdr.obsTypeList.size() > maxObsPerLine)
+    if ((int)hdr.obsTypeList.size() > maxObsPerLine)
       strm.formattedGetLine(line); 
     else
       strm.formattedGetLine(line, true);
@@ -148,7 +148,7 @@ namespace gpstk
 
     while (data.size() < hdr.obsTypeList.size())
     {
-      if (hdr.obsTypeList.size() - data.size() < maxObsPerContinuationLine)
+      if ((int)(hdr.obsTypeList.size() - data.size()) < maxObsPerContinuationLine)
         strm.formattedGetLine(line, true);
       else
         strm.formattedGetLine(line);
