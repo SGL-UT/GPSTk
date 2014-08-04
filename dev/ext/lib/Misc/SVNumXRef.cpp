@@ -106,6 +106,8 @@ SVNumXRef::SVNumXRef( )
    NtoBMap.insert( make_pair( 64,IIF ));
    NtoBMap.insert( make_pair( 65,IIF )); 
    NtoBMap.insert( make_pair( 66,IIF )); 
+   NtoBMap.insert( make_pair( 67,IIF ));
+   NtoBMap.insert( make_pair( 68,IIF ));
 
 
       // Note: This table start with Block I values
@@ -398,6 +400,10 @@ SVNumXRef::SVNumXRef( )
    //NANU  2014045 (start)
    NtoPMap.insert( std::pair<const int, XRefNode>( 67, XRefNode(  6,
                                        CivilTime( 2014,  5, 17,  0,  0,  0.0, TimeSystem::GPS),
+                                       CommonTime::END_OF_TIME  )));
+   //
+   NtoPMap.insert( std::pair<const int, XRefNode>( 68, XRefNode(  9,
+                                       CivilTime( 2014,  8,  2,  0,  0,  0.0, TimeSystem::GPS),
                                        CommonTime::END_OF_TIME  )));
                                        
       //Iterate through the data to produce the PtoNMap
