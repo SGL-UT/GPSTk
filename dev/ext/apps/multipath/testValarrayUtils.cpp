@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -59,5 +57,3 @@ int main(void)
    cout << "End of test." << endl;
    return 0;
 }
-
-   

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -114,12 +112,9 @@ namespace gpstk
    public:
 
          /// A Simple Constructor.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
       Rinex3ClockHeader() :
-         version(3.0), valid(false), timeFirst(CommonTime::BEGINNING_OF_TIME)
+         version(3.0), timeFirst(CommonTime::BEGINNING_OF_TIME), valid(false)
          {}
-#pragma clang diagnostic pop
 
          /// Clear (empty out) header
       void clear(void);

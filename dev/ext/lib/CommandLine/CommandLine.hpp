@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -148,11 +146,8 @@ private:
 public:
    // -------------- member functions -------------------------------------
    // constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
     CommandLine(void)
-      : help(false),debug(-1),verbose(false),syntaxPageBuilt(0) { }
-#pragma clang diagnostic pop
+      : help(false),verbose(false),debug(-1),syntaxPageBuilt(0) { }
    // destructor
    ~CommandLine(void) { }
 

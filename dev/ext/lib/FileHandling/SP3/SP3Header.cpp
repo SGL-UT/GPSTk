@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -259,7 +257,7 @@ namespace gpstk
    try {
       SP3Stream& strm = dynamic_cast<SP3Stream&>(ffs);
       int i,k;
-      size_t j;
+      long j;
       string line;
       SP3SatID SVid;
       bool isVerA = (version == SP3a);
@@ -368,7 +366,7 @@ namespace gpstk
       //std::vector<std::string> comments; ///< vector of 4 comment lines
       for(j=0,i=19; i<=22; i++) {
          line = "/* ";
-         if(j < comments.size()) line += leftJustify(comments[j++],57);
+         if(j < (int)comments.size()) line += leftJustify(comments[j++],57);
          else line += string(57,'C');
          strm << line << endl;
          strm.lineNumber++;

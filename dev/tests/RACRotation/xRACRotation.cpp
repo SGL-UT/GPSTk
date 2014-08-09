@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -265,4 +263,3 @@ void xRACRotation :: fifthTest (void)
    testErrXYZ = Triple( 0.0, 0.0, -1.0);
    testErrRAC = rot5.convertToRAC( testErrXYZ );
 }
-

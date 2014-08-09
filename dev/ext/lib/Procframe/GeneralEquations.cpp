@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -348,8 +346,6 @@ namespace gpstk
          else                satNoCS[satellite[i]]=i;
       }
 
-      int index(-1);
-#pragma unused(index)
          // First we check satellite no cs
       int indexMaxElev(-1);
       double maxElev(-90);

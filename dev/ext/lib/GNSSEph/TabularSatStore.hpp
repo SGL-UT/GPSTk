@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -120,16 +118,13 @@ namespace gpstk
 
    // member functions
    public:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
       /// Default constructor
       TabularSatStore() throw()
-         : havePosition(false), haveVelocity(false),
+         : storeTimeSystem(TimeSystem::Any),
+           havePosition(false), haveVelocity(false),
            haveClockBias(false), haveClockDrift(false),
-           checkDataGap(false), checkInterval(false),
-           storeTimeSystem(TimeSystem::Any)
+           checkDataGap(false), checkInterval(false)
       {}
-#pragma clang diagnostic pop
       /// Destructor
       virtual ~TabularSatStore() {};
 

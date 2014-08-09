@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -513,8 +511,6 @@ namespace gpstk
       // Perihelion distance, semimajor axis and mean motion
 
       a = p/(1.0-e*e);
-      double n = std::sqrt( GM / std::fabs(a*a*a) );
-#pragma unused(n)
 
       // Mean anomaly and time of perihelion passage
 
@@ -745,12 +741,7 @@ namespace gpstk
       }
       
   
-   }	// End of method 'KeplerOrbit::test()'
+   }  // End of method 'KeplerOrbit::test()'
 
 
-}	// End of namespace 'gpstk'
-
-
-
-
-
+}  // End of namespace 'gpstk'

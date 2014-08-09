@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -155,7 +153,7 @@ try {
          }
          else if(group == 1041) {
             if(n++ == 0) {
-               if(Nconst != asInt(word)) {
+               if((int)Nconst != asInt(word)) {
                   Exception e("Nconst does not match N in GROUP 1041 : " +
                               asString(Nconst) + " != " + word);
                   GPSTK_THROW(e);
@@ -273,7 +271,6 @@ try {
    int ntot=0;                      // counts the total number of lines
    int n=0;                         // counts the lines within a set of coefficients
    int nc=0;                        // count coefficients within a record
-   int rec;
    vector<double> data_vector;
    while(1) {
       getline(strm,line);
@@ -286,7 +283,7 @@ try {
       }
 
       if(n == 0) {
-         rec = asInt(stripFirstWord(line));           // 1st word is the record number
+         (void)asInt(stripFirstWord(line));           // 1st word is the record number
          int ncc = asInt(stripFirstWord(line));       // 2nd word is ncoeff
          if(ncc != Ncoeff) {
             Exception e("readASCIIdata finds conflicting sizes in header ("
@@ -648,7 +645,7 @@ try {
    }
 
    // define computeID's for target and center
-   computeID TARGET,CENTER;
+   computeID TARGET = NONE, CENTER = NONE;
 
    if(target <= Sun)                        TARGET = computeID(target-1);
    else if(target == SolarSystemBarycenter) TARGET = NONE;
@@ -714,11 +711,10 @@ Position SolarSystem::WGS84Position(Planet body, const CommonTime time,
    const EarthOrientation& eo) throw(Exception)
 {
 try {
-   int iret;
    double PV[6];
 
    double JD = static_cast<JulianDate>(time).jd;
-   iret = computeState(JD, body, Earth, PV);          // result in km, km/day
+   (void)computeState(JD, body, Earth, PV);          // result in km, km/day
 
    Matrix<double> Rot;
    Rot = GeodeticFrames::ECEFtoInertial(time, eo.xp, eo.yp, eo.UT1mUTC);
@@ -1028,7 +1024,7 @@ void SolarSystem::computeState(double tt, SolarSystem::computeID which, double P
 {
 try {
    int i,i0,ncomp;
-   size_t j;
+   long j;
 
    for(i=0; i<6; i++) PV[i]=0.0;
    if(which == NONE) return;

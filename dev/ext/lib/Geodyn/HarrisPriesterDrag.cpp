@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -783,17 +781,10 @@ namespace gpstk
       }
       sc.initStateVector(rv);
 
-      double den = computeDensity(t,body,r,v);
+      (void)computeDensity(t,body,r,v);
       doCompute(t,body,sc);
       
-      Vector<double> accl = getAccel();
-      
-      double ax = accl(0);
-      double ay = accl(1);
-      double az = accl(2);
-
-      int a = 0;
-#pragma unused(ay,ax,az,den,a)
+      (void)getAccel();
    }
    
    void HarrisPriesterDrag::updateF107(double f107)
@@ -835,9 +826,6 @@ namespace gpstk
       // Transform r from J2000 to TOD
       Vector<double> r_tod = N * r;
 
-      double rmag = norm(r_tod);
-#pragma unused(rmag)
-      
       //* Satellite true altitude
       Position pos(r_tod(0), r_tod(1), r_tod(2), Position::Cartesian);
       double alt = pos.getAltitude()/1000.0;      // km
@@ -930,6 +918,3 @@ namespace gpstk
 
 
 }  // End of namespace 'gpstk'
-
-
-

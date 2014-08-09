@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -134,8 +132,7 @@ namespace gpstk
       {
          try
          { 
-            RinexObsStream& r = dynamic_cast<RinexObsStream&>(i);
-#pragma unused(r)
+            (void)dynamic_cast<RinexObsStream&>(i);
          }
          catch(...)
          {

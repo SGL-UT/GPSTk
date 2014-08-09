@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 // expandtilde.cpp Expand tilde (~) in filenames.
 
 #include <iostream>

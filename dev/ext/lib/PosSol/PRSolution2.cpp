@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -247,7 +245,7 @@ namespace gpstk
          Vector<double> BestSol(3,0.0);
          vector<bool> BestUse;
          BestRMS = -1.0;      // this marks the 'Best' set as unused.
-	 Matrix<double> BestCovariance;
+         Matrix<double> BestCovariance;
 
          // ----------------------------------------------------------------
          // initialize
@@ -481,7 +479,7 @@ namespace gpstk
          RMSResidual = BestRMS;
          Solution = BestSol;
          MaxSlope = BestSL;
-	 Covariance =BestCovariance;
+         Covariance =BestCovariance;
          for (Nsvs=0,i=0; i<BestUse.size(); i++)
          {
             if (!BestUse[i])
@@ -753,9 +751,10 @@ namespace gpstk
             // iteration loop
             // do at least twice (even for algebraic solution) so that
             // trop model gets evaluated
-      	 bool applied_trop;
-         	do {
-            		applied_trop = true;
+          //bool applied_trop;
+          do {
+            //applied_trop = true;
+
 
                // current estimate of position solution
             for(i=0; i<3; i++) RX.x[i]=Sol(i);
@@ -782,7 +781,7 @@ namespace gpstk
                
                   // corrected pseudorange (m)
                CRange(n) = SVP(i,3);
-               
+
                   // correct for troposphere (but not on the first iteration)
                if (n_iterate > 0)
                {
@@ -794,7 +793,7 @@ namespace gpstk
                   double tc=R.getHeight(), elev = R.elevation(SV);
                   if (elev < 0.0 || tc > 10000.0 || tc < -1000) {
                      tc=0.0;
-                     applied_trop = false;
+                     //applied_trop = false;
                   }
                   else tc = pTropModel->correction(R,S,T);
                   //if(pDebugStream) *pDebugStream << "Trop " << i << " "
@@ -898,14 +897,15 @@ namespace gpstk
             }
             
          }
-	
-	while(1);    // end iteration loop
+
+        while(1);    // end iteration loop
 
          //if(!applied_trop && pDebugStream)
             //*pDebugStream << "Warning - trop correction not applied at time "
                //<< T.printf("%4F %10.3g\n");
 
          
+
             // compute slopes
          Slope = 0.0;
          if (iret == 0)
@@ -935,4 +935,3 @@ namespace gpstk
 ///-------------------------------------------------------------------------///
 
 } // namespace gpstk
-

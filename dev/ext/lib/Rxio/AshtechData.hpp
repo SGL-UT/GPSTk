@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -63,10 +61,7 @@ namespace gpstk
    class AshtechData : public FFData, public CRCDataStatus
    {
    public:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-       AshtechData() throw() : checksum(0), ascii(false){}
-#pragma clang diagnostic pop
+       AshtechData() throw() : ascii(false), checksum(0) {}
       // Returns whether or not this AshtechData is valid.
       bool isValid() const {return good();}
 

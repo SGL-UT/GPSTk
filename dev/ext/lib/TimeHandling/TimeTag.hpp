@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -60,7 +58,7 @@ namespace gpstk
       {}
 
          /// Constructor
-      TimeTag( TimeSystem ts )
+      TimeTag( const TimeSystem& ts )
       { timeSystem = ts; }
 
          /// Virtual Destructor.

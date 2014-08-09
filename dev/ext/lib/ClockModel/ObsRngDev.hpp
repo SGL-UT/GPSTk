@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -73,10 +71,8 @@ namespace gpstk
        * Creates an empty, useless object to facilitate STL containers of this
        * object.
        */
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-       ObsRngDev() throw() : wonky(false), obstime(CommonTime::END_OF_TIME) {};
-#pragma clang diagnostic pop
+       ObsRngDev() throw()
+         : obstime(CommonTime::END_OF_TIME), wonky(0) {}
       /**
        * constructor.
        * Creates an ORD, with no ionospheric correction and a default

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -395,7 +393,7 @@ namespace gpstk
       }
 
          // Check if we have enough data to start processing.
-      if (s >= minBufferSize)
+      if (s >= (size_t)minBufferSize)
       {
             // Declare a Vector for LI measurements
          Vector<double> y(s, 0.0);

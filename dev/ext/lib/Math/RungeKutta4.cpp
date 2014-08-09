@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -130,4 +128,3 @@ void gpstk::RungeKutta4::integrateTo ( double nextTime,
    currentState = twoStepState + (twoStepState - oneStepState) / 15.0;
 
 }  // End of method 'gpstk::RungeKutta4::integrateTo(nextTime, error, stepSize)'
-

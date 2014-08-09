@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -792,8 +790,7 @@ namespace gpstk
    void BrcKeplerOrbit::dump(ostream& s) const
       throw()
    {
-      ios::fmtflags oldFlags = s.flags();
-#pragma unused(oldFlags)
+      const ios::fmtflags oldFlags = s.flags();
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
@@ -845,7 +842,8 @@ namespace gpstk
         << setw(16) << Cuc << " rad" << endl;    
       
       s << endl;
-      
+
+      s.flags(oldFlags);
    } // end of BrcKeplerOrbit::dump()
    
    ostream& operator<<(ostream& s, const BrcKeplerOrbit& eph)

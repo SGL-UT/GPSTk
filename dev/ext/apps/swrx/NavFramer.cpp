@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -125,13 +123,10 @@ const char* NavFramer::Subframe::checkWords() const
    return good.c_str();
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
 NavFramer::NavFramer()
-   : prevNavCount(0), navIndex(0), howCurrent(false),inSync(false),
-     codeIndex(5*300), eightBaker(0x8b), bitLength(20e-3)
+   : codeIndex(5*300), eightBaker(0x8b), navIndex(0), prevNavCount(0),
+   bitLength(20e-3), howCurrent(false)
 {}
-#pragma clang diagnostic pop
 
 long int NavFramer::process(const EMLTracker& tr, long int dp, float cPO)
 {

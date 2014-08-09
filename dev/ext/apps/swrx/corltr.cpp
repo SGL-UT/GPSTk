@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -93,14 +91,13 @@ private:
    bool peakOnly;
 };
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 Corltr::Corltr() throw() :
    BasicFramework("corltr", "A program to test out local replica generation and correlation."),
-   timeStep(50e-9), bands(2), steps(4092), peakOnly(false), interFreq(0.42e6)
+   timeStep(50e-9), interFreq(0.42e6),
+   cc(NULL), input(NULL), steps(4092),
+   bands(2), peakOnly(false)
 {}
-#pragma clang diagnostic pop
 
 
 bool Corltr::initialize(int argc, char *argv[]) throw()
@@ -298,7 +295,7 @@ void Corltr::process()
 
    double maxSnr=0, maxR=0, maxDelay=0;
 
-   for (int i=0; i<steps; i++)
+   for (int i=0; i<(int)steps; i++)
    {
       double delay = i * stepSize + offset;
       cc->reset();
@@ -308,7 +305,7 @@ void Corltr::process()
 
       SimpleCorrelator<double> sum;
       double mySumSq=0;
-      for (int j=0; j<windowTicks; j++)
+      for (int j=0; j<(int)windowTicks; j++)
       {
          cc->tick();
          complex<double> carrier = cc->getCarrier();

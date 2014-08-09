@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -98,7 +96,3 @@ namespace gpstk
 }  // End of namespace 'gpstk'
 
 #endif   // GPSTK_CIRA_EXPONENTIAL_DRAG_HPP
-
-
-
-

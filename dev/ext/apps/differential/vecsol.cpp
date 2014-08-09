@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -478,8 +476,7 @@ Triple permanentTide(double const phi)
 	int const MaxDim(phase ? 1000 : MaxUnkn); // For reserving array space
 	int const MaxSats(30);    // Same
 
-	const double gamma((L1_FREQ_GPS / L2_FREQ_GPS) * (L1_FREQ_GPS / L2_FREQ_GPS));
-#pragma unused(gamma)
+	//const double gamma((L1_FREQ_GPS / L2_FREQ_GPS) * (L1_FREQ_GPS / L2_FREQ_GPS));
 	const double L1_F2(L1_FREQ_GPS * L1_FREQ_GPS), L2_F2(L2_FREQ_GPS * L2_FREQ_GPS);
 	const double LDIF_F2(L1_F2 - L2_F2);
 	// Weights for adding L1 and L2 pseudo-ranges into metric iono free
@@ -772,20 +769,18 @@ Triple permanentTide(double const phi)
 			double best(0.0);
 			int bestIdx(0);
 			bool stickWithOld = false;
-			for (int i = 0; i != prnVec_2.size(); i++)
+			for (size_t i = 0; i != prnVec_2.size(); i++)
 			    if (prnVec_2[i].id > 0) {
 
 				// Invariant over iterations! Uses t10, t20
-				double dummy = EPH_RANGE(CER2, rod2, t10,
-					prnVec_2[i]);
+				(void)EPH_RANGE(CER2, rod2, t10, prnVec_2[i]);
 				double const riseVel1 = CER2.svPosVel.v.dot(t10);
 				//double const riseVel1 =
 				//	-CER2.svPosVel.v.dot(CER2.svPosVel.x);
 				Elev10[i] = CER2.elevation;
 				bool const elev1OK = CER2.elevation > refsat_elev;
 
-				dummy = EPH_RANGE(CER2, rod2, t20,
-					prnVec_2[i]);
+				(void)EPH_RANGE(CER2, rod2, t20, prnVec_2[i]);
 				double const riseVel2 = CER2.svPosVel.v.dot(t20);
 				//double const riseVel2 =
 				//	-CER2.svPosVel.v.dot(CER2.svPosVel.x);
@@ -808,7 +803,7 @@ Triple permanentTide(double const phi)
 				}
 			    }
 
-			for (int ii = 0; ii != prnVec_2.size(); ii++) {
+			for (int ii = 0; ii != (int)prnVec_2.size(); ii++) {
 			    // Reshuffle... 
 			    int i = (ii + bestIdx) % prnVec_2.size();
 			    if (prnVec_2[i].id > 0 
@@ -820,7 +815,7 @@ Triple permanentTide(double const phi)
 				    trop.correction(t2, CER2.svPosVel.x, rod2.time);
 				r2 += trop2;
 				
-				for (int j = 0; j != prnVec_1.size(); j++) {
+				for (size_t j = 0; j != prnVec_1.size(); j++) {
 				    if (prnVec_1[j].id > 0
 					&& prnVec_1[j].id == prnVec_2[i].id)
 				    {
@@ -926,8 +921,6 @@ Triple permanentTide(double const phi)
 					} else {
 					    // Construct inter-sat diffs
 					    bool reject(false);
-					    FixType fix(FIX_NONE);
-#pragma unused(fix)
 					    vector <double> DDobs(3);
 					    DDobs[1] = rdiffL1 - ref_rdiffL1;
 					    DDobs[2] = rdiffL2 - ref_rdiffL2;
@@ -1345,5 +1338,3 @@ Triple permanentTide(double const phi)
 	exit(0);
  
     }
-
-

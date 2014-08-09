@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -91,7 +89,7 @@ namespace gpstk {
          /// Constructor from string
       TimeSystemCorrection(std::string str) { this->fromString(str); }
 
-      void fromString(const std::string str)
+      void fromString(const std::string& str)
       {
          std::string STR(gpstk::StringUtils::upperCase(str));
          if(STR == std::string("GPUT"))

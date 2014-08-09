@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -303,7 +301,7 @@ public:
    static const unsigned short GFDETECT;
    static const unsigned short GFFIX;
 
-   explicit GDCPass(SatPass& sp, const GDCconfiguration& gdc);
+   explicit GDCPass(const SatPass& sp, const GDCconfiguration& gdc);
 
    //~GDCPass(void) { };
 
@@ -700,7 +698,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 //------------------------------------------------------------------------------------
 // class GDCPass member functions
 //------------------------------------------------------------------------------------
-GDCPass::GDCPass(SatPass& sp, const GDCconfiguration& gdc)
+GDCPass::GDCPass(const SatPass& sp, const GDCconfiguration& gdc)
       : SatPass(sp.getSat(), sp.getDT(), sp.getObsTypes())
 {
    size_t j;
@@ -1983,7 +1981,7 @@ try {
    // Add to slip list, but if one exists with same time tag, use it instead
    list<Slip>::iterator jt;
    for(jt=SlipList.begin(); jt != SlipList.end(); jt++)
-      if(jt->index == right->nbeg) break;
+      if(jt->index == (int)right->nbeg) break;
 
    if(jt == SlipList.end()) {
       Slip newSlip(right->nbeg);
@@ -2290,7 +2288,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 int GDCPass::GFphaseResiduals(list<Segment>::iterator& it) throw(Exception)
 {
 try {
-   int ndeg,nprev;
+   int ndeg = 0, nprev = 0;
    size_t i;
    double fit,rbias,prev,tmp;
    Stats<double> rofStats;
@@ -2411,7 +2409,7 @@ try {
          if(ifirst == -1) ifirst = iplus;
 
          // pop the new i from the future
-         if(futureIndex.size() == width || iplus > it->nend) {
+         if((int)futureIndex.size() == width || iplus > it->nend) {
             inew = futureIndex.front();
             futureIndex.pop_front();
             futureStats.Subtract(spdvector[inew].data[A1]);
@@ -2452,7 +2450,7 @@ try {
          }
 
          // pop last from past
-         if(pastIndex.size() == width) {
+         if((int)pastIndex.size() == width) {
             j = pastIndex.front();
             pastIndex.pop_front();
             pastStats.Subtract(spdvector[j].data[A1]);
@@ -2904,7 +2902,7 @@ try {
       }
 
       // keep track of net slip fix
-      if(jt != SlipList.end() && i == jt->index) {          // there is a slip here
+      if(jt != SlipList.end() && (int)i == jt->index) {          // there is a slip here
          // fix the slip by changing the bias added to phase
          N1 = jt->N1;
          N2 = jt->N1 - jt->NWL;
@@ -2958,11 +2956,10 @@ try {
          // wide lane phase (m)
       double wlp = wl1p * spdvector[i].data[L1] + wl2p * spdvector[i].data[L2];
          // geo-free range (m)
-      double gfr = gf1r * spdvector[i].data[P1] + gf2r * spdvector[i].data[P2];
-#pragma unused(gfr)
+      //double gfr = gf1r * spdvector[i].data[P1] + gf2r * spdvector[i].data[P2];
          // geo-free phase (m)
       double gfp = gf1p * spdvector[i].data[L1] + gf2p * spdvector[i].data[L2];
-      if(i == ifirst) {
+      if((int)i == ifirst) {
          WLbias = (wlp-wlr)/wlwl;
          GFbias = gfp;
       }
@@ -3006,7 +3003,7 @@ try {
       if(spdvector[i].flag & OK) {
 //??     if(((spdvector[i].flag & DETECT)!=0 && (spdvector[i].flag & FIX)==0)
          if(((spdvector[i].flag & DETECT)==0 && (spdvector[i].flag & FIX)!=0)
-            || i == ifirst)
+            || (int)i == ifirst)
             spdvector[i].flag = LL3 + OK;
          else
             spdvector[i].flag = OK;
@@ -3150,7 +3147,7 @@ catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 string GDCPass::dumpSegments(string label, int level, bool extra) throw(Exception)
 {
 try {
-   size_t i, ifirst, ilast;
+   long i, ifirst, ilast;
    list<Segment>::iterator it;
    string msg;
    ostringstream oss;
@@ -3187,13 +3184,15 @@ try {
             << " bias(gf)=" << setw(13) << it->bias2; //biasgf;
          if(ilast > -1) {
             ifirst = it->nbeg;
-            while(ifirst <= it->nend && !(spdvector[ifirst].flag & OK)) ifirst++;
+            while(ifirst <= (long)it->nend
+                  && !(spdvector[ifirst].flag & OK)) ifirst++;
             i = spdvector[ifirst].ndt - spdvector[ilast].ndt;
             oss << " Gap " << setprecision(1) << setw(5)
                << cfg(DT)*i << " s = " << i << " pts.";
          }
          ilast = it->nend;
-         while(ilast >= it->nbeg && !(spdvector[ilast].flag & OK)) ilast--;
+         while(ilast >= (long)it->nbeg 
+               && !(spdvector[ilast].flag & OK)) ilast--;
       }
 
       oss << endl;
@@ -3205,7 +3204,7 @@ try {
 
       // dump the data
    for(it=SegList.begin(); it != SegList.end(); it++) {
-      for(i=it->nbeg; i<=it->nend; i++) {
+      for(i=it->nbeg; i<=(long)it->nend; i++) {
          //if(!(spdvector[i].flag & OK)) continue;  //dfplot ignores bad data
 
          log << "DSC" << label << " " << GDCUnique << " " << sat << " " << it->nseg
@@ -3220,7 +3219,7 @@ try {
             << " " << setw(13) << spdvector[i].data[A1]
             << " " << setw(13) << spdvector[i].data[A2];
          log << " " << setw(4) << i;          // TD? make this spdvector[i].ndt?
-         if(i == it->nbeg) log
+         if(i == (long)it->nbeg) log
             << " " << setw(13) << it->bias1 //biaswl
             << " " << setw(13) << it->bias2; //biasgf;
          log << endl;

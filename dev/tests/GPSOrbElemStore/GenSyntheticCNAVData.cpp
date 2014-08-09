@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -973,6 +971,3 @@ void GenSyntheticCNAVData::convertCNAV2(ofstream& out, const OrbElemFIC109& oe)
 
    return;
 }
-
-
-

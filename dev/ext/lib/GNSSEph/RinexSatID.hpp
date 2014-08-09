@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -68,7 +66,7 @@ namespace gpstk
 
       /// Explicit constructor, no defaults, RINEX systems only.
 
-      RinexSatID(int p, SatelliteSystem s)
+      RinexSatID(int p, const SatelliteSystem& s)
          throw()
       {
          id = p; system = s;
@@ -118,7 +116,7 @@ namespace gpstk
 
       /// Get the fill character used in output.
 
-      char getfill()
+      char getfill() const
          throw()
       { return fillchar; }
 
@@ -186,7 +184,7 @@ namespace gpstk
       /// Set the RinexSatID from a string (1 character plus 2-digit integer).
       /// @note GPS is default system (no or unknown system char)
 
-      void fromString(const std::string s)
+      void fromString(const std::string& s)
          throw(Exception)
       {
          char c;

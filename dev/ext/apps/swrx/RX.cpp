@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -147,15 +145,13 @@ private:
    int gpsWeek;   // (we don't currently generate our own eph file).
 };
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
 //-----------------------------------------------------------------------------
 RxSim::RxSim() throw() :
    BasicFramework("rxSim", "A simulation of a gps receiver."),
-   cc(NULL), tr(0), band(1), timeStep(50e-9), interFreq(0.42e6), 
-   fakeL2(false), gain(1), timeLimit(9e99), iadMax(20460), solvePos(false)
+   cc(NULL), tr(0), band(1), gain(1), fakeL2(false),
+   timeStep(50e-9), interFreq(0.42e6), 
+   timeLimit(9e99), input(NULL), iadMax(20460), solvePos(false)
 {}
-#pragma clang diagnostic pop
 
 
 bool RxSim::initialize(int argc, char *argv[]) throw()
@@ -265,7 +261,7 @@ bool RxSim::initialize(int argc, char *argv[]) throw()
    }
 
    numTrackers = codeOpt.getCount();
-   for (int i=0; i < codeOpt.getCount(); i++)
+   for (int i=0; i < (int)codeOpt.getCount(); i++)
    {
       string val=codeOpt.getValue()[i];
       const char delim(':');

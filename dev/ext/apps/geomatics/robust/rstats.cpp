@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -76,10 +74,9 @@ int main(int argc, char **argv)
    try {
       bool help,nostats=false,plot=false,qplot=false,domin=false,domax=false;
       bool doKS=false,dobeg=false,doend=false,doseq=false;
-      int i,j,col=1,xcol=-1,fit=0,prec=3,width=0,windwid(0);
+      int i,j,col=1,xcol=-1,fit=0,prec=3,width=0;
       unsigned int brief=0;
-      double sigout=0.0,min,max,beg,end,dht(0.0),ddt(0.0);
-#pragma unused(windwid,dht,ddt)
+      double sigout=0.0,min,max,beg,end;
        string filename,label=string();
       ostream *pout;
 

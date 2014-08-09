@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -132,16 +130,12 @@ namespace gpstk
       
       return value;
    }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
    Expression::Token::Token(std::string iValue, int iPriority, 
                             bool isOp=false)
          :
-         value(iValue), priority(iPriority), used(false), resolved(false),
-         expNode(0), isOperator(isOp)
-   {
-   }
-#pragma clang diagnostic pop
+         value(iValue), isOperator(isOp), resolved(false), priority(iPriority),
+         expNode(0), used(false)
+   { }
    void Expression::Token::print(std::ostream& ostr)
    {
       ostr <<" Value '" << value;
@@ -323,7 +317,7 @@ namespace gpstk
 
       for (it=operatorMap.begin(); it!=operatorMap.end(); it++)
       {
-         int position = 0;
+         std::string::size_type position = 0;
          while ((position=str.find(it->first,position+1))!=string::npos)
          {
             // Account for scientific notation

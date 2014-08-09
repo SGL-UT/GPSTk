@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -202,14 +200,13 @@ namespace gpstk {
    {
       int i,j,nr;
       T stemp, spart;
-      S ptemp, ppart;
+      S ptemp;
       while(1) { 
          if(na < 8) {                     // use insert sort for small arrays
             insert(sa,pa,na,comp);
             return;
          }
          spart = sa[na/2];                // pick middle element as pivot
-         ppart = pa[na/2];
          i = -1; 
          j = na;
          while(1) {
@@ -308,7 +305,7 @@ namespace gpstk {
 
       try {
          int i;
-         T med, *save;
+         T med, *save = NULL;
 
          if(save_flag) {
             save = new T[nd];

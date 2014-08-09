@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -54,15 +52,11 @@
 namespace gpstk
 {
    using namespace std;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
    OrbElemRinex::OrbElemRinex()
-      :OrbElem(),
-       codeflags(0), health(0), L2Pdata(0),
-       accuracyValue(0.0), IODC(0),
-       Tgd(0.0), fitDuration(0)
+      : OrbElem(),
+        codeflags(0), accuracyValue(0.0), health(0),
+        L2Pdata(0), IODC(0), fitDuration(0), Tgd(0.0)
    {}
-#pragma clang diagnostic pop
    OrbElemRinex::OrbElemRinex( const RinexNavData& rinNav )
       throw( InvalidParameter )
    {

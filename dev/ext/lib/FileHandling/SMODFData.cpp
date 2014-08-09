@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -118,6 +116,11 @@ namespace gpstk
 
             // convert from 211-B/C to 211-A flags
          short wxsource = 0;
+         // FIXME - is this supposed to mean
+         //     if (tempSource == pressSource && tempSource == humidSource)
+         // or
+         //     if ((bool)tempSource == (pressSource == humidSource))
+         // ???
          if (tempSource == pressSource == humidSource)
             wxsource = tempSource;
          else if (tempSource && pressSource && humidSource)

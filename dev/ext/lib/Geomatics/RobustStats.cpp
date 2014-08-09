@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -414,7 +412,7 @@ double gpstk::ADtest(double *xd, const int nd,
 
    try {
       int i;
-      double *save;
+      double *save = NULL;
 
       if(save_flag) {
          save = new double[nd];

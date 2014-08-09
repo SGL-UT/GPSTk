@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -418,7 +416,7 @@ using namespace StringUtils;
                // find where this column of R goes in A
                // (should never throw..)
             k = all.index(names.labels[j]);
-            if(k == -1) {
+            if(k == -1) {     // FIXME - k is unsigned!!!
                MatrixException me("Algorithm error 1");
                GPSTK_THROW(me);
             }
@@ -432,7 +430,7 @@ using namespace StringUtils;
             // now do the same for S, but put S.R|S.Z below R|Z
          for(j=0; j<sm; j++) {
             k = all.index(S.names.labels[j]);
-            if(k == -1) {
+            if(k == -1) {     // FIXME - k is unsigned!!!
                MatrixException me("Algorithm error 2");
                GPSTK_THROW(me);
             }
@@ -789,7 +787,7 @@ using namespace StringUtils;
          Matrix<double> Rtmp(n-m,n,0.0);
          for(i=0,k=0; i<n; i++) {
             skip = false;
-            for(j=0; j<m; j++) if(i == indx[j]) { skip=true; break; }
+            for(j=0; j<m; j++) if((int)i == indx[j]) { skip=true; break; }
             if(skip) continue;      // skip row to be dropped
 
             Ztmp(k) = Z(i);
@@ -804,7 +802,7 @@ using namespace StringUtils;
          R = Matrix<double>(n-m,n-m,0.0);
          for(j=0,k=0; j<n; j++) {
             skip = false;
-            for(i=0; i<m; i++) if(j == indx[i]) { skip=true; break; }
+            for(i=0; i<m; i++) if((int)j == indx[i]) { skip=true; break; }
             if(skip) continue;      // skip col to be dropped
 
             for(i=0; i<=j; i++) R(i,k) = Rtmp(i,j);

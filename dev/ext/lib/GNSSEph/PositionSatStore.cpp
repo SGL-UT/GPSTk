@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -131,7 +129,7 @@ namespace gpstk
             ++n;
          };
 
-         if(isExact && Nmatch==Nhalf-1) { Nlow++; Nhi++; }
+         if(isExact && Nmatch == (int)(Nhalf-1)) { Nlow++; Nhi++; }
 
          // Lagrange interpolation
          rec.sigAcc = rec.Acc = Triple(0,0,0);        // default
@@ -464,4 +462,3 @@ namespace gpstk
    //@}
 
 }  // End of namespace gpstk
-

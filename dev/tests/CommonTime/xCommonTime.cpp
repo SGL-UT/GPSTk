@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -161,4 +159,3 @@ void xCommonTime :: arithmiticTest (void)
 	Arith2.addMilliseconds((long)-1);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(sod,Arith2.getSecondOfDay(),1e-6);
 }
-

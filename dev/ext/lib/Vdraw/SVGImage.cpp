@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -142,10 +140,8 @@ namespace vdraw
     string::size_type loc;
     while( (loc = com.find("-->")) != string::npos)
       com = com.replace(loc+1,1,"=");
-    bool hadnl = false;
     if((loc = com.find("\n")) != string::npos)
     {
-      hadnl = true;
       ostr << endl;
       string::size_type lastloc = 0;
       while( (loc = com.find("\n",lastloc)) != string::npos )
