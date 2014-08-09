@@ -62,15 +62,12 @@ namespace gpstk
 
       TimeNamedFileStream() 
          : omode(std::ios::in), debugLevel(0)
-      {};
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
+      {}
       TimeNamedFileStream(
          const std::string fs,
          std::ios::openmode mode = std::ios::in)
-         : filespec(fs), omode(mode), debugLevel(0)
-      {};
-#pragma clang diagnostic pop
+         : debugLevel(0), filespec(fs), omode(mode)
+      {}
       virtual ~TimeNamedFileStream(void) {};
 
 
@@ -80,7 +77,7 @@ namespace gpstk
       {
          setFilespec(fs);
          omode = mode;
-      };
+      }
 
 
       void setFilespec(const std::string fs)
@@ -88,17 +85,17 @@ namespace gpstk
 
 
       std::string getFilespec(void) const
-      { return filespec;}
+      { return filespec; }
 
 
       // Get the filename of the current file
       std::string getCurrentFilename(void) const 
-      { return currentFilename; };
+      { return currentFilename; }
 
 
       // Return the time used to generate the current file name
       CommonTime getCurrentTime(void) const
-      { return currentTime; };
+      { return currentTime; }
 
 
       // Update the file name, returns true if the file name changed
@@ -134,7 +131,7 @@ namespace gpstk
          }
 
          return openedNewFile;
-      };
+      }
 
       int debugLevel;
 

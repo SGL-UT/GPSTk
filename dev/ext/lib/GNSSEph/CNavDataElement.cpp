@@ -157,9 +157,8 @@ namespace gpstk
       }
       s << endl
         << endl;
-      ios::fmtflags oldFlags = s.flags();
-#pragma unused(oldFlags)
-       
+      const ios::fmtflags oldFlags = s.flags();
+
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
@@ -183,6 +182,8 @@ namespace gpstk
          timeDisplay(s, ctEpoch);
          s << endl;
       }
+
+      s.flags(oldFlags);
    }
 
    void CNavDataElement::dumpBody(ostream& s) const

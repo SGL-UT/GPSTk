@@ -81,11 +81,11 @@ public:
 #pragma clang diagnostic pop
 protected:
    virtual void process();
-   gpstk::CommandOptionWithAnyArg outputOption;
    gpstk::CommandOptionWithAnyArg inputFileOption;
-   gpstk::CommandOptionNoArg terseOption;
+   gpstk::CommandOptionWithAnyArg outputOption;
    gpstk::CommandOptionWithNumberArg slotOption;
-   
+   gpstk::CommandOptionNoArg terseOption;
+
    ofstream out;
    bool terseFlag;
    list <long> slotFilterList;
@@ -111,8 +111,6 @@ int main( int argc, char*argv[] )
    }
    return 0;
 }
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
 GloDump::GloDump(const std::string& applName, 
                        const std::string& applDesc) throw()
           :BasicFramework(applName, applDesc),
@@ -125,7 +123,6 @@ GloDump::GloDump(const std::string& applName,
    inputFileOption.setMaxCount(1); 
    outputOption.setMaxCount(1);
 }
-#pragma clang diagnostic pop
 bool GloDump::initialize(int argc, char *argv[])
    throw()
 {
@@ -161,8 +158,6 @@ bool GloDump::initialize(int argc, char *argv[])
 void GloDump::process()
 {
    bool first = true;
-   long recordCount = 0;
-#pragma unused(recordCount)
 
    string fn =inputFileOption.getValue().front();
 

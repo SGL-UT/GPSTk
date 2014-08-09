@@ -129,13 +129,13 @@ public:
       if (output.getFilespec() == "-")
          output.setFilespec("<stdout>");
       
-      for (int i=0; i<sendStringOpt.getCount(); i++)
+      for (size_t i=0; i<sendStringOpt.getCount(); i++)
          sendString.push_back(sendStringOpt.getValue()[i]);
       
-      for (int i=0; i<sendPeriodOpt.getCount(); i++)
+      for (size_t i=0; i<sendPeriodOpt.getCount(); i++)
          sendPeriod.push_back(StringUtils::asInt(sendPeriodOpt.getValue()[i]));
 
-      for (int i=sendPeriod.size(); i< sendString.size(); i++)
+      for (size_t i=sendPeriod.size(); i< sendString.size(); i++)
          sendPeriod.push_back(60);
 
       output.debugLevel = debugLevel;
@@ -154,7 +154,7 @@ public:
             cout << "Sending username:" << username
                  << ", password:" << password
                  << " for login." << endl;
-         for (int i=0; i<sendString.size(); i++)
+         for (size_t i=0; i<sendString.size(); i++)
          {
             cout << "Send period:" << sendPeriod[i] << endl;
             StringUtils::hexDumpData(cout, sendString[i]);

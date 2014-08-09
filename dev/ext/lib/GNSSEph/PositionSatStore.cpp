@@ -129,7 +129,7 @@ namespace gpstk
             ++n;
          };
 
-         if(isExact && Nmatch == (Nhalf-1)) { Nlow++; Nhi++; }
+         if(isExact && Nmatch == (int)(Nhalf-1)) { Nlow++; Nhi++; }
 
          // Lagrange interpolation
          rec.sigAcc = rec.Acc = Triple(0,0,0);        // default

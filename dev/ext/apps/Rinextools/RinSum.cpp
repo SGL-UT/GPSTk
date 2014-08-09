@@ -555,7 +555,7 @@ try {
    RinexSatID sat;
    Rinex3ObsStream ostrm;
    ostringstream oss;
-   const int ndtmax=15;
+   const size_t ndtmax=15;
    double dt, bestdt[ndtmax];
    int ndt[ndtmax];
 
@@ -783,7 +783,7 @@ try {
             string sysStr(string(1,sysCode));
 
             // update Obs data totals
-            for(int index=0; index != vecData.size(); index++) {
+            for(size_t index=0; index != vecData.size(); index++) {
 
                if(C.debug > -1) oss << " (" << index << ")";
 
@@ -1308,7 +1308,3 @@ try {
 }
 catch(Exception& e) { GPSTK_RETHROW(e); }
 }  // end ProcessFiles()
-
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------

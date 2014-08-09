@@ -58,26 +58,24 @@
 class SVSource
 {
 public:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
    SVSource (int SVPRNID, int bandArg) :
-      zchips_per_sample(1),
-      doppler(0),
-      zchip_fraction_accum(0),
-      p_codegen(SVPRNID),
-      ca_codegen(SVPRNID),
-      ca_amplitude(1),
-      p_amplitude(1),
-      carrier_amplitude(1),
-      code_only(false),
-      zchip_counter(0),
-      prn(SVPRNID),
-      band(bandArg),
       p_modulation(true),
       ca_modulation(true),
       p_nav(true),
       ca_nav(true),
-      carrier_multiplier(0)
+      ca_amplitude(1),
+      p_amplitude(1),
+      carrier_amplitude(1),
+      doppler(0),
+      zchips_per_sample(1),
+      zchip_fraction_accum(0),
+      carrier_multiplier(0),
+      code_only(false),
+      p_codegen(SVPRNID),
+      ca_codegen(SVPRNID),
+      band(bandArg),
+      prn(SVPRNID),
+      zchip_counter(0)
    {
       switch(band)
       {
@@ -85,7 +83,6 @@ public:
          case 2: carrier_multiplier = gpstk::L2_MULT_GPS; break;
       }
    }
-#pragma clang diagnostic pop
 
    std::complex<double> getSample() const
    {

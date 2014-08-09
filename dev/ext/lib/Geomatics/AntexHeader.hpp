@@ -62,10 +62,7 @@ namespace gpstk
    public:
 
          /// Default and only constructor.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-      AntexHeader() : version(1.3), valid(false) {}
-#pragma clang diagnostic pop
+      AntexHeader() : valid(false), version(1.3) {}
          /// Clear (empty out) header
       inline void clear()
       {

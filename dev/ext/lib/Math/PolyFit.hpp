@@ -71,12 +71,9 @@ namespace gpstk
    {
    public:
          /// Empty constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-      PolyFit() : n_(0), Inverted(false), Singular(true), Npts(0) {}
-#pragma clang diagnostic pop
+      PolyFit() : n_(0), Npts(0), Inverted(false), Singular(true) {}
          /// Constructor given an initial size.
-      PolyFit(unsigned int n) : n_(n), Inverted(false), Singular(true), Npts(0)
+      PolyFit(unsigned int n) : n_(n), Npts(0), Inverted(false), Singular(true)
       {
          InfData.resize(n_,T(0));
          X.resize(n_);

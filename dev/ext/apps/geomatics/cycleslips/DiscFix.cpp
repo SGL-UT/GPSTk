@@ -374,8 +374,6 @@ int ReadFile(int nfile) throw(Exception)
       if(inP1 == inC1) UsingCA = true; else UsingCA = false;
 
          // loop over epochs in the file
-      bool first=true;
-#pragma unused(first)
       int iret;
       RinexObsData rodata;
       while(1) {

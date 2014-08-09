@@ -603,8 +603,8 @@ try {
                continue;
             }
          // this adds the station name to the list of stations
-         Station& st=findStationInList(Stations,field[1]);
-#pragma unused(st)
+         (void)findStationInList(Stations,field[1]);
+
          // create new ObsFile and add to list
          ObsFile of;
          of.name = field[0];

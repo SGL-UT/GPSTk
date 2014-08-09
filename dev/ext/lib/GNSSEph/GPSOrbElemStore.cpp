@@ -219,17 +219,13 @@ namespace gpstk
    bool GPSOrbElemStore::addOrbElem(const OrbElem& eph)
       throw(InvalidParameter,Exception)
    {
-      bool rc = false;
      try
      {
 
      SatID sid = eph.satID;
      OrbElemMap& oem = ube[sid];
      string ts = "%02m/%02d/%02y %02H:%02M:%02S";
-     int PRN = sid.id;
-     int testPRN = 0;
-#pragma unused(PRN,testPRN,rc)
-         
+
        // if map is empty, load object and return
      if (oem.size()==0)
      {

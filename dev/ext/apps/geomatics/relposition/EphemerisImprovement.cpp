@@ -68,13 +68,12 @@ try {
 
       GPSEphemerisStore& BCE = dynamic_cast<GPSEphemerisStore&>(*pEph);
       list<GPSEphemeris> EphList;
+      long i;
 
       oflog << "EphemerisStore is broadcast ephemeris" << endl;
       //BCE.dump(1,oflog);
 
-      long i, neph = BCE.addToList(EphList);
-#pragma unused(neph)
-      //oflog << "There are " << neph << " ephemerides in the list:" << endl;
+      (void)BCE.addToList(EphList);
 
       GSatID sat;
       map<GSatID,long> IODEmap;
@@ -139,10 +138,6 @@ try {
    }
 
    if(dynamic_cast<SP3EphemerisStore*>(pEph)) {
-
-      SP3EphemerisStore& SP3E = dynamic_cast<SP3EphemerisStore&>(*pEph);
-#pragma unused(SP3E)
-
       oflog << "EphemerisStore is SP3 ephemeris" << endl;
    }
 
@@ -152,6 +147,3 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 catch(exception& e) { Exception E("std except: "+string(e.what())); GPSTK_THROW(E); }
 catch(...) { Exception e("Unknown exception"); GPSTK_THROW(e); }
 }   // end EphemerisImprovement()
-
-//------------------------------------------------------------------------------------
-//------------------------------------------------------------------------------------

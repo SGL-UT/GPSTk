@@ -146,9 +146,8 @@ int main(int argc, char **argv)
 
       // get the current system time
       time_t timer;
-      struct tm *tblock;
       timer = time(NULL);
-      tblock = localtime(&timer);
+      (void)localtime(&timer);
       CurrEpoch = SystemTime();
 
       i = GetCommandInput(argc, argv);

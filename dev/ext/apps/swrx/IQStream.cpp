@@ -61,7 +61,7 @@ namespace gpstk
       readPtr = 0;
 
       unsigned char sum=0;
-      for (int i=0; i<frameLength-1; i++)
+      for (unsigned i=0; i<(frameLength-1); i++)
          sum+=static_cast<unsigned char>(frameBuffer[i]);
       if (sum != 0x5a)
          cerr << "IQStream::readComplex() checksum error "
@@ -88,7 +88,7 @@ namespace gpstk
       frameBuffer[frameLength-4] = frameCounter>>8 & 0xff;
 
       unsigned char sum=0;
-      for (int i=0; i<frameLength-2; i++)
+      for (unsigned i=0; i<(frameLength-2); i++)
          sum+=static_cast<unsigned char>(frameBuffer[i]);
       frameBuffer[frameLength-2] = 0x5a-sum;
       frameBuffer[frameLength-1] = 0;
