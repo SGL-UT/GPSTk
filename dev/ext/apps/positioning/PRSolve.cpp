@@ -273,8 +273,7 @@ public:
    {
       vector<string> fields = split(desc,':');
       sfcodes = ObsID::map3to1sys[fields[0]];   // first char of sfcodes
-      char csys(sfcodes[0]);
-#pragma unused(csys)
+      // const char csys(sfcodes[0]);
       sfcodes += fields[1];                     // 1 or 2 freq chars
       sfcodes += fields[2];
    }
@@ -1106,7 +1105,7 @@ try {
 
    // Choose transforms to be used; dump the available Helmert Tranformations
    LOG(INFO) << "\nAvailable Helmert Tranformations:";
-   for(i=0; i<HelmertTransform::stdCount; i++) {
+   for(i=0; i<(size_t)HelmertTransform::stdCount; i++) {
       const HelmertTransform& ht(HelmertTransform::stdTransforms[i]);
       // pick the ones to use
       C.msg = "";
@@ -1426,14 +1425,14 @@ try {
 
             // elevation mask, azimuth and ephemeris range corrected with trop
             // - pass elev to CollectData for m-cov matrix and ORDs
-            double elev(0),azim(0),ER(0),tcorr;
+            double elev(0), ER(0), tcorr;
             if((C.elevLimit > 0 || C.weight || C.ORDout)
                               && PrevPos.getCoordinateSystem() != Position::Unknown) {
                CorrectedEphemerisRange CER;
                try {
                   CER.ComputeAtReceiveTime(Rdata.time, PrevPos, sat, *C.pEph);
                   elev = CER.elevation;
-                  azim = CER.azimuth;
+                  // const double azim = CER.azimuth;
                   if(C.ORDout) {
                      tcorr = C.pTrop->correction(PrevPos,CER.svPosVel.x,Rdata.time);
                      ER = CER.rawrange - CER.svclkbias - CER.relativity + tcorr;
@@ -1556,8 +1555,7 @@ catch(Exception& e) { GPSTK_RETHROW(e); }
 int routine(void) throw(Exception)
 {
 try {
-   Configuration& C(Configuration::Instance());
-#pragma unused(C)
+   (void)Configuration::Instance();
 
    return 0;
 }
@@ -2223,9 +2221,9 @@ bool SolutionObject::ChooseObsIDs(map<string,vector<RinexObsID> >& mapObsTypes)
    throw()
 {
    size_t i;
-   Configuration& C(Configuration::Instance());
-#pragma unused(C)
    vector<string> obstypes;
+
+   (void)Configuration::Instance();
 
    isValid = true;
 
@@ -2246,8 +2244,8 @@ string SolutionObject::dump(int level, string msg1, string msg2) throw()
    int j;
    size_t i;
    ostringstream oss;
-   Configuration& C(Configuration::Instance());
-#pragma unused(C)
+
+   (void)Configuration::Instance();
 
    oss << msg1 << " " << Descriptor << (msg2.empty() ? "" : " "+msg2);
 

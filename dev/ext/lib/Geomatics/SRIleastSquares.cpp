@@ -324,7 +324,7 @@ try {
 
    // nominal solution
    if(!doLinearize) {
-      if(X.size() != N) X=Vector<double>(N);
+      if((int)X.size() != N) X=Vector<double>(N);
       X = 0.0;
    }
    NominalX = X;
@@ -539,7 +539,7 @@ void SRIleastSquares::zeroAll(void)
 void SRIleastSquares::Reset(const int N) throw(Exception)
 {
    try {
-      if(N > 0 && N != R.rows()) {
+      if(N > 0 && N != (int)R.rows()) {
          R.resize(N,N,0.0);
          Z.resize(N,0.0);
       }

@@ -52,22 +52,19 @@ namespace gpstk
 {
    using namespace std;
    using namespace gpstk;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
     OrbElem::OrbElem()
       :dataLoadedFlag(false),
        ctToe(CommonTime::BEGINNING_OF_TIME),
        ctToc(CommonTime::BEGINNING_OF_TIME),
        beginValid(CommonTime::BEGINNING_OF_TIME),
-       endValid(CommonTime::BEGINNING_OF_TIME),
-       healthy(false)
+       endValid(CommonTime::BEGINNING_OF_TIME)
    {
+      healthy = false;
       ctToe.setTimeSystem(TimeSystem::GPS);
       ctToc.setTimeSystem(TimeSystem::GPS);
       beginValid.setTimeSystem(TimeSystem::GPS);
       endValid.setTimeSystem(TimeSystem::GPS);
    }
-#pragma clang diagnostic pop
 
     bool OrbElem::isValid(const CommonTime& ct) const
       throw(InvalidRequest)
@@ -411,9 +408,8 @@ namespace gpstk
          InvalidRequest exc("Required data not stored.");
          GPSTK_THROW(exc);
       }
-      ios::fmtflags oldFlags = s.flags();
-#pragma unused(oldFlags)
-       
+      const ios::fmtflags oldFlags = s.flags();
+
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
@@ -476,6 +472,8 @@ namespace gpstk
         << setw(16) << Cic << " rad" << endl
         << "In-track      Sine: " << setw(16) << Cus << " rad  Cosine: "
         << setw(16) << Cuc << " rad" << endl;
+
+       s.flags(oldFlags);
    } // end of dumpBody()
 
    void OrbElem::dumpHeader(ostream& s) const

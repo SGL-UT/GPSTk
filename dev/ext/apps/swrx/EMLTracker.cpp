@@ -43,16 +43,21 @@ using namespace std;
 /// param codeSpacing the correlator spacing (in sec) that will be used for 
 /// the code. This class will quantize this value to the closest number
 /// of ticks.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
 EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
    GenericTracker(localReplica),
+   pllAlpha(/*0.2*/0.1), pllBeta(/*0.05*/0.025),
+   dllAlpha(/*6*/3), dllBeta(/*0.01*/0.005),
+   navChange(true),
+   periodCount(10), prn(0),
+   pllError(0), dllError(0),
+   dllMode(dmFar), pllMode(pmUnlocked),
+   nav(false), prevNav(true),
+   inSumSq(0), lrSumSq(0),
+   iadCount(0),
+   iadThreshold(0.02),
    ticksPerChip(static_cast<unsigned>(1.0/localReplica.chipsPerTick)),
-   eplSpacing(static_cast<unsigned>((codeSpacing / localReplica.tickSize))),pllError(0), pllAlpha(/*0.2*/0.1), pllBeta(/*0.05*/0.025),
-   dllError(0), dllAlpha(/*6*/3), dllBeta(/*0.01*/0.005),
-   iadCount(0), nav(false), baseGain(1.0/(0.1767*1.404)),
-   inSumSq(0), lrSumSq(0),iadThreshold(0.02),
-   dllMode(dmFar), pllMode(pmUnlocked), navChange(true), prevNav(true),periodCount(10),prn(0)
+   eplSpacing(static_cast<unsigned>((codeSpacing / localReplica.tickSize))),
+   baseGain(1.0/(0.1767*1.404))
 {
    early.setDelay(2*eplSpacing);
    prompt.setDelay(eplSpacing);

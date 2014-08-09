@@ -120,31 +120,26 @@ public:
    IQStream *output;
 
 
-
-
 protected:
    virtual void process();
 };
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
 GpsSim::GpsSim() throw() :
    BasicFramework("gpsSim", "A simple simulation of a the GPS signal."),
-   periods_to_generate(4096),
-   LO_COUNT(2),
-   rx_sample_rate(20.0e6),
    samples_per_period(20.0),
-   interFreq(0.42e6),
+   rx_sample_rate(20.0e6),
    rx_L1_LO(gpstk::L1_FREQ_GPS - 0.42e6),
    rx_L2_LO(gpstk::L2_FREQ_GPS - 0.42e6),
-   time_step(1.0/20e6),
+   LO_COUNT(2),
+   noise_amplitude(2.805),
    p_amplitude(0.1250*M_SQRT2),
    ca_amplitude(0.1767*M_SQRT2),
-   noise_amplitude(2.805),
-   codeOnly(false),
-   gain(1)
+   gain(1),
+   time_step(1.0/20e6),
+   interFreq(0.42e6),
+   periods_to_generate(4096),
+   codeOnly(false)
 {}
-#pragma clang diagnostic pop
 
 bool GpsSim::initialize(int argc, char *argv[]) throw()
 {
@@ -296,7 +291,7 @@ bool GpsSim::initialize(int argc, char *argv[]) throw()
            <<    "  2: " << setw(7) << (L2_FREQ_GPS - lo[1]) * 1e-3<< " kHz"
            <<  endl;
 
-   for (int i=0; i < codeOpt.getCount(); i++)
+   for (int i=0; i < (int)codeOpt.getCount(); i++)
    {
       string val=codeOpt.getValue()[i];
       const char delim(':');

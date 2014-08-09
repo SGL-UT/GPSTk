@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
 
    GPSEphemerisStore bce;
    IonoModel iono;
-   for (int i=0; i < ephFileOption.getCount(); i++)
+   for (int i=0; i < (int)ephFileOption.getCount(); i++)
    {
       string fn = ephFileOption.getValue()[i];
       RinexNavStream rns(fn.c_str(), ios::in);

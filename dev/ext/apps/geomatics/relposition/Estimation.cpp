@@ -472,7 +472,7 @@ try {
       i = StateNL.index(it->first+string("-X"));
       j = StateNL.index(it->first+string("-Y"));
       k = StateNL.index(it->first+string("-Z"));
-      if(i == -1 || j == -1 || k == -1) {
+      if(i == -1 || j == -1 || k == -1) {   // FIXME - i is unsigned!!
          Exception e("Position states confused: unable to find for " + it->first);
          GPSTK_THROW(e);
       }

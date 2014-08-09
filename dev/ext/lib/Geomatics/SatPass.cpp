@@ -475,7 +475,7 @@ try {
    ngood = 0;
    CommonTime newfirstTime, tt;
    for(j=0,i=0; i<spdvector.size(); i++) {
-      if(spdvector[i].ndt % N != nstart) continue;
+      if((int)(spdvector[i].ndt % N) != nstart) continue;
       lastTime = time(i);
       if(j==0) {
          newfirstTime = time(i);
@@ -681,14 +681,14 @@ int SatPassIterator::next(map<unsigned int, unsigned int>& indexMap) throw(Excep
 
          if(SPList[i].Status < 0) continue;     // should never happen
 
-         if(countOffset[sat] + SPList[i].spdvector[j].ndt == currentN) {
+         if((int)(countOffset[sat] + SPList[i].spdvector[j].ndt) == currentN) {
             // found active sat at this count - add to map
             nextIndexMap[i] = j;
             numsvs++;
 
             // increment data index
             j++;
-            if(j == SPList[i].spdvector.size()) {     // this pass is done
+            if(j == (int)SPList[i].spdvector.size()) {     // this pass is done
                indexStatus[i] = 1;
 
                // find the next pass for this sat

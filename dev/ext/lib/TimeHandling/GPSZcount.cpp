@@ -323,7 +323,7 @@ namespace gpstk
                                    unsigned long inZcountBlock,
                                    unsigned long inZcountOffset)
    {
-      if (inZcountBlock < ZCOUNT_WEEK)
+      if ((long)inZcountBlock < ZCOUNT_WEEK)
       {
             // Make sure that we're in the same week, and then check to see if
             // we're in the same time block

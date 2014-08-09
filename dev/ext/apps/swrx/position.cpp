@@ -133,7 +133,7 @@ bool P::initialize(int argc, char *argv[]) throw()
          time = GPSWeekZcount(gpsWeek,zCount);
    }
  
-   for (int i=0; i < ephFileOption.getCount(); i++)
+   for (int i=0; i < (int)ephFileOption.getCount(); i++)
    {
       string fn = ephFileOption.getValue()[i];
       RinexNavStream rns(fn.c_str(), ios::in);

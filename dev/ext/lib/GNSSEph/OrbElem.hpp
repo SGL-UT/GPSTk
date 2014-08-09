@@ -195,7 +195,7 @@ namespace gpstk
          //@{
       double   M0;            /**< Mean anomaly (rad) */
       double   dn;            /**< Correction to mean motion (rad/sec) */
-      double   dndot;	      /**< Rate of correction to mean motion (rad/sec/sec) */
+      double   dndot;         /**< Rate of correction to mean motion (rad/sec/sec) */
       double   ecc;           /**< Eccentricity */
       double   A;             /**< Semi-major axis (m) */
       double   Adot;          /**< Rate of semi-major axis (m/sec) */
@@ -208,7 +208,7 @@ namespace gpstk
 
          /// Clock information
          //@{
-      CommonTime ctToc;	    /**< Clock Epoch in commontime format */
+      CommonTime ctToc;     /**< Clock Epoch in commontime format */
       double af0;           /**< SV clock error (sec) */
       double af1;           /**< SV clock drift (sec/sec) */
       double af2;           /**< SV clock drift rate (sec/sec**2) */
