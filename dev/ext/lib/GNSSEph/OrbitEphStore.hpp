@@ -308,6 +308,8 @@ namespace gpstk
       {
          // get the appropriate OrbitEph
          const OrbitEph *eph = findOrbitEph(sat,t);
+         if (eph == NULL)
+            return false;
          return eph->isHealthy();
       }
 
