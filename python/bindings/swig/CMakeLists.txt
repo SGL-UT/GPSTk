@@ -8,9 +8,7 @@ project (gpstk_bindings)
 # The default CMAKE_INSTALL_PREFIX is inappropriate for python modules so this variable needs
 # to be overridden. To install in the user's directory:
 #   cmake -DCMAKE_INSTALL_PREFIX=$(python -m site --user-site) ..
-# To install for the whole system:
-#   cmake -DCMAKE_INSTALL_PREFIX=$(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()") ..
-#
+
 
 # Since the default is never correct, at least put in something reasonable
 if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
@@ -18,6 +16,8 @@ if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
     OUTPUT_VARIABLE CMAKE_INSTALL_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 
+# This is a hack way to find the GPSTk source directory. This assumes the current
+# directory part of a complete clone of the GPSTk repo.
 set (GPSTK_SRC "../../../dev")
 set (GPSTK_EXT_LIB "${GPSTK_SRC}/ext/lib")
 set (GPSTK_CORE_LIB "${GPSTK_SRC}/core/lib")

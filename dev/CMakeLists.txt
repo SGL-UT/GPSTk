@@ -15,7 +15,17 @@ message ("system_name = ${CMAKE_SYSTEM_NAME}")
 # Installation Path Prefix - Change to desired location
 #----------------------------------------
 
-set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
+if( DEFINED ENV{sgltk} )
+    set( CMAKE_INSTALL_PREFIX $ENV{gpstk} )
+else()
+  message( "Notice: Environment variable gpstk is not defined. Using CMake CMAKE_INSTALL_PREFIX variable" )
+  message( "        You may tell CMake where to install your GPSTk using either the environment variable 'sgltk'." )
+  message( "        or setting CMAKE_INSTALL_PREFIX" )
+endif()
+
+message( "Notice: Will install GPSTk to the path ${CMAKE_INSTALL_PREFIX}" )
+
+
 
 #----------------------------------------
 # Core Only Switch - Only Build Core Library Code
