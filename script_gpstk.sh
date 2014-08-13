@@ -107,13 +107,13 @@ function ptof {
 printf "$0: gpstk_root      = $gpstk_root\n"
 printf "$0: build_cpp       = $(ptof $build_cpp)\n"
 if [ "$build_cpp" ]; then
-    printf "$0: clean_install   = $(ptof $clean_install)\n"
     printf "$0: core_only       = $(ptof $core_only)\n"
     printf "$0: test_switch     = $(ptof $test_switch)\n"
     printf "$0: graphviz        = $(ptof $graphviz)\n"
     printf "$0: gpstk_install   = $gpstk_install\n"
 fi
 
+printf "$0: clean_install   = $(ptof $clean_install)\n"
 printf "$0: clean_build     = $(ptof $clean_build)\n"
 printf "$0: build_doxygen   = $(ptof $build_doxygen)\n"
 printf "$0: build_python    = $(ptof $build_python)\n"
