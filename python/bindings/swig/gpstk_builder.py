@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """GPSTk module __init__.py generator and build finisher.
 
 Usage:

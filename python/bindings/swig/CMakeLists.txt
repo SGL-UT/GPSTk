@@ -5,18 +5,27 @@ cmake_minimum_required(VERSION 2.8)
 # ../../../dev directory.
 project (gpstk_bindings)
 
-#---------------------------------------------------------------------------------
+# The default CMAKE_INSTALL_PREFIX is inappropriate for python modules so this variable needs
+# to be overridden. To install in the user's directory:
+#   cmake -DCMAKE_INSTALL_PREFIX=$(python -m site --user-site) ..
+# To install for the whole system:
+#   cmake -DCMAKE_INSTALL_PREFIX=$(python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()") ..
 #
-#---------------------------------------------------------------------------------
-set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
+
+# Since the default is never correct, at least put in something reasonable
+if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
+  execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
+    OUTPUT_VARIABLE CMAKE_INSTALL_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+
 set (GPSTK_SRC "../../../dev")
 set (GPSTK_EXT_LIB "${GPSTK_SRC}/ext/lib")
 set (GPSTK_CORE_LIB "${GPSTK_SRC}/core/lib")
-#---------------------------------------------------------------------------------
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 message(STATUS "Building using swig at: ${SWIG_EXECUTABLE}")
+message(STATUS "Installing to: ${CMAKE_INSTALL_PREFIX}")
 
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
@@ -164,5 +173,4 @@ swig_add_module(
   ${GPSTK_EXT_LIB}/FileHandling/SMODFData.cpp
   )
 
-execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
-  OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+install(CODE "execute_process(COMMAND ../gpstk_builder.py ${CMAKE_INSTALL_PREFIX})")
