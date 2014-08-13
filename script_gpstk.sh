@@ -6,7 +6,8 @@
 # outline = Optionally build C++, Python, or both files and libraries
 #             By default, the Python GPSTk library is installed in the local Python site packages directory (~/.local/lib/pythonXX/site-packages on Linux)
 #               If the option [-l] is specified, the user must specify a different install location
-#               By default, the script purges the specified Python install folder prior to the install in order to prevent file contamination with previous installations
+#               By default, the script purges the specified Python install folder prior to the install
+#               in order to prevent file contamination with previous installations
 #           Optionally clean out install and build paths
 #           Export gpstk install path as environment variables used by CMake
 #           Run CMake to generate build environment
@@ -106,7 +107,6 @@ function ptof {
 printf "$0: gpstk_root      = $gpstk_root\n"
 printf "$0: build_cpp       = $(ptof $build_cpp)\n"
 if [ "$build_cpp" ]; then
-    printf "$0: clean_build     = $(ptof $clean_build)\n"
     printf "$0: clean_install   = $(ptof $clean_install)\n"
     printf "$0: core_only       = $(ptof $core_only)\n"
     printf "$0: test_switch     = $(ptof $test_switch)\n"
@@ -114,6 +114,7 @@ if [ "$build_cpp" ]; then
     printf "$0: gpstk_install   = $gpstk_install\n"
 fi
 
+printf "$0: clean_build     = $(ptof $clean_build)\n"
 printf "$0: build_doxygen   = $(ptof $build_doxygen)\n"
 printf "$0: build_python    = $(ptof $build_python)\n"
 
@@ -123,71 +124,10 @@ fi
 
 printf "$0: num_cores       = $num_cores\n"
 
-
-#----------------------------------------
-# Test build and install paths before doing anything
-#----------------------------------------
 if [ ! -d "$gpstk_root" ]; then
-    echo "$0: $gpstk_root, directory exist test = FAIL"
-    echo "$0: exitting..."
+    echo "$0: Error. $gpstk_root does not exist."
     exit 1
 fi
-
-if [ "$build_cpp" ]; then
-    if [ ! -d "$gpstk_install" ]; then
-        echo "$0: Creating $gpstk_install directory"
-        mkdir -p $gpstk_install
-    fi
-    if [ ! -d "$gpstk_root/build" ]; then
-        echo "$0: Creating $gpstk_root/build directory"
-        mkdir -p $gpstk_root/build
-    fi
-fi
-
-if [[ "$build_python" && ! -d "$python_install" ]]; then
-    echo "$0: Creating $python_install directory"
-    mkdir -p "$python_install"
-fi
-
-path_graphviz=$gpstk_install/graphviz
-if [[ "$graphviz" && ! -d "$path_graphviz" ]]; then
-    echo "$0: Creating $path_graphviz directory"
-    mkdir -p $path_graphviz
-fi
-
-#----------------------------------------
-# Optionally clean out previous builds and installs
-#----------------------------------------
-if [[ "$build_cpp" && "$clean_build" ]]; then
-   echo "$0: Removing previous c++ build"
-   rm -rf "$gpstk_root/build"
-   mkdir -p "$gpstk_root/build"
-fi
-
-if [[ "$build_python" && "$clean_build" ]]; then
-    echo "$0: Removing previous python build"
-    rm -rf $gpstk_root/../python/bindings/swig/build
-    mkdir -p $gpstk_root/../python/bindings/swig/build
-    rm -rf $python_install"/gpstk"
-fi
-
-if [[ "$build_cpp" && "$clean_install" ]]; then
-    echo "$0: Removing previous install directory"
-    rm -rf $gpstk_install
-    mkdir -p $gpstk_install
-fi
-
-#----------------------------------------
-# Test and then export install paths needed by CMake
-#----------------------------------------
-
-if [[ ! -d "$gpstk_install" ]]; then
-    echo "$0: Paths: $gpstk_install, directory exist test = FAIL"
-    echo "$0: exitting..."
-    exit 1
-fi
-
-export gpstk=$gpstk_install
 
 
 #----------------------------------------
@@ -196,16 +136,25 @@ export gpstk=$gpstk_install
 # Construct CMake command string based on script options
 # Reminder: to set variables from command line use "$ cmake -D <var>:<type>=<value>"
 if [ "$build_cpp" ]; then
+    if [ "$clean_build" ]; then
+        echo "$0: Removing previous c++ build"
+        rm -rf "$gpstk_root/build"
+    fi
+    mkdir -p $gpstk_root/build
+
     args=""
     args+=${core_only:+" -DCORE_ONLY=ON"}
     args+=${test_switch:+" -DTEST_SWITCH=ON"}
     args+=${graphviz:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
 
+    export gpstk=$gpstk_install
     cd $gpstk_root/build
     cmake $args ..
 
     # Convert graphviz .DOT file into a .PDF
     if ["$graphviz" ]; then
+        path_graphviz=$gpstk_install/graphviz
+        mkdir -p $path_graphviz
         dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
     fi
 fi
@@ -244,24 +193,42 @@ if [ "$build_python" ]; then
         python docstring_generator.py
     fi
 
+    if [ "$clean_build" ]; then
+        echo "$0: Removing previous python build"
+        rm -rf  $python_root/build
+    fi
+    
     cd $python_root/build
-    cmake ..
+    cmake -DCMAKE_INSTALL_PREFIX=$python_install ..
+    echo "$0: Building python gpstk module"
     make -j$num_cores
 
-    cd $python_root/bin
-    python gpstk_builder.py $python_install
+    if [ "$clean_install" ]; then
+        rm -rf $python_install
+    fi
+
+    echo "$0: Installing python gpstk module"
+    make install
 fi
 
 
 #----------------------------------------
 # Build/install c++ library and apps
 #----------------------------------------
-if [[ "$build_cpp" ]]; then
-    echo "$0: Calling make and make install..."
+if [ "$build_cpp" ]; then
+    echo "$0: Building c++ libs and apps"
     cd $gpstk_root/build
     make -j $num_cores
+
+    if [ "$clean_install" ]; then
+        echo "$0: Removing previous install directory"
+        rm -rf $gpstk_install
+    fi
+
+    echo "$0: Installing c++ libs and apps"
     make install
 fi
+
 
 if [ "$test_switch" ]; then
     cd $gpstk_root/build
