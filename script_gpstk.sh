@@ -55,8 +55,8 @@ OPTIONS:
    -d     build_doxygen    build Doxygen files
    -p     build_python     build Python files and libraries with SWIG bindings (autobuilds Doxygen)
 
-   -b     clean_build      rm -rf gpstk_root/build
-   -i     clean_install    rm -rf gpstk_install
+   -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
+   -i     clean_install    rm -rf gpstk_install; rm -rf python_install
    
    -o     core_only        only builds core library code
    -t     test_switch      initialize test framework
@@ -197,7 +197,8 @@ if [ "$build_python" ]; then
         echo "$0: Removing previous python build"
         rm -rf  $python_root/build
     fi
-    
+    mkdir -p $python_root/build
+
     cd $python_root/build
     cmake -DCMAKE_INSTALL_PREFIX=$python_install ..
     echo "$0: Building python gpstk module"
