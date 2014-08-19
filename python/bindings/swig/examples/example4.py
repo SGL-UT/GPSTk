@@ -60,14 +60,15 @@ def main():
     # observation types we are interested in. Given that old-style
     # observation types are used, GPS is assumed.
     try:
-        indexP1 = obsHeader.getObsIndex('P1')
+        indexP1 = obsHeader.getObsIndex('C1P')
     except:
-        print 'The observation files has no P1 pseudoranges.'
+        print 'The observation files has no L1 C/A pseudoranges.'
         sys.exit()
 
     try:
-        indexP2 = obsHeader.getObsIndex('P2')
+        indexP2 = obsHeader.getObsIndex('C2W')
     except:
+        print 'The observation files has no L2 codeless pseudoranges.'
         indexP2 = -1
 
     for obsObj in obsData:
