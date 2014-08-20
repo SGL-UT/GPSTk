@@ -159,7 +159,6 @@ STR_DUMP_HELPER(YumaData)
 STR_DUMP_HELPER(YumaHeader)
 
 
-
 // Uses the print method in the class to get string output
 %define STR_PRINT_HELPER(name)
 %extend gpstk:: ## name {
@@ -208,6 +207,9 @@ STR_STREAM_HELPER(GPSZcount)
 STR_STREAM_HELPER(Position)
 // STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
+STR_STREAM_HELPER(SvObsEpoch)
+STR_STREAM_HELPER(ObsEpoch)
+
 
 // STR_STREAM_HELPER(Xvt)
 // Q: Why is this (below) here instead of the macro for Xvt?
