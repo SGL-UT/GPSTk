@@ -43,11 +43,12 @@
 
 %template(map_RinexSatID_vector_RinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
 
-
+// These need to be instantiated so the SvObsEpoch and ObsEpoch classes will work correctly
 %template(map_SvObsEpoch) std::map< gpstk::ObsID, double >;
 %template(map_ObsEpoch) std::map<gpstk::SatID, gpstk::SvObsEpoch>;
-%template(map_ObsEpochMap) std::map<gpstk::ObsID, gpstk::SvObsEpoch>;
-%template(map_CommonTime_ObsEpoch) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
+
+// AKA ObsEpochMap
+%template(map_ObsEpochMap) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
 
 
 //////////////////////////////////////////////////
