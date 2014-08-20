@@ -32,15 +32,22 @@
 %template(map_char_string) std::map<char, std::string>;
 %template(map_char_int)    std::map<char, int>;
 
+// AKA RinexObsData::RinexObsTypeMap
 %template(map_RinexObsType_RinexDatum) std::map<gpstk::RinexObsType, gpstk::RinexDatum>;
+
+// AKA RinexObsData::RinexSatMap
 %template(map_RinexSatID_RinexObsTypeMap) std::map<gpstk::SatID, std::map<gpstk::RinexObsType, gpstk::RinexDatum> >;
+
+// the type of Rinex3ObsHeader::mapObsTypes
 %template(map_string_vector_RinexObsID) std::map<std::string, std::vector<gpstk::RinexObsID> >;
+
 %template(map_RinexSatID_vector_RinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
 
-%template(map_ObsID_double) std::map< gpstk::ObsID,double >;
 
-%template(map_SatID_double) std::map<gpstk::SatID, double>;
-%template(map_SatID_SvObsEpoch) std::map<gpstk::SatID,gpstk::SvObsEpoch>;
+%template(map_SvObsEpoch) std::map< gpstk::ObsID, double >;
+%template(map_ObsEpoch) std::map<gpstk::SatID, gpstk::SvObsEpoch>;
+%template(map_ObsEpochMap) std::map<gpstk::ObsID, gpstk::SvObsEpoch>;
+%template(map_CommonTime_ObsEpoch) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
 
 
 //////////////////////////////////////////////////

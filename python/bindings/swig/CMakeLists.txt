@@ -69,10 +69,13 @@ set(CMAKE_SWIG_FLAGS "-w362,383,384,389,503")
 set(CMAKE_CXX_FLAGS "-std=c++11")
 set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
 #set_source_files_properties(gpstk_pylib.i PROPERTIES SWIG_FLAGS "-includeall") //Possible addition for full source file library
+
 swig_add_module(
   gpstk_pylib
   python
   gpstk_pylib.i
+  # Note that the cmake swig module doesn't seem to know how to track dependancy on other .i files...
+  # so if the other .i files are changed, do a make clean....
   ${GPSTK_EXT_LIB}/GNSSEph/AlmOrbit.cpp
   ${GPSTK_EXT_LIB}/TimeHandling/ANSITime.cpp
   ${GPSTK_EXT_LIB}/Procframe/Antenna.cpp
@@ -166,11 +169,10 @@ swig_add_module(
   ${GPSTK_EXT_LIB}/GNSSEph/YumaAlmanacStore.cpp
   ${GPSTK_EXT_LIB}/FileHandling/Yuma/YumaData.cpp
   ${GPSTK_EXT_LIB}/GNSSEph/EphemerisRange.cpp
-  # ${GPSTK_EXT_LIB}/Rxio/EphReader.cpp
-  # ${GPSTK_EXT_LIB}/Rxio/FFIdentifier.cpp
   ${GPSTK_EXT_LIB}/Rxio/NovatelData.cpp
   ${GPSTK_EXT_LIB}/Rxio/AshtechData.cpp
   ${GPSTK_EXT_LIB}/FileHandling/SMODFData.cpp
   )
+
 
 install(CODE "execute_process(COMMAND ../gpstk_builder.py ${CMAKE_INSTALL_PREFIX})")
