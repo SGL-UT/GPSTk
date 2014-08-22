@@ -202,6 +202,12 @@
 %include "src/typemaps.i"
 %include "src/STLTemplates.i"
 %include "src/STLHelpers.i"
+
+
+%include "exception.i"
+%rename(__str__) gpstk::Exception::what() const; //Rename the Exception output to __str__ from const
+%include "../../../../dev/ext/lib/Utilities/Exception.hpp" //Include the header file Exception.hpp
+%include "../../../../dev/ext/lib/FileHandling/FFStreamError.hpp" //Include the header file FFStreamError.hpp
 %include "src/Exception.i"
 
 
@@ -212,7 +218,11 @@
 %rename(toCommonTime) *::convertToCommonTime() const;
 %ignore *::operator CommonTime() const;
 
+%ignore gpstk::TimeSystem::TimeSystem(int i); //Ignore the declaration i in TimeSystem
+%ignore gpstk::TimeSystem::getTimeSystem(); //Ignore the declaration getTimeSystem in TimeSystem
+%include "../../../../dev/ext/lib/RefTime/TimeSystem.hpp" //Get the header file TimeSystem
 %include "src/TimeSystem.i"
+
 %include "../../../dev/ext/lib/TimeHandling/TimeTag.hpp"
 %include "../../../dev/ext/lib/TimeHandling/TimeConstants.hpp"
 
@@ -227,7 +237,9 @@
 %feature("notabstract") ANSITime;
 %include "../../../dev/ext/lib/TimeHandling/ANSITime.hpp"
 %feature("notabstract") CivilTime;
-%include "src/CivilTime.i"
+%ignore gpstk::CivilTime::MonthNames; //Ignore declarations matching identifier in class
+%ignore gpstk::CivilTime::MonthAbbrevNames;
+%include "../../../../dev/ext/lib/TimeHandling/CivilTime.hpp" //Import header file CivilTime.hpp
 %include "../../../dev/ext/lib/TimeHandling/GPSZcount.hpp"
 %include "../../../dev/ext/lib/TimeHandling/GPSWeek.hpp"
 %feature("notabstract") GPSWeekSecond;
@@ -246,6 +258,11 @@
 %include "../../../dev/ext/lib/TimeHandling/MJD.hpp"
 %feature("notabstract") YDSTime;
 %include "../../../dev/ext/lib/TimeHandling/YDSTime.hpp"
+%ignore gpstk::scanTime(TimeTag& btime, const std::string& str, const std::string& fmt); //Ignore the declarations in scanTime of TimeTag and CommonTime and in mixedScanTime of CommonTime
+%ignore gpstk::scanTime(CommonTime& btime, const std::string& str, const std::string& fmt);
+%ignore gpstk::mixedScanTime(CommonTime& btime, const std::string& str, const std::string& fmt);
+
+%include "../../../../dev/ext/lib/TimeHandling/TimeString.hpp" //Grab header file of TimeString
 %include "src/TimeString.i"
 %include "../../../dev/ext/lib/RefTime/TimeSystemCorr.hpp"
 
@@ -256,19 +273,43 @@
 // Utils stuff
 %include "../../../dev/ext/lib/GNSSCore/geometry.hpp"
 %include "../../../dev/ext/lib/deprecate/gps_constants.hpp"
+%include "../../../../dev/ext/lib/GNSSEph/SatID.hpp"
 %include "src/SatID.i"
 %include "../../../dev/ext/lib/GNSSCore/ObsIDInitializer.hpp"
 %include "../../../dev/ext/lib/GNSSCore/ObsID.hpp"
 %ignore gpstk::SV_ACCURACY_GLO_INDEX;  // wrapper added in GPS_URA.i
 %include "../../../dev/ext/lib/GNSSCore/GNSSconstants.hpp"
+%ignore gpstk::Triple::operator[](const size_t index);
+%ignore gpstk::Triple::operator()(const size_t index);
+%ignore gpstk::Triple::operator*(double right, const Triple& rhs);
+%ignore gpstk::Triple::theArray;
 %include "../../../dev/ext/lib/Math/Triple.hpp"
-%include "src/ReferenceFrame.i"
+%ignore gpstk::ReferenceFrame::ReferenceFrame(int i);
+%rename(__str__) gpstk::ReferenceFrame::asString() const;
+%include "../../../../dev/ext/lib/RefTime/ReferenceFrame.hpp"
 %include "../../../dev/ext/lib/GNSSCore/EllipsoidModel.hpp"
 %include "../../../dev/ext/lib/GNSSCore/Xvt.hpp"
+
+%ignore gpstk::Position::convertSphericalToCartesian(const Triple& tpr, Triple& xyz) throw();
+%ignore gpstk::Position::convertCartesianToSpherical(const Triple& xyz, Triple& tpr) throw();
+%ignore gpstk::Position::convertCartesianToGeodetic(const Triple& xyz, Triple& llh, const double A, const double eccSq) throw();
+%ignore gpstk::Position::convertGeodeticToCartesian(const Triple&, llh, Triple& xyz, const double A, const double eccSq) throw();
+%ignore gpstk::Position::convertCartesianToGeocentric(const Triple& xyz, Triple& llr) throw();
+%ignore gpstk::Position::convertGeocentricToCartesian(const Triple& llr, Triple& xyz) throw();
+%ignore gpstk::Position::convertGeocentricToGeodetic(const Triple& llr, Triple& geodeticllr, const double A, const double eccSq) throw();
+%ignore gpstk::Position::convertGeodeticToGeocentric(const Triple& geodeticllh, Triple& llr, const double A, const double eccSq) throw();
+%include "../../../../dev/ext/lib/GNSSCore/Position.hpp"
 %include "src/Position.i"
+
 %include "../../../dev/ext/lib/GNSSCore/convhelp.hpp"
 %include "../../../dev/ext/lib/GNSSCore/Xv.hpp"
-%include "src/VectorBase.i"
+%ignore gpstk::VectorBase::operator[] (size_t i) const;
+%ignore gpstk::VectorBase::operator() (size_t i) const;
+%ignore gpstk::RefVectorBaseHelper::zeroTolerance;
+%ignore gpstk::RefVectorBaseHelper::perator[] (size_t i);
+%ignore gpstk::RefVectorBaseHelper::operator() (size_t i);
+%ignore gpstk::RefVectorBaseHelper::zeroize();
+%include "../../../../dev/ext/lib/Math/Vector/VectorBase.hpp"
 %include "src/Vector.i"
 
 
@@ -314,7 +355,16 @@
 
 %include "../../../dev/ext/lib/Misc/SVNumXRef.hpp"
 %include "../../../dev/ext/lib/GNSSEph/RinexSatID.hpp"
+
+%ignore gpstk::SV_ACCURACY_GPS_MIN_INDEX;
+%ignore gpstk::SV_ACCURACY_GPS_NOMINAL_INDEX;
+%ignore gpstk::SV_ACCURACY_GPS_MAX_INDEX;
+%ignore gpstk::SV_CNAV_ACCURACY_GPS_MIN_INDEX;
+%ignore gpstk::SV_CNAV_ACCURACY_GPS_NOM_INDEX;
+%ignore gpstk::SV_CNAV_ACCURACY_GPS_MAX_INDEX;
+%include "../../../../dev/ext/lib/GNSSEph/GPS_URA.hpp"
 %include "src/GPS_URA.i"
+
 %include "../../../dev/ext/lib/GNSSEph/BrcClockCorrection.hpp"
 %include "../../../dev/ext/lib/GNSSEph/BrcKeplerOrbit.hpp"
 %include "../../../dev/ext/lib/GNSSEph/EphemerisRange.hpp"
@@ -351,8 +401,12 @@
 %include "../../../dev/ext/lib/FileHandling/RINEX/RinexMetBase.hpp"
 %include "../../../dev/ext/lib/FileHandling/RINEX/RinexMetHeader.hpp"
 %include "../../../dev/ext/lib/FileHandling/RINEX/RinexMetStream.hpp"
+
+%ignore gpstk::RinexMetData::data;
+%include "../../../../dev/ext/lib/FileHandling/RINEX/RinexMetData.hpp"
 %include "src/RinexMetData.i"
-// RINEX 3 nav:
+
+ // RINEX 3 nav:
 %include "../../../dev/ext/lib/FileHandling/RINEX3/Rinex3NavBase.hpp"
 %include "../../../dev/ext/lib/FileHandling/RINEX3/Rinex3NavHeader.hpp"
 %include "../../../dev/ext/lib/FileHandling/RINEX3/Rinex3NavStream.hpp"
