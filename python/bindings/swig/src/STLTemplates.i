@@ -48,7 +48,7 @@
 %template(map_ObsEpoch) std::map<gpstk::SatID, gpstk::SvObsEpoch>;
 
 // AKA ObsEpochMap
-%template(map_ObsEpochMap) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
+%template(ObsEpochMap) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
 
 
 //////////////////////////////////////////////////
