@@ -1,10 +1,3 @@
-%ignore gpstk::Triple::operator[](const size_t index);
-%ignore gpstk::Triple::operator()(const size_t index);
-%ignore gpstk::Triple::operator*(double right, const Triple& rhs);
-%ignore gpstk::Triple::theArray;
-
-%include "../../../../dev/ext/lib/Math/Triple.hpp"
-
 // C++ extensions:
 %extend gpstk::Triple {
    double __getitem__(unsigned int i) {
