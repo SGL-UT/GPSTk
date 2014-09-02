@@ -176,8 +176,7 @@ fi
 # Build/install python swig bindings
 #----------------------------------------
 if [ "$build_python" ]; then
-    if [ -d "$gpstk_root/doc" ]
-    then
+    if [ -d "$gpstk_root/doc" ]; then
         echo "Using existing doxygen files."
     else
         echo "Doxygen Files Not Found, Building now..."
@@ -197,7 +196,8 @@ if [ "$build_python" ]; then
         echo "$0: Removing previous python build"
         rm -rf  $python_root/build
     fi
-    mkdir -p $python_root/build
+    
+    [ -d $python_root/build ] || mkdir -p $python_root/build
 
     cd $python_root/build
     cmake -DCMAKE_INSTALL_PREFIX=$python_install ..
@@ -211,7 +211,6 @@ if [ "$build_python" ]; then
     echo "$0: Installing python gpstk module"
     make install
 fi
-
 
 #----------------------------------------
 # Build/install c++ library and apps
@@ -238,4 +237,3 @@ fi
 
 echo ""
 echo "$0: ...done."
-
