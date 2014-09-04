@@ -193,7 +193,6 @@ if [ "$build_python" ]; then
     fi
 
     if [ "$clean_build" ]; then
-        echo "$0: Removing previous python build"
         rm -rf  $python_root/build
     fi
     
@@ -207,6 +206,7 @@ if [ "$build_python" ]; then
     if [ "$clean_install" ]; then
         rm -rf $python_install
     fi
+    mkdir -p $python_install
 
     echo "$0: Installing python gpstk module"
     make install
