@@ -17,7 +17,10 @@
 #
 #----------------------------------------
 
+#----------------------------------------
 # Default values for paths. Options can override these.
+#----------------------------------------
+
 gpstk_root=$PWD/dev
 gpstk_install=$PWD/dev/install
 python_install=$(python -m site --user-site)
@@ -39,11 +42,12 @@ esac
 #----------------------------------------
 # usage() function to use when help is needed:
 #----------------------------------------
+
 usage()
 {
 cat << EOF
 
-usage:     $0 [-h] [-c] [-d] [-p] [-b] [-i] [-o] [-t] [-v] [-l <path>] [-r <path>] [-s <path>]
+usage:     $0 [-h] [-cpdbiotv] [-l <path>] [-r <path>] [-s <path>]
 
 purpose:   This script is for use with CMake and building GPSTk.
 
@@ -52,8 +56,8 @@ OPTIONS:
    -h     help             Show this message
 
    -c     build_cpp        build C++ files and libraries
-   -d     build_doxygen    build Doxygen files
-   -p     build_python     build Python files and libraries with SWIG bindings (autobuilds Doxygen)
+   -d     build_doxygen    build Doxygen files (used for python docstrings)
+   -p     build_python     build Python files and libraries with SWIG bindings
 
    -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
    -i     clean_install    rm -rf gpstk_install; rm -rf python_install
@@ -62,14 +66,19 @@ OPTIONS:
    -t     test_switch      initialize test framework
    -v     graphviz         generate dependency graph (.DOT and .PDF files)
 
-   -l     python_install   default = $python_install, change Python library installation location
    -r     gpstk_root       default = $gpstk_root, path to GPSTk dev top-level CMakeLists.txt file (and source tree)
    -s     gpstk_install    default = $gpstk_install,  path to GPSTk install, to contain ./bin, ./lib, and ./include
                            If a relative path is supplied here, it needs to be relative to gpstk_root
+   -l     python_install   default = $python_install, change Python library installation location
+
 EOF
 
 exit 1
 }
+
+#----------------------------------------
+# Parse input args
+#----------------------------------------
 
 while getopts "hcdpbiotvl:r:s:" option; do
     case $option in
@@ -96,6 +105,10 @@ done
 # command line options we did not capture,
 # then they are accessible via use of $*
 shift $(($OPTIND - 1))
+
+#----------------------------------------
+# Echo configuration
+#----------------------------------------
 
 # helper function to print out configutaion
 function ptof {
@@ -129,27 +142,44 @@ if [ ! -d "$gpstk_root" ]; then
     exit 1
 fi
 
-
 #----------------------------------------
-# CMake
+# C++: Build and install lib and apps
 #----------------------------------------
 # Construct CMake command string based on script options
 # Reminder: to set variables from command line use "$ cmake -D <var>:<type>=<value>"
+
 if [ "$build_cpp" ]; then
+
     if [ "$clean_build" ]; then
         echo "$0: Removing previous c++ build"
         rm -rf "$gpstk_root/build"
     fi
     mkdir -p $gpstk_root/build
 
+    # Generate build files (e.g. Makefiles)
     args=""
+    args+=${gpstk_install:+" -DCMAKE_INSTALL_INSTALL=$gpstk_install"}
     args+=${core_only:+" -DCORE_ONLY=ON"}
     args+=${test_switch:+" -DTEST_SWITCH=ON"}
     args+=${graphviz:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
 
-    export gpstk=$gpstk_install
     cd $gpstk_root/build
     cmake $args ..
+
+    # Build library and apps
+    echo "$0: Building c++ libs and apps"
+    cd $gpstk_root/build
+    make -j $num_cores
+
+    # Install library and apps
+    if [ "$clean_install" ]; then
+        echo "$0: Removing previous install directory"
+        rm -rf $gpstk_install
+    fi
+    mkdir -p $gpstk_install
+
+    echo "$0: Installing c++ libs and apps"
+    make install
 
     # Convert graphviz .DOT file into a .PDF
     if ["$graphviz" ]; then
@@ -157,8 +187,8 @@ if [ "$build_cpp" ]; then
         mkdir -p $path_graphviz
         dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
     fi
-fi
 
+fi
 
 #----------------------------------------
 # Doxygen
@@ -171,25 +201,36 @@ if [ "$build_doxygen" ]; then
     python docstring_generator.py
 fi
 
+#----------------------------------------
+# Test: Hooks for test framework
+#----------------------------------------
+
+if [ "$test_switch" ]; then
+    cd $gpstk_root/build
+    ctest -v
+fi
 
 #----------------------------------------
-# Build/install python swig bindings
+# Python: Build/install swig bindings
 #----------------------------------------
+
 if [ "$build_python" ]; then
-    if [ -d "$gpstk_root/doc" ]; then
-        echo "Using existing doxygen files."
-    else
-        echo "Doxygen Files Not Found, Building now..."
-        cd $gpstk_root
-        doxygen
-    fi
+    if [ "$build_doxygen" ]; then
+        if [ -d "$gpstk_root/doc" ]; then
+            echo "Using existing doxygen files."
+        else
+            echo "Doxygen Files Not Found, Building now..."
+            cd $gpstk_root
+            doxygen
+        fi
 
-    if [ -d "$python_root/doc" ]; then
-        echo "Using existing docstring files."
-    else
-        echo "Docstring Files Not Found, Building now..."
-        cd $python_root
-        python docstring_generator.py
+        if [ -d "$python_root/doc" ]; then
+            echo "Using existing docstring files."
+        else
+            echo "Docstring Files Not Found, Building now..."
+            cd $python_root
+            python docstring_generator.py
+        fi
     fi
 
     if [ "$clean_build" ]; then
@@ -213,27 +254,22 @@ if [ "$build_python" ]; then
 fi
 
 #----------------------------------------
-# Build/install c++ library and apps
+# Test paths
 #----------------------------------------
-if [ "$build_cpp" ]; then
-    echo "$0: Building c++ libs and apps"
-    cd $gpstk_root/build
-    make -j $num_cores
 
-    if [ "$clean_install" ]; then
-        echo "$0: Removing previous install directory"
-        rm -rf $gpstk_install
-    fi
+# Test whether $gpstk_install is in the user's PATH
+# If not, echo a warning since the python extension module will break at run time.
 
-    echo "$0: Installing c++ libs and apps"
-    make install
+if [[ ":$PATH:" == *":$gpstk_install/lib:"* ]]; then
+    echo "NOTICE: Your chosen install location for libgpstk.so is in your PATH. Well done."
+elif [[ ":$LD_LIBRARY_PATH:" == *":$gpstk_install/lib:"* ]]; then
+    echo "NOTICE: Your chosen install location for libgpstk.so is in your LD_LIBRARY_PATH. Well done."
+else
+    echo "WARNING: Your chosen install location for libgpstk.so is NOT in your path."
+    echo "         You may want to add it to your environment LD_LIBRARY_PATH like so:"
+    echo "             $ export LD_LIBRARY_PATH=$gpstk_install/lib:'$LD_LIBRARY_PATH' "
 fi
 
-
-if [ "$test_switch" ]; then
-    cd $gpstk_root/build
-    ctest -v
-fi
-
-echo ""
-echo "$0: ...done."
+#----------------------------------------
+# The End
+#----------------------------------------
