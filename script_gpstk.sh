@@ -158,7 +158,7 @@ if [ "$build_cpp" ]; then
 
     # Generate build files (e.g. Makefiles)
     args=""
-    args+=${gpstk_install:+" -DCMAKE_INSTALL_INSTALL=$gpstk_install"}
+    args+=${gpstk_install:+" -DCMAKE_INSTALL_PREFIX=$gpstk_install"}
     args+=${core_only:+" -DCORE_ONLY=ON"}
     args+=${test_switch:+" -DTEST_SWITCH=ON"}
     args+=${graphviz:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
@@ -240,7 +240,14 @@ if [ "$build_python" ]; then
     [ -d $python_root/build ] || mkdir -p $python_root/build
 
     cd $python_root/build
-    cmake -DCMAKE_INSTALL_PREFIX=$python_install ..
+
+    # Generate build files (e.g. Makefiles)
+    args=""
+    args+=${gpstk_install:+" -DGPSTK_INSTALL=$gpstk_install"}
+    args+=${python_install:+" -DCMAKE_INSTALL_PREFIX=$python_install"}
+
+    cmake $args ..
+
     echo "$0: Building python gpstk module"
     make -j$num_cores
 
