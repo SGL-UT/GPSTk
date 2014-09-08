@@ -33,7 +33,7 @@ find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 set(CMAKE_SWIG_FLAGS "")
 
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 2 REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
