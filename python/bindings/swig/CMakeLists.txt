@@ -99,9 +99,9 @@ swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 # Install with CMake install() directive
 #----------------------------------------
 
-message( STATUS "SWIG module install path = ${CMAKE_INSTALL_PREFIX}/gpstk" )
-install( TARGETS "_${SWIG_MODULE}" DESTINATION ${CMAKE_INSTALL_PREFIX}/gpstk )
-install( FILES "${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py" DESTINATION ${CMAKE_INSTALL_PREFIX}/gpstk )
+message( STATUS "SWIG module install path = ${CMAKE_INSTALL_PREFIX}" )
+install( TARGETS "_${SWIG_MODULE}" DESTINATION ${CMAKE_INSTALL_PREFIX} )
+install( FILES "${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py" DESTINATION ${CMAKE_INSTALL_PREFIX} )
 
 #------------------------------------------------------------
 # The End
