@@ -1713,10 +1713,12 @@ namespace gpstk
             strm.timesystem = TimeSystem::BDT;
             firstObs.setTimeSystem(TimeSystem::BDT);
          }
-         else if(fileSysSat.system == SatID::systemMixed)
-         {
-            FFStreamError e("TimeSystem in MIXED files must be given by first obs");
-            GPSTK_THROW(e);
+         else if(fileSysSat.system == SatID::systemMixed) {
+            // Though it violates the standard,
+            // assume that file creator knew what he was doing,
+            // and use TimeSystem::GPS by default
+            strm.timesystem = TimeSystem::GPS;
+            firstObs.setTimeSystem(TimeSystem::BDT);
          }
          else
          {
