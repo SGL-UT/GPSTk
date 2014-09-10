@@ -2386,6 +2386,17 @@ namespace gpstk
 
          // 'old-style' type: Let's change it to 'new style'.
       if( newType.size() == 2 )
+      if (version < 3.0)
+      {
+         // Use mappings instead to find reassigned observation types
+         if (mapSysR2toR3ObsID.count("G") == 0 || mapSysR2toR3ObsID.at("G").count(newType) == 0)
+         {
+            InvalidRequest exc("Missing observation type.");
+            GPSTK_THROW(exc);
+         }
+         newType = mapSysR2toR3ObsID.at("G").at(newType).asString();
+      }
+      else
       {
          if( newType == "C1" ) newType = "C1C";
          else if( newType == "P1" ) newType = "C1P";
