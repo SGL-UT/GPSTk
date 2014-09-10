@@ -37,6 +37,8 @@ find_package(PythonLibs 2 REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
+
 message(STATUS "Building against python include path: ${PYTHON_INCLUDE_PATH}")
 message(STATUS "Building against python library: ${PYTHON_LIBRARIES}")
 
@@ -99,9 +101,11 @@ swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 # Install with CMake install() directive
 #----------------------------------------
 
-message( STATUS "SWIG module install path = ${CMAKE_INSTALL_PREFIX}" )
-install( TARGETS "_${SWIG_MODULE}" DESTINATION ${CMAKE_INSTALL_PREFIX} )
-install( FILES "${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py" DESTINATION ${CMAKE_INSTALL_PREFIX} )
+set( MODULE_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/gpstk )
+message( STATUS "SWIG module install path = ${MODULE_INSTALL_PATH}" )
+install( TARGETS "_${SWIG_MODULE}" DESTINATION gpstk )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION gpstk )
+install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py DESTINATION gpstk )
 
 #------------------------------------------------------------
 # The End
