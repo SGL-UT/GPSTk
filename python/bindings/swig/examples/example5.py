@@ -2,6 +2,13 @@
 
 """
 A GPSTk example showing how to walk RINEX data sets and use the ObsEpoch classes
+
+Usage:
+  python example5.py <RINEX3 Obs file>
+  
+Example:
+  python ./example5.py rinex3obs_data.txt
+
 """
 
 import argparse

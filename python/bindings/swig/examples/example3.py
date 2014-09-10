@@ -7,22 +7,22 @@ sample text file rinex3obs_data.txt. A PRN number that gives useful output is 5.
 This is a port of the older C++ example3.cpp.
 
 Usage:
-
   python example3.py <rinex3obs_filename>
 
-For example:
+Example:
   python example3.py rinex3obs_data.txt
+  # when asked for PRN, enter 6
 
 """
 
-from gpstk.constants import C_MPS, GAMMA_GPS, L1_FREQ_GPS
+from gpstk import C_MPS, GAMMA_GPS, L1_FREQ_GPS
 import argparse  # an incredibly useful module for command line processing
 import gpstk
 
 # We recommend only using
 #     'import gpstk',
 # but if you need constants fairly often, then importing them specifically at once
-# may be easier than referring to them by gpstk.constants.L1_FREQ_GPS.
+# may be easier than referring to them by gpstk.L1_FREQ_GPS.
 
 
 def main():
@@ -59,7 +59,7 @@ def main():
                 print 'PRN', int_prn, 'biased multipath', mu
 
     # We can catch any custom gpstk exception like this:
-    except gpstk.exceptions.Exception as e:
+    except gpstk.Exception as e:
         print e
 
 

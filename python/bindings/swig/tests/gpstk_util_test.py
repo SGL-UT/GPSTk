@@ -6,14 +6,14 @@ import gpstk
 
 class GPS_consants_test(unittest.TestCase):
     def test_constants(self):
-        self.assertEqual(32, gpstk.constants.MAX_PRN)
-        self.assertEqual(32, gpstk.constants.MAX_PRN_GPS)
+        self.assertEqual(32, gpstk.MAX_PRN)
+        self.assertEqual(32, gpstk.MAX_PRN_GPS)
 
 
 class Geometry_test(unittest.TestCase):
     def test_constants(self):
-        self.assertEqual(1.7453292519943e-2, gpstk.constants.DEG_TO_RAD)
-        self.assertEqual(57.295779513082, gpstk.constants.RAD_TO_DEG)
+        self.assertEqual(1.7453292519943e-2, gpstk.DEG_TO_RAD)
+        self.assertEqual(57.295779513082, gpstk.RAD_TO_DEG)
 
 
 class ReferenceFrame_test(unittest.TestCase):
@@ -52,9 +52,9 @@ class SatID_test(unittest.TestCase):
 
 class GNSSconstants_test(unittest.TestCase):
     def test_constants(self):
-        self.assertEqual(gpstk.constants.PI, 3.1415926535898)
-        self.assertEqual(gpstk.constants.OSC_FREQ_GPS, 10.23e6)
-        self.assertEqual(gpstk.constants.L6_FREQ_GAL, 1278.75e6)
+        self.assertEqual(gpstk.PI, 3.1415926535898)
+        self.assertEqual(gpstk.OSC_FREQ_GPS, 10.23e6)
+        self.assertEqual(gpstk.L6_FREQ_GAL, 1278.75e6)
 
     def test_functions(self):
         self.assertEqual(4, gpstk.getLegacyFitInterval(15, 27))
@@ -77,12 +77,6 @@ class Triple_test(unittest.TestCase):
         self.assertEqual(1.5, t[0])
         self.assertEqual(2.0, t[1])
         self.assertEqual(-3.0, t[2])
-
-    def test_conversions(self):
-        trip = gpstk.Triple(1.5, 2.5, 3.5)
-        tupl = (1.5, 2.5, 3.5)
-        self.assertEqual(trip, gpstk.makeTriple(tupl))
-        self.assertEqual(tupl, gpstk.makeTuple(trip))
 
     def test_operators(self):
         a = gpstk.Triple(1.0, 2.0, 4.0)
@@ -179,11 +173,11 @@ class Position_test(unittest.TestCase):
 
 class GPS_URA_test(unittest.TestCase):
     def test(self):
-        self.assertEqual(15, gpstk.constants.SV_ACCURACY_GPS_MAX_INDEX_VALUE)
+        self.assertEqual(15, gpstk.SV_ACCURACY_GPS_MAX_INDEX_VALUE)
         self.assertEqual(9, gpstk.accuracy2ura(100.1))
-        self.assertEqual(0.0, gpstk.constants.sv_accuracy_gps_min_index(0))
-        self.assertEqual(2.4, gpstk.constants.sv_accuracy_gps_min_index(1))
-        self.assertRaises(gpstk.exceptions.IndexOutOfBoundsException, gpstk.constants.sv_accuracy_gps_min_index, 16)
+        self.assertEqual(0.0, gpstk.sv_accuracy_gps_min_index(0))
+        self.assertEqual(2.4, gpstk.sv_accuracy_gps_min_index(1))
+        self.assertRaises(gpstk.IndexOutOfBoundsException, gpstk.sv_accuracy_gps_min_index, 16)
 
 
 class ObsID_test(unittest.TestCase):
@@ -215,7 +209,7 @@ class Vector_test(unittest.TestCase):
         self.assertEqual('3, 3, 3, 3, 3', str(v))
 
     def test_from_stdvector_double(self):
-        tmp = gpstk.cpp.vector_double(5)
+        tmp = gpstk.vector_double(5)
         tmp[0] = 1.23
         tmp[1] = 2.34
         tmp[2] = 3.45
@@ -240,14 +234,14 @@ class Vector_test(unittest.TestCase):
 
 class std_template_test(unittest.TestCase):
     def test_vector(self):
-        v = gpstk.cpp.vector_int()
+        v = gpstk.vector_int()
         v.push_back(5)
         v.push_back(3)
         v.push_back(10)
         self.assertEqual(5, v[0])
         self.assertEqual(3, v[1])
         self.assertEqual(10, v[2])
-        v = gpstk.cpp.vector_double()
+        v = gpstk.vector_double()
         v.push_back(1.5)
         v.push_back(2.5)
         self.assertEqual(1.5, v[0])
@@ -255,7 +249,7 @@ class std_template_test(unittest.TestCase):
         self.assertEqual(2, len(v))
 
     def test_vector_iter(self):
-        v = gpstk.cpp.vector_int()
+        v = gpstk.vector_int()
         v.push_back(5)
         v.push_back(3)
         v.push_back(10)
@@ -271,49 +265,49 @@ class std_template_test(unittest.TestCase):
                 self.assertEqual(seq1[i], seq2[i])
 
         list = [1.1, 2.2, 3.3]
-        v = gpstk.cpp.seqToVector(list)
-        self.assertIsInstance(v, gpstk.cpp.vector_double)
+        v = gpstk.seqToVector(list)
+        self.assertIsInstance(v, gpstk.vector_double)
         same_seq(list, v)
 
         list = [1.1, 2.2, 3.3]
-        v = gpstk.cpp.seqToVector(list, outtype='vector_double')
-        self.assertIsInstance(v, gpstk.cpp.vector_double)
+        v = gpstk.seqToVector(list, outtype='vector_double')
+        self.assertIsInstance(v, gpstk.vector_double)
         same_seq(list, v)
 
         list = ['bar!', 'foo?']
-        v = gpstk.cpp.seqToVector(list)
-        self.assertIsInstance(v, gpstk.cpp.vector_string)
+        v = gpstk.seqToVector(list)
+        self.assertIsInstance(v, gpstk.vector_string)
         same_seq(list, v)
 
-        v = gpstk.cpp.vector_int()
+        v = gpstk.vector_int()
         v.push_back(3)
         v.push_back(5)
-        list = gpstk.cpp.vectorToSeq(v)
+        list = gpstk.vectorToSeq(v)
         same_seq(list, v)
 
         list = [1.1, 2.2, 3.3]
-        self.assertRaises(TypeError, gpstk.cpp.seqToVector, list, 'vector_doesnotexist')
+        self.assertRaises(TypeError, gpstk.seqToVector, list, 'vector_doesnotexist')
 
         list = [1, 2.2, 'c']  # mismatching types not allowed
-        self.assertRaises(TypeError, gpstk.cpp.seqToVector, list)
+        self.assertRaises(TypeError, gpstk.seqToVector, list)
 
         list = [1000L, 2000L]  # PyLongs are not templated
-        self.assertRaises(TypeError, gpstk.cpp.seqToVector, list)
+        self.assertRaises(TypeError, gpstk.seqToVector, list)
 
     def test_map(self):
-        map = gpstk.cpp.map_int_char()
+        map = gpstk.map_int_char()
         map[1] = 'A'
         map[100] = 'z'
         self.assertEqual('A', map[1])
         self.assertEqual('z', map[100])
-        map = gpstk.cpp.map_string_int()
+        map = gpstk.map_string_int()
         map['key1'] = 123
         map['key2'] = 321
         self.assertEqual(123, map['key1'])
         self.assertEqual(321, map['key2'])
 
     def test_map_iter(self):
-        map = gpstk.cpp.map_int_string()
+        map = gpstk.map_int_string()
         map[5] = 'five'
         map[6] = 'six'
         list = []
@@ -322,7 +316,7 @@ class std_template_test(unittest.TestCase):
         self.assertEqual([5,6], sorted(list))
 
     def test_map_len(self):
-        map = gpstk.cpp.map_int_string()
+        map = gpstk.map_int_string()
         map[5] = 'five'
         map[6] = 'six'
         self.assertEqual(2, len(map))
@@ -334,19 +328,19 @@ class std_template_test(unittest.TestCase):
                 self.assertEqual(a[x], b[x])
 
         d = {1: 'A', 2: 'B', 3: 'C'}
-        m = gpstk.cpp.dictToMap(d)
+        m = gpstk.dictToMap(d)
         same(d, m)
-        self.assertIsInstance(m, gpstk.cpp.map_int_string)
-        same(d, gpstk.cpp.mapToDict(m))
+        self.assertIsInstance(m, gpstk.map_int_string)
+        same(d, gpstk.mapToDict(m))
 
         d = {'A': 1.1, 'B': 2.2, 'C': 3.3}
-        m = gpstk.cpp.dictToMap(d)
+        m = gpstk.dictToMap(d)
         same(d, m)
-        self.assertIsInstance(m, gpstk.cpp.map_string_double)
-        same(d, gpstk.cpp.mapToDict(m))
+        self.assertIsInstance(m, gpstk.map_string_double)
+        same(d, gpstk.mapToDict(m))
 
         d = {'A': 1, 'B': 1.1}
-        self.assertRaises(TypeError, gpstk.cpp.dictToMap, d)
+        self.assertRaises(TypeError, gpstk.dictToMap, d)
 
 
 class convhelp_test(unittest.TestCase):
@@ -392,9 +386,9 @@ class AstronomicalFunctions_test(unittest.TestCase):
         self.assertAlmostEqual(10.934294925420545, gpstk.UTC2SID(c))
 
     def test_constants(self):
-        self.assertAlmostEqual(1.49597870e11, gpstk.constants.AU_CONST)
-        self.assertAlmostEqual(0.0174532925199432957692369, gpstk.constants.D2R)
-        self.assertAlmostEqual(9.80665,  gpstk.constants.EarthGrav)
+        self.assertAlmostEqual(1.49597870e11, gpstk.AU_CONST)
+        self.assertAlmostEqual(0.0174532925199432957692369, gpstk.D2R)
+        self.assertAlmostEqual(9.80665,  gpstk.EarthGrav)
 
 
 class Positioning_test(unittest.TestCase):

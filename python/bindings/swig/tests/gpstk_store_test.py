@@ -19,7 +19,7 @@ class EllipsoidTests(unittest.TestCase):
 class URATest(unittest.TestCase):
     def test(self):
         self.assertEqual(3, gpstk.accuracy2ura(5.352))
-        self.assertEqual(15, gpstk.constants.SV_ACCURACY_GPS_MAX_INDEX_VALUE)
+        self.assertEqual(15, gpstk.SV_ACCURACY_GPS_MAX_INDEX_VALUE)
 
 
 class BrcKeplerOrbitTest(unittest.TestCase):
@@ -184,44 +184,6 @@ class RinexMetTest(unittest.TestCase):
         d = dataPoint.getData()
         self.assertAlmostEqual(998.3, d[gpstk.RinexMetHeader.PR])
         self.assertAlmostEqual(30.8, d[gpstk.RinexMetHeader.TD])
-
-
-class FICTest(unittest.TestCase):
-    def test_almanac(self):
-        isblock62 = (lambda x: x.blockNum == 62)
-        header, data = gpstk.readFIC('fic_data.txt', filterfunction=isblock62, strict=True)
-        self.assertEqual(96, len(data))
-        g = gpstk.GPSAlmanacStore()
-        for d in data:
-            orbit = d.toAlmOrbit()
-            g.addAlmanac(orbit)
-
-        sat = gpstk.SatID(4, gpstk.SatID.systemGPS)
-        sys = gpstk.TimeSystem(gpstk.TimeSystem.GPS)
-        t = gpstk.CivilTime(2012, 11, 10, 2, 0, 0, sys)
-        t = t.toCommonTime()
-        xvt= g.getXvt(sat, t)
-        self.assertAlmostEqual(6888490.4337890595, xvt.x[0])
-        self.assertAlmostEqual(1036.1894772036476, xvt.v[1])
-
-
-class MSCTest(unittest.TestCase):
-    def test_stream(self):
-        header, data = gpstk.readMSC('msc_data.txt')
-        dataPoint = data.next()
-        xvt = dataPoint.getXvt(dataPoint.time)
-        self.assertAlmostEqual(-1111111.3059100616, xvt.x[0])
-        self.assertAlmostEqual(0.0222, xvt.v[1])
-        self.assertEqual('AAA    ', dataPoint.mnemonic)
-        self.assertEqual(11111, dataPoint.station)
-
-    def test_store(self):
-        store = gpstk.MSCStore()
-        store.loadFile('msc_data.txt')
-        xvt = store.getXvt('11111', store.getInitialTime())
-        self.assertAlmostEqual(-1111111.295, xvt.x[0])
-        self.assertAlmostEqual(0.0222, xvt.v[1])
-
 
 if __name__ == '__main__':
     unittest.main()

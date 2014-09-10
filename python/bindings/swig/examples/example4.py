@@ -8,7 +8,7 @@ This is a port of the older C++ example4.cpp.
 Usage:
   python example4.py <RINEX3 Obs file> <RINEX3 Nav file> [-m <RINEX Met file>]'
 
-For example:
+Example:
   python example4.py rinex3obs_data.txt rinex3nav_data.txt -m rinexmet_data.txt
 
 """
@@ -123,7 +123,7 @@ def main():
                         continue  # Ignore this satellite if P1 is not found
                     # list 'vecList' contains RinexDatum, whose public
                     # attribute "data" indeed holds the actual data point
-                    ionocorr = 1.0 / (1.0 - gpstk.constants.GAMMA_GPS) * ( P1 - P2 )
+                    ionocorr = 1.0 / (1.0 - gpstk.GAMMA_GPS) * ( P1 - P2 )
 
                 # Now, we include the current PRN number in the first part
                 # of "it" iterator into the list holding the satellites.

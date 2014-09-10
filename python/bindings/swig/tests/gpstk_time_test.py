@@ -21,7 +21,7 @@ class CommonTime_Tests(unittest.TestCase):
         # subtracting 2 CommonTimes throws an InvalidRequest
         a = gpstk.CommonTime(gpstk.TimeSystem('GPS'))
         b = gpstk.CommonTime(gpstk.TimeSystem('GLO'))
-        self.assertRaises(gpstk.exceptions.InvalidRequest, a.__sub__, b)
+        self.assertRaises(gpstk.InvalidRequest, a.__sub__, b)
 
     def test_times_gen(self):
         start = gpstk.CommonTime()
@@ -64,12 +64,12 @@ class ScanTimes(unittest.TestCase):
 
         # ANSI
         test('10000', '%K', '2440588 10000000 0.000000000000000 UNK')
-        test('100000000', '%x', raises=gpstk.exceptions.InvalidRequest)  # bad format
-        test('1000000000000000000', '%K', raises=gpstk.exceptions.InvalidRequest)  # bad time
+        test('100000000', '%x', raises=gpstk.InvalidRequest)  # bad format
+        test('1000000000000000000', '%K', raises=gpstk.InvalidRequest)  # bad time
 
         # Civil
         test('01 24 1994 11:39:50', '%m %d %Y %H:%M:%f', '2449377 41990000 0.000000000000000 UNK')
-        test('123461994', '%m %d %Y %H:%M:%f', raises=gpstk.exceptions.InvalidRequest)
+        test('123461994', '%m %d %Y %H:%M:%f', raises=gpstk.InvalidRequest)
 
         # RINEX
         test('01 24 1994 11:39:50', '%y %m %d %H %M %S', '2454603 39600000 0.000000000000000 UNK')
@@ -157,9 +157,9 @@ class Time_Comparisons(unittest.TestCase):
         t1.addDays(3)
 
         t2 = gpstk.CommonTime(timeSystem)
-        t2.addSeconds(2 * gpstk.constants.SEC_PER_DAY)  # add 2 days
-        t2 += (2 * gpstk.constants.SEC_PER_DAY)  # add 2 more days
-        t2 -= (1 * gpstk.constants.SEC_PER_DAY)  # subtract a day
+        t2.addSeconds(2 * gpstk.SEC_PER_DAY)  # add 2 days
+        t2 += (2 * gpstk.SEC_PER_DAY)  # add 2 more days
+        t2 -= (1 * gpstk.SEC_PER_DAY)  # subtract a day
 
         self.assertEqual(False, t1 < t2)
         self.assertEqual(True, t1 <= t2,)
