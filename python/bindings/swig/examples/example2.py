@@ -8,7 +8,6 @@ only imported and rewrote the same file. But that would be
 completely trivial for python.
 
 Usage:
-
   python example2.py
 
 """

@@ -6,7 +6,6 @@ A GPSTk example with some simple time classes and functions.
 This is a port of the older C++ example1.cpp.
 
 Usage:
-
   python example1.py
 
 """
