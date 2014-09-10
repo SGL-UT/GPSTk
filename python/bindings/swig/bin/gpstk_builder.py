@@ -26,6 +26,7 @@ import distutils.sysconfig
 import inspect
 import os
 import sys
+import shutil
 
 cwd = os.getcwd()
 os.chdir(os.path.join(cwd, '..', 'build'))
@@ -198,6 +199,7 @@ def main():
         out_file.write('import ' + key + '\n')
     out_file.write('import constants\n')
     out_file.write('import exceptions\n')
+    out_file.close()
 
     # Create gpstk folder, move things into it
     # we don't know extension of library file, so search the directory:
@@ -211,10 +213,10 @@ def main():
         os.makedirs(out_dir)
     for f in files_to_move:
         if os.path.exists(f):
-            os.rename(f, out_dir + f)
+            shutil.move(f, out_dir + f)
         # adds pyc file if it exists:
         if os.path.exists(f + 'c'):
-            os.rename(f + 'c', out_dir + f + 'c')
+            shutil.move(f + 'c', out_dir + f + 'c')
 
 
 if __name__ == '__main__':
