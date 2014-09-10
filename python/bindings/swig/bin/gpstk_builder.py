@@ -199,6 +199,7 @@ def main():
         out_file.write('import ' + key + '\n')
     out_file.write('import constants\n')
     out_file.write('import exceptions\n')
+    out_file.close()
 
     # Create gpstk folder, move things into it
     # we don't know extension of library file, so search the directory:
