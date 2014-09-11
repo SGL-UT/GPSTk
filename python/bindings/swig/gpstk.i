@@ -328,3 +328,17 @@ using namespace gpstk;
 // instead of creating another small file.
 %include "src/pythonfunctions.i"
 %include "src/FileIO.i"
+
+%pythoncode %{
+        # clean-up the dir listing by removing *_swigregister.
+        import gpstk
+        stuff=None
+        to_remove=[]
+        for stuff in locals():
+            if stuff.endswith('_swigregister'):
+                to_remove.append(stuff)
+        for stuff in to_remove:
+            del locals()[stuff]
+        del locals()['stuff']
+        del locals()['to_remove']
+    %}
