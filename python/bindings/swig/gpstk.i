@@ -118,24 +118,7 @@ using namespace gpstk;
 %ignore gpstk::Triple::operator*(double right, const Triple& rhs);
 %ignore gpstk::Triple::theArray;
 %include "Triple.hpp"
-
-
-%extend gpstk::Triple {
-   double __getitem__(unsigned int i) {
-      return (*($self))[i];
-   }
-
-   std::string __str__() {
-      std::ostringstream ss;
-      size_t i;
-      for(i = 0; i < $self->size() - 1; i++)
-         ss << (*($self))[i] << ", ";
-      ss << (*($self))[i];
-      return ss.str();
-   }
-
-}
-
+%include "src/Triple.i"
 
 %ignore gpstk::ReferenceFrame::ReferenceFrame(int i);
 %rename(__str__) gpstk::ReferenceFrame::asString() const;

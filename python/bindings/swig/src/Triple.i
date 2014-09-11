@@ -4,6 +4,15 @@
       // element [] access
       return $self->theArray[i];
    }
+   
+   //----------------------------------------
+   // Alternate implementation of indexing
+   // Remove this comment block after testing
+   //----------------------------------------
+   //    double __getitem__(unsigned int i) {
+   //       return (*($self))[i];
+   //    }
+
    gpstk::Triple scale(double scalar) {
       // since operator* can't be wrapped
       return Triple(scalar * $self->theArray[0],
@@ -13,6 +22,19 @@
    int __len__() {
       return 3;
    }
+ 
+   std::string __str__() {
+      std::ostringstream ss;
+      size_t i;
+      for(i = 0; i < $self->size() - 1; i++)
+         ss << (*($self))[i] << ", ";
+      ss << (*($self))[i];
+      return ss.str();
+   }
+ 
+   
+   
+   
 };
 
 
