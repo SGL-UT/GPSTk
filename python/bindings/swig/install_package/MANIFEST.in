@@ -1,0 +1,6 @@
+include README.txt
+include LICENSE.txt
+include COPYING.txt
+include COPYING.LESSER.txt
+include CHANGES.txt
+include INSTALL.txt
