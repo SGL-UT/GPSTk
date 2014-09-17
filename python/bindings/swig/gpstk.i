@@ -89,6 +89,7 @@ using namespace gpstk;
 %feature("notabstract") QZSWeekSecond;
 %include "QZSWeekSecond.hpp"
 %feature("notabstract") MJD;
+%apply double { long double };  // swig does not really handle long doubles
 %include "MJD.hpp"
 %feature("notabstract") YDSTime;
 %include "YDSTime.hpp"
