@@ -101,12 +101,73 @@ swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 # Install with CMake install() directive
 #----------------------------------------
 
-set( MODULE_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/gpstk )
-message( STATUS "SWIG module install path = ${MODULE_INSTALL_PATH}" )
-install( TARGETS "_${SWIG_MODULE}" DESTINATION gpstk )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION gpstk )
-install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py DESTINATION gpstk )
+set( INSTALL_METHOD "1" )
 
+message( STATUS "INSTALL_METHOD = ${INSTALL_METHOD}" )
+
+# Only install the gpstk module files
+if( INSTALL_METHOD STREQUAL "1" )
+    set( MODULE_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/gpstk )
+    message( STATUS "SWIG module install path = ${MODULE_INSTALL_PATH}" )
+    install( TARGETS "_${SWIG_MODULE}" DESTINATION gpstk )
+    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION gpstk )
+    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py DESTINATION gpstk )
+endif()
+
+# Install the gpstk package file tree, then install the gpstk extension module into the package
+if( INSTALL_METHOD STREQUAL "2" )
+    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk )
+    message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
+    install( DIRECTORY ${INSTALL_PACKAGE_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+    install( TARGETS "_${SWIG_MODULE}" DESTINATION gpstk )
+    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION gpstk )
+endif()
+
+# Install the gpstk module into the package file tree, and then install the package file tree 
+if( INSTALL_METHOD STREQUAL "3" )
+    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk )
+    message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
+    install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH} )
+    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH} )
+    install( DIRECTORY ${INSTALL_PACKAGE_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX} )
+endif()
+	
+if( INSTALL_METHOD STREQUAL "4" )
+
+  # Install with distutils
+  find_program(PYTHON "python")
+
+  if( PYTHON )
+
+    # Currently, this returns /usr/bin/python
+    message( STATUS "find_program returned this PYTHON: ${PYTHON}" )
+    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
+
+    # Define filenames of stuff we need to build/install this module
+    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
+    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/install_package/setup.py")
+    set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk/__init__.py")
+    set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/timestamp")
+
+    # Use a configuration file setup.py.in to let CMake generate a proper setup.py for install
+    configure_file(${SETUP_PY_IN} ${SETUP_PY})
+
+    # use a custom command to create proper dependencies in the make targets
+    add_custom_command(OUTPUT ${OUTPUT}
+      COMMAND ${PYTHON} ${SETUP_PY} build
+      COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+      DEPENDS ${DEPS})
+    add_custom_target(target ALL DEPENDS ${OUTPUT})
+
+    install(CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --prefix=${CMAKE_INSTALL_PREFIX})")
+
+  endif()
+
+endif()
+	
+	
+	
+	
 #------------------------------------------------------------
 # The End
 #------------------------------------------------------------

@@ -3,7 +3,6 @@
 import gpstk
 import unittest
 
-
 class EllipsoidTests(unittest.TestCase):
     def test_WGS84(self):
         e = gpstk.WGS84Ellipsoid()
@@ -74,7 +73,7 @@ class SP3Test(unittest.TestCase):
         ephem = gpstk.SP3EphemerisStore()
         ephem.rejectBadPositions(True);
         ephem.rejectBadClocks(True);
-        ephem.loadFile("sp3_data.txt");
+        ephem.loadFile( gpstk.data.full_path("sp3_data.txt") );
         t = ephem.getInitialTime()
         t.addSeconds(60*120) # 2 hours into data
         s = gpstk.SatID(1)
@@ -84,7 +83,7 @@ class SP3Test(unittest.TestCase):
         self.assertAlmostEqual(-19921938.297000002, p[2])
 
     def test_stream(self):
-        header, data = gpstk.readSP3('sp3_data.txt', strict=True)
+        header, data = gpstk.readSP3( gpstk.data.full_path('sp3_data.txt'), strict=True)
         self.assertEqual(' IGS', header.agency)
         self.assertEqual(96, header.numberOfEpochs)
         dataPoint = data[15]
@@ -99,12 +98,12 @@ class SP3Test(unittest.TestCase):
 
 class SEMTest(unittest.TestCase):
     def test_stream(self):
-        header, gen = gpstk.readSEM('sem_data.txt')
+        header, gen = gpstk.readSEM( gpstk.data.full_path('sem_data.txt') )
         data = list(gen)
         self.assertEqual(31, len(data))
 
     def test_stream_strict(self):
-        header, data = gpstk.readSEM('sem_data.txt', strict=True)
+        header, data = gpstk.readSEM( gpstk.data.full_path('sem_data.txt') , strict=True)
         self.assertEqual(724, header.week)
         self.assertEqual(405504L, header.Toa)
         self.assertEqual(31, len(data))
@@ -114,7 +113,7 @@ class SEMTest(unittest.TestCase):
 
     def test_almanac_store(self):
         s = gpstk.SEMAlmanacStore()
-        s.loadFile('sem_data.txt')
+        s.loadFile( gpstk.data.full_path('sem_data.txt') )
         expected = ('x:(1.33149e+06, 1.54299e+07, -2.15873e+07), '
                     'v:(-2620.86, 793.126, 415.074), '
                     'clk bias:4.75373e-05, clk drift:0, relcorr:0')
@@ -124,12 +123,12 @@ class SEMTest(unittest.TestCase):
 
 class YumaTest(unittest.TestCase):
     def test_stream(self):
-        header, gen = gpstk.readYuma('yuma_data.txt')
+        header, gen = gpstk.readYuma( gpstk.data.full_path('yuma_data.txt') )
         data = list(gen)
         self.assertEqual(30, len(data))
 
     def test_stream_lazy(self):
-        header, data = gpstk.readYuma('yuma_data.txt', strict=True)
+        header, data = gpstk.readYuma( gpstk.data.full_path('yuma_data.txt') , strict=True)
         self.assertEqual(30, len(data))
         dataPoint = data[10]
         self.assertAlmostEqual(0.0, dataPoint.AF1)
@@ -140,7 +139,7 @@ class YumaTest(unittest.TestCase):
 
 class Rinex3ObsTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinex3Obs('rinex3obs_data.txt', strict=True)
+        header, data = gpstk.readRinex3Obs( gpstk.data.full_path('rinex3obs_data.txt') , strict=True)
         self.assertEqual(0L, header.numSVs)
         self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
         self.assertEqual(120, len(data))
@@ -154,14 +153,14 @@ class Rinex3ObsTest(unittest.TestCase):
         self.assertEqual(expectedTime, dataPoint.time)
 
     def test_stream_lazy(self):
-        header, gen = gpstk.readRinex3Obs('rinex3obs_data.txt', strict=False)
+        header, gen = gpstk.readRinex3Obs( gpstk.data.full_path('rinex3obs_data.txt') , strict=False)
         data = list(gen)
         self.assertEqual(120, len(data))
 
 
 class Rinex3NavTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinex3Nav('rinex3nav_data.txt', strict=True)
+        header, data = gpstk.readRinex3Nav( gpstk.data.full_path('rinex3nav_data.txt') , strict=True)
         self.assertEqual('06/10/2004 00:00:26', header.date)
         self.assertEqual(166, len(data))
         dataPoint = data[165]
@@ -177,7 +176,7 @@ class Rinex3NavTest(unittest.TestCase):
 
 class RinexMetTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinexMet('rinexmet_data.txt', strict=True)
+        header, data = gpstk.readRinexMet( gpstk.data.full_path('rinexmet_data.txt'), strict=True)
         self.assertEqual('06/09/2004 23:58:58', header.date)
         self.assertEqual(96, len(data))
         dataPoint = data[95]
@@ -185,5 +184,8 @@ class RinexMetTest(unittest.TestCase):
         self.assertAlmostEqual(998.3, d[gpstk.RinexMetHeader.PR])
         self.assertAlmostEqual(30.8, d[gpstk.RinexMetHeader.TD])
 
-if __name__ == '__main__':
+def main():
     unittest.main()
+
+if __name__ == '__main__':
+    main()
