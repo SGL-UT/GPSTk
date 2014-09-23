@@ -101,7 +101,9 @@ swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 # Install with CMake install() directive
 #----------------------------------------
 
-set( INSTALL_METHOD "1" )
+if( NOT DEFINED INSTALL_METHOD )
+    set( INSTALL_METHOD "4" )
+endif()
 
 message( STATUS "INSTALL_METHOD = ${INSTALL_METHOD}" )
 
@@ -125,23 +127,34 @@ endif()
 
 # Install the gpstk module into the package file tree, and then install the package file tree 
 if( INSTALL_METHOD STREQUAL "3" )
-    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk )
+    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
     message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
-    install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH} )
-    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH} )
+    install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
     install( DIRECTORY ${INSTALL_PACKAGE_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX} )
 endif()
-	
+
+# Install the gpstk module into the package file tree, and then STOP and let user run the setup.py script manually
 if( INSTALL_METHOD STREQUAL "4" )
-
-  # Install with distutils
-  find_program(PYTHON "python")
-
-  if( PYTHON )
-
-    # Currently, this returns /usr/bin/python
-    message( STATUS "find_program returned this PYTHON: ${PYTHON}" )
     set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
+    message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
+    install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+endif()
+	
+# Install the gpstk module into the package file tree, and then have CMake create a make target to call the setup.py script
+if( INSTALL_METHOD STREQUAL "5" )
+
+  # Create targets for installing the python extension module into the package file tree
+  set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
+  message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
+  install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+  install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+
+  # Install the package file tree using distutils
+  find_program(PYTHON "python")
+  if( PYTHON )
+    message( STATUS "find_program returned this PYTHON: ${PYTHON}" )
 
     # Define filenames of stuff we need to build/install this module
     set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
@@ -149,17 +162,32 @@ if( INSTALL_METHOD STREQUAL "4" )
     set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk/__init__.py")
     set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/timestamp")
 
-    # Use a configuration file setup.py.in to let CMake generate a proper setup.py for install
+    # CMake congifure_file() is to copy and modify files as part of creating the makefiles.
+	# With the configure_file() command CMake allows 
+	#   (1) copying a file from the source directory to the binary directory,
+	#   (2) replacement of CMake variables within the text by encasing the variable name in @@ (e.g. @variable_name@). 
+	# Here's how to use it:
+	#   - Create a regular file and rename it; the renamed file will be a "template" for recreating the original and variations.
+	#       e.g. setup.py is renamed to setup.py.in
+	#   - In the template (renamed) file, replace a variable the CMake variable enclosed in a pair of "@",
+	#       e.g. "version = @CMAKE_MY_PACKAGE_VERSION@" takes the value of the CMake variable "${CMAKE_MY_PACKAGE_VERSION}"
+	#   - Use the configure_file() directive to copy the setup.py.in file to setup.py 
+	#     and use configure_file() input arges to tell it how to 
+	#     replace the CMake style variables with actual values.
+	#     e.g. configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" "${BINARY_BUILD_DIR}/setup.py" @ONLY)
+	#   - Final result is a setup.py the is customize based on variables from CMake.
+	# In our case, we don't change anything, but add this directive as a hook for the future.
     configure_file(${SETUP_PY_IN} ${SETUP_PY})
 
     # use a custom command to create proper dependencies in the make targets
-    add_custom_command(OUTPUT ${OUTPUT}
-      COMMAND ${PYTHON} ${SETUP_PY} build
-      COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
-      DEPENDS ${DEPS})
-    add_custom_target(target ALL DEPENDS ${OUTPUT})
+    add_custom_command( OUTPUT ${OUTPUT}
+                        COMMAND ${PYTHON} ${SETUP_PY} build
+                        COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
+                        DEPENDS ${DEPS} )
+    add_custom_target( target ALL DEPENDS ${OUTPUT} )
 
-    install(CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --prefix=${CMAKE_INSTALL_PREFIX})")
+    # default command to run should be "$ python setup.py install --prefix=~/.local"
+    install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --prefix=${CMAKE_INSTALL_PREFIX})" )
 
   endif()
 

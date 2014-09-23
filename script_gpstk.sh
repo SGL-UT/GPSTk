@@ -246,6 +246,10 @@ if [ "$build_python" ]; then
     args+=${gpstk_install:+" -DGPSTK_INSTALL=$gpstk_install"}
     args+=${python_install:+" -DCMAKE_INSTALL_PREFIX=$python_install"}
 
+    # For testing install package
+    python_install_method=4
+    args+=${python_install:+" -DINSTALL_METHOD=$python_install_method"}
+
     cmake $args ..
 
     echo "$0: Building python gpstk module"
@@ -258,6 +262,10 @@ if [ "$build_python" ]; then
 
     echo "$0: Installing python gpstk module"
     make install
+	
+	# Installing gpstk python package
+	cd $python_root/install_package
+	python setup.py install --prefix=~/.local
 fi
 
 #----------------------------------------
