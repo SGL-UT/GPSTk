@@ -102,40 +102,13 @@ swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 #----------------------------------------
 
 if( NOT DEFINED INSTALL_METHOD )
-    set( INSTALL_METHOD "4" )
+    set( INSTALL_METHOD "1" )
 endif()
 
 message( STATUS "INSTALL_METHOD = ${INSTALL_METHOD}" )
 
-# Only install the gpstk module files
-if( INSTALL_METHOD STREQUAL "1" )
-    set( MODULE_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/gpstk )
-    message( STATUS "SWIG module install path = ${MODULE_INSTALL_PATH}" )
-    install( TARGETS "_${SWIG_MODULE}" DESTINATION gpstk )
-    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION gpstk )
-    install( FILES ${CMAKE_CURRENT_SOURCE_DIR}/__init__.py DESTINATION gpstk )
-endif()
-
-# Install the gpstk package file tree, then install the gpstk extension module into the package
-if( INSTALL_METHOD STREQUAL "2" )
-    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk )
-    message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
-    install( DIRECTORY ${INSTALL_PACKAGE_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-    install( TARGETS "_${SWIG_MODULE}" DESTINATION gpstk )
-    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION gpstk )
-endif()
-
-# Install the gpstk module into the package file tree, and then install the package file tree 
-if( INSTALL_METHOD STREQUAL "3" )
-    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
-    message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
-    install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
-    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
-    install( DIRECTORY ${INSTALL_PACKAGE_PATH} DESTINATION ${CMAKE_INSTALL_PREFIX} )
-endif()
-
 # Install the gpstk module into the package file tree, and then STOP and let user run the setup.py script manually
-if( INSTALL_METHOD STREQUAL "4" )
+if( INSTALL_METHOD STREQUAL "1" )
     set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
     message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
     install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
@@ -143,7 +116,7 @@ if( INSTALL_METHOD STREQUAL "4" )
 endif()
 	
 # Install the gpstk module into the package file tree, and then have CMake create a make target to call the setup.py script
-if( INSTALL_METHOD STREQUAL "5" )
+if( INSTALL_METHOD STREQUAL "2" )
 
   # Create targets for installing the python extension module into the package file tree
   set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )

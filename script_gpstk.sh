@@ -247,7 +247,7 @@ if [ "$build_python" ]; then
     args+=${python_install:+" -DCMAKE_INSTALL_PREFIX=$python_install"}
 
     # For testing install package
-    python_install_method=4
+    python_install_method=1
     args+=${python_install:+" -DINSTALL_METHOD=$python_install_method"}
 
     cmake $args ..
