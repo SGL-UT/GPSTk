@@ -18,7 +18,7 @@ import gpstk
 
 def main():
     # Read in the rinex data
-    header, data = gpstk.readRinex3Obs('rinex3obs_data.txt', strict=True)
+    header, data = gpstk.readRinex3Obs( gpstk.data.full_path('rinex3obs_data.txt'), strict=True)
 
     # Let's pretend we want to change something in the header
     # (otherwise this would be a two-line example!)
@@ -34,7 +34,7 @@ def main():
     print 'Latest time found:  ', gpstk.CivilTime(latest.time)
 
     # Now let's write it all back to a different file
-    gpstk.writeRinex3Obs('rinex3obs_data.txt.new', header, data)
+    gpstk.writeRinex3Obs( 'rinex3obs_data.txt.new', header, data)
 
 
 if __name__ == '__main__':
