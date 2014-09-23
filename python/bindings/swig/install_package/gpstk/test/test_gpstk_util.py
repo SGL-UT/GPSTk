@@ -453,5 +453,12 @@ class Expression_test(unittest.TestCase):
         self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
 
 
-if __name__ == '__main__':
+def run():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
+    unittest.TextTestRunner(verbosity=2).run(suite)    
+
+def main():
     unittest.main()
+
+if __name__ == '__main__':
+    main()

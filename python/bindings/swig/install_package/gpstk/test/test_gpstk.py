@@ -5,5 +5,8 @@ from test_gpstk_time import *
 from test_gpstk_util import *
 from test_gpstk_store import *
 
-if __name__ == '__main__':
+def main():
     unittest.main()
+
+if __name__ == '__main__':
+    main()

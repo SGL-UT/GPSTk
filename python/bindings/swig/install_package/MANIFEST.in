@@ -1,6 +1,4 @@
-include README.txt
-include LICENSE.txt
-include COPYING.txt
-include COPYING.LESSER.txt
-include CHANGES.txt
-include INSTALL.txt
+include *.txt
+recursive-include examples * 
+include gpstk/data *.txt
+include gpstk _gpstk.so

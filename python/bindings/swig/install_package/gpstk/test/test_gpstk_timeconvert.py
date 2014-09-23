@@ -220,5 +220,12 @@ class formatted_ouput(unittest.TestCase):
                  'ms:1289048400, year:2010')
 
 
-if __name__ == '__main__':
+def run():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
+    unittest.TextTestRunner(verbosity=2).run(suite)    
+
+def main():
     unittest.main()
+
+if __name__ == '__main__':
+    main()

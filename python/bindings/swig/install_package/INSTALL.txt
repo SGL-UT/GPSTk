@@ -1,0 +1,9 @@
+--------------
+Install Notes:
+--------------
+
+Test your setup.py file before executing it:
+	$ python setup.py check
+
+Install the package by running the setup.py script:
+	$ python setup.py install

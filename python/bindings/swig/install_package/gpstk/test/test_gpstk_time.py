@@ -169,5 +169,12 @@ class Time_Comparisons(unittest.TestCase):
         self.assertEqual(False, t1 != t2)
 
 
-if __name__ == '__main__':
+def run():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
+    unittest.TextTestRunner(verbosity=2).run(suite)
+
+def main():
     unittest.main()
+
+if __name__ == '__main__':
+    main()
