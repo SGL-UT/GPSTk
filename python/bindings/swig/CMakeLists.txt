@@ -11,6 +11,17 @@ cmake_minimum_required(VERSION 2.8)
 project( pygpstk )
 
 #------------------------------------------------------------
+# Test for python before doing anything
+#------------------------------------------------------------
+find_program(PYTHON "python")
+if( PYTHON )
+  message( STATUS "find_program(): found this PYTHON: ${PYTHON}" )
+else()
+  message( STATUS "find_program(): cannot find PYTHON! Exit now!" )
+  return()
+endif()
+
+#------------------------------------------------------------
 # CMAKE_INSTALL_PREFIX
 #------------------------------------------------------------
 # The default CMAKE_INSTALL_PREFIX is inappropriate for python modules so this variable needs
@@ -20,7 +31,7 @@ project( pygpstk )
 
 if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
   # set a variable for the PYTHON_SITE_PACKAGES but call it CMAKE_INSTALL_PREFIX
-  execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
+  execute_process(COMMAND ${PYTHON} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
     OUTPUT_VARIABLE CMAKE_INSTALL_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
 endif()
 message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
@@ -38,17 +49,12 @@ include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
-
 message(STATUS "Building against python include path: ${PYTHON_INCLUDE_PATH}")
 message(STATUS "Building against python library: ${PYTHON_LIBRARIES}")
 
 #------------------------------------------------------------
 # CMake Find module used to find the installed GPSTK
 #------------------------------------------------------------
-# User must define GPSTK install path:
-#     Method 1:  $ export gpstk=/home/vestuto/git/gpstk/dev/install; cmake;
-#     Method 2:  $ cmake -DGPSTK_INSTALL=/home/vestuto/git/gpstk/dev/install
-#     Method 3:  set( GPSTK_INSTALL "/home/vestuto/git/gpstk/dev/install" )
 
 set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
 find_package( GPSTK )
@@ -98,77 +104,41 @@ swig_link_libraries( ${SWIG_MODULE} gpstk )
 swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 
 #----------------------------------------
-# Install with CMake install() directive
+# Install python extension module into package tree
 #----------------------------------------
 
-if( NOT DEFINED INSTALL_METHOD )
-    set( INSTALL_METHOD "1" )
+# Install the gpstk module into the package file tree, and then STOP
+set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
+message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
+install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+
+#----------------------------------------
+# Install package tree into a system path
+#----------------------------------------
+
+# Determine whether the python package is to be installed by CMake
+# or if we shall let user run the setup.py script manually
+if( NOT DEFINED PACKAGE_INSTALL )
+    set( PACKAGE_INSTALL "1" )
 endif()
 
-message( STATUS "INSTALL_METHOD = ${INSTALL_METHOD}" )
+if( PACKAGE_INSTALL STREQUAL "1" )
+		
+	# MAKE_CURRENT_SOURCE_DIR default is /home/vestuto/git/gpstk/python/bindings/swig
+	# CMAKE_INSTALL_PREFIX    default is /home/vestuto/.local/lib/python2.7/site-packages
+	# INSTALL_PACKAGE_PATH    default is /home/vestuto/git/gpstk/python/bindings/swig/install_package
+		
+    # Provide ability to use CMake variables to define some values within the setup.py script
+	set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
+	set( SETUP_PY    "${INSTALL_PACKAGE_PATH}/setup.py" )
+	configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
 
-# Install the gpstk module into the package file tree, and then STOP and let user run the setup.py script manually
-if( INSTALL_METHOD STREQUAL "1" )
-    set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
-    message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
-    install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
-    install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
-endif()
-	
-# Install the gpstk module into the package file tree, and then have CMake create a make target to call the setup.py script
-if( INSTALL_METHOD STREQUAL "2" )
-
-  # Create targets for installing the python extension module into the package file tree
-  set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
-  message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
-  install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
-  install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
-
-  # Install the package file tree using distutils
-  find_program(PYTHON "python")
-  if( PYTHON )
-    message( STATUS "find_program returned this PYTHON: ${PYTHON}" )
-
-    # Define filenames of stuff we need to build/install this module
-    set(SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in")
-    set(SETUP_PY    "${CMAKE_CURRENT_BINARY_DIR}/install_package/setup.py")
-    set(DEPS        "${CMAKE_CURRENT_SOURCE_DIR}/install_package/gpstk/__init__.py")
-    set(OUTPUT      "${CMAKE_CURRENT_BINARY_DIR}/build/timestamp")
-
-    # CMake congifure_file() is to copy and modify files as part of creating the makefiles.
-	# With the configure_file() command CMake allows 
-	#   (1) copying a file from the source directory to the binary directory,
-	#   (2) replacement of CMake variables within the text by encasing the variable name in @@ (e.g. @variable_name@). 
-	# Here's how to use it:
-	#   - Create a regular file and rename it; the renamed file will be a "template" for recreating the original and variations.
-	#       e.g. setup.py is renamed to setup.py.in
-	#   - In the template (renamed) file, replace a variable the CMake variable enclosed in a pair of "@",
-	#       e.g. "version = @CMAKE_MY_PACKAGE_VERSION@" takes the value of the CMake variable "${CMAKE_MY_PACKAGE_VERSION}"
-	#   - Use the configure_file() directive to copy the setup.py.in file to setup.py 
-	#     and use configure_file() input arges to tell it how to 
-	#     replace the CMake style variables with actual values.
-	#     e.g. configure_file( "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" "${BINARY_BUILD_DIR}/setup.py" @ONLY)
-	#   - Final result is a setup.py the is customize based on variables from CMake.
-	# In our case, we don't change anything, but add this directive as a hook for the future.
-    configure_file(${SETUP_PY_IN} ${SETUP_PY})
-
-    # use a custom command to create proper dependencies in the make targets
-    add_custom_command( OUTPUT ${OUTPUT}
-                        COMMAND ${PYTHON} ${SETUP_PY} build
-                        COMMAND ${CMAKE_COMMAND} -E touch ${OUTPUT}
-                        DEPENDS ${DEPS} )
-    add_custom_target( target ALL DEPENDS ${OUTPUT} )
-
-    # default command to run should be "$ python setup.py install --prefix=~/.local"
-    install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --prefix=${CMAKE_INSTALL_PREFIX})" )
-
-  endif()
+    # Install target calls the python distutils input script
+	install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --prefix=~/.local WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
 
 endif()
-	
-	
-	
-	
+
 #------------------------------------------------------------
 # The End
 #------------------------------------------------------------

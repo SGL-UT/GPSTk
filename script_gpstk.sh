@@ -58,6 +58,7 @@ OPTIONS:
    -c     build_cpp        build C++ files and libraries
    -d     build_doxygen    build Doxygen files (used for python docstrings)
    -p     build_python     build Python files and libraries with SWIG bindings
+   -e     build_sphinx     build Sphinx RST files into HTML documentation
 
    -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
    -i     clean_install    rm -rf gpstk_install; rm -rf python_install
@@ -67,9 +68,9 @@ OPTIONS:
    -v     graphviz         generate dependency graph (.DOT and .PDF files)
 
    -r     gpstk_root       default = $gpstk_root, path to GPSTk dev top-level CMakeLists.txt file (and source tree)
-   -s     gpstk_install    default = $gpstk_install,  path to GPSTk install, to contain ./bin, ./lib, and ./include
+   -s     gpstk_install    default = $gpstk_install,  GPSTk install path prefix, to contain ./bin, ./lib, and ./include
                            If a relative path is supplied here, it needs to be relative to gpstk_root
-   -l     python_install   default = $python_install, change Python library installation location
+   -l     python_install   default = $python_install, Python bindings package install path prefix
 
 EOF
 
@@ -86,6 +87,7 @@ while getopts "hcdpbiotvl:r:s:" option; do
         h) usage;;
         c) build_cpp=1;;
         d) build_doxygen=1;;
+        e) build_sphinx=1;;
         p) build_python=1;;
         b) clean_build=1;;
         i) clean_install=1;;
@@ -129,6 +131,7 @@ fi
 printf "$0: clean_install   = $(ptof $clean_install)\n"
 printf "$0: clean_build     = $(ptof $clean_build)\n"
 printf "$0: build_doxygen   = $(ptof $build_doxygen)\n"
+printf "$0: build_sphinx    = $(ptof $build_sphinx)\n"
 printf "$0: build_python    = $(ptof $build_python)\n"
 
 if [ $build_python ]; then
@@ -232,6 +235,12 @@ if [ "$build_python" ]; then
             python docstring_generator.py
         fi
     fi
+	
+    if [ "$build_spinx" ]; then
+        echo "Rebuilding sphinx RST documentation now..."
+        cd $python_root/sphinx
+        make html
+    fi
 
     if [ "$clean_build" ]; then
         rm -rf  $python_root/build
@@ -246,13 +255,13 @@ if [ "$build_python" ]; then
     args+=${gpstk_install:+" -DGPSTK_INSTALL=$gpstk_install"}
     args+=${python_install:+" -DCMAKE_INSTALL_PREFIX=$python_install"}
 
-    # For testing install package
-    python_install_method=1
-    args+=${python_install:+" -DINSTALL_METHOD=$python_install_method"}
+    # Have CMake install the package, True or False?
+    package_install=1 # 0=False, 1=True
+    args+=${python_install:+" -DPACKAGE_INSTALL=$package_install"}
 
     cmake $args ..
 
-    echo "$0: Building python gpstk module"
+    echo "$0: Building gpstk python extension module"
     make -j$num_cores
 
     if [ "$clean_install" ]; then
@@ -260,12 +269,16 @@ if [ "$build_python" ]; then
     fi
     mkdir -p $python_install
 
-    echo "$0: Installing python gpstk module"
+    echo "$0: Installing gpstk python extension module"
     make install
+
+    # Python extension module was built and installed into the package file tree
+	# But the package itself was not installed into a system path, so we do it here
+    if [ $package_install = 0 ]; then
+	    cd $python_root/install_package
+	    python setup.py install --prefix=~/.local
+	fi
 	
-	# Installing gpstk python package
-	cd $python_root/install_package
-	python setup.py install --prefix=~/.local
 fi
 
 #----------------------------------------
