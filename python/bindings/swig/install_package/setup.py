@@ -20,7 +20,7 @@ Details:
 
 """
 
-from distutils.core import setup, Extension
+from distutils.core import setup
 
 #----------------------------------------
 # File lists
