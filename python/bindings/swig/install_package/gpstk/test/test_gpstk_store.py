@@ -184,6 +184,10 @@ class RinexMetTest(unittest.TestCase):
         self.assertAlmostEqual(998.3, d[gpstk.RinexMetHeader.PR])
         self.assertAlmostEqual(30.8, d[gpstk.RinexMetHeader.TD])
 
+def run_store():
+    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
+    unittest.TextTestRunner(verbosity=2).run(suite)  
+
 def main():
     unittest.main()
 

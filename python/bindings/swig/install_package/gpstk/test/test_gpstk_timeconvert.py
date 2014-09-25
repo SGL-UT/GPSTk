@@ -220,7 +220,7 @@ class formatted_ouput(unittest.TestCase):
                  'ms:1289048400, year:2010')
 
 
-def run():
+def run_timeconvert():
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
     unittest.TextTestRunner(verbosity=2).run(suite)    
 
