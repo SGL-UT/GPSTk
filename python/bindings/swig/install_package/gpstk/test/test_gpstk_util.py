@@ -453,7 +453,7 @@ class Expression_test(unittest.TestCase):
         self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
 
 
-def run():
+def run_util():
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
     unittest.TextTestRunner(verbosity=2).run(suite)    
 

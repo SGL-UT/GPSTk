@@ -169,7 +169,7 @@ class Time_Comparisons(unittest.TestCase):
         self.assertEqual(False, t1 != t2)
 
 
-def run():
+def run_time():
     suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
     unittest.TextTestRunner(verbosity=2).run(suite)
 
