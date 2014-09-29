@@ -59,8 +59,8 @@ def main(args=sys.argv[1:]):
             try:
                 ct = gpstk.scanTime(input_time, formats[key])
                 time_found = True
-            except gpstk.exceptions.InvalidRequest:
-                raise gpstk.exceptions.InvalidRequest('Input could not be parsed.'
+            except gpstk.InvalidRequest:
+                raise gpstk.InvalidRequest('Input could not be parsed.'
                      '\nCheck the formatting and ensure that the input is both valid and in quotes.'
                      '\nAlso check if the time is too early/late for these formats.')
 
