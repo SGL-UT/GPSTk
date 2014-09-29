@@ -68,6 +68,7 @@ class ScanTimes(unittest.TestCase):
         test('1000000000000000000', '%K', raises=gpstk.InvalidRequest)  # bad time
 
         # Civil
+        test('01 06 1980 00:00:00', '%m %d %Y %H:%M:%f', '2444245 00000000 0.000000000000000 UNK')
         test('01 24 1994 11:39:50', '%m %d %Y %H:%M:%f', '2449377 41990000 0.000000000000000 UNK')
         test('123461994', '%m %d %Y %H:%M:%f', raises=gpstk.InvalidRequest)
 
@@ -79,7 +80,7 @@ class ScanTimes(unittest.TestCase):
         test('0 700 0', '%E %G %g', '2449145 00000000 0.000000000000000 GPS')
 
         # ws
-        test('158 200', '%F %g', '2445351 00000000 0.000000000000000 GPS')
+        test('158 200', '%F %g', '2445351 00200000 0.000000000000000 GPS')
 
         # wz
         test('200 300', '%F %Z', '2444245 00450000 0.000000000000000 UNK')
