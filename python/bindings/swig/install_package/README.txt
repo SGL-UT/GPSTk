@@ -16,7 +16,7 @@ README.txt
 INSTALL.txt
 LICENSE.txt
 CHANGES.txt
-MANIFEST.txt
+MANIFEST.in
 setup.py
 	
 /gpstk
@@ -37,7 +37,6 @@ setup.py
 /gpstk/data/__init__.py
 /gpstk/data/rinex3nav_data.txt
 /gpstk/data/rinex3obs_data.txt
-/gpstk/data/rinex3obs_data.txt.new
 /gpstk/data/rinexmet_data.txt
 /gpstk/data/sem_data.txt
 /gpstk/data/sp3_data.txt
@@ -60,9 +59,9 @@ Package File Descriptions:
 README.txt
 - This file.
 
- INSTALL.txt
- - Instructions on how to install this package.
- - See also setup.py and setup.cfg
+INSTALL.txt
+- Instructions on how to install this package.
+- See also setup.py and setup.cfg
  
 LICENSE.txt
 - Details of use and re-use of the GPSTk source code
