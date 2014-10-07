@@ -240,6 +240,8 @@ if [ "$build_python" ]; then
         echo "Rebuilding sphinx RST documentation now..."
         cd $python_root/sphinx
         make html
+        cd $python_root/sphinx/_build/html
+        zip $python_root/install_package/docs/gpstkpythondoc.zip $python_root/sphinx/_build/html/*
     fi
 
     if [ "$clean_build" ]; then
@@ -295,7 +297,7 @@ elif [[ ":$LD_LIBRARY_PATH:" == *":$gpstk_install/lib:"* ]]; then
 else
     echo "WARNING: Your chosen install location for libgpstk.so is NOT in your path."
     echo "         You may want to add it to your environment LD_LIBRARY_PATH like so:"
-    echo "             $ export LD_LIBRARY_PATH=$gpstk_install/lib:'$LD_LIBRARY_PATH' "
+    echo "             $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
 fi
 
 #----------------------------------------
