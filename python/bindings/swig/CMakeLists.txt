@@ -125,9 +125,9 @@ endif()
 
 if( PACKAGE_INSTALL STREQUAL "1" )
 		
-	# MAKE_CURRENT_SOURCE_DIR default is /home/vestuto/git/gpstk/python/bindings/swig
-	# CMAKE_INSTALL_PREFIX    default is /home/vestuto/.local/lib/python2.7/site-packages
-	# INSTALL_PACKAGE_PATH    default is /home/vestuto/git/gpstk/python/bindings/swig/install_package
+	# MAKE_CURRENT_SOURCE_DIR default is /home/<username>/git/gpstk/python/bindings/swig
+	# CMAKE_INSTALL_PREFIX    default is /home/<username>/.local/lib/python2.7/site-packages
+	# INSTALL_PACKAGE_PATH    default is /home/<username>/git/gpstk/python/bindings/swig/install_package
 		
     # Provide ability to use CMake variables to define some values within the setup.py script
 	set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
