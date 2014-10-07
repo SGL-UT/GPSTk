@@ -80,8 +80,13 @@
 // #include "EphReader.hpp"
 
 // Ephemeris:
+#include "OrbitEph.hpp"
+#include "BDSEphemeris.hpp"
 #include "EngEphemeris.hpp"
+#include "GalEphemeris.hpp"
 #include "GloEphemeris.hpp"
+#include "GPSEphemeris.hpp"
+#include "QZSEphemeris.hpp"
 
 // RINEX format:
 #include "RinexSatID.hpp"
@@ -116,19 +121,12 @@
 #include "Rinex3ClockData.hpp"
 #include "Rinex3ClockStream.hpp"
 #include "Rinex3EphemerisStore.hpp"
-#include "GloEphemerisStore.hpp"
 
 // Ephemeris stores:
-#include "OrbitEph.hpp"
-#include "BDSEphemeris.hpp"
-#include "GalEphemeris.hpp"
-#include "GPSEphemeris.hpp"
-#include "QZSEphemeris.hpp"
 #include "OrbitEphStore.hpp"
 #include "BDSEphemerisStore.hpp"
 #include "GalEphemerisStore.hpp"
-#include "GalEphemerisStore.hpp"
-#include "GPSEphemerisStore.hpp"
+#include "GloEphemerisStore.hpp"
 #include "GPSEphemerisStore.hpp"
 #include "QZSEphemerisStore.hpp"
 #include "RinexEphemerisStore.hpp"

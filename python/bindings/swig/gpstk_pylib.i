@@ -79,8 +79,13 @@
   // #include "../../../dev/ext/lib/Rxio/EphReader.hpp"
 
    // Ephemeris:
+   #include "../../../dev/ext/lib/GNSSEph/BDSEphemeris.hpp"
    #include "../../../dev/ext/lib/GNSSEph/EngEphemeris.hpp"
+   #include "../../../dev/ext/lib/GNSSEph/GalEphemeris.hpp"
    #include "../../../dev/ext/lib/GNSSEph/GloEphemeris.hpp"
+   #include "../../../dev/ext/lib/GNSSEph/GPSEphemeris.hpp"
+   #include "../../../dev/ext/lib/GNSSEph/OrbitEph.hpp"
+   #include "../../../dev/ext/lib/GNSSEph/QZSEphemeris.hpp"
 
    // RINEX format:
    #include "../../../dev/ext/lib/GNSSEph/RinexSatID.hpp"
@@ -118,16 +123,9 @@
    #include "../../../dev/ext/lib/GNSSEph/GloEphemerisStore.hpp"
 
    // Ephemeris stores:
-   #include "../../../dev/ext/lib/GNSSEph/OrbitEph.hpp"
-   #include "../../../dev/ext/lib/GNSSEph/BDSEphemeris.hpp"
-   #include "../../../dev/ext/lib/GNSSEph/GalEphemeris.hpp"
-   #include "../../../dev/ext/lib/GNSSEph/GPSEphemeris.hpp"
-   #include "../../../dev/ext/lib/GNSSEph/QZSEphemeris.hpp"
    #include "../../../dev/ext/lib/GNSSEph/OrbitEphStore.hpp"
    #include "../../../dev/ext/lib/GNSSEph/BDSEphemerisStore.hpp"
    #include "../../../dev/ext/lib/GNSSEph/GalEphemerisStore.hpp"
-   #include "../../../dev/ext/lib/GNSSEph/GalEphemerisStore.hpp"
-   #include "../../../dev/ext/lib/GNSSEph/GPSEphemerisStore.hpp"
    #include "../../../dev/ext/lib/GNSSEph/GPSEphemerisStore.hpp"
    #include "../../../dev/ext/lib/GNSSEph/QZSEphemerisStore.hpp"
    #include "../../../dev/ext/lib/GNSSEph/RinexEphemerisStore.hpp"
