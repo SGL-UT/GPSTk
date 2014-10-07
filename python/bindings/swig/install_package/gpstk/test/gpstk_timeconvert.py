@@ -9,7 +9,8 @@ import sys
 def main(args=sys.argv[1:]):
     program_description = ('Converts from a given input time specification to '
                            'other time formats. Include the quotation marks. '
-                           'All year values are four digit years.')
+                           'All year values are four digit years. '
+                           'Example: $ python gpstk_timeconvert.py -f "158 200" ')
     parser = argparse.ArgumentParser(description=program_description)
 
     group = parser.add_mutually_exclusive_group()
