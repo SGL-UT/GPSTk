@@ -451,11 +451,7 @@ class Expression_test(unittest.TestCase):
 
         e = gpstk.Expression('1 + 2*x')
         self.assertAlmostEqual(12.0, gpstk.eval(e, x=5.5))
-
-
-def run_util():
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
-    unittest.TextTestRunner(verbosity=2).run(suite)    
+ 
 
 def main():
     unittest.main()

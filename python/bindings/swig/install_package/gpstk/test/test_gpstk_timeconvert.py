@@ -217,12 +217,7 @@ class wz_input_before_epoch(unittest.TestCase):
 class formatted_ouput(unittest.TestCase):
     def test(self):
         run_test(self, ['-R', '05 06 1985 13:50:02', '-F', 'ms:%K, year:%Y'],
-                 'ms:1289048400, year:2010')
-
-
-def run_timeconvert():
-    suite = unittest.TestLoader().loadTestsFromTestCase(TestSequenceFunctions)
-    unittest.TextTestRunner(verbosity=2).run(suite)    
+                 'ms:1289048400, year:2010') 
 
 def main():
     unittest.main()
