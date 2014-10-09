@@ -1,19 +1,23 @@
 #!/bin/bash
 #----------------------------------------
 #
-# purpose = Automate the use of CMake and make to build C++ and Python GPSTk files and libraries
+# Purpose:
+#     Automate the use of CMake, SWIG, and distutils to build and install
+#     the GPSTK C++ Library, C++ Applications, and Python bindings.
 #
-# outline = Optionally build C++, Python, or both files and libraries
-#             By default, the Python GPSTk library is installed in the local Python site packages directory (~/.local/lib/pythonXX/site-packages on Linux)
-#               If the option [-l] is specified, the user must specify a different install location
-#               By default, the script purges the specified Python install folder prior to the install
-#               in order to prevent file contamination with previous installations
-#           Optionally clean out install and build paths
-#           Export gpstk install path as environment variables used by CMake
-#           Run CMake to generate build environment
-#           Run make to build GPSTk
-#           Run make install to install GPSTk
-#           Echo a list of the installed files
+# Outline:
+#     Test input arguments
+#     Optionally Build the C++ library and applications
+#         Clean out the build and install paths
+#         Call CMake to generate Makefiles
+#         Call make to build targets and install
+#     Optionally generate Doxygen documentation
+#     Optionally Build Python bindings
+#         Clean out the build and install paths
+#         Call CMake to generate Makefiles
+#         Use CMake to create SWIG targets to generate wrapper code
+#         Call make to generate, build, and install python bindings
+#     Optionally use python setup.py to install python package
 #
 #----------------------------------------
 
@@ -100,7 +104,7 @@ while getopts "hcdpbiotvl:r:s:" option; do
         *) echo "Invalid option: -$OPTARG" >&2
            usage
            ;;
-  esac
+    esac
 done
 
 # Shift OPTIND so that if there are any additional 
