@@ -4,10 +4,10 @@
 A GPSTk example showing how to walk RINEX data sets and use the ObsEpoch classes
 
 Usage:
-  python example5.py <RINEX3 Obs file>
+  python example5.py <RINEX2 Obs file>
   
 Example:
-  python ./example5.py rinex3obs_data.txt
+  python ./example5.py rinex2obs_data.txt
 
 """
 
@@ -15,14 +15,14 @@ import argparse
 import gpstk
 
 parser = argparse.ArgumentParser()
-parser.add_argument('rinex3obs_filename')
+parser.add_argument('rinex2obs_filename')
 args = parser.parse_args()
 
 try:
-    print 'Reading ' + args.rinex3obs_filename + '.'
+    print 'Reading ' + args.rinex2obs_filename + '.'
 
     # read in header and get a generator for the data
-    header, data = gpstk.readRinex3Obs(args.rinex3obs_filename)
+    header, data = gpstk.readRinex3Obs(args.rinex2obs_filename)
     print header
 
     for d in data:

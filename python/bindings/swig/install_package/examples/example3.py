@@ -2,15 +2,15 @@
 
 """
 A GPSTk example featuring more complex processing. You can use the
-sample text file rinex3obs_data.txt. A PRN number that gives useful output is 5.
+sample text file rinex2obs_data.txt. A PRN number that gives useful output is 5.
 
 This is a port of the older C++ example3.cpp.
 
 Usage:
-  python example3.py <rinex3obs_filename>
+  python example3.py <rinex2obs_filename>
 
 Example:
-  python example3.py rinex3obs_data.txt
+  python example3.py rinex2obs_data.txt
   # when asked for PRN, enter 6
 
 """
@@ -27,15 +27,15 @@ import gpstk
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('rinex3obs_filename')
+    parser.add_argument('rinex2obs_filename')
     args = parser.parse_args()
 
     user_input = raw_input('Name your PRN of interest, by number: 1 through 32: ')
     int_prn = int(user_input)
 
     try:
-        print 'Reading ' + args.rinex3obs_filename + '.'
-        header, data = gpstk.readRinex3Obs(args.rinex3obs_filename)  # read in everything
+        print 'Reading ' + args.rinex2obs_filename + '.'
+        header, data = gpstk.readRinex3Obs(args.rinex2obs_filename)  # read in everything
         print header
 
         # Now we loop through all the epochs and process the data for each one
