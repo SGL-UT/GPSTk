@@ -52,7 +52,7 @@ class SatID_test(unittest.TestCase):
 
 class GNSSconstants_test(unittest.TestCase):
     def test_constants(self):
-        self.assertEqual(gpstk.PI, 3.1415926535898)
+        self.assertEqual(gpstk.PI, 3.141592653589793238462643383280)
         self.assertEqual(gpstk.OSC_FREQ_GPS, 10.23e6)
         self.assertEqual(gpstk.L6_FREQ_GAL, 1278.75e6)
 
@@ -396,19 +396,19 @@ class Positioning_test(unittest.TestCase):
         t = gpstk.CivilTime(2000).toCommonTime()
         # object way:
         pos = gpstk.MoonPosition().getPosition(t)
-        self.assertAlmostEqual(-89651219.03579094, pos[0])
+        self.assertAlmostEqual(-89651219.03579193, pos[0])
         # functional way:
         pos = gpstk.moonPosition(t)
-        self.assertAlmostEqual(-89651219.03579094, pos[0])
+        self.assertAlmostEqual(-89651219.03579193, pos[0])
 
     def test_sun(self):
         t = gpstk.CivilTime(2000).toCommonTime()
         # object way:
         pos = gpstk.SunPosition().getPosition(t)
-        self.assertAlmostEqual(-136909966557.84602 , pos[0])
+        self.assertAlmostEqual(-136909966557.84612 , pos[0])
         # functional way:
         pos = gpstk.sunPosition(t)
-        self.assertAlmostEqual(-136909966557.84602 , pos[0])
+        self.assertAlmostEqual(-136909966557.84612 , pos[0])
 
 
 class Tides_test(unittest.TestCase):
