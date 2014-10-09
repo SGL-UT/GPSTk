@@ -2,68 +2,109 @@
 
 Installation
 ======================
-There are two ways to build and install the GPSTk python bindings on your system:
 
-1. Install using pre-compiled binaries. This is the easiest option for most users.
-
-2. Clone the git repo and use CMake and your system's local build tool. This requires CMake, SWIG and a C++ compiler.
-   To generate the docstrings, this also requires Doxygen and you must also run several included python scripts.
-   Developers of the GPSTk and users that wish to be on the bleeding edge should use this option.
-
-
-Installing Using Binaries
+Preliminary steps
 ********************************************
-At this point in time, no pre-compiled binaries are provided yet.
+Prerequisits for building and installing:
+- install of cmake
+- install of swig
+- install of C++ compiler (e.g. gcc)
+- install of python
 
+Installing Pre-compiled Binaries
+********************************************
+At this point in time, pre-compiled binaries are not distributed.
+Presently, the only option is to build from source.
+In the future, we hope to release pre-built binaries.
 
-Installing with CMake [developer build]
+Build and Install on POSIX using Bash script
 ******************************************************
 
-The build system is fairly complex, thanks to a large amount of auto-generated code procedures:
+The build system is composed of the following steps:
 
-- Compiling object files for the C++ sources
-- Parsing Doxygen comments in C++ source for SWIG to read later
-- SWIG generating the gpstk wrap file (which is well over 600K lines) and the gpstk python wrap file
-- Compiling and linking the wrapped source with the original object files
-- Auto-generating the init files to set up the package structure
+- Compiling object files for the C++ sources to generate a libgpstk.so
+- Parsing Doxygen comments in C++ source for use by SWIG in creating docstrings
+- SWIG generates C++ wrapper source code to map C++ types to python types
+- Compiling and linking the C++ wrapper to generate a python extension module
+- Moving files into the install package file tree to complet the python package
 
+An example source file tree is provided here for the purpose
+of giving context to the build and install examples below, listing paths 
+and files that play critical roles in the build and install process:
+  
+	$GPSTK/script_gpstk.sh
+	$GPSTK/dev/CMakeLists.txt
+	$GPSTK/python/bindings/swig/CMakeLists.txt
+	$GPSTK/python/bindings/swig/install_package/setup.py
 
-This example places the gpstk directory in the home folder and builds
-to :file:`~/.local/lib/python2.7/site-packages/` , which is a source
-that python will automatically search for packages on a Linux system.
+Current build and install is automated for Linux only.
+A bash script script_gpstk.sh, is included with this GPSTk 
+distribution for this automation, but also to document the 
+manual steps that support build and install on a wide 
+variety of other platforms. The major dependencies are
+CMake, SWIG, gcc, and python (distutils). See setup.py
+for a detailed dependency listing with version numbers
+that were tested.
 
-A Windows user would typically
-use :file:`C:\\Python27\\Lib\\site-packages\\` instead.
+Review the help comments of the build script found in the
+top-level directory of the GPSTk file tree:
+  
+	$ script_gpstk.sh -h
+  
+The python bindings link against the C++ library, e.g.
+libgpstk.so on Linux, so you must compile and install that library first.
+To build and install the C++ library, you can use the included
+bash script:
+  
+	$ script_gpstk.sh -c
 
+Default install path of the C++ library shared object file is as follows:
+  
+	$GPSTK/install/libgpstk.so
+  
+Once installed, you must manually add the install path in 
+$PATH or $LD_LIBRARY_PATH. For example:
+  
+	$ export LD_LIBRARY_PATH=$GPSTK/dev/install/lib
 
-First clone to git repo to your home directory (or wherever you want), then: ::
+This is left for the user to do as we did not want the automated
+script to change your environment variables without you knowing.
 
-    cd ~/gpstk/dev
-    doxygen
-    cd ~/gpstk/dev/apps/bindings/swig
-    python docstring_generator.py
-    cd bin
-    cmake ..
-    make
-    python gpstk_builder.py  ~/.local/lib/python2.7/site-packages/
+To generate and build the python wrapper code, run the bash script
+found in the GPSTk top-level directory:
+  
+	$ script_gpstk.sh -p
 
-.. note:
-        :file:`gpstk/dev/bindings_intaller/devinstall.sh` runs these commands
+Default install path for the python package is:
 
+	$HOME/.local/lib/python<X.X>/site-packages/gpstk
 
-You can also run gpstk_builder.py (the final command above) without any arguments to build to the system default.
+To install the python package in an alternate path, use disutils and
+the included setup.py script, for example:
+  
+    # Move to the install package root diretory
+	$ cd $GPSTK/python/bindings/swig/install_package
 
-On a Debian-based Linux distro, this will be :file:`/usr/local/lib/python2.7/dist-packages`
+	# run a check on the setup.py file
+	$ python setup.py check
 
-For example: ::
+	# install the package
+	$ python setup.py install
+	
+Alternatively, to force install into your user home file tree
 
-    sudo python gpstk_builder.py
+    # install the package under your home directory
+    $ python setup.py --prefix=~/.local
 
-Note that this would require root privileges.
+Note that the CMake install uses setup.py.in to allow for CMake variable
+values to be written into the final setup.py file which is then used with 
+distutils based install. Though setup.py is regenerated from setup.py.in
+by CMake, we've preserved setup.py for those who may not have CMake 
+installed.
 
 
 Additionally, the html documentation can be built/viewed with sphinx by: ::
 
-    cd ~/gpstk/dev/apps/bindings/swig/sphinx
+    cd $GPSTK/python/bindings/swig/sphinx
     make html
     firefox _build/html/index.html

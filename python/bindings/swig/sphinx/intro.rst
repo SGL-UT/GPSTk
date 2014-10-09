@@ -6,7 +6,6 @@ of the GPS ToolKit (GPSTk), produced by the Space and Geophysics Laboratory (SGL
 of Applied Research Laboratories, The University of Texas at Austin (ARL:UT).
 
 
-
 About the GPSTk
 *****************
 The GPSTK is a library of support routines designed for use by programmers
@@ -34,12 +33,11 @@ for the details.
 
 About the Python Bindings
 ********************************************
-Though effort has been taken to reduce the C++-feeling when using these Python
-classes, it is impossible to completely purify the library without creating severe
-maintenance problems. Thus, the user must be aware that the GPSTk is primarily a
-C++ library and some things may require unusual semantics. It is recommended that
-you avoid using some of these unusual classes, such as gpstk.cpp.vector_double (std::vector<double>)
-as much as a possible. A much better replacement would be a numpy array.
+Though effort has been taken to reduce the uniquely C++ idioms when using these Python
+classes where possible and practical. The GPSTk is primarily a C++ library and some aspects
+may require unusual semantics. It is recommended that you avoid using some of these unusual
+classes, such as gpstk.vector_double (std::vector<double>) as much as a possible.
+A much better replacement would be a numpy array.
 
 Example of how C++ GPSTk reads and prints a Rinex3Obs file:
 
@@ -79,18 +77,11 @@ The standard Python implementation, CPython, must be used. The wrapping makes us
 of the C Python API heavily.
 
 
-
-
 Package Organization
 ************************
-Most classes and functions are in the gpstk namespace, but there are some exceptions.
-
-1. Constant values not inside a class are placed in the gpstk.constants submodule.
-2. GPSTk Exceptions are placed in the gpstk.exceptions submodule.
-3. Wrappers of C++ library structures (std::vector and std::map,
-   which should only be used when necessary) are placed in the gpstk.cpp submodule.
-
-
+All classes and functions are in the gpstk namespace, mirroring the namespace organization
+ found on the C++ side.
+Additional sub-packages are represented in the python namespace as gpstk.data and gpstk.test.
 
 How to Use This Documentation
 **************************************
@@ -142,16 +133,13 @@ Any changes for the sake of the Python API could not duplicate code.
 
 **Namespaces:**
 
-These don't exist in python, so they are simply discarded.
 The GPSTk largely only uses the gpstk namespace, which is roughly the gpstk package now.
-Exceptions include the submodules created for exceptions and constants.
+Exceptions include the subpackages created for gpstk.data and gpstk.test.
 
-Note that SWIG is actually set to create a module called gpstk_pylib. To clean up the namespace
-and provide more organization, there are __init__.py files that divide up the
-namespace (into gpstk, gpstk.constants, etc.) and remove unwanted members.
-You can still access the raw wrapping through gpstk.gpstk_pylib, however. It is
-strongly recommended you ignore the hidden components; they were hidden for a reason!
-
+Note that SWIG build createa a module called gpstk (gpstk.py and _gpstk.so).
+ALl attributes of this module are inported into a single package namespace "gpstk".
+The subpackages gpstk.data and gpstk.test are unique to the python package, and not 
+available on the C++ side.
 
 **Enumerations:**
 
@@ -234,8 +222,7 @@ calling GPSTk routines should be caught in the standard way in Python. ::
         print 'Could not process data.'
 
 When an exception is thrown by the C++ code, it is propagated to the SWIG
-system which has code (written in Exception.i) that either wraps the exception
-to one of the classes in gpstk.exceptions.
+system which has code (written in Exception.i).
 
 
 **Arrays:**
