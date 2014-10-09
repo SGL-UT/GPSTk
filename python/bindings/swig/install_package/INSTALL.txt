@@ -1,68 +1,78 @@
---------------
 Install Notes:
 --------------
 
-- An example source file-tree is provided here for the purpose
-  of giving context to the examples below, listing paths and files
-  that play critical roles in the build and install process:
+An example source file tree is provided here for the purpose
+of giving context to the examples below, listing paths and files
+that play critical roles in the build and install process.
+This assumes that the root of the GPSTk file tree has been
+defined in an environment variable GPSTK.
   
-      /home/<username>/git/gpstk/
-      /home/<username>/git/gpstk/script_gpstk.sh
-      /home/<username>/git/gpstk/dev/CMakeLists.txt
-      /home/<username>/git/gpstk/python/bindings/swig/CMakeLists.txt
-      /home/<username>/git/gpstk/python/bindings/swig/install_package/setup.py
+	$GPSTK/script_gpstk.sh
+	$GPSTK/dev/CMakeLists.txt
+	$GPSTK/python/bindings/swig/CMakeLists.txt
+	$GPSTK/python/bindings/swig/install_package/setup.py
 
-- Current build and install is automated for Linux only.
-  A bash script script_gpstk.sh, is included with this GPSTk 
-  distribution for this automation, but also to document the 
-  manual steps that support build and install on a wide 
-  variety of other platforms. The major dependencies are
-  CMake, SWIG, gcc, and python (distutils). See setup.py
-  for a detailed dependency listing with version numbers
-  that were tested.
+Current build and install is automated for Linux only.
+A bash script script_gpstk.sh, is included with this GPSTk 
+distribution for this automation, but also to document the 
+manual steps that support build and install on a wide 
+variety of other platforms. The major dependencies are
+CMake, SWIG, gcc, and python (distutils). See setup.py
+for a detailed dependency listing with version numbers
+that were tested.
 
-- Review the help comments of the build script found in the
-  top-level directory of the GPSTk file tree:
+Review the help comments of the build script found in the
+top-level directory of the GPSTk file tree:
   
-      $ script_gpstk.sh -h
+	$ script_gpstk.sh -h
   
-- The python bindings link against the C++ library, e.g.
-  libgpstk.so on Linux, so you must compile and install that library first.
-  To build and install the C++ library, you can use the included
-  bash script:
+The python bindings link against the C++ library, e.g.
+libgpstk.so on Linux, so you must compile and install that library first.
+To build and install the C++ library, you can use the included
+bash script:
   
-      $ script_gpstk.sh -c
-	  
-  Default install path is as follows:
-  
-      /home/<username>/git/gpstk/install
-  
-  Once installed, you must manually add the install path in 
-  $PATH or $LD_LIBRARY_PATH. For example:
-  
-      $ export LD_LIBRARY_PATH=/home/<username>/git/gpstk/install/lib
+	$ script_gpstk.sh -c
 
-  This is left for the user to do as we did not want the automated
-  script to change your environment variables without you knowing.
-
-- To generate and build the python wrapper code, run the bash script
-  found in the GPSTk top-level directory:
+Default install path is as follows:
   
-      $ script_gpstk.sh -p
-
-- Default install path for the python package is:
-
-      /home/<username>/.local/lib/python<X.X>/site-packages/gpstk
-
-- To install the python package in an alternate path, use disutils and
-  the included setup.py script, for example:
+	$GPSTK/dev/install
   
-      $ cd /home/<username>/git/gpstk/python/bindings/swig/install_package
-      $ python setup.py check
-      $ python setup.py install
+Once installed, you must manually add the install path in 
+$PATH or $LD_LIBRARY_PATH. For example:
+  
+	$ export LD_LIBRARY_PATH=$GPSTK/dev/install/lib
 
-- Note that the CMake install uses setup.py.in to allow for CMake variable
-  values to be written into the final setup.py file which is then used with 
-  distutils based install. Though setup.py is regenerated from setup.py.in
-  by CMake, we've preserved setup.py for those who may not have CMake 
-  installed.
+This is left for the user to do as we did not want the automated
+script to change your environment variables without you knowing.
+
+To generate and build the python wrapper code, run the bash script
+found in the GPSTk top-level directory:
+  
+	$ script_gpstk.sh -p
+
+Default install path for the python package is:
+
+	$HOME/.local/lib/python<X.X>/site-packages/gpstk
+
+To install the python package in an alternate path, use disutils and
+the included setup.py script, for example:
+  
+    # Move to the install package root diretory
+	$ cd $GPSTK/python/bindings/swig/install_package
+
+	# run a check on the setup.py file
+	$ python setup.py check
+
+	# install the package
+	$ python setup.py install
+	
+Alternatively, to force install into your user home file tree
+
+    # install the package under your home directory
+    $ python setup.py --prefix=~/.local
+
+Note that the CMake install uses setup.py.in to allow for CMake variable
+values to be written into the final setup.py file which is then used with 
+distutils based install. Though setup.py is regenerated from setup.py.in
+by CMake, we've preserved setup.py for those who may not have CMake 
+installed.
