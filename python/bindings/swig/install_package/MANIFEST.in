@@ -1,0 +1,4 @@
+include *.txt
+recursive-include examples * 
+include gpstk/data *.txt
+include gpstk _gpstk.so

@@ -131,6 +131,9 @@ STR_DUMP_HELPER(BrcKeplerOrbit)
 STR_DUMP_HELPER(EngAlmanac)
 STR_DUMP_HELPER(EngEphemeris)
 STR_DUMP_HELPER(EngNav)
+STR_DUMP_HELPER(GPSEphemeris)
+STR_DUMP_HELPER(BDSEphemeris)
+STR_DUMP_HELPER(QZSEphemeris)
 STR_DUMP_HELPER(GalEphemeris)
 STR_DUMP_HELPER(GloEphemeris)
 STR_DUMP_HELPER(OrbElem)
@@ -157,7 +160,6 @@ STR_DUMP_HELPER(SP3Header)
 STR_DUMP_HELPER(SP3SatID)
 STR_DUMP_HELPER(YumaData)
 STR_DUMP_HELPER(YumaHeader)
-
 
 
 // Uses the print method in the class to get string output
@@ -208,6 +210,9 @@ STR_STREAM_HELPER(GPSZcount)
 STR_STREAM_HELPER(Position)
 // STR_STREAM_HELPER(ReferenceFrame)
 STR_STREAM_HELPER(Xv)
+STR_STREAM_HELPER(SvObsEpoch)
+STR_STREAM_HELPER(ObsEpoch)
+
 
 // STR_STREAM_HELPER(Xvt)
 // Q: Why is this (below) here instead of the macro for Xvt?

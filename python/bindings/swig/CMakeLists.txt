@@ -1,161 +1,144 @@
-# This file is not added to the parent cmakelists.txt files!
-
 cmake_minimum_required(VERSION 2.8)
 
-#---------------------------------------------------------------------------------
-# Installation Path Prefix - Do not change unless required to desired location
-#---------------------------------------------------------------------------------
+#------------------------------------------------------------
+# CMake Scope
+#------------------------------------------------------------
+# Please note that this file does not use any of the CMakeLists
+# files in the GPSTK /dev directory. This CMakeLists file is a
+# separate project that uses a CMake Find module to locate the
+# GPSTK install and source files
 
-set (CMAKE_INSTALL_PREFIX $ENV{gpstk})
-set (CMAKE_CPP_LIB_PREFIX "${CMAKE_INSTALL_PREFIX}/../dev/ext/lib")
+project( pygpstk )
 
-#---------------------------------------------------------------------------------
+#------------------------------------------------------------
+# Test for python before doing anything
+#------------------------------------------------------------
+find_program(PYTHON "python")
+if( PYTHON )
+  message( STATUS "find_program(): found this PYTHON: ${PYTHON}" )
+else()
+  message( STATUS "find_program(): cannot find PYTHON! Exit now!" )
+  return()
+endif()
+
+#------------------------------------------------------------
+# CMAKE_INSTALL_PREFIX
+#------------------------------------------------------------
+# The default CMAKE_INSTALL_PREFIX is inappropriate for python modules so this variable needs
+# to be overridden. To install in the user's directory:
+#   cmake -DCMAKE_INSTALL_PREFIX=$(python -m site --user-site) ..
+# Since the default is never correct, at least put in something reasonable
+
+if ("${CMAKE_INSTALL_PREFIX}" STREQUAL "/usr/local")
+  # set a variable for the PYTHON_SITE_PACKAGES but call it CMAKE_INSTALL_PREFIX
+  execute_process(COMMAND ${PYTHON} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
+    OUTPUT_VARIABLE CMAKE_INSTALL_PREFIX OUTPUT_STRIP_TRAILING_WHITESPACE)
+endif()
+message(STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
+
+#------------------------------------------------------------
+# SWIG and PythonLibs packages
+#------------------------------------------------------------
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
-message(STATUS "Building using swig at: ${SWIG_EXECUTABLE}")
+set(CMAKE_SWIG_FLAGS "")
 
-find_package(PythonLibs REQUIRED)
+find_package(PythonLibs 2 REQUIRED)
 include_directories(${PYTHON_INCLUDE_PATH})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(
-                    ${CMAKE_CPP_LIB_PREFIX}/AstroEph
-                    ${CMAKE_CPP_LIB_PREFIX}/ClockModel
-                    ${CMAKE_CPP_LIB_PREFIX}/deprecate
-                    ${CMAKE_CPP_LIB_PREFIX}/FileDirProc
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SEM
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SP3
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/Yuma
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph
-                    ${CMAKE_CPP_LIB_PREFIX}/Math
-                    ${CMAKE_CPP_LIB_PREFIX}/Math/Matrix
-                    ${CMAKE_CPP_LIB_PREFIX}/Math/Vector
-                    ${CMAKE_CPP_LIB_PREFIX}/Misc
-                    ${CMAKE_CPP_LIB_PREFIX}/PosSol
-                    ${CMAKE_CPP_LIB_PREFIX}/Procframe
-                    ${CMAKE_CPP_LIB_PREFIX}/RefTime
-                    ${CMAKE_CPP_LIB_PREFIX}/Rxio
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling
-                    ${CMAKE_CPP_LIB_PREFIX}/Utilities
-                    )
 
+message(STATUS "CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
 message(STATUS "Building against python include path: ${PYTHON_INCLUDE_PATH}")
 message(STATUS "Building against python library: ${PYTHON_LIBRARIES}")
 
-# warning disables:
-# 362: operator= ignored
-# 383: operator++ ignored
-# 384: operator-- ignored
-# 389: operator[] ignored
-# 503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
+#------------------------------------------------------------
+# CMake Find module used to find the installed GPSTK
+#------------------------------------------------------------
+
+set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
+find_package( GPSTK )
+if( NOT GPSTK_FOUND )
+  message(WARNING "Cannot find GPSTK library install. Exitting." )
+  return()
+else()
+  message( STATUS "Found GPSTK library install"  )
+  message( STATUS "GPSTK_INCLUDE_DIRS = ${GPSTK_INCLUDE_DIRS}"  )
+  message( STATUS "GPSTK_LIBRARY_DIRS = ${GPSTK_LIBRARY_DIRS}"  )
+endif()
+include_directories( ${GPSTK_INCLUDE_DIRS} )
+link_directories( ${GPSTK_LIBRARY_DIRS} )
+
+#----------------------------------------
+# Compiler warning disables
+#----------------------------------------
+# CMAKE_SWIG_FLAGS
+#     362: operator= ignored
+#     383: operator++ ignored
+#     384: operator-- ignored
+#     389: operator[] ignored
+#     503: can't wrap 'identifer' unless renamed to a valid identifier (e.g. operator<<)
 
 set(CMAKE_SWIG_FLAGS "-w362,383,384,389,503")
-set(CMAKE_CXX_FLAGS "-std=c++11")
-set_source_files_properties(gpstk_pylib.i PROPERTIES CPLUSPLUS ON)
-#set_source_files_properties(gpstk_pylib.i PROPERTIES SWIG_FLAGS "-includeall") //Possible addition for full source file library
-swig_add_module(gpstk_pylib python gpstk_pylib.i
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/AlmOrbit.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/ANSITime.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Procframe/Antenna.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/AstroEph/AstronomicalFunctions.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/BDSEphemeris.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/BDSEphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Utilities/BinUtils.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/BrcClockCorrection.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/BrcKeplerOrbit.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/CivilTime.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/ClockSatStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/CommonTime.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/EngAlmanac.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/EngEphemeris.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/EngNav.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Utilities/Exception.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Math/Expression.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Procframe/ExtractData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/FFData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/FFStream.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GalEphemeris.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GalEphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GloEphemeris.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GloEphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GPSAlmanacStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GPSEphemeris.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/GPSEphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Utilities/gpstkplatform.h
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/GPSWeek.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/GPSWeekZcount.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/GPSZcount.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/JulianDate.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/MJD.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/AstroEph/MoonPosition.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/ClockModel/ObsEpochMap.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/ObsID.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/ObsIDInitializer.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/OrbElem.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/OrbElemRinex.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/OrbitEph.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/OrbitEphStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/PoleTides.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/Position.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/PositionSatStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/PosSol/PRSolution2.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/QZSEphemeris.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/QZSEphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/RefTime/ReferenceFrame.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3/Rinex3ClockData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3/Rinex3ClockHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/Rinex3EphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3/Rinex3NavData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3/Rinex3NavHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3/Rinex3ObsData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX3/Rinex3ObsHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexClockData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexClockHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/RinexEphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexMetData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexMetHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexNavData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexNavHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexObsData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexObsHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/RinexObsID.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/RinexSatID.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/RINEX/RinexUtilities.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/SEMAlmanacStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SEM/SEMData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SEM/SEMHeader.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/SolidTides.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SP3/SP3Data.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/SP3EphemerisStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SP3/SP3Header.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/SP3SatID.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/AstroEph/SunPosition.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Misc/SVNumXRef.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/SystemTime.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/TimeConverters.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/TimeString.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/RefTime/TimeSystem.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/TimeTag.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Math/Triple.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/TropModel.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/UnixTime.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/Week.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/WeekSecond.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/WxObsMap.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSCore/Xvt.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/TimeHandling/YDSTime.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/YumaAlmanacStore.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/Yuma/YumaData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/GNSSEph/EphemerisRange.cpp
-#                   ${CMAKE_CPP_LIB_PREFIX}/Rxio/EphReader.cpp
-#                   ${CMAKE_CPP_LIB_PREFIX}/Rxio/FFIdentifier.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Rxio/NovatelData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/Rxio/AshtechData.cpp
-                    ${CMAKE_CPP_LIB_PREFIX}/FileHandling/SMODFData.cpp
-                    )
 
-execute_process(COMMAND python -c "from distutils.sysconfig import get_python_lib; print get_python_lib()" OUTPUT_VARIABLE PYTHON_SITE_PACKAGES OUTPUT_STRIP_TRAILING_WHITESPACE)
+#----------------------------------------
+# Compiler CXX flags
+#----------------------------------------
+
+set(CMAKE_CXX_FLAGS "-std=c++11")
+set_source_files_properties(gpstk.i PROPERTIES CPLUSPLUS ON)
+ 
+#----------------------------------------
+# Swig module target
+#----------------------------------------
+# Note: the cmake swig module doesn't seem to know
+#       how to track dependancy on other .i files...
+#       so if the other .i files are changed, do a make clean....
+#
+# Note: list of all headers files are included in 
+#       gpstk_swig.hpp which is included in gpstk.i
+
+set( SWIG_MODULE "gpstk" )
+swig_add_module( ${SWIG_MODULE} python gpstk.i )
+swig_link_libraries( ${SWIG_MODULE} gpstk )
+swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
+
+#----------------------------------------
+# Install python extension module into package tree
+#----------------------------------------
+
+# Install the gpstk module into the package file tree, and then STOP
+set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
+message( STATUS "SWIG install package root = ${INSTALL_PACKAGE_PATH}" )
+install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/gpstk )
+
+#----------------------------------------
+# Install package tree into a system path
+#----------------------------------------
+
+# Determine whether the python package is to be installed by CMake
+# or if we shall let user run the setup.py script manually
+if( NOT DEFINED PACKAGE_INSTALL )
+    set( PACKAGE_INSTALL "1" )
+endif()
+
+if( PACKAGE_INSTALL STREQUAL "1" )
+		
+	# MAKE_CURRENT_SOURCE_DIR default is /home/<username>/git/gpstk/python/bindings/swig
+	# CMAKE_INSTALL_PREFIX    default is /home/<username>/.local/lib/python2.7/site-packages
+	# INSTALL_PACKAGE_PATH    default is /home/<username>/git/gpstk/python/bindings/swig/install_package
+		
+    # Provide ability to use CMake variables to define some values within the setup.py script
+	set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
+	set( SETUP_PY    "${INSTALL_PACKAGE_PATH}/setup.py" )
+	configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
+
+    # Install target calls the python distutils input script
+	install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --prefix=~/.local WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
+
+endif()
+
+#------------------------------------------------------------
+# The End
+#------------------------------------------------------------

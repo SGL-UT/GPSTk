@@ -1,0 +1,63 @@
+v2.5, 2014-10-09 -- Initial release.
+
+
+  Build changes:
+  --------------
+
+  - Addition of a single include file, gpstk_swig.hpp, to facilitate the
+	SWIG wrapper code linking against the pre-compiled libgpstk.so library.
+	  
+  - Reorganization of some of the SWIG directives, such that the primary swig
+    input file gpstk.i is intended to list only includes and ignores, whereas
+	the secondary SWIG input files in src/files.i contain extension code, and
+	other details.
+
+  - Addition of a /cmake/Modules/FindGPSTk.cmake find module to enable
+	the SWIG target in the CMake files to find the GPSTk library.
+
+  Install changes:
+  ----------------
+
+  - Addition of __init__.py files for all package sub-directories.
+
+  - Addition of a more conventional setup.py for distutils package install.
+  
+  - Addition of licensing information (COPYING.txt, COPYING.LESSER.txt)
+  
+  - Addition of install instructions (INSTALL.txt)
+  
+  - Addition of package contents list and starting points (README.txt)
+  
+  - Addition of hooks for alternative install options
+    (MANIFEST.in, setup.py.in, setup.cfg)
+  
+  - Addition of this change-list (CHANGES.txt)
+
+  Namespace changes:
+  ------------------
+
+  - Removal of sub-namespaces gpstk.cpp, gpstk.constants. gpstk.exceptions
+	These did not represent the C++ namespace organization, nor were they
+    in keeping with python module and package conventions.
+
+  - Addition of sub-package gpstk.test, moving all unittest test cases into
+    on location, while adding methods to facilitate calling all tests from 
+	within the python interpreter, rather than only allowing them to be run
+    as scripts.
+	  
+	    gpstk.test.run_all()
+ 
+  - Addition of sub-package gpstk.data, moving all test data files into one
+    location, and removing duplicates formerly included in both the test and
+	example directories. Addition of package utilities to help find the full
+	file paths to the data files after package install, for example:
+	  
+	    my_file = gpstk.data.full_path( 'rinex3nav_data.txt' )
+
+  Script changes:
+  ---------------
+  
+  - removal of example4.py as the C++ side no longer supports the particular
+    ephemeris type conversion used in this example.
+  - Modification of test scripts so that they now make up a sub-package and 
+    can be imported from gpstk.test

@@ -8,6 +8,8 @@
 %template(vector_RinexDatum) std::vector<gpstk::RinexDatum>;
 %template(vector_RinexSatID) std::vector<gpstk::RinexSatID>;
 %template(vector_RinexObsID) std::vector<gpstk::RinexObsID>;
+%template(vector_RinexObsType) std::vector<gpstk::RinexObsType>;
+%template(vector_Rinex3ObsData) std::vector<gpstk::Rinex3ObsData>;
 
 
 //////////////////////////////////////////////////
@@ -30,13 +32,23 @@
 %template(map_char_string) std::map<char, std::string>;
 %template(map_char_int)    std::map<char, int>;
 
-%template(map_RinexSatID_vector_RinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
+// AKA RinexObsData::RinexObsTypeMap
+%template(map_RinexObsType_RinexDatum) std::map<gpstk::RinexObsType, gpstk::RinexDatum>;
+
+// AKA RinexObsData::RinexSatMap
+%template(map_RinexSatID_RinexObsTypeMap) std::map<gpstk::SatID, std::map<gpstk::RinexObsType, gpstk::RinexDatum> >;
+
+// the type of Rinex3ObsHeader::mapObsTypes
 %template(map_string_vector_RinexObsID) std::map<std::string, std::vector<gpstk::RinexObsID> >;
 
-%template(map_ObsID_double) std::map< gpstk::ObsID,double >;
+%template(map_RinexSatID_vector_RinexDatum) std::map<gpstk::RinexSatID, std::vector<gpstk::RinexDatum> >;
 
-%template(map_SatID_double) std::map<gpstk::SatID, double>;
-%template(map_SatID_SvObsEpoch) std::map<gpstk::SatID,gpstk::SvObsEpoch>;
+// These need to be instantiated so the SvObsEpoch and ObsEpoch classes will work correctly
+%template(map_SvObsEpoch) std::map< gpstk::ObsID, double >;
+%template(map_ObsEpoch) std::map<gpstk::SatID, gpstk::SvObsEpoch>;
+
+// AKA ObsEpochMap
+%template(ObsEpochMap) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
 
 
 //////////////////////////////////////////////////
