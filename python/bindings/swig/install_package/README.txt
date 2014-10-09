@@ -2,77 +2,66 @@
 GPSTk Python Extension Package
 ==============================
 
--------------
 Introduction:
 -------------
+The GPSTk python extension package provides access to the GPSTk C++ library 
+from within python. It is built using SWIG and CMake, and installed with a 
+standard setup.py script using the python distutils module.
 
-The GPSTk python extension package provides access to the GPSTk C++ library from within python.
+Getting started:
+----------------
+Summary of the package files and directory structure:
 
----------------------
+* CHANGES.txt contains information on what has changed since the last release.
+* INSTALL.txt contains detailed installation instructions.
+* setup.py is included for use with distutil based installs, e.g. "$ python setup.py install"
+* MANIFEST.in contains a list of non-source package files that will be installed with the package.
+* LICENSE.txt, COPYING.txt, and COPYING.LESSER.txt contain information on code reuse and licensing.
+* setup.cfg and included a hook for future development of a setuptools based install procedure.
+* gpstk/ is the top-level directory of the python package and contains gpstk/data/ and gpstk/test/
+* examples/ contains example scripts that demonstrate use of the package, e.g. examples/example1.py.
+
 Package File Listing:
 ---------------------
+This assumes that the root directory of the python package install has been
+assigned to an environment variable PKG_INSTALL. For example,
 
-README.txt
-INSTALL.txt
-LICENSE.txt
-CHANGES.txt
-MANIFEST.in
-setup.py
-	
-/gpstk
-/gpstk/__init__.py
-/gpstk/_gpstk.so
-/gpstk/gpstk.py
+    PKG_INSTALL=$GPSTK/python/bindings/swig/install_package
 
-/gpstk/test
-/gpstk/test/__init__.py
-/gpstk/test/test.py
-/gpstk/test/test_gpstk_timeconvert.py
-/gpstk/test/test_gpstk_util.py
-/gpstk/test/test_gpstk_store.py
-/gpstk/test/test_gpstk_time.py
-/gpstk/test/gpstk_timeconvert.py
+With that in mind, the package file manifest is as follows:
 
-/gpstk/data
-/gpstk/data/__init__.py
-/gpstk/data/rinex3nav_data.txt
-/gpstk/data/rinex3obs_data.txt
-/gpstk/data/rinexmet_data.txt
-/gpstk/data/sem_data.txt
-/gpstk/data/sp3_data.txt
-/gpstk/data/yuma_data.txt
-
-/examples
-/examples/__init__.py
-/examples/example1.py
-/examples/example2.py
-/examples/example3.py
-/examples/example4.py
-/examples/example5.py
-/examples/position_difference.py
-/examples/sem_plot.py
-
---------------------------
-Package File Descriptions:
---------------------------
-
-README.txt
-- This file.
-
-INSTALL.txt
-- Instructions on how to install this package.
-- See also setup.py and setup.cfg
- 
-LICENSE.txt
-- Details of use and re-use of the GPSTk source code
-- see also COPYING.txt and COPYING.LESSER.txt
- 
-CHANGES.txt
-- Notable changes since the last distribution version.
-
-MANIFEST.txt
-- List of non-source package files that will be installed with the package.
-
-setup.py
-- used to install this package
-- see also INSTALL.txt
+$PKG_INSTALL/README.txt
+$PKG_INSTALL/INSTALL.txt
+$PKG_INSTALL/LICENSE.txt
+$PKG_INSTALL/CHANGES.txt
+$PKG_INSTALL/MANIFEST.in
+$PKG_INSTALL/setup.py
+$PKG_INSTALL/gpstk
+$PKG_INSTALL/gpstk/__init__.py
+$PKG_INSTALL/gpstk/_gpstk.so
+$PKG_INSTALL/gpstk/gpstk.py
+$PKG_INSTALL/gpstk/test
+$PKG_INSTALL/gpstk/test/__init__.py
+$PKG_INSTALL/gpstk/test/test.py
+$PKG_INSTALL/gpstk/test/test_gpstk_timeconvert.py
+$PKG_INSTALL/gpstk/test/test_gpstk_util.py
+$PKG_INSTALL/gpstk/test/test_gpstk_store.py
+$PKG_INSTALL/gpstk/test/test_gpstk_time.py
+$PKG_INSTALL/gpstk/test/gpstk_timeconvert.py
+$PKG_INSTALL/gpstk/data
+$PKG_INSTALL/gpstk/data/__init__.py
+$PKG_INSTALL/gpstk/data/rinex2nav_data.txt
+$PKG_INSTALL/gpstk/data/rinex2obs_data.txt
+$PKG_INSTALL/gpstk/data/rinexmet_data.txt
+$PKG_INSTALL/gpstk/data/sem_data.txt
+$PKG_INSTALL/gpstk/data/sp3_data.txt
+$PKG_INSTALL/gpstk/data/yuma_data.txt
+$PKG_INSTALL/examples
+$PKG_INSTALL/examples/__init__.py
+$PKG_INSTALL/examples/example1.py
+$PKG_INSTALL/examples/example2.py
+$PKG_INSTALL/examples/example3.py
+$PKG_INSTALL/examples/example4.py
+$PKG_INSTALL/examples/example5.py
+$PKG_INSTALL/examples/position_difference.py
+$PKG_INSTALL/examples/sem_plot.py

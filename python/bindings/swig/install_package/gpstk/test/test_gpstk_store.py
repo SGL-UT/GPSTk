@@ -139,7 +139,7 @@ class YumaTest(unittest.TestCase):
 
 class Rinex3ObsTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinex3Obs( gpstk.data.full_path('rinex3obs_data.txt') , strict=True)
+        header, data = gpstk.readRinex3Obs( gpstk.data.full_path('rinex2obs_data.txt') , strict=True)
         self.assertEqual(0L, header.numSVs)
         self.assertEqual('NATIONAL IMAGERY AND MAPPING AGENCY', header.agency)
         self.assertEqual(120, len(data))
@@ -153,14 +153,14 @@ class Rinex3ObsTest(unittest.TestCase):
         self.assertEqual(expectedTime, dataPoint.time)
 
     def test_stream_lazy(self):
-        header, gen = gpstk.readRinex3Obs( gpstk.data.full_path('rinex3obs_data.txt') , strict=False)
+        header, gen = gpstk.readRinex3Obs( gpstk.data.full_path('rinex2obs_data.txt') , strict=False)
         data = list(gen)
         self.assertEqual(120, len(data))
 
 
 class Rinex3NavTest(unittest.TestCase):
     def test_stream(self):
-        header, data = gpstk.readRinex3Nav( gpstk.data.full_path('rinex3nav_data.txt') , strict=True)
+        header, data = gpstk.readRinex3Nav( gpstk.data.full_path('rinex2nav_data.txt') , strict=True)
         self.assertEqual('06/10/2004 00:00:26', header.date)
         self.assertEqual(166, len(data))
         dataPoint = data[165]
