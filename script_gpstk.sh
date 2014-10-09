@@ -280,7 +280,23 @@ if [ "$build_python" ]; then
 	    cd $python_root/install_package
 	    python setup.py install --prefix=~/.local
 	fi
-	
+
+    # Create source distribution packages
+	# options: tar-ball, zip, debian package
+	package_tar=0
+	package_debian=0
+    if [ "$package_tar" ]; then
+		cd $python_root/install_package
+	    python setup.py sdist --formats=zip,gztar
+		if [ "$package_debian" ]; then
+		    cd $python_root/install_package/dist
+			# py2dsc will convert a distutils-built source tarball into a Debian source package.
+		    py2dsc gpstk-2.5.tar.gz
+		    cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
+		    dpkg-buildpackage -rfakeroot -uc -us
+	    fi
+    fi
+
 fi
 
 #----------------------------------------
