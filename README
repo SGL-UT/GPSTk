@@ -1,61 +1,41 @@
-$Id$
+README:
+=======
 
-The following is excerpted from the GPSTk web/wiki site at 
-http://www.gpstk.org/.
+Contents:
+---------
 
-The website includes a variety of additional and the latest information 
-including:
-   * Source code and compiled binaries
-   * Coding examples
-   * Doxygen documentation
-   * System requirements and build instructions
-   * A users guide
-   * Publications
-   * Email lists
-   * Support question/answer
-   * Development process (including feature suggestions, bug tracking, 
-      schedule, testing, and developer documentation)
-   * Source code repository information
-   * GPSTk IRC channel
-   * Success stories
-
-What is GPSTk?
---------------
-
-The goal of the GPSTk project is to provide an open source library and suite
-of applications to the satellite navigation community--to free researchers
-to focus on research, not lower level coding.
-
-GPS users employ practically every computational architecture and operating 
-system. Therefore the design of the GPSTk suite is as platform-independent as 
-possible. Platform independence is achieved through use of the ANSI-standard 
-C++ programming language. The principles of object-oriented programming are 
-used throughout the GPSTk code base in order to ensure that the code is 
-modular, extensible, and maintainable.
-
-The GPSTk suite consists of a core library, auxiliary libraries, and a set 
-of applications. The GPSTk provides a wide array of functions that solve 
-processing problems associated with GPS such as processing or using standard 
-formats such as RINEX. The libraries are the basis for the more advanced 
-applications distributed as part of the GPSTk suite.
-
-The GPSTk is sponsored by Space and Geophysics Laboratory, within the Applied 
-Research Laboratories at the University of Texas at Austin (ARL:UT). GPSTk is
-the by-product of GPS research conducted at ARL:UT since before the first 
-satellite launched in 1978; it is the combined effort of many software 
-engineers and scientists. In 2003 the research staff at ARL:UT decided to 
-open source much of their basic GPS processing software as the GPSTk.
+* Introduction
+* Description: GPSTk C++ Library
+* Description: GPSTk C++ Applications
+* Description: GPSTk Python Bindings
+* Installation
+* Help & Docs
+* Contribution guidelines
+* Contributor list
+* Credits & Lineage
 
 
-GPSTk Core Library
-------------------
+Introduction:
+-------------
 
-The GPSTk core library consist of the most robust, broadly useful,  and 
-platform independent code in the GPSTk.  It provides a number of models and 
-algorithms found in GPS textbooks and classic papers, such as solving for 
-the user position or estimating atmospheric refraction. Common formats 
-are supported as well, such as RINEX or SP3. There are several categories 
-of functions in the GPSTk library:
+The GPS Toolkit (GPSTk) is an open-source (LGPL) project sponsored by
+the Space and Geophysics Laboratory (SGL), part of the Applied Research 
+Laboratories (ARL) at The University of Texas at Austin.
+
+The primary goals of the GPSTk project are to:
+
+* provide applications for use by the GNSS and satellite navigation community.
+* provide a core library to facilitate the development of GNSS applications.
+
+
+Description: GPSTk C++ Library:
+-------------------------------
+
+The GPSTk core library provides a number of models and algorithms found in GNSS
+textbooks and classic papers, such as solving for the user position or estimating
+atmospheric refraction. Common data formats such as RINEX are supported as well. 
+
+There are several categories of functions in the GPSTk library:
 
    1. GPS time. Conversion among time representations such as MJD, GPS week 
       and seconds of week, and many others.
@@ -82,6 +62,8 @@ of functions in the GPSTk library:
 A more detailed description of the functionality provided by the GPSTk library 
 can be found in the Doxygen documentation on the GPSTk website.
 
+    http://www.gpstk.org/bin/view/Documentation/WebHome
+
 The GPSTk Core Library and its associated test programs can be built 
 independently of building the GPSTk Applications or Auxiliary Libraries.
 The GPSTk Core Library source code contains no dependencies outside of the
@@ -89,31 +71,14 @@ GPSTk Core Library and Standard C++ and will build cleanly on all
 supported platforms.
 
 
-GPSTk Auxiliary Libraries
--------------------------
-The auxiliary libraries contains code that could be useful in GNSS processing 
-but do not fit the description and portability of the core library. This code
-could contain highly specialized algorithms or be related to the message 
-format of a specific receiver. The code could require libraries or system 
-functions that are broadly available but not part of the C++ standard.  
-Currently the auxiliary libraries are:
+Description: GPSTk C++ Applications:
+------------------------------------
 
-   1. rxio - Receiver and input/output library
-   2. vplot, vdraw - Vector graphics libraries
-   3. geomatics - Precise positioning library
-   4. procframe - Framework for storage, filtering and processing of
-                  observations, including 'PPP' processing.
-   5. geodyn - a library to model the effects of natural forces on 
-	       space vehicle dynamics.
-
-GPSTk Applications
-------------------
-
-The libraries are the foundation for applications within the GPSTk suite.  
+The GPSTk libraries are the foundation for the GPSTk applications suite.
 The applications support greater depth of functionality to support research 
 and development. The applications are almost entirely console based (i.e., 
 without a graphical user interface). They can be grouped functionally into 
-a number of categories.
+the following categories:
 
    1. RINEX utilities - The RINEX utilities provide a set of applications 
       that can be used to examine, manipulate, and plot RINEX observation 
@@ -151,39 +116,93 @@ a number of categories.
 
 
 The GPSTk applications are dependent on the GPSTk libraries.  However, the 
-GPSTk Applications may also contain external dependencies.  Some applications 
-may not build or run successfully on all the supported platforms. 
-
-License
--------
-
-The source code provided by the GPSTk is distributed under the GNU LGPL 
-(http://www.gnu.org/copyleft/lesser.html). This license gives all users the 
-right to use and redistribute the code. Users of the GPSTk are not required 
-to open their source, according to the LGPL. This makes the GPSTk a practical 
-choice for commercial projects.
+GPSTk applications may also contain external dependencies.  Some applications 
+may not build or run successfully on all platforms. 
 
 
-Credit
-------
+Description: GPSTk Python Bindings:
+-----------------------------------
 
-If you use the GPSTk to produce an article or thesis, please reference 
-the following article to credit the GPSTk project.
+The GPSTk python extension package provides access to the GPSTk C++ library 
+from within python. It is built using SWIG and CMake, and installed with a 
+standard setup.py script using the python distutils module.
 
-Brian Tolman, R. Benjamin Harris, Tom Gaussiran, David Munton, Jon Little, 
-Richard Mach, Scot Nelsen, Brent Renfro, ARL:UT; David Schlossberg, 
-University of California Berkeley. "The GPS Toolkit -- Open Source GPS 
-Software." Proceedings of the 17th International Technical Meeting of 
-the Satellite Division of the Institute of Navigation (ION GNSS 2004). 
-Long Beach, California. September 2004
+For more details, see $GPSTK/python/bindings/swig/install_package/README.txt
 
-For LaTeX users, here is a BibTeX entry for that citation.
+Installation:
+-------------
 
-http://www.gpstk.org/pub/Documentation/GPSTkPublications/gpstk-ion-gnss-2004.bib
+See the INSTALL.txt for details.
 
+The most recent version of the GPSTk source code can be found here:
 
-Contact Info
+* http://www.gpstk.org
+* http://www.github.com/gpstk
+* http://www.sourceforge.com/gpstk
+
+The tools used for the build and install frameworks are cross-platform.
+These include CMake, SWIG, and python (distutils).
+
+Automated build and install is supported on POSIX platforms with the 
+supplied Bash script called script_gpstk.sh. For help on script usage, 
+run the script with the help flag:
+
+    $ script_gpstk.sh -h
+
+For other platforms, such as Windows, please refer to comments and commands
+in the same script, which document how we are using CMake, SWIG, and 
+distutils for various steps in the build and install process.
+
+To build and install the C++ library and applications on POSIX platforms:
+
+* automated: run the script_gpstk.sh, minimally with the "-c" flag.
+* manual: see the contents of script_gpstk.sh for command examples on how you might run cmake and make to build and install the library.
+
+To build and install the python bindings, you have two options:
+
+* automated: run the script_gpstk.sh, minimally with the "-p" flag.
+* manual build: see script_gpstk.sh for examples on calling cmake and swig
+* manual install: use the setup.py script in the install_package path. See $GPSTK/python/bindings/swig/install_package/INSTALL.txt for more details
+
+	
+Help & Docs:
 ------------
-The GPSTk is a collaborative effort. However, you can email to 
-gpstk@arlut.utexas.edu or contact one of the CoreTeam members
-(http://www.gpstk.org/bin/view/Development/CoreTeam).
+
+The website http://www.gpstk.org/ includes a variety of additional
+resources and documentation, including:
+
+* Source code and compiled binaries
+* Coding examples
+* Doxygen documentation
+* System requirements and build instructions
+* A users guide
+* Publications
+* Email lists
+* Support question/answer
+* Development process (including feature suggestions, bug tracking, schedule, testing, and developer documentation)
+* Source code repository information
+* GPSTk IRC channel
+* Success stories
+
+Contribution guidelines:
+------------------------
+
+How you can help out, including wanted features and code standards
+
+Contributor list:
+-----------------
+
+The humans behind the project
+   
+Credits & Lineage:
+------------------
+
+GPSTk is the by-product of GPS research conducted at ARL:UT since before the first 
+satellite launched in 1978; it is the combined effort of many software 
+engineers and scientists. In 2003 the research staff at ARL:UT decided to 
+open source much of their basic GPS processing software as the GPSTk.
+
+The development history is documented by a series of related publications: 
+
+	http://www.gpstk.org/bin/view/Documentation/GPSTkPublications
+
