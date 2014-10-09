@@ -235,7 +235,7 @@ if [ "$build_python" ]; then
             python docstring_generator.py
         fi
     fi
-	
+    
     if [ "$build_spinx" ]; then
         echo "Rebuilding sphinx RST documentation now..."
         cd $python_root/sphinx
@@ -275,26 +275,26 @@ if [ "$build_python" ]; then
     make install
 
     # Python extension module was built and installed into the package file tree
-	# But the package itself was not installed into a system path, so we do it here
+    # But the package itself was not installed into a system path, so we do it here
     if [ $package_install = 0 ]; then
-	    cd $python_root/install_package
-	    python setup.py install --prefix=~/.local
-	fi
+        cd $python_root/install_package
+        python setup.py install --prefix=~/.local
+    fi
 
     # Create source distribution packages
-	# options: tar-ball, zip, debian package
-	package_tar=0
-	package_debian=0
+    # options: tar-ball, zip, debian package
+    package_tar=0
+    package_debian=0
     if [ "$package_tar" ]; then
-		cd $python_root/install_package
-	    python setup.py sdist --formats=zip,gztar
-		if [ "$package_debian" ]; then
-		    cd $python_root/install_package/dist
-			# py2dsc will convert a distutils-built source tarball into a Debian source package.
-		    py2dsc gpstk-2.5.tar.gz
-		    cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
-		    dpkg-buildpackage -rfakeroot -uc -us
-	    fi
+        cd $python_root/install_package
+        python setup.py sdist --formats=zip,gztar
+        if [ "$package_debian" ]; then
+            cd $python_root/install_package/dist
+            # py2dsc will convert a distutils-built source tarball into a Debian source package.
+            py2dsc gpstk-2.5.tar.gz
+            cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
+            dpkg-buildpackage -rfakeroot -uc -us
+        fi
     fi
 
 fi
