@@ -145,8 +145,6 @@ For example, to get a generator of Rinex3NavData objects with only the PRNID of 
 
 The following formats use this pattern (all read/write semantics are identical):
 
-* FIC
-* MSC
 * Rinex3Clock
 * Rinex3Nav
 * Rinex3Obs
