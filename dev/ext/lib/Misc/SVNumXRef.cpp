@@ -573,10 +573,10 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
             std::pair<const int, gpstk::XRefNode> navP = *navIt;
             int navNum = navP.second.getNAVSTARNum();
                //if this navstar equals that navstar and the prns arent the same
-            if(mm.first == navNum and mm.second.getPRNNum() != navP.first)
+            if((mm.first == navNum) && (mm.second.getPRNNum() != navP.first))
             {
                   //if this beginTime is less than that endTime AND this endTime is greater than that beginTime
-               if(mm.second.getBeginTime() < navP.second.getEndTime() && mm.second.getEndTime() > navP.second.getBeginTime())
+               if((mm.second.getBeginTime() < navP.second.getEndTime()) && (mm.second.getEndTime() > navP.second.getBeginTime()))
                {
                   out << "OVERLAP \n" << "Nav    " << mm.first << "  PRN  " << mm.second.toString() << endl;
                   out << "PRN    " << navP.first << "  Nav  " << navP.second.toString() << endl;
@@ -584,17 +584,17 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
                }
             }
                //if BOTH the Nav# and the PRN# equals then you either are looking at the same entry or an overlap
-            if(mm.first == navNum and mm.second.getPRNNum() == navP.first)
+            if((mm.first == navNum) && (mm.second.getPRNNum() == navP.first))
             {
                   //if this beginTime is less than that endTime AND this endTime is greater than that beginTime AND you have already found the same entry
-               if(mm.second.getBeginTime() < navP.second.getEndTime() && mm.second.getEndTime() > navP.second.getBeginTime() && pastCurrent)
+               if((mm.second.getBeginTime() < navP.second.getEndTime()) && (mm.second.getEndTime() > navP.second.getBeginTime()) && pastCurrent)
                {
                   out << "OVERLAP \n" << "Nav    " << mm.first << "  PRN  " << mm.second.toString() << endl;
                   out << "PRN    " << navP.first << "  Nav  " << navP.second.toString() << endl;
                   out << "WITH" << endl;
                }
                   //if the times are all the same and you have not yet seen the same entry then you set pastCurrent to true
-               if(mm.second.getBeginTime() == navP.second.getBeginTime() && mm.second.getEndTime() == navP.second.getEndTime() && !pastCurrent)
+               if((mm.second.getBeginTime() == navP.second.getBeginTime()) && (mm.second.getEndTime() == navP.second.getEndTime()) && !pastCurrent)
                {
                   pastCurrent = true;
                }
@@ -626,7 +626,7 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
             std::pair<const int, gpstk::XRefNode> prnN = *prnIt;
             int prnNum = prnN.second.getPRNNum();
                //if this prn equals that prn and the navstar arent the same
-            if(pp.first == prnNum and pp.second.getNAVSTARNum() != prnN.first)
+            if((pp.first == prnNum) && (pp.second.getNAVSTARNum() != prnN.first))
             {
                   //if this beginTime is less than that endTime AND this endTime is greater than that beginTime
                if(pp.second.getBeginTime() < prnN.second.getEndTime() && pp.second.getEndTime() > prnN.second.getBeginTime())
@@ -637,7 +637,7 @@ int SVNumXRef::dump(std::ostream& out, bool checkOverlap) const
                }
             }
                //if BOTH the Nav# and the PRN# equals then you either are looking at the same entry or an overlap
-            if(pp.first == prnNum and pp.second.getPRNNum() == prnN.first)
+            if((pp.first == prnNum) && (pp.second.getPRNNum() == prnN.first))
             {
                   //if this beginTime is less than that endTime AND this endTime is greater than that beginTime AND you have already found the same entry
                if(pp.second.getBeginTime() < prnN.second.getEndTime() && pp.second.getEndTime() > prnN.second.getBeginTime() && pastCurrent)
