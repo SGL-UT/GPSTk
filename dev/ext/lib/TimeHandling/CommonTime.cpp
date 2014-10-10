@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -82,7 +80,7 @@ namespace gpstk
    CommonTime& CommonTime::set( long day,
                                 long sod,
                                 double fsod,
-                                TimeSystem timeSystem )
+                                const TimeSystem& timeSystem )
    {
          // Use temp variables so that we don't modify our
          // data members until we know these values are good.
@@ -124,7 +122,7 @@ namespace gpstk
 
    CommonTime& CommonTime::set( long day,
                                 double sod,
-                                TimeSystem timeSystem )
+                                const TimeSystem& timeSystem )
    {
          // separate whole and fractional seconds, then use set()
       long sec = static_cast<long>( sod );
@@ -134,7 +132,7 @@ namespace gpstk
    }
 
   CommonTime& CommonTime::set( double day,
-                               TimeSystem timeSystem )
+                               const TimeSystem& timeSystem )
    {
          // separate whole and fractional days
       long lday = static_cast<long>( day );
@@ -145,7 +143,7 @@ namespace gpstk
    CommonTime& CommonTime::setInternal( long day,
                                         long msod,
                                         double fsod,
-                                        TimeSystem timeSystem )
+                                        const TimeSystem& timeSystem )
    {
       if( day < BEGIN_LIMIT_JDAY || day > END_LIMIT_JDAY )
       {

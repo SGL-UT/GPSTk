@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -144,10 +142,8 @@ namespace gpstk
       /// Obliquity of the ecliptic, J2000 in degrees
       static const double EPS = 23.43929111;
 
-   };
+   }  // End of 'namespace ASConstant'
 
 }  // End of 'namespace gpstk'
 
 #endif //GNSSTK_ASCONSTANT_HPP
-
-

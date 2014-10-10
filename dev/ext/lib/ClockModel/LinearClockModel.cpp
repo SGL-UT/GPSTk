@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -76,8 +74,6 @@ namespace gpstk
       double mean;
       if (clockModel.N()==0)
       {
-         double clkc = stat.Average();
-#pragma unused(clkc)
          startTime = endTime = baseTime = t;
          tossCount = 0;
       }

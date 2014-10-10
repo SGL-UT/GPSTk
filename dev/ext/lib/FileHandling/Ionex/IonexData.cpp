@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -331,13 +329,13 @@ namespace gpstk
                GPSTK_THROW(e);
             }
 
-            double lat0,lon1,lon2,dlon,hgt;
-
-            lat0 = asDouble(line.substr( 2,6));
-            lon1 = asDouble(line.substr( 8,6));
-            lon2 = asDouble(line.substr(14,6));
-            dlon = asDouble(line.substr(20,6));
-            hgt  = asDouble(line.substr(26,6));
+#ifdef GPSTK_IONEX_UNUSED
+            const double lat0 = asDouble(line.substr( 2,6)),
+                         lon1 = asDouble(line.substr( 8,6)),
+                         lon2 = asDouble(line.substr(14,6)),
+                         dlon = asDouble(line.substr(20,6)),
+                         hgt  = asDouble(line.substr(26,6));
+#endif  // GPSTK_IONEX_UNUSED
 
                //read single data block
             for (int ival = 0,line_ndx = 0; ival < dim[1]; ival++, line_ndx++)

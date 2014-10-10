@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -529,15 +527,12 @@ namespace gpstk
       double t0   = 0.0;
       double h   = 1.0;
       gpstk::Vector<double> y0(1,0.0); 
-      int dim      = 1;
-#pragma unused(dim)
       gpstk::Vector<double> y(1,0.0);   // = {0.0};
       
       this->setStepSize(0.01);
       //this->setAdaptive(true);
 
-      int i=0;
-      for(i=0;i<1000000;i++)
+      for(int i=0;i<1000000;i++)
       {
          y = integrateTo(t0, y0, &eom, t0 + h);
          double t = t0 + h;

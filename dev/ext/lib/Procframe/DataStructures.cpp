@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -2067,7 +2065,7 @@ in matrix and number of types do not match") );
       gnssDataMap gdMap( getDataFromEpoch(epoch) );
 
          // Value to be returned
-      double toReturn;
+      double toReturn = 0.0;
 
          // We'll need a flag
       bool found(false);
@@ -2122,7 +2120,7 @@ in matrix and number of types do not match") );
       gnssDataMap gdMap( frontEpoch() );
 
          // Value to be returned
-      double toReturn;
+      double toReturn = 0.0;
 
          // We'll need a flag
       bool found(false);

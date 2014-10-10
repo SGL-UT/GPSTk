@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -55,14 +53,12 @@ namespace gpstk
        * @param n Desired degree.
        * @param m Desired order.
        */
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
    SphericalHarmonicGravity::SphericalHarmonicGravity(int n, int m)
       : desiredDegree(n),
         desiredOrder(m),
         correctSolidTide(false),
-        correctOceanTide(false),
-        correctPoleTide(false)
+        correctPoleTide(false),
+        correctOceanTide(false)
    {
       const int size = desiredDegree;
 
@@ -72,8 +68,7 @@ namespace gpstk
       //Sn0.resize(gmData.maxDegree, 0.0);
 
    }
-#pragma clang diagnostic pop
-   
+
       /* Evaluates the two harmonic functions V and W.
        * @param r ECI position vector.
        * @param E ECI to ECEF transformation matrix.
@@ -519,4 +514,3 @@ namespace gpstk
    }  // End of method 'SphericalHarmonicGravity::test()'
 
 }  // End of namespace 'gpstk'
-

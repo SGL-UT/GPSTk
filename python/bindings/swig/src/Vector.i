@@ -1,4 +1,3 @@
-#pragma ident "$Id$"
 #ifndef GPSTK_VECTOR_HPP
 #define GPSTK_VECTOR_HPP
 #include <limits>

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -177,7 +175,7 @@ namespace gpstk
       { return EPOCH_TOLERANCE = tol; }
 
          /// Returns the current EPOCH_TOLERANCE.
-      static double getEpochTolerance() 
+      static double getEpochTolerance()
          throw()
       { return EPOCH_TOLERANCE; }
    
@@ -195,7 +193,7 @@ namespace gpstk
           * Return the tolerance value currently in use by this object.
           * @return the current tolerance value (in seconds, of course)
           */
-      double getTolerance() throw()
+      double getTolerance() const throw()
       { return tolerance; }
          //@}
 

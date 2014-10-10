@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -186,7 +184,7 @@ namespace gpstk
       Tgd                  = subframe2.asSignedDouble(526, 13, -35);
       ISCL1cp              = subframe2.asSignedDouble(539, 13, -35);
       ISCL1cd              = subframe2.asSignedDouble(552, 13, -35);
-      short sflag          = subframe2.asUnsignedLong(565, 1, 1);
+      //short sflag          = subframe2.asUnsignedLong(565, 1, 1);
 
       double A        = A_REF_GPS + deltaA;
       double Ahalf    = SQRT(A);
@@ -199,9 +197,8 @@ namespace gpstk
       if (timeDiff < -HALFWEEK) epochWeek++;
       else if (timeDiff > HALFWEEK) epochWeek--;
 
-      double accuracy1 = gpstk::ura2CNAVaccuracy(URAoe);
-#pragma unused(sflag,accuracy1)
-       
+      (void)gpstk::ura2CNAVaccuracy(URAoe);
+
      // deleted because algorithms in -705 and -800 have changed
      // double accuracy2 = gpstk::uraoc2CNAVaccuracy(URAoc, URAoc1, URAoc2, GPSWeekSecond(epochWeek, TOWCount, TimeSystem::GPS), GPSWeekSecond(epochWeek, Top, TimeSystem::GPS));
 

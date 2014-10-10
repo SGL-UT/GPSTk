@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -59,9 +57,7 @@ namespace gpstk
    bool Rinex3EphemerisStore::addEphemeris(const Rinex3NavData& inRdata)
    {
       Rinex3NavData Rdata(inRdata);
-      TimeSystem ts = TimeSystem::GPS;
-#pragma unused(ts)
-       
+
       switch(Rdata.sat.system) {
          case SatID::systemGPS:
          {
@@ -485,10 +481,9 @@ namespace gpstk
       const bool keepGLO(keepAll || sysSat.system==SatID::systemGlonass);
       const bool keepBDS(keepAll || sysSat.system==SatID::systemBeiDou);
       const bool keepQZS(keepAll || sysSat.system==SatID::systemQZSS);
-      const bool keepGEO(keepAll || sysSat.system==SatID::systemGeosync);
+      //const bool keepGEO(keepAll || sysSat.system==SatID::systemGeosync);
       const bool keepOrb(keepAll || keepGPS || keepGAL || keepBDS || keepQZS);
-#pragma unused(keepGEO)
-       
+
       if(keepOrb) {
          list<OrbitEph*> OElist;
          ORBstore.addToList(OElist);

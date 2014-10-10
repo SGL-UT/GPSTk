@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -99,14 +97,14 @@ namespace gpstk
    string YumaData::lineParser(const string& line, const string& s)
       const throw(FFStreamError)
    {
-      int i = line.find_first_of(":");
+      const int i = line.find_first_of(":");
 
       // Gotta have a colon or the format is wrong
-      if (i == string::npos)
+      if (i == (int)string::npos)
          GPSTK_THROW(FFStreamError("Format error in YumaData"));
 
       // Only compare the first five characters since some files differ after that
-      int w = std::min(5, std::min(i, (int)s.size()));
+      const int w = std::min(5, std::min(i, (int)s.size()));
       if (line.substr(0,w) != s.substr(0,w))
          GPSTK_THROW(FFStreamError("Format error in YumaData"));
 

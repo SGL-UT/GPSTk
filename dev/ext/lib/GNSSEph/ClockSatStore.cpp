@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -106,7 +104,7 @@ namespace gpstk
             ++n;
          };
 
-         if(isExact && Nmatch==Nhalf-1) { Nlow++; Nhi++; }
+         if(isExact && Nmatch == (int)(Nhalf-1)) { Nlow++; Nhi++; }
 
          // interpolate
          rec.accel = rec.sig_accel = 0.0;              // defaults
@@ -282,7 +280,7 @@ namespace gpstk
             ++n;
          };
 
-         if(isExact && Nhi==Nhalf-1) Nhi++;
+         if(isExact && Nhi == (int)(Nhalf-1)) Nhi++;
 
          // interpolate
          double drift, dt(ttag-ttag0), err, slope;

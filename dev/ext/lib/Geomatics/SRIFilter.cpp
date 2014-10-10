@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -230,7 +228,7 @@ void SRIFilter::zeroAll(void)
 // @param N new SRIFilter dimension (optional).
 void SRIFilter::Reset(const int N)
 {
-   if(N > 0 && N != R.rows()) {
+   if(N > 0 && N != (int)R.rows()) {
       R.resize(N,N,0.0);
       Z.resize(N,0.0);
    }

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -193,8 +191,7 @@ namespace gpstk
       {
          try
          { 
-            FFStream& r = dynamic_cast<FFStream&>(i);
-            #pragma unused(r)
+            (void)dynamic_cast<FFStream&>(i);
          }
          catch(...)
          {
@@ -246,4 +243,3 @@ namespace gpstk
 
 }  // End of namespace gpstk
 #endif   // GPSTK_FFSTREAM_HPP
-

@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -62,11 +60,8 @@ namespace gpstk
    {
    public:
       /// constructor
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-       SMODFData() : PRNID(0), time(gpstk::CommonTime::BEGINNING_OF_TIME)
+       SMODFData() : time(gpstk::CommonTime::BEGINNING_OF_TIME), PRNID(0)
       {}
-#pragma clang diagnostic pop
       /// destructor
       virtual ~SMODFData() {}
 

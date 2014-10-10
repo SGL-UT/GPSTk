@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -114,4 +112,3 @@ namespace vdraw
 } // end namespace vdraw
 
 #endif //VDRAW_EPSIMAGE_H
-

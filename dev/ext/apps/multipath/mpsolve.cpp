@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -326,7 +324,7 @@ int main(int argc, char *argv[])
 
 
          // Now only long passes remain.
-         // Next use robust stats to remove cycle slips\
+         // Next use robust stats to remove cycle slips
          // Start with a clean slate
          removePts.resize(oa.lli.size());
          removePts = false;

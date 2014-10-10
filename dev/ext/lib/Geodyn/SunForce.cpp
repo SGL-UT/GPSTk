@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -124,14 +122,11 @@ namespace gpstk
       ReferenceFrames::setJPLEphFile("InputData\\DE405\\jplde405");
 
       CivilTime time(2000,1,1,0,0,0.0);
-      double mjd = static_cast<Epoch>(time).MJD();
-#pragma unused(mjd)
+      (void)static_cast<Epoch>(time).MJD();
 
       Vector<double> posSun =  ReferenceFrames::getJ2kPosition(time,SolarSystem::Sun);
 
       cout << posSun << endl;
-
    }
 
 }  // End of namespace 'gpstk'
-

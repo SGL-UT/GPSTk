@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -256,12 +254,9 @@ namespace gpstk
       // member functions
 
       /// Constructor.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-      AntexData() : validFrom(CommonTime::BEGINNING_OF_TIME),
-                    validUntil(CommonTime::END_OF_TIME),
-                    valid(0), PRN(0), SVN(0), nFreq(0), absolute(true) {}
-#pragma clang diagnostic pop
+      AntexData() : valid(0), absolute(true), PRN(0), SVN(0), nFreq(0),
+                    validFrom(CommonTime::BEGINNING_OF_TIME),
+                    validUntil(CommonTime::END_OF_TIME) {}
       /// Destructor
       virtual ~AntexData() {}
 

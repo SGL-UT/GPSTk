@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -82,12 +80,12 @@ namespace gpstk
       /// explicit constructor, no defaults
       /// @note if s is given a default value here,
       /// some compilers will silently cast int to SatID.
-      SatID(int p, SatelliteSystem s) { id=p; system=s; }
+      SatID(int p, const SatelliteSystem& s) { id=p; system=s; }
 
       // operator=, copy constructor and destructor built by compiler
 
       /// Convenience method used by dump().
-      static std::string convertSatelliteSystemToString(SatelliteSystem s)
+      static std::string convertSatelliteSystemToString(const SatelliteSystem& s)
       {
          switch(s)
          {

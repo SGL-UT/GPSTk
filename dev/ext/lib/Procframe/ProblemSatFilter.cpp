@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -154,7 +152,7 @@ namespace gpstk
          stringstream ss(data);
          ss >> satellite >> problem >> action;
          
-         int s[6]={0.0};
+         int s[6] = {0};
          for(int i=0;i<6;i++) ss >> s[i];
 
          CivilTime tempEpoch(s[0],s[1],s[2],s[3],s[4],double(s[5]));

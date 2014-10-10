@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -54,28 +52,25 @@ namespace gpstk
    class IQStream : public FFBinaryStream
    {
    public:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
       IQStream()
-         : debugLevel(0),
+         : frameLength(500),
            frameCounter(0),
+           frameBuffer(NULL),
            sampleCounter(0),
-           frameLength(500),
-           bands(1),
-           frameBuffer(NULL)
+           debugLevel(0),
+           bands(1)
       { init(); }
 
 
       IQStream(const char* fn, std::ios::openmode mode = std::ios::in)
          : FFBinaryStream(fn, mode),
-           debugLevel(0),
-           frameCounter(0),
-           sampleCounter(0),
            frameLength(500),
-           bands(1),
-           frameBuffer(NULL)
+           frameCounter(0),
+           frameBuffer(NULL),
+           sampleCounter(0),
+           debugLevel(0),
+           bands(1)
       { init(); }
-#pragma clang diagnostic pop
 
       /// destructor per the coding standards
       virtual ~IQStream()

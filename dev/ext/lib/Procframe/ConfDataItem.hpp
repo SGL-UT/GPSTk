@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -374,4 +372,3 @@ return !(operator<(right));
 */
 
 #endif  //GPSTK_CONFDATAITEM_HPP
-

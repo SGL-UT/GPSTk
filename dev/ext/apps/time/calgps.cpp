@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -107,13 +105,10 @@ void plotMonth(short month, short year,
 
    CivilTime thisDay(firstDOM);
    GPSWeekSecond gws1(thisDay);
-   int gpsweek1 = gws1.week;
 
    CivilTime thatDay(lastDOM);
    GPSWeekSecond gws2(thatDay);
-   int gpsweek2 = gws2.week;
-#pragma unused(gpsweek1,gpsweek2)
-    
+
    TextStyle ts(ft.getHeight()*.5, (int) TextStyle::BOLD, Color::BLACK, 
                 TextStyle::SANSSERIF);
    if (printYear)

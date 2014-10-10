@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -227,7 +225,7 @@ namespace gpstk
          ite--;
       }
       
-      const int N = its->second.size();
+      const size_t N = its->second.size();
 
       std::vector<double> times;
       std::vector<std::vector<double> > datas(N);
@@ -249,7 +247,7 @@ namespace gpstk
             
          }
          
-         for(int i = 0; i < N; i++)
+         for(size_t i = 0; i < N; i++)
          {
             datas[i].push_back( vd[i] );
          }
@@ -259,7 +257,7 @@ namespace gpstk
 
       double dt = t - its->first;
       
-      for(int i = 0; i < N; i++)
+      for(size_t i = 0; i < N; i++)
       {
          vd[i] = SimpleLagrangeInterpolation(times,datas[i],dt);
       }
@@ -270,12 +268,3 @@ namespace gpstk
 
 
 }  // End of namespace gpstk
-
-
-
-
-
-
-
-
-

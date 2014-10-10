@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -52,10 +50,8 @@ class format {
    int wide;
    int prec;
 public:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-    explicit format(int w, int p, int f=1) : wide(w),prec(p),form(f) {}
-#pragma clang diagnostic pop
+    explicit format(int w, int p, int f=1)
+      : form(f), wide(w), prec(p) {}
    format& scientific() { form=2; return *this; }
    format& sci() { form=2; return *this; }
    format& fixed() { form=1; return *this; }
@@ -73,4 +69,3 @@ public:
 
 //------------------------------------------------------------------------------------
 #endif
-// nothing below this..

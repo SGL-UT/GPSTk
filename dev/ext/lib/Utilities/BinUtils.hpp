@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -381,14 +379,12 @@ namespace gpstk
          return xc;
       }
          //@}
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunused-function"
-       
+
          /**
           * Count the set bits in an 32-bit unsigned integer.
           * Originated due to need in EngNav::checkParity
           */
-      static unsigned short countBits(uint32_t v)
+      static inline unsigned short countBits(uint32_t v)
       {
             // Stolen from http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
          uint32_t c; // store the total here
@@ -408,7 +404,6 @@ namespace gpstk
 
          return c;
       }
-#pragma clang diagnostic pop
    } // end namespace BinUtils
 } // end namespace gpstk
 

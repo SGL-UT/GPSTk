@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -52,7 +50,7 @@ namespace vplot
     if(!(top || bottom) || p->empty())
       return pair<list<Path* >*, list<Path*>*>((list<Path* >*)0,(list<Path* >*)0);
 
-    list<Path*> *tl, *bl;
+    list<Path*> *tl = NULL, *bl = NULL;
     if(top) 
       tl = new list<Path*> ();
     if(bottom)

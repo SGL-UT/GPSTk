@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -54,21 +52,18 @@
 namespace gpstk
 {
    using namespace std;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
    PackedNavBits::PackedNavBits()
-                 :bits(900),
-                  bits_used(0),
-                  transmitTime(CommonTime::BEGINNING_OF_TIME)
+                 : transmitTime(CommonTime::BEGINNING_OF_TIME),
+                   bits(900),
+                   bits_used(0)
    {
       transmitTime.setTimeSystem(TimeSystem::GPS);
    }
-#pragma clang diagnostic pop
    PackedNavBits::PackedNavBits(const SatID& satSysArg, 
                                 const ObsID& obsIDArg,
                                 const CommonTime& transmitTimeArg)
-                                :bits(900),
-                                 bits_used(0)
+                                : bits(900),
+                                  bits_used(0)
    {
       satSys = satSysArg;
       obsID = obsIDArg;
@@ -349,14 +344,11 @@ namespace gpstk
       int i;
       for (i = 0; i < numToCopy; ++i)
       {
-         char ch = String[i];
+         const unsigned char ch = String[i];
          bool valid = false;
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wtautological-constant-out-of-range-compare"
          if ( ('A' <= ch && ch <= 'Z') || ('0' <= ch && ch <= ':') || (' ' == ch) ||
             ('"' == ch) || ('\'' == ch) || ('+' == ch) || ('-' <= ch && ch <= '/') ||
             (0xF8 == ch) ) valid = true;
-#pragma clang diagnostic pop
 
          if (!valid)
          {

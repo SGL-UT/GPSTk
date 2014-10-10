@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -540,7 +538,7 @@ try {
          }
          tt = FirstEpoch + CI.DataInterval * dddata.count[i];
             // fix
-         if(i == slipindex[ii]) {     // new slip on this count
+         if((int)i == slipindex[ii]) {     // new slip on this count
             k += int(slipsize[ii] + (slipsize[ii]>0 ? 0.5 : -0.5));
             if(CI.Verbose) oflog << " Fix L" << frequency << " slip at count "
                << dddata.count[i]

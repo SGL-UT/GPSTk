@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -318,8 +316,6 @@ try {
 
    size_t nc;
    double angle,pwu,prevpwu,shadow;
-   double prevwindup = 0.0;
-#pragma unused(prevwindup)
    CommonTime tt;
    GSatID sat;
    Position SV;

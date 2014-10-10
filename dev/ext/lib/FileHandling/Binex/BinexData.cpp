@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -813,7 +811,6 @@ namespace gpstk
    {
       unsigned char  buffer   [MAX_BYTES];
       unsigned char  flags;
-      short          sign;
 
          // Read the flags byte
       strm.read((char*)&buffer[0], 1);
@@ -825,13 +822,13 @@ namespace gpstk
 
          // Determine whether the final value is positive or negative
          // and determine the number of bytes comprising the MGFZI.
-      sign = (flags & 0x08) ? -1 : 1;      
+      //const short sign = (flags & 0x08) ? -1 : 1;      
       size = (flags & 0x07) + 1;
 
       if (size > 1)
       {
          strm.read((char*)&buffer[1], size - 1);
-         if (!strm.good() || strm.gcount() != size - 1)
+         if (!strm.good() || strm.gcount() != (std::streamsize)(size - 1))
          {
             FFStreamError err("Error reading BINEX MGFZI");
             GPSTK_THROW(err);
@@ -1324,7 +1321,7 @@ namespace gpstk
                // since the vector is allocated on the stack.
             std::vector<char>  msgBuf(msgLen);
             strm->read((char*)&msgBuf[0], msgLen);
-            if (!strm->good() || (strm->gcount() != msgLen) )
+            if (!strm->good() || (strm->gcount() != (std::streamsize)msgLen) )
             {
                FFStreamError err("Incomplete BINEX record message");
                GPSTK_THROW(err);
@@ -1337,7 +1334,7 @@ namespace gpstk
             crcLen = expectedCrc.size();
 
             strm->read( (char*)crc, crcLen);
-            if (!strm->good() || (strm->gcount() != crcLen) )
+            if (!strm->good() || (strm->gcount() != (std::streamsize)crcLen) )
             {
                FFStreamError err("Error reading BINEX CRC");
                GPSTK_THROW(err);
@@ -1360,7 +1357,8 @@ namespace gpstk
                // Read the entire remainder of the record into memory
             std::vector<char>  revRecVec(revRecSize);
             strm->read( (char*)&revRecVec[0], revRecSize);
-            if (!strm->good() || (strm->gcount() != revRecSize) )
+            if (!strm->good()
+                || (strm->gcount() != (std::streamsize)revRecSize) )
             {
                FFStreamError err("Incomplete BINEX record message");
                GPSTK_THROW(err);

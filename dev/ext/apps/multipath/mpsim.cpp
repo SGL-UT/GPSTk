@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -187,9 +185,3 @@ int main(int argc, char *argv[])
     }
   return 1;
 }
-
-
-
-
-
-

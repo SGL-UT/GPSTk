@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -68,15 +66,10 @@ namespace gpstk
       UTCTime t;
       Spacecraft sc;
 
-      double den = computeDensity(t,body,r,v);
+      (void)computeDensity(t,body,r,v);
       doCompute(t,body,sc);
 
-      Vector<double> accl = getAccel();
-
-      double ax = accl(0);
-      double ay = accl(1);
-      double az = accl(2);
-#pragma unused(den,ax,ay,az)
+      (void)getAccel();
    }
 
       /* Compute the atmospheric density using an exponential atmosphere model.
@@ -96,9 +89,7 @@ namespace gpstk
 
       // Transform r from J2000 to TOD
       Vector<double> r_tod = N*r;
-      double rmag = norm(r_tod);
-#pragma unused(rmag)
-      
+
       Position geoidPos(r_tod(0),r_tod(1),r_tod(3),Position::Cartesian);
       double height = geoidPos.getAltitude()/1000.0;              //  convert to [km]
 
@@ -141,5 +132,3 @@ namespace gpstk
    }  // End of method 'CiraExponentialDrag::computeDensity()'
 
 }  // End of namespace 'gpstk'
-
-

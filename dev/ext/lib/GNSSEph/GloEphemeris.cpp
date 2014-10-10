@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -448,12 +446,11 @@ namespace gpstk
 
          // Let's start getting the current satellite position and velocity
       double  x( inState(0) );          // X coordinate
-      double vx( inState(1) );          // X velocity
+      //double vx( inState(1) );          // X velocity
       double  y( inState(2) );          // Y coordinate
-      double vy( inState(3) );          // Y velocity
+      //double vy( inState(3) );          // Y velocity
       double  z( inState(4) );          // Z coordinate
-      double vz( inState(5) );          // Z velocity
-#pragma unused(vx,vy,vz)
+      //double vz( inState(5) );          // Z velocity
 
       double r2( x*x + y*y + z*z );
       double r( std::sqrt(r2) );
@@ -502,4 +499,3 @@ namespace gpstk
 
 
 }  // End of namespace gpstk
-

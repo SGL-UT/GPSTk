@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -363,8 +361,7 @@ namespace gpstk
 #pragma clang diagnostic pop
    void BrcClockCorrection::dump(ostream& s) const
    {
-      ios::fmtflags oldFlags = s.flags();
-#pragma unused(oldFlags)
+      const ios::fmtflags oldFlags = s.flags();
       s.setf(ios::fixed, ios::floatfield);
       s.setf(ios::right, ios::adjustfield);
       s.setf(ios::uppercase);
@@ -398,6 +395,8 @@ namespace gpstk
 
       s << "****************************************************************"
         << "************" << endl;
+
+      s.flags(oldFlags);
    }
 
    ostream& operator<<(ostream& s, const BrcClockCorrection& eph)

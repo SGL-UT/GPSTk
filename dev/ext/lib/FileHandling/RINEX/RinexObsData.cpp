@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -95,7 +93,7 @@ namespace gpstk
          }
 
         // continuation lines
-         while (satsWritten != obs.size())
+         while (satsWritten != (int)obs.size())
          {
             if ((satsWritten % maxPrnsPerLine) == 0)
             {
@@ -223,9 +221,7 @@ namespace gpstk
             }
 
                // Check if it is a number; if not, an exception will be thrown
-            short tempNumSat = asInt(line.substr(29,3));
-#pragma unused(tempNumSat)
-             
+            (void)asInt(line.substr(29,3));
          }
          catch(...)
          {

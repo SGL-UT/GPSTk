@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -351,8 +349,6 @@ try {
    Configuration& C(Configuration::Instance());
    C.beginTime.setTimeSystem(TimeSystem::GPS);
    C.endTime.setTimeSystem(TimeSystem::GPS);
-   static const int width=13;
-#pragma unused(width)
    int iret,nfiles;
    size_t i,nfile;
    string tag;
@@ -658,8 +654,6 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
    throw(Exception)
 {
    Configuration& C(Configuration::Instance());
-   int iret;
-#pragma unused(iret)
    size_t i;
    string sys;
    vector<string> flds;

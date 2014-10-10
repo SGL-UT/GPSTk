@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -99,7 +97,7 @@ try {
    bool jump;
    int n,iprev;
    size_t i;
-   double curr,prev = 0,prevprev,fdiff,sdiff,prevsdiff,frac,offset;
+   double curr,prev = 0,prevprev,sdiff,prevsdiff,frac,offset;
    CommonTime tt;
    map<int,double> jumps;
    map<string,Station>::iterator it;
@@ -117,7 +115,7 @@ try {
          // second difference at (i) is (i)-2(i-1)+(i-2) ; ignore gaps in time
          if(n > 1) {
             jump = false;
-            fdiff = curr-prev;
+            //const double fdiff = curr-prev;
             sdiff = curr-2*prev+prevprev;
             frac = 2*fabs(fabs(sdiff)-fabs(prevsdiff))/(fabs(sdiff)+fabs(prevsdiff));
             if(n>2 && fabs(sdiff)>0.3 && fabs(prevsdiff)>0.3
@@ -154,7 +152,7 @@ try {
          curr = it->second.ClockBuffer[i];
          if(curr == 0.0) continue;
          tt = FirstEpoch + it->second.CountBuffer[i]*CI.DataInterval;
-         if(kt != jumps.end() && kt->first == i) {
+         if(kt != jumps.end() && kt->first == (int)i) {
             oflog << "Found jump at " << i << endl;
             jump = true;
             offset += kt->second;

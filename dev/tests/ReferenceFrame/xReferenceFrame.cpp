@@ -1,5 +1,3 @@
-#pragma ident "$Id: xReferenceFrame.cpp 2011-06-24 14:11:10 nwu $"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.

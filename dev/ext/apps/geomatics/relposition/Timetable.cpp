@@ -1,5 +1,3 @@
-#pragma ident "$Id$"
-
 //============================================================================
 //
 //  This file is part of GPSTk, the GPS Toolkit.
@@ -76,11 +74,11 @@ public:
    int length;       // length (in data points)
    double minelev;   // minimum elevation in this segment
    double maxelev;   // maximum elevation in this segment
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wreorder"
-   TTSegment(void) : start(-1),stop(-1),length(0),minelev(0.0),maxelev(0.0),
-                     usestart(-1),usestop(-1) {}
-#pragma clang diagnostic pop
+
+   TTSegment(void)
+    : start(-1), stop(-1), usestart(-1), usestop(-1),
+      length(0), minelev(0.0), maxelev(0.0)
+    {}
    double metric(void) const
    { return (double(length)/100.0 + 100.0*(minelev+maxelev)/90.0); }
 
@@ -400,7 +398,7 @@ int TTComputeSingleDifferences(const string& bl, const double ElevLimit)
 try {
    size_t i,j;
    int k;
-   static const int MinSize = 10;
+   const size_t MinSize = 10;
    double elevi,elevj;
    GSatID sat;
    map<GSatID,RawData>::const_iterator it,jt;
