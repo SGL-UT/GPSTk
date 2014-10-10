@@ -77,7 +77,6 @@ EMLTracker::EMLTracker(CCReplica& localReplica, double codeSpacing) :
       localReplica.codeGenPtr->getSyncIndex() / localReplica.chipsPerTick);
    iadCountDefault = iadCountMax;
 };
-#pragma clang diagnostic pop
 
 bool EMLTracker::process(complex<double> in)
 {
