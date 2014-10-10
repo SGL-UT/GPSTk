@@ -417,7 +417,7 @@ SVNumXRef::SVNumXRef( )
       //Iterates through Navstar by PRN map for each relationship building the corresponding map
    for (itate=NtoPMap.begin(); itate != NtoPMap.end(); itate++)
    {
-      std::pair<int, gpstk::XRefNode> values = *itate;
+      std::pair<const int, gpstk::XRefNode> values = *itate;
          //Grabs the values to then insert into PtoN
       int navNum = values.first;
       int prnNum = values.second.getPRNNum();
