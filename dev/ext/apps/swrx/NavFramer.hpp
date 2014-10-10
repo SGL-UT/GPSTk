@@ -100,7 +100,7 @@ private:
    
    // Most recent how
    bool howCurrent;
-   gpstk::CodeIndex tlmIndex;
+   //gpstk::CodeIndex tlmIndex;
    uint32_t how;
 };
 
