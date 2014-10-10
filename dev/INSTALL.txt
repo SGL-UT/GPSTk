@@ -58,18 +58,26 @@ The following procedure will build and install the GPSTk.
 
       Add optional parameters for additional functionality
 
-         $ ./script_gpstk.sh [-h] [-b] [-i] [-v] [-c] [-r <path>] [-s <path>]
+         $ ./script_gpstk.sh [-h] [-cpdbiotv] [-l <path>] [-r <path>] [-s <path>]
 
-         -b     clean_build,   rm -rf gpstk_root/build
-         -i     clean_install, rm -rf gpstk_install
-         -d     build_doxygen, build doxygen files
-         -p     build_python,  build python swig bindings (autobuilds doxygen)
-         -c     core_only,     only builds core library code
-         -t     test_switch,   initialize test framework
-         -v     graphviz,      generate dependency graph (.DOT and .PDF files)
-         -r     gpstk_root,    default = ~/git/gpstk/dev, path to GPSTk top-level CMakeLists.txt file (and source tree)
-         -s     gpstk_install, default = /opt/gpstk,  path to GPSTk install, e.g. ~/git/gpstk/install
+         -h     help             Show this message
 
+         -c     build_cpp        build C++ files and libraries
+         -d     build_doxygen    build Doxygen files (used for python docstrings)
+         -p     build_python     build Python files and libraries with SWIG bindings
+         -e     build_sphinx     build Sphinx RST files into HTML documentation
+
+         -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
+         -i     clean_install    rm -rf gpstk_install; rm -rf python_install
+         
+         -o     core_only        only builds core library code
+         -t     test_switch      initialize test framework
+         -v     graphviz         generate dependency graph (.DOT and .PDF files)
+
+         -r     gpstk_root       default = $gpstk_root, path to GPSTk dev top-level CMakeLists.txt file (and source tree)
+         -s     gpstk_install    default = $gpstk_install,  GPSTk install path prefix, to contain ./bin, ./lib, and ./include.
+                                 If a relative path is supplied here, it needs to be relative to gpstk_root
+         -l     python_install   default = $python_install, Python bindings package install path prefix
 
 
 Building and Installing in a UNIX-like Environment using CMake
@@ -121,7 +129,7 @@ Building and Installing in OSX using CMake - Terminal
 
 This section describes build and installation under the following environments.
 
-   - OS X Developer Tools under Lion (10.7.5)
+   - OS X Developer Tools under Mavericks (10.9.5)
 
 The following procedure will build and install the GPSTk.
 
