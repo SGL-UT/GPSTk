@@ -138,8 +138,8 @@ See the INSTALL.txt for details.
 The most recent version of the GPSTk source code can be found here:
 
 * http://www.gpstk.org
-* http://www.github.com/gpstk
-* http://www.sourceforge.com/gpstk
+* https://github.com/SGL-UT/GPSTk
+* http://sourceforge.net/projects/gpstk/
 
 The tools used for the build and install frameworks are cross-platform.
 These include CMake, SWIG, and python (distutils).
@@ -169,8 +169,8 @@ To build and install the python bindings, you have two options:
 Help & Docs:
 ------------
 
-The website http://www.gpstk.org/ includes a variety of additional
-resources and documentation, including:
+Additional documentation and resources can be found at http://www.gpstk.org/, 
+including:
 
 * Source code and compiled binaries
 * Coding examples
@@ -185,16 +185,6 @@ resources and documentation, including:
 * GPSTk IRC channel
 * Success stories
 
-Contribution guidelines:
-------------------------
-
-How you can help out, including wanted features and code standards
-
-Contributor list:
------------------
-
-The humans behind the project
-   
 Credits & Lineage:
 ------------------
 
@@ -206,6 +196,8 @@ open source much of their basic GPS processing software as the GPSTk.
 The development history is documented by a series of related publications: 
 
 	http://www.gpstk.org/bin/view/Documentation/GPSTkPublications
+
+See the AUTHORS.txt file for additional detail.
 
 License
 -------
