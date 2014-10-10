@@ -289,10 +289,10 @@ if [ "$build_python" ]; then
     # options: tar-ball, zip, debian package
     package_tar=0
     package_debian=0
-    if [ "$package_tar" ]; then
+    if [ $package_tar = 1 ]; then
         cd $python_root/install_package
         python setup.py sdist --formats=zip,gztar
-        if [ "$package_debian" ]; then
+        if [ $package_debian = 1 ]; then
             cd $python_root/install_package/dist
             # py2dsc will convert a distutils-built source tarball into a Debian source package.
             py2dsc gpstk-2.5.tar.gz
