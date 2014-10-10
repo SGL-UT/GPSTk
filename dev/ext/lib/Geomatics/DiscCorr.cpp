@@ -517,8 +517,8 @@ const double wl2r=F2/(F1+F2);
 const double wl1p=wl1*F1/(F1-F2);
 const double wl2p=-wl2*F2/(F1-F2);
    // for geometry-free R and Ph
-const double gf1r=-1;
-const double gf2r=1;
+//const double gf1r=-1;
+//const double gf2r=1;
 const double gf1p=wl1;
 const double gf2p=-wl2;
 
