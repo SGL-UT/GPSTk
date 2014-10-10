@@ -66,7 +66,7 @@ OPTIONS:
    -z     build_sdist      build source distribution for the python package and tar/zip it
 
    -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
-   -i     clean_install    rm -rf gpstk_install; rm -rf python_install
+   -i     clean_install    rm -rf gpstk_install; rm -rf python_install/gpstk*
    
    -o     core_only        only builds core library code
    -t     test_switch      initialize test framework
@@ -278,7 +278,7 @@ if [ "$build_python" ]; then
     #----------------------------------------
 
     if [ "$clean_install" ]; then
-        rm -rf $python_install
+        rm -rf $python_install/gpstk*
     fi
     mkdir -p $python_install
 
