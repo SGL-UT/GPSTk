@@ -51,7 +51,7 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-h] [-cpdbiotv] [-l <path>] [-r <path>] [-s <path>]
+usage:     $0 [-h] [-cpdebiotvz] [-l <path>] [-r <path>] [-s <path>]
 
 purpose:   This script is for use with CMake and building GPSTk.
 
@@ -63,9 +63,10 @@ OPTIONS:
    -d     build_doxygen    build Doxygen files (used for python docstrings)
    -p     build_python     build Python files and libraries with SWIG bindings
    -e     build_sphinx     build Sphinx RST files into HTML documentation
+   -z     build_sdist      build source distribution for the python package and tar/zip it
 
    -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
-   -i     clean_install    rm -rf gpstk_install; rm -rf python_install
+   -i     clean_install    rm -rf gpstk_install; rm -rf python_install/gpstk*
    
    -o     core_only        only builds core library code
    -t     test_switch      initialize test framework
@@ -85,7 +86,7 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "hcdpbiotvl:r:s:" option; do
+while getopts "bcdehioptvzl:r:s:" option; do
     case $option in
         
         h) usage;;
@@ -98,6 +99,7 @@ while getopts "hcdpbiotvl:r:s:" option; do
         o) core_only=1;;
         t) test_switch=1;;
         v) graphviz=1;;
+        z) build_sdist=1;;
         l) python_install=${OPTARG};;
         r) gpstk_root=${OPTARG};;
         s) gpstk_install=${OPTARG};;
@@ -136,6 +138,7 @@ printf "$0: clean_install   = $(ptof $clean_install)\n"
 printf "$0: clean_build     = $(ptof $clean_build)\n"
 printf "$0: build_doxygen   = $(ptof $build_doxygen)\n"
 printf "$0: build_sphinx    = $(ptof $build_sphinx)\n"
+printf "$0: build_sdist     = $(ptof $build_sdist)\n"
 printf "$0: build_python    = $(ptof $build_python)\n"
 
 if [ $build_python ]; then
@@ -270,8 +273,12 @@ if [ "$build_python" ]; then
     echo "$0: Building gpstk python extension module"
     make -j$num_cores
 
+    #----------------------------------------
+	# Python Package Install
+    #----------------------------------------
+
     if [ "$clean_install" ]; then
-        rm -rf $python_install
+        rm -rf $python_install/gpstk*
     fi
     mkdir -p $python_install
 
@@ -285,23 +292,35 @@ if [ "$build_python" ]; then
         python setup.py install --prefix=~/.local
     fi
 
-    # Create source distribution packages
-    # options: tar-ball, zip, debian package
-    package_tar=0
+    #----------------------------------------
+    # Python source distribution
+    #----------------------------------------
+    # default: tar-ball, zip
+	# optional: debian, set package_debian=1 to build it.
     package_debian=0
-    if [ $package_tar = 1 ]; then
+    if [ $build_sdist ]; then
         cd $python_root/install_package
         python setup.py sdist --formats=zip,gztar
         if [ $package_debian = 1 ]; then
-            cd $python_root/install_package/dist
             # py2dsc will convert a distutils-built source tarball into a Debian source package.
-            py2dsc gpstk-2.5.tar.gz
-            cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
-            dpkg-buildpackage -rfakeroot -uc -us
+            # py2dsc is not typically installed, so we need to add a check before trying to run it.
+            command_name=py2dsc
+            command_name_exists=1
+            command -v $command_name >/dev/null 2>&1 || { command_name_exists=0; };
+            if [ $command_name_exists = 1 ]; then
+                cd $python_root/install_package/dist
+                py2dsc gpstk-2.5.tar.gz
+                cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
+                dpkg-buildpackage -rfakeroot -uc -us
+            fi
         fi
     fi
 
 fi
+
+
+
+
 
 #----------------------------------------
 # Test paths
