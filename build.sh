@@ -25,10 +25,10 @@
 # Default values for paths. Options can override these.
 #----------------------------------------
 
-gpstk_root=$PWD/dev
-gpstk_install=$PWD/dev/install
+gpstk_root=$PWD
+gpstk_install=$PWD/install
 python_install=$(python -m site --user-site)
-python_root="$gpstk_root/../python/bindings/swig"
+python_root="$gpstk_root/swig"
 
 # Default to using all cores for compiles...
 case `uname` in
