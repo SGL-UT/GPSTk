@@ -33,7 +33,7 @@ using namespace gpstk;
 %ignore *::operator++;
 %ignore *::operator--;
 
-%include "gpstk_typemaps.i"
+%include "typemaps.i"
 %include "STLTemplates.i"
 %include "STLHelpers.i"
 

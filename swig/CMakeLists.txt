@@ -104,5 +104,13 @@ endif(PYTHON_USER_INSTALL)
 
 
 #------------------------------------------------------------
+# These files aren't required to use the bindings but are requried to make a swig module that
+# depends upon these bindings
+#------------------------------------------------------------
+file(GLOB swig_includes ${CMAKE_CURRENT_SOURCE_DIR}/src/*)
+install(FILES ${swig_includes} ${CMAKE_CURRENT_SOURCE_DIR}/gpstk.i DESTINATION include )
+
+
+#------------------------------------------------------------
 # The End
 #------------------------------------------------------------
