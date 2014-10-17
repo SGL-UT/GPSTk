@@ -8,8 +8,8 @@ project (gpstk)
 # System Variables
 #----------------------------------------
 
-message ("system = ${CMAKE_SYSTEM}")
-message ("system_name = ${CMAKE_SYSTEM_NAME}")
+message (STATUS "CMAKE_SYSTEM: ${CMAKE_SYSTEM}")
+message (STATUS "CMAKE_SYSTEM_NAME: ${CMAKE_SYSTEM_NAME}")
 
 #----------------------------------------
 # Installation Path Prefix - Change to desired location
@@ -19,13 +19,13 @@ if( NOT DEFINED CMAKE_INSTALL_PREFIX )
     if( DEFINED ENV{gpstk} )
         set( CMAKE_INSTALL_PREFIX $ENV{gpstk} )
     else()
-      message( "Notice: Environment variable gpstk is not defined. Using CMake CMAKE_INSTALL_PREFIX variable" )
-      message( "        You may tell CMake where to install your GPSTk using either the environment variable 'gpstk'." )
-      message( "        or setting CMAKE_INSTALL_PREFIX" )
+      message(STATUS "Environment variable gpstk is not defined. Using CMake CMAKE_INSTALL_PREFIX variable." )
+      message(STATUS "You may tell CMake where to install your GPSTk using either the environment variable 'gpstk'." )
+      message(STATUS "or setting CMAKE_INSTALL_PREFIX" )
     endif()
 endif()
 
-message( "Notice: Will install GPSTk to the path ${CMAKE_INSTALL_PREFIX}" )
+message(STATUS "Will install GPSTk to the path ${CMAKE_INSTALL_PREFIX}" )
 
 
 
@@ -204,14 +204,14 @@ else ()
   install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
 endif ()
 
-
 #----------------------------------------
 # Add sub-directories
 #----------------------------------------
 
-add_subdirectory (core)
-add_subdirectory (ext)
-add_subdirectory (examples)
+add_subdirectory(core)
+add_subdirectory(ext)
+add_subdirectory(swig)
+add_subdirectory(examples)
 if (TEST_SWITCH)
   add_subdirectory(tests)
 endif()

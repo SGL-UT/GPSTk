@@ -145,10 +145,10 @@ The tools used for the build and install frameworks are cross-platform.
 These include CMake, SWIG, and python (distutils).
 
 Automated build and install is supported on POSIX platforms with the 
-supplied Bash script called script_gpstk.sh. For help on script usage, 
+supplied Bash script called build.sh. For help on script usage, 
 run the script with the help flag:
 
-    $ script_gpstk.sh -h
+    $ build.sh -h
 
 For other platforms, such as Windows, please refer to comments and commands
 in the same script, which document how we are using CMake, SWIG, and 
@@ -156,14 +156,14 @@ distutils for various steps in the build and install process.
 
 To build and install the C++ library and applications on POSIX platforms:
 
-* automated: run the script_gpstk.sh, minimally with the "-c" flag.
-* manual: see the contents of script_gpstk.sh for command examples on how you might run cmake and make to build and install the library.
+* automated: run build.sh, minimally with the "-c" flag.
+* manual: see the contents of build.sh for command examples on how you might run cmake and make to build and install the library.
 
 To build and install the python bindings, you have two options:
 
-* automated: run the script_gpstk.sh, minimally with the "-p" flag.
-* manual build: see script_gpstk.sh for examples on calling cmake and swig
-* manual install: use the setup.py script in the install_package path. See $GPSTK/python/bindings/swig/install_package/INSTALL.txt for more details
+* automated: run the build.sh, minimally with the "-p" flag.
+* manual build: see build.sh for examples on calling cmake and swig
+* manual install: use the setup.py script in the install_package path. See $GPSTK/swig/install_package/INSTALL.txt for more details
 
 	
 Help & Docs:
