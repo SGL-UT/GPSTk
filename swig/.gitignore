@@ -1,16 +1,3 @@
-gpstk_pylib.py
-
 *.pyc
-*.h
-*.cxx
 *.new
 
-doc/
-html/
-latex/
-
-sphinx/_build
-sphinx/_static
-sphinx/_templates
-sphinx/quickref.rst
-sphinx/gpstk.*

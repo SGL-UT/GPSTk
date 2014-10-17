@@ -58,7 +58,6 @@ set_source_files_properties(gpstk.i PROPERTIES CPLUSPLUS ON)
 
 set( SWIG_MODULE "gpstk" )
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/doc)
 swig_add_module(${SWIG_MODULE} python gpstk.i )
 swig_link_libraries( ${SWIG_MODULE} gpstk )
 swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
@@ -76,6 +75,14 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTAL
 file(COPY ${INSTALL_PACKAGE_SOURCE}/ DESTINATION ${INSTALL_PACKAGE_PATH} PATTERN "*")
 set(METAFILES "${CMAKE_SOURCE_DIR}/README.txt;${CMAKE_SOURCE_DIR}/AUTHORS.txt;${CMAKE_SOURCE_DIR}/COPYING.txt;${CMAKE_SOURCE_DIR}/COPYING.LESSER.txt;${CMAKE_SOURCE_DIR}/ChangeLog.txt;${CMAKE_SOURCE_DIR}/INSTALL.txt;${CMAKE_SOURCE_DIR}/NEWS.txt")
 file(COPY ${METAFILES} DESTINATION ${INSTALL_PACKAGE_PATH} )
+
+#--------------------------------------------
+# Initialize a working space to build the doxygen/sphinx docs
+#--------------------------------------------
+set(SWIG_DOC_DIR ${CMAKE_CURRENT_BINARY_DIR}/doc)
+file(MAKE_DIRECTORY ${SWIG_DOC_DIR})
+file(WRITE ${SWIG_DOC_DIR}/doc.i "#dummy file. Is replaced when docs are generated for bindings.")
+include_directories(${SWIG_DOC_DIR})
 
 #----------------------------------------
 # Install package tree 
