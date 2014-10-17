@@ -1,3 +1,6 @@
+// This file is used in building the swig bindings of the GPSTk and is not really
+// intended to be used by C++ code directly
+
 #ifndef GPSTK_SWIG_HPP
 #define GPSTK_SWIG_HPP
 

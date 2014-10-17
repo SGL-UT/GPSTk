@@ -33,16 +33,16 @@ using namespace gpstk;
 %ignore *::operator++;
 %ignore *::operator--;
 
-%include "src/typemaps.i"
-%include "src/STLTemplates.i"
-%include "src/STLHelpers.i"
+%include "gpstk_typemaps.i"
+%include "STLTemplates.i"
+%include "STLHelpers.i"
 
 
 %include "exception.i"
 %rename(__str__) gpstk::Exception::what() const;
 %include "Exception.hpp"
 %include "FFStreamError.hpp"
-%include "src/Exception.i"
+%include "Exception.i"
 
 
 // =============================================================
@@ -55,7 +55,7 @@ using namespace gpstk;
 %ignore gpstk::TimeSystem::TimeSystem(int i);
 %ignore gpstk::TimeSystem::getTimeSystem();
 %include "TimeSystem.hpp"
-%include "src/TimeSystem.i"
+%include "TimeSystem.i"
 
 %include "TimeTag.hpp"
 %include "TimeConstants.hpp"
@@ -98,7 +98,7 @@ using namespace gpstk;
 %ignore gpstk::mixedScanTime(CommonTime& btime, const std::string& str, const std::string& fmt);
 
 %include "TimeString.hpp"
-%include "src/TimeString.i"
+%include "TimeString.i"
 %include "TimeSystemCorr.hpp"
 
 
@@ -109,10 +109,10 @@ using namespace gpstk;
 %include "geometry.hpp"
 %include "gps_constants.hpp"
 %include "SatID.hpp"
-%include "src/SatID.i"
+%include "SatID.i"
 %include "ObsIDInitializer.hpp"
 %include "ObsID.hpp"
-%include "src/ObsID.i"
+%include "ObsID.i"
 %ignore gpstk::SV_ACCURACY_GLO_INDEX;  // wrapper added in GPS_URA.i
 %include "GNSSconstants.hpp"
 %ignore gpstk::Triple::operator[](const size_t index);
@@ -120,7 +120,7 @@ using namespace gpstk;
 %ignore gpstk::Triple::operator*(double right, const Triple& rhs);
 %ignore gpstk::Triple::theArray;
 %include "Triple.hpp"
-%include "src/Triple.i"
+%include "Triple.i"
 
 %ignore gpstk::ReferenceFrame::ReferenceFrame(int i);
 %rename(__str__) gpstk::ReferenceFrame::asString() const;
@@ -137,7 +137,7 @@ using namespace gpstk;
 %ignore gpstk::Position::convertGeocentricToGeodetic(const Triple& llr, Triple& geodeticllr, const double A, const double eccSq) throw();
 %ignore gpstk::Position::convertGeodeticToGeocentric(const Triple& geodeticllh, Triple& llr, const double A, const double eccSq) throw();
 %include "Position.hpp"
-%include "src/Position.i"
+%include "Position.i"
 
 %include "convhelp.hpp"
 %include "Xv.hpp"
@@ -148,7 +148,7 @@ using namespace gpstk;
 %ignore gpstk::RefVectorBaseHelper::operator() (size_t i);
 %ignore gpstk::RefVectorBaseHelper::zeroize();
 %include "VectorBase.hpp"
-%include "src/Vector.i"
+%include "Vector.i"
 
 
 // =============================================================
@@ -201,7 +201,7 @@ using namespace gpstk;
 %ignore gpstk::SV_CNAV_ACCURACY_GPS_NOM_INDEX;
 %ignore gpstk::SV_CNAV_ACCURACY_GPS_MAX_INDEX;
 %include "GPS_URA.hpp"
-%include "src/GPS_URA.i"
+%include "GPS_URA.i"
 
 %include "BrcClockCorrection.hpp"
 %include "BrcKeplerOrbit.hpp"
@@ -242,7 +242,7 @@ using namespace gpstk;
 
 %ignore gpstk::RinexMetData::data;
 %include "RinexMetData.hpp"
-%include "src/RinexMetData.i"
+%include "RinexMetData.i"
 
  // RINEX 3 nav:
 %include "Rinex3NavBase.hpp"
