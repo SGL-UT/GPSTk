@@ -311,8 +311,8 @@ using namespace gpstk;
 // Encapsulation of many the __str__, __getitem__, etc. functions to avoid clutter.
 // When the only change to a class is adding a simple wrapper, add to pythonfunctions
 // instead of creating another small file.
-%include "src/pythonfunctions.i"
-%include "src/FileIO.i"
+%include "pythonfunctions.i"
+%include "FileIO.i"
 
 %pythoncode %{
         # clean-up the dir listing by removing *_swigregister.
