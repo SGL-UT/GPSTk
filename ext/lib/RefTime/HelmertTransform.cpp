@@ -198,7 +198,8 @@ namespace gpstk {
                   "\"ITRS, PZ-90 and WGS 84: current realizations\n       "
                   "and the related transformation parameters,\"\n       "
                   "Journal Geodesy (2001), 75:613, by Boucher and Altamimi.\n       "
-                  "Use before 20 Sept 2007 17:00 UTC (ICD-2008 v5.1 table 3.2).")),
+                  "Use before 20 Sept 2007 17:00 UTC (ICD-2008 v5.1 table 3.2)."),
+            YDSTime(-4713,1,0.0,TimeSystem::UTC)),
 
       HelmertTransform(ReferenceFrame::PZ90, ReferenceFrame::WGS84,
            0, 0, 0,  -0.36, 0.08, 0.18,  0,
@@ -217,7 +218,8 @@ namespace gpstk {
                   "\"ITRS, PZ-90 and WGS 84: current realizations\n       "
                   "and the related transformation parameters,\"\n       "
                   "Journal Geodesy (2001), 75:613, by Boucher and Altamimi.\n       "
-                  "Use before 20 Sept 2007 17:00 UTC (ICD-2008 v5.1 table 3.2).")),
+                  "Use before 20 Sept 2007 17:00 UTC (ICD-2008 v5.1 table 3.2)."),
+            YDSTime(-4713,1,0.0,TimeSystem::UTC)),
 
       HelmertTransform(ReferenceFrame::PZ90, ReferenceFrame::ITRF,
            0, 0, 0,  -0.36, 0.08, 0.18,  0,
