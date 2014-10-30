@@ -84,7 +84,7 @@ namespace gpstk
                        const double& Rx, const double& Ry, const double& Rz,
                        const double& Tx, const double& Ty, const double& Tz,
                        const double& Scale, const std::string& Desc,
-                       CommonTime epoch=CommonTime::BEGINNING_OF_TIME)
+                       CommonTime epoch)
          throw(InvalidRequest);
 
       /// Dump the object to a multi-line string including reference frames, the

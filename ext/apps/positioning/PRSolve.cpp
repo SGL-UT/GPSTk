@@ -1109,22 +1109,20 @@ try {
       const HelmertTransform& ht(HelmertTransform::stdTransforms[i]);
       // pick the ones to use
       C.msg = "";
-      if(ht.getFromFrame() != ReferenceFrame::PZ90)
-         ;
-      else if(ht.getToFrame() == ReferenceFrame::ITRF) {
-         if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
-            { C.PZ90ITRF = i; C.msg = "\n  [use this for PZ90-ITRF]"; }
-         else
-            { C.PZ90ITRFold = i; C.msg = "\n  [use this for PZ90-ITRF old]"; }
+      if(ht.getFromFrame() == ReferenceFrame::PZ90){
+         if(ht.getToFrame() == ReferenceFrame::ITRF) {
+            if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
+               { C.PZ90ITRF = i; C.msg = "\n  [use this for PZ90-ITRF]";}
+            else
+               { C.PZ90ITRFold = i; C.msg = "\n  [use this for PZ90-ITRF old]";}
+         }
+         else if(ht.getToFrame() == ReferenceFrame::WGS84) {
+            if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
+             { C.PZ90WGS84 = i; C.msg = "\n  [use this for PZ90-WGS84]"; }
+            else
+               { C.PZ90WGS84old = i; C.msg = "\n  [use this for PZ90-WGS84 old]"; }
+         }
       }
-      else if(ht.getToFrame() == ReferenceFrame::WGS84) {
-         if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
-            { C.PZ90WGS84 = i; C.msg = "\n  [use this for PZ90-WGS84]"; }
-         else
-            { C.PZ90WGS84old = i; C.msg = "\n  [use this for PZ90-WGS84 old]"; }
-      }
-
-      LOG(INFO) << i << " " << ht.asString() << C.msg;
    }
    LOG(INFO) << "End of Available Helmert Tranformations.\n";
 
