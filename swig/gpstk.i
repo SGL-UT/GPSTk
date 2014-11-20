@@ -33,6 +33,7 @@ using namespace gpstk;
 %ignore *::operator++;
 %ignore *::operator--;
 
+%include "ValidType.hpp"
 %include "typemaps.i"
 %include "STLTemplates.i"
 %include "STLHelpers.i"
@@ -291,7 +292,6 @@ using namespace gpstk;
 %template(FileStore_SEMHeader) gpstk::FileStore<gpstk::SEMHeader>;
 %include "SEMAlmanacStore.hpp"
 
-%include "ValidType.hpp"
 %include "ObsEpochMap.hpp"
 %include "WxObsMap.hpp"
 %include "TropModel.hpp"
