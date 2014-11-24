@@ -17,10 +17,10 @@ import matplotlib.pyplot as plt
 
 def main():
     # Read in data, strict=True makes dataSets a list rather than a generator:
-    header, dataSets = gpstk.readSEM('sem_data.txt', strict=True)
+    header, dataSets = gpstk.readSEM( gpstk.data.full_path('sem_data.txt'), strict=True)
 
     # Write the data back to a different file (their contents should match):
-    gpstk.writeSEM('sem_data.txt.new', header, dataSets)
+    gpstk.writeSEM( gpstk.data.full_path('sem_data.txt.new'), header, dataSets)
 
     # Read the orbit out of the data:
     orbit = dataSets[0].toAlmOrbit()  # alm orbit of first data point
