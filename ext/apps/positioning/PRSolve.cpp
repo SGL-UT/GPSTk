@@ -128,7 +128,9 @@ public:
 
    // Open the output file, and parse the strings used on the command line
    // return -4 if log file could not be opened
-   int ExtraProcessing(string& errors, string& extras) throw();
+   int ExtraProcessing(void) throw();
+   //TD on clau, this leads to the SPS algorithm failing to converge on some problems.
+   //int ExtraProcessing(string& errors, string& extras) throw();
 
    // update weather in the trop model using the Met store
    void setWeather(const CommonTime& ttag) throw(Exception);
@@ -227,6 +229,9 @@ public:
    string msg;                      // temp used everywhere
    // vector of 1-char strings containing systems needed in all solutions: G,R,E,C,S,J
    vector<string> allSystemChars;
+
+   string PrgmDesc, cmdlineUsage, cmdlineErrors, cmdlineExtras;
+   vector<string> cmdlineUnrecognized;
 
 }; // end class Configuration
 
@@ -386,7 +391,7 @@ public:
          return false;
 
       string frs=getFreq();
-      for(size_t i=0; i<frs.size(); i++) {            // loop over frequencies
+      for(size_t i=0; i<frs.size(); i++) {         // loop over frequencies
          RawPR.push_back(0.0);                     // placeholder = 0 == missing
          usedobsids.push_back(string("---"));      // placeholder == none
          for(size_t j=0; j<indexes[i].size(); j++) {  // loop over codes (RINEX indexes)
@@ -1109,20 +1114,22 @@ try {
       const HelmertTransform& ht(HelmertTransform::stdTransforms[i]);
       // pick the ones to use
       C.msg = "";
-      if(ht.getFromFrame() == ReferenceFrame::PZ90){
+      if(ht.getFromFrame() == ReferenceFrame::PZ90) {
          if(ht.getToFrame() == ReferenceFrame::ITRF) {
             if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
-               { C.PZ90ITRF = i; C.msg = "\n  [use this for PZ90-ITRF]";}
+               { C.PZ90ITRF = i; C.msg = "\n  [use this for PZ90-ITRF]"; }
             else
-               { C.PZ90ITRFold = i; C.msg = "\n  [use this for PZ90-ITRF old]";}
+               { C.PZ90ITRFold = i; C.msg = "\n  [use this for PZ90-ITRF old]"; }
          }
          else if(ht.getToFrame() == ReferenceFrame::WGS84) {
             if(ht.getEpoch() >= HelmertTransform::PZ90Epoch)
-             { C.PZ90WGS84 = i; C.msg = "\n  [use this for PZ90-WGS84]"; }
+               { C.PZ90WGS84 = i; C.msg = "\n  [use this for PZ90-WGS84]"; }
             else
                { C.PZ90WGS84old = i; C.msg = "\n  [use this for PZ90-WGS84 old]"; }
          }
       }
+
+      LOG(INFO) << i << " " << ht.asString() << C.msg;
    }
    LOG(INFO) << "End of Available Helmert Tranformations.\n";
 
@@ -1313,8 +1320,8 @@ try {
       LOG(INFO) << "\nSolutions to be computed for this file:";
       for(i=0; i<C.SolObjs.size(); ++i) {
          bool ok(C.SolObjs[i].ChooseObsIDs(Rhead.mapObsTypes));
-#pragma unused(ok)
-         //LOG(INFO) << (ok ? "    ":" NO ") << i+1 << " " << C.SolObjs[i].dump(0);
+
+         LOG(INFO) << (ok ? " OK ":" NO ") << i+1 << " " << C.SolObjs[i].dump(0);
          LOG(INFO) << C.SolObjs[i].dump(0);
          if(C.verbose) for(j=0; j<C.SolObjs[i].sysChars.size(); j++) {
             TimeSystem ts;
@@ -1687,9 +1694,6 @@ void Configuration::SolDescHelp(void)
 //------------------------------------------------------------------------------------
 int Configuration::ProcessUserInput(int argc, char **argv) throw()
 {
-   string PrgmDesc,cmdlineUsage, cmdlineErrors, cmdlineExtras;
-   vector<string> cmdlineUnrecognized;
-
    // build the command line
    opts.DefineUsageString(PrgmName + " [options]");
    PrgmDesc = BuildCommandLine();
@@ -1721,7 +1725,7 @@ int Configuration::ProcessUserInput(int argc, char **argv) throw()
    }
 
    // extra parsing (perhaps add to cmdlineErrors, cmdlineExtras)
-   iret = ExtraProcessing(cmdlineErrors, cmdlineExtras);
+   iret = ExtraProcessing(); //TD clau failure: cmdlineErrors, cmdlineExtras);
    if(iret == -4) return iret;      // log file could not be opened
 
    // output warning / error messages
@@ -1912,7 +1916,8 @@ string Configuration::BuildCommandLine(void) throw()
 }  // end Configuration::BuildCommandLine()
 
 //------------------------------------------------------------------------------------
-int Configuration::ExtraProcessing(string& errors, string& extras) throw()
+//TD clau failure: ExtraProcessing(string& errors, string& extras) throw()
+int Configuration::ExtraProcessing(void) throw()
 {
    int i,n;
    vector<string> fld;
@@ -1955,7 +1960,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    // start and stop times
    for(i=0; i<2; i++) {
-      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S");
+      static const string fmtGPS("%F,%g"),fmtCAL("%Y,%m,%d,%H,%M,%S %P");
       msg = (i==0 ? startStr : stopStr);
       if(msg == (i==0 ? defaultstartStr : defaultstopStr)) continue;
 
@@ -1993,7 +1998,7 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
          oss << "Error : invalid time or format in --" << (i==0 ? "start" : "stop")
             << " " << (i==0 ? startStr : stopStr) << endl;
       else
-         ossx << (i==0 ? "   Begin time --begin" : "   End time --end") << " is "
+         ossx << (i==0 ? "   Begin time --start" : "   End time --stop") << " is "
             << printTime((i==0 ? beginTime : endTime), fmtGPS+" = "+fmtCAL+"\n");
    }
 
@@ -2058,13 +2063,13 @@ int Configuration::ExtraProcessing(string& errors, string& extras) throw()
 
    // add new errors to the list
    msg = oss.str();
-   if(!msg.empty()) errors += msg;
+   if(!msg.empty()) cmdlineErrors += msg;
    msg = ossx.str();
-   if(!msg.empty()) extras += msg;
+   if(!msg.empty()) cmdlineExtras += msg;
 
    return 0;
 
-} // end Configuration::ExtraProcessing(string& errors) throw()
+} // end Configuration::ExtraProcessing() throw()
 
 //------------------------------------------------------------------------------------
 // update weather in the trop model using the Met store
@@ -2373,7 +2378,7 @@ int SolutionObject::ComputeSolution(const CommonTime& ttag) throw(Exception)
                (iret==-2 ? "because the problem is singular" :
               /*iret==-1*/ "because the algorithm failed to converge")))
             << " for " << Descriptor
-            << " at time " << printTime(ttag,C.longfmt);
+            << " at time " << printTime(ttag,C.longfmt) << " iret " << iret;
          }
          else {
             // at this point we have a good solution
