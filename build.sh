@@ -2,22 +2,12 @@
 #----------------------------------------
 #
 # Purpose:
-#     Automate the use of CMake, SWIG, and distutils to build and install
-#     the GPSTK C++ Library, C++ Applications, and Python bindings.
+#     Automate the use of CMake, SWIG, dOxygen, Sphinx, and distutils
+#     to build and install the GPSTK C++ Library, C++ Applications, 
+#     Python bindings, and documentation.
 #
-# Outline:
-#     Test input arguments
-#     Optionally Build the C++ library and applications
-#         Clean out the build and install paths
-#         Call CMake to generate Makefiles
-#         Call make to build targets and install
-#     Optionally generate Doxygen documentation
-#     Optionally Build Python bindings
-#         Clean out the build and install paths
-#         Call CMake to generate Makefiles
-#         Use CMake to create SWIG targets to generate wrapper code
-#         Call make to generate, build, and install python bindings
-#     Optionally use python setup.py to install python package
+# Help:
+#    $ ./build.sh -h
 #
 #----------------------------------------
 
@@ -26,11 +16,15 @@
 #----------------------------------------
 
 gpstk_root=$PWD
-gpstk_install=$PWD/install
-python_install=$(python -m site --user-site)
+gpstk_install=$HOME/.local/gpstk             # e.g., $(python -m site --user-base) === $HOME/.local
+python_install=$(python -m site --user-site) # e.g., /home/vestuto/.local/lib/python2.7/site-packages
 python_root="$gpstk_root/swig"
 
-# Default to using all cores for compiles...
+#----------------------------------------
+# Number of cores for use by compiler
+#     Default = all of them!
+#----------------------------------------
+
 case `uname` in
     Linux)
         last_core_index=`cat /proc/cpuinfo | grep "processor" | awk '{print $3}' | tail -1`
@@ -51,31 +45,40 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-h] [-cpdebiotvz] [-l <path>] [-r <path>] [-s <path>]
+usage:     $0 [-cdehtuvz]
 
-purpose:   This script is for use with CMake and building GPSTk.
+purpose:   This script automates and documents how to build and install GPSTk with CMake.
 
 OPTIONS:
- OPTIONS:
+
+   -c     clean            Removes all files created from the build and install process.
+                               $ rm -rf $gpstk_install/*;
+                               $ rm -rf $python_install/gpstk*
+                               $ git clean -fxd $gpstk_root/build/
+                               $ git clean -fxd $gpstk_root/swig/sphinx/
+
+   -d     build_docs       Build, process, and install all documentation files.
+                               * build Doxygen files (used for python docstrings)
+                               * build Sphinx RST files into HTML documentation
+                               * generate graphviz dependency graph (.DOT and .PDF files)
+
+   -e     build_ext        builds /ext library in addition to the /core library
+
    -h     help             Show this message
 
-   -c     build_cpp        build C++ files and libraries
-   -d     build_doxygen    build Doxygen files (used for python docstrings)
-   -p     build_python     build Python files and libraries with SWIG bindings
-   -e     build_sphinx     build Sphinx RST files into HTML documentation
+   -t     test_switch      turn on CMake/Ctest framework
+
+   -u     user_install     GPSTk installs will be in the user home tree, not system paths
+                               * with user_install
+                                   C++ lib install path = $HOME/.local/gpstk/lib
+                                   python install path  = $HOME/.local/lib/pythonX.X/site-packages/gpstk
+                               * without user_install
+                                   C++ lib install path = /usr/lib
+                                   python install path  = /usr/lib/pythonX.X/gpstk
+
+   -v     verbosity        Debug output
+
    -z     build_sdist      build source distribution for the python package and tar/zip it
-
-   -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
-   -i     clean_install    rm -rf gpstk_install; rm -rf python_install/gpstk*
-   
-   -o     core_only        only builds core library code
-   -t     test_switch      initialize test framework
-   -v     graphviz         generate dependency graph (.DOT and .PDF files)
-
-   -r     gpstk_root       default = $gpstk_root, path to GPSTk dev top-level CMakeLists.txt file (and source tree)
-   -s     gpstk_install    default = $gpstk_install,  GPSTk install path prefix, to contain ./bin, ./lib, and ./include
-                           If a relative path is supplied here, it needs to be relative to gpstk_root
-   -l     python_install   default = $python_install, Python bindings package install path prefix
 
 EOF
 
@@ -86,23 +89,17 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "bcdehioptvzl:r:s:" option; do
+while getopts "cdehtuvz" option; do
     case $option in
         
         h) usage;;
-        c) build_cpp=1;;
-        d) build_doxygen=1;;
-        e) build_sphinx=1;;
-        p) build_python=1;;
-        b) clean_build=1;;
-        i) clean_install=1;;
-        o) core_only=1;;
+        c) clean=1;;
+        d) build_docs=1;;
+        e) build_ext=1;;
         t) test_switch=1;;
-        v) graphviz=1;;
+        u) user_install=1;;
+        v) verbosity=1;;
         z) build_sdist=1;;
-        l) python_install=${OPTARG};;
-        r) gpstk_root=${OPTARG};;
-        s) gpstk_install=${OPTARG};;
         *) echo "Invalid option: -$OPTARG" >&2
            usage
            ;;
@@ -126,90 +123,133 @@ function ptof {
 }
 
 printf "$0: gpstk_root      = $gpstk_root\n"
-printf "$0: build_cpp       = $(ptof $build_cpp)\n"
-if [ "$build_cpp" ]; then
-    printf "$0: core_only       = $(ptof $core_only)\n"
-    printf "$0: test_switch     = $(ptof $test_switch)\n"
-    printf "$0: graphviz        = $(ptof $graphviz)\n"
-    printf "$0: gpstk_install   = $gpstk_install\n"
-fi
-
-printf "$0: clean_install   = $(ptof $clean_install)\n"
-printf "$0: clean_build     = $(ptof $clean_build)\n"
-printf "$0: build_doxygen   = $(ptof $build_doxygen)\n"
-printf "$0: build_sphinx    = $(ptof $build_sphinx)\n"
-printf "$0: build_sdist     = $(ptof $build_sdist)\n"
-printf "$0: build_python    = $(ptof $build_python)\n"
-
-if [ $build_python ]; then
-    printf "$0: python_install  = $python_install\n"
-fi
-
+printf "$0: gpstk_install   = $gpstk_install\n"
+printf "$0: python_install  = $python_install\n"
+printf "$0: user_install    = $(ptof $user_install)\n"
+printf "$0: clean           = $(ptof $clean)\n"
 printf "$0: num_cores       = $num_cores\n"
+printf "$0: build_ext       = $(ptof $build_ext)\n"
+printf "$0: test_switch     = $(ptof $test_switch)\n"
+printf "$0: verbosity       = $(ptof $verbosity)\n"
+printf "$0: build_docs      = $(ptof $build_docs)\n"
+printf "$0: build_sdist     = $(ptof $build_sdist)\n"
 
 if [ ! -d "$gpstk_root" ]; then
-    echo "$0: Error. $gpstk_root does not exist."
+    echo "$0: COnfiguration: ERROR: $gpstk_root does not exist."
     exit 1
 fi
 
 #----------------------------------------
-# C++: Build and install lib and apps
+# Clean build and install
 #----------------------------------------
-# Construct CMake command string based on script options
-# Reminder: to set variables from command line use "$ cmake -D <var>:<type>=<value>"
 
-if [ "$build_cpp" ]; then
+if [ "$clean" ]; then
+	echo ""
+	echo ""
+    echo "$0: Clean: Removing previous c++ build"
+	echo ""
+	echo ""
 
-    if [ "$clean_build" ]; then
-        echo "$0: Removing previous c++ build"
-        rm -rf "$gpstk_root/build"
-    fi
-    mkdir -p $gpstk_root/build
+    echo "$0: Clean: Removing previous install directory"
+    rm -rf $gpstk_install/*;
+    rm -rf $python_install/gpstk*
+    git clean -fxd $gpstk_root/build/
+	git clean -fxd $gpstk_root/swig/sphinx/
+fi
+mkdir -p $gpstk_root/build
+mkdir -p $gpstk_install
 
-    # Generate build files (e.g. Makefiles)
-    args=""
-    args+=${gpstk_install:+" -DCMAKE_INSTALL_PREFIX=$gpstk_install"}
-    args+=${core_only:+" -DCORE_ONLY=ON"}
-    args+=${test_switch:+" -DTEST_SWITCH=ON"}
-    args+=${graphviz:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
+#----------------------------------------
+# User Install
+#----------------------------------------
 
-    cd $gpstk_root/build
-    cmake $args ..
-
-    # Build library and apps
-    echo "$0: Building c++ libs and apps"
-    cd $gpstk_root/build
-    make -j $num_cores
-
-    # Install library and apps
-    if [ "$clean_install" ]; then
-        echo "$0: Removing previous install directory"
-        rm -rf $gpstk_install
-    fi
-    mkdir -p $gpstk_install
-
-    echo "$0: Installing c++ libs and apps"
-    make install
-
-    # Convert graphviz .DOT file into a .PDF
-    if ["$graphviz" ]; then
-        path_graphviz=$gpstk_install/graphviz
-        mkdir -p $path_graphviz
-        dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
-    fi
-
+if [ "$user_install" ]; then
+	echo "$0: Install: User intall paths"
+	gpstk_install=$HOME/.local/gpstk
+    python_install=$(python -m site --user-site)
+else
+	echo "$0: Install: System intall paths"
+	gpstk_install=/usr
+    python_install=$(python -m site --user-site)
 fi
 
 #----------------------------------------
-# Doxygen
+# Pre-Build Generated Documentation
 #----------------------------------------
-# Build Doxygen Files
-if [ "$build_doxygen" ]; then
-    cd $gpstk_root
-    doxygen
-    cd $python_root
-    python docstring_generator.py
+
+if [ "$build_docs" ]; then
+
+	echo ""
+	echo ""
+    echo "$0: Documentation: processing dOxygen XML and docstrings and Sphinx RST ..."
+	echo ""
+	echo ""
+	
+	# build doxygen
+    if [ -d "$gpstk_root/doc" ]; then
+        echo "$0: Documentation: Doxygen: Using existing doxygen files."
+    else
+        echo "$0: Documentation: Doxygen: Files Not Found, Building now..."
+        cd $gpstk_root
+        doxygen
+    fi
+	
+	# generate python docstrings from doxygen output
+    if [ -d "$python_root/doc" ]; then
+        echo "$0: Documentation: Docstrings: Using existing docstring files."
+    else
+        echo "$0: Documentation: Docstrings: Files Not Found, Building new ones from Doxygen output files now..."
+        cd $python_root
+        python docstring_generator.py
+    fi
+
+	# Building sphinx RST documentation
+	command -v sphinx-build 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+	if [[ $? -eq 0 ]] ; then
+	    echo "$0: Documentation: Sphinx: Rebuilding RST documentation now..."
+	    cd $python_root/sphinx
+	    make html
+	    cd $python_root/sphinx/_build/html
+	    zip $python_root/install_package/docs/gpstkpythondoc.zip $python_root/sphinx/_build/html/*
+	else
+	    echo "$0: Documentation: Cannot build Sphinx Documentation. Sad trombone."	
+	fi
+	
 fi
+
+#----------------------------------------
+# CMake generation of Makefiles
+#----------------------------------------
+
+echo ""
+echo ""
+echo "$0: CMake: executing cmake command to generate Makefiles..."
+echo ""
+echo ""
+
+args=""
+args+=${gpstk_install:+" -DCMAKE_INSTALL_PREFIX=$gpstk_install"}
+args+=${user_install:+" -DPYTHON_USER_INSTALL=ON"}
+args+=${build_ext:+" -DBUILD_EXT=ON"}
+args+=${test_switch:+" -DTEST_SWITCH=ON"}
+args+=${verbosity:+" -DDEBUG_SWITCH=ON"}
+args+=${build_docs:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
+
+cd $gpstk_root/build
+cmake $args ..
+
+#----------------------------------------
+# Build and install
+#----------------------------------------
+
+echo ""
+echo ""
+echo "$0: Make: Building and installing C++ libs, C++ apps, and Python package..."
+echo ""
+echo ""
+
+cd $gpstk_root/build
+make install -j $num_cores
 
 #----------------------------------------
 # Test: Hooks for test framework
@@ -221,124 +261,85 @@ if [ "$test_switch" ]; then
 fi
 
 #----------------------------------------
-# Python: Build/install swig bindings
+# Post-Build Generated Documentation
 #----------------------------------------
 
-if [ "$build_python" ]; then
-    if [ "$build_doxygen" ]; then
-        if [ -d "$gpstk_root/doc" ]; then
-            echo "Using existing doxygen files."
-        else
-            echo "Doxygen Files Not Found, Building now..."
-            cd $gpstk_root
-            doxygen
-        fi
+if [ "$build_docs" ]; then
 
-        if [ -d "$python_root/doc" ]; then
-            echo "Using existing docstring files."
-        else
-            echo "Docstring Files Not Found, Building now..."
-            cd $python_root
-            python docstring_generator.py
-        fi
-    fi
-    
-    if [ "$build_spinx" ]; then
-        echo "Rebuilding sphinx RST documentation now..."
-        cd $python_root/sphinx
-        make html
-        cd $python_root/sphinx/_build/html
-        zip $python_root/install_package/docs/gpstkpythondoc.zip $python_root/sphinx/_build/html/*
-    fi
+	echo ""
+	echo ""
+    echo "$0: Post-build Documentation: processing Graphviz ..."
+	echo ""
+	echo ""
 
-    if [ "$clean_build" ]; then
-        rm -rf  $python_root/build
-    fi
-    
-    [ -d $python_root/build ] || mkdir -p $python_root/build
-
-    cd $python_root/build
-
-    # Generate build files (e.g. Makefiles)
-    args=""
-    args+=${gpstk_install:+" -DGPSTK_INSTALL=$gpstk_install"}
-    args+=${python_install:+" -DCMAKE_INSTALL_PREFIX=$python_install"}
-
-    # Have CMake install the package, True or False?
-    package_install=1 # 0=False, 1=True
-    args+=${python_install:+" -DPACKAGE_INSTALL=$package_install"}
-
-    cmake $args ..
-
-    echo "$0: Building gpstk python extension module"
-    make -j$num_cores
-
-    #----------------------------------------
-	# Python Package Install
-    #----------------------------------------
-
-    if [ "$clean_install" ]; then
-        rm -rf $python_install/gpstk*
-    fi
-    mkdir -p $python_install
-
-    echo "$0: Installing gpstk python extension module"
-    make install
-
-    # Python extension module was built and installed into the package file tree
-    # But the package itself was not installed into a system path, so we do it here
-    if [ $package_install = 0 ]; then
-        cd $python_root/install_package
-        python setup.py install --prefix=~/.local
-    fi
-
-    #----------------------------------------
-    # Python source distribution
-    #----------------------------------------
-    # default: tar-ball, zip
-	# optional: debian, set package_debian=1 to build it.
-    package_debian=0
-    if [ $build_sdist ]; then
-        cd $python_root/install_package
-        python setup.py sdist --formats=zip,gztar
-        if [ $package_debian = 1 ]; then
-            # py2dsc will convert a distutils-built source tarball into a Debian source package.
-            # py2dsc is not typically installed, so we need to add a check before trying to run it.
-            command_name=py2dsc
-            command_name_exists=1
-            command -v $command_name >/dev/null 2>&1 || { command_name_exists=0; };
-            if [ $command_name_exists = 1 ]; then
-                cd $python_root/install_package/dist
-                py2dsc gpstk-2.5.tar.gz
-                cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
-                dpkg-buildpackage -rfakeroot -uc -us
-            fi
-        fi
-    fi
+	# Building Graphviz .DOT and .PDF
+	command -v dot 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+	if [[ $? -eq 0 ]] ; then
+	    echo "$0: Documentation: Graphviz: Generating GrpahVix output PDF..."
+	    path_graphviz=$gpstk_install/graphviz
+	    mkdir -p $path_graphviz
+	    dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
+	else
+	    echo "$0: Documentation: Cannot build Graphviz documentation. Sad trombone."	
+	fi
 
 fi
 
+#----------------------------------------
+# Python source distribution
+#----------------------------------------
+# default: tar-ball, zip
+# optional: debian, set package_debian=1 to build it.
 
+if [ $build_sdist ]; then
 
+	echo ""
+    echo ""
+    echo "$0: Distribution: Generating distribution packages..."
+    echo ""
+    echo ""
+    cd $python_root/install_package
+    python setup.py sdist --formats=zip,gztar
 
+	package_debian=0
+    if [ $package_debian = 1 ]; then
+        # py2dsc will convert a distutils-built source tarball into a Debian source package.
+        # py2dsc is not typically installed, so we need to add a check before trying to run it.
+		command -v py2dsc 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+		if [[ $? -eq 0 ]] ; then
+            cd $python_root/install_package/dist
+            py2dsc gpstk-2.5.tar.gz
+            cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
+            dpkg-buildpackage -rfakeroot -uc -us
+        fi
+    fi
+fi
 
 #----------------------------------------
-# Test paths
+# Test LD_LIBRARY_PATH
 #----------------------------------------
 
 # Test whether $gpstk_install is in the user's PATH
 # If not, echo a warning since the python extension module will break at run time.
 
+echo ""
+echo ""
+echo "$0: Paths: Testing library load paths..."
+echo ""
+echo ""
+
 if [[ ":$PATH:" == *":$gpstk_install/lib:"* ]]; then
-    echo "NOTICE: Your chosen install location for libgpstk.so is in your PATH. Well done."
+    echo "$0: Paths: install location for libgpstk.so is in your PATH. Well done. No further action needed."
 elif [[ ":$LD_LIBRARY_PATH:" == *":$gpstk_install/lib:"* ]]; then
-    echo "NOTICE: Your chosen install location for libgpstk.so is in your LD_LIBRARY_PATH. Well done."
+    echo "$0: Paths: install location for libgpstk.so is in your LD_LIBRARY_PATH. Well done. No further action needed."
 else
-    echo "WARNING: Your chosen install location for libgpstk.so is NOT in your path."
-    echo "         You may want to add it to your environment LD_LIBRARY_PATH like so:"
-    echo "             $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
+    echo "$0: Paths: install location for libgpstk.so is NOT in your path. You must add it to your environment to use it."
+    echo "$0: Paths: recommend updating your LD_LIBVRARY_PATH as follows: "
+    echo "$0:            $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
 fi
 
 #----------------------------------------
 # The End
 #----------------------------------------
+echo ""
+echo ""
