@@ -184,56 +184,56 @@ mkdir -p $gpstk_install
 #----------------------------------------
 
 if [ "$user_install" ]; then
-	echo "$0: Install: User intall paths"
-	gpstk_install=$HOME/.local/gpstk
+    echo "$0: Install: User intall paths"
+    gpstk_install=$HOME/.local/gpstk
     python_install=$(python -m site --user-site)
 else
-	echo "$0: Install: System intall paths"
-	gpstk_install=/usr
-    python_install=$(python -m site --user-site)
+    echo "$0: Install: System intall paths"
+    gpstk_install=/usr/local
+    # python_install=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+    python_install=$(python -c "import site; print(site.getsitepackages()[0])")
 fi
 
 #----------------------------------------
-# Pre-Build Generated Documentation
+# Pre-Build Documentation processing
 #----------------------------------------
 
 if [ "$build_docs" ]; then
 
-	echo ""
-	echo ""
+    echo ""
+    echo ""
     echo "$0: Documentation: processing dOxygen XML and docstrings and Sphinx RST ..."
-	echo ""
-	echo ""
+    echo ""
+    echo ""
 	
-	# build doxygen
+    # build doxygen xml output from scraping the source files *.cpp and *.hpp
     if [ -d "$gpstk_root/doc" ]; then
         echo "$0: Documentation: Doxygen: Using existing doxygen files."
     else
-        echo "$0: Documentation: Doxygen: Files Not Found, Building now..."
+        echo "$0: Documentation: Doxygen: Generating XML files and dot graphs for C++ library... $gpstk_rooot/doc/xml"
         cd $gpstk_root
+        # Running doxygen walks the C++ source files and scrapes doxygen comments and 
+        # writes out $gpstk_root/doc/html/*.html and $gpstk_root/doc/xml/*.xml
+        # and generates graphviz files (.map, .md5, and .png) in $gpstk_root/doc/html/
         doxygen
+        tar -czvf $gpstk_root/gpstk_cpp_lib_docs.tgz $gpstk_root/doc/html/*
     fi
-	
-	# generate python docstrings from doxygen output
+
+    # generate python files.i docstrings from doxygen xml output
     if [ -d "$python_root/doc" ]; then
         echo "$0: Documentation: Docstrings: Using existing docstring files."
     else
-        echo "$0: Documentation: Docstrings: Files Not Found, Building new ones from Doxygen output files now..."
+        echo "$0: Documentation: Docstrings: using Doxygen XML output to generate docstring .i files for python bindings... $python_root/doc "
         cd $python_root
+        # running docstring_generator.py reads in the $gpstk_root/doc/xml/*.xml 
+        # fileswere created previously by doxygen and then 
+        # outputs SWIG .i files to $python_root/doc
         python docstring_generator.py
     fi
-
-	# Building sphinx RST documentation
-	command -v sphinx-build 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
-	if [[ $? -eq 0 ]] ; then
-	    echo "$0: Documentation: Sphinx: Rebuilding RST documentation now..."
-	    cd $python_root/sphinx
-	    make html
-	    cd $python_root/sphinx/_build/html
-	    zip $python_root/install_package/docs/gpstkpythondoc.zip $python_root/sphinx/_build/html/*
-	else
-	    echo "$0: Documentation: Cannot build Sphinx Documentation. Sad trombone."	
-	fi
+	
+    # Create GraphViz path
+    path_graphviz=$gpstk_install/graphviz
+    mkdir -p $path_graphviz
 	
 fi
 
@@ -281,27 +281,48 @@ if [ "$test_switch" ]; then
 fi
 
 #----------------------------------------
-# Post-Build Generated Documentation
+# Post-Build Documentation processing
 #----------------------------------------
 
 if [ "$build_docs" ]; then
 
-	echo ""
-	echo ""
-    echo "$0: Post-build Documentation: processing Graphviz ..."
-	echo ""
-	echo ""
+    echo ""
+    echo ""
+    echo "$0: Post-build Documentation: generating HTML documentation for python bindings from RST files using Sphinx ..."
+    echo ""
+    echo ""
 
-	# Building Graphviz .DOT and .PDF
-	command -v dot 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
-	if [[ $? -eq 0 ]] ; then
-	    echo "$0: Documentation: Graphviz: Generating GrpahVix output PDF..."
-	    path_graphviz=$gpstk_install/graphviz
-	    mkdir -p $path_graphviz
-	    dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
-	else
-	    echo "$0: Documentation: Cannot build Graphviz documentation. Sad trombone."	
+    # Building sphinx RST documentation
+    # Requires the import of the gpstk python package, so you have to do this AFTER building the bindings
+    # After importing gpstk, sphinx generates *.rst files for each attibute in the gpstk namespace, and
+    # then converts those to html files.
+    command -v sphinx-build 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+    if [[ $? -eq 0 ]] ; then
+        echo "$0: Documentation: Sphinx: Rebuilding RST documentation now..."
+        cd $python_root/sphinx
+        # running make html generates a lot of new RST files in $python_root/sphinx/*.rst
+        # and a bunch of html files under $python_root/sphinx/_build/html/*.html
+        make html
+        tar -czvf $gpstk_root/gpstk_python_doc.tgz $python_root/sphinx/_build/html/*
+    else
+        echo "$0: Documentation: Cannot build Sphinx Documentation."	
 	fi
+	
+
+    echo ""
+    echo ""
+    echo "$0: Post-build Documentation: processing Graphviz ..."
+    echo ""
+    echo ""
+
+    # Building Graphviz .DOT and .PDF
+    command -v dot 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+    if [[ $? -eq 0 ]] ; then
+        echo "$0: Documentation: Graphviz: Generating GraphViz output PDF... $path_graphviz"
+        dot -Tpdf $path_graphviz/gpstk_graphviz.dot -o $path_graphviz/gpstk_graphviz.pdf
+    else
+        echo "$0: Documentation: Cannot build Graphviz documentation."	
+    fi
 
 fi
 
@@ -313,7 +334,7 @@ fi
 
 if [ $build_sdist ]; then
 
-	echo ""
+    echo ""
     echo ""
     echo "$0: Distribution: Generating distribution packages..."
     echo ""
@@ -325,8 +346,8 @@ if [ $build_sdist ]; then
     if [ $package_debian = 1 ]; then
         # py2dsc will convert a distutils-built source tarball into a Debian source package.
         # py2dsc is not typically installed, so we need to add a check before trying to run it.
-		command -v py2dsc 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
-		if [[ $? -eq 0 ]] ; then
+        command -v py2dsc 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+        if [[ $? -eq 0 ]] ; then
             cd $python_root/install_package/dist
             py2dsc gpstk-2.5.tar.gz
             cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
