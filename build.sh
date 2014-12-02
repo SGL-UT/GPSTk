@@ -140,6 +140,26 @@ if [ ! -d "$gpstk_root" ]; then
 fi
 
 #----------------------------------------
+# Test for source files, exit if nothing to build
+#----------------------------------------
+
+num_files_ext=0
+num_files_core=0
+if [ "$build_ext" ]; then
+	num_files_ext=`find $gpstk_root/ext/lib/ -type f -name "*.cpp" | wc -l`
+    if [ "$num_files_ext" -eq 0 ]; then
+        echo "$0: ERROR: $gpstk_root/ext/lib contains no *.cpp source files. Try building without /ext. See help: $0 -h"
+		exit 1
+	fi
+else
+	num_files_core=`find $gpstk_root/core/lib/ -type f -name "*.cpp" | wc -l`
+    if [ "$num_files_core" -eq 0 ]; then
+        echo "$0: ERROR: $gpstk_root/core/lib contains no *.cpp source files. Try building /ext. See help: $0 -h"
+		exit 1
+	fi
+fi
+
+#----------------------------------------
 # Clean build and install
 #----------------------------------------
 
