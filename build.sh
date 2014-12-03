@@ -16,8 +16,8 @@
 #----------------------------------------
 
 gpstk_root=$PWD
-gpstk_install=$HOME/.local/gpstk             # e.g., $(python -m site --user-base) === $HOME/.local
-python_install=$(python -m site --user-site) # e.g., /home/vestuto/.local/lib/python2.7/site-packages
+gpstk_install=$HOME/.local/gpstk             # default to a user install path
+python_install=$(python -m site --user-site) # e.g., $HOME/.local/lib/python2.7/site-packages
 python_root="$gpstk_root/swig"
 
 #----------------------------------------
@@ -73,8 +73,8 @@ OPTIONS:
                                    C++ lib install path = $HOME/.local/gpstk/lib
                                    python install path  = $HOME/.local/lib/pythonX.X/site-packages/gpstk
                                * without user_install
-                                   C++ lib install path = /usr/lib
-                                   python install path  = /usr/lib/pythonX.X/gpstk
+                                   C++ lib install path = /usr/local/lib
+                                   python install path  = /usr/local/lib/pythonX.X/dist-packages/gpstk
 
    -v     verbosity        Debug output
 
@@ -110,6 +110,23 @@ done
 # command line options we did not capture,
 # then they are accessible via use of $*
 shift $(($OPTIND - 1))
+
+#----------------------------------------
+# User Install
+#----------------------------------------
+
+if [ "$user_install" ]; then
+    echo "$0: Install: User intall paths"
+    gpstk_install=$HOME/.local/gpstk
+    python_install=$(python -m site --user-site)
+else
+    echo "$0: Install: System intall paths"
+    gpstk_install=/usr/local
+    # python_install=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
+	#    returns /usr/lib/ path vs. /usr/local/lib/ path
+    python_install=$(python -c "import site; print(site.getsitepackages()[0])")
+	#    returns /usr/local/lib/ path vs. /usr/lib/ path
+fi
 
 #----------------------------------------
 # Echo configuration
@@ -180,21 +197,6 @@ mkdir -p $gpstk_root/build
 mkdir -p $gpstk_install
 
 #----------------------------------------
-# User Install
-#----------------------------------------
-
-if [ "$user_install" ]; then
-    echo "$0: Install: User intall paths"
-    gpstk_install=$HOME/.local/gpstk
-    python_install=$(python -m site --user-site)
-else
-    echo "$0: Install: System intall paths"
-    gpstk_install=/usr/local
-    # python_install=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-    python_install=$(python -c "import site; print(site.getsitepackages()[0])")
-fi
-
-#----------------------------------------
 # Pre-Build Documentation processing
 #----------------------------------------
 
@@ -216,7 +218,7 @@ if [ "$build_docs" ]; then
         # writes out $gpstk_root/doc/html/*.html and $gpstk_root/doc/xml/*.xml
         # and generates graphviz files (.map, .md5, and .png) in $gpstk_root/doc/html/
         doxygen
-        tar -czvf $gpstk_root/gpstk_cpp_lib_docs.tgz $gpstk_root/doc/html/*
+        tar -czvf $gpstk_root/gpstk_doc_cpp.tgz $gpstk_root/doc/html/*
     fi
 
     # generate python files.i docstrings from doxygen xml output
@@ -303,7 +305,7 @@ if [ "$build_docs" ]; then
         # running make html generates a lot of new RST files in $python_root/sphinx/*.rst
         # and a bunch of html files under $python_root/sphinx/_build/html/*.html
         make html
-        tar -czvf $gpstk_root/gpstk_python_doc.tgz $python_root/sphinx/_build/html/*
+        tar -czvf $gpstk_root/gpstk_doc_python.tgz $python_root/sphinx/_build/html/*
     else
         echo "$0: Documentation: Cannot build Sphinx Documentation."	
 	fi
