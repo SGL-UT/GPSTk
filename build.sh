@@ -163,17 +163,17 @@ fi
 num_files_ext=0
 num_files_core=0
 if [ "$build_ext" ]; then
-	num_files_ext=`find $gpstk_root/ext/lib/ -type f -name "*.cpp" | wc -l`
+    num_files_ext=`find $gpstk_root/ext/lib/ -type f -name "*.cpp" | wc -l`
     if [ "$num_files_ext" -eq 0 ]; then
         echo "$0: ERROR: $gpstk_root/ext/lib contains no *.cpp source files. Try building without /ext. See help: $0 -h"
-		exit 1
-	fi
+        exit 1
+    fi
 else
-	num_files_core=`find $gpstk_root/core/lib/ -type f -name "*.cpp" | wc -l`
+    num_files_core=`find $gpstk_root/core/lib/ -type f -name "*.cpp" | wc -l`
     if [ "$num_files_core" -eq 0 ]; then
         echo "$0: ERROR: $gpstk_root/core/lib contains no *.cpp source files. Try building /ext. See help: $0 -h"
-		exit 1
-	fi
+        exit 1
+    fi
 fi
 
 #----------------------------------------
@@ -181,11 +181,11 @@ fi
 #----------------------------------------
 
 if [ "$clean" ]; then
-	echo ""
-	echo ""
+    echo ""
+    echo ""
     echo "$0: Clean: Removing previous c++ build"
-	echo ""
-	echo ""
+    echo ""
+    echo ""
 
     echo "$0: Clean: Removing previous install directory"
     rm -rf $gpstk_install/*;
@@ -218,7 +218,8 @@ if [ "$build_docs" ]; then
         # writes out $gpstk_root/doc/html/*.html and $gpstk_root/doc/xml/*.xml
         # and generates graphviz files (.map, .md5, and .png) in $gpstk_root/doc/html/
         doxygen
-        tar -czvf $gpstk_root/gpstk_doc_cpp.tgz $gpstk_root/doc/html/*
+        cd $gpstk_root/doc/html/
+        tar -czvf $gpstk_root/gpstk_doc_cpp.tgz ./*
     fi
 
     # generate python files.i docstrings from doxygen xml output
@@ -305,7 +306,7 @@ if [ "$build_docs" ]; then
         # running make html generates a lot of new RST files in $python_root/sphinx/*.rst
         # and a bunch of html files under $python_root/sphinx/_build/html/*.html
         make html
-        tar -czvf $gpstk_root/gpstk_doc_python.tgz $python_root/sphinx/_build/html/*
+        find $python_root/sphinx/_build/html/ -type f | xargs tar -czvf $gpstk_root/gpstk_doc_python.tgz
     else
         echo "$0: Documentation: Cannot build Sphinx Documentation."	
 	fi
