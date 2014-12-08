@@ -19,6 +19,7 @@ gpstk_root=$PWD
 gpstk_install=$HOME/.local/gpstk             # default to a user install path
 python_install=$(python -m site --user-site) # e.g., $HOME/.local/lib/python2.7/site-packages
 python_root="$gpstk_root/swig"
+build_root=$gpstk_root/build
 
 #----------------------------------------
 # Number of cores for use by compiler
@@ -45,16 +46,19 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-cdehtuvz]
+usage:     $0 [-bcdehtuvz]
 
 purpose:   This script automates and documents how to build and install GPSTk with CMake.
 
 OPTIONS:
 
+   -b     build_only       Do not do an install. This is useful if you want to build as yourself,
+                           and then later use sudo to do a system install.
+
    -c     clean            Removes all files created from the build and install process.
                                $ rm -rf $gpstk_install/*;
                                $ rm -rf $python_install/gpstk*
-                               $ git clean -fxd $gpstk_root/build/
+                               $ git clean -fxd $build_root/
                                $ git clean -fxd $gpstk_root/swig/sphinx/
 
    -d     build_docs       Build, process, and install all documentation files.
@@ -89,10 +93,11 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "cdehtuvz" option; do
+while getopts "bcdehtuvz" option; do
     case $option in
         
         h) usage;;
+        b) build_only=1;;
         c) clean=1;;
         d) build_docs=1;;
         e) build_ext=1;;
@@ -119,8 +124,10 @@ if [ "$user_install" ]; then
     echo "$0: Install: User intall paths"
     gpstk_install=$HOME/.local/gpstk
     python_install=$(python -m site --user-site)
+    build_root=$gpstk_root/build
 else
     echo "$0: Install: System intall paths"
+    build_root=/tmp/gpstk/build
     gpstk_install=/usr/local
     # python_install=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
 	#    returns /usr/lib/ path vs. /usr/local/lib/ path
@@ -190,10 +197,10 @@ if [ "$clean" ]; then
     echo "$0: Clean: Removing previous install directory"
     rm -rf $gpstk_install/*;
     rm -rf $python_install/gpstk*
-    git clean -fxd $gpstk_root/build/
+    git clean -fxd $build_root/
 	git clean -fxd $gpstk_root/swig/sphinx/
 fi
-mkdir -p $gpstk_root/build
+mkdir -p $build_root
 mkdir -p $gpstk_install
 
 #----------------------------------------
@@ -218,8 +225,10 @@ if [ "$build_docs" ]; then
         # writes out $gpstk_root/doc/html/*.html and $gpstk_root/doc/xml/*.xml
         # and generates graphviz files (.map, .md5, and .png) in $gpstk_root/doc/html/
         doxygen
-        cd $gpstk_root/doc/html/
-        tar -czvf $gpstk_root/gpstk_doc_cpp.tgz ./*
+        tar -czvf $gpstk_root/gpstk_doc_cpp.tgz -C $gpstk_root/doc/html .
+        # doc_install_prefix=/usr/share/gpstk
+        # mkdir -p $doc_install_prefix/cpp/html
+        # tar -xzvf gpstk_doc_cpp.tgz -C $doc_install_prefix/cpp/html
     fi
 
     # generate python files.i docstrings from doxygen xml output
@@ -233,9 +242,9 @@ if [ "$build_docs" ]; then
         # outputs SWIG .i files to $python_root/doc
         python docstring_generator.py
     fi
-	
-    # Create GraphViz path
-    path_graphviz=$gpstk_install/graphviz
+
+    # make path for graphviz
+    path_graphviz=$build_root/doc/graphviz
     mkdir -p $path_graphviz
 	
 fi
@@ -258,28 +267,29 @@ args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${verbosity:+" -DDEBUG_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
 
-cd $gpstk_root/build
-cmake $args ..
+cd $build_root
+cmake $args $gpstk_root
 
 #----------------------------------------
-# Build and install
+# Build
 #----------------------------------------
 
 echo ""
 echo ""
-echo "$0: Make: Building and installing C++ libs, C++ apps, and Python package..."
+echo "$0: Make: Building C++ libs, C++ apps, and Python package..."
 echo ""
 echo ""
 
-cd $gpstk_root/build
-make install -j $num_cores
+cd $build_root
+# make install -j $num_cores
+make -j $num_cores
 
 #----------------------------------------
 # Test: Hooks for test framework
 #----------------------------------------
 
 if [ "$test_switch" ]; then
-    cd $gpstk_root/build
+    cd $build_root
     ctest -v
 fi
 
@@ -306,7 +316,16 @@ if [ "$build_docs" ]; then
         # running make html generates a lot of new RST files in $python_root/sphinx/*.rst
         # and a bunch of html files under $python_root/sphinx/_build/html/*.html
         make html
-        find $python_root/sphinx/_build/html/ -type f | xargs tar -czvf $gpstk_root/gpstk_doc_python.tgz
+        tar -czvf $gpstk_root/gpstk_doc_python.tgz -C $python_root/sphinx/_build/html/ .
+        # doc_install_prefix=/usr/share/gpstk
+        # mkdir -p $doc_install_prefix/python/html
+        # tar -xzvf gpstk_doc_python.tgz -C $doc_install_prefix/python/html
+
+
+        # doc_install=/usr/share/gpstk/doc
+        # mkdir -p $doc_install/python
+        # tar -xzvf gpstk_doc_python.tgz -C $doc_install/python/
+
     else
         echo "$0: Documentation: Cannot build Sphinx Documentation."	
 	fi
@@ -380,6 +399,21 @@ else
     echo "$0: Paths: install location for libgpstk.so is NOT in your path. You must add it to your environment to use it."
     echo "$0: Paths: recommend updating your LD_LIBVRARY_PATH as follows: "
     echo "$0:            $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
+fi
+
+#----------------------------------------
+# Install
+#----------------------------------------
+
+if [ $build_only ]; then
+    echo ""
+    echo ""
+    echo "$0: Install: Build script was configured to do a build only, no install."
+    echo ""
+    echo ""
+else
+    cd $build_root
+    make install -j $num_cores
 fi
 
 #----------------------------------------
