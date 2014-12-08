@@ -149,6 +149,7 @@ set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON ) # why not also se
 # messages on stdout and all other message types on stderr. 
 
 if( DEBUG_SWITCH )
+    message( STATUS "DEBUG: SWIG: DEBUG BLOCK 1 -----------------------------------------" )
     message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )    # e.g., $HOME/git/gpstk/swig
     message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )   # e.g., $HOME/git/gpstk/swig/CMakeLists.txt
     message( STATUS "DEBUG: SWIG: CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )          # e.g., $HOME/git/gpstk
@@ -159,7 +160,7 @@ if( DEBUG_SWITCH )
     message( STATUS "DEBUG: SWIG: PROJECT_BINARY_DIR       = ${PROJECT_BINARY_DIR}" )        # e.g., $HOME/git/gpstk/build
     message( STATUS "DEBUG: SWIG: PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}" )        # e.g., $HOME/git/gpstk
 
-	message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
+    message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
     message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_DIR        = ${CMAKE_INSTALL_DIR}" )         # e.g., [empty]
 endif()
 
@@ -174,6 +175,9 @@ endif()
 # Note: list of all headers files are included in 
 #       gpstk_swig.hpp which is included in gpstk.i
 
+# make sure the swig build target outputs files to the build file tree
+# set( CMAKE_SWIG_OUTDIR ${CMAKE_CURRENT_BINARY_DIR}/install_package/${SWIG_MODULE} )
+
 set( SWIG_MODULE "gpstk" )
 
 include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/src )
@@ -183,7 +187,7 @@ swig_link_libraries( ${SWIG_MODULE} gpstk )
 swig_link_libraries( ${SWIG_MODULE} ${PYTHON_LIBRARIES} )
 
 #----------------------------------------
-# Install python extension module into package tree
+# Copy python extension module output into package build tree
 #----------------------------------------
 
 # Install the gpstk module into the package file tree
@@ -191,15 +195,37 @@ set( INSTALL_PACKAGE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
 set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_BINARY_DIR}/install_package )
 
 if( DEBUG_SWITCH )
+    message( STATUS "DEBUG: SWIG: DEBUG BLOCK 2 -----------------------------------------" )
+    message( STATUS "DEBUG: SWIG: EXECUTABLE_OUTPUT_PATH   = ${EXECUTABLE_OUTPUT_PATH}" )
+    message( STATUS "DEBUG: SWIG: WORKING_DIRECTORY        = ${WORKING_DIRECTORY}" )
+    message( STATUS "DEBUG: SWIG: CMAKE_SOURCE_DIR         = ${CMAKE_CURRENT_DIR}" )
+    message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
+    message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )
     message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )
+    message( STATUS "DEBUG: SWIG: CMAKE_SWIG_OUTDIR        = ${CMAKE_SWIG_OUTDIR}" )
+    message( STATUS "DEBUG: SWIG: INSTALL_PACKAGE_SOURCE   = ${INSTALL_PACKAGE_SOURCE}" )
     message( STATUS "DEBUG: SWIG: INSTALL_PACKAGE_PATH     = ${INSTALL_PACKAGE_PATH}" )
 endif()
 
-# Define swig wrapper install target
-install( TARGETS "_${SWIG_MODULE}" DESTINATION ${INSTALL_PACKAGE_PATH}/${SWIG_MODULE} )
-install( FILES ${CMAKE_CURRENT_BINARY_DIR}/${SWIG_MODULE}.py DESTINATION ${INSTALL_PACKAGE_PATH}/${SWIG_MODULE} )
+#----------------------------------------
+# Add custom commands to the _gpstk.so build target
+#----------------------------------------
+#    ...to relocate the output from teh swig build target to 
+#    the correct directory within the python package file tree
+#        CMake documentation claims that all SWIG target output 
+#        will be written to $CMAKE_SWIG_OUTDIR, but
+#        testing shows that this ONLY works for the gpstk.py
+#        and does NOT work for the _gpstk.so
+#----------------------------------------
+add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "_${SWIG_MODULE}.so" ${INSTALL_PACKAGE_PATH}/${SWIG_MODULE} )
+add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${INSTALL_PACKAGE_PATH}/${SWIG_MODULE} )
+
+# CONFIGURATION:
+# It copies entire install_package file tree 
+# from it's original src root to the build root
 file( COPY ${INSTALL_PACKAGE_SOURCE}/ DESTINATION ${INSTALL_PACKAGE_PATH} PATTERN "*" )
 
+# CONFIGURATION: Copy meta files.txt 
 set( METAFILES "" ) # for a single set() command, just ";" delimiter between entries in the list
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/AUTHORS.txt" )
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/COPYING.txt" )
@@ -208,8 +234,6 @@ list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/ChangeLog.txt" )
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/INSTALL.txt" )
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/NEWS.txt" )
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/README.txt" )
-
-# file( COPY ${CMAKE_SOURCE_DIR}/*.txt DESTINATION ${INSTALL_PACKAGE_PATH} )
 file( COPY ${METAFILES} DESTINATION ${INSTALL_PACKAGE_PATH} )
 
 #--------------------------------------------
