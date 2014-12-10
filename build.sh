@@ -151,6 +151,7 @@ printf "$0: gpstk_install   = $gpstk_install\n"
 printf "$0: python_install  = $python_install\n"
 printf "$0: user_install    = $(ptof $user_install)\n"
 printf "$0: clean           = $(ptof $clean)\n"
+printf "$0: build_root      = $build_root\n"
 printf "$0: num_cores       = $num_cores\n"
 printf "$0: build_ext       = $(ptof $build_ext)\n"
 printf "$0: test_switch     = $(ptof $test_switch)\n"
@@ -198,7 +199,7 @@ if [ "$clean" ]; then
     rm -rf $gpstk_install/*;
     rm -rf $python_install/gpstk*
     git clean -fxd $build_root/
-	git clean -fxd $gpstk_root/swig/sphinx/
+    git clean -fxd $gpstk_root/swig/sphinx/
 fi
 mkdir -p $build_root
 mkdir -p $gpstk_install

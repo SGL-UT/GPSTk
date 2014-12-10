@@ -42,50 +42,27 @@ The following procedure will build and install the GPSTk.
 
    1. Ensure that prerequisites such as cmake have been installed.
 
-   2. Download the GPSTk distribution.
+   2. Clone the GPSTk repository or otherwise obtain or download the GPSTk distributio from http://www.gpstk.org
 
-   3. Extract the GPSTk tarball. For example, using GNU tar
+   3. If needed, extract the GPSTk tarball. For example, using GNU tar and gunzip:
 
-         $ tar xvzf gpstk.tar.gz
+         $ tar -xvzf gpstk.tgz
 
-   4. Navigate to the root GPSTk directory
+   4. Navigate to the root GPSTk directory, henceforth called $gpstk_root
 
-   5. Run the GPSTk script with the desired parameters
+         $ cd $gpstk_root
 
-      Build and Installation using default paths
+   5. Run the GPSTk script with the desired parameters. See the script help for details on those parameters:
 
-         $ ./script_gpstk.sh
-
-      Add optional parameters for additional functionality
-
-         $ ./script_gpstk.sh [-h] [-cpdbiotv] [-l <path>] [-r <path>] [-s <path>]
-
-         -h     help             Show this message
-
-         -c     build_cpp        build C++ files and libraries
-         -d     build_doxygen    build Doxygen files (used for python docstrings)
-         -p     build_python     build Python files and libraries with SWIG bindings
-         -e     build_sphinx     build Sphinx RST files into HTML documentation
-
-         -b     clean_build      rm -rf gpstk_root/build; rm -rf python_root/build
-         -i     clean_install    rm -rf gpstk_install; rm -rf python_install
-         
-         -o     core_only        only builds core library code
-         -t     test_switch      initialize test framework
-         -v     graphviz         generate dependency graph (.DOT and .PDF files)
-
-         -r     gpstk_root       default = $gpstk_root, path to GPSTk dev top-level CMakeLists.txt file (and source tree)
-         -s     gpstk_install    default = $gpstk_install,  GPSTk install path prefix, to contain ./bin, ./lib, and ./include.
-                                 If a relative path is supplied here, it needs to be relative to gpstk_root
-         -l     python_install   default = $python_install, Python bindings package install path prefix
+         $ ./build.sh -h
 
 
-Building and Installing in a UNIX-like Environment using CMake
+Building and Installing in a Unix-like Environment using CMake
 ------------------------------------------------------------
 
 This section describes build and installation under the following environments.
 
-   - Linux & Solaris
+   - Linux, OSX, Solaris
 
 The following procedure will build and install the GPSTk.
 
@@ -93,77 +70,43 @@ The following procedure will build and install the GPSTk.
 
    2. Download the GPSTk distribution.
 
-   3. Extract the GPSTk tarball. For example, using GNU tar
+   3. Extract the GPSTk compressed archive. For example, using GNU tar
 
-         $ tar xvzf gpstk.tar.gz
+         $ tar -xvzf gpstk.tgz
 
-   4. Create a directory for your build. For example, change into the gpstk/ directory and type
+   4. Navigate to the root GPSTk directory, henceforth called $gpstk_root
 
-         $ mkdir build
+   4. Create a directory for your build.
 
-   5. Change into the gpstk/build directory, this will be where all of the build files will reside.
+         $ cd $gpstk_root
 
-   6. If GPSTk will be installed as a system library in /usr/local, execute the following commands:
+         $ mkdir $gpstk_root/build
 
-         $ cmake ../ or ../dev (if using Developer repo)
+   5. Change into the $gpstk_root/build directory, this will be where all of the build files will reside.
+
+   6. To build and install GPSTk as a system library in /usr/local, execute the following commands:
+
+         $ cd $gpstk_root/build
+
+         $ cmake $gpstk_root
 
          $ make
 
-      To install to a different directory, the install directory must be set-up when CMake configures the makefiles. Execute the following commands:
+         $ make install 
 
-         $ cmake -DCMAKE_INSTALL_PREFIX:PATH=/path/to/install ../ or ../dev (if using Developer repo)
+      To build and install GPSTk as a user library in $HOME/.local, execute the following commands:
+
+         $ cd $gpstk_root/build
+
+         $ cmake -DPYTHON_USER_INSTALL=TRUE -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $gpstk_root
 
          $ make
-
-   7. To install GPSTk, executee
 
          $ make install 
   
-   8. To build the source documentation using doxygen: Change into the gpstk/dev directory (if using Developer repo) or the gpstk/ directory (if using the tarball), and type
+   7. To build the source documentation using doxygen:
 
-         $ doxygen 
-
-
-Building and Installing in OSX using CMake - Terminal
-------------------------------------------------------------
-
-This section describes build and installation under the following environments.
-
-   - OS X Developer Tools under Mavericks (10.9.5)
-
-The following procedure will build and install the GPSTk.
-
-   1. Ensure that OS X Developer Tools and CMake have been installed.
-
-   2. Download the GPSTk distribution.
-
-   3. Extract the GPSTk tarball. For example, using GNU tar
-
-         $ tar xvzf gpstk.tar.gz
-
-   4. Create a directory for your build. For example, change into the gpstk/ directory and type
-
-         $ mkdir build
-
-   5. Change into the gpstk/build directory, this will be where all of the build files will reside.
-
-   6. If GPSTk will be installed as a system library in /usr/local, execute the following commands:
-
-         $ cmake ../ or ../dev (if using Developer repo)
-
-         $ make
-
-      To install to a different directory, the install directory must be set-up when CMake configures the makefiles. Execute the following commands:
-
-         $ cmake -DCMAKE_INSTALL_PREFIX:PATH=/path/to/install ../ or ../dev (if using Developer repo)
-
-         $ make
-
-   7. To install GPSTk, executee
-
-         $ make install 
-  
-   8. To build the source documentation using doxygen: Change into the gpstk/dev directory (if using Developer repo) or the gpstk/ directory (if using the tarball), and type
+         $ cd $gpstk_root/doc
 
          $ doxygen 
 
