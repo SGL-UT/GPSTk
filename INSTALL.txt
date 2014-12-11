@@ -1,90 +1,122 @@
 Installation of the GPSTk library and applications
 --------------------------------------------------
 
-This INSTALL file has these sections
+Contents
+--------
 
-Introduction
-Building and Installing using the GPSTk script
-Building and Installing in a UNIX-like Environment using CMake
-Building and Installing in OSX using CMake - Terminal
-Building and Installing in OSX using CMake - Xcode IDE
-Building under Microsoft Visual Studio IDE using CMake
+* Introduction
+* Dependencies
+* UNIX-like Environment: Preparation
+* UNIX-like Environment: Automated Build and Install
+* UNIX-like Environment: Manual Build and Install
+* OSX and XCode: Building and Installing with CMake
+* Windows and Microsoft Visual Studio: Building with CMake
 
-More background information and detailed instuctions can be 
-found at the GPSTk website, http://www.gpstk.org/.  The website
-contains the latest information, support forum, and email and IRC
-contacts to obtain help on the project.  Please utilize these
-resource for problems with or questions about the GPSTk.
 
 Introduction
 ------------
-   This project uses CMake for all of its configuration, build & install tasks.
-   See http://www.cmake.org/ for more details on this tool.
-   There are multiple sections below, excepted from the GPSTk website at 
-   http://www.gpstk.org/, that describe how UNIX,OS X and Windows users
-   can build and install the GPSTk.  (Please refer to the GPSTk website
-   for the most detailed and up to date information.)
 
-   This project uses doxygen to dynamically generate API documentation.
-   See http://www.doxygen.org/ for more details.
+The most up-to-date project information can be found at the project website, 
+including build and install instructions, the latest project news, a support 
+forum, IRC, and contact information:
 
-   For more information about building the GPSTk, see the website at
-   http://www.gpstk.org/
+    http://www.gpstk.org/
 
-Building and Installing in a UNIX-like Environment using the GPSTk script
-------------------------------------------------------------
-
-This section describes build and installation under the following environments.
-
-   - Linux, Solaris, Mac OSx
-
-The following procedure will build and install the GPSTk.
-
-   1. Ensure that prerequisites such as cmake have been installed.
-
-   2. Clone the GPSTk repository or otherwise obtain or download the GPSTk distributio from http://www.gpstk.org
-
-   3. If needed, extract the GPSTk tarball. For example, using GNU tar and gunzip:
-
-         $ tar -xvzf gpstk.tgz
-
-   4. Navigate to the root GPSTk directory, henceforth called $gpstk_root
-
-         $ cd $gpstk_root
-
-   5. Run the GPSTk script with the desired parameters. See the script help for details on those parameters:
-
-         $ ./build.sh -h
+The easiest way to build an install GPSTk is to use the shell script provided 
+with the source distribution. See below for more details on use of the script, 
+details on building on POSIX platforms, and where to get instructions for 
+building with CMake, both with Xcode on OSX and Visual Studio on Windows.
 
 
-Building and Installing in a Unix-like Environment using CMake
-------------------------------------------------------------
+Dependencies
+------------
 
-This section describes build and installation under the following environments.
+This project uses CMake for all of its configuration, build & install tasks.
+   
+    http://www.cmake.org/
+
+This project uses SWIG for generation of python bindings for the C++ library.
+   
+    http://www.swig.org/
+
+This project (optionally) uses doxygen to dynamically generate API documentation.
+   
+    http://www.doxygen.org/
+
+This project (optionally) uses Sphinx for some documentation generation
+   
+    http://sphinx-doc.org/
+
+
+UNIX-like Environment: Preparation
+----------------------------------
+
+This section describes build and installation under the following environments:
 
    - Linux, OSX, Solaris
 
 The following procedure will build and install the GPSTk.
 
-   1. Ensure that prerequisites such as cmake have been installed.
+   1. Ensure that prerequisites such as cmake and swig have been installed.
 
-   2. Download the GPSTk distribution.
+   2. Obtain the GPSTk source distribution.
 
-   3. Extract the GPSTk compressed archive. For example, using GNU tar
+   3. If needed, extract the GPSTk compressed archive.
+      For example, using GNU tar and gunzip:
 
          $ tar -xvzf gpstk.tgz
 
-   4. Navigate to the root GPSTk directory, henceforth called $gpstk_root
+   4. Navigate to the root directory of the extract GPSTk file tree, herein
+      called $gpstk_root:
 
-   4. Create a directory for your build.
+         $ cd $gpstk_root
+
+
+UNIX-like Environment: Automated Build and Install
+--------------------------------------------------
+
+If you prefer automation, run the GPSTk script. See the script help for details 
+on those parameters:
+
+    $ cd $gpstk_root
+
+    $ ./build.sh -h
+
+Typical user installs will look like this:
+
+    $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:$LD_LIBRARY_PATH
+
+    $ ./build.sh -edu
+
+Typical system installs will look like this:
+
+    $ ./build.sh -ed
+
+
+UNIX-like Environment: Manual Build and Install
+-----------------------------------------------
+
+If you instead prefer or need to run commands one at a time, run the following 
+commands instead of build.sh:
+
+   1. If you want documentation of the C++ classes and improved python 
+      docstrings:
+
+         $ cd $gpstk_root/doc
+
+         $ doxygen 
+
+   2. Create a directory for your build:
 
          $ cd $gpstk_root
 
          $ mkdir $gpstk_root/build
 
-   5. Change into the $gpstk_root/build directory, this will be where all of the build files will reside.
+   3. Change into the $gpstk_root/build directory, this will be where all of the
+      build files will reside.
 
-   6. To build and install GPSTk as a system library in /usr/local, execute the following commands:
+   4. If you prefer to build and install GPSTk as a system library in /usr/local, 
+      execute the following commands:
 
          $ cd $gpstk_root/build
 
@@ -94,32 +126,36 @@ The following procedure will build and install the GPSTk.
 
          $ make install 
 
-      To build and install GPSTk as a user library in $HOME/.local, execute the following commands:
+   5. If you prefer to build and install GPSTk as a user library in $HOME/.local, 
+      skip the previous step, and instead execute the following commands:
 
          $ cd $gpstk_root/build
 
          $ cmake -DPYTHON_USER_INSTALL=TRUE -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $gpstk_root
 
+         $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:LD_LIBRARY_PATH
+
          $ make
 
          $ make install 
-  
-   7. To build the source documentation using doxygen:
 
-         $ cd $gpstk_root/doc
-
-         $ doxygen 
+         $ export PATH=$HOME/.local/gpstk/bin:$PATH
 
 
-Building and Installing in OSX using CMake - Xcode IDE
-------------------------------------------------------------
+OSX and XCode: Building and Installing with CMake
+-------------------------------------------------
 
-Step-by-step procedure with pictures on building the GPSTk under Xcode can be found 
-at http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderOSX
+Step-by-step procedure with pictures on building the GPSTk under Xcode can be
+found at gpstk.org:
+
+    http://www.gpstk.org/bin/view/Documentation/BuildingGPSTkUnderOSX
 
 
-Building under Microsoft Visual Studio IDE using CMake
--------------------------------------------------------------------------
+Windows and Microsoft Visual Studio: Building with CMake
+--------------------------------------------------------
 
-Step-by-step procedure with pictures on building the GPSTk under Visual Studio 2012
-can be found at www.gpstk.org/BuildingGPSTkUnderWindows
+Step-by-step procedure with pictures on building the GPSTk under Visual Studio 
+2012 can be found at gpstk.org:
+
+    http://www.gpstk.org/BuildingGPSTkUnderWindows
+
