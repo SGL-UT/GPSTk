@@ -37,6 +37,7 @@ case `uname` in
     *)
         num_cores=1
 esac
+num_threads=$num_cores
 
 #----------------------------------------
 # usage() function to use when help is needed:
@@ -46,7 +47,7 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-bcdehtuvz]
+usage:     $0 [-bcdehtuvz] [-j <num_threads>]
 
 purpose:   This script automates and documents how to build and install GPSTk with CMake.
 
@@ -67,6 +68,8 @@ OPTIONS:
                                * generate graphviz dependency graph (.DOT and .PDF files)
 
    -e     build_ext        builds /ext library in addition to the /core library
+
+   -j     num_threads      For use with make, i.e. "make -j $num_threads"
 
    -h     help             Show this message
 
@@ -93,7 +96,7 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "bcdehtuvz" option; do
+while getopts "bcdehj:tuvz" option; do
     case $option in
         
         h) usage;;
@@ -101,6 +104,7 @@ while getopts "bcdehtuvz" option; do
         c) clean=1;;
         d) build_docs=1;;
         e) build_ext=1;;
+        j) num_threads=${OPTARG};;
         t) test_switch=1;;
         u) user_install=1;;
         v) verbosity=1;;
@@ -153,6 +157,7 @@ printf "$0: user_install    = $(ptof $user_install)\n"
 printf "$0: clean           = $(ptof $clean)\n"
 printf "$0: build_root      = $build_root\n"
 printf "$0: num_cores       = $num_cores\n"
+printf "$0: num_threads     = $num_threads\n"
 printf "$0: build_ext       = $(ptof $build_ext)\n"
 printf "$0: test_switch     = $(ptof $test_switch)\n"
 printf "$0: verbosity       = $(ptof $verbosity)\n"
@@ -283,7 +288,7 @@ echo ""
 
 cd $build_root
 # make install -j $num_cores
-make -j $num_cores
+make -j $num_threads
 
 #----------------------------------------
 # Test: Hooks for test framework
@@ -414,7 +419,7 @@ if [ $build_only ]; then
     echo ""
 else
     cd $build_root
-    make install -j $num_cores
+    make install -j $num_threads
 fi
 
 #----------------------------------------
