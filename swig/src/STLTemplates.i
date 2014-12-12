@@ -1,3 +1,4 @@
+
 //////////////////////////////////////////////////
 //            std::vector wraps
 //////////////////////////////////////////////////
@@ -50,6 +51,28 @@
 // AKA ObsEpochMap
 %template(ObsEpochMap) std::map<gpstk::CommonTime, gpstk::ObsEpoch>;
 
+// These are needed to properly interpret an ObsID instance
+%template(map_ObservationType_string) std::map<enum gpstk::ObsID::ObservationType, std::string>;
+%template(map_CarrierBand_string) std::map<enum gpstk::ObsID::CarrierBand, std::string>;
+%template(map_TrackingCode_string) std::map<enum gpstk::ObsID::TrackingCode, std::string>;
+%template(map_char_ObservationType) std::map<char, enum gpstk::ObsID::ObservationType>;
+%template(map_char_CarrierBand) std::map<char, enum gpstk::ObsID::CarrierBand>;
+%template(map_char_TrackingCode) std::map<char, enum gpstk::ObsID::TrackingCode>;
+%template(map_ObservationType_char) std::map<enum gpstk::ObsID::ObservationType,char>;
+%template(map_CarrierBand_char) std::map<enum gpstk::ObsID::CarrierBand,char>;
+%template(map_TrackingCode_char) std::map<enum gpstk::ObsID::TrackingCode,char>;
+
+// ValidType wraps
+%template(validtype_float) gpstk::ValidType<float>;
+%template(validtype_double) gpstk::ValidType<double>;
+%template(validtype_char) gpstk::ValidType<char>;
+%template(validtype_short) gpstk::ValidType<short>;
+%template(validtype_int) gpstk::ValidType<int>;
+%template(validtype_long) gpstk::ValidType<long>;
+%template(validtype_uchar) gpstk::ValidType<unsigned char>;
+%template(validtype_ushort) gpstk::ValidType<unsigned short>;
+%template(validtype_uint) gpstk::ValidType<unsigned int>;
+%template(validtype_ulong) gpstk::ValidType<unsigned long>;
 
 //////////////////////////////////////////////////
 //             std::set wraps

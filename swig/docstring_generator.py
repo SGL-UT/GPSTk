@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 
-
 """GPSTk python-swig binding documentation generator.
 
-This reads every file in the gpstk/dev/doc/xml (where doxygen places its xml)
-and uses doxy2swig.py to create docstring output for a SWIG .i file. These
-files are placed in gpstk/python/bindings/swig/doc. doc.i is auto-generated
-to include all of these new files in the doc/ folder.
+This reads every file in the $gpstk_root/doc/xml (where doxygen places its xml)
+Then uses $gpstk_root/swig/doxy2swig.py to create docstring output for a SWIG .i file.
+These .i files are placed in $gpstk_root/swig/doc.
+Then doc.i is auto-generated to include all of these new files in the doc/ folder.
 
 Usage:
-  python doc.py
+  $ cd $gpstk_root/swig
+  $ python docstring_generator.py
 """
 
 
@@ -48,27 +48,33 @@ def clean_errors(file):
     f.write(data)
     f.close()
 
-
 def generate_docs():
-    # yes, it's a magic number below.
-    # gpstk_folder should be the path ending with 'gpstk/'
-    # the number is the number of chars to cut off from this file's path
-    gpstk_folder = os.path.realpath(__file__)[:-43]
-    xml_files = glob.glob(gpstk_folder + 'dev/doc/xml/*.xml')
-    num_files = len(xml_files)
+    # This present script should live in '$gpstk_root/swig', 
+    # so to get the $gpstk_root, just strip off the file name 
+    # and use split() to pop off the 'swig' directory from the
+    # remaining file path.
+    script_fullpath_name = os.path.realpath(__file__)
+    path_gpstk_swig = os.path.dirname( script_fullpath_name )
+    (gpstk_root, swig_dir) = os.path.split( path_gpstk_swig )
+    
+    # Build a list of all the XML files that dOxygen output previously
+    xml_glob_pattern = gpstk_root + os.path.sep + 'doc' + os.path.sep + 'xml' + os.path.sep + '*.xml'
+    xml_files = glob.glob( xml_glob_pattern )
+    num_files = len( xml_files )
     if num_files == 0:
         print 'WARNING: No doxygen-xml files found, docstrings cannot be generated.'
 
-    gpstk_swig = ''
-    gpstk_py_doc = gpstk_swig + 'doc/'
-    if not os.path.exists(gpstk_py_doc):
-        os.makedirs(gpstk_py_doc)
+    # create directories for swig doc files
+    path_gpstk_swig_doc = path_gpstk_swig + os.path.sep + 'doc'
+    if not os.path.exists( path_gpstk_swig_doc ):
+        os.makedirs( path_gpstk_swig_doc )
 
+    # for each doxygen xml file, create a converted swig .i file for associated docstrings
     for f_xml in xml_files:
-        f = f_xml[:-4]  # remove the .xml ending
-        name = file_name(f)
-        output_file = gpstk_py_doc + name + '.i'
-        if ('index' not in name):  # don't try to use index.xml
+        (f, xml_ext) = os.path.splitext( f_xml ) # remove the .xml ending
+        name_root = file_name(f)
+        output_file = path_gpstk_swig_doc + os.path.sep + name_root + '.i'
+        if ('index' not in name_root):  # don't try to use index.xml
             try:
                 doxy2swig.convert(f_xml, output_file, False, False)
                 clean_errors(output_file)
@@ -77,10 +83,11 @@ def generate_docs():
                 print 'ERROR:', f_xml, 'can not be parsed'
                 print '\t', e
 
-    out_file = open(gpstk_py_doc + 'doc.i', 'w')
+    # Add the includes for each converted xml file.i to the doc.i file
+    out_file = open(path_gpstk_swig_doc + os.path.sep + 'doc.i', 'w')
     out_file.write('# This is an AUTO-GENERATED file by doc.py.\n')
     out_file.write('# Do not modify it unless you know what you are doing.\n')
-    doc_files = glob.glob(gpstk_py_doc + '*.i')
+    doc_files = glob.glob(path_gpstk_swig_doc + os.path.sep + '*.i')
     for f_i in doc_files:
         if 'doc.i' not in f_i:
             out_file.write('%include ' + f_i + '\n')
