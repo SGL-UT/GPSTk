@@ -75,13 +75,6 @@ elseif (WIN32) #Windows Compiler Options
   endif (MSVC11)
 endif(UNIX)
 
-#----------------------------------------
-# Test Switch
-#----------------------------------------
-
-if (TEST_SWITCH)
-  enable_testing()
-endif()
 
 #----------------------------------------
 # Set Build path options
@@ -202,6 +195,23 @@ if (CORE_ONLY)
   install (FILES ${CORE_HDRS} ${CORE_HDRS2} DESTINATION include )
 else ()
   install (FILES ${CORE_HDRS} ${CORE_HDRS2} ${EXT_HDRS} ${EXT_HDRS2} DESTINATION include )
+endif ()
+
+#----------------------------------------
+# Test Switch
+#----------------------------------------
+
+if (TEST_SWITCH)
+  enable_testing()
+  set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
+  find_package( CppUnit )
+  if (CPPUNIT_FOUND)
+    include_directories( ${CPPUNIT_INCLUDE_DIRS} )
+    link_directories( ${CPPUNIT_LIBRARIES} )
+    target_link_libraries(gpstk cppunit)
+  else ()
+    message(STATUS "CppUnit not installed.  Please install and try again." )
+  endif ()
 endif ()
 
 #----------------------------------------

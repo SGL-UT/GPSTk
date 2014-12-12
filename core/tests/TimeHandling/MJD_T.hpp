@@ -34,18 +34,18 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#ifndef XMJD_HPP
+#define XMJD_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "MJD.hpp"
 
 using namespace std;
 
-class xANSITime: public CPPUNIT_NS :: TestFixture
+class xMJD: public CPPUNIT_NS :: TestFixture
 {
-	CPPUNIT_TEST_SUITE (xANSITime);
+	CPPUNIT_TEST_SUITE (xMJD);
 	CPPUNIT_TEST (setFromInfoTest);
 	CPPUNIT_TEST (operatorTest);
 	CPPUNIT_TEST (resetTest);
@@ -63,7 +63,6 @@ class xANSITime: public CPPUNIT_NS :: TestFixture
 		void timeSystemTest (void);
 		void printfTest (void);
 	private:
-
 };
 
 #endif

@@ -34,18 +34,18 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#ifndef XYDSTIME_HPP
+#define XYDSTIME_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "YDSTime.hpp"
 
 using namespace std;
 
-class xANSITime: public CPPUNIT_NS :: TestFixture
+class xYDSTime: public CPPUNIT_NS :: TestFixture
 {
-	CPPUNIT_TEST_SUITE (xANSITime);
+	CPPUNIT_TEST_SUITE (xYDSTime);
 	CPPUNIT_TEST (setFromInfoTest);
 	CPPUNIT_TEST (operatorTest);
 	CPPUNIT_TEST (resetTest);

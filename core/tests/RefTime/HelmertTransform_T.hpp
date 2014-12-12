@@ -34,35 +34,47 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#ifndef X_HELMERT_TRANSFORM_HPP
+#define X_HELMERT_TRANSFORM_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "HelmertTransform.hpp"
+#include "ReferenceFrame.hpp"
+#include "Position.hpp"
+#include "Xv.hpp"
+#include "Xvt.hpp"
+#include "Triple.hpp"
+#include "Vector.hpp"
 
 using namespace std;
 
-class xANSITime: public CPPUNIT_NS :: TestFixture
+class xHelmertTransform : public CPPUNIT_NS :: TestFixture
 {
-	CPPUNIT_TEST_SUITE (xANSITime);
-	CPPUNIT_TEST (setFromInfoTest);
-	CPPUNIT_TEST (operatorTest);
-	CPPUNIT_TEST (resetTest);
-	CPPUNIT_TEST (timeSystemTest);
-	CPPUNIT_TEST (printfTest);
-	CPPUNIT_TEST_SUITE_END ();
+   CPPUNIT_TEST_SUITE (xHelmertTransform);
+   CPPUNIT_TEST (positionTransformTest);
+   CPPUNIT_TEST (xtTransformTest);
+   CPPUNIT_TEST (xvtTransformTest);
+   CPPUNIT_TEST (triplePosTransformTest);
+   CPPUNIT_TEST (tripleVelTransformTest);
+   CPPUNIT_TEST (vectorPosTransformTest);
+   CPPUNIT_TEST (vectorVelTransformTest);
+   CPPUNIT_TEST_SUITE_END ();
 
-	public:
-		void setUp (void);
+   public:
+   void setUp();
+   void tearDown() {   };
 
-	protected:
-		void operatorTest (void);
-		void setFromInfoTest (void);
-        void resetTest (void);
-		void timeSystemTest (void);
-		void printfTest (void);
-	private:
+   protected:
+   void positionTransformTest();
+   void xtTransformTest();
+   void xvtTransformTest();
+   void triplePosTransformTest();
+   void tripleVelTransformTest();
+   void vectorPosTransformTest();
+   void vectorVelTransformTest();
+
+   private:
 
 };
 

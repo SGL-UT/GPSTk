@@ -3,4 +3,4 @@
 add_executable(vecsol vecsol.cpp)
 target_link_libraries(vecsol gpstk)
 install (TARGETS vecsol DESTINATION bin)
-add_test(vecsolTest vecsol)
+#add_test(vecsolTest vecsol)

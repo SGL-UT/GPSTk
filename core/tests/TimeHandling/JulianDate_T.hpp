@@ -34,21 +34,21 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#ifndef XJULIANDATE_HPP
+#define XJULIANDATE_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "JulianDate.hpp"
 
 using namespace std;
 
-class xANSITime: public CPPUNIT_NS :: TestFixture
+class xJulianDate: public CPPUNIT_NS :: TestFixture
 {
-	CPPUNIT_TEST_SUITE (xANSITime);
+	CPPUNIT_TEST_SUITE (xJulianDate);
 	CPPUNIT_TEST (setFromInfoTest);
 	CPPUNIT_TEST (operatorTest);
-	CPPUNIT_TEST (resetTest);
+    CPPUNIT_TEST (resetTest);
 	CPPUNIT_TEST (timeSystemTest);
 	CPPUNIT_TEST (printfTest);
 	CPPUNIT_TEST_SUITE_END ();
