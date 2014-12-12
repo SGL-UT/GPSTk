@@ -39,7 +39,7 @@
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "ANSITime.hpp"
 
 using namespace std;
 

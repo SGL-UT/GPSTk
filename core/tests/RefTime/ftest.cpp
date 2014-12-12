@@ -34,36 +34,31 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#include <cppunit/CompilerOutputter.h>
+#include <cppunit/extensions/TestFactoryRegistry.h>
+#include <cppunit/TestResult.h>
+#include <cppunit/TestResultCollector.h>
+#include <cppunit/TestRunner.h>
 
-#include <cppunit/TestFixture.h>
-#include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
-
-using namespace std;
-
-class xANSITime: public CPPUNIT_NS :: TestFixture
+int main (int argc, char* argv[])
 {
-	CPPUNIT_TEST_SUITE (xANSITime);
-	CPPUNIT_TEST (setFromInfoTest);
-	CPPUNIT_TEST (operatorTest);
-	CPPUNIT_TEST (resetTest);
-	CPPUNIT_TEST (timeSystemTest);
-	CPPUNIT_TEST (printfTest);
-	CPPUNIT_TEST_SUITE_END ();
 
-	public:
-		void setUp (void);
+   // informs test-listener about testresults
+   CPPUNIT_NS :: TestResult testresult;
 
-	protected:
-		void operatorTest (void);
-		void setFromInfoTest (void);
-        void resetTest (void);
-		void timeSystemTest (void);
-		void printfTest (void);
-	private:
+   // register listener for collecting the test-results
+   CPPUNIT_NS :: TestResultCollector collectedresults;
+   testresult.addListener (&collectedresults);
 
-};
+   // insert test-suite at test-runner by registry
+   CPPUNIT_NS :: TestRunner testrunner;
+   testrunner.addTest (CPPUNIT_NS :: TestFactoryRegistry :: getRegistry ().makeTest ());
+   testrunner.run (testresult);
 
-#endif
+   // output results in compiler-format
+   CPPUNIT_NS :: CompilerOutputter compileroutputter (&collectedresults, std::cerr);
+   compileroutputter.write ();
+
+   // return 0 if tests were successful
+   return collectedresults.wasSuccessful () ? 0 : 1;
+}

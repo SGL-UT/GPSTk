@@ -34,22 +34,22 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#ifndef XCIVILTIME_HPP
+#define XCIVILTIME_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "CivilTime.hpp"
 
 using namespace std;
 
-class xANSITime: public CPPUNIT_NS :: TestFixture
+class xCivilTime: public CPPUNIT_NS :: TestFixture
 {
-	CPPUNIT_TEST_SUITE (xANSITime);
+	CPPUNIT_TEST_SUITE (xCivilTime);
 	CPPUNIT_TEST (setFromInfoTest);
 	CPPUNIT_TEST (operatorTest);
-	CPPUNIT_TEST (resetTest);
-	CPPUNIT_TEST (timeSystemTest);
+    CPPUNIT_TEST (resetTest);
+    CPPUNIT_TEST (timeSystemTest);
 	CPPUNIT_TEST (printfTest);
 	CPPUNIT_TEST_SUITE_END ();
 

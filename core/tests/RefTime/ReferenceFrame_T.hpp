@@ -34,36 +34,42 @@
 //
 //=============================================================================
 
-#ifndef XANSITIME_HPP
-#define XANSITIME_HPP
+#ifndef X_REFERENCE_FRAME_HPP
+#define X_REFERENCE_FRAME_HPP
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
-#include "../../core/lib/TimeHandling/ANSITime.hpp"
+#include "ReferenceFrame.hpp"
+namespace gpstk{
+   class xReferenceFrame : public CPPUNIT_NS :: TestFixture
+   {
+      CPPUNIT_TEST_SUITE (xReferenceFrame);
+      CPPUNIT_TEST (getFrameTest);
+      CPPUNIT_TEST (asStringTest);
+      CPPUNIT_TEST (equalityTest);
+      CPPUNIT_TEST (inequalityTest);
+      CPPUNIT_TEST (greaterThanTest);
+      CPPUNIT_TEST (greaterThanOrEqualToTest);
+      CPPUNIT_TEST (lessThanTest);
+      CPPUNIT_TEST (lesserThanOrEqualToTest);
+      CPPUNIT_TEST (setReferenceFrameTest);
+      CPPUNIT_TEST_SUITE_END ();
 
-using namespace std;
+      public:
+      void setUp(void) {   };
+      void tearDown(void) {   };
 
-class xANSITime: public CPPUNIT_NS :: TestFixture
-{
-	CPPUNIT_TEST_SUITE (xANSITime);
-	CPPUNIT_TEST (setFromInfoTest);
-	CPPUNIT_TEST (operatorTest);
-	CPPUNIT_TEST (resetTest);
-	CPPUNIT_TEST (timeSystemTest);
-	CPPUNIT_TEST (printfTest);
-	CPPUNIT_TEST_SUITE_END ();
+      protected:
+      void getFrameTest();
+      void asStringTest();
+      void equalityTest();
+      void inequalityTest();
+      void greaterThanTest();
+      void lessThanTest();
+      void greaterThanOrEqualToTest();
+      void lesserThanOrEqualToTest();
+      void setReferenceFrameTest();
 
-	public:
-		void setUp (void);
-
-	protected:
-		void operatorTest (void);
-		void setFromInfoTest (void);
-        void resetTest (void);
-		void timeSystemTest (void);
-		void printfTest (void);
-	private:
-
-};
-
+   };
+}
 #endif
