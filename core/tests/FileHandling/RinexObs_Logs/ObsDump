@@ -1,0 +1,45 @@
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.10,  File type Observation,  System S (Geosync).
+Prgm: row,  Run: 04/11/2006 23:59:18,  By: Dataflow Processing
+Marker name: 85408.
+Obs'r : Monitor Station,  Agency: NGA
+Rec#: 1,  Type: ZY12,  Vers: 
+Antenna # : 85408,  Type : AshTech Geodetic 3
+Position (XYZ,m) : (-740289.8540, -5457071.7398, 3207245.6036).
+Antenna offset (ENU,m) : (0.0000, 0.0000, 0.0000).
+Wavelength factors (default) L1:1, L2: 1.
+Wavelength factors (extra)   L1:1, L2: 1, for Sats GPS 1 GPS 5 GPS 11 GPS 14 GPS 15 GPS 18 GPS 22
+Wavelength factors (extra)   L1:1, L2: 1, for Sats GPS 25 GPS 30
+Observation types (10) :
+ Type #0 = L1 L1 Carrier Phase (L1 cycles).
+ Type #1 = L2 L2 Carrier Phase (L2 cycles).
+ Type #2 = C1 C/A-code pseudorange (meters).
+ Type #3 = P1 Pcode L1 pseudorange (meters).
+ Type #4 = P2 Pcode L2 pseudorange (meters).
+ Type #5 = D1 Doppler Frequency L1 (Hz).
+ Type #6 = D2 Doppler Frequency L2 (Hz).
+ Type #7 = S1 Signal-to-Noise L1 (dB-Hz).
+ Type #8 = S2 Signal-to-Noise L2 (dB-Hz).
+ Type #9 = C2 L2C-code pseudorange (meters).
+Time of first obs 2006/04/12 00:00:00.0000000 GPS
+(This header is VALID 2.11 Rinex.)
+---------------------------------- OPTIONAL ----------------------------------
+Marker number : 85408
+Interval =  30.000
+Time of last obs 2006/04/12 00:02:30.0000000 GPS
+Leap seconds: 0
+Clock offset record is present and offsets are NOT applied.
+Number of Satellites with data : 9
+SAT       L1     L2     C1     P1     P2     D1     D2     S1     S2     C2
+ G01       6      6      6      6      6      6      6      6      6      6
+ G05       6      6      6      6      6      6      6      6      6      6
+ G11       6      6      6      6      6      6      6      6      6      6
+ G14       6      6      6      6      6      6      6      6      6      6
+ G15       6      6      6      6      6      6      6      6      6      6
+ G18       6      6      6      6      6      6      6      6      6      6
+ G22       6      6      6      6      6      6      6      6      6      6
+ G25       6      6      6      6      6      6      6      6      6      6
+ G30       6      6      6      6      6      6      6      6      6      6
+Comments (1) :
+THIS IS AN EXAMPLE RINEX OBS FILE
+-------------------------------- END OF HEADER -------------------------------

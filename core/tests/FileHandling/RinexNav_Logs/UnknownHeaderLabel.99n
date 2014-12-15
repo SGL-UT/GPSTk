@@ -1,0 +1,9 @@
+     2.10           N : GPS NAV DATA                        RINEX VERSION / TYPE
+XXRINEXN V3         AIUB                1999-09-02 19:22:36 PGM / RUN BY / DATE
+EXAMPLE OF VERSION 2.10 FORMAT                              COMMENT
+     .1676D-07   .2235D-07  -.1192D-06  -.1192D-06          ION ALPHA
+     .1208D+06   .1310D+06  -.1310D+06  -.1966D+06          ION BETA
+     .133179128170D-06 .107469588780D-12    552960     1025 DELTA-UTC: A0,A1,T,W
+    13                                                      LEAP SECONDS
+                                                            UNKNOWN LABEL
+                                                            END OF HEADER

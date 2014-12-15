@@ -18,7 +18,7 @@
 gpstk_root=$PWD
 gpstk_install=$HOME/.local/gpstk             # default to a user install path
 python_install=$(python -m site --user-site) # e.g., $HOME/.local/lib/python2.7/site-packages
-python_root="$gpstk_root/swig"
+python_root=$gpstk_root/swig
 build_root=$gpstk_root/build
 
 #----------------------------------------

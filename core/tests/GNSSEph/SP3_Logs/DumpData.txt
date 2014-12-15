@@ -1,0 +1,99 @@
+Dump SP3EphemerisStore:
+ Reject bad positions.
+ Reject bad clocks.
+ Do not reject predicted positions.
+ Do not reject predicted clocks.
+Dump of FileStore
+ File  1: igs09000.sp3 (header for this file follows)
+SP3 Header: version SP3a containing positions only.
+ Time tag : 1997/04/06  0:00:00
+ Timespacing is 900 sec, and the number of epochs is 96
+ Data used as input : ORBIT
+ Coordinate system : ITR94
+ Orbit estimate type : HLM
+ Agency :  IGS
+ List of satellite PRN/accuracy (25 total) :
+ G01/5 G02/5 G03/5 G04/5 G05/5 G06/5 G07/5 G09/5
+ G10/5 G14/4 G15/5 G16/5 G17/5 G18/5 G19/5 G21/5
+ G22/5 G23/5 G24/5 G25/5 G26/5 G27/5 G29/4 G30/5
+ G31/5
+ Comments:
+    FINAL ORBIT COMBINATION FROM WEIGHTED AVERAGE OF:
+    cod emr esa gfz jpl ngs sio                              
+    REFERENCED TO GPS CLOCK AND TO WEIGHTED MEAN POLE:       
+                                                             
+End of SP3 header
+End dump of FileStore
+Dump of PositionSatStore(1):
+ This store does not contain acceleration data.
+ Interpolation is Lagrange, of order 10 (5 points on each side)
+ Dump of TabularSatStore(1):
+  Data stored for 25 satellites
+  Time span of data:  FROM  900 0      0.000 1997/04/06  0:00:00 Any TO  900 0  85500.000 1997/04/06 23:45:00 Any
+  This store contains: position, not velocity, not clock bias, and not clock drift data.
+  Checking for data gaps? no
+  Checking data interval? no
+   Sat GPS 1 : 96 records.
+   Sat GPS 2 : 96 records.
+   Sat GPS 3 : 96 records.
+   Sat GPS 4 : 96 records.
+   Sat GPS 5 : 96 records.
+   Sat GPS 6 : 96 records.
+   Sat GPS 7 : 96 records.
+   Sat GPS 9 : 96 records.
+   Sat GPS 10 : 96 records.
+   Sat GPS 14 : 96 records.
+   Sat GPS 15 : 96 records.
+   Sat GPS 16 : 96 records.
+   Sat GPS 17 : 96 records.
+   Sat GPS 18 : 96 records.
+   Sat GPS 19 : 96 records.
+   Sat GPS 21 : 96 records.
+   Sat GPS 22 : 96 records.
+   Sat GPS 23 : 96 records.
+   Sat GPS 24 : 96 records.
+   Sat GPS 25 : 96 records.
+   Sat GPS 26 : 96 records.
+   Sat GPS 27 : 96 records.
+   Sat GPS 29 : 96 records.
+   Sat GPS 30 : 96 records.
+   Sat GPS 31 : 96 records.
+ End dump of TabularSatStore.
+End dump of PositionSatStore.
+Dump of ClockSatStore(1):
+ This store  does not contain clock acceleration data.
+ Interpolation is Lagrange, of order 10 (5 points on each side)
+ Dump of TabularSatStore(1):
+  Data stored for 25 satellites
+  Time span of data:  FROM  900 0      0.000 1997/04/06  0:00:00 Any TO  900 0  85500.000 1997/04/06 23:45:00 Any
+  This store contains: not position, not velocity, clock bias, and not clock drift data.
+  Checking for data gaps? no
+  Checking data interval? no
+   Sat GPS 1 : 96 records.
+   Sat GPS 2 : 96 records.
+   Sat GPS 3 : 96 records.
+   Sat GPS 4 : 96 records.
+   Sat GPS 5 : 96 records.
+   Sat GPS 6 : 96 records.
+   Sat GPS 7 : 96 records.
+   Sat GPS 9 : 96 records.
+   Sat GPS 10 : 96 records.
+   Sat GPS 14 : 96 records.
+   Sat GPS 15 : 96 records.
+   Sat GPS 16 : 96 records.
+   Sat GPS 17 : 96 records.
+   Sat GPS 18 : 96 records.
+   Sat GPS 19 : 96 records.
+   Sat GPS 21 : 96 records.
+   Sat GPS 22 : 96 records.
+   Sat GPS 23 : 96 records.
+   Sat GPS 24 : 96 records.
+   Sat GPS 25 : 96 records.
+   Sat GPS 26 : 96 records.
+   Sat GPS 27 : 96 records.
+   Sat GPS 29 : 96 records.
+   Sat GPS 30 : 96 records.
+   Sat GPS 31 : 96 records.
+ End dump of TabularSatStore.
+End dump of ClockSatStore.
+End dump SP3EphemerisStore.

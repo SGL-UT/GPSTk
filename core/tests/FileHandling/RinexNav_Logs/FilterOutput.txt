@@ -1,0 +1,9 @@
+     2.100          NAVIGATION                              RINEX VERSION / TYPE
+XXRINEXN V3         AIUB                06/26/2012 20:31:10 PGM / RUN BY / DATE
+THIS IS A DIFFERENT COMMENT                                 COMMENT
+THIS IS ONE COMMENT                                         COMMENT
+   .167600D-07 .223500D-07-.119200D-06-.119200D-06          ION ALPHA
+   .120800D+06 .131000D+06-.131000D+06-.196600D+06          ION BETA
+    .1331791281700D-06 .1074695887800D-12   552960     1025 DELTA-UTC: A0,A1,T,W
+    13                                                      LEAP SECONDS
+                                                            END OF HEADER

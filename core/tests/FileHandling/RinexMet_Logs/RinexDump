@@ -1,0 +1,13 @@
+---------------------------------- REQUIRED ----------------------------------
+Rinex Version  2.10,  File type NAVIGATION.
+Prgm: XXRINEXN V3,  Run: 09/02/1999 19:22:36,  By: AIUB
+(This header is VALID 2.11 Rinex.)
+---------------------------------- OPTIONAL ----------------------------------
+Ion alpha: 1.6760e-08 2.2350e-08 -1.1920e-07 -1.1920e-07
+Ion beta: 1.2080e+05 1.3100e+05 -1.3100e+05 -1.9660e+05
+Delta UTC: A0=1.331791281700e-07, A1=1.074695887800e-13, UTC ref = (1025,552960)
+Leap seconds: 13
+Comments (1) :
+THIS IS ONE COMMENT
+-------------------------------- END OF HEADER -------------------------------
+PRN: 13 TOE: 2451424 68400000 0.000000000000000 Unknown TOC: 1025 414000.000 IODE:  133 HOWtime: 410400
