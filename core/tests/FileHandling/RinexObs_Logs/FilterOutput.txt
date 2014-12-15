@@ -1,0 +1,41 @@
+     2.10           Observation         S (Geosync)         RINEX VERSION / TYPE
+row                 Dataflow Processing 20120626 203130 UTC PGM / RUN BY / DATE
+85408                                                       MARKER NAME
+Monitor Station     NGA                                     OBSERVER / AGENCY
+1                   ZY12                                    REC # / TYPE / VERS
+85408               AshTech Geodetic 3                      ANT # / TYPE
+  -740289.8540 -5457071.7398  3207245.6036                  APPROX POSITION XYZ
+        0.0000        0.0000        0.0000                  ANTENNA: DELTA H/E/N
+     1     1                                                WAVELENGTH FACT L1/2
+     1     1     7   G01   G05   G11   G14   G15   G18   G22WAVELENGTH FACT L1/2
+     1     1     2   G25   G30                              WAVELENGTH FACT L1/2
+    10    C1    C2    D1    D2    L1    L2    P1    P2    S1# / TYPES OF OBSERV
+          S2                                                # / TYPES OF OBSERV
+    30.000                                                  INTERVAL
+  2006     4    11     0     0    0.0000000     GPS         TIME OF FIRST OBS
+  2006     4    11     0     2   30.0000000     GPS         TIME OF LAST OBS
+85408                                                       MARKER NUMBER
+     0                                                      RCV CLOCK OFFS APPL
+     0                                                      LEAP SECONDS
+THIS IS A SECOND COMMENT                                    COMMENT
+THIS IS A SINGULAR COMMENT                                  COMMENT
+     9                                                      # OF SATELLITES
+   G01     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G05     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G11     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G14     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G15     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G18     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G22     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G25     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+   G30     6     6     6     6     6     6     6     6     6PRN / # OF OBS
+           6                                                PRN / # OF OBS
+                                                            END OF HEADER

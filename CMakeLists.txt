@@ -85,7 +85,7 @@ if( UNIX )
         set( CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -shared" )
     endif()
 
-elseif( WIN32 ) # Um, what about "WIN64" ?
+elseif( WIN32 )
 
     # Windows platforms will use static libraries, not shared/dynamic
     set( STADYN "STATIC" )

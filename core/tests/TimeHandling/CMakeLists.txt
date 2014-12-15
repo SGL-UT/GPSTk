@@ -1,3 +1,4 @@
+#Tests for TimeHandling Classes
 
 add_executable(ANSITime_T ANSITime_T.cpp ftest.cpp)
 target_link_libraries(ANSITime_T gpstk)
