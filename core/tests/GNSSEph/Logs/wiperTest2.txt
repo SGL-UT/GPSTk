@@ -1,0 +1,6 @@
+Dump of GPSEphemerisStore:
+  BCE map for satellite 1 has 0 entries.
+  BCE map for satellite 15 has 0 entries.
+  BCE map for satellite 32 has 0 entries.
+  End of GPSEphemerisStore data.
+
