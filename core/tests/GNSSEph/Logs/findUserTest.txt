@@ -1,0 +1,9 @@
+Dump of GPSEphemerisStore:
+  BCE map for satellite 1 has 1 entries.
+PRN  1 TOE 1360 223200.000 GPS TOC 223200.000 HOW 216006.000 KEY 1360 216000.000 GPS
+  BCE map for satellite 15 has 1 entries.
+PRN 15 TOE 1360 223200.000 GPS TOC 223200.000 HOW 216006.000 KEY 1360 216000.000 GPS
+  BCE map for satellite 32 has 1 entries.
+PRN 32 TOE 1360 223200.000 GPS TOC 223200.000 HOW 216006.000 KEY 1360 216000.000 GPS
+  End of GPSEphemerisStore data.
+
