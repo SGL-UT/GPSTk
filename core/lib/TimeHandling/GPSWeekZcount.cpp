@@ -178,7 +178,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem.fromString(i->second);
+               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
                break;
 
             default:
