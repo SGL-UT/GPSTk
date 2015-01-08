@@ -1,7 +1,7 @@
 #include "TimeConverters.hpp"
 #include <iostream>
 #include <fstream>
-
+#include <cmath>
 using namespace gpstk;
 using namespace std;
 
@@ -103,19 +103,19 @@ class xTimeConverters
 			convertSODtoTime(-.01,hour,minute,second);
 			if (23 != hour) return 1;
 			if (59 != minute) return 2;
-			if (abs(59.99-second) > eps) return 3;
+			if (fabs(59.99-second) > eps) return 3;
 
 			//Wraps Forwards
 			convertSODtoTime(24*60*60+1.11,hour,minute,second);
 			if (0 != hour) return 4;
 			if (0 != minute) return 5;
-			if (abs(1.11 - second) > eps) return 6;
+			if (fabs(1.11 - second) > eps) return 6;
 
 			//Standard
 			convertSODtoTime(12345.67,hour,minute,second);
 			if (3 != hour) return 7;
 			if (25 != minute) return 8;
-			if (abs(45.67 - second) > eps) return 9;
+			if (fabs(45.67 - second) > eps) return 9;
 
 			return 0;
 		}
@@ -131,13 +131,13 @@ class xTimeConverters
 			minute = 10;
 			second = 30.5;
 			SOD = convertTimeToSOD(hour,minute,second);
-			if (abs(60*60+600+30.5 - SOD) > eps) return 1;
+			if (fabs(60*60+600+30.5 - SOD) > eps) return 1;
 
 			hour = 23;
 			minute = 59;
 			second = 59.99;
 			SOD = convertTimeToSOD(hour,minute,second);
-			if (abs(23*3600+59*60+59.99 - SOD) > eps) return 2;
+			if (fabs(23*3600+59*60+59.99 - SOD) > eps) return 2;
 
 			return 0;
 		}

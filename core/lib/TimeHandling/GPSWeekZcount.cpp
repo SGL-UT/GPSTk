@@ -160,6 +160,9 @@ namespace gpstk
             // based on the character, we know what to do...
          switch( i->first )
          {
+            case 'F':
+               week = asInt( i->second );
+               break;
             case 'w':
                zcount = asInt( i->second) * ZCOUNT_PER_DAY;
                break;
@@ -178,7 +181,7 @@ namespace gpstk
                break;
 
             case 'P':
-               timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+               timeSystem.fromString(i->second);
                break;
 
             default:

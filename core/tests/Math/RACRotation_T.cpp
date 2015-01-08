@@ -190,9 +190,9 @@ class xRACRotation
 			double x = 1.0 + 1.0/sqrt(2.0);
 			double y = (-2.0+sqrt(2.0))/(2.0*sqrt(3.0));
 			double z = (1.0 - sqrt(2.0))/sqrt(3.0);
-		   	if (abs(x - rotatedXYZ[0]) > eps) return 1;
-		   	if (abs(y - rotatedXYZ[1]) > eps) return 2;
-		   	if (abs(z - rotatedXYZ[2]) > eps) return 3;
+		   	if (fabs(x - rotatedXYZ[0]) > eps) return 1;
+		   	if (fabs(y - rotatedXYZ[1]) > eps) return 2;
+		   	if (fabs(z - rotatedXYZ[2]) > eps) return 3;
 
 		   	XYZ = Triple( -1.0, -1.0, -1.0);
 		   	rotatedXYZ = rot4.convertToRAC( XYZ );
@@ -200,9 +200,9 @@ class xRACRotation
 			x = -1.0 - 1.0/sqrt(2.0);
 			y = -(-2.0+sqrt(2.0))/(2.0*sqrt(3.0));
 			z = -(1.0 - sqrt(2.0))/sqrt(3.0);
-		   	if (abs(x - rotatedXYZ[0]) > eps) return 4;
-		   	if (abs(y - rotatedXYZ[1]) > eps) return 5;
-		   	if (abs(z - rotatedXYZ[2]) > eps) return 6;
+		   	if (fabs(x - rotatedXYZ[0]) > eps) return 4;
+		   	if (fabs(y - rotatedXYZ[1]) > eps) return 5;
+		   	if (fabs(z - rotatedXYZ[2]) > eps) return 6;
 
 		   	XYZ = Triple( 0.0, 0.0, -1.0);
 		   	rotatedXYZ = rot4.convertToRAC( XYZ );
@@ -210,9 +210,9 @@ class xRACRotation
 			x = -1.0/sqrt(2.0);
 			y = -sqrt(2.0)/(2.0*sqrt(3.0));
 			z = -1.0/sqrt(3.0);
-		   	if (abs(x - rotatedXYZ[0]) > eps) return 7;
-		   	if (abs(y - rotatedXYZ[1]) > eps) return 8;
-		   	if (abs(z - rotatedXYZ[2]) > eps) return 9;
+		   	if (fabs(x - rotatedXYZ[0]) > eps) return 7;
+		   	if (fabs(y - rotatedXYZ[1]) > eps) return 8;
+		   	if (fabs(z - rotatedXYZ[2]) > eps) return 9;
 
 		   	XYZ = Triple( 0.0, -1.0, 0.0);
 		   	rotatedXYZ = rot4.convertToRAC( XYZ );
@@ -220,9 +220,9 @@ class xRACRotation
 			x = -0.5;
 			y = -1.0/(2.0*sqrt(3.0));
 			z = sqrt(2.0)/sqrt(3.0);
-		   	if (abs(x - rotatedXYZ[0]) > eps) return 10;
-		   	if (abs(y - rotatedXYZ[1]) > eps) return 11;
-		   	if (abs(z - rotatedXYZ[2]) > eps) return 12;
+		   	if (fabs(x - rotatedXYZ[0]) > eps) return 10;
+		   	if (fabs(y - rotatedXYZ[1]) > eps) return 11;
+		   	if (fabs(z - rotatedXYZ[2]) > eps) return 12;
 			return 0;
 		}
 

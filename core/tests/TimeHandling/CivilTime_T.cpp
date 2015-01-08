@@ -14,30 +14,29 @@ class xCivilTime
 	double eps;
 	public:
 
-	//setFromInfoTest is having issues with the Solaris compiler. Commenting it out for now.	
-	/*
 	// Test will check if CivilTime variable can be set from a map.
 	int setFromInfoTest (void)
 	{
 		//Create several objects for testing
-		gpstk::CivilTime setFromInfo1;
-		gpstk::CivilTime setFromInfo2;
-		gpstk::CivilTime setFromInfo3;
-		gpstk::CivilTime setFromInfo4;
-		gpstk::CivilTime setFromInfo5;
+		CivilTime setFromInfo1;
+		CivilTime setFromInfo2;
+		CivilTime setFromInfo3;
+		CivilTime setFromInfo4;
+		CivilTime setFromInfo5;
 
 		//Set several values to set the objects
-		gpstk::TimeTag::IdToValue Id;
+		TimeTag::IdToValue Id;
 		Id.insert(make_pair('b',"Dec"));
 		Id.insert(make_pair('d',"31"));
 		Id.insert(make_pair('Y',"2008"));
 		Id.insert(make_pair('H',"12"));
 		Id.insert(make_pair('M',"00"));
 		Id.insert(make_pair('S',"00"));
-		Id.insert(make_pair('P',"02"));
+		Id.insert(make_pair('P',"GPS"));
 
 		//Can a CivilTime object be set with b,d,Y,H,M,S,P options?
 		if (!(setFromInfo1.setFromInfo(Id))) return 1;
+
 		//Is the set object what is expected?
     		CivilTime Check(2008,12,31,12,0,0,TimeSystem::GPS);
     		if (setFromInfo1 != Check) return 2; 
@@ -49,60 +48,44 @@ class xCivilTime
 
 		//Can a CivilTime object be set with d,m,y,H,M,S,P options?
 		if (!(setFromInfo2.setFromInfo(Id))) return 2;
-
+    		CivilTime Check2(2006,12,31,12,0,0,TimeSystem::GPS);
+    		if (setFromInfo2 != Check2) return 3; 
 		Id.erase('y');
 		Id.insert(make_pair('y',"006"));
 
 		//Can a CivilTime object be set with a 3 digit year?
-		if (!(setFromInfo3.setFromInfo(Id))) return 3;
-
+		// Answer should be no. 'y' option is for 2 digit years.
+		if (!(setFromInfo3.setFromInfo(Id))) return 4;
+    		if (setFromInfo3 == Check2) return 5; 
 		//Can a CivilTime object be set without a year?
 		Id.erase('y');
-		if (!(setFromInfo4.setFromInfo(Id))) return 4;
+		if (!(setFromInfo4.setFromInfo(Id))) return 6;
 		Id.erase('m');
 		Id.insert(make_pair('b',"AAA"));
 		//Can a CivilTime object be set with an improper month?
-		if (setFromInfo5.setFromInfo(Id)) return 5;
+		if (setFromInfo5.setFromInfo(Id)) return 7;
 
-		cout << setFromInfo1 << endl;
-		cout << setFromInfo2 << endl;
-		cout << setFromInfo3 << endl;
-		cout << setFromInfo4 << endl;
-		cout << setFromInfo5 << endl;
-
-		//CommonTime time;
-    		//time = Check.convertToCommonTime();
-    		//std::cout << Check.printf("%02P") << std::endl;
-    		//std::cout << Check.printf("%04Y %02m %02d %02H %02M") << std::endl;
-    		//std::cout << ((CivilTime)time).printf("%04Y %02m %02d %02H %02M")<< std::endl;
-		//  std::cout << ((YDSTime)(time)).printf("%10Y")<< std::endl;
-		//  std::cout << ((GPSWeekSecond)(time)).printf("%02F")<< std::endl;
-
-		//  GPSWeekSecond time2;
-		//  std::cout << time2.printf("%02w") << std::endl;
-		//  time = time2.convertToCommonTime();
-		//  std::cout << ((GPSWeekSecond)(time)).printf("%02F")<< std::endl;
 		return 0;
 	}
-	*/
+
 	/* Test will check if the ways to initialize and set an CivilTime object.
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		gpstk::CivilTime Zero; //Use default constructor
+		CivilTime Zero; //Use default constructor
 
-		gpstk::CivilTime Aug21(2008,8,21,13,30,15.); //Reference time
+		CivilTime Aug21(2008,8,21,13,30,15.); //Reference time
 		// Series of conditions less than Aug21 above
-		gpstk::CivilTime LessThanYear(2005,8,21,13,30,15.);
-		gpstk::CivilTime LessThanMonth(2008,7,21,13,30,15.);
-		gpstk::CivilTime LessThanDay(2008,8,20,13,30,15.);
-		gpstk::CivilTime LessThanHour(2008,8,21,12,30,15.);
-		gpstk::CivilTime LessThanMinute(2008,8,21,13,20,15.);
-		gpstk::CivilTime LessThanSecond(2008,8,21,13,30,0.);
+		CivilTime LessThanYear(2005,8,21,13,30,15.);
+		CivilTime LessThanMonth(2008,7,21,13,30,15.);
+		CivilTime LessThanDay(2008,8,20,13,30,15.);
+		CivilTime LessThanHour(2008,8,21,12,30,15.);
+		CivilTime LessThanMinute(2008,8,21,13,20,15.);
+		CivilTime LessThanSecond(2008,8,21,13,30,0.);
 
-		gpstk::CivilTime Aug21Copy(Aug21); //Use copy constructor
+		CivilTime Aug21Copy(Aug21); //Use copy constructor
 
-		gpstk::CivilTime Aug21Copy2 = Aug21Copy; //Use the = set operator.
+		CivilTime Aug21Copy2 = Aug21Copy; //Use the = set operator.
 		Aug21Copy2 = Aug21Copy;
 		//Equality Assertion
 		if (!(Aug21 == Aug21Copy)) return 1;
@@ -260,12 +243,11 @@ int main() //Main function to initialize and run all tests above
 	checkResult(check, errorCounter);
 	check = -1;
 
-	/* Commented out due to issues with Solaris compiler
 	check = testClass.setFromInfoTest();
         std::cout << "setFromInfoTest Result is: ";
 	checkResult(check, errorCounter);
 	check = -1;
-	*/
+
 	check = testClass.resetTest();
         std::cout << "resetTest Result is: ";
 	checkResult(check, errorCounter);

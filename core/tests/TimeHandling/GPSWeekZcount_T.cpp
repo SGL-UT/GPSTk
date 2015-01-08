@@ -11,30 +11,36 @@ class xGPSWeekZcount
 	public:
 		xGPSWeekZcount(){eps = 1e-11;}// Default Constructor, set the precision value
 		~xGPSWeekZcount() {} // Default Desructor
-	// Test is not currently compiling with Solaris compilers. Leaving it commented for now.
+
 
 	/* Test will check if GPSWeekZcount variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
-	/*int setFromInfoTest (void)
+	int setFromInfoTest (void)
 	{
 		GPSWeekZcount setFromInfo1;
 		GPSWeekZcount setFromInfo2;
 		GPSWeekZcount setFromInfo3;
 	
-		IdToValue Id;
+		TimeTag::IdToValue Id;
 		Id.insert(make_pair('F',"1300"));
 		Id.insert(make_pair('z',"13500"));
-		if(!setFromInfo1.setFromInfo(Id));
+		Id.insert(make_pair('P',"GPS"));
+		if(!setFromInfo1.setFromInfo(Id)) return 1;
+		GPSWeekZcount Compare(1300,13500.,TimeSystem(2));
+		if (Compare != setFromInfo1) return 2;
+
 		Id.erase('z');
 		Id.insert(make_pair('w',"3"));
-		if (!setFromInfo2.setFromInfo(Id));
+		if (!setFromInfo2.setFromInfo(Id)) return 3;
+		GPSWeekZcount Compare2(1300,3*57600L,TimeSystem(2));
+		if (Compare2 != setFromInfo2) return 4;
+
 		Id.erase('F');
-		if (!setFromInfo3.setFromInfo(Id));
-		ofstream out("Logs/printfOutput");
-	
-		out << setFromInfo1 << endl;
-		out << setFromInfo2 << endl;
-	}*/
+		if (!setFromInfo3.setFromInfo(Id)) return 5;
+		GPSWeekZcount Compare3(0,3*57600L,TimeSystem(2));
+		if (Compare3 != setFromInfo3) return 6;
+		return 0;
+	}
 
 	/* Test will check if the ways to initialize and set an GPSWeekZcount object.
 	   Test also tests whether the comparison operators and isValid method function. */
@@ -143,7 +149,7 @@ class xGPSWeekZcount
 	{
 
   		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));
-  		GPSWeekZcount UTC1(1300,13500.,TimeSystem(5));
+  		GPSWeekZcount UTC1(1300,13500.,TimeSystem(7));
 
   		if (GPS1.printf("%04F %05z %02P") != (std::string)"1300 13500 GPS") return 1;
   		if (UTC1.printf("%04F %05z %02P") != (std::string)"1300 13500 UTC") return 2;
@@ -182,10 +188,11 @@ int main() //Main function to initialize and run all tests above
 	checkResult(check, errorCounter);
 	check = -1;
 
-	/*check = testClass.setFromInfoTest(); // Not run due to issue with Solaris compiler.
+	check = testClass.setFromInfoTest();
         std::cout << "setFromInfoTest Result is: ";
 	checkResult(check, errorCounter);
-	check = -1;*/
+	check = -1;
+
 	check = testClass.resetTest();
         std::cout << "resetTest Result is: ";
 	checkResult(check, errorCounter);

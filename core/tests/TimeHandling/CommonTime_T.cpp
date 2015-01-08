@@ -1,7 +1,7 @@
 #include "CommonTime.hpp"
 #include "Exception.hpp"
 #include <iostream>
-
+#include <cmath>
 using namespace gpstk;
 using namespace std;
 
@@ -16,21 +16,31 @@ class xCommonTime : public CommonTime
 		*/
 		int initializationTest()
 		{
-			try
-			{
-				CommonTime Zero;
-				CommonTime Test1((long)700000,(long)0,(double)0.);
+			try {CommonTime Zero;}
+			catch (...) {return 1;}
+
+			try {CommonTime Test1;
+			     Test1.set((long)700000,(long)0,(double)0.);}
+			catch (...) {return 2;}
+				//CommonTime Test1((long)700000,(long)0,(double)0.); // This is a protected method
+
 				//Copy-Constructer
-				CommonTime Test2(Test1);
-				CommonTime Test3 = Test1;
-				CommonTime Test4;
-				//Assignment
-				Test4 = Test1;
-			}
-			catch(...)
-			{
-				return 1;
-			}
+			try {CommonTime Test1;
+			     Test1.set((long)700000,(long)0,(double)0.);
+			     CommonTime Test2(Test1);}
+			catch (...) {return 3;}
+
+			try {CommonTime Test1;
+			     Test1.set((long)700000,(long)0,(double)0.);
+			     CommonTime Test3 = Test1;}
+			catch (...) {return 4;}
+
+			try {CommonTime Test1;
+			     Test1.set((long)700000,(long)0,(double)0.);
+			     CommonTime Test4;
+			     Test4 = Test1;}
+			catch(...) {return 5;}
+
 			return 0;
 		}
 		/*
@@ -44,7 +54,7 @@ class xCommonTime : public CommonTime
 
 			// Break the input in various ways and make sure the proper exception is called
 			try {Test.set(-1,0,0.);} //Negative days
-			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
+			catch(gpstk::InvalidRequest e) {e.dump(cout); brokeWhenAndHowItShouldCounter++;}
 			catch(...){return 1;}
 
 			try {Test.set(3442449,0,0.);} //Too many days
@@ -120,7 +130,7 @@ class xCommonTime : public CommonTime
 			//Compare different sets
 			if (day != day2) return 1;
 			if (sod != sod2) return 2;
-			if (abs(fsod - fsod2) > eps) return 3;
+			if (fabs(fsod - fsod2) > eps) return 3;
 
 			//Load up compare variables
 			Test3.get(day2,sod2,fsod2);
@@ -133,7 +143,7 @@ class xCommonTime : public CommonTime
 			//Appears to be a result of the input double is 700001.000012732
 			//Rounding the last digit appears to be causing the issue and the
 			//large error.
-			if (abs(fsod - fsod2) > 1E-4) return 6;
+			if (fabs(fsod - fsod2) > 1E-4) return 6;
 
 
 			/*Adding a test for a much lower day value to ensure the error is from
@@ -142,7 +152,7 @@ class xCommonTime : public CommonTime
 			Test3.set(1+dec);
 			Test1.get(day,sod,fsod);
 			Test3.get(day2,sod2,fsod2);
-			if (abs(fsod-fsod2) > eps) return 7;
+			if (fabs(fsod-fsod2) > eps) return 7;
 
 			//Load up compare variables
 			Test1.set(700001,1,.1);
@@ -152,7 +162,7 @@ class xCommonTime : public CommonTime
 			//Compare setInternal
 			if (day != day2) return 8;
 			if (sod != sod2) return 9;
-			if (abs(fsod - fsod2) > eps) return 10;
+			if (fabs(fsod - fsod2) > eps) return 10;
 			return 0;
 		}
 
@@ -165,32 +175,32 @@ class xCommonTime : public CommonTime
 			long day, day2, sod;
 			double fsod, sod2;
 			//- between two CommonTimes
-			if (abs((Arith1-Arith2) - 0) > eps) return 1;
+			if (fabs((Arith1-Arith2) - 0) > eps) return 1;
 
 			//Add Seconds with +
 			Result = Arith2 + 1;
 			Result.get(day,sod,fsod);
 			if (day != 700000) return 2;
 			if (sod != 2) return 3;
-			if (abs(fsod - 0.1) > eps) return 4;
+			if (fabs(fsod - 0.1) > eps) return 4;
 
 			//Subtract seconds with -
 			Result = Arith2 - 1;
 			Result.get(day,sod,fsod);
 			if (day != 700000) return 5;
 			if (sod != 0) return 6;
-			if (abs(fsod - 0.1) > eps) return 7;
+			if (fabs(fsod - 0.1) > eps) return 7;
 
 			//Add seconds with +=
 			Arith2 += 1;
-			if (abs((Arith2-Arith1) - 1) > eps) return 8;
+			if (fabs((Arith2-Arith1) - 1) > eps) return 8;
 
 			//Check that values can be compared with integer seconds
 			if (1 != Arith2 - Arith1) return 11;
 
 			//Subtract seconds with -=
 			Arith2 -= 1;
-			if (abs((Arith2-Arith1) - 0) > eps) return 9;
+			if (fabs((Arith2-Arith1) - 0) > eps) return 9;
 
 			//Add days with addDays
 			Arith2.addDays((long)1);
@@ -204,11 +214,11 @@ class xCommonTime : public CommonTime
 
 			//Add seconds with addSeconds(double)
 			Arith2.addSeconds(86400000.+1000.);
-			if (abs(86401000. - (Arith2-Arith1)) > eps) return 17;
+			if (fabs(86401000. - (Arith2-Arith1)) > eps) return 17;
 
 			//Subtract seconds with addSeconds(long)
 			Arith2.addSeconds((long)-86401000);
-			if (abs(0. - (Arith2-Arith1)) > eps) return 18;
+			if (fabs(0. - (Arith2-Arith1)) > eps) return 18;
 
 			//Check that the two parameter get method returns day2 as the proper double
 			Arith2.get(day2, sod2);
@@ -216,13 +226,13 @@ class xCommonTime : public CommonTime
 			if (((double)0. - sod2) > eps) return 20;
 
 			//Check seconds using getSecondOfDay()
-			if (abs(sod2 - Arith2.getSecondOfDay()) > eps) return 21;
+			if (fabs(sod2 - Arith2.getSecondOfDay()) > eps) return 21;
 
 			//Add milliseconds with addMilliseconds(long)
 			Arith2.addMilliseconds((long)1);
-			if (abs(sod2+0.001 - Arith2.getSecondOfDay()) > eps) return 22;
+			if (fabs(sod2+0.001 - Arith2.getSecondOfDay()) > eps) return 22;
 			Arith2.addMilliseconds((long)-1);
-			if (abs(sod2 - Arith2.getSecondOfDay()) > eps) return 23;
+			if (fabs(sod2 - Arith2.getSecondOfDay()) > eps) return 23;
 			return 0;
 		}
 
@@ -230,10 +240,10 @@ class xCommonTime : public CommonTime
 		int operatorTest (void)
 		{
 
-			CommonTime Compare(1000,200,0.2); // Initialize with value
-			CommonTime LessThanDay(100,200,0.2); // Initialize with smaller day value
-			CommonTime LessThanSecond(1000,20,0.2); // Initialize with smaller second value
-			CommonTime LessThanFSecond(1000,200,0.1); // Initialize with smaller fractional second value
+			CommonTime Compare; Compare.set(1000,200,0.2); // Initialize with value
+			CommonTime LessThanDay; LessThanDay.set(100,200,0.2); // Initialize with smaller day value
+			CommonTime LessThanSecond; LessThanSecond.set(1000,20,0.2); // Initialize with smaller second value
+			CommonTime LessThanFSecond; LessThanFSecond.set(1000,200,0.1); // Initialize with smaller fractional second value
 			CommonTime CompareCopy(Compare); // Initialize with copy constructor
 
 			//Equality Assertion
@@ -265,11 +275,11 @@ class xCommonTime : public CommonTime
 	int  timeSystemTest (void)
 	{
 
-  		CommonTime GPS1(1000,200,0.2,TimeSystem(2));
-  		CommonTime GPS2(100,200,0.2,TimeSystem(2));
-  		CommonTime UTC1(1000,200,0.2,TimeSystem(5));
-  		CommonTime UNKNOWN(1000,200,0.2,TimeSystem(0));
-  		CommonTime ANY(1000,200,0.2,TimeSystem(1));
+  		CommonTime GPS1; GPS1.set(1000,200,0.2,TimeSystem(2));
+  		CommonTime GPS2; GPS2.set(100,200,0.2,TimeSystem(2));
+  		CommonTime UTC1; UTC1.set(1000,200,0.2,TimeSystem(5));
+  		CommonTime UNKNOWN; UNKNOWN.set(1000,200,0.2,TimeSystem(0));
+  		CommonTime ANY; ANY.set(1000,200,0.2,TimeSystem(1));
 
   		if (GPS1 == GPS2) return 1; // GPS1 and GPS2 should have different times
   		if (GPS1.getTimeSystem() != GPS2.getTimeSystem()) return 2; // Should have the same time system
@@ -294,8 +304,8 @@ class xCommonTime : public CommonTime
 	int  printfTest (void)
 	{
 
-  		CommonTime GPS1(1234567,24000,0.2111,TimeSystem(2));
-  		CommonTime UTC1(1000,200,0.2,TimeSystem(5));
+  		CommonTime GPS1; GPS1.set(1234567,24000,0.2111,TimeSystem(2));
+  		CommonTime UTC1; UTC1.set(1000,200,0.2,TimeSystem(7));
 		
   		if (GPS1.asString() != (std::string)"1234567 24000211 0.000100000000000 GPS") return 1;
   		if (UTC1.asString() != (std::string)"0001000 00200200 0.000000000000000 UTC") return 2;
@@ -327,7 +337,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 
 int main() //Main function to initialize and run all tests above
 {
-	int check, errorCounter = 0;
+	int check = -1, errorCounter = 0;
 	xCommonTime testClass;
 
 	check = testClass.initializationTest();

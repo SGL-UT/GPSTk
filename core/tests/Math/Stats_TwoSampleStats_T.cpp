@@ -13,7 +13,7 @@ class StatsTest
 		// Then add another stat on top with weight. I will use the average to check
 		// that data was added and that the data added was correct.
 		{
-			gpstk::TwoSampleStats<double> test;
+			gpstk::TwoSampleStats<int> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
 			test.Add(3, 1);
@@ -21,16 +21,10 @@ class StatsTest
 			test.Add(5, 3);
 
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			if (test.AverageX() == 3 && test.N() == 5)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
-		};
+			if (test.AverageX() != 3) return 1;
+			return 0;
+		}
+
 		int AverageXTest()
 		// Verify the X average calculation.
 		{
@@ -41,17 +35,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Average of X is: " << test.AverageX() << std::endl;
-			if (test.AverageX() == 3)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Average of X is: " << test.AverageX() << std::endl;
+			if (test.AverageX() != 3) return 1;
+			return 0;
 		}
+
 		int AverageYTest()
 		// Verify the Y average calculation.
 		{
@@ -62,17 +50,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Average of Y is: " << test.AverageY() << std::endl;
-			if (test.AverageY() == 3)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Average of Y is: " << test.AverageY() << std::endl;
+			if (test.AverageY() != 3) return 1;
+			return 0;
 		}
+
 		int MaxXTest()
 		// Verify the X maximum calculation.
 		{
@@ -83,17 +65,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Maximum of X is: " << test.MaximumX() << std::endl;
-			if (test.MaximumX() == 5)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Maximum of X is: " << test.MaximumX() << std::endl;
+			if (test.MaximumX() != 5) return 1;
+			return 0;
 		}
+
 		int MaxYTest()
 		// Verify the Y maximum calculation.
 		{
@@ -104,17 +80,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Maximum of Y is: " << test.MaximumY() << std::endl;
-			if (test.MaximumY() == 5)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Maximum of Y is: " << test.MaximumY() << std::endl;
+			if (test.MaximumY() != 5) return 1;
+			return 0;
 		}
+
 		int MinXTest()
 		// Verify the X minimum calculation.
 		{
@@ -125,17 +95,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Minimum of X is: " << test.MinimumX() << std::endl;
-			if (test.MinimumX() == 1)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Minimum of X is: " << test.MinimumX() << std::endl;
+			if (test.MinimumX() != 1) return 1;
+			return 0;
 		}
+
 		int MinYTest()
 		// Verify the Y minimum calculation.
 		{
@@ -146,17 +110,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Minimum of Y is: " << test.MinimumY() << std::endl;
-			if (test.MinimumY() == 1)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Minimum of Y is: " << test.MinimumY() << std::endl;
+			if (test.MinimumY() != 1) return 1;
+			return 0;
 		}
+
 		int VarianceXTest()
 		// Verify the X variance calculation.
 		{
@@ -167,17 +125,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Variance of X is: " << test.VarianceX() << std::endl;
-			if (test.VarianceX() == 2)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Variance of X is: " << test.VarianceX() << std::endl;
+			if (fabs(test.VarianceX() - 2.5) > eps) return 1;
+			return 0;	
 		}
+
 		int VarianceYTest()
 		// Verify the Y variance calculation.
 		{
@@ -188,17 +140,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Variance of Y is: " << test.VarianceY() << std::endl;
-			if (test.VarianceY() == 2)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Variance of Y is: " << test.VarianceY() << std::endl;
+			if (fabs(test.VarianceY() - 2.5) > eps) return 1;
+			return 0;	
 		}
+
 		int StdDevXTest()
 		// Verify the X Standard Deviation calculation.
 		{
@@ -209,16 +155,9 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Standard Deviation of X is: " << test.StdDevX() << std::endl;
-			if ((test.StdDevX() > (sqrt(2.0)-eps)) && (test.StdDevX() < (sqrt(2.0)+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Standard Deviation of X is: " << test.StdDevX() << std::endl;
+			if (fabs(test.StdDevX() - sqrt(2.5)) > eps) return 1;
+			return 0;
 		}
 		int StdDevYTest()
 		// Verify the Y Standard Deviation calculation.
@@ -230,17 +169,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Standard Deviation of Y is: " << test.StdDevY() << std::endl;
-			if ((test.StdDevY() > (sqrt(2.0)-eps)) && (test.StdDevY() < (sqrt(2.0)+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Standard Deviation of Y is: " << test.StdDevY() << std::endl;
+			if (fabs(test.StdDevY() - sqrt(2.5)) > eps) return 1;
+			return 0;
 		}
+
 		int SlopeTest()
 		// Verify the Slope calculation.
 		{
@@ -251,17 +184,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Slope is: " << test.Slope() << std::endl;
-			if ((test.Slope() > (0.1-eps)) && (test.Slope() < (0.1+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Slope is: " << test.Slope() << std::endl;
+			if (fabs(test.Slope() - 0.1) > eps) return 1;
+			return 0;
 		}
+
 		int InterceptTest()
 		// Verify the Intercept calculation.
 		{
@@ -272,17 +199,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Intercept is: " << test.Intercept() << std::endl;
-			if ((test.Intercept() > (2.7-eps)) && (test.Intercept() < (2.7+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Intercept is: " << test.Intercept() << std::endl;
+			if (fabs(test.Intercept() - 2.7) > eps) return 1;
+			return 0;
 		}
+
 		int SlopeUncertaintyTest()
 		// Verify the Slope Uncertainty calculation.
 		{
@@ -293,17 +214,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Slope Uncertainty is: " << test.SigmaSlope() << std::endl;
-			if ((test.SigmaSlope() > (1.2375-eps)) && (test.SigmaSlope() < (1.2375+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Slope Uncertainty is: " << test.SigmaSlope() << std::endl;
+			if (fabs(test.SigmaSlope() - 0.574456264653803) > eps) return 1;
+			return 0;
 		}
+
 		int ConditionalUncertaintyTest()
 		// Verify the Conditional Uncertainty calculation.
 		{
@@ -314,17 +229,11 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Conditional Uncertainty is: " << test.SigmaYX() << std::endl;
-			if ((test.SigmaYX() > (2.475-eps)) && (test.SigmaYX() < (2.475+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Conditional Uncertainty is: " << test.SigmaYX() << std::endl;
+			if (fabs(test.SigmaYX() - 1.81659021245849) > eps) return 1;
+			return 0;
 		}
+
 		int CorrelationTest()
 		// Verify the Correlation calculation.
 		{
@@ -335,22 +244,12 @@ class StatsTest
 			test.Add(4, 4);
 			test.Add(5, 3);
 
-			std::cout << "The Correlation is: " << test.Correlation() << std::endl;
-			if ((test.Correlation() > (0.1-eps)) && (test.Correlation() < (0.1+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Correlation is: " << test.Correlation() << std::endl;
+			if (fabs(test.Correlation() - 0.1) > eps) return 1;
+			return 0;
 		}
 
-
-
  };
-
 void checkResult(int check, int& errCount)// Function to handle test result output
 {
 	if (check == -1)
