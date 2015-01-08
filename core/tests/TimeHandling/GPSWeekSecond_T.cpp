@@ -6,31 +6,65 @@
 using namespace gpstk;
 using namespace std;
 
+#define testAssertion(x, y) \
+	if (!(x)) \
+	{ \
+		cout << "Error!! testAssert on line " << __LINE__ << " has failed." << endl; \
+		y++; \
+	}
+
+
+
 class xGPSWeekSecond
 {
 	public:
 		xGPSWeekSecond(){eps = 1e-11;}// Default Constructor, set the precision value
 		~xGPSWeekSecond() {} // Default Desructor
-	// Test is not currently compiling with Solaris compilers. Leaving it commented for now.
+
 
 	/* Test will check if GPSWeekSecond variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
-	/*int setFromInfoTest (void)
+	int setFromInfoTest (void)
 	{
-		GPSWeekSecond setFromInfo1;
-		GPSWeekSecond setFromInfo2;
 	
-		IdToValue Id;
+		/*GPSWeekSecond setFromInfo1;
+		GPSWeekSecond setFromInfo2;
+
+		TimeTag::IdToValue Id;
 		Id.insert(make_pair('F',"1300"));
 		Id.insert(make_pair('g',"13500"));
+		Id.insert(make_pair('P',"GPS"));
+		cout << (bool)setFromInfo1.setFromInfo(Id) << endl;
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
+		GPSWeekSecond Compare(1300,13500.,TimeSystem(2));
+		if (Compare != setFromInfo1) return 2;
 		Id.erase('F');
-		if (!setFromInfo2.setFromInfo(Id)) return 2;
-		ofstream out("Logs/printfOutput");
+		if (!setFromInfo2.setFromInfo(Id)) return 3;
+		GPSWeekSecond Compare2(0,13500.,TimeSystem(2));
+		if (Compare2 != setFromInfo2) return 4;
 	
-		out << setFromInfo1 << endl;
-		out << setFromInfo2 << endl;
-	}*/
+		return 0;*/
+	
+
+		GPSWeekSecond setFromInfo1;
+		GPSWeekSecond setFromInfo2;
+		int numErrors = 0;
+
+		TimeTag::IdToValue Id;
+		Id.insert(make_pair('F',"1300"));
+		Id.insert(make_pair('g',"13500"));
+		Id.insert(make_pair('P',"GPS"));
+		testAssertion(setFromInfo1.setFromInfo(Id),numErrors);
+		GPSWeekSecond Compare(1300,13500.,TimeSystem(2));
+		testAssertion(Compare == setFromInfo1 , numErrors);
+		Id.erase('F');
+		testAssertion(setFromInfo2.setFromInfo(Id), numErrors);
+		GPSWeekSecond Compare2(0,13500.,TimeSystem(2));
+		testAssertion(Compare2 == setFromInfo2, numErrors);
+	
+		return numErrors;
+
+	}
 
 	/* Test will check if the ways to initialize and set an GPSWeekSecond object.
 	   Test also tests whether the comparison operators and isValid method function. */
@@ -44,21 +78,21 @@ class xGPSWeekSecond
 		GPSWeekSecond CompareCopy2; //Empty initialization
 		CompareCopy2 = CompareCopy; //Assignment
 
-		//Equality Assertion
+		//Equality testAssertion
 		if (!(Compare == CompareCopy)) return 1;
-		//Non-equality Assertion
+		//Non-equality testAssertion
 		if (!(Compare != LessThanWeek)) return 2;
-		//Less than assertions
+		//Less than testAssertions
 		if (!(LessThanWeek < Compare)) return 3;
 		if (Compare < LessThanWeek) return 4;
 		if (!(LessThanSecond < Compare)) return 5;
 		if (Compare < LessThanSecond) return 6;
-		//Greater than assertions
+		//Greater than testAssertions
 		if(!(Compare > LessThanWeek)) return 7;
-		//Less than equals assertion
+		//Less than equals testAssertion
 		if (!(LessThanWeek <= Compare)) return 8;
 		if(!(CompareCopy <= Compare)) return 9;
-		//Greater than equals assertion
+		//Greater than equals testAssertion
 		if(!(Compare >= LessThanWeek)) return 10;
 		if(!(Compare >= CompareCopy)) return 11;
 		//Validity check
@@ -108,7 +142,7 @@ class xGPSWeekSecond
 
   		GPSWeekSecond GPS1(1300,13500.,TimeSystem(2));
   		GPSWeekSecond GPS2(1200,13500.,TimeSystem(2));
-  		GPSWeekSecond UTC1(1300,13500.,TimeSystem(7));
+  		GPSWeekSecond UTC1(1300,13500.,TimeSystem(5));
   		GPSWeekSecond UNKNOWN(1300,13500.,TimeSystem(0));
   		GPSWeekSecond ANY(1300,13500.,TimeSystem(1));
 
@@ -142,11 +176,9 @@ class xGPSWeekSecond
   		GPSWeekSecond UTC1(1300,13500.,TimeSystem(7));
 		
   		if (GPS1.printf("%04F %05g %02P") != (std::string)"1300 13500.000000 GPS") return 1;
-  		cout << UTC1.printf("%04F %05g %02P") << endl;
   		if (UTC1.printf("%04F %05g %02P") != (std::string)"1300 13500.000000 UTC") return 2;
-  		cout << GPS1.printError("%04F %05g %02P") << endl;
+		//std::cout << GPS1.printError("%04F %05g %02P") << std::endl;
   		if (GPS1.printError("%04F %05g %02P") != (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime") return 3; 
-  		cout << UTC1.printError("%04F %05g %02P") << endl;
   		if (UTC1.printError("%04F %05g %02P") != (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime") return 4;
 		return 0;
 	}
@@ -181,10 +213,11 @@ int main() //Main function to initialize and run all tests above
 	checkResult(check, errorCounter);
 	check = -1;
 
-	/*check = testClass.setFromInfoTest(); // Not run due to issue with Solaris compiler.
+	check = testClass.setFromInfoTest();
         std::cout << "setFromInfoTest Result is: ";
 	checkResult(check, errorCounter);
-	check = -1;*/
+	check = -1;
+
 	check = testClass.resetTest();
         std::cout << "resetTest Result is: ";
 	checkResult(check, errorCounter);

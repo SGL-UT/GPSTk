@@ -10,28 +10,24 @@ class xMJD
 {
 	public:
 
-	// Test is not currently compiling with Solaris compilers. Leaving it commented for now.
-
 	/* Test will check if MJD variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
-	/*int setFromInfoTest (void)
+	int setFromInfoTest (void)
 	{
 		MJD setFromInfo1;
 		MJD setFromInfo2;
-		MJD Compare(135000.0,TimeSystem(2));
-		IdToValue Id;
+		MJD Compare(135000.0,TimeSystem(2)), Compare2(0.0,TimeSystem(2));
+		TimeTag::IdToValue Id;
 		Id.insert(make_pair('Q',"135000.0"));
-		Id.insert(make_pair('P',"02"));
+		Id.insert(make_pair('P',"GPS"));
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
 		if (setFromInfo1 != Compare) return 2;
 		Id.erase('Q');
 		if(!setFromInfo2.setFromInfo(Id)) return 3;
-		ofstream out("Logs/printfOutput");
+		if (setFromInfo2 != Compare2) return 4;
 
-		out << setFromInfo1 << endl;
-		out << setFromInfo2 << endl;
 		return 0;
-	}*/
+	}
 
 	/* Test will check if the ways to initialize and set an MJD object.
 	   Test also tests whether the comparison operators and isValid method function. */
@@ -132,7 +128,7 @@ class xMJD
 	{
 
   		MJD GPS1(135000,TimeSystem(2));
-  		MJD UTC1(135000,TimeSystem(5));
+  		MJD UTC1(135000,TimeSystem(7));
 		
   		if (GPS1.printf("%08Q %02P") != (std::string)"135000.000000 GPS") return 1;
   		if (UTC1.printf("%08Q %02P") != (std::string)"135000.000000 UTC") return 2;
@@ -169,10 +165,11 @@ int main() //Main function to initialize and run all tests above
 	checkResult(check, errorCounter);
 	check = -1;
 
-	/*check = testClass.setFromInfoTest(); // Not run due to issue with Solaris compiler.
+	check = testClass.setFromInfoTest(); // Not run due to issue with Solaris compiler.
         std::cout << "setFromInfoTest Result is: ";
 	checkResult(check, errorCounter);
-	check = -1;*/
+	check = -1;
+
 	check = testClass.resetTest();
         std::cout << "resetTest Result is: ";
 	checkResult(check, errorCounter);

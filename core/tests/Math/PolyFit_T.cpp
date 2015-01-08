@@ -163,7 +163,7 @@ class PolyFitTest
 			n = 0;			
 			for (int i = 0; i<4; i++)
 			{
-				if (abs(soln(i) - 2) > eps)
+				if (fabs(soln(i) - 2) > eps)
 				{
 					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
 					n += 1;
@@ -219,9 +219,10 @@ class PolyFitTest
 			n = 0;			
 			for (int i = 0; i<3; i++)
 			{
-				if (abs(soln(i) - eval(i)*eval(i)) > eps)
+				// Using relative error since the soln >> 1
+				if (fabs(soln(i) - eval(i)*eval(i))/(eval(i)*eval(i)) > eps) 
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
+					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << " Expected Value: " << eval(i)*eval(i) << " Error: " << fabs(soln(i) - eval(i)*eval(i)) << std::endl; 
 					n += 1;
 				}
 			}
@@ -247,7 +248,7 @@ class PolyFitTest
 
 			soln = test.Evaluate(eval);
 			//std::cout << "Solution is: " << soln << std::endl;
-			if (abs(soln - eval*eval) > eps) return 1;
+			if (fabs(soln - eval*eval) > eps) return 1;
 			else return 0;
 			
 		};

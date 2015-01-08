@@ -38,17 +38,17 @@ class xPosition
 		        	t.transformTo(Position::Geodetic);
 		        	//cout << "Transform Cartesian to Geodetic   " << t;
 		        	//cout << "  Error : " << range(t,c) << " m" << endl;
-				if (abs(range(t,c)) > eps) return 1; 
+				if (fabs(range(t,c)) > eps) return 1; 
 		        	t = c; // Reset comparison object
 		        	t.transformTo(Position::Geocentric);
 		       		//cout << "Transform Cartesian to Geocentric " << t;
 	         		//cout << "  Error : " << range(t,c) << " m" << endl;
-				if (abs(range(t,c)) > eps) return 2; 
+				if (fabs(range(t,c)) > eps) return 2; 
 	         		t = c;
 	         		t.transformTo(Position::Spherical);
 	         		//cout << "Transform Cartesian to Spherical  " << t;
 	         		//cout << "  Error : " << range(t,c) << " m" << endl;
-				if (abs(range(t,c)) > eps) return 3; 
+				if (fabs(range(t,c)) > eps) return 3; 
 
 				//Start in Geodetic
 	         		d.setGeodetic(39.000004186778,251.499999999370,1400.009066903964);
@@ -57,17 +57,17 @@ class xPosition
 				t.transformTo(Position::Cartesian);
 				//cout << "Transform Geodetic to Cartesian   " << t;
 				//cout << "  Error : " << range(t,d) << " m" << endl;
-				if (abs(range(t,d)) > eps) return 4; 
+				if (fabs(range(t,d)) > eps) return 4; 
 				t = d;
 				t.transformTo(Position::Geocentric);
 				//cout << "Transform Geodetic to Geocentric  " << t;
 				//cout << "  Error : " << range(t,d) << " m" << endl;
-				if (abs(range(t,d)) > eps) return 5; 
+				if (fabs(range(t,d)) > eps) return 5; 
 				t = d;
 				t.transformTo(Position::Spherical);
 	         		//cout << "Transform Geodetic to Spherical   " << t;
 	         		//cout << "  Error : " << range(t,d) << " m" << endl;
-				if (abs(range(t,d)) > eps) return 6; 
+				if (fabs(range(t,d)) > eps) return 6; 
 
 				//Start in Geocentric
 	         		g.setGeocentric(38.811958506159,251.499999999370,6371110.627671023800);
@@ -76,17 +76,17 @@ class xPosition
 	         		t.transformTo(Position::Cartesian);
 	         		//cout << "Transform Geocentric to Cartesian " << t;
 	         		//cout << "  Error : " << range(t,g) << " m" << endl;
-				if (abs(range(t,g)) > eps) return 7; 
+				if (fabs(range(t,g)) > eps) return 7; 
 	         		t = g;
 	         		t.transformTo(Position::Geodetic);
 	         		//cout << "Transform Geocentric to Geodetic  " << t;
 	         		//cout << "  Error : " << range(t,g) << " m" << endl;
-				if (abs(range(t,g)) > eps) return 8; 
+				if (fabs(range(t,g)) > eps) return 8; 
 	         		t = g;
 	         		t.transformTo(Position::Spherical);
 	         		//cout << "Transform Geocentric to Spherical " << t;
 	         		//cout << "  Error : " << range(t,g) << " m" << endl;
-				if (abs(range(t,g)) > eps) return 9; 
+				if (fabs(range(t,g)) > eps) return 9; 
 
 				//Start in Spherical
 	         		s.setSpherical(51.188041493841,251.499999999370,6371110.627671023800);
@@ -95,17 +95,17 @@ class xPosition
 	         		t.transformTo(Position::Cartesian);
 	         		//cout << "Transform Spherical to Cartesian  " << t;
 	         		//cout << "  Error : " << range(t,s) << " m" << endl;
-				if (abs(range(t,s)) > eps) return 10; 
+				if (fabs(range(t,s)) > eps) return 10; 
 	         		t = s;
 	         		t.transformTo(Position::Geocentric);
 	         		//cout << "Transform Spherical to Geocentric " << t;
 	         		//cout << "  Error : " << range(t,s) << " m" << endl;
-				if (abs(range(t,s)) > eps) return 11; 
+				if (fabs(range(t,s)) > eps) return 11; 
 	         		t = s;
 	         		t.transformTo(Position::Geodetic);
 	         		//cout << "Transform Spherical to Geodetic   " << t;
 	         		//cout << "  Error : " << range(t,s) << " m" << endl;
-				if (abs(range(t,s)) > eps) return 12; 
+				if (fabs(range(t,s)) > eps) return 12; 
 
 			//cout << endl << endl << endl;
 			return 0;
@@ -213,8 +213,8 @@ class xPosition
 
       			//cout << setw(6) << setprecision(2) << c.elvAngle(s)
          		//	<< " " << setw(6) << setprecision(2) << c.azAngle(s) << endl;
-			if (abs(c.elevation(s) - c.elvAngle(s)) > eps) return 1;
-			if (abs(c.azimuth(s) - c.azAngle(s)) > eps) return 2;
+			if (fabs(c.elevation(s) - c.elvAngle(s)) > eps) return 1;
+			if (fabs(c.azimuth(s) - c.azAngle(s)) > eps) return 2;
 			return 0;
 		}
 		catch(...)
@@ -238,40 +238,40 @@ class xPosition
 			//cout << "The pole " << c << endl;
 			t.transformTo(Position::Geodetic);
 			//cout << "The pole in geodetic   " << t << endl;
-			if (abs(range(t,c)) > eps) return 1; 
+			if (fabs(range(t,c)) > eps) return 1; 
 			t.transformTo(Position::Geocentric);
 			//cout << "The pole in geocentric " << t << endl;
-			if (abs(range(t,c)) > eps) return 2; 
+			if (fabs(range(t,c)) > eps) return 2; 
 			t.transformTo(Position::Spherical);
  			//cout << "The pole in spherical  " << t << endl;
-			if (abs(range(t,c)) > eps) return 3; 
+			if (fabs(range(t,c)) > eps) return 3; 
 			t.transformTo(Position::Cartesian);
 			//cout << "The pole in cartesian  " << t << endl;
-			if (abs(range(t,c)) > eps) return 4; 
+			if (fabs(range(t,c)) > eps) return 4; 
 			t.transformTo(Position::Geocentric);
 			//cout << "The pole in geocentric " << t << endl;
-			if (abs(range(t,c)) > eps) return 5; 
+			if (fabs(range(t,c)) > eps) return 5; 
 			t.transformTo(Position::Geodetic);
 			//cout << "The pole in geodetic   " << t << endl;
-			if (abs(range(t,c)) > eps) return 6; 
+			if (fabs(range(t,c)) > eps) return 6; 
 			t.transformTo(Position::Cartesian);
 			//cout << "The pole in cartesian  " << t << endl;
-			if (abs(range(t,c)) > eps) return 7; 
+			if (fabs(range(t,c)) > eps) return 7; 
 			t.transformTo(Position::Spherical);
 			//cout << "The pole in spherical  " << t << endl;
-			if (abs(range(t,c)) > eps) return 8; 
+			if (fabs(range(t,c)) > eps) return 8; 
 			t.transformTo(Position::Geodetic);
 			//cout << "The pole in geodetic   " << t << endl;
-			if (abs(range(t,c)) > eps) return 9; 
+			if (fabs(range(t,c)) > eps) return 9; 
 			t.transformTo(Position::Spherical);
 			//cout << "The pole in spherical  " << t << endl;
-			if (abs(range(t,c)) > eps) return 10; 
+			if (fabs(range(t,c)) > eps) return 10; 
 			t.transformTo(Position::Geocentric);
 			//cout << "The pole in geocentric " << t << endl;
-			if (abs(range(t,c)) > eps) return 11; 
+			if (fabs(range(t,c)) > eps) return 11; 
 			t.transformTo(Position::Cartesian);
 			//cout << "The pole in cartesian  " << t << endl;
-			if (abs(range(t,c)) > eps) return 12; 
+			if (fabs(range(t,c)) > eps) return 12; 
 			//cout << "Tests complete." << endl;	
 			return 0;	
 		}
@@ -291,13 +291,13 @@ class xPosition
 	      		Position c,t;
 			c.setECEF(0,0,6371110.6277);
 			t.setECEF(20,0,6371110.6277);
-			if(abs(range(c,t)-20) > 1E-12) return 1;
+			if(fabs(range(c,t)-20) > 1E-12) return 1;
 			t.setECEF(0,-20,6371110.6277);
-			if(abs(range(c,t)-20) > 1E-12) return 2;
+			if(fabs(range(c,t)-20) > 1E-12) return 2;
 			t.setECEF(0,0,6371210.6277);
-			if(abs(range(c,t)-100) > 1E-12) return 3;
+			if(fabs(range(c,t)-100) > 1E-12) return 3;
 			t.setECEF(300,400,6371610.6277);
-			if(abs(range(c,t)-sqrt(500000.0)) > 1E-12) return 4;
+			if(fabs(range(c,t)-sqrt(500000.0)) > 1E-12) return 4;
 			return 0;
 
 		}

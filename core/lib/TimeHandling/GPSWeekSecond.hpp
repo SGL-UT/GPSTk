@@ -182,7 +182,7 @@ namespace gpstk
                   sow = asDouble( i->second );
                   break;
                case 'P':
-                  timeSystem = static_cast<TimeSystem>(asInt( i->second ));
+                  timeSystem.fromString(i->second);
                   break;
                default:
                      // do nothing

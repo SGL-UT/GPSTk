@@ -10,45 +10,46 @@ class xYDSTime
 {
 	public:
 
-	// Test is not currently compiling with Solaris compilers. Leaving it commented for now.
-
 	/* Test will check if YDSTime variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
-	/*int setFromInfoTest (void)
+	int setFromInfoTest (void)
 	{
 		YDSTime setFromInfo1;
 		YDSTime setFromInfo2;
 		YDSTime setFromInfo3;
 		YDSTime setFromInfo4;
 		YDSTime setFromInfo5;
-		YDSTime Compare(2008,2,1,TimeSystem::GPS);
+		YDSTime Compare(2008,2,1,TimeSystem::GPS), Compare2(2006,2,1,TimeSystem::GPS);
+		YDSTime Compare3(0,2,1,TimeSystem::GPS);
 
-		IdToValue Id;
+		TimeTag::IdToValue Id;
 		Id.insert(make_pair('Y',"2008"));
 		Id.insert(make_pair('j',"2"));
 		Id.insert(make_pair('s',"1"));
-		Id.insert(make_pair('P',"02"));
+		Id.insert(make_pair('P',"GPS"));
+
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
 		if (setFromInfo1 != Compare) return 2;
 		Id.erase('Y');
 		Id.insert(make_pair('y',"06"));
 		if (!setFromInfo2.setFromInfo(Id)) return 3;
+		if (setFromInfo2 != Compare2) return 4;
+		//Can we set a three digit year with 'y' option? Answer should be no.
 		Id.erase('y');
 		Id.insert(make_pair('y',"006"));
-		if (!setFromInfo3.setFromInfo(Id)) return 4;
+		if (!setFromInfo3.setFromInfo(Id)) return 5;
+		if (setFromInfo3 == Compare2) return 6;
+		
 		Id.erase('y');
 		Id.insert(make_pair('y',"2008"));
 		if (!setFromInfo4.setFromInfo(Id)) return 5;
+		if (setFromInfo4 != Compare) return 6;
 		Id.erase('y');
 		if (!setFromInfo5.setFromInfo(Id)) return 6;
-		ofstream out("Logs/printfOutput");
+		if (setFromInfo5 != Compare3) return 2;
 
-		out << setFromInfo1 << endl;
-		out << setFromInfo2 << endl;
-		out << setFromInfo3 << endl;
-		out << setFromInfo4 << endl;
 		return 0;
-	}*/
+	}
 
 	/* Test will check if the ways to initialize and set an YDSTime object.
 	   Test also tests whether the comparison operators and isValid method function. */
@@ -200,10 +201,11 @@ int main() //Main function to initialize and run all tests above
 	checkResult(check, errorCounter);
 	check = -1;
 
-	/*check = testClass.setFromInfoTest(); // Not run due to issue with Solaris compiler.
+	check = testClass.setFromInfoTest();
         std::cout << "setFromInfoTest Result is: ";
 	checkResult(check, errorCounter);
-	check = -1;*/
+	check = -1;
+
 	check = testClass.resetTest();
         std::cout << "resetTest Result is: ";
 	checkResult(check, errorCounter);

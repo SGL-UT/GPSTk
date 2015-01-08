@@ -108,7 +108,7 @@ namespace gpstk
        *   - s     integer second-of-day
        *
        * - Common Identifiers:
-       *   - P     string TimeSystem
+       *   - P     string TimeSystem to compare with TimeSystem::Systems enum
        */
    std::string printTime( const CommonTime& t,
                           const std::string& fmt );
