@@ -172,7 +172,7 @@ class ANSITime_T
 //--------------ANSITime_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
   		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
 
-//--------------ANSITime_toFromCommonTimeTest_2 - Is the set object vaild?
+//--------------ANSITime_toFromCommonTimeTest_2 - Is the set object valid?
 		testFramework.assert(Compare.isValid());
 
   		CommonTime Test = Compare.convertToCommonTime(); //Convert to
@@ -217,26 +217,23 @@ class ANSITime_T
 //--------------ANSITime_timeSystemTest_4 - Verify different Time System but same time inequality
 		testFramework.assert(GPS1 != UNKNOWN);
 
-//--------------ANSITime_timeSystemTest_5 - Verify different Time System but same time inequality
-		testFramework.assert(GPS1 != UNKNOWN);
-
 		testFramework.changeSourceMethod("ANY TimeSystem == Operator");		
-//--------------ANSITime_timeSystemTest_6 - Verify TimeSystem=ANY does not matter in TimeSystem=GPS comparisons 
+//--------------ANSITime_timeSystemTest_5 - Verify TimeSystem=ANY does not matter in TimeSystem=GPS comparisons 
 		testFramework.assert(GPS1 == ANY);
 
-//--------------ANSITime_timeSystemTest_7 - Verify TimeSystem=ANY does not matter in TimeSystem=UTC comparisons 
+//--------------ANSITime_timeSystemTest_6 - Verify TimeSystem=ANY does not matter in TimeSystem=UTC comparisons 
 		testFramework.assert(UTC1 == ANY);
 
-//--------------ANSITime_timeSystemTest_8 - Verify TimeSystem=ANY does not matter in TimeSystem=UNKOWN comparisons 
+//--------------ANSITime_timeSystemTest_7 - Verify TimeSystem=ANY does not matter in TimeSystem=UNKOWN comparisons 
 		testFramework.assert(UNKNOWN == ANY);
 
 		testFramework.changeSourceMethod("ANY TimeSystem < Operator");	
-//--------------ANSITime_timeSystemTest_9 - Verify TimeSystem=ANY does not matter in other operator comparisons 
+//--------------ANSITime_timeSystemTest_8 - Verify TimeSystem=ANY does not matter in other operator comparisons 
 		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY));
 
 		testFramework.changeSourceMethod("setTimeSystem");	
   		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
-//--------------ANSITime_timeSystemTest_10 - Ensure resetting a Time System changes it
+//--------------ANSITime_timeSystemTest_9 - Ensure resetting a Time System changes it
 		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2));
 
 		return testFramework.countFails();
