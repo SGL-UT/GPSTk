@@ -1,12 +1,13 @@
 #include "YDSTime.hpp"
 #include "TimeTag.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
 using namespace gpstk;
 using namespace std;
 
-class xYDSTime
+class YDSTime_T
 {
 	public:
 
@@ -23,25 +24,25 @@ class xYDSTime
 		YDSTime Compare3(0,2,1,TimeSystem::GPS);
 
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('Y',"2008"));
-		Id.insert(make_pair('j',"2"));
-		Id.insert(make_pair('s',"1"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['Y'] = "2008";
+		Id['j'] = "2";
+		Id['s'] = "1";
+		Id['P'] = "GPS";
 
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
 		if (setFromInfo1 != Compare) return 2;
 		Id.erase('Y');
-		Id.insert(make_pair('y',"06"));
+		Id['y'] = "06";
 		if (!setFromInfo2.setFromInfo(Id)) return 3;
 		if (setFromInfo2 != Compare2) return 4;
 		//Can we set a three digit year with 'y' option? Answer should be no.
 		Id.erase('y');
-		Id.insert(make_pair('y',"006"));
+		Id['y'] = "006";
 		if (!setFromInfo3.setFromInfo(Id)) return 5;
 		if (setFromInfo3 == Compare2) return 6;
 		
 		Id.erase('y');
-		Id.insert(make_pair('y',"2008"));
+		Id['y'] = "2008";
 		if (!setFromInfo4.setFromInfo(Id)) return 5;
 		if (setFromInfo4 != Compare) return 6;
 		Id.erase('y');
@@ -195,7 +196,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xYDSTime testClass;
+	YDSTime_T testClass;
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);

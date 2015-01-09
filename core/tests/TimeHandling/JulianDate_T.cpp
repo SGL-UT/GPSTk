@@ -1,12 +1,13 @@
 #include "JulianDate.hpp"
 #include "TimeTag.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
 using namespace gpstk;
 using namespace std;
 
-class xJulianDate
+class JulianDate_T
 {
 	public:
 
@@ -20,8 +21,8 @@ class xJulianDate
 		JulianDate setFromInfo2;
 		JulianDate Compare(1350000,TimeSystem(2)), Compare2(0,TimeSystem(2));
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('J',"1350000"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['J'] = "1350000";
+		Id['P'] = "GPS";
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
 		if (setFromInfo1 != Compare) return 2;
 		Id.erase('J');
@@ -160,7 +161,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xJulianDate testClass;
+	JulianDate_T testClass;
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);

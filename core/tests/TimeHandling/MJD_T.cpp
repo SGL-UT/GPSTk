@@ -1,12 +1,13 @@
 #include "MJD.hpp"
 #include "TimeTag.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
 using namespace gpstk;
 using namespace std;
 
-class xMJD
+class MJD_T
 {
 	public:
 
@@ -18,8 +19,8 @@ class xMJD
 		MJD setFromInfo2;
 		MJD Compare(135000.0,TimeSystem(2)), Compare2(0.0,TimeSystem(2));
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('Q',"135000.0"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['Q'] = "135000.0";
+		Id['P'] = "GPS";
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
 		if (setFromInfo1 != Compare) return 2;
 		Id.erase('Q');
@@ -159,7 +160,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xMJD testClass;
+	MJD_T testClass;
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);

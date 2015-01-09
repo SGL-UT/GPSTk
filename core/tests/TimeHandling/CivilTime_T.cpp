@@ -1,18 +1,98 @@
 #include "CivilTime.hpp"
 #include "TimeSystem.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
 using namespace gpstk;
 using namespace std;
 
-class xCivilTime
+class CivilTime_T
 {
 	public:
-	xCivilTime(){eps = 1e-12;}// Default Constructor, set the precision value
-	~xCivilTime() {} // Default Desructor
-	double eps;
+	CivilTime_T(){eps = 1e-12;}// Default Constructor, set the precision value
+	~CivilTime_T() {} // Default Desructor
+
 	public:
+
+	/* Test to ensure the values in the constructor go to their intended locations */
+	int  initializationTest (void)
+	{
+		TestUtil testFramework( "ANSITime", "Constructor(time,TimeSystem)", __FILE__, __func__ );
+	  	CivilTime Compare(2008,8,21,13,30,15.); //Initialize an object
+
+//--------------CivilTime_initializationTest_1 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
+
+//--------------CivilTime_initializationTest_2 - Was the year value set to expectation?
+		testFramework.assert(2008 == (int)Compare.year);
+
+//--------------CivilTime_initializationTest_3 - Was the month value set to expectation?
+		testFramework.assert(8 == (int)Compare.month);
+
+//--------------CivilTime_initializationTest_4 - Was the day value set to expectation?
+		testFramework.assert(21 == (int)Compare.day);
+
+//--------------CivilTime_initializationTest_5 - Was the hour value set to expectation?
+		testFramework.assert(13 == (int)Compare.hour);
+
+//--------------CivilTime_initializationTest_6 - Was the minute value set to expectation?
+		testFramework.assert(30 == (int)Compare.minute); 
+
+//--------------CivilTime_initializationTest_7 - Was the second value set to expectation?
+		testFramework.assert(15 == (double)Compare.second); 
+
+
+		testFramework.changeSourceMethod("Constructor(CivilTime)");
+		CivilTime Copy(Compare); // Initialize with copy constructor
+//--------------CivilTime_initializationTest_8 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());
+
+//--------------CivilTime_initializationTest_9 - Was the year value set to expectation?
+		testFramework.assert(2008 == (int)Copy.year);
+
+//--------------CivilTime_initializationTest_10 - Was the month value set to expectation?
+		testFramework.assert(8 == (int)Copy.month);
+
+//--------------CivilTime_initializationTest_11 - Was the day value set to expectation?
+		testFramework.assert(21 == (int)Copy.day);
+
+//--------------CivilTime_initializationTest_12 - Was the hour value set to expectation?
+		testFramework.assert(13 == (int)Copy.hour);
+
+//--------------CivilTime_initializationTest_13 - Was the minute value set to expectation?
+		testFramework.assert(30 == (int)Copy.minute); 
+
+//--------------CivilTime_initializationTest_14 - Was the second value set to expectation?
+		testFramework.assert(15 == (double)Copy.second); 
+
+
+		CivilTime Assigned;
+		Assigned = Compare;
+		testFramework.changeSourceMethod("= Operator");
+//--------------CivilTime_initializationTest_15 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem());
+
+//--------------CivilTime_initializationTest_16 - Was the year value set to expectation?
+		testFramework.assert(2008 == (int)Assigned.year);
+
+//--------------CivilTime_initializationTest_17 - Was the month value set to expectation?
+		testFramework.assert(8 == (int)Assigned.month);
+
+//--------------CivilTime_initializationTest_18 - Was the day value set to expectation?
+		testFramework.assert(21 == (int)Assigned.day);
+
+//--------------CivilTime_initializationTest_19 - Was the hour value set to expectation?
+		testFramework.assert(13 == (int)Assigned.hour);
+
+//--------------CivilTime_initializationTest_20 - Was the minute value set to expectation?
+		testFramework.assert(30 == (int)Assigned.minute); 
+
+//--------------CivilTime_initializationTest_21 - Was the second value set to expectation?
+		testFramework.assert(15 == (double)Assigned.second); 
+		
+		return testFramework.countFails();
+	}
 
 	// Test will check if CivilTime variable can be set from a map.
 	int setFromInfoTest (void)
@@ -26,13 +106,13 @@ class xCivilTime
 
 		//Set several values to set the objects
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('b',"Dec"));
-		Id.insert(make_pair('d',"31"));
-		Id.insert(make_pair('Y',"2008"));
-		Id.insert(make_pair('H',"12"));
-		Id.insert(make_pair('M',"00"));
-		Id.insert(make_pair('S',"00"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['b'] = "Dec";
+		Id['d'] = "31";
+		Id['Y'] = "2008";
+		Id['H'] = "12";
+		Id['M'] = "00";
+		Id['S'] = "00";
+		Id['P'] = "GPS";
 
 		//Can a CivilTime object be set with b,d,Y,H,M,S,P options?
 		if (!(setFromInfo1.setFromInfo(Id))) return 1;
@@ -43,15 +123,15 @@ class xCivilTime
 
 		Id.erase('b');
 		Id.erase('Y');
-		Id.insert(make_pair('m',"12"));
-		Id.insert(make_pair('y',"06"));
+		Id['m'] = "12";
+		Id['y'] = "06";
 
 		//Can a CivilTime object be set with d,m,y,H,M,S,P options?
 		if (!(setFromInfo2.setFromInfo(Id))) return 2;
     		CivilTime Check2(2006,12,31,12,0,0,TimeSystem::GPS);
     		if (setFromInfo2 != Check2) return 3; 
 		Id.erase('y');
-		Id.insert(make_pair('y',"006"));
+		Id['y'] = "006";
 
 		//Can a CivilTime object be set with a 3 digit year?
 		// Answer should be no. 'y' option is for 2 digit years.
@@ -61,7 +141,7 @@ class xCivilTime
 		Id.erase('y');
 		if (!(setFromInfo4.setFromInfo(Id))) return 6;
 		Id.erase('m');
-		Id.insert(make_pair('b',"AAA"));
+		Id['b'] = "AAA";
 		//Can a CivilTime object be set with an improper month?
 		if (setFromInfo5.setFromInfo(Id)) return 7;
 
@@ -123,6 +203,10 @@ class xCivilTime
 	{
   		CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
 
+		// Perform comparisons to start of CommonTime
+  		//if (GPS1.convertToCommonTime() < CommonTime::BEGINNING_OF_TIME) return 11;
+  		//if (CommonTime::BEGINNING_OF_TIME > GPS1) return 12;
+
   		CommonTime Test = Aug21.convertToCommonTime();
 
   		CivilTime Test2;
@@ -147,14 +231,6 @@ class xCivilTime
 	{
 		//Initialize a time
   		CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
-  		if (!(Aug21.getTimeSystem()==TimeSystem(2))) return 1; // Check TimeSystem
-  		if (2008 != (int)Aug21.year) return 2; // Check year value
-  		if (8 != (int)Aug21.month) return 3; // Check month value
-  		if (21 != (int)Aug21.day) return 4; // Check day value
-  		if (13 != (int)Aug21.hour) return 5; // Check hour value
-  		if (30 != (int)Aug21.minute) return 6; // Check minute value
-  		if (15 != (int)Aug21.second) return 7; // Check second value	
-
 
   		Aug21.reset();
   		if (!(Aug21.getTimeSystem()==TimeSystem(0))) return 8; // Check TimeSystem
@@ -180,10 +256,6 @@ class xCivilTime
   		if (GPS1.getTimeSystem() != GPS2.getTimeSystem()) return 2; // Should have the same time system
   		if (GPS1 == UTC1) return 3; //Should have different time systems
   		if (GPS1 == UNKNOWN) return 4;
-
-		// Perform comparisons to start of CommonTime
-  		if (GPS1.convertToCommonTime() < CommonTime::BEGINNING_OF_TIME) return 11;
-  		if (CommonTime::BEGINNING_OF_TIME > GPS1) return 12;
 		
 		// Make TimeSystem part not matter and perform comparisons
 		// which solely depend on the time value.
@@ -214,6 +286,9 @@ class xCivilTime
                        (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime")return 4;
 		return 0;
 	}
+
+	private:
+		double eps;
 };
 
 void checkResult(int check, int& errCount) // Function to handle test result output
@@ -237,7 +312,11 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xCivilTime testClass;
+	CivilTime_T testClass;
+
+	//check = testClass.initializationTest();
+	//errorCounter += check;
+
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);

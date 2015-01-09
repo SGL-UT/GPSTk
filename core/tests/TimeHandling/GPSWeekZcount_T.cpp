@@ -1,16 +1,17 @@
 #include "GPSWeekZcount.hpp"
 #include "TimeTag.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
 using namespace gpstk;
 using namespace std;
 
-class xGPSWeekZcount
+class GPSWeekZcount_T
 {
 	public:
-		xGPSWeekZcount(){eps = 1e-11;}// Default Constructor, set the precision value
-		~xGPSWeekZcount() {} // Default Desructor
+		GPSWeekZcount_T(){eps = 1e-11;}// Default Constructor, set the precision value
+		~GPSWeekZcount_T() {} // Default Desructor
 
 
 	/* Test will check if GPSWeekZcount variable can be set from a map.
@@ -22,15 +23,15 @@ class xGPSWeekZcount
 		GPSWeekZcount setFromInfo3;
 	
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('F',"1300"));
-		Id.insert(make_pair('z',"13500"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['F'] = "1300";
+		Id['z'] = "13500";
+		Id['P'] = "GPS";
 		if(!setFromInfo1.setFromInfo(Id)) return 1;
 		GPSWeekZcount Compare(1300,13500.,TimeSystem(2));
 		if (Compare != setFromInfo1) return 2;
 
 		Id.erase('z');
-		Id.insert(make_pair('w',"3"));
+		Id['w'] = "3";
 		if (!setFromInfo2.setFromInfo(Id)) return 3;
 		GPSWeekZcount Compare2(1300,3*57600L,TimeSystem(2));
 		if (Compare2 != setFromInfo2) return 4;
@@ -182,7 +183,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xGPSWeekZcount testClass;
+	GPSWeekZcount_T testClass;
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);
