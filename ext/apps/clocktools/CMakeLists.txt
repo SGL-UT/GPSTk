@@ -54,5 +54,7 @@ target_link_libraries(trunc gpstk)
 install (TARGETS trunc DESTINATION bin)
 
 install( PROGRAMS allanplot DESTINATION bin )
-install( FILES allanplot.py DESTINATION ${PYTHON_INSTALL_PREFIX} )
+install( FILES allanplot.py DESTINATION bin )
+# install( FILES allanplot.py DESTINATION ${PYTHON_INSTALL_PREFIX} )
+# Will resolve at a later time with Python install package
 
