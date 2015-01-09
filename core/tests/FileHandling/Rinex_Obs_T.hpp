@@ -54,7 +54,7 @@ class xRinexObs
         int hardCodeTest( void );
         int filterOperatorsTest( void );
         int dataExceptionsTest( void );
-        int fileEqualTest( char*, char* );
+        bool fileEqualTest( char*, char* );
 
     private:
 
