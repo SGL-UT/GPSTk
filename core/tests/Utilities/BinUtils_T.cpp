@@ -37,14 +37,14 @@
 #include "BinUtils_T.hpp"
 #include <iostream>
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xBinUtils);
+CPPUNIT_TEST_SUITE_REGISTRATION (BinUtils_T);
 
 
-void xBinUtils :: setUp (void)
+void BinUtils_T :: setUp (void)
 { 
 }
 
-void xBinUtils :: firstTest (void)
+void BinUtils_T :: firstTest (void)
 { 
 	cout.setf(ios_base::hex,ios_base::basefield);
 	

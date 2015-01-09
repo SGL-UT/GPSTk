@@ -48,10 +48,10 @@
 using namespace std;
 
 
-class xSP3EphemerisStore: public CPPUNIT_NS :: TestFixture
+class SP3EphemerisStore_T: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
-	CPPUNIT_TEST_SUITE (xSP3EphemerisStore);
+	CPPUNIT_TEST_SUITE (SP3EphemerisStore_T);
 	CPPUNIT_TEST (SP3Test);
 	CPPUNIT_TEST (SP3getXvtTest);
 	CPPUNIT_TEST (SP3getInitialTimeTest);

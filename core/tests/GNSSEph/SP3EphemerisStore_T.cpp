@@ -34,7 +34,7 @@
 //
 //=============================================================================
 
-// file: xSP3EphemerisStore.cpp
+// file: SP3EphemerisStore_T.cpp
 
 #include "SP3EphemerisStore_T.hpp"
 #include "SatID.hpp"
@@ -43,11 +43,11 @@
 #include "CommonTime.hpp"
 #include "SP3EphemerisStore.hpp"
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xSP3EphemerisStore);
+CPPUNIT_TEST_SUITE_REGISTRATION (SP3EphemerisStore_T);
 
 using namespace gpstk;
 
-void xSP3EphemerisStore :: setUp (void)
+void SP3EphemerisStore_T :: setUp (void)
 {
 }
 
@@ -57,7 +57,7 @@ void xSP3EphemerisStore :: setUp (void)
  * -- a file; also ensures that nonexistent files throw an exception
  */
 
-void xSP3EphemerisStore :: SP3Test(void)
+void SP3EphemerisStore_T :: SP3Test(void)
 {
 	ofstream DumpData;
 	DumpData.open ("SP3_Logs/DumpData.txt");
@@ -76,7 +76,7 @@ void xSP3EphemerisStore :: SP3Test(void)
  * -- SP3 file; also ensures nonexistent SatIDs throw an exception
  */
 
-void xSP3EphemerisStore :: SP3getXvtTest (void)
+void SP3EphemerisStore_T :: SP3getXvtTest (void)
 {
 	SP3EphemerisStore Store;
 	Store.loadFile("igs09000.sp3");
@@ -139,7 +139,7 @@ void xSP3EphemerisStore :: SP3getXvtTest (void)
  * -- the method outputs the initial time stamp in an SP3 file
  */
 
-void xSP3EphemerisStore :: SP3getInitialTimeTest (void)
+void SP3EphemerisStore_T :: SP3getInitialTimeTest (void)
 {
 	SP3EphemerisStore Store;
 	Store.loadFile("igs09000.sp3");
@@ -158,7 +158,7 @@ void xSP3EphemerisStore :: SP3getInitialTimeTest (void)
  * -- the method outputs the final time stamp in an SP3 file
  */
 
-void xSP3EphemerisStore :: SP3getFinalTimeTest (void)
+void SP3EphemerisStore_T :: SP3getFinalTimeTest (void)
 {
 	SP3EphemerisStore Store;
 	Store.loadFile("igs09000.sp3");
@@ -178,7 +178,7 @@ void xSP3EphemerisStore :: SP3getFinalTimeTest (void)
  * -- velocity values and one with only position values
  */
 
-void xSP3EphemerisStore :: SP3getPositionTest (void)
+void SP3EphemerisStore_T :: SP3getPositionTest (void)
 {
 
 	SP3EphemerisStore igsStore;
@@ -236,7 +236,7 @@ void xSP3EphemerisStore :: SP3getPositionTest (void)
  * -- velocity values
  */
 
-void xSP3EphemerisStore :: SP3getVelocityTest (void)
+void SP3EphemerisStore_T :: SP3getVelocityTest (void)
 {
 	SP3EphemerisStore Store;
 	Store.loadFile("apc01000");
@@ -269,7 +269,7 @@ void xSP3EphemerisStore :: SP3getVelocityTest (void)
 /*
  * Can compare two files--necessary for getXvt test
  */
-bool xSP3EphemerisStore :: fileEqualTest (char* handle1, char* handle2)
+bool SP3EphemerisStore_T :: fileEqualTest (char* handle1, char* handle2)
 {
 	bool isEqual = false;
 

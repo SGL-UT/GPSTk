@@ -25,9 +25,9 @@
 using namespace std;
 using namespace gpstk;
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xReferenceFrame);
+CPPUNIT_TEST_SUITE_REGISTRATION (ReferenceFrame_T);
 
-void xReferenceFrame::getFrameTest()
+void ReferenceFrame_T::getFrameTest()
 {
    ReferenceFrame rf1((ReferenceFrame::Frames)0);
    ReferenceFrame::Frames frame1 = (ReferenceFrame::Frames)0;
@@ -47,7 +47,7 @@ void xReferenceFrame::getFrameTest()
    CPPUNIT_ASSERT(rf4.getReferenceFrame() != frame4);
    CPPUNIT_ASSERT(rf4.getReferenceFrame() == frame1);
 }
-void xReferenceFrame::asStringTest()
+void ReferenceFrame_T::asStringTest()
 {
    string pz("PZ90");
    string wgs("WGS84");
@@ -62,7 +62,7 @@ void xReferenceFrame::asStringTest()
    ReferenceFrame rf3(ReferenceFrame::Unknown);
    CPPUNIT_ASSERT(rf3.asString() == unk);
 }
-void xReferenceFrame::equalityTest()
+void ReferenceFrame_T::equalityTest()
 {
    ReferenceFrame rf1(ReferenceFrame::PZ90);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
@@ -95,7 +95,7 @@ void xReferenceFrame::equalityTest()
    CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 == rf5 ));
    CPPUNIT_ASSERT( rf3 == rf6 );
 }
-void xReferenceFrame::inequalityTest()
+void ReferenceFrame_T::inequalityTest()
 {
    ReferenceFrame rf1(ReferenceFrame::PZ90);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
@@ -128,7 +128,7 @@ void xReferenceFrame::inequalityTest()
    CPPUNIT_ASSERT( rf3 != rf5 );
    CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 != rf6 ));
 }
-void xReferenceFrame::greaterThanTest()
+void ReferenceFrame_T::greaterThanTest()
 {
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
@@ -158,7 +158,7 @@ void xReferenceFrame::greaterThanTest()
    CPPUNIT_ASSERT( rf3 > rf5 );
    CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 > rf6 ));
 }
-void xReferenceFrame::lessThanTest()
+void ReferenceFrame_T::lessThanTest()
 {
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
@@ -188,7 +188,7 @@ void xReferenceFrame::lessThanTest()
    CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf5 ));
    CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 < rf6 ));
 }
-void xReferenceFrame::greaterThanOrEqualToTest()
+void ReferenceFrame_T::greaterThanOrEqualToTest()
 {
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
@@ -219,7 +219,7 @@ void xReferenceFrame::greaterThanOrEqualToTest()
    CPPUNIT_ASSERT( rf3 >= rf5 );
    CPPUNIT_ASSERT( rf3 >= rf6 );
 }
-void xReferenceFrame::lesserThanOrEqualToTest()
+void ReferenceFrame_T::lesserThanOrEqualToTest()
 {
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);
@@ -249,7 +249,7 @@ void xReferenceFrame::lesserThanOrEqualToTest()
    CPPUNIT_ASSERT_ASSERTION_FAIL(CPPUNIT_ASSERT( rf3 <= rf5 ));
    CPPUNIT_ASSERT( rf3 <= rf6 );
 }
-void xReferenceFrame::setReferenceFrameTest()
+void ReferenceFrame_T::setReferenceFrameTest()
 {
    ReferenceFrame rf1(ReferenceFrame::Unknown);
    ReferenceFrame rf2(ReferenceFrame::WGS84);

@@ -6,15 +6,15 @@
 using namespace gpstk;
 using namespace std;
 
-class xMatrix
+class Matrix_T
 {
 	public:
-	xMatrix() // Default Constructor, set values that will be used frequently
+	Matrix_T() // Default Constructor, set values that will be used frequently
 	{
 		eps = 1e-12;
 
 	}
-	~xMatrix() // Default Desructor
+	~Matrix_T() // Default Desructor
 	{       // finally delete objects
 
 	} 
@@ -205,7 +205,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xMatrix testClass;
+	Matrix_T testClass;
 
 	check = testClass.sizeTest();
         std::cout << "sizeTest Result is: ";

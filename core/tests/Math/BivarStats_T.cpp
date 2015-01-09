@@ -2,11 +2,11 @@
 #include "Vector.hpp"
 #include <iostream>
 
-class StatsTest
+class BivarStats_T
 {
         public: 
-		StatsTest(){eps = 1e-12;}// Default Constructor, set the precision value
-		~StatsTest() {} // Default Desructor
+		BivarStats_T(){eps = 1e-12;}// Default Constructor, set the precision value
+		~BivarStats_T() {} // Default Desructor
 		double eps;
 		int addTest()
 		// Test to add data. Want to add single values to empty Stats class.
@@ -272,7 +272,7 @@ void checkResult(int check, int& errCount)
 int main()
 {
 	int check, errorCounter = 0;
-	StatsTest testClass;
+	BivarStats_T testClass;
 	check = testClass.addTest();
         std::cout << "add Result is: ";
 	checkResult(check, errorCounter);

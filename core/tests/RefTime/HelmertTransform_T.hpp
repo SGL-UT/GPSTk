@@ -49,9 +49,9 @@
 
 using namespace std;
 
-class xHelmertTransform : public CPPUNIT_NS :: TestFixture
+class HelmertTransform_T : public CPPUNIT_NS :: TestFixture
 {
-   CPPUNIT_TEST_SUITE (xHelmertTransform);
+   CPPUNIT_TEST_SUITE (HelmertTransform_T);
    CPPUNIT_TEST (positionTransformTest);
    CPPUNIT_TEST (xtTransformTest);
    CPPUNIT_TEST (xvtTransformTest);
