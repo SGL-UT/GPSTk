@@ -35,6 +35,7 @@
 //=============================================================================
 
 #include "Rinex_Obs_T.hpp"
+#include "TestUtil.hpp"
 #include<iostream>
 #include<string>
 
@@ -47,8 +48,8 @@ using namespace gpstk;
 //------------------------------------------------------------
 int xRinexObs :: headerExceptionTest( void )
 {
-    int fail_counter = 0;
 
+    TestUtil test1( "RinexObsStream", "dump", __FILE__, __func__ );
     try
     {
         gpstk::RinexObsStream RinexObsFile( "RinexObs_Logs/RinexObsFile.06o" );
@@ -122,21 +123,20 @@ int xRinexObs :: headerExceptionTest( void )
         ilh.dump( dump );
         gpstk::DisplayExtendedRinexObsTypes( dump );
 
-        if( RinexObsFileh.NumberHeaderRecordsToBeWritten() != 39 )
-        {
-          fail_counter++;
-          std::cout << "GPSTK_TEST_RESULT, RinexObs_T, xRinexObs, headerExceptionTest, subtest1, 1"  << std::endl;
-        }
+        test1.assert( RinexObsFileh.NumberHeaderRecordsToBeWritten() == 39 );
+        test1.print();
     }
     catch(...)
     {
       // the reported num_fails here should be the total of all the tests above
       // since if the try block fails, we have no way to know if any of the tests passed.
-        fail_counter++;
-        std::cout << "GPSTK_TEST_RESULT, RinexObs_T, xRinexObs, headerExceptionTest, subtest, 1"  << std::endl;
+
+        test1.fail();
+        test1.print();
+
     }
 
-    return( fail_counter );
+    return( test1.countFails() );
 }
 
 
@@ -147,10 +147,7 @@ int xRinexObs :: headerExceptionTest( void )
 int xRinexObs :: hardCodeTest( void )
 {
 
-    int fail_counter = 0;
-    int test_fail    = 1;
-    bool test_result = false;
-    bool test_pass   = false;
+    TestUtil test2( "RinexObsStream", "dump", __FILE__, __func__ );
 
     try
     {
@@ -171,19 +168,17 @@ int xRinexObs :: hardCodeTest( void )
         RinexObsFiled.dump( dump );
         RinexObsFileh.dump( dump );
 
-        test_fail = fileEqualTest( (char*)"RinexObs_Logs/RinexObsFile.06o", 
-                                   (char*)"RinexObs_Logs/TestOutput2.06o"   );
-        if( test_fail )
-        {
-            fail_counter++;
-        }
+        test2.assert( fileEqualTest( (char*)"RinexObs_Logs/RinexObsFile.06o", 
+                                     (char*)"RinexObs_Logs/TestOutput2.06o"   )
+                    );
     }
     catch(...)
     {
-        fail_counter++;
+        test2.fail();
     }
+    test2.print();
 
-    return( fail_counter );
+    return( test2.countFails() );
 }
 
 //------------------------------------------------------------
@@ -193,7 +188,7 @@ int xRinexObs :: hardCodeTest( void )
 int xRinexObs :: dataExceptionsTest( void )
 {
 
-    int fail_counter = 0;
+    TestUtil test3( "RinexObsStream", "dump", __FILE__, __func__ );
 
     try
       {
@@ -226,10 +221,11 @@ int xRinexObs :: dataExceptionsTest( void )
       }
     catch(...)
       {
-        fail_counter++;
+        test3.fail();
       }
+      test3.print();
 
-    return( fail_counter );
+    return( test3.countFails() );
 
 }
 
@@ -239,9 +235,8 @@ int xRinexObs :: dataExceptionsTest( void )
 //------------------------------------------------------------
 int xRinexObs :: filterOperatorsTest( void )
 {
-    int fail_counter = 0;
-    bool test_result = false;
-    bool test_pass   = false;
+
+    TestUtil test4( "RinexObsStream", "open", __FILE__, __func__ );
 
     try
     {
@@ -291,60 +286,35 @@ int xRinexObs :: filterOperatorsTest( void )
 
         //----------------------------------------
         gpstk::RinexObsDataOperatorEqualsSimple EqualsSimple;
-        test_pass   = false;
-        test_result = EqualsSimple( FilterData1, FilterData1 );
-        if( test_result == true )
-        {
-            test_pass = true;
-        }
-        else
-        {
-            fail_counter++;
-        }
+        test4.assert( EqualsSimple( FilterData1, FilterData1 ) );
+        test4.print();
 
         //----------------------------------------
         gpstk::RinexObsDataOperatorLessThanSimple LessThanSimple;
-        test_pass   = false;
-        test_result = LessThanSimple( FilterData1, FilterData1 );
-        if( test_result == false )
-        {
-            test_pass = true;
-        }
-        else
-        {
-            fail_counter++;
-        }
+        test4.next();
+        test4.assert( !LessThanSimple( FilterData1, FilterData1 ) );
+        test4.print();
 
         //----------------------------------------
         //----------------------------------------
         gpstk::RinexObsDataOperatorLessThanFull LessThanFull( merged.obsSet );
-        test_pass   = false;
-        test_result = LessThanFull( FilterData1, FilterData1 );
-        if( test_result == false )
-        {
-            test_pass = true;
-        }
-        else
-        {
-            fail_counter++;
-        }
 
-        test_pass   = false;
-        test_result = LessThanFull( FilterData1, FilterData2 );
-        if( test_result == false )
-        {
-            test_pass = true;
-        }
-        else
-        {
-            fail_counter++;
-        }
+        test4.next();
+        test4.assert( !LessThanFull( FilterData1, FilterData1 ) );
+        test4.print();
+
+        test4.next();
+        test4.assert( !LessThanFull( FilterData1, FilterData2 ) );
+        test4.print();
 
     }
     catch(...)
     {
-        fail_counter++;
+        test4.fail();
+        test4.print();
     }
+
+    return( test4.countFails() );
 
 }
 
@@ -356,9 +326,9 @@ int xRinexObs :: filterOperatorsTest( void )
 // Skips the first two lines becasue dates are often writen as the current
 // data and thus very hard to pin down a specific time for.
 //------------------------------------------------------------
-int xRinexObs :: fileEqualTest( char* handle1, char* handle2 )
+bool xRinexObs :: fileEqualTest( char* handle1, char* handle2 )
 {
-    int test_fail = 1;
+    bool files_equal = false;
     int counter = 2;
     std::ifstream File1;
     std::ifstream File2;
@@ -377,8 +347,8 @@ int xRinexObs :: fileEqualTest( char* handle1, char* handle2 )
         if( File2.eof() )
             {
                 cout << counter << "ONE" << endl;
-                test_fail = 1;
-                return( test_fail );
+                files_equal = false;
+                return( files_equal );
             }
         getline( File1, File1Line );
         getline( File2, File2Line );
@@ -386,21 +356,21 @@ int xRinexObs :: fileEqualTest( char* handle1, char* handle2 )
         if( File1Line != File2Line )
         {
             cout << counter << "TWO" << endl;
-            test_fail = 1;
-            return( test_fail );
+            files_equal = false;
+            return( files_equal );
         }
     }
 
     if( !File2.eof() )
     {
         cout << counter << "THREE" << endl;
-        test_fail = 1;
-        return( test_fail );
+        files_equal = false;
+        return( files_equal );
     }
     else
     {
-        test_fail = 0;
-        return( test_fail );
+        files_equal = true;
+        return( files_equal );
     }
 }
 
