@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# purpose: shell wrapper for python application allanplot.py
+#
+# exec "$0.py" "$@"
+
+allanplot.py "$@"
+
