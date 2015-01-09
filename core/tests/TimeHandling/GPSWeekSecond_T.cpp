@@ -1,5 +1,6 @@
 #include "GPSWeekSecond.hpp"
 #include "TimeTag.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -15,11 +16,11 @@ using namespace std;
 
 
 
-class xGPSWeekSecond
+class GPSWeekSecond_T
 {
 	public:
-		xGPSWeekSecond(){eps = 1e-11;}// Default Constructor, set the precision value
-		~xGPSWeekSecond() {} // Default Desructor
+		GPSWeekSecond_T(){eps = 1e-11;}// Default Constructor, set the precision value
+		~GPSWeekSecond_T() {} // Default Desructor
 
 
 	/* Test will check if GPSWeekSecond variable can be set from a map.
@@ -27,33 +28,14 @@ class xGPSWeekSecond
 	int setFromInfoTest (void)
 	{
 	
-		/*GPSWeekSecond setFromInfo1;
-		GPSWeekSecond setFromInfo2;
-
-		TimeTag::IdToValue Id;
-		Id.insert(make_pair('F',"1300"));
-		Id.insert(make_pair('g',"13500"));
-		Id.insert(make_pair('P',"GPS"));
-		cout << (bool)setFromInfo1.setFromInfo(Id) << endl;
-		if (!setFromInfo1.setFromInfo(Id)) return 1;
-		GPSWeekSecond Compare(1300,13500.,TimeSystem(2));
-		if (Compare != setFromInfo1) return 2;
-		Id.erase('F');
-		if (!setFromInfo2.setFromInfo(Id)) return 3;
-		GPSWeekSecond Compare2(0,13500.,TimeSystem(2));
-		if (Compare2 != setFromInfo2) return 4;
-	
-		return 0;*/
-	
-
 		GPSWeekSecond setFromInfo1;
 		GPSWeekSecond setFromInfo2;
 		int numErrors = 0;
 
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('F',"1300"));
-		Id.insert(make_pair('g',"13500"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['F'] = "1300";
+		Id['g'] = "13500";
+		Id['P'] = "GPS";
 		testAssertion(setFromInfo1.setFromInfo(Id),numErrors);
 		GPSWeekSecond Compare(1300,13500.,TimeSystem(2));
 		testAssertion(Compare == setFromInfo1 , numErrors);
@@ -207,7 +189,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xGPSWeekSecond testClass;
+	GPSWeekSecond_T testClass;
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);

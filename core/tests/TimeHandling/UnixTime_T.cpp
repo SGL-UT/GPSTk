@@ -1,12 +1,13 @@
 #include "UnixTime.hpp"
 #include "TimeTag.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
 using namespace gpstk;
 using namespace std;
 
-class xUnixTime
+class UnixTime_T
 {
 	public:
 
@@ -18,9 +19,9 @@ class xUnixTime
 		UnixTime setFromInfo2;
 		UnixTime Compare(1350000,1,TimeSystem(2)),Compare2(0,1,TimeSystem(2));
 		TimeTag::IdToValue Id;
-		Id.insert(make_pair('U',"1350000"));
-		Id.insert(make_pair('u',"1"));
-		Id.insert(make_pair('P',"GPS"));
+		Id['U'] = "1350000";
+		Id['u'] = "1";
+		Id['P'] = "GPS";
 		if (!setFromInfo1.setFromInfo(Id)) return 1;
 		if (setFromInfo1 != Compare) return 2;
 		Id.erase('U');
@@ -164,7 +165,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xUnixTime testClass;
+	UnixTime_T testClass;
 	check = testClass.operatorTest();
         std::cout << "opertatorTest Result is: ";
 	checkResult(check, errorCounter);
