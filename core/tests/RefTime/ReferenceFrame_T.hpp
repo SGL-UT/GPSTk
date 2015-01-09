@@ -41,9 +41,9 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include "ReferenceFrame.hpp"
 namespace gpstk{
-   class xReferenceFrame : public CPPUNIT_NS :: TestFixture
+   class ReferenceFrame_T : public CPPUNIT_NS :: TestFixture
    {
-      CPPUNIT_TEST_SUITE (xReferenceFrame);
+      CPPUNIT_TEST_SUITE (ReferenceFrame_T);
       CPPUNIT_TEST (getFrameTest);
       CPPUNIT_TEST (asStringTest);
       CPPUNIT_TEST (equalityTest);

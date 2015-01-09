@@ -38,16 +38,16 @@
 
 
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xIonoModel);
+CPPUNIT_TEST_SUITE_REGISTRATION (IonoModel_T);
 
-void xIonoModel :: setUp (void)
+void IonoModel_T :: setUp (void)
 {
 }
 
 /*
 ****Test to assert the quality of the == operator of the IonoModel class
 */
-void xIonoModel :: equalityTest (void)
+void IonoModel_T :: equalityTest (void)
 {
 	//Create many alpha and beta arrays which deine the Ionospheric model
 	double a[4] = {1.,2.,3.,4.};
@@ -66,7 +66,7 @@ void xIonoModel :: equalityTest (void)
 /*
 ****Test to assert the quality of the != operator of the IonoModel class
 */
-void xIonoModel :: nonEqualityTest (void)
+void IonoModel_T :: nonEqualityTest (void)
 {
 	//Create many alpha and beta arrays which deine the Ionospheric model
 	double a[4] = {1.,2.,3.,4.};
@@ -85,7 +85,7 @@ void xIonoModel :: nonEqualityTest (void)
 ****Test to assert the quality of the isValid() member of the IonoModel
 ****class.
 */
-void xIonoModel :: validTest (void)
+void IonoModel_T :: validTest (void)
 {
 	//Instantiate a blank almanac
 	gpstk::EngAlmanac blankAlmanac;
@@ -111,7 +111,7 @@ void xIonoModel :: validTest (void)
 **** exception to throw the way I wanted it to.  I have set it to assert fail so I can
 **** come back at a later date to fix it.
 */
-void xIonoModel :: exceptionTest (void)
+void IonoModel_T :: exceptionTest (void)
 {
 	//Default constructer for Almanac will give a blank almanac
 	gpstk::EngAlmanac blankAlmanac;

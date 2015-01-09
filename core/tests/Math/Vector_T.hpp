@@ -44,10 +44,10 @@
 using namespace std;
 
  
-class xVector: public CPPUNIT_NS :: TestFixture
+class Vector_T: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
-	CPPUNIT_TEST_SUITE (xVector);
+	CPPUNIT_TEST_SUITE (Vector_T);
 	CPPUNIT_TEST (getTest);
 	CPPUNIT_TEST (operatorTest);
 	

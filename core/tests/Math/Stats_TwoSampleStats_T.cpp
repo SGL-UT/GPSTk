@@ -2,11 +2,11 @@
 #include "Vector.hpp"
 #include <iostream>
 
-class StatsTest
+class Stats_TwoSampleStats_T
 {
         public: 
-		StatsTest(){eps = 1e-12;}// Default Constructor, set the precision value
-		~StatsTest() {} // Default Desructor
+		Stats_TwoSampleStats_T(){eps = 1e-12;}// Default Constructor, set the precision value
+		~Stats_TwoSampleStats_T() {} // Default Desructor
 		double eps;
 		int AddTest()
 		// Test to add data. Want to add single values to empty Stats class.
@@ -271,7 +271,7 @@ void checkResult(int check, int& errCount)// Function to handle test result outp
 int main()//Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	StatsTest testClass;
+	Stats_TwoSampleStats_T testClass;
 	check = testClass.AddTest();
         std::cout << "Add Result is: ";
 	checkResult(check, errorCounter);

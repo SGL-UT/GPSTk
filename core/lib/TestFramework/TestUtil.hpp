@@ -138,7 +138,7 @@ public:
       // some C++ implementations do not include the std:to_string() method
       std::ostringstream ss;
       ss << failBit;
-      std:string failString = ss.str();
+      std::string failString = ss.str();
 
       // print test description and result to stdout
       std::cout     <<
@@ -148,7 +148,7 @@ public:
       testFilename  << ", " << \
       testMethod    << ", " << \
       subtestID     << ", " << \
-      failString    << endl;
+      failString    << std::endl;
   }
 
   //----------------------------------------
@@ -209,6 +209,6 @@ private:
   double tolerance = 0;
   int failCount    = 0;
   // int testCount    = 0;
-  ostringstream testOutputStream; // Printed out to screen, but why bother since
+  std::ostringstream testOutputStream; // Printed out to screen, but why bother since
                                   //  we just use std::cout everywhere?
 };

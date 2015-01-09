@@ -44,10 +44,10 @@
 using namespace std;
 
  
-class xIonoModel: public CPPUNIT_NS :: TestFixture
+class IonoModel_T: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
-	CPPUNIT_TEST_SUITE (xIonoModel);
+	CPPUNIT_TEST_SUITE (IonoModel_T);
 	CPPUNIT_TEST (equalityTest);
 	CPPUNIT_TEST (nonEqualityTest);
 	CPPUNIT_TEST (validTest);

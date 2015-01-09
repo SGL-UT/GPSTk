@@ -36,16 +36,16 @@
 
 #include "HelmertTransform_T.hpp"
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xHelmertTransform);
+CPPUNIT_TEST_SUITE_REGISTRATION (HelmertTransform_T);
 
 using namespace gpstk;
 
-void xHelmertTransform::setUp()
+void HelmertTransform_T::setUp()
 {
 
 }
 
-void xHelmertTransform::positionTransformTest()
+void HelmertTransform_T::positionTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 
@@ -70,7 +70,7 @@ void xHelmertTransform::positionTransformTest()
    CPPUNIT_ASSERT( pos.getY() == pos2.getY() );
    CPPUNIT_ASSERT( pos.getZ() == pos2.getZ() );
 }
-void xHelmertTransform::xtTransformTest()
+void HelmertTransform_T::xtTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 
@@ -97,7 +97,7 @@ void xHelmertTransform::xtTransformTest()
    CPPUNIT_ASSERT( pos.x[1] == pos2.x[1] );
    CPPUNIT_ASSERT( pos.x[2] == pos2.x[2] );
 }
-void xHelmertTransform::xvtTransformTest()
+void HelmertTransform_T::xvtTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 
@@ -133,7 +133,7 @@ void xHelmertTransform::xvtTransformTest()
    CPPUNIT_ASSERT( pos.v[1] == pos2.v[1] );
    CPPUNIT_ASSERT( pos.v[2] == pos2.v[2] );
 }
-void xHelmertTransform::triplePosTransformTest()
+void HelmertTransform_T::triplePosTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 
@@ -156,7 +156,7 @@ void xHelmertTransform::triplePosTransformTest()
    CPPUNIT_ASSERT( pos[1] == pos2[1] );
    CPPUNIT_ASSERT( pos[2] == pos2[2] );
 }
-void xHelmertTransform::tripleVelTransformTest()
+void HelmertTransform_T::tripleVelTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 
@@ -179,7 +179,7 @@ void xHelmertTransform::tripleVelTransformTest()
    CPPUNIT_ASSERT( vel[1] == vel2[1] );
    CPPUNIT_ASSERT( vel[2] == vel2[2] );
 }
-void xHelmertTransform::vectorPosTransformTest()
+void HelmertTransform_T::vectorPosTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 
@@ -214,7 +214,7 @@ void xHelmertTransform::vectorPosTransformTest()
    CPPUNIT_ASSERT(pos(1) == pos2(1));
    CPPUNIT_ASSERT(pos(2) == pos2(2));
 }
-void xHelmertTransform::vectorVelTransformTest()
+void HelmertTransform_T::vectorVelTransformTest()
 {
    HelmertTransform helmert = HelmertTransform();
 

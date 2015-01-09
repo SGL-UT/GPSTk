@@ -6,11 +6,11 @@ using namespace std;
 using namespace gpstk;
 using namespace gpstk::StringUtils;
 
-class xPosition
+class Position_T
 {
 	public:
-	xPosition(){eps = 1e-3;}// Default Constructor, set the precision value
-	~xPosition() {} // Default Desructor
+	Position_T(){eps = 1e-3;}// Default Constructor, set the precision value
+	~Position_T() {} // Default Desructor
 	double eps;
 
 	/* Test will check the transforms of Position Objects.
@@ -330,7 +330,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xPosition testClass;
+	Position_T testClass;
 
 	check = testClass.rangeTest();
         std::cout << "rangeTest Result is: ";

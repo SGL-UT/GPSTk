@@ -36,13 +36,13 @@
 
 #include "Vector_T.hpp"
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xVector);
+CPPUNIT_TEST_SUITE_REGISTRATION (Vector_T);
 
-void xVector :: setUp (void) 
+void Vector_T :: setUp (void) 
 { 
 }	
 
-void xVector :: getTest (void)
+void Vector_T :: getTest (void)
 {
    gpstk::Vector<double> v1(250,1.0);
    gpstk::Vector<double> v2(1000,5.0);
@@ -60,7 +60,7 @@ void xVector :: getTest (void)
    }
 }
 
-void xVector :: operatorTest (void)
+void Vector_T :: operatorTest (void)
 {
    gpstk::Vector<double> v1(3,1.0);
    gpstk::Vector<double> v2(12,3.0);

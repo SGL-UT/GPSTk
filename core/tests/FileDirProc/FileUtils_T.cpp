@@ -1,3 +1,4 @@
+#include "TestUtil.hpp"
 #include <iostream>
 
 class FileUtilsTest

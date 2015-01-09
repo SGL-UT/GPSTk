@@ -44,10 +44,10 @@
 using namespace std;
 
  
-class xBinUtils: public CPPUNIT_NS :: TestFixture
+class BinUtils_T: public CPPUNIT_NS :: TestFixture
 {
 	//Test Fixture information, e.g. what tests will be run
-	CPPUNIT_TEST_SUITE (xBinUtils);
+	CPPUNIT_TEST_SUITE (BinUtils_T);
 	CPPUNIT_TEST (firstTest);
 	CPPUNIT_TEST_SUITE_END ();
 

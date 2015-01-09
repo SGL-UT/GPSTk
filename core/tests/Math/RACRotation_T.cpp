@@ -12,11 +12,11 @@ using namespace gpstk;
 using namespace std;
 
 /* Tests should be cleaned to use a == or != operator for the Triple class, once one is added.*/
-class xRACRotation
+class RACRotation_T
 {
 	public:
-		xRACRotation(){eps = 1e-12;}// Default Constructor, set the precision value
-		~xRACRotation() {} // Default Desructor
+		RACRotation_T(){eps = 1e-12;}// Default Constructor, set the precision value
+		~RACRotation_T() {} // Default Desructor
 		// First test case.  SV at GPS orbit altitude at 0 deg N, 0 deg E
 		// Heading due N at 4 km/sec
 		// Resulting RAC matrix: [  1  0  0]
@@ -315,7 +315,7 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xRACRotation testClass;
+	RACRotation_T testClass;
 
 	check = testClass.tripleFirstTest();
         std::cout << "tripleFirstTest Result is: ";
