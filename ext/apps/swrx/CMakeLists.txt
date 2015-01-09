@@ -29,6 +29,7 @@ target_link_libraries(iqdump simlib)
 
 add_executable(codeDump codeDump.cpp)
 target_link_libraries(codeDump simlib)
+install (TARGETS codeDump DESTINATION bin)
 
 add_executable(position position.cpp)
 target_link_libraries(position simlib)
