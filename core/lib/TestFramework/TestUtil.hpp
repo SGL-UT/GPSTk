@@ -135,12 +135,12 @@ public:
   void print( )
   {
 
-      // the C++ compiler on clau is fucking retarded!
+      // some C++ implementations do not include the std:to_string() method
       std::ostringstream ss;
       ss << failBit;
       std:string failString = ss.str();
 
-      // print shit
+      // print test description and result to stdout
       std::cout     <<
       outputKeyword << ", " << \
       sourceClass   << ", " << \
