@@ -21,19 +21,19 @@
 //     myTest.print();
 //
 //     myTest.next();
-//     if( 2 > 1 ), myTest.fail();
-//     myTest.print();
+//     myTest.changeSourceMethod("SomeOtherMethod");
+//     if( 2 > 1 ) myTest.failTest();
+//     else myTest.passTest();
 //
-//     myTest.next();
-//     if( 2 < 1 ), myTest.fail();
-//     myTest.print();
+//     if( 2 < 1 ), myTest.failTest();
+//     else myTest.passTest();
 //
 // Output: stdout from above myTest.print() calls would be:
 //
 //     TestOutput, SomeClass, SomeMethod, myTestFile, myTestMethod, 1, 1
 //     TestOutput, SomeClass, SomeMethod, myTestFile, myTestMethod, 2, 0
-//     TestOutput, SomeClass, SomeMethod, myTestFile, myTestMethod, 3, 0
-//     TestOutput, SomeClass, SomeMethod, myTestFile, myTestMethod, 4, 1
+//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, myTestMethod, 3, 0
+//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, myTestMethod, 4, 1
 //
 //============================================================
 class TestUtil
@@ -221,6 +221,50 @@ public:
   int countTests( void )
   {
     return( testCount );
+  }
+
+  //----------------------------------------
+  // Method:  changeSourceMethod()
+  // Purpose: changeSourceMethod allows for the change of the method,
+  //          function, or feature of the source class under test
+  //          in the test output stream.
+  // Usage:   to be called as needed to change the sourceMethod string
+  // Inputs:  1
+  //          string newMethod
+  // Outputs: none
+  //----------------------------------------
+  void changeSourceMethod(std::string newMethod )
+  {
+    sourceMethod = newMethod;
+  }
+
+  //----------------------------------------
+  // Method:  passTest()
+  // Purpose: For cases without booleans to use for assert(), print out
+  //          the PASS message and move to the next test.
+  // Usage:   to be called as needed to produce passing output
+  // Inputs:  none
+  // Outputs: none
+  //----------------------------------------
+  void passTest( void )
+  {
+    print();
+    next();
+  }
+
+  //----------------------------------------
+  // Method:  failTest()
+  // Purpose: For cases without booleans to use for assert(), print out
+  //          the FAIL message and move to the next test.
+  // Usage:   to be called as needed to produce failing output
+  // Inputs:  none
+  // Outputs: none
+  //----------------------------------------
+  void failTest( void )
+  {
+    fail();
+    print();
+    next();
   }
 
 private:
