@@ -694,7 +694,7 @@ int ExecuteEditCmd(const vector<EditCmd>::iterator& it, Rinex3ObsHeader& Rhead,
                for(i=0; i<3; i++) Rhead.antennaPosition[i] = asDouble(flds[i]);
             }
             if(!C.HDm.empty()) Rhead.markerName = C.HDm;
-            if(!C.HDn.empty()) Rhead.markerNumber = C.HDx;
+            if(!C.HDn.empty()) Rhead.markerNumber = C.HDn;
             if(!C.HDt.empty()) Rhead.antType = C.HDt;
             if(!C.HDh.empty()) {
                flds = split(C.HDh,',');   // TD check n==3,doubles in Initialize
