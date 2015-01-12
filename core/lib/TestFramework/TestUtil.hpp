@@ -248,6 +248,7 @@ public:
   //----------------------------------------
   void passTest( void )
   {
+    pass();
     print();
     next();
   }

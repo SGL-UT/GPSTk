@@ -57,6 +57,7 @@ namespace gpstk
       try
       {
          RinexNavStream strm(filename.c_str());
+	 strm.open(filename.cstr());
 	 if (strm.is_open())
 	 {
 	   RinexNavHeader header;
