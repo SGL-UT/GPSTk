@@ -19,7 +19,7 @@ class CivilTime_T
 	int  initializationTest (void)
 	{
 		TestUtil testFramework( "CivilTime", "Constructor(time,TimeSystem)", __FILE__, __func__ );
-	  	CivilTime Compare(2008,8,21,13,30,15.); //Initialize an object
+	  	CivilTime Compare(2008,8,21,13,30,15.,TimeSystem::GPS); //Initialize an object
 
 //--------------CivilTime_initializationTest_1 - Was the time system set to expectation?
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
@@ -190,8 +190,6 @@ class CivilTime_T
 	int operatorTest (void)
 	{
 		TestUtil testFramework( "CivilTime", "== Operator", __FILE__, __func__ );
-		
-		CivilTime Zero; //Use default constructor
 
 		CivilTime Aug21(2008,8,21,13,30,15.); //Reference time
 		// Series of conditions less than Aug21 above
@@ -221,7 +219,7 @@ class CivilTime_T
 		testFramework.next();
 
 //--------------CivilTime_operatorTest_4 - Does the < operator function when left_year > right_year?
-		testFramework.assert(!(Aug21 < LessThanYear);
+		testFramework.assert(!(Aug21 < LessThanYear));
 		testFramework.next();
 
 //--------------CivilTime_operatorTest_5 - Does the < operator function when left_month < right_month?
@@ -285,14 +283,6 @@ class CivilTime_T
 
 //--------------CivilTime_operatorTest_19 - Does the >= operator function when left_year = right_year?
 		testFramework.assert(Aug21 >= Aug21Copy);
-		testFramework.next();
-
-//--------------CivilTime_operatorTest_20 - Is the set object valid?
-		testFramework.assert(Aug21.isValid());
-		testFramework.next();
-
-//--------------CivilTime_operatorTest_21 - Is the default constructor set object valid?
-		testFramework.assert(!(Zero.isValid()));
 		testFramework.next();
 
 		return testFramework.countFails();
@@ -469,12 +459,12 @@ class CivilTime_T
   		CivilTime UTC1(2008,8,21,13,30,15.,TimeSystem::UTC);
 
 //--------------CivilTime_printfTest_1 - Verify printed output matches expectation
-		testFramework.assert("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P") ==
+		testFramework.assert(GPS1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P") ==
                        (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 GPS");
 		testFramework.next();
 
 //--------------CivilTime_printfTest_2 - Verify printed output matches expectation
-		testFramework.assert("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P") ==
+		testFramework.assert(UTC1.printf("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P") ==
                        (std::string)"2008 08 08 Aug 21 13 30 15 15.000000 UTC");
 		testFramework.next();
 
@@ -485,7 +475,7 @@ class CivilTime_T
 		testFramework.next();
 
 //--------------CivilTime_printfTest_4 - Verify printed error message matches expectation
-		testFramework.assert("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P") ==
+		testFramework.assert(UTC1.printError("%04Y %02y %02m %02b %02d %02H %02M %02S %02f %02P") ==
                        (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
 		testFramework.next();
 		
@@ -496,60 +486,31 @@ class CivilTime_T
 		double eps;
 };
 
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
-
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	CivilTime_T testClass;
 
-	//check = testClass.initializationTest();
-	//errorCounter += check;
+	check = testClass.initializationTest();
+	errorCounter += check;
 
 	check = testClass.operatorTest();
-        std::cout << "opertatorTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+        errorCounter += check;
 
 	check = testClass.setFromInfoTest();
-        std::cout << "setFromInfoTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+        errorCounter += check;
 
 	check = testClass.resetTest();
-        std::cout << "resetTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+        errorCounter += check;
 
 	check = testClass.timeSystemTest();
-        std::cout << "timeSystemTest Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+        errorCounter += check;
+
 	check = testClass.toFromCommonTimeTest();
-        std::cout << "toFromCommonTimeTest Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+        errorCounter += check;
 
 	check = testClass.printfTest();
-        std::cout << "printfTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+        errorCounter += check;
 	
 	std::cout << "Total Errors: " << errorCounter << std::endl;
 
