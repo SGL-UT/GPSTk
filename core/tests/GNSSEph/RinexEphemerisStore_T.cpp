@@ -82,37 +82,33 @@ class RinexEphemerisStore_T
 			catch (...) {testFramework.failTest();}
 			RinexEphemerisStore Store; 
 
-			//------------------------------------------------------------------------------
-			// SHOULDN'T THIS FAIL?
+			/*------------------------------------------------------------------------------
+			// NotaFILE does not exist. The Exception should be thrown.
 			testFramework.changeSourceMethod("loadFile");
 			try
 			{
 			  Store.loadFile("NotaFILE");
-			  testFramework.passTest();
+			  //testFramework.failTest();
 			}
 			catch (Exception& e)
 			{
 			  cout << "Expected exception thrown " << endl;
 			  cout << e << endl;
-			  testFramework.failTest();
+			  //testFramework.passTest();
 			}
-			//------------------------------------------------------------------------------
-
+			------------------------------------------------------------------------------*/
+			testFramework.changeSourceMethod("loadFile");
 			try {Store.loadFile("TestRinex06.031"); testFramework.passTest();}
 			catch (...) {cout << "Checking for failure!!!!" << endl; testFramework.failTest();}
 
 			// Clear the store after invoking for assert_no_throw before loading file again to avoid 
 			// duplicate file name error
+			Store.gpstk::FileStore<RinexNavHeader>::clear();
+			testFramework.changeSourceMethod("clear");
+			try {Store.loadFile("TestRinex06.031"); testFramework.passTest();}
+			catch (Exception& e) {cout << " Exception received from RinexEphemerisStore, e = " << e << endl; testFramework.failTest();} 
 
-			RinexEphemerisStore Store2;
-
-			try {Store2.loadFile("TestRinex06.031");}
-			catch (Exception& e)
-			{
-			  cout << " Exception received from RinexEphemerisStore, e = " << e << endl;
-			} 
-
-			Store2.dump(DumpData,1);
+			Store.dump(DumpData,1);
 			DumpData.close();
 			return testFramework.countFails();
 
