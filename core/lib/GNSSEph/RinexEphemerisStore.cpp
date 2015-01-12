@@ -57,24 +57,20 @@ namespace gpstk
       try
       {
          RinexNavStream strm(filename.c_str());
-	 strm.open(filename.cstr());
-	 if (strm.is_open())
-	 {
-	   RinexNavHeader header;
-	   strm >> header;
+         if (!strm)
+         {
+            FileMissingException e("File " + filename + " could not be opened.");
+            GPSTK_THROW(e);
+         }
+      
+         RinexNavHeader header;
+         strm >> header;
 
-	   addFile(filename, header);
-	   
-	   RinexNavData rec;
-	   while(strm >> rec)
-	     addEphemeris(rec);
+         addFile(filename, header);
 
-	 }
-	 else
-	 {
-	   FileMissingException e("File " + filename + " could not be opened.");
-	   GPSTK_THROW(e);
-	 }
+         RinexNavData rec;
+         while(strm >> rec)
+            addEphemeris(rec);
       }
       catch (gpstk::Exception& e)
       {
