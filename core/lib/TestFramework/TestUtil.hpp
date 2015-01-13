@@ -50,10 +50,10 @@ public:
   //          test_method   = the name of test method doing the testing, e.g. __func__
   // Outputs: none
   //----------------------------------------
-  TestUtil( std::string const& sourceClassInput  = "Unknown", 
-            std::string const& sourceMethodInput = "Unknown",
-            std::string const& testFileInput     = "Unknown",
-            std::string const& testMethodInput   = "Unknown"
+  TestUtil( const std::string& sourceClassInput  = "Unknown", 
+            const std::string& sourceMethodInput = "Unknown",
+            const std::string& testFileInput     = "Unknown",
+            const std::string& testMethodInput   = "Unknown"
            ):
       outputKeyword( "TestOutput" ), 
       sourceClass( sourceClassInput  ),
@@ -233,7 +233,7 @@ public:
   //          string newMethod
   // Outputs: none
   //----------------------------------------
-  void changeSourceMethod(std::string newMethod )
+  void changeSourceMethod( std::string newMethod )
   {
     sourceMethod = newMethod;
   }
