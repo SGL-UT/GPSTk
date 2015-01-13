@@ -295,16 +295,6 @@ endif()
 	
 add_subdirectory( swig )
 add_subdirectory( examples )
-	
-if( TEST_SWITCH )
-	# Past tests exist in /tests, and future tests will be found
-	# uder /core and /ext.
-	# The subdirectory /tests is added here after the /core and /ext 
-	# as these tests may depend on applications in those other dirs
-	# being built first.
-    add_subdirectory( tests )
-endif()
-
 
 #----------------------------------------
 # Experimental: build debs, tgz packages
