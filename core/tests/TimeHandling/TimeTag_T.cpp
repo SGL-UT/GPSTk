@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class SystemTimeTest
+class TimeTagTest
 {
         public: 
-		SystemTimeTest(){}// Default Constructor, set the precision value
-		~SystemTimeTest() {} // Default Desructor
+		TimeTagTest(){}// Default Constructor, set the precision value
+		~TimeTagTest() {} // Default Desructor
 };
 
 
