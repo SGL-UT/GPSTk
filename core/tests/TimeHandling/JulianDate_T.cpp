@@ -1,6 +1,3 @@
-//demo rewrite of JulianDate_T
-//formatting to ANSITime_T standard
-
 #include "JulianDate.hpp"
 #include "TimeTag.hpp"
 #include "TestUtil.hpp"
@@ -19,17 +16,6 @@ class JulianDate_T
 	public:
 	JulianDate_T() {eps = 1E-12;}
 	~JulianDate_T() {}
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Include initialization test here? YES JulianDate_T doesn't have one, but ANSITime_T does
-//Julian date looks like it takes the same construction parameters as ANSITime, could be wrong
-
-//Julian date has long double value called jd instead of ASNI's time_t value called time.
-//need to use epsilon for accurate float comparison? Solved by using a-b>c && b-a>c
-//Better solution?
-
-//Also, why does ANSITime use 13500000 but JulianDate use 1350000? Julian needs to be smaller
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
@@ -78,10 +64,6 @@ class JulianDate_T
 	/* Test will check if JulianDate variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Error with "1350000" compared to 1350000?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 	int setFromInfoTest (void)
 	{
 
@@ -126,6 +108,11 @@ class JulianDate_T
 		JulianDate CompareCopy(Compare); // Initialize with copy constructor
 		JulianDate CompareCopy2; //Empty initialization
 		CompareCopy2 = CompareCopy; //Assignment
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//	Why have CompareCopy2? Never called. Also, LessThanZCount was only called once
+//	in the original test. Shouldn't it be called more for more rigorous testing?
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //--------------JulianDate_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
@@ -209,11 +196,6 @@ class JulianDate_T
 	  	Compare.reset(); // Reset it
 
 //--------------JulianDate_resetTest_1 - Was the jd value reset to expectation?
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Compare.jd<eps? Is this neccessary because Compare.jd is compared to 0?
-//Can't 0 be set as a float?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 		testFramework.assert(Compare.jd==0);
 		testFramework.next();
 
@@ -312,10 +294,6 @@ class JulianDate_T
 
 		return testFramework.countFails();
 	}
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Error with "1350000" compared to 1350000?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	/* Test for the formatted printing of JulianDate objects */
 	int  printfTest (void)
