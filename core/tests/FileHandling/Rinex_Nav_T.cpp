@@ -15,7 +15,7 @@
 //  You should have received a copy of the GNU Lesser General Public
 //  License along with GPSTk; if not, write to the Free Software Foundation,
 //  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
-//  
+//
 //  Copyright 2004, The University of Texas at Austin
 //
 //============================================================================
@@ -23,13 +23,13 @@
 //============================================================================
 //
 //This software developed by Applied Research Laboratories at the University of
-//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Texas at Austin, under contract to an agency or agencies within the U.S.
 //Department of Defense. The U.S. Government retains all rights to use,
-//duplicate, distribute, disclose, or release this software. 
+//duplicate, distribute, disclose, or release this software.
 //
-//Pursuant to DoD Directive 523024 
+//Pursuant to DoD Directive 523024
 //
-// DISTRIBUTION STATEMENT A: This software has been approved for public 
+// DISTRIBUTION STATEMENT A: This software has been approved for public
 //                           release, distribution is unlimited.
 //
 //=============================================================================
@@ -57,7 +57,7 @@ using namespace gpstk;
 
 class RinexNav_T
 {
-    
+
     public:
 
         // constructor
@@ -74,7 +74,6 @@ class RinexNav_T
         int headerExceptionTest( void );
         int streamReadWriteTest( void );
         int filterOperatorsTest( void );
-        bool fileEqualTest( const std::string&, const std::string& );
 
     private:
 
@@ -140,7 +139,7 @@ void RinexNav_T :: init( void )
 
 
 //------------------------------------------------------------
-// This test checks to make sure that the internal members of 
+// This test checks to make sure that the internal members of
 // the RinexNavHeader are as we think they should be.
 // Also at the end of this test, we check and make sure our
 // output file is equal to our input
@@ -163,14 +162,14 @@ int RinexNav_T :: hardCodeTest( void )
 
     RinexNavStream >> RinexNavHeader;
     out << RinexNavHeader;
-		
+
     while( RinexNavStream >> RinexNavData )
       {
         out << RinexNavData;
       }
 
     test1.assert( RinexNavHeader.version == 2.1 );
-	
+
     test1.next();
     test1.assert( RinexNavHeader.fileProgram == (std::string)"XXRINEXN V3" );
 
@@ -184,10 +183,10 @@ int RinexNav_T :: hardCodeTest( void )
     std::vector<std::string>::const_iterator itr1 = RinexNavHeader.commentList.begin();
     test1.next();
     test1.assert( (*itr1) == (std::string)"THIS IS ONE COMMENT" );
-  
+
     //------------------------------------------------------------
     test1.next();
-    test1.assert( fileEqualTest( inputRinexNavExample, outputTestOutput ) );
+    test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput, 2 ) );
 
     //------------------------------------------------------------
     gpstk::RinexNavStream RinexNavStream2( outputTestOutput.c_str() );
@@ -202,7 +201,7 @@ int RinexNav_T :: hardCodeTest( void )
       {
         out2 << RinexNavData2;
       }
-		
+
     gpstk::RinexNavStream RinexNavStream3( outputTestOutput2.c_str() );
     gpstk::RinexNavStream out3( outputTestOutput3.c_str() , std::ios::out );
     gpstk::RinexNavHeader RinexNavHeader3;
@@ -219,7 +218,7 @@ int RinexNav_T :: hardCodeTest( void )
     RinexNavData.dump( dmp );
 
     test1.next();
-    test1.assert( fileEqualTest( inputRinexNavExample, outputTestOutput3 ) );
+    test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput3, 2 ) );
   }
   catch(...)
     {
@@ -231,7 +230,7 @@ int RinexNav_T :: hardCodeTest( void )
 }
 
 //------------------------------------------------------------
-//   This test check that Rinex Header exceptions are thrown 
+//   This test check that Rinex Header exceptions are thrown
 //------------------------------------------------------------
 int RinexNav_T :: headerExceptionTest( void )
 {
@@ -280,8 +279,8 @@ int RinexNav_T :: headerExceptionTest( void )
     }
     catch(...)
     {
-            test2.fail();	
-            test2.print();	
+            test2.fail();
+            test2.print();
     }
 
     return( test2.countFails() );
@@ -306,14 +305,12 @@ int RinexNav_T :: streamReadWriteTest( void )
         rinexOutputStream << rinexOutputStream.header;
 
 	RinexNavData data;
-	while( rinexInputStream >> data ) 
+	while( rinexInputStream >> data )
 	{
             rinexOutputStream << data;
 	}
-    
-        test3.assert( fileEqualTest( inputRinexNavExample, outputRinexStore) );
 
-        test3.passTest();
+        test3.assert( test3.fileEqualTest( inputRinexNavExample, outputRinexStore, 2) );
     }
     catch(...)
     {
@@ -325,7 +322,7 @@ int RinexNav_T :: streamReadWriteTest( void )
 }
 
 //------------------------------------------------------------
-// Test for several of the members within RinexNavFilterOperators 
+// Test for several of the members within RinexNavFilterOperators
 //  including merge, EqualsFull, LessThanSimple, LessThanFull, and FilterPRN
 //------------------------------------------------------------
 int RinexNav_T :: filterOperatorsTest( void )
@@ -340,7 +337,7 @@ int RinexNav_T :: filterOperatorsTest( void )
       gpstk::RinexNavStream FilterStream2( inputFilterStream2.c_str() );
       gpstk::RinexNavStream FilterStream3( inputFilterStream3.c_str() );
       gpstk::RinexNavStream out( outputFilterOutput.c_str(), std::ios::out );
-		
+
       gpstk::RinexNavHeader FilterHeader1;
       gpstk::RinexNavHeader FilterHeader2;
       gpstk::RinexNavHeader FilterHeader3;
@@ -352,7 +349,7 @@ int RinexNav_T :: filterOperatorsTest( void )
       FilterStream1 >> FilterHeader1;
       FilterStream2 >> FilterHeader2;
       FilterStream3 >> FilterHeader3;
-		
+
       while (FilterStream1 >> FilterData1)
         {
         }
@@ -367,7 +364,7 @@ int RinexNav_T :: filterOperatorsTest( void )
       merged( FilterHeader1 );
       merged( FilterHeader2 );
       out << merged.theHeader;
-		
+
       gpstk::RinexNavDataOperatorEqualsFull EqualsFull;
       test4.assert( EqualsFull( FilterData1, FilterData2 ) );
       test4.next();
@@ -377,13 +374,13 @@ int RinexNav_T :: filterOperatorsTest( void )
       test4.next();
       test4.assert( !LessThanSimple(FilterData1, FilterData2) );
       //CPPUNIT_ASSERT_EQUAL(true,LessThanSimple(FilterData1, FilterData3));
-		
+
       gpstk::RinexNavDataOperatorLessThanFull LessThanFull;
       test4.next();
       //CPPUNIT_ASSERT_EQUAL(true,LessThanFull(FilterData1, FilterData3));
       //CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData3, FilterData1));
       test4.assert( !LessThanFull(FilterData1, FilterData1) );
-		
+
       std::list<long> list;
       list.push_front(6);
       gpstk::RinexNavDataFilterPRN FilterPRN(list);
@@ -400,62 +397,6 @@ int RinexNav_T :: filterOperatorsTest( void )
     return( test4.countFails() );
 
 }
- 
-//------------------------------------------------------------
-// Method:  fileEqualTest()
-// Purpose: A helper function for RinexNav_T to compare two files for differences
-// Inputs:  Takes in two file names "FILEONE.TXT" "FILETWO.TXT".
-// Outputs: Returns true if the files are equal, false if not.
-// Note:    Skips the first two lines becasue dates are often writen as the
-//          current data and thus very hard to pin down a specific time for.
-//------------------------------------------------------------
-bool RinexNav_T :: fileEqualTest( const std::string& filename1, const std::string& filename2 )
-{
-  bool filesEqual = false;
-  int counter = 0;
-  std::ifstream File1;
-  std::ifstream File2;
-	
-  std::string File1Line;
-  std::string File2Line;
-	
-  File1.open( filename1.c_str() );
-  File2.open( filename2.c_str() );
-  getline( File1, File1Line );
-  getline( File2, File2Line );
-  getline( File1, File1Line );
-  getline( File2, File2Line );
-	
-  while( !File1.eof() )
-    {
-      if( File2.eof() ) 
-        {
-          filesEqual = false;			
-          return( filesEqual );
-        }
-      getline( File1, File1Line );
-      getline( File2, File2Line );
-
-      if( File1Line != File2Line )
-        {
-          // cout << File1Line << endl;
-          // cout << File2Line << endl;
-          filesEqual = false;		
-          return( filesEqual );
-        }
-    }
-  if( !File2.eof() )
-  {
-    filesEqual = false;		
-    return( filesEqual );
-  }
-  else
-  {
-    filesEqual = true;
-    return( filesEqual );
-  }
-}
-
 
 //============================================================
 // Run all the test methods defined above
