@@ -25,16 +25,16 @@ class GPSWeekZcount_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest(void)
 	{
-		TestUtil testFramework( "GPSWeekZCount", "Constructor(w,z,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZcount", "Constructor(week,zcount,TimeSystem)", __FILE__, __func__ );
 		testFramework.init();
 
 		GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object
-//--------------GPSWeekZCountTime_initializationTest_1 - Was the w value set to expectation?
-		testFramework.assert(1300 == Compare.w);
+//--------------GPSWeekZCountTime_initializationTest_1 - Was the week value set to expectation?
+		testFramework.assert(1300 == Compare.week);
 		testFramework.next();
 
-//--------------GPSWeekZCountTime_initializationTest_2 - Was the z value set to expectation?
-		testFramework.assert(13500 - Compare.z < eps && Compare.z - 13500 < eps);
+//--------------GPSWeekZCountTime_initializationTest_2 - Was the zcount value set to expectation?
+		testFramework.assert(13500 - Compare.zcount < eps && Compare.zcount - 13500 < eps);
 		testFramework.next();
 
 //--------------GPSWeekZCountTime_initializationTest_3 - Was the time system set to expectation?
@@ -44,12 +44,12 @@ class GPSWeekZcount_T
 		testFramework.changeSourceMethod("Constructor(GPSWeekZcount)");
 		GPSWeekZcount Copy(Compare); // Initialize with copy constructor
 
-//--------------GPSWeekZCountTime_initializationTest_4 - Was the w value set to expectation?
-		testFramework.assert(1300 == Compare.w);
+//--------------GPSWeekZCountTime_initializationTest_4 - Was the week value set to expectation?
+		testFramework.assert(1300 == Compare.week);
 		testFramework.next();
 
-//--------------GPSWeekZCountTime_initializationTest_5 - Was the z value set to expectation?
-		testFramework.assert(13500 - Compare.z < eps && Compare.z - 13500 < eps);
+//--------------GPSWeekZCountTime_initializationTest_5 - Was the zcount value set to expectation?
+		testFramework.assert(13500 == Compare.zcount);
 		testFramework.next();
 
 //--------------GPSWeekZCountTime_initializationTest_6 - Was the time system set to expectation?
@@ -60,17 +60,19 @@ class GPSWeekZcount_T
 		GPSWeekZcount Assigned;
 		Assigned = Compare;
 
-//--------------GPSWeekZCountTime_initializationTest_7 - Was the w value set to expectation?
-		testFramework.assert(1300 == Compare.w);
+//--------------GPSWeekZCountTime_initializationTest_7 - Was the week value set to expectation?
+		testFramework.assert(1300 == Compare.week);
 		testFramework.next();
 
-//--------------GPSWeekZCountTime_initializationTest_8 - Was the z value set to expectation?
-		testFramework.assert(13500 - Compare.z < eps && Compare.z - 13500 < eps);
+//--------------GPSWeekZCountTime_initializationTest_8 - Was the zcount value set to expectation?
+		testFramework.assert(13500 == Compare.zcount);
 		testFramework.next();
 
 //--------------GPSWeekZCountTime_initializationTest_9 - Was the time system set to expectation?
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
 		testFramework.next();
+
+		return testFramework.countFails();
 
 	}
 
@@ -178,7 +180,7 @@ class GPSWeekZcount_T
 		testFramework.next();
 
 //--------------GPSWeekZCount_operatorTest_7 - Does the Zcount cause left_object > right_object?
-		testFramework.assert(Compare > LessThanZcount)
+		testFramework.assert(Compare > LessThanZcount);
 
 //--------------GPSWeekZCount_operatorTest_8 - Does the < operator function when left_object = right_object?
 		testFramework.assert(!(Compare < CompareCopy));
@@ -297,10 +299,13 @@ class GPSWeekZcount_T
 		testFramework.assert(Compare.getTimeSystem()==TimeSystem(2));
 		testFramework.next();
 
-//--------------GPSWeekZCount_toFromCommonTimeTest_5 - Is the time after conversion what is expected?
-		//Compare.week==0
-		testFramework.assert(13500. - Compare.week < eps && Compare.week - 13500. < eps);
+//--------------GPSWeekZCount_toFromCommonTimeTest_5 - Is the week after conversion what is expected?
+		testFramework.assert(Compare.week==1300);
+		testFramework.next();
 
+//--------------GPSWeekZCount_toFromCommonTimeTest_6 - Is the zcount after conversion what is expected?
+		testFramework.assert(Compare.zcount==13500);
+		testFramework.next();
 		return testFramework.countFails();
 	}
 
@@ -372,20 +377,20 @@ class GPSWeekZcount_T
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //--------------GPSWeekZCount_printfTest_1 - Verify printed output matches expectation
-		testFramework.assert(GPS1.printf("%08K %02P") == (std::string)"1350000.000000 GPS");
+		testFramework.assert(GPS1.printf("%04F %05z %02P") == (std::string)"1300 13500 GPS");
 		testFramework.next();
 
 //--------------GPSWeekZCount_printfTest_2 - Verify printed output matches expectation
-		testFramework.assert(UTC1.printf("%08K %02P") == (std::string)"1350000.000000 UTC");
+		testFramework.assert(UTC1.printf("%04F %05z %02P") == (std::string)"1300 13500 UTC");
 		testFramework.next();
 
 		testFramework.changeSourceMethod("printError");	
 //--------------GPSWeekZCount_printfTest_3 - Verify printed error message matches expectation
-		testFramework.assert(GPS1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.assert(GPS1.printError("%04F %05z %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 		testFramework.next();
 
 //--------------GPSWeekZCount_printfTest_4 - Verify printed error message matches expectation
-		testFramework.assert(UTC1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.assert(UTC1.printError("%04F %05z %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime");
 
 		return testFramework.countFails();
 	}
