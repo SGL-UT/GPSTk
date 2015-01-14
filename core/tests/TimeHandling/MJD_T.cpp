@@ -17,8 +17,6 @@ class MJD_T
 //Is eps necessary? Included for float, but unsure if will work without
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	
-	MJD_T() {eps = 1E-12;}
-	~MJD_T() {}
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //Include initialization test here 
@@ -164,7 +162,7 @@ class MJD_T
 	  	testFramework.next();
 
 //--------------MJD_resetTest_2 - Was the time system reset to expectation?
-	  	testFramework.assert(TimeSystem(0) != Compare.getTimeSystem()); 
+	  	testFramework.assert(TimeSystem(0) == Compare.getTimeSystem()); 
 
 		return testFramework.countFails();
 	}
@@ -201,7 +199,7 @@ class MJD_T
 
 //--------------MJD_toFromCommonTimeTest_5 - Is the time after conversion what is expected?
 		//Compare.jd==0
-		testFramework.assert(135000 - Compare.mjd < eps && Compare.mjd - 135000 < eps);
+		testFramework.assert(135000 == Compare.mjd);// < eps && Compare.mjd - 135000 < eps);
 
 		return testFramework.countFails();
 	}
@@ -280,11 +278,11 @@ class MJD_T
 
 		testFramework.changeSourceMethod("printError");	
 //--------------MJD_printfTest_3 - Verify printed error message matches expectation
-		testFramework.assert(GPS1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.assert(GPS1.printError("%08Q %02P") == (std::string)"ErrorBadTime ErrorBadTime");
 		testFramework.next();
 
 //--------------MJD_printfTest_4 - Verify printed error message matches expectation
-		testFramework.assert(UTC1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.assert(UTC1.printError("%08Q %02P") == (std::string)"ErrorBadTime ErrorBadTime");
 
 		return testFramework.countFails();
 	}
