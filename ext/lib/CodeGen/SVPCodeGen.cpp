@@ -46,9 +46,9 @@ namespace gpstk
 
    SVPCodeGen::SVPCodeGen( const int SVPRNID, const gpstk::CommonTime& dt )
    {
-      if (SVPRNID < 1 || SVPRNID > 210)
+      if (SVPRNID < 0 || SVPRNID > 210)
       {
-         gpstk::Exception e("Must provide a prn between 1 and 210");
+         gpstk::Exception e("Must provide a prn between 0 and 210");
          GPSTK_THROW(e);
       }
       currentZTime = dt;

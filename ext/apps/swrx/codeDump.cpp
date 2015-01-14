@@ -91,7 +91,7 @@ bool CodeDump::initialize(int argc, char *argv[]) throw()
       codeOpt('c', "code",
               "The code to generate. ARG takes the form of "
               "code:prn:offset. Code is either c or p. "
-              "Prn is an integer between 1 and 32. "
+              "Prn is an integer between 0 and 32. "
               "Offset is a number in chips. For example, to generate P code "
               "for PRN 3, with no initial time offset, "
               "specify -c p:3:0");
