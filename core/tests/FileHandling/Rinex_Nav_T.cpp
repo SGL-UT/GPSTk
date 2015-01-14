@@ -34,287 +34,451 @@
 //
 //=============================================================================
 
-#include "Rinex_Nav_T.hpp"
+
+
+#include "RinexNavHeader.hpp"
+#include "RinexNavData.hpp"
+#include "RinexNavStream.hpp"
+#include "RinexNavFilterOperators.hpp"
+
+#include "StringUtils.hpp"
 #include "Exception.hpp"
 #include "RinexEphemerisStore.hpp"
-#include <string>
 
-CPPUNIT_TEST_SUITE_REGISTRATION (xRinexNav);
+#include "TestUtil.hpp"
+#include <string>
+#include <iostream>
 
 using namespace gpstk;
 
-void xRinexNav :: setUp (void)
+//=============================================================================
+// Class declarations
+//=============================================================================
+
+class RinexNav_T
 {
-}
-/*
-**** This test checks to make sure that the internal members of the RinexNavHeader are as we think they
-**** should be.  Also at the end of this test, we check and make sure our output file is equal to our input
-**** This assures that if any changes happen, the test will fail and the user will know.  Also, output was put
-**** into input three times over to make sure there were no small errors which blow up into big errors
-*/
-void xRinexNav :: hardCodeTest (void)
+    
+    public:
+
+        // constructor
+       RinexNav_T( const std::string& data_path = "RinexNav_Logs" ):
+            dataFilePath( data_path )
+        {
+            init();
+        }
+
+        void init( void );
+
+        // return values indicate number of failures, i.e., 0=PASS, !0=FAIL
+        int hardCodeTest( void );
+        int headerExceptionTest( void );
+        int streamReadWriteTest( void );
+        int filterOperatorsTest( void );
+        bool fileEqualTest( const std::string&, const std::string& );
+
+    private:
+
+        std::string dataFilePath;
+
+        std::string inputRinexNavExample;
+
+        std::string outputTestOutput;
+        std::string outputTestOutput2;
+        std::string outputTestOutput3;
+        std::string outputRinexDump;
+
+        std::string inputInvalidLineLength;
+        std::string inputNotaNavFile;
+        std::string inputUnknownHeaderLabel;
+        std::string inputIncompleteHeader;
+        std::string inputUnsupportedRinex;
+        std::string inputBadHeader;
+        std::string outputTestOutputHeader;
+
+        std::string inputFilterStream1;
+        std::string inputFilterStream2;
+        std::string inputFilterStream3;
+        std::string outputFilterOutput;
+
+        std::string outputRinexStore;
+
+};
+
+//============================================================
+// Initialize Test Data Filenames
+//============================================================
+
+void RinexNav_T :: init( void )
 {
-	try{
-		gpstk::RinexNavStream RinexNavStream("RinexNav_Logs/RinexNavExample.99n");
-		gpstk::RinexNavStream out("RinexNav_Logs/TestOutput.99n",ios::out);
-		gpstk::RinexNavStream dmp("RinexNav_Logs/RinexDump",ios::out);
-		gpstk::RinexNavHeader RinexNavHeader;
-		gpstk::RinexNavData RinexNavData;
-		RinexNavStream >> RinexNavHeader;
-		out << RinexNavHeader;
-		
-		while (RinexNavStream >> RinexNavData)
-		{
-			out << RinexNavData;
-		}
-		
-		
-		CPPUNIT_ASSERT_EQUAL(2.1,RinexNavHeader.version);
-		
-		CPPUNIT_ASSERT_EQUAL((string)"XXRINEXN V3",RinexNavHeader.fileProgram);
-		CPPUNIT_ASSERT_EQUAL((string)"AIUB", RinexNavHeader.fileAgency);
-		CPPUNIT_ASSERT_EQUAL((string)"09/02/1999 19:22:36",RinexNavHeader.date);
-	
-		vector<string>::const_iterator itr1 = RinexNavHeader.commentList.begin();
-		CPPUNIT_ASSERT_EQUAL((string)"THIS IS ONE COMMENT",(*itr1));
-	
-		CPPUNIT_ASSERT(fileEqualTest((char*)"RinexNav_Logs/RinexNavExample.99n",(char*)"RinexNav_Logs/TestOutput.99n"));
-		
-		gpstk::RinexNavStream RinexNavStream2("RinexNav_Logs/TestOutput.99n");
-		gpstk::RinexNavStream out2("RinexNav_Logs/TestOutput2.99n",ios::out);
-		gpstk::RinexNavHeader RinexNavHeader2;
-		gpstk::RinexNavData RinexNavData2;
-		RinexNavStream2 >> RinexNavHeader2;
-		out2 << RinexNavHeader2;
+   inputRinexNavExample     = dataFilePath  + "/" + "RinexNavExample.99n";
 
-		while (RinexNavStream2 >> RinexNavData2)
-		{
-			out2 << RinexNavData2;
-		}
-		
-		gpstk::RinexNavStream RinexNavStream3("RinexNav_Logs/TestOutput2.99n");
-		gpstk::RinexNavStream out3("RinexNav_Logs/TestOutput3.99n",ios::out);
-		gpstk::RinexNavHeader RinexNavHeader3;
-		gpstk::RinexNavData RinexNavData3;
-		RinexNavStream3 >> RinexNavHeader3;
-		out3 << RinexNavHeader3;
+   outputTestOutput         =  dataFilePath + "/" + "TestOutput.99n";
+   outputTestOutput2        =  dataFilePath + "/" + "TestOutput2.99n";
+   outputTestOutput3        =  dataFilePath + "/" + "TestOutput3.99n";
+   outputRinexDump          =  dataFilePath + "/" + "RinexDump";
 
-		while (RinexNavStream3 >> RinexNavData3)
-		{
-			out3 << RinexNavData3;
-		}
-		RinexNavHeader.dump(dmp);
-		RinexNavData.dump(dmp);
-		CPPUNIT_ASSERT(fileEqualTest((char*)"RinexNav_Logs/RinexNavExample.99n",(char*)"RinexNav_Logs/TestOutput3.99n"));
-	}
-	catch (gpstk::Exception& e)
-	{
-		cout << e;
-	}
-}
+   inputInvalidLineLength   =  dataFilePath + "/" + "InvalidLineLength.99n";
+   inputNotaNavFile         =  dataFilePath + "/" + "NotaNavFile.99n";
+   inputUnknownHeaderLabel  =  dataFilePath + "/" + "UnknownHeaderLabel.99n";
+   inputIncompleteHeader    =  dataFilePath + "/" + "IncompleteHeader.99n";
+   inputUnsupportedRinex    =  dataFilePath + "/" + "UnsupportedRinex.99n";
+   inputBadHeader           =  dataFilePath + "/" + "BadHeader.99n";
+   outputTestOutputHeader   =  dataFilePath + "/" + "TestOutputHeader.99n";
 
-/*
-**** This test check that Rinex Header exceptions are thrown 
-*/
-void xRinexNav :: headerExceptionTest (void)
-{
-	try{
-		gpstk::RinexNavStream InvalidLineLength("RinexNav_Logs/InvalidLineLength.99n");
-		gpstk::RinexNavStream NotaNavFile("RinexNav_Logs/NotaNavFile.99n");
-		gpstk::RinexNavStream UnknownHeaderLabel("RinexNav_Logs/UnknownHeaderLabel.99n");
-		gpstk::RinexNavStream IncompleteHeader("RinexNav_Logs/IncompleteHeader.99n");
-		gpstk::RinexNavStream UnsupportedRinex("RinexNav_Logs/UnsupportedRinex.99n");
-		gpstk::RinexNavStream BadHeader("RinexNav_Logs/BadHeader.99n");
-		gpstk::RinexNavStream out("RinexNav_Logs/TestOutputHeader.99n",ios::out);
-		gpstk::RinexNavHeader Header;
+   inputFilterStream1       =  dataFilePath + "/" + "FilterTest1.99n";
+   inputFilterStream2       =  dataFilePath + "/" + "FilterTest2.99n";
+   inputFilterStream3       =  dataFilePath + "/" + "FilterTest3.99n";
+   outputFilterOutput       =  dataFilePath + "/" + "FilterOutput.txt";
 
-		InvalidLineLength.exceptions(fstream::failbit);
-		NotaNavFile.exceptions(fstream::failbit);
-		UnknownHeaderLabel.exceptions(fstream::failbit);
-		IncompleteHeader.exceptions(fstream::failbit);
-		UnsupportedRinex.exceptions(fstream::failbit);
-		BadHeader.exceptions(fstream::failbit);
-
-		CPPUNIT_ASSERT_THROW(InvalidLineLength >> Header,gpstk::Exception);
-		CPPUNIT_ASSERT_THROW(NotaNavFile >> Header,gpstk::Exception);
-		CPPUNIT_ASSERT_THROW(UnknownHeaderLabel >> Header,gpstk::Exception);
-		CPPUNIT_ASSERT_THROW(IncompleteHeader >> Header,gpstk::Exception);
-		CPPUNIT_ASSERT_THROW(UnsupportedRinex >> Header,gpstk::Exception);
-		CPPUNIT_ASSERT_THROW(BadHeader >> Header,gpstk::Exception);
-		
-		IncompleteHeader >> Header;
-		out << Header;
-		
-		UnsupportedRinex >> Header;
-		out << Header;
-	
-		Header.dump(out);
-		
-	}
-	catch (gpstk::Exception& e)
-	{
-		//cout << e;
-	}
-
+   outputRinexStore         =  dataFilePath + "/" + "RinexStore.txt";
 
 }
 
-/*
-**** Test for RinexNavData methods
-*/
-void xRinexNav :: dataTest (void)
+//=============================================================================
+// Test Method Definitions
+//=============================================================================
+
+
+//------------------------------------------------------------
+// This test checks to make sure that the internal members of 
+// the RinexNavHeader are as we think they should be.
+// Also at the end of this test, we check and make sure our
+// output file is equal to our input
+// This assures that if any changes happen, the test will fail
+// and the user will know.
+// Also, output was put into input three times over to make sure
+// there were no small errors which blow up into big errors
+//------------------------------------------------------------
+int RinexNav_T :: hardCodeTest( void )
 {
-        const short PRN6 = 6 ;
-	gpstk::SatID sid6(PRN6,gpstk::SatID::systemGPS); 
 
-	try
-	{
-		gpstk::RinexEphemerisStore Store;
-                Store.loadFile("RinexNav_Logs/RinexNavExample.99n");
+  TestUtil test1( "RinexNavStream", "out", __FILE__, __func__ );
 
-		gpstk::CivilTime Time(1999,9,2,17,51,44,TimeSystem::GPS);
+  try{
+    gpstk::RinexNavStream RinexNavStream( inputRinexNavExample.c_str() );
+    gpstk::RinexNavStream out( outputTestOutput.c_str(), std::ios::out );
+    gpstk::RinexNavStream dmp( outputRinexDump.c_str(), std::ios::out );
+    gpstk::RinexNavHeader RinexNavHeader;
+    gpstk::RinexNavData RinexNavData;
 
-//Load data into GPSEphemerisStore object so can invoke findUserEphemeris on it
+    RinexNavStream >> RinexNavHeader;
+    out << RinexNavHeader;
+		
+    while( RinexNavStream >> RinexNavData )
+      {
+        out << RinexNavData;
+      }
 
-                std::list<gpstk::RinexNavData> R3NList;
-                gpstk::GPSEphemerisStore GStore;
-                std::list<gpstk::RinexNavData>::const_iterator it;
-                Store.addToList(R3NList);
-                for (it=R3NList.begin(); it != R3NList.end(); ++it)
-                  GStore.addEphemeris(gpstk::EngEphemeris(*it));
-
-		const gpstk::EngEphemeris& Eph6 = GStore.findUserEphemeris(sid6, Time);
-		gpstk::RinexNavData Data(Eph6);
-		list<double> NavDataList = Data.toList();
+    test1.assert( RinexNavHeader.version == 2.1 );
 	
-	}
-	catch (gpstk::Exception& e)
-	{
-		cout << e;
-	}
+    test1.next();
+    test1.assert( RinexNavHeader.fileProgram == (std::string)"XXRINEXN V3" );
 
-}
-/*
-**** test for several of the members within RinexNavFilterOperators including merge, EqualsFull, LessThanSimple
-**** LessThanFull, and FilterPRN
-*/
-void xRinexNav :: filterOperatorsTest (void)
-{
-	try
-	{
-		
-		
-		gpstk::RinexNavStream FilterStream1("RinexNav_Logs/FilterTest1.99n");
-		FilterStream1.open("RinexNav_Logs/FilterTest1.99n",std::ios::in);
-		gpstk::RinexNavStream FilterStream2("RinexNav_Logs/FilterTest2.99n");
-		gpstk::RinexNavStream FilterStream3("RinexNav_Logs/FilterTest3.99n");
-		gpstk::RinexNavStream out("RinexNav_Logs/FilterOutput.txt",ios::out);
-		
-		gpstk::RinexNavHeader FilterHeader1;
-		gpstk::RinexNavHeader FilterHeader2;
-		gpstk::RinexNavHeader FilterHeader3;
+    test1.next();
+    test1.assert( RinexNavHeader.fileAgency == (std::string)"AIUB" );
 
-		
-		gpstk::RinexNavData FilterData1;
-		gpstk::RinexNavData FilterData2;
-		gpstk::RinexNavData FilterData3;
+    test1.next();
+    test1.assert( RinexNavHeader.date == (std::string)"09/02/1999 19:22:36" );
 
-		
-		
-		FilterStream1 >> FilterHeader1;
-		FilterStream2 >> FilterHeader2;
-		FilterStream3 >> FilterHeader3;
+    //------------------------------------------------------------
+    std::vector<std::string>::const_iterator itr1 = RinexNavHeader.commentList.begin();
+    test1.next();
+    test1.assert( (*itr1) == (std::string)"THIS IS ONE COMMENT" );
+  
+    //------------------------------------------------------------
+    test1.next();
+    test1.assert( fileEqualTest( inputRinexNavExample, outputTestOutput ) );
 
-		
-		while (FilterStream1 >> FilterData1)
-		{
-		}
-		while (FilterStream2 >> FilterData2)
-		{
-		}
-		while (FilterStream3 >> FilterData3)
-		{
-		}
+    //------------------------------------------------------------
+    gpstk::RinexNavStream RinexNavStream2( outputTestOutput.c_str() );
+    gpstk::RinexNavStream out2( outputTestOutput2.c_str(), std::ios::out );
+    gpstk::RinexNavHeader RinexNavHeader2;
+    gpstk::RinexNavData RinexNavData2;
 
-		
-		gpstk::RinexNavHeaderTouchHeaderMerge merged;
-		merged(FilterHeader1);
-		merged(FilterHeader2);
-		out << merged.theHeader;
-		
-		gpstk::RinexNavDataOperatorEqualsFull EqualsFull;
-		CPPUNIT_ASSERT_EQUAL(true,EqualsFull(FilterData1, FilterData2));
-		CPPUNIT_ASSERT_EQUAL(false,EqualsFull(FilterData1, FilterData3));
-		
-		gpstk::RinexNavDataOperatorLessThanSimple LessThanSimple;
-		CPPUNIT_ASSERT_EQUAL(false,LessThanSimple(FilterData1, FilterData2));
-		//CPPUNIT_ASSERT_EQUAL(true,LessThanSimple(FilterData1, FilterData3));
-		
-		gpstk::RinexNavDataOperatorLessThanFull LessThanFull;
-		//CPPUNIT_ASSERT_EQUAL(true,LessThanFull(FilterData1, FilterData3));
-		//CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData3, FilterData1));
-		CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData1, FilterData1));
-		
-		std::list<long> list;
-		list.push_front(6);
-		gpstk::RinexNavDataFilterPRN FilterPRN(list);
-		CPPUNIT_ASSERT_EQUAL(true,FilterPRN(FilterData3));
-		//cout << FilterPRN(FilterData3) << endl;
-	}
-	catch(gpstk::Exception& e)
-	{
-	
-	}
-	
+    RinexNavStream2 >> RinexNavHeader2;
+    out2 << RinexNavHeader2;
 
+    while (RinexNavStream2 >> RinexNavData2)
+      {
+        out2 << RinexNavData2;
+      }
+		
+    gpstk::RinexNavStream RinexNavStream3( outputTestOutput2.c_str() );
+    gpstk::RinexNavStream out3( outputTestOutput3.c_str() , std::ios::out );
+    gpstk::RinexNavHeader RinexNavHeader3;
+    gpstk::RinexNavData RinexNavData3;
+
+    RinexNavStream3 >> RinexNavHeader3;
+    out3 << RinexNavHeader3;
+
+    while (RinexNavStream3 >> RinexNavData3)
+      {
+        out3 << RinexNavData3;
+      }
+    RinexNavHeader.dump( dmp );
+    RinexNavData.dump( dmp );
+
+    test1.next();
+    test1.assert( fileEqualTest( inputRinexNavExample, outputTestOutput3 ) );
+  }
+  catch(...)
+    {
+        test1.fail();
+        test1.print();
+    }
+
+    return( test1.countFails() );
 }
 
-/*
-**** A helper function for xRinexNav to line by line, check if the two files given are the same.
-**** Takes in two file names within double quotes "FILEONE.TXT" "FILETWO.TXT".  Returns true if
-**** the files are equal.  Skips the first two lines becasue dates are often writen as the current
-**** data and thus very hard to pin down a specific time for.
-*/
-bool xRinexNav :: fileEqualTest (char* handle1, char* handle2)
+//------------------------------------------------------------
+//   This test check that Rinex Header exceptions are thrown 
+//------------------------------------------------------------
+int RinexNav_T :: headerExceptionTest( void )
 {
-	bool isEqual = false;
-	int counter = 0;
-	ifstream File1;
-	ifstream File2;
-	
-	std::string File1Line;
-	std::string File2Line;
-	
-	File1.open(handle1);
-	File2.open(handle2);
-	getline (File1, File1Line);
-	getline (File2, File2Line);
-	getline (File1, File1Line);
-	getline (File2, File2Line);
-	
-	while (!File1.eof())
-	{
-		if (File2.eof()) 
-		{
-			cout << "ONE" << counter << endl;
-			
-			return isEqual;
-			}
-		getline (File1, File1Line);
-		getline (File2, File2Line);
+    TestUtil test2( "RinexNavStream", "exceptions", __FILE__, __func__ );
+    try{
+          gpstk::RinexNavStream InvalidLineLength( inputInvalidLineLength.c_str() );
+          gpstk::RinexNavStream NotaNavFile( inputNotaNavFile.c_str() );
+          gpstk::RinexNavStream UnknownHeaderLabel( inputUnknownHeaderLabel.c_str() );
+          gpstk::RinexNavStream IncompleteHeader( inputIncompleteHeader.c_str() );
+          gpstk::RinexNavStream UnsupportedRinex( inputUnsupportedRinex.c_str() );
+          gpstk::RinexNavStream BadHeader( inputBadHeader.c_str() );
+          gpstk::RinexNavStream out( outputTestOutputHeader.c_str(), std::ios::out );
+          gpstk::RinexNavHeader Header;
 
-		if (File1Line != File2Line)
-		{
-			cout << "TWO"  << counter << endl;
-			cout << File1Line << endl;
-			cout << File2Line << endl;
-			return isEqual;
-		}
+          InvalidLineLength.exceptions( std::fstream::failbit );
+          NotaNavFile.exceptions( std::fstream::failbit );
+          UnknownHeaderLabel.exceptions( std::fstream::failbit );
+          IncompleteHeader.exceptions( std::fstream::failbit );
+          UnsupportedRinex.exceptions( std::fstream::failbit );
+          BadHeader.exceptions( std::fstream::failbit );
+
+          try{ InvalidLineLength >> Header; test2.failTest(); }
+          catch(gpstk::Exception e){ test2.passTest(); }
+          catch(...){ test2.failTest(); }
+
+          try{ NotaNavFile >> Header; test2.failTest(); }
+          catch(gpstk::Exception e){ test2.passTest(); }
+          catch(...){ test2.failTest(); }
+
+          try{ UnknownHeaderLabel >> Header; test2.failTest(); }
+          catch(gpstk::Exception e){ test2.passTest(); }
+          catch(...){ test2.failTest(); }
+
+          try{ IncompleteHeader >> Header; test2.failTest(); }
+          catch(gpstk::Exception e){ test2.passTest(); }
+          catch(...){ test2.failTest(); }
+
+          try{ UnsupportedRinex >> Header; test2.failTest(); }
+          catch(gpstk::Exception e){ test2.passTest(); }
+          catch(...){ test2.failTest(); }
+
+          try{ BadHeader >> Header; test2.failTest(); }
+          catch(gpstk::Exception e){ test2.passTest(); }
+          catch(...){ test2.failTest(); }
+
+    }
+    catch(...)
+    {
+            test2.fail();	
+            test2.print();	
+    }
+
+    return( test2.countFails() );
+
+}
+
+//------------------------------------------------------------
+//   Test RinexNavData File read/write with streams
+//   * Read Rinex Nav file directly into a RinexEphemerisStore
+//   * Write contents of RinexEphemerisStore back out to a new file
+//   * Diff the old file and the new file
+//------------------------------------------------------------
+int RinexNav_T :: streamReadWriteTest( void )
+{
+    TestUtil test3( "RinexNavData", "<<", __FILE__, __func__ );
+
+    try
+    {
+        RinexNavStream rinexInputStream( inputRinexNavExample.c_str()  );
+        RinexNavStream rinexOutputStream( outputRinexStore.c_str(), std::ios::out );
+        rinexOutputStream.header = rinexInputStream.header;
+        rinexOutputStream << rinexOutputStream.header;
+
+	RinexNavData data;
+	while( rinexInputStream >> data ) 
+	{
+            rinexOutputStream << data;
 	}
-	if (!File2.eof()){
-	cout << "THREE" << counter  << endl;
-		return isEqual;
-		}
-	else
-		return isEqual = true;
+    
+        test3.assert( fileEqualTest( inputRinexNavExample, outputRinexStore) );
+
+        test3.passTest();
+    }
+    catch(...)
+    {
+        test3.failTest();
+    }
+
+    return( test3.countFails() );
+
+}
+
+//------------------------------------------------------------
+// Test for several of the members within RinexNavFilterOperators 
+//  including merge, EqualsFull, LessThanSimple, LessThanFull, and FilterPRN
+//------------------------------------------------------------
+int RinexNav_T :: filterOperatorsTest( void )
+{
+    TestUtil test4( "RinexNavStream", "open", __FILE__, __func__ );
+
+    try
+    {
+
+      gpstk::RinexNavStream FilterStream1( inputFilterStream1.c_str() );
+      FilterStream1.open( inputFilterStream1.c_str(), std::ios::in );
+      gpstk::RinexNavStream FilterStream2( inputFilterStream2.c_str() );
+      gpstk::RinexNavStream FilterStream3( inputFilterStream3.c_str() );
+      gpstk::RinexNavStream out( outputFilterOutput.c_str(), std::ios::out );
+		
+      gpstk::RinexNavHeader FilterHeader1;
+      gpstk::RinexNavHeader FilterHeader2;
+      gpstk::RinexNavHeader FilterHeader3;
+
+      gpstk::RinexNavData FilterData1;
+      gpstk::RinexNavData FilterData2;
+      gpstk::RinexNavData FilterData3;
+
+      FilterStream1 >> FilterHeader1;
+      FilterStream2 >> FilterHeader2;
+      FilterStream3 >> FilterHeader3;
+		
+      while (FilterStream1 >> FilterData1)
+        {
+        }
+      while (FilterStream2 >> FilterData2)
+        {
+        }
+      while (FilterStream3 >> FilterData3)
+        {
+        }
+
+      gpstk::RinexNavHeaderTouchHeaderMerge merged;
+      merged( FilterHeader1 );
+      merged( FilterHeader2 );
+      out << merged.theHeader;
+		
+      gpstk::RinexNavDataOperatorEqualsFull EqualsFull;
+      test4.assert( EqualsFull( FilterData1, FilterData2 ) );
+      test4.next();
+      test4.assert( !EqualsFull( FilterData1, FilterData3 ) );
+
+      gpstk::RinexNavDataOperatorLessThanSimple LessThanSimple;
+      test4.next();
+      test4.assert( !LessThanSimple(FilterData1, FilterData2) );
+      //CPPUNIT_ASSERT_EQUAL(true,LessThanSimple(FilterData1, FilterData3));
+		
+      gpstk::RinexNavDataOperatorLessThanFull LessThanFull;
+      test4.next();
+      //CPPUNIT_ASSERT_EQUAL(true,LessThanFull(FilterData1, FilterData3));
+      //CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData3, FilterData1));
+      test4.assert( !LessThanFull(FilterData1, FilterData1) );
+		
+      std::list<long> list;
+      list.push_front(6);
+      gpstk::RinexNavDataFilterPRN FilterPRN(list);
+      test4.next();
+      test4.assert( FilterPRN( FilterData3 ) );
+      //cout << FilterPRN(FilterData3) << std:endl;
+    }
+    catch(...)
+    {
+        test4.fail();
+        test4.print();
+    }
+
+    return( test4.countFails() );
+
+}
+ 
+//------------------------------------------------------------
+// Method:  fileEqualTest()
+// Purpose: A helper function for RinexNav_T to compare two files for differences
+// Inputs:  Takes in two file names "FILEONE.TXT" "FILETWO.TXT".
+// Outputs: Returns true if the files are equal, false if not.
+// Note:    Skips the first two lines becasue dates are often writen as the
+//          current data and thus very hard to pin down a specific time for.
+//------------------------------------------------------------
+bool RinexNav_T :: fileEqualTest( const std::string& filename1, const std::string& filename2 )
+{
+  bool filesEqual = false;
+  int counter = 0;
+  std::ifstream File1;
+  std::ifstream File2;
+	
+  std::string File1Line;
+  std::string File2Line;
+	
+  File1.open( filename1.c_str() );
+  File2.open( filename2.c_str() );
+  getline( File1, File1Line );
+  getline( File2, File2Line );
+  getline( File1, File1Line );
+  getline( File2, File2Line );
+	
+  while( !File1.eof() )
+    {
+      if( File2.eof() ) 
+        {
+          filesEqual = false;			
+          return( filesEqual );
+        }
+      getline( File1, File1Line );
+      getline( File2, File2Line );
+
+      if( File1Line != File2Line )
+        {
+          // cout << File1Line << endl;
+          // cout << File2Line << endl;
+          filesEqual = false;		
+          return( filesEqual );
+        }
+    }
+  if( !File2.eof() )
+  {
+    filesEqual = false;		
+    return( filesEqual );
+  }
+  else
+  {
+    filesEqual = true;
+    return( filesEqual );
+  }
+}
+
+
+//============================================================
+// Run all the test methods defined above
+//============================================================
+
+int main()
+{
+
+    int errorCount = 0;
+    int errorTotal = 0;
+    RinexNav_T testClass;
+
+    errorCount = testClass.headerExceptionTest();
+    errorTotal = errorTotal + errorCount;
+
+    errorCount = testClass.hardCodeTest();
+    errorTotal = errorTotal + errorCount;
+
+    errorCount = testClass.streamReadWriteTest();
+    errorTotal = errorTotal + errorCount;
+
+    errorCount = testClass.filterOperatorsTest();
+    errorTotal = errorTotal + errorCount;
+
+    return( errorTotal );
 }

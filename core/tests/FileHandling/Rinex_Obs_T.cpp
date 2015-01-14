@@ -34,39 +34,142 @@
 //
 //=============================================================================
 
-#include "Rinex_Obs_T.hpp"
+#include "RinexObsBase.hpp"
+#include "RinexObsData.hpp"
+#include "RinexObsStream.hpp"
+#include "RinexObsHeader.hpp"
+#include "RinexObsFilterOperators.hpp"
+
 #include "TestUtil.hpp"
 #include<iostream>
 #include<string>
 
 using namespace gpstk;
 
+//============================================================
+// Class decalarations
+//============================================================
+
+class RinexObs_T
+{
+    public:
+
+        // constructor
+       RinexObs_T( const std::string& data_path = "RinexObs_Logs" ):
+            dataFilePath( data_path )
+        {
+            init();
+        }
+
+        // return values indicate number of failures, i.e., 0=PASS, !0=FAIL
+        void init( void );
+        int headerExceptionTest( void );
+        int hardCodeTest( void );
+        int filterOperatorsTest( void );
+        int dataExceptionsTest( void );
+        bool fileEqualTest( const std::string&, const std::string& );
+
+    private:
+
+        std::string dataFilePath;
+
+        std::string dataRinexObsFile;
+        std::string dataIncompleteHeader;
+        std::string dataInvalidLineLength;
+        std::string dataInvalidNumPRNWaveFact;
+        std::string dataNotObs;
+        std::string dataSystemGeosync;
+        std::string dataSystemGlonass;
+        std::string dataSystemMixed;
+        std::string dataSystemTransit;
+        std::string dataUnSupVersion ;
+        std::string dataRinexContData;
+
+        std::string dataBadEpochLine;
+        std::string dataBadEpochFlag;
+        std::string dataBadLineSize;
+        std::string dataInvalidTimeFormat;
+
+        std::string dataFilterTest1;
+        std::string dataFilterTest2;
+        std::string dataFilterTest3;
+        std::string dataFilterTest4;
+
+        std::string dataTestOutput;
+        std::string dataTestOutput2;
+        std::string dataTestOutput3;
+        std::string dataTestOutputObsDump;
+        std::string dataTestOutputDataException;
+        std::string dataTestFilterOutput;
+};
+
+//============================================================
+// Initialize Test Data Filenames
+//============================================================
+
+void RinexObs_T :: init( void )
+{
+   dataRinexObsFile           = dataFilePath + "/" + "RinexObsFile.06o";
+   dataIncompleteHeader       = dataFilePath + "/" + "IncompleteHeader.06o";
+   dataInvalidLineLength      = dataFilePath + "/" + "InvalidLineLength.06o";
+   dataInvalidNumPRNWaveFact  = dataFilePath + "/" + "InvalidNumPRNWaveFact.06o";
+   dataNotObs                 = dataFilePath + "/" + "NotObs.06o";
+   dataSystemGeosync          = dataFilePath + "/" + "SystemGeosync.06o";
+   dataSystemGlonass          = dataFilePath + "/" + "SystemGlonass.06o";
+   dataSystemMixed            = dataFilePath + "/" + "SystemMixed.06o";
+   dataSystemTransit          = dataFilePath + "/" + "SystemTransit.06o";
+   dataUnSupVersion           = dataFilePath + "/" + "UnSupVersion.06o";
+   dataRinexContData          = dataFilePath + "/" + "RinexContData.06o";
+
+   dataBadEpochLine           = dataFilePath + "/" + "BadEpochLine.06o";
+   dataBadEpochFlag           = dataFilePath + "/" + "BadEpochFlag.06o";
+   dataBadLineSize            = dataFilePath + "/" + "BadLineSize.06o";
+   dataInvalidTimeFormat      = dataFilePath + "/" + "InvalidTimeFormat.06o";
+
+   dataFilterTest1            = dataFilePath + "/" + "FilterTest1.06o";
+   dataFilterTest2            = dataFilePath + "/" + "FilterTest2.06o";
+   dataFilterTest3            = dataFilePath + "/" + "FilterTest3.06o";
+   dataFilterTest4            = dataFilePath + "/" + "FilterTest4.06o";
+
+   dataTestOutput              = dataFilePath + "/" + "TestOutput.06o";
+   dataTestOutput2             = dataFilePath + "/" + "TestOutput2.06o";
+   dataTestOutput3             = dataFilePath + "/" + "TestOutput3.06o";
+   dataTestOutputObsDump       = dataFilePath + "/" + "ObsDump.06o";
+   dataTestOutputDataException = dataFilePath + "/" + "DataExceptionOutput.06o";
+   dataTestFilterOutput        = dataFilePath + "/" + "FilterOutput.txt";
+
+}
+
+//============================================================
+// Test Method Definitions
+//============================================================
+
 //------------------------------------------------------------
 // This tests throws many GPSTK RinexObsHeader exceptions including
 // Incomplete headers, invalid line lengths etc
 // Also an extended obs type is used and dumped within this test.
 //------------------------------------------------------------
-int xRinexObs :: headerExceptionTest( void )
+int RinexObs_T :: headerExceptionTest( void )
 {
-
+ 
     TestUtil test1( "RinexObsStream", "dump", __FILE__, __func__ );
     try
     {
-        gpstk::RinexObsStream RinexObsFile( "RinexObs_Logs/RinexObsFile.06o" );
-        gpstk::RinexObsStream ih( "RinexObs_Logs/IncompleteHeader.06o" );
-        gpstk::RinexObsStream il( "RinexObs_Logs/InvalidLineLength.06o" );
-        gpstk::RinexObsStream inpwf( "RinexObs_Logs/InvalidNumPRNWaveFact.06o" );
-        gpstk::RinexObsStream no( "RinexObs_Logs/NotObs.06o" );
-        gpstk::RinexObsStream ss( "RinexObs_Logs/SystemGeosync.06o" );
-        gpstk::RinexObsStream sr( "RinexObs_Logs/SystemGlonass.06o" );
-        gpstk::RinexObsStream sm( "RinexObs_Logs/SystemMixed.06o" );
-        gpstk::RinexObsStream st( "RinexObs_Logs/SystemTransit.06o" );
-        gpstk::RinexObsStream unsupv( "RinexObs_Logs/UnSupVersion.06o" );
-        gpstk::RinexObsStream contdata( "RinexObs_Logs/RinexContData.06o" );
- 
-        gpstk::RinexObsStream out( "RinexObs_Logs/TestOutput.06o",ios::out);
-        gpstk::RinexObsStream out2( "RinexObs_Logs/TestOutput3.06o",ios::out);
-        gpstk::RinexObsStream dump( "RinexObs_Logs/ObsDump",ios::out);
+        gpstk::RinexObsStream RinexObsFile( dataRinexObsFile );
+        gpstk::RinexObsStream ih( dataIncompleteHeader );
+        gpstk::RinexObsStream il( dataInvalidLineLength );
+        gpstk::RinexObsStream inpwf( dataInvalidNumPRNWaveFact );
+        gpstk::RinexObsStream no( dataNotObs );
+        gpstk::RinexObsStream ss( dataSystemGeosync );
+        gpstk::RinexObsStream sr( dataSystemGlonass );
+        gpstk::RinexObsStream sm( dataSystemMixed );
+        gpstk::RinexObsStream st( dataSystemTransit );
+        gpstk::RinexObsStream unsupv( dataUnSupVersion );
+        gpstk::RinexObsStream contdata( dataRinexContData );
+
+        gpstk::RinexObsStream out( dataTestOutput, std::ios::out );
+        gpstk::RinexObsStream out2( dataTestOutput3, std::ios::out );
+        gpstk::RinexObsStream dump( dataTestOutputObsDump, std::ios::out );
 
         gpstk::RinexObsHeader RinexObsFileh;
         gpstk::RinexObsHeader ihh;
@@ -123,17 +226,12 @@ int xRinexObs :: headerExceptionTest( void )
         ilh.dump( dump );
         gpstk::DisplayExtendedRinexObsTypes( dump );
 
-        test1.assert( RinexObsFileh.NumberHeaderRecordsToBeWritten() == 39 );
-        test1.print();
+        test1.assert( 39 == RinexObsFileh.NumberHeaderRecordsToBeWritten() );
     }
     catch(...)
     {
-      // the reported num_fails here should be the total of all the tests above
-      // since if the try block fails, we have no way to know if any of the tests passed.
-
         test1.fail();
         test1.print();
-
     }
 
     return( test1.countFails() );
@@ -144,16 +242,16 @@ int xRinexObs :: headerExceptionTest( void )
 // This test checks to make sure that the output
 // from a read in RinexObsFile matches the input.
 //------------------------------------------------------------
-int xRinexObs :: hardCodeTest( void )
+int RinexObs_T :: hardCodeTest( void )
 {
 
     TestUtil test2( "RinexObsStream", "dump", __FILE__, __func__ );
 
     try
     {
-        gpstk::RinexObsStream RinexObsFile( "RinexObs_Logs/RinexObsFile.06o" );
-        gpstk::RinexObsStream out( "RinexObs_Logs/TestOutput2.06o", ios::out );
-        gpstk::RinexObsStream dump( "RinexObs_Logs/ObsDump", ios::out );
+        gpstk::RinexObsStream RinexObsFile( dataRinexObsFile );
+        gpstk::RinexObsStream out( dataTestOutput2, std::ios::out );
+        gpstk::RinexObsStream dump( dataTestOutputObsDump, std::ios::out );
         gpstk::RinexObsHeader RinexObsFileh;
         gpstk::RinexObsData RinexObsFiled;
 
@@ -168,15 +266,13 @@ int xRinexObs :: hardCodeTest( void )
         RinexObsFiled.dump( dump );
         RinexObsFileh.dump( dump );
 
-        test2.assert( fileEqualTest( (char*)"RinexObs_Logs/RinexObsFile.06o", 
-                                     (char*)"RinexObs_Logs/TestOutput2.06o"   )
-                    );
+        test2.assert( fileEqualTest( dataRinexObsFile, dataTestOutput2 ) );
     }
     catch(...)
     {
         test2.fail();
+        test2.print();
     }
-    test2.print();
 
     return( test2.countFails() );
 }
@@ -185,18 +281,18 @@ int xRinexObs :: hardCodeTest( void )
 // This test throws many GPSTK exceptions within the
 // RinexObsData, including BadEpochLine and BadEpochFlag
 //------------------------------------------------------------
-int xRinexObs :: dataExceptionsTest( void )
+int RinexObs_T :: dataExceptionsTest( void )
 {
 
     TestUtil test3( "RinexObsStream", "dump", __FILE__, __func__ );
 
     try
       {
-        gpstk::RinexObsStream BadEpochLine( "RinexObs_Logs/BadEpochLine." );
-        gpstk::RinexObsStream BadEpochFlag( "RinexObs_Logs/BadEpochFlag.06o" );
-        gpstk::RinexObsStream BadLineSize( "RinexObs_Logs/BadLineSize.06o" );
-        gpstk::RinexObsStream InvalidTimeFormat( "RinexObs_Logs/InvalidTimeFormat.06o" );
-        gpstk::RinexObsStream out( "RinexObs_Logs/DataExceptionOutput.06o", ios::out );
+        gpstk::RinexObsStream BadEpochLine( dataBadEpochLine );
+        gpstk::RinexObsStream BadEpochFlag( dataBadEpochFlag );
+        gpstk::RinexObsStream BadLineSize( dataBadLineSize );
+        gpstk::RinexObsStream InvalidTimeFormat( dataInvalidTimeFormat );
+        gpstk::RinexObsStream out( dataTestOutputDataException, std::ios::out );
         gpstk::RinexObsData BadEpochLined;
         gpstk::RinexObsData BadEpochFlagd;
         gpstk::RinexObsData BadLineSized;
@@ -218,12 +314,14 @@ int xRinexObs :: dataExceptionsTest( void )
           {
             out << InvalidTimeFormatd;
           }
+        test3.pass();
+        test3.print();
       }
     catch(...)
       {
         test3.fail();
+        test3.print();
       }
-      test3.print();
 
     return( test3.countFails() );
 
@@ -233,20 +331,20 @@ int xRinexObs :: dataExceptionsTest( void )
 // This is the test for several of the members within RinexObsFilterOperators
 // including merge, LessThanSimple, EqualsSimple, and LessThanFull.
 //------------------------------------------------------------
-int xRinexObs :: filterOperatorsTest( void )
+int RinexObs_T :: filterOperatorsTest( void )
 {
 
     TestUtil test4( "RinexObsStream", "open", __FILE__, __func__ );
 
     try
     {
-        gpstk::RinexObsStream FilterStream1( "RinexObs_Logs/FilterTest1.06o" );
-        FilterStream1.open( "RinexObs_Logs/FilterTest1.06o", std::ios::in );
+        gpstk::RinexObsStream FilterStream1( dataFilterTest1 );
+        FilterStream1.open( dataFilterTest1, std::ios::in );
 
-        gpstk::RinexObsStream FilterStream2( "RinexObs_Logs/FilterTest2.06o" );
-        gpstk::RinexObsStream FilterStream3( "RinexObs_Logs/FilterTest3.06o" );
-        gpstk::RinexObsStream FilterStream4( "RinexObs_Logs/FilterTest4.06o" );
-        gpstk::RinexObsStream out( "RinexObs_Logs/FilterOutput.txt", ios::out );
+        gpstk::RinexObsStream FilterStream2( dataFilterTest2  );
+        gpstk::RinexObsStream FilterStream3( dataFilterTest3  );
+        gpstk::RinexObsStream FilterStream4( dataFilterTest4  );
+        gpstk::RinexObsStream out( dataTestFilterOutput, std::ios::out );
 
         gpstk::RinexObsHeader FilterHeader1;
         gpstk::RinexObsHeader FilterHeader2;
@@ -287,13 +385,11 @@ int xRinexObs :: filterOperatorsTest( void )
         //----------------------------------------
         gpstk::RinexObsDataOperatorEqualsSimple EqualsSimple;
         test4.assert( EqualsSimple( FilterData1, FilterData1 ) );
-        test4.print();
 
         //----------------------------------------
         gpstk::RinexObsDataOperatorLessThanSimple LessThanSimple;
         test4.next();
         test4.assert( !LessThanSimple( FilterData1, FilterData1 ) );
-        test4.print();
 
         //----------------------------------------
         //----------------------------------------
@@ -301,11 +397,9 @@ int xRinexObs :: filterOperatorsTest( void )
 
         test4.next();
         test4.assert( !LessThanFull( FilterData1, FilterData1 ) );
-        test4.print();
 
         test4.next();
         test4.assert( !LessThanFull( FilterData1, FilterData2 ) );
-        test4.print();
 
     }
     catch(...)
@@ -319,81 +413,54 @@ int xRinexObs :: filterOperatorsTest( void )
 }
 
 //------------------------------------------------------------
-// A helper function for xRinexObs to line by line, check if  the two 
-// files given are the same.
-// Takes in two file names within double quotes "FILEONE.TXT" "FILETWO.TXT".
-// Returns true if the files are equal.
-// Skips the first two lines becasue dates are often writen as the current
-// data and thus very hard to pin down a specific time for.
+// Method:  fileEqualTest()
+// Purpose: A helper function for RinexObs_T to compare two files for differences
+// Inputs:  Takes in two file names "FILEONE.TXT" "FILETWO.TXT".
+// Outputs: Returns true if the files are equal, false if not.
+// Note:    Skips the first two lines becasue dates are often writen as the
+//          current data and thus very hard to pin down a specific time for.
 //------------------------------------------------------------
-bool xRinexObs :: fileEqualTest( char* handle1, char* handle2 )
+bool RinexObs_T :: fileEqualTest( const std::string& filename1, const std::string& filename2 )
 {
-    bool files_equal = false;
-    int counter = 2;
-    std::ifstream File1;
-    std::ifstream File2;
-    std::string File1Line;
-    std::string File2Line;
+  bool files_equal = false;
+  std::ifstream File1;
+  std::ifstream File2;
+  std::string File1Line;
+  std::string File2Line;
 
-    File1.open( handle1 );
-    File2.open( handle2 );
-    std::getline( File1, File1Line );
-    std::getline( File2, File2Line );
-    std::getline( File1, File1Line );
-    std::getline( File2, File2Line );
+  File1.open( filename1.c_str() );
+  File2.open( filename2.c_str() );
+  std::getline( File1, File1Line );
+  std::getline( File2, File2Line );
+  std::getline( File1, File1Line );
+  std::getline( File2, File2Line );
 
-    while( !File1.eof() )
+  while( !File1.eof() )
     {
-        if( File2.eof() )
-            {
-                cout << counter << "ONE" << endl;
-                files_equal = false;
-                return( files_equal );
-            }
-        getline( File1, File1Line );
-        getline( File2, File2Line );
-        counter++;
-        if( File1Line != File2Line )
+      if( File2.eof() )
         {
-            cout << counter << "TWO" << endl;
-            files_equal = false;
-            return( files_equal );
+          files_equal = false;
+          return( files_equal );
+        }
+      getline( File1, File1Line );
+      getline( File2, File2Line );
+      if( File1Line != File2Line )
+        {
+          files_equal = false;
+          return( files_equal );
         }
     }
 
-    if( !File2.eof() )
+  if( !File2.eof() )
     {
-        cout << counter << "THREE" << endl;
-        files_equal = false;
-        return( files_equal );
+      files_equal = false;
+      return( files_equal );
     }
-    else
+  else
     {
-        files_equal = true;
-        return( files_equal );
+      files_equal = true;
+      return( files_equal );
     }
-}
-
-//------------------------------------------------------------
-// Helper function to check the test result
-//------------------------------------------------------------
-
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
 }
 
 //============================================================
@@ -403,30 +470,21 @@ void checkResult(int check, int& errCount) // Function to handle test result out
 int main()
 {
 
-    int check = 0;
-    int errorCounter = 0;
-    xRinexObs testClass;
+    int errorCount = 0;
+    int errorTotal = 0;
+    RinexObs_T testClass;
 
-    check = testClass.headerExceptionTest();
-    std::cout << "headerExceptionTest Result is: ";
-    checkResult( check, errorCounter );
-    check = -1;
+    errorCount = testClass.headerExceptionTest();
+    errorTotal = errorTotal + errorCount;
 
-    check = testClass.hardCodeTest();
-    std::cout << "hardCodeTest Result is: ";
-    checkResult( check, errorCounter );
-    check = -1;
+    errorCount = testClass.hardCodeTest();
+    errorTotal = errorTotal + errorCount;
 
-    check = testClass.dataExceptionsTest();
-    std::cout << "dataExceptionsTest Result is: ";
-    checkResult( check, errorCounter );
-    check = -1;
+    errorCount = testClass.dataExceptionsTest();
+    errorTotal = errorTotal + errorCount;
 
-    check = testClass.filterOperatorsTest();
-    std::cout << " filterOperatorsTest Result is: ";
-    checkResult( check, errorCounter );
-    check = -1;
+    errorCount = testClass.filterOperatorsTest();
+    errorTotal = errorTotal + errorCount;
 
-    std::cout << "Total Errors: " << errorCounter << std::endl;
-    return( errorCounter );
+    return( errorTotal );
 }
