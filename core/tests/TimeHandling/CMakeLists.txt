@@ -40,7 +40,7 @@ add_executable(TimeString_T TimeString_T.cpp)
 target_link_libraries(TimeString_T gpstk)
 add_test(TimeHandling_TimeString* TimeString_T)
 
-add_executable(TimeString_T TimeTag_T.cpp)
+add_executable(TimeTag_T TimeTag_T.cpp)
 target_link_libraries(TimeTag_T gpstk)
 add_test(TimeHandling_TimeTag_T* TimeTag_T)
 
