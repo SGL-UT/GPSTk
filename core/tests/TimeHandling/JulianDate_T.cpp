@@ -327,20 +327,20 @@ class JulianDate_T
   		JulianDate UTC1(1350000,TimeSystem(7));
 
 //--------------JulianDate_printfTest_1 - Verify printed output matches expectation
-		testFramework.assert(GPS1.printf("%08K %02P") == (std::string)"1350000.000000 GPS");
+		testFramework.assert(GPS1.printf("%08J %02P") == (std::string)"1350000.000000 GPS");
 		testFramework.next();
 
 //--------------JulianDate_printfTest_2 - Verify printed output matches expectation
-		testFramework.assert(UTC1.printf("%08K %02P") == (std::string)"1350000.000000 UTC");
+		testFramework.assert(UTC1.printf("%08J %02P") == (std::string)"1350000.000000 UTC");
 		testFramework.next();
 
 		testFramework.changeSourceMethod("printError");	
 //--------------JulianDate_printfTest_3 - Verify printed error message matches expectation
-		testFramework.assert(GPS1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.assert(GPS1.printError("%08J %02P") == (std::string)"ErrorBadTime ErrorBadTime");
 		testFramework.next();
 
 //--------------JulianDate_printfTest_4 - Verify printed error message matches expectation
-		testFramework.assert(UTC1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.assert(UTC1.printError("%08J %02P") == (std::string)"ErrorBadTime ErrorBadTime");
 
 		return testFramework.countFails();
 	}
