@@ -13,13 +13,77 @@ class YDSTime_T
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //	Add Initialization test here
+	int  initializationTest (void)
+	{
+		TestUtil testFramework( "YDSTime", "Constructor(year,day,second,TimeSystem)", __FILE__, __func__ );
+		testFramework.init();
+
+		YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
+
+//--------------YDSTime_initializationTest_1 - Was the year value set to expectation?
+		testFramework.assert(2008 == Compare.year);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_2 - Was the day value set to expectation?
+		testFramework.assert(2 == Compare.doy);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_3 - Was the second value set to expectation?
+		testFramework.assert(1 == Compare.sod);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_4 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("Constructor(YDSTime)");
+		YDSTime Copy(Compare); //Initialize the copy constructor
+
+//--------------YDSTime_initializationTest_5 - Was the year value set to expectation?
+		testFramework.assert(2008 == Copy.year);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_6 - Was the day value set to expectation?
+		testFramework.assert(2 == Copy.doy);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_7 - Was the second value set to expectation?
+		testFramework.assert(1 == Copy.sod);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_8 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("= Operator");
+		YDSTime Assigned;
+		Assigned = Compare;
+
+//--------------YDSTime_initializationTest_5 - Was the year value set to expectation?
+		testFramework.assert(2008 == Assigned.year);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_6 - Was the day value set to expectation?
+		testFramework.assert(2 == Assigned.doy);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_7 - Was the second value set to expectation?
+		testFramework.assert(1 == Assigned.sod);
+		testFramework.next();
+
+//--------------YDSTime_initializationTest_8 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem());
+
+		return testFramework.countFails();
+	}
+
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	/* Test will check if YDSTime variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
 	int setFromInfoTest (void)
 	{
-		TestUtil testFramework( "YDSTime", "Constructor(year,day,second,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "YDSTime", "setFromInfo", __FILE__, __func__ );
 		testFramework.init();
 
 		YDSTime setFromInfo1;
@@ -36,22 +100,22 @@ class YDSTime_T
 		Id['s'] = "1";
 		Id['P'] = "GPS";
 
-//--------------ANSITime_setFromInfoTest_1 - Does a proper setFromInfo work with all information provided?
-		testFramework.assert(setFromInfo1.setFromInfo(Id);
+//--------------YDSTime_setFromInfoTest_1 - Does a proper setFromInfo work with all information provided?
+		testFramework.assert(setFromInfo1.setFromInfo(Id));
 		testFramework.next();
 
-//--------------ANSITime_setFromInfoTest_2 - Did the setFromInfo set the proper values?
+//--------------YDSTime_setFromInfoTest_2 - Did the setFromInfo set the proper values?
 		testFramework.assert(Compare == setFromInfo1);
 		testFramework.next();
 
 		Id.erase('Y');
 		Id['y'] = "06";
 
-//--------------ANSITime_setFromInfoTest_3 - Does a proper setFromInfo work with 2 digit year?
+//--------------YDSTime_setFromInfoTest_3 - Does a proper setFromInfo work with 2 digit year?
 		testFramework.assert(setFromInfo2.setFromInfo(Id));
 		testFramework.next();
 
-//--------------ANSITime_setFromInfoTest_4 - Did the previous setFromInfo set the proper values?
+//--------------YDSTime_setFromInfoTest_4 - Did the previous setFromInfo set the proper values?
 		testFramework.assert(Compare2 == setFromInfo2);
 		testFramework.next();
 						
@@ -59,32 +123,32 @@ class YDSTime_T
 		Id.erase('y');
 		Id['y'] = "006";
 
-//--------------ANSITime_setFromInfoTest_5 - Does a proper setFromInfo work with 3 digit year?
+//--------------YDSTime_setFromInfoTest_5 - Does a proper setFromInfo work with 3 digit year?
 		testFramework.assert(setFromInfo3.setFromInfo(Id));
 		testFramework.next();
 
-//--------------ANSITime_setFromInfoTest_6 - Did the previous setFromInfo set the proper values?
-		testFramework.assert(Compare2 == setFromInfo3);
+//--------------YDSTime_setFromInfoTest_6 - Did the previous setFromInfo set the proper values?
+		testFramework.assert(!(Compare2 == setFromInfo3));
 		testFramework.next();
 
 		Id.erase('y');
 		Id['y'] = "2008";
 
-//--------------ANSITime_setFromInfoTest_7 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
+//--------------YDSTime_setFromInfoTest_7 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
 		testFramework.assert(setFromInfo4.setFromInfo(Id));
 		testFramework.next();
 
-//--------------ANSITime_setFromInfoTest_8 - Did the previous setFromInfo set the proper values?
+//--------------YDSTime_setFromInfoTest_8 - Did the previous setFromInfo set the proper values?
 		testFramework.assert(Compare == setFromInfo4);
 		testFramework.next();
 
 		Id.erase('y');
 
-//--------------ANSITime_setFromInfoTest_9 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
+//--------------YDSTime_setFromInfoTest_9 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
 		testFramework.assert(setFromInfo5.setFromInfo(Id));
 		testFramework.next();
 
-//--------------ANSITime_setFromInfoTest_10 - Did the previous setFromInfo set the proper values?
+//--------------YDSTime_setFromInfoTest_10 - Did the previous setFromInfo set the proper values?
 		testFramework.assert(setFromInfo5 == Compare3);
 
 		return testFramework.countFails();
@@ -105,151 +169,151 @@ class YDSTime_T
 		YDSTime CompareCopy2; //Empty initialization
 		CompareCopy2 = CompareCopy; //Assignment
 
-//--------------ANSITime_operatorTest_1 - Are equivalent objects equivalent?
+//--------------YDSTime_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_2 - Are equivalent objects equivalent?
+//--------------YDSTime_operatorTest_2 - Are equivalent objects equivalent?
 		testFramework.assert(!(Compare == LessThanYear));
 		testFramework.next();
 
 		testFramework.changeSourceMethod("!= Operator");
 
-//--------------ANSITime_operatorTest_3 - Are non-equivalent objects not equivalent?
+//--------------YDSTime_operatorTest_3 - Are non-equivalent objects not equivalent?
 		testFramework.assert(Compare != LessThanYear);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_4 - Are equivalent objects not equivalent?
+//--------------YDSTime_operatorTest_4 - Are equivalent objects not equivalent?
 		testFramework.assert(!(Compare != Compare));
 		testFramework.next();
 
 		testFramework.changeSourceMethod("< Operator");
 
-//--------------ANSITime_operatorTest_5 - Does the < operator function when left_object < right_object by years?
-		testFramework.assert(LessThanYear < Compare));
+//--------------YDSTime_operatorTest_5 - Does the < operator function when left_object < right_object by years?
+		testFramework.assert(LessThanYear < Compare);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_6 - Does the < operator function when left_object > right_object by years?
+//--------------YDSTime_operatorTest_6 - Does the < operator function when left_object > right_object by years?
 		testFramework.assert(!(Compare < LessThanYear));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_7 - Does the < operator function when left_object < right_object by days?
+//--------------YDSTime_operatorTest_7 - Does the < operator function when left_object < right_object by days?
 		testFramework.assert(LessThanDOY < Compare);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_8 - Does the < operator function when left_object > right_object by days?		
+//--------------YDSTime_operatorTest_8 - Does the < operator function when left_object > right_object by days?		
 		testFramework.assert(!(Compare < LessThanDOY));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_9 - Does the < operator function when left_object < right_object by seconds?
+//--------------YDSTime_operatorTest_9 - Does the < operator function when left_object < right_object by seconds?
 		testFramework.assert(LessThanSOD < Compare);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_10 - Does the < operator function when left_object > right_object by seconds?
+//--------------YDSTime_operatorTest_10 - Does the < operator function when left_object > right_object by seconds?
 		testFramework.assert(!(Compare < LessThanSOD));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_11 - Does the < operator function when left_object = right_object?
+//--------------YDSTime_operatorTest_11 - Does the < operator function when left_object = right_object?
 		testFramework.assert(!(Compare < CompareCopy));
 		testFramework.next();
 
 		//Greater than assertions
 		testFramework.changeSourceMethod("> Operator");
 
-//--------------ANSITime_operatorTest_12 - Does the > operator function when left_object > right_object by years?
-		testFramework.assert(Compare > LessThanYear));
+//--------------YDSTime_operatorTest_12 - Does the > operator function when left_object > right_object by years?
+		testFramework.assert(Compare > LessThanYear);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_13 - Does the > operator function when left_object < right_object by years?
+//--------------YDSTime_operatorTest_13 - Does the > operator function when left_object < right_object by years?
 		testFramework.assert(!(LessThanYear > Compare));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_14 - Does the > operator function when left_object > right_object by days?
+//--------------YDSTime_operatorTest_14 - Does the > operator function when left_object > right_object by days?
 		testFramework.assert(Compare > LessThanDOY);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_15 - Does the > operator function when left_object < right_object by days?		
+//--------------YDSTime_operatorTest_15 - Does the > operator function when left_object < right_object by days?		
 		testFramework.assert(!(LessThanDOY > Compare));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_16 - Does the > operator function when left_object > right_object by seconds?
+//--------------YDSTime_operatorTest_16 - Does the > operator function when left_object > right_object by seconds?
 		testFramework.assert(Compare > LessThanSOD);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_17 - Does the > operator function when left_object < right_object by seconds?
+//--------------YDSTime_operatorTest_17 - Does the > operator function when left_object < right_object by seconds?
 		testFramework.assert(!(LessThanSOD > Compare));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_18 - Does the > operator function when left_object = right_object?
+//--------------YDSTime_operatorTest_18 - Does the > operator function when left_object = right_object?
 		testFramework.assert(!(Compare > CompareCopy));
 		testFramework.next();	
 
 		//Less than equals assertion
 		testFramework.changeSourceMethod("<= Operator");
 
-//--------------ANSITime_operatorTest_19 - Does the < operator function when left_object < right_object by years?
-		testFramework.assert(LessThanYear <= Compare));
+//--------------YDSTime_operatorTest_19 - Does the < operator function when left_object < right_object by years?
+		testFramework.assert(LessThanYear <= Compare);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_20 - Does the <= operator function when left_object > right_object by years?
+//--------------YDSTime_operatorTest_20 - Does the <= operator function when left_object > right_object by years?
 		testFramework.assert(!(Compare <= LessThanYear));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_21 - Does the <= operator function when left_object < right_object by days?
+//--------------YDSTime_operatorTest_21 - Does the <= operator function when left_object < right_object by days?
 		testFramework.assert(LessThanDOY <= Compare);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_22 - Does the <= operator function when left_object > right_object by days?		
+//--------------YDSTime_operatorTest_22 - Does the <= operator function when left_object > right_object by days?		
 		testFramework.assert(!(Compare <= LessThanDOY));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_23 - Does the <= operator function when left_object < right_object by seconds?
+//--------------YDSTime_operatorTest_23 - Does the <= operator function when left_object < right_object by seconds?
 		testFramework.assert(LessThanSOD <= Compare);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_24 - Does the <= operator function when left_object > right_object by seconds?
+//--------------YDSTime_operatorTest_24 - Does the <= operator function when left_object > right_object by seconds?
 		testFramework.assert(!(Compare <= LessThanSOD));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_25 - Does the <= operator function when left_object = right_object?
+//--------------YDSTime_operatorTest_25 - Does the <= operator function when left_object = right_object?
 		testFramework.assert(Compare <= CompareCopy);
 		testFramework.next();
 
 		//Greater than equals assertion
 		testFramework.changeSourceMethod(">= Operator");
 
-//--------------ANSITime_operatorTest_26 - Does the >= operator function when left_object > right_object by years?
-		testFramework.assert(Compare >= LessThanYear));
+//--------------YDSTime_operatorTest_26 - Does the >= operator function when left_object > right_object by years?
+		testFramework.assert(Compare >= LessThanYear);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_27 - Does the >= operator function when left_object < right_object by years?
+//--------------YDSTime_operatorTest_27 - Does the >= operator function when left_object < right_object by years?
 		testFramework.assert(!(LessThanYear >= Compare));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_28 - Does the >= operator function when left_object > right_object by days?
+//--------------YDSTime_operatorTest_28 - Does the >= operator function when left_object > right_object by days?
 		testFramework.assert(Compare >= LessThanDOY);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_29 - Does the >= operator function when left_object < right_object by days?		
-		testFramework.assert(!(Compare >= LessThanDOY));
+//--------------YDSTime_operatorTest_29 - Does the >= operator function when left_object < right_object by days?		
+		testFramework.assert(!(LessThanDOY >= Compare));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_30 - Does the >= operator function when left_object > right_object by seconds?
+//--------------YDSTime_operatorTest_30 - Does the >= operator function when left_object > right_object by seconds?
 		testFramework.assert(Compare >= LessThanSOD);
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_31 - Does the >= operator function when left_object < right_object by seconds?
+//--------------YDSTime_operatorTest_31 - Does the >= operator function when left_object < right_object by seconds?
 		testFramework.assert(!(LessThanSOD >= Compare));
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_32 - Does the > operator function when left_object = right_object?
+//--------------YDSTime_operatorTest_32 - Does the > operator function when left_object = right_object?
 		testFramework.assert(!(Compare < CompareCopy));
 		testFramework.next();	
 
 		//Validity check
 		testFramework.changeSourceMethod("isValid Method");
 
-//--------------ANSITime_operatorTest_33 - Does the isValid methods function properly?
+//--------------YDSTime_operatorTest_33 - Does the isValid methods function properly?
 		testFramework.assert(Compare.isValid());
 
 		return testFramework.countFails();
@@ -275,19 +339,19 @@ class YDSTime_T
 
 	  	Compare.reset(); // Reset it
 
-//--------------ANSITime_operatorTest_1 - Was the time system reset to expectation?
+//--------------YDSTime_operatorTest_1 - Was the time system reset to expectation?
 	  	testFramework.assert(TimeSystem(0) == Compare.getTimeSystem());
 	  	testFramework.next();
 
-//--------------ANSITime_operatorTest_2 - Was the year value reset to expectation?	  	
+//--------------YDSTime_operatorTest_2 - Was the year value reset to expectation?	  	
 		testFramework.assert(0 == (int)Compare.year); 
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_3 - Was the day value reset to expectation?
+//--------------YDSTime_operatorTest_3 - Was the day value reset to expectation?
 		testFramework.assert(0 == (int)Compare.doy); 
 		testFramework.next();
 
-//--------------ANSITime_operatorTest_4 - Was the second value reset to expectation?	  	
+//--------------YDSTime_operatorTest_4 - Was the second value reset to expectation?	  	
 		testFramework.assert(0 == (int)Compare.sod); 
 		testFramework.next();
 
@@ -298,17 +362,17 @@ class YDSTime_T
 	/* Test will check converting to/from CommonTime. */
 	int toFromCommonTimeTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "isValid", __FILE__, __func__ );
+		TestUtil testFramework( "YDSTime", "isValid", __FILE__, __func__ );
 		testFramework.init();
 
 	  	YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
   		CommonTime Test = Compare.convertToCommonTime(); //Convert to
 
-//--------------ANSITime_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
+//--------------YDSTime_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
   		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
 		testFramework.next();
 
-//--------------ANSITime_toFromCommonTimeTest_2 - Is the set object valid?
+//--------------YDSTime_toFromCommonTimeTest_2 - Is the set object valid?
 		testFramework.assert(Compare.isValid());
 		testFramework.next();
 
@@ -316,30 +380,33 @@ class YDSTime_T
   		Test2.convertFromCommonTime(Test); //Convert From
 
  		testFramework.changeSourceMethod("CommonTime Conversion");
-//--------------ANSITime_toFromCommonTimeTest_3 - Is the result of conversion the same?
+//--------------YDSTime_toFromCommonTimeTest_3 - Is the result of conversion the same?
 		testFramework.assert(Test2 == Compare);
 		testFramework.next();
 
-//--------------ANSITime_toFromCommonTimeTest_4 - Is the time system after conversion what is expected?
+//--------------YDSTime_toFromCommonTimeTest_4 - Is the time system after conversion what is expected?
 		testFramework.assert(Compare.getTimeSystem()==TimeSystem(2));
 		testFramework.next();
 
-//--------------ANSITime_toFromCommonTimeTest_5 - Is the year after conversion what is expected?
+//--------------YDSTime_toFromCommonTimeTest_5 - Is the year after conversion what is expected?
 		testFramework.assert(2008 == (int)Compare.year);
 		testFramework.next();
 
-//--------------ANSITime_toFromCommonTimeTest_6 - Is the day after conversion what is expected?
+//--------------YDSTime_toFromCommonTimeTest_6 - Is the day after conversion what is expected?
 		testFramework.assert(2 == (int)Compare.doy);
 		testFramework.next();
 
-//--------------ANSITime_toFromCommonTimeTest_5 - Is the second after conversion what is expected?
+//--------------YDSTime_toFromCommonTimeTest_5 - Is the second after conversion what is expected?
 		testFramework.assert(1 == (int)Compare.sod);
+
 		return testFramework.countFails();
 	}
 
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int timeSystemTest (void)
 	{
+		TestUtil testFramework( "YDSTime", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		testFramework.init();
 
   		YDSTime GPS1(   2008,2,1,TimeSystem::GPS    );
 		YDSTime GPS2(   2005,2,1,TimeSystem::GPS    );
@@ -347,95 +414,104 @@ class YDSTime_T
 		YDSTime UNKNOWN(2008,2,1,TimeSystem::Unknown);
 		YDSTime ANY(    2008,2,1,TimeSystem::Any    );
 
-  		if (GPS1 == GPS2) return 1; // GPS1 and GPS2 should have different times
-  		if (GPS1.getTimeSystem() != GPS2.getTimeSystem()) return 2; // Should have the same time system
-  		if (GPS1 == UTC1) return 3; //Should have different time systems
-  		if (GPS1 == UNKNOWN) return 4;
+//--------------YDSTime_timeSystemTest_1 - Verify same Time System but different time inequality
+		testFramework.assert(!(GPS1 == GPS2));
+		testFramework.next();
 
-		// Perform comparisons to start of CommonTime
-  		if (GPS1.convertToCommonTime() < CommonTime::BEGINNING_OF_TIME) return 11;
-  		if (CommonTime::BEGINNING_OF_TIME > GPS1) return 12;
+//--------------YDSTime_timeSystemTest_2 - Verify same Time System equality
+		testFramework.assert(GPS1.getTimeSystem() == GPS2.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("Differing TimeSystem != Operator");
+//--------------YDSTime_timeSystemTest_3 - Verify different Time System but same time inequality
+		testFramework.assert(GPS1 != UTC1);
+		testFramework.next();
+
+//--------------YDSTime_timeSystemTest_4 - Verify different Time System but same time inequality
+		testFramework.assert(GPS1 != UNKNOWN);
+		testFramework.next();
 		
-		// Make TimeSystem part not matter and perform comparisons
-		// which solely depend on the time value.
-  		if (GPS1 != ANY) return 5; 
-  		if (UTC1 != ANY) return 6;
-  		if (UNKNOWN != ANY) return 7;
-  		if (GPS2 == ANY) return 8;
-  		if (GPS2 > GPS1) return 9;
-  		if (GPS2 > ANY) return 10;
+		testFramework.changeSourceMethod("ANY TimeSystem == Operator");		
+//--------------YDSTime_timeSystemTest_5 - Verify TimeSystem=ANY does not matter in TimeSystem=GPS comparisons 
+		testFramework.assert(GPS1 == ANY);
+		testFramework.next();
 
+//--------------YDSTime_timeSystemTest_6 - Verify TimeSystem=ANY does not matter in TimeSystem=UTC comparisons 
+		testFramework.assert(UTC1 == ANY);
+		testFramework.next();
+
+//--------------YDSTime_timeSystemTest_7 - Verify TimeSystem=ANY does not matter in TimeSystem=UNKOWN comparisons 
+		testFramework.assert(UNKNOWN == ANY);
+		testFramework.next();
+
+		testFramework.changeSourceMethod("ANY TimeSystem < Operator");	
+//--------------YDSTime_timeSystemTest_8 - Verify TimeSystem=ANY does not matter in other operator comparisons 
+		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY));
+		testFramework.next();
+
+		testFramework.changeSourceMethod("setTimeSystem");	
   		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
-  		if (UNKNOWN.getTimeSystem()!=TimeSystem(2)) return 13;
-		return 0;
+//--------------YDSTime_timeSystemTest_9 - Ensure resetting a Time System changes it
+		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2));
+
+		return testFramework.countFails();
 	}
 	/* Test for the formatted printing of YDSTime objects */
 	int printfTest (void)
 	{
+		TestUtil testFramework( "YDSTime", "printf", __FILE__, __func__ );
+		testFramework.init();
 
 		YDSTime GPS1(2008,2,1,TimeSystem::GPS);
 		YDSTime UTC1(2008,2,1,TimeSystem::UTC);
 		
-  		if (GPS1.printf("%04Y %02y %03j %02s %02P") != (std::string)"2008 08 002 1.000000 GPS") return 1;
-  		if (UTC1.printf("%04Y %02y %03j %02s %02P") != (std::string)"2008 08 002 1.000000 UTC") return 2;
-  		if (GPS1.printError("%04Y %02y %03j %02s %02P") != (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime") return 3; 
-  		if (UTC1.printError("%04Y %02y %03j %02s %02P") != (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime") return 4;
-		return 0;
+//--------------YDSTime_printfTest_1 - Verify printed output matches expectation		
+  		testFramework.assert(GPS1.printf("%04Y %02y %03j %02s %02P") == (std::string)"2008 08 002 1.000000 GPS");
+  		testFramework.next();
+
+//--------------YDSTime_printfTest_2 - Verify printed output matches expectation
+  		testFramework.assert(UTC1.printf("%04Y %02y %03j %02s %02P") == (std::string)"2008 08 002 1.000000 UTC");
+  		testFramework.next();
+
+//--------------YDSTime_printfTest_3 - Verify printed error message matches expectation
+  		testFramework.assert(GPS1.printError("%04Y %02y %03j %02s %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime"); 
+  		testFramework.next();
+
+//--------------YDSTime_printfTest_4 - Verify printed error message matches expectation
+  		testFramework.assert(UTC1.printError("%04Y %02y %03j %02s %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
+		testFramework.next();
+
+		return testFramework.countFails();
 	}
 };
-
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	YDSTime_T testClass;
+
+	check = testClass.initializationTest();
+	errorCounter += check;
+
 	check = testClass.operatorTest();
-        std::cout << "opertatorTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+    errorCounter += check;
 
 	check = testClass.setFromInfoTest();
-        std::cout << "setFromInfoTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+    errorCounter += check;
 
 	check = testClass.resetTest();
-        std::cout << "resetTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+    errorCounter += check;
 
 	check = testClass.timeSystemTest();
-        std::cout << "timeSystemTest Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+    errorCounter += check;
+
 	check = testClass.toFromCommonTimeTest();
-        std::cout << "toFromCommonTimeTest Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+    errorCounter += check;
 
 	check = testClass.printfTest();
-        std::cout << "printfTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+    errorCounter += check;
 	
-	std::cout << "Total Errors: " << errorCounter << std::endl;
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter; //Return the total number of errors
 }
