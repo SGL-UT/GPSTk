@@ -36,7 +36,7 @@ class xTimeConverters
 			convertJDtoCalendar(2453971,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_1 - Was the year value set to expectation?			
-			testFramework.assert((2006 == year);
+			testFramework.assert((2006 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_2 - Was the month value set to expectation?			
@@ -50,7 +50,7 @@ class xTimeConverters
 			convertJDtoCalendar(2299159,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_4 - Was the year value set to expectation?			
-			testFramework.assert((1582 == year);
+			testFramework.assert((1582 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_5 - Was the month value set to expectation?			
@@ -64,7 +64,7 @@ class xTimeConverters
 			convertJDtoCalendar(2342032,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_7 - Was the year value set to expectation?			
-			testFramework.assert((1700 == year);
+			testFramework.assert((1700 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_8 - Was the month value set to expectation?			
@@ -78,7 +78,7 @@ class xTimeConverters
 			convertJDtoCalendar(2377095,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_10 - Was the year value set to expectation?			
-			testFramework.assert((1796 == year);
+			testFramework.assert((1796 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_11 - Was the month value set to expectation?			
@@ -92,7 +92,7 @@ class xTimeConverters
 			convertJDtoCalendar(1721118,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_13 - Was the year value set to expectation?			
-			testFramework.assert((-1 == year);
+			testFramework.assert((-1 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_14 - Was the month value set to expectation?			
@@ -106,7 +106,7 @@ class xTimeConverters
 			convertJDtoCalendar(1721424,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_16 - Was the year value set to expectation?			
-			testFramework.assert((1 == year);
+			testFramework.assert((1 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_17 - Was the month value set to expectation?			
@@ -120,7 +120,7 @@ class xTimeConverters
 			convertJDtoCalendar(1648549,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_19 - Was the year value set to expectation?			
-			testFramework.assert((-200 == year);
+			testFramework.assert((-200 == year));
 			testFramework.next();
 
 //--------------TimeConverters_JDtoCalandarTest_20 - Was the month value set to expectation?			
