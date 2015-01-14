@@ -67,7 +67,6 @@ class RinexObs_T
         int hardCodeTest( void );
         int filterOperatorsTest( void );
         int dataExceptionsTest( void );
-        bool fileEqualTest( const std::string&, const std::string& );
 
     private:
 
@@ -245,6 +244,8 @@ int RinexObs_T :: headerExceptionTest( void )
 int RinexObs_T :: hardCodeTest( void )
 {
 
+    bool files_equal = false;
+    int num_lines_skip = 2; // Previous comments indicated that these Rinex methods aare not expected to match in the top two lines of the file
     TestUtil test2( "RinexObsStream", "dump", __FILE__, __func__ );
 
     try
@@ -266,7 +267,8 @@ int RinexObs_T :: hardCodeTest( void )
         RinexObsFiled.dump( dump );
         RinexObsFileh.dump( dump );
 
-        test2.assert( fileEqualTest( dataRinexObsFile, dataTestOutput2 ) );
+        files_equal = test2.fileEqualTest( dataRinexObsFile, dataTestOutput2, num_lines_skip );
+        test2.assert( files_equal );
     }
     catch(...)
     {
@@ -410,57 +412,6 @@ int RinexObs_T :: filterOperatorsTest( void )
 
     return( test4.countFails() );
 
-}
-
-//------------------------------------------------------------
-// Method:  fileEqualTest()
-// Purpose: A helper function for RinexObs_T to compare two files for differences
-// Inputs:  Takes in two file names "FILEONE.TXT" "FILETWO.TXT".
-// Outputs: Returns true if the files are equal, false if not.
-// Note:    Skips the first two lines becasue dates are often writen as the
-//          current data and thus very hard to pin down a specific time for.
-//------------------------------------------------------------
-bool RinexObs_T :: fileEqualTest( const std::string& filename1, const std::string& filename2 )
-{
-  bool files_equal = false;
-  std::ifstream File1;
-  std::ifstream File2;
-  std::string File1Line;
-  std::string File2Line;
-
-  File1.open( filename1.c_str() );
-  File2.open( filename2.c_str() );
-  std::getline( File1, File1Line );
-  std::getline( File2, File2Line );
-  std::getline( File1, File1Line );
-  std::getline( File2, File2Line );
-
-  while( !File1.eof() )
-    {
-      if( File2.eof() )
-        {
-          files_equal = false;
-          return( files_equal );
-        }
-      getline( File1, File1Line );
-      getline( File2, File2Line );
-      if( File1Line != File2Line )
-        {
-          files_equal = false;
-          return( files_equal );
-        }
-    }
-
-  if( !File2.eof() )
-    {
-      files_equal = false;
-      return( files_equal );
-    }
-  else
-    {
-      files_equal = true;
-      return( files_equal );
-    }
 }
 
 //============================================================

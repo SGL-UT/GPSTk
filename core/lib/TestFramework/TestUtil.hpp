@@ -268,6 +268,64 @@ public:
     next();
   }
 
+  //------------------------------------------------------------
+  // Method:  fileEqualTest()
+  // Purpose: compare two files for differences
+  // Inputs:  Takes in two file names "FILEONE.TXT" "FILETWO.TXT".
+  //          Take one integrer number of lines at the top of the two files to skip
+  // Outputs: Returns boolean: true if the files are equal, false if not.
+  //------------------------------------------------------------
+  bool fileEqualTest( const std::string& file1_name, const std::string& file2_name, int num_lines_skip=0 )
+  {
+      int           line_number = 0;
+      bool          files_equal = false;
+      std::ifstream file1_stream;
+      std::ifstream file2_stream;
+      std::string   file1_line;
+      std::string   file2_line;
+
+      file1_stream.open( file1_name.c_str() );
+      file2_stream.open( file2_name.c_str() );
+
+      // Compare each line until you reach the end of File1
+      while( !file1_stream.eof() )
+      {
+          line_number++;
+        
+          // If we reach the end of File2, but there is
+          // more left in File1, then they are not equal
+          if( file2_stream.eof() )
+          {
+              files_equal = false;
+              return( files_equal );
+          }
+
+          // get the next line and compare
+          getline( file1_stream, file1_line );
+          getline( file2_stream, file2_line );
+
+          // only fail if you find differences AFTER the skipped lines
+          if( (line_number > num_lines_skip) && (file1_line != file2_line) )
+          {
+              files_equal = false;
+              return( files_equal );
+          }
+      }
+
+      // If we reach the end of File1, but there is
+      // more left in File2, then they are not equal
+      if( !file2_stream.eof() )
+      {
+          files_equal = false;
+          return( files_equal );
+      }
+      else
+      {
+          files_equal = true;
+          return( files_equal );
+      }
+  }
+
 private:
 
   // The following are all used as part of the output from TestUtil::print()
@@ -278,7 +336,7 @@ private:
   std::string sourceMethod;  // help locate source method causing a test failure
   std::string testFilename;  // help locate test file that discovered a failure
   std::string testMethod;    // help locate test method that discovered a failure
-  std::string testLine;      // help locate line number where the test code lives
+
   int         failBit;       // store the result of a test (0=pass, 1=fail)
 
   double      tolerance;     // acceptable difference between test output and 
