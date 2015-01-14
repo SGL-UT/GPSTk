@@ -1,5 +1,6 @@
 #include "CommonTime.hpp"
 #include "Exception.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <cmath>
 using namespace gpstk;
@@ -16,32 +17,55 @@ class xCommonTime : public CommonTime
 		*/
 		int initializationTest()
 		{
+			TestUtil testFramework( "CommonTime", "Constructor(time,TimeSystem)", __FILE__, __func__ );
+			testFramework.init();
+
 			try {CommonTime Zero;}
-			catch (...) {return 1;}
+			catch (...) 
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {CommonTime Test1;
 			     Test1.set((long)700000,(long)0,(double)0.);}
-			catch (...) {return 2;}
+			catch (...)
+ 			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 				//CommonTime Test1((long)700000,(long)0,(double)0.); // This is a protected method
 
 				//Copy-Constructer
 			try {CommonTime Test1;
 			     Test1.set((long)700000,(long)0,(double)0.);
 			     CommonTime Test2(Test1);}
-			catch (...) {return 3;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {CommonTime Test1;
 			     Test1.set((long)700000,(long)0,(double)0.);
 			     CommonTime Test3 = Test1;}
-			catch (...) {return 4;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {CommonTime Test1;
 			     Test1.set((long)700000,(long)0,(double)0.);
 			     CommonTime Test4;
 			     Test4 = Test1;}
-			catch(...) {return 5;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
-			return 0;
+			return testFramework.countFails();
 		}
 		/*
 		  Test to see if setting improper values induces the correct exception handling.
@@ -52,59 +76,105 @@ class xCommonTime : public CommonTime
 			Test.set(700000,0,0.);
 			int brokeWhenAndHowItShouldCounter = 0;
 
+			TestUtil testFramework( "CommonTime", "Constructor(time,TimeSystem)", __FILE__, __func__ );
+			testFramework.init();
 			// Break the input in various ways and make sure the proper exception is called
 			try {Test.set(-1,0,0.);} //Negative days
 			catch(gpstk::InvalidRequest e) {e.dump(cout); brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 1;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.set(3442449,0,0.);} //Too many days
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 2;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.set(700000,-1,0.);} //Negative seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 3;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.set(700000,24*60*60+1,0.);} //Too many seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 4;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.set(700000,0,-1.);} //Negative fractional seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 5;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.set(700000,0,2.);} //Too many fractional seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 6;}
-			
-			if (brokeWhenAndHowItShouldCounter != 6) return 7;
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.setInternal(-1,0,0.);} //Negative days
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 8;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.setInternal(3442449,0,0.);} //Too many days
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 9;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.setInternal(700000,-1,0.);} //Negative seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 10;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.setInternal(700000,24*60*60+1,0.);} //Too many seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 11;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.setInternal(700000,1001,-1.);} //Negative fractional seconds
 			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 12;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
 			try {Test.setInternal(700000,1001,1001.);} //Too many fractional seconds
-			catch(gpstk::Exception e) {brokeWhenAndHowItShouldCounter++;}
-			catch(...){return 13;}
+			catch (...)
+			{
+				testFramework.failTest();
+				testFramework.print();
+			}
 
-			if (brokeWhenAndHowItShouldCounter == 12) return 14;
-			return 0;
+			return testFramework.countFails();
 		}
 
 		/*
