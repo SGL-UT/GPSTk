@@ -1,5 +1,3 @@
-//demo rewrite of GPSWeekZCount_T
-//formatting to ANSITime_T standard
 #include "GPSWeekZcount.hpp"
 #include "TimeTag.hpp"
 #include "TestUtil.hpp"
@@ -17,10 +15,6 @@ class GPSWeekZcount_T
 	public:
 		GPSWeekZcount_T(){eps = 1e-11;}// Default Constructor, set the precision value
 		~GPSWeekZcount_T() {} // Default Desructor
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Include initialization test here 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest(void)
@@ -81,10 +75,6 @@ class GPSWeekZcount_T
 	   Test also implicity tests whether the != operator functions. */
 	int setFromInfoTest (void)
 	{
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Possible error due to float?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 		TestUtil testFramework( "GPSWeekZcount", "setFromInfo", __FILE__, __func__ );
 		testFramework.init();
@@ -371,10 +361,6 @@ class GPSWeekZcount_T
 
   		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));
   		GPSWeekZcount UTC1(1300,13500.,TimeSystem(7));
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Error with "1350000" compared to 1350000?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //--------------GPSWeekZCount_printfTest_1 - Verify printed output matches expectation
 		testFramework.assert(GPS1.printf("%04F %05z %02P") == (std::string)"1300 13500 GPS");

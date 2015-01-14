@@ -1,5 +1,3 @@
-//demo rewrite of MJD_T
-//formatting to ANSITime_T standard
 #include "MJD.hpp"
 #include "TimeTag.hpp"
 #include "TestUtil.hpp"
@@ -13,10 +11,6 @@ class MJD_T
 {
 	public:
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Include initialization test here 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 	int  initializationTest (void)
 	{
 		TestUtil testFramework( "MJD", "Constructor(jd,TimeSystem)", __FILE__, __func__ );
@@ -25,7 +19,7 @@ class MJD_T
 	  	MJD Compare(135000.0,TimeSystem(2)); //Initialize an object
 
 //--------------MJD_initializationTest_1 - Was the jd value set to expectation?
-		testFramework.assert(135000.0 - Compare.mjd < eps && Compare.mjd - 135000.0 < eps);
+		testFramework.assert(135000.0 == Compare.mjd);
 		testFramework.next();
 
 //--------------MJD_initializationTest_2 - Was the time system set to expectation?
@@ -37,7 +31,7 @@ class MJD_T
 
 //--------------MJD_initializationTest_3 - Was the jd value set to expectation?
 		//Compare.jd==135000
-		testFramework.assert(135000.0-Copy.mjd < eps && Copy.mjd - 135000.0 < eps);
+		testFramework.assert(135000.0 == Copy.mjd);
 		testFramework.next();
 
 //--------------MJD_initializationTest_4 - Was the time system set to expectation?
@@ -50,7 +44,7 @@ class MJD_T
 
 //--------------MJD_initializationTest_5 - Was the jd value set to expectation?
 		//Compare.jd==135000
-		testFramework.assert(135000.0-Assigned.jmd < eps && Assigned.mjd - 135000.0 < eps);
+		testFramework.assert(135000.0 == Assigned.mjd);
 		testFramework.next();
 
 //--------------MJD_initializationTest_6 - Was the time system set to expectation?
@@ -106,6 +100,13 @@ class MJD_T
 		gpstk::MJD CompareCopy(Compare); // Initialize with copy constructor
 		gpstk::MJD CompareCopy2; //Empty initialization
 		CompareCopy2 = CompareCopy; //Assignment
+
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//	Why have CompareCopy2? Never called. Also, LessThanZCount was only called once
+//	in the original test. Shouldn't it be called more for more rigorous testing?
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 
 //--------------MJD_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
@@ -187,12 +188,9 @@ class MJD_T
 	  	MJD Compare(135000,TimeSystem(2)); //Initialize an object
 
 	  	Compare.reset(); // Reset it
-//--------------MJD_resetTest_1 - Was the mjd value reset to expectation?
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// mjd recast as int! Is that okay? Does 0 as a double not return 0?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-	  	
-	  	testFramework.assert(0 == (int)Compare.mjd);
+//--------------MJD_resetTest_1 - Was the mjd value reset to expectation?	
+	  	testFramework.assert(0 == Compare.mjd);
 	  	testFramework.next();
 
 //--------------MJD_resetTest_2 - Was the time system reset to expectation?
@@ -327,18 +325,14 @@ int main() //Main function to initialize and run all tests above
 	int check, errorCounter = 0;
 	MJD_T testClass;
 
-	//check = testClass.initializationTest();
-	//errorCounter += check;
+	check = testClass.initializationTest();
+	errorCounter += check;
 
 	check = testClass.operatorTest();
 	errorCounter += check;
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	//check = testClass.setFromInfoTest(); 
-// "Not run due to issue with Solaris compiler"
-// ????
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	//errorCounter += check;
+	check = testClass.setFromInfoTest(); 
+	errorCounter += check;
 
 	check = testClass.resetTest();
 	errorCounter += check;
