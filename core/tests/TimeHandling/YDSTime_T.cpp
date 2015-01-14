@@ -10,10 +10,8 @@ using namespace std;
 class YDSTime_T
 {
 	public:
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Add Initialization test here
-	int  initializationTest (void)
+	/* Test to ensure the values in the constructor go to their intended locations */
+	int initializationTest (void)
 	{
 		TestUtil testFramework( "YDSTime", "Constructor(year,day,second,TimeSystem)", __FILE__, __func__ );
 		testFramework.init();
@@ -76,8 +74,6 @@ class YDSTime_T
 
 		return testFramework.countFails();
 	}
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	/* Test will check if YDSTime variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
