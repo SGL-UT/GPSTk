@@ -53,7 +53,7 @@ class JulianDate_T
 
 //--------------JulianDate_initializationTest_3 - Was the jd value set to expectation?
 		//Compare.jd==135000
-		testFramework.assert(1350000-Copy.jd < eps && Copy.jd - 135000 < eps);
+		testFramework.assert(1350000-Copy.jd < eps && Copy.jd - 1350000 < eps);
 		testFramework.next();
 
 //--------------JulianDate_initializationTest_4 - Was the time system set to expectation?
