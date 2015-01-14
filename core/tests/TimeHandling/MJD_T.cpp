@@ -14,21 +14,55 @@ class MJD_T
 	public:
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Is eps necessary? Included for float, but unsure if will work without
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-	
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //Include initialization test here 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	int  initializationTest (void)
+	{
+		TestUtil testFramework( "MJD", "Constructor(jd,TimeSystem)", __FILE__, __func__ );
+		testFramework.init();
+
+	  	MJD Compare(135000.0,TimeSystem(2)); //Initialize an object
+
+//--------------MJD_initializationTest_1 - Was the jd value set to expectation?
+		testFramework.assert(135000.0 - Compare.mjd < eps && Compare.mjd - 135000.0 < eps);
+		testFramework.next();
+
+//--------------MJD_initializationTest_2 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("Constructor(MJD)");
+		MJD Copy(Compare); // Initialize with copy constructor
+
+//--------------MJD_initializationTest_3 - Was the jd value set to expectation?
+		//Compare.jd==135000
+		testFramework.assert(135000.0-Copy.mjd < eps && Copy.mjd - 135000.0 < eps);
+		testFramework.next();
+
+//--------------MJD_initializationTest_4 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("= Operator");
+		MJD Assigned;
+		Assigned = Compare;
+
+//--------------MJD_initializationTest_5 - Was the jd value set to expectation?
+		//Compare.jd==135000
+		testFramework.assert(135000.0-Assigned.jmd < eps && Assigned.mjd - 135000.0 < eps);
+		testFramework.next();
+
+//--------------MJD_initializationTest_6 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem());
+
+		return testFramework.countFails();
+	}
 
 
 	/* Test will check if MJD variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//Error with "1350000" compared to 1350000?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 	int setFromInfoTest (void)
 	{
 		TestUtil testFramework( "MJD", "setFromInfo", __FILE__, __func__ );
