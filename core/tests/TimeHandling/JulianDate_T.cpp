@@ -1,197 +1,382 @@
+//demo rewrite of JulianDate_T
+//formatting to ANSITime_T standard
+
 #include "JulianDate.hpp"
 #include "TimeTag.hpp"
 #include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
+#include <string>
+#include <iomanip>
+#include <sstream>
 
 using namespace gpstk;
 using namespace std;
 
+
 class JulianDate_T
 {
 	public:
+	JulianDate_T() {eps = 1E-12;}
+	~JulianDate_T() {}
 
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//Include initialization test here? YES JulianDate_T doesn't have one, but ANSITime_T does
+//Julian date looks like it takes the same construction parameters as ANSITime, could be wrong
 
+//Julian date has long double value called jd instead of ASNI's time_t value called time.
+//need to use epsilon for accurate float comparison? Solved by using a-b>c && b-a>c
+//Better solution?
+
+//Also, why does ANSITime use 13500000 but JulianDate use 1350000? Julian needs to be smaller
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	/* Test to ensure the values in the constructor go to their intended locations */
+	int  initializationTest (void)
+	{
+		TestUtil testFramework( "JulianDate", "Constructor(jd,TimeSystem)", __FILE__, __func__ );
+		testFramework.init();
+
+	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
+
+//--------------JulianDate_initializationTest_1 - Was the jd value set to expectation?
+		//Compare.jd==135000
+		testFramework.assert(1350000 - Compare.jd < eps && Compare.jd - 1350000 < eps);
+		testFramework.next();
+
+//--------------JulianDate_initializationTest_2 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("Constructor(JulianDate)");
+		JulianDate Copy(Compare); // Initialize with copy constructor
+
+//--------------JulianDate_initializationTest_3 - Was the jd value set to expectation?
+		//Compare.jd==135000
+		testFramework.assert(1350000-Copy.jd < eps && Copy.jd - 135000 < eps);
+		testFramework.next();
+
+//--------------JulianDate_initializationTest_4 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());
+		testFramework.next();
+
+		testFramework.changeSourceMethod("= Operator");
+		JulianDate Assigned;
+		Assigned = Compare;
+
+//--------------JulianDate_initializationTest_5 - Was the jd value set to expectation?
+		//Compare.jd==135000
+		testFramework.assert(1350000-Assigned.jd < eps && Assigned.jd - 1350000 < eps);
+		testFramework.next();
+
+//--------------JulianDate_initializationTest_6 - Was the time system set to expectation?
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem());
+
+		return testFramework.countFails();
+	}
 
 	/* Test will check if JulianDate variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//Error with "1350000" compared to 1350000?
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 	int setFromInfoTest (void)
 	{
+
+		TestUtil testFramework( "JulianDate", "setFromInfo", __FILE__, __func__ );
+		testFramework.init();
+
 		JulianDate setFromInfo1;
 		JulianDate setFromInfo2;
 		JulianDate Compare(1350000,TimeSystem(2)), Compare2(0,TimeSystem(2));
 		TimeTag::IdToValue Id;
 		Id['J'] = "1350000";
 		Id['P'] = "GPS";
-		if (!setFromInfo1.setFromInfo(Id)) return 1;
-		if (setFromInfo1 != Compare) return 2;
+
+//--------------JulianDate_setFromInfoTest_1 - Does a proper setFromInfo work with all information provided?
+		testFramework.assert(setFromInfo1.setFromInfo(Id));
+		testFramework.next();
+
+//--------------JulianDate_setFromInfoTest_2 - Did the setFromInfo set the proper values?
+		testFramework.assert(Compare == setFromInfo1);
+		testFramework.next();
+
 		Id.erase('J');
-		if(!setFromInfo2.setFromInfo(Id)) return 3;
-		if (setFromInfo2 != Compare2) return 4;
-		return 0;
+//--------------JulianDate_setFromInfoTest_3 - Does a proper setFromInfo work with missing information?
+		testFramework.assert(setFromInfo2.setFromInfo(Id));
+		testFramework.next();
+
+//--------------JulianDate_setFromInfoTest_4 - Did the previous setFromInfo set the proper values?
+		testFramework.assert(Compare2 == setFromInfo2);		
+
+		return testFramework.countFails();
 	}
 
 	/* Test will check if the ways to initialize and set an JulianDate object.
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
+		TestUtil testFramework( "JulianDate", "== Operator", __FILE__, __func__ );
+		testFramework.init();
 
 		JulianDate Compare(1350000); // Initialize with value
-		JulianDate LessThanJD(1340000); // Initialize with value
+		JulianDate LessThanJD(134000); // Initialize with value
 		JulianDate CompareCopy(Compare); // Initialize with copy constructor
 		JulianDate CompareCopy2; //Empty initialization
 		CompareCopy2 = CompareCopy; //Assignment
 
-		//Equality Assertion
-		if (!(Compare == CompareCopy)) return 1;
-		//Non-equality Assertion
-		if (!(Compare != LessThanJD)) return 2;
-		//Less than assertions
-		if (!(LessThanJD < Compare)) return 3;
-		if (Compare < LessThanJD) return 4;
-		//Greater than assertions
-		if(!(Compare > LessThanJD)) return 5;
-		//Less than equals assertion
-		if (!(LessThanJD <= Compare)) return 6;
-		if(!(CompareCopy <= Compare)) return 7;
-		//Greater than equals assertion
-		if(!(Compare >= LessThanJD)) return 8;
-		if(!(Compare >= CompareCopy)) return 9;
-		//Validity check
-		if(!(Compare.isValid())) return 10;
-		return 0;
+//--------------JulianDate_operatorTest_1 - Are equivalent objects equivalent?
+		testFramework.assert(Compare == CompareCopy);
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_2 - Are equivalent objects equivalent?
+		testFramework.assert(!(Compare == LessThanJD));
+		testFramework.next();
+
+		testFramework.changeSourceMethod("!= Operator");
+//--------------JulianDate_operatorTest_3 - Are non-equivalent objects not equivalent?
+		testFramework.assert(Compare != LessThanJD);
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_4 - Are equivalent objects not equivalent?
+		testFramework.assert(!(Compare != Compare));
+		testFramework.next();
+
+		testFramework.changeSourceMethod("< Operator");
+//--------------JulianDate_operatorTest_5 - Does the < operator function when left_object < right_object?
+		testFramework.assert(LessThanJD < Compare);
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_6 - Does the < operator function when left_object > right_object?
+		testFramework.assert(!(Compare < LessThanJD));
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_7 - Does the < operator function when left_object = right_object?
+		testFramework.assert(!(Compare < CompareCopy));
+		testFramework.next();
+
+		testFramework.changeSourceMethod("> Operator");
+//--------------JulianDate_operatorTest_8 - Does the > operator function when left_object < right_object?
+		testFramework.assert(!(LessThanJD > Compare));
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_9 - Does the > operator function when left_object > right_object?
+		testFramework.assert(Compare > LessThanJD);
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_10 - Does the > operator function when left_object = right_object?
+		testFramework.assert(!(Compare > CompareCopy));
+		testFramework.next();
+
+		testFramework.changeSourceMethod("<= Operator");
+//--------------JulianDate_operatorTest_11 - Does the <= operator function when left_object < right_object?
+		testFramework.assert(LessThanJD <= Compare);
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_12 - Does the <= operator function when left_object > right_object?
+		testFramework.assert(!(Compare <= LessThanJD));
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_13 - Does the <= operator function when left_object = right_object?
+		testFramework.assert(Compare <= CompareCopy);
+		testFramework.next();
+
+		testFramework.changeSourceMethod(">= Operator");
+//--------------JulianDate_operatorTest_14 - Does the >= operator function when left_object < right_object?
+		testFramework.assert(!(LessThanJD >= Compare));
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_15 - Does the >= operator function when left_object > right_object?
+		testFramework.assert(Compare >= LessThanJD);
+		testFramework.next();
+
+//--------------JulianDate_operatorTest_16 - Does the >= operator function when left_object = right_object?
+		testFramework.assert(Compare >= CompareCopy);
+
+		return testFramework.countFails();
 	}
 
-	/* Test will check the reset method. */
+		/* Test will check the reset method. */
 	int resetTest (void)
 	{
-	
+		TestUtil testFramework( "JulianDate", "reset", __FILE__, __func__ );
+		testFramework.init();
+
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
-		// Check initialization
-  		if (!(Compare.getTimeSystem()==TimeSystem(2))) return 1; 
-  		if (1350000 != (int)Compare.jd) return 2;
 
 	  	Compare.reset(); // Reset it
-	  	if (TimeSystem(0) != Compare.getTimeSystem()) return 3; 
-	  	if (0 != (int)Compare.jd) return 4;
-		return 0;
-	}
 
+//--------------JulianDate_resetTest_1 - Was the jd value reset to expectation?
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//Compare.jd<eps? Is this neccessary because Compare.jd is compared to 0?
+//Can't 0 be set as a float?
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+		testFramework.assert(Compare.jd==0);
+		testFramework.next();
+
+//--------------JulianDate_resetTest_2 - Was the time system reset to expectation?
+		testFramework.assert(TimeSystem(0) == Compare.getTimeSystem());
+
+		return testFramework.countFails();
+	}
 	/* Test will check converting to/from CommonTime. */
-	int toFromCommonTimeTest (void)
+	int  toFromCommonTimeTest (void)
 	{
+		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __func__ );
+		testFramework.init();
+
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
+
+//--------------JulianDate_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
+  		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
+		testFramework.next();
+
+//--------------JulianDate_toFromCommonTimeTest_2 - Is the set object valid?
+		testFramework.assert(Compare.isValid());
+		testFramework.next();
+
   		CommonTime Test = Compare.convertToCommonTime(); //Convert to
 
   		JulianDate Test2;
   		Test2.convertFromCommonTime(Test); //Convert From
 
-  		if (!(Test2 == Compare)) return 1; // Converting to then from yields original
+		testFramework.changeSourceMethod("CommonTime Conversion");
+//--------------JulianDate_toFromCommonTimeTest_3 - Is the result of conversion the same?
+		testFramework.assert(Test2 == Compare);
+		testFramework.next();
 
-  		if (!(Compare.getTimeSystem()==TimeSystem(2))) return 2; // Recheck TimeSystem
-  		if (1350000 != (int)Compare.jd) return 3; // Recheck value
-		return 0;
+//--------------JulianDate_toFromCommonTimeTest_4 - Is the time system after conversion what is expected?
+		testFramework.assert(Compare.getTimeSystem()==TimeSystem(2));
+		testFramework.next();
+
+//--------------JulianDate_toFromCommonTimeTest_5 - Is the time after conversion what is expected?
+		//Compare.jd==0
+		testFramework.assert(1350000 - Compare.jd < eps && Compare.jd - 1350000 < eps);
+
+		return testFramework.countFails();
 	}
-
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
-	int timeSystemTest (void)
+	int  timeSystemTest (void)
 	{
+		TestUtil testFramework( "JulianDate", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		testFramework.init();
 
   		JulianDate GPS1(1350000,TimeSystem(2));
   		JulianDate GPS2(1340000,TimeSystem(2));
-  		JulianDate UTC1(1350000,TimeSystem(5));
+  		JulianDate UTC1(1350000,TimeSystem(7));
   		JulianDate UNKNOWN(1350000,TimeSystem(0));
   		JulianDate ANY(1350000,TimeSystem(1));
 
-  		if (GPS1 == GPS2) return 1; // GPS1 and GPS2 should have different times
-  		if (GPS1.getTimeSystem() != GPS2.getTimeSystem()) return 2; // Should have the same time system
-  		if (GPS1 == UTC1) return 3; //Should have different time systems
-  		if (GPS1 == UNKNOWN) return 4;
+//--------------JulianDate_timeSystemTest_1 - Verify same Time System but different time inequality
+		testFramework.assert(!(GPS1 == GPS2));
+		testFramework.next();
 
-		// Perform comparisons to start of CommonTime
-  		if (GPS1.convertToCommonTime() < CommonTime::BEGINNING_OF_TIME) return 11;
-  		if (CommonTime::BEGINNING_OF_TIME > GPS1) return 12;
-		
-		// Make TimeSystem part not matter and perform comparisons
-		// which solely depend on the time value.
-  		if (GPS1 != ANY) return 5; 
-  		if (UTC1 != ANY) return 6;
-  		if (UNKNOWN != ANY) return 7;
-  		if (GPS2 == ANY) return 8;
-  		if (GPS2 > GPS1) return 9;
-  		if (GPS2 > ANY) return 10;
+//--------------JulianDate_timeSystemTest_2 - Verify same Time System equality
+		testFramework.assert(GPS1.getTimeSystem() == GPS2.getTimeSystem());
+		testFramework.next();
 
+		testFramework.changeSourceMethod("Differing TimeSystem != Operator");
+//--------------JulianDate_timeSystemTest_3 - Verify different Time System but same time inequality
+		testFramework.assert(GPS1 != UTC1);
+		testFramework.next();
+
+//--------------JulianDate_timeSystemTest_4 - Verify different Time System but same time inequality
+		testFramework.assert(GPS1 != UNKNOWN);
+		testFramework.next();
+
+		testFramework.changeSourceMethod("ANY TimeSystem == Operator");		
+//--------------JulianDate_timeSystemTest_5 - Verify TimeSystem=ANY does not matter in TimeSystem=GPS comparisons 
+		testFramework.assert(GPS1 == ANY);
+		testFramework.next();
+
+//--------------JulianDate_timeSystemTest_6 - Verify TimeSystem=ANY does not matter in TimeSystem=UTC comparisons 
+		testFramework.assert(UTC1 == ANY);
+		testFramework.next();
+
+//--------------JulianDate_timeSystemTest_7 - Verify TimeSystem=ANY does not matter in TimeSystem=UNKOWN comparisons 
+		testFramework.assert(UNKNOWN == ANY);
+		testFramework.next();
+
+		testFramework.changeSourceMethod("ANY TimeSystem < Operator");	
+//--------------JulianDate_timeSystemTest_8 - Verify TimeSystem=ANY does not matter in other operator comparisons 
+		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY));
+		testFramework.next();
+
+		testFramework.changeSourceMethod("setTimeSystem");	
   		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
-  		if (UNKNOWN.getTimeSystem()!=TimeSystem(2)) return 13;
-		return 0;
+//--------------JulianDate_timeSystemTest_9 - Ensure resetting a Time System changes it
+		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2));
+
+		return testFramework.countFails();
 	}
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//Error with "1350000" compared to 1350000?
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
 	/* Test for the formatted printing of JulianDate objects */
-	int printfTest (void)
+	int  printfTest (void)
 	{
+		TestUtil testFramework( "JulianDate", "printf", __FILE__, __func__ );
+		testFramework.init();
 
   		JulianDate GPS1(1350000,TimeSystem(2));
   		JulianDate UTC1(1350000,TimeSystem(7));
-		
-  		if (GPS1.printf("%08J %02P") != (std::string)"1350000.000000 GPS") return 1;
-  		if (UTC1.printf("%08J %02P") != (std::string)"1350000.000000 UTC") return 2;
-  		if (GPS1.printError("%08J %02P") != (std::string)"ErrorBadTime ErrorBadTime") return 3; 
-  		if (UTC1.printError("%08J %02P") != (std::string)"ErrorBadTime ErrorBadTime") return 4;
-		return 0;
+
+//--------------JulianDate_printfTest_1 - Verify printed output matches expectation
+		testFramework.assert(GPS1.printf("%08K %02P") == (std::string)"1350000.000000 GPS");
+		testFramework.next();
+
+//--------------JulianDate_printfTest_2 - Verify printed output matches expectation
+		testFramework.assert(UTC1.printf("%08K %02P") == (std::string)"1350000.000000 UTC");
+		testFramework.next();
+
+		testFramework.changeSourceMethod("printError");	
+//--------------JulianDate_printfTest_3 - Verify printed error message matches expectation
+		testFramework.assert(GPS1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		testFramework.next();
+
+//--------------JulianDate_printfTest_4 - Verify printed error message matches expectation
+		testFramework.assert(UTC1.printError("%08K %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+
+		return testFramework.countFails();
 	}
+
+	private:
+		double eps;
 };
 
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	JulianDate_T testClass;
-	check = testClass.operatorTest();
-        std::cout << "opertatorTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
 
-	check = testClass.setFromInfoTest(); 
-        std::cout << "setFromInfoTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	check = testClass.initializationTest();
+	errorCounter += check;
+
+	check = testClass.operatorTest();
+	errorCounter += check;
+
+	check = testClass.setFromInfoTest();
+	errorCounter += check;
 
 	check = testClass.resetTest();
-        std::cout << "resetTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.timeSystemTest();
-        std::cout << "timeSystemTest Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.toFromCommonTimeTest();
-        std::cout << "toFromCommonTimeTest Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.printfTest();
-        std::cout << "printfTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 	
-	std::cout << "Total Errors: " << errorCounter << std::endl;
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter; //Return the total number of errors
 }
