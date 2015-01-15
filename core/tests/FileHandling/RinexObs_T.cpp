@@ -41,8 +41,8 @@
 #include "RinexObsFilterOperators.hpp"
 
 #include "TestUtil.hpp"
-#include<iostream>
-#include<string>
+#include <iostream>
+#include <string>
 
 using namespace gpstk;
 
@@ -108,27 +108,33 @@ class RinexObs_T
 
 void RinexObs_T :: init( void )
 {
-   dataRinexObsFile           = dataFilePath + "/" + "RinexObsFile.06o";
-   dataIncompleteHeader       = dataFilePath + "/" + "IncompleteHeader.06o";
-   dataInvalidLineLength      = dataFilePath + "/" + "InvalidLineLength.06o";
-   dataInvalidNumPRNWaveFact  = dataFilePath + "/" + "InvalidNumPRNWaveFact.06o";
-   dataNotObs                 = dataFilePath + "/" + "NotObs.06o";
-   dataSystemGeosync          = dataFilePath + "/" + "SystemGeosync.06o";
-   dataSystemGlonass          = dataFilePath + "/" + "SystemGlonass.06o";
-   dataSystemMixed            = dataFilePath + "/" + "SystemMixed.06o";
-   dataSystemTransit          = dataFilePath + "/" + "SystemTransit.06o";
-   dataUnSupVersion           = dataFilePath + "/" + "UnSupVersion.06o";
-   dataRinexContData          = dataFilePath + "/" + "RinexContData.06o";
 
-   dataBadEpochLine           = dataFilePath + "/" + "BadEpochLine.06o";
-   dataBadEpochFlag           = dataFilePath + "/" + "BadEpochFlag.06o";
-   dataBadLineSize            = dataFilePath + "/" + "BadLineSize.06o";
-   dataInvalidTimeFormat      = dataFilePath + "/" + "InvalidTimeFormat.06o";
+   // Get the full file path the to source file, strip off the filename from the path
+   // and then append the data file subdirectory to the path
+   std::string sourceFileName = __FILE__;
+   dataFilePath = sourceFileName.substr(0, sourceFileName.find_last_of("\\/")) + "/" + dataFilePath;
 
-   dataFilterTest1            = dataFilePath + "/" + "FilterTest1.06o";
-   dataFilterTest2            = dataFilePath + "/" + "FilterTest2.06o";
-   dataFilterTest3            = dataFilePath + "/" + "FilterTest3.06o";
-   dataFilterTest4            = dataFilePath + "/" + "FilterTest4.06o";
+   dataRinexObsFile            = dataFilePath + "/" + "RinexObsFile.06o";
+   dataIncompleteHeader        = dataFilePath + "/" + "IncompleteHeader.06o";
+   dataInvalidLineLength       = dataFilePath + "/" + "InvalidLineLength.06o";
+   dataInvalidNumPRNWaveFact   = dataFilePath + "/" + "InvalidNumPRNWaveFact.06o";
+   dataNotObs                  = dataFilePath + "/" + "NotObs.06o";
+   dataSystemGeosync           = dataFilePath + "/" + "SystemGeosync.06o";
+   dataSystemGlonass           = dataFilePath + "/" + "SystemGlonass.06o";
+   dataSystemMixed             = dataFilePath + "/" + "SystemMixed.06o";
+   dataSystemTransit           = dataFilePath + "/" + "SystemTransit.06o";
+   dataUnSupVersion            = dataFilePath + "/" + "UnSupVersion.06o";
+   dataRinexContData           = dataFilePath + "/" + "RinexContData.06o";
+
+   dataBadEpochLine            = dataFilePath + "/" + "BadEpochLine.06o";
+   dataBadEpochFlag            = dataFilePath + "/" + "BadEpochFlag.06o";
+   dataBadLineSize             = dataFilePath + "/" + "BadLineSize.06o";
+   dataInvalidTimeFormat       = dataFilePath + "/" + "InvalidTimeFormat.06o";
+
+   dataFilterTest1             = dataFilePath + "/" + "FilterTest1.06o";
+   dataFilterTest2             = dataFilePath + "/" + "FilterTest2.06o";
+   dataFilterTest3             = dataFilePath + "/" + "FilterTest3.06o";
+   dataFilterTest4             = dataFilePath + "/" + "FilterTest4.06o";
 
    dataTestOutput              = dataFilePath + "/" + "TestOutput.06o";
    dataTestOutput2             = dataFilePath + "/" + "TestOutput2.06o";
@@ -150,10 +156,11 @@ void RinexObs_T :: init( void )
 //------------------------------------------------------------
 int RinexObs_T :: headerExceptionTest( void )
 {
- 
+
     TestUtil test1( "RinexObsStream", "dump", __FILE__, __func__ );
     try
     {
+
         gpstk::RinexObsStream RinexObsFile( dataRinexObsFile );
         gpstk::RinexObsStream ih( dataIncompleteHeader );
         gpstk::RinexObsStream il( dataInvalidLineLength );
@@ -245,7 +252,11 @@ int RinexObs_T :: hardCodeTest( void )
 {
 
     bool files_equal = false;
-    int num_lines_skip = 2; // Previous comments indicated that these Rinex methods aare not expected to match in the top two lines of the file
+
+    // Previous comments indicated that these Rinex methods
+    // are not expected to match in the top two lines of the file
+    int num_lines_skip = 2;
+
     TestUtil test2( "RinexObsStream", "dump", __FILE__, __func__ );
 
     try
@@ -276,7 +287,7 @@ int RinexObs_T :: hardCodeTest( void )
         test2.print();
     }
 
-    return( test2.countFails() );
+     return( test2.countFails() );
 }
 
 //------------------------------------------------------------
@@ -420,7 +431,6 @@ int RinexObs_T :: filterOperatorsTest( void )
 
 int main()
 {
-
     int errorCount = 0;
     int errorTotal = 0;
     RinexObs_T testClass;
