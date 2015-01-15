@@ -165,20 +165,17 @@ class CivilTime_T
 		Id['y'] = "006";
 
 //--------------CivilTime_setFromInfoTest_5 - Can a CivilTime object be set with a 3 digit year? Answer should be no. 'y' option is for 2 digit years.
-		testFramework.assert(setFromInfo3.setFromInfo(Id));
-		testFramework.next();
-//--------------CivilTime_setFromInfoTest_6 - Is the set object what is expected?
-    	testFramework.assert(setFromInfo3 != Check2); 
+		testFramework.assert(!setFromInfo3.setFromInfo(Id));
 		testFramework.next();
 
 		Id.erase('y');
-//--------------CivilTime_setFromInfoTest_7 - Can a CivilTime object be set without a year?
+//--------------CivilTime_setFromInfoTest_6 - Can a CivilTime object be set without a year?
 		testFramework.assert(setFromInfo4.setFromInfo(Id));
 		testFramework.next();
 
 		Id.erase('m');
 		Id['b'] = "AAA";
-//--------------CivilTime_setFromInfoTest_8 - Can a CivilTime object be set with an improper month?
+//--------------CivilTime_setFromInfoTest_7 - Can a CivilTime object be set with an improper month?
 		testFramework.assert(!(setFromInfo5.setFromInfo(Id)));
 		testFramework.next();
 

@@ -110,7 +110,7 @@ class Vector_T
       if (badCount==0) {testFramework.passTest();}
       else {testFramework.failTest();}
 
-      testFramework.changeSourceMethod("+= Operator")
+      testFramework.changeSourceMethod("+= Operator");
       v2 += v3; // 6 6 6 ...
       v2 += 2; // 8 8 8 ...
 
@@ -123,7 +123,7 @@ class Vector_T
       if (badCount==0) {testFramework.passTest();}
       else {testFramework.failTest();}
 
-      testFramework.changeSourceMethod("+= Operator")
+      testFramework.changeSourceMethod("+= Operator");
       v2 -= v3; // 5 5 5 ...
       v2 -= 4; // 1 1 1 ...
    
