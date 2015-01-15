@@ -92,7 +92,7 @@ namespace gpstk
       template <class BaseClass>
       Matrix(size_t rows, size_t cols, const ConstVectorBase<T, BaseClass>& vec)
          : v(rows*cols), r(rows), c(cols), s(rows * cols)
-      { assignFrom(vec); }
+      { this->assignFrom(vec); }
 
          /// constructor for a ConstMatrixBase object
       template <class BaseClass>

@@ -172,67 +172,66 @@ class Matrix_T
    		for(int i = 0; i < a.rows(); i++)
       			for(int j = 0; j < a.cols(); j++)
          			if (1 != a(i,j)) {badCount++;}
-      	if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_2 - Is matrix b initializated properly?
    		for(int i = 0; i < b.rows(); i++)
       			for(int j = 0; j < b.cols(); j++)
          			if (3 != b(i,j)) {badCount++;}
- 		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_3 - Is matrix c initializated properly?
 		for(int i = 0; i < c.rows(); i++)
 		      	for(int j = 0; j < c.cols(); j++)
          			if (5 != c(i,j)) {badCount++;}
- 		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_4 - Is matrix d initializated properly?
 		for(int i = 0; i < d.rows(); i++)
 		      	for(int j = 0; j < d.cols(); j++)
-				if (7 != d(i,j)) {badCount++;}
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+					if (7 != d(i,j)) {badCount++;}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_5 - Is matrix e initializated properly?
 		for(int i = 0; i < e.rows(); i++)
 		      	for(int j = 0; j < e.cols(); j++)
-				if (1+i+j*8 != e(i,j)) {badCount++;}
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+					if (1+i+j*8 != e(i,j)) {badCount++;}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_6 - Is matrix f initializated properly?
 		for(int i = 0; i < f.rows(); i++)
 		      	for(int j = 0; j < f.cols(); j++)
-				if (16-i-4*j != f(i,j)) {badCount++;}
+					if (16-i-4*j != f(i,j)) {badCount++;}
 				//cout << f(i,j) << " " << 16-i-4*j << endl;
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_7 - Is matrix g initializated properly?
 		for(int i = 0; i < g.rows(); i++)
 		      	for(int j = 0; j < g.cols(); j++)
-				if (1+i+j*2 != g(i,j)) {badCount++;}
+					if (1+i+j*2 != g(i,j)) {badCount++;}
 				//cout << g(i,j) << " " << 1+i+j*2 << endl;
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
 
 //--------------Matrix_getTest_8 - Is matrix h initializated properly?
 		for(int i = 0; i < h.rows(); i++)
 		      	for(int j = 0; j < h.cols(); j++)
-			 	if (5.+i != h(i,j)) {badCount++;}
+			 		if (5.+i != h(i,j)) {badCount++;}
 				//cout << h(i,j) << " " << 5.+i << endl;
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
       	badCount = 0; // Reset error counter
 
 		return testFramework.countFails();
@@ -269,8 +268,8 @@ class Matrix_T
       			for(int j = 0; j < a.cols(); j++)
 				//cout << a(i,j) << " " << 2+i+j*2 << endl;
          			if (2+i+j*2. != a(i,j)) {badCount++;}
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter;
    		a -= g; // 2x2 reset a
 
@@ -280,8 +279,8 @@ class Matrix_T
       				for(int j = 0; j < b.cols(); j++)
 					//cout << b(i,j) << " " << 3-(1+i+j*8) << endl;
          				if (3-(1+i+j*8.) != b(i,j)) {badCount++;}
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter;
    		b += e; // 8x2 reset b
 
@@ -291,8 +290,8 @@ class Matrix_T
       			for(int j = 0; j < c.cols(); j++)
 					//cout << c(i,j) << " " << 5-(5.+i) << endl;
          				if (5-(5.+i) != c(i,j)) {badCount++;}
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter;
    		c += h; // 4x2 reset c
 
@@ -302,8 +301,8 @@ class Matrix_T
       			for(int j = 0; j < d.cols(); j++)
 				//cout << d(i,j) << " " << 16-i-4*j+7 << endl;
          			if (16-i-4*j+7 != d(i,j)) {badCount++;}
-		if (badCount==0) {testFramework.passTest();}
-      	else {testFramework.failTest();}
+        testFramework.assert(badCount==0);
+        testFramework.next();
       	badCount = 0; // Reset error counter
    		d -= f; // 4x4 reset d
 

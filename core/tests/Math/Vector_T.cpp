@@ -67,8 +67,8 @@ class Vector_T
          if (1.0 != v1[i]) {badCount++;}
          if (1.0 != v1(i)) {badCount++;}
       }
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
       badCount = 0; // Reset error counter
 
 //--------------Vector_getTest_2 - Was the size set to expectation?
@@ -81,8 +81,8 @@ class Vector_T
          if (5.0 != v2[i]) {badCount++;}
          if (5.0 != v2(i)) {badCount++;}
       }
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
       badCount = 0; // Reset error counter
 
 //--------------Vector_getTest_4 - Was the size set to expectation?
@@ -99,8 +99,8 @@ class Vector_T
          if (1.0 != Compare[i]) {badCount++;}
          if (1.0 != Compare(i)) {badCount++;}
       }
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
       badCount = 0; // Reset error counter
 
 //--------------Vector_getTest_7 - Was the size set to expectation?
@@ -113,8 +113,8 @@ class Vector_T
          if (10.0 != val[i]) {badCount++;}
          if (10.0 != val(i)) {badCount++;}
       }
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
       badCount = 0; // Reset error counter
 
 //--------------Vector_getTest_9 - Was the size set to expectation?
@@ -145,18 +145,16 @@ class Vector_T
 //--------------Vector_operatorTest_1 - Are equivalent objects equivalent?
          if (v2[i] != v3[i]) {badCount++;}
       }
-
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
 
       for(int i = 0; i < v1.size(); i++)
       {
 //--------------Vector_operatorTest_2 - Are equivalent objects equivalent?
          if (-v1[i] != v4[i]) {badCount++;}
       }
-      
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
 
       testFramework.changeSourceMethod("+= Operator");
       v2 += v3; // 6 6 6 ...
@@ -167,9 +165,8 @@ class Vector_T
 //--------------Vector_operatorTest_3 - Were the previous addition operators successful?
          if (8. != v2[i]) {badCount++;}
       }
-      
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
 
       testFramework.changeSourceMethod("+= Operator");
       v2 -= v3; // 5 5 5 ...
@@ -180,9 +177,8 @@ class Vector_T
 //--------------Vector_operatorTest_4 - Were the previous subtraction operators successful?
          if (v1[i] != v2[i]) {badCount++;} //sizes mismatch, check till v1 ends
       }
-      
-      if (badCount==0) {testFramework.passTest();}
-      else {testFramework.failTest();}
+      testFramework.assert(badCount==0);
+      testFramework.next();
 
       v2 += 2; // 3 3 3 ...
    

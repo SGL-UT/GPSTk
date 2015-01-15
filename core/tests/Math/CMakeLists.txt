@@ -4,9 +4,9 @@ add_executable(BivarStats_T BivarStats_T.cpp)
 target_link_libraries(BivarStats_T gpstk)
 add_test(Math_BivarStats* BivarStats_T)
 
-#add_executable(Matrix_T Matrix_T.cpp)
-#target_link_libraries(Matrix_T gpstk)
-#add_test(Math_Matrix Matrix_T)
+add_executable(Matrix_T Matrix_T.cpp)
+target_link_libraries(Matrix_T gpstk)
+add_test(Math_Matrix Matrix_T)
 
 add_executable(MiscMath_T MiscMath_T.cpp)
 target_link_libraries(MiscMath_T gpstk)
