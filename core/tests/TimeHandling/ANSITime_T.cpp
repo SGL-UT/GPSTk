@@ -92,14 +92,14 @@ class ANSITime_T
 //--------------ANSITime_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
 
-//--------------ANSITime_operatorTest_2 - Are equivalent objects equivalent?
+//--------------ANSITime_operatorTest_2 - Are non-equivalent objects equivalent?
 		testFramework.assert(!(Compare == LessThan));
 
 		testFramework.changeSourceMethod("!= Operator");
 //--------------ANSITime_operatorTest_3 - Are non-equivalent objects not equivalent?
 		testFramework.assert(Compare != LessThan);
 
-//--------------ANSITime_operatorTest_4 - Are non-equivalent objects not equivalent?
+//--------------ANSITime_operatorTest_4 - Are equivalent objects not equivalent?
 		testFramework.assert(!(Compare != Compare));
 
 		testFramework.changeSourceMethod("< Operator");
@@ -270,6 +270,9 @@ int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	ANSITime_T testClass;
+
+	check = testClass.initializationTest();
+	errorCounter += check;
 
 	check = testClass.operatorTest();
 	errorCounter += check;

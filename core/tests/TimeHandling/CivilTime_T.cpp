@@ -295,10 +295,6 @@ class CivilTime_T
 
   		CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
 
-		// Perform comparisons to start of CommonTime
-  		//if (GPS1.convertToCommonTime() < CommonTime::BEGINNING_OF_TIME) return 11;
-  		//if (CommonTime::BEGINNING_OF_TIME > GPS1) return 12;
-
 //--------------CivilTime_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
   		testFramework.assert(Aug21.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
 		testFramework.next();
