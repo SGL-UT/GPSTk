@@ -120,31 +120,23 @@ class YDSTime_T
 		Id['y'] = "006";
 
 //--------------YDSTime_setFromInfoTest_5 - Does a proper setFromInfo work with 3 digit year?
-		testFramework.assert(setFromInfo3.setFromInfo(Id));
-		testFramework.next();
-
-//--------------YDSTime_setFromInfoTest_6 - Did the previous setFromInfo set the proper values?
-		testFramework.assert(!(Compare2 == setFromInfo3));
+		testFramework.assert(!setFromInfo3.setFromInfo(Id));
 		testFramework.next();
 
 		Id.erase('y');
 		Id['y'] = "2008";
 
-//--------------YDSTime_setFromInfoTest_7 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
-		testFramework.assert(setFromInfo4.setFromInfo(Id));
-		testFramework.next();
-
-//--------------YDSTime_setFromInfoTest_8 - Did the previous setFromInfo set the proper values?
-		testFramework.assert(Compare == setFromInfo4);
+//--------------YDSTime_setFromInfoTest_6 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
+		testFramework.assert(!setFromInfo4.setFromInfo(Id));
 		testFramework.next();
 
 		Id.erase('y');
 
-//--------------YDSTime_setFromInfoTest_9 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
+//--------------YDSTime_setFromInfoTest_7 - Does a proper setFromInfo work with no year provided?
 		testFramework.assert(setFromInfo5.setFromInfo(Id));
 		testFramework.next();
 
-//--------------YDSTime_setFromInfoTest_10 - Did the previous setFromInfo set the proper values?
+//--------------YDSTime_setFromInfoTest_8 - Did the previous setFromInfo set the proper values?
 		testFramework.assert(setFromInfo5 == Compare3);
 
 		return testFramework.countFails();
