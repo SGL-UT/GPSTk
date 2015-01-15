@@ -1,35 +1,63 @@
 #include "PolyFit.hpp"
 #include "Vector.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 
-class PolyFitTest
+class PolyFit_T
 {
         public: 
-		PolyFitTest(){eps = 1e-11;}// Default Constructor, set the precision value
-		~PolyFitTest() {} // Default Desructor
-		double eps;
+		PolyFit_T(){eps = 1e-11;}// Default Constructor, set the precision value
+		~PolyFit_T() {} // Default Desructor
+
+		double eps;// Shouldn't this be private?
+
+		/* 	Test to add data. Want to add single values to empty Stats class.
+			Then add another stat on top with weight. I will use the average to check
+			that data was added and that the data added was correct. */
 		int AddTest()
-		// Test to add data. Want to add single values to empty Stats class.
-		// Then add another stat on top with weight. I will use the average to check
-		// that data was added and that the data added was correct.
 		{
+			TestUtil testFramework( "PolyFit", "AddTest", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			double indep[6] = {0, 1, 2, 3, 4, 5}, dep[6] = {0, 1, 8, 27, 64, 125};
 
+//--------------PolyFit_addTest_1 - Did the add method function properly?
+			try {
+				for(int i=0; i<6; i++)
+				{
+					test.Add(dep[i],indep[i]);
+				}
+				testFramework.passTest();
+			}
+			catch(gpstk::Exception e) {testFramework.passTest();}
+			catch (...)
+			{
+				testFramework.failTest();
+			}
+/*
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+Find a way to compare the stored values to the actual values
 			for(int i=0; i<6; i++)
 			{
-				test.Add(dep[i],indep[i]);
-			}
+				testFramework.assert(test.?? == (dep[i],indep[i]));
+				testFramework.next();
+			}					
 
 			//std::cout << test.Solution() << std::endl;
-			return 0;
-			
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+*/			
+			return testFramework.countFails();
 		};
+
+		/*	Test to check that the correct solution is found. 
+			The result should be only a 3rd order term. */
 		int SolutionTest3()
-		// Test to check that the correct solution is found. 
-		// The result should be only a 3rd order term.
 		{
+			TestUtil testFramework( "PolyFit", "SolutionTest3", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4; //Highest order in polynomial fit + 1 (constant term)
 			gpstk::PolyFit<double> test(n); 
 			gpstk::Vector<double> soln; // To store the solution
@@ -49,17 +77,22 @@ class PolyFitTest
 				// Make sure the data matches what is expected
 				if ((i != 3 && abs(soln(i)) > eps) || (i == 3 && abs(soln(i) - 1) > eps))
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
+					//std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
 					n += 1; // Increment the return value for each wrong value
 				}
 			}
-			return n; // Return the result of the test.
-			
+//--------------PolyFit_solutionTest3_1 - Was the solution computed correct?
+			testFramework.assert(n==0);
+
+			return testFramework.countFails(); // Return the result of the test.
 		};
+		/*	Test to check that the correct solution is found. 
+			The result should be only a 2nd order term. */
 		int SolutionTest2()
-		// Test to check that the correct solution is found. 
-		// The result should be only a 2nd order term.
 		{
+			TestUtil testFramework( "PolyFit", "SolutionTest2", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln;
@@ -78,17 +111,24 @@ class PolyFitTest
 			{
 				if ((i != 2 && abs(soln(i)) > eps) || (i == 2 && abs(soln(i) - 1) > eps))
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
-					n += 1;
+					//std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
+					n += 1; // Increment the return value for each wrong value
 				}
 			}
-			return n;
-			
+
+//--------------PolyFit_solutionTest2_1 - Was the solution computed correct?
+			testFramework.assert(n==0);
+
+			return testFramework.countFails(); // Return the result of the test.
 		};
+
+		/*	Test to check that the correct solution is found. 
+			The result should be only a 1st order term. */
 		int SolutionTest1()
-		// Test to check that the correct solution is found. 
-		// The result should be only a 1st order term.
 		{
+			TestUtil testFramework( "PolyFit", "SolutionTest1", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln;
@@ -107,17 +147,24 @@ class PolyFitTest
 			{
 				if ((i != 1 && abs(soln(i)) > eps) || (i == 1 && abs(soln(i) - 1) > eps))
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
-					n += 1;
+					//std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
+					n += 1; // Increment the return value for each wrong value
 				}
 			}
-			return n;
-			
+
+//--------------PolyFit_solutionTest1_1 - Was the solution computed correct?
+			testFramework.assert(n==0);
+
+			return testFramework.countFails(); // Return the result of the test.
 		};
+
+		/*	Test to check that the correct solution is found. 
+			The result should be only a constant term. */
 		int SolutionTest0()
-		// Test to check that the correct solution is found. 
-		// The result should be only a constant term.
 		{
+			TestUtil testFramework( "PolyFit", "SolutionTest0", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln;
@@ -136,17 +183,23 @@ class PolyFitTest
 			{
 				if ((i != 0 && abs(soln(i)) > eps) || (i == 0 && abs(soln(i) - 7) > eps))
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
-					n += 1;
+					//std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
+					n += 1; // Increment the return value for each wrong value
 				}
 			}
-			return n;
-			
+
+//--------------PolyFit_solutionTest0_1 - Was the solution computed correct?
+			testFramework.assert(n==0);
+
+			return testFramework.countFails(); // Return the result of the test.
 		};
+
+		/*	Test to check that the correct solution is found. */
 		int SolutionTest()
-		// Test to check that the correct solution is found. 
-		// The result should be 2 for all coefficients.
 		{
+			TestUtil testFramework( "PolyFit", "SolutionTest", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln;
@@ -165,17 +218,23 @@ class PolyFitTest
 			{
 				if (fabs(soln(i) - 2) > eps)
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
-					n += 1;
+					//std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << std::endl; 
+					n += 1; // Increment the return value for each wrong value
 				}
 			}
-			return n;
-			
+
+			testFramework.assert(n==0);
+
+			return testFramework.countFails(); // Return the result of the test.
 		};
+
+		/*	Test to check that the correct solution is found. 
+			In this case the problem is singular. */
 		int SolutionFailTest()
-		// Test to check that the correct solution is found. 
-		// In this case the problem is singular.
 		{
+			TestUtil testFramework( "PolyFit", "SolutionTest", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln;
@@ -187,18 +246,26 @@ class PolyFitTest
 				test.Add(dep[i],indep[i]);
 			}
 
-
 			soln = test.Solution(); // This should still work
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+//	Add a error handler here? "Should work" suggests it's possible to fail...
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 			//std::cout << "Solution is: " << test.isSingular() << std::endl;
 			n = 0;			
-			if (test.isSingular())return 0; // The singular flag should be set
-			else return 1;
 
-			
+//--------------PolyFit_solutionFailTest_1 - Was the solution computed singular?
+			testFramework.assert(test.isSingular()); // The singular flag should be set
+
+			return testFramework.countFails();
 		};
+
+		/*	Test to verify the evaluate method with a vector input. */
 		int EvaluateVectorTest()
-		// Test to verify the evaluate method with a vector input.
 		{
+			TestUtil testFramework( "PolyFit", "EvaluateVectorTest", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			gpstk::Vector<double> soln(3), eval(3);
@@ -222,17 +289,22 @@ class PolyFitTest
 				// Using relative error since the soln >> 1
 				if (fabs(soln(i) - eval(i)*eval(i))/(eval(i)*eval(i)) > eps) 
 				{
-					std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << " Expected Value: " << eval(i)*eval(i) << " Error: " << fabs(soln(i) - eval(i)*eval(i)) << std::endl; 
-					n += 1;
+					//std::cout << "i: " << i << " value: " << soln(i) << " absVal: " << abs(soln(i)) << " Expected Value: " << eval(i)*eval(i) << " Error: " << fabs(soln(i) - eval(i)*eval(i)) << std::endl; 
+					n += 1; // Increment the return value for each wrong value
 				}
 			}
-			return n;
-			
+//--------------PolyFit_EvaluateVectorTest_1 - Was the solution computed correct?		
+			testFramework.assert(n==0);
+
+			return testFramework.countFails(); // Return the result of the test.
 		};
 
+		/* Test to verify the evaluate method with a single input. */
 		int EvaluateTest()
-		// Test to verify the evaluate method with a single input.
 		{
+			TestUtil testFramework( "PolyFit", "EvaluateTest", __FILE__, __func__ );
+			testFramework.init();
+
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			double soln, eval;
@@ -248,72 +320,49 @@ class PolyFitTest
 
 			soln = test.Evaluate(eval);
 			//std::cout << "Solution is: " << soln << std::endl;
-			if (fabs(soln - eval*eval) > eps) return 1;
-			else return 0;
-			
+
+//--------------PolyFit_EvaluateVectorTest_1 - Was the solution computed correct?
+			testFramework.assert(fabs(soln - eval*eval) < eps);
+
+			return testFramework.countFails();
 		};
  };
-
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	PolyFitTest testClass;
+	PolyFit_T testClass;
+
 	check = testClass.AddTest();
-        std::cout << "Add Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SolutionTest3();
-        std::cout << "Solution(3) Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SolutionTest2();
-        std::cout << "Solution(2) Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SolutionTest1();
-        std::cout << "Solution(1) Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SolutionTest0();
-        std::cout << "Solution(0) Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SolutionTest();
-        std::cout << "Solution Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SolutionFailTest();
-        std::cout << "SolutionFail Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.EvaluateTest();
-        std::cout << "Evaluate Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.EvaluateVectorTest();
-        std::cout << "Evaluate Vector Result is: " << check << ", ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	std::cout << "Total Errors: " << errorCounter << std::endl;
 
-	return errorCounter; //Return the total number of errors
+  	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+
+   	return errorCounter; //Return the total number of errors
 }
