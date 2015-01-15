@@ -1,5 +1,6 @@
 #include "Matrix.hpp"
 #include "Vector.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
 
@@ -23,6 +24,9 @@ class Matrix_T
 	/* Test to check the sizing functions */
 	int sizeTest (void)
 	{
+		TestUtil testFramework("Matrix","Size",__FILE__,__func__);
+		testFramework.init();
+
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
    		for(int i = 0; i < 16; i++) v1[i] = i+1;
    		gpstk::Vector<int> v2 = gpstk::Vector<int>(16);
@@ -41,43 +45,111 @@ class Matrix_T
    		gpstk::Matrix<int> g(2, 2, v3);
    		gpstk::Matrix<int> h(4, 2, v4);
 
-		if ((size_t)4 != a.size()) return 1;
-		if ((size_t)2 != a.rows()) return 2;
-		if ((size_t)2 != a.cols()) return 3;
+//--------------Matrix_sizeTest_1 - Does the size method function as expected?
+		testFramework.assert((size_t)4 == a.size());
+		testFramework.next();
 
-		if ((size_t)16 != b.size()) return 4;
-		if ((size_t)8 != b.rows()) return 5;
-		if ((size_t)2 != b.cols()) return 6;
+//--------------Matrix_sizeTest_2 - Does the rows method function as expected?
+		testFramework.assert((size_t)2 == a.rows());
+		testFramework.next();
 
-		if ((size_t)8 != c.size()) return 7;
-		if ((size_t)4 != c.rows()) return 8;
-		if ((size_t)2 != c.cols()) return 9;
+//--------------Matrix_sizeTest_3 - Does the cols method function as expected?
+		testFramework.assert((size_t)2 == a.cols());
+		testFramework.next();
 
-		if ((size_t)16 != d.size()) return 10;
-		if ((size_t)4 != d.rows()) return 11;
-		if ((size_t)4 != d.cols()) return 12;
+//--------------Matrix_sizeTest_4 - Does the size method function as expected?
+		testFramework.assert((size_t)16 == b.size());
+		testFramework.next();
 
-		if ((size_t)16 != e.size()) return 13;
-		if ((size_t)8 != e.rows()) return 14;
-		if ((size_t)2 != e.cols()) return 15;
+//--------------Matrix_sizeTest_5 - Does the rows method function as expected?
+		testFramework.assert((size_t)8 == b.rows());
+		testFramework.next();
 
-		if ((size_t)16 != f.size()) return 16;
-		if ((size_t)4 != f.rows()) return 17;
-		if ((size_t)4 != f.cols()) return 18;
+//--------------Matrix_sizeTest_6 - Does the cols method function as expected?
+		testFramework.assert((size_t)2 == b.cols());
+		testFramework.next();
 
-		if ((size_t)4 != g.size()) return 19;
-		if ((size_t)2 != g.rows()) return 20;
-		if ((size_t)2 != g.cols()) return 21;
+//--------------Matrix_sizeTest_7 - Does the size method function as expected?
+		testFramework.assert((size_t)8 == c.size());
+		testFramework.next();
 
-		if ((size_t)8 != h.size()) return 22;
-		if ((size_t)4 != h.rows()) return 23;
-		if ((size_t)2 != h.cols()) return 24;
-		return 0;
+//--------------Matrix_sizeTest_8 - Does the rows method function as expected?
+		testFramework.assert((size_t)4 == c.rows());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_9 - Does the cols method function as expected?
+		testFramework.assert((size_t)2 == c.cols());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_10 - Does the cols method function as expected?
+		testFramework.assert((size_t)16 == d.size());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_11 - Does the rows method function as expected?
+		testFramework.assert((size_t)4 == d.rows());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_12 - Does the cols method function as expected?
+		testFramework.assert((size_t)4 == d.cols());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_13 - Does the cols method function as expected?
+		testFramework.assert((size_t)16 == e.size());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_14 - Does the rows method function as expected?
+		testFramework.assert((size_t)8 == e.rows());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_15 - Does the cols method function as expected?
+		testFramework.assert((size_t)2 == e.cols());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_16 - Does the cols method function as expected?
+		testFramework.assert((size_t)16 == f.size());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_17 - Does the rows method function as expected?
+		testFramework.assert((size_t)4 == f.rows());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_18 - Does the cols method function as expected?
+		testFramework.assert((size_t)4 == f.cols());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_19 - Does the cols method function as expected?
+		testFramework.assert((size_t)4 == g.size());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_20 - Does the rows method function as expected?
+		testFramework.assert((size_t)2 == g.rows());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_21 - Does the cols method function as expected?
+		testFramework.assert((size_t)2 == g.cols());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_22 - Does the cols method function as expected?
+		testFramework.assert((size_t)8 == h.size());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_23 - Does the rows method function as expected?
+		testFramework.assert((size_t)4 == h.rows());
+		testFramework.next();
+
+//--------------Matrix_sizeTest_24 - Does the cols method function as expected?
+		testFramework.assert((size_t)2 == h.cols());
+		
+		return testFramework.countFails();
 	}
 
 	/* Test the accessor operator */
 	int getTest (void)
 	{
+		TestUtil testFramework("Matrix_T","getTest",__FILE__,__func__);
+      	testFramework.init();
+      	int badCount = 0;
+
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
    		for(int i = 0; i < 16; i++) v1[i] = i+1;
    		gpstk::Vector<int> v2 = gpstk::Vector<int>(16);
@@ -96,45 +168,83 @@ class Matrix_T
    		gpstk::Matrix<int> g(2, 2, v3);
    		gpstk::Matrix<int> h(4, 2, v4);
 
+//--------------Matrix_getTest_1 - Is matrix a initializated properly?
    		for(int i = 0; i < a.rows(); i++)
       			for(int j = 0; j < a.cols(); j++)
-         			if (1 != a(i,j)) return 1;
+         			if (1 != a(i,j)) {badCount++;}
+      	if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
 
+//--------------Matrix_getTest_2 - Is matrix b initializated properly?
    		for(int i = 0; i < b.rows(); i++)
       			for(int j = 0; j < b.cols(); j++)
-         			if (3 != b(i,j)) return 2;
+         			if (3 != b(i,j)) {badCount++;}
+ 		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
 
+//--------------Matrix_getTest_3 - Is matrix c initializated properly?
 		for(int i = 0; i < c.rows(); i++)
 		      	for(int j = 0; j < c.cols(); j++)
-         			if (5 != c(i,j)) return 3;
+         			if (5 != c(i,j)) {badCount++;}
+ 		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
 
+//--------------Matrix_getTest_4 - Is matrix d initializated properly?
 		for(int i = 0; i < d.rows(); i++)
 		      	for(int j = 0; j < d.cols(); j++)
-				if (7 != d(i,j)) return 4;
+				if (7 != d(i,j)) {badCount++;}
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
 
+//--------------Matrix_getTest_5 - Is matrix e initializated properly?
 		for(int i = 0; i < e.rows(); i++)
 		      	for(int j = 0; j < e.cols(); j++)
-				if (1+i+j*8 != e(i,j)) return 5;
+				if (1+i+j*8 != e(i,j)) {badCount++;}
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
 
+//--------------Matrix_getTest_6 - Is matrix f initializated properly?
 		for(int i = 0; i < f.rows(); i++)
 		      	for(int j = 0; j < f.cols(); j++)
-				if (16-i-4*j != f(i,j)) return 6;
+				if (16-i-4*j != f(i,j)) {badCount++;}
 				//cout << f(i,j) << " " << 16-i-4*j << endl;
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
 
+//--------------Matrix_getTest_7 - Is matrix g initializated properly?
 		for(int i = 0; i < g.rows(); i++)
 		      	for(int j = 0; j < g.cols(); j++)
-				if (1+i+j*2 != g(i,j)) return 7;
+				if (1+i+j*2 != g(i,j)) {badCount++;}
 				//cout << g(i,j) << " " << 1+i+j*2 << endl;
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
+
+//--------------Matrix_getTest_8 - Is matrix h initializated properly?
 		for(int i = 0; i < h.rows(); i++)
 		      	for(int j = 0; j < h.cols(); j++)
-			 	if (5.+i != h(i,j)) return 8;
+			 	if (5.+i != h(i,j)) {badCount++;}
 				//cout << h(i,j) << " " << 5.+i << endl;
-		return 0;
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
+
+		return testFramework.countFails();
 	}
 
 	/* Test the add/subtract and set operators */
 	int operatorTest (void)
 	{
+		TestUtil testFramework("Matrix_T","getTest",__FILE__,__func__);
+      	testFramework.init();
+      	int badCount = 0;
+
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
    		for(int i = 0; i < 16; i++) v1[i] = i+1;
    		gpstk::Vector<int> v2 = gpstk::Vector<int>(16);
@@ -153,54 +263,53 @@ class Matrix_T
    		gpstk::Matrix<int> g(2, 2, v3);
    		gpstk::Matrix<int> h(4, 2, v4);
 
+//--------------Matrix_operatorTest_1 - Does 2x2 additon function as expected?
    		a += g; // 2x2 addition
    		for(int i = 0; i < a.rows(); i++)
       			for(int j = 0; j < a.cols(); j++)
 				//cout << a(i,j) << " " << 2+i+j*2 << endl;
-         			if (2+i+j*2. != a(i,j)) return 1;
+         			if (2+i+j*2. != a(i,j)) {badCount++;}
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter;
    		a -= g; // 2x2 reset a
 
+//--------------Matrix_operatorTest_2 - Does 8x2 subtraction work as expected?
    		b -= e; // 8x2 subtraction
    			for(int i = 0; i < b.rows(); i++)
       				for(int j = 0; j < b.cols(); j++)
 					//cout << b(i,j) << " " << 3-(1+i+j*8) << endl;
-         				if (3-(1+i+j*8.) != b(i,j)) return 2;
+         				if (3-(1+i+j*8.) != b(i,j)) {badCount++;}
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter;
    		b += e; // 8x2 reset b
 
+//--------------Matrix_operatorTest_3 - Does 4x2 subtraction work as expected?
    		c -= h; // 4x2 subtraction
    		for(int i = 0; i < c.rows(); i++)
       			for(int j = 0; j < c.cols(); j++)
 					//cout << c(i,j) << " " << 5-(5.+i) << endl;
-         				if (5-(5.+i) != c(i,j)) return 3;
+         				if (5-(5.+i) != c(i,j)) {badCount++;}
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter;
    		c += h; // 4x2 reset c
 
+//--------------Matrix_operatorTest_4 - Does 4x4 addition work as expected?
    		d += f; // 4x4 addition
    		for(int i = 0; i < d.rows(); i++)
       			for(int j = 0; j < d.cols(); j++)
 				//cout << d(i,j) << " " << 16-i-4*j+7 << endl;
-         			if (16-i-4*j+7 != d(i,j)) return 4;
+         			if (16-i-4*j+7 != d(i,j)) {badCount++;}
+		if (badCount==0) {testFramework.passTest();}
+      	else {testFramework.failTest();}
+      	badCount = 0; // Reset error counter
    		d -= f; // 4x4 reset d
-		return 0;
+
+		return testFramework.countFails();
 	}
 };
-
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main() //Main function to initialize and run all tests above
 {
@@ -208,21 +317,15 @@ int main() //Main function to initialize and run all tests above
 	Matrix_T testClass;
 
 	check = testClass.sizeTest();
-        std::cout << "sizeTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.getTest();
-        std::cout << "getTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.operatorTest();
-        std::cout << "opertatorTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
-	std::cout << "Total Errors: " << errorCounter << std::endl;
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter; //Return the total number of errors
 }

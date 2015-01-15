@@ -43,43 +43,91 @@ class Vector_T
 {
    public:
 
-   int getTest(void)
+   /* Tests the initialization of Vector objects */
+   int initializationTest(void)
    {
-      TestUtil testFramework("Vector_T","getTest",__FILE__,__func__);
+      TestUtil testFramework("Vector","initializationTest",__FILE__,__func__);
       testFramework.init();
 
       int badCount=0;
 
       gpstk::Vector<double> v1(250,1.0);
       gpstk::Vector<double> v2(1000,5.0);
+      gpstk::Vector<double> st(250); //Initialize without values
+      gpstk::Vector<double> Compare(v1); //Copy Constructor
 
-      for(int i=0; i<v1.size(); i++)
+      std::valarray<double> valarray1(10.0, 250);
+      gpstk::Vector<double> val(valarray1);
+
+      int i = 0;
+
+      for(i=0; i<v1.size(); i++)
       {
 //--------------Vector_getTest_1 - Were the array values set to expectation?
          if (1.0 != v1[i]) {badCount++;}
-
          if (1.0 != v1(i)) {badCount++;}
       }
-
       if (badCount==0) {testFramework.passTest();}
       else {testFramework.failTest();}
+      badCount = 0; // Reset error counter
 
-      badCount = 0; // Reset counter
+//--------------Vector_getTest_2 - Was the size set to expectation?
+      testFramework.assert(i == v1.size());
+      testFramework.next();
 
-      for(int i=0; i<v2.size(); i++)
+      for(i=0; i<v2.size(); i++)
       {
-//--------------Vector_getTest_2 - Were the array values set to expectation?
+//--------------Vector_getTest_3 - Were the array values set to expectation?
          if (5.0 != v2[i]) {badCount++;}
-
          if (5.0 != v2(i)) {badCount++;}
       }
-
       if (badCount==0) {testFramework.passTest();}
       else {testFramework.failTest();}
+      badCount = 0; // Reset error counter
+
+//--------------Vector_getTest_4 - Was the size set to expectation?
+      testFramework.assert(i == v2.size());
+      testFramework.next();
+
+//--------------Vector_getTest_5 - Was the size set to expectation?
+      testFramework.assert(250 == st.size());
+      testFramework.next();
+
+      for(i=0; i<Compare.size(); i++)
+      {
+//--------------Vector_getTest_6 - Were the array values set to expectation?
+         if (1.0 != Compare[i]) {badCount++;}
+         if (1.0 != Compare(i)) {badCount++;}
+      }
+      if (badCount==0) {testFramework.passTest();}
+      else {testFramework.failTest();}
+      badCount = 0; // Reset error counter
+
+//--------------Vector_getTest_7 - Was the size set to expectation?
+      testFramework.assert(i == Compare.size());
+      testFramework.next();
+
+      for(i=0; i<val.size(); i++)
+      {
+//--------------Vector_getTest_8 - Were the array values set to expectation?
+         if (10.0 != val[i]) {badCount++;}
+         if (10.0 != val(i)) {badCount++;}
+      }
+      if (badCount==0) {testFramework.passTest();}
+      else {testFramework.failTest();}
+      badCount = 0; // Reset error counter
+
+//--------------Vector_getTest_9 - Was the size set to expectation?
+      testFramework.assert(i == val.size());
+
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+// Add test for VectorBase and subvector constructors
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
       return testFramework.countFails();
    }
 
+   /* Tests addition and subtraction between vector objects */
    int operatorTest(void)
    {
       TestUtil testFramework("Vector_T","== Operator",__FILE__,__func__);
@@ -110,7 +158,7 @@ class Vector_T
       if (badCount==0) {testFramework.passTest();}
       else {testFramework.failTest();}
 
-      testFramework.changeSourceMethod("+= Operator")
+      testFramework.changeSourceMethod("+= Operator");
       v2 += v3; // 6 6 6 ...
       v2 += 2; // 8 8 8 ...
 
@@ -123,7 +171,7 @@ class Vector_T
       if (badCount==0) {testFramework.passTest();}
       else {testFramework.failTest();}
 
-      testFramework.changeSourceMethod("+= Operator")
+      testFramework.changeSourceMethod("+= Operator");
       v2 -= v3; // 5 5 5 ...
       v2 -= 4; // 1 1 1 ...
    
@@ -158,7 +206,7 @@ int main()
    int check, errorCounter = 0;
    Vector_T testClass;
 
-   check = testClass.getTest();
+   check = testClass.initializationTest();
    errorCounter += check;
 
    check = testClass.operatorTest();
