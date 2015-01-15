@@ -32,6 +32,6 @@ add_executable(Triple_T Triple_T.cpp)
 target_link_libraries(Triple_T gpstk)
 add_test(Math_Triple* Triple_T)
 
-add_executable(Vector_T Vector_T.cpp ftest.cpp)
+add_executable(Vector_T Vector_T.cpp)
 target_link_libraries(Vector_T gpstk)
 add_test(Math_Vector Vector_T)
