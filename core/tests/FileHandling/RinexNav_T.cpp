@@ -66,6 +66,8 @@ class RinexNav_T
         {
             init();
         }
+        // destructor
+      ~RinexNav_T( ){}
 
         void init( void );
 
@@ -109,27 +111,32 @@ class RinexNav_T
 
 void RinexNav_T :: init( void )
 {
+   // Get the full file path the to source file, strip off the filename from the path
+   // and then append the data file subdirectory to the path 
+   std::string sourceFileName = __FILE__;
+   dataFilePath = sourceFileName.substr(0, sourceFileName.find_last_of("\\/")) + "/" + dataFilePath;
+
    inputRinexNavExample     = dataFilePath  + "/" + "RinexNavExample.99n";
 
-   outputTestOutput         =  dataFilePath + "/" + "TestOutput.99n";
-   outputTestOutput2        =  dataFilePath + "/" + "TestOutput2.99n";
-   outputTestOutput3        =  dataFilePath + "/" + "TestOutput3.99n";
-   outputRinexDump          =  dataFilePath + "/" + "RinexDump";
+   outputTestOutput         = dataFilePath + "/" + "TestOutput.99n";
+   outputTestOutput2        = dataFilePath + "/" + "TestOutput2.99n";
+   outputTestOutput3        = dataFilePath + "/" + "TestOutput3.99n";
+   outputRinexDump          = dataFilePath + "/" + "RinexDump";
 
-   inputInvalidLineLength   =  dataFilePath + "/" + "InvalidLineLength.99n";
-   inputNotaNavFile         =  dataFilePath + "/" + "NotaNavFile.99n";
-   inputUnknownHeaderLabel  =  dataFilePath + "/" + "UnknownHeaderLabel.99n";
-   inputIncompleteHeader    =  dataFilePath + "/" + "IncompleteHeader.99n";
-   inputUnsupportedRinex    =  dataFilePath + "/" + "UnsupportedRinex.99n";
-   inputBadHeader           =  dataFilePath + "/" + "BadHeader.99n";
-   outputTestOutputHeader   =  dataFilePath + "/" + "TestOutputHeader.99n";
+   inputInvalidLineLength   = dataFilePath + "/" + "InvalidLineLength.99n";
+   inputNotaNavFile         = dataFilePath + "/" + "NotaNavFile.99n";
+   inputUnknownHeaderLabel  = dataFilePath + "/" + "UnknownHeaderLabel.99n";
+   inputIncompleteHeader    = dataFilePath + "/" + "IncompleteHeader.99n";
+   inputUnsupportedRinex    = dataFilePath + "/" + "UnsupportedRinex.99n";
+   inputBadHeader           = dataFilePath + "/" + "BadHeader.99n";
+   outputTestOutputHeader   = dataFilePath + "/" + "TestOutputHeader.99n";
 
-   inputFilterStream1       =  dataFilePath + "/" + "FilterTest1.99n";
-   inputFilterStream2       =  dataFilePath + "/" + "FilterTest2.99n";
-   inputFilterStream3       =  dataFilePath + "/" + "FilterTest3.99n";
-   outputFilterOutput       =  dataFilePath + "/" + "FilterOutput.txt";
+   inputFilterStream1       = dataFilePath + "/" + "FilterTest1.99n";
+   inputFilterStream2       = dataFilePath + "/" + "FilterTest2.99n";
+   inputFilterStream3       = dataFilePath + "/" + "FilterTest3.99n";
+   outputFilterOutput       = dataFilePath + "/" + "FilterOutput.txt";
 
-   outputRinexStore         =  dataFilePath + "/" + "RinexStore.txt";
+   outputRinexStore         = dataFilePath + "/" + "RinexStore.txt";
 
 }
 
@@ -153,7 +160,8 @@ int RinexNav_T :: hardCodeTest( void )
 
   TestUtil test1( "RinexNavStream", "out", __FILE__, __func__ );
 
-  try{
+  try
+  {
     gpstk::RinexNavStream RinexNavStream( inputRinexNavExample.c_str() );
     gpstk::RinexNavStream out( outputTestOutput.c_str(), std::ios::out );
     gpstk::RinexNavStream dmp( outputRinexDump.c_str(), std::ios::out );
@@ -221,10 +229,10 @@ int RinexNav_T :: hardCodeTest( void )
     test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput3, 2 ) );
   }
   catch(...)
-    {
-        test1.fail();
-        test1.print();
-    }
+  {
+      test1.fail();
+      test1.print();
+  }
 
     return( test1.countFails() );
 }
@@ -235,7 +243,9 @@ int RinexNav_T :: hardCodeTest( void )
 int RinexNav_T :: headerExceptionTest( void )
 {
     TestUtil test2( "RinexNavStream", "exceptions", __FILE__, __func__ );
-    try{
+    
+    try
+    {
           gpstk::RinexNavStream InvalidLineLength( inputInvalidLineLength.c_str() );
           gpstk::RinexNavStream NotaNavFile( inputNotaNavFile.c_str() );
           gpstk::RinexNavStream UnknownHeaderLabel( inputUnknownHeaderLabel.c_str() );
@@ -279,8 +289,8 @@ int RinexNav_T :: headerExceptionTest( void )
     }
     catch(...)
     {
-            test2.fail();
-            test2.print();
+          test2.fail();
+          test2.print();
     }
 
     return( test2.countFails() );
