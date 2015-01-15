@@ -165,20 +165,17 @@ class CivilTime_T
 		Id['y'] = "006";
 
 //--------------CivilTime_setFromInfoTest_5 - Can a CivilTime object be set with a 3 digit year? Answer should be no. 'y' option is for 2 digit years.
-		testFramework.assert(setFromInfo3.setFromInfo(Id));
-		testFramework.next();
-//--------------CivilTime_setFromInfoTest_6 - Is the set object what is expected?
-    	testFramework.assert(setFromInfo3 != Check2); 
+		testFramework.assert(!setFromInfo3.setFromInfo(Id));
 		testFramework.next();
 
 		Id.erase('y');
-//--------------CivilTime_setFromInfoTest_7 - Can a CivilTime object be set without a year?
+//--------------CivilTime_setFromInfoTest_6 - Can a CivilTime object be set without a year?
 		testFramework.assert(setFromInfo4.setFromInfo(Id));
 		testFramework.next();
 
 		Id.erase('m');
 		Id['b'] = "AAA";
-//--------------CivilTime_setFromInfoTest_8 - Can a CivilTime object be set with an improper month?
+//--------------CivilTime_setFromInfoTest_7 - Can a CivilTime object be set with an improper month?
 		testFramework.assert(!(setFromInfo5.setFromInfo(Id)));
 		testFramework.next();
 
@@ -294,10 +291,6 @@ class CivilTime_T
   		TestUtil testFramework( "CivilTime", "isValid", __FILE__, __func__ );
 
   		CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
-
-		// Perform comparisons to start of CommonTime
-  		//if (GPS1.convertToCommonTime() < CommonTime::BEGINNING_OF_TIME) return 11;
-  		//if (CommonTime::BEGINNING_OF_TIME > GPS1) return 12;
 
 //--------------CivilTime_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
   		testFramework.assert(Aug21.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);

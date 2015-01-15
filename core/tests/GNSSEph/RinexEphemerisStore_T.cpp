@@ -41,6 +41,7 @@
 #include <iomanip>
 #include <sstream>
 
+#include "Xvt.hpp"
 #include "RinexEphemerisStore.hpp"
 #include "Exception.hpp"
 #include "CivilTime.hpp"
@@ -53,6 +54,7 @@
 #include "TestUtil.hpp"
 
 
+
 using namespace gpstk;
 using namespace std;
 
@@ -62,96 +64,117 @@ class RinexEphemerisStore_T
 	public:
 		RinexEphemerisStore_T() {}
 
-		/*
-		**** General test for the RinexEphemerisStore (RES) class
-		**** Test to assure the that RES throws its exceptions in the right place and
-		**** that it loads the RINEX Nav file correctly
-
-		**** To further check this data, please view DumpData.txt for the dumped information
-		*/
-
+/* =========================================================================================================================
+	General test for the RinexEphemerisStore (RES) class
+	Test to assure the that RES throws its exceptions in the right place and
+	that it loads the RINEX Nav file correctly
+========================================================================================================================= */
 		int RESTest (void)
 		{
 			TestUtil testFramework( "RinexEphemerisStore", "Constructor", __FILE__, __func__ );
 			testFramework.init();
 
-			ofstream DumpData;
-			DumpData.open ("DumpData.txt");
-
+//--------------RinexEphemerisStore_RESTest_1 - Verify the consturctor builds the RES object
 			try {RinexEphemerisStore Store; testFramework.passTest();}
 			catch (...) {testFramework.failTest();}
 			RinexEphemerisStore Store; 
 
-			/*------------------------------------------------------------------------------
-			// NotaFILE does not exist. The Exception should be thrown.
+//--------------RinexEphemerisStore_RESTest_2 - Verify the ability to load nonexistant files.
 			testFramework.changeSourceMethod("loadFile");
 			try
 			{
-			  Store.loadFile("NotaFILE");
-			  //testFramework.failTest();
+			  Store.loadFile(inputNotaFile.c_str());
+			  testFramework.passTest();
 			}
 			catch (Exception& e)
 			{
 			  cout << "Expected exception thrown " << endl;
 			  cout << e << endl;
-			  //testFramework.passTest();
+			  testFramework.failTest();
 			}
-			------------------------------------------------------------------------------*/
-			testFramework.changeSourceMethod("loadFile");
-			try {Store.loadFile("TestRinex06.031"); testFramework.passTest();}
+
+//--------------RinexEphemerisStore_RESTest_3 - Verify the ability to load existant files.
+			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.passTest();}
 			catch (...) {cout << "Checking for failure!!!!" << endl; testFramework.failTest();}
 
-			// Clear the store after invoking for assert_no_throw before loading file again to avoid 
-			// duplicate file name error
-			Store.gpstk::FileStore<RinexNavHeader>::clear();
+//=================================================================================================
+// PERSONAL_COMMENT DO NOT PUBLISH
+//   It would be nice to verify that the double name exception is indeed thrown. However the InvalidParameter exception 
+//   thrown will terminate the program even with a catch-all.
+/*
+//--------------RinexEphemerisStore_RESTest_4 - Verify that a repeated filename returns an exception
+			try 
+			{
+				Store.loadFile(inputRinexNavData.c_str()); 
+				testFramework.failTest();
+			}
+			catch (Exception& e) 
+			{
+				testFramework.passTest(); 
+				cout << "Expected exception received from RinexEphemerisStore" << endl;
+			}
+			catch (...) 
+			{
+				cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
+			}
+*/
+//=================================================================================================
+
 			testFramework.changeSourceMethod("clear");
-			try {Store.loadFile("TestRinex06.031"); testFramework.passTest();}
+//--------------RinexEphemerisStore_RESTest_5 - Verify that once a clear() has been performed the repeated filename can be opened.
+			Store.gpstk::FileStore<RinexNavHeader>::clear();
+			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.passTest();}
 			catch (Exception& e) {cout << " Exception received from RinexEphemerisStore, e = " << e << endl; testFramework.failTest();} 
 
-			Store.dump(DumpData,1);
-			DumpData.close();
 			return testFramework.countFails();
 
 		}
 
-		/*
-		**** Test to assure the quality of GPSEphemerisStore class member findEph()
 
-		**** This test makes sure that exceptions are thrown if there is no ephemeris data
-		**** for the given PRN and also that an exception is thrown if there is no data for
-		**** the PRN at the given time. Furthermore, this test finds an Ephemeris for a given
-		**** CivilTime Time and PRN.
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member findEph()
 
-		**** To see the ephemeris information for the selected Time and PRN please see
-		**** findEph.txt
-		*/
+	This test makes sure that exceptions are thrown if there is no ephemeris data
+	for the given PRN and also that an exception is thrown if there is no data for
+	the PRN at the given time. Furthermore, this test finds an Ephemeris for a given
+	CivilTime Time and PRN.
 
-/*		int BCESfindEphTest (void)
+	To see the ephemeris information for the selected Time and PRN please see
+	findEph#.txt
+========================================================================================================================= */
+		int findEphTest (void)
 		{
-			TestUtil test2( "RinexEphemerisStore", "Error Handling", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "findEphemeris", __FILE__, __func__ );
+			testFramework.init();
 			ofstream fPRN1;
 			ofstream fPRN15;
 			ofstream fPRN32;
-			fPRN1.open ("Rinex_Logs/findEph1.txt");
-			fPRN15.open ("Rinex_Logs/findEph15.txt");
-			fPRN32.open ("Rinex_Logs/findEph32.txt");
+
+			outputTestOutput1 = outputTestOutput + "findEph1.txt";
+			outputTestOutput15 = outputTestOutput + "findEph15.txt";
+			outputTestOutput32 = outputTestOutput + "findEph32.txt";
+
+			fPRN1.open (outputTestOutput1.c_str());
+			fPRN15.open (outputTestOutput15.c_str());
+			fPRN32.open (outputTestOutput32.c_str());
 
 			RinexEphemerisStore Store;
-			Store.loadFile("TestRinex06.031");
+			Store.loadFile(inputRinexNavData.c_str());
 
-			std::list<RinexNavData> R3NList;
-			GPSEphemerisStore GStore;
-			std::list<RinexNavData>::const_iterator it;
-			const SatID sidNeg((short)-1, SatID::systemGPS);
-			Store.addToList(R3NList,sidNeg);
-			for (it = R3NList.begin(); it != R3NList.end(); ++it)
-			  GStore.addEphemeris(EngEphemeris(*it));
+			std::list<GPSEphemeris> R3NList;                         //Create a list of GPSEphemerides
+			GPSEphemerisStore GStore;                                //Create a GPSEphemerisStore for testing
+			list<GPSEphemeris>::const_iterator it;                   //Create an interator for the GPSEphmeris list
+			Store.addToList(R3NList);                                //Add the loaded Rinex Nav Data into the list
+			for (it = R3NList.begin(); it != R3NList.end(); ++it)    //Loop over the list adding the ephemerides to the GPSEphemerisStore
+			{
+			  GStore.addEphemeris(GPSEphemeris(*it));
+			}
 
 			// debug dump of GStore
-
-			//ofstream GDumpData;
-			//GDumpData.open("GDumpData.txt");
-			//GStore.dump(GDumpData,1);
+			ofstream GDumpData;
+			GDumpData.open(outputDataDump.c_str());
+			GStore.dump(GDumpData,1);
+			GDumpData.close();
 
 			const short PRN0 = 0; // Zero PRN (Border test case)
 			const short PRN1 = 1;
@@ -167,768 +190,1160 @@ class RinexEphemerisStore_T
 
 			CivilTime Time(2006,1,31,11,45,0,2);
 			CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
-			const CommonTime ComTime = (CommonTime)Time;
-			const CommonTime CombTime = (CommonTime)bTime;
+			const CommonTime ComTime = Time.convertToCommonTime();
+			const CommonTime CombTime = bTime.convertToCommonTime();
 
 			try
 			{
 				CivilTime crazy(1950,1,31,2,0,0,2);
 				const CommonTime Comcrazy = (CommonTime)crazy;
 
-				try {GStore.findEphemeris(sid1,ComTime); test2.print(); test2.next();}
-				catch (...) {test2.fail(); test2.print(); test2.next();}
 
-				fPRN1 << GStore.findEphemeris(sid1,ComTime);
+//=================================================================================================
+// PERSONAL_COMMENT DO NOT PUBLISH
+// Extra lines to test the underlying methods. THESE SHOULD BE DELETED!!!!
+/*
+cout << "===============================================================================================" << endl;
+cout << "ADDITIONAL NOTES FOR findEphemeris" << endl << endl;
+cout << "Can satID 1 be found? " << (bool) (GStore.satTables.find(sid1) == GStore.satTables.end()) << endl;
+cout << "Can satID 15 be found? " << (bool) (GStore.satTables.find(sid1) == GStore.satTables.end()) << endl;
+cout << "Can satID 32 be found? " << (bool) (GStore.satTables.find(sid1) == GStore.satTables.end()) << endl;
+
+const OrbitEphStore::TimeOrbitEphTable& table = Store.getTimeOrbitEphMap(sid1);
+cout << "I MADE IT HERE" << endl;
+OrbitEphStore::TimeOrbitEphTable::const_iterator itNext = table.find(ComTime);
+cout << "I MADE IT HERE TOO" << endl;
+if(itNext != table.end()) 
+	{
+		cout << "Were the satID and CommonTime found? " << "YES" << endl << endl;
+		cout << "Dumping header: " << endl; 
+		try{(itNext->second)->dumpHeader(cout);}
+		catch (Exception& e) {cout << "Error caught dumping header." << endl << "Error reads: " << e << endl;}
+		cout << endl << endl;
+		cout << "Dumping Body: " << endl;
+		(itNext->second)->dumpBody(cout);
+	}
+else cout << "Were the satID and CommonTime found? " << "NO" << endl;
+
+
+
+// It appears that GPSEphemeris.dumpHeader(ofstream) calls an ext/lib/Misc class called SVNumXRef in order to obtain the SVN corresponding
+// to the SatID (understood as PRN) given. This ext class causes improper CommonTime comparisons. 
+
+// We have two options:
+//  1) Remove that part of the output
+//  2) Fix SVNumXRef and add it to core (Core MUST NOT depend on ext)
+
+cout << "===============================================================================================" << endl;*/
+//=================================================================================================
+
+//--------------RinexEphemerisStore_findEphTest_1 - For proper input, will the method return properly?
+				try {GStore.findEphemeris(sid1,ComTime); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findEphTest_2 - For a wrong SatID (too small), will an exception be thrown?
+				try {GStore.findEphemeris(sid0,CombTime); testFramework.failTest();}
+				catch (InvalidRequest) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findEphTest_3 - For a wrong SatID (too large), will an exception be thrown?
+				try {GStore.findEphemeris(sid33,CombTime); testFramework.failTest();}
+				catch (InvalidRequest) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findEphTest_4 - For an improper time, will an exception be thrown?
+				try {GStore.findEphemeris(sid32,Comcrazy); testFramework.failTest();}
+				catch (InvalidRequest) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+				//Write out findEphemeris data to output files
+				fPRN1  << GStore.findEphemeris(sid1,ComTime);
 				fPRN15 << GStore.findEphemeris(sid15,ComTime);
 				fPRN32 << GStore.findEphemeris(sid32,ComTime);
-
-				try {GStore.findEphemeris(sid0,CombTime); test2.fail(); test2.print(); test2.next();}
-				catch (InvalidRequest) {test2.print(); test2.next();}
-				catch (...) {test2.fail(); test2.print(); test2.next();}
-
-				try {GStore.findEphemeris(sid33,CombTime; test2.fail(); test2.print(); test2.next();}
-				catch (InvalidRequest) {test2.print(); test2.next();}
-				catch (...) {test2.fail(); test2.print(); test2.next();}
-
-				try {GStore.findEphemeris(sid32,Comcrazy); test2.fail(); test2.print(); test2.next();}
-				catch (InvalidRequest) {test2.print(); test2.next();}
-				catch (...) {test2.fail(); test2.print(); test2.next();}
 			}
 			catch (Exception& e)
 			{
 				//cout << e;
 			}
 
-			test2.assert(fileEqualTest((char*)"Rinex_Logs/findEph1.txt",(char*)"Rinex_Checks/findEph1.chk"));
-			test2.print();
-			test2.next();
-			test2.assert(fileEqualTest((char*)"Rinex_Logs/findEph15.txt",(char*)"Rinex_Checks/findEph15.chk"));
-			test2.print();
-			test2.next();
-			test2.assert(fileEqualTest((char*)"Rinex_Logs/findEph32.txt",(char*)"Rinex_Checks/findEph32.chk"));
-			test2.print();
-			test2.next();
-			return test1.countFails();
+
+
+			fPRN1.close();
+			fPRN15.close();
+			fPRN32.close();
+
+			inputComparisonOutput1  = inputComparisonOutput + "findEph1.chk";
+			inputComparisonOutput15 = inputComparisonOutput + "findEph15.chk";
+			inputComparisonOutput32 = inputComparisonOutput + "findEph32.chk";
+
+			testFramework.changeSourceMethod("findEphemeris Output");
+
+//--------------RinexEphemerisStore_findEphTest_5 - Check findEphemeris output with pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_findEphTest_6 - Check findEphemeris output with pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_findEphTest_7 - Check findEphemeris output with pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput32, inputComparisonOutput32, 0) );
+			testFramework.next();
+
+			return testFramework.countFails();
 		}
 
 
-/*
-**** Test to assure the quality of GPSEphemerisStore class member getXvt()
-
-**** This test makes sure that exceptions are thrown if there is no ephemeris data
-**** for the given PRN and also that an exception is thrown if there is no data for
-**** the PRN at the given time. Furthermore, this test finds an Xvt for a given
-**** CivilTime Time and PRN.
-
-**** To see the Xvt information for the selected Time and PRN please see
-**** getXvt.txt
-
-void RinexEphemerisStore_T :: BCESgetXvtTest (void)
-{
-	ofstream fPRN1;
-	ofstream fPRN15;
-	ofstream fPRN32;
-
-	fPRN1.open ("Rinex_Logs/getXvt1.txt");
-	fPRN15.open ("Rinex_Logs/getXvt15.txt");
-	fPRN32.open ("Rinex_Logs/getXvt32.txt");
-
-	RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
-
-	const short PRN0 = 0; // Zero PRN (Border test case)
-	const short PRN1 = 1;
-	const short PRN15 = 15;
-	const short PRN32 = 32;
-	const short PRN33 = 33;  //Top PRN (33) (Border test case);
-   SatID sid0(PRN0,SatID::systemGPS);
-   SatID sid1(PRN1,SatID::systemGPS);
-   SatID sid15(PRN15,SatID::systemGPS);
-   SatID sid32(PRN32,SatID::systemGPS);
-   SatID sid33(PRN33,SatID::systemGPS);
-
-	CivilTime Time(2006,1,31,11,45,0,2);
-	CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
-        const CommonTime ComTime = (CommonTime)Time;
-        const CommonTime CombTime = (CommonTime)bTime;
-
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.getXvt(sid1,ComTime));
-
-		fPRN1 << Store.getXvt(sid1,ComTime) << endl;
-		fPRN15 << Store.getXvt(sid15,ComTime) << endl;
-		fPRN32 << Store.getXvt(sid32,ComTime) << endl;
-
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid0,CombTime),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(Store.getXvt(sid33,CombTime),InvalidRequest);
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/getXvt1.txt",(char*)"Rinex_Checks/getPrnXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/getXvt15.txt",(char*)"Rinex_Checks/getPrnXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/getXvt32.txt",(char*)"Rinex_Checks/getPrnXvt32.chk"));
-}
-
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member getXvt()
-**** This test differs from the previous in that this getXvt() has another parameter
-**** for the IODC
-
-**** This test makes sure that exceptions are thrown if there is no ephemeris data
-**** for the given PRN and also that an exception is thrown if there is no data for
-**** the PRN at the given time. Furthermore, this test finds an Xvt for a given
-**** CivilTime Time and PRN and IODC.
-
-**** To see the Xvt information for the selected Time and PRN please see
-**** getXvt2.txt
-
-void RinexEphemerisStore_T :: BCESgetXvt2Test (void)
-{
-
-	ofstream fPRN1;
-	ofstream fPRN15;
-	ofstream fPRN32;
-
-	fPRN1.open ("Rinex_Logs/getXvt2_1.txt");
-	fPRN15.open ("Rinex_Logs/getXvt2_15.txt");
-	fPRN32.open ("Rinex_Logs/getXvt2_32.txt");
-
-	RinexEphemerisStore Store;
-        int nr;
-	nr = Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-        
-	const short PRN0 = 0; // Zero PRN (Border test case)
-	const short PRN1 = 1;
-	const short PRN15 = 15;
-	const short PRN32 = 32;
-	const short PRN33 = 33;  //Top PRN (33) (Border test case);
-   SatID sid0(PRN0,SatID::systemGPS);
-   SatID sid1(PRN1,SatID::systemGPS);
-   SatID sid15(PRN15,SatID::systemGPS);
-   SatID sid32(PRN32,SatID::systemGPS);
-   SatID sid33(PRN33,SatID::systemGPS);
-
-	short IODC0 = 89;
-	short IODC1 = 372;
-	short IODC15 = 455;
-	short IODC32 = 441;
-	short IODC33 = 392;
-
-	CivilTime Time(2006,1,31,11,45,0,2);
-	CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
-        const CommonTime ComTime = (CommonTime)Time;
-        const CommonTime CombTime = (CommonTime)bTime;
-
-	try
-	{
-		fPRN1 << GStore.getXvt(sid1,ComTime,IODC1) << endl;
-		fPRN15 << GStore.getXvt(sid15,ComTime,IODC15) << endl;
-		fPRN32 << GStore.getXvt(sid32,ComTime,IODC32) << endl;
-
-		CPPUNIT_ASSERT_THROW(GStore.getXvt(sid0,CombTime,IODC0),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(GStore.getXvt(sid33,CombTime,IODC33),InvalidRequest);
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/getXvt2_1.txt",(char*)"Rinex_Checks/getPrnXvt1.chk"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/getXvt2_15.txt",(char*)"Rinex_Checks/getPrnXvt15.chk"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/getXvt2_32.txt",(char*)"Rinex_Checks/getPrnXvt32.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member getSatHealth()
-
-**** This test makes sure that exceptions are thrown if there is no ephemeris data
-**** for the given PRN and also that an exception is thrown if there is no data for
-**** the PRN at the given time. Furthermore, this test assures that for a specific PRN
-**** and Time, that SV is as we expect it, health (0).
-
-
-void RinexEphemerisStore_T :: BCESgetSatHealthTest (void)
-{
-	const short PRN0 = 0; // Zero PRN (Border test case)
-	const short PRN1 = 1;
-	const short PRN15 = 15;
-	const short PRN32 = 32;
-	const short PRN33 = 33;  //Top PRN (33) (Border test case);
-   SatID sid0(PRN0,SatID::systemGPS);
-   SatID sid1(PRN1,SatID::systemGPS);
-   SatID sid15(PRN15,SatID::systemGPS);
-   SatID sid32(PRN32,SatID::systemGPS);
-   SatID sid33(PRN33,SatID::systemGPS);
-
-	RinexEphemerisStore Store;
-        int nr;
-	nr = Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-
-	CivilTime Time(2006,1,31,11,45,0,2);
-	CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
-        const CommonTime ComTime = (CommonTime)Time;
-        const CommonTime CombTime = (CommonTime)bTime;
-
-
-	try
-	{
-
-
-		CPPUNIT_ASSERT_NO_THROW(GStore.getSatHealth(sid1,ComTime));
-
-		CPPUNIT_ASSERT_EQUAL((short) 0,GStore.getSatHealth(sid1,Time));
-		CPPUNIT_ASSERT_EQUAL((short) 0,GStore.getSatHealth(sid15,Time));
-		CPPUNIT_ASSERT_EQUAL((short) 0,GStore.getSatHealth(sid32,Time));
-
-		CPPUNIT_ASSERT_THROW(GStore.getSatHealth(sid0,bTime),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(GStore.getSatHealth(sid33,bTime),InvalidRequest);
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member dump()
-
-**** This test makes sure that dump() behaves as expected.  With paramters from
-**** 0-2 with each giving more and more respective information, this information is
-**** then put into txt files.
-
-**** To see the dump with paramter 0, please view DumpData0.txt
-**** To see the dump with paramter 1, pleave view DumpData1.txt
-**** To see the dump with paramter 2, please uncomment the test and view the command
-**** line output (cout).
-
-
-void RinexEphemerisStore_T :: BCESdumpTest (void)
-{
-	ofstream DumpData0;
-	ofstream DumpData1;
-	ofstream DumpData2;
-	DumpData0.open ("Rinex_Logs/DumpData0.txt");
-	DumpData1.open ("Rinex_Logs/DumpData1.txt");
-	DumpData2.open ("Rinex_Logs/DumpData2.txt");
-
-	RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
-
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.dump(DumpData0,0));
-		CPPUNIT_ASSERT_NO_THROW(Store.dump(DumpData1,1));
-		//Code outputs to cout but does pass, just dont want to run that every time
-		//CPPUNIT_ASSERT_NO_THROW(Store.dump(2,DumpData2));
-		//Store.dump(2,DumpData2);
-
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/DumpData0.txt",(char*)"Rinex_Checks/DumpData0.chk"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/DumpData1.txt",(char*)"Rinex_Checks/DumpData1.chk"));
-	//CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/DumpData2.txt",(char*)"Rinex_Checks/DumpData2.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member addEphemeris()
-
-**** This test assures that no exceptions are thrown when a an ephemeris, taken from Store
-**** is added to a blank BCES Object.  Then the test makes sure that only that Ephemeris
-**** is in the object by checking the start and end times of the Object
-
-**** Question:  Why does this eph data begin two hours earlier than it does on the output?
-
-
-void RinexEphemerisStore_T :: BCESaddEphemerisTest (void)
-{
-
-	ofstream DumpData;
-	DumpData.open ("Rinex_Logs/addEphemerisTest.txt");
-
-	GPSEphemerisStore Blank;
-     //cout << " On construction, Blank.getInitialTime: " << Blank.getInitialTime() << endl;
-     //cout << " On construction, Blank.getFinalTime:   " << Blank.getFinalTime() << endl;
-
-	RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        std::list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-
-	short PRN = 1;
-        SatID sid(PRN,SatID::systemGPS);
-
-	CivilTime Time(2006,1,31,11,45,0,2);
-	CivilTime TimeB(2006,1,31,9,59,44,2);
-        CivilTime TimeE(2006,1,31,13,59,44,2);
-
-        const CommonTime ComTime = (CommonTime)Time;
-        const CommonTime ComTimeB = (CommonTime)TimeB;
-        const CommonTime ComTimeE = (CommonTime)TimeE;
-
-	const EngEphemeris eph = GStore.findEphemeris(sid,ComTime);
-
-     //cout << " ComTime: " << ComTime << " ComTimeB: " << ComTimeB << " ComTimeE: " << ComTimeE << endl;
-     //cout << " eph follows: " << endl;
-     //cout << eph << endl;
-
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Blank.addEphemeris(eph));
-     //cout << " After assert_no_throw: " << endl;
-     //cout << " Blank.getInitialTime: " << Blank.getInitialTime() << endl;
-     //cout << " Blank.getFinalTime:   " << Blank.getFinalTime() << endl;
-
-                Blank.clear();
-     //cout << " After clear: " << endl;
-     //cout << " Blank.getInitialTime: " << Blank.getInitialTime() << endl;
-     //cout << " Blank.getFinalTime:   " << Blank.getFinalTime() << endl;
-
-		Blank.addEphemeris(eph);
-     //cout << " After addEphemeris(eph): " << endl;
-     //cout << " Blank.getInitialTime: " << Blank.getInitialTime() << endl;
-     //cout << " Blank.getFinalTime:   " << Blank.getFinalTime() << endl;
-
-		CPPUNIT_ASSERT_EQUAL(ComTimeB,Blank.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(ComTimeE,Blank.getFinalTime());
-
-		Blank.dump(DumpData,1);
-	}
-	catch (Exception& e)
-	{
-		cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/addEphemerisTest.txt",(char*)"Rinex_Checks/addEphemerisTest.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member edit()
-
-**** This test assures that no exceptions are thrown when we edit a RES object
-**** then after we edit the RES Object, we test to make sure that our edit time
-**** parameters are now the time endpoints of the object.
-
-**** For further inspection of the edit, please view editTest.txt
-
-
-void RinexEphemerisStore_T :: BCESeditTest (void)
-{
-	ofstream DumpData;
-	DumpData.open ("Rinex_Logs/editTest.txt");
-
-	RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
-
-	CivilTime TimeMax(2006,1,31,15,45,0,2);
-	CivilTime TimeMin(2006,1,31,3,0,0,2);
-
-        //cout << "TimeMax: " << TimeMax << "\n" << "TimeMin: " << TimeMin << "\n";
-
-        const CommonTime ComTMax = (CommonTime)TimeMax;
-        const CommonTime ComTMin = (CommonTime)TimeMin;
-
-	//cout << "ComTMax: " << ComTMax << "\n" << "ComTMin: " << ComTMin << "\n";
-
-	try
-	{
-                CPPUNIT_ASSERT_NO_THROW(Store.edit(ComTMin, ComTMax));
-		Store.edit(ComTMin, ComTMax);
-		CPPUNIT_ASSERT_EQUAL(ComTMin,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(ComTMax,Store.getFinalTime());
-		Store.dump(DumpData,1);
-
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/editTest.txt",(char*)"Rinex_Checks/editTest.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member wiper()
-
-**** This test assures that no exceptions are thrown when we wiper a RES object
-**** then after we wiper the RES Object, we test to make sure that our wiper time
-**** parameter in now the time endpoint of the object.
-
-**** For further inspection of the edit, please view wiperTest.txt
-
-**** Please note that this test also indirectly tests size
-
-
-void RinexEphemerisStore_T :: BCESwiperTest (void)
-{
-	ofstream DumpData1;
-	ofstream DumpData2;
-	DumpData1.open ("Rinex_Logs/wiperTest.txt");
-	DumpData2.open ("Rinex_Logs/wiperTest2.txt");
-
-
-	RinexEphemerisStore Store;
-        int nr;
-	nr = Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-
-	CivilTime Time(2006,1,31,11,45,0,2);
-        const CommonTime ComTime = (CommonTime)Time;
-
-	try
-	{
-		//Make sure it doesn't fail but dont wipe anything
-		CPPUNIT_ASSERT_NO_THROW(GStore.wiper(CommonTime::BEGINNING_OF_TIME));
-		//Wipe everything outside interval and make sure that we did wipe all the data
-		GStore.wiper(ComTime);
-		GStore.dump(DumpData1,1);
-
-		CPPUNIT_ASSERT_EQUAL(ComTime,GStore.getInitialTime());
-
-		//Wipe everything, return size (should be zero)
-		GStore.wiper(CommonTime::END_OF_TIME);
-		unsigned int Num = GStore.ubeSize();
-
-		CPPUNIT_ASSERT_EQUAL((unsigned) 0,Num);
-
-		GStore.dump(DumpData2,1);
-
-		CPPUNIT_ASSERT_EQUAL(CommonTime::END_OF_TIME,GStore.getInitialTime());
-
-
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/wiperTest.txt",(char*)"Rinex_Checks/wiperTest.chk"));
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/wiperTest.txt",(char*)"Rinex_Checks/wiperTest.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member clear()
-
-**** This test assures that no exceptions are thrown when we clear a RES object
-**** then after we clear the RES Object, we test to make sure that END_OF_TIME is our
-**** initial time and BEGINNING_OF_TIME is our final time
-
-**** For further inspection of the edit, please view clearTest.txt
-
-
-void RinexEphemerisStore_T :: BCESclearTest (void)
-{
-	ofstream DumpData;
-	DumpData.open ("Rinex_Logs/clearTest.txt");
-
-	RinexEphemerisStore Store;
-	Store.loadFile("TestRinex06.031");
-
-	try
-	{
-		CPPUNIT_ASSERT_NO_THROW(Store.clear());
-
-		CPPUNIT_ASSERT_EQUAL(CommonTime::END_OF_TIME,Store.getInitialTime());
-		CPPUNIT_ASSERT_EQUAL(CommonTime::BEGINNING_OF_TIME,Store.getFinalTime());
-		Store.dump(DumpData,1);
-
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/clearTest.txt",(char*)"Rinex_Checks/clearTest.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member findUserEphemeris()
-
-**** findUserEphemeris find the ephemeris which a) is within the fit tinterval for the
-**** given time of interest and 2) is the last ephemeris transmitted before the time of
-**** interest (i.e. min(toi-HOW time))
-
-**** This test makes sure that exceptions are thrown if there is no ephemeris data
-**** for the given PRN and also that an exception is thrown if there is no data for
-**** the PRN at the given time. Store is then cleared and the ephemeris data is readded
-**** for output purposes.
-
-**** For further inspection of the find, please view findUserTest.txt
-
-
-void RinexEphemerisStore_T :: BCESfindUserTest (void)
-{
-	ofstream DumpData;
-	DumpData.open ("Rinex_Logs/findUserTest.txt");
-
-	RinexEphemerisStore Store;
-        int nr;
-	nr = Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-
-	CivilTime Time(2006,1,31,13,0,1,2);
-        const CommonTime ComTime = (CommonTime)Time;
-
-	short PRN0 = 0;
-	short PRN1 = 1;
-	short PRN15 = 15;
-	short PRN32 = 32;
-	short PRN33 = 33;
-   SatID sid0(PRN0,SatID::systemGPS);
-   SatID sid1(PRN1,SatID::systemGPS);
-   SatID sid15(PRN15,SatID::systemGPS);
-   SatID sid32(PRN32,SatID::systemGPS);
-   SatID sid33(PRN33,SatID::systemGPS);
-
-	try
-	{
-		CPPUNIT_ASSERT_THROW(GStore.findUserEphemeris(sid0,ComTime),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(GStore.findUserEphemeris(sid33,ComTime),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(GStore.findUserEphemeris(sid1,CommonTime::END_OF_TIME),
-					InvalidRequest);
-
-		CPPUNIT_ASSERT_NO_THROW(GStore.findUserEphemeris(sid1, ComTime));
-
-		const EngEphemeris Eph1 = GStore.findUserEphemeris(sid1, ComTime);
-		const EngEphemeris Eph15 = GStore.findUserEphemeris(sid15, ComTime);
-		const EngEphemeris Eph32 = GStore.findUserEphemeris(sid32, ComTime);
-
-		GStore.clear();
-
-		GStore.addEphemeris(Eph1);
-		GStore.addEphemeris(Eph15);
-		GStore.addEphemeris(Eph32);
-
-		GStore.dump(DumpData,1);
-
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/findUserTest.txt",(char*)"Rinex_Checks/findUserTest.chk"));
-}
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member findNearEphemeris()
-**** findNearEphemeris finds the ephemeris with the HOW time closest to the time t, i.e
-**** with the smalles fabs(t-HOW), but still within the fit interval
-
-**** This test makes sure that exceptions are thrown if there is no ephemeris data
-**** for the given PRN and also that an exception is thrown if there is no data for
-**** the PRN at the given time. Store is then cleared and the epeheris data is readded
-**** for output purposes.
-
-**** For further inspection of the find, please view findNearTest.txt
-
-
-void RinexEphemerisStore_T :: BCESfindNearTest (void)
-{
-	ofstream DumpData;
-	DumpData.open ("Rinex_Logs/findNearTest.txt");
-
-	RinexEphemerisStore Store;
-        int nr;
-	nr = Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-
-	CivilTime Time(2006,1,31,13,0,1,2);
-        const CommonTime ComTime = (CommonTime)Time;
-
-	short PRN0 = 0;
-	short PRN1 = 1;
-	short PRN15 = 15;
-	short PRN32 = 32;
-	short PRN33 = 33;
-   SatID sid0(PRN0,SatID::systemGPS);
-   SatID sid1(PRN1,SatID::systemGPS);
-   SatID sid15(PRN15,SatID::systemGPS);
-   SatID sid32(PRN32,SatID::systemGPS);
-   SatID sid33(PRN33,SatID::systemGPS);
-
-	try
-	{
-		CPPUNIT_ASSERT_THROW(GStore.findNearEphemeris(sid0,ComTime),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(GStore.findNearEphemeris(sid33,ComTime),InvalidRequest);
-		CPPUNIT_ASSERT_THROW(GStore.findNearEphemeris(sid1,CommonTime::END_OF_TIME),
-					InvalidRequest);
-
-		CPPUNIT_ASSERT_NO_THROW(GStore.findNearEphemeris(sid1, ComTime));
-
-		const EngEphemeris Eph1 = GStore.findNearEphemeris(sid1, ComTime);
-		const EngEphemeris Eph15 = GStore.findNearEphemeris(sid15, ComTime);
-		const EngEphemeris Eph32 = GStore.findNearEphemeris(sid32, ComTime);
-
-		GStore.clear();
-
-		GStore.addEphemeris(Eph1);
-		GStore.addEphemeris(Eph15);
-		GStore.addEphemeris(Eph32);
-
-		GStore.dump(DumpData,1);
-
-	}
-	catch (Exception& e)
-	{
-                e.addLocation(FILE_LOCATION);
-		cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/findNearTest.txt",(char*)"Rinex_Checks/findNearTest.chk"));
-}
-
-
-
-/*
-**** Test to assure the quality of GPSEphemerisStore class member addToList()
-
-**** This test creats a list of EngEphemeris and then adds all of the ephemeris
-**** members to that list.  After that of the List and Store are checked to be
-**** equal.
-
-**** For further inspection of the add, please view addToListTest.txt
-
-
-void RinexEphemerisStore_T :: BCESaddToListTest (void)
-{
-	ofstream DumpData;
-	DumpData.open ("Rinex_Logs/addToListTest.txt");
-
-
-	RinexEphemerisStore Store;
-        int nr;
-	nr = Store.loadFile("TestRinex06.031");
-
-        std::list<RinexNavData> R3NList;
-        GPSEphemerisStore GStore;
-        list<RinexNavData>::const_iterator it;
-        Store.addToList(R3NList);
-        for (it = R3NList.begin(); it != R3NList.end(); ++it)
-          GStore.addEphemeris(EngEphemeris(*it));
-
-
-	try
-	{
-		std::list<EngEphemeris> EphList; // Empty Ephemeris List
-
-		//Assert that the number of added members equals the size of Store (all members added)
-		CPPUNIT_ASSERT_EQUAL(GStore.ubeSize(),(unsigned) GStore.addToList(EphList));
-		CPPUNIT_ASSERT_EQUAL((unsigned) EphList.size(),GStore.ubeSize());
-
-		typedef list<EngEphemeris>::const_iterator LI;
-		for (LI i = EphList.begin();i!=EphList.end();i++)
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member getXvt()
+
+	This test makes sure that exceptions are thrown if there is no ephemeris data
+	for the given PRN and also that an exception is thrown if there is no data for
+	the PRN at the given time. Furthermore, this test finds an Xvt for a given
+	CivilTime Time and PRN.
+
+	To see the Xvt information for the selected Time and PRN please see the files
+	getXvt#.txt
+========================================================================================================================= */
+
+		int getXvtTest (void)
 		{
-			const EngEphemeris& e = *i;
-			DumpData << e;
-		}
+			TestUtil testFramework( "RinexEphemerisStore", "getXvt", __FILE__, __func__ );
+			testFramework.init();
+			ofstream fPRN1;
+			ofstream fPRN15;
+			ofstream fPRN32;
 
-	}
-	catch (Exception& e)
-	{
-		//cout << e;
-	}
-	CPPUNIT_ASSERT(fileEqualTest((char*)"Rinex_Logs/addToListTest.txt",(char*)"Rinex_Checks/addToListTest.chk"));
-}
+			outputTestOutput1  = outputTestOutput + "getPrnXvt1.txt";
+			outputTestOutput15 = outputTestOutput + "getPrnXvt15.txt";
+			outputTestOutput32 = outputTestOutput + "getPrnXvt32.txt";
 
+			fPRN1.open ( outputTestOutput1.c_str() );
+			fPRN15.open( outputTestOutput15.c_str() );
+			fPRN32.open( outputTestOutput32.c_str() );
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			const short PRN0 = 0; // Zero PRN (Border test case)
+			const short PRN1 = 1;
+			const short PRN15 = 15;
+			const short PRN32 = 32;
+			const short PRN33 = 33;  //Top PRN (33) (Border test case);
+			SatID sid0(PRN0,SatID::systemGPS);
+			SatID sid1(PRN1,SatID::systemGPS);
+			SatID sid15(PRN15,SatID::systemGPS);
+			SatID sid32(PRN32,SatID::systemGPS);
+			SatID sid33(PRN33,SatID::systemGPS);
+
+			CivilTime Time(2006,1,31,11,45,0,1);
+			CivilTime bTime(2006,1,31,2,0,0,1); //Border Time (Time of Border test cases)
+			const CommonTime ComTime = (CommonTime)Time;
+			const CommonTime CombTime = (CommonTime)bTime;
+
+			Xvt xvt1;
+			Xvt xvt15;
+			Xvt xvt32;
+			try
+			{
+//--------------RinexEphemerisStore_getXvtTest_1 - Does getXvt work in ideal settings?
+				try 
+				{
+					Store.getXvt(sid1,ComTime);
+					testFramework.passTest();
+				}
+				catch (Exception& e)
+				{
+					cout << "Exception thrown is " << e << endl;
+					testFramework.failTest();
+				}
+
+//=================================================================================================
+// PERSONAL_COMMENT DO NOT PUBLISH
+// For some odd reason the redirect operator << does not work for Xvt on Snow. I have to build
+// around it.
+
+				xvt1 = Store.getXvt(sid1,ComTime);
+				xvt15 = Store.getXvt(sid15,ComTime);
+				xvt32 = Store.getXvt(sid32,ComTime);
+				fPRN1    << "x:" << xvt1.x
+					 << ", v:" << xvt1.v
+					 << ", clk bias:" << xvt1.clkbias
+					 << ", clk drift:" << xvt1.clkdrift
+					 << ", relcorr:" << xvt1.relcorr;
+
+				fPRN15    << "x:" << Store.getXvt(sid15,ComTime).x
+					 << ", v:" << Store.getXvt(sid15,ComTime).v
+					 << ", clk bias:" << Store.getXvt(sid15,ComTime).clkbias
+					 << ", clk drift:" << Store.getXvt(sid15,ComTime).clkdrift
+					 << ", relcorr:" << Store.getXvt(sid15,ComTime).relcorr;
+
+				fPRN32    << "x:" << Store.getXvt(sid32,ComTime).x
+					 << ", v:" << Store.getXvt(sid32,ComTime).v
+					 << ", clk bias:" << Store.getXvt(sid32,ComTime).clkbias
+					 << ", clk drift:" << Store.getXvt(sid32,ComTime).clkdrift
+					 << ", relcorr:" << Store.getXvt(sid32,ComTime).relcorr;
+
+// I should be able to use these.
+/*
+				fPRN1 << xvt1 << endl;
+				fPRN15 << xvt15 << endl;
+				fPRN32 << xvt32 << endl;
 */
-	bool fileEqualTest (char* handle1, char* handle2)
-	{
-		bool isEqual = false;
+//=================================================================================================
 
-		ifstream File1;
-		ifstream File2;
+//--------------RinexEphemerisStore_getXvtTest_2 - Can I get an xvt for a non-real SV?
+				try 
+				{
+					Store.getXvt(sid0,CombTime);
+					testFramework.failTest();
+				}
+				catch (InvalidRequest& e)
+				{
+					testFramework.passTest();
+				}
+				catch (...) {testFramework.failTest();}
 
-		std::string File1Line;
-		std::string File2Line;
+//--------------RinexEphemerisStore_getXvtTest_3 - Can I get an xvt for a non-real SV?
+				try 
+				{
+					Store.getXvt(sid33,CombTime);
+					testFramework.failTest();
+				}
+				catch (InvalidRequest& e)
+				{
+					testFramework.passTest();
+				}
+				catch (...) {testFramework.failTest();}
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
 
-		File1.open(handle1);
-		File2.open(handle2);
+			fPRN1.close(); 
+			fPRN15.close(); 
+			fPRN32.close();
 
-		while (!File1.eof())
-		{
-			if (File2.eof())
-				return isEqual;
-			getline (File1, File1Line);
-			getline (File2, File2Line);
+			inputComparisonOutput1  = inputComparisonOutput + "getPrnXvt1.chk";
+			inputComparisonOutput15 = inputComparisonOutput + "getPrnXvt15.chk";
+			inputComparisonOutput32 = inputComparisonOutput + "getPrnXvt32.chk";
 
-			if (File1Line != File2Line)
-				return isEqual;
+			testFramework.changeSourceMethod("getXvt Output");
+
+//--------------RinexEphemerisStore_getXvtTest_4 - Compare data for SatID 1 with pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_getXvtTest_5 - Compare data for SatID 15 with pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_getXvtTest_6 - Compare data for SatID 32 with pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput32, inputComparisonOutput32, 0) );
+			testFramework.next();
+
+			return testFramework.countFails();
 		}
-		if (!File2.eof())
-			return isEqual;
-		else
-			return isEqual = true;
-	}
+
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member getXvt()
+	This test differs from the previous in that this getXvt() has another parameter
+	for the IODC
+
+	This test makes sure that exceptions are thrown if there is no ephemeris data
+	for the given PRN and also that an exception is thrown if there is no data for
+	the PRN at the given time. Furthermore, this test finds an Xvt for a given
+	CivilTime Time and PRN and IODC.
+
+	To see the Xvt information for the selected Time and PRN please see
+	getXvt2.txt
+
+NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary, but is
+      being left here in case the functionality returns.
+========================================================================================================================= */
+/*
+		int getXvt2Test (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "getXvt with IODC", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream fPRN1;
+			ofstream fPRN15;
+			ofstream fPRN32;
+
+			string filename;
+			filename = __FILE__;
+			filename = filename.substr(0, filename.find_last_of("\\/"));
+
+			fPRN1.open ((filename+"/Logs/getXvt2_1.txt").c_str());
+			fPRN15.open ((filename+"/Logs/getXvt2_15.txt").c_str());
+			fPRN32.open ((filename+"/Logs/getXvt2_32.txt").c_str());
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			std::list<RinexNavData> R3NList;
+			GPSEphemerisStore GStore;
+			list<RinexNavData>::const_iterator it;
+			Store.addToList(R3NList);
+			for (it = R3NList.begin(); it != R3NList.end(); ++it)
+			  GStore.addEphemeris(EngEphemeris(*it));
+		
+			const short PRN0 = 0; // Zero PRN (Border test case)
+			const short PRN1 = 1;
+			const short PRN15 = 15;
+			const short PRN32 = 32;
+			const short PRN33 = 33;  //Top PRN (33) (Border test case);
+			SatID sid0(PRN0,SatID::systemGPS);
+			SatID sid1(PRN1,SatID::systemGPS);
+			SatID sid15(PRN15,SatID::systemGPS);
+			SatID sid32(PRN32,SatID::systemGPS);
+			SatID sid33(PRN33,SatID::systemGPS);
+
+			short IODC0 = 89;
+			short IODC1 = 372;
+			short IODC15 = 455;
+			short IODC32 = 441;
+			short IODC33 = 392;
+
+			CivilTime Time(2006,1,31,11,45,0,2);
+			CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
+			const CommonTime ComTime = (CommonTime)Time;
+			const CommonTime CombTime = (CommonTime)bTime;
+
+			try
+			{
+//--------------RinexEphemerisStore_getXvt2Test_1 - Does getXvt work in ideal settings?
+				try 
+				{
+					Store.getXvt(sid1,ComTime,IODC1);
+					testFramework.passTest();
+				}
+				catch (...) {testFramework.failTest();}
+
+				fPRN1 << Store.getXvt(sid1,ComTime,IODC1) << endl;
+				fPRN15 << Store.getXvt(sid15,ComTime,IODC15) << endl;
+				fPRN32 << Store.getXvt(sid32,ComTime,IODC32) << endl;
+
+
+//--------------RinexEphemerisStore_getXvt2Test_2 - Is an error thrown when SatID is too small?
+				try
+				{
+					Store.getXvt(sid0,CombTime,IODC0);
+					testFramework.failTest();
+				}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_getXvt2Test_3 - Is an error thrown when SatID is too large?
+				try
+				{
+					Store.getXvt(sid33,CombTime,IODC33);
+					testFramework.failTest();
+				}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+
+			fPRN1.close();
+			fPRN15.close();
+			fPRN32.close();
+
+			testFramework.changeSourceMethod("getXvt with IODC Output");
+//--------------RinexEphemerisStore_getXvt2Test_4 - Compare data for SatID 1 with pre-determined standard
+			testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_1.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt1.chk").c_str()));
+			testFramework.next();
+//--------------RinexEphemerisStore_getXvt2Test_5 - Compare data for SatID 15 with pre-determined standard
+			testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_15.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt15.chk").c_str()));
+			testFramework.next();
+//--------------RinexEphemerisStore_getXvt2Test_6 - Compare data for SatID 32 with pre-determined standard
+			testFramework.assert(fileEqualTest((char*)(filename+"/Logs/getXvt2_32.txt").c_str(),(char*)(filename+"/Checks/getPrnXvt32.chk").c_str()));
+			testFramework.next();
+
+			return testFramework.countFails();
+		}
+*/
+
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member getSatHealth()
+
+	This test makes sure that exceptions are thrown if there is no ephemeris data
+	for the given PRN and also that an exception is thrown if there is no data for
+	the PRN at the given time. Furthermore, this test assures that for a specific PRN
+	and Time, that SV is as we expect it, health (0).
+========================================================================================================================= */
+		int getSatHealthTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __func__ );
+			testFramework.init();
+
+			const short PRN0 = 0; // Zero PRN (Border test case)
+			const short PRN1 = 1;
+			const short PRN15 = 15;
+			const short PRN32 = 32;
+			const short PRN33 = 33;  //Top PRN (33) (Border test case);
+			SatID sid0(PRN0,SatID::systemGPS);
+			SatID sid1(PRN1,SatID::systemGPS);
+			SatID sid15(PRN15,SatID::systemGPS);
+			SatID sid32(PRN32,SatID::systemGPS);
+			SatID sid33(PRN33,SatID::systemGPS);
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			std::list<GPSEphemeris> R3NList;
+			GPSEphemerisStore GStore;
+			list<GPSEphemeris>::const_iterator it;
+			Store.addToList(R3NList);
+			for (it = R3NList.begin(); it != R3NList.end(); ++it)
+			  GStore.addEphemeris(GPSEphemeris(*it));
+
+			CivilTime Time(2006,1,31,11,45,0,2);
+			CivilTime bTime(2006,1,31,2,0,0,2); //Border Time (Time of Border test cases)
+			const CommonTime ComTime = (CommonTime)Time;
+			const CommonTime CombTime = (CommonTime)bTime;
+
+
+			try
+			{
+
+//--------------RinexEphemerisStore_getSatHealthTest_1 - Does getSatHealth work in ideal conditions?
+				try {GStore.getSatHealth(sid1,ComTime); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_getSatHealthTest_2 - Does getSatHealth return the proper value?
+				testFramework.assert((short) 1 == GStore.getSatHealth(sid1,ComTime));
+				testFramework.next();
+
+//--------------RinexEphemerisStore_getSatHealthTest_3 - Does getSatHealth return the proper value?
+				testFramework.assert((short) 1 == GStore.getSatHealth(sid15,ComTime));
+				testFramework.next();
+
+//--------------RinexEphemerisStore_getSatHealthTest_4 - Does getSatHealth return the proper value?
+				testFramework.assert((short) 1 == GStore.getSatHealth(sid32,ComTime));
+				testFramework.next();
+
+//--------------RinexEphemerisStore_getSatHealthTest_5 - Does getSatHealth throw an error for bad SatID request?
+				try {GStore.getSatHealth(sid0,CombTime); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_getSatHealthTest_6 - Does getSatHealth throw an error for bad SatID request?
+				try {GStore.getSatHealth(sid33,CombTime); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_getSatHealthTest_7 - Does getSatHealth return the proper value for bad SatID?
+				testFramework.assert((short) 0 == GStore.getSatHealth(sid0,ComTime));
+				testFramework.next();
+
+//--------------RinexEphemerisStore_getSatHealthTest_8 - Does getSatHealth return the proper value for bad SatID?
+				testFramework.assert((short) 0 == GStore.getSatHealth(sid33,ComTime));
+				testFramework.next();
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+
+			return testFramework.countFails();
+		}
+
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member dump()
+
+	This test makes sure that dump() behaves as expected.  With paramters from
+	1-3 with each giving more and more respective information, this information is
+	then put into txt files.
+
+	To see the dump with paramter 1, please view DumpData1.txt
+	To see the dump with paramter 2, pleave view DumpData2.txt
+	To see the dump with paramter 3, please view DumpData3.txt
+========================================================================================================================= */
+		int dumpTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream DumpData0;
+			ofstream DumpData1;
+			ofstream DumpData2;
+
+			outputTestOutput1  = outputTestOutput + "DumpData1.txt";
+			outputTestOutput15 = outputTestOutput + "DumpData2.txt";
+			outputTestOutput32 = outputTestOutput + "DumpData3.txt";
+
+			DumpData0.open ( outputTestOutput1.c_str() );
+			DumpData1.open ( outputTestOutput15.c_str() );
+			DumpData2.open ( outputTestOutput32.c_str() );
+
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			try
+			{
+//--------------RinexEphemerisStore_dumpTest_1 - Check that dump( , detail = 1) will work with no exceptions
+				try {Store.dump(DumpData0,1); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_dumpTest_2 - Check that dump( , detail = 2) will work with no exceptions
+				try {Store.dump(DumpData1,2); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_dumpTest_3 - Check that dump( , detail = 3) will work with no exceptions
+				try {Store.dump(DumpData2,3); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+
+			DumpData0.close();
+			DumpData1.close();
+			DumpData2.close();
+
+			inputComparisonOutput1  = inputComparisonOutput + "DumpData1.chk";
+			inputComparisonOutput15 = inputComparisonOutput + "DumpData2.chk";
+			inputComparisonOutput32 = inputComparisonOutput + "DumpData3.chk";
+
+//--------------RinexEphemerisStore_dumpTest_4 - Check dump( , detail = 1) output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 2) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_dumpTest_5 - Check dump( , detail = 2) output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 2) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_dumpTest_6 - Check dump( , detail = 3) output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput32, inputComparisonOutput32, 2) );
+			testFramework.next();
+
+			return testFramework.countFails();
+		}
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member addEphemeris()
+
+	This test assures that no exceptions are thrown when an ephemeris, taken from Store
+	is added to a blank BCES Object.  Then the test makes sure that only that Ephemeris
+	is in the object by checking the start and end times of the Object
+========================================================================================================================= */
+
+		int addEphemerisTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "addEphemeris", __FILE__, __func__ );
+			testFramework.init();
+
+			GPSEphemerisStore Blank;
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			std::list<GPSEphemeris> R3NList;
+			GPSEphemerisStore GStore;
+			list<GPSEphemeris>::const_iterator it;
+			Store.addToList(R3NList);
+			for (it = R3NList.begin(); it != R3NList.end(); ++it)
+			{
+			  GStore.addEphemeris(GPSEphemeris(*it));
+			}
+
+			short PRN = 1;
+			SatID sid(PRN,SatID::systemGPS);
+
+			CivilTime Time(2006,1,31,11,45,0,2);
+			//CivilTime TimeB(2006,1,31,9,59,44,2);
+			//CivilTime TimeE(2006,1,31,13,59,44,2);
+			CivilTime TimeBeginning(2006,1,31,10,0,0,2);
+			CivilTime TimeEnd(2006,1,31,14,0,0,2);
+			CivilTime defaultBeginning(4713, 1, 1, 0, 0, 0, 2);
+			CivilTime defaultEnd(-4713, 1, 1, 0, 0, 0, 2);
+			CivilTime check;
+			const CommonTime ComTime  = Time.convertToCommonTime();
+			const CommonTime ComTimeB = TimeBeginning.convertToCommonTime();
+			const CommonTime ComTimeE = TimeEnd.convertToCommonTime();
+			const CommonTime ComDefB  = defaultBeginning.convertToCommonTime();
+			const CommonTime ComDefE  = defaultEnd.convertToCommonTime();
+			const GPSEphemeris eph = GStore.findEphemeris(sid,ComTime);
+
+			try
+			{
+
+//--------------RinexEphemerisStore_addEphemeris_1 - Verify that addEphemeris runs with no errors
+				try{Blank.addEphemeris(eph); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_addEphemeris_2 - Verify that addEphemeris added by checking the initial time of the GPSEphemerisStore
+				testFramework.assert( ComTimeB == Blank.getInitialTime() );
+				testFramework.next();
+
+//--------------RinexEphemerisStore_addEphemeris_3 - Verify that addEphemeris added by checking the final time of the GPSEphemerisStore
+				testFramework.assert( ComTimeE == Blank.getFinalTime() );
+				testFramework.next();
+
+				Blank.clear();
+
+//--------------RinexEphemerisStore_addEphemeris_4 - Verify that clear() worked by checking the initial time of the GPSEphemerisStore
+				testFramework.assert( ComDefB == Blank.getInitialTime() );
+				testFramework.next();
+
+//--------------RinexEphemerisStore_addEphemeris_5 - Verify that clear() worked by checking the initial time of the GPSEphemerisStore
+				testFramework.assert( ComDefE == Blank.getFinalTime() );
+				testFramework.next();
+			}
+			catch (Exception& e)
+			{
+				cout << e;
+			}
+
+			return testFramework.countFails();
+		}
+
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member edit()
+
+	This test assures that no exceptions are thrown when we edit a RES object
+	then after we edit the RES Object, we test to make sure that our edit time
+	parameters are now the time endpoints of the object.
+
+	For further inspection of the edit, please view editTest.txt
+========================================================================================================================= */
+		int editTest (void)
+		{
+
+			TestUtil testFramework( "RinexEphemerisStore", "edit", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream DumpData;
+			outputTestOutput1 = outputTestOutput + "editTest.txt";
+			DumpData.open (outputTestOutput1.c_str());
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			CivilTime TimeMax(2006,1,31,15,45,0,2);
+			CivilTime TimeMin(2006,1,31,3,0,0,2);
+
+			//cout << "TimeMax: " << TimeMax << "\n" << "TimeMin: " << TimeMin << "\n";
+
+			const CommonTime ComTMax = (CommonTime)TimeMax;
+			const CommonTime ComTMin = (CommonTime)TimeMin;
+
+			//cout << "ComTMax: " << ComTMax << "\n" << "ComTMin: " << ComTMin << "\n";
+
+			try
+			{
+//--------------RinexEphemerisStore_editTest_1 - Verify that the edit method runs
+				try{Store.edit(ComTMin, ComTMax); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+				Store.edit(ComTMin, ComTMax);
+//--------------RinexEphemerisStore_editTest_2 - Verify that the edit method changed the initial time
+				testFramework.assert(ComTMin == Store.getInitialTime());
+				testFramework.next();
+
+//--------------RinexEphemerisStore_editTest_3 - Verify that the edit method changed the initial time
+				testFramework.assert(ComTMax == Store.getFinalTime());
+				testFramework.next();
+
+				Store.dump(DumpData,1);
+
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+			inputComparisonOutput1 = inputComparisonOutput + "editTest.chk";
+			DumpData.close();
+//--------------RinexEphemerisStore_editTest_4 - Check edited output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.next();
+
+			return testFramework.countFails();
+		}
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member wiper()
+
+	This test assures that no exceptions are thrown when we wiper a RES object
+	then after we wiper the RES Object, we test to make sure that our wiper time
+	parameter in now the time endpoint of the object.
+
+	For further inspection of the edit, please view wiperTest.txt
+
+	Please note that this test also indirectly tests size
+========================================================================================================================= */
+/*		int wiperTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "wiper", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream DumpData1;
+			ofstream DumpData2;
+			outputTestOutput1 = outputTestOutput + "wiperTest.txt";
+			outputTestOutput15 = outputTestOutput + "wiperTest2.txt";
+			DumpData1.open (outputTestOutput1.c_str());
+			DumpData2.open (outputTestOutput15.c_str());
+
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			std::list<GPSEphemeris> R3NList;
+			GPSEphemerisStore GStore;
+			list<GPSEphemeris>::const_iterator it;
+			Store.addToList(R3NList);
+			for (it = R3NList.begin(); it != R3NList.end(); ++it)
+			{
+			  GStore.addEphemeris(GPSEphemeris(*it));
+			}
+
+			CivilTime Time(2006,1,31,11,45,0,2);
+			const CommonTime ComTime = (CommonTime)Time;
+
+			try
+			{
+//--------------RinexEphemerisStore_wiperTest_1 - Verify that the wiper method runs (but shouldn't wipe anything this time)
+				try {GStore.wiper(CommonTime::BEGINNING_OF_TIME); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+				//Wipe everything outside interval and make sure that we did wipe all the data
+				//up to the provided time.
+				GStore.wiper(ComTime);
+
+				GStore.dump(DumpData1,1);
+
+//--------------RinexEphemerisStore_wiperTest_2 - Verify that the new initial time is the time provided (partial wipe)
+				testFramework.assert(ComTime == GStore.getInitialTime());
+				testFramework.next();
+
+				//Wipe everything, return size (should be zero)
+				GStore.wiper(CommonTime::END_OF_TIME);
+				unsigned int Num = GStore.gpstk::OrbitEphStore::size(); //Get the size of the GPSEphemerisStore
+
+//--------------RinexEphemerisStore_wiperTest_3 - Verify that the store is empty (total wipe)
+				testFramework.assert((unsigned int) 0 == Num);
+				testFramework.next();
+
+//--------------RinexEphemerisStore_wiperTest_4 - Verify that the initial time is the default END_OF_TIME (indicates empty GPSEphemerisStore)
+				testFramework.assert(CommonTime::END_OF_TIME == GStore.getInitialTime());
+				testFramework.next();
+
+				GStore.dump(DumpData2,1);
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+			DumpData1.close();
+			DumpData2.close();
+			inputComparisonOutput1  = inputComparisonOutput + "wiperTest.chk";
+			inputComparisonOutput15 = inputComparisonOutput + "wiperTest2.chk";
+
+//--------------RinexEphemerisStore_dumpTest_5 - Check partially wiped output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.next();
+
+//--------------RinexEphemerisStore_dumpTest_6 - Check totally wiped output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
+			testFramework.next();
+
+			return testFramework.countFails();
+		}
+*/
+
+/* =========================================================================================================================
+	Test to assure the quality of OrbitEphStore class member clear()
+
+	This test assures that no exceptions are thrown when we clear a RES object
+	then after we clear the RES Object, we test to make sure that END_OF_TIME is our
+	initial time and BEGINNING_OF_TIME is our final time
+
+	For further inspection of the edit, please view clearTest.txt
+========================================================================================================================= */
+		int clearTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "clear", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream DumpData;
+			outputTestOutput1 = outputTestOutput + "clearTest.txt";
+			DumpData.open(outputTestOutput1.c_str());
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			try
+			{
+//--------------RinexEphemerisStore_clearTest_1 - Verify the gpstk::OrbitEphStore::clear() method runs
+				try {Store.gpstk::OrbitEphStore::clear(); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_clearTest_2 - Verify that clear set the initial time to END_OF_TIME
+				testFramework.assert(CommonTime::END_OF_TIME == Store.getInitialTime());
+				testFramework.next();
+
+//--------------RinexEphemerisStore_clearTest_3 - Verify that clear set the initial time to END_OF_TIME
+				testFramework.assert(CommonTime::BEGINNING_OF_TIME == Store.getFinalTime());
+				testFramework.next();
+
+				Store.dump(DumpData,1);
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+			DumpData.close();
+			inputComparisonOutput1  = inputComparisonOutput + "clearTest.chk";
+
+//--------------RinexEphemerisStore_clearTest_4 - Check partially wiped output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			return testFramework.countFails();
+		}
+
+
+/* =========================================================================================================================
+	Test to assure the quality of OrbitEphStore class member findUserOrbitEph()
+
+	This test will be performed using OrbitEphStore's grand-child class GPSEphemerisStore
+
+	findUserOrbitEph find the ephemeris which a) is within the fit tinterval for the
+	given time of interest and 2) is the last ephemeris transmitted before the time of
+	interest (i.e. min(toi-HOW time))
+
+	This test makes sure that exceptions are thrown if there is no ephemeris data
+	for the given PRN and also that an exception is thrown if there is no data for
+	the PRN at the given time. Store is then cleared and the ephemeris data is readded
+	for output purposes.
+
+	For further inspection of the find, please view findUserTest.txt
+========================================================================================================================= */
+		int findUserOrbEphTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "findUserOrbitEph", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream DumpData;
+			outputTestOutput1 = outputTestOutput + "findUserTest.txt";
+			DumpData.open(outputTestOutput1.c_str());
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			OrbitEphStore orbEphStore; //Store for found ephemerides
+
+			CivilTime Time(2006,1,31,13,0,1,2);
+			const CommonTime ComTime = (CommonTime)Time;
+
+			short PRN0 = 0;
+			short PRN1 = 1;
+			short PRN15 = 15;
+			short PRN32 = 32;
+			short PRN33 = 33;
+			SatID sid0(PRN0,SatID::systemGPS);
+			SatID sid1(PRN1,SatID::systemGPS);
+			SatID sid15(PRN15,SatID::systemGPS);
+			SatID sid32(PRN32,SatID::systemGPS);
+			SatID sid33(PRN33,SatID::systemGPS);
+
+			try
+			{
+//--------------RinexEphemerisStore_findUserOrbEphTest_1 - Check that a missing satID (too small) yields a thrown error
+				try {Store.findUserOrbitEph(sid0,ComTime); testFramework.failTest();}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findUserOrbEphTest_2 - Check that a missing satID (too big) yields a thrown error
+				try {Store.findUserOrbitEph(sid33,ComTime); testFramework.failTest();}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findUserOrbEphTest_3 - Check that an invalid time yields a thrown error
+				try {Store.findUserOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.failTest();}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findUserOrbEphTest_4 - Verify that for ideal conditions findUserOrbitEph runs
+				try {Store.findUserOrbitEph(sid1, ComTime); testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+				const OrbitEph* Eph1 = Store.findUserOrbitEph(sid1, ComTime);
+				const OrbitEph* Eph15 = Store.findUserOrbitEph(sid15, ComTime);
+				const OrbitEph* Eph32 = Store.findUserOrbitEph(sid32, ComTime);
+
+				orbEphStore.addEphemeris(Eph1);
+				orbEphStore.addEphemeris(Eph15);
+				orbEphStore.addEphemeris(Eph32);
+
+				orbEphStore.dump(DumpData,1);
+
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+
+			DumpData.close();
+			inputComparisonOutput1  = inputComparisonOutput + "findUserTest.chk";
+
+//--------------RinexEphemerisStore_findUserOrbEphTest_5 - Check partially findUserOrbitEph output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			return testFramework.countFails();
+		}
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member findNearOrbitEph()
+	findNearOrbitEph finds the ephemeris with the HOW time closest to the time t, i.e
+	with the smalles fabs(t-HOW), but still within the fit interval
+
+	This test makes sure that exceptions are thrown if there is no ephemeris data
+	for the given PRN and also that an exception is thrown if there is no data for
+	the PRN at the given time. Store is then cleared and the epeheris data is readded
+	for output purposes.
+
+	For further inspection of the find, please view findNearTest.txt
+========================================================================================================================= */
+
+
+
+		int findNearOrbEphTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "findNearOrbitEph", __FILE__, __func__ );
+			testFramework.init();
+
+			ofstream DumpData;
+			outputTestOutput1 = outputTestOutput + "findNearTest.txt";
+			DumpData.open(outputTestOutput1.c_str());
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			OrbitEphStore orbEphStore; //Store for found ephemerides
+
+			CivilTime Time(2006,1,31,13,0,1,2);
+			const CommonTime ComTime = (CommonTime)Time;
+
+			short PRN0 = 0;
+			short PRN1 = 1;
+			short PRN15 = 15;
+			short PRN32 = 32;
+			short PRN33 = 33;
+			SatID sid0(PRN0,SatID::systemGPS);
+			SatID sid1(PRN1,SatID::systemGPS);
+			SatID sid15(PRN15,SatID::systemGPS);
+			SatID sid32(PRN32,SatID::systemGPS);
+			SatID sid33(PRN33,SatID::systemGPS);
+
+			try
+			{
+//--------------RinexEphemerisStore_findNearOrbEphTest_1 - Check that a missing satID (too small) yields a thrown error
+				try {Store.findNearOrbitEph(sid0,ComTime); testFramework.failTest();}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findNearOrbEphTest_2 - Check that a missing satID (too big) yields a thrown error
+				try {Store.findNearOrbitEph(sid33,ComTime); testFramework.failTest();}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findNearOrbEphTest_3 - Check that an invalid time yields a thrown error
+				try {Store.findNearOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.failTest();}
+				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (...) {testFramework.failTest();}
+
+//--------------RinexEphemerisStore_findNearOrbEphTest_4 - Verify that for ideal conditions findNearOrbitEph runs
+				try {Store.findNearOrbitEph(sid1, ComTime); testFramework.passTest();}
+				catch (Exception& e) {cout << "Caught Exception: " << e << endl; testFramework.failTest();}
+				catch (...) {testFramework.failTest();}
+
+				const OrbitEph* Eph1 = Store.findUserOrbitEph(sid1, ComTime);
+				const OrbitEph* Eph15 = Store.findUserOrbitEph(sid15, ComTime);
+				const OrbitEph* Eph32 = Store.findUserOrbitEph(sid32, ComTime);
+
+				orbEphStore.addEphemeris(Eph1);
+				orbEphStore.addEphemeris(Eph15);
+				orbEphStore.addEphemeris(Eph32);
+
+				orbEphStore.dump(DumpData,1);
+
+			}
+			catch (Exception& e)
+			{
+				e.addLocation(FILE_LOCATION);
+				cout << e;
+			}
+			DumpData.close();
+			inputComparisonOutput1  = inputComparisonOutput + "findUserTest.chk";
+
+//--------------RinexEphemerisStore_findNearOrbEphTest_5 - Check partially findNearOrbitEph output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			return testFramework.countFails();
+		}
+
+
+
+/* =========================================================================================================================
+	Test to assure the quality of GPSEphemerisStore class member addToList()
+
+	This test creats a list of GPSEphemeris and then adds all of the ephemeris
+	members to that list.  After that of the List and Store are checked to be
+	equal.
+========================================================================================================================= */
+
+		int addToListTest (void)
+		{
+			TestUtil testFramework( "RinexEphemerisStore", "addToList", __FILE__, __func__ );
+			testFramework.init();
+
+			const short PRN1 = 1;
+			const short PRN15 = 15;
+			const short PRN32 = 32;
+
+			unsigned numberOfEntries = 41;
+			unsigned numberOfEntries1 = 15;
+			unsigned numberOfEntries15 = 13;
+			unsigned numberOfEntries32 = 13;
+
+			SatID sid1(PRN1,SatID::systemGPS);
+			SatID sid15(PRN15,SatID::systemGPS);
+			SatID sid32(PRN32,SatID::systemGPS);
+
+			RinexEphemerisStore Store;
+			Store.loadFile(inputRinexNavData.c_str());
+
+			std::list<GPSEphemeris> R3NList;
+			GPSEphemerisStore GStore;
+			list<GPSEphemeris>::const_iterator it;
+			Store.addToList(R3NList);
+			for (it = R3NList.begin(); it != R3NList.end(); ++it)
+			{
+			  GStore.addEphemeris(GPSEphemeris(*it));
+//			  GPSEphemeris(*it).dumpBody(cout);
+			}
+			try
+			{
+
+				//Assert that the number of added members equals the size of Store (all members added)
+				testFramework.assert(Store.gpstk::OrbitEphStore::size() == GStore.gpstk::OrbitEphStore::size());
+				testFramework.next();
+
+				testFramework.assert(Store.gpstk::OrbitEphStore::size() == numberOfEntries);
+				testFramework.next();
+
+
+				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid1) == numberOfEntries1);
+				testFramework.next();
+
+
+				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid15) == numberOfEntries15);
+				testFramework.next();
+
+
+				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid32) == numberOfEntries32);
+				testFramework.next();
+			}
+			catch (Exception& e)
+			{
+				//cout << e;
+			}
+			return testFramework.countFails();
+		}
+
+/* =========================================================================================================================
+	Initialize Test Data Filenames
+========================================================================================================================= */
+
+		void init( void )
+		{
+			dataFilePath = __FILE__;
+			dataFilePath = dataFilePath.substr(0, dataFilePath.find_last_of("\\/"));
+
+			inputRinexNavData        = dataFilePath  + "/" + "TestRinex06.031";
+
+			outputTestOutput         =  dataFilePath + "/" + "Logs" + "/";
+			outputTestOutput1;
+			outputTestOutput15;
+			outputTestOutput32;
+			outputDataDump           =  dataFilePath + "/" + "DataDump.txt";
+
+			inputNotaFile            =  dataFilePath + "/" + "NotaFILE";
+
+			inputComparisonOutput    =  dataFilePath + "/" + "Checks" + "/";
+			inputComparisonOutput1;
+			inputComparisonOutput15;
+			inputComparisonOutput32;
+		}
+
+    private:
+
+        std::string dataFilePath;
+
+        std::string inputRinexNavData;
+
+        std::string outputTestOutput;
+        std::string outputTestOutput1;
+        std::string outputTestOutput15;
+        std::string outputTestOutput32;
+        std::string outputDataDump;
+
+        std::string inputNotaFile;
+
+	std::string inputComparisonOutput;
+	std::string inputComparisonOutput1;
+	std::string inputComparisonOutput15;
+	std::string inputComparisonOutput32;
 };
 
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	RinexEphemerisStore_T testClass;
+	testClass.init();
 
 	check = testClass.RESTest();
 	errorCounter += check;
-/*
-	check = testClass.BCESfindEphTest();
+
+	check = testClass.findEphTest();
 	errorCounter += check;
 
-	check = testClass.operatorTest();
+	check = testClass.getXvtTest();
 	errorCounter += check;
 
-	check = testClass.setFromInfoTest();
+	check = testClass.getSatHealthTest();
 	errorCounter += check;
 
-	check = testClass.resetTest();
+	check = testClass.dumpTest();
 	errorCounter += check;
 
-	check = testClass.timeSystemTest();
+	check = testClass.addToListTest();
 	errorCounter += check;
 
-	check = testClass.toFromCommonTimeTest();
+	check = testClass.addEphemerisTest();
 	errorCounter += check;
 
-	check = testClass.printfTest();
+	check = testClass.editTest();
 	errorCounter += check;
-*/	
+
+	check = testClass.clearTest();
+	errorCounter += check;
+
+	check = testClass.findUserOrbEphTest();
+	errorCounter += check;
+
+	check = testClass.findNearOrbEphTest();
+	errorCounter += check;
+
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter; //Return the total number of errors

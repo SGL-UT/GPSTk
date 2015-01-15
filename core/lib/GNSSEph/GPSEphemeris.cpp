@@ -189,14 +189,14 @@ namespace gpstk
 
          // ... and add this for GPS
          os << " SVN ";
-         SVNumXRef svNumXRef; 
+         /*SVNumXRef svNumXRef; 
          try {
             os << svNumXRef.getNAVSTAR(satID.id, ctToe );
          }
          catch(NoNAVSTARNumberFound) {
             os << "Unknown";
          }
-         os << endl;
+         os << endl;*/
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }
