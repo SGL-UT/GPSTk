@@ -177,10 +177,10 @@ class xCommonTime : public CommonTime
 			try {Test.setInternal(700000,24*60*60+1,0.);
 				testFramework.failTest();} //Too many seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
+			/*catch (...)
 			{
 				testFramework.failTest();
-			}
+			}*/
 			
 //--------------CommonTime_improperSetTest_11 - Does a set method work with negative fractional seconds?
 			try {Test.setInternal(700000,1001,-1.);
@@ -363,7 +363,7 @@ class xCommonTime : public CommonTime
 			day = Arith2.getDays();
 
 //--------------CommonTime_arithmeticTest_11 - Does the addDays method function correctly with +?
-			testFramework.assert(700001. != day);
+			testFramework.assert(700001. == day);
 			testFramework.next();
 
 			//Subtract days with addDays
@@ -378,14 +378,14 @@ class xCommonTime : public CommonTime
 			Arith2.addSeconds(86400000.+1000.);
 
 //--------------CommonTime_arithmeticTest_13 - Does the addSeconds method function correctly with +?			
-			testFramework.assert(fabs(86401000. - (Arith2-Arith1)) > eps);
+			testFramework.assert(fabs(86401000. - (Arith2-Arith1)) < eps);
 			testFramework.next();
 
 			//Subtract seconds with addSeconds(long)
 			Arith2.addSeconds((long)-86401000);
 
 //--------------CommonTime_arithmeticTest_14 - Does the addSeconds method function correctly with -?
-			testFramework.assert(fabs(0. - (Arith2-Arith1)) > eps);
+			testFramework.assert(fabs(0. - (Arith2-Arith1)) < eps);
 			testFramework.next();
 
 			//Check that the two parameter get method returns day2 as the proper double
