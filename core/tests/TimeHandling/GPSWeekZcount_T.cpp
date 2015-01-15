@@ -213,6 +213,12 @@ class GPSWeekZcount_T
 
 //--------------GPSWeekZCount_operatorTest_17 - Does the >= operator function when left_object = right_object?
 		testFramework.assert(Compare >= CompareCopy);
+		testFramework.next();
+
+		testFramework.changeSourceMethod("isValid Method");
+
+//--------------GPSWeekZCount_operatorTest_17 - Does the isValid method function properly?
+		testFramework.assert(Compare.isValid());
 
 		return testFramework.countFails();
 	}
@@ -295,14 +301,13 @@ class GPSWeekZcount_T
 
 //--------------GPSWeekZCount_toFromCommonTimeTest_6 - Is the zcount after conversion what is expected?
 		testFramework.assert(Compare.zcount==13500);
-		testFramework.next();
+
 		return testFramework.countFails();
 	}
 
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
-
 		TestUtil testFramework( "GPSWeekZcount", "Differing TimeSystem == Operator", __FILE__, __func__ );
 		testFramework.init();
 
@@ -346,8 +351,10 @@ class GPSWeekZcount_T
 		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY));
 		testFramework.next();
 
-		testFramework.changeSourceMethod("setTimeSystem");	
+		testFramework.changeSourceMethod("setTimeSystem");
+
   		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
+
 //--------------GPSWeekZCount_timeSystemTest_9 - Ensure resetting a Time System changes it
 		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2));
 
@@ -412,8 +419,6 @@ int main() //Main function to initialize and run all tests above
 	errorCounter += check;
 	
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
-
-	return errorCounter; //Return the total number of errors
 
 	return errorCounter; //Return the total number of errors
 }
