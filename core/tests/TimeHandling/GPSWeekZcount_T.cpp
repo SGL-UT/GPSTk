@@ -112,13 +112,13 @@ class GPSWeekZcount_T
 
 		Id.erase('F');
 
-//--------------GPSWeekZcount_setFromInfoTest_3 - Does a proper setFromInfo work with missing information?
+//--------------GPSWeekZcount_setFromInfoTest_5 - Does a proper setFromInfo work with missing information?
 		testFramework.assert(setFromInfo3.setFromInfo(Id));
 		testFramework.next();
 
 		GPSWeekZcount Compare3(0,3*57600L,TimeSystem(2));
 
-//--------------GPSWeekZCount_setFromInfoTest_4 - Did the previous setFromInfo set the proper values?
+//--------------GPSWeekZCount_setFromInfoTest_6 - Did the previous setFromInfo set the proper values?
 		testFramework.assert(Compare3 == setFromInfo3);
 
 		return testFramework.countFails();
