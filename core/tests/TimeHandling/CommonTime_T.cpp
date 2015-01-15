@@ -134,18 +134,13 @@ class xCommonTime : public CommonTime
 //--------------CommonTime_improperSetTest_6 - Does a set method work with too many fractional seconds?
 			try {Test.set(700000,0,2.);
 				testFramework.failTest();} //Too many fractional seconds
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-// Doesn't seem like enough fractional seconds to call an error
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
 			catch(gpstk::Exception e) {testFramework.passTest();}
 			catch (...)
 			{
 				testFramework.failTest();
 			}
-			
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//	Below tests seem redundant to the ones above, but test 10 calls an error and test 4 doesn't
-			
+				
 //--------------CommonTime_improperSetTest_7 - Does a set method work with negative days?
 			try {Test.setInternal(-1,0,0.);
 				testFramework.failTest();} //Negative days
@@ -200,8 +195,6 @@ class xCommonTime : public CommonTime
 				testFramework.failTest();
 			}
 		
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-
 			return testFramework.countFails();
 		}
 
@@ -573,6 +566,36 @@ class xCommonTime : public CommonTime
 			return testFramework.countFails();
 		}
 
+	/* Test will check the reset method. */
+	int resetTest (void)
+	{
+		TestUtil testFramework( "CommonTime", "reset" , __FILE__, __func__ );
+		testFramework.init();
+
+		CommonTime Compare; Compare.set(1000,200,0.2); // Initialize with value
+		long day, sod;
+		double fsod;
+	  	Compare.reset(); // Reset it
+	  	Compare.get(day,sod,fsod);
+//--------------CommonTime_operatorTest_1 - Was the time system reset to expectation?
+	  	testFramework.assert(TimeSystem(0) == Compare.getTimeSystem());
+	  	testFramework.next();
+
+//--------------CommonTime_operatorTest_2 - Was the day value reset to expectation?	  	
+		testFramework.assert(0 == day); 
+		testFramework.next();
+
+//--------------CommonTime_operatorTest_3 - Was the sod value reset to expectation?
+		testFramework.assert(0 == sod); 
+		testFramework.next();
+
+//--------------CommonTime_operatorTest_4 - Was the fsod value reset to expectation?	  	
+		testFramework.assert(0 == fsod); 
+		testFramework.next();
+
+		return testFramework.countFails();
+	}
+
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
@@ -672,6 +695,9 @@ int main() //Main function to initialize and run all tests above
 	errorCounter += check;
 
 	check = testClass.operatorTest();
+	errorCounter += check;
+
+	check = testClass.resetTest();
 	errorCounter += check;
 
 	check = testClass.timeSystemTest();
