@@ -1,5 +1,6 @@
 #include "Stats.hpp"
 #include "Vector.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 
 class Stats_TwoSampleStats_T
@@ -7,12 +8,16 @@ class Stats_TwoSampleStats_T
         public: 
 		Stats_TwoSampleStats_T(){eps = 1e-12;}// Default Constructor, set the precision value
 		~Stats_TwoSampleStats_T() {} // Default Desructor
-		double eps;
+		double eps; //shouldn't this be private?
+
+		/*	Test to add data. Want to add single values to empty Stats class.
+			Then add another stat on top with weight. I will use the average to check
+			that data was added and that the data added was correct. */
 		int AddTest()
-		// Test to add data. Want to add single values to empty Stats class.
-		// Then add another stat on top with weight. I will use the average to check
-		// that data was added and that the data added was correct.
 		{
+			TestUtil testFramework( "TwoSampleStats", "Add(value,weight)", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<int> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -21,13 +26,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			if (test.AverageX() != 3) return 1;
-			return 0;
-		}
+			testFramework.assert(test.AverageX() == 3);
 
+			return testFramework.countFails();
+		}
+		/*	Verify the X average calculation. */
 		int AverageXTest()
-		// Verify the X average calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "AverageX", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -36,13 +44,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Average of X is: " << test.AverageX() << std::endl;
-			if (test.AverageX() != 3) return 1;
-			return 0;
-		}
+			testFramework.assert(test.AverageX() == 3);
 
+			return testFramework.countFails();
+		}
+		/* Verify the Y average calculation. */
 		int AverageYTest()
-		// Verify the Y average calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "AverageY", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -51,13 +62,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Average of Y is: " << test.AverageY() << std::endl;
-			if (test.AverageY() != 3) return 1;
-			return 0;
-		}
+			testFramework.assert(test.AverageY() == 3);
 
+			return testFramework.countFails();
+		}
+		/* Verify the X maximum calculation. */
 		int MaxXTest()
-		// Verify the X maximum calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "MaxXTest", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -66,13 +80,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Maximum of X is: " << test.MaximumX() << std::endl;
-			if (test.MaximumX() != 5) return 1;
-			return 0;
-		}
+			testFramework.assert(test.MaximumX() == 5);
 
+			return testFramework.countFails();
+		}
+		/*	Verify the Y maximum calculation. */
 		int MaxYTest()
-		// Verify the Y maximum calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "MaxYTest", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -81,13 +98,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Maximum of Y is: " << test.MaximumY() << std::endl;
-			if (test.MaximumY() != 5) return 1;
-			return 0;
-		}
+			testFramework.assert(test.MaximumY() == 5);
 
+			return testFramework.countFails();
+		}
+		/*	Verify the X minimum calculation. */
 		int MinXTest()
-		// Verify the X minimum calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "MinXTest", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -96,13 +116,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Minimum of X is: " << test.MinimumX() << std::endl;
-			if (test.MinimumX() != 1) return 1;
-			return 0;
-		}
+			testFramework.assert(test.MinimumX() == 1);
 
+			return testFramework.countFails();
+		}
+		/*	Verify the Y minimum calculation. */
 		int MinYTest()
-		// Verify the Y minimum calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "MinYTest", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -111,13 +134,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Minimum of Y is: " << test.MinimumY() << std::endl;
-			if (test.MinimumY() != 1) return 1;
-			return 0;
-		}
+			testFramework.assert(test.MinimumY() == 1);
 
+			return testFramework.countFails();
+		}
+		/* Verify the X variance calculation. */
 		int VarianceXTest()
-		// Verify the X variance calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "VarianceXTest", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -126,13 +152,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Variance of X is: " << test.VarianceX() << std::endl;
-			if (fabs(test.VarianceX() - 2.5) > eps) return 1;
-			return 0;	
-		}
+			testFramework.assert(fabs(test.VarianceX() - 2.5) < eps);
 
+			return testFramework.countFails();	
+		}
+		/* Verify the Y variance calculation. */
 		int VarianceYTest()
-		// Verify the Y variance calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "VarianceYTest", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -141,13 +170,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Variance of Y is: " << test.VarianceY() << std::endl;
-			if (fabs(test.VarianceY() - 2.5) > eps) return 1;
-			return 0;	
-		}
+			testFramework.assert(fabs(test.VarianceY() - 2.5) < eps);
 
+			return testFramework.countFails();	
+		}
+		/* Verify the X Standard Deviation calculation. */
 		int StdDevXTest()
-		// Verify the X Standard Deviation calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "StdDevX", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -156,12 +188,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Standard Deviation of X is: " << test.StdDevX() << std::endl;
-			if (fabs(test.StdDevX() - sqrt(2.5)) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.StdDevX() - sqrt(2.5)) < eps);
+
+			return testFramework.countFails();
 		}
+		/*	Verify the Y Standard Deviation calculation. */		
 		int StdDevYTest()
-		// Verify the Y Standard Deviation calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "StdDevY", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -170,13 +206,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Standard Deviation of Y is: " << test.StdDevY() << std::endl;
-			if (fabs(test.StdDevY() - sqrt(2.5)) > eps) return 1;
-			return 0;
-		}
+			testFramework.assert(fabs(test.StdDevY() - sqrt(2.5)) < eps);
 
+			return testFramework.countFails();
+		}
+		/*	Verify the Slope calculation. */
 		int SlopeTest()
-		// Verify the Slope calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "Slope", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -185,13 +224,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Slope is: " << test.Slope() << std::endl;
-			if (fabs(test.Slope() - 0.1) > eps) return 1;
-			return 0;
-		}
+			testFramework.assert(fabs(test.Slope() - 0.1) < eps);
 
+			return testFramework.countFails();
+		}
+		/* Verify the Intercept calculation. */
 		int InterceptTest()
-		// Verify the Intercept calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "Intercept", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -200,13 +242,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Intercept is: " << test.Intercept() << std::endl;
-			if (fabs(test.Intercept() - 2.7) > eps) return 1;
-			return 0;
-		}
+			testFramework.assert(fabs(test.Intercept() - 2.7) < eps);
 
+			return testFramework.countFails();
+		}
+		/*	Verify the Slope Uncertainty calculation. */
 		int SlopeUncertaintyTest()
-		// Verify the Slope Uncertainty calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "SlopeUncertainty", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -215,13 +260,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Slope Uncertainty is: " << test.SigmaSlope() << std::endl;
-			if (fabs(test.SigmaSlope() - 0.574456264653803) > eps) return 1;
-			return 0;
-		}
+			testFramework.assert(fabs(test.SigmaSlope() - 0.574456264653803) < eps);
 
+			return testFramework.countFails();
+		}
+		/* Verify the Conditional Uncertainty calculation. */
 		int ConditionalUncertaintyTest()
-		// Verify the Conditional Uncertainty calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "ConditionalUncertainty", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -230,13 +278,16 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Conditional Uncertainty is: " << test.SigmaYX() << std::endl;
-			if (fabs(test.SigmaYX() - 1.81659021245849) > eps) return 1;
-			return 0;
-		}
+			testFramework.assert(fabs(test.SigmaYX() - 1.81659021245849) < eps);
 
+			return testFramework.countFails();
+		}
+		/* Verify the Correlation calculation. */
 		int CorrelationTest()
-		// Verify the Correlation calculation.
 		{
+			TestUtil testFramework( "TwoSampleStats", "Correlation", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
 			test.Add(2, 5);
@@ -245,106 +296,67 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Correlation is: " << test.Correlation() << std::endl;
-			if (fabs(test.Correlation() - 0.1) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.Correlation() - 0.1) < eps);
+
+			return testFramework.countFails();
 		}
 
  };
-void checkResult(int check, int& errCount)// Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main()//Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	Stats_TwoSampleStats_T testClass;
+
 	check = testClass.AddTest();
-        std::cout << "Add Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.AverageXTest();
-        std::cout << "AverageX Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.AverageYTest();
-        std::cout << "AverageY Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.MaxXTest();
-        std::cout << "MaximumX Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.MaxYTest();
-        std::cout << "MaximumY Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.MinXTest();
-        std::cout << "MinimumX Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.MinYTest();
-        std::cout << "MinimumY Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.VarianceXTest(); 
-        std::cout << "VarianceX Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.VarianceYTest(); 
-        std::cout << "VarianceY Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.StdDevXTest(); 
-        std::cout << "Standard Deviation in X Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.StdDevYTest(); 
-        std::cout << "Standard Deviation in Y Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.SlopeTest(); 
-        std::cout << "Slope Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.InterceptTest(); 
-        std::cout << "Intercept Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.ConditionalUncertaintyTest(); 
-        std::cout << "Conditional Uncertainty Test Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SlopeUncertaintyTest(); 
-        std::cout << "Slope Uncertainty Test Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.CorrelationTest(); 
-        std::cout << "Correlation Test Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
-
-
-	std::cout << "Total Errors: " << errorCounter << std::endl;
+	errorCounter += check;
+	
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter;//Return the total number of errors
 }

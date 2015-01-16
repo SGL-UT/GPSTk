@@ -1,5 +1,6 @@
 #include "Stats.hpp"
 #include "Vector.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 
 class Stats_T
@@ -7,32 +8,36 @@ class Stats_T
         public: 
 		Stats_T(){eps = 1e-12;}// Default Constructor, set the precision value
 		~Stats_T() {} // Default Desructor
-		double eps;
+
+		double eps; // Shouldn't this be private?
+
+		/*	Test to add data. Want to add single values to empty Stats class.
+			Then add another stat on top with weight. I will use the average to check
+			that data was added and that the data added was correct. */
 		int AddTest()
-		// Test to add data. Want to add single values to empty Stats class.
-		// Then add another stat on top with weight. I will use the average to check
-		// that data was added and that the data added was correct.
 		{
+			TestUtil testFramework( "Stats", "Add(value,weight)", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<double> test;
 			test.Add(5, 1);		
 			test.Add(11, 2);
 			test.Add(9,3);
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			if (test.Average() == 9)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
+
+			testFramework.assert(test.Average()==9);
+
+			return testFramework.countFails();
 			
 		};
+		/*	Test to add data with a vector. Want to add a single vector to empty Stats class.
+			I will use the average to check that data was added 
+			and that the data added was correct. */
 		int AddVectorTest()
-		// Test to add data with a vector. Want to add a single vector to empty Stats class.
-		// I will use the average to check that data was added 
-                // and that the data added was correct. 
 		{
+			TestUtil testFramework( "Stats", "AddVector(value,weight)", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(5), weight(5);
 			for (int i = 0; i < 5; i++)
@@ -42,19 +47,16 @@ class Stats_T
 			}
 			test.Add(input, weight);
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			if ((test.Average() > (3.5-eps)) && (test.Average() < (3.5+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			testFramework.assert((test.Average() > (3.5-eps)) && (test.Average() < (3.5+eps)));
+
+			return testFramework.countFails();	
 		}
+		/*	Verify the average calculation. */
 		int AverageTest()
-		// Verify the average calculation.
 		{
+			TestUtil testFramework( "Stats", "Average", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
@@ -63,20 +65,19 @@ class Stats_T
 				weight(i) = i+1;
 			}
 			test.Add(input, weight); 
-			std::cout << "The Average is: " << test.Average() << std::endl;
-			if ((test.Average() > (7.0/3.0-eps)) && (test.Average() < (7.0/3.0+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+
+			//std::cout << "The Average is: " << test.Average() << std::endl;
+
+			testFramework.assert((test.Average() > (7.0/3.0-eps)) && (test.Average() < (7.0/3.0+eps)));
+
+			return testFramework.countFails();
 		}
+		/*	Verify the maximum calculation. */
 		int MaxTest()
-		// Verify the maximum calculation.
 		{
+			TestUtil testFramework( "Stats", "Max", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<int> test;
 			gpstk::Vector<int> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
@@ -85,20 +86,19 @@ class Stats_T
 				weight(i) = i+1;
 			}
 			test.Add(input, weight);
-			std::cout << "The Maximum is: " << test.Maximum() << std::endl;
-			if (test.Maximum() == 3)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+
+			//std::cout << "The Maximum is: " << test.Maximum() << std::endl;
+
+			testFramework.assert(test.Maximum() == 3);
+
+			return testFramework.countFails();
 		}
+		/*	Verify the minimum calculation */
 		int MinTest()
-		// Verify the minimum calculation.
 		{
+			TestUtil testFramework( "Stats", "Min", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<int> test;
 			gpstk::Vector<int> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
@@ -107,20 +107,19 @@ class Stats_T
 				weight(i) = i+1;
 			}
 			test.Add(input, weight);
-			std::cout << "The Minimum is: " << test.Minimum() << std::endl;
-			if (test.Minimum() == 1)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+
+			//std::cout << "The Minimum is: " << test.Minimum() << std::endl;
+
+			testFramework.assert(test.Minimum() == 1);
+
+			return testFramework.countFails();
 		}
+		/*	Verify the variance calculation */
 		int VarianceTest()
-		// Verify the variance calculation.
 		{
+			TestUtil testFramework( "Stats", "Variance", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
@@ -129,20 +128,18 @@ class Stats_T
 				weight(i) = i+2;
 			}
 			test.Add(input, weight);
-			std::cout << "The Variance is: " << test.Variance() << std::endl;
-			if (test.Variance() > (5.0/9.0-eps) && test.Variance() < (5.0/9.0+eps))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Variance is: " << test.Variance() << std::endl;
+
+			testFramework.assert(test.Variance() > (5.0/9.0-eps) && test.Variance() < (5.0/9.0+eps));
+
+			return testFramework.countFails();
 		}
+		/*	Verify the Standard Deviation calculation.*/
 		int StdDevTest()
-		// Verify the Standard Deviation calculation.
 		{
+			TestUtil testFramework( "Stats", "StdDev", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(3), weight(3);
 			for (int i = 0; i < 3; i++)
@@ -151,24 +148,21 @@ class Stats_T
 				weight(i) = i+1;
 			}
 			test.Add(input, weight);
-			std::cout << "The Standard Deviation is: " << test.StdDev() << std::endl;
-			if (test.StdDev() > (sqrt(5.0/9.0)-eps) && test.StdDev() < (sqrt(5.0/9.0)+eps))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Standard Deviation is: " << test.StdDev() << std::endl;
+			testFramework.assert(test.StdDev() > (sqrt(5.0/9.0)-eps) && test.StdDev() < (sqrt(5.0/9.0)+eps));
+
+			return testFramework.countFails();
 		}
+		/*	Test to subtract data. Add a single vector to empty Stats class.
+			After, delete a weighted data portion. 
+            I will use the average and maxmimum to check data was removed.
+			Specifically I will remove the former maximum and show that it is
+			NOT reset. */
 		int SubtractTest()
-		// Test to subtract data. Add a single vector to empty Stats class.
-		// After, delete a weighted data portion. 
-                // I will use the average and maxmimum to check data was removed.
-		// Specifically I will remove the former maximum and show that it is
-		// NOT reset. 
 		{
+			TestUtil testFramework( "Stats", "Subtract", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(5), weight(5);
 			for (int i = 0; i < 5; i++)
@@ -177,28 +171,25 @@ class Stats_T
 				weight(i) = i+2;
 			}
 			test.Add(input, weight);
-			std::cout << "The Average is: " << test.Average() << std::endl;
+			//std::cout << "The Average is: " << test.Average() << std::endl;
 			test.Subtract(5);
-			std::cout << "The Average is: " << test.Average() << std::endl;
+			//std::cout << "The Average is: " << test.Average() << std::endl;
 			test.Subtract(5); // Doing this twice to get 10/3 as a result
-			std::cout << "The Average is: " << test.Average() << std::endl;
-			if (test.Average() > 3.2 && test.Average() < 3.4 && test.Maximum() == 5)
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			//std::cout << "The Average is: " << test.Average() << std::endl;
+			testFramework.assert(test.Average() > 3.2 && test.Average() < 3.4 && test.Maximum() == 5);
+
+			return testFramework.countFails();			
 		}
+		/*	Test to subtract data with a vector. Add a single vector to empty Stats class.
+			After, delete with the same vector. 
+			I will use the average and maxmimum to check data was removed.
+			Specifically I will remove the former maximum and show that it is
+			NOT reset. */
 		int SubtractVectorTest()
-		// Test to subtract data with a vector. Add a single vector to empty Stats class.
-		// After, delete with the same vector. 
-                // I will use the average and maxmimum to check data was removed.
-		// Specifically I will remove the former maximum and show that it is
-		// NOT reset. 
 		{
+			TestUtil testFramework( "Stats", "SubtractVector", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<int> test;
 			gpstk::Vector<int> input(5), weight(5);
 			for (int i = 0; i < 5; i++)
@@ -208,107 +199,71 @@ class Stats_T
 			}
 			test.Add(input, weight);
 			test.Subtract(input);
-			if ((test.Average() > -0.000001) && (test.Average() < 0.000001) && (test.Maximum() == 5))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			testFramework.assert((test.Average() > -0.000001) && (test.Average() < 0.000001) && (test.Maximum() == 5));
+	
+			return testFramework.countFails();
 		}
+		/*	Test to use the += and << operators. 
+			Uses the same data as in the previous steps and should match. */
 		int operatorTest()
-		// Test to use the += and << operators. 
-		// Uses the same data as in the previous steps and should match.
 		{
+			TestUtil testFramework( "Stats", "+= Operator", __FILE__, __func__ );
+			testFramework.init();
+
 			gpstk::Stats<int> test1, test2;
 			test1.Add(1,1);
 			test2.Add(2,2);
 			test1.Add(3,3);
 			test1 += test2;
 			std::cout << test1 << std::endl;
-			if ((test1.Average() > (7.0/3.0-eps)) && (test1.Average() < (7.0/3.0+eps)))
-			{
-				return 0;
-			}
-			else
-			{
-				return 1;
-			}
-			
+			testFramework.assert((test1.Average() > (7.0/3.0-eps)) && (test1.Average() < (7.0/3.0+eps)));
+
+			return testFramework.countFails();
 		}
 
  };
-
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
 	Stats_T testClass;
+
 	check = testClass.AddTest();
-        std::cout << "Add Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.AddVectorTest();
-        std::cout << "Add Vector Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.AverageTest();
-        std::cout << "Average Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.MaxTest();
-        std::cout << "Maximum Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 	check = testClass.MinTest();
-        std::cout << "Minimum Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 // This will fail with MSNTk. Variance is not calculated correctly. GPSTK is also incorrect.
 	check = testClass.VarianceTest(); 
-        std::cout << "Variance Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 // Standard Deviation is not calculated correctly since variance is not calculated correctly. GPSTk is also incorrect.
 	check = testClass.StdDevTest(); 
-        std::cout << "Standard Deviation Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 /* Portion for testing the Subtract Routines. Commented out as they will fail as written.
-   However the tests are designed to demonstrate the shortcomings in these routines.
+   However the tests are designed to demonstrate the shortcomings in these routines. */
 	check = testClass.SubtractTest();
-        std::cout << "Subtract Result is: ";
-	checkResult(check, errorCounter);
+	errorCounter += check;
+
 	check = testClass.SubtractVectorTest();
-        std::cout << "Subtract Vector Result is: ";
-	checkResult(check, errorCounter);
-*/
+	errorCounter += check;
+
 	// This test will fail as well.
-/*	std::cout << "Performing Operator Check:" << std::endl;
+
 	check = testClass.operatorTest();
-	std::cout << "Operator Result is: ";
-	checkResult(check, errorCounter);
-*/
-	std::cout << "Total Errors: " << errorCounter << std::endl;
+	errorCounter += check;
+
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter; //Return the total number of errors
 }
