@@ -20,9 +20,9 @@ add_executable(EphemerisRange_T EphemerisRange_T.cpp)
 target_link_libraries(EphemerisRange_T gpstk)
 add_test(GNSSEph_EphemerisRange* EphemerisRange_T)
 
-#add_executable(RinexEphemerisStore_T RinexEphemerisStore_T.cpp ftest.cpp)
-#target_link_libraries(RinexEphemerisStore_T gpstk)
-#add_test(GNSSEph_RinexEphemerisStore RinexEphemerisStore_T)
+add_executable(RinexEphemerisStore_T RinexEphemerisStore_T.cpp)
+target_link_libraries(RinexEphemerisStore_T gpstk)
+add_test(GNSSEph_RinexEphemerisStore RinexEphemerisStore_T)
 
 #add_executable(SP3EphemerisStore_T SP3EphemerisStore_T.cpp ftest.cpp)
 #target_link_libraries(SP3EphemerisStore_T gpstk)

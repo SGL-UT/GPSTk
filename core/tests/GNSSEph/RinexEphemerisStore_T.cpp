@@ -98,7 +98,6 @@ class RinexEphemerisStore_T
 			catch (...) {cout << "Checking for failure!!!!" << endl; testFramework.failTest();}
 
 //=================================================================================================
-// PERSONAL_COMMENT DO NOT PUBLISH
 //   It would be nice to verify that the double name exception is indeed thrown. However the InvalidParameter exception 
 //   thrown will terminate the program even with a catch-all.
 /*
@@ -197,45 +196,6 @@ class RinexEphemerisStore_T
 			{
 				CivilTime crazy(1950,1,31,2,0,0,2);
 				const CommonTime Comcrazy = (CommonTime)crazy;
-
-
-//=================================================================================================
-// PERSONAL_COMMENT DO NOT PUBLISH
-// Extra lines to test the underlying methods. THESE SHOULD BE DELETED!!!!
-/*
-cout << "===============================================================================================" << endl;
-cout << "ADDITIONAL NOTES FOR findEphemeris" << endl << endl;
-cout << "Can satID 1 be found? " << (bool) (GStore.satTables.find(sid1) == GStore.satTables.end()) << endl;
-cout << "Can satID 15 be found? " << (bool) (GStore.satTables.find(sid1) == GStore.satTables.end()) << endl;
-cout << "Can satID 32 be found? " << (bool) (GStore.satTables.find(sid1) == GStore.satTables.end()) << endl;
-
-const OrbitEphStore::TimeOrbitEphTable& table = Store.getTimeOrbitEphMap(sid1);
-cout << "I MADE IT HERE" << endl;
-OrbitEphStore::TimeOrbitEphTable::const_iterator itNext = table.find(ComTime);
-cout << "I MADE IT HERE TOO" << endl;
-if(itNext != table.end()) 
-	{
-		cout << "Were the satID and CommonTime found? " << "YES" << endl << endl;
-		cout << "Dumping header: " << endl; 
-		try{(itNext->second)->dumpHeader(cout);}
-		catch (Exception& e) {cout << "Error caught dumping header." << endl << "Error reads: " << e << endl;}
-		cout << endl << endl;
-		cout << "Dumping Body: " << endl;
-		(itNext->second)->dumpBody(cout);
-	}
-else cout << "Were the satID and CommonTime found? " << "NO" << endl;
-
-
-
-// It appears that GPSEphemeris.dumpHeader(ofstream) calls an ext/lib/Misc class called SVNumXRef in order to obtain the SVN corresponding
-// to the SatID (understood as PRN) given. This ext class causes improper CommonTime comparisons. 
-
-// We have two options:
-//  1) Remove that part of the output
-//  2) Fix SVNumXRef and add it to core (Core MUST NOT depend on ext)
-
-cout << "===============================================================================================" << endl;*/
-//=================================================================================================
 
 //--------------RinexEphemerisStore_findEphTest_1 - For proper input, will the method return properly?
 				try {GStore.findEphemeris(sid1,ComTime); testFramework.passTest();}
@@ -359,8 +319,7 @@ cout << "=======================================================================
 				}
 
 //=================================================================================================
-// PERSONAL_COMMENT DO NOT PUBLISH
-// For some odd reason the redirect operator << does not work for Xvt on Snow. I have to build
+// For some odd reason the redirect operator << does not work for Xvt. I have to build
 // around it.
 
 				xvt1 = Store.getXvt(sid1,ComTime);
