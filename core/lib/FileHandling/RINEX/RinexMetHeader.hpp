@@ -54,10 +54,6 @@ namespace gpstk
   /** @addtogroup RinexMet */
   //@{
 
-      // forward declarations
-   struct sensorType;
-
-   struct sensorPosType;
 
   /**
    * This class models the RINEX MET header for a RINEX MET file.
@@ -73,6 +69,11 @@ namespace gpstk
   {
 
   public:
+
+      // forward declarations
+   struct sensorType;
+
+   struct sensorPosType;
 
     /// Enum for the different types of data in this file.
     enum RinexMetType
@@ -219,6 +220,27 @@ namespace gpstk
     static const std::string stringEoH;           ///< "END OF HEADER"
     //@}
 
+  /// Struct for holding information about a sensor
+   struct sensorType
+   {
+      std::string model;    ///< The manufacturer of the sensor.
+      std::string type;     ///< The specific type of sensor.
+      double accuracy;      ///< The accuracy of the sensor.
+      RinexMetHeader::RinexMetType obsType; ///< The obs type this sensor corresponds to.
+   };
+
+   /// Struct for holding info about a sensor position
+   struct sensorPosType
+   {
+     /**
+      * XYZ and height of sensor coordinates.  Use ITRF or WGS-84 coordinates.
+      */
+      gpstk::Triple position;
+      double height;
+      /// The obs type of the sensor this position corresponds to.
+      RinexMetHeader::RinexMetType obsType;
+   };
+
   protected:
 
   /// Writes the RINEX Met header to the stream \a s.
@@ -240,27 +262,6 @@ namespace gpstk
             gpstk::StringUtils::StringException);
 
   }; // class RinexMetHeader
-
-  /// Struct for holding information about a sensor
-   struct sensorType
-   {
-      std::string model;    ///< The manufacturer of the sensor.
-      std::string type;     ///< The specific type of sensor.
-      double accuracy;      ///< The accuracy of the sensor.
-      RinexMetHeader::RinexMetType obsType; ///< The obs type this sensor corresponds to.
-   };
-
-   /// Struct for holding info about a sensor position
-   struct sensorPosType
-   {
-     /**
-      * XYZ and height of sensor coordinates.  Use ITRF or WGS-84 coordinates.
-      */
-      gpstk::Triple position;
-      double height;
-      /// The obs type of the sensor this position corresponds to.
-      RinexMetHeader::RinexMetType obsType;
-   };
 
 
   //@}
