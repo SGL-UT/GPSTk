@@ -34,42 +34,98 @@
 //
 //=============================================================================
 
-#include "RinexNavData.cpp"
-#include <iostream>
+#include "RinexNavData.hpp"
+#include "TestUtil.hpp"
+#include <sstream>
 
 using namespace std;
 using namespace gpstk;
 
-
-int main(int argc, char* argv[])
+class Rinex_T
 {
-      // Set time to Day 153, 2011 (6/2/2011) at noon
-   CivilTime g( 2011, 6, 2, 12, 14, 44.0, TimeSystem::GPS );
-   CommonTime dt = g.convertToCommonTime();
 
-   short weeknum   = 1638;     // By rules of Kepler Orbit, this must be week of Toe
-  
-   // Test data from 06/02/2011
+    public:
 
-   long subframe1[10] = { 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
-                          0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C };
-   long subframe2[10] = { 0x22C2663D, 0x1F0E4A28, 0x05809675, 0x0EBD8AF1, 0x00089344,
-                          0x008081F8, 0x1330CC2C, 0x0461E855, 0x034F8045, 0x17BB1E68 };
-   long subframe3[10] = { 0x22C2663D, 0x1F0E6BA0, 0x3FE129CD, 0x26E31837, 0x0006C96A,
-                          0x35A74DFC, 0x065C8B0F, 0x1E4F400A, 0x3FE8966D, 0x05860C44 };
-   
+        Rinex_T()
+        {
+            init();
+        }
 
-   //The dump from ee.dump() and ee_copy.dump() should be the same
+        ~Rinex_T(){}
+
+        void init( void );
+        void run( void );
+
+    private:
+
+        EngEphemeris ee_orig;
+        EngEphemeris ee_copy;
+        RinexNavData rnd;
+
+        static const short weeknum;
+        static const long  subframe1[10];
+        static const long  subframe2[10];
+        static const long  subframe3[10];
+};
+
+//------------------------------------------------------------
+// Inialization of static class data members
+//------------------------------------------------------------
+
+// By rules of Kepler Orbit, this must be week of Toe
+const short Rinex_T::weeknum   = 1638;
+
+// Test data from 06/02/2011
+const long Rinex_T::subframe1[10] = { 0x22C2663D, 0x1F0E29B8, 0x2664002B, 0x09FCC1B6, 0x0F60EB8A,
+                                      0x1299CE93, 0x29CD3DB6, 0x0597BB0F, 0x00000B68, 0x17B28E5C };
+const long Rinex_T::subframe2[10] = { 0x22C2663D, 0x1F0E4A28, 0x05809675, 0x0EBD8AF1, 0x00089344,
+                                      0x008081F8, 0x1330CC2C, 0x0461E855, 0x034F8045, 0x17BB1E68 };
+const long Rinex_T::subframe3[10] = { 0x22C2663D, 0x1F0E6BA0, 0x3FE129CD, 0x26E31837, 0x0006C96A,
+                                      0x35A74DFC, 0x065C8B0F, 0x1E4F400A, 0x3FE8966D, 0x05860C44 };
+
+//------------------------------------------------------------
+// Rinext_T::init()
+//------------------------------------------------------------
+
+void Rinex_T :: init( void )
+{
+  // ...in contemplation of the meaning of life.
+}
+
+//------------------------------------------------------------
+// Rinext_T::run()
+//------------------------------------------------------------
+
+void Rinex_T :: run( void )
+{
+
+  TestUtil test1( "Rinex", "run", __FILE__, __func__ );
+
+  std::stringstream before;
+  std::stringstream after;
+
+
+   //The dump from ee_orig.dump() and ee_copy.dump() should be the same
    //    an EngEphemeris object is created, then used to create a RinexNavData
-   EngEphemeris ee;
-   ee.addSubframe(subframe1, weeknum, 3, 1);
-   ee.addSubframe(subframe2, weeknum, 3, 1);
-   ee.addSubframe(subframe3, weeknum, 3, 1);
-   ee.dump();
 
-   RinexNavData rnd = RinexNavData(ee); //constructor
+   ee_orig.addSubframe( subframe1, weeknum, 3, 1 );
+   ee_orig.addSubframe( subframe2, weeknum, 3, 1 );
+   ee_orig.addSubframe( subframe3, weeknum, 3, 1 );
+   ee_orig.dump( before );
 
-   EngEphemeris ee_copy;
-   ee_copy = EngEphemeris(rnd);           //cast
-   ee_copy.dump();
+   RinexNavData rnd = RinexNavData( ee_orig ); //constructor
+
+   ee_copy = EngEphemeris( rnd ); //cast
+   ee_copy.dump( after );
+
+   test1.assert( before.str() == after.str() );
+
+}
+//------------------------------------------------------------
+// main()
+//------------------------------------------------------------
+int main( void )
+{
+    Rinex_T testClass;
+    testClass.run();
 }
