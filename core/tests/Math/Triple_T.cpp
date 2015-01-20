@@ -239,7 +239,6 @@ int main() //Main function to initialize and run all tests above
 	check = testClass.magTest();
 	errorCounter += check;
 
-	//Test FAILS due to test[2]!=1
 	check = testClass.unitVectorTest();
 	errorCounter += check;
 
