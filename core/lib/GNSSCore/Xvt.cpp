@@ -42,6 +42,9 @@
 #include <iostream>
 #include "Xvt.hpp"
 
+namespace gpstk
+{
+
 // Output operator for Xvt
 // @param os output stream to which \c xvt is sent
 // @param xvt Xvt that is sent to \c os
@@ -56,7 +59,7 @@ std::ostream& operator<<(std::ostream& os, const gpstk::Xvt& xvt) throw()
 }
 
 // compute the relativity correction
-double gpstk::Xvt::computeRelativityCorrection(void)
+double Xvt::computeRelativityCorrection(void)
 {
    relcorr = -2.0*( (x[0]/C_MPS)*(v[0]/C_MPS)
                    +(x[1]/C_MPS)*(v[1]/C_MPS)
@@ -71,7 +74,7 @@ double gpstk::Xvt::computeRelativityCorrection(void)
 // rotation, then compute a rough receiver bias by differencing
 // the initial time of flight with the new estimate.  Then
 // correct the rotation by a small amount.
-double gpstk::Xvt::preciseRho(const Triple& rxPos,
+double Xvt::preciseRho(const Triple& rxPos,
                               const EllipsoidModel& ellips,
                               double correction) const 
    throw()
@@ -122,3 +125,5 @@ double gpstk::Xvt::preciseRho(const Triple& rxPos,
    return rho;
 
 } // end of preciseRho()
+
+} // end of gpstk namespace
