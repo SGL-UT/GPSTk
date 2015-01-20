@@ -405,7 +405,7 @@ void RinexMet_T :: convertObsTypeSTRTest( void )
     gpstk::RinexMetHeader::RinexMetType ZD = RinexMetHeader.convertObsType( "ZD" );
     gpstk::RinexMetHeader::RinexMetType ZT = RinexMetHeader.convertObsType( "ZT" );
     gpstk::RinexMetHeader::RinexMetType HI = RinexMetHeader.convertObsType( "HI" );
-    gpstk::RinexMetHeader::RinexMetType KE = RinexMetHeader.convertObsType( "HI" );
+    // gpstk::RinexMetHeader::RinexMetType KE = RinexMetHeader.convertObsType( "HI" );
 
     std::string PRS = "PR";
     std::string TDS = "TD";
@@ -452,7 +452,7 @@ void RinexMet_T :: convertObsTypeHeaderTest( void )
     gpstk::RinexMetHeader::RinexMetType ZW = RinexMetHeader.convertObsType( "ZW" );
     gpstk::RinexMetHeader::RinexMetType ZD = RinexMetHeader.convertObsType( "ZD" );
     gpstk::RinexMetHeader::RinexMetType ZT = RinexMetHeader.convertObsType( "ZT" );
-    gpstk::RinexMetHeader::RinexMetType KE = RinexMetHeader.convertObsType( "ZT" );
+    // gpstk::RinexMetHeader::RinexMetType KE = RinexMetHeader.convertObsType( "ZT" );
 
     std::string PRS = "PR";
     std::string TDS = "TD";
@@ -497,7 +497,7 @@ void RinexMet_T :: hardCodeTest( void )
     gpstk::RinexMetHeader testRinexMetHeader;
 
     testRinexMetStream >> testRinexMetHeader;
-
+ 
     //Start of RinexMetHeader member check to assure that what we want is whats in there
     test7.assert( testRinexMetHeader.version     == 2.1 );
     test7.next();
@@ -518,21 +518,13 @@ void RinexMet_T :: hardCodeTest( void )
         itr1++;
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     test7.assert( testRinexMetHeader.markerName   == (std::string)"85408" );
     test7.next();
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     test7.assert( testRinexMetHeader.markerNumber == (std::string)"85408" );
     test7.next();
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     vector<RinexMetHeader::RinexMetType>::const_iterator itr2 = testRinexMetHeader.obsTypeList.begin();
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     if( itr2 != testRinexMetHeader.obsTypeList.end() )
     {
@@ -543,8 +535,6 @@ void RinexMet_T :: hardCodeTest( void )
       test7.failTest();
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     if( itr2 != testRinexMetHeader.obsTypeList.end() )
     {
         test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"TD" );
@@ -554,8 +544,6 @@ void RinexMet_T :: hardCodeTest( void )
       test7.failTest();
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     if( itr2 != testRinexMetHeader.obsTypeList.end() )
     {
         test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"HI" );
@@ -564,11 +552,7 @@ void RinexMet_T :: hardCodeTest( void )
       test7.failTest();
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     vector<RinexMetHeader::sensorType>::const_iterator itr3 = testRinexMetHeader.sensorTypeList.begin();
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     if( itr3 != testRinexMetHeader.sensorTypeList.end() )
     {
@@ -591,8 +575,6 @@ void RinexMet_T :: hardCodeTest( void )
         test7.failTest();
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     if( itr3 != testRinexMetHeader.sensorTypeList.end() )
     {
         test7.assert( (*itr3).model    == (std::string)"Vaisala" );
@@ -613,8 +595,6 @@ void RinexMet_T :: hardCodeTest( void )
         test7.failTest();
         test7.failTest();
     }
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     if( itr3 != testRinexMetHeader.sensorTypeList.end() )
     {
@@ -637,11 +617,7 @@ void RinexMet_T :: hardCodeTest( void )
         test7.failTest();
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     vector<RinexMetHeader::sensorPosType>::const_iterator itr4 = testRinexMetHeader.sensorPosList.begin();
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     if( itr4 != testRinexMetHeader.sensorPosList.end() )
     {
@@ -667,8 +643,6 @@ void RinexMet_T :: hardCodeTest( void )
         test7.failTest();
     }
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     if( itr4 != testRinexMetHeader.sensorPosList.end() )
     {
         test7.assert( (*itr4).position[0] ==  -740289.8363 );
@@ -691,15 +665,11 @@ void RinexMet_T :: hardCodeTest( void )
     }
     //End of Header
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     // Now test the RinexMetData
     out << testRinexMetHeader;
     gpstk::RinexMetData testRinexMetData;
     testRinexMetStream >> testRinexMetData;
     gpstk::CivilTime TimeGuess(2004,4,19,0,0,0);
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
 
     test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess );
@@ -711,13 +681,9 @@ void RinexMet_T :: hardCodeTest( void )
     test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )] ==  59.7 );
     test7.next();
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     out << testRinexMetData;
     testRinexMetStream >> testRinexMetData;
     gpstk::CivilTime TimeGuess2(2004,4,19,0,15,0);
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess2 );
     test7.next();
@@ -728,8 +694,6 @@ void RinexMet_T :: hardCodeTest( void )
     test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )] ==  61.6 );
     test7.next();
 
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
-
     out << testRinexMetData;
     while( testRinexMetStream >> testRinexMetData )
     {
@@ -738,8 +702,6 @@ void RinexMet_T :: hardCodeTest( void )
 
     test7.assert( test7.fileEqualTest( inputRinexMetNormal, outputRinexMetHardCode, 2) );
     test7.next();
-
-    std::cout << "DEBUG STATEMENT at LINE " << __LINE__ << std::endl;
 
     gpstk::RinexMetStream MetDumps( outputRinexMetDumps.c_str(), std::ios::out );
     testRinexMetHeader.dump( MetDumps );
