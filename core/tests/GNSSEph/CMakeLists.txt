@@ -24,9 +24,9 @@ add_executable(RinexEphemerisStore_T RinexEphemerisStore_T.cpp)
 target_link_libraries(RinexEphemerisStore_T gpstk)
 add_test(GNSSEph_RinexEphemerisStore RinexEphemerisStore_T)
 
-#add_executable(SP3EphemerisStore_T SP3EphemerisStore_T.cpp ftest.cpp)
-#target_link_libraries(SP3EphemerisStore_T gpstk)
-#add_test(GNSSEph_SP3EphemerisStore SP3EphemerisStore_T)
+add_executable(SP3EphemerisStore_T SP3EphemerisStore_T.cpp)
+target_link_libraries(SP3EphemerisStore_T gpstk)
+add_test(GNSSEph_SP3EphemerisStore SP3EphemerisStore_T)
 
 add_executable(SP3SatID_T SP3SatID_T.cpp)
 target_link_libraries(SP3SatID_T gpstk)
