@@ -318,38 +318,13 @@ class RinexEphemerisStore_T
 					testFramework.failTest();
 				}
 
-//=================================================================================================
-// For some odd reason the redirect operator << does not work for Xvt. I have to build
-// around it.
-
 				xvt1 = Store.getXvt(sid1,ComTime);
 				xvt15 = Store.getXvt(sid15,ComTime);
 				xvt32 = Store.getXvt(sid32,ComTime);
-				fPRN1    << "x:" << xvt1.x
-					 << ", v:" << xvt1.v
-					 << ", clk bias:" << xvt1.clkbias
-					 << ", clk drift:" << xvt1.clkdrift
-					 << ", relcorr:" << xvt1.relcorr;
 
-				fPRN15    << "x:" << Store.getXvt(sid15,ComTime).x
-					 << ", v:" << Store.getXvt(sid15,ComTime).v
-					 << ", clk bias:" << Store.getXvt(sid15,ComTime).clkbias
-					 << ", clk drift:" << Store.getXvt(sid15,ComTime).clkdrift
-					 << ", relcorr:" << Store.getXvt(sid15,ComTime).relcorr;
-
-				fPRN32    << "x:" << Store.getXvt(sid32,ComTime).x
-					 << ", v:" << Store.getXvt(sid32,ComTime).v
-					 << ", clk bias:" << Store.getXvt(sid32,ComTime).clkbias
-					 << ", clk drift:" << Store.getXvt(sid32,ComTime).clkdrift
-					 << ", relcorr:" << Store.getXvt(sid32,ComTime).relcorr;
-
-// I should be able to use these.
-/*
 				fPRN1 << xvt1 << endl;
 				fPRN15 << xvt15 << endl;
 				fPRN32 << xvt32 << endl;
-*/
-//=================================================================================================
 
 //--------------RinexEphemerisStore_getXvtTest_2 - Can I get an xvt for a non-real SV?
 				try 
