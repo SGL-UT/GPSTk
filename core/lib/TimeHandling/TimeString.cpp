@@ -172,6 +172,7 @@ namespace gpstk
                   break;
 
                case 'Z':
+               case 'z':
                   hzcount = true;
                   break;
 
@@ -640,11 +641,24 @@ namespace gpstk
          if( hfullweek )
          {
             WeekSecond *ptt;
-            if(hbds) ptt = new BDSWeekSecond(ct);
-            else if(hqzs) ptt = new QZSWeekSecond(ct);
-            else if(hgal) ptt = new GALWeekSecond(ct);
-            else ptt = new GPSWeekSecond(ct);
-            ptt->week = ifullweek;
+            if(hbds) ptt = new BDSWeekSecond();
+            else if(hqzs) ptt = new QZSWeekSecond();
+            else if(hgal) ptt = new GALWeekSecond();
+            else ptt = new GPSWeekSecond();
+
+            //When if( hfullweek ) is the first if entered in the list of if's
+            //the conversion of CommonTime to WeekSecond causes an InvalidParameter
+            //error. The following if-else is a workaround.
+	    if (ct == CommonTime::BEGINNING_OF_TIME)
+            {
+              ptt->week = ifullweek;
+            }
+	    else 
+            {
+              ptt->convertFromCommonTime(ct);
+              ptt->week = ifullweek;
+            }
+
             ct = ptt->convertToCommonTime();
          }
          
@@ -718,7 +732,7 @@ namespace gpstk
             if(hbds) ptt = new BDSWeekSecond(ct);
             else if(hqzs) ptt = new QZSWeekSecond(ct);
             else if(hgal) ptt = new GALWeekSecond(ct);
-            else ptt = new GPSWeekSecond(ct);
+            else ptt =  new GPSWeekSecond(ct);
             ptt->sow = isow;
             ct = ptt->convertToCommonTime();
          }
@@ -736,7 +750,6 @@ namespace gpstk
             tt.second = isec;
             ct = tt.convertToCommonTime();
          }
-         
          t = ct;
       }
       catch( gpstk::StringUtils::StringException& se )
