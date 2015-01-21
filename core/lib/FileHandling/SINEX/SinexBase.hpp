@@ -16,6 +16,7 @@
 
 #include "CommonTime.hpp"
 #include "Exception.hpp"
+#include <stdint.h>
 
 namespace gpstk
 {
