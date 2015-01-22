@@ -1,6 +1,43 @@
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
+
+#include "Position.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 #include <iomanip>
-#include "Position.hpp"
 
 using namespace std;
 using namespace gpstk;
@@ -22,6 +59,8 @@ class Position_T
 	   Suppressing print lines from the test. */
 	int transformTest (void)
 	{
+		TestUtil testFramework( "Position", "Cartesian transformTo", __FILE__, __func__ );
+		testFramework.init();
 		try
    		{
       			int i;
@@ -38,126 +77,207 @@ class Position_T
 		        	t.transformTo(Position::Geodetic);
 		        	//cout << "Transform Cartesian to Geodetic   " << t;
 		        	//cout << "  Error : " << range(t,c) << " m" << endl;
-				if (fabs(range(t,c)) > eps) return 1; 
+//--------------Position_transformTest_1 - Were the ECEF coordinates converted to Geodetic?
+				testFramework.assert(fabs(range(t,c)) < eps);
+				testFramework.next();
+
 		        	t = c; // Reset comparison object
 		        	t.transformTo(Position::Geocentric);
 		       		//cout << "Transform Cartesian to Geocentric " << t;
 	         		//cout << "  Error : " << range(t,c) << " m" << endl;
-				if (fabs(range(t,c)) > eps) return 2; 
-	         		t = c;
+ //--------------Position_transformTest_2 - Were the ECEF coordinates converted to Geocentric?
+				testFramework.assert(fabs(range(t,c)) < eps);
+				testFramework.next();
+
+	         		t = c; // Reset comparison object
 	         		t.transformTo(Position::Spherical);
 	         		//cout << "Transform Cartesian to Spherical  " << t;
 	         		//cout << "  Error : " << range(t,c) << " m" << endl;
-				if (fabs(range(t,c)) > eps) return 3; 
+//--------------Position_transformTest_3 - Were the ECEF coordinates converted to Spherical?
+				testFramework.assert(fabs(range(t,c)) < eps); 
+				testFramework.next();
 
 				//Start in Geodetic
+				testFramework.changeSourceMethod("Geodetic transformTo");
 	         		d.setGeodetic(39.000004186778,251.499999999370,1400.009066903964);
 	         		//cout << "Position.set         to Geodetic  " << d << endl;
 	         		t = d;
 				t.transformTo(Position::Cartesian);
 				//cout << "Transform Geodetic to Cartesian   " << t;
 				//cout << "  Error : " << range(t,d) << " m" << endl;
-				if (fabs(range(t,d)) > eps) return 4; 
-				t = d;
-				t.transformTo(Position::Geocentric);
-				//cout << "Transform Geodetic to Geocentric  " << t;
-				//cout << "  Error : " << range(t,d) << " m" << endl;
-				if (fabs(range(t,d)) > eps) return 5; 
-				t = d;
-				t.transformTo(Position::Spherical);
+//--------------Position_transformTest_4 - Were the Geodetic coordinates converted to ECEF?
+				testFramework.assert(fabs(range(t,d)) < eps);
+				testFramework.next();
+
+					t = d;  // Reset comparison object
+					t.transformTo(Position::Geocentric);
+					//cout << "Transform Geodetic to Geocentric  " << t;
+					//cout << "  Error : " << range(t,d) << " m" << endl;
+//--------------Position_transformTest_5 - Were the Geodetic coordinates converted to Geocentric?
+				testFramework.assert(fabs(range(t,d)) < eps); 
+				testFramework.next();
+
+					t = d;  // Reset comparison object
+					t.transformTo(Position::Spherical);
 	         		//cout << "Transform Geodetic to Spherical   " << t;
 	         		//cout << "  Error : " << range(t,d) << " m" << endl;
-				if (fabs(range(t,d)) > eps) return 6; 
+//--------------Position_transformTest_6 - Were the Geodetic coordinates converted to Spherical?
+				testFramework.assert(fabs(range(t,d)) < eps); 
+				testFramework.next();
 
 				//Start in Geocentric
+				testFramework.changeSourceMethod("Geocentric transformTo");
 	         		g.setGeocentric(38.811958506159,251.499999999370,6371110.627671023800);
 	         		//cout << "Position.set        to Geocentric " << g << endl;
-	         		t = g;
+	         		t = g;  // Reset comparison object
 	         		t.transformTo(Position::Cartesian);
 	         		//cout << "Transform Geocentric to Cartesian " << t;
 	         		//cout << "  Error : " << range(t,g) << " m" << endl;
-				if (fabs(range(t,g)) > eps) return 7; 
-	         		t = g;
+//--------------Position_transformTest_7 - Were the Geocentric coordinates converted to ECEF?
+				testFramework.assert(fabs(range(t,g)) < eps); 
+				testFramework.next();
+
+	         		t = g;  // Reset comparison object
 	         		t.transformTo(Position::Geodetic);
 	         		//cout << "Transform Geocentric to Geodetic  " << t;
 	         		//cout << "  Error : " << range(t,g) << " m" << endl;
-				if (fabs(range(t,g)) > eps) return 8; 
-	         		t = g;
+//--------------Position_transformTest_8 - Were the Geocentric coordinates converted to Geodetic?
+				testFramework.assert(fabs(range(t,g)) < eps);
+				testFramework.next();
+
+	         		t = g;  // Reset comparison object
 	         		t.transformTo(Position::Spherical);
 	         		//cout << "Transform Geocentric to Spherical " << t;
 	         		//cout << "  Error : " << range(t,g) << " m" << endl;
-				if (fabs(range(t,g)) > eps) return 9; 
+//--------------Position_transformTest_9 - Were the Geocentric coordinates converted to Spherical?
+				testFramework.assert(fabs(range(t,g)) < eps); 
+				testFramework.next();
 
 				//Start in Spherical
+				testFramework.changeSourceMethod("Spherical transformTo");
 	         		s.setSpherical(51.188041493841,251.499999999370,6371110.627671023800);
 	         		//cout << "Position.set      to Spherical    " << s << endl;
 	         		t = s;
 	         		t.transformTo(Position::Cartesian);
 	         		//cout << "Transform Spherical to Cartesian  " << t;
 	         		//cout << "  Error : " << range(t,s) << " m" << endl;
-				if (fabs(range(t,s)) > eps) return 10; 
+//--------------Position_transformTest_10 - Were the  Spherical coordinates converted to ECEF?
+				testFramework.assert(fabs(range(t,s)) < eps);
+				testFramework.next();
+
 	         		t = s;
 	         		t.transformTo(Position::Geocentric);
 	         		//cout << "Transform Spherical to Geocentric " << t;
 	         		//cout << "  Error : " << range(t,s) << " m" << endl;
-				if (fabs(range(t,s)) > eps) return 11; 
+//--------------Position_transformTest_11 - Were the Spherical coordinates converted to Geocentric?
+				testFramework.assert(fabs(range(t,s)) < eps);
+				testFramework.next();
+
 	         		t = s;
 	         		t.transformTo(Position::Geodetic);
 	         		//cout << "Transform Spherical to Geodetic   " << t;
 	         		//cout << "  Error : " << range(t,s) << " m" << endl;
-				if (fabs(range(t,s)) > eps) return 12; 
+//--------------Position_transformTest_12 - Were the Spherical coordinates converted to Geodetic?
+				testFramework.assert(fabs(range(t,s)) < eps); 
 
 			//cout << endl << endl << endl;
-			return 0;
+			return testFramework.countFails();
 		}
 		catch(...)
 		{
-			cout << "An exception was thrown!!!!!!!!" << endl;
+			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
+			std::cout << "Test method failed" << std::endl;
 		}
-		return -1;
+		return 0; // Make a more subtle way to show exception;
 	}
 
 	/* Test will check the formatted printing of Position objects. */
 	int printfTest()
 	{
+		TestUtil testFramework( "Position", "printf", __FILE__, __func__ );
+		testFramework.init();
+
 		try
 		{
-	      		Position c;
-		        c.setECEF(-1575232.0141,-4707872.2332, 3993198.4383);
+      		Position c;
+	        c.setECEF(-1575232.0141,-4707872.2332, 3993198.4383);
 
-			if (c.printf("%13.4x     X() (meters)") != (std::string)"-1575232.0141     X() (meters)") return 1;
-			if (c.printf("%13.4y     Y() (meters)") != (std::string)"-4707872.2332     Y() (meters)") return 2;
-			if (c.printf("%13.4z     Z() (meters)") != (std::string)" 3993198.4383     Z() (meters)") return 3;
-			if (c.printf("%13.4X     X()/1000 (kilometers)") != (std::string)"   -1575.2320     X()/1000 (kilometers)") return 4;
-			if (c.printf("%13.4Y     Y()/1000 (kilometers)") != (std::string)"   -4707.8722     Y()/1000 (kilometers)") return 5;
-			if (c.printf("%13.4Z     Z()/1000 (kilometers)") != (std::string)"    3993.1984     Z()/1000 (kilometers)") return 6;
-			if (c.printf("%15.6A   geodeticLatitude() (degrees North)") != (std::string)"      39.000004   geodeticLatitude() (degrees North)") return 7;
-			if (c.printf("%15.6a   geocentricLatitude() (degrees North)") != (std::string)"      38.811959   geocentricLatitude() (degrees North)") return 8;
-			if (c.printf("%15.6L   longitude() (degrees East)") != (std::string)"     251.500000   longitude() (degrees East)") return 9;
-			if (c.printf("%15.6l   longitude() (degrees East)") != (std::string)"     251.500000   longitude() (degrees East)") return 10;
-			if (c.printf("%15.6w   longitude() (degrees West)") != (std::string)"     108.500000   longitude() (degrees West)") return 11;
-			if (c.printf("%15.6W   longitude() (degrees West)") != (std::string)"     108.500000   longitude() (degrees West)") return 12;
-			if (c.printf("%15.6t   theta() (degrees)") != (std::string)"      51.188041   theta() (degrees)") return 13;
-			if (c.printf("%15.6T   theta() (radians)") != (std::string)"       0.893400   theta() (radians)") return 14;
-			if (c.printf("%15.6p   phi() (degrees)") != (std::string)"     251.500000   phi() (degrees)") return 15;
-			if (c.printf("%15.6P   phi() (radians)") != (std::string)"       4.389503   phi() (radians)") return 16;
-			if (c.printf("%13.4r     radius() meters") != (std::string)" 6371110.6277     radius() meters") return 17;
-			if (c.printf("%13.4R     radius()/1000 kilometers") != (std::string)"    6371.1106     radius()/1000 kilometers") return 18;
-			if (c.printf("%13.4h     height() meters") != (std::string)"    1400.0091     height() meters") return 19;
-			if (c.printf("%13.4H     height()/1000 kilometers") != (std::string)"       1.4000     height()/1000 kilometers") return 20;
-			return 0;
+//--------------Position_printfTest_1 -	Did the x value print out as expected?
+			testFramework.assert(c.printf("%13.4x     X() (meters)") == (std::string)"-1575232.0141     X() (meters)");
+			testFramework.next();
+//--------------Position_printfTest_2 -	Did the y value print out as expected?			
+			testFramework.assert(c.printf("%13.4y     Y() (meters)") == (std::string)"-4707872.2332     Y() (meters)");
+			testFramework.next();
+//--------------Position_printfTest_3 -	Did the z value print out as expected?			
+			testFramework.assert(c.printf("%13.4z     Z() (meters)") == (std::string)" 3993198.4383     Z() (meters)");
+			testFramework.next();
+//--------------Position_printfTest_4 -	Did the X value print out as expected?
+			testFramework.assert(c.printf("%13.4X     X()/1000 (kilometers)") == (std::string)"   -1575.2320     X()/1000 (kilometers)");
+			testFramework.next();
+//--------------Position_printfTest_5 -	Did the Y value print out as expected?			
+			testFramework.assert(c.printf("%13.4Y     Y()/1000 (kilometers)") == (std::string)"   -4707.8722     Y()/1000 (kilometers)");
+			testFramework.next();
+//--------------Position_printfTest_6 -	Did the Z value print out as expected?
+			testFramework.assert(c.printf("%13.4Z     Z()/1000 (kilometers)") == (std::string)"    3993.1984     Z()/1000 (kilometers)");
+			testFramework.next();
+//--------------Position_printfTest_7 -	Did the A value print out as expected?
+			testFramework.assert(c.printf("%15.6A   geodeticLatitude() (degrees North)") == (std::string)"      39.000004   geodeticLatitude() (degrees North)");
+			testFramework.next();
+//--------------Position_printfTest_8 -	Did the a value print out as expected?
+			testFramework.assert(c.printf("%15.6a   geocentricLatitude() (degrees North)") == (std::string)"      38.811959   geocentricLatitude() (degrees North)");
+			testFramework.next();
+//--------------Position_printfTest_9 -	Did the L value print out as expected?
+			testFramework.assert(c.printf("%15.6L   longitude() (degrees East)") == (std::string)"     251.500000   longitude() (degrees East)");
+			testFramework.next();
+//--------------Position_printfTest_10 - Did the l value print out as expected?
+			testFramework.assert(c.printf("%15.6l   longitude() (degrees East)") == (std::string)"     251.500000   longitude() (degrees East)");
+			testFramework.next();
+//--------------Position_printfTest_11 - Did the w value print out as expected?				
+			testFramework.assert(c.printf("%15.6w   longitude() (degrees West)") == (std::string)"     108.500000   longitude() (degrees West)");
+			testFramework.next();
+//--------------Position_printfTest_12 - Did the W value print out as expected?
+			testFramework.assert(c.printf("%15.6W   longitude() (degrees West)") == (std::string)"     108.500000   longitude() (degrees West)");
+			testFramework.next();
+//--------------Position_printfTest_13 - Did the t value print out as expected?
+			testFramework.assert(c.printf("%15.6t   theta() (degrees)") == (std::string)"      51.188041   theta() (degrees)");
+			testFramework.next();
+//--------------Position_printfTest_14 - Did the T value print out as expected?
+			testFramework.assert(c.printf("%15.6T   theta() (radians)") == (std::string)"       0.893400   theta() (radians)");
+			testFramework.next();
+//--------------Position_printfTest_15 - Did the p value print out as expected?
+			testFramework.assert(c.printf("%15.6p   phi() (degrees)") == (std::string)"     251.500000   phi() (degrees)");
+			testFramework.next();
+//--------------Position_printfTest_16 - Did the P value print out as expected?	
+			testFramework.assert(c.printf("%15.6P   phi() (radians)") == (std::string)"       4.389503   phi() (radians)");
+			testFramework.next();
+//--------------Position_printfTest_17 - Did the r value print out as expected?	
+			testFramework.assert(c.printf("%13.4r     radius() meters") == (std::string)" 6371110.6277     radius() meters");
+			testFramework.next();
+//--------------Position_printfTest_18 - Did the R value print out as expected?	
+			testFramework.assert(c.printf("%13.4R     radius()/1000 kilometers") == (std::string)"    6371.1106     radius()/1000 kilometers");
+			testFramework.next();
+//--------------Position_printfTest_19 - Did the h value print out as expected?	
+			testFramework.assert(c.printf("%13.4h     height() meters") == (std::string)"    1400.0091     height() meters");
+			testFramework.next();
+//--------------Position_printfTest_20 - Did the H value print out as expected?	
+			testFramework.assert(c.printf("%13.4H     height()/1000 kilometers") == (std::string)"       1.4000     height()/1000 kilometers");
+			return testFramework.countFails();
 		}
 		catch(...)
 		{
-			cout << "An exception was thrown!!!!!!!!" << endl;
+			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
+			std::cout << "Test method failed" << std::endl;
 		}
-		return -1;
+		return 0; // Make a more subtle way to show exception;
 	}
 
-	//Test for scanning strings
-	//Additional print lines are commented out.
+	/*	Test for scanning strings
+		Additional print lines are commented out. */
 	int scanTest()
 	{
+		TestUtil testFramework( "Position", "scan", __FILE__, __func__ );
+		testFramework.init();
+
 		try
 		{
 	      		Position c; // Initial position
@@ -179,7 +299,10 @@ class Position_T
 					str = o.str(); //Store that output as a string
 				}
 				tt.setToString(str,fmt[i]); //Set the comparison object using the output string
-				if (range(tt,t) > eps) return i; //Perform the comparison
+
+//--------------Position_scanTest_1-4 - Was the string set to expectation?
+				testFramework.assert(range(tt,t) < eps); //Perform the comparison
+				testFramework.next();
 
 				// Suppressed Output
 				//cout << "System: " << t.getSystemName() << endl;
@@ -190,19 +313,23 @@ class Position_T
          			//cout << " but " << (t!=tt ? "!=" : "not !=") << endl;
          			//cout << endl;
       			}
-			return 0;
+			return testFramework.countFails();
 		}
 		catch(...)
 		{
-			cout << "An exception was thrown!!!!!!!!" << endl;
+			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
+			std::cout << "Test method failed" << std::endl;
 		}
-		return -1;
+		return 0; // Make a more subtle way to show exception;
 	}
 
-	// Elevation and Azimuth tests
-	// Comparing these calculations from the ones in Triple (which are tested in the Triple tests).
+	/*	Elevation and Azimuth tests
+		Comparing these calculations from the ones in Triple
+		(which are tested in the Triple tests) */
 	int elevationAzimuthTest()
 	{
+		TestUtil testFramework( "Position", "elevationAzimuth", __FILE__, __func__ );
+		testFramework.init();		
 		try
 		{
 	      		Position c,s;
@@ -213,156 +340,176 @@ class Position_T
 
       			//cout << setw(6) << setprecision(2) << c.elvAngle(s)
          		//	<< " " << setw(6) << setprecision(2) << c.azAngle(s) << endl;
-			if (fabs(c.elevation(s) - c.elvAngle(s)) > eps) return 1;
-			if (fabs(c.azimuth(s) - c.azAngle(s)) > eps) return 2;
-			return 0;
+//--------------Position_elevationAzimuthTest_1 - Was the elevation computed correctly?
+			testFramework.assert(fabs(c.elevation(s) - c.elvAngle(s)) < eps);
+			testFramework.next();
+//--------------Position_elevationAzimuthTest_2 - Was the azmuith computed correctly?
+			testFramework.assert(fabs(c.azimuth(s) - c.azAngle(s)) < eps);
+			testFramework.next();
+			return testFramework.countFails();
 		}
 		catch(...)
 		{
-			cout << "An exception was thrown!!!!!!!!" << endl;
+			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
+			std::cout << "Test method failed" << std::endl;
 		}
-		return -1;
+		return 0; // Make a more subtle way to show exception;
 	}
 
-	//Transform tests at a pole. The pole is a unique location which may cause the transforms to break.
+	/*	Transform tests at a pole. The pole is a unique location
+		which may cause the transforms to break. */
 	int poleTransformTest()
 	{
+		TestUtil testFramework( "Position", "poleTransform", __FILE__, __func__ );
+		testFramework.init();	
 		try
 		{
-	      		Position c,t;
+      		Position c,t;
 			//cout << "Try to break it at the pole\n";
 			c.setECEF(0,0,6371110.6277);
 			//c.setECEF(0,0,0.0001);         // this will break it
 			t = c;
 
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//		Code below tests every possible conversion from one coordinate system to the
+//		next at the pole.
+//		i.e.	ECEF -> Geodetic
+//				ECEF -> Geocentric
+//				ECEF -> Spherical
+//				Spherical -> Geodetic
+//				Spherical -> Geocentric
+//				Spherical -> ECEF
+//				etc...
+//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-			
+
 			//cout << "The pole " << c << endl;
 			t.transformTo(Position::Geodetic);
 			//cout << "The pole in geodetic   " << t << endl;
-			if (fabs(range(t,c)) > eps) return 1; 
+//--------------Position_poleTransformTest_1 - Were the ECEF coordinates converted to Geodetic at the pole?
+			testFramework.assert(fabs(range(t,c)) < eps);
+			testFramework.next();
 			t.transformTo(Position::Geocentric);
 			//cout << "The pole in geocentric " << t << endl;
-			if (fabs(range(t,c)) > eps) return 2; 
+//--------------Position_poleTransformTest_2 - Were the Geoedetic coordinates converted to Geocentric at the pole?		
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Spherical);
  			//cout << "The pole in spherical  " << t << endl;
-			if (fabs(range(t,c)) > eps) return 3; 
+//--------------Position_poleTransformTest_3 - Were the Geocentric coordinates converted to Spherical at the pole?
+			testFramework.assert(fabs(range(t,c)) < eps);
+			testFramework.next();
 			t.transformTo(Position::Cartesian);
 			//cout << "The pole in cartesian  " << t << endl;
-			if (fabs(range(t,c)) > eps) return 4; 
-			t.transformTo(Position::Geocentric);
-			//cout << "The pole in geocentric " << t << endl;
-			if (fabs(range(t,c)) > eps) return 5; 
+//--------------Position_poleTransformTest_4 - Were the Spherical coordinates converted to ECEF at the pole?
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Geodetic);
 			//cout << "The pole in geodetic   " << t << endl;
-			if (fabs(range(t,c)) > eps) return 6; 
+//--------------Position_poleTransformTest_5 - Were the Geocentric coordinates converted to Geodetic at the pole?			
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Cartesian);
 			//cout << "The pole in cartesian  " << t << endl;
-			if (fabs(range(t,c)) > eps) return 7; 
+//--------------Position_poleTransformTest_6 - Were the Geodetic coordinates converted to ECEF at the pole?
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Spherical);
 			//cout << "The pole in spherical  " << t << endl;
-			if (fabs(range(t,c)) > eps) return 8; 
+//--------------Position_poleTransformTest_7 - Were the Geocentric coordinates converted to Spherical at the pole?			
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Geodetic);
 			//cout << "The pole in geodetic   " << t << endl;
-			if (fabs(range(t,c)) > eps) return 9; 
+//--------------Position_poleTransformTest_8 - Were the Spherical coordinates converted to Geodetic at the pole?			
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Spherical);
 			//cout << "The pole in spherical  " << t << endl;
-			if (fabs(range(t,c)) > eps) return 10; 
+//--------------Position_poleTransformTest_9 - Were the Geodetic coordinates converted to Spherical at the pole?
+			testFramework.assert(fabs(range(t,c)) < eps);
+			testFramework.next();
 			t.transformTo(Position::Geocentric);
 			//cout << "The pole in geocentric " << t << endl;
-			if (fabs(range(t,c)) > eps) return 11; 
+//--------------Position_poleTransformTest_10 - Were the Spherical coordinates converted to Geocentric at the pole?		
+			testFramework.assert(fabs(range(t,c)) < eps); 
+			testFramework.next();
 			t.transformTo(Position::Cartesian);
 			//cout << "The pole in cartesian  " << t << endl;
-			if (fabs(range(t,c)) > eps) return 12; 
-			//cout << "Tests complete." << endl;	
-			return 0;	
+//--------------Position_poleTransformTest_11 - Were the Geocentric coordinates converted to ECEF at the pole?			
+			testFramework.assert(fabs(range(t,c)) < eps);
+			//cout << "Tests complete." << endl;
+
+			return testFramework.countFails();	
 		}
 		catch(...)
 		{
-			cout << "An exception was thrown!!!!!!!!" << endl;
+			std::cout << "Exception encountered at: " << testFramework.countTests() << std::endl;
+			std::cout << "Test method failed" << std::endl;
 		}
-		return -1;
+		return 0; // Make a more subtle way to show exception;
 	}
 
-	// Many of the tests above use the range() function to measure the distances
-	// between two positions. It in turn needs to be tested to ensure that it works.
+	/*	Many of the tests above use the range() function to
+		measure the distances between two positions. It in turn 
+		needs to be tested to ensure that it works. */
 	int rangeTest()
 	{
+		TestUtil testFramework( "Position", "range()", __FILE__, __func__ );
+		testFramework.init();
 		try
 		{
-	      		Position c,t;
+      		Position c,t;
 			c.setECEF(0,0,6371110.6277);
 			t.setECEF(20,0,6371110.6277);
-			if(fabs(range(c,t)-20) > 1E-12) return 1;
+//--------------Position_rangeTest_1 - Was the range computation correct?
+			testFramework.assert(fabs(range(c,t)-20) < eps);
+			testFramework.next();
 			t.setECEF(0,-20,6371110.6277);
-			if(fabs(range(c,t)-20) > 1E-12) return 2;
+//--------------Position_rangeTest_2 - Was the range computation correct?
+			testFramework.assert(fabs(range(c,t)-20) < eps);
+			testFramework.next();
 			t.setECEF(0,0,6371210.6277);
-			if(fabs(range(c,t)-100) > 1E-12) return 3;
+//--------------Position_rangeTest_3 - Was the range computation correct?
+			testFramework.assert(fabs(range(c,t)-100) < eps);
+			testFramework.next();
 			t.setECEF(300,400,6371610.6277);
-			if(fabs(range(c,t)-sqrt(500000.0)) > 1E-12) return 4;
-			return 0;
+//--------------Position_rangeTest_4 - Was the range computation correct?
+			testFramework.assert(fabs(range(c,t)-sqrt(500000.0)) < eps);
+			return testFramework.countFails();
 
 		}
 		catch(...)
 		{
 			cout << "An exception was thrown!!!!!!!!" << endl;
 		}
-		return -1;
+		return -1000; // Make a more subtle way to show error;
 	}
 };
-	
-void checkResult(int check, int& errCount) // Function to handle test result output
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main() //Main function to initialize and run all tests above
 {
-	int check, errorCounter = 0;
+	int check = 0, errorCounter = 0;
 	Position_T testClass;
 
 	check = testClass.rangeTest();
-        std::cout << "rangeTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.transformTest();
-        std::cout << "transformTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.printfTest();
-        std::cout << "printfTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.scanTest();
-        std::cout << "scanTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.elevationAzimuthTest();
-        std::cout << "elevationAzimuthTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+ 	errorCounter += check;
 	
 	check = testClass.poleTransformTest();
-        std::cout << "poleTransformTest Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
-	std::cout << "Total Errors: " << errorCounter << std::endl;
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
 	return errorCounter; //Return the total number of errors
 }

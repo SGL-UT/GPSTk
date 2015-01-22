@@ -1,6 +1,38 @@
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//	Add grepable comments for each case below
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+//============================================================================
+//
+//  This file is part of GPSTk, the GPS Toolkit.
+//
+//  The GPSTk is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU Lesser General Public License as published
+//  by the Free Software Foundation; either version 3.0 of the License, or
+//  any later version.
+//
+//  The GPSTk is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with GPSTk; if not, write to the Free Software Foundation,
+//  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
+//  
+//  Copyright 2004, The University of Texas at Austin
+//
+//============================================================================
+
+//============================================================================
+//
+//This software developed by Applied Research Laboratories at the University of
+//Texas at Austin, under contract to an agency or agencies within the U.S. 
+//Department of Defense. The U.S. Government retains all rights to use,
+//duplicate, distribute, disclose, or release this software. 
+//
+//Pursuant to DoD Directive 523024 
+//
+// DISTRIBUTION STATEMENT A: This software has been approved for public 
+//                           release, distribution is unlimited.
+//
+//=============================================================================
 
 #include "TimeConverters.hpp"
 #include "TestUtil.hpp"
@@ -133,9 +165,6 @@ class xTimeConverters
 			return testFramework.countFails();
 		}
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//	Add grepable comments for each case
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 
 		// Calendar to JD tests
 		int CalendartoJDTest()
@@ -151,27 +180,34 @@ class xTimeConverters
 			day = 23;
 			JD = convertCalendarToJD(year,month,day);
 
+//--------------TimeConverters_CalendartoJD_1 - Was the julian date value set to expectation?
 			testFramework.assert((long int)2453971 == JD);
 			testFramework.next();
 
 			year = 1582;
 			month = 10;
 			day = 3;
-			JD = convertCalendarToJD(year,month,day);	
+			JD = convertCalendarToJD(year,month,day);
+
+//--------------TimeConverters_CalendartoJD_2 - Was the julian date value set to expectation?
 			testFramework.assert((long int)2299159 == JD);
 			testFramework.next();
 
 			year = 1700;
 			month = 3;
 			day = 1;
-			JD = convertCalendarToJD(year,month,day);		
+			JD = convertCalendarToJD(year,month,day);
+
+//--------------TimeConverters_CalendartoJD_3 - Was the julian date value set to expectation?
 			testFramework.assert((long int)2342032 == JD);
 			testFramework.next();
 
 			year = 0;
 			month = 3;
 			day = 1;
-			JD = convertCalendarToJD(year,month,day);	
+			JD = convertCalendarToJD(year,month,day);
+
+//--------------TimeConverters_CalendartoJD_4 - Was the julian date value set to expectation?
 			testFramework.assert((long int)1721118 == JD);
 			testFramework.next();
 
@@ -179,6 +215,8 @@ class xTimeConverters
 			month = 3;
 			day = 1;
 			JD = convertCalendarToJD(year,month,day);
+
+//--------------TimeConverters_CalendartoJD_5 - Was the julian date value set to expectation?
 			testFramework.assert((long int)1719657 == JD);
 			testFramework.next();
 
@@ -186,6 +224,8 @@ class xTimeConverters
 			month = 6;
 			day = 25;
 			JD = convertCalendarToJD(year,month,day);
+
+//--------------TimeConverters_CalendartoJD_6 - Was the julian date value set to expectation?
 			testFramework.assert((long int)1648549 == JD);
 
 			return testFramework.countFails();
@@ -194,7 +234,7 @@ class xTimeConverters
 		// Seconds of Day (SOD) to Time Tests
 		int SODtoTimeTest()
 		{
-			TestUtil testFramework( "TimeConverters", "SODtoTime", __FILE__, __func__ );
+			TestUtil testFramework( "TimeConverters", "Wrapping Backwards", __FILE__, __func__ );
 			testFramework.init();
 
 			int hour;
@@ -204,36 +244,47 @@ class xTimeConverters
 			//Wraps Backwards
 			convertSODtoTime(-.01,hour,minute,second);
 
+//--------------TimeConverters_SODtoTimeTest_1 - Was the hour value set to expectation?
 			testFramework.assert(23 == hour);
 			testFramework.next();
 
+//--------------TimeConverters_SODtoTimeTest_2 - Was the minute value set to expectation?
 			testFramework.assert(59 == minute);
 			testFramework.next();
 
+//--------------TimeConverters_SODtoTimeTest_3 - Was the second value set to expectation?
 			testFramework.assert(fabs(59.99-second) < eps);
 			testFramework.next();
 
 			//Wraps Forwards
+			testFramework.changeSourceMethod("Wrapping Forwards");
 			convertSODtoTime(24*60*60+1.11,hour,minute,second);
-			
+
+//--------------TimeConverters_SODtoTimeTest_4 - Was the hour value set to expectation?			
 			testFramework.assert(0 == hour);
 			testFramework.next();
 
+//--------------TimeConverters_SODtoTimeTest_5 - Was the minute value set to expectation?
 			testFramework.assert(0 == minute);
 			testFramework.next();
 
+//--------------TimeConverters_SODtoTimeTest_6 - Was the second value set to expectation?
 			testFramework.assert(fabs(1.11 - second) < eps);
 			testFramework.next();
 
 			//Standard
+			testFramework.changeSourceMethod("Standard");
 			convertSODtoTime(12345.67,hour,minute,second);
-			
+
+//--------------TimeConverters_SODtoTimeTest_7 - Was the hour value set to expectation?			
 			testFramework.assert(3 == hour);
 			testFramework.next();
 
+//--------------TimeConverters_SODtoTimeTest_8 - Was the minute value set to expectation?
 			testFramework.assert(25 == minute);
 			testFramework.next();
 
+//--------------TimeConverters_SODtoTimeTest_9 - Was the second value set to expectation?
 			testFramework.assert(fabs(45.67 - second) < eps);
 
 			return testFramework.countFails();
@@ -254,6 +305,7 @@ class xTimeConverters
 			second = 30.5;
 			SOD = convertTimeToSOD(hour,minute,second);
 
+//--------------TimeConverters_TimetoSODTest_1 - Was the SOD value set to expectation?
 			testFramework.assert(fabs(60*60+600+30.5 - SOD) < eps);
 			testFramework.next();
 
@@ -261,6 +313,8 @@ class xTimeConverters
 			minute = 59;
 			second = 59.99;
 			SOD = convertTimeToSOD(hour,minute,second);
+
+//--------------TimeConverters_TimetoSODTest_2 - Was the SOD value set to expectation?			
 			testFramework.assert(fabs(23*3600+59*60+59.99 - SOD) < eps);
 
 			return testFramework.countFails();

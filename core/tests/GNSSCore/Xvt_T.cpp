@@ -170,7 +170,7 @@ class Xvt_T
 
 		std::stringstream streamOutput;
 		std::stringstream streamCompare;
-		std::string stringOuput;
+		std::string stringOutput;
 		std::string stringCompare; 
 
 		try
@@ -181,7 +181,7 @@ class Xvt_T
 //--------------XvT_operatorTest_1- Was the operation using the << operator successful?			
 			testFramework.passTest();
 
-			stringOuput = streamOutput.str();
+			stringOutput = streamOutput.str();
 
 			// Creates a string of what the output stream should be
 			streamCompare << "x:" << output.x
@@ -192,7 +192,7 @@ class Xvt_T
     		stringCompare = streamCompare.str();
 
 //--------------XvT_operatorTest_2- Were the contents of the Xvt output stream correct?
-			testFramework.assert(stringCompare == stringOuput);
+			testFramework.assert(stringCompare == stringOutput);
 			testFramework.next();
 		}
 		catch (...) {std::cout<<"hi"<<std::endl;
