@@ -1,8 +1,12 @@
 #Tests for Utilities Classes
 
-add_executable(BinUtils_T BinUtils_T.cpp ftest.cpp)
-target_link_libraries(BinUtils_T gpstk)
-add_test(Utilities_BinUtils BinUtils_T)
+#add_executable(BinUtils_T BinUtils_T.cpp ftest.cpp)
+#target_link_libraries(BinUtils_T gpstk)
+#add_test(Utilities_BinUtils BinUtils_T)
+
+add_executable(StringUtils_T StringUtils_T.cpp)
+target_link_libraries(StringUtils_T gpstk)
+add_test(Utilities_StringUtils StringUtils_T)
 
 add_executable(Stl_helpers_T Stl_helpers_T.cpp)
 target_link_libraries(Stl_helpers_T gpstk)
