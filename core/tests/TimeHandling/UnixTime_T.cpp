@@ -49,7 +49,7 @@ class UnixTime_T
 /* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "Constructor(sec,usec,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "Constructor(sec,usec,TimeSystem)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		UnixTime Compare(1350000,1,TimeSystem(2)); //Initialize an object
@@ -102,7 +102,7 @@ class UnixTime_T
 	   Test also implicity tests whether the != operator functions. */
 	int setFromInfoTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "setFromInfo", __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "setFromInfo", __FILE__, __LINE__ );
 		testFramework.init();
 
 		UnixTime setFromInfo1;
@@ -140,7 +140,7 @@ class UnixTime_T
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "== Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		UnixTime Compare(1350000,100); // Initialize with value
@@ -273,7 +273,7 @@ class UnixTime_T
 	/* Test will check the reset method. */
 	int  resetTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "reset" , __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "reset" , __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	UnixTime Compare(1350000,0,TimeSystem(2)); //Initialize an object
@@ -308,7 +308,7 @@ class UnixTime_T
 	/* Test will check converting to/from CommonTime. */
 	int  toFromCommonTimeTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "isValid", __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "isValid", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	UnixTime Compare(1350000,0,TimeSystem(2)); //Initialize an object
@@ -346,7 +346,7 @@ class UnixTime_T
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		UnixTime GPS1(1350000,0,TimeSystem::GPS);
@@ -401,7 +401,7 @@ class UnixTime_T
 	/* Test for the formatted printing of UnixTime objects */
 	int  printfTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "UnixTime", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
   		UnixTime GPS1(1350000,0,TimeSystem(2));

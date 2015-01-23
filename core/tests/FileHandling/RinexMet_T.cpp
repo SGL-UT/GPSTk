@@ -193,7 +193,7 @@ void RinexMet_T :: init( void )
 
 void RinexMet_T :: bitsAsStringTest( void )
 {
-    TestUtil test1( "RinexMetHeader", "bitsAsString", __FILE__, __func__ );
+    TestUtil test1( "RinexMetHeader", "bitsAsString", __FILE__, __LINE__ );
 
     gpstk::RinexMetHeader RinexMetHeader;
 
@@ -238,7 +238,7 @@ void RinexMet_T :: bitsAsStringTest( void )
 //------------------------------------------------------------
 void RinexMet_T :: bitStringTest( void )
 {
-    TestUtil test2( "RinexMetHeader", "bitString", __FILE__, __func__ );
+    TestUtil test2( "RinexMetHeader", "bitString", __FILE__, __LINE__ );
 
     gpstk::RinexMetHeader RinexMetHeader;
 
@@ -267,7 +267,7 @@ void RinexMet_T :: bitStringTest( void )
 //------------------------------------------------------------
 void RinexMet_T :: reallyPutRecordTest( void )
 {
-    TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __func__ );
+    TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
 
     gpstk::RinexMetHeader RinexMetHeader;
 
@@ -294,7 +294,7 @@ void RinexMet_T :: reallyPutRecordTest( void )
 // ------------------------------------------------------------
 void RinexMet_T :: reallyGetRecordTest( void )
 {
-    TestUtil test4( "RinexMetHeader", "exceptions", __FILE__, __func__ );
+    TestUtil test4( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
 
     //Header file we will be testing on
     gpstk::RinexMetHeader RinexMetHeader;
@@ -391,7 +391,7 @@ void RinexMet_T :: reallyGetRecordTest( void )
 
 void RinexMet_T :: convertObsTypeSTRTest( void )
 {
-    TestUtil test5( "RinexMetHeader", "convertObsType", __FILE__, __func__ );
+    TestUtil test5( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
 
     gpstk::RinexMetHeader RinexMetHeader;
     gpstk::RinexMetStream Normal( inputRinexMetNormal.c_str() );
@@ -439,7 +439,7 @@ void RinexMet_T :: convertObsTypeSTRTest( void )
 //------------------------------------------------------------
 void RinexMet_T :: convertObsTypeHeaderTest( void )
 {
-    TestUtil test6( "RinexMetHeader", "convertObsType", __FILE__, __func__ );
+    TestUtil test6( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
 
     gpstk::RinexMetHeader RinexMetHeader;
     gpstk::RinexMetStream Normal( inputRinexMetNormal.c_str() );
@@ -490,7 +490,7 @@ void RinexMet_T :: convertObsTypeHeaderTest( void )
 //------------------------------------------------------------
 void RinexMet_T :: hardCodeTest( void )
 {
-    TestUtil test7( "RinexMetHeader", "version", __FILE__, __func__ );
+    TestUtil test7( "RinexMetHeader", "version", __FILE__, __LINE__ );
 
     gpstk::RinexMetStream testRinexMetStream( inputRinexMetNormal.c_str() );
     gpstk::RinexMetStream out( outputRinexMetHardCode.c_str(), std::ios::out );
@@ -717,7 +717,7 @@ void RinexMet_T :: hardCodeTest( void )
 
 void RinexMet_T :: continuationTest( void )
 {
-    TestUtil test8( "RinexMetHeader", "continuation", __FILE__, __func__ );
+    TestUtil test8( "RinexMetHeader", "continuation", __FILE__, __LINE__ );
 
     gpstk::RinexMetStream RinexMetStream( inputRinexMetContLines.c_str() );
     gpstk::RinexMetStream out( outputRinexMetContLines.c_str(), std::ios::out );
@@ -761,7 +761,7 @@ void RinexMet_T :: continuationTest( void )
 //------------------------------------------------------------
 void RinexMet_T :: dataExceptionsTest( void )
 {
-    TestUtil test9( "RinexMetHeader", "nodata", __FILE__, __func__ );
+    TestUtil test9( "RinexMetHeader", "nodata", __FILE__, __LINE__ );
  
     gpstk::RinexMetStream NoObs( inputRinexMetNoObs.c_str() );
     gpstk::RinexMetStream InvalidTimeFormat( inputRinexMetInvTimeFmt.c_str() );
@@ -803,7 +803,7 @@ void RinexMet_T :: dataExceptionsTest( void )
 //------------------------------------------------------------
 void RinexMet_T :: filterOperatorsTest( void )
 {
-    TestUtil test10( "RinexMetStream", "filter", __FILE__, __func__ );
+    TestUtil test10( "RinexMetStream", "filter", __FILE__, __LINE__ );
     try
     {
 

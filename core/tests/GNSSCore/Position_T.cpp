@@ -59,7 +59,7 @@ class Position_T
 	   Suppressing print lines from the test. */
 	int transformTest (void)
 	{
-		TestUtil testFramework( "Position", "Cartesian transformTo", __FILE__, __func__ );
+		TestUtil testFramework( "Position", "Cartesian transformTo", __FILE__, __LINE__ );
 		testFramework.init();
 		try
    		{
@@ -194,7 +194,7 @@ class Position_T
 	/* Test will check the formatted printing of Position objects. */
 	int printfTest()
 	{
-		TestUtil testFramework( "Position", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "Position", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
 		try
@@ -275,7 +275,7 @@ class Position_T
 		Additional print lines are commented out. */
 	int scanTest()
 	{
-		TestUtil testFramework( "Position", "scan", __FILE__, __func__ );
+		TestUtil testFramework( "Position", "scan", __FILE__, __LINE__ );
 		testFramework.init();
 
 		try
@@ -328,7 +328,7 @@ class Position_T
 		(which are tested in the Triple tests) */
 	int elevationAzimuthTest()
 	{
-		TestUtil testFramework( "Position", "elevationAzimuth", __FILE__, __func__ );
+		TestUtil testFramework( "Position", "elevationAzimuth", __FILE__, __LINE__ );
 		testFramework.init();		
 		try
 		{
@@ -360,7 +360,7 @@ class Position_T
 		which may cause the transforms to break. */
 	int poleTransformTest()
 	{
-		TestUtil testFramework( "Position", "poleTransform", __FILE__, __func__ );
+		TestUtil testFramework( "Position", "poleTransform", __FILE__, __LINE__ );
 		testFramework.init();	
 		try
 		{
@@ -454,7 +454,7 @@ class Position_T
 		needs to be tested to ensure that it works. */
 	int rangeTest()
 	{
-		TestUtil testFramework( "Position", "range()", __FILE__, __func__ );
+		TestUtil testFramework( "Position", "range()", __FILE__, __LINE__ );
 		testFramework.init();
 		try
 		{

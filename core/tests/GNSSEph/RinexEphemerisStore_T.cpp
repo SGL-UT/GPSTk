@@ -71,7 +71,7 @@ class RinexEphemerisStore_T
 ========================================================================================================================= */
 		int RESTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "Constructor", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "Constructor", __FILE__, __LINE__ );
 			testFramework.init();
 
 //--------------RinexEphemerisStore_RESTest_1 - Verify the consturctor builds the RES object
@@ -143,7 +143,7 @@ class RinexEphemerisStore_T
 ========================================================================================================================= */
 		int findEphTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "findEphemeris", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "findEphemeris", __FILE__, __LINE__ );
 			testFramework.init();
 			ofstream fPRN1;
 			ofstream fPRN15;
@@ -268,7 +268,7 @@ class RinexEphemerisStore_T
 
 		int getXvtTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getXvt", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "getXvt", __FILE__, __LINE__ );
 			testFramework.init();
 			ofstream fPRN1;
 			ofstream fPRN15;
@@ -400,7 +400,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 /*
 		int getXvt2Test (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getXvt with IODC", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "getXvt with IODC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream fPRN1;
@@ -515,7 +515,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int getSatHealthTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __LINE__ );
 			testFramework.init();
 
 			const short PRN0 = 0; // Zero PRN (Border test case)
@@ -602,7 +602,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int dumpTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData0;
@@ -675,7 +675,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		int addEphemerisTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "addEphemeris", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "addEphemeris", __FILE__, __LINE__ );
 			testFramework.init();
 
 			GPSEphemerisStore Blank;
@@ -756,7 +756,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 		int editTest (void)
 		{
 
-			TestUtil testFramework( "RinexEphemerisStore", "edit", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "edit", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -820,7 +820,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 /*		int wiperTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "wiper", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "wiper", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData1;
@@ -908,7 +908,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int clearTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "clear", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "clear", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -965,7 +965,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int findUserOrbEphTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "findUserOrbitEph", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "findUserOrbitEph", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -1053,7 +1053,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		int findNearOrbEphTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "findNearOrbitEph", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "findNearOrbitEph", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -1137,7 +1137,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		int addToListTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "addToList", __FILE__, __func__ );
+			TestUtil testFramework( "RinexEphemerisStore", "addToList", __FILE__, __LINE__ );
 			testFramework.init();
 
 			const short PRN1 = 1;

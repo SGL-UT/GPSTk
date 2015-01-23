@@ -56,7 +56,7 @@ class ANSITime_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "Constructor(time,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "Constructor(time,TimeSystem)", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	ANSITime Compare(13500000,TimeSystem(2)); //Initialize an object
@@ -95,7 +95,7 @@ class ANSITime_T
 	   Test also implicity tests whether the != operator functions. */
 	int setFromInfoTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "setFromInfo", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "setFromInfo", __FILE__, __LINE__ );
 		testFramework.init();
 
 		ANSITime setFromInfo1;
@@ -127,7 +127,7 @@ class ANSITime_T
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "== Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		ANSITime Compare(13500000); // Initialize with value
@@ -210,7 +210,7 @@ class ANSITime_T
 	/* Test will check the reset method. */
 	int  resetTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "reset", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "reset", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	ANSITime Compare(13500000,TimeSystem(2)); //Initialize an object
@@ -229,7 +229,7 @@ class ANSITime_T
 	/* Test will check converting to/from CommonTime. */
 	int  toFromCommonTimeTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "isValid", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "isValid", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	ANSITime Compare(13500000,TimeSystem(2)); //Initialize an object
@@ -265,7 +265,7 @@ class ANSITime_T
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
   		ANSITime GPS1(13500000,TimeSystem(2));
@@ -319,7 +319,7 @@ class ANSITime_T
 	/* Test for the formatted printing of ANSITime objects */
 	int  printfTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "ANSITime", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
   		ANSITime GPS1(13500000,TimeSystem(2));

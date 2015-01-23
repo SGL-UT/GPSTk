@@ -12,7 +12,7 @@ class ValidType_T
 
 	int methodTest(void)
 	{
-		TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __func__ );
+		TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __LINE__ );
 		testFramework.init();
 
 		gpstk::ValidType<float> vfloat0;
@@ -45,7 +45,7 @@ class ValidType_T
 
 	int operatorTest(void)
 	{
-		TestUtil testFramework( "ValidType", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "ValidType", "== Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		gpstk::ValidType<float> Compare1 (6.);

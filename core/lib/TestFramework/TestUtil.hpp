@@ -10,7 +10,7 @@
 //          for use with test classes and test methods in GPSTk.
 // Example: Source usage for a test method with 4 sub-tests:
 //
-//     TestUtil myTest( "SomeClass", "SomeMethod", "myTestFile", "myTestMethod" );
+//     TestUtil myTest( "SomeClass", "SomeMethod", "myTestFile", __LINE__ );
 //
 //     myTest.init();
 //     myTest.assert( 1==2 );
@@ -30,10 +30,10 @@
 //
 // Output: stdout from above myTest.print() calls would be:
 //
-//     TestOutput, SomeClass, SomeMethod, myTestFile, myTestMethod, 1, 1
-//     TestOutput, SomeClass, SomeMethod, myTestFile, myTestMethod, 2, 0
-//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, myTestMethod, 3, 0
-//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, myTestMethod, 4, 1
+//     TestOutput, SomeClass, SomeMethod, myTestFile, 13, 1, 1
+//     TestOutput, SomeClass, SomeMethod, myTestFile, 13, 2, 0
+//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, 13, 3, 0
+//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, 13, 4, 1
 //
 //============================================================
 class TestUtil
@@ -53,20 +53,22 @@ public:
   TestUtil( const std::string& sourceClassInput  = "Unknown", 
             const std::string& sourceMethodInput = "Unknown",
             const std::string& testFileInput     = "Unknown",
-            const std::string& testMethodInput   = "Unknown"
+            const int& lineNumberInput   = 0
            ):
       outputKeyword( "TestOutput" ), 
       sourceClass( sourceClassInput  ),
       sourceMethod( sourceMethodInput ),
       testFilename( testFileInput ),
-      testMethod( testMethodInput ),
+      testMethod( "Unknown" ),
       failBit( 0 ),
       failCount( 0 ),
       testCount( 0 ),
       subtestID( 1 ),
       tolerance( 0 )
   {
-
+      std::stringstream conversionStringStream;
+      conversionStringStream << lineNumberInput;
+      testMethod = conversionStringStream.str();
   }
 
   //----------------------------------------

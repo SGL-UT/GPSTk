@@ -157,7 +157,7 @@ void RinexObs_T :: init( void )
 int RinexObs_T :: headerExceptionTest( void )
 {
 
-    TestUtil test1( "RinexObsStream", "dump", __FILE__, __func__ );
+    TestUtil test1( "RinexObsStream", "dump", __FILE__, __LINE__ );
     try
     {
 
@@ -257,7 +257,7 @@ int RinexObs_T :: hardCodeTest( void )
     // are not expected to match in the top two lines of the file
     int num_lines_skip = 2;
 
-    TestUtil test2( "RinexObsStream", "dump", __FILE__, __func__ );
+    TestUtil test2( "RinexObsStream", "dump", __FILE__, __LINE__ );
 
     try
     {
@@ -297,7 +297,7 @@ int RinexObs_T :: hardCodeTest( void )
 int RinexObs_T :: dataExceptionsTest( void )
 {
 
-    TestUtil test3( "RinexObsStream", "dump", __FILE__, __func__ );
+    TestUtil test3( "RinexObsStream", "dump", __FILE__, __LINE__ );
 
     try
       {
@@ -347,7 +347,7 @@ int RinexObs_T :: dataExceptionsTest( void )
 int RinexObs_T :: filterOperatorsTest( void )
 {
 
-    TestUtil test4( "RinexObsStream", "open", __FILE__, __func__ );
+    TestUtil test4( "RinexObsStream", "open", __FILE__, __LINE__ );
 
     try
     {

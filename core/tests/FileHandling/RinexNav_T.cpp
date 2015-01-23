@@ -158,7 +158,7 @@ void RinexNav_T :: init( void )
 int RinexNav_T :: hardCodeTest( void )
 {
 
-  TestUtil test1( "RinexNavStream", "out", __FILE__, __func__ );
+  TestUtil test1( "RinexNavStream", "out", __FILE__, __LINE__ );
 
   try
   {
@@ -242,7 +242,7 @@ int RinexNav_T :: hardCodeTest( void )
 //------------------------------------------------------------
 int RinexNav_T :: headerExceptionTest( void )
 {
-    TestUtil test2( "RinexNavStream", "exceptions", __FILE__, __func__ );
+    TestUtil test2( "RinexNavStream", "exceptions", __FILE__, __LINE__ );
     
     try
     {
@@ -305,7 +305,7 @@ int RinexNav_T :: headerExceptionTest( void )
 //------------------------------------------------------------
 int RinexNav_T :: streamReadWriteTest( void )
 {
-    TestUtil test3( "RinexNavData", "<<", __FILE__, __func__ );
+    TestUtil test3( "RinexNavData", "<<", __FILE__, __LINE__ );
 
     try
     {
@@ -337,7 +337,7 @@ int RinexNav_T :: streamReadWriteTest( void )
 //------------------------------------------------------------
 int RinexNav_T :: filterOperatorsTest( void )
 {
-    TestUtil test4( "RinexNavStream", "open", __FILE__, __func__ );
+    TestUtil test4( "RinexNavStream", "open", __FILE__, __LINE__ );
 
     try
     {

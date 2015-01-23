@@ -51,7 +51,7 @@ class Stats_TwoSampleStats_T
 			that data was added and that the data added was correct. */
 		int AddTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "Add(value,weight)", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "Add(value,weight)", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<int> test;
@@ -69,7 +69,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the X average calculation. */
 		int AverageXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "AverageX", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "AverageX", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -87,7 +87,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the Y average calculation. */
 		int AverageYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "AverageY", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "AverageY", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -105,7 +105,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the X maximum calculation. */
 		int MaxXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MaxXTest", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "MaxXTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -123,7 +123,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Y maximum calculation. */
 		int MaxYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MaxYTest", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "MaxYTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -141,7 +141,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the X minimum calculation. */
 		int MinXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MinXTest", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "MinXTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -159,7 +159,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Y minimum calculation. */
 		int MinYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MinYTest", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "MinYTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -177,7 +177,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the X variance calculation. */
 		int VarianceXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "VarianceXTest", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "VarianceXTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -195,7 +195,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the Y variance calculation. */
 		int VarianceYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "VarianceYTest", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "VarianceYTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -213,7 +213,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the X Standard Deviation calculation. */
 		int StdDevXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "StdDevX", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "StdDevX", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -231,7 +231,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Y Standard Deviation calculation. */		
 		int StdDevYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "StdDevY", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "StdDevY", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -249,7 +249,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Slope calculation. */
 		int SlopeTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "Slope", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "Slope", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -267,7 +267,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the Intercept calculation. */
 		int InterceptTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "Intercept", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "Intercept", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -285,7 +285,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Slope Uncertainty calculation. */
 		int SlopeUncertaintyTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "SlopeUncertainty", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "SlopeUncertainty", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -303,7 +303,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the Conditional Uncertainty calculation. */
 		int ConditionalUncertaintyTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "ConditionalUncertainty", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "ConditionalUncertainty", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -321,7 +321,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the Correlation calculation. */
 		int CorrelationTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "Correlation", __FILE__, __func__ );
+			TestUtil testFramework( "TwoSampleStats", "Correlation", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;

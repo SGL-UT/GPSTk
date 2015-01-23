@@ -99,7 +99,7 @@ void Rinex_T :: init( void )
 void Rinex_T :: run( void )
 {
 
-  TestUtil test1( "Rinex", "run", __FILE__, __func__ );
+  TestUtil test1( "Rinex", "run", __FILE__, __LINE__ );
 
   std::stringstream before;
   std::stringstream after;
