@@ -297,6 +297,26 @@ make -j $num_threads
 if [ "$test_switch" ]; then
     cd $build_root
     ctest -v
+    ctest_keyword=TestOutput
+    test_log=$build_root/Testing/Temporary/LastTest.log
+    test_log_save_file=$build_root/test_output.log
+    cat $test_log | grep "$ctest_keyword" > $test_log_save_file
+
+    # the last character on each line of output is a fail bit
+    test_count=`cat $test_log | grep $ctest_keyword | wc -l`
+    tests_passed=`cat $test_log | grep $ctest_keyword | grep "0$" | wc -l`
+    tests_failed=`cat $test_log | grep $ctest_keyword | grep "1$" | wc -l`
+
+    echo ""
+    echo "****************************************"
+    echo "CTest Summary Results"
+    echo "****************************************"
+    echo "Number of tests run:     $test_count"
+    echo "Number of tests passed:  $tests_passed"
+    echo "Number of tests failed:  $tests_failed"
+    echo "****************************************"
+    echo ""
+
 fi
 
 #----------------------------------------
