@@ -53,7 +53,7 @@ class xCommonTime : public CommonTime
 		*/
 		int initializationTest()
 		{
-			TestUtil testFramework( "CommonTime", "Constructor(day,secondOfDay,fractionalSecondOfDay,TimeSystem)", __FILE__, __func__ );
+			TestUtil testFramework( "CommonTime", "Constructor(day,secondOfDay,fractionalSecondOfDay,TimeSystem)", __FILE__, __LINE__ );
 			testFramework.init();
 
 			try {CommonTime Zero;
@@ -113,7 +113,7 @@ class xCommonTime : public CommonTime
 			Test.set(700000,0,0.);
 			int brokeWhenAndHowItShouldCounter = 0;
 
-			TestUtil testFramework( "CommonTime", "improperSetTest", __FILE__, __func__ );
+			TestUtil testFramework( "CommonTime", "improperSetTest", __FILE__, __LINE__ );
 			testFramework.init();
 			// Break the input in various ways and make sure the proper exception is called
 
@@ -239,7 +239,7 @@ class xCommonTime : public CommonTime
 		*/
 		int setComparisonTest()
 		{
-			TestUtil testFramework( "CommonTime", "setComparisonTest", __FILE__, __func__ );
+			TestUtil testFramework( "CommonTime", "setComparisonTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			CommonTime Test1, Test2, Test3, Test4;
@@ -323,7 +323,7 @@ class xCommonTime : public CommonTime
 		/* Test to check arithmetic operations function properly */
 		int arithmeticTest()
 		{
-			TestUtil testFramework( "CommonTime", "arithmeticTest", __FILE__, __func__ );
+			TestUtil testFramework( "CommonTime", "arithmeticTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			CommonTime Arith1;
@@ -450,7 +450,7 @@ class xCommonTime : public CommonTime
 		// Test the comparison operators
 		int operatorTest (void)
 		{
-			TestUtil testFramework( "CommonTime", "Differing TimeSystem == Operator", __FILE__, __func__ );
+			TestUtil testFramework( "CommonTime", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 			testFramework.init();
 			CommonTime Compare; Compare.set(1000,200,0.2); // Initialize with value
 			CommonTime LessThanDay; LessThanDay.set(100,200,0.2); // Initialize with smaller day value
@@ -605,7 +605,7 @@ class xCommonTime : public CommonTime
 	/* Test will check the reset method. */
 	int resetTest (void)
 	{
-		TestUtil testFramework( "CommonTime", "reset" , __FILE__, __func__ );
+		TestUtil testFramework( "CommonTime", "reset" , __FILE__, __LINE__ );
 		testFramework.init();
 
 		CommonTime Compare; Compare.set(1000,200,0.2); // Initialize with value
@@ -635,7 +635,7 @@ class xCommonTime : public CommonTime
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
-		TestUtil testFramework( "CommonTime", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		TestUtil testFramework( "CommonTime", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
   		CommonTime GPS1; GPS1.set(1000,200,0.2,TimeSystem(2));
@@ -690,7 +690,7 @@ class xCommonTime : public CommonTime
 	// Test Formatted Printing
 	int  printfTest (void)
 	{	
-		TestUtil testFramework( "CommonTime", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "CommonTime", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
   		CommonTime GPS1; GPS1.set(1234567,24000,0.2111,TimeSystem(2));

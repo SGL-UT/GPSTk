@@ -52,7 +52,7 @@ class Stats_T
 			that data was added and that the data added was correct. */
 		int AddTest()
 		{
-			TestUtil testFramework( "Stats", "Add(value,weight)", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "Add(value,weight)", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -71,7 +71,7 @@ class Stats_T
 			and that the data added was correct. */
 		int AddVectorTest()
 		{
-			TestUtil testFramework( "Stats", "AddVector(value,weight)", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "AddVector(value,weight)", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -90,7 +90,7 @@ class Stats_T
 		/*	Verify the average calculation. */
 		int AverageTest()
 		{
-			TestUtil testFramework( "Stats", "Average", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "Average", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -111,7 +111,7 @@ class Stats_T
 		/*	Verify the maximum calculation. */
 		int MaxTest()
 		{
-			TestUtil testFramework( "Stats", "Max", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "Max", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<int> test;
@@ -132,7 +132,7 @@ class Stats_T
 		/*	Verify the minimum calculation */
 		int MinTest()
 		{
-			TestUtil testFramework( "Stats", "Min", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "Min", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<int> test;
@@ -153,7 +153,7 @@ class Stats_T
 		/*	Verify the variance calculation */
 		int VarianceTest()
 		{
-			TestUtil testFramework( "Stats", "Variance", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "Variance", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -173,7 +173,7 @@ class Stats_T
 		/*	Verify the Standard Deviation calculation.*/
 		int StdDevTest()
 		{
-			TestUtil testFramework( "Stats", "StdDev", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "StdDev", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -196,7 +196,7 @@ class Stats_T
 			NOT reset. */
 		int SubtractTest()
 		{
-			TestUtil testFramework( "Stats", "Subtract", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "Subtract", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -223,7 +223,7 @@ class Stats_T
 			NOT reset. */
 		int SubtractVectorTest()
 		{
-			TestUtil testFramework( "Stats", "SubtractVector", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "SubtractVector", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<int> test;
@@ -243,7 +243,7 @@ class Stats_T
 			Uses the same data as in the previous steps and should match. */
 		int operatorTest()
 		{
-			TestUtil testFramework( "Stats", "+= Operator", __FILE__, __func__ );
+			TestUtil testFramework( "Stats", "+= Operator", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<int> test1, test2;

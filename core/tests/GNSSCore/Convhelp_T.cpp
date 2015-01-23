@@ -47,7 +47,7 @@ class Convhelp_T
 
 	int cycles2metersTest(void) 
 	{
-		TestUtil testFramework( "convhelp", "cycles2meters(phase, frequency, elliposid model)", __FILE__, __func__ );
+		TestUtil testFramework( "convhelp", "cycles2meters(phase, frequency, elliposid model)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		gpstk::WGS84Ellipsoid wem;
@@ -71,7 +71,7 @@ class Convhelp_T
 
 	int meters2cyclesTest(void)
 	{
-		TestUtil testFramework( "convhelp", "meters2cycles(phase, frequency, elliposid model)", __FILE__, __func__ );
+		TestUtil testFramework( "convhelp", "meters2cycles(phase, frequency, elliposid model)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		gpstk::WGS84Ellipsoid wem;
@@ -101,7 +101,7 @@ class Convhelp_T
 
 	int cel2farTest(void)
 	{
-		TestUtil testFramework( "convhelp", "cel2far(Celsius)", __FILE__, __func__ );
+		TestUtil testFramework( "convhelp", "cel2far(Celsius)", __FILE__, __LINE__ );
 		testFramework.init();
 
 //--------------Convhelp_cel2farTest_1 - Did the computation work with a postitive value?
@@ -118,7 +118,7 @@ class Convhelp_T
 
 	int far2celTest(void)
 	{
-		TestUtil testFramework( "convhelp", "far2cel(Farenheit)", __FILE__, __func__ );
+		TestUtil testFramework( "convhelp", "far2cel(Farenheit)", __FILE__, __LINE__ );
 		testFramework.init();
 
 //--------------Convhelp_far2celTest_1 - Did the computation work with a postitive value?
@@ -135,7 +135,7 @@ class Convhelp_T
 
 	int mb2hgTest(void)
 	{
-		TestUtil testFramework( "convhelp", "mb2hg(Millibar)", __FILE__, __func__ );
+		TestUtil testFramework( "convhelp", "mb2hg(Millibar)", __FILE__, __LINE__ );
 		testFramework.init();
 
 //--------------Convhelp_mb2hgTest_1 - Did the computation work with a postitive value?
@@ -152,7 +152,7 @@ class Convhelp_T
 
 	int hg2mbTest(void)
 	{
-		TestUtil testFramework( "convhelp", "hg2mb(inchOfMercury)", __FILE__, __func__ );
+		TestUtil testFramework( "convhelp", "hg2mb(inchOfMercury)", __FILE__, __LINE__ );
 		testFramework.init();
 
 //--------------Convhelp_hg2mbTest_1 - Did the computation work with a postitive value?

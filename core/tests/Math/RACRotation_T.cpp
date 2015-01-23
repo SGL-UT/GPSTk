@@ -62,7 +62,7 @@ class RACRotation_T
 				 			  [  0 -1  0] */
 		int tripleFirstTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleFirst", __FILE__, __func__ );
+			TestUtil testFramework( "RACRotation", "tripleFirst", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -142,7 +142,7 @@ class RACRotation_T
 					 			  [ -1  0  0] */
 		int tripleSecondTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleSecond", __FILE__, __func__ );
+			TestUtil testFramework( "RACRotation", "tripleSecond", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -223,7 +223,7 @@ class RACRotation_T
 								  [ -1  0  0] */
 		int  tripleThirdTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleThird", __FILE__, __func__ );
+			TestUtil testFramework( "RACRotation", "tripleThird", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -303,7 +303,7 @@ class RACRotation_T
 								  [  0             -sqrt(2)/sqrt(3)  1/sqrt(3)          ] */
 		int tripleFourthTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleFourthTest", __FILE__, __func__ );
+			TestUtil testFramework( "RACRotation", "tripleFourthTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -417,7 +417,7 @@ class RACRotation_T
 					 			  [  0 -1  0] */
 		int xvtTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "xvtTest", __FILE__, __func__ );
+			TestUtil testFramework( "RACRotation", "xvtTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;

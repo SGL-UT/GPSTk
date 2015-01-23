@@ -55,7 +55,7 @@ class GPSWeekZcount_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest(void)
 	{
-		TestUtil testFramework( "GPSWeekZcount", "Constructor(week,zcount,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZcount", "Constructor(week,zcount,TimeSystem)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object
@@ -112,7 +112,7 @@ class GPSWeekZcount_T
 	int setFromInfoTest (void)
 	{
 
-		TestUtil testFramework( "GPSWeekZcount", "setFromInfo", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZcount", "setFromInfo", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount setFromInfo1;
@@ -164,7 +164,7 @@ class GPSWeekZcount_T
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "GPSWeekZCount", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZCount", "== Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount Compare(1300,13500);
@@ -267,7 +267,7 @@ class GPSWeekZcount_T
 //	Tests 1-3 seem redundant to setFromInfoTests
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-		TestUtil testFramework( "GPSWeekZcount", "reset", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZcount", "reset", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount Compare(1300,13500.,TimeSystem::GPS); //Initialize an object
@@ -304,7 +304,7 @@ class GPSWeekZcount_T
 	/* Test will check converting to/from CommonTime. */
 	int  toFromCommonTimeTest (void)
 	{
-		TestUtil testFramework( "GPSWeekZcount", "isValid", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZcount", "isValid", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object
@@ -344,7 +344,7 @@ class GPSWeekZcount_T
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
-		TestUtil testFramework( "GPSWeekZcount", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZcount", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
   		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));
@@ -399,7 +399,7 @@ class GPSWeekZcount_T
 	/* Test for the formatted printing of GPSWeekZcount objects */
 	int  printfTest (void)
 	{
-		TestUtil testFramework( "GPSWeekZCount", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "GPSWeekZCount", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
   		GPSWeekZcount GPS1(1300,13500.,TimeSystem(2));

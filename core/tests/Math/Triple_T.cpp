@@ -50,7 +50,7 @@ class TripleTest
 		/*	Test to initialize and set Triple objects. */
 		int setTest() 
 		{
-			TestUtil testFramework( "Triple", "Set(1,2,3)", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "Set(1,2,3)", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test, test2(1,2,3), test3(test2);
@@ -66,7 +66,7 @@ class TripleTest
 		/* Verify the dot product calculation. */		
 		int dotTest()
 		{
-			TestUtil testFramework( "Triple", "Dot(2,2,2)", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "Dot(2,2,2)", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(1,2,3),test2(2,2,2);
@@ -84,7 +84,7 @@ class TripleTest
 		/*	Verify the cross product calculation. */
 		int crossTest()
 		{
-			TestUtil testFramework( "Triple", "Cross", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "Cross", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(1,2,3), test2(2,2,2), test3;
@@ -101,7 +101,7 @@ class TripleTest
 			Note this presumes the L2 (Euclidian) norm of the vector. */		
 		int magTest()
 		{
-			TestUtil testFramework( "Triple", "Mag", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "Mag", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(3,4,0);
@@ -120,7 +120,7 @@ class TripleTest
 		/*	Verify the unit vector calculation. */
 		int unitVectorTest()
 		{
-			TestUtil testFramework( "Triple", "unitVector", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "unitVector", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(3,4,0),test2;
@@ -141,7 +141,7 @@ class TripleTest
 		/*	Verify the cosine of the angle between two triples calculation. */
 		int cosVectorTest()
 		{
-			TestUtil testFramework( "Triple", "cosVector", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "cosVector", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(1,0,1),test2(-1,0,-1);
@@ -168,7 +168,7 @@ class TripleTest
 		/*	Verify the slant range calculation */
 		int slantRangeTest()
 		{
-			TestUtil testFramework( "Triple", "slantRange", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "slantRange", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(4,6,3),test2(1,2,3);
@@ -188,7 +188,7 @@ class TripleTest
 		/*	Verify the elevation angle calculation */
 		int elvAngleTest()
 		{
-			TestUtil testFramework( "Triple", "elvAngle", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "elvAngle", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(1,0,0),test2(0,-1,0);
@@ -219,7 +219,7 @@ class TripleTest
 			Uses relative error to check the number of correct digits */
 		int azAngleTest()
 		{
-			TestUtil testFramework( "Triple", "azAngle", __FILE__, __func__ );
+			TestUtil testFramework( "Triple", "azAngle", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(1,1,1),test2(-1,1,1);

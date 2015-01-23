@@ -60,7 +60,7 @@ class Matrix_T
 	/* Test to check the sizing functions */
 	int sizeTest (void)
 	{
-		TestUtil testFramework("Matrix","Size",__FILE__,__func__);
+		TestUtil testFramework("Matrix","Size",__FILE__,__LINE__);
 		testFramework.init();
 
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
@@ -182,7 +182,7 @@ class Matrix_T
 	/* Test the accessor operator */
 	int getTest (void)
 	{
-		TestUtil testFramework("Matrix_T","getTest",__FILE__,__func__);
+		TestUtil testFramework("Matrix_T","getTest",__FILE__,__LINE__);
       	testFramework.init();
       	int badCount = 0;
 
@@ -276,7 +276,7 @@ class Matrix_T
 	/* Test the add/subtract and set operators */
 	int operatorTest (void)
 	{
-		TestUtil testFramework("Matrix_T","getTest",__FILE__,__func__);
+		TestUtil testFramework("Matrix_T","getTest",__FILE__,__LINE__);
       	testFramework.init();
       	int badCount = 0;
 

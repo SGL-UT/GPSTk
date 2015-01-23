@@ -69,7 +69,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeANSITime( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(ANSITime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(ANSITime)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		ANSITime scannedTime;
@@ -108,7 +108,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeCivilTime( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(CivilTime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(CivilTime)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		CivilTime scannedTime;
@@ -252,7 +252,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeGPSWeekSecond( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(GPSWeekSecond)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(GPSWeekSecond)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekSecond scannedTime;
@@ -291,7 +291,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeGPSWeekZcount( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(GPSWeekZcount)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(GPSWeekZcount)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount scannedTime;
@@ -381,7 +381,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeJulianDate( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(JulianDate)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(JulianDate)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		JulianDate scannedTime;
@@ -421,7 +421,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeMJD( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(MJD)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(MJD)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		MJD scannedTime;
@@ -460,7 +460,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeUnixTime( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(UnixTime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(UnixTime)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		UnixTime scannedTime;
@@ -500,7 +500,7 @@ class TimeString_T
 ========================================================================================================================= */
 	int scanTimeYDSTime( void )
 	{
-		TestUtil testFramework( "TimeString", "scanTime(YDSTime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeString", "scanTime(YDSTime)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		YDSTime scannedTime;

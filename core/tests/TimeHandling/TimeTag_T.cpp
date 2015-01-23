@@ -68,7 +68,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfANSITime( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(ANSITime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(ANSITime)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		ANSITime hardCodedTime(13500000,TimeSystem(2));                //Set a hardcoded time
@@ -90,7 +90,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfCivilTime( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(CivilTime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(CivilTime)", __FILE__, __LINE__ );
 		testFramework.init();
 
 		CivilTime hardCodedTime(2008,8,21,13,30,15.,TimeSystem::UTC);      //Set a hardcoded time
@@ -157,7 +157,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfGPSWeekSecond( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(GPSWeekSecond)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(GPSWeekSecond)", __FILE__, __LINE__ );
 		testFramework.init();
 
   		GPSWeekSecond hardCodedTime(1300,13500.,TimeSystem::GPS);      //Set a hardcoded time
@@ -179,7 +179,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfGPSWeekZcount( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(GPSWeekZcount)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(GPSWeekZcount)", __FILE__, __LINE__ );
 		testFramework.init();
 
   		GPSWeekZcount hardCodedTime(1300,13500.,TimeSystem(2));        //Set a hardcoded time
@@ -223,7 +223,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfJulianDate( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(JulianDate)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(JulianDate)", __FILE__, __LINE__ );
 		testFramework.init();
 
   		JulianDate hardCodedTime(1234567,TimeSystem(2));                //Set a hardcoded time
@@ -245,7 +245,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfMJD( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(MJD)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(MJD)", __FILE__, __LINE__ );
 		testFramework.init();
 
   		MJD hardCodedTime(123456,TimeSystem(1));                       //Set a hardcoded time
@@ -267,7 +267,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfUnixTime( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(UnixTime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(UnixTime)", __FILE__, __LINE__ );
 		testFramework.init();
 
   		UnixTime hardCodedTime(1654321,10,TimeSystem(5));              //Set a hardcoded time
@@ -290,7 +290,7 @@ class TimeTag_T
 ========================================================================================================================= */
 	int scanfYDSTime( void )
 	{
-		TestUtil testFramework( "TimeTag", "scanf(YDSTime)", __FILE__, __func__ );
+		TestUtil testFramework( "TimeTag", "scanf(YDSTime)", __FILE__, __LINE__ );
 		testFramework.init();
 
   		YDSTime hardCodedTime(2008,200,1000,TimeSystem::GPS);          //Set a hardcoded time

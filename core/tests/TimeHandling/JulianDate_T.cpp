@@ -56,7 +56,7 @@ class JulianDate_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "Constructor(jd,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "Constructor(jd,TimeSystem)", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
@@ -103,7 +103,7 @@ class JulianDate_T
 	int setFromInfoTest (void)
 	{
 
-		TestUtil testFramework( "JulianDate", "setFromInfo", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "setFromInfo", __FILE__, __LINE__ );
 		testFramework.init();
 
 		JulianDate setFromInfo1;
@@ -136,7 +136,7 @@ class JulianDate_T
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "== Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		JulianDate Compare(1350000); // Initialize with value
@@ -224,7 +224,7 @@ class JulianDate_T
 		/* Test will check the reset method. */
 	int resetTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "reset", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "reset", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
@@ -243,7 +243,7 @@ class JulianDate_T
 	/* Test will check converting to/from CommonTime. */
 	int  toFromCommonTimeTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
@@ -279,7 +279,7 @@ class JulianDate_T
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int  timeSystemTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
   		JulianDate GPS1(1350000,TimeSystem(2));
@@ -334,7 +334,7 @@ class JulianDate_T
 	/* Test for the formatted printing of JulianDate objects */
 	int  printfTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "JulianDate", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
   		JulianDate GPS1(1350000,TimeSystem(2));

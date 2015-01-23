@@ -83,7 +83,7 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		int SP3ESTest(void)
 		{
-			TestUtil testFramework( "SP3EphemerisStore", "Constructor", __FILE__, __func__ );
+			TestUtil testFramework( "SP3EphemerisStore", "Constructor", __FILE__, __LINE__ );
 			testFramework.init();
 
 
@@ -121,7 +121,7 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		int getXvtTest (void)
 		{
-			TestUtil testFramework( "SP3EphemerisStore", "getXvt", __FILE__, __func__ );
+			TestUtil testFramework( "SP3EphemerisStore", "getXvt", __FILE__, __LINE__ );
 			testFramework.init();
 
 			SP3EphemerisStore Store;
@@ -197,7 +197,7 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		int getInitialTimeTest (void)
 		{
-			TestUtil testFramework( "SP3EphemerisStore", "getInitialTime", __FILE__, __func__ );
+			TestUtil testFramework( "SP3EphemerisStore", "getInitialTime", __FILE__, __LINE__ );
 			testFramework.init();
 
 			SP3EphemerisStore Store;
@@ -222,7 +222,7 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		int getFinalTimeTest (void)
 		{
-			TestUtil testFramework( "SP3EphemerisStore", "getFinalTime", __FILE__, __func__ );
+			TestUtil testFramework( "SP3EphemerisStore", "getFinalTime", __FILE__, __LINE__ );
 			testFramework.init();
 
 			SP3EphemerisStore Store;
@@ -246,7 +246,7 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		int getPositionTest (void)
 		{
-			TestUtil testFramework( "SP3EphemerisStore", "getPosition", __FILE__, __func__ );
+			TestUtil testFramework( "SP3EphemerisStore", "getPosition", __FILE__, __LINE__ );
 			testFramework.init();
 
 			SP3EphemerisStore igsStore;
@@ -339,7 +339,7 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		int getVelocityTest (void)
 		{
-			TestUtil testFramework( "SP3EphemerisStore", "getVelocity", __FILE__, __func__ );
+			TestUtil testFramework( "SP3EphemerisStore", "getVelocity", __FILE__, __LINE__ );
 			testFramework.init();
 
 			SP3EphemerisStore Store;

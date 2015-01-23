@@ -51,7 +51,7 @@ class xTimeConverters
 		// Julian Date (JD) to Calendar Date Tests
 		int JDtoCalendarTest()
 		{
-			TestUtil testFramework( "TimeConverters", "JDtoCalendar", __FILE__, __func__ );
+			TestUtil testFramework( "TimeConverters", "JDtoCalendar", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int year;
@@ -169,7 +169,7 @@ class xTimeConverters
 		// Calendar to JD tests
 		int CalendartoJDTest()
 		{
-			TestUtil testFramework( "TimeConverters", "CalendartoJD", __FILE__, __func__ );
+			TestUtil testFramework( "TimeConverters", "CalendartoJD", __FILE__, __LINE__ );
 			testFramework.init();
 
 			long JD;
@@ -234,7 +234,7 @@ class xTimeConverters
 		// Seconds of Day (SOD) to Time Tests
 		int SODtoTimeTest()
 		{
-			TestUtil testFramework( "TimeConverters", "Wrapping Backwards", __FILE__, __func__ );
+			TestUtil testFramework( "TimeConverters", "Wrapping Backwards", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int hour;
@@ -297,7 +297,7 @@ class xTimeConverters
 			int hour, minute;
 			double second, SOD;
 
-			TestUtil testFramework( "TimeConverters", "SODtoTime", __FILE__, __func__ );
+			TestUtil testFramework( "TimeConverters", "SODtoTime", __FILE__, __LINE__ );
 			testFramework.init();
 
 			hour = 1;

@@ -60,7 +60,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int justificationTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "Justify", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString= "1234567890";
@@ -101,7 +101,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int stripLeadingTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString= "---1234567890---";
@@ -149,7 +149,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int stripTrailingTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString= "---1234567890---";
@@ -197,7 +197,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int stripTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "strip", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString= "---1234567890---";
@@ -245,7 +245,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int translateTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "strip", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString = "Hello World! I am the Translation test String!";
@@ -286,7 +286,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int stringToNumberTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "asInt", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString = "12345.67890";
@@ -332,7 +332,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int numberToStringTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "asString", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string convertedString;
@@ -371,7 +371,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int hexConversionTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "x2d", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string initialHexString = "0x100 foo";
@@ -399,7 +399,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int stringReplaceTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string baseString = "010101000111010";
@@ -435,7 +435,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int wordTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __LINE__ );
 			testFramework.init();
 
 
@@ -501,7 +501,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int regularExpressionsTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "isLike", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
 			testFramework.init();
 
 			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    ";
@@ -536,7 +536,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int prettyPrintTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __LINE__ );
 			testFramework.init();
 			string originalString("This is a very long sentence that will get cut up into lines with a maximum length of 40 characters, each line indented by a few spaces.");
 			string prettyPrintThis = originalString;
@@ -557,7 +557,7 @@ class StringUtils_T
 ========================================================================================================================= */
 		int hexDumpTest( void )
 		{
-			TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __func__ );
+			TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
 			testFramework.init();
 
 

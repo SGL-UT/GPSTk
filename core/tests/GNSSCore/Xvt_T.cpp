@@ -54,7 +54,7 @@ class Xvt_T
 	/*Tests the get methods and constructor of Xvt */
 	int getTest (void)
 	{
-		TestUtil testFramework("Xvt","Get",__FILE__,__func__ );
+		TestUtil testFramework("Xvt","Get",__FILE__,__LINE__ );
 		testFramework.init();
 
 		//Add in blank initialization check here
@@ -94,7 +94,7 @@ class Xvt_T
 	/* Ensures the computeRelativityCorrection method is accurate */
 	int computeRelativityCorrectionTest (void)
 	{
-		TestUtil testFramework("Xvt","computeRelativityCorrection",__FILE__,__func__ );
+		TestUtil testFramework("Xvt","computeRelativityCorrection",__FILE__,__LINE__ );
 		testFramework.init();
 
 		Triple pos( 1234567000, 887654, 321 );
@@ -140,7 +140,7 @@ class Xvt_T
 	/* Ensures the preciseRho method is accurate */
 	int preciseRhoTest (void)
 	{
-		TestUtil testFramework("Xvt","preciseRho Method Unverified",__FILE__,__func__ );
+		TestUtil testFramework("Xvt","preciseRho Method Unverified",__FILE__,__LINE__ );
 		testFramework.init();
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -155,7 +155,7 @@ class Xvt_T
 	/* Tests to see if the redirection operator << is functioning properly*/
 	int operatorTest (void)
 	{
-		TestUtil testFramework("Xvt","<< Operator",__FILE__,__func__ );
+		TestUtil testFramework("Xvt","<< Operator",__FILE__,__LINE__ );
 		testFramework.init();
 
 		Triple pos(1,2,3);

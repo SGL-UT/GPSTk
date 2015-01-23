@@ -54,7 +54,7 @@ class CivilTime_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "CivilTime", "Constructor(time,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "CivilTime", "Constructor(time,TimeSystem)", __FILE__, __LINE__ );
 	  	CivilTime Compare(2008,8,21,13,30,15.,TimeSystem::GPS); //Initialize an object
 
 //--------------CivilTime_initializationTest_1 - Was the time system set to expectation?
@@ -154,7 +154,7 @@ class CivilTime_T
 	// Test will check if CivilTime variable can be set from a map.
 	int setFromInfoTest (void)
 	{
-		TestUtil testFramework( "CivilTime", "setFromInfo", __FILE__, __func__ );
+		TestUtil testFramework( "CivilTime", "setFromInfo", __FILE__, __LINE__ );
 
 		//Create several objects for testing
 		CivilTime setFromInfo1;
@@ -222,7 +222,7 @@ class CivilTime_T
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "CivilTime", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "CivilTime", "== Operator", __FILE__, __LINE__ );
 
 		CivilTime Aug21(2008,8,21,13,30,15.); //Reference time
 		// Series of conditions less than Aug21 above
@@ -324,7 +324,7 @@ class CivilTime_T
 	/* Test will check converting to/from CommonTime. */
 	int  toFromCommonTimeTest (void)
 	{
-  		TestUtil testFramework( "CivilTime", "isValid", __FILE__, __func__ );
+  		TestUtil testFramework( "CivilTime", "isValid", __FILE__, __LINE__ );
 
   		CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
 
@@ -381,7 +381,7 @@ class CivilTime_T
 	/* Test will check the reset method. */
 	int resetTest (void)
 	{
-		TestUtil testFramework( "CivilTime", "reset", __FILE__, __func__ );
+		TestUtil testFramework( "CivilTime", "reset", __FILE__, __LINE__ );
 		//Initialize a time
   		CivilTime Aug21(2008,8,21,13,30,15.,TimeSystem::GPS);
 
@@ -421,7 +421,7 @@ class CivilTime_T
 	/* Test to check the TimeSystem comparisons when using the comparison operators. */
 	int timeSystemTest (void)
 	{
-  		TestUtil testFramework( "CivilTime", "Differing TimeSystem == Operator", __FILE__, __func__ );
+  		TestUtil testFramework( "CivilTime", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 
   		CivilTime GPS1(   2008,8,21,13,30,15.,TimeSystem::GPS);
   		CivilTime GPS2(   2005,8,21,13,30,15.,TimeSystem::GPS); // Time is less than the others
@@ -482,7 +482,7 @@ class CivilTime_T
 
 	int printfTest (void)
 	{
-		TestUtil testFramework( "CivilTime", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "CivilTime", "printf", __FILE__, __LINE__ );
 
   		CivilTime GPS1(2008,8,21,13,30,15.,TimeSystem::GPS);
   		CivilTime UTC1(2008,8,21,13,30,15.,TimeSystem::UTC);

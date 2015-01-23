@@ -52,7 +52,7 @@ class PolyFit_T
 			that data was added and that the data added was correct. */
 		int AddTest()
 		{
-			TestUtil testFramework( "PolyFit", "AddTest", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "AddTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -91,7 +91,7 @@ Find a way to compare the stored values to the actual values
 			The result should be only a 3rd order term. */
 		int SolutionTest3()
 		{
-			TestUtil testFramework( "PolyFit", "SolutionTest3", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "SolutionTest3", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4; //Highest order in polynomial fit + 1 (constant term)
@@ -126,7 +126,7 @@ Find a way to compare the stored values to the actual values
 			The result should be only a 2nd order term. */
 		int SolutionTest2()
 		{
-			TestUtil testFramework( "PolyFit", "SolutionTest2", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "SolutionTest2", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -162,7 +162,7 @@ Find a way to compare the stored values to the actual values
 			The result should be only a 1st order term. */
 		int SolutionTest1()
 		{
-			TestUtil testFramework( "PolyFit", "SolutionTest1", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "SolutionTest1", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -198,7 +198,7 @@ Find a way to compare the stored values to the actual values
 			The result should be only a constant term. */
 		int SolutionTest0()
 		{
-			TestUtil testFramework( "PolyFit", "SolutionTest0", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "SolutionTest0", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -233,7 +233,7 @@ Find a way to compare the stored values to the actual values
 		/*	Test to check that the correct solution is found. */
 		int SolutionTest()
 		{
-			TestUtil testFramework( "PolyFit", "SolutionTest", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "SolutionTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -268,7 +268,7 @@ Find a way to compare the stored values to the actual values
 			In this case the problem is singular. */
 		int SolutionFailTest()
 		{
-			TestUtil testFramework( "PolyFit", "SolutionTest", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "SolutionTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -299,7 +299,7 @@ Find a way to compare the stored values to the actual values
 		/*	Test to verify the evaluate method with a vector input. */
 		int EvaluateVectorTest()
 		{
-			TestUtil testFramework( "PolyFit", "EvaluateVectorTest", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "EvaluateVectorTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;
@@ -338,7 +338,7 @@ Find a way to compare the stored values to the actual values
 		/* Test to verify the evaluate method with a single input. */
 		int EvaluateTest()
 		{
-			TestUtil testFramework( "PolyFit", "EvaluateTest", __FILE__, __func__ );
+			TestUtil testFramework( "PolyFit", "EvaluateTest", __FILE__, __LINE__ );
 			testFramework.init();
 
 			int n = 4;

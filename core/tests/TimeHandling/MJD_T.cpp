@@ -49,7 +49,7 @@ class MJD_T
 
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "MJD", "Constructor(jd,TimeSystem)", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "Constructor(jd,TimeSystem)", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	MJD Compare(135000.0,TimeSystem(2)); //Initialize an object
@@ -95,7 +95,7 @@ class MJD_T
 
 	int setFromInfoTest (void)
 	{
-		TestUtil testFramework( "MJD", "setFromInfo", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "setFromInfo", __FILE__, __LINE__ );
 		testFramework.init();
 
 		MJD setFromInfo1;
@@ -128,7 +128,7 @@ class MJD_T
 	   Test also tests whether the comparison operators and isValid method function. */
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "MJD", "== Operator", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "== Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
 		gpstk::MJD Compare(135000); // Initialize with value
@@ -218,7 +218,7 @@ class MJD_T
 	/* Test will check the reset method. */
 	int resetTest (void)
 	{
-		TestUtil testFramework( "MJD", "reset", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "reset", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	MJD Compare(135000,TimeSystem(2)); //Initialize an object
@@ -238,7 +238,7 @@ class MJD_T
 	/* Test will check converting to/from CommonTime. */
 	int toFromCommonTimeTest (void)
 	{
-		TestUtil testFramework( "MJD", "isValid", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "isValid", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	MJD Compare(135000,TimeSystem(2)); //Initialize an object
@@ -275,7 +275,7 @@ class MJD_T
 	/* Test will check the TimeSystem comparisons when using the comparison operators. */
 	int timeSystemTest (void)
 	{
-		TestUtil testFramework( "MJD", "Differing TimeSystem == Operator", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
 		testFramework.init();
 
   		MJD GPS1(135000,TimeSystem(2));
@@ -330,7 +330,7 @@ class MJD_T
 	/* Test for the formatted printing of MJD objects */
 	int printfTest (void)
 	{
-		TestUtil testFramework( "MJD", "printf", __FILE__, __func__ );
+		TestUtil testFramework( "MJD", "printf", __FILE__, __LINE__ );
 		testFramework.init();
 
   		MJD GPS1(135000,TimeSystem(2));
