@@ -130,7 +130,7 @@ class Vector_T
    /* Tests addition and subtraction between vector objects */
    int operatorTest(void)
    {
-      TestUtil testFramework("Vector_T","== Operator",__FILE__,__LINE__);
+      TestUtil testFramework( "Vector", "== Operator", __FILE__, __LINE__);
       testFramework.init();
 
       gpstk::Vector<double> v1(3,1.0);
