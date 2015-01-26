@@ -44,22 +44,22 @@ public:
   // Method:  TestUtil::TestUtil()
   // Purpose: Constructor
   // Usage:   To be called at the start of each test method
-  // Inputs:  source_class  = the name of the source class being tested
-  //          source_method = the name of the source method being tested
-  //          test_file     = the name of file containing the test code, e.g., __FILE__
-  //          test_method   = the name of test method doing the testing, e.g. __func__
+  // Inputs:  sourceClassInput  = the name of the source class being tested
+  //          sourceMethodInput = the name of the source method being tested
+  //          testFileInput     = the name of file containing the test code, e.g., __FILE__
+  //          testLineInput     = the line number in the file where testing is done, e.g. __LINE__
   // Outputs: none
   //----------------------------------------
   TestUtil( const std::string& sourceClassInput  = "Unknown", 
             const std::string& sourceMethodInput = "Unknown",
             const std::string& testFileInput     = "Unknown",
-            const int& lineNumberInput   = 0
+            const         int& testLineInput     = 0
            ):
       outputKeyword( "TestOutput" ), 
       sourceClass( sourceClassInput  ),
       sourceMethod( sourceMethodInput ),
       testFilename( testFileInput ),
-      testMethod( "Unknown" ),
+      testFileLine( "0" ),
       failBit( 0 ),
       failCount( 0 ),
       testCount( 0 ),
@@ -67,8 +67,8 @@ public:
       tolerance( 0 )
   {
       std::stringstream conversionStringStream;
-      conversionStringStream << lineNumberInput;
-      testMethod = conversionStringStream.str();
+      conversionStringStream << testLineInput;
+      testFileLine = conversionStringStream.str();
   }
 
   //----------------------------------------
@@ -175,7 +175,7 @@ public:
       sourceClass   << ", " << 
       sourceMethod  << ", " << 
       testFilename  << ", " << 
-      testMethod    << ", " <<
+      testFileLine  << ", " <<
       subtestID     << ", " << 
       failBit       << std::endl;     // implicit conversion from int to string
   }
@@ -337,7 +337,7 @@ private:
   std::string sourceClass;   // help locate source class causing a test failure
   std::string sourceMethod;  // help locate source method causing a test failure
   std::string testFilename;  // help locate test file that discovered a failure
-  std::string testMethod;    // help locate test method that discovered a failure
+  std::string testFileLine;  // help locate test line where the failure occured
 
   int         failBit;       // store the result of a test (0=pass, 1=fail)
 
