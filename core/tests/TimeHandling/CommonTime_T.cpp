@@ -53,7 +53,7 @@ class xCommonTime : public CommonTime
 		*/
 		int initializationTest()
 		{
-			TestUtil testFramework( "CommonTime", "Constructor(day,secondOfDay,fractionalSecondOfDay,TimeSystem)", __FILE__, __LINE__ );
+			TestUtil testFramework( "CommonTime", "Constructor", __FILE__, __LINE__ );
 			testFramework.init();
 
 			try {CommonTime Zero;
@@ -113,7 +113,7 @@ class xCommonTime : public CommonTime
 			Test.set(700000,0,0.);
 			int brokeWhenAndHowItShouldCounter = 0;
 
-			TestUtil testFramework( "CommonTime", "improperSetTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "CommonTime", "set", __FILE__, __LINE__ );
 			testFramework.init();
 			// Break the input in various ways and make sure the proper exception is called
 
@@ -239,7 +239,7 @@ class xCommonTime : public CommonTime
 		*/
 		int setComparisonTest()
 		{
-			TestUtil testFramework( "CommonTime", "setComparisonTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "CommonTime", "set", __FILE__, __LINE__ );
 			testFramework.init();
 
 			CommonTime Test1, Test2, Test3, Test4;
@@ -323,7 +323,7 @@ class xCommonTime : public CommonTime
 		/* Test to check arithmetic operations function properly */
 		int arithmeticTest()
 		{
-			TestUtil testFramework( "CommonTime", "arithmeticTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "CommonTime", "Operators", __FILE__, __LINE__ );
 			testFramework.init();
 
 			CommonTime Arith1;

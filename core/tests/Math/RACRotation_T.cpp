@@ -62,7 +62,7 @@ class RACRotation_T
 				 			  [  0 -1  0] */
 		int tripleFirstTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleFirst", __FILE__, __LINE__ );
+			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -138,11 +138,11 @@ class RACRotation_T
 		/* Second test case.  SV at GPS orbit altitude at 0 deg N, 90 deg E
 			Heading due S at 4 km/sec
 			Resulting RAC matrix: [  0  1  0]
-		    	                  [  0  0 -1]
-					 			  [ -1  0  0] */
+		    	                      [  0  0 -1]
+					      [ -1  0  0] */
 		int tripleSecondTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleSecond", __FILE__, __LINE__ );
+			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -220,10 +220,10 @@ class RACRotation_T
 			Heading parallel to the Y axis at 4 km/sec
 			Resulting RAC matrix: [  0  0  1]
 			                      [  0  1  0]
-								  [ -1  0  0] */
+					      [ -1  0  0] */
 		int  tripleThirdTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleThird", __FILE__, __LINE__ );
+			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -300,10 +300,10 @@ class RACRotation_T
 			Heading  4 km/sec to the NW.
 			Resulting RAC matrix: [  1/2            1/2              1/sqrt(2)          ]
 			                      [ -3/(2*sqrt(3))  1/(2*sqrt(3))    sqrt(2)/(2*sqrt(3))]
-								  [  0             -sqrt(2)/sqrt(3)  1/sqrt(3)          ] */
+					      [  0             -sqrt(2)/sqrt(3)  1/sqrt(3)          ] */
 		int tripleFourthTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "tripleFourthTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;
@@ -417,7 +417,7 @@ class RACRotation_T
 					 			  [  0 -1  0] */
 		int xvtTest (void)
 		{
-			TestUtil testFramework( "RACRotation", "xvtTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			double GPSAlt = 26000000;

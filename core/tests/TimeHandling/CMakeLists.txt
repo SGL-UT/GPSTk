@@ -30,7 +30,7 @@ add_test(TimeHandling_MJD MJD_T)
 
 add_executable(SystemTime_T SystemTime_T.cpp)
 target_link_libraries(SystemTime_T gpstk)
-add_test(TimeHandling_SystemTime* SystemTime_T)
+add_test(TimeHandling_SystemTime SystemTime_T)
 
 add_executable(TimeConverters_T TimeConverters_T.cpp)
 target_link_libraries(TimeConverters_T gpstk)
@@ -38,7 +38,7 @@ add_test(TimeHandling_TimeConverters TimeConverters_T)
 
 add_executable(TimeString_T TimeString_T.cpp)
 target_link_libraries(TimeString_T gpstk)
-add_test(TimeHandling_TimeString* TimeString_T)
+add_test(TimeHandling_TimeString TimeString_T)
 
 add_executable(TimeTag_T TimeTag_T.cpp)
 target_link_libraries(TimeTag_T gpstk)
@@ -52,4 +52,6 @@ add_executable(YDSTime_T YDSTime_T.cpp)
 target_link_libraries(YDSTime_T gpstk)
 add_test(TimeHandling_YDSTime YDSTime_T)
 
-
+add_executable(TimeRange_T TimeRange_T.cpp)
+target_link_libraries(TimeRange_T gpstk)
+add_test(TimeHandling_TimeRange TimeRange_T)

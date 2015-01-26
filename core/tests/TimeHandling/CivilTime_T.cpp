@@ -54,7 +54,7 @@ class CivilTime_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "CivilTime", "Constructor(time,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "CivilTime", "Constructor", __FILE__, __LINE__ );
 	  	CivilTime Compare(2008,8,21,13,30,15.,TimeSystem::GPS); //Initialize an object
 
 //--------------CivilTime_initializationTest_1 - Was the time system set to expectation?
@@ -86,7 +86,7 @@ class CivilTime_T
 		testFramework.next(); 
 
 
-		testFramework.changeSourceMethod("Constructor(CivilTime)");
+		testFramework.changeSourceMethod("Constructor");
 		CivilTime Copy(Compare); // Initialize with copy constructor
 //--------------CivilTime_initializationTest_8 - Was the time system set to expectation?
 		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());

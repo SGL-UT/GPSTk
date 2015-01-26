@@ -55,7 +55,7 @@ class GPSWeekZcount_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest(void)
 	{
-		TestUtil testFramework( "GPSWeekZcount", "Constructor(week,zcount,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "GPSWeekZcount", "Constructor", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount Compare(1300,13500.,TimeSystem(2)); //Initialize an object

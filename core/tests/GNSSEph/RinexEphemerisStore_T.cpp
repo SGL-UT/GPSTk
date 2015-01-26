@@ -101,7 +101,7 @@ class RinexEphemerisStore_T
 //   It would be nice to verify that the double name exception is indeed thrown. However the InvalidParameter exception 
 //   thrown will terminate the program even with a catch-all.
 /*
-//--------------RinexEphemerisStore_RESTest_4 - Verify that a repeated filename returns an exception
+//--------------RinexEphemerisStore_RESTest_# - Verify that a repeated filename returns an exception
 			try 
 			{
 				Store.loadFile(inputRinexNavData.c_str()); 
@@ -120,7 +120,7 @@ class RinexEphemerisStore_T
 //=================================================================================================
 
 			testFramework.changeSourceMethod("clear");
-//--------------RinexEphemerisStore_RESTest_5 - Verify that once a clear() has been performed the repeated filename can be opened.
+//--------------RinexEphemerisStore_RESTest_4 - Verify that once a clear() has been performed the repeated filename can be opened.
 			Store.gpstk::FileStore<RinexNavHeader>::clear();
 			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.passTest();}
 			catch (Exception& e) {cout << " Exception received from RinexEphemerisStore, e = " << e << endl; testFramework.failTest();} 
@@ -143,7 +143,7 @@ class RinexEphemerisStore_T
 ========================================================================================================================= */
 		int findEphTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "findEphemeris", __FILE__, __LINE__ );
+			TestUtil testFramework( "GPSEphemerisStore", "findEphemeris", __FILE__, __LINE__ );
 			testFramework.init();
 			ofstream fPRN1;
 			ofstream fPRN15;
@@ -268,7 +268,7 @@ class RinexEphemerisStore_T
 
 		int getXvtTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getXvt", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "getXvt", __FILE__, __LINE__ );
 			testFramework.init();
 			ofstream fPRN1;
 			ofstream fPRN15;
@@ -400,7 +400,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 /*
 		int getXvt2Test (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getXvt with IODC", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "getXvt with IODC", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream fPRN1;
@@ -515,7 +515,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int getSatHealthTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "getSatHealth", __FILE__, __LINE__ );
 			testFramework.init();
 
 			const short PRN0 = 0; // Zero PRN (Border test case)
@@ -602,7 +602,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int dumpTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "getSatHealth", __FILE__, __LINE__ );
+			TestUtil testFramework( "GPSEphemerisStore", "dump", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData0;
@@ -675,7 +675,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		int addEphemerisTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "addEphemeris", __FILE__, __LINE__ );
+			TestUtil testFramework( "GPSEphemerisStore", "addEphemeris", __FILE__, __LINE__ );
 			testFramework.init();
 
 			GPSEphemerisStore Blank;
@@ -756,7 +756,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 		int editTest (void)
 		{
 
-			TestUtil testFramework( "RinexEphemerisStore", "edit", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "edit", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -908,7 +908,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int clearTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "clear", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "clear", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -965,7 +965,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 ========================================================================================================================= */
 		int findUserOrbEphTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "findUserOrbitEph", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "findUserOrbitEph", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -1053,7 +1053,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		int findNearOrbEphTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "findNearOrbitEph", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "findNearOrbitEph", __FILE__, __LINE__ );
 			testFramework.init();
 
 			ofstream DumpData;
@@ -1137,7 +1137,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		int addToListTest (void)
 		{
-			TestUtil testFramework( "RinexEphemerisStore", "addToList", __FILE__, __LINE__ );
+			TestUtil testFramework( "OrbitEphStore", "addToList", __FILE__, __LINE__ );
 			testFramework.init();
 
 			const short PRN1 = 1;

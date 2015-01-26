@@ -49,7 +49,7 @@ class UnixTime_T
 /* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest (void)
 	{
-		TestUtil testFramework( "UnixTime", "Constructor(sec,usec,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "UnixTime", "Constructor", __FILE__, __LINE__ );
 		testFramework.init();
 
 		UnixTime Compare(1350000,1,TimeSystem(2)); //Initialize an object

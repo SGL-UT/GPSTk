@@ -50,7 +50,7 @@ class TripleTest
 		/*	Test to initialize and set Triple objects. */
 		int setTest() 
 		{
-			TestUtil testFramework( "Triple", "Set(1,2,3)", __FILE__, __LINE__ );
+			TestUtil testFramework( "Triple", "Set", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test, test2(1,2,3), test3(test2);
@@ -66,7 +66,7 @@ class TripleTest
 		/* Verify the dot product calculation. */		
 		int dotTest()
 		{
-			TestUtil testFramework( "Triple", "Dot(2,2,2)", __FILE__, __LINE__ );
+			TestUtil testFramework( "Triple", "Dot", __FILE__, __LINE__ );
 			testFramework.init();
 
 			Triple test(1,2,3),test2(2,2,2);
