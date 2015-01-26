@@ -52,7 +52,7 @@ class Stats_T
 			that data was added and that the data added was correct. */
 		int AddTest()
 		{
-			TestUtil testFramework( "Stats", "Add(value,weight)", __FILE__, __LINE__ );
+			TestUtil testFramework( "Stats", "Add", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;
@@ -71,7 +71,7 @@ class Stats_T
 			and that the data added was correct. */
 		int AddVectorTest()
 		{
-			TestUtil testFramework( "Stats", "AddVector(value,weight)", __FILE__, __LINE__ );
+			TestUtil testFramework( "Stats", "AddVector", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::Stats<double> test;

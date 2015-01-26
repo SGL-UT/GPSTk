@@ -56,7 +56,7 @@ class JulianDate_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "Constructor(jd,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "JulianDate", "Constructor", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object

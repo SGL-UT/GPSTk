@@ -51,7 +51,7 @@ class Stats_TwoSampleStats_T
 			that data was added and that the data added was correct. */
 		int AddTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "Add(value,weight)", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "Add", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<int> test;
@@ -105,7 +105,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the X maximum calculation. */
 		int MaxXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MaxXTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "MaxX", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -123,7 +123,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Y maximum calculation. */
 		int MaxYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MaxYTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "MaxY", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -141,7 +141,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the X minimum calculation. */
 		int MinXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MinXTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "MinX", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -159,7 +159,7 @@ class Stats_TwoSampleStats_T
 		/*	Verify the Y minimum calculation. */
 		int MinYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "MinYTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "MinY", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -177,7 +177,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the X variance calculation. */
 		int VarianceXTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "VarianceXTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "VarianceX", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;
@@ -195,7 +195,7 @@ class Stats_TwoSampleStats_T
 		/* Verify the Y variance calculation. */
 		int VarianceYTest()
 		{
-			TestUtil testFramework( "TwoSampleStats", "VarianceYTest", __FILE__, __LINE__ );
+			TestUtil testFramework( "TwoSampleStats", "VarianceY", __FILE__, __LINE__ );
 			testFramework.init();
 
 			gpstk::TwoSampleStats<double> test;

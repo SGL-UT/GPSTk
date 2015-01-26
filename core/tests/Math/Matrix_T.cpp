@@ -182,7 +182,7 @@ class Matrix_T
 	/* Test the accessor operator */
 	int getTest (void)
 	{
-		TestUtil testFramework("Matrix_T","getTest",__FILE__,__LINE__);
+		TestUtil testFramework("Matrix","getTest",__FILE__,__LINE__);
       	testFramework.init();
       	int badCount = 0;
 
@@ -276,7 +276,7 @@ class Matrix_T
 	/* Test the add/subtract and set operators */
 	int operatorTest (void)
 	{
-		TestUtil testFramework("Matrix_T","getTest",__FILE__,__LINE__);
+		TestUtil testFramework("Matrix","Operators",__FILE__,__LINE__);
       	testFramework.init();
       	int badCount = 0;
 

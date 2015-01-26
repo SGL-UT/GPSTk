@@ -56,7 +56,7 @@ class ANSITime_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "ANSITime", "Constructor(time,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "ANSITime", "Constructor", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	ANSITime Compare(13500000,TimeSystem(2)); //Initialize an object
@@ -68,7 +68,6 @@ class ANSITime_T
 		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
 		testFramework.next();
 
-		testFramework.changeSourceMethod("Constructor(ANSITime)");
 		ANSITime Copy(Compare); // Initialize with copy constructor
 //--------------ANSITime_initializationTest_3 - Was the time value set to expectation?
 		testFramework.assert(13500000 == (int)Copy.time);

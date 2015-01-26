@@ -49,7 +49,7 @@ class MJD_T
 
 	int  initializationTest (void)
 	{
-		TestUtil testFramework( "MJD", "Constructor(jd,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "MJD", "Constructor", __FILE__, __LINE__ );
 		testFramework.init();
 
 	  	MJD Compare(135000.0,TimeSystem(2)); //Initialize an object

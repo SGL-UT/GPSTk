@@ -49,7 +49,7 @@ class YDSTime_T
 	/* Test to ensure the values in the constructor go to their intended locations */
 	int initializationTest (void)
 	{
-		TestUtil testFramework( "YDSTime", "Constructor(year,day,second,TimeSystem)", __FILE__, __LINE__ );
+		TestUtil testFramework( "YDSTime", "Constructor", __FILE__, __LINE__ );
 		testFramework.init();
 
 		YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
