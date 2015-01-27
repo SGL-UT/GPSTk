@@ -34,7 +34,7 @@
 //
 //=============================================================================
 
-#include "Xvt.cpp"
+#include "Xvt.hpp"
 #include "Triple.hpp"
 #include "GPSEllipsoid.hpp"
 
