@@ -273,6 +273,8 @@ args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${verbosity:+" -DDEBUG_SWITCH=ON"}
 args+=${build_docs:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
 
+#   args+="-C $gpstk_root/BuildSetup.cmake"
+
 cd $build_root
 cmake $args $gpstk_root
 
@@ -311,9 +313,9 @@ if [ "$test_switch" ]; then
     echo "****************************************"
     echo "CTest Summary Results"
     echo "****************************************"
-    echo "Number of tests run:     $test_count"
-    echo "Number of tests passed:  $tests_passed"
-    echo "Number of tests failed:  $tests_failed"
+    echo "Number of tests run    = $test_count"
+    echo "Number of tests passed = $tests_passed"
+    echo "Number of tests failed = $tests_failed"
     echo "****************************************"
     echo ""
 
