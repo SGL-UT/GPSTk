@@ -142,13 +142,6 @@ class JulianDate_T
 		JulianDate Compare(1350000); // Initialize with value
 		JulianDate LessThanJD(134000); // Initialize with value
 		JulianDate CompareCopy(Compare); // Initialize with copy constructor
-		JulianDate CompareCopy2; //Empty initialization
-		CompareCopy2 = CompareCopy; //Assignment
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Why have CompareCopy2? Never called. Also, LessThanZCount was only called once
-//	in the original test. Shouldn't it be called more for more rigorous testing?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //--------------JulianDate_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);

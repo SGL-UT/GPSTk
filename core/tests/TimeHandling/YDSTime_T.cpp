@@ -190,8 +190,6 @@ class YDSTime_T
 		YDSTime LessThanDOY(2008,1,1);// Initialize with value with a smaller month
 		YDSTime LessThanSOD(2008,2,0);// Initialize with value with a smaller day
 		YDSTime CompareCopy(Compare); // Initialize with copy constructor
-		YDSTime CompareCopy2; //Empty initialization
-		CompareCopy2 = CompareCopy; //Assignment
 
 //--------------YDSTime_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
@@ -350,16 +348,6 @@ class YDSTime_T
 		testFramework.init();
 
 	  	YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Test is redundant of the initialization test
-/*
-		//Check initial data
-		if (TimeSystem(TimeSystem::GPS) != Compare.getTimeSystem()) return 1;
-		if (2008 != (int)Compare.year) return 2;
-		if (2 != (int)Compare.doy) return 3;
-		if (1 != (int)Compare.sod) return 4;
-*/
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	  	Compare.reset(); // Reset it
 

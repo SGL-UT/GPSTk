@@ -42,10 +42,10 @@
 using namespace gpstk;
 using namespace std;
 
-class xCommonTime : public CommonTime
+class CommonTime_T : public CommonTime
 {
         public: 
-		xCommonTime(){eps = 1e-11;}// Default Constructor, set the precision value
+		CommonTime_T(){eps = 1e-11;}// Default Constructor, set the precision value
 
 		/*
 		  Test to see if any of the standard assignment methods break when using
@@ -125,111 +125,74 @@ class xCommonTime : public CommonTime
 			// Only case that does so
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
 			catch(gpstk::InvalidRequest e) {e.dump(cout); testFramework.passTest();}
-			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}	
+			catch (...) {testFramework.failTest();}	
 
 //--------------CommonTime_improperSetTest_2 - Does a set method work with too many days?
 			try {Test.set(3442449,0,0.);
 				testFramework.failTest();} //Too many days
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}		
+			catch (...) {testFramework.failTest();}			
 
 //--------------CommonTime_improperSetTest_3 - Does a set method work with negative seconds?
 			try {Test.set(700000,-1,0.);
 				testFramework.failTest();} //Negative seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_4 - Does a set method work with too many seconds?
 			try {Test.set(700000,24*60*60+1,0.);
 				testFramework.failTest();} //Too many seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 
 //--------------CommonTime_improperSetTest_5 - Does a set method work with negative fractional seconds?
 			try {Test.set(700000,0,-1.);
 				testFramework.failTest();} //Negative fractional seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_6 - Does a set method work with too many fractional seconds?
 			try {Test.set(700000,0,2.);
 				testFramework.failTest();} //Too many fractional seconds
 
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 				
 //--------------CommonTime_improperSetTest_7 - Does a set method work with negative days?
 			try {Test.setInternal(-1,0,0.);
 				testFramework.failTest();} //Negative days
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_8 - Does a set method work with too many days?
 			try {Test.setInternal(3442449,0,0.);
 				testFramework.failTest();} //Too many days
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_9 - Does a set method work with negative seconds?
 			try {Test.setInternal(700000,-1,0.);
 				testFramework.failTest();} //Negative seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_10 - Does a set method work with too many seconds?
 			try {Test.setInternal(700000,24*60*60+1,0.);
 				testFramework.failTest();} //Too many seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			/*catch (...)
-			{
-				testFramework.failTest();
-			}*/
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_11 - Does a set method work with negative fractional seconds?
 			try {Test.setInternal(700000,1001,-1.);
 				testFramework.failTest();} //Negative fractional seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_12 - Does a set method work with too many fractional seconds?
 			try {Test.setInternal(700000,1001,1001.);
 				testFramework.failTest();} //Too many fractional seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...)
-			{
-				testFramework.failTest();
-			}
+			catch (...) {testFramework.failTest();}	
 		
 			return testFramework.countFails();
 		}
@@ -716,7 +679,7 @@ class xCommonTime : public CommonTime
 int main() //Main function to initialize and run all tests above
 {
 	int check, errorCounter = 0;
-	xCommonTime testClass;
+	CommonTime_T testClass;
 
 	check = testClass.initializationTest();
 	errorCounter += check;

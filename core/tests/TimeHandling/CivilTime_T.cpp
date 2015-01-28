@@ -242,7 +242,7 @@ class CivilTime_T
 		testFramework.next();
 
 		testFramework.changeSourceMethod("!= Operator");
-//--------------CivilTime_operatorTest_2 - Are non-equivalent objects equivalent?
+//--------------CivilTime_operatorTest_2 - Are non-equivalent objects non-equivalent?
 		testFramework.assert(Aug21 != LessThanYear);
 		testFramework.next();
 

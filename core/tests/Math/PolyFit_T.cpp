@@ -282,10 +282,7 @@ Find a way to compare the stored values to the actual values
 				test.Add(dep[i],indep[i]);
 			}
 
-			soln = test.Solution(); // This should still work
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//	Add a error handler here? "Should work" suggests it's possible to fail...
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+			soln = test.Solution(); // This might NaN
 
 			//std::cout << "Solution is: " << test.isSingular() << std::endl;
 			n = 0;			

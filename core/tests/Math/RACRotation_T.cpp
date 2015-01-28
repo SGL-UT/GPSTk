@@ -59,7 +59,7 @@ class RACRotation_T
 		Heading due N at 4 km/sec
 		Resulting RAC matrix: [  1  0  0]
 		                      [  0  0  1]
-				 			  [  0 -1  0] */
+		                      [  0 -1  0] */
 		int tripleFirstTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
@@ -414,7 +414,7 @@ class RACRotation_T
 			the RACRotation class.
 			Resulting RAC matrix: [  1  0  0]
 			                      [  0  0  1]
-					 			  [  0 -1  0] */
+			                      [  0 -1  0] */
 		int xvtTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );

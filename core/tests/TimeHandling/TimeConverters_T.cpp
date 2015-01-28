@@ -58,13 +58,6 @@ class xTimeConverters
 			int month;
 			int day;
 			
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Why pick these values for the conversion?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Comments are repetative, need to be more descriptive based on what the
-// 	conversion is testing
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 			convertJDtoCalendar(2453971,year,month,day);
 
 //--------------TimeConverters_JDtoCalandarTest_1 - Was the year value set to expectation?			

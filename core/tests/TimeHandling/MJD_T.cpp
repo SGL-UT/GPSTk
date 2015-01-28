@@ -134,14 +134,6 @@ class MJD_T
 		gpstk::MJD Compare(135000); // Initialize with value
 		gpstk::MJD LessThanMJD(134000); // Initialize with value
 		gpstk::MJD CompareCopy(Compare); // Initialize with copy constructor
-		gpstk::MJD CompareCopy2; //Empty initialization
-		CompareCopy2 = CompareCopy; //Assignment
-
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Why have CompareCopy2? Never called. Also, LessThanZCount was only called once
-//	in the original test. Shouldn't it be called more for more rigorous testing?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 
 //--------------MJD_operatorTest_1 - Are equivalent objects equivalent?

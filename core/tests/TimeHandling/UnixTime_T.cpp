@@ -147,8 +147,6 @@ class UnixTime_T
 		UnixTime LessThanSec(1340000, 100); //Initialize with fewer seconds
 		UnixTime LessThanMicroSec(1350000,0); //Initialize with fewer microseconds
 		UnixTime CompareCopy(Compare); // Initialize with copy constructor
-		UnixTime CompareCopy2; //Empty initialization
-		CompareCopy2 = CompareCopy; //Assignment
 
 //--------------UnixTime_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
@@ -277,16 +275,6 @@ class UnixTime_T
 		testFramework.init();
 
 	  	UnixTime Compare(1350000,0,TimeSystem(2)); //Initialize an object
-		
-		//Verify correct initialization
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-// Test is redundant of the initialization test
-/*
-  		if (!(Compare.getTimeSystem()==TimeSystem(2))) return 1;
-		if (1350000 != (int)Compare.tv.tv_sec) return 2; 
-		if (0 != (int)Compare.tv.tv_usec) return 3;
-*/
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 	  	Compare.reset(); // Reset it
 
