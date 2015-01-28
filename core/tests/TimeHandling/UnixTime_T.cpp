@@ -431,7 +431,7 @@ int main() //Main function to initialize and run all tests above
 	int check, errorCounter = 0;
 	UnixTime_T testClass;
 
-	//check = testClass.initializationTest();
+	check = testClass.initializationTest();
 	errorCounter += check;
 
 	check = testClass.operatorTest();

@@ -127,7 +127,7 @@ class TripleTest
 			test2 = test.unitVector();
 			
 //--------------Triple_unitVectorTest_1	- Did the calculation return the correct values? 	
-			testFramework.assert((test2[0] == 3.0/5.0) && (test2[1] == 4.0/5.0) && (test2[2] == 0));
+			testFramework.assert( (fabs(test2[0] - 3.0/5.0)*5.0/3.0 < eps) && (fabs(test2[1] - 4.0/5.0)*5.0/4.0 < eps) && (fabs(test2[2]) < eps) );
 			testFramework.next();
 
 			test[0] = 0; test[1] = 0; test[2] = -2;
