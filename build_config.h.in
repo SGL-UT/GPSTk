@@ -59,21 +59,30 @@ namespace gpstk
   }
 
   //----------------------------------------
+  // Purpose: get file system path to the CMake build dir
+  // Usage:   std::string build_path = gpstk::getPathBuild()
+  //----------------------------------------
+  inline std::string getPathBuild( void )
+  {
+    return( "@PROJECT_BINARY_DIR@" );
+  }
+
+  //----------------------------------------
   // Purpose: get file system path to location of gpstk data files
   // Usage:   std::string data_path = gpstk::getPathData()
   //----------------------------------------
   inline std::string getPathData( void )
   {
-    return( "@PROJECT_SOURCE_DIR@" + gpstk::getFileSep() + "data" );
+    return( gpstk::getPathSrc() + gpstk::getFileSep() + "data" );
   }
 
   //----------------------------------------
   // Purpose: get file system path to location to write temp test output
-  // Usage:   std::string temp_path = gpstk::getPathTemp()
+  // Usage:   std::string temp_path = gpstk::getPathTestTemp()
   //----------------------------------------
-  inline std::string getPathTemp( void )
+  inline std::string getPathTestTemp( void )
   {
-    return( "@PROJECT_BINARY_DIR@" );
+    return( gpstk::getPathBuild() + gpstk::getFileSep() + "Testing" + gpstk::getFileSep() + "Temporary"  );
   }
 
 
