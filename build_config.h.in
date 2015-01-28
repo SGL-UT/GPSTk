@@ -24,7 +24,7 @@ namespace gpstk
   // Purpose: get path separator character, e.g. ":" or ";"
   // Usage:   std::string file_sep = gpstk::getPathSep()
   //----------------------------------------
-  std::string getPathSep( void )
+  inline std::string getPathSep( void )
   {
     #ifdef _WIN32
     const std::string path_sep(";");
@@ -39,10 +39,10 @@ namespace gpstk
   // Purpose: get file system file separator character, e.g. "/" or "\"
   // Usage:   std::string file_sep = gpstk::getFileSep()
   //----------------------------------------
-  std::string getFileSep( void )
+  inline std::string getFileSep( void )
   {
     #ifdef _WIN32
-    const std::string file_sep( "\\" );
+    const std::string file_sep("\\");
     #else
     const std::string file_sep("/");
     #endif
@@ -53,7 +53,7 @@ namespace gpstk
   // Purpose: get file system path to top level of source tree
   // Usage:   std::string src_path = gpstk::getPathSrc()
   //----------------------------------------
-  std::string getPathSrc( void )
+  inline std::string getPathSrc( void )
   {
     return( "@PROJECT_SOURCE_DIR@" );
   }
@@ -62,7 +62,7 @@ namespace gpstk
   // Purpose: get file system path to location of gpstk data files
   // Usage:   std::string data_path = gpstk::getPathData()
   //----------------------------------------
-  std::string getPathData( void )
+  inline std::string getPathData( void )
   {
     return( "@PROJECT_SOURCE_DIR@" + gpstk::getFileSep() + "data" );
   }
@@ -71,7 +71,7 @@ namespace gpstk
   // Purpose: get file system path to location to write temp test output
   // Usage:   std::string temp_path = gpstk::getPathTemp()
   //----------------------------------------
-  std::string getPathTemp( void )
+  inline std::string getPathTemp( void )
   {
     return( "@PROJECT_BINARY_DIR@" );
   }
