@@ -49,7 +49,7 @@ using namespace std;
 class GPSWeekZcount_T
 {
 	public:
-		GPSWeekZcount_T(){eps = 1e-11;}// Default Constructor, set the precision value
+		GPSWeekZcount_T(){eps = 1e-12;}// Default Constructor, set the precision value
 		~GPSWeekZcount_T() {} // Default Desructor
 
 	/* Test to ensure the values in the constructor go to their intended locations */
@@ -171,13 +171,6 @@ class GPSWeekZcount_T
 		GPSWeekZcount LessThanWeek(1299,13500);
 		GPSWeekZcount LessThanZcount(1300,13400);
 		GPSWeekZcount CompareCopy(Compare); // Initialize with copy constructor
-		GPSWeekZcount CompareCopy2; //Empty initialization
-		CompareCopy2 = CompareCopy; //Assignment
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Why have CompareCopy2? Never called. Also, LessThanZCount was only called once
-//	in the original test. Shouldn't it be called more for more rigorous testing?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //--------------GPSWeekZCount_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
@@ -263,38 +256,22 @@ class GPSWeekZcount_T
 	int  resetTest (void)
 	{
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Tests 1-3 seem redundant to setFromInfoTests
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 		TestUtil testFramework( "GPSWeekZcount", "reset", __FILE__, __LINE__ );
 		testFramework.init();
 
 		GPSWeekZcount Compare(1300,13500.,TimeSystem::GPS); //Initialize an object
 
-//--------------GPSWeekZCount_resetTest_1 - Was the week value set to expectation?
-		testFramework.assert(1300 == Compare.week);
-		testFramework.next();
-
-//--------------GPSWeekZCount_resetTest_2 - Was the zcount value set to expectation?
-		testFramework.assert(13500 == Compare.zcount);
-		testFramework.next();
-
-//--------------GPSWeekZCount_resetTest_3 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
-		testFramework.next();
-
 	  	Compare.reset(); // Reset it
 
-//--------------GPSWeekZCount_resetTest_4 - Was the week value reset to expectation?
+//--------------GPSWeekZCount_resetTest_1 - Was the week value reset to expectation?
 	  	testFramework.assert(0 == (int)Compare.week);
 	  	testFramework.next();
 
-//--------------GPSWeekZCount_resetTest_5 - Was the zcount value reset to expectation?
+//--------------GPSWeekZCount_resetTest_2 - Was the zcount value reset to expectation?
 	  	testFramework.assert(0 == (int)Compare.zcount);
 	  	testFramework.next();
 
-//--------------GPSWeekZCount_resetTest_6 - Was the time system reset to expectation?
+//--------------GPSWeekZCount_resetTest_3 - Was the time system reset to expectation?
 		/*GPSWeekZcount resets to GPS TimeSystem!!!!*/
 	  	testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
 

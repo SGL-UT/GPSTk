@@ -104,31 +104,6 @@ class GPSWeekSecond_T
 
 	}
 
-	/* Test will check if GPSWeekSecond variable can be set from a map.
-	   Test also implicity tests whether the != operator functions. */
-/*	int setFromInfoTest (void)
-	{
-	
-		GPSWeekSecond setFromInfo1;
-		GPSWeekSecond setFromInfo2;
-		int numErrors = 0;
-
-		TimeTag::IdToValue Id;
-		Id['F'] = "1300";
-		Id['g'] = "13500";
-		Id['P'] = "GPS";
-		testAssertion(setFromInfo1.setFromInfo(Id),numErrors);
-		GPSWeekSecond Compare(1300,13500.,TimeSystem(2));
-		testAssertion(Compare == setFromInfo1 , numErrors);
-		Id.erase('F');
-		testAssertion(setFromInfo2.setFromInfo(Id), numErrors);
-		GPSWeekSecond Compare2(0,13500.,TimeSystem(2));
-		testAssertion(Compare2 == setFromInfo2, numErrors);
-	
-		return numErrors;
-
-	}*/
-
 		/* Test will check if GPSWeekSecond variable can be set from a map.
 	   Test also implicity tests whether the != operator functions. */
 	int setFromInfoTest (void)
@@ -184,13 +159,6 @@ class GPSWeekSecond_T
 		GPSWeekSecond LessThanWeek(1299,13500.);
 		GPSWeekSecond LessThanSecond(1300,13400.);
 		GPSWeekSecond CompareCopy(Compare); // Initialize with copy constructor
-		GPSWeekSecond CompareCopy2; //Empty initialization
-		CompareCopy2 = CompareCopy; //Assignment
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Why have CompareCopy2? Never called. Also, LessThanZCount was only called once
-//	in the original test. Shouldn't it be called more for more rigorous testing?
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
 //--------------GPSWeekSecond_operatorTest_1 - Are equivalent objects equivalent?
 		testFramework.assert(Compare == CompareCopy);
@@ -276,37 +244,21 @@ class GPSWeekSecond_T
 	int  resetTest (void)
 	{
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-//	Tests 1-3 seem redundant to setFromInfoTests
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-
 		TestUtil testFramework( "GPSWeekSecond", "reset", __FILE__, __LINE__ );
 		testFramework.init();	
 		GPSWeekSecond Compare(1300,13500.,TimeSystem::GPS); //Initialize an object
 
-//--------------GPSWeekSecond_resetTest_1 - Was the week value set to expectation?
-		testFramework.assert(1300 == Compare.week);
-		testFramework.next();
-
-//--------------GPSWeekSecond_resetTest_2 - Was the sow value set to expectation?
-		testFramework.assert(13500 == Compare.sow);
-		testFramework.next();
-
-//--------------GPSWeekSecond_resetTest_3 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
-		testFramework.next();
-
 	  	Compare.reset(); // Reset it
 
-//--------------GPSWeekSecond_resetTest_4 - Was the week value reset to expectation?
+//--------------GPSWeekSecond_resetTest_1 - Was the week value reset to expectation?
 	  	testFramework.assert(0 == (int)Compare.week);
 	  	testFramework.next();
 
-//--------------GPSWeekSecond_resetTest_5 - Was the sow value reset to expectation?
+//--------------GPSWeekSecond_resetTest_2 - Was the sow value reset to expectation?
 	  	testFramework.assert(0 == (int)Compare.sow);
 	  	testFramework.next();
 
-//--------------GPSWeekSecond_resetTest_6 - Was the time system reset to expectation?
+//--------------GPSWeekSecond_resetTest_3 - Was the time system reset to expectation?
 		/*GPSWeekSecond resets to GPS TimeSystem!!!!*/
 	  	testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
 
