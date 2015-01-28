@@ -1,13 +1,83 @@
 #ifndef BUILD_CONFIG_H
 #define BUILD_CONFIG_H
 
-// define your source root and build root from CMake vars
-// so you can pass paths from CMake into C++
+//------------------------------------------------------------
+// Purpose:
+//     Define your source root and build root from CMake vars
+//     so you can pass paths from CMake into C++
+//------------------------------------------------------------
+// Notes:
+//     If you need these CMake variables for pure C code,
+//     then use the #define variables, otherwise, use the
+//     get methods defined in the gpstk namespace.
+//------------------------------------------------------------
+
 #define BUILD_PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
 #define BUILD_PROJECT_BINARY_DIR "@PROJECT_BINARY_DIR@"
 
-// const std::string gpstk::BUILD_PROJECT_SOURCE_DIR = "@PROJECT_SOURCE_DIR@"
-// const std::string gpstk::BUILD_PROJECT_BINARY_DIR = "@PROJECT_BINARY_DIR@"
+#include <string>
+
+namespace gpstk
+{
+
+  //----------------------------------------
+  // Purpose: get path separator character, e.g. ":" or ";"
+  // Usage:   std::string file_sep = gpstk::getPathSep()
+  //----------------------------------------
+  std::string getPathSep( void )
+  {
+    #ifdef _WIN32
+    const std::string path_sep(";");
+    #else
+    const std::string path_sep(":");
+    #endif
+
+    return( path_sep );
+  }
+
+  //----------------------------------------
+  // Purpose: get file system file separator character, e.g. "/" or "\"
+  // Usage:   std::string file_sep = gpstk::getFileSep()
+  //----------------------------------------
+  std::string getFileSep( void )
+  {
+    #ifdef _WIN32
+    const std::string file_sep( "\\" );
+    #else
+    const std::string file_sep("/");
+    #endif
+    return( file_sep );
+  }
+
+  //----------------------------------------
+  // Purpose: get file system path to top level of source tree
+  // Usage:   std::string src_path = gpstk::getPathSrc()
+  //----------------------------------------
+  std::string getPathSrc( void )
+  {
+    return( "@PROJECT_SOURCE_DIR@" );
+  }
+
+  //----------------------------------------
+  // Purpose: get file system path to location of gpstk data files
+  // Usage:   std::string data_path = gpstk::getPathData()
+  //----------------------------------------
+  std::string getPathData( void )
+  {
+    return( "@PROJECT_SOURCE_DIR@" + gpstk::getFileSep() + "data" );
+  }
+
+  //----------------------------------------
+  // Purpose: get file system path to location to write temp test output
+  // Usage:   std::string temp_path = gpstk::getPathTemp()
+  //----------------------------------------
+  std::string getPathTemp( void )
+  {
+    return( "@PROJECT_BINARY_DIR@" );
+  }
+
+
+}
 
 #endif // BUILD_CONFIG_H
 
