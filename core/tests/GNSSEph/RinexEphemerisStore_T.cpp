@@ -115,7 +115,7 @@ class RinexEphemerisStore_T
 			catch (...) 
 			{
 				cout << "Expected exception received from RinexEphemerisStore!!!!!!!!!" << endl;
-			}
+			} }
 */
 //=================================================================================================
 
@@ -145,17 +145,9 @@ class RinexEphemerisStore_T
 		{
 			TestUtil testFramework( "GPSEphemerisStore", "findEphemeris", __FILE__, __LINE__ );
 			testFramework.init();
-			ofstream fPRN1;
-			ofstream fPRN15;
-			ofstream fPRN32;
+			ofstream outputFileStream;
 
-			outputTestOutput1 = outputTestOutput + "findEph1.txt";
-			outputTestOutput15 = outputTestOutput + "findEph15.txt";
-			outputTestOutput32 = outputTestOutput + "findEph32.txt";
-
-			fPRN1.open (outputTestOutput1.c_str());
-			fPRN15.open (outputTestOutput15.c_str());
-			fPRN32.open (outputTestOutput32.c_str());
+			outputFileStream.open (findEphTestOutput.c_str());
 
 			RinexEphemerisStore Store;
 			Store.loadFile(inputRinexNavData.c_str());
@@ -169,9 +161,9 @@ class RinexEphemerisStore_T
 			  GStore.addEphemeris(GPSEphemeris(*it));
 			}
 
-			// debug dump of GStore
+			// debug dump of GStore for reference if needed
 			ofstream GDumpData;
-			GDumpData.open(outputDataDump.c_str());
+			GDumpData.open(gpsEphemerisStoreDumpOutput.c_str());
 			GStore.dump(GDumpData,1);
 			GDumpData.close();
 
@@ -217,37 +209,19 @@ class RinexEphemerisStore_T
 				catch (...) {testFramework.failTest();}
 
 				//Write out findEphemeris data to output files
-				fPRN1  << GStore.findEphemeris(sid1,ComTime);
-				fPRN15 << GStore.findEphemeris(sid15,ComTime);
-				fPRN32 << GStore.findEphemeris(sid32,ComTime);
+				outputFileStream  << GStore.findEphemeris(sid1,ComTime);
 			}
 			catch (Exception& e)
 			{
 				//cout << e;
 			}
 
-
-
-			fPRN1.close();
-			fPRN15.close();
-			fPRN32.close();
-
-			inputComparisonOutput1  = inputComparisonOutput + "findEph1.chk";
-			inputComparisonOutput15 = inputComparisonOutput + "findEph15.chk";
-			inputComparisonOutput32 = inputComparisonOutput + "findEph32.chk";
+			outputFileStream.close();
 
 			testFramework.changeSourceMethod("findEphemeris Output");
 
 //--------------RinexEphemerisStore_findEphTest_5 - Check findEphemeris output with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
-			testFramework.next();
-
-//--------------RinexEphemerisStore_findEphTest_6 - Check findEphemeris output with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
-			testFramework.next();
-
-//--------------RinexEphemerisStore_findEphTest_7 - Check findEphemeris output with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput32, inputComparisonOutput32, 0) );
+			testFramework.assert( testFramework.fileEqualTest( findEphTestOutput, findEphTestInput, 0) );
 			testFramework.next();
 
 			return testFramework.countFails();
@@ -270,17 +244,9 @@ class RinexEphemerisStore_T
 		{
 			TestUtil testFramework( "OrbitEphStore", "getXvt", __FILE__, __LINE__ );
 			testFramework.init();
-			ofstream fPRN1;
-			ofstream fPRN15;
-			ofstream fPRN32;
-
-			outputTestOutput1  = outputTestOutput + "getPrnXvt1.txt";
-			outputTestOutput15 = outputTestOutput + "getPrnXvt15.txt";
-			outputTestOutput32 = outputTestOutput + "getPrnXvt32.txt";
-
-			fPRN1.open ( outputTestOutput1.c_str() );
-			fPRN15.open( outputTestOutput15.c_str() );
-			fPRN32.open( outputTestOutput32.c_str() );
+			stringstream fPRN1;
+			stringstream fPRN15;
+			stringstream fPRN32;
 
 			RinexEphemerisStore Store;
 			Store.loadFile(inputRinexNavData.c_str());
@@ -322,9 +288,9 @@ class RinexEphemerisStore_T
 				xvt15 = Store.getXvt(sid15,ComTime);
 				xvt32 = Store.getXvt(sid32,ComTime);
 
-				fPRN1 << xvt1 << endl;
-				fPRN15 << xvt15 << endl;
-				fPRN32 << xvt32 << endl;
+				fPRN1 << xvt1;
+				fPRN15 << xvt15;
+				fPRN32 << xvt32;
 
 //--------------RinexEphemerisStore_getXvtTest_2 - Can I get an xvt for a non-real SV?
 				try 
@@ -355,26 +321,26 @@ class RinexEphemerisStore_T
 				//cout << e;
 			}
 
-			fPRN1.close(); 
-			fPRN15.close(); 
-			fPRN32.close();
 
-			inputComparisonOutput1  = inputComparisonOutput + "getPrnXvt1.chk";
-			inputComparisonOutput15 = inputComparisonOutput + "getPrnXvt15.chk";
-			inputComparisonOutput32 = inputComparisonOutput + "getPrnXvt32.chk";
+
+			std::string comparisonOutput1  = "x:(1.43293e+07, -2.70658e+06, -2.19986e+07), v:(354.696, 2812.26, -117.977), clk bias:3.42039e-05, clk drift:1.93268e-12, relcorr:-1.49802e-09";
+
+			std::string comparisonOutput15 = "x:(1.46708e+07, 7.54272e+06, 2.07205e+07), v:(-2147.79, 1575.58, 902.848), clk bias:0.000558473, clk drift:5.91172e-12, relcorr:2.04148e-08";
+
+			std::string comparisonOutput32 = "x:(8.40859e+06, 1.71989e+07, -1.87307e+07), v:(-2248.12, -606.201, -1577.94), clk bias:2.12814e-05, clk drift:3.41061e-12, relcorr:-5.04954e-09";
 
 			testFramework.changeSourceMethod("getXvt Output");
 
 //--------------RinexEphemerisStore_getXvtTest_4 - Compare data for SatID 1 with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.assert( fPRN1.str() == comparisonOutput1 );
 			testFramework.next();
 
 //--------------RinexEphemerisStore_getXvtTest_5 - Compare data for SatID 15 with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 0) );
+			testFramework.assert( fPRN15.str() == comparisonOutput15 );
 			testFramework.next();
 
 //--------------RinexEphemerisStore_getXvtTest_6 - Compare data for SatID 32 with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput32, inputComparisonOutput32, 0) );
+			testFramework.assert( fPRN32.str() == comparisonOutput32 );
 			testFramework.next();
 
 			return testFramework.countFails();
@@ -396,6 +362,8 @@ class RinexEphemerisStore_T
 
 NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary, but is
       being left here in case the functionality returns.
+
+NOTE: This test will need to be brought up to the newest standard should it be used again.
 ========================================================================================================================= */
 /*
 		int getXvt2Test (void)
@@ -605,17 +573,13 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 			TestUtil testFramework( "GPSEphemerisStore", "dump", __FILE__, __LINE__ );
 			testFramework.init();
 
-			ofstream DumpData0;
-			ofstream DumpData1;
-			ofstream DumpData2;
+			ofstream dumpTestOutputStreamForDetail0;
+			ofstream dumpTestOutputStreamForDetail1;
+			ofstream dumpTestOutputStreamForDetail2;
 
-			outputTestOutput1  = outputTestOutput + "DumpData1.txt";
-			outputTestOutput15 = outputTestOutput + "DumpData2.txt";
-			outputTestOutput32 = outputTestOutput + "DumpData3.txt";
-
-			DumpData0.open ( outputTestOutput1.c_str() );
-			DumpData1.open ( outputTestOutput15.c_str() );
-			DumpData2.open ( outputTestOutput32.c_str() );
+			dumpTestOutputStreamForDetail0.open ( dumpTestOutputForDetail0.c_str() );
+			dumpTestOutputStreamForDetail1.open ( dumpTestOutputForDetail1.c_str() );
+			dumpTestOutputStreamForDetail2.open ( dumpTestOutputForDetail2.c_str() );
 
 
 			RinexEphemerisStore Store;
@@ -624,15 +588,15 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 			try
 			{
 //--------------RinexEphemerisStore_dumpTest_1 - Check that dump( , detail = 1) will work with no exceptions
-				try {Store.dump(DumpData0,1); testFramework.passTest();}
+				try {Store.dump(dumpTestOutputStreamForDetail0,1); testFramework.passTest();}
 				catch (...) {testFramework.failTest();}
 
 //--------------RinexEphemerisStore_dumpTest_2 - Check that dump( , detail = 2) will work with no exceptions
-				try {Store.dump(DumpData1,2); testFramework.passTest();}
+				try {Store.dump(dumpTestOutputStreamForDetail1,2); testFramework.passTest();}
 				catch (...) {testFramework.failTest();}
 
 //--------------RinexEphemerisStore_dumpTest_3 - Check that dump( , detail = 3) will work with no exceptions
-				try {Store.dump(DumpData2,3); testFramework.passTest();}
+				try {Store.dump(dumpTestOutputStreamForDetail2,3); testFramework.passTest();}
 				catch (...) {testFramework.failTest();}
 
 
@@ -642,24 +606,20 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				//cout << e;
 			}
 
-			DumpData0.close();
-			DumpData1.close();
-			DumpData2.close();
+			dumpTestOutputStreamForDetail0.close();
+			dumpTestOutputStreamForDetail1.close();
+			dumpTestOutputStreamForDetail2.close();
 
-			inputComparisonOutput1  = inputComparisonOutput + "DumpData1.chk";
-			inputComparisonOutput15 = inputComparisonOutput + "DumpData2.chk";
-			inputComparisonOutput32 = inputComparisonOutput + "DumpData3.chk";
-
-//--------------RinexEphemerisStore_dumpTest_4 - Check dump( , detail = 1) output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 2) );
+//--------------RinexEphemerisStore_dumpTest_4 - Check dump( , detail = 0) output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0, dumpTestInputForDetail0, 2) );
 			testFramework.next();
 
-//--------------RinexEphemerisStore_dumpTest_5 - Check dump( , detail = 2) output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput15, inputComparisonOutput15, 2) );
+//--------------RinexEphemerisStore_dumpTest_5 - Check dump( , detail = 1) output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1, dumpTestInputForDetail1, 2) );
 			testFramework.next();
 
-//--------------RinexEphemerisStore_dumpTest_6 - Check dump( , detail = 3) output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput32, inputComparisonOutput32, 2) );
+//--------------RinexEphemerisStore_dumpTest_6 - Check dump( , detail = 2) output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2, dumpTestInputForDetail2, 2) );
 			testFramework.next();
 
 			return testFramework.countFails();
@@ -759,9 +719,8 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 			TestUtil testFramework( "OrbitEphStore", "edit", __FILE__, __LINE__ );
 			testFramework.init();
 
-			ofstream DumpData;
-			outputTestOutput1 = outputTestOutput + "editTest.txt";
-			DumpData.open (outputTestOutput1.c_str());
+			ofstream editTestOutputStream;
+			editTestOutputStream.open (editTestOutput.c_str());
 
 			RinexEphemerisStore Store;
 			Store.loadFile(inputRinexNavData.c_str());
@@ -791,17 +750,18 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				testFramework.assert(ComTMax == Store.getFinalTime());
 				testFramework.next();
 
-				Store.dump(DumpData,1);
+				Store.dump(editTestOutputStream,1);
 
 			}
 			catch (Exception& e)
 			{
 				//cout << e;
 			}
-			inputComparisonOutput1 = inputComparisonOutput + "editTest.chk";
-			DumpData.close();
+
+			editTestOutputStream.close();
+
 //--------------RinexEphemerisStore_editTest_4 - Check edited output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 0) );
 			testFramework.next();
 
 			return testFramework.countFails();
@@ -911,9 +871,8 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 			TestUtil testFramework( "OrbitEphStore", "clear", __FILE__, __LINE__ );
 			testFramework.init();
 
-			ofstream DumpData;
-			outputTestOutput1 = outputTestOutput + "clearTest.txt";
-			DumpData.open(outputTestOutput1.c_str());
+			ofstream clearTestOutputStream;
+			clearTestOutputStream.open(clearTestOutput.c_str());
 
 			RinexEphemerisStore Store;
 			Store.loadFile(inputRinexNavData.c_str());
@@ -932,17 +891,17 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				testFramework.assert(CommonTime::BEGINNING_OF_TIME == Store.getFinalTime());
 				testFramework.next();
 
-				Store.dump(DumpData,1);
+				Store.dump(clearTestOutputStream,1);
 			}
 			catch (Exception& e)
 			{
 				//cout << e;
 			}
-			DumpData.close();
-			inputComparisonOutput1  = inputComparisonOutput + "clearTest.chk";
+
+			clearTestOutputStream.close();
 
 //--------------RinexEphemerisStore_clearTest_4 - Check partially wiped output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 0) );
 			return testFramework.countFails();
 		}
 
@@ -968,9 +927,8 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 			TestUtil testFramework( "OrbitEphStore", "findUserOrbitEph", __FILE__, __LINE__ );
 			testFramework.init();
 
-			ofstream DumpData;
-			outputTestOutput1 = outputTestOutput + "findUserTest.txt";
-			DumpData.open(outputTestOutput1.c_str());
+			ofstream findUserTestOutputStream;
+			findUserTestOutputStream.open(findUserTestOutput.c_str());
 
 			RinexEphemerisStore Store;
 			Store.loadFile(inputRinexNavData.c_str());
@@ -1020,7 +978,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				orbEphStore.addEphemeris(Eph15);
 				orbEphStore.addEphemeris(Eph32);
 
-				orbEphStore.dump(DumpData,1);
+				orbEphStore.dump(findUserTestOutputStream,1);
 
 			}
 			catch (Exception& e)
@@ -1028,11 +986,10 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				//cout << e;
 			}
 
-			DumpData.close();
-			inputComparisonOutput1  = inputComparisonOutput + "findUserTest.chk";
+			findUserTestOutputStream.close();
 
-//--------------RinexEphemerisStore_findUserOrbEphTest_5 - Check partially findUserOrbitEph output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+//--------------RinexEphemerisStore_findUserOrbEphTest_5 - Check findUserOrbitEph output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( findUserTestOutput, findUserTestInput, 0) );
 			return testFramework.countFails();
 		}
 
@@ -1056,9 +1013,8 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 			TestUtil testFramework( "OrbitEphStore", "findNearOrbitEph", __FILE__, __LINE__ );
 			testFramework.init();
 
-			ofstream DumpData;
-			outputTestOutput1 = outputTestOutput + "findNearTest.txt";
-			DumpData.open(outputTestOutput1.c_str());
+			ofstream findNearTestOutputStream;
+			findNearTestOutputStream.open(findNearTestOutput.c_str());
 
 			RinexEphemerisStore Store;
 			Store.loadFile(inputRinexNavData.c_str());
@@ -1109,7 +1065,7 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				orbEphStore.addEphemeris(Eph15);
 				orbEphStore.addEphemeris(Eph32);
 
-				orbEphStore.dump(DumpData,1);
+				orbEphStore.dump(findNearTestOutputStream,1);
 
 			}
 			catch (Exception& e)
@@ -1117,11 +1073,11 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 				e.addLocation(FILE_LOCATION);
 				cout << e;
 			}
-			DumpData.close();
-			inputComparisonOutput1  = inputComparisonOutput + "findUserTest.chk";
 
-//--------------RinexEphemerisStore_findNearOrbEphTest_5 - Check partially findNearOrbitEph output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( outputTestOutput1, inputComparisonOutput1, 0) );
+			findNearTestOutputStream.close();
+
+//--------------RinexEphemerisStore_findNearOrbEphTest_5 - Check findNearOrbitEph output against its pre-determined standard
+			testFramework.assert( testFramework.fileEqualTest( findNearTestOutput, findNearTestInput, 0) );
 			return testFramework.countFails();
 		}
 
@@ -1200,43 +1156,65 @@ NOTE: getXvt with an IODC option is now deprecated. Test is no longer necessary,
 
 		void init( void )
 		{
-			dataFilePath = __FILE__;
-			dataFilePath = dataFilePath.substr(0, dataFilePath.find_last_of("\\/"));
 
-			inputRinexNavData        = dataFilePath  + "/" + "TestRinex06.031";
+			TestUtil test0;
+			std::string dataFilePath = test0.getDataPath();
+			std::string tempFilePath = test0.getTempPath();
+			std::string file_sep = "/";
 
-			outputTestOutput         =  dataFilePath + "/" + "Logs" + "/";
-			outputTestOutput1;
-			outputTestOutput15;
-			outputTestOutput32;
-			outputDataDump           =  dataFilePath + "/" + "DataDump.txt";
+			inputRinexNavData             = dataFilePath + file_sep + "test_input_rinex_nav_ephemerisData.031";
+			inputNotaFile                 = dataFilePath + file_sep + "NotaFILE";
 
-			inputNotaFile            =  dataFilePath + "/" + "NotaFILE";
+			findEphTestOutput             = tempFilePath + file_sep + "test_output_ephemeris_dump_findEph.txt";
+			findEphTestInput              = dataFilePath + file_sep + "test_input_ephemeris_dump_findEph.txt";
+			gpsEphemerisStoreDumpOutput   = tempFilePath + file_sep + "DataDump.txt";
 
-			inputComparisonOutput    =  dataFilePath + "/" + "Checks" + "/";
-			inputComparisonOutput1;
-			inputComparisonOutput15;
-			inputComparisonOutput32;
+			dumpTestOutputForDetail0      = tempFilePath + file_sep + "test_output_ephemeris_dump_detail0.txt";
+			dumpTestOutputForDetail1      = tempFilePath + file_sep + "test_output_ephemeris_dump_detail1.txt";
+			dumpTestOutputForDetail2      = tempFilePath + file_sep + "test_output_ephemeris_dump_detail2.txt";
+			dumpTestInputForDetail0       = dataFilePath + file_sep + "test_input_ephemeris_dump_detail0.txt";
+			dumpTestInputForDetail1       = dataFilePath + file_sep + "test_input_ephemeris_dump_detail1.txt";
+			dumpTestInputForDetail2       = dataFilePath + file_sep + "test_input_ephemeris_dump_detail2.txt";
+
+			editTestOutput                = tempFilePath + file_sep + "test_output_ephemeris_dump_edit.txt";
+			editTestInput                 = dataFilePath + file_sep + "test_input_ephemeris_dump_edit.txt";
+
+			clearTestOutput               = tempFilePath + file_sep + "test_output_ephemeris_dump_clear.txt";
+			clearTestInput                = dataFilePath + file_sep + "test_input_ephemeris_dump_clear.txt";
+
+			findUserTestOutput            = tempFilePath + file_sep + "test_output_ephemeris_dump_findUser.txt";
+			findUserTestInput             = dataFilePath + file_sep + "test_input_ephemeris_dump_findUser.txt";
+
+			findNearTestOutput            = tempFilePath + file_sep + "test_output_ephemeris_dump_findNear.txt";
+			findNearTestInput             = dataFilePath + file_sep + "test_input_ephemeris_dump_findNear.txt";
 		}
 
     private:
-
-        std::string dataFilePath;
-
         std::string inputRinexNavData;
-
-        std::string outputTestOutput;
-        std::string outputTestOutput1;
-        std::string outputTestOutput15;
-        std::string outputTestOutput32;
-        std::string outputDataDump;
-
         std::string inputNotaFile;
 
-	std::string inputComparisonOutput;
-	std::string inputComparisonOutput1;
-	std::string inputComparisonOutput15;
-	std::string inputComparisonOutput32;
+        std::string findEphTestOutput;
+        std::string findEphTestInput;
+        std::string gpsEphemerisStoreDumpOutput;
+
+	std::string dumpTestOutputForDetail0;
+	std::string dumpTestOutputForDetail1;
+	std::string dumpTestOutputForDetail2;
+	std::string dumpTestInputForDetail0;
+	std::string dumpTestInputForDetail1;
+	std::string dumpTestInputForDetail2;
+
+        std::string editTestOutput;
+        std::string editTestInput;
+
+        std::string clearTestOutput;
+        std::string clearTestInput;
+
+        std::string findUserTestOutput;
+	std::string findUserTestInput;
+
+	std::string findNearTestOutput;
+	std::string findNearTestInput;
 };
 
 int main() //Main function to initialize and run all tests above
