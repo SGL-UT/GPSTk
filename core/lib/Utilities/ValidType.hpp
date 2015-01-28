@@ -64,13 +64,13 @@ namespace gpstk
    {
    public:
       ValidType(const T& v):value(v),valid(true){};
-      ValidType():valid(false){};
+      ValidType():value(0),valid(false){};
       
       ValidType& operator=(const T& v) throw() {
          this->valid = true; this->value = v; return *this; };
       
-      ValidType& operator+=(const T& r) throw(){value+=r;};
-      ValidType& operator-=(const T& r) throw(){value-=r;};
+      ValidType& operator+=(const T& r) throw(){value+=r; return *this;};
+      ValidType& operator-=(const T& r) throw(){value-=r; return *this;};
 
       // A conversion operator, will throw an exception if the object
       // is marked invalid
