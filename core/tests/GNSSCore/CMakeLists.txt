@@ -20,6 +20,10 @@ add_executable(TropModel_T TropModel_T.cpp)
 target_link_libraries(TropModel_T gpstk)
 add_test(GNSSCore_TropModel* TropModel_T)
 
+add_executable(WxObsMap_T WxObsMap_T.cpp)
+target_link_libraries(WxObsMap_T gpstk)
+add_test(GNSSCore_WxObsMap WxObsMap_T)
+
 add_executable(Xvt_T Xvt_T.cpp)
 target_link_libraries(Xvt_T gpstk)
 add_test(GNSSCore_Xvt* Xvt_T)
