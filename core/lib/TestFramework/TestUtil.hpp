@@ -3,6 +3,7 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
+#include "build_config.h"
 
 //============================================================
 // class:   TestUtil
@@ -66,9 +67,43 @@ public:
       subtestID( 1 ),
       tolerance( 0 )
   {
+
       std::stringstream conversionStringStream;
       conversionStringStream << testLineInput;
       testFileLine = conversionStringStream.str();
+
+      // determine path to test data using
+      // variable set by CMake/Make in build_config.h
+      std::string source_root = BUILD_PROJECT_SOURCE_DIR;
+      std::string build_root  = BUILD_PROJECT_BINARY_DIR;
+      std::string file_sep    = "/";
+      dataPath = source_root + file_sep + "data";
+      tempPath = build_root + file_sep + "Testing" + file_sep + "Temporary";
+
+  }
+
+  //----------------------------------------
+  // Method:  getDataPath
+  // Purpose: get file system path to test input and baseline output data
+  // Usage:   std::string data_path = myTestUtil.getDataPath()
+  // Inputs:  0
+  // Outputs: std::string equal to path, with no trailing slash
+  //----------------------------------------
+  std::string getDataPath( void )
+  {
+    return( dataPath );
+  }
+
+  //----------------------------------------
+  // Method:  getTempPath
+  // Purpose: get file system path to location to write temp test output
+  // Usage:   std::string temp_path = myTestUtil.getTempPath()
+  // Inputs:  0
+  // Outputs: std::string equal to path, with no trailing slash
+  //----------------------------------------
+  std::string getTempPath( void )
+  {
+    return( tempPath );
   }
 
   //----------------------------------------
@@ -338,6 +373,10 @@ private:
   std::string sourceMethod;  // help locate source method causing a test failure
   std::string testFilename;  // help locate test file that discovered a failure
   std::string testFileLine;  // help locate test line where the failure occured
+
+  std::string dataPath;      // Full path to directory containing data files needed for testing
+  std::string tempPath;      // Full path to place where the test should write temporary data files
+
 
   int         failBit;       // store the result of a test (0=pass, 1=fail)
 

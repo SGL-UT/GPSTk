@@ -221,6 +221,14 @@ if( BUILD_EXT )
 endif()
 		
 #----------------------------------------
+# Get CMake vars into C++
+#----------------------------------------
+
+configure_file( "${PROJECT_SOURCE_DIR}/build_config.h.in" "${PROJECT_BINARY_DIR}/generated/build_config.h" )
+include_directories( "${PROJECT_BINARY_DIR}/generated/" ) 
+install( FILES "${PROJECT_BINARY_DIR}/generated/build_config.h" DESTINATION include )
+
+#----------------------------------------
 # Define core and ext library build targets
 #----------------------------------------
 	
