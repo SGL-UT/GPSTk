@@ -1,0 +1,13 @@
+#ifndef BUILD_CONFIG_H
+#define BUILD_CONFIG_H
+
+// define your source root and build root from CMake vars
+// so you can pass paths from CMake into C++
+#define BUILD_PROJECT_SOURCE_DIR "@PROJECT_SOURCE_DIR@"
+#define BUILD_PROJECT_BINARY_DIR "@PROJECT_BINARY_DIR@"
+
+// const std::string gpstk::BUILD_PROJECT_SOURCE_DIR = "@PROJECT_SOURCE_DIR@"
+// const std::string gpstk::BUILD_PROJECT_BINARY_DIR = "@PROJECT_BINARY_DIR@"
+
+#endif // BUILD_CONFIG_H
+
