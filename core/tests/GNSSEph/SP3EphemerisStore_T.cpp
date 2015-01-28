@@ -60,15 +60,16 @@ class SP3EphemerisStore_T
 ========================================================================================================================= */
 		void init( void )
 		{
-			dataFilePath = __FILE__;
-			dataFilePath = dataFilePath.substr(0, dataFilePath.find_last_of("\\/"));
+			TestUtil test0;
+			std::string dataFilePath = test0.getDataPath();
+			std::string tempFilePath = test0.getTempPath();
+			std::string file_sep = "/";
 
-			inputSP3Data             =  dataFilePath + "/" + "igs09000.sp3";
-			inputAPCData             =  dataFilePath + "/" + "apc01000";
+			inputSP3Data             =  dataFilePath + file_sep + "test_input_sp3_nav_ephemerisData.sp3";
+			inputAPCData             =  dataFilePath + file_sep + "test_input_sp3_nav_apcData.sp3";
+			inputNotaFile            =  dataFilePath + file_sep + "NotaFILE";
 
-			outputDataDump           =  dataFilePath + "/Logs/" + "SP3_DataDump.txt";
-
-			inputNotaFile            =  dataFilePath + "/" + "NotaFILE";
+			outputDataDump           =  tempFilePath + file_sep + "SP3_DataDump.txt";
 
 			inputComparisonOutput1 = "x:(-1.51906e+07, -2.15539e+07, 3.31227e+06), v:(488.793, 118.124, 3125.01), clk bias:1.68268e-05, clk drift:1.93783e-11, relcorr:-8.45152e-09";
 			inputComparisonOutput15 = "x:(-1.57075e+07, 1.72951e+07, 1.24252e+07), v:(408.54, -1568.11, 2651.16), clk bias:0.000411558, clk drift:3.22901e-12, relcorr:1.32734e-08";
