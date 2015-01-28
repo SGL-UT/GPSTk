@@ -67,18 +67,10 @@ public:
       subtestID( 1 ),
       tolerance( 0 )
   {
-
+      // convert int to string
       std::stringstream conversionStringStream;
       conversionStringStream << testLineInput;
       testFileLine = conversionStringStream.str();
-
-      // determine path to test data using
-      // variable set by CMake/Make in build_config.h
-      std::string source_root = BUILD_PROJECT_SOURCE_DIR;
-      std::string build_root  = BUILD_PROJECT_BINARY_DIR;
-      std::string file_sep    = "/";
-      dataPath = source_root + file_sep + "data";
-      tempPath = build_root + file_sep + "Testing" + file_sep + "Temporary";
 
   }
 
@@ -89,9 +81,9 @@ public:
   // Inputs:  0
   // Outputs: std::string equal to path, with no trailing slash
   //----------------------------------------
-  std::string getDataPath( void )
+  inline std::string getDataPath( void )
   {
-    return( dataPath );
+    return( gpstk::getPathData() );
   }
 
   //----------------------------------------
@@ -101,9 +93,9 @@ public:
   // Inputs:  0
   // Outputs: std::string equal to path, with no trailing slash
   //----------------------------------------
-  std::string getTempPath( void )
+  inline std::string getTempPath( void )
   {
-    return( tempPath );
+    return( gpstk::getPathTestTemp() );
   }
 
   //----------------------------------------
@@ -373,10 +365,6 @@ private:
   std::string sourceMethod;  // help locate source method causing a test failure
   std::string testFilename;  // help locate test file that discovered a failure
   std::string testFileLine;  // help locate test line where the failure occured
-
-  std::string dataPath;      // Full path to directory containing data files needed for testing
-  std::string tempPath;      // Full path to place where the test should write temporary data files
-
 
   int         failBit;       // store the result of a test (0=pass, 1=fail)
 
