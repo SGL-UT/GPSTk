@@ -67,8 +67,7 @@ class RinexMet_T
 
     public:
 
-        RinexMet_T( const std::string& data_path = "RinexMet_Logs" ):
-            dataFilePath( data_path )
+        RinexMet_T()
         {
             init();
         }
@@ -90,7 +89,12 @@ class RinexMet_T
 
     private:
 
+        // for version controled files needed for testing
         std::string dataFilePath;
+      
+        // for temporary ntermediate and output files 
+        // used during testing but not to be version controlled
+        std::string tempFilePath;
 
         //---------------------------------------- 
         // Input File descriptions
@@ -149,40 +153,41 @@ class RinexMet_T
 
 void RinexMet_T :: init( void )
 {
-    // Get the full file path the to source file, strip off the filename from the path
-    // and then append the data file subdirectory to the path 
-    std::string sourceFileName = __FILE__;
-    dataFilePath = sourceFileName.substr(0, sourceFileName.find_last_of("\\/")) + "/" + dataFilePath;
+
+    TestUtil test0;
+    std::string dataFilePath = test0.getDataPath();
+    std::string tempFilePath = test0.getTempPath();
 
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
+    std::string file_sep = "/";
 
-    inputRinexMetNormal       = dataFilePath  + "/" + "408_110a.04m"    ;
-    inputRinexMetBLL          = dataFilePath  + "/" + "BLL.04m"         ;
-    inputRinexMetNMF          = dataFilePath  + "/" + "NotMetFile.04m"  ;
-    inputRinexMetBOL          = dataFilePath  + "/" + "BOL.04m"         ;
-    inputRinexMetFER          = dataFilePath  + "/" + "FER.04m"         ;
-    inputRinexMetExtraH       = dataFilePath  + "/" + "ExtraH.04m"      ;
-    inputRinexMetUnSupRinex   = dataFilePath  + "/" + "UnSupRinex.04m"  ;
-    inputRinexMetMissingSPos  = dataFilePath  + "/" + "MissingEOH.04m"  ;
-    inputRinexMetContLines    = dataFilePath  + "/" + "ContLines10.04m" ;
-    inputRinexMetNoObs        = dataFilePath  + "/" + "NoObsData.04m"   ;
-    inputRinexMetSensorType   = dataFilePath  + "/" + "SensorTypeError.04m" ;
-    inputRinexMetObsHdrStrErr = dataFilePath  + "/" + "ObsHeaderStringError.04m" ;
-    inputRinexMetMissingMkr   = dataFilePath  + "/" + "MissingMarkerName";
-    inputRinexMetInvTimeFmt   = dataFilePath  + "/" + "InvalidTimeFormat.04m";
-    inputRinexMetFilterTest1  = dataFilePath  + "/" + "FilterTest1.04m"  ;
-    inputRinexMetFilterTest2  = dataFilePath  + "/" + "FilterTest2.04m"  ;
-    inputRinexMetFilterTest3  = dataFilePath  + "/" + "FilterTest3.04m"  ;
-    inputRinexMetFilterTest4  = dataFilePath  + "/" + "FilterTest4.04m"  ;
+    inputRinexMetNormal       = dataFilePath  + file_sep + "test_input_rinex_met_408_110a.04m"    ; // Formerly without the "test_input_rinex_met_" prefix string
+    inputRinexMetBLL          = dataFilePath  + file_sep + "test_input_rinex_met_BLL.04m"         ;
+    inputRinexMetNMF          = dataFilePath  + file_sep + "test_input_rinex_met_NotMetFile.04m"  ;
+    inputRinexMetBOL          = dataFilePath  + file_sep + "test_input_rinex_met_BOL.04m"         ;
+    inputRinexMetFER          = dataFilePath  + file_sep + "test_input_rinex_met_FER.04m"         ;
+    inputRinexMetExtraH       = dataFilePath  + file_sep + "test_input_rinex_met_ExtraH.04m"      ;
+    inputRinexMetUnSupRinex   = dataFilePath  + file_sep + "test_input_rinex_met_UnSupRinex.04m"  ;
+    inputRinexMetMissingSPos  = dataFilePath  + file_sep + "test_input_rinex_met_MissingEOH.04m"  ;
+    inputRinexMetContLines    = dataFilePath  + file_sep + "test_input_rinex_met_ContLines10.04m" ;
+    inputRinexMetNoObs        = dataFilePath  + file_sep + "test_input_rinex_met_NoObsData.04m"   ;
+    inputRinexMetSensorType   = dataFilePath  + file_sep + "test_input_rinex_met_SensorTypeError.04m" ;
+    inputRinexMetObsHdrStrErr = dataFilePath  + file_sep + "test_input_rinex_met_ObsHeaderStringError.04m" ;
+    inputRinexMetMissingMkr   = dataFilePath  + file_sep + "test_input_rinex_met_MissingMarkerName";
+    inputRinexMetInvTimeFmt   = dataFilePath  + file_sep + "test_input_rinex_met_InvalidTimeFormat.04m";
+    inputRinexMetFilterTest1  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest1.04m"  ;
+    inputRinexMetFilterTest2  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest2.04m"  ;
+    inputRinexMetFilterTest3  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest3.04m"  ;
+    inputRinexMetFilterTest4  = dataFilePath  + file_sep + "test_input_rinex_met_FilterTest4.04m"  ;
 
-    outputRinexMetHardCode    = dataFilePath  + "/" + "Output.txt";
-    outputRinexMetExtraOutput = dataFilePath  + "/" + "ExtraOutput.txt";
-    outputRinexMetContLines   = dataFilePath  + "/" + "OutputCont.txt";
-    outputRinexMetDumps       = dataFilePath  + "/" + "MetDumps";
-    outputRinexMetExceptions  = dataFilePath  + "/" + "OutputDataExceptions.txt";
-    outputRinexMetFilterTest  = dataFilePath  + "/" + "FilterOutput.txt" ;
+    outputRinexMetHardCode    = tempFilePath  + file_sep + "test_output_rinex_met_Output.txt";         // formerly Output.txt
+    outputRinexMetExtraOutput = tempFilePath  + file_sep + "test_output_rinex_met_ExtraOutput.txt";    // formerly ExtraOutput.txt
+    outputRinexMetContLines   = tempFilePath  + file_sep + "test_output_rinex_met_Cont.txt";           // formerly OutputCont.txt
+    outputRinexMetDumps       = tempFilePath  + file_sep + "test_output_rinex_met_Dumps.txt";          // formerly MetDumps
+    outputRinexMetExceptions  = tempFilePath  + file_sep + "test_output_rinex_met_DataExceptions.txt"; // formerly OutputDataExceptions.txt
+    outputRinexMetFilterTest  = tempFilePath  + file_sep + "test_output_rinex_met_Filter.txt" ;        // formerly FilterOutput.txt
 
 
 }

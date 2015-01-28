@@ -61,8 +61,7 @@ class RinexNav_T
     public:
 
         // constructor
-       RinexNav_T( const std::string& data_path = "RinexNav_Logs" ):
-            dataFilePath( data_path )
+       RinexNav_T()
         {
             init();
         }
@@ -111,32 +110,37 @@ class RinexNav_T
 
 void RinexNav_T :: init( void )
 {
-   // Get the full file path the to source file, strip off the filename from the path
-   // and then append the data file subdirectory to the path 
-   std::string sourceFileName = __FILE__;
-   dataFilePath = sourceFileName.substr(0, sourceFileName.find_last_of("\\/")) + "/" + dataFilePath;
 
-   inputRinexNavExample     = dataFilePath  + "/" + "RinexNavExample.99n";
+    TestUtil test0;
+    std::string dataFilePath = test0.getDataPath();
+    std::string tempFilePath = test0.getTempPath();
 
-   outputTestOutput         = dataFilePath + "/" + "TestOutput.99n";
-   outputTestOutput2        = dataFilePath + "/" + "TestOutput2.99n";
-   outputTestOutput3        = dataFilePath + "/" + "TestOutput3.99n";
-   outputRinexDump          = dataFilePath + "/" + "RinexDump";
+    //---------------------------------------- 
+    // Full file paths
+    //---------------------------------------- 
+    std::string file_sep = "/";
 
-   inputInvalidLineLength   = dataFilePath + "/" + "InvalidLineLength.99n";
-   inputNotaNavFile         = dataFilePath + "/" + "NotaNavFile.99n";
-   inputUnknownHeaderLabel  = dataFilePath + "/" + "UnknownHeaderLabel.99n";
-   inputIncompleteHeader    = dataFilePath + "/" + "IncompleteHeader.99n";
-   inputUnsupportedRinex    = dataFilePath + "/" + "UnsupportedRinex.99n";
-   inputBadHeader           = dataFilePath + "/" + "BadHeader.99n";
-   outputTestOutputHeader   = dataFilePath + "/" + "TestOutputHeader.99n";
+    inputRinexNavExample     = dataFilePath + file_sep + "test_input_rinex_nav_RinexNavExample.99n";
 
-   inputFilterStream1       = dataFilePath + "/" + "FilterTest1.99n";
-   inputFilterStream2       = dataFilePath + "/" + "FilterTest2.99n";
-   inputFilterStream3       = dataFilePath + "/" + "FilterTest3.99n";
-   outputFilterOutput       = dataFilePath + "/" + "FilterOutput.txt";
+    outputTestOutput         = tempFilePath + file_sep + "test_output_rinex_nav_TestOutput.99n";
+    outputTestOutput2        = tempFilePath + file_sep + "test_output_rinex_nav_TestOutput2.99n";
+    outputTestOutput3        = tempFilePath + file_sep + "test_output_rinex_nav_TestOutput3.99n";
+    outputRinexDump          = tempFilePath + file_sep + "test_output_rinex_nav_RinexDump";
 
-   outputRinexStore         = dataFilePath + "/" + "RinexStore.txt";
+    inputInvalidLineLength   = dataFilePath + file_sep + "test_input_rinex_nav_InvalidLineLength.99n";
+    inputNotaNavFile         = dataFilePath + file_sep + "test_input_rinex_nav_NotaNavFile.99n";
+    inputUnknownHeaderLabel  = dataFilePath + file_sep + "test_input_rinex_nav_UnknownHeaderLabel.99n";
+    inputIncompleteHeader    = dataFilePath + file_sep + "test_input_rinex_nav_IncompleteHeader.99n";
+    inputUnsupportedRinex    = dataFilePath + file_sep + "test_input_rinex_nav_UnsupportedRinex.99n";
+    inputBadHeader           = dataFilePath + file_sep + "test_input_rinex_nav_BadHeader.99n";
+    outputTestOutputHeader   = tempFilePath + file_sep + "test_output_rinex_nav_TestOutputHeader.99n";
+
+    inputFilterStream1       = dataFilePath + file_sep + "test_input_rinex_nav_FilterTest1.99n";
+    inputFilterStream2       = dataFilePath + file_sep + "test_input_rinex_nav_FilterTest2.99n";
+    inputFilterStream3       = dataFilePath + file_sep + "test_input_rinex_nav_FilterTest3.99n";
+    outputFilterOutput       = tempFilePath + file_sep + "test_output_rinex_nav_FilterOutput.txt";
+
+    outputRinexStore         = tempFilePath + file_sep + "test_output_rinex_nav_RinexStore.txt";
 
 }
 
