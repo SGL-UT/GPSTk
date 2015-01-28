@@ -55,8 +55,7 @@ class RinexObs_T
     public:
 
         // constructor
-       RinexObs_T( const std::string& data_path = "RinexObs_Logs" ):
-            dataFilePath( data_path )
+       RinexObs_T()
         {
             init();
         }
@@ -109,39 +108,43 @@ class RinexObs_T
 void RinexObs_T :: init( void )
 {
 
-   // Get the full file path the to source file, strip off the filename from the path
-   // and then append the data file subdirectory to the path
-   std::string sourceFileName = __FILE__;
-   dataFilePath = sourceFileName.substr(0, sourceFileName.find_last_of("\\/")) + "/" + dataFilePath;
+    TestUtil test0;
+    std::string dataFilePath = test0.getDataPath();
+    std::string tempFilePath = test0.getTempPath();
 
-   dataRinexObsFile            = dataFilePath + "/" + "RinexObsFile.06o";
-   dataIncompleteHeader        = dataFilePath + "/" + "IncompleteHeader.06o";
-   dataInvalidLineLength       = dataFilePath + "/" + "InvalidLineLength.06o";
-   dataInvalidNumPRNWaveFact   = dataFilePath + "/" + "InvalidNumPRNWaveFact.06o";
-   dataNotObs                  = dataFilePath + "/" + "NotObs.06o";
-   dataSystemGeosync           = dataFilePath + "/" + "SystemGeosync.06o";
-   dataSystemGlonass           = dataFilePath + "/" + "SystemGlonass.06o";
-   dataSystemMixed             = dataFilePath + "/" + "SystemMixed.06o";
-   dataSystemTransit           = dataFilePath + "/" + "SystemTransit.06o";
-   dataUnSupVersion            = dataFilePath + "/" + "UnSupVersion.06o";
-   dataRinexContData           = dataFilePath + "/" + "RinexContData.06o";
+    //---------------------------------------- 
+    // Full file paths
+    //---------------------------------------- 
+    std::string file_sep = "/";
 
-   dataBadEpochLine            = dataFilePath + "/" + "BadEpochLine.06o";
-   dataBadEpochFlag            = dataFilePath + "/" + "BadEpochFlag.06o";
-   dataBadLineSize             = dataFilePath + "/" + "BadLineSize.06o";
-   dataInvalidTimeFormat       = dataFilePath + "/" + "InvalidTimeFormat.06o";
+    dataRinexObsFile            = dataFilePath + file_sep + "test_input_rinex_obs_RinexObsFile.06o";
+    dataIncompleteHeader        = dataFilePath + file_sep + "test_input_rinex_obs_IncompleteHeader.06o";
+    dataInvalidLineLength       = dataFilePath + file_sep + "test_input_rinex_obs_InvalidLineLength.06o";
+    dataInvalidNumPRNWaveFact   = dataFilePath + file_sep + "test_input_rinex_obs_InvalidNumPRNWaveFact.06o";
+    dataNotObs                  = dataFilePath + file_sep + "test_input_rinex_obs_NotObs.06o";
+    dataSystemGeosync           = dataFilePath + file_sep + "test_input_rinex_obs_SystemGeosync.06o";
+    dataSystemGlonass           = dataFilePath + file_sep + "test_input_rinex_obs_SystemGlonass.06o";
+    dataSystemMixed             = dataFilePath + file_sep + "test_input_rinex_obs_SystemMixed.06o";
+    dataSystemTransit           = dataFilePath + file_sep + "test_input_rinex_obs_SystemTransit.06o";
+    dataUnSupVersion            = dataFilePath + file_sep + "test_input_rinex_obs_UnSupVersion.06o";
+    dataRinexContData           = dataFilePath + file_sep + "test_input_rinex_obs_RinexContData.06o";
 
-   dataFilterTest1             = dataFilePath + "/" + "FilterTest1.06o";
-   dataFilterTest2             = dataFilePath + "/" + "FilterTest2.06o";
-   dataFilterTest3             = dataFilePath + "/" + "FilterTest3.06o";
-   dataFilterTest4             = dataFilePath + "/" + "FilterTest4.06o";
+    dataBadEpochLine            = dataFilePath + file_sep + "test_input_rinex_obs_BadEpochLine.06o";
+    dataBadEpochFlag            = dataFilePath + file_sep + "test_input_rinex_obs_BadEpochFlag.06o";
+    dataBadLineSize             = dataFilePath + file_sep + "test_input_rinex_obs_BadLineSize.06o";
+    dataInvalidTimeFormat       = dataFilePath + file_sep + "test_input_rinex_obs_InvalidTimeFormat.06o";
 
-   dataTestOutput              = dataFilePath + "/" + "TestOutput.06o";
-   dataTestOutput2             = dataFilePath + "/" + "TestOutput2.06o";
-   dataTestOutput3             = dataFilePath + "/" + "TestOutput3.06o";
-   dataTestOutputObsDump       = dataFilePath + "/" + "ObsDump.06o";
-   dataTestOutputDataException = dataFilePath + "/" + "DataExceptionOutput.06o";
-   dataTestFilterOutput        = dataFilePath + "/" + "FilterOutput.txt";
+    dataFilterTest1             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest1.06o";
+    dataFilterTest2             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest2.06o";
+    dataFilterTest3             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest3.06o";
+    dataFilterTest4             = dataFilePath + file_sep + "test_input_rinex_obs_FilterTest4.06o";
+
+    dataTestOutput              = tempFilePath + file_sep + "test_output_rinex_obs_TestOutput.06o";
+    dataTestOutput2             = tempFilePath + file_sep + "test_output_rinex_obs_TestOutput2.06o";
+    dataTestOutput3             = tempFilePath + file_sep + "test_output_rinex_obs_TestOutput3.06o";
+    dataTestOutputObsDump       = tempFilePath + file_sep + "test_output_rinex_obs_ObsDump.06o";
+    dataTestOutputDataException = tempFilePath + file_sep + "test_output_rinex_obs_DataExceptionOutput.06o";
+    dataTestFilterOutput        = tempFilePath + file_sep + "test_output_rinex_obs_FilterOutput.txt";
 
 }
 
