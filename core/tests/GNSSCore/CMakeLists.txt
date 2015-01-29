@@ -12,6 +12,10 @@ add_executable(IonoModelStore_T IonoModelStore_T.cpp)
 target_link_libraries(IonoModelStore_T gpstk)
 add_test(GNSSCore_IonoModelStore* IonoModelStore_T)
 
+add_executable(ObsID_T ObsID_T.cpp)
+target_link_libraries(ObsID_T gpstk)
+add_test(GNSSCore_ObsID ObsID_T)
+
 add_executable(Position_T Position_T.cpp)
 target_link_libraries(Position_T gpstk)
 add_test(GNSSCore_Position Position_T)
