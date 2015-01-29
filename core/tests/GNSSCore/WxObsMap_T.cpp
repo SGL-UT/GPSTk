@@ -44,7 +44,7 @@
 class WxObsMap_T
 {
 	public: 
-	WxObsMap_T(){ eps = 1E-12; }// Default Constructor, set the precision value
+	WxObsMap_T(){ singlePrecisionError = 1E-7; }// Default Constructor, set the precision value for single precision. Note WxObsMap stores floating point values in single precision.
 	~WxObsMap_T() {} // Default Desructor
 
 //================================================================
@@ -85,15 +85,15 @@ class WxObsMap_T
 		testFramework.next();
 
 //--------------WxObsMap_observationsTest_6 - Was the temperature value set correctly?
-		testFramework.assert(abs(Compare1.temperature - 100) < eps);
+		testFramework.assert(abs(Compare1.temperature - 100) < singlePrecisionError);
 		testFramework.next();
 
 //--------------WxObsMap_observationsTest_7 - Was the pressure value set correctly?
-		testFramework.assert(abs(Compare1.pressure - 0.5) < eps);
+		testFramework.assert(abs(Compare1.pressure - 0.5) < singlePrecisionError);
 		testFramework.next();
 
 //--------------WxObsMap_observationsTest_8 - Was the humidity value set correctly?
-		testFramework.assert(abs(Compare1.humidity - 0.8) < eps);
+		testFramework.assert(abs(Compare1.humidity - 0.8) < singlePrecisionError);
 		testFramework.next();
 
 //--------------WxObsMap_observationsTest_9 - Was the temperature source set correctly?
@@ -274,10 +274,10 @@ class WxObsMap_T
 		gpstk::WxObservation obs10(cTime, 107.5, 0.0575, 0.0875);
 
 //--------------WxObsMap_WxObsDataTest_12 - Did the getWxObservation perform linear interpolation succesfully?
-		testFramework.assert(abs(obs9.t - obs10.t) < eps && 
-						abs(obs9.temperature - obs10.temperature) < eps&&
-						abs(obs9.pressure - obs10.pressure) < eps &&
-						abs(obs9.humidity - obs10.humidity) < eps);
+		testFramework.assert(abs(obs9.t - obs10.t) < singlePrecisionError && 
+						abs(obs9.temperature - obs10.temperature) < singlePrecisionError&&
+						abs(obs9.pressure - obs10.pressure) < singlePrecisionError &&
+						abs(obs9.humidity - obs10.humidity) < singlePrecisionError);
 		testFramework.next();
 		
 		return testFramework.countFails();
@@ -286,7 +286,7 @@ class WxObsMap_T
 //================================================================	
 
 	private:
-		double eps;
+		double singlePrecisionError;
 
 };
 
