@@ -569,7 +569,7 @@ class StringUtils_T
 			stringstream printableMessageStream;
 
 			char hexDumpArray[] =
-			{ 0x00, 0x10, 0x30, 0x33, 0x30, 0x31, 0x30, 0x35,
+			{ 0x61, 0x66, 0x30, 0x33, 0x30, 0x31, 0x30, 0x35,
 			  0x3A, 0x65, 0x70, 0x68, 0x20, 0x3A, 0x30, 0x3A,
 			  0x35, 0x32, 0x36, 0x34, 0x30, 0x2E, 0x33, 0x33,
 			  0x33, 0x34, 0x30, 0x32, 0x37, 0x37, 0x37, 0x37,
@@ -600,9 +600,9 @@ class StringUtils_T
 			  0x63, 0x34, 0x36, 0x36, 0x63, 0x31, 0x20, 0x62,
 			  0x64, 0x30, 0x63, 0x36, 0x64, 0x63, 0x20, 0x33,
 			  0x39, 0x31, 0x62, 0x33, 0x37, 0x38, 0x33, 0x20,
-			  0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, 0x85 };
+			  0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, 0x65 };
 
-			correctHexDumpStream << "0000: 00 10 30 33 30 31 30 35  3a 65 70 68 20 3a 30 3a    ..030105:eph :0:" << endl 
+			correctHexDumpStream << "0000: 61 66 30 33 30 31 30 35  3a 65 70 68 20 3a 30 3a    af030105:eph :0:" << endl 
 					     << "0010: 35 32 36 34 30 2e 33 33  33 34 30 32 37 37 37 37    52640.3334027777" << endl
 					     << "0020: 37 37 37 38 41 20 52 61  6e 64 6f 6d 20 4d 65 73    7778A Random Mes" << endl
 					     << "0030: 73 61 67 65 32 35 39 32  35 39 32 34 20 32 20 35    sage25925924 2 5" << endl
@@ -617,9 +617,9 @@ class StringUtils_T
 					     << "00c0: 33 36 32 63 34 38 20 31  31 39 39 20 32 32 63 30    362c48 1199 22c0" << endl
 					     << "00d0: 61 66 30 33 20 31 37 37  30 34 61 37 34 20 33 61    af03 17704a74 3a" << endl
 					     << "00e0: 63 34 36 36 63 31 20 62  64 30 63 36 64 63 20 33    c466c1 bd0c6dc 3" << endl
-					     << "00f0: 39 31 62 33 37 38 33 20  33 65 30 34 30 63 66 85    91b3783 3e040cf." << endl;
+					     << "00f0: 39 31 62 33 37 38 33 20  33 65 30 34 30 63 66 65    91b3783 3e040cfe" << endl;
 
-			correctConfigHexDumpStream << "      00000000:  0010 3033 3031 3035 3A65 7068 203A 303A '..030105:eph :0:'\n" 
+			correctConfigHexDumpStream << "      00000000:  6166 3033 3031 3035 3A65 7068 203A 303A 'af030105:eph :0:'\n" 
 					     << "      00000010:  3532 3634 302E 3333 3334 3032 3737 3737 '52640.3334027777'\n" 
 					     << "      00000020:  3737 3738 4120 5261 6E64 6F6D 204D 6573 '7778A Random Mes'\n" 
 					     << "      00000030:  7361 6765 3235 3932 3539 3234 2032 2035 'sage25925924 2 5'\n" 
@@ -634,7 +634,7 @@ class StringUtils_T
 					     << "      000000C0:  3336 3263 3438 2031 3139 3920 3232 6330 '362c48 1199 22c0'\n"
 					     << "      000000D0:  6166 3033 2031 3737 3034 6137 3420 3361 'af03 17704a74 3a'\n" 
 					     << "      000000E0:  6334 3636 6331 2062 6430 6336 6463 2033 'c466c1 bd0c6dc 3'\n"
-					     << "      000000F0:  3931 6233 3738 3320 3365 3034 3063 6685 '91b3783 3e040cf.'\n";
+					     << "      000000F0:  3931 6233 3738 3320 3365 3034 3063 6665 '91b3783 3e040cfe'\n";
 
 			string hexDumpString(hexDumpArray, sizeof(hexDumpArray));
 			hexDumpData(hexDumpStream, hexDumpString);
@@ -652,11 +652,11 @@ class StringUtils_T
 			testFramework.next();
 
 
-			correctPrintableMessage << "^@^P030105:eph :0:52640.33340277777778A Random Message25925924"
+			correctPrintableMessage << "af030105:eph :0:52640.33340277777778A Random Message25925924"
 						<< " 2 52640.338836342592593 2 85412 1 1 0 1 1 4 2 4 0 0 3 1199 22c0af03"
 						<< " 177029e4 af4001f e61b58a 55f3750 4cca887 115d7cfc 3ad2048a cea"
-						<< " 362c48 1199 22c0af03 17704a74 3ac466c1 bd0c6dc 391b3783 3e040cf<85>";
-			printableMessageStream << printable(hexDumpString);
+						<< " 362c48 1199 22c0af03 17704a74 3ac466c1 bd0c6dc 391b3783 3e040cfe" << endl;
+			printableMessageStream << printable(hexDumpString) << endl;
 			testFramework.changeSourceMethod("printable");
 //--------------StringUtils_hexDumpTest_2 - Verify that prettyPrint works
 			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str());
