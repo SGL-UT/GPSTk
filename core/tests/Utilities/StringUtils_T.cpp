@@ -63,27 +63,32 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string baseString= "1234567890";
-			string resultString;
-			string manipulatedString;
+			string baseString= "1234567890"; //base string to manipulate
+			string resultString;             //storage for the correct response
+			string manipulatedString;        //storage for the manipulated base string
 			char fillerChar = '-';
 
 			manipulatedString = baseString;
 			resultString = string(6, fillerChar) + baseString;
+			//Add six filler characters to the front of the string 
 			rightJustify(manipulatedString, manipulatedString.length() + 6, fillerChar);
+
 //--------------StringUtils_justificationTest_1 - Verify that rightJustify works by appending 6 '-'s to the left
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString + string(6, fillerChar);
+			//Add six filler characters to the end of the string
 			leftJustify(manipulatedString, manipulatedString.length()+6, fillerChar);
+
 //--------------StringUtils_justificationTest_2 - Verify that leftJustify works by appending 6 '-'s to the right
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 			  
 			manipulatedString = baseString;
 			resultString = string(3, fillerChar) + baseString + string(3, fillerChar);
+			//Add three filler characters to both ends of the string
 			center(manipulatedString, manipulatedString.length()+6, fillerChar);
 //--------------StringUtils_justificationTest_3 - Verify that leftJustify works by appending 3 '-'s to both sides
 			testFramework.assert(manipulatedString == resultString);
@@ -104,36 +109,44 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string baseString= "---1234567890---";
-			string resultString;
-			string manipulatedString;
+			string baseString= "---1234567890---";  //base string to manipulate
+			string resultString;                    //storage for the correct response
+			string manipulatedString;               //storage for the manipulated base string
 			char charToBeRemoved = '-';
 			string stringToBeRemoved = "--";
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(1,string::npos);
+			//Strip one of the character -'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, charToBeRemoved, 1);
+
 //--------------StringUtils_stripLeadingTest_1 - Verify that stripLeading works by removing 1 '-' from the beginning of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2,string::npos);
+			//Strip one of the string --'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, stringToBeRemoved, 1);
+
 //--------------StringUtils_stripLeadingTest_2 -Verify that stripLeading works by removing 1 '--' from the beginning of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(3,string::npos);
+			//Strip all of the character -'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, charToBeRemoved);
+
 //--------------StringUtils_stripLeadingTest_3 - Verify that stripLeading works by removing all '-' from the beginning of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2,string::npos);
+			//Strip all of the string --'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, stringToBeRemoved);
+
 //--------------StringUtils_stripLeadingTest_4 - Verify that stripLeading works by removing all '--' from the beginning of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
@@ -152,36 +165,44 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string baseString= "---1234567890---";
-			string resultString;
-			string manipulatedString;
+			string baseString= "---1234567890---"; //base string to manipulate
+			string resultString;                   //storage for the correct response
+			string manipulatedString;              //storage for the manipulated base string
 			char charToBeRemoved = '-';
 			string stringToBeRemoved = "--";
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-1);
+			//Strip one of the character -'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, charToBeRemoved, 1);
+
 //--------------StringUtils_stripTrailingTest_1 - Verify that stripTrailing works by removing 1 '-' from the end of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-2);
+			//Strip one of the string --'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, stringToBeRemoved, 1);
+
 //--------------StringUtils_stripTrailingTest_2 - Verify that stripTrailing works by removing 1 '--' from the end of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-3);
+			//Strip all of the character -'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, charToBeRemoved);
+
 //--------------StringUtils_stripTrailingTest_3 - Verify that stripTrailing works by removing all '-' from the end of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-2);
+			//Strip all of the string --'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, stringToBeRemoved);
+
 //--------------StringUtils_stripTrailingTest_4 - Verify that stripTrailing works by removing all '--' from the end of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
@@ -200,36 +221,44 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string baseString= "---1234567890---";
-			string resultString;
-			string manipulatedString;
+			string baseString= "---1234567890---"; //base string to manipulate
+			string resultString;                   //storage for the correct response
+			string manipulatedString;              //storage for the manipulated base string
 			char charToBeRemoved = '-';
 			string stringToBeRemoved = "--";
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(1,baseString.length()-2);
+			//Strip one of the character -'s from both ends of the string
 			manipulatedString = strip(manipulatedString, charToBeRemoved, 1);
+
 //--------------StringUtils_stripTest_1 - Verify that strip works by removing 1 '-' from both ends of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2,baseString.length()-4);
+			//Strip one of the string --'s from both ends of the string
 			manipulatedString = strip(manipulatedString, stringToBeRemoved, 1);
+
 //--------------StringUtils_stripTest_2 - Verify that strip works by removing 1 '--' from both ends of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(3, baseString.length()-6);
+			//Strip all of the character -'s from both ends of the string
 			manipulatedString = strip(manipulatedString, charToBeRemoved);
+
 //--------------StringUtils_stripTest_3 - Verify that strip works by removing all '-' from both ends of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2, baseString.length()-4);
+			//Strip all of the string --'s from both ends of the string
 			manipulatedString = strip(manipulatedString, stringToBeRemoved);
+
 //--------------StringUtils_stripTest_4 - Verify that strip works by removing all '--' from both ends of the string
 			testFramework.assert(manipulatedString == resultString);
 			testFramework.next();
@@ -248,29 +277,27 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string baseString = "Hello World! I am the Translation test String!";
-			string manipulatedString;
-			string translateFrom1 = "aeoWTS!";
-			string translateTo1 = "@30M7Q1";
-			string expectedResult1 = "H3ll0 M0rld1 I @m th3 7r@nsl@ti0n t3st Qtring1";
-			string translateFrom2 = "aeoWTS!";
-			string translateTo2 = "@30M7";
-			string expectedResult2 = "H3ll0 M0rld  I @m th3 7r@nsl@ti0n t3st  tring ";
-			string translateFrom3 = "aeoWTS!";
-			string translateTo3 = "aeoWTS!";
-			string expectedResult3 = "Hello World! I am the Translation test String!";
+			string baseString = "Hello World! I am the Translation test String!";      //Original String to replace characters on
+			string manipulatedString;                                                  //storage for manipulated base string
+			string translateFrom = "aeoWTS!";                                          //Characters to replace
+			string translateTo1 = "@30M7Q1";                                           //Characters that will replace the ones in translateFrom
+			string expectedResult1 = "H3ll0 M0rld1 I @m th3 7r@nsl@ti0n t3st Qtring1"; //Correctly translated base string with translateTo1
+			string translateTo2 = "@30M7";                                             //Characters that will replace the ones in translateFrom
+			string expectedResult2 = "H3ll0 M0rld  I @m th3 7r@nsl@ti0n t3st  tring "; //Correctly translated base string with translateTo2
+			string translateTo3 = "aeoWTS!";                                           //Characters that will replace the ones in translateFrom
+			string expectedResult3 = "Hello World! I am the Translation test String!"; //Correctly translated base string with translateTo3
 
-			manipulatedString = translate(baseString, translateFrom1, translateTo1);
+			manipulatedString = translate(baseString, translateFrom, translateTo1);
 //--------------StringUtils_translateTest_1 - Verify that translate works by changing multiple characters
 			testFramework.assert(manipulatedString == expectedResult1);
 			testFramework.next();
 
-			manipulatedString = translate(baseString, translateFrom2, translateTo2);
+			manipulatedString = translate(baseString, translateFrom, translateTo2);
 //--------------StringUtils_translateTest_2 - Verify that translate replaces unmatched characters with blanks
 			testFramework.assert(manipulatedString == expectedResult2);
 			testFramework.next();
 
-			manipulatedString = translate(baseString, translateFrom3, translateTo3);
+			manipulatedString = translate(baseString, translateFrom, translateTo3);
 //--------------StringUtils_translateTest_2 - Verify that translate won't change things when supplied the same set of characters
 			testFramework.assert(manipulatedString == expectedResult3);
 			testFramework.next();
@@ -289,11 +316,11 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string baseString = "12345.67890";
-			int resultingInt, comparisonInt = 12345;
-			double resultingDouble, comparisonDouble = 12345.67890;
-			float resultingFloat, comparisonFloat = 12345.67890;
-			long double resultingLongDouble, comparisonLongDouble = 12345.67890L;
+			string baseString = "12345.67890";                                    //String to convert to a number
+			int resultingInt, comparisonInt = 12345;                              //Storage for converted string and the expected result value
+			double resultingDouble, comparisonDouble = 12345.67890;               //Storage for converted string and the expected result value
+			float resultingFloat, comparisonFloat = 12345.67890;                  //Storage for converted string and the expected result value
+			long double resultingLongDouble, comparisonLongDouble = 12345.67890L; //Storage for converted string and the expected result value
 
 			resultingInt = asInt(baseString);
 //--------------StringUtils_stringToNumberTest_1 - Verify that asInt works as intended
@@ -335,11 +362,11 @@ class StringUtils_T
 			TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string convertedString;
-			int sampleInt = 1234567890;
-			double sampleDouble = 12345.67890;
-			float sampleFloat = 12345.7;
-			long double sampleLongDouble = 12345.67890L;
+			string convertedString;                     //Storage for converted number
+			int sampleInt = 1234567890;                 //Example integer to test
+			double sampleDouble = 12345.67890;          //Example double to test
+			float sampleFloat = 12345.7;                //Example float to test
+			long double sampleLongDouble = 12345.67890L;//Example long double to test
 
 			
 			convertedString = asString(sampleInt);
@@ -368,17 +395,20 @@ class StringUtils_T
 
 /* =========================================================================================================================
 	Tests for the hex converters
+
+	Given strings with hex and decimal values, convert the values to the opposite type
+        then compare with expected results
 ========================================================================================================================= */
 		int hexConversionTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string initialHexString = "0x100 foo";
-			string correctConvertedHexString = "256 foo";
-			string initialDecimalString ="100 bar";
-			string correctConvertedDecimalString = "64 bar";
-			string manipulatedResult;
+			string initialHexString = "0x100 foo";           //Example string with hex values in it
+			string correctConvertedHexString = "256 foo";    //Resulting string when the hex -> decimal conversion was made
+			string initialDecimalString ="100 bar";          //Example decimal string
+			string correctConvertedDecimalString = "64 bar"; //Resulting string when the decimal -> hex conversion was made
+			string manipulatedResult;                        //Storage for manipulated strings
 
 			manipulatedResult = x2d(initialHexString);
 //--------------StringUtils_hexConversionTest_1 - Verify that x2d works
@@ -396,6 +426,10 @@ class StringUtils_T
 
 /* =========================================================================================================================
 	Tests for the string replace methods
+
+	Provided a string, replace substrings within it with other substrings and compare with expected results.
+
+        WARNING: Method will perform the replace on the string passed to it as well!
 ========================================================================================================================= */
 		int stringReplaceTest( void )
 		{
@@ -432,6 +466,8 @@ class StringUtils_T
 
 /* =========================================================================================================================
 	Tests for the word methods
+
+	WARNING: Removal methods will perform the replace on the string passed to it as well!
 ========================================================================================================================= */
 		int wordTest( void )
 		{
@@ -439,16 +475,16 @@ class StringUtils_T
 			testFramework.init();
 
 
-			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    ";
-			string firstWordInString = "The";
-			int numberOfWords = 9;
-			int resultInt;
-			string fifthWordInString = "Jumps";
-			string removedFourthFifthWords = "      The  Quick    Brown  Over    The  Lazy    Dog.    ";
-			string removedFirstWord = "Quick    Brown  Over    The  Lazy    Dog.    ";
-			string removedSixthWord = "Quick    Brown  Over    The  Lazy"; 
-			string allWordsFromFourthOn = "The  Lazy";
-			string resultString;
+			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    "; //Original string to manipulate
+			string firstWordInString = "The"; //Expected result for use of firstWord with the original string
+			int numberOfWords = 9;            //Number of words in the original string
+			int resultInt;                    
+			string fifthWordInString = "Jumps"; //Expected result for the fifth word in the original string
+			string removedFourthFifthWords = "      The  Quick    Brown  Over    The  Lazy    Dog.    "; //Expected result for removal of the 4th and 5th words
+			string removedFirstWord = "Quick    Brown  Over    The  Lazy    Dog.    "; //Expected result for the removal of the 1st word in removedFourthFifthWords
+			string removedSixthWord = "Quick    Brown  Over    The  Lazy"; //Expected result of the removal of the sixth word in removedFirstWord
+			string allWordsFromFourthOn = "The  Lazy"; //Expected result of the reporting of the words from the fourth to the end of removedSixthWord
+			string resultString; //String to store resulting data.
 
 
 			resultString = firstWord(originalString);
@@ -498,18 +534,21 @@ class StringUtils_T
 
 /* =========================================================================================================================
 	Tests for the regular expression methods
+
+	Provided a string and a regular expression query, the isLike method will return 0 or 1 if a match is found.
+        Matches will then provide the found result.
 ========================================================================================================================= */
 		int regularExpressionsTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
 			testFramework.init();
 
-			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    ";
-			int resultInt;
-			string testedRegularExpression1 = "Br.*Over.*";
-			string testedRegularExpression2 = "Br.Over.*";
-			string resultString;
-			string correctResult = "Brown  Fox     Jumps  Over    The  Lazy    Dog.    ";
+			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    "; //String to be searched
+			int resultInt;                                                                                     //Storage for isLike result
+			string testedRegularExpression1 = "Br.*Over.*";                                                    //A query which will be found
+			string testedRegularExpression2 = "Br.Over.*";                                                     //A query which will not be found
+			string resultString;                                                                               //Storage for matches method
+			string correctResult = "Brown  Fox     Jumps  Over    The  Lazy    Dog.    ";                      //Expected string to be found
 
 
 			resultInt = isLike(originalString, testedRegularExpression1);
@@ -533,6 +572,8 @@ class StringUtils_T
 
 /* =========================================================================================================================
 	Test for the prettyPrint method
+
+	prettyPrint will take a string and split the information into formatted lines
 ========================================================================================================================= */
 		int prettyPrintTest( void )
 		{
@@ -554,8 +595,16 @@ class StringUtils_T
 
 /* =========================================================================================================================
 	Test for the hexDump methods
+
+	This test is intended to verify that the unique ASCII characters 
+        are all transformed from hex and output properly.
+
+	The hexDataDump method is to display hex data in ASCII format. This output may be configured using
+        the configHexDataDump method, or output without the comparison hex code using the printable method. 
+
+	THIS TEST SHOULD BE REMADE TO BE CROSS PLATFORM
 ========================================================================================================================= */
-		int hexDumpTest( void )
+		int hexToAsciiTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
 			testFramework.init();
@@ -568,7 +617,134 @@ class StringUtils_T
 			stringstream correctPrintableMessage;
 			stringstream printableMessageStream;
 
-			char hexDumpArray[] =
+			char hexDumpArray[] = //Array of hex values to output
+			{ 0x00, 0x10, 0x30, 0x33, 0x30, 0x31, 0x30, 0x35,
+			  0x3A, 0x65, 0x70, 0x68, 0x20, 0x3A, 0x30, 0x3A,
+			  0x35, 0x32, 0x36, 0x34, 0x30, 0x2E, 0x33, 0x33,
+			  0x33, 0x34, 0x30, 0x32, 0x37, 0x37, 0x37, 0x37,
+			  0x37, 0x37, 0x37, 0x38, 0x41, 0x20, 0x52, 0x61,
+			  0x6e, 0x64, 0x6F, 0x6D, 0x20, 0x4D, 0x65, 0x73,
+			  0x73, 0x61, 0x67, 0x65, 0x32, 0x35, 0x39, 0x32,
+			  0x35, 0x39, 0x32, 0x34, 0x20, 0x32, 0x20, 0x35,
+			  0x32, 0x36, 0x34, 0x30, 0x2E, 0x33, 0x33, 0x38,
+			  0x38, 0x33, 0x36, 0x33, 0x34, 0x32, 0x35, 0x39,
+			  0x32, 0x35, 0x39, 0x33, 0x20, 0x32, 0x20, 0x38,
+			  0x35, 0x34, 0x31, 0x32, 0x20, 0x31, 0x20, 0x31,
+			  0x20, 0x30, 0x20, 0x31, 0x20, 0x31, 0x20, 0x34,
+			  0x20, 0x32, 0x20, 0x34, 0x20, 0x30, 0x20, 0x30,
+			  0x20, 0x33, 0x20, 0x31, 0x31, 0x39, 0x39, 0x20,
+			  0x32, 0x32, 0x63, 0x30, 0x61, 0x66, 0x30, 0x33,
+			  0x20, 0x31, 0x37, 0x37, 0x30, 0x32, 0x39, 0x65,
+			  0x34, 0x20, 0x61, 0x66, 0x34, 0x30, 0x30, 0x31,
+			  0x66, 0x20, 0x65, 0x36, 0x31, 0x62, 0x35, 0x38,
+			  0x61, 0x20, 0x35, 0x35, 0x66, 0x33, 0x37, 0x35,
+			  0x30, 0x20, 0x34, 0x63, 0x63, 0x61, 0x38, 0x38,
+			  0x37, 0x20, 0x31, 0x31, 0x35, 0x64, 0x37, 0x63,
+			  0x66, 0x63, 0x20, 0x33, 0x61, 0x64, 0x32, 0x30,
+			  0x34, 0x38, 0x61, 0x20, 0x63, 0x65, 0x61, 0x20,
+			  0x33, 0x36, 0x32, 0x63, 0x34, 0x38, 0x20, 0x31,
+			  0x31, 0x39, 0x39, 0x20, 0x32, 0x32, 0x63, 0x30,
+			  0x61, 0x66, 0x30, 0x33, 0x20, 0x31, 0x37, 0x37,
+			  0x30, 0x34, 0x61, 0x37, 0x34, 0x20, 0x33, 0x61,
+			  0x63, 0x34, 0x36, 0x36, 0x63, 0x31, 0x20, 0x62,
+			  0x64, 0x30, 0x63, 0x36, 0x64, 0x63, 0x20, 0x33,
+			  0x39, 0x31, 0x62, 0x33, 0x37, 0x38, 0x33, 0x20,
+			  0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, 0x85 };
+
+                        //Correct format for hexDumpData, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
+			//A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
+                        //OPERATING SYSTEMS OR COMPILERS.
+			correctHexDumpStream << "0000: 00 10 30 33 30 31 30 35  3a 65 70 68 20 3a 30 3a    ..030105:eph :0:" << endl 
+					     << "0010: 35 32 36 34 30 2e 33 33  33 34 30 32 37 37 37 37    52640.3334027777" << endl
+					     << "0020: 37 37 37 38 41 20 52 61  6e 64 6f 6d 20 4d 65 73    7778A Random Mes" << endl
+					     << "0030: 73 61 67 65 32 35 39 32  35 39 32 34 20 32 20 35    sage25925924 2 5" << endl
+					     << "0040: 32 36 34 30 2e 33 33 38  38 33 36 33 34 32 35 39    2640.33883634259" << endl
+					     << "0050: 32 35 39 33 20 32 20 38  35 34 31 32 20 31 20 31    2593 2 85412 1 1" << endl
+					     << "0060: 20 30 20 31 20 31 20 34  20 32 20 34 20 30 20 30     0 1 1 4 2 4 0 0" << endl
+					     << "0070: 20 33 20 31 31 39 39 20  32 32 63 30 61 66 30 33     3 1199 22c0af03" << endl
+					     << "0080: 20 31 37 37 30 32 39 65  34 20 61 66 34 30 30 31     177029e4 af4001" << endl
+					     << "0090: 66 20 65 36 31 62 35 38  61 20 35 35 66 33 37 35    f e61b58a 55f375" << endl
+					     << "00a0: 30 20 34 63 63 61 38 38  37 20 31 31 35 64 37 63    0 4cca887 115d7c" << endl
+					     << "00b0: 66 63 20 33 61 64 32 30  34 38 61 20 63 65 61 20    fc 3ad2048a cea " << endl
+					     << "00c0: 33 36 32 63 34 38 20 31  31 39 39 20 32 32 63 30    362c48 1199 22c0" << endl
+					     << "00d0: 61 66 30 33 20 31 37 37  30 34 61 37 34 20 33 61    af03 17704a74 3a" << endl
+					     << "00e0: 63 34 36 36 63 31 20 62  64 30 63 36 64 63 20 33    c466c1 bd0c6dc 3" << endl
+					     << "00f0: 39 31 62 33 37 38 33 20  33 65 30 34 30 63 66 85    91b3783 3e040cf." << endl;
+
+                        //Correct format for the configured hexDumpData, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
+			//A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
+                        //OPERATING SYSTEMS OR COMPILERS.
+			correctConfigHexDumpStream << "      00000000:  0010 3033 3031 3035 3A65 7068 203A 303A '..030105:eph :0:'\n" 
+					     << "      00000010:  3532 3634 302E 3333 3334 3032 3737 3737 '52640.3334027777'\n" 
+					     << "      00000020:  3737 3738 4120 5261 6E64 6F6D 204D 6573 '7778A Random Mes'\n" 
+					     << "      00000030:  7361 6765 3235 3932 3539 3234 2032 2035 'sage25925924 2 5'\n" 
+					     << "      00000040:  3236 3430 2E33 3338 3833 3633 3432 3539 '2640.33883634259'\n" 
+					     << "      00000050:  3235 3933 2032 2038 3534 3132 2031 2031 '2593 2 85412 1 1'\n" 
+					     << "      00000060:  2030 2031 2031 2034 2032 2034 2030 2030 ' 0 1 1 4 2 4 0 0'\n" 
+					     << "      00000070:  2033 2031 3139 3920 3232 6330 6166 3033 ' 3 1199 22c0af03'\n" 
+					     << "      00000080:  2031 3737 3032 3965 3420 6166 3430 3031 ' 177029e4 af4001'\n" 
+					     << "      00000090:  6620 6536 3162 3538 6120 3535 6633 3735 'f e61b58a 55f375'\n" 
+					     << "      000000A0:  3020 3463 6361 3838 3720 3131 3564 3763 '0 4cca887 115d7c'\n" 
+					     << "      000000B0:  6663 2033 6164 3230 3438 6120 6365 6120 'fc 3ad2048a cea '\n" 
+					     << "      000000C0:  3336 3263 3438 2031 3139 3920 3232 6330 '362c48 1199 22c0'\n"
+					     << "      000000D0:  6166 3033 2031 3737 3034 6137 3420 3361 'af03 17704a74 3a'\n" 
+					     << "      000000E0:  6334 3636 6331 2062 6430 6336 6463 2033 'c466c1 bd0c6dc 3'\n"
+					     << "      000000F0:  3931 6233 3738 3320 3365 3034 3063 6685 '91b3783 3e040cf.'\n";
+
+			//Build the hexDumpString and output it to stringstream
+			string hexDumpString(hexDumpArray, sizeof(hexDumpArray));
+			hexDumpData(hexDumpStream, hexDumpString);
+
+//--------------StringUtils_hexDumpTest_1 - Verify that hexDumpData works
+			testFramework.assert(hexDumpStream.str() == correctHexDumpStream.str());
+			testFramework.next();
+
+			//configure the hexDumpData, dump it to output stringstream
+      			HexDumpDataConfig hdcfg(true, true, true, 8, 2, 2, 1, 0, 0, 16, true,'\'', 1);
+			hexDumpData(configHexDumpStream, hexDumpString, 6, hdcfg);
+			testFramework.changeSourceMethod("HexDumpDataConfig");
+
+//--------------StringUtils_hexDumpTest_2 - Verify that configuring the hexDumpData works
+			testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str());
+			testFramework.next();
+
+                        //Correct format for the printable, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
+			//A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
+                        //OPERATING SYSTEMS OR COMPILERS.
+			correctPrintableMessage << "^@^P030105:eph :0:52640.33340277777778A Random Message25925924"
+						<< " 2 52640.338836342592593 2 85412 1 1 0 1 1 4 2 4 0 0 3 1199 22c0af03"
+						<< " 177029e4 af4001f e61b58a 55f3750 4cca887 115d7cfc 3ad2048a cea"
+						<< " 362c48 1199 22c0af03 17704a74 3ac466c1 bd0c6dc 391b3783 3e040cf<85>";
+
+			printableMessageStream << printable(hexDumpString) ;
+			testFramework.changeSourceMethod("printable");
+//--------------StringUtils_hexDumpTest_2 - Verify that prettyPrint works
+			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str());
+			testFramework.next();
+
+			return testFramework.countFails();
+		}
+
+/* =========================================================================================================================
+	Test for the hexDump methods
+
+	This test is intended to verify that the output formats are correct.
+	There are no characters that could be unique to the system configuration in these lists.
+========================================================================================================================= */
+		int hexDumpDataTest( void )
+		{
+			TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
+			testFramework.init();
+
+
+			stringstream hexDumpStream;
+			stringstream correctHexDumpStream;
+			stringstream configHexDumpStream;
+			stringstream correctConfigHexDumpStream;
+			stringstream correctPrintableMessage;
+			stringstream printableMessageStream;
+
+			char hexDumpArray[] = //Array of hex values to output
 			{ 0x61, 0x66, 0x30, 0x33, 0x30, 0x31, 0x30, 0x35,
 			  0x3A, 0x65, 0x70, 0x68, 0x20, 0x3A, 0x30, 0x3A,
 			  0x35, 0x32, 0x36, 0x34, 0x30, 0x2E, 0x33, 0x33,
@@ -602,6 +778,7 @@ class StringUtils_T
 			  0x39, 0x31, 0x62, 0x33, 0x37, 0x38, 0x33, 0x20,
 			  0x33, 0x65, 0x30, 0x34, 0x30, 0x63, 0x66, 0x65 };
 
+                        //Correct format for hexDumpData
 			correctHexDumpStream << "0000: 61 66 30 33 30 31 30 35  3a 65 70 68 20 3a 30 3a    af030105:eph :0:" << endl 
 					     << "0010: 35 32 36 34 30 2e 33 33  33 34 30 32 37 37 37 37    52640.3334027777" << endl
 					     << "0020: 37 37 37 38 41 20 52 61  6e 64 6f 6d 20 4d 65 73    7778A Random Mes" << endl
@@ -619,6 +796,7 @@ class StringUtils_T
 					     << "00e0: 63 34 36 36 63 31 20 62  64 30 63 36 64 63 20 33    c466c1 bd0c6dc 3" << endl
 					     << "00f0: 39 31 62 33 37 38 33 20  33 65 30 34 30 63 66 65    91b3783 3e040cfe" << endl;
 
+                        //Correct format for the configured hexDumpData
 			correctConfigHexDumpStream << "      00000000:  6166 3033 3031 3035 3A65 7068 203A 303A 'af030105:eph :0:'\n" 
 					     << "      00000010:  3532 3634 302E 3333 3334 3032 3737 3737 '52640.3334027777'\n" 
 					     << "      00000020:  3737 3738 4120 5261 6E64 6F6D 204D 6573 '7778A Random Mes'\n" 
@@ -636,27 +814,30 @@ class StringUtils_T
 					     << "      000000E0:  6334 3636 6331 2062 6430 6336 6463 2033 'c466c1 bd0c6dc 3'\n"
 					     << "      000000F0:  3931 6233 3738 3320 3365 3034 3063 6665 '91b3783 3e040cfe'\n";
 
+			//Build the hexDumpString and output it to stringstream
 			string hexDumpString(hexDumpArray, sizeof(hexDumpArray));
 			hexDumpData(hexDumpStream, hexDumpString);
 
-//--------------StringUtils_hexDumpTest_1 - Verify that prettyPrint works
+//--------------StringUtils_hexDumpTest_1 - Verify that hexDumpData works
 			testFramework.assert(hexDumpStream.str() == correctHexDumpStream.str());
 			testFramework.next();
 
-
+			//configure the hexDumpData, dump it to output stringstream
       			HexDumpDataConfig hdcfg(true, true, true, 8, 2, 2, 1, 0, 0, 16, true,'\'', 1);
 			hexDumpData(configHexDumpStream, hexDumpString, 6, hdcfg);
 			testFramework.changeSourceMethod("HexDumpDataConfig");
-//--------------StringUtils_hexDumpTest_2 - Verify that prettyPrint works
+
+//--------------StringUtils_hexDumpTest_2 - Verify that configuring the hexDumpData works
 			testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str());
 			testFramework.next();
 
-
+                        //Correct format for the printable
 			correctPrintableMessage << "af030105:eph :0:52640.33340277777778A Random Message25925924"
 						<< " 2 52640.338836342592593 2 85412 1 1 0 1 1 4 2 4 0 0 3 1199 22c0af03"
 						<< " 177029e4 af4001f e61b58a 55f3750 4cca887 115d7cfc 3ad2048a cea"
-						<< " 362c48 1199 22c0af03 17704a74 3ac466c1 bd0c6dc 391b3783 3e040cfe" << endl;
-			printableMessageStream << printable(hexDumpString) << endl;
+						<< " 362c48 1199 22c0af03 17704a74 3ac466c1 bd0c6dc 391b3783 3e040cfe";
+
+			printableMessageStream << printable(hexDumpString) ;
 			testFramework.changeSourceMethod("printable");
 //--------------StringUtils_hexDumpTest_2 - Verify that prettyPrint works
 			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str());
@@ -704,7 +885,10 @@ int main() //Main function to initialize and run all tests above
 	check = testClass.prettyPrintTest();
 	errorCounter += check;
 
-	check = testClass.hexDumpTest();
+	check = testClass.hexDumpDataTest();
+	errorCounter += check;
+
+	check = testClass.hexToAsciiTest();
 	errorCounter += check;
 
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
