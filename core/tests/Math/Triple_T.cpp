@@ -235,28 +235,44 @@ class TripleTest
 			testFramework.assert(fabs(test.azAngle(test2) - 35.0779447169289) < eps);
 			testFramework.next();
 
-			test2[0] = 0; test2[1] = 0; test2[2] = 0;
-
-//--------------Triple_azAngleTest_3 - Was the azimutal angle calculation computed correctly?	
-			testFramework.assert(fabs(test.azAngle(test2) - 270)/270 < eps);
-			testFramework.next();
-
 			test[0] = 1; test[1] = 0; test[2] = 0;
 			test2[0] = 0; test2[1] = 1; test2[2] = 0;
 
-//--------------Triple_azAngleTest_4 - Was the azimutal angle calculation computed correctly?	
+//--------------Triple_azAngleTest_3 - Was the azimutal angle calculation computed correctly?	
 			testFramework.assert(fabs(test.azAngle(test2) - 90)/90 < eps);
 			testFramework.next();
 
 			test[0] = 1; test[1] = -1; test[2] = 1;
 			test2[0] = 1; test2[1] = 1; test2[2] = 1;
 
-//--------------Triple_azAngleTest_5 - Was the azimutal angle calculation computed correctly?	
+//--------------Triple_azAngleTest_4 - Was the azimutal angle calculation computed correctly?	
 			testFramework.assert(fabs(test.azAngle(test2) - 60)/60 < eps);
+
+
+/* Special case: Using the origin as the point in which to find the azimuthal angle should ALWAYS cause test for p1+p2 != 0 to fail (see Triple.cpp).
+   This next test is to ensure that the error is indeed thrown when it should. */ 
+
+			test2[0] = 0; test2[1] = 0; test2[2] = 0;
+//--------------Triple_azAngleTest_5 - Was the azimutal angle calculation computed correctly?	
+			try {test.azAngle(test2); testFramework.failTest();}
+			catch (Exception& e) {testFramework.passTest();}
+			catch (...) {testFramework.failTest();}
+
+/* Special case: Using the south, (0,0,-1), direction as the position from which to find the azimuthal angle should also cause the initial check to
+   get the angles to fail. */ 
+
+			test[0] = 0; test[1] = 0; test[2] = -1;
+			test2[0] = 1; test2[1] = 1; test2[2] = 1;
+//--------------Triple_azAngleTest_6 - Was the azimutal angle calculation computed correctly?	
+			try {test.azAngle(test2); testFramework.failTest();}
+			catch (Exception& e) {testFramework.passTest();}
+			catch (...) {testFramework.failTest();}
 
 			return testFramework.countFails();
 		}
+
  };
+
 
 int main() //Main function to initialize and run all tests above
 {

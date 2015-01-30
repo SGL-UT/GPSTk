@@ -228,7 +228,7 @@ namespace gpstk
 
       test = fabs(p1) + fabs(p2);
 
-      if (test < 1.0e-16)
+      if (test < 1.0e-14)
       {
          GPSTK_THROW(GeometryException("azAngle(), failed p1+p2 test."));
       }
