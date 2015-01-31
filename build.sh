@@ -12,14 +12,26 @@
 #----------------------------------------
 
 #----------------------------------------
-# Default values for paths. Options can override these.
+# Qué hora es? Dónde estamos? Y dónde vamos?
 #----------------------------------------
 
+build_date=`date +"%Y%m%d"`
+build_time=`date +"%Y%m%d_%H%M%S"`
+build_host=`hostname`
+build_who=`whoami`
+
 gpstk_root=$PWD
-gpstk_install=$HOME/.local/gpstk             # default to a user install path
-python_install=$(python -m site --user-site) # e.g., $HOME/.local/lib/python2.7/site-packages
 python_root=$gpstk_root/swig
-build_root=$gpstk_root/build
+build_root=/tmp/gpstk_build_${build_who}_${build_host}_${build_date}
+python_exe=`which python2.7`
+
+system_install_prefix=/usr/local
+system_gpstk_install=/usr/local/gpstk
+system_python_install=$(${python_exe} -c "import site; print(site.getsitepackages()[0])") # this will break for python < 2.7
+
+user_install_prefix=$HOME/.local
+user_gpstk_install=$HOME/.local/gpstk
+user_python_install=$(${python_exe} -m site --user-site)
 
 #----------------------------------------
 # Number of cores for use by compiler
@@ -47,45 +59,61 @@ usage()
 {
 cat << EOF
 
-usage:     $0 [-bcdehtuvz] [-j <num_threads>]
+purpose:   This script automates and documents how to build, test, and install GPSTk with CMake.
 
-purpose:   This script automates and documents how to build and install GPSTk with CMake.
+usage:     $0 [-bcdehtuvz] [-j <num_threads>] [-i <install_prefix>] [-p <python_exe>]
+
+           example:  Typical admin build and install: $ ./build.sh -e
+           example:  Typical  user build and install: $ ./build.sh -eu
+           example:  Typical  test build and install: $ ./build.sh -et -i /tmp/test
 
 OPTIONS:
 
+   -h     help             Show this message
+
    -b     build_only       Do not do an install. This is useful if you want to build as yourself,
                            and then later use sudo to do a system install.
+                           Build path is constructed in this script.
+                           Currently set to build_root=$build_root
 
-   -c     clean            Removes all files created from the build and install process.
-                               $ rm -rf $gpstk_install/*;
-                               $ rm -rf $python_install/gpstk*
-                               $ git clean -fxd $build_root/
-                               $ git clean -fxd $gpstk_root/swig/sphinx/
+   -e     build_ext        GPSTk has two parts: core and ext. See README.txt for details.
+                           Default (without -e) will build only $gpstk_root/core
+                           Optional (with -e) will build both $gpstk_root/core and $gpstk_root/ext
+
+   -j     num_threads      Default = $num_threads, number of system cores determined from /proc/cpuinfo
+                               for use with make, i.e. "make -j $num_threads"
+
+   -t     test_switch      Execute all CMake Ctest test cases before install.
+
+   -i     install_prefix   Default = $system_install_prefix, such that:
+                               *  C++    install path = $system_gpstk_install
+                               *  Python install path = $system_python_install
+                           If you use a non-standard install path, you must update your environment.
+                           For example, if your install_prefix=/tmp/test, do the following:
+                               $ export LD_LIBRARY_PATH=/tmp/test/gpstk/lib:\$LD_LIBRARY_PATH
+                               $ export PYTHONPATH=/tmp/test/lib/python2.7/site-packages:\$PYTHONPATH
+
+   -u     user_install     Over-rides install prefix such that:
+                               *  C++    install path = $user_gpstk_install
+                               *  Python install path = $user_python_install
 
    -d     build_docs       Build, process, and install all documentation files.
                                * build Doxygen files (used for python docstrings)
                                * build Sphinx RST files into HTML documentation
                                * generate graphviz dependency graph (.DOT and .PDF files)
 
-   -e     build_ext        builds /ext library in addition to the /core library
+   -z     build_sdist      build source distribution for the python package and tar/zip it
 
-   -j     num_threads      For use with make, i.e. "make -j $num_threads"
+   -c     clean            Be very careful! Removes all files created from the build and install
+                           Behaviour changes with install_prefix. Default with system install:
+                               $ git clean -fxd $gpstk_root/swig/sphinx/
+                               $ rm -rf $build_root
+                               $ rm -rf $system_gpstk_install
+                               $ rm -rf $system_python_install/gpstk*
 
-   -h     help             Show this message
-
-   -t     test_switch      turn on CMake/Ctest framework
-
-   -u     user_install     GPSTk installs will be in the user home tree, not system paths
-                               * with user_install
-                                   C++ lib install path = $HOME/.local/gpstk/lib
-                                   python install path  = $HOME/.local/lib/pythonX.X/site-packages/gpstk
-                               * without user_install
-                                   C++ lib install path = /usr/local/lib
-                                   python install path  = /usr/local/lib/pythonX.X/dist-packages/gpstk
+   -p     python_exe       Default=$python_exe, full system path to python executable
 
    -v     verbosity        Debug output
-
-   -z     build_sdist      build source distribution for the python package and tar/zip it
 
 EOF
 
@@ -96,15 +124,17 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "bcdehj:tuvz" option; do
+while getopts "bcdehi:j:p:tuvz" option; do
     case $option in
         
-        h) usage;;
         b) build_only=1;;
         c) clean=1;;
         d) build_docs=1;;
         e) build_ext=1;;
+        h) usage;;
+        i) install_prefix=${OPTARG};;
         j) num_threads=${OPTARG};;
+        p) python_exe=${OPTARG};;
         t) test_switch=1;;
         u) user_install=1;;
         v) verbosity=1;;
@@ -121,23 +151,31 @@ done
 shift $(($OPTIND - 1))
 
 #----------------------------------------
-# User Install
+# Install Paths
 #----------------------------------------
 
-if [ "$user_install" ]; then
-    echo "$0: Install: User intall paths"
-    gpstk_install=$HOME/.local/gpstk
-    python_install=$(python -m site --user-site)
-    build_root=$gpstk_root/build
+if [[ -z "$install_prefix" ]]; then
+
+    if [ "$user_install" ]; then
+        install_prefix=$user_install_prefix
+        gpstk_install=$user_gpstk_install
+    else
+        install_prefix=$system_install_prefix
+        gpstk_install=$system_gpstk_install
+    fi
+
 else
-    echo "$0: Install: System intall paths"
-    build_root=/tmp/gpstk/build
-    gpstk_install=/usr/local
-    # python_install=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")
-	#    returns /usr/lib/ path vs. /usr/local/lib/ path
-    python_install=$(python -c "import site; print(site.getsitepackages()[0])")
-	#    returns /usr/local/lib/ path vs. /usr/lib/ path
+
+    gpstk_install=${install_prefix}
+
 fi
+
+# the python install is ALWAYS in the install_prefix
+# to insure, in the case of the default(system) install and the use install,
+# that the pyhton package is installed to a place that is already in sys.path
+# and to further insure that if the user selects a crazy non-standard install path,
+# that the python stuff gets shoved into the same crazy place as the gpstk cpp junk
+python_install=${install_prefix}
 
 #----------------------------------------
 # Echo configuration
@@ -151,8 +189,10 @@ function ptof {
 }
 
 printf "$0: gpstk_root      = $gpstk_root\n"
+printf "$0: install_prefix  = $install_prefix\n"
 printf "$0: gpstk_install   = $gpstk_install\n"
 printf "$0: python_install  = $python_install\n"
+printf "$0: python_exe      = $python_exe\n"
 printf "$0: user_install    = $(ptof $user_install)\n"
 printf "$0: clean           = $(ptof $clean)\n"
 printf "$0: build_root      = $build_root\n"
@@ -165,7 +205,7 @@ printf "$0: build_docs      = $(ptof $build_docs)\n"
 printf "$0: build_sdist     = $(ptof $build_sdist)\n"
 
 if [ ! -d "$gpstk_root" ]; then
-    echo "$0: COnfiguration: ERROR: $gpstk_root does not exist."
+    echo "$0: Configuration: ERROR: $gpstk_root does not exist."
     exit 1
 fi
 
@@ -175,6 +215,7 @@ fi
 
 num_files_ext=0
 num_files_core=0
+
 if [ "$build_ext" ]; then
     num_files_ext=`find $gpstk_root/ext/lib/ -type f -name "*.cpp" | wc -l`
     if [ "$num_files_ext" -eq 0 ]; then
@@ -190,24 +231,32 @@ else
 fi
 
 #----------------------------------------
-# Clean build and install
+# Clean build
 #----------------------------------------
 
 if [ "$clean" ]; then
     echo ""
     echo ""
-    echo "$0: Clean: Removing previous c++ build"
+    echo "$0: Clean: Removing previous c++ and python build"
     echo ""
     echo ""
 
-    echo "$0: Clean: Removing previous install directory"
-    rm -rf $gpstk_install/*;
-    rm -rf $python_install/gpstk*
-    git clean -fxd $build_root/
     git clean -fxd $gpstk_root/swig/sphinx/
+
+    if [ $build_only ]; then
+        rm -rf $build_root
+        mkdir -p $build_root
+    else
+        rm -rf $build_root
+        mkdir -p $build_root
+
+        rm -rf $gpstk_install/*;
+        mkdir -p $gpstk_install
+
+        rm -rf $python_install/gpstk*
+    fi
 fi
-mkdir -p $build_root
-mkdir -p $gpstk_install
+
 
 #----------------------------------------
 # Pre-Build Documentation processing
@@ -246,7 +295,7 @@ if [ "$build_docs" ]; then
         # running docstring_generator.py reads in the $gpstk_root/doc/xml/*.xml 
         # fileswere created previously by doxygen and then 
         # outputs SWIG .i files to $python_root/doc
-        python docstring_generator.py
+        ${python_exe} docstring_generator.py
     fi
 
     # make path for graphviz
@@ -267,7 +316,8 @@ echo ""
 
 args=""
 args+=${gpstk_install:+" -DCMAKE_INSTALL_PREFIX=$gpstk_install"}
-args+=${user_install:+" -DPYTHON_USER_INSTALL=ON"}
+args+=${install_prefix:+" -DPYTHON_INSTALL_PREFIX=$python_install"}
+args+=${python_exe:+" -DPYTHON_EXECUTABLE=$python_exe"}
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${verbosity:+" -DDEBUG_SWITCH=ON"}
@@ -289,7 +339,6 @@ echo ""
 echo ""
 
 cd $build_root
-# make install -j $num_cores
 make -j $num_threads
 
 #----------------------------------------
@@ -390,7 +439,7 @@ if [ $build_sdist ]; then
     echo ""
     echo ""
     cd $python_root/install_package
-    python setup.py sdist --formats=zip,gztar
+    ${python_exe} setup.py sdist --formats=zip,gztar
 
 	package_debian=0
     if [ $package_debian = 1 ]; then
@@ -407,11 +456,29 @@ if [ $build_sdist ]; then
 fi
 
 #----------------------------------------
-# Test LD_LIBRARY_PATH
+# Install
+#----------------------------------------
+
+if [ $build_only ]; then
+    echo ""
+    echo ""
+    echo "$0: Install: Build script was configured to do a build only"
+    echo "$0: Install: Exitting now..."
+    echo ""
+    echo ""
+    exit 1
+else
+    cd $build_root
+    make install -j $num_threads
+fi
+
+#----------------------------------------
+# Test Shell Environment, PATH, LD_LIBRARY_PATH
 #----------------------------------------
 
 # Test whether $gpstk_install is in the user's PATH
-# If not, echo a warning since the python extension module will break at run time.
+# If not, echo a warning since the python extension
+# module will break at run time.
 
 echo ""
 echo ""
@@ -419,29 +486,84 @@ echo "$0: Paths: Testing library load paths..."
 echo ""
 echo ""
 
-if [[ ":$PATH:" == *":$gpstk_install/lib:"* ]]; then
-    echo "$0: Paths: install location for libgpstk.so is in your PATH. Well done. No further action needed."
-elif [[ ":$LD_LIBRARY_PATH:" == *":$gpstk_install/lib:"* ]]; then
-    echo "$0: Paths: install location for libgpstk.so is in your LD_LIBRARY_PATH. Well done. No further action needed."
+ldd_path_list=`ldconfig -v 2>/dev/null | grep -v ^$'\t' | sed -e 's/://g'`
+gpstk_install_path_test=`echo "$ldd_path_list" | grep -o "$gpstk_install"`
+
+if [ -z "$gpstk_install_path_test" ]; then
+
+    echo ""
+    echo "$0: Paths: |--------------------- [FAIL]"
+    echo "$0: Paths: | "
+    echo "$0: Paths: | Based on a query to ldconfig, it appears that your"
+    echo "$0: Paths: | GPSTk library install path is NOT in a location known to ldd"
+    echo "$0: Paths: | Anything trying to link against libgpstk.so will fail"
+    echo "$0: Paths: |  including the GPSTk python bindings."
+    echo "$0: Paths: | "
+    echo "$0: Paths: | gpstk_install_path = $gpstk_install" 
+    echo "$0: Paths: | ldd_path_list:" 
+    for ldd_path_entry in $ldd_path_list; do
+    echo "$0: Paths: |     ldd_path_entry = $ldd_path_entry" 
+    done;
+    echo "$0: Paths: | "
+    echo "$0: Paths: | Please update your environment as follows:"
+    echo "$0: Paths: |      $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
+    echo "$0: Paths: | "
+    echo "$0: Paths: |--------------------- [FAIL]"
+    echo ""
 else
-    echo "$0: Paths: install location for libgpstk.so is NOT in your path. You must add it to your environment to use it."
-    echo "$0: Paths: recommend updating your LD_LIBVRARY_PATH as follows: "
-    echo "$0:            $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
+    echo ""
+    echo "$0: Paths: |--------------------- [PASS]"
+    echo "$0: Paths: | GPSTk library install path appears to be in your PATH"
+    echo "$0: Paths: | No further action needed."
+    echo "$0: Paths: |--------------------- [PASS]"
+    echo ""
 fi
 
 #----------------------------------------
-# Install
+# Test Python Module search path, sys.path
 #----------------------------------------
 
-if [ $build_only ]; then
+# get the contents of sys.path, the python module search path
+sys_path_raw=`$python_exe -c 'import sys;print(sys.path)'`
+
+# filter the square brackets, commas, and quotes and put one path on each line
+sys_path_list=`echo $sys_path_raw | sed 's/\(\[\|\]\)//g' | sed "s/'//g" | sed -e 's/,/ /g'`
+
+# test the sys_path_list to see if it contains the path where this script installed GPSTk python module
+sys_path_test=`echo "$sys_path_list" | grep -o "$python_install"`
+
+# if the path is in sys.path, then sys_path_test will NOT be empty
+if [ -z "$sys_path_test" ]; then
+
     echo ""
+    echo "$0: Paths: |--------------------- [FAIL]"
+    echo "$0: Paths: | "
+    echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
+    echo "$0: Paths: | GPSTk python package install path is not known to sys.path"
+    echo "$0: Paths: | Any attempt to 'import gpstk' will fail"
+    echo "$0: Paths: | "
+    echo "$0: Paths: | python_install_path = $python_install" 
+    echo "$0: Paths: | sys_path_list:" 
+    for sys_path_entry in $sys_path_list; do
+    echo "$0: Paths: |      sys_path_entry = $sys_path_entry" 
+    done;
+    echo "$0: Paths: | "
+    echo "$0: Paths: | Please update your PYTHONPATH as follows: "
+    echo "$0: Paths: |     $ export PYTHONPATH=$install_prefix/lib/python2.7/site-packages:\$PYTHONPATH "
+    echo "$0: Paths: | "
+    echo "$0: Paths: |--------------------- [FAIL]"
     echo ""
-    echo "$0: Install: Build script was configured to do a build only, no install."
-    echo ""
-    echo ""
+
 else
-    cd $build_root
-    make install -j $num_threads
+    echo ""
+    echo "$0: Paths: |--------------------- [PASS]"
+    echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
+    echo "$0: Paths: | GPSTk python package install path is known to sys.path"
+    echo "$0: Paths: | GPSTk python package 'import gpstk' should work just fine."
+    echo "$0: Paths: | No further action needed."
+    echo "$0: Paths: |--------------------- [PASS]"
+    echo ""
+
 fi
 
 #----------------------------------------
