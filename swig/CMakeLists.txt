@@ -4,6 +4,8 @@
 
 cmake_minimum_required( VERSION 2.8.4  )
 
+message( STATUS "Inside gpstk/swig/CMakeLists.txt, PYTHON_INSTALL_PREFIX = ${PYTHON_INSTALL_PREFIX}" )
+
 # The CMake command-line tool displays STATUS messages 
 # on stdout and all other message types on stderr. 
 #   set( CMAKE_PREFIX_PATH "" )
@@ -17,6 +19,7 @@ cmake_minimum_required( VERSION 2.8.4  )
 # If user does not pass in the full-path to the python executable,
 # then figure it out by running python.
 if( NOT PYTHON_EXECUTABLE )
+    message( WARNING  "PYTHON_EXECUTABLE is undefined. Will attempt find a python instance. Next time, pass in a full path to cmake using, e.g., cmake -DPYTHON_EXECUTABLE=/usr/bin/python2.7" )
     execute_process( COMMAND python -c 
 		             "import sys; print sys.executable"
                      OUTPUT_VARIABLE PYTHON_EXECUTABLE
@@ -27,7 +30,8 @@ endif()
 # If PYTHON_EXECUTABLE is still empty, something is severely wrong, 
 #  perhaps python is not installed on this system?
 if( NOT PYTHON_EXECUTABLE )
-	message( FATAL_ERROR "Something is wrong with the specified PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}" )
+	message( FATAL_ERROR "PYTHON_EXECUTABLE: Unable to determine or use PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}" )
+	message( FATAL_ERROR "PYTHON_EXECUTABLE: Exitting now!" )
     return()
 endif()
 
@@ -69,12 +73,11 @@ endif()
 find_package( PythonLibs ${PYTHON_VERSION} REQUIRED )
 
 if( DEBUG_SWITCH )
+    message( STATUS "DEBUG: SWIG: PYTHON_EXECUTABLE        = ${PYTHON_EXECUTABLE}" )
     message( STATUS "DEBUG: SWIG: PYTHON_FOUND             = ${PYTHON_FOUND}" )
     message( STATUS "DEBUG: SWIG: PYTHONLIBS_FOUND         = ${PYTHONLIBS_FOUND}" )
     message( STATUS "DEBUG: SWIG: PYTHON                   = ${PYTHON}" )
     message( STATUS "DEBUG: SWIG: PYTHON_VERSION           = ${PYTHON_VERSION}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_USER_INSTALL      = ${PYTHON_USER_INSTALL}" )
-    message( STATUS "DEBUG: SWIG: PYTHON_EXECUTABLE        = ${PYTHON_EXECUTABLE}" )
     message( STATUS "DEBUG: SWIG: PYTHON_LIBRARIES         = ${PYTHON_LIBRARIES}" )
     message( STATUS "DEBUG: SWIG: PYTHON_LIBRARY           = ${PYTHON_LIBRARY}" )
     message( STATUS "DEBUG: SWIG: PYTHON_INCLUDE_DIR       = ${PYTHON_INCLUDE_DIR}" )
@@ -84,11 +87,18 @@ if( NOT PYTHONLIBS_FOUND )
     message( STATUS "Cannot find requested version of PYTHONLIBS on your system." )
     message( STATUS "Cannot build swig bindings without the right python libraries." )
     message( STATUS "PYTHON_LIBRARY and PYTHON_INCLUDE_DIR versions must match PYTHON_EXECUTABLE." )
-    message( STATUS "Try passing in CMake variables PYTHON_LIBRARY and PYTHON_INCLUDE_DIR to help the search." )
+    message( STATUS "DEBUG: SWIG: PYTHON_EXECUTABLE        = ${PYTHON_EXECUTABLE}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_FOUND             = ${PYTHON_FOUND}" )
+    message( STATUS "DEBUG: SWIG: PYTHONLIBS_FOUND         = ${PYTHONLIBS_FOUND}" )
+    message( STATUS "DEBUG: SWIG: PYTHON                   = ${PYTHON}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_VERSION           = ${PYTHON_VERSION}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_LIBRARIES         = ${PYTHON_LIBRARIES}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_LIBRARY           = ${PYTHON_LIBRARY}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_INCLUDE_DIR       = ${PYTHON_INCLUDE_DIR}" )
     message( FATAL_ERROR "Cannot find PYTHONLIBS. Cannot proceed. Exiting now!" )
     return()
 else()
-    message( STATUS "Version requested for PYTHONLIBS found. Yay for you!" )
+    message( STATUS "PYTHONLIBS Version requested was found. Yay for you!" )
 endif()
 
 #------------------------------------------------------------
@@ -149,7 +159,7 @@ set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON ) # why not also se
 # messages on stdout and all other message types on stderr. 
 
 if( DEBUG_SWITCH )
-    message( STATUS "DEBUG: SWIG: DEBUG BLOCK 1 -----------------------------------------" )
+    message( STATUS "DEBUG: SWIG: DEBUG: Before swig module is set -----------------------------------------" )
     message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_LIST_DIR   = ${CMAKE_CURRENT_LIST_DIR}" )    # e.g., $HOME/git/gpstk/swig
     message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_LIST_FILE  = ${CMAKE_CURRENT_LIST_FILE}" )   # e.g., $HOME/git/gpstk/swig/CMakeLists.txt
     message( STATUS "DEBUG: SWIG: CMAKE_SOURCE_DIR         = ${CMAKE_SOURCE_DIR}" )          # e.g., $HOME/git/gpstk
@@ -161,6 +171,7 @@ if( DEBUG_SWITCH )
     message( STATUS "DEBUG: SWIG: PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}" )        # e.g., $HOME/git/gpstk
 
     message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
+    message( STATUS "DEBUG: SWIG: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
     message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_DIR        = ${CMAKE_INSTALL_DIR}" )         # e.g., [empty]
 endif()
 
@@ -195,13 +206,14 @@ set( INSTALL_PACKAGE_SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/install_package )
 set( INSTALL_PACKAGE_PATH ${CMAKE_CURRENT_BINARY_DIR}/install_package )
 
 if( DEBUG_SWITCH )
-    message( STATUS "DEBUG: SWIG: DEBUG BLOCK 2 -----------------------------------------" )
+    message( STATUS "DEBUG: SWIG: DEBUG: After swig module is set -----------------------------------------" )
     message( STATUS "DEBUG: SWIG: EXECUTABLE_OUTPUT_PATH   = ${EXECUTABLE_OUTPUT_PATH}" )
     message( STATUS "DEBUG: SWIG: WORKING_DIRECTORY        = ${WORKING_DIRECTORY}" )
     message( STATUS "DEBUG: SWIG: CMAKE_SOURCE_DIR         = ${CMAKE_CURRENT_DIR}" )
     message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_SOURCE_DIR = ${CMAKE_CURRENT_SOURCE_DIR}" )
     message( STATUS "DEBUG: SWIG: CMAKE_CURRENT_BINARY_DIR = ${CMAKE_CURRENT_BINARY_DIR}" )
     message( STATUS "DEBUG: SWIG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )
+    message( STATUS "DEBUG: SWIG: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
     message( STATUS "DEBUG: SWIG: CMAKE_SWIG_OUTDIR        = ${CMAKE_SWIG_OUTDIR}" )
     message( STATUS "DEBUG: SWIG: INSTALL_PACKAGE_SOURCE   = ${INSTALL_PACKAGE_SOURCE}" )
     message( STATUS "DEBUG: SWIG: INSTALL_PACKAGE_PATH     = ${INSTALL_PACKAGE_PATH}" )
@@ -254,20 +266,27 @@ set( SETUP_PY_IN "${CMAKE_CURRENT_SOURCE_DIR}/setup.py.in" )
 set( SETUP_PY    "${INSTALL_PACKAGE_PATH}/setup.py" )
 configure_file( ${SETUP_PY_IN} ${SETUP_PY} )
 
-# https://docs.python.org/2/install/
+#------------------------------------------------------------
+# Install python package
+#------------------------------------------------------------
 
-# To install in the user's directory, define PYTHON_USER_INSTALL:
-if( PYTHON_USER_INSTALL )
-  message( STATUS "GPSTk Python bindings install         = user directory only." )
-  install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f --user WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
-else()
-  message( STATUS "GPSTk Python bindings install         = system directory." )
-  install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install -f  WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
-endif( PYTHON_USER_INSTALL )
+# Note: For setup.py install options, see https://docs.python.org/2/install/
+# Note: The two words "WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH}" are a key-value pair
+#       This sets the value of WORKING_DIRECTORY equal to ${INSTALL_PACKAGE_PATH}, i.e.
+#       the command being run treats ${INSTALL_PACKAGE_PATH} as the current working directory
+
+
+if( NOT PYTHON_INSTALL_PREFIX )
+    message( WARNING "PYTHON_INSTALL_PREFIX: Install prefix for python package was not set by user." )
+    set( PYTHON_INSTALL_PREFIX $CMAKE_INSTALL_PREFIX )
+    message( WARNING "PYTHON_INSTALL_PREFIX: Using CMAKE_INSTALL_PREFIX as the default, so that PYTHON_INSTALL_PREFIX = ${PYTHON_INSTALL_PREFIX}" )
+endif()
+
+install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
 
 #------------------------------------------------------------
 # These files aren't required to use the bindings but are 
-# requried to make a swig module that depends upon these bindings
+# required to make a swig module that depends upon these bindings
 #------------------------------------------------------------
 
 file( GLOB swig_includes ${CMAKE_CURRENT_SOURCE_DIR}/src/* )

@@ -11,7 +11,7 @@ project( gpstk )
 #     Path to which we will install the
 #     gpstk /lib, /bin, and /include dirs.
 #----------------------------------------
-	
+
 if( DEFINED CMAKE_INSTALL_PREFIX )
     message( STATUS "CMAKE_INSTALL_PREFIX was defined by user with the cmake command line. CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}" )
 elseif( DEFINED ENV{gpstk} )
@@ -34,7 +34,6 @@ option( DEBUG_SWITCH "HELP: DEBUG_SWITCH: Default = OFF, print some CMake variab
 option( DEBUG_VERBOSE "HELP: DEBUG_VERBOSE: Default = OFF, print all CMake variable values." OFF )
 option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library, in addition to the core library." OFF )
 option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
-option( PYTHON_USER_INSTALL "HELP: PYTHON_USER_INSTALL: SWITCH, Default = OFF, Install GPSTk python package into user home file tree instead of a system path." OFF )
 
 #----------------------------------------
 # Debug Messages
@@ -59,6 +58,7 @@ if( DEBUG_SWITCH )
     message( STATUS "DEBUG: PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}" )        # e.g., $HOME/git/gpstk
     message( STATUS "DEBUG: CMAKE_INSTALL_DIR        = ${CMAKE_INSTALL_DIR}" )         # e.g., /usr
     message( STATUS "DEBUG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
+    message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
 endif()
 
 #----------------------------------------
@@ -278,7 +278,7 @@ endif()
 # Test Switch
 #----------------------------------------
 
-if (TEST_SWITCH)
+if( TEST_SWITCH )
   enable_testing()
   set( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake/Modules )
   find_package( CppUnit )
@@ -286,10 +286,10 @@ if (TEST_SWITCH)
     include_directories( ${CPPUNIT_INCLUDE_DIRS} )
     link_directories( ${CPPUNIT_LIBRARIES} )
     target_link_libraries(gpstk cppunit)
-  else ()
-    message(STATUS "CppUnit not installed.  Please install and try again." )
-  endif ()
-endif ()
+  else( )
+    message( STATUS "CppUnit not installed.  Please install and try again." )
+  endif( )
+endif( )
 
 #----------------------------------------
 # Add sub-directories
