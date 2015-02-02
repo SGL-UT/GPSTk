@@ -392,12 +392,16 @@ make -j $num_threads 2>&1 | tee -a $MAKE_OUTPUT_LOG
 #----------------------------------------
 
 if [ "$test_switch" ]; then
+
+    # run the tests
     cd $build_root
     ctest -v
+
+    # capture the test output
     ctest_keyword=TestOutput
-    ctest_log=$build_root/Testing/Temporary/LastTest.log
-    ctest_log_save_file=$build_root/test.log
-    cat $ctest_log | grep "$ctest_keyword" > $ctest_log_save_file
+    ctest_log_raw=$build_root/Testing/Temporary/LastTest.log
+    ctest_log_save=$build_root/test.log
+    cat $ctest_log_raw | grep "$ctest_keyword" > $ctest_log_save
 
     # the last character on each line of output is a fail bit
     test_count=`cat $ctest_log | grep $ctest_keyword | wc -l`
