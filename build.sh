@@ -22,16 +22,17 @@ build_who=`whoami`
 
 gpstk_root=$PWD
 python_root=$gpstk_root/swig
-build_root=/tmp/gpstk_build_${build_who}_${build_host}_${build_date}
 python_exe=`which python2.7`
 
 system_install_prefix=/usr/local
 system_gpstk_install=/usr/local/gpstk
 system_python_install=$(${python_exe} -c "import site; print(site.getsitepackages()[0])") # this will break for python < 2.7
+system_build_root=/tmp/gpstk_build_${build_who}_${build_host}_${build_date}
 
 user_install_prefix=$HOME/.local
 user_gpstk_install=$HOME/.local/gpstk
 user_python_install=$(${python_exe} -m site --user-site)
+user_build_root=$gpstk_root/build
 
 #----------------------------------------
 # Number of cores for use by compiler
@@ -74,7 +75,7 @@ OPTIONS:
    -b     build_only       Do not do an install. This is useful if you want to build as yourself,
                            and then later use sudo to do a system install.
                            Build path is constructed in this script.
-                           Currently set to build_root=$build_root
+                           Currently set to $system_build_root
 
    -e     build_ext        GPSTk has two parts: core and ext. See README.txt for details.
                            Default (without -e) will build only $gpstk_root/core
@@ -96,6 +97,8 @@ OPTIONS:
    -u     user_install     Over-rides install prefix such that:
                                *  C++    install path = $user_gpstk_install
                                *  Python install path = $user_python_install
+                           Also sets the build root to the following:
+                               $user_build_root
 
    -d     build_docs       Build, process, and install all documentation files.
                                * build Doxygen files (used for python docstrings)
@@ -159,14 +162,17 @@ if [[ -z "$install_prefix" ]]; then
     if [ "$user_install" ]; then
         install_prefix=$user_install_prefix
         gpstk_install=$user_gpstk_install
+        build_root=$user_build_root
     else
         install_prefix=$system_install_prefix
         gpstk_install=$system_gpstk_install
+        build_root=$system_build_root
     fi
 
 else
 
     gpstk_install=${install_prefix}
+    build_root=$system_build_root
 
 fi
 
@@ -180,6 +186,17 @@ python_install=${install_prefix}
 #----------------------------------------
 # Echo configuration
 #----------------------------------------
+
+echo ""
+echo ""
+echo "============================================================"
+echo "GPSTk Build and Test Script: Echo of config values..."
+echo "============================================================"
+echo ""
+echo "$0: system user     = $build_who"
+echo "$0: system name     = $build_host"
+echo "$0: system time     = $build_time"
+echo ""
 
 # helper function to print out configutaion
 function ptof {
@@ -209,6 +226,10 @@ if [ ! -d "$gpstk_root" ]; then
     exit 1
 fi
 
+echo ""
+echo "============================================================"
+echo ""
+
 #----------------------------------------
 # Test for source files, exit if nothing to build
 #----------------------------------------
@@ -231,7 +252,7 @@ else
 fi
 
 #----------------------------------------
-# Clean build
+# Clean build and install directories
 #----------------------------------------
 
 if [ "$clean" ]; then
@@ -240,23 +261,46 @@ if [ "$clean" ]; then
     echo "$0: Clean: Removing previous c++ and python build"
     echo ""
     echo ""
-
+    
     git clean -fxd $gpstk_root/swig/sphinx/
+    rm -rf $build_root
 
-    if [ $build_only ]; then
-        rm -rf $build_root
-        mkdir -p $build_root
-    else
-        rm -rf $build_root
-        mkdir -p $build_root
-
+    if [ ! $build_only ]; then
         rm -rf $gpstk_install/*;
-        mkdir -p $gpstk_install
-
         rm -rf $python_install/gpstk*
     fi
 fi
 
+#----------------------------------------
+# Try to create the build and install paths
+#----------------------------------------
+
+if [ ! -d "$build_root" ]; then
+    echo "$0: NOTICE: build path $build_root does not exist. Creating it now."
+    mkdir -p $build_root
+    if [ ! -d "$build_root" ]; then
+        echo "$0: ERROR: Unable to create the GPSTk build directory $build_root"
+        exit 1
+    fi
+fi
+
+if [ ! -d "$gpstk_install" ]; then
+    echo "$0: WARNING: install path $gpstk_install does not exist. Creating it now."
+    mkdir -p $gpstk_install
+    if [ ! -d "$gpstk_install" ]; then
+        echo "$0: ERROR: Unable to create the GPSTk C++ lib install directory $gpstk_install"
+        exit 1
+    fi
+fi
+
+if [ ! -d "$python_install" ]; then
+    echo "$0: WARNING: Install path $python_install does not exist. Creating it now."
+    mkdir -p $python_install
+    if [ ! -d "$python_install" ]; then
+        echo "$0: ERROR: Unable to create the GPSTk Python package install directory $python_install"
+        exit 1
+    fi
+fi
 
 #----------------------------------------
 # Pre-Build Documentation processing
@@ -304,7 +348,7 @@ if [ "$build_docs" ]; then
 	
 fi
 
-#----------------------------------------
+#---------------------------------------- 
 # CMake generation of Makefiles
 #----------------------------------------
 
@@ -326,7 +370,8 @@ args+=${build_docs:+" --graphviz=$path_graphviz/gpstk_graphviz.dot"}
 #   args+="-C $gpstk_root/BuildSetup.cmake"
 
 cd $build_root
-cmake $args $gpstk_root
+CMAKE_OUTPUT_LOG=$build_root/cmake.log
+cmake $args $gpstk_root 2>&1 | tee -a $CMAKE_OUTPUT_LOG
 
 #----------------------------------------
 # Build
@@ -339,7 +384,8 @@ echo ""
 echo ""
 
 cd $build_root
-make -j $num_threads
+MAKE_OUTPUT_LOG=$build_root/build.log
+make -j $num_threads 2>&1 | tee -a $MAKE_OUTPUT_LOG
 
 #----------------------------------------
 # Test: Hooks for test framework
@@ -349,23 +395,23 @@ if [ "$test_switch" ]; then
     cd $build_root
     ctest -v
     ctest_keyword=TestOutput
-    test_log=$build_root/Testing/Temporary/LastTest.log
-    test_log_save_file=$build_root/test_output.log
-    cat $test_log | grep "$ctest_keyword" > $test_log_save_file
+    ctest_log=$build_root/Testing/Temporary/LastTest.log
+    ctest_log_save_file=$build_root/test.log
+    cat $ctest_log | grep "$ctest_keyword" > $ctest_log_save_file
 
     # the last character on each line of output is a fail bit
-    test_count=`cat $test_log | grep $ctest_keyword | wc -l`
-    tests_passed=`cat $test_log | grep $ctest_keyword | grep "0$" | wc -l`
-    tests_failed=`cat $test_log | grep $ctest_keyword | grep "1$" | wc -l`
+    test_count=`cat $ctest_log | grep $ctest_keyword | wc -l`
+    tests_passed=`cat $ctest_log | grep $ctest_keyword | grep "0$" | wc -l`
+    tests_failed=`cat $ctest_log | grep $ctest_keyword | grep "1$" | wc -l`
 
     echo ""
-    echo "****************************************"
+    echo "------------------------------------------------------------"
     echo "CTest Summary Results"
-    echo "****************************************"
+    echo "------------------------------------------------------------"
     echo "Number of tests run    = $test_count"
     echo "Number of tests passed = $tests_passed"
     echo "Number of tests failed = $tests_failed"
-    echo "****************************************"
+    echo "------------------------------------------------------------"
     echo ""
 
 fi
@@ -469,7 +515,8 @@ if [ $build_only ]; then
     exit 1
 else
     cd $build_root
-    make install -j $num_threads
+    INSTALL_OUTPUT_LOG=$build_root/install.log
+    make install -j $num_threads 2>&1 | tee -a $INSTALL_OUTPUT_LOG
 fi
 
 #----------------------------------------
