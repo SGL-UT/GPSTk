@@ -6,8 +6,8 @@ cmake_minimum_required( VERSION 2.8.4  )
 
 message( STATUS "Inside gpstk/swig/CMakeLists.txt, PYTHON_INSTALL_PREFIX = ${PYTHON_INSTALL_PREFIX}" )
 
-# The CMake command-line tool displays STATUS messages 
-# on stdout and all other message types on stderr. 
+# The CMake command-line tool displays STATUS messages
+# on stdout and all other message types on stderr.
 #   set( CMAKE_PREFIX_PATH "" )
 #   list( APPEND CMAKE_PREFIX_PATH /opt/python/2.7.6 )
 #   message( STATUS "DEBUG: SWIG: CMAKE_PREFIX_PATH  = ${CMAKE_PREFIX_PATH}" )
@@ -20,14 +20,14 @@ message( STATUS "Inside gpstk/swig/CMakeLists.txt, PYTHON_INSTALL_PREFIX = ${PYT
 # then figure it out by running python.
 if( NOT PYTHON_EXECUTABLE )
     message( WARNING  "PYTHON_EXECUTABLE is undefined. Will attempt find a python instance. Next time, pass in a full path to cmake using, e.g., cmake -DPYTHON_EXECUTABLE=/usr/bin/python2.7" )
-    execute_process( COMMAND python -c 
+    execute_process( COMMAND python -c
 		             "import sys; print sys.executable"
                      OUTPUT_VARIABLE PYTHON_EXECUTABLE
                      OUTPUT_STRIP_TRAILING_WHITESPACE
                     )
 endif()
 
-# If PYTHON_EXECUTABLE is still empty, something is severely wrong, 
+# If PYTHON_EXECUTABLE is still empty, something is severely wrong,
 #  perhaps python is not installed on this system?
 if( NOT PYTHON_EXECUTABLE )
 	message( FATAL_ERROR "PYTHON_EXECUTABLE: Unable to determine or use PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}" )
@@ -39,9 +39,9 @@ endif()
 # Get python version number
 #------------------------------------------------------------
 
-# Now figure out the version of the python executable 
+# Now figure out the version of the python executable
 # so we can go look for a matching python library to link against.
-execute_process( COMMAND ${PYTHON_EXECUTABLE} -c 
+execute_process( COMMAND ${PYTHON_EXECUTABLE} -c
 	             "import sys; print sys.version.split()[0]"
                  OUTPUT_VARIABLE PYTHON_version_output
                  OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -118,7 +118,7 @@ if( NOT SWIG_FOUND )
     message( FATAL_ERROR "SWIG: System install of swig not found. Cannot build swig bindings." )
     return()
 endif()
-	  
+
 if( NOT SWIG_EXECUTABLE )
     message( FATAL_ERROR "SWIG: System install of swig not found. Cannot build swig bindings." )
     return()
@@ -155,8 +155,8 @@ set_source_files_properties( gpstk.i PROPERTIES CPLUSPLUS ON ) # why not also se
 #----------------------------------------
 # Debug
 #----------------------------------------
-# The CMake command-line tool, message( STATUS ) displays 
-# messages on stdout and all other message types on stderr. 
+# The CMake command-line tool, message( STATUS ) displays
+# messages on stdout and all other message types on stderr.
 
 if( DEBUG_SWITCH )
     message( STATUS "DEBUG: SWIG: DEBUG: Before swig module is set -----------------------------------------" )
@@ -180,10 +180,10 @@ endif()
 #----------------------------------------
 # Note: the cmake swig module doesn't seem to know
 #       how to track dependancy on other .i files...
-#       so if the other .i files are changed, 
+#       so if the other .i files are changed,
 #       you must rerun cmake, not just make.
 #
-# Note: list of all headers files are included in 
+# Note: list of all headers files are included in
 #       gpstk_swig.hpp which is included in gpstk.i
 
 # make sure the swig build target outputs files to the build file tree
@@ -222,9 +222,9 @@ endif()
 #----------------------------------------
 # Add custom commands to the _gpstk.so build target
 #----------------------------------------
-#    ...to relocate the output from teh swig build target to 
+#    ...to relocate the output from teh swig build target to
 #    the correct directory within the python package file tree
-#        CMake documentation claims that all SWIG target output 
+#        CMake documentation claims that all SWIG target output
 #        will be written to $CMAKE_SWIG_OUTDIR, but
 #        testing shows that this ONLY works for the gpstk.py
 #        and does NOT work for the _gpstk.so
@@ -233,11 +233,11 @@ add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND}
 add_custom_command( TARGET "_${SWIG_MODULE}" POST_BUILD COMMAND ${CMAKE_COMMAND} -E copy "${SWIG_MODULE}.py" ${INSTALL_PACKAGE_PATH}/${SWIG_MODULE} )
 
 # CONFIGURATION:
-# It copies entire install_package file tree 
+# It copies entire install_package file tree
 # from it's original src root to the build root
 file( COPY ${INSTALL_PACKAGE_SOURCE}/ DESTINATION ${INSTALL_PACKAGE_PATH} PATTERN "*" )
 
-# CONFIGURATION: Copy meta files.txt 
+# CONFIGURATION: Copy meta files.txt
 set( METAFILES "" ) # for a single set() command, just ";" delimiter between entries in the list
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/AUTHORS.txt" )
 list( APPEND METAFILES "${CMAKE_SOURCE_DIR}/COPYING.txt" )
@@ -258,7 +258,7 @@ file( WRITE ${SWIG_DOC_DIR}/doc.i "#dummy file. Is replaced when docs are genera
 include_directories( ${SWIG_DOC_DIR} )
 
 #----------------------------------------
-# Install package tree 
+# Install package tree
 #----------------------------------------
 
 # Provide ability to use CMake variables to define some values within the setup.py script
@@ -285,7 +285,7 @@ endif()
 install( CODE "execute_process(COMMAND ${PYTHON} ${SETUP_PY} install --prefix=${PYTHON_INSTALL_PREFIX} WORKING_DIRECTORY ${INSTALL_PACKAGE_PATH})" )
 
 #------------------------------------------------------------
-# These files aren't required to use the bindings but are 
+# These files aren't required to use the bindings but are
 # required to make a swig module that depends upon these bindings
 #------------------------------------------------------------
 

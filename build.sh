@@ -394,8 +394,20 @@ make -j $num_threads 2>&1 | tee -a $MAKE_OUTPUT_LOG
 if [ "$test_switch" ]; then
 
     # run the tests
+    echo ""
+    echo "------------------------------------------------------------"
+    echo "Begin testing."
+    echo "------------------------------------------------------------"
+    echo ""
+
     cd $build_root
     ctest -v
+
+    echo ""
+    echo "------------------------------------------------------------"
+    echo "Tests completed. Parsing test logs..."
+    echo "------------------------------------------------------------"
+    echo ""
 
     # capture the test output
     ctest_keyword=TestOutput
@@ -404,9 +416,9 @@ if [ "$test_switch" ]; then
     cat $ctest_log_raw | grep "$ctest_keyword" > $ctest_log_save
 
     # the last character on each line of output is a fail bit
-    test_count=`cat $ctest_log | grep $ctest_keyword | wc -l`
-    tests_passed=`cat $ctest_log | grep $ctest_keyword | grep "0$" | wc -l`
-    tests_failed=`cat $ctest_log | grep $ctest_keyword | grep "1$" | wc -l`
+    test_count=`cat $ctest_log_save | wc -l`
+    tests_passed=`cat $ctest_log_save | grep "0$" | wc -l`
+    tests_failed=`cat $ctest_log_save | grep "1$" | wc -l`
 
     echo ""
     echo "------------------------------------------------------------"
@@ -538,12 +550,15 @@ echo ""
 echo ""
 
 ldd_path_list=`ldconfig -v 2>/dev/null | grep -v ^$'\t' | sed -e 's/://g'`
-gpstk_install_path_test=`echo "$ldd_path_list" | grep -o "$gpstk_install"`
+ld_lib_path_list=`echo $LD_LIBRARY_PATH`
+gpstk_install_path_test=`echo "$ldd_path_list $ld_lib_path_list" | grep -o "$gpstk_install"`
 
 if [ -z "$gpstk_install_path_test" ]; then
 
     echo ""
-    echo "$0: Paths: |--------------------- [FAIL]"
+    echo "$0: Paths: |------------------------------------------ "
+    echo "$0: Paths: | [FAIL]: Can $gpstk_install/lib be found by ldd?"
+    echo "$0: Paths: |------------------------------------------ "
     echo "$0: Paths: | "
     echo "$0: Paths: | Based on a query to ldconfig, it appears that your"
     echo "$0: Paths: | GPSTk library install path is NOT in a location known to ldd"
@@ -551,22 +566,31 @@ if [ -z "$gpstk_install_path_test" ]; then
     echo "$0: Paths: |  including the GPSTk python bindings."
     echo "$0: Paths: | "
     echo "$0: Paths: | gpstk_install_path = $gpstk_install" 
+    echo "$0: Paths: | gpstk_lib_install_path = $gpstk_install/lib" 
     echo "$0: Paths: | ldd_path_list:" 
     for ldd_path_entry in $ldd_path_list; do
     echo "$0: Paths: |     ldd_path_entry = $ldd_path_entry" 
     done;
     echo "$0: Paths: | "
-    echo "$0: Paths: | Please update your environment as follows:"
+    echo "$0: Paths: | ld_lib_path_list:" 
+    for ld_lib_path_entry in $ld_lib_path_list; do
+    echo "$0: Paths: |     ld_lib_path_entry = $ld_lib_path_entry" 
+    done;
+    echo "$0: Paths: | "
+    echo "$0: Paths: | Recommendation: update your environment as follows:"
+    echo "$0: Paths: | "
     echo "$0: Paths: |      $ export LD_LIBRARY_PATH=$gpstk_install/lib:\$LD_LIBRARY_PATH "
     echo "$0: Paths: | "
-    echo "$0: Paths: |--------------------- [FAIL]"
+    echo "$0: Paths: |------------------------------------------ "
     echo ""
 else
     echo ""
-    echo "$0: Paths: |--------------------- [PASS]"
+    echo "$0: Paths: |------------------------------------------ "
+    echo "$0: Paths: | [PASS]: Can $gpstk_install/lib be found by ldd?"
+    echo "$0: Paths: |------------------------------------------ "
     echo "$0: Paths: | GPSTk library install path appears to be in your PATH"
     echo "$0: Paths: | No further action needed."
-    echo "$0: Paths: |--------------------- [PASS]"
+    echo "$0: Paths: |------------------------------------------ "
     echo ""
 fi
 
@@ -587,7 +611,9 @@ sys_path_test=`echo "$sys_path_list" | grep -o "$python_install"`
 if [ -z "$sys_path_test" ]; then
 
     echo ""
-    echo "$0: Paths: |--------------------- [FAIL]"
+    echo "$0: Paths: |------------------------------------------ "
+    echo "$0: Paths: | [FAIL]: Can $python_install be found by sys.path?"
+    echo "$0: Paths: |------------------------------------------ "
     echo "$0: Paths: | "
     echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
     echo "$0: Paths: | GPSTk python package install path is not known to sys.path"
@@ -599,20 +625,23 @@ if [ -z "$sys_path_test" ]; then
     echo "$0: Paths: |      sys_path_entry = $sys_path_entry" 
     done;
     echo "$0: Paths: | "
-    echo "$0: Paths: | Please update your PYTHONPATH as follows: "
+    echo "$0: Paths: | Recommendation: update your environment as follows:"
+    echo "$0: Paths: | "
     echo "$0: Paths: |     $ export PYTHONPATH=$install_prefix/lib/python2.7/site-packages:\$PYTHONPATH "
     echo "$0: Paths: | "
-    echo "$0: Paths: |--------------------- [FAIL]"
+    echo "$0: Paths: |------------------------------------------ "
     echo ""
 
 else
     echo ""
-    echo "$0: Paths: |--------------------- [PASS]"
+    echo "$0: Paths: |------------------------------------------ "
+    echo "$0: Paths: | [PASS]: Can $python_install be found by sys.path?"
+    echo "$0: Paths: |------------------------------------------ "
     echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
     echo "$0: Paths: | GPSTk python package install path is known to sys.path"
     echo "$0: Paths: | GPSTk python package 'import gpstk' should work just fine."
     echo "$0: Paths: | No further action needed."
-    echo "$0: Paths: |--------------------- [PASS]"
+    echo "$0: Paths: |------------------------------------------ "
     echo ""
 
 fi
