@@ -43,7 +43,7 @@
 // system includes
 
 // GPSTk
-#include "geometry.hpp"                // for DEG_TO_RAD
+#include "GNSSconstants.hpp"                // for DEG_TO_RAD
 // geomatics
 #include "SunEarthSatGeometry.hpp"
 // DDBase

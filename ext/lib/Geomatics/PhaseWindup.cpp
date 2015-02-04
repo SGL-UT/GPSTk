@@ -43,7 +43,7 @@
 // -----------------------------------------------------------------------------------
 // GPSTk includes
 #include "Matrix.hpp"
-#include "geometry.hpp"             // DEG_TO_RAD
+#include "GNSSconstants.hpp"             // DEG_TO_RAD
 #include "GNSSconstants.hpp"    // TWO_PI
 // geomatics
 #include "PhaseWindup.hpp"

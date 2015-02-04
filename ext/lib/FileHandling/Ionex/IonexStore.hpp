@@ -49,7 +49,7 @@
 #include "FileStore.hpp"
 #include "IonexData.hpp"
 
-#include "geometry.hpp"                   // DEG_TO_RAD
+#include "GNSSconstants.hpp"                   // DEG_TO_RAD
 #include "GNSSconstants.hpp"          // LX_FREQ, with X = 1,2,5,6,7,8
 #include "Triple.hpp"
 

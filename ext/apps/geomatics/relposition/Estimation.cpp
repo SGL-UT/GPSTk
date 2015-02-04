@@ -59,7 +59,7 @@
 #include "PreciseRange.hpp"
 #include "Stats.hpp"
 #include "RobustStats.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 
 // DDBase
 #include "DDBase.hpp"

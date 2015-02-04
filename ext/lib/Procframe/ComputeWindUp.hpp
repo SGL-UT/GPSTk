@@ -50,7 +50,7 @@
 #include "SunPosition.hpp"
 #include "XvtStore.hpp"
 #include "SatDataReader.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 
 
 

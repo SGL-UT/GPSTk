@@ -44,7 +44,7 @@
 #ifndef GPSTK_XYZ2NED_HPP
 #define GPSTK_XYZ2NED_HPP
 
-#include "geometry.hpp"                   // DEG_TO_RAD
+#include "GNSSconstants.hpp"                   // DEG_TO_RAD
 #include "Matrix.hpp"
 #include "Position.hpp"
 #include "TypeID.hpp"

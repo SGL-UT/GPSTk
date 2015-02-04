@@ -43,7 +43,7 @@
 #include "GNSSconstants.hpp"
 #include "IonoModel.hpp"
 #include "YDSTime.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 
 namespace gpstk
 {

@@ -132,7 +132,7 @@
    // Class to compute the Precise Point Positioning (PPP) solution
 #include "SolverPPP.hpp"
 
-#include "geometry.hpp"                   // DEG_TO_RAD
+#include "GNSSconstants.hpp"                   // DEG_TO_RAD
 
 #include "RinexNavStream.hpp"
 #include "RinexNavData.hpp"

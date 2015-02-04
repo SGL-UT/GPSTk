@@ -52,7 +52,7 @@
 #include <deque>
 #include "TimeString.hpp"
 // GPSTk
-#include "geometry.hpp"             // DEG_TO_RAD
+#include "GNSSconstants.hpp"             // DEG_TO_RAD
 #include "PolyFit.hpp"
 #include "EphemerisRange.hpp"
 // geomatics
