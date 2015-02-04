@@ -299,10 +299,11 @@ add_subdirectory( core )
 
 if( BUILD_EXT )
    add_subdirectory( ext )
+   add_subdirectory( swig )
+   add_subdirectory( examples )
 endif()
 	
-add_subdirectory( swig )
-add_subdirectory( examples )
+
 
 #----------------------------------------
 # Experimental: build debs, tgz packages
