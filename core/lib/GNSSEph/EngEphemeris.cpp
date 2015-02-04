@@ -52,7 +52,6 @@
 #include "TimeSystem.hpp"
 #include "GPS_URA.hpp"
 #include "TimeString.hpp"
-#include "SVNumXRef.hpp"
 
 namespace gpstk
 {
@@ -1319,18 +1318,6 @@ namespace gpstk
       s.setf(ios::uppercase);
       s.precision(0);
       s.fill(' ');
-
-      SVNumXRef svNumXRef;
-      int NAVSTARNum = 0;
-      try
-      {
-	      NAVSTARNum = svNumXRef.getNAVSTAR(PRNID, bcClock.getEpochTime());
-         s << setw(2) << " " << NAVSTARNum << "  ";
-      }
-      catch(NoNAVSTARNumberFound)
-      {
-	      s << "  XX  ";
-      }
 
       s << setw(2) << PRNID << " ! ";
 

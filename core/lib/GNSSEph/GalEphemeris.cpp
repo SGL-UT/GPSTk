@@ -41,7 +41,6 @@
 
 #include <string>
 #include "Exception.hpp"
-#include "SVNumXRef.hpp"
 #include "TimeString.hpp"
 #include "CivilTime.hpp"
 #include "GALWeekSecond.hpp"

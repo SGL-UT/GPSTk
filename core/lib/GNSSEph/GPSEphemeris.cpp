@@ -41,7 +41,6 @@
 
 #include <string>
 #include "Exception.hpp"
-#include "SVNumXRef.hpp"
 #include "GPSWeekSecond.hpp"
 #include "CivilTime.hpp"
 #include "TimeString.hpp"
@@ -187,16 +186,6 @@ namespace gpstk
          os << "Satellite: " << SatID::convertSatelliteSystemToString(satID.system)
             << " " << setfill('0') << setw(2) << satID.id << setfill(' ');
 
-         // ... and add this for GPS
-         os << " SVN ";
-         /*SVNumXRef svNumXRef; 
-         try {
-            os << svNumXRef.getNAVSTAR(satID.id, ctToe );
-         }
-         catch(NoNAVSTARNumberFound) {
-            os << "Unknown";
-         }
-         os << endl;*/
       }
       catch(Exception& e) { GPSTK_RETHROW(e); }
    }

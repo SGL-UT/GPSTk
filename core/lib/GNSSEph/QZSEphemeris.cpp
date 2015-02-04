@@ -41,7 +41,6 @@
 
 #include <string>
 #include "Exception.hpp"
-#include "SVNumXRef.hpp"
 #include "QZSWeekSecond.hpp"
 
 #include "QZSEphemeris.hpp"
