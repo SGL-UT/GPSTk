@@ -250,6 +250,8 @@ namespace gpstk
    const double L5_WAVELENGTH_GEO  = L5_WAVELENGTH_GPS;
 
    // ---------------- BeiDou ----------------------------------
+      /// The maximum number of active satellites in the Compass constellation. 
+   const long MAX_PRN_COM     = 30;
       /// BDS L1 (B1) carrier frequency in Hz.
    const double L1_FREQ_BDS   = 1561.098e6;
       /// BDS L2 (B2) carrier frequency in Hz.
