@@ -442,7 +442,7 @@ namespace gpstk
    {
       Xvt sv;
 
-      Xv xv = orbit.svXv(t);
+      Xvt xv = orbit.svXv(t);
 
       sv.x = xv.x;
       sv.v = xv.v;

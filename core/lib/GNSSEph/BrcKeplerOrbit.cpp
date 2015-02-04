@@ -265,10 +265,10 @@ namespace gpstk
       return(false);
    }
 
-   Xv BrcKeplerOrbit::svXv(const CommonTime& t) const
+   Xvt BrcKeplerOrbit::svXv(const CommonTime& t) const
       throw(InvalidRequest)
    {
-      Xv sv;
+      Xvt sv;
 
       GPSWeekSecond gpsws = (Toe);
       double ToeSOW = gpsws.sow;

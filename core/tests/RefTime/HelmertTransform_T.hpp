@@ -42,7 +42,6 @@
 #include "HelmertTransform.hpp"
 #include "ReferenceFrame.hpp"
 #include "Position.hpp"
-#include "Xv.hpp"
 #include "Xvt.hpp"
 #include "Triple.hpp"
 #include "Vector.hpp"
