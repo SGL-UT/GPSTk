@@ -42,7 +42,7 @@
 #include "HelmertTransform.hpp"
 #include "TimeString.hpp"
 #include "YDSTime.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 
 using namespace gpstk;
 using namespace std;

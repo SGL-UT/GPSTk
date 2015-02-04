@@ -39,7 +39,7 @@
  * Three element double vectors, for use with geodetic coordinates
  */
 
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 #include "Triple.hpp"
 #include <cmath>
 

@@ -33,7 +33,7 @@
 
 // general files:
 #include "StringUtils.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 #include "gps_constants.hpp"
 #include "SatID.hpp"
 #include "ObsIDInitializer.hpp"

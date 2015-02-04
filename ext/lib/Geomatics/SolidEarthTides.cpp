@@ -45,7 +45,7 @@
  * as GM for sun and moon.
  */
 
-#include "geometry.hpp"             // for DEG_TO_RAD
+#include "GNSSconstants.hpp"             // for DEG_TO_RAD
 
 #include "logstream.hpp"
 #include "GeodeticFrames.hpp"

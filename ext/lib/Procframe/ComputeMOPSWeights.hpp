@@ -53,7 +53,7 @@
 #include "GPSEphemerisStore.hpp"
 #include "ComputeIURAWeights.hpp"
 #include "TropModel.hpp"
-#include "geometry.hpp"             // DEG_TO_RAD
+#include "GNSSconstants.hpp"             // DEG_TO_RAD
 
 
 namespace gpstk
