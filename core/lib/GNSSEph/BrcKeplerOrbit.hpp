@@ -50,7 +50,7 @@
 #include "EngNav.hpp"
 #include "Exception.hpp"
 #include "CommonTime.hpp"
-#include "Xvt.hpp"
+#include "Xv.hpp"
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
 #include "GPSEllipsoid.hpp"
@@ -265,7 +265,7 @@ namespace gpstk
           * using this orbit data.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      Xvt svXv(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      Xv svXv(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute satellite relativity correction (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
