@@ -45,7 +45,7 @@
 #include "AntexData.hpp"
 #include "AntexStream.hpp"
 #include "StringUtils.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 #include "TimeString.hpp"
 #include "CivilTime.hpp"
 

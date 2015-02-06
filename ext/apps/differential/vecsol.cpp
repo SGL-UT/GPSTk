@@ -43,7 +43,7 @@
 #include <limits.h>
 #include <float.h>
 
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 
 #include "Matrix.hpp"
 #include "MatrixOperators.hpp"

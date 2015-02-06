@@ -45,7 +45,7 @@
 #include "CommonTime.hpp"
 #include "Position.hpp"
 #include "GNSSconstants.hpp"       // TWO_PI
-#include "geometry.hpp"                // DEG_TO_RAD
+#include "GNSSconstants.hpp"                // DEG_TO_RAD
 #include "SolarPosition.hpp"
 #include "YDSTime.hpp"
 #include "JulianDate.hpp"

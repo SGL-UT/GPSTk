@@ -33,12 +33,11 @@
 
 // general files:
 #include "StringUtils.hpp"
-#include "geometry.hpp"
+#include "GNSSconstants.hpp"
 #include "gps_constants.hpp"
 #include "SatID.hpp"
 #include "ObsIDInitializer.hpp"
 #include "ObsID.hpp"
-#include "GNSSconstants.hpp"
 #include "Triple.hpp"
 #include "ReferenceFrame.hpp"
 #include "EllipsoidModel.hpp"

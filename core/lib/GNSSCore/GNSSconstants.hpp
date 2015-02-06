@@ -65,6 +65,10 @@ namespace gpstk
    const double REL_CONST = -4.442807633e-10;
       /// m/s, speed of light; this value defined by GPS but applies to GAL and GLO.
    const double C_MPS = 2.99792458e8;
+      /// Conversion Factor from degrees to radians (units: degrees^-1)
+   static const double DEG_TO_RAD = 1.7453292519943e-2;
+      /// Conversion Factor from radians to degrees (units: degrees)
+   static const double RAD_TO_DEG = 57.295779513082;
 
    // ---------------- GPS --------------------------------------
       /// Hz, GPS Oscillator or chip frequency
@@ -246,6 +250,8 @@ namespace gpstk
    const double L5_WAVELENGTH_GEO  = L5_WAVELENGTH_GPS;
 
    // ---------------- BeiDou ----------------------------------
+      /// The maximum number of active satellites in the Compass constellation. 
+   const long MAX_PRN_COM     = 30;
       /// BDS L1 (B1) carrier frequency in Hz.
    const double L1_FREQ_BDS   = 1561.098e6;
       /// BDS L2 (B2) carrier frequency in Hz.
