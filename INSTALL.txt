@@ -11,7 +11,7 @@ Contents
 * UNIX-like Environment: Manual Build and Install
 * OSX and XCode: Building and Installing with CMake
 * Windows and Microsoft Visual Studio: Building with CMake
-
+* Linking Against the GPSTk Library
 
 Introduction
 ------------
@@ -82,15 +82,26 @@ on those parameters:
 
     $ ./build.sh -h
 
+Note that the script will NOT update your shell environment, so you
+will need to export the library install path if you install to a 
+non-standard path. The build script will test your paths to and warn
+you if your installs cannot be found.
+
+Typical system installs will look like this:
+
+    $ ./build.sh -e
+
 Typical user installs will look like this:
 
     $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:$LD_LIBRARY_PATH
 
-    $ ./build.sh -edu
+    $ ./build.sh -eu
 
-Typical system installs will look like this:
+Typical test install will look like this:
 
-    $ ./build.sh -ed
+    $ export LD_LIBRARY_PATH=/tmp/test/lib:$LD_LIBRARY_PATH
+
+    $ ./build.sh -et -i /tmp/test
 
 
 UNIX-like Environment: Manual Build and Install
@@ -131,9 +142,9 @@ commands instead of build.sh:
 
          $ cd $gpstk_root/build
 
-         $ cmake -DPYTHON_USER_INSTALL=TRUE -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $gpstk_root
+         $ cmake -DPYTHON_INSTALL_PREFIX=$HOME/.local -DCMAKE_INSTALL_PREFIX=$HOME/.local/gpstk $gpstk_root
 
-         $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:LD_LIBRARY_PATH
+         $ export LD_LIBRARY_PATH=$HOME/.local/gpstk/lib:$LD_LIBRARY_PATH
 
          $ make
 
@@ -158,4 +169,22 @@ Step-by-step procedure with pictures on building the GPSTk under Visual Studio
 2012 can be found at gpstk.org:
 
     http://www.gpstk.org/BuildingGPSTkUnderWindows
+
+
+Linking Against the GPSTk Library
+---------------------------------
+
+If you are developing against your install of GPSTk, and have added
+the relevant GPSTk library #include statements in you implementation file,
+then the simplest example of building your application in a Bash script 
+would look like this:
+
+    INPUT=Your_App.cpp
+    OUTPUT=Your_App.exe
+    GPSTK_INSTALL=$HOME/.local/gpstk
+    COMPILER="gcc -Wall"
+
+    COMMAND_STRING="$COMPILER -I$GPSTK_INSTALL/include -L$GPSTK_INSTALL/lib -lgpstk -o $OUTPUT $INPUT"
+    echo "$COMMAND_STRING"
+    eval $COMMAND_STRING
 
