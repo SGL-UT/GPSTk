@@ -1,0 +1,14 @@
+# This file contains data for the BINEX UBNXI tests
+# 
+#     Test   Expected
+#   Number   Size (bytes), 0 = NaN
+#---------   ---------------------
+         0   1
+       127   1
+       128   2
+     16383   2
+     16384   3
+   2097151   3
+   2097152   4
+ 536870911   4
+ 536870912   0

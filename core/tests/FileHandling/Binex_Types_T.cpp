@@ -33,663 +33,317 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-#include <stdlib.h> // For lrand48()
-#include "BinexData.hpp"
-#include "BasicFramework.hpp"
 
-/**
- * @file binex_types_test.cpp
- * 
- * Tests gpstk::BinexData::UBNXI, gpstk::BinexData::MGFZI
- */
+#include "BinexData.hpp"
+#include "TestUtil.hpp"
 
 using namespace std;
 using namespace gpstk;
 
-/**
- * 
- */
-class BinexTypesTest : public BasicFramework
+//=============================================================================
+// Class declarations
+//=============================================================================
+
+class BinexTypes_T
 {
 public:
 
-      /**
-       * 
-       */
-   BinexTypesTest(char* arg0);
+      // constructor
+   BinexTypes_T() : verboseLevel(0) { init(); };
 
-      /**
-       * 
-       */
-   virtual ~BinexTypesTest() {};
+      // destructor
+   virtual ~BinexTypes_T() { };
 
-protected:
+      // initialize tests
+   void init();
 
-      /**
-       * 
-       */
-   void process()
-      throw();
+      // test methods
+      // @return  number of failures, i.e., 0=PASS, !0=FAIL
+   int doUbnxiInitializationTests();
+   int doUbnxiEncodeDecodeTests();
+   int doMgfziInitializationTests();
+   int doMgfziEncodeDecodeTests();
 
-      /**
-       * 
-       */
-   void report(string description,
-               bool   pass);
+   unsigned  verboseLevel;  // amount to display during tests, 0 = least
 
-      /**
-       * 
+private:
+
+   struct TestNum
+   {
+      long long  value;
+      int        size;  // expected size, -1 denotes an invalid number
+   };
+
+   typedef vector<TestNum>  NumListType;
+
+      // read a list of numbers (one per line) from the specified file
+      // @return true on success, false on failure
+   bool readNums(const string& filename, NumListType& numList);
+
+   NumListType  ubnxiNumList;
+   NumListType  mgfziNumList;
+
+   string  inputUbnxiNums;
+   string  inputMgfziNums;
+
+      /** Update test results and optionally show test details
        */
-   void report(string                  description,
+   void report(TestUtil&               test,
                const unsigned long     expectedValue,
                const size_t            expectedSize,
                const BinexData::UBNXI& actual,
-               const bool              littleEndian = false);
+               const bool              isLittleEndian = false);
 
-      /**
-       * 
+      /** Update test results and optionally show test details
        */
-   void report(string                  description,
+   void report(TestUtil&               test,
                const long long         expectedValue,
                const size_t            expectedSize,
                const BinexData::MGFZI& actual,
-               const bool              littleEndian = false);
+               const bool              isLittleEndian = false);
 
       /**
        * 
        */
    void dumpBuffer(const unsigned char* buffer, size_t size);
 
-}; // class BinexTypesTest
+}; // class BinexTypes_T
 
 
-//---------------------------------------------------------------------------
-BinexTypesTest::BinexTypesTest(char* arg0) :
-   BasicFramework (arg0, "Tests Binex types UBNXI and MGFZI")
+//============================================================
+// Initialize Test Data Filenames and Values
+//============================================================
+
+void BinexTypes_T :: init( void )
 {
-   // Intentionally empty
+
+    TestUtil  test0;
+    string  dataFilePath = test0.getDataPath();
+    string  tempFilePath = test0.getTempPath();
+
+    //---------------------------------------- 
+    // Full file paths
+    //---------------------------------------- 
+    string  file_sep = "/";
+
+    inputUbnxiNums = dataFilePath + file_sep + "test_input_binex_types_Ubnxi.txt";
+    inputMgfziNums = dataFilePath + file_sep + "test_input_binex_types_Mgfzi.txt";
+
+    readNums(inputUbnxiNums, ubnxiNumList);
+    readNums(inputMgfziNums, mgfziNumList);
 }
 
 
 //---------------------------------------------------------------------------
-void BinexTypesTest::process()
-   throw()
+bool BinexTypes_T :: readNums(const string& filename,
+                              NumListType& numList)
 {
-   // Test UBNXI class
-   if (verboseLevel > 0)
+   ifstream  ifs(filename.c_str());
+
+   if (!ifs.good())
+      return false;
+   
+   while (ifs.good())
    {
-      cout << "Testing UBNXI initialization . . ." << endl;
+      string  line;
+      getline(ifs, line);
+
+         // ignore comments
+      string::size_type  hashPos = line.find('#');
+      if (hashPos != string::npos)
+      {
+         line.erase(hashPos);         
+      }
+         // ignore empty lines
+      string::size_type  nonWhitePos = line.find_first_not_of(" \t");
+      if (nonWhitePos != string::npos)
+      {
+         istringstream  iss(line);
+         TestNum  num;
+         iss >> num.value;
+         iss >> num.size;
+         numList.push_back(num);
+      }
    }
-   {
-      BinexData::UBNXI u;
-      report("UBNXI: Uninitialized", 0, 1, u);
-   }
-   {
-      BinexData::UBNXI u(0);
-      report("UBNXI: Initialize boundary condition", 0, 1, u);
-   }
-   {
-      BinexData::UBNXI u(127);
-      report("UBNXI: Initialize boundary condition", 127, 1, u);
-   }
-   {
-      BinexData::UBNXI u(128);
-      report("UBNXI: Initialize boundary condition", 128, 2, u);
-   }
-   {
-      BinexData::UBNXI u(16383);
-      report("UBNXI: Initialize boundary condition", 16383, 2, u);
-   }
-   {
-      BinexData::UBNXI u(16384);
-      report("UBNXI: Initialize boundary condition", 16384, 3, u);
-   }
-   {
-      BinexData::UBNXI u(2097151);
-      report("UBNXI: Initialize boundary condition", 2097151, 3, u);
-   }
-   {
-      BinexData::UBNXI u(2097152);
-      report("UBNXI: Initialize boundary condition", 2097152, 4, u);
-   }
-   {
-      BinexData::UBNXI u(536870911);
-      report("UBNXI: Initialize boundary condition", 536870911, 4, u);
-   }
+   return (numList.size() > 0);
+}
+
+
+//=============================================================================
+// Test Method Definitions
+//=============================================================================
+
+
+int BinexTypes_T :: doUbnxiInitializationTests()
+{
+   TestUtil  testFramework( "BinexData::UBNXI", "Initialization", __FILE__, __LINE__ );
+
+      // BinexData::UBNXI_Initialization_1 - Uninitialized
    try
-   {      
-      BinexData::UBNXI u(536870912);
-      report("UBNXI: Overflow exception not generated for 536870912", false);
-   }
-   catch (Exception e)
    {
-      report("UBNXI: Overflow exception correctly generated for 536870912", true);
+      BinexData::UBNXI  u;
+      report(testFramework, 0, 1, u);
+   }
+   catch (Exception& e)
+   {
+      testFramework.fail();
+   }
+   testFramework.next();
+
+
+      // BinexData::UBNXI_Initialization_2..n - Initialization
+   NumListType::const_iterator  numIter = ubnxiNumList.begin();
+   for ( ; numIter != ubnxiNumList.end(); ++numIter)
+   {
+      try
+      {
+            // validate value and size of each number
+         BinexData::UBNXI  u(numIter->value);
+         report(testFramework,
+                numIter->value, numIter->size,  // expected
+                u);                             // actual
+      }
+      catch (Exception& e)
+      {
+            // was this an expected exception?
+         testFramework.assert(numIter->size <= 0);
+      }
+
+      testFramework.next();
    }
 
-   if (verboseLevel > 0)
+   return testFramework.countFails();
+}
+
+
+//---------------------------------------------------------------------------
+int BinexTypes_T :: doUbnxiEncodeDecodeTests()
+{
+   TestUtil  testFramework( "BinexData::UBNXI", "Encode/Decode", __FILE__, __LINE__ );
+
+   NumListType::const_iterator  numIter = ubnxiNumList.begin();
+   for ( ; numIter != ubnxiNumList.end(); ++numIter)
    {
-      cout << "Testing UBNXI encoding/decoding . . ." << endl;
-   }
-   for (unsigned short littleEndian = 0; littleEndian <= 1; littleEndian++)
-   {
-      BinexData::UBNXI u2;
-      //unsigned char    buffer[4];
-      std::string      buffer;
-      size_t           offset = 0;
-      size_t           len;
-      string           descB = "UBNXI: Encode/decode, boundary condition";
-      string           descR = "UBNXI: Encode/decode, random";
-            
+      for (short isLittleEndian = 0; isLittleEndian <= 1; ++isLittleEndian)
       {
-         BinexData::UBNXI u1(0);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 0, 1, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(127);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 127, 1, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(128);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 128, 2, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(506);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 506, 2, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(15619);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 15619, 2, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(16383);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 16383, 2, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(16384);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 16384, 3, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(2097151);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 2097151, 3, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(2097152);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 2097152, 4, u2, (bool)littleEndian);
-      }
-      {
-         BinexData::UBNXI u1(536870911);
-         u1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         u2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 536870911, 4, u2, (bool)littleEndian);
-      }
-      
-      for (unsigned long i = 1000; i <  BinexData::UBNXI::MAX_VALUE; i <<= 3)
-      {
-         for (unsigned long j = 0; j < 50; j++)
+         try
          {
-            unsigned long v = (unsigned long)lrand48() % i;
-            BinexData::UBNXI u1(v);
-            u1.encode(buffer, offset, (bool)littleEndian);
-            u2.decode(buffer, offset, (bool)littleEndian);
-            report(descR, v, u1.getSize(), u2, (bool)littleEndian);
+            string  buffer;
+            size_t       offset = 0;
+
+            BinexData::UBNXI  u1(numIter->value);
+            u1.encode(buffer, offset, (bool)isLittleEndian);
+
+            BinexData::UBNXI  u2;
+            u2.decode(buffer, offset, (bool)isLittleEndian);
+
+            report(testFramework,
+                   numIter->value, numIter->size,  // expected
+                   u2,                             // actual
+                   (bool)isLittleEndian);
          }
-      }
-      
-   }
-
-   // Test MGFZI class
-   if (verboseLevel > 0)
-   {
-      cout << "Testing MGFZI initialization . . ." << endl;
-   }
-   {
-      BinexData::MGFZI m;
-      report("MGFZI: Uninitialized", 0, 1, m);
-   }
-   {
-      BinexData::MGFZI m(0);
-      report("MGFZI: Initialize boundary condition", 0, 1, m);
-   }
-   {
-      BinexData::MGFZI m(15);
-      report("MGFZI: Initialize boundary condition", 15, 1, m);
-   }
-   {
-      BinexData::MGFZI m(-15);
-      report("MGFZI: Initialize boundary condition", -15, 1, m);
-   }
-   {
-      BinexData::MGFZI m(16);
-      report("MGFZI: Initialize boundary condition", 16, 2, m);
-   }
-   {
-      BinexData::MGFZI m(-16);
-      report("MGFZI: Initialize boundary condition", -16, 2, m);
-   }
-   {
-      BinexData::MGFZI m(4109);
-      report("MGFZI: Initialize boundary condition", 4109, 2, m);
-   }
-   {
-      BinexData::MGFZI m(-4109);
-      report("MGFZI: Initialize boundary condition", -4109, 2, m);
-   }
-   {
-      BinexData::MGFZI m(4110);
-      report("MGFZI: Initialize boundary condition", 4110, 3, m);
-   }
-   {
-      BinexData::MGFZI m(-4110);
-      report("MGFZI: Initialize boundary condition", -4110, 3, m);
-   }
-   {
-      BinexData::MGFZI m(1052684);
-      report("MGFZI: Initialize boundary condition", 1052684, 3, m);
-   }
-   {
-      BinexData::MGFZI m(-1052684);
-      report("MGFZI: Initialize boundary condition", -1052684, 3, m);
-   }
-   {
-      BinexData::MGFZI m(1052685);
-      report("MGFZI: Initialize boundary condition", 1052685, 4, m);
-   }
-   {
-      BinexData::MGFZI m(-1052685);
-      report("MGFZI: Initialize boundary condition", -1052685, 4, m);
-   }
-   {
-      BinexData::MGFZI m(269488139);
-      report("MGFZI: Initialize boundary condition", 269488139, 4, m);
-   }
-   {
-      BinexData::MGFZI m(-269488139);
-      report("MGFZI: Initialize boundary condition", -269488139, 4, m);
-   }
-   {
-      BinexData::MGFZI m(269488140);
-      report("MGFZI: Initialize boundary condition", 269488140, 5, m);
-   }
-   {
-      BinexData::MGFZI m(-269488140);
-      report("MGFZI: Initialize boundary condition", -269488140, 5, m);
-   }
-   {
-      BinexData::MGFZI m(68988964874LL);
-      report("MGFZI: Initialize boundary condition", 68988964874LL, 5, m);
-   }
-   {
-      BinexData::MGFZI m(-68988964874LL);
-      report("MGFZI: Initialize boundary condition", -68988964874LL, 5, m);
-   }
-   {
-      BinexData::MGFZI m(68988964875LL);
-      report("MGFZI: Initialize boundary condition", 68988964875LL, 6, m);
-   }
-   {
-      BinexData::MGFZI m(-68988964875LL);
-      report("MGFZI: Initialize boundary condition", -68988964875LL, 6, m);
-   }
-   {
-      BinexData::MGFZI m(17661175009289LL);
-      report("MGFZI: Initialize boundary condition", 17661175009289LL, 6, m);
-   }
-   {
-      BinexData::MGFZI m(-17661175009289LL);
-      report("MGFZI: Initialize boundary condition", -17661175009289LL, 6, m);
-   }
-   {
-      BinexData::MGFZI m(17661175009290LL);
-      report("MGFZI: Initialize boundary condition", 17661175009290LL, 7, m);
-   }
-   {
-      BinexData::MGFZI m(-17661175009290LL);
-      report("MGFZI: Initialize boundary condition", -17661175009290LL, 7, m);
-   }
-   {
-      BinexData::MGFZI m(4521260802379784LL);
-      report("MGFZI: Initialize boundary condition", 4521260802379784LL, 7, m);
-   }
-   {
-      BinexData::MGFZI m(-4521260802379784LL);
-      report("MGFZI: Initialize boundary condition", -4521260802379784LL, 7, m);
-   }
-   {
-      BinexData::MGFZI m(4521260802379785LL);
-      report("MGFZI: Initialize boundary condition", 4521260802379785LL, 8, m);
-   }
-   {
-      BinexData::MGFZI m(-4521260802379785LL);
-      report("MGFZI: Initialize boundary condition", -4521260802379785LL, 8, m);
-   }
-   {
-      BinexData::MGFZI m(BinexData::MGFZI::MAX_VALUE);
-      report("MGFZI: Initialize boundary condition", BinexData::MGFZI::MAX_VALUE, 8, m);
-   }
-   {
-      BinexData::MGFZI m(BinexData::MGFZI::MIN_VALUE);
-      report("MGFZI: Initialize boundary condition", BinexData::MGFZI::MIN_VALUE, 8, m);
-   }
-   try
-   {      
-      BinexData::MGFZI m(BinexData::MGFZI::MAX_VALUE + 1);
-      report("MGFZI: Overflow exception not generated for BinexData::MGFZI::MAX_VALUE + 1", false);
-   }
-   catch (Exception e)
-   {
-      report("MGFZI: Overflow exception correctly generated for BinexData::MGFZI::MAX_VALUE + 1", true);
-   }
-   try
-   {      
-      BinexData::MGFZI m(BinexData::MGFZI::MIN_VALUE - 1);
-      report("MGFZI: Underflow exception not generated for BinexData::MGFZI::MIN_VALUE - 1", false);
-   }
-   catch (Exception e)
-   {
-      report("MGFZI: Underflow exception correctly generated for BinexData::MGFZI::MIN_VALUE - 1", true);
-   }
-
-   if (verboseLevel > 0)
-   {
-      cout << "Testing MGFZI encoding/decoding . . ." << endl;
-   }
-   for (unsigned short littleEndian = 0; littleEndian <= 1; littleEndian++)
-   {
-      BinexData::MGFZI m2;
-      //unsigned char    buffer[8];
-      std::string      buffer;
-      size_t           offset = 0;
-      size_t           len;
-      string           descB = "MGFZI: Encode/decode, boundary condition";
-      string           descR = "MGFZI: Encode/decode, random";
-
-      {
-         BinexData::MGFZI m1(0);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 0, 1, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(15);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 15, 1, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-15);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -15, 1, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(16);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 16, 2, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-16);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -16, 2, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(4109);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 4109, 2, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-4109);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -4109, 2, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(4110);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 4110, 3, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-4110);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -4110, 3, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(1052684);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 1052684, 3, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-1052684);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -1052684, 3, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(1052685);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 1052685, 4, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-1052685);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -1052685, 4, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(269488139);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 269488139, 4, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-269488139);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -269488139, 4, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(269488140);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 269488140, 5, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-269488140);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -269488140, 5, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(68988964874LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 68988964874LL, 5, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-68988964874LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -68988964874LL, 5, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(68988964875LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 68988964875LL, 6, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-68988964875LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -68988964875LL, 6, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(17661175009289LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 17661175009289LL, 6, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-17661175009289LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -17661175009289LL, 6, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(17661175009290LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 17661175009290LL, 7, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-17661175009290LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -17661175009290LL, 7, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(4521260802379784LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 4521260802379784LL, 7, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-4521260802379784LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -4521260802379784LL, 7, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(4521260802379785LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, 4521260802379785LL, 8, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(-4521260802379785LL);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, -4521260802379785LL, 8, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(BinexData::MGFZI::MAX_VALUE);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, BinexData::MGFZI::MAX_VALUE, 8, m2, (bool)littleEndian);
-      }
-      {
-         BinexData::MGFZI m1(BinexData::MGFZI::MIN_VALUE);
-         m1.encode(buffer, offset, (bool)littleEndian);
-         //dumpBuffer(buffer, len);
-         m2.decode(buffer, offset, (bool)littleEndian);
-         report(descB, BinexData::MGFZI::MIN_VALUE, 8, m2, (bool)littleEndian);
-      }
-      
-      for (long long i = 1000; i <  BinexData::MGFZI::MAX_VALUE; i <<= 3)
-      {
-         for (unsigned long j = 0; j < 50; j++)
+         catch (Exception& e)
          {
-            long long v = ( (long long)lrand48() | ( (long long)lrand48() ) << 32) % i;
-            BinexData::MGFZI m1(v);
-            m1.encode(buffer, offset, (bool)littleEndian);
-            m2.decode(buffer, offset, (bool)littleEndian);
-            report(descR, v, m1.getSize(), m2, (bool)littleEndian);
+               // was this an expected exception?
+            testFramework.assert(numIter->size <= 0);            
          }
+
+         testFramework.next();
       }
-      
    }
 
+   return testFramework.countFails();
 }
 
 
 //---------------------------------------------------------------------------
-void BinexTypesTest::report(string description,
-                            bool   pass)
+int BinexTypes_T :: doMgfziInitializationTests()
 {
-   if (pass)
+   TestUtil  testFramework( "BinexData::MGFZI", "Initialization", __FILE__, __LINE__ );
+
+      // BinexData::MGFZI_Initialization_1 - Uninitialized
+   try
    {
-      if (verboseLevel > 1)
+      BinexData::MGFZI  m;
+      report(testFramework, 0, 1, m);
+   }
+   catch (Exception& e)
+   {
+      testFramework.fail();
+   }
+   testFramework.next();
+
+
+      // BinexData::MGFZI_Initialization_2..n - Initialization
+   NumListType::const_iterator  numIter = mgfziNumList.begin();
+   for ( ; numIter != mgfziNumList.end(); ++numIter)
+   {
+      try
       {
-         cout << " PASS - " << description << endl;
+            // validate value and size of each number
+         BinexData::MGFZI  m(numIter->value);
+         report(testFramework,
+                numIter->value, numIter->size,  // expected
+                m);                             // actual
       }
+      catch (Exception& e)
+      {
+            // was this an expected exception?
+         testFramework.assert(numIter->size <= 0);
+      }
+
+      testFramework.next();
    }
-   else
-   {
-      cout << " FAIL - " << description << endl;
-   }
+
+   return testFramework.countFails();
 }
 
 
 //---------------------------------------------------------------------------
-void BinexTypesTest::report(string                  description,
-                            const unsigned long     expectedValue,
-                            const size_t            expectedSize,
-                            const BinexData::UBNXI& actual,
-                            const bool              littleEndian)
+int BinexTypes_T :: doMgfziEncodeDecodeTests()
+{
+   TestUtil  testFramework( "BinexData::MGFZI", "Encode/Decode", __FILE__, __LINE__ );
+
+   NumListType::const_iterator  numIter = mgfziNumList.begin();
+   for ( ; numIter != mgfziNumList.end(); ++numIter)
+   {
+      for (short isLittleEndian = 0; isLittleEndian <= 1; ++isLittleEndian)
+      {
+         try
+         {
+            string  buffer;
+            size_t  offset = 0;
+
+            BinexData::MGFZI  m1(numIter->value);
+            m1.encode(buffer, offset, (bool)isLittleEndian);
+
+            BinexData::MGFZI  m2;
+            m2.decode(buffer, offset, (bool)isLittleEndian);
+
+            report(testFramework,
+                   numIter->value, numIter->size,  // expected
+                   m2,                             // actual
+                   (bool)isLittleEndian);
+         }
+         catch (Exception& e)
+         {
+               // was this an expected exception?
+            testFramework.assert(numIter->size <= 0);            
+         }
+         testFramework.next();
+      }
+   }
+
+   return testFramework.countFails();
+}
+
+
+//---------------------------------------------------------------------------
+void BinexTypes_T::report(TestUtil&               test,
+                          const unsigned long     expectedValue,
+                          const size_t            expectedSize,
+                          const BinexData::UBNXI& actual,
+                          const bool              isLittleEndian)
 {
    unsigned long  actualValue = (unsigned long)actual;
    size_t         actualSize  = actual.getSize();
@@ -697,21 +351,19 @@ void BinexTypesTest::report(string                  description,
    if (  (expectedValue != (unsigned long)actualValue)
       || (expectedSize  != actualSize) )
    {
-      cout << " FAIL - " << description;
-      if (littleEndian)
-      {
-         cout << " (Little Endian)" << endl;
-      }
-      else
-      {
-         cout << " (Big Endian)" << endl;
-      }
-      cout << "        Expected Value = " << expectedValue << endl;
-      cout << "        Actual Value   = " << actualValue   << endl;
-      cout << "        Expected Size  = " << expectedSize  << endl;
-      cout << "        Actual Size    = " << actualSize    << endl;
+      test.print();  // FAIL
 
-      std::string   bytes;
+      if (verboseLevel > 1)
+      {
+         cout << "        Expected Value = " << expectedValue << endl;
+         cout << "        Actual Value   = " << actualValue   << endl;
+         cout << "        Expected Size  = " << expectedSize  << endl;
+         cout << "        Actual Size    = " << actualSize    << endl;
+         cout << "        Endian         = "
+              << (isLittleEndian ? "little" : "BIG") << endl;
+      }
+      /*
+      string   bytes;
       size_t        offset = 0;
       actual.encode(bytes, offset); //, littleEndian);
       cout << "        Raw Hex Bytes  =";
@@ -720,21 +372,15 @@ void BinexTypesTest::report(string                  description,
          cout << " " << hex << (unsigned short)bytes[i];
       }
       cout << dec << endl;
+      */
    }
    else
    {
       if (verboseLevel > 1)
       {
-         cout << " PASS - " << description;
-         if (littleEndian)
-         {
-            cout << " (Little Endian)" << endl;
-         }
-         else
-         {
-            cout << " (Big Endian)" << endl;
-         }
-         std::string   bytes;
+         test.print();  // PASS
+         /*
+         string   bytes;
          size_t        offset = 0;
          actual.encode(bytes, offset); //, littleEndian);
          cout << "        Value = " << (unsigned long)actual << "  Raw Hex Bytes  =";
@@ -743,17 +389,18 @@ void BinexTypesTest::report(string                  description,
             cout << " " << hex << (unsigned short)bytes[i];
          }
          cout << dec << endl;
+         */
       }
    }
 }
 
 
 //---------------------------------------------------------------------------
-void BinexTypesTest::report(string                  description,
-                            const long long         expectedValue,
-                            const size_t            expectedSize,
-                            const BinexData::MGFZI& actual,
-                            const bool              littleEndian)
+void BinexTypes_T::report(TestUtil&               test,
+                          const long long         expectedValue,
+                          const size_t            expectedSize,
+                          const BinexData::MGFZI& actual,
+                          const bool              isLittleEndian)
 {
    long long  actualValue = (long long)actual;
    size_t     actualSize  = actual.getSize();
@@ -761,59 +408,30 @@ void BinexTypesTest::report(string                  description,
    if (  (expectedValue != (long long)actualValue)
       || (expectedSize  != actualSize) )
    {
-      cout << " FAIL - " << description;
-      if (littleEndian)
+      test.print();  // FAIL
+
+      if (verboseLevel > 0)
       {
-         cout << " (Little Endian)" << endl;
+         cout << "        Expected Value = " << expectedValue << endl;
+         cout << "        Actual Value   = " << actualValue   << endl;
+         cout << "        Expected Size  = " << expectedSize  << endl;
+         cout << "        Actual Size    = " << actualSize    << endl;
+         cout << "        Endian         = "
+              << (isLittleEndian ? "little" : "BIG") << endl;
       }
-      else
-      {
-         cout << " (Big Endian)" << endl;
-      }
-      cout << "        Expected Value = " << expectedValue << endl;
-      cout << "        Actual Value   = " << actualValue   << endl;
-      cout << "        Expected Size  = " << expectedSize  << endl;
-      cout << "        Actual Size    = " << actualSize    << endl;
-      
-      std::string   bytes;
-      size_t        offset = 0;
-      actual.encode(bytes, offset); //, littleEndian);
-      cout << "        Raw Hex Bytes  =";
-      for (size_t i = 0; i < bytes.size(); i++)
-      {
-         cout << " " << hex << (unsigned short)bytes[i];
-      }
-      cout << dec << endl;
    }
    else
    {
-      if (verboseLevel > 1)
+      if (verboseLevel > 0)
       {
-         cout << " PASS - " << description;
-         if (littleEndian)
-         {
-            cout << " (Little Endian)" << endl;
-         }
-         else
-         {
-            cout << " (Big Endian)" << endl;
-         }
-         std::string   bytes;
-         size_t        offset = 0;
-         actual.encode(bytes, offset); //, littleEndian);
-         cout << "        Value = " << actualValue << "  Raw Hex Bytes  =";
-         for (size_t i = 0; i < bytes.size(); i++)
-         {
-            cout << " " << hex << (unsigned short)bytes[i];
-         }
-         cout << dec << endl;
+         test.print();  // PASS
       }
    }
 }
 
 
 //---------------------------------------------------------------------------
-void BinexTypesTest::dumpBuffer(const unsigned char* buffer, size_t size)
+void BinexTypes_T :: dumpBuffer(const unsigned char* buffer, size_t size)
 {
    cout << "       Raw Hex Bytes  =";
    for (size_t i = 0; i < size; i++)
@@ -824,23 +442,29 @@ void BinexTypesTest::dumpBuffer(const unsigned char* buffer, size_t size)
 }
 
 
-/**
- * Returns 0 if successful.
+/** Run the program.
+ *
+ * @return 0 if successful
  */
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 {
-   BinexTypesTest app(argv[0]);
+   int  errorCount = 0;
+   int  errorTotal = 0;
 
-   if (!app.initialize(argc, argv) )
-   {
-      return 0;
-   }
+   BinexTypes_T  testClass;  // test data is loaded here
 
-   if (!app.run() )
-   {
-      return 1;
-   }
+   errorCount = testClass.doUbnxiInitializationTests();
+   errorTotal = errorTotal + errorCount;
 
-   exit(0);
+   errorCount = testClass.doUbnxiEncodeDecodeTests();
+   errorTotal = errorTotal + errorCount;
+
+   errorCount = testClass.doMgfziInitializationTests();
+   errorTotal = errorTotal + errorCount;
+
+   errorCount = testClass.doMgfziEncodeDecodeTests();
+   errorTotal = errorTotal + errorCount;
+
+   return( errorTotal );
    
 } // main()
