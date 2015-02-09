@@ -48,7 +48,7 @@
 #include "Position.hpp"
 #include "Vector.hpp"
 #include "Matrix.hpp"
-#include "Xv.hpp"
+#include "Xvt.hpp"
 
 namespace gpstk
 {

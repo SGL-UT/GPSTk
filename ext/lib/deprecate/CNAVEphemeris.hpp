@@ -53,7 +53,7 @@
 #include "BrcKeplerOrbit.hpp"
 #include "PackedNavBits.hpp"
 #include "Exception.hpp"
-
+#include "Xvt.hpp"
 namespace gpstk
 {
    /** @addtogroup ephemcalc */
@@ -162,7 +162,7 @@ namespace gpstk
           * using this ephemeris.
           * @throw InvalidRequest if a required message type has not been stored.
           */
-      Xv svXv(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
       
       
          /** Output the contents of this ephemeris to the given stream. */

@@ -220,7 +220,7 @@ namespace gpstk
       return(dataLoaded);
    }
             
-    Xv CNAVEphemeris::svXv(const CommonTime& t) const
+    Xvt CNAVEphemeris::svXvt(const CommonTime& t) const
       throw( InvalidRequest )
    {
       if(!dataLoaded)
@@ -228,8 +228,8 @@ namespace gpstk
          InvalidRequest exc("svXvt: Required data not stored.");
          GPSTK_THROW(exc);
       }
-      Xv sv;
-      Xv xv = orbit.svXv(t);
+      Xvt sv;
+      Xvt xv = orbit.svXvt(t);
       sv.x = xv.x; // Position
       sv.v = xv.v; // Velocity
       return sv;
