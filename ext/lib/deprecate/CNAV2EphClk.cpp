@@ -242,7 +242,7 @@ namespace gpstk
          GPSTK_THROW(exc);
       }
       Xvt sv;
-      Xv xv = orbit.svXv(t);
+      Xvt xv = orbit.svXvt(t);
 
       sv.x = xv.x;
       sv.v = xv.v;

@@ -46,11 +46,11 @@
 #define GPSTK_BRCKEPLERORBIT_HPP
 
 #include <string>
+#include "Xvt.hpp"
 #include "ObsID.hpp"
 #include "EngNav.hpp"
 #include "Exception.hpp"
 #include "CommonTime.hpp"
-#include "Xv.hpp"
 #include "StringUtils.hpp"
 #include "GNSSconstants.hpp"
 #include "GPSEllipsoid.hpp"
@@ -265,7 +265,7 @@ namespace gpstk
           * using this orbit data.
           * @throw InvalidRequest if a required subframe has not been stored.
           */
-      Xv svXv(const CommonTime& t) const throw(gpstk::InvalidRequest);
+      Xvt svXvt(const CommonTime& t) const throw(gpstk::InvalidRequest);
 
          /** Compute satellite relativity correction (sec) at the given time
           * @throw InvalidRequest if a required subframe has not been stored.
