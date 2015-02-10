@@ -54,7 +54,7 @@ class Rinex_T
         ~Rinex_T(){}
 
         void init( void );
-        void run( void );
+        int run( void );
 
     private:
 
@@ -96,7 +96,7 @@ void Rinex_T :: init( void )
 // Rinext_T::run()
 //------------------------------------------------------------
 
-void Rinex_T :: run( void )
+int Rinex_T :: run( void )
 {
 
   TestUtil test1( "Rinex", "run", __FILE__, __LINE__ );
@@ -119,13 +119,19 @@ void Rinex_T :: run( void )
    ee_copy.dump( after );
 
    test1.assert( before.str() == after.str() );
-
+   return ( test1.countFails() );
 }
 //------------------------------------------------------------
 // main()
 //------------------------------------------------------------
 int main( void )
 {
+    int check, errorCounter = 0;
     Rinex_T testClass;
-    testClass.run();
+    check = testClass.run();
+    errorCounter += check;
+
+    std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+
+    return errorCounter; //Return the total number of errors
 }

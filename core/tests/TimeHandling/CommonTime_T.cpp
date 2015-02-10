@@ -124,7 +124,7 @@ class CommonTime_T : public CommonTime
 			// Why have InvalidRequest catcher instead of Exception?
 			// Only case that does so
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-			catch(gpstk::InvalidRequest e) {e.dump(cout); testFramework.passTest();}
+			catch(gpstk::InvalidParameter e) {e.dump(cout); testFramework.passTest();}
 			catch (...) {testFramework.failTest();}	
 
 //--------------CommonTime_improperSetTest_2 - Does a set method work with too many days?
@@ -180,7 +180,7 @@ class CommonTime_T : public CommonTime
 			try {Test.setInternal(700000,24*60*60+1,0.);
 				testFramework.failTest();} //Too many seconds
 			catch(gpstk::Exception e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}	
+			//catch (...) {testFramework.failTest();}	
 			
 //--------------CommonTime_improperSetTest_11 - Does a set method work with negative fractional seconds?
 			try {Test.setInternal(700000,1001,-1.);
