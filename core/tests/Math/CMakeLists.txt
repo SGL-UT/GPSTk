@@ -2,7 +2,11 @@
 
 add_executable(BivarStats_T BivarStats_T.cpp)
 target_link_libraries(BivarStats_T gpstk)
-add_test(Math_BivarStats* BivarStats_T)
+add_test(Math_BivarStats BivarStats_T)
+
+add_executable(MathBase_T MathBase_T.cpp)
+target_link_libraries(MathBase_T gpstk)
+add_test(Math_MathBase MathBase_T)
 
 add_executable(Matrix_T Matrix_T.cpp)
 target_link_libraries(Matrix_T gpstk)
@@ -10,7 +14,7 @@ add_test(Math_Matrix Matrix_T)
 
 add_executable(MiscMath_T MiscMath_T.cpp)
 target_link_libraries(MiscMath_T gpstk)
-add_test(Math_MiscMath* MiscMath_T)
+add_test(Math_MiscMath MiscMath_T)
 
 add_executable(PolyFit_T PolyFit_T.cpp)
 target_link_libraries(PolyFit_T gpstk)
@@ -30,7 +34,7 @@ add_test(Math_Stats_TwoSampleStats Stats_TwoSampleStats_T)
 
 add_executable(Triple_T Triple_T.cpp)
 target_link_libraries(Triple_T gpstk)
-add_test(Math_Triple* Triple_T)
+add_test(Math_Triple Triple_T)
 
 add_executable(Vector_T Vector_T.cpp)
 target_link_libraries(Vector_T gpstk)

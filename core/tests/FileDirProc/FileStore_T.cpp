@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class FileStoreTest
+class FileStore_T
 {
         public: 
-		FileStoreTest(){}// Default Constructor, set the precision value
-		~FileStoreTest() {} // Default Desructor
+		FileStore_T(){}// Default Constructor, set the precision value
+		~FileStore_T() {} // Default Desructor
 };
 
 

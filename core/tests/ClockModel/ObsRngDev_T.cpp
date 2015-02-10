@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class ObsRngDevTest
+class ObsRngDev_T
 {
         public: 
-		ObsRngDevTest(){}// Default Constructor, set the precision value
-		~ObsRngDevTest() {} // Default Desructor
+		ObsRngDev_T(){}// Default Constructor, set the precision value
+		~ObsRngDev_T() {} // Default Desructor
 };
 
 

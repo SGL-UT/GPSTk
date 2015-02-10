@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class CommandOptionWithCommonTimeArgTest
+class CommandOptionWithCommonTimeArg_T
 {
         public: 
-		CommandOptionWithCommonTimeArgTest(){}// Default Constructor, set the precision value
-		~CommandOptionWithCommonTimeArgTest() {} // Default Desructor
+		CommandOptionWithCommonTimeArg_T(){}// Default Constructor, set the precision value
+		~CommandOptionWithCommonTimeArg_T() {} // Default Desructor
 };
 
 

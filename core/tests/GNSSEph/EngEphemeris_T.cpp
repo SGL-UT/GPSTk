@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EngEphemerisTest
+class EngEphemeris_T
 {
         public: 
-		EngEphemerisTest(){}// Default Constructor, set the precision value
-		~EngEphemerisTest() {} // Default Desructor
+		EngEphemeris_T(){}// Default Constructor, set the precision value
+		~EngEphemeris_T() {} // Default Desructor
 };
 
 

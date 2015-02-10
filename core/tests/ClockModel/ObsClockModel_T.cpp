@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class ObsClockModelTest
+class ObsClockModel_T
 {
         public: 
-		ObsClockModelTest(){}// Default Constructor, set the precision value
-		~ObsClockModelTest() {} // Default Desructor
+		ObsClockModel_T(){}// Default Constructor, set the precision value
+		~ObsClockModel_T() {} // Default Desructor
 };
 
 
