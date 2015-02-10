@@ -46,7 +46,7 @@
 #include "TestUtil.hpp"
 #include <fstream>
 #include <string>
-
+#include <iostream>
 
 using namespace gpstk;
 using namespace std;
@@ -76,16 +76,16 @@ class RinexMet_T
 
         void init( void );
 
-        void bitsAsStringTest( void );
-        void bitStringTest( void );
-        void reallyPutRecordTest( void );
-        void reallyGetRecordTest( void );
-        void convertObsTypeSTRTest( void );
-        void convertObsTypeHeaderTest( void );
-        void hardCodeTest( void );
-        void continuationTest( void );
-        void dataExceptionsTest( void );
-        void filterOperatorsTest( void );
+        int bitsAsStringTest( void );
+        int bitStringTest( void );
+        int reallyPutRecordTest( void );
+        int reallyGetRecordTest( void );
+        int convertObsTypeSTRTest( void );
+        int convertObsTypeHeaderTest( void );
+        int hardCodeTest( void );
+        int continuationTest( void );
+        int dataExceptionsTest( void );
+        int filterOperatorsTest( void );
 
     private:
 
@@ -196,7 +196,7 @@ void RinexMet_T :: init( void )
 // A test to assure that the bistAsString function works as intended
 //------------------------------------------------------------
 
-void RinexMet_T :: bitsAsStringTest( void )
+int RinexMet_T :: bitsAsStringTest( void )
 {
     TestUtil test1( "RinexMetHeader", "bitsAsString", __FILE__, __LINE__ );
 
@@ -235,13 +235,13 @@ void RinexMet_T :: bitsAsStringTest( void )
     //Defult Case
     test1.next();
     test1.assert( expected_string_z == RinexMetHeader.bitsAsString(RinexMetHeader.allValid21) );
-
+    return test1.countFails();
 }
 
 //------------------------------------------------------------
 // A test to assure that the version validity bits are what we expect them to be
 //------------------------------------------------------------
-void RinexMet_T :: bitStringTest( void )
+int RinexMet_T :: bitStringTest( void )
 {
     TestUtil test2( "RinexMetHeader", "bitString", __FILE__, __LINE__ );
 
@@ -262,7 +262,7 @@ void RinexMet_T :: bitStringTest( void )
 
     // test2.next();
     // test2.assert( expected_string_b, RinexMetHeader.bitString(RinexMetHeader.allValid20,' ',sep) );
-
+    return test2.countFails();
 }
 
 //------------------------------------------------------------
@@ -270,7 +270,7 @@ void RinexMet_T :: bitStringTest( void )
 // with a few execptions such as an Unsupported Rinex version (e.g. 3.33)
 //  and a Missing Marker Name
 //------------------------------------------------------------
-void RinexMet_T :: reallyPutRecordTest( void )
+int RinexMet_T :: reallyPutRecordTest( void )
 {
     TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
 
@@ -289,7 +289,7 @@ void RinexMet_T :: reallyPutRecordTest( void )
     try { MissingMarkerName >> RinexMetHeader; test3.failTest(); }
     catch(gpstk::Exception e) { test3.passTest(); }
     catch(...) { test3.failTest(); }
-
+    return test3.countFails();
 }
 
 // ------------------------------------------------------------
@@ -297,7 +297,7 @@ void RinexMet_T :: reallyPutRecordTest( void )
 // If an error is encountered in reading form the stream, the stream
 // is reset to its original position and its fail-bit is set.
 // ------------------------------------------------------------
-void RinexMet_T :: reallyGetRecordTest( void )
+int RinexMet_T :: reallyGetRecordTest( void )
 {
     TestUtil test4( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
 
@@ -386,7 +386,7 @@ void RinexMet_T :: reallyGetRecordTest( void )
     try { Normal >> RinexMetHeader ; test4.passTest(); }
     catch(gpstk::Exception e) { test4.failTest(); }
     catch(...) { test4.failTest(); }
-
+    return test4.countFails();
 }
 
 //------------------------------------------------------------
@@ -394,7 +394,7 @@ void RinexMet_T :: reallyGetRecordTest( void )
 // This particular test asserts if two Met Types are equal
 //------------------------------------------------------------
 
-void RinexMet_T :: convertObsTypeSTRTest( void )
+int RinexMet_T :: convertObsTypeSTRTest( void )
 {
     TestUtil test5( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
 
@@ -433,7 +433,7 @@ void RinexMet_T :: convertObsTypeSTRTest( void )
     test5.assert( ZT == RinexMetHeader.convertObsType(ZTS) ); 
     test5.next();
     test5.assert( HI == RinexMetHeader.convertObsType(HIS) );
-
+    return test5.countFails();
 }
 
 //------------------------------------------------------------
@@ -442,7 +442,7 @@ void RinexMet_T :: convertObsTypeSTRTest( void )
 // This particular test asserts if two strings are equal
 //
 //------------------------------------------------------------
-void RinexMet_T :: convertObsTypeHeaderTest( void )
+int RinexMet_T :: convertObsTypeHeaderTest( void )
 {
     TestUtil test6( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
 
@@ -482,7 +482,7 @@ void RinexMet_T :: convertObsTypeHeaderTest( void )
     try { RinexMetHeader.convertObsType( "KE" )   ; test6.failTest(); }
     catch(gpstk::FFStreamError) { test6.passTest(); }
     catch(...) { test6.failTest(); }
-
+    return test6.countFails();
 }
 
 //------------------------------------------------------------
@@ -493,7 +493,7 @@ void RinexMet_T :: convertObsTypeHeaderTest( void )
 // output file is equal to our input
 //
 //------------------------------------------------------------
-void RinexMet_T :: hardCodeTest( void )
+int RinexMet_T :: hardCodeTest( void )
 {
     TestUtil test7( "RinexMetHeader", "version", __FILE__, __LINE__ );
 
@@ -711,6 +711,7 @@ void RinexMet_T :: hardCodeTest( void )
     gpstk::RinexMetStream MetDumps( outputRinexMetDumps.c_str(), std::ios::out );
     testRinexMetHeader.dump( MetDumps );
     testRinexMetData.dump( MetDumps );
+    return test7.countFails();
 }
 
 //------------------------------------------------------------
@@ -720,7 +721,7 @@ void RinexMet_T :: hardCodeTest( void )
 //
 //------------------------------------------------------------
 
-void RinexMet_T :: continuationTest( void )
+int RinexMet_T :: continuationTest( void )
 {
     TestUtil test8( "RinexMetHeader", "continuation", __FILE__, __LINE__ );
 
@@ -752,6 +753,7 @@ void RinexMet_T :: continuationTest( void )
     {
         test8.failTest();
     }
+    return test8.countFails();
 }
 
 //------------------------------------------------------------
@@ -764,7 +766,7 @@ void RinexMet_T :: continuationTest( void )
 // Throwing any exception other than gpstk::Exception is considered a failure.
 // Throwing nothing is assumed also to be a failure of the test.
 //------------------------------------------------------------
-void RinexMet_T :: dataExceptionsTest( void )
+int RinexMet_T :: dataExceptionsTest( void )
 {
     TestUtil test9( "RinexMetHeader", "nodata", __FILE__, __LINE__ );
  
@@ -797,6 +799,7 @@ void RinexMet_T :: dataExceptionsTest( void )
     {
         test9.failTest();
     }
+    return test9.countFails();
 }
 
 //------------------------------------------------------------
@@ -806,7 +809,7 @@ void RinexMet_T :: dataExceptionsTest( void )
 // and LessThanFull.
 //
 //------------------------------------------------------------
-void RinexMet_T :: filterOperatorsTest( void )
+int RinexMet_T :: filterOperatorsTest( void )
 {
     TestUtil test10( "RinexMetStream", "filter", __FILE__, __LINE__ );
     try
@@ -894,7 +897,7 @@ void RinexMet_T :: filterOperatorsTest( void )
         test10.failTest();
 
     }
-
+    return test10.countFails();
 }
 
 //============================================================
@@ -903,19 +906,40 @@ void RinexMet_T :: filterOperatorsTest( void )
 
 int main()
 {
-
+    int check, errorCounter = 0;
     RinexMet_T testClass;
 
-    testClass.bitsAsStringTest();
-    testClass.bitStringTest();
-    testClass.reallyPutRecordTest();
-    testClass.reallyGetRecordTest();
-    testClass.convertObsTypeSTRTest();
-    testClass.convertObsTypeHeaderTest();
-    testClass.hardCodeTest();
-    testClass.continuationTest();
-    testClass.dataExceptionsTest();
-    testClass.filterOperatorsTest();
+    check = testClass.bitsAsStringTest();
+    errorCounter += check;
+
+    check = testClass.bitStringTest();
+    errorCounter += check;
+
+    check = testClass.reallyPutRecordTest();
+    errorCounter += check;
+
+    check = testClass.reallyGetRecordTest();
+    errorCounter += check;
+
+    check = testClass.convertObsTypeSTRTest();
+    errorCounter += check;
+
+    check = testClass.convertObsTypeHeaderTest();
+    errorCounter += check;
+
+    check = testClass.hardCodeTest();
+    errorCounter += check;
+
+    check = testClass.continuationTest();
+    errorCounter += check;
+
+    check = testClass.dataExceptionsTest();
+    errorCounter += check;
+
+    check = testClass.filterOperatorsTest();
+    errorCounter += check;
+
+    std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
     return( 0 );
 }

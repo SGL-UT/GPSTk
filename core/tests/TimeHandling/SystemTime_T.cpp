@@ -57,7 +57,7 @@ class SystemTime_T
                    In fact, the tolerance will be set so that the time will be accurate to the second only. */
 		int obtainTimeFromSystemTest ( void )
 		{
-			TestUtil testFramework( "CommonTime", "set", __FILE__, __LINE__ );
+			TestUtil testFramework( "SystemTime", "Constructor", __FILE__, __LINE__ );
 			testFramework.init();
 
 			long day, day2;
@@ -84,7 +84,7 @@ class SystemTime_T
 			testFramework.next();
 
 //--------------SystemTime_ _3 - Is the TimeSystem set to UTC
-			testFramework.assert( commonTime_SystemTime.getTimeSystem() == TimeSystem(5) );
+			testFramework.assert( commonTime_SystemTime.getTimeSystem() == TimeSystem(7) );
 			testFramework.next();
 
 			return testFramework.countFails();
