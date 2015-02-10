@@ -450,5 +450,7 @@ int main()
     errorCount = testClass.filterOperatorsTest();
     errorTotal = errorTotal + errorCount;
 
+    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
+
     return( errorTotal );
 }

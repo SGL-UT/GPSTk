@@ -59,7 +59,7 @@ class UnixTime_T
 		testFramework.next();
 
 //--------------UnixTime_initializationTest_2 - Was the usec value set to expectation?
-		testFramework.assert(1 == Compare.tv.tv_sec);
+		testFramework.assert(1 == Compare.tv.tv_usec);
 		testFramework.next();
 
 //--------------UnixTime_initializationTest_3 - Was the time system set to expectation?

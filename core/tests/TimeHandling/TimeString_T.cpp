@@ -538,14 +538,14 @@ class TimeString_T
 		timeString = hardcodedTime.printf(formatString);               //Print the time using that format
 		scanTime(scannedTime, timeString, formatString);               //Read the formatted string back into a new
 		                                                               //time variable
-//--------------TimeString_scanTimeYDSTime_1 - Verify the scanned time is the same as the hardcoded time
+//--------------TimeString_scanTimeYDSTime_4 - Verify the scanned time is the same as the hardcoded time
 		testFramework.assert(scannedTime == hardcodedTime);
 		testFramework.next();
 		scannedTime.reset();                                           //Reset the TimeTag child object
 		scanTime(scannedCommonTime, timeString, formatString);         //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeYDSTime_2 - Verify the scanned CommonTime time is the same as the hardcoded time
+//--------------TimeString_scanTimeYDSTime_5 - Verify the scanned CommonTime time is the same as the hardcoded time
 		testFramework.assert(scannedTime == hardcodedTime);
 		testFramework.next();
 		scannedCommonTime.reset();
@@ -553,7 +553,7 @@ class TimeString_T
 		mixedScanTime(scannedCommonTime, timeString, formatString);    //Read the formatted string back into a
 		                                                               //CommonTime time variable
 		scannedTime.convertFromCommonTime(scannedCommonTime);          //Convert to the TimeTag child class
-//--------------TimeString_scanTimeYDSTime_3 - Verify the scanned CommonTime time is the same as the hardcoded time
+//--------------TimeString_scanTimeYDSTime_6 - Verify the scanned CommonTime time is the same as the hardcoded time
 		testFramework.assert(scannedCommonTime == hardcodedCommonTime); 
 		return testFramework.countFails();
 	}

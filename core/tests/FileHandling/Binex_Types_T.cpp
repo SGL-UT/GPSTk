@@ -36,6 +36,7 @@
 
 #include "BinexData.hpp"
 #include "TestUtil.hpp"
+#include <iostream>
 
 using namespace std;
 using namespace gpstk;
@@ -464,6 +465,8 @@ int main(int argc, char *argv[])
 
    errorCount = testClass.doMgfziEncodeDecodeTests();
    errorTotal = errorTotal + errorCount;
+
+   std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
 
    return( errorTotal );
    

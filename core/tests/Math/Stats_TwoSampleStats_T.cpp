@@ -62,7 +62,7 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			testFramework.assert(test.AverageX() == 3);
+			testFramework.assert(test.N() == 5);
 
 			return testFramework.countFails();
 		}
