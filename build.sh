@@ -525,7 +525,7 @@ if [ $build_only ]; then
     echo ""
     echo ""
     echo "$0: Install: Build script was configured to do a build only"
-    echo "$0: Install: Exitting now..."
+    echo "$0: Install: Exiting now..."
     echo ""
     echo ""
     exit 1
