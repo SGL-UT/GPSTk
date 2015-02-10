@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class CommandOptionTest
+class CommandOption_T
 {
         public: 
-		CommandOptionTest(){}// Default Constructor, set the precision value
-		~CommandOptionTest() {} // Default Desructor
+		CommandOption_T(){}// Default Constructor, set the precision value
+		~CommandOption_T() {} // Default Desructor
 };
 
 

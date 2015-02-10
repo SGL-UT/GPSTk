@@ -42,7 +42,7 @@ add_test(TimeHandling_TimeString TimeString_T)
 
 add_executable(TimeTag_T TimeTag_T.cpp)
 target_link_libraries(TimeTag_T gpstk)
-add_test(TimeHandling_TimeTag_T* TimeTag_T)
+add_test(TimeHandling_TimeTag_T TimeTag_T)
 
 add_executable(UnixTime_T UnixTime_T.cpp)
 target_link_libraries(UnixTime_T gpstk)

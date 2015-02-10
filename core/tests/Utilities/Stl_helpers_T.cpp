@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class Stl_helpersTest
+class Stl_helpers_T
 {
         public: 
-		Stl_helpersTest(){}// Default Constructor, set the precision value
-		~Stl_helpersTest() {} // Default Desructor
+		Stl_helpers_T(){}// Default Constructor, set the precision value
+		~Stl_helpers_T() {} // Default Desructor
 };
 
 

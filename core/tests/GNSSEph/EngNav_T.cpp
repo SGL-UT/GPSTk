@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EngNavTest
+class EngNav_T
 {
         public: 
-		EngNavTest(){}// Default Constructor, set the precision value
-		~EngNavTest() {} // Default Desructor
+		EngNav_T(){}// Default Constructor, set the precision value
+		~EngNav_T() {} // Default Desructor
 };
 
 

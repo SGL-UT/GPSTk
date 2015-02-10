@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class FileFilterFrameTest
+class RinexSatID_T
 {
         public: 
-		FileFilterFrameTest(){}// Default Constructor, set the precision value
-		~FileFilterFrameTest() {} // Default Desructor
+		RinexSatID_T(){}// Default Constructor, set the precision value
+		~RinexSatID_T() {} // Default Desructor
 };
 
 

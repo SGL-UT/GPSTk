@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EpochClockModel_T
+class ObsEpochMap_T
 {
         public: 
-		EpochClockModel_T(){}// Default Constructor, set the precision value
-		~EpochClockModel_T() {} // Default Desructor
+		ObsEpochMap_T(){}// Default Constructor, set the precision value
+		~ObsEpochMap_T() {} // Default Desructor
 };
 
 

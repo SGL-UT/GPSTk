@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class FileUtilsTest
+class FileUtils_T
 {
         public: 
-		FileUtilsTest(){}// Default Constructor, set the precision value
-		~FileUtilsTest() {} // Default Desructor
+		FileUtils_T(){}// Default Constructor, set the precision value
+		~FileUtils_T() {} // Default Desructor
 };
 
 

@@ -10,8 +10,8 @@ add_test(Utilities_StringUtils StringUtils_T)
 
 add_executable(Stl_helpers_T Stl_helpers_T.cpp)
 target_link_libraries(Stl_helpers_T gpstk)
-add_test(Utilities_Stl_helpers* Stl_helpers_T)
+add_test(Utilities_Stl_helpers Stl_helpers_T)
 
 add_executable(ValidType_T ValidType_T.cpp)
 target_link_libraries(ValidType_T gpstk)
-add_test(Utilities_ValidType* ValidType_T)
+add_test(Utilities_ValidType ValidType_T)

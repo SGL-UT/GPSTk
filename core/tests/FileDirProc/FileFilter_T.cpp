@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class FileFilterTest
+class FileFilter_T
 {
         public: 
-		FileFilterTest(){}// Default Constructor, set the precision value
-		~FileFilterTest() {} // Default Desructor
+		FileFilter_T(){}// Default Constructor, set the precision value
+		~FileFilter_T() {} // Default Desructor
 };
 
 

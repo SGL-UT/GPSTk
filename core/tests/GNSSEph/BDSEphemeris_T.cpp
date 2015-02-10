@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EpochClockModel_T
+class BDSEphemeris_T
 {
         public: 
-		EpochClockModel_T(){}// Default Constructor, set the precision value
-		~EpochClockModel_T() {} // Default Desructor
+		BDSEphemeris_T(){}// Default Constructor, set the precision value
+		~BDSEphemeris_T() {} // Default Desructor
 };
 
 

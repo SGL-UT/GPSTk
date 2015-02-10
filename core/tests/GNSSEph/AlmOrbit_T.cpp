@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class AlmOrbitTest
+class AlmOrbit_T
 {
         public: 
-		AlmOrbitTest(){}// Default Constructor, set the precision value
-		~AlmOrbitTest() {} // Default Desructor
+		AlmOrbit_T(){}// Default Constructor, set the precision value
+		~AlmOrbit_T() {} // Default Desructor
 };
 
 

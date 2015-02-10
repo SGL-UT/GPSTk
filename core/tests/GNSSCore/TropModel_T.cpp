@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class TropModelTest
+class TropModel_T
 {
         public: 
-		TropModelTest(){}// Default Constructor, set the precision value
-		~TropModelTest() {} // Default Desructor
+		TropModel_T(){}// Default Constructor, set the precision value
+		~TropModel_T() {} // Default Desructor
 };
 
 

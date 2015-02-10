@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class RinexClockTest
+class RinexClock_T
 {
         public: 
-		RinexClockTest(){}// Default Constructor, set the precision value
-		~RinexClockTest() {} // Default Desructor
+		RinexClock_T(){}// Default Constructor, set the precision value
+		~RinexClock_T() {} // Default Desructor
 };
 
 

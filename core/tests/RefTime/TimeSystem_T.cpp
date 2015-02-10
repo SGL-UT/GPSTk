@@ -1,11 +1,12 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EpochClockModel_T
+
+class TimeSystem_T
 {
         public: 
-		EpochClockModel_T(){}// Default Constructor, set the precision value
-		~EpochClockModel_T() {} // Default Desructor
+		TimeSystem_T(){}// Default Constructor, set the precision value
+		~TimeSystem_T() {} // Default Desructor
 };
 
 
