@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class FileHunterTest
+class FileHunter_T
 {
         public: 
-		FileHunterTest(){}// Default Constructor, set the precision value
-		~FileHunterTest() {} // Default Desructor
+		FileHunter_T(){}// Default Constructor, set the precision value
+		~FileHunter_T() {} // Default Desructor
 };
 
 

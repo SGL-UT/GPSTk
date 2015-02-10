@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EpochClockModel_T
+class ObsIDInitializer_T
 {
         public: 
-		EpochClockModel_T(){}// Default Constructor, set the precision value
-		~EpochClockModel_T() {} // Default Desructor
+		ObsIDInitializer_T(){}// Default Constructor, set the precision value
+		~ObsIDInitializer_T() {} // Default Desructor
 };
 
 

@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EngAlmanacTest
+class EngAlmanac_T
 {
         public: 
-		EngAlmanacTest(){}// Default Constructor, set the precision value
-		~EngAlmanacTest() {} // Default Desructor
+		EngAlmanac_T(){}// Default Constructor, set the precision value
+		~EngAlmanac_T() {} // Default Desructor
 };
 
 

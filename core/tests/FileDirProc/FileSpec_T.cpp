@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class FileSpecTest
+class FileSpec_T
 {
         public: 
-		FileSpecTest(){}// Default Constructor, set the precision value
-		~FileSpecTest() {} // Default Desructor
+		FileSpec_T(){}// Default Constructor, set the precision value
+		~FileSpec_T() {} // Default Desructor
 };
 
 

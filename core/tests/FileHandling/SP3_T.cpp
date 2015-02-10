@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class SP3Test
+class SP3_T
 {
         public: 
-		SP3Test(){}// Default Constructor, set the precision value
-		~SP3Test() {} // Default Desructor
+		SP3_T(){}// Default Constructor, set the precision value
+		~SP3_T() {} // Default Desructor
 };
 
 

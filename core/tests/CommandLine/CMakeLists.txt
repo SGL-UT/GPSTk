@@ -2,12 +2,12 @@
 
 add_executable(CommandOption_T CommandOption_T.cpp)
 target_link_libraries(CommandOption_T gpstk)
-add_test(CommandLine_CommandOption* CommandOption_T)
+add_test(CommandLine_CommandOption CommandOption_T)
 
 add_executable(CommandOptionParser_T CommandOptionParser_T.cpp)
 target_link_libraries(CommandOptionParser_T gpstk)
-add_test(CommandLine_CommandOptionParser* CommandOptionParser_T)
+add_test(CommandLine_CommandOptionParser CommandOptionParser_T)
 
 add_executable(CommandOptionWithCommonTimeArg_T CommandOptionWithCommonTimeArg_T.cpp)
 target_link_libraries(CommandOptionWithCommonTimeArg_T gpstk)
-add_test(CommandLine_CommandOptionWithCommonTimeArg* CommandOptionWithCommonTimeArg_T)
+add_test(CommandLine_CommandOptionWithCommonTimeArg CommandOptionWithCommonTimeArg_T)

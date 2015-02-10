@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EpochClockModel_T
+class XvtStore_T
 {
         public: 
-		EpochClockModel_T(){}// Default Constructor, set the precision value
-		~EpochClockModel_T() {} // Default Desructor
+		XvtStore_T(){}// Default Constructor, set the precision value
+		~XvtStore_T() {} // Default Desructor
 };
 
 

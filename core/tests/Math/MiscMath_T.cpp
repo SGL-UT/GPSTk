@@ -2,11 +2,11 @@
 #include <iostream>
 
 
-class MiscMathTest
+class MiscMath_T
 {
         public: 
-		MiscMathTest(){}// Default Constructor, set the precision value
-		~MiscMathTest() {} // Default Desructor
+		MiscMath_T(){}// Default Constructor, set the precision value
+		~MiscMath_T() {} // Default Desructor
 };
 
 

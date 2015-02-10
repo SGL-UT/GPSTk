@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class EphemerisRangeTest
+class EphemerisRange_T
 {
         public: 
-		EphemerisRangeTest(){}// Default Constructor, set the precision value
-		~EphemerisRangeTest() {} // Default Desructor
+		EphemerisRange_T(){}// Default Constructor, set the precision value
+		~EphemerisRange_T() {} // Default Desructor
 };
 
 

@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class ORDEpochTest
+class ORDEpoch_T
 {
         public: 
-		ORDEpochTest(){}// Default Constructor, set the precision value
-		~ORDEpochTest() {} // Default Desructor
+		ORDEpoch_T(){}// Default Constructor, set the precision value
+		~ORDEpoch_T() {} // Default Desructor
 };
 
 

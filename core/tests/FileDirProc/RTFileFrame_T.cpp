@@ -1,11 +1,11 @@
 #include "TestUtil.hpp"
 #include <iostream>
 
-class RTFileFrameTest
+class RTFileFrame_T
 {
         public: 
-		RTFileFrameTest(){}// Default Constructor, set the precision value
-		~RTFileFrameTest() {} // Default Desructor
+		RTFileFrame_T(){}// Default Constructor, set the precision value
+		~RTFileFrame_T() {} // Default Desructor
 };
 
 
