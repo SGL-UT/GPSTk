@@ -444,7 +444,7 @@ void BinexTypes_T :: dumpBuffer(const unsigned char* buffer, size_t size)
 
 /** Run the program.
  *
- * @return 0 if successful
+ * @return Total error count for all tests
  */
 int main(int argc, char *argv[])
 {
