@@ -4,10 +4,6 @@ add_executable(AlmOrbit_T AlmOrbit_T.cpp)
 target_link_libraries(AlmOrbit_T gpstk)
 add_test(GNSSEph_AlmOrbit AlmOrbit_T)
 
-add_executable(BDSEphemeris_T BDSEphemeris_T.cpp)
-target_link_libraries(BDSEphemeris_T gpstk)
-add_test(GNSSEph_BDSEphemeris BDSEphemeris_T)
-
 add_executable(EngAlmanac_T EngAlmanac_T.cpp)
 target_link_libraries(EngAlmanac_T gpstk)
 add_test(GNSSEph_EngAlmanac EngAlmanac_T)
