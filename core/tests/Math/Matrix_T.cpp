@@ -39,7 +39,7 @@
 #include "TestUtil.hpp"
 #include <iostream>
 #include <fstream>
-
+#include <sstream>
 using namespace gpstk;
 using namespace std;
 
@@ -239,7 +239,11 @@ class Matrix_T
 //--------------Matrix_getTest_5 - Is matrix e initializated properly?
 		for(int i = 0; i < e.rows(); i++)
 		      	for(int j = 0; j < e.cols(); j++)
-					if (1+i+j*8 != e(i,j)) {badCount++;}
+				if (v1(i*e.cols()+j) != e(i,j)) {badCount++;}
+
+	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 8x2 matrix. " << badCount << " of them are set improperly.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter
@@ -247,8 +251,10 @@ class Matrix_T
 //--------------Matrix_getTest_6 - Is matrix f initializated properly?
 		for(int i = 0; i < f.rows(); i++)
 		      	for(int j = 0; j < f.cols(); j++)
-					if (16-i-4*j != f(i,j)) {badCount++;}
-				//cout << f(i,j) << " " << 16-i-4*j << endl;
+				if (v2(i*f.cols()+j) != f(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 4x4 matrix. " << badCount << " of them are set improperly.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter
@@ -256,8 +262,10 @@ class Matrix_T
 //--------------Matrix_getTest_7 - Is matrix g initializated properly?
 		for(int i = 0; i < g.rows(); i++)
 		      	for(int j = 0; j < g.cols(); j++)
-					if (1+i+j*2 != g(i,j)) {badCount++;}
-				//cout << g(i,j) << " " << 1+i+j*2 << endl;
+				if (v3(i*g.cols()+j) != g(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 2x2 matrix. " << badCount << " of them are set improperly.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter
@@ -265,8 +273,10 @@ class Matrix_T
 //--------------Matrix_getTest_8 - Is matrix h initializated properly?
 		for(int i = 0; i < h.rows(); i++)
 		      	for(int j = 0; j < h.cols(); j++)
-			 		if (5.+i != h(i,j)) {badCount++;}
-				//cout << h(i,j) << " " << 5.+i << endl;
+			 	if (v4(i*h.cols()+j) != h(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 4x2 matrix. " << badCount << " of them are set improperly.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
       	badCount = 0; // Reset error counter
 
@@ -302,8 +312,10 @@ class Matrix_T
    		a += g; // 2x2 addition
    		for(int i = 0; i < a.rows(); i++)
       			for(int j = 0; j < a.cols(); j++)
-				//cout << a(i,j) << " " << 2+i+j*2 << endl;
-         			if (2+i+j*2. != a(i,j)) {badCount++;}
+         			if (v3(i*g.cols()+j)+1 != a(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if addition between two 2x2 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter;
@@ -314,7 +326,10 @@ class Matrix_T
    			for(int i = 0; i < b.rows(); i++)
       				for(int j = 0; j < b.cols(); j++)
 					//cout << b(i,j) << " " << 3-(1+i+j*8) << endl;
-         				if (3-(1+i+j*8.) != b(i,j)) {badCount++;}
+         				if (3-v1(i*e.cols()+j) != b(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if subtraction between two 8x2 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter;
@@ -325,7 +340,10 @@ class Matrix_T
    		for(int i = 0; i < c.rows(); i++)
       			for(int j = 0; j < c.cols(); j++)
 					//cout << c(i,j) << " " << 5-(5.+i) << endl;
-         				if (5-(5.+i) != c(i,j)) {badCount++;}
+         				if (5-v4(i*h.cols()+j) != c(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if subtraction between two 4x2 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter;
@@ -336,7 +354,10 @@ class Matrix_T
    		for(int i = 0; i < d.rows(); i++)
       			for(int j = 0; j < d.cols(); j++)
 				//cout << d(i,j) << " " << 16-i-4*j+7 << endl;
-         			if (16-i-4*j+7 != d(i,j)) {badCount++;}
+         			if (v2(i*f.cols()+j)+7 != d(i,j)) {badCount++;}
+	failDescriptionStream << "Check to see if addition between two 4x4 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	testFramework.setFailMessage(failDescriptionString, __LINE__);
         testFramework.assert(badCount==0);
         testFramework.next();
       	badCount = 0; // Reset error counter
@@ -344,6 +365,10 @@ class Matrix_T
 
 		return testFramework.countFails();
 	}
+	private:
+		std::stringstream failDescriptionStream;
+		std::string       failDescriptionString;
+
 };
 
 int main() //Main function to initialize and run all tests above
