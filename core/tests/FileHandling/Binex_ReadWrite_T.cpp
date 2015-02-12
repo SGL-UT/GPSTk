@@ -34,58 +34,70 @@
 //
 //=============================================================================
 
-#include <stdlib.h> // For lrand48()
 #include "BinexData.hpp"
 #include "BinexStream.hpp"
-#include "BasicFramework.hpp"
-
-/**
- * @file BinexReadWriteTest.cpp
- * 
- * Tests gpstk::BinexData
- */
+#include "TestUtil.hpp"
 
 using namespace std;
 using namespace gpstk;
 
-/**
- * 
- */
-class BinexReadWriteTest : public BasicFramework
+//=============================================================================
+// Class declarations
+//=============================================================================
+class BinexReadWrite_T
 {
 public:
 
-      /**
-       * 
-       */
-   BinexReadWriteTest(char* arg0);
+      // constructor
+   BinexReadWrite_T(int v = 0) : verboseLevel(v) { init(); };
 
-      /**
-       * 
-       */
-   virtual ~BinexReadWriteTest() {};
+      // destructor
+   virtual ~BinexReadWrite_T() {};
 
-protected:
+      // initialize tests
+   void init();
+
+      // test methods
+      // @return  number of failures, i.e., 0=PASS, !0=FAIL
+   int doForwardTests();
+   int doReverseTests();
+
+   unsigned  verboseLevel;  // amount to display during tests, 0 = least
+
+private:
 
    enum TestDataType
    {
-      eChar,
-      eShort,
-      eLong,
-      eUBNXI,
-      eMGFZI
+      CharType  = 'c',
+      ShortType = 's',
+      LongType  = 'l',
+      UbnxiType = 'U',
+      MgfziType = 'M'
    };
    
-   typedef pair<TestDataType, void*>   TestData;
-   typedef vector<TestData>            TestDataList;
-   typedef vector<TestDataList>        TestDataListList;
-   typedef vector<BinexData>           RecordList;
+   struct TestData
+   {
+      TestDataType  dtype;
+      long long     value;
+   };
 
-      /**
-       * 
-       */
-   void process()
-      throw();
+   typedef vector<TestData>      TestDataList;
+   typedef vector<TestDataList>  TestDataListList;
+   typedef vector<BinexData>     RecordList;
+
+      // @param[in] c character to convert
+      // @param[in/out] dtype data type derived from c
+      // @return true if the character is a valid data type,
+      //         false otherwise
+   bool charToType(char c, TestDataType& t);
+
+      // read a list of numbers (one per line) from the specified file
+      // @return true on success, false on failure
+   bool readNums(const string& filename);
+
+      // generate BINEX records from the contents of numList
+      // @return true if successful, false otherwise
+   bool createRecs();
 
       /**
        * 
@@ -116,249 +128,218 @@ protected:
        */
    void dumpBuffer(const unsigned char* buffer, size_t size);
 
+   TestDataList  numList;
+
    TestDataListList  testData;
   
-   RecordList        testRecords;   
+   RecordList  testRecords;   
    
-}; // class BinexReadWriteTest
+}; // class BinexReadWrite_T
 
 
-//---------------------------------------------------------------------------
-BinexReadWriteTest::BinexReadWriteTest(char* arg0) :
-   BasicFramework (arg0, "Tests Binex record reading and writing")
+//============================================================
+// Initialize Test Data Filenames and Values
+//============================================================
+
+void BinexReadWrite_T :: init( void )
 {
-   // Intentionally empty
+
+    TestUtil  testUtil;
+    string  dataFilePath = testUtil.getDataPath();
+
+    //---------------------------------------- 
+    // Full file paths
+    //---------------------------------------- 
+    string  inputFile = dataFilePath + gpstk::getFileSep()
+                      + "test_input_binex_readwrite.txt";
+
+   if (verboseLevel > 0)
+   {
+      cout << "  Reading test input . . ." << endl;
+   }
+   readNums(inputFile);
+
+   if (verboseLevel > 0)
+   {
+      cout << "    " << numList.size() << " numbers" << endl;
+      cout << "  Creating BINEX records . . ." << endl;
+   }
+   createRecs();
+   if (verboseLevel > 0)
+   {
+      cout << "    " << testRecords.size() << " records" << endl;
+   }
+}
+
+
+bool BinexReadWrite_T :: charToType(char c, TestDataType& t)
+{
+   switch (c)
+   {
+      case CharType:   t = CharType;   break;
+      case ShortType:  t = ShortType;  break;
+      case LongType:   t = LongType;   break;
+      case UbnxiType:  t = UbnxiType;  break;
+      case MgfziType:  t = MgfziType;  break;
+
+      default:
+         return false;
+   }
+   return true;
 }
 
 
 //---------------------------------------------------------------------------
-void BinexReadWriteTest::process()
-   throw()
+bool BinexReadWrite_T :: readNums(const string& filename)
 {
-   if (verboseLevel > 0)
-   {
-      cout << "Creating BINEX records . . ." << endl;
-   }
+   ifstream  ifs(filename.c_str());
+
+   if (!ifs.good())
+      return false;
    
-   for (short recNum = 0; recNum < 10; recNum++)
+   while (ifs.good())
    {
-      BinexData record(recNum);
-      TestDataList      recordData;
-      size_t            offset = 0;
-      
-      for (short dataNum = 0; dataNum < 80; dataNum++)
+      string  line;
+      getline(ifs, line);
+
+         // ignore comments
+      string::size_type  hashPos = line.find('#');
+      if (hashPos != string::npos)
       {
-         TestDataType whichType = (TestDataType)(rand() % (eMGFZI + 1) );
-         void         *value = NULL;
-         
-         switch (whichType)
+         line.erase(hashPos);         
+      }
+         // ignore empty lines
+      string::size_type  nonWhitePos = line.find_first_not_of(" \t");
+      if (nonWhitePos != string::npos)
+      {
+         istringstream  iss(line);
+         TestData  num;
+         char  c;
+         iss >> c;
+
+            // make sure the type is valid
+         if (charToType(c, num.dtype))
          {
-            case eChar:
+            iss >> num.value;
+            numList.push_back(num);
+         }
+         else
+         {
+            if (verboseLevel > 0)
             {
-               char c = (char)(rand() % 0x100);
+               cout << "  Warning: Unrecognized data type: " << c << endl;
+            }
+         }
+      }
+   }
+   return (numList.size() > 0);
+}
+
+
+bool BinexReadWrite_T :: createRecs()
+{
+   TestDataList::const_iterator  tdIter = numList.begin();
+   while (tdIter != numList.end() )
+   {
+      BinexData     record(1);
+      TestDataList  recordData;
+      size_t        offset = 0;
+      
+         // create multiple records with 9 fields each
+      short  dataNum = 0;
+      for ( ; (dataNum < 9) && (tdIter != numList.end()); ++dataNum, ++tdIter)
+      {
+         switch (tdIter->dtype)
+         {
+            case CharType:
+            {
+               char  c = tdIter->value;
                record.updateMessageData(offset, c, sizeof(c) );
-               value  = new char(c);
                break;
             }   
-            case eShort:
+            case ShortType:
             {
-               short s = (short)(rand() % 10000);
+               short  s = tdIter->value;
                record.updateMessageData(offset, s, sizeof(s) );
-               value  = new short(s);
                break;
             }  
-            case eLong:
+            case LongType:
             {
-               long l = (long)(lrand48() );
+               long  l = tdIter->value;
                record.updateMessageData(offset, l, sizeof(l) );
-               value  = new long(l);
                break;
             }   
-            case eUBNXI:
+            case UbnxiType:
             {
-               BinexData::UBNXI u( (unsigned long)(abs(lrand48() ) ) % BinexData::UBNXI::MAX_VALUE);
+               BinexData::UBNXI  u(tdIter->value);
                record.updateMessageData(offset, u);
-               value = new BinexData::UBNXI(u);
                break;
             }   
-            case eMGFZI:
+            case MgfziType:
             {
-               BinexData::MGFZI m( (long long)(lrand48() ) );
+               BinexData::MGFZI  m(tdIter->value);
                record.updateMessageData(offset, m);
-               value = new BinexData::MGFZI(m);
                break;
             }   
             default:
                   // Internal error
-               exit(1);
+               cout << "  Internal error during record creation" << std::endl;
+               return false;
          }
-         if (value != NULL)
-         {
-            recordData.push_back(TestData(whichType, value) );
-         }
+         recordData.push_back(*tdIter);
       }
       testData.push_back(recordData);      
       testRecords.push_back(record);
    }
+   return true;
+}
 
-   if (verboseLevel > 0)
-   {
-      cout << "Verifying BINEX records . . ." << endl;
-   }
-   TestDataListList::iterator dataListIter = testData.begin();
-   RecordList::iterator       recordIter   = testRecords.begin();
-   bool more = true;
-   while (  (dataListIter != testData.end() )
-         && (recordIter   != testRecords.end() ) )
-   {
-      TestDataList      dataList = *dataListIter;
-      BinexData record   = *recordIter;
-      try
-      {
-         size_t offset = 0;
-         TestDataList::iterator dataIter = (*dataListIter).begin();
-         while (dataIter != (*dataListIter).end() )
-         {
-            switch ( (*dataIter).first)
-            {
-               case eChar:
-               {
-                  string desc = "Comparing character record message data";
-                  char   c;
-                  record.extractMessageData(offset, c, sizeof(c) );
-                  if (memcmp( (void*)&c, (*dataIter).second, sizeof(c) ) )
-                  {
-                     report(desc, false);
-                     cout << "  Actual:   " << c << endl;
-                     cout << "  Expected: " << *( (char*)(*dataIter).second) << endl;
-                  }
-                  else
-                  {
-                     report(desc, true);
-                  }
-                  break;
-               }   
-               case eShort:
-               {
-                  string desc = "Comparing short record message data";
-                  short  s;
-                  record.extractMessageData(offset, s, sizeof(s) );
-                  if (memcmp( (void*)&s, (*dataIter).second, sizeof(s) ) )
-                  {
-                     report(desc, false);
-                     cout << "  Actual:   " << s << endl;
-                     cout << "  Expected: " << *( (char*)(*dataIter).second) << endl;
-                  }
-                  else
-                  {
-                     report(desc, true);
-                  }
-                  break;
-               }  
-               case eLong:
-               {
-                  string desc = "Comparing long record message data";
-                  long   l;
-                  record.extractMessageData(offset, l, sizeof(l) );
-                  if (memcmp( (void*)&l, (*dataIter).second, sizeof(l) ) )
-                  {
-                     report(desc, false);
-                     cout << "  Actual:   " << l << endl;
-                     cout << "  Expected: " << *( (char*)(*dataIter).second) << endl;
-                  }
-                  else
-                  {
-                     report(desc, true);
-                  }
-                  break;
-               }   
-               case eUBNXI:
-               {
-                  string           desc = "Comparing UBNXI record message data";
-                  BinexData::UBNXI u;
-                  record.extractMessageData(offset, u);
-                  if (u == *( (BinexData::UBNXI*)(*dataIter).second) )
-                  {
-                     report(desc, true);
-                  }
-                  else
-                  {
-                     report(desc, false);
-                     cout << "  Actual:   " << (unsigned long)u << endl;
-                     cout << "  Expected: " << (unsigned long)*( (BinexData::UBNXI*)(*dataIter).second) << endl;
-                  }
-                  break;
-               }   
-               case eMGFZI:
-               {
-                  string           desc = "Comparing MGFZI record message data";
-                  BinexData::MGFZI m;
-                  record.extractMessageData(offset, m);
-                  if (m == *( (BinexData::MGFZI*)(*dataIter).second) )
-                  {
-                     report(desc, true);
-                  }
-                  else
-                  {
-                     report(desc, false);
-                     cout << "  Actual:   " << (long long)m << endl;
-                     cout << "  Expected: " << (long long)*( (BinexData::MGFZI*)(*dataIter).second) << endl;
-                  }
-                  break;
-               }   
-               default:
-                     // Internal error
-                  exit(1);
-            }
-            dataIter++;
-         }
-      }
-      catch (FFStreamError e)
-      {
-         cout << "  FFStreamError reading record." << endl;
-      }
-      catch (...)
-      {
-         cout << "  Unknown error reading record." << endl;
-      }
-      dataListIter++;
-      recordIter++;
-      
-   }
 
-   if (verboseLevel > 0)
-   {
-      cout << "Writing BINEX file . . ." << endl;
-   }
-   BinexStream outStream("test.out", std::ios::out | std::ios::binary);
+int BinexReadWrite_T :: doForwardTests()
+{
+   TestUtil  testFramework( "BinexData", "Read/Write (Fwd)", __FILE__, __LINE__ );
+
+   string  tempFilePath = testFramework.getTempPath();
+   string  tempFileName = tempFilePath + gpstk::getFileSep() +
+                          "test_output_binex_readwrite.binex";
+   BinexStream  outStream(tempFileName.c_str(),
+                          std::ios::out | std::ios::binary);
+
+   testFramework.assert(outStream.good());
+
    outStream.exceptions(ios_base::failbit | ios_base::badbit);
-   recordIter = testRecords.begin();
-   while (recordIter != testRecords.end() )
+   RecordList::iterator  recordIter = testRecords.begin();
+   for ( ; recordIter != testRecords.end(); ++recordIter)
    {
+      testFramework.next();
       try
       {
          (*recordIter).putRecord(outStream);
+         testFramework.pass();
       }
-      catch(...)
+      catch (...)
       {
-         cout << "  Error writing record." << endl;
+         testFramework.fail("Unknown exception writing record");
       }
-      recordIter++;
+      testFramework.print();
    }
    outStream.close();
    
-   if (verboseLevel > 0)
-   {
-      cout << "Reading BINEX file . . ." << endl;
-   }
-   BinexStream inStream("test.out", std::ios::in | std::ios::binary);   
+   BinexStream  inStream(tempFileName.c_str(),
+                         std::ios::in | std::ios::binary);
    inStream.exceptions(ios_base::failbit);
+   
+   testFramework.next();
+   testFramework.assert(inStream.good());
+
    recordIter = testRecords.begin();
    while (inStream.good() && (EOF != inStream.peek() ) )
    {
+      testFramework.next();
+
       if (recordIter == testRecords.end() )
       {
-         cout << "Stored records exhausted before file records - exiting." << endl;
+         testFramework.fail("Stored records exhausted before file records");
          break;
       }
       BinexData record;
@@ -367,207 +348,65 @@ void BinexReadWriteTest::process()
          record.getRecord(inStream);
          if (record == *recordIter)
          {
-            report("Reading and comparing BINEX record", true);
+            testFramework.pass();
          }
          else
          {
-            report("Reading and comparing BINEX record", false);
-            cout << "Actual record:" << endl;
-            (*recordIter).dump(cout);
-            cout << "Expected record:" << endl;
-            record.dump(cout);
+            ostringstream  oss;
+            oss << "Actual record:" << endl;
+            (*recordIter).dump(oss);
+            oss << "Expected record:" << endl;
+            record.dump(oss);
+
+            testFramework.fail(oss.str());
          }
       }
-      catch (FFStreamError e)
+      catch (FFStreamError& e)
       {
-         cout << e << endl;
+         ostringstream  oss;
+         oss << "Stream exception reading record: " << e;
+         testFramework.fail(oss.str());
       }
       catch (...)
       {
-         cout << "  Unknown error reading record." << endl;
+         testFramework.fail("Unknown exception reading record");
       }
+      testFramework.print();
       recordIter++;      
    }
    inStream.close();
 
+   return testFramework.countFails();  
 }
 
 
-//---------------------------------------------------------------------------
-void BinexReadWriteTest::report(string description,
-                                bool   pass)
+int BinexReadWrite_T :: doReverseTests()
 {
-   if (pass)
-   {
-      if (verboseLevel > 1)
-      {
-         cout << " PASS - " << description << endl;
-      }
-   }
-   else
-   {
-      cout << " FAIL - " << description << endl;
-   }
-}
+   TestUtil  testFramework( "BinexData", "Read/Write (Rev)", __FILE__, __LINE__ );
 
-/*
-//---------------------------------------------------------------------------
-void BinexReadWriteTest::report(string                  description,
-                            const unsigned long     expectedValue,
-                            const unsigned short    expectedSize,
-                            const BinexData::UBNXI& actual,
-                            const bool              littleEndian)
-{
-   unsigned long  actualValue = (unsigned long)actual;
-   unsigned short actualSize  = actual.getSize();
-   
-   if (  (expectedValue != (unsigned long)actualValue)
-      || (expectedSize  != actualSize) )
-   {
-      cout << " FAIL - " << description;
-      if (littleEndian)
-      {
-         cout << " (Little Endian)" << endl;
-      }
-      else
-      {
-         cout << " (Big Endian)" << endl;
-      }
-      cout << "        Expected Value = " << expectedValue << endl;
-      cout << "        Actual Value   = " << actualValue   << endl;
-      cout << "        Expected Size  = " << expectedSize  << endl;
-      cout << "        Actual Size    = " << actualSize    << endl;
-      
-      unsigned char bytes[8];
-      unsigned char byteCount;
-      actual.encode(bytes, byteCount); //, littleEndian);
-      cout << "        Raw Hex Bytes  =";
-      for (unsigned char i = 0; i < byteCount; i++)
-      {
-         cout << " " << hex << (unsigned short)bytes[i];
-      }
-      cout << dec << endl;
-   }
-   else
-   {
-      if (verboseLevel > 1)
-      {
-         cout << " PASS - " << description;
-         if (littleEndian)
-         {
-            cout << " (Little Endian)" << endl;
-         }
-         else
-         {
-            cout << " (Big Endian)" << endl;
-         }
-         unsigned char bytes[8];
-         unsigned char byteCount;
-         actual.encode(bytes, byteCount); //, littleEndian);
-         cout << "        Value = " << (unsigned long)actual << "  Raw Hex Bytes  =";
-         for (unsigned char i = 0; i < byteCount; i++)
-         {
-            cout << " " << hex << (unsigned short)bytes[i];
-         }
-         cout << dec << endl;
-      }
-   }
+   // @todo
+
+   return testFramework.countFails();
 }
 
 
-//---------------------------------------------------------------------------
-void BinexReadWriteTest::report(string                  description,
-                            const long long         expectedValue,
-                            const unsigned short    expectedSize,
-                            const BinexData::MGFZI& actual,
-                            const bool              littleEndian)
-{
-   long long       actualValue = (long long)actual;
-   unsigned short  actualSize  = actual.getSize();
-   
-   if (  (expectedValue != (long long)actualValue)
-      || (expectedSize  != actualSize) )
-   {
-      cout << " FAIL - " << description;
-      if (littleEndian)
-      {
-         cout << " (Little Endian)" << endl;
-      }
-      else
-      {
-         cout << " (Big Endian)" << endl;
-      }
-      cout << "        Expected Value = " << expectedValue << endl;
-      cout << "        Actual Value   = " << actualValue   << endl;
-      cout << "        Expected Size  = " << expectedSize  << endl;
-      cout << "        Actual Size    = " << actualSize    << endl;
-      
-      unsigned char bytes[8];
-      unsigned char byteCount;
-      actual.encode(bytes, byteCount); //, littleEndian);
-      cout << "        Raw Hex Bytes  =";
-      for (unsigned char i = 0; i < byteCount; i++)
-      {
-         cout << " " << hex << (unsigned short)bytes[i];
-      }
-      cout << dec << endl;
-   }
-   else
-   {
-      if (verboseLevel > 1)
-      {
-         cout << " PASS - " << description;
-         if (littleEndian)
-         {
-            cout << " (Little Endian)" << endl;
-         }
-         else
-         {
-            cout << " (Big Endian)" << endl;
-         }
-         unsigned char bytes[8];
-         unsigned char byteCount;
-         actual.encode(bytes, byteCount); //, littleEndian);
-         cout << "        Value = " << actualValue << "  Raw Hex Bytes  =";
-         for (unsigned char i = 0; i < byteCount; i++)
-         {
-            cout << " " << hex << (unsigned short)bytes[i];
-         }
-         cout << dec << endl;
-      }
-   }
-}
-*/
-
-//---------------------------------------------------------------------------
-void BinexReadWriteTest::dumpBuffer(const unsigned char* buffer, size_t size)
-{
-   cout << "       Raw Hex Bytes  =";
-   for (size_t i = 0; i < size; i++)
-   {
-      cout << " " << hex << (unsigned short)buffer[i];
-   }
-   cout << dec << endl;
-}
-
-
-/**
- * Returns 0 if successful.
+/** Run the program.
+ *
+ * @return Total error count for all tests
  */
 main(int argc, char *argv[])
 {
-   BinexReadWriteTest app(argv[0]);
+   int  errorCount = 0;
+   int  errorTotal = 0;
 
-   if (!app.initialize(argc, argv) )
-   {
-      return 0;
-   }
+   BinexReadWrite_T  testClass;  // test data is loaded here
 
-   if (!app.run() )
-   {
-      return 1;
-   }
+   errorCount = testClass.doForwardTests();
+   errorTotal = errorTotal + errorCount;
 
-   exit(0);
+   //errorCount = testClass.doReverseTests();
+   //errorTotal = errorTotal + errorCount;
+
+   return( errorTotal );
    
 } // main()
