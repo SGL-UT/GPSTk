@@ -125,10 +125,11 @@ void BinexTypes_T :: init( void )
     //---------------------------------------- 
     // Full file paths
     //---------------------------------------- 
-    string  file_sep = "/";
+    inputUbnxiNums = dataFilePath + gpstk::getFileSep()
+                   + "test_input_binex_types_Ubnxi.txt";
 
-    inputUbnxiNums = dataFilePath + file_sep + "test_input_binex_types_Ubnxi.txt";
-    inputMgfziNums = dataFilePath + file_sep + "test_input_binex_types_Mgfzi.txt";
+    inputMgfziNums = dataFilePath + gpstk::getFileSep()
+                   + "test_input_binex_types_Mgfzi.txt";
 
     readNums(inputUbnxiNums, ubnxiNumList);
     readNums(inputMgfziNums, mgfziNumList);

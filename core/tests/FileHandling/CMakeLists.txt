@@ -1,12 +1,20 @@
 #Tests for FileHandling Classes
 
-add_executable(Binex_ReadWrite_T Binex_ReadWrite_T.cpp)
-target_link_libraries(Binex_ReadWrite_T gpstk)
-add_test(FileHandling_Binex_ReadWrite Binex_ReadWrite_T)
-
 add_executable(Binex_Types_T Binex_Types_T.cpp)
 target_link_libraries(Binex_Types_T gpstk)
 add_test(FileHandling_Binex_Types Binex_Types_T)
+
+add_executable(Binex_Attrs_T Binex_Attrs_T.cpp)
+target_link_libraries(Binex_Attrs_T gpstk)
+add_test(FileHandling_Binex_Attrs Binex_Attrs_T)
+
+add_executable(Binex_UpdateExtract_T Binex_UpdateExtract_T.cpp)
+target_link_libraries(Binex_UpdateExtract_T gpstk)
+add_test(FileHandling_Binex_UpdateExtract Binex_UpdateExtract_T)
+
+add_executable(Binex_ReadWrite_T Binex_ReadWrite_T.cpp)
+target_link_libraries(Binex_ReadWrite_T gpstk)
+add_test(FileHandling_Binex_ReadWrite Binex_ReadWrite_T)
 
 add_executable(Rinex_T Rinex_T.cpp)
 target_link_libraries(Rinex_T gpstk)
