@@ -103,7 +103,8 @@ int Rinex_T :: run( void )
 
   std::stringstream before;
   std::stringstream after;
-
+  std::stringstream failDescriptionStream;
+  std::string       failDescriptionString;
 
    //The dump from ee_orig.dump() and ee_copy.dump() should be the same
    //    an EngEphemeris object is created, then used to create a RinexNavData
@@ -117,7 +118,11 @@ int Rinex_T :: run( void )
 
    ee_copy = EngEphemeris( rnd ); //cast
    ee_copy.dump( after );
-
+//	cout << "BEFORE:" << endl << before.str() << endl << endl;
+//	cout << "AFTER:" << endl << after.str() << endl;
+   failDescriptionStream << "Check if the data dumps between two datatypes with the same data are the same. They are NOT!";
+   failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+   test1.setFailMessage(failDescriptionString, __LINE__);
    test1.assert( before.str() == after.str() );
    return ( test1.countFails() );
 }
