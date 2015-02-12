@@ -49,28 +49,35 @@ public:
   //          sourceMethodInput = the name of the source method being tested
   //          testFileInput     = the name of file containing the test code, e.g., __FILE__
   //          testLineInput     = the line number in the file where testing is done, e.g. __LINE__
+  //          verbosityInput    = the level of verbosity in the print output, default=1, but set to 0 will supress fail messages
   // Outputs: none
   //----------------------------------------
   TestUtil( const std::string& sourceClassInput  = "Unknown", 
             const std::string& sourceMethodInput = "Unknown",
             const std::string& testFileInput     = "Unknown",
-            const         int& testLineInput     = 0
+            const         int& testLineInput     = 0,
+            const         int& verbosityInput    = 1
            ):
-      outputKeyword( "TestOutput" ), 
+      outputKeyword( "GpstkTest" ),
       sourceClass( sourceClassInput  ),
       sourceMethod( sourceMethodInput ),
-      testFilename( testFileInput ),
+      testFileName( testFileInput ),
       testFileLine( "0" ),
       failBit( 0 ),
       failCount( 0 ),
       testCount( 0 ),
       subtestID( 1 ),
-      tolerance( 0 )
+      tolerance( 0 ),
+      verbosity( verbosityInput )
   {
       // convert int to string
-      std::stringstream conversionStringStream;
-      conversionStringStream << testLineInput;
-      testFileLine = conversionStringStream.str();
+      setTestLine( testLineInput );
+  
+      // strip off the path from the full-path filename
+      // so that "/home/user/test.txt" becomes "test.txt"
+      std::string file_sep = gpstk::getFileSep();
+      testFileName = testFileName.substr( testFileName.find_last_of( file_sep ) + 1 );
+
 
   }
 
@@ -113,6 +120,7 @@ public:
     testCount = 0;
     subtestID = 1;
     tolerance = 0;
+    failMessage = "";
   }
 
   //----------------------------------------
@@ -126,6 +134,7 @@ public:
   {
     failBit = 0;
     subtestID = countTests() + 1;
+    failMessage = "";
   }
 
   //----------------------------------------
@@ -133,7 +142,9 @@ public:
   // Purpose: Fail the test! Record a failure by setting the failBit and
   //           incrementing failCount
   // Usage:   To be called (once!) at the end of any subtest that has failed
-  // Inputs:  none
+  // Inputs:  2 [optional]
+  //          string fail_message
+  //          int    line_number
   // Outputs: none
   //----------------------------------------
   void fail( void )
@@ -141,6 +152,19 @@ public:
     failBit = 1;
     failCount++;
     testCount++;
+  }
+
+  void fail( const std::string fail_message )
+  {
+    setFailMessage( fail_message );
+    fail();
+  }
+
+  void fail( const std::string fail_message, const int line_number )
+  {
+    setFailMessage( fail_message );
+    setTestLine( line_number );
+    fail();
   }
 
   //----------------------------------------
@@ -191,20 +215,39 @@ public:
   // Usage:   to be called after each test method subtest is performed
   // Inputs:  none
   // Outputs: none
-  // STDOUT:  "outputKeyword, sourceClass, sourceMethod, testFilename,
+  // STDOUT:  "outputKeyword, sourceClass, sourceMethod, testFileName,
   //             testMethod, subtestID, failBit"
   //----------------------------------------
   void print( void )
   {
-      // print test description and result to stdout
-      std::cout     <<
-      outputKeyword << ", " << 
-      sourceClass   << ", " << 
-      sourceMethod  << ", " << 
-      testFilename  << ", " << 
-      testFileLine  << ", " <<
-      subtestID     << ", " << 
-      failBit       << std::endl;     // implicit conversion from int to string
+      // print test summary description and result to stdout
+      if( failBit==1 && verbosity >=1 )
+      {
+         std::cout     <<
+         outputKeyword << ", " << 
+         "Class="      << sourceClass   << ", " << 
+         "Method="     << sourceMethod  << ", " << 
+         "testFile="   << testFileName  << ", " << 
+         "testLine="   << testFileLine  << ", " <<
+         "subtest="    << subtestID     << ", " << 
+         "failBit="    << failBit       << ", " << 
+         "failMsg="    << failMessage
+         << std::endl;     // implicit conversion from int to string
+
+      } else {
+
+         std::cout     <<
+         outputKeyword << ", " << 
+         "Class="      << sourceClass   << ", " << 
+         "Method="     << sourceMethod  << ", " << 
+         "testFile="   << testFileName  << ", " << 
+         "testLine="   << testFileLine  << ", " <<
+         "subtest="    << subtestID     << ", " << 
+         "failBit="    << failBit
+         << std::endl;     // implicit conversion from int to string
+
+      }
+
   }
 
   //----------------------------------------
@@ -253,6 +296,16 @@ public:
   }
 
   //----------------------------------------
+  // Method:  getTolerance
+  // Purpose: return numerical value of test tolerance
+  //----------------------------------------
+  inline double getTolerance( void )
+  {
+    return( tolerance );
+  }
+
+
+  //----------------------------------------
   // Method:  changeSourceMethod()
   // Purpose: changeSourceMethod allows for the change of the method,
   //          function, or feature of the source class under test
@@ -266,6 +319,7 @@ public:
   {
     sourceMethod = newMethod;
   }
+
 
   //----------------------------------------
   // Method:  passTest()
@@ -283,6 +337,52 @@ public:
   }
 
   //----------------------------------------
+  // Method:  setFailMessage()
+  // Purpose: Set the message text that is reported if the test fails
+  // Inputs:  2
+  //          std::string fail_message, the text to be sent to a log to describe what failed and why
+  //          int         line_number, the line number in the test app where fail() was called
+  // Outputs: none
+  //----------------------------------------
+  void setFailMessage( const std::string fail_message )
+  {
+    failMessage  = fail_message;    
+  }
+
+  void setFailMessage( const std::string fail_message, const int line_number )
+  {
+    setFailMessage( fail_message );
+    setTestLine( line_number );
+    
+  }
+
+  void setFailMessage( const std::string fail_message, const std::string line_number )
+  {
+    setFailMessage( fail_message );
+    setTestLine( line_number );
+    
+  }
+
+  //----------------------------------------
+  // Method:  setTestLine()
+  // Purpose: Set the testFileLine
+  // Inputs:  1
+  //          int         line_number, the line number in the test app where fail() was called
+  // Outputs: none
+  //----------------------------------------
+  void setTestLine( const int line_number_int )
+  {
+      std::stringstream conversionStringStream;
+      conversionStringStream << line_number_int;
+      testFileLine = conversionStringStream.str();
+  }
+
+  void setTestLine( const std::string line_number_string )
+  {
+      testFileLine = line_number_string;
+  }
+
+  //----------------------------------------
   // Method:  failTest()
   // Purpose: For cases without booleans to use for assert(), print out
   //          the FAIL message and move to the next test.
@@ -296,6 +396,21 @@ public:
     print();
     next();
   }
+
+  void failTest( const std::string fail_message )
+  {
+    fail( fail_message );
+    print();
+    next();
+  }
+
+  void failTest( const std::string fail_message, const int line_number )
+  {
+    fail( fail_message, line_number );
+    print();
+    next();
+  }
+
 
   //------------------------------------------------------------
   // Method:  fileEqualTest()
@@ -360,16 +475,19 @@ private:
   // The following are all used as part of the output from TestUtil::print()
   // to facilitate filtering of output that is thus printed to stdout
 
-  std::string outputKeyword; // Identifies a stdout line as from this class
+  std::string outputKeyword; // Identifies a stdout line as a test record from this class
   std::string sourceClass;   // help locate source class causing a test failure
   std::string sourceMethod;  // help locate source method causing a test failure
-  std::string testFilename;  // help locate test file that discovered a failure
+  std::string testFileName;  // help locate test file that discovered a failure
   std::string testFileLine;  // help locate test line where the failure occured
-
-  int         failBit;       // store the result of a test (0=pass, 1=fail)
 
   double      tolerance;     // acceptable difference between test output and 
                              //  expected or baseline output
+
+  int         failBit;       // store the result of a test (0=pass, 1=fail)
+  int         verbosity;     // if verbosity>=0, print summary line; if verbosity>=1, print failMessage when fail() is called.
+  std::string failMessage;   // if failBit==1 && verbosity>=1, print this string
+                             // description of why the test failed to be set by the test app developer
 
   //  since single test methods may contain multiple subtests.
 

@@ -410,15 +410,14 @@ if [ "$test_switch" ]; then
     echo ""
 
     # capture the test output
-    ctest_keyword=TestOutput
+    ctest_keyword=GpstkTest
     ctest_log_raw=$build_root/Testing/Temporary/LastTest.log
     ctest_log_save=$build_root/test.log
     cat $ctest_log_raw | grep "$ctest_keyword" > $ctest_log_save
 
-    # the last character on each line of output is a fail bit
     test_count=`cat $ctest_log_save | wc -l`
-    tests_passed=`cat $ctest_log_save | grep "0$" | wc -l`
-    tests_failed=`cat $ctest_log_save | grep "1$" | wc -l`
+    tests_passed=`cat $ctest_log_save | grep "failBit=0" | wc -l`
+    tests_failed=`cat $ctest_log_save | grep "failBit=1" | wc -l`
 
     echo ""
     echo "------------------------------------------------------------"
