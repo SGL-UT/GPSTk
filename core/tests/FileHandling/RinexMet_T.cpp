@@ -138,6 +138,9 @@ class RinexMet_T
         std::string outputRinexMetExceptions  ;
         std::string outputRinexMetFilterTest  ;
 
+        std::string failDescriptionString;
+	std::stringstream failDescriptionStream;
+
 };
 
 
@@ -789,7 +792,7 @@ int RinexMet_T :: dataExceptionsTest( void )
         InvalidTimeFormat >> rme;
         out << rme;
 
-        test9.failTest();
+        test9.failTest("Test looking for a gpstk::Exception to be thrown when there is no header obs. No exception was thrown.", __LINE__);
     }
     catch( gpstk::Exception& e )
     {
@@ -797,7 +800,7 @@ int RinexMet_T :: dataExceptionsTest( void )
     }
     catch(...)
     {
-        test9.failTest();
+        test9.failTest("Test looking for a gpstk::Exception to be thrown when there is no header obs. A different exception was thrown.", __LINE__);
     }
     return test9.countFails();
 }
@@ -858,25 +861,54 @@ int RinexMet_T :: filterOperatorsTest( void )
 
         gpstk::RinexMetDataOperatorEqualsSimple EqualsSimple;
 
+	failDescriptionStream << "Check to see if two equivalent files have the same times. They DO NOT.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( EqualsSimple(FilterData1, FilterData2) == true );
         test10.next();
+
+	failDescriptionStream << "Check to see if two files with different times have the same time values. They DO.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( EqualsSimple(FilterData1, FilterData3) == false );
         test10.next();
 
         gpstk::RinexMetDataOperatorLessThanSimple LessThanSimple;
+	failDescriptionStream << "Check to see if one file occurred earlier than another using equivalent files. One is found to be earlier than the other.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( LessThanSimple(FilterData1, FilterData2) == false );
         test10.next();
+
+	failDescriptionStream << "Check to see if one file occurred earlier than another using two files with different times. The earlier file is not found to be earlier.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( LessThanSimple(FilterData1, FilterData3) == true );
         test10.next();
 
         gpstk::RinexMetDataOperatorLessThanFull LessThanFull(merged.obsSet);
 
+	failDescriptionStream << "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( LessThanFull(FilterData1, FilterData2) == false );
         test10.next();
+
+	failDescriptionStream << "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( LessThanFull(FilterData2, FilterData1) == false );
         test10.next();
+
+	failDescriptionStream << "Perform the full less than comparison on two different files. FilterData1, an earlier date, has been found to NOT be less than FilterData3.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( LessThanFull(FilterData1, FilterData3) == true );
         test10.next();
+
+	failDescriptionStream << "Perform the full less than comparison on two different files. FilterData3, a later date, has been found to be less than FilterData1.";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test10.setFailMessage(failDescriptionString, __LINE__);
         test10.assert( LessThanFull(FilterData3, FilterData1) == false );
         test10.next();
 

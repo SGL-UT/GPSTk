@@ -102,6 +102,9 @@ class RinexNav_T
 
         std::string outputRinexStore;
 
+	std::stringstream failDescriptionStream;
+	std::string       failDescriptionString;
+
 };
 
 //============================================================
@@ -309,7 +312,7 @@ int RinexNav_T :: headerExceptionTest( void )
 //------------------------------------------------------------
 int RinexNav_T :: streamReadWriteTest( void )
 {
-    TestUtil test3( "RinexNavData", "<<", __FILE__, __LINE__ );
+    TestUtil test3( "RinexNavData", "Redirect", __FILE__, __LINE__ );
 
     try
     {
@@ -323,8 +326,10 @@ int RinexNav_T :: streamReadWriteTest( void )
 	{
             rinexOutputStream << data;
 	}
-
-        test3.assert( test3.fileEqualTest( inputRinexNavExample, outputRinexStore, 2) );
+	failDescriptionStream << "Compare the output with a regression standard. The files are different!";
+	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
+	test3.setFailMessage(failDescriptionString, __LINE__);
+        test3.assert( test3.fileEqualTest( inputRinexNavExample, outputRinexStore, 9) );
     }
     catch(...)
     {
