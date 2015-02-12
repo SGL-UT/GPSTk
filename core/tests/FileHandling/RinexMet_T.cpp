@@ -272,7 +272,7 @@ int RinexMet_T :: bitStringTest( void )
 //------------------------------------------------------------
 int RinexMet_T :: reallyPutRecordTest( void )
 {
-    TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
+  TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
 
     gpstk::RinexMetHeader RinexMetHeader;
 
@@ -282,13 +282,13 @@ int RinexMet_T :: reallyPutRecordTest( void )
 
     output.exceptions( std::fstream::failbit );
 
-    try { UnSupRinex >> RinexMetHeader; test3.failTest(); }
+    try { UnSupRinex >> RinexMetHeader; test3.failTest( "This passed but was expected to fail and throw a gpstk::exception", __LINE__ ); }
     catch(gpstk::Exception e) { test3.passTest(); }
-    catch(...) { test3.failTest(); }
+    catch(...) { test3.failTest( "This failed as expected but should thrown a gpstk::exception", __LINE__ ); }
 
-    try { MissingMarkerName >> RinexMetHeader; test3.failTest(); }
+    try { MissingMarkerName >> RinexMetHeader; test3.failTest( "This passed but was expected to fail and throw a gpstk::exception", __LINE__ ); }
     catch(gpstk::Exception e) { test3.passTest(); }
-    catch(...) { test3.failTest(); }
+    catch(...) { test3.failTest( "This failed as expected but did not throw a gpstk::exception", __LINE__ ); }
     return test3.countFails();
 }
 
