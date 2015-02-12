@@ -63,6 +63,7 @@ public:
       sourceMethod( sourceMethodInput ),
       testFileName( testFileInput ),
       testFileLine( "0" ),
+      failMessage( "none" ),
       failBit( 0 ),
       failCount( 0 ),
       testCount( 0 ),
@@ -120,7 +121,7 @@ public:
     testCount = 0;
     subtestID = 1;
     tolerance = 0;
-    failMessage = "";
+    failMessage = "none";
   }
 
   //----------------------------------------
@@ -134,7 +135,7 @@ public:
   {
     failBit = 0;
     subtestID = countTests() + 1;
-    failMessage = "";
+    failMessage = "none";
   }
 
   //----------------------------------------
