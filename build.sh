@@ -62,7 +62,7 @@ cat << EOF
 
 purpose:   This script automates and documents how to build, test, and install GPSTk with CMake.
 
-usage:     $0 [-bcdehtuvz] [-j <num_threads>] [-i <install_prefix>] [-p <python_exe>]
+usage:     $0 [-bcdehptuvz] [-j <num_threads>] [-i <install_prefix>] [-P <python_exe>]
 
            example:  Typical admin build and install: $ ./build.sh -e
            example:  Typical  user build and install: $ ./build.sh -eu
@@ -114,7 +114,13 @@ OPTIONS:
                                $ rm -rf $system_gpstk_install
                                $ rm -rf $system_python_install/gpstk*
 
-   -p     python_exe       Default=$python_exe, full system path to python executable
+   -p     build_python     Flag to build python extension package and set path to python intepreter
+                           Default bit is build_python=0, but "-p" will set it to build_python=1
+
+   -P     python_exe       Python executable used to help determine with python system libraries
+                           will be used when building python extension package.
+                           Default=`which python`, full system path to python executable
+                           If this flag is used, automatically turns on -p also, i.e. sets build_python=1
 
    -v     verbosity        Debug output
 
@@ -127,27 +133,30 @@ exit 1
 # Parse input args
 #----------------------------------------
 
-while getopts "bcdehi:j:p:tuvz" option; do
-    case $option in
-        
-        b) build_only=1;;
-        c) clean=1;;
-        d) build_docs=1;;
-        e) build_ext=1;;
-        h) usage;;
-        i) install_prefix=${OPTARG};;
-        j) num_threads=${OPTARG};;
-        p) python_exe=${OPTARG};;
-        t) test_switch=1;;
-        u) user_install=1;;
-        v) verbosity=1;;
-        z) build_sdist=1;;
-        *) echo "Invalid option: -$OPTARG" >&2
-           usage
-           ;;
+while getopts "bcdehi:j:P:ptuvz" OPTION
+do
+    case $OPTION in
+    b)   build_only=1;;
+    c)   clean=1;;
+    d)   build_docs=1;;
+    e)   build_ext=1;;
+    h)   usage;;
+    i)   install_prefix="$OPTARG";;
+    j)   num_threads="$OPTARG";;
+    p)   build_python=1;;
+    P)   build_python=1
+         python_exe="$OPTARG"
+         ;;
+    t)   test_switch=1;;
+    u)   user_install=1;;
+    v)   verbosity=1;;
+    z)   build_sdist=1;;
+    *)   echo "Invalid option: -$OPTARG" >&2
+         usage
+         exit 2
+         ;;
     esac
 done
-
 # Shift OPTIND so that if there are any additional 
 # command line options we did not capture,
 # then they are accessible via use of $*
@@ -181,7 +190,11 @@ fi
 # that the pyhton package is installed to a place that is already in sys.path
 # and to further insure that if the user selects a crazy non-standard install path,
 # that the python stuff gets shoved into the same crazy place as the gpstk cpp junk
-python_install=${install_prefix}
+if [ "$build_python" ]; then
+    python_install=${install_prefix}
+else
+    python_install=
+fi
 
 #----------------------------------------
 # Echo configuration
@@ -198,7 +211,7 @@ echo "$0: system name     = $build_host"
 echo "$0: system time     = $build_time"
 echo ""
 
-# helper function to print out configutaion
+# helper function: Print True Or False
 function ptof {
     if [ -z $1 ]; then printf "False";
     else               printf "True";
@@ -208,8 +221,9 @@ function ptof {
 printf "$0: gpstk_root      = $gpstk_root\n"
 printf "$0: install_prefix  = $install_prefix\n"
 printf "$0: gpstk_install   = $gpstk_install\n"
-printf "$0: python_install  = $python_install\n"
+printf "$0: build_python    = $(ptof $build_python)\n"
 printf "$0: python_exe      = $python_exe\n"
+printf "$0: python_install  = $python_install\n"
 printf "$0: user_install    = $(ptof $user_install)\n"
 printf "$0: clean           = $(ptof $clean)\n"
 printf "$0: build_root      = $build_root\n"
@@ -293,12 +307,14 @@ if [ ! -d "$gpstk_install" ]; then
     fi
 fi
 
-if [ ! -d "$python_install" ]; then
-    echo "$0: WARNING: Install path $python_install does not exist. Creating it now."
-    mkdir -p $python_install
+if [ "$build_python" ]; then
     if [ ! -d "$python_install" ]; then
-        echo "$0: ERROR: Unable to create the GPSTk Python package install directory $python_install"
-        exit 1
+        echo "$0: WARNING: Install path $python_install does not exist. Creating it now."
+        mkdir -p $python_install
+        if [ ! -d "$python_install" ]; then
+            echo "$0: ERROR: Unable to create the GPSTk Python package install directory $python_install"
+            exit 1
+        fi
     fi
 fi
 
@@ -331,15 +347,17 @@ if [ "$build_docs" ]; then
     fi
 
     # generate python files.i docstrings from doxygen xml output
-    if [ -d "$python_root/doc" ]; then
-        echo "$0: Documentation: Docstrings: Using existing docstring files."
-    else
-        echo "$0: Documentation: Docstrings: using Doxygen XML output to generate docstring .i files for python bindings... $python_root/doc "
-        cd $python_root
-        # running docstring_generator.py reads in the $gpstk_root/doc/xml/*.xml 
-        # fileswere created previously by doxygen and then 
-        # outputs SWIG .i files to $python_root/doc
-        ${python_exe} docstring_generator.py
+    if [ "$build_python" ]; then
+        if [ -d "$python_root/doc" ]; then
+            echo "$0: Documentation: Docstrings: Using existing docstring files."
+        else
+            echo "$0: Documentation: Docstrings: using Doxygen XML output to generate docstring .i files for python bindings... $python_root/doc "
+            cd $python_root
+            # running docstring_generator.py reads in the $gpstk_root/doc/xml/*.xml 
+            # fileswere created previously by doxygen and then 
+            # outputs SWIG .i files to $python_root/doc
+            ${python_exe} docstring_generator.py
+        fi
     fi
 
     # make path for graphviz
@@ -360,8 +378,11 @@ echo ""
 
 args=""
 args+=${gpstk_install:+" -DCMAKE_INSTALL_PREFIX=$gpstk_install"}
-args+=${install_prefix:+" -DPYTHON_INSTALL_PREFIX=$python_install"}
-args+=${python_exe:+" -DPYTHON_EXECUTABLE=$python_exe"}
+args+=${build_python:+" -DBUILD_PYTHON=ON"}
+if [ "$build_python" ]; then
+    args+=${python_exe:+" -DPYTHON_EXECUTABLE=$python_exe"}
+    args+=${install_prefix:+" -DPYTHON_INSTALL_PREFIX=$python_install"}
+fi
 args+=${build_ext:+" -DBUILD_EXT=ON"}
 args+=${test_switch:+" -DTEST_SWITCH=ON"}
 args+=${verbosity:+" -DDEBUG_SWITCH=ON"}
@@ -379,7 +400,11 @@ cmake $args $gpstk_root 2>&1 | tee -a $CMAKE_OUTPUT_LOG
 
 echo ""
 echo ""
-echo "$0: Make: Building C++ libs, C++ apps, and Python package..."
+if [ "$build_python" ]; then
+    echo "$0: Make: Building the following: C++ libs, C++ apps, and Python extension package"
+else
+    echo "$0: Make: Building the following: C++ libs, C++ apps"
+fi
 echo ""
 echo ""
 
@@ -396,7 +421,7 @@ if [ "$test_switch" ]; then
     # run the tests
     echo ""
     echo "------------------------------------------------------------"
-    echo "Begin testing."
+    echo "Tests: started"
     echo "------------------------------------------------------------"
     echo ""
 
@@ -405,7 +430,7 @@ if [ "$test_switch" ]; then
 
     echo ""
     echo "------------------------------------------------------------"
-    echo "Tests completed. Parsing test logs..."
+    echo "Tests: completed"
     echo "------------------------------------------------------------"
     echo ""
 
@@ -421,7 +446,7 @@ if [ "$test_switch" ]; then
 
     echo ""
     echo "------------------------------------------------------------"
-    echo "CTest Summary Results"
+    echo "Tests: results"
     echo "------------------------------------------------------------"
     echo "Number of tests run    = $test_count"
     echo "Number of tests passed = $tests_passed"
@@ -447,27 +472,28 @@ if [ "$build_docs" ]; then
     # Requires the import of the gpstk python package, so you have to do this AFTER building the bindings
     # After importing gpstk, sphinx generates *.rst files for each attibute in the gpstk namespace, and
     # then converts those to html files.
-    command -v sphinx-build 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
-    if [[ $? -eq 0 ]] ; then
-        echo "$0: Documentation: Sphinx: Rebuilding RST documentation now..."
-        cd $python_root/sphinx
-        # running make html generates a lot of new RST files in $python_root/sphinx/*.rst
-        # and a bunch of html files under $python_root/sphinx/_build/html/*.html
-        make html
-        tar -czvf $gpstk_root/gpstk_doc_python.tgz -C $python_root/sphinx/_build/html/ .
-        # doc_install_prefix=/usr/share/gpstk
-        # mkdir -p $doc_install_prefix/python/html
-        # tar -xzvf gpstk_doc_python.tgz -C $doc_install_prefix/python/html
+    if [ "$build_python" ]; then
+        command -v sphinx-build 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+        if [[ $? -eq 0 ]] ; then
+            echo "$0: Documentation: Sphinx: Rebuilding RST documentation now..."
+            cd $python_root/sphinx
+            # running make html generates a lot of new RST files in $python_root/sphinx/*.rst
+            # and a bunch of html files under $python_root/sphinx/_build/html/*.html
+            make html
+            tar -czvf $gpstk_root/gpstk_doc_python.tgz -C $python_root/sphinx/_build/html/ .
+            # doc_install_prefix=/usr/share/gpstk
+            # mkdir -p $doc_install_prefix/python/html
+            # tar -xzvf gpstk_doc_python.tgz -C $doc_install_prefix/python/html
 
 
-        # doc_install=/usr/share/gpstk/doc
-        # mkdir -p $doc_install/python
-        # tar -xzvf gpstk_doc_python.tgz -C $doc_install/python/
+            # doc_install=/usr/share/gpstk/doc
+            # mkdir -p $doc_install/python
+            # tar -xzvf gpstk_doc_python.tgz -C $doc_install/python/
 
-    else
-        echo "$0: Documentation: Cannot build Sphinx Documentation."	
-	fi
-	
+        else
+            echo "$0: Documentation: Cannot build Sphinx Documentation."	
+        fi
+    fi	
 
     echo ""
     echo ""
@@ -492,26 +518,28 @@ fi
 # default: tar-ball, zip
 # optional: debian, set package_debian=1 to build it.
 
-if [ $build_sdist ]; then
+if [ "$build_python" ]; then
+    if [ $build_sdist ]; then
 
-    echo ""
-    echo ""
-    echo "$0: Distribution: Generating distribution packages..."
-    echo ""
-    echo ""
-    cd $python_root/install_package
-    ${python_exe} setup.py sdist --formats=zip,gztar
+        echo ""
+        echo ""
+        echo "$0: Distribution: Generating distribution packages..."
+        echo ""
+        echo ""
+        cd $python_root/install_package
+        ${python_exe} setup.py sdist --formats=zip,gztar
 
 	package_debian=0
-    if [ $package_debian = 1 ]; then
-        # py2dsc will convert a distutils-built source tarball into a Debian source package.
-        # py2dsc is not typically installed, so we need to add a check before trying to run it.
-        command -v py2dsc 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
-        if [[ $? -eq 0 ]] ; then
-            cd $python_root/install_package/dist
-            py2dsc gpstk-2.5.tar.gz
-            cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
-            dpkg-buildpackage -rfakeroot -uc -us
+        if [ $package_debian = 1 ]; then
+            # py2dsc will convert a distutils-built source tarball into a Debian source package.
+            # py2dsc is not typically installed, so we need to add a check before trying to run it.
+            command -v py2dsc 1>/dev/null 2>/dev/null # exit status 0 indicated program exists
+            if [[ $? -eq 0 ]] ; then
+                cd $python_root/install_package/dist
+                py2dsc gpstk-2.5.tar.gz
+                cd $python_root/install_package/dist/deb_dist/gpstk-2.5/
+                dpkg-buildpackage -rfakeroot -uc -us
+            fi
         fi
     fi
 fi
@@ -597,54 +625,57 @@ fi
 # Test Python Module search path, sys.path
 #----------------------------------------
 
-# get the contents of sys.path, the python module search path
-sys_path_raw=`$python_exe -c 'import sys;print(sys.path)'`
+if [ "$build_python" ]; then
 
-# filter the square brackets, commas, and quotes and put one path on each line
-sys_path_list=`echo $sys_path_raw | sed 's/\(\[\|\]\)//g' | sed "s/'//g" | sed -e 's/,/ /g'`
+    # get the contents of sys.path, the python module search path
+    sys_path_raw=`$python_exe -c 'import sys;print(sys.path)'`
 
-# test the sys_path_list to see if it contains the path where this script installed GPSTk python module
-sys_path_test=`echo "$sys_path_list" | grep -o "$python_install"`
+    # filter the square brackets, commas, and quotes and put one path on each line
+    sys_path_list=`echo $sys_path_raw | sed 's/\(\[\|\]\)//g' | sed "s/'//g" | sed -e 's/,/ /g'`
 
-# if the path is in sys.path, then sys_path_test will NOT be empty
-if [ -z "$sys_path_test" ]; then
+    # test the sys_path_list to see if it contains the path where this script installed GPSTk python module
+    sys_path_test=`echo "$sys_path_list" | grep -o "$python_install"`
 
-    echo ""
-    echo "$0: Paths: |------------------------------------------ "
-    echo "$0: Paths: | [FAIL]: Can $python_install be found by sys.path?"
-    echo "$0: Paths: |------------------------------------------ "
-    echo "$0: Paths: | "
-    echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
-    echo "$0: Paths: | GPSTk python package install path is not known to sys.path"
-    echo "$0: Paths: | Any attempt to 'import gpstk' will fail"
-    echo "$0: Paths: | "
-    echo "$0: Paths: | python_install_path = $python_install" 
-    echo "$0: Paths: | sys_path_list:" 
-    for sys_path_entry in $sys_path_list; do
-    echo "$0: Paths: |      sys_path_entry = $sys_path_entry" 
-    done;
-    echo "$0: Paths: | "
-    echo "$0: Paths: | Recommendation: update your environment as follows:"
-    echo "$0: Paths: | "
-    echo "$0: Paths: |     $ export PYTHONPATH=$install_prefix/lib/python2.7/site-packages:\$PYTHONPATH "
-    echo "$0: Paths: | "
-    echo "$0: Paths: |------------------------------------------ "
-    echo ""
+    # if the path is in sys.path, then sys_path_test will NOT be empty
+    if [ -z "$sys_path_test" ]; then
 
-else
-    echo ""
-    echo "$0: Paths: |------------------------------------------ "
-    echo "$0: Paths: | [PASS]: Can $python_install be found by sys.path?"
-    echo "$0: Paths: |------------------------------------------ "
-    echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
-    echo "$0: Paths: | GPSTk python package install path is known to sys.path"
-    echo "$0: Paths: | GPSTk python package 'import gpstk' should work just fine."
-    echo "$0: Paths: | No further action needed."
-    echo "$0: Paths: |------------------------------------------ "
-    echo ""
+        echo ""
+        echo "$0: Paths: |------------------------------------------ "
+        echo "$0: Paths: | [FAIL]: Can $python_install be found by sys.path?"
+        echo "$0: Paths: |------------------------------------------ "
+        echo "$0: Paths: | "
+        echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
+        echo "$0: Paths: | GPSTk python package install path is not known to sys.path"
+        echo "$0: Paths: | Any attempt to 'import gpstk' will fail"
+        echo "$0: Paths: | "
+        echo "$0: Paths: | python_install_path = $python_install" 
+        echo "$0: Paths: | sys_path_list:" 
+        for sys_path_entry in $sys_path_list; do
+            echo "$0: Paths: |      sys_path_entry = $sys_path_entry" 
+        done;
+        echo "$0: Paths: | "
+        echo "$0: Paths: | Recommendation: update your environment as follows:"
+        echo "$0: Paths: | "
+        echo "$0: Paths: |     $ export PYTHONPATH=$install_prefix/lib/python2.7/site-packages:\$PYTHONPATH "
+        echo "$0: Paths: | "
+        echo "$0: Paths: |------------------------------------------ "
+        echo ""
+
+    else
+        echo ""
+        echo "$0: Paths: |------------------------------------------ "
+        echo "$0: Paths: | [PASS]: Can $python_install be found by sys.path?"
+        echo "$0: Paths: |------------------------------------------ "
+        echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
+        echo "$0: Paths: | GPSTk python package install path is known to sys.path"
+        echo "$0: Paths: | GPSTk python package 'import gpstk' should work just fine."
+        echo "$0: Paths: | No further action needed."
+        echo "$0: Paths: |------------------------------------------ "
+        echo ""
+
+    fi
 
 fi
-
 #----------------------------------------
 # The End
 #----------------------------------------
