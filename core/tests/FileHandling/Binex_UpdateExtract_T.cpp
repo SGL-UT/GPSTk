@@ -175,17 +175,24 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
             expectedOffset = offset + sizeof(T);
             record.updateMessageData(offset, value, sizeof(T) );
             data.push_back(value);
-            testFramework.assert(offset == expectedOffset);
-            testFramework.next();
-            testFramework.assert(record.getMessageLength() == offset);
+
+            if (  (offset != expectedOffset)
+               || (offset != record.getMessageLength()) )
+            {
+               testFramework.fail("incorrect offset");
+            }
+            else
+            {
+               testFramework.pass();
+            }
          }
          catch (Exception& e)
          {
-            testFramework.fail();
-            testFramework.print();
+            testFramework.fail("exception updating record");
          }
-         testFramework.next();
       }
+      testFramework.print();
+      testFramework.next();
 
       offset = 0;
 
@@ -195,15 +202,22 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
          {
             T  value;
             record.extractMessageData(offset, value, sizeof(T) );
-            testFramework.assert(value == data[i]);
+            if (value != data[i])
+            {
+               testFramework.fail("value mismatch");
+            }
+            else
+            {
+               testFramework.pass();
+            }
          }
          catch (Exception& e)
          {
-            testFramework.fail();
-            testFramework.print();
+            testFramework.fail("exception extracting from record");
          }
-         testFramework.next();
       }
+      testFramework.print();
+      testFramework.next();
 
       recStep += recSize;
    }
@@ -236,17 +250,24 @@ int BinexUpdateExtract_T :: doUbnxiTests()
             expectedOffset = offset + value.getSize();
             record.updateMessageData(offset, value);
             data.push_back(value);
-            testFramework.assert(offset == expectedOffset);
-            testFramework.next();
-            testFramework.assert(record.getMessageLength() == offset);
+
+            if (  (offset != expectedOffset)
+               || (offset != record.getMessageLength()) )
+            {
+               testFramework.fail("incorrect offset");
+            }
+            else
+            {
+               testFramework.pass();
+            }
          }
          catch (Exception& e)
          {
-            testFramework.fail();
-            testFramework.print();
+            testFramework.fail("exception updating record");
          }
-         testFramework.next();
       }
+      testFramework.print();
+      testFramework.next();
 
       offset = 0;
 
@@ -256,15 +277,22 @@ int BinexUpdateExtract_T :: doUbnxiTests()
          {
             BinexData::UBNXI  value;
             record.extractMessageData(offset, value);
-            testFramework.assert(value == data[i]);
+            if (value != data[i])
+            {
+               testFramework.fail("value mismatch");
+            }
+            else
+            {
+               testFramework.pass();
+            }
          }
          catch (Exception& e)
          {
-            testFramework.fail();
-            testFramework.print();
+            testFramework.fail("exception extracting from record");
          }
-         testFramework.next();
       }
+      testFramework.print();
+      testFramework.next();
 
       recStep += recSize;
    }
@@ -297,17 +325,24 @@ int BinexUpdateExtract_T :: doMgfziTests()
             expectedOffset = offset + value.getSize();
             record.updateMessageData(offset, value);
             data.push_back(value);
-            testFramework.assert(offset == expectedOffset);
-            testFramework.next();
-            testFramework.assert(record.getMessageLength() == offset);
+
+            if (  (offset != expectedOffset)
+               || (offset != record.getMessageLength()) )
+            {
+               testFramework.fail("incorrect offset");
+            }
+            else
+            {
+               testFramework.pass();
+            }
          }
          catch (Exception& e)
          {
-            testFramework.fail();
-            testFramework.print();
+            testFramework.fail("exception updating record");
          }
-         testFramework.next();
       }
+      testFramework.print();
+      testFramework.next();
 
       offset = 0;
 
@@ -317,15 +352,22 @@ int BinexUpdateExtract_T :: doMgfziTests()
          {
             BinexData::MGFZI  value;
             record.extractMessageData(offset, value);
-            testFramework.assert(value == data[i]);
+            if (value != data[i])
+            {
+               testFramework.fail("value mismatch");
+            }
+            else
+            {
+               testFramework.pass();
+            }
          }
          catch (Exception& e)
          {
-            testFramework.fail();
-            testFramework.print();
+            testFramework.fail("exception extracting from record");
          }
-         testFramework.next();
       }
+      testFramework.print();
+      testFramework.next();
 
       recStep += recSize;
    }
