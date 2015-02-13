@@ -34,6 +34,7 @@ option( DEBUG_SWITCH "HELP: DEBUG_SWITCH: Default = OFF, print some CMake variab
 option( DEBUG_VERBOSE "HELP: DEBUG_VERBOSE: Default = OFF, print all CMake variable values." OFF )
 option( BUILD_EXT "HELP: BUILD_EXT: SWITCH, Default = OFF, Build the ext library, in addition to the core library." OFF )
 option( TEST_SWITCH "HELP: TEST_SWITCH: SWITCH, Default = OFF, Turn on test mode." OFF )
+option( BUILD_PYTHON "HELP: BUILD_PYTHON: SWITCH, Default = OFF, Turn on processing of python extension package." OFF )
 
 #----------------------------------------
 # Debug Messages
@@ -58,7 +59,9 @@ if( DEBUG_SWITCH )
     message( STATUS "DEBUG: PROJECT_SOURCE_DIR       = ${PROJECT_SOURCE_DIR}" )        # e.g., $HOME/git/gpstk
     message( STATUS "DEBUG: CMAKE_INSTALL_DIR        = ${CMAKE_INSTALL_DIR}" )         # e.g., /usr
     message( STATUS "DEBUG: CMAKE_INSTALL_PREFIX     = ${CMAKE_INSTALL_PREFIX}" )      # e.g., $HOME/.local/gpstk
-    message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
+    if( BUILD_PYTHON )
+        message( STATUS "DEBUG: PYTHON_INSTALL_PREFIX    = ${PYTHON_INSTALL_PREFIX}" )     # e.g., $HOME/.local
+    endif()
 endif()
 
 #----------------------------------------
@@ -299,10 +302,12 @@ add_subdirectory( core )
 
 if( BUILD_EXT )
    add_subdirectory( ext )
-   add_subdirectory( swig )
    add_subdirectory( examples )
 endif()
 	
+if( BUILD_PYTHON )
+   add_subdirectory( swig )
+endif()
 
 
 #----------------------------------------
