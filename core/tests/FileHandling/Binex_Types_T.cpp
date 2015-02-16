@@ -178,19 +178,22 @@ bool BinexTypes_T :: readNums(const string& filename,
 
 int BinexTypes_T :: doUbnxiInitializationTests()
 {
-   TestUtil  testFramework( "BinexData::UBNXI", "Initialization", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData::UBNXI", "Initialization", __FILE__, __LINE__ );
 
       // BinexData::UBNXI_Initialization_1 - Uninitialized
    try
    {
       BinexData::UBNXI  u;
-      report(testFramework, 0, 1, u);
+      report(tester, 0, 1, u);
    }
    catch (Exception& e)
    {
-      testFramework.fail();
+      ostringstream  oss;
+      oss << e;
+      tester.fail(oss.str());
+      tester.print();
    }
-   testFramework.next();
+   tester.next();
 
 
       // BinexData::UBNXI_Initialization_2..n - Initialization
@@ -201,27 +204,29 @@ int BinexTypes_T :: doUbnxiInitializationTests()
       {
             // validate value and size of each number
          BinexData::UBNXI  u(numIter->value);
-         report(testFramework,
+         report(tester,
                 numIter->value, numIter->size,  // expected
                 u);                             // actual
       }
       catch (Exception& e)
       {
             // was this an expected exception?
-         testFramework.assert(numIter->size <= 0);
+         ostringstream  oss;
+         oss << e;
+         tester.assert( (numIter->size <= 0) , oss.str() );
       }
 
-      testFramework.next();
+      tester.next();
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 //---------------------------------------------------------------------------
 int BinexTypes_T :: doUbnxiEncodeDecodeTests()
 {
-   TestUtil  testFramework( "BinexData::UBNXI", "Encode/Decode", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData::UBNXI", "Encode/Decode", __FILE__, __LINE__ );
 
    NumListType::const_iterator  numIter = ubnxiNumList.begin();
    for ( ; numIter != ubnxiNumList.end(); ++numIter)
@@ -231,7 +236,7 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
          try
          {
             string  buffer;
-            size_t       offset = 0;
+            size_t  offset = 0;
 
             BinexData::UBNXI  u1(numIter->value);
             u1.encode(buffer, offset, (bool)isLittleEndian);
@@ -239,7 +244,7 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
             BinexData::UBNXI  u2;
             u2.decode(buffer, offset, (bool)isLittleEndian);
 
-            report(testFramework,
+            report(tester,
                    numIter->value, numIter->size,  // expected
                    u2,                             // actual
                    (bool)isLittleEndian);
@@ -247,34 +252,39 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
          catch (Exception& e)
          {
                // was this an expected exception?
-            testFramework.assert(numIter->size <= 0);            
+            ostringstream  oss;
+            oss << e;
+            tester.assert( (numIter->size <= 0), oss.str() );            
          }
 
-         testFramework.next();
+         tester.next();
       }
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 //---------------------------------------------------------------------------
 int BinexTypes_T :: doMgfziInitializationTests()
 {
-   TestUtil  testFramework( "BinexData::MGFZI", "Initialization", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData::MGFZI", "Initialization", __FILE__, __LINE__ );
 
       // BinexData::MGFZI_Initialization_1 - Uninitialized
    try
    {
       BinexData::MGFZI  m;
-      report(testFramework, 0, 1, m);
+      report(tester, 0, 1, m);
    }
    catch (Exception& e)
    {
-      testFramework.fail();
-   }
-   testFramework.next();
+      ostringstream  oss;
+      oss << e;
+      tester.fail(oss.str());
+      tester.print();
 
+   }
+   tester.next();
 
       // BinexData::MGFZI_Initialization_2..n - Initialization
    NumListType::const_iterator  numIter = mgfziNumList.begin();
@@ -284,27 +294,29 @@ int BinexTypes_T :: doMgfziInitializationTests()
       {
             // validate value and size of each number
          BinexData::MGFZI  m(numIter->value);
-         report(testFramework,
+         report(tester,
                 numIter->value, numIter->size,  // expected
                 m);                             // actual
       }
       catch (Exception& e)
       {
             // was this an expected exception?
-         testFramework.assert(numIter->size <= 0);
+         ostringstream  oss;
+         oss << e;
+         tester.assert( (numIter->size <= 0) , oss.str() );
       }
 
-      testFramework.next();
+      tester.next();
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 //---------------------------------------------------------------------------
 int BinexTypes_T :: doMgfziEncodeDecodeTests()
 {
-   TestUtil  testFramework( "BinexData::MGFZI", "Encode/Decode", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData::MGFZI", "Encode/Decode", __FILE__, __LINE__ );
 
    NumListType::const_iterator  numIter = mgfziNumList.begin();
    for ( ; numIter != mgfziNumList.end(); ++numIter)
@@ -322,7 +334,7 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
             BinexData::MGFZI  m2;
             m2.decode(buffer, offset, (bool)isLittleEndian);
 
-            report(testFramework,
+            report(tester,
                    numIter->value, numIter->size,  // expected
                    m2,                             // actual
                    (bool)isLittleEndian);
@@ -330,13 +342,16 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
          catch (Exception& e)
          {
                // was this an expected exception?
-            testFramework.assert(numIter->size <= 0);            
+            ostringstream  oss;
+            oss << e;
+            tester.assert( (numIter->size <= 0) , oss.str() );            
          }
-         testFramework.next();
+
+         tester.next();
       }
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
@@ -350,50 +365,22 @@ void BinexTypes_T::report(TestUtil&               test,
    unsigned long  actualValue = (unsigned long)actual;
    size_t         actualSize  = actual.getSize();
    
-   if (  (expectedValue != (unsigned long)actualValue)
+   if (  (expectedValue != actualValue)
       || (expectedSize  != actualSize) )
    {
-      test.print();  // FAIL
-
-      if (verboseLevel > 1)
-      {
-         cout << "        Expected Value = " << expectedValue << endl;
-         cout << "        Actual Value   = " << actualValue   << endl;
-         cout << "        Expected Size  = " << expectedSize  << endl;
-         cout << "        Actual Size    = " << actualSize    << endl;
-         cout << "        Endian         = "
-              << (isLittleEndian ? "little" : "BIG") << endl;
-      }
-      /*
-      string   bytes;
-      size_t        offset = 0;
-      actual.encode(bytes, offset); //, littleEndian);
-      cout << "        Raw Hex Bytes  =";
-      for (size_t i = 0; i < bytes.size(); i++)
-      {
-         cout << " " << hex << (unsigned short)bytes[i];
-      }
-      cout << dec << endl;
-      */
+      ostringstream  oss;
+      oss << "Expected Value = " << expectedValue;
+      oss << ", Actual Value = " << actualValue;
+      oss << ", Expected Size = " << expectedSize;
+      oss << ", Actual Size = " << actualSize;
+      oss << ", Endian = " << (isLittleEndian ? "little" : "BIG");
+      test.fail(oss.str());
    }
    else
    {
-      if (verboseLevel > 1)
-      {
-         test.print();  // PASS
-         /*
-         string   bytes;
-         size_t        offset = 0;
-         actual.encode(bytes, offset); //, littleEndian);
-         cout << "        Value = " << (unsigned long)actual << "  Raw Hex Bytes  =";
-         for (size_t i = 0; i < bytes.size(); i++)
-         {
-            cout << " " << hex << (unsigned short)bytes[i];
-         }
-         cout << dec << endl;
-         */
-      }
+      test.pass();
    }
+   test.print();
 }
 
 
@@ -407,28 +394,22 @@ void BinexTypes_T::report(TestUtil&               test,
    long long  actualValue = (long long)actual;
    size_t     actualSize  = actual.getSize();
    
-   if (  (expectedValue != (long long)actualValue)
+   if (  (expectedValue != actualValue)
       || (expectedSize  != actualSize) )
    {
-      test.print();  // FAIL
-
-      if (verboseLevel > 0)
-      {
-         cout << "        Expected Value = " << expectedValue << endl;
-         cout << "        Actual Value   = " << actualValue   << endl;
-         cout << "        Expected Size  = " << expectedSize  << endl;
-         cout << "        Actual Size    = " << actualSize    << endl;
-         cout << "        Endian         = "
-              << (isLittleEndian ? "little" : "BIG") << endl;
-      }
+      ostringstream  oss;
+      oss << "Expected Value = " << expectedValue;
+      oss << ", Actual Value = " << actualValue;
+      oss << ", Expected Size = " << expectedSize;
+      oss << ", Actual Size = " << actualSize;
+      oss << ", Endian = " << (isLittleEndian ? "little" : "BIG");
+      test.fail(oss.str());      
    }
    else
    {
-      if (verboseLevel > 0)
-      {
-         test.print();  // PASS
-      }
+      test.pass();
    }
+   test.print();
 }
 
 

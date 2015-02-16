@@ -66,32 +66,6 @@ public:
 
    unsigned  verboseLevel;  // amount to display during tests, 0 = least
 
-private:
-
-      /**
-       * 
-       */
-   void report(string description,
-               bool   pass);
-
-      /**
-       * 
-       */
-   void report(string                  description,
-               const unsigned long     expectedValue,
-               const size_t            expectedSize,
-               const BinexData::UBNXI& actual,
-               const bool              littleEndian = false);
-
-      /**
-       * 
-       */
-   void report(string                  description,
-               const long long         expectedValue,
-               const size_t            expectedSize,
-               const BinexData::MGFZI& actual,
-               const bool              littleEndian = false);
-   
 }; // class BinexAttrs_T
 
 
@@ -107,88 +81,88 @@ void BinexAttrs_T :: init( void )
 
 int BinexAttrs_T :: doIsDataTests()
 {
-   TestUtil  testFramework( "BinexData", "isData", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "isData", __FILE__, __LINE__ );
 
    BinexData  rec;
-   testFramework.assert(rec.isData() == true);
+   tester.assert(rec.isData() == true);
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexAttrs_T :: doRecordFlagsTests()
 {
-   TestUtil  testFramework( "BinexData", "recordflags", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "recordflags", __FILE__, __LINE__ );
 
    BinexData  rec;
-   testFramework.assert(rec.getRecordFlags() == BinexData::DEFAULT_RECORD_FLAGS);
+   tester.assert(rec.getRecordFlags() == BinexData::DEFAULT_RECORD_FLAGS);
+   tester.next();
 
    rec.setRecordFlags(0);
-   testFramework.next();
-   testFramework.assert(rec.getRecordFlags() == 0);
+   tester.assert(rec.getRecordFlags() == 0);
+   tester.next();
 
    rec.setRecordFlags(0xFF);
-   testFramework.next();
-   testFramework.assert(rec.getRecordFlags() == BinexData::VALID_RECORD_FLAGS);
+   tester.assert(rec.getRecordFlags() == BinexData::VALID_RECORD_FLAGS);
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexAttrs_T :: doRecordIdTests()
 {
-   TestUtil  testFramework( "BinexData", "recordId", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "recordId", __FILE__, __LINE__ );
 
    BinexData  recA;
-   testFramework.assert(recA.getRecordID() == BinexData::INVALID_RECORD_ID);
+   tester.assert(recA.getRecordID() == BinexData::INVALID_RECORD_ID);
+   tester.next();
 
    BinexData  recB(123);
-   testFramework.next();
-   testFramework.assert(recB.getRecordID() == 123);
+   tester.assert(recB.getRecordID() == 123);
+   tester.next();
 
    recB.setRecordID(456);
-   testFramework.next();
-   testFramework.assert(recB.getRecordID() == 456);
+   tester.assert(recB.getRecordID() == 456);
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexAttrs_T :: doMessageCapacityTests()
 {
-   TestUtil  testFramework( "BinexData", "messageCapacity", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "messageCapacity", __FILE__, __LINE__ );
 
    BinexData  rec;
-   testFramework.assert(rec.getMessageCapacity() == 0);
+   tester.assert(rec.getMessageCapacity() == 0);
+   tester.next();
 
    BinexData::UBNXI  u;
    size_t  offset = 0;
    rec.updateMessageData(offset, u);
-   testFramework.next();
-   testFramework.assert(rec.getMessageCapacity() > 0);
+   tester.assert(rec.getMessageCapacity() > 0);
+   tester.next();
 
    rec.ensureMessageCapacity(1024);
-   testFramework.next();
-   testFramework.assert(rec.getMessageCapacity() == 1024);
+   tester.assert(rec.getMessageCapacity() == 1024);
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexAttrs_T :: doMessageLengthTests()
 {
-   TestUtil  testFramework( "BinexData", "messageLength", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "messageLength", __FILE__, __LINE__ );
 
    BinexData  rec;
-   testFramework.assert(rec.getMessageLength() == 0);
+   tester.assert(rec.getMessageLength() == 0);
+   tester.next();
 
    BinexData::UBNXI  u;
    size_t  offset = 0;
    rec.updateMessageData(offset, u);
-   testFramework.next();
-   testFramework.assert(rec.getMessageLength() > 0);
+   tester.assert(rec.getMessageLength() > 0);
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 

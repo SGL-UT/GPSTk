@@ -153,7 +153,7 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
    std::string  testName("Update/Extract (");
    testName += typeInfo.name();
    testName += ")";
-   TestUtil  testFramework( "BinexData", testName, __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", testName, __FILE__, __LINE__ );
 
       // test various record sizes: 1, 2, 5, 13, 34, 89, 233
    int  recStep = 0;
@@ -179,20 +179,22 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
             if (  (offset != expectedOffset)
                || (offset != record.getMessageLength()) )
             {
-               testFramework.fail("incorrect offset");
+               tester.fail("incorrect offset");
             }
             else
             {
-               testFramework.pass();
+               tester.pass();
             }
          }
          catch (Exception& e)
          {
-            testFramework.fail("exception updating record");
+            ostringstream  oss;
+            oss << "exception updating record: " << e;
+            tester.fail(oss.str());
          }
       }
-      testFramework.print();
-      testFramework.next();
+      tester.print();
+      tester.next();
 
       offset = 0;
 
@@ -204,31 +206,33 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
             record.extractMessageData(offset, value, sizeof(T) );
             if (value != data[i])
             {
-               testFramework.fail("value mismatch");
+               tester.fail("value mismatch");
             }
             else
             {
-               testFramework.pass();
+               tester.pass();
             }
          }
          catch (Exception& e)
          {
-            testFramework.fail("exception extracting from record");
+            ostringstream  oss;
+            oss << "exception extracting from record: " << e;
+            tester.fail(oss.str());
          }
       }
-      testFramework.print();
-      testFramework.next();
+      tester.print();
+      tester.next();
 
       recStep += recSize;
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexUpdateExtract_T :: doUbnxiTests()
 {
-   TestUtil  testFramework( "BinexData", "Update/Extract (UBNXI)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (UBNXI)", __FILE__, __LINE__ );
 
       // test various record sizes: 1, 2, 5, 13, 34, 89, 233
    int  recStep = 0;
@@ -254,20 +258,22 @@ int BinexUpdateExtract_T :: doUbnxiTests()
             if (  (offset != expectedOffset)
                || (offset != record.getMessageLength()) )
             {
-               testFramework.fail("incorrect offset");
+               tester.fail("incorrect offset");
             }
             else
             {
-               testFramework.pass();
+               tester.pass();
             }
          }
          catch (Exception& e)
          {
-            testFramework.fail("exception updating record");
+            ostringstream  oss;
+            oss << "exception updating record: " << e;
+            tester.fail(oss.str());
          }
       }
-      testFramework.print();
-      testFramework.next();
+      tester.print();
+      tester.next();
 
       offset = 0;
 
@@ -279,31 +285,33 @@ int BinexUpdateExtract_T :: doUbnxiTests()
             record.extractMessageData(offset, value);
             if (value != data[i])
             {
-               testFramework.fail("value mismatch");
+               tester.fail("value mismatch");
             }
             else
             {
-               testFramework.pass();
+               tester.pass();
             }
          }
          catch (Exception& e)
          {
-            testFramework.fail("exception extracting from record");
+            ostringstream  oss;
+            oss << "exception extracting from record: " << e;
+            tester.fail(oss.str());
          }
       }
-      testFramework.print();
-      testFramework.next();
+      tester.print();
+      tester.next();
 
       recStep += recSize;
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexUpdateExtract_T :: doMgfziTests()
 {
-   TestUtil  testFramework( "BinexData", "Update/Extract (MGFZI)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (MGFZI)", __FILE__, __LINE__ );
 
       // test various record sizes: 1, 2, 5, 13, 34, 89, 233
    int  recStep = 0;
@@ -329,20 +337,22 @@ int BinexUpdateExtract_T :: doMgfziTests()
             if (  (offset != expectedOffset)
                || (offset != record.getMessageLength()) )
             {
-               testFramework.fail("incorrect offset");
+               tester.fail("incorrect offset");
             }
             else
             {
-               testFramework.pass();
+               tester.pass();
             }
          }
          catch (Exception& e)
          {
-            testFramework.fail("exception updating record");
+            ostringstream  oss;
+            oss << "exception updating record: " << e;
+            tester.fail(oss.str());
          }
       }
-      testFramework.print();
-      testFramework.next();
+      tester.print();
+      tester.next();
 
       offset = 0;
 
@@ -354,31 +364,33 @@ int BinexUpdateExtract_T :: doMgfziTests()
             record.extractMessageData(offset, value);
             if (value != data[i])
             {
-               testFramework.fail("value mismatch");
+               tester.fail("value mismatch");
             }
             else
             {
-               testFramework.pass();
+               tester.pass();
             }
          }
          catch (Exception& e)
          {
-            testFramework.fail("exception extracting from record");
+            ostringstream  oss;
+            oss << "exception extracting from record: " << e;
+            tester.fail(oss.str());
          }
       }
-      testFramework.print();
-      testFramework.next();
+      tester.print();
+      tester.next();
 
       recStep += recSize;
    }
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexUpdateExtract_T :: doMixedTestA()
 {
-   TestUtil  testFramework( "BinexData", "Update/Extract (Mixed A)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (Mixed A)", __FILE__, __LINE__ );
 
    // A Data = s U U M c l l s c c M M U l s
 
@@ -440,86 +452,86 @@ int BinexUpdateExtract_T :: doMixedTestA()
 
    short  vs1;
    record.extractMessageData(offset, vs1, sizeof(short));
-   testFramework.assert(vs1 == s1);
-   testFramework.next();
+   tester.assert(vs1 == s1);
+   tester.next();
 
    BinexData::UBNXI  vu1;
    record.extractMessageData(offset, vu1);
-   testFramework.assert(vu1 == u1);
-   testFramework.next();
+   tester.assert(vu1 == u1);
+   tester.next();
 
    BinexData::UBNXI  vu2;
    record.extractMessageData(offset, vu2);
-   testFramework.assert(vu2 == u2);
-   testFramework.next();
+   tester.assert(vu2 == u2);
+   tester.next();
 
    BinexData::MGFZI  vm1;
    record.extractMessageData(offset, vm1);
-   testFramework.assert(vm1 == m1);
-   testFramework.next();
+   tester.assert(vm1 == m1);
+   tester.next();
 
    char  vc1;
    record.extractMessageData(offset, vc1, sizeof(char));
-   testFramework.assert(vc1 == c1);
-   testFramework.next();
+   tester.assert(vc1 == c1);
+   tester.next();
 
    long  vl1;
    record.extractMessageData(offset, vl1, sizeof(long));
-   testFramework.assert(vl1 == l1);
-   testFramework.next();
+   tester.assert(vl1 == l1);
+   tester.next();
 
    long  vl2;
    record.extractMessageData(offset, vl2, sizeof(long));
-   testFramework.assert(vl2 == l2);
-   testFramework.next();
+   tester.assert(vl2 == l2);
+   tester.next();
 
    short  vs2;
    record.extractMessageData(offset, vs2, sizeof(short));
-   testFramework.assert(vs2 == s2);
-   testFramework.next();
+   tester.assert(vs2 == s2);
+   tester.next();
 
    char  vc2;
    record.extractMessageData(offset, vc2, sizeof(char));
-   testFramework.assert(vc2 == c2);
-   testFramework.next();
+   tester.assert(vc2 == c2);
+   tester.next();
 
    char  vc3;
    record.extractMessageData(offset, vc3, sizeof(char));
-   testFramework.assert(vc3 == c3);
-   testFramework.next();
+   tester.assert(vc3 == c3);
+   tester.next();
 
    BinexData::MGFZI  vm2;
    record.extractMessageData(offset, vm2);
-   testFramework.assert(vm2 == m2);
-   testFramework.next();
+   tester.assert(vm2 == m2);
+   tester.next();
 
    BinexData::MGFZI  vm3;
    record.extractMessageData(offset, vm3);
-   testFramework.assert(vm3 == m3);
-   testFramework.next();
+   tester.assert(vm3 == m3);
+   tester.next();
 
    BinexData::UBNXI  vu3;
    record.extractMessageData(offset, vu3);
-   testFramework.assert(vu3 == u3);
-   testFramework.next();
+   tester.assert(vu3 == u3);
+   tester.next();
 
    long  vl3;
    record.extractMessageData(offset, vl3, sizeof(long));
-   testFramework.assert(vl3 == l3);
-   testFramework.next();
+   tester.assert(vl3 == l3);
+   tester.next();
 
    short  vs3;
    record.extractMessageData(offset, vs3, sizeof(short));
-   testFramework.assert(vs3 == s3);
-   testFramework.next();
+   tester.assert(vs3 == s3);
+   tester.next();
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexUpdateExtract_T :: doMixedTestB()
 {
-   TestUtil  testFramework( "BinexData", "Update/Extract (Mixed B)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (Mixed B)", __FILE__, __LINE__ );
 
    // B Data = M l s s U c U l M s c l M U c
 
@@ -581,86 +593,86 @@ int BinexUpdateExtract_T :: doMixedTestB()
 
    BinexData::MGFZI  vm1;
    record.extractMessageData(offset, vm1);
-   testFramework.assert(vm1 == m1);
-   testFramework.next();
+   tester.assert(vm1 == m1);
+   tester.next();
 
    long  vl1;
    record.extractMessageData(offset, vl1, sizeof(long));
-   testFramework.assert(vl1 == l1);
-   testFramework.next();
+   tester.assert(vl1 == l1);
+   tester.next();
 
    short  vs1;
    record.extractMessageData(offset, vs1, sizeof(short));
-   testFramework.assert(vs1 == s1);
-   testFramework.next();
+   tester.assert(vs1 == s1);
+   tester.next();
 
    short  vs2;
    record.extractMessageData(offset, vs2, sizeof(short));
-   testFramework.assert(vs2 == s2);
-   testFramework.next();
+   tester.assert(vs2 == s2);
+   tester.next();
 
    BinexData::UBNXI  vu1;
    record.extractMessageData(offset, vu1);
-   testFramework.assert(vu1 == u1);
-   testFramework.next();
+   tester.assert(vu1 == u1);
+   tester.next();
 
    char  vc1;
    record.extractMessageData(offset, vc1, sizeof(char));
-   testFramework.assert(vc1 == c1);
-   testFramework.next();
+   tester.assert(vc1 == c1);
+   tester.next();
 
    BinexData::UBNXI  vu2;
    record.extractMessageData(offset, vu2);
-   testFramework.assert(vu2 == u2);
-   testFramework.next();
+   tester.assert(vu2 == u2);
+   tester.next();
 
    long  vl2;
    record.extractMessageData(offset, vl2, sizeof(long));
-   testFramework.assert(vl2 == l2);
-   testFramework.next();
+   tester.assert(vl2 == l2);
+   tester.next();
 
    BinexData::MGFZI  vm2;
    record.extractMessageData(offset, vm2);
-   testFramework.assert(vm2 == m2);
-   testFramework.next();
+   tester.assert(vm2 == m2);
+   tester.next();
 
    short  vs3;
    record.extractMessageData(offset, vs3, sizeof(short));
-   testFramework.assert(vs3 == s3);
-   testFramework.next();
+   tester.assert(vs3 == s3);
+   tester.next();
 
    char  vc2;
    record.extractMessageData(offset, vc2, sizeof(char));
-   testFramework.assert(vc2 == c2);
-   testFramework.next();
+   tester.assert(vc2 == c2);
+   tester.next();
 
    long  vl3;
    record.extractMessageData(offset, vl3, sizeof(long));
-   testFramework.assert(vl3 == l3);
-   testFramework.next();
+   tester.assert(vl3 == l3);
+   tester.next();
 
    BinexData::MGFZI  vm3;
    record.extractMessageData(offset, vm3);
-   testFramework.assert(vm3 == m3);
-   testFramework.next();
+   tester.assert(vm3 == m3);
+   tester.next();
 
    BinexData::UBNXI  vu3;
    record.extractMessageData(offset, vu3);
-   testFramework.assert(vu3 == u3);
-   testFramework.next();
+   tester.assert(vu3 == u3);
+   tester.next();
 
    char  vc3;
    record.extractMessageData(offset, vc3, sizeof(char));
-   testFramework.assert(vc3 == c3);
-   testFramework.next();
+   tester.assert(vc3 == c3);
+   tester.next();
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
 int BinexUpdateExtract_T :: doMixedTestC()
 {
-   TestUtil  testFramework( "BinexData", "Update/Extract (Mixed C)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Update/Extract (Mixed C)", __FILE__, __LINE__ );
 
    // C Data = c M U l s s s M c l U U l c M 
 
@@ -722,80 +734,80 @@ int BinexUpdateExtract_T :: doMixedTestC()
 
    char  vc1;
    record.extractMessageData(offset, vc1, sizeof(char));
-   testFramework.assert(vc1 == c1);
-   testFramework.next();
+   tester.assert(vc1 == c1);
+   tester.next();
 
    BinexData::MGFZI  vm1;
    record.extractMessageData(offset, vm1);
-   testFramework.assert(vm1 == m1);
-   testFramework.next();
+   tester.assert(vm1 == m1);
+   tester.next();
 
    BinexData::UBNXI  vu1;
    record.extractMessageData(offset, vu1);
-   testFramework.assert(vu1 == u1);
-   testFramework.next();
+   tester.assert(vu1 == u1);
+   tester.next();
 
    long  vl1;
    record.extractMessageData(offset, vl1, sizeof(long));
-   testFramework.assert(vl1 == l1);
-   testFramework.next();
+   tester.assert(vl1 == l1);
+   tester.next();
 
    short  vs1;
    record.extractMessageData(offset, vs1, sizeof(short));
-   testFramework.assert(vs1 == s1);
-   testFramework.next();
+   tester.assert(vs1 == s1);
+   tester.next();
 
    short  vs2;
    record.extractMessageData(offset, vs2, sizeof(short));
-   testFramework.assert(vs2 == s2);
-   testFramework.next();
+   tester.assert(vs2 == s2);
+   tester.next();
 
    short  vs3;
    record.extractMessageData(offset, vs3, sizeof(short));
-   testFramework.assert(vs3 == s3);
-   testFramework.next();
+   tester.assert(vs3 == s3);
+   tester.next();
 
    BinexData::MGFZI  vm2;
    record.extractMessageData(offset, vm2);
-   testFramework.assert(vm2 == m2);
-   testFramework.next();
+   tester.assert(vm2 == m2);
+   tester.next();
 
    char  vc2;
    record.extractMessageData(offset, vc2, sizeof(char));
-   testFramework.assert(vc2 == c2);
-   testFramework.next();
+   tester.assert(vc2 == c2);
+   tester.next();
 
    long  vl2;
    record.extractMessageData(offset, vl2, sizeof(long));
-   testFramework.assert(vl2 == l2);
-   testFramework.next();
+   tester.assert(vl2 == l2);
+   tester.next();
 
    BinexData::UBNXI  vu2;
    record.extractMessageData(offset, vu2);
-   testFramework.assert(vu2 == u2);
-   testFramework.next();
+   tester.assert(vu2 == u2);
+   tester.next();
 
    BinexData::UBNXI  vu3;
    record.extractMessageData(offset, vu3);
-   testFramework.assert(vu3 == u3);
-   testFramework.next();
+   tester.assert(vu3 == u3);
+   tester.next();
 
    long  vl3;
    record.extractMessageData(offset, vl3, sizeof(long));
-   testFramework.assert(vl3 == l3);
-   testFramework.next();
+   tester.assert(vl3 == l3);
+   tester.next();
 
    char  vc3;
    record.extractMessageData(offset, vc3, sizeof(char));
-   testFramework.assert(vc3 == c3);
-   testFramework.next();
+   tester.assert(vc3 == c3);
+   tester.next();
 
    BinexData::MGFZI  vm3;
    record.extractMessageData(offset, vm3);
-   testFramework.assert(vm3 == m3);
-   testFramework.next();
+   tester.assert(vm3 == m3);
+   tester.next();
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 

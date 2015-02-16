@@ -102,30 +102,6 @@ private:
       /**
        * 
        */
-   void report(string description,
-               bool   pass);
-
-      /**
-       * 
-       */
-   void report(string                  description,
-               const unsigned long     expectedValue,
-               const size_t            expectedSize,
-               const BinexData::UBNXI& actual,
-               const bool              littleEndian = false);
-
-      /**
-       * 
-       */
-   void report(string                  description,
-               const long long         expectedValue,
-               const size_t            expectedSize,
-               const BinexData::MGFZI& actual,
-               const bool              littleEndian = false);
-
-      /**
-       * 
-       */
    void dumpBuffer(const unsigned char* buffer, size_t size);
 
    TestDataList  numList;
@@ -297,31 +273,37 @@ bool BinexReadWrite_T :: createRecs()
 
 int BinexReadWrite_T :: doForwardTests()
 {
-   TestUtil  testFramework( "BinexData", "Read/Write (Fwd)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Read/Write (Fwd)", __FILE__, __LINE__ );
 
-   string  tempFilePath = testFramework.getTempPath();
+   string  tempFilePath = tester.getTempPath();
    string  tempFileName = tempFilePath + gpstk::getFileSep() +
                           "test_output_binex_readwrite.binex";
    BinexStream  outStream(tempFileName.c_str(),
                           std::ios::out | std::ios::binary);
 
-   testFramework.assert(outStream.good());
+   tester.assert(outStream.good(), "error creating ouput stream");
 
    outStream.exceptions(ios_base::failbit | ios_base::badbit);
    RecordList::iterator  recordIter = testRecords.begin();
    for ( ; recordIter != testRecords.end(); ++recordIter)
    {
-      testFramework.next();
+      tester.next();
       try
       {
          (*recordIter).putRecord(outStream);
-         testFramework.pass();
+         tester.pass();
+      }
+      catch (Exception& e)
+      {
+         ostringstream  oss;
+         oss << "exception writing record: " << e;
+         tester.fail(oss.str());
       }
       catch (...)
       {
-         testFramework.fail("Unknown exception writing record");
+         tester.fail("unknown exception writing record");
       }
-      testFramework.print();
+      tester.print();
    }
    outStream.close();
    
@@ -329,17 +311,17 @@ int BinexReadWrite_T :: doForwardTests()
                          std::ios::in | std::ios::binary);
    inStream.exceptions(ios_base::failbit);
    
-   testFramework.next();
-   testFramework.assert(inStream.good());
+   tester.next();
+   tester.assert(inStream.good(), "error creating input stream");
 
    recordIter = testRecords.begin();
    while (inStream.good() && (EOF != inStream.peek() ) )
    {
-      testFramework.next();
+      tester.next();
 
       if (recordIter == testRecords.end() )
       {
-         testFramework.fail("Stored records exhausted before file records");
+         tester.fail("stored records exhausted before file records");
          break;
       }
       BinexData record;
@@ -348,7 +330,7 @@ int BinexReadWrite_T :: doForwardTests()
          record.getRecord(inStream);
          if (record == *recordIter)
          {
-            testFramework.pass();
+            tester.pass();
          }
          else
          {
@@ -358,35 +340,35 @@ int BinexReadWrite_T :: doForwardTests()
             oss << "Expected record:" << endl;
             record.dump(oss);
 
-            testFramework.fail(oss.str());
+            tester.fail(oss.str());
          }
       }
-      catch (FFStreamError& e)
+      catch (Exception& e)
       {
          ostringstream  oss;
-         oss << "Stream exception reading record: " << e;
-         testFramework.fail(oss.str());
+         oss << "stream exception reading record: " << e;
+         tester.fail(oss.str());
       }
       catch (...)
       {
-         testFramework.fail("Unknown exception reading record");
+         tester.fail("unknown exception reading record");
       }
-      testFramework.print();
+      tester.print();
       recordIter++;      
    }
    inStream.close();
 
-   return testFramework.countFails();  
+   return tester.countFails();  
 }
 
 
 int BinexReadWrite_T :: doReverseTests()
 {
-   TestUtil  testFramework( "BinexData", "Read/Write (Rev)", __FILE__, __LINE__ );
+   TestUtil  tester( "BinexData", "Read/Write (Rev)", __FILE__, __LINE__ );
 
    // @todo
 
-   return testFramework.countFails();
+   return tester.countFails();
 }
 
 
