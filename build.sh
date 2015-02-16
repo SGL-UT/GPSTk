@@ -435,11 +435,18 @@ if [ "$test_switch" ]; then
     echo "------------------------------------------------------------"
     echo ""
 
+    #----------------------------------------
     # capture the test output
+    #----------------------------------------
+
     ctest_keyword=GpstkTest
     ctest_log_raw=$build_root/Testing/Temporary/LastTest.log
     ctest_log_save=$build_root/test.log
     cat $ctest_log_raw | grep "$ctest_keyword" > $ctest_log_save
+
+    #----------------------------------------
+    # summary results
+    #----------------------------------------
 
     test_count=`cat $ctest_log_save | wc -l`
     tests_passed=`cat $ctest_log_save | grep "failBit=0" | wc -l`
@@ -447,13 +454,50 @@ if [ "$test_switch" ]; then
 
     echo ""
     echo "------------------------------------------------------------"
-    echo "Tests: results"
+    echo "Tests: Summary Results"
     echo "------------------------------------------------------------"
     echo "Number of tests run    = $test_count"
     echo "Number of tests passed = $tests_passed"
     echo "Number of tests failed = $tests_failed"
     echo "------------------------------------------------------------"
     echo ""
+
+    #----------------------------------------
+    # Search test.log for keywords, summarize
+    #----------------------------------------
+
+    keyword_list=()
+    keyword_list+=("TimeSystem")
+    keyword_list+=("CommonTime")
+    keyword_list+=("CivilTime")
+    keyword_list+=("GPSWeek")
+    keyword_list+=("Ephemeris")
+    keyword_list+=("Rinex")
+    keyword_list+=("Binex")
+    keyword_list+=("position")
+    keyword_list+=("Xvt")
+    keyword_list+=("Math")
+    keyword_list+=("Matrix")
+    keyword_list+=("Vector")
+    keyword_list+=("Stats")
+    keyword_list+=("RACRotation")
+
+    myformat="name = %-14s, ran = %4d, passed = %4d, failed = %4d, %%passed = %5.1f \n"
+
+    echo "------------------------------------------------------------"
+    echo "Tests: Results by Category"
+    echo "------------------------------------------------------------"
+    for keyword in "${keyword_list[@]}"; do
+
+        tests_run=`cat $ctest_log_save | grep -i "$keyword" | wc -l`
+        tests_passed=`cat $ctest_log_save | grep -i "$keyword" | grep "failBit=0" | wc -l`
+        tests_failed=`cat $ctest_log_save | grep -i "$keyword" | grep "failBit=1" | wc -l`
+        percent_pass=$(awk -v r=$tests_run -v p=$tests_passed 'BEGIN { print (100*(p/r)) }')
+
+        printf "$myformat" "$keyword" "$tests_run" "$tests_passed" "$tests_failed" "$percent_pass"
+
+    done
+    echo "------------------------------------------------------------"
 
 fi
 
