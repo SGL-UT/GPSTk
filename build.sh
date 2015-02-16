@@ -1,7 +1,8 @@
 #!/bin/bash
 #----------------------------------------
 #
-# Purpose:
+# Purpose: GPSTk build and install script
+#
 #     Automate the use of CMake, SWIG, dOxygen, Sphinx, and distutils
 #     to build and install the GPSTK C++ Library, C++ Applications, 
 #     Python bindings, and documentation.
@@ -14,7 +15,7 @@
 #----------------------------------------
 # Qué hora es? Dónde estamos? Y dónde vamos?
 #----------------------------------------
-
+ 
 build_date=`date +"%Y%m%d"`
 build_time=`date +"%Y%m%d_%H%M%S"`
 build_host=`hostname`
@@ -584,7 +585,7 @@ if [ -z "$gpstk_install_path_test" ]; then
 
     echo ""
     echo "$0: Paths: |------------------------------------------ "
-    echo "$0: Paths: | [FAIL]: Can $gpstk_install/lib be found by ldd?"
+    echo "$0: Paths: | [FAIL]: Post-install config test: Can $gpstk_install/lib be found by ldd?"
     echo "$0: Paths: |------------------------------------------ "
     echo "$0: Paths: | "
     echo "$0: Paths: | Based on a query to ldconfig, it appears that your"
@@ -592,16 +593,19 @@ if [ -z "$gpstk_install_path_test" ]; then
     echo "$0: Paths: | Anything trying to link against libgpstk.so will fail"
     echo "$0: Paths: |  including the GPSTk python bindings."
     echo "$0: Paths: | "
-    echo "$0: Paths: | gpstk_install_path = $gpstk_install" 
-    echo "$0: Paths: | gpstk_lib_install_path = $gpstk_install/lib" 
-    echo "$0: Paths: | ldd_path_list:" 
+    echo "$0: Paths: | What should be found:"
+    echo "$0: Paths: |     gpstk_install_path = $gpstk_install" 
+    echo "$0: Paths: |     gpstk_lib_install_path = $gpstk_install/lib" 
+    echo "$0: Paths: | "
+    echo "$0: Paths: | Where they should be found:"
+    echo "$0: Paths: |     ldd_path_list:" 
     for ldd_path_entry in $ldd_path_list; do
-    echo "$0: Paths: |     ldd_path_entry = $ldd_path_entry" 
+    echo "$0: Paths: |         ldd_path_entry = $ldd_path_entry" 
     done;
     echo "$0: Paths: | "
-    echo "$0: Paths: | ld_lib_path_list:" 
+    echo "$0: Paths: |     ld_lib_path_list:" 
     for ld_lib_path_entry in $ld_lib_path_list; do
-    echo "$0: Paths: |     ld_lib_path_entry = $ld_lib_path_entry" 
+    echo "$0: Paths: |         ld_lib_path_entry = $ld_lib_path_entry" 
     done;
     echo "$0: Paths: | "
     echo "$0: Paths: | Recommendation: update your environment as follows:"
@@ -613,7 +617,7 @@ if [ -z "$gpstk_install_path_test" ]; then
 else
     echo ""
     echo "$0: Paths: |------------------------------------------ "
-    echo "$0: Paths: | [PASS]: Can $gpstk_install/lib be found by ldd?"
+    echo "$0: Paths: | [PASS]: Post-install config test: Can $gpstk_install/lib be found by ldd?"
     echo "$0: Paths: |------------------------------------------ "
     echo "$0: Paths: | GPSTk library install path appears to be in your PATH"
     echo "$0: Paths: | No further action needed."
@@ -641,17 +645,20 @@ if [ "$build_python" ]; then
 
         echo ""
         echo "$0: Paths: |------------------------------------------ "
-        echo "$0: Paths: | [FAIL]: Can $python_install be found by sys.path?"
+        echo "$0: Paths: | [FAIL]: Post-install config test: Can $python_install be found by sys.path?"
         echo "$0: Paths: |------------------------------------------ "
         echo "$0: Paths: | "
         echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
         echo "$0: Paths: | GPSTk python package install path is not known to sys.path"
         echo "$0: Paths: | Any attempt to 'import gpstk' will fail"
         echo "$0: Paths: | "
-        echo "$0: Paths: | python_install_path = $python_install" 
-        echo "$0: Paths: | sys_path_list:" 
+        echo "$0: Paths: | What should be found:"
+        echo "$0: Paths: |     python_install_path = $python_install" 
+        echo "$0: Paths: | "
+        echo "$0: Paths: | Where it should be found:"
+        echo "$0: Paths: |     sys_path_list:" 
         for sys_path_entry in $sys_path_list; do
-            echo "$0: Paths: |      sys_path_entry = $sys_path_entry" 
+            echo "$0: Paths: |          sys_path_entry = $sys_path_entry" 
         done;
         echo "$0: Paths: | "
         echo "$0: Paths: | Recommendation: update your environment as follows:"
@@ -664,7 +671,7 @@ if [ "$build_python" ]; then
     else
         echo ""
         echo "$0: Paths: |------------------------------------------ "
-        echo "$0: Paths: | [PASS]: Can $python_install be found by sys.path?"
+        echo "$0: Paths: | [PASS]: Post-install config test: Can $python_install be found by sys.path?"
         echo "$0: Paths: |------------------------------------------ "
         echo "$0: Paths: | Based on a query to $python_exe and sys.path, your "
         echo "$0: Paths: | GPSTk python package install path is known to sys.path"
