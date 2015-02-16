@@ -78,9 +78,8 @@ public:
       // so that "/home/user/test.txt" becomes "test.txt"
       std::string file_sep = gpstk::getFileSep();
       testFileName = testFileName.substr( testFileName.find_last_of( file_sep ) + 1 );
-
-
   }
+
 
   //----------------------------------------
   // Method:  getDataPath
@@ -91,8 +90,9 @@ public:
   //----------------------------------------
   inline std::string getDataPath( void )
   {
-    return( gpstk::getPathData() );
+      return( gpstk::getPathData() );
   }
+
 
   //----------------------------------------
   // Method:  getTempPath
@@ -103,8 +103,9 @@ public:
   //----------------------------------------
   inline std::string getTempPath( void )
   {
-    return( gpstk::getPathTestTemp() );
+      return( gpstk::getPathTestTemp() );
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::init()
@@ -116,13 +117,14 @@ public:
   //----------------------------------------
   void init( void )
   {
-    failBit   = 0;
-    failCount = 0;
-    testCount = 0;
-    subtestID = 1;
-    tolerance = 0;
-    failMessage = "none";
+      failBit   = 0;
+      failCount = 0;
+      testCount = 0;
+      subtestID = 1;
+      tolerance = 0;
+      failMessage = "none";
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::next()
@@ -133,10 +135,11 @@ public:
   //----------------------------------------
   void next( void )
   {
-    failBit = 0;
-    subtestID = countTests() + 1;
-    failMessage = "none";
+      failBit = 0;
+      subtestID = countTests() + 1;
+      failMessage = "none";
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::fail()
@@ -150,23 +153,24 @@ public:
   //----------------------------------------
   void fail( void )
   {
-    failBit = 1;
-    failCount++;
-    testCount++;
+      failBit = 1;
+      failCount++;
+      testCount++;
   }
 
-  void fail( const std::string fail_message )
+  void fail( const std::string& fail_message )
   {
-    setFailMessage( fail_message );
-    fail();
+      setFailMessage( fail_message );
+      fail();
   }
 
-  void fail( const std::string fail_message, const int line_number )
+  void fail( const std::string& fail_message, const int line_number )
   {
-    setFailMessage( fail_message );
-    setTestLine( line_number );
-    fail();
+      setFailMessage( fail_message );
+      setTestLine( line_number );
+      fail();
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::pass()
@@ -178,9 +182,10 @@ public:
   //----------------------------------------
   void pass( void )
   {
-    failBit = 0;
-    testCount++;
+      failBit = 0;
+      testCount++;
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::undo()
@@ -193,19 +198,20 @@ public:
   //----------------------------------------
   void undo( void )
   {
-    if( failBit==1 )
+      if( failBit==1 )
       { 
-         failBit = 0;
-         failCount--;
-         testCount--;
+          failBit = 0;
+          failCount--;
+          testCount--;
       }
-    else
+      else
       {
-         failBit = 0;
-         testCount--;
+          failBit = 0;
+          testCount--;
       }
-    next();
+      next();
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::print()
@@ -235,8 +241,9 @@ public:
          "failMsg="    << failMessage
          << std::endl;     // implicit conversion from int to string
 
-      } else {
-
+      }
+      else
+      {
          std::cout     <<
          outputKeyword << ", " << 
          "Class="      << sourceClass   << ", " << 
@@ -248,8 +255,8 @@ public:
          << std::endl;     // implicit conversion from int to string
 
       }
-
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::assert()
@@ -259,18 +266,19 @@ public:
   // Inputs:  boolean testExpression
   // Outputs: none
   //----------------------------------------
-  void assert( bool testExpression )
+  void assert( bool testExpression, const std::string& fail_message = "none")
   {
-    if( testExpression == false )
+      if( testExpression == false )
       {
-        fail();
+          fail(fail_message);
       }
-    else
+      else
       {
-        pass();
+          pass();
       }
-    print();
+      print();
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::countFails()
@@ -281,8 +289,9 @@ public:
   //----------------------------------------
   int countFails( void )
   {
-    return( failCount );
+      return( failCount );
   }
+
 
   //----------------------------------------
   // Method:  TestUtil::countTests()
@@ -293,8 +302,9 @@ public:
   //----------------------------------------
   int countTests( void )
   {
-    return( testCount );
+      return( testCount );
   }
+
 
   //----------------------------------------
   // Method:  getTolerance
@@ -302,7 +312,7 @@ public:
   //----------------------------------------
   inline double getTolerance( void )
   {
-    return( tolerance );
+      return( tolerance );
   }
 
 
@@ -316,9 +326,9 @@ public:
   //          string newMethod
   // Outputs: none
   //----------------------------------------
-  void changeSourceMethod( std::string newMethod )
+  void changeSourceMethod( const std::string& newMethod )
   {
-    sourceMethod = newMethod;
+      sourceMethod = newMethod;
   }
 
 
@@ -332,10 +342,11 @@ public:
   //----------------------------------------
   void passTest( void )
   {
-    pass();
-    print();
-    next();
+      pass();
+      print();
+      next();
   }
+
 
   //----------------------------------------
   // Method:  setFailMessage()
@@ -345,24 +356,23 @@ public:
   //          int         line_number, the line number in the test app where fail() was called
   // Outputs: none
   //----------------------------------------
-  void setFailMessage( const std::string fail_message )
+  void setFailMessage( const std::string& fail_message )
   {
-    failMessage  = fail_message;    
+      failMessage  = fail_message;    
   }
 
-  void setFailMessage( const std::string fail_message, const int line_number )
+  void setFailMessage( const std::string& fail_message, const int line_number )
   {
-    setFailMessage( fail_message );
-    setTestLine( line_number );
-    
+      setFailMessage( fail_message );
+      setTestLine( line_number );    
   }
 
-  void setFailMessage( const std::string fail_message, const std::string line_number )
+  void setFailMessage( const std::string& fail_message, const std::string& line_number )
   {
-    setFailMessage( fail_message );
-    setTestLine( line_number );
-    
+      setFailMessage( fail_message );
+      setTestLine( line_number );    
   }
+
 
   //----------------------------------------
   // Method:  setTestLine()
@@ -373,15 +383,16 @@ public:
   //----------------------------------------
   void setTestLine( const int line_number_int )
   {
-      std::stringstream conversionStringStream;
+      std::ostringstream conversionStringStream;
       conversionStringStream << line_number_int;
       testFileLine = conversionStringStream.str();
   }
 
-  void setTestLine( const std::string line_number_string )
+  void setTestLine( const std::string& line_number_string )
   {
       testFileLine = line_number_string;
   }
+
 
   //----------------------------------------
   // Method:  failTest()
@@ -393,23 +404,23 @@ public:
   //----------------------------------------
   void failTest( void )
   {
-    fail();
-    print();
-    next();
+      fail();
+      print();
+      next();
   }
 
-  void failTest( const std::string fail_message )
+  void failTest( const std::string& fail_message )
   {
-    fail( fail_message );
-    print();
-    next();
+      fail( fail_message );
+      print();
+      next();
   }
 
-  void failTest( const std::string fail_message, const int line_number )
+  void failTest( const std::string& fail_message, const int line_number )
   {
-    fail( fail_message, line_number );
-    print();
-    next();
+      fail( fail_message, line_number );
+      print();
+      next();
   }
 
 
