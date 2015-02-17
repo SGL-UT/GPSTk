@@ -468,25 +468,52 @@ if [ "$test_switch" ]; then
 
     keyword_list=()
     keyword_list+=("TimeSystem")
+    keyword_list+=("TimeConverters")
+    keyword_list+=("TimeString")
+    keyword_list+=("TimeTag")
     keyword_list+=("CommonTime")
     keyword_list+=("CivilTime")
+    keyword_list+=("ANSITime")
+    keyword_list+=("UnixTime")
+    keyword_list+=("YDSTime")
     keyword_list+=("GPSWeek")
-    keyword_list+=("Ephemeris")
+    keyword_list+=("MJD")
+    keyword_list+=("JulianDate")
     keyword_list+=("Rinex")
+    keyword_list+=("RinexObs")
+    keyword_list+=("RinexNav")
+    keyword_list+=("RinexMet")
     keyword_list+=("Binex")
-    keyword_list+=("position")
+    keyword_list+=("SP3")
+    keyword_list+=("Ephemeris")
+    keyword_list+=("Store")
+    keyword_list+=("Position")
     keyword_list+=("Xvt")
-    keyword_list+=("Math")
+    keyword_list+=("ObsID")
+    keyword_list+=("SatID")
     keyword_list+=("Matrix")
     keyword_list+=("Vector")
+    keyword_list+=("Triple")
     keyword_list+=("Stats")
     keyword_list+=("RACRotation")
+    keyword_list+=("StringUtils")
 
-    myformat="name = %-14s, ran = %4d, passed = %4d, failed = %4d, %%passed = %5.1f \n"
+
+    myheader="%-16s, %4s, %4s, %4s, %5s\n"
+    myformat="%-16s, %4d, %4d, %4d, %5.1f \n"
+    mydivider="========================================="
+
+
+    # myformat="name = %-16s, tests run = %4d, passed = %4d, failed = %4d, %%passed = %5.1f \n"
 
     echo "------------------------------------------------------------"
     echo "Tests: Results by Category"
     echo "------------------------------------------------------------"
+
+    echo ""
+    printf "$myheader" "NAME" "RUN" "PASS" "FAIL" "%PASS"
+    printf "%s\n" "$mydivider"
+
     for keyword in "${keyword_list[@]}"; do
 
         tests_run=`cat $ctest_log_save | grep -i "$keyword" | wc -l`
@@ -497,7 +524,9 @@ if [ "$test_switch" ]; then
         printf "$myformat" "$keyword" "$tests_run" "$tests_passed" "$tests_failed" "$percent_pass"
 
     done
+    echo ""
     echo "------------------------------------------------------------"
+    echo ""
 
 fi
 
