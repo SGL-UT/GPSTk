@@ -33,149 +33,643 @@
 //                           release, distribution is unlimited.
 //
 //=============================================================================
-
-#include "BinUtils_T.hpp"
+#include "TestUtil.hpp"
+#include "BinUtils.hpp"
+#include "Exception.hpp"
 #include <iostream>
 
-CPPUNIT_TEST_SUITE_REGISTRATION (BinUtils_T);
+class BinUtils_T
+{
+	public:
+
+	/*	Stores hex values as every type in big & little endian,
+		then verifies that twiddle reverses byte order	*/
+	int twiddleTest(void)
+	{
+		TestUtil testFramework("BinUtils", "twiddle", __FILE__, __LINE__);
+		testFramework.init();
+
+		//std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
+		
+		unsigned char Store[16] = {0x11,0x33,0x77,0xFF,0xBB,0x22,0xDD,0x44,0x00,0x00,0xDD,0xAA,0x44,0x22,0xBB,0xAA};
+		
+		char a;
+		unsigned char *ptra = (unsigned char *)& a;
+		for (int i = sizeof(char)-1;i>=0;i--)
+		{
+			*ptra = Store[i];
+			*ptra++;
+		}
+		
+		short b;
+		unsigned char *ptrb = (unsigned char *)& b;
+		for (int i = sizeof(short)-1;i>=0;i--)
+		{
+			*ptrb = Store[i];
+			*ptrb++;	
+		}
+		
+		int c;
+		unsigned char *ptrc = (unsigned char *)& c;
+		for (int i = sizeof(int)-1;i>=0;i--)
+		{
+			*ptrc = Store[i];;
+			*ptrc++;
+		}
+		
+		long d;
+		unsigned char *ptrd = (unsigned char *)& d;
+		for (int i = sizeof(long)-1;i>=0;i--)
+		{
+			*ptrd = Store[i];	
+			*ptrd++;	
+		}
+		
+		float e;
+		unsigned char *ptre = (unsigned char *)& e;
+		for (int i = sizeof(float)-1;i>=0;i--)
+		{
+			*ptre = Store[i];
+			*ptre++;
+		}
+		
+		double f;
+		unsigned char *ptrf = (unsigned char *)& f;
+		for (int i = sizeof(double)-1;i>=0;i--)
+		{
+			*ptrf = Store[i];
+			*ptrf++;
+		}
+		
+		long double g;
+		unsigned char *ptrg = (unsigned char *)& g;
+		for (int i = sizeof(long double)-1;i>=0;i--)
+		{
+			*ptrg = Store[i];
+			*ptrg++;
+		}
+
+		char a1;
+		unsigned char *ptra1 = (unsigned char *)& a1;
+		for (int i =0;i<sizeof(char);i++)
+		{
+			*ptra1 = Store[i];
+			*ptra1++;
+		}
+		
+		short b1;
+		unsigned char *ptrb1 = (unsigned char *)& b1;
+		for (int i =0;i<sizeof(short);i++)
+		{
+			*ptrb1 = Store[i];
+			*ptrb1++;
+		}
+		
+		int c1;
+		unsigned char *ptrc1 = (unsigned char *)& c1;
+		for (int i =0;i<sizeof(int);i++)
+		{
+			*ptrc1 = Store[i];
+			*ptrc1++;
+		}
+		
+		long d1;
+		unsigned char *ptrd1 = (unsigned char *)& d1;
+		for (int i =0;i<sizeof(long);i++)
+		{
+			*ptrd1 = Store[i];
+			*ptrd1++;
+		}
+		
+		float e1;
+		unsigned char *ptre1 = (unsigned char *)& e1;
+		for (int i =0;i<sizeof(float);i++)
+		{
+			*ptre1 = Store[i];
+			*ptre1++;
+		}
+		
+		double f1;
+		unsigned char *ptrf1 = (unsigned char *)& f1;
+		for (int i =0;i<sizeof(double);i++)
+		{
+			*ptrf1 = Store[i];
+			*ptrf1++;
+		}
+		
+		long double g1;
+		unsigned char *ptrg1 = (unsigned char *)& g1;
+		for (int i =0;i<sizeof(long double);i++)
+		{
+			*ptrg1 = Store[i];
+			*ptrg1++;
+		}
 
 
-void BinUtils_T :: setUp (void)
-{ 
-}
+//Testing twiddle for little Endian
 
-void BinUtils_T :: firstTest (void)
-{ 
-	cout.setf(ios_base::hex,ios_base::basefield);
-	
-	unsigned char Store[16] = {0x11,0x33,0x77,0xFF,0xBB,0x22,0xDD,0x44,0x00,0x00,0xDD,0xAA,0x44,0x22,0xBB,0xAA};
-	
-	char a;
-	unsigned char *ptra = (unsigned char *)& a;
-	for (int i = sizeof(char)-1;i>=0;i--)
-	{
-		*ptra = Store[i];
-		*ptra++;
-	}
-	
-	short b;
-	unsigned char *ptrb = (unsigned char *)& b;
-	for (int i = sizeof(short)-1;i>=0;i--)
-	{
-		*ptrb = Store[i];
-		*ptrb++;
-	}
-	
-	int c;
-	unsigned char *ptrc = (unsigned char *)& c;
-	for (int i = sizeof(int)-1;i>=0;i--)
-	{
-		*ptrc = Store[i];
-		*ptrc++;
-	}
-	
-	long d;
-	unsigned char *ptrd = (unsigned char *)& d;
-	for (int i = sizeof(long)-1;i>=0;i--)
-	{
-		*ptrd = Store[i];
-		*ptrd++;
-	}
-	
-	float e;
-	unsigned char *ptre = (unsigned char *)& e;
-	for (int i = sizeof(float)-1;i>=0;i--)
-	{
-		*ptre = Store[i];
-		*ptre++;
-	}
-	
-	double f;
-	unsigned char *ptrf = (unsigned char *)& f;
-	for (int i = sizeof(double)-1;i>=0;i--)
-	{
-		*ptrf = Store[i];
-		*ptrf++;
-	}
-	
-	long double g;
-	unsigned char *ptrg = (unsigned char *)& g;
-	for (int i = sizeof(long double)-1;i>=0;i--)
-	{
-		*ptrg = Store[i];
-		*ptrg++;
+		gpstk::BinUtils::twiddle(a);
+		gpstk::BinUtils::twiddle(b);
+		gpstk::BinUtils::twiddle(c);
+		gpstk::BinUtils::twiddle(d);
+		gpstk::BinUtils::twiddle(e);
+		gpstk::BinUtils::twiddle(f);
+		gpstk::BinUtils::twiddle(g);
+
+
+		std::string failMesg;
+		failMesg = "The twiddle method was not successful";
+//--------------BinUtils_twiddleTest_1 - Was the twiddle method successful?		
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(a1 == a, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_2 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(b1 == b, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_3 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(c1 == c, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_4 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(d1 == d, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_5 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(abs(e1-e) < 1e-50, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_6 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(abs(f1-f) < 1e-50, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_7 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(abs(g1-g) < 1e-50, failMesg);
+		testFramework.next();
+
+		gpstk::BinUtils::twiddle(a);
+		gpstk::BinUtils::twiddle(b);
+		gpstk::BinUtils::twiddle(c);
+		gpstk::BinUtils::twiddle(d);
+		gpstk::BinUtils::twiddle(e);
+		gpstk::BinUtils::twiddle(f);
+		gpstk::BinUtils::twiddle(g);
+
+		gpstk::BinUtils::twiddle(a1);
+		gpstk::BinUtils::twiddle(b1);
+		gpstk::BinUtils::twiddle(c1);
+		gpstk::BinUtils::twiddle(d1);
+		gpstk::BinUtils::twiddle(e1);
+		gpstk::BinUtils::twiddle(f1);
+		gpstk::BinUtils::twiddle(g1);
+
+//Testing twiddle for big Endian
+
+//--------------BinUtils_twiddleTest_1 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(a1 == a, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_2 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(b1 == b, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_3 - Was the twiddle method successful?		
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(c1 == c, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_4 - Was the twiddle method successful?		
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(d1 == d, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_5 - Was the twiddle method successful?			
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(abs(e1-e) < 1e-50, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_6 - Was the twiddle method successful?		
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(abs(f1-f) < 1e-50, failMesg);
+		testFramework.next();
+//--------------BinUtils_twiddleTest_7 - Was the twiddle method successful?
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(abs(g1-g) < 1e-50, failMesg);
+		testFramework.next();		
+
+		return testFramework.countFails();
 	}
 
-	char a1;
-	unsigned char *ptra1 = (unsigned char *)& a1;
-	for (int i =0;i<sizeof(char);i++)
+
+	int decodeVarTest(void)
 	{
-		*ptra1 = Store[i];
-		*ptra1++;
+		TestUtil testFramework("BinUtils", "decodeVar", __FILE__, __LINE__);
+		testFramework.init();
+
+		//std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
+
+		std::string stringTest = "Random";
+		char out = gpstk::BinUtils::decodeVar<char>(stringTest);
+		
+		std::string failMesg;
+
+		failMesg = "The method did not remove the first byte of the string";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(stringTest == "andom", failMesg);
+		testFramework.next();
+
+		std::string stringTest0 = "Random";
+		char out0 = gpstk::BinUtils::decodeVar<char>(stringTest0,0);
+
+		failMesg = "The method did not parse the proper value";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(out0 == 0x52, failMesg);
+		testFramework.next();
+
+		std::string stringTest1 = "I am 5000.";
+		int out1 = gpstk::BinUtils::decodeVar<int>(stringTest1,5);
+
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(out1 == 0x35303030, failMesg); // '5000'
+		testFramework.next();
+
+		std::string stringTest2 = "The word 'this' should be read";
+		float out2 = gpstk::BinUtils::decodeVar<float>(stringTest2, 10);
+
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(abs(out2 - 0x74686973) < 1e-12, failMesg); // 'this'
+
+		return testFramework.countFails();
 	}
-	
-	short b1;
-	unsigned char *ptrb1 = (unsigned char *)& b1;
-	for (int i =0;i<sizeof(short);i++)
+
+
+	int encodeVarTest(void)
 	{
-		*ptrb1 = Store[i];
-		*ptrb1++;
+		TestUtil testFramework("BinUtils", "encodeVar", __FILE__, __LINE__);
+		testFramework.init();
+
+		char test1 = 'H';
+		std::string stringTest1 = gpstk::BinUtils::encodeVar<char>(test1);
+
+		std::string failMesg;
+
+		failMesg = "The method did not output the correct string";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(stringTest1 == "H", failMesg);
+		testFramework.next();
+
+		int test2 = 0x41424344; // "ABCD"
+		std::string stringTest2 = gpstk::BinUtils::encodeVar<int>(test2);
+
+//Should be same string coming out, unless it's a little endian system.
+//		If so, byte order reversed
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(stringTest2 == "ABCD", failMesg);
+		testFramework.next();
+
+		float test3 = 0x4D336C316F; // "M3l10"
+		std::string stringTest3 = gpstk::BinUtils::encodeVar<float>(test3);
+
+//Should be same string coming out, unless it's a little endian system.
+//		If so, byte order reversed		
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(stringTest3 == "\x52\x9A\x66\xD8", failMesg);
+		testFramework.next();
+
+		return testFramework.countFails();
 	}
-	
-	int c1;
-	unsigned char *ptrc1 = (unsigned char *)& c1;
-	for (int i =0;i<sizeof(int);i++)
+
+	int computeCRCTest(void)
 	{
-		*ptrc1 = Store[i];
-		*ptrc1++;
+		TestUtil testFramework("BinUtils", "computeCRC", __FILE__, __LINE__);
+		testFramework.init();
+		std::string failMesg;
+
+//====================================================================================
+//
+//		Using http://www.zorc.breitbandkatze.de/crc.html for generating comparison for 
+//		CRCs, in addition to writing out the calculations by hand
+//
+//====================================================================================
+
+//initially test basic crc computation
+//verified by hand-written calculation
+
+		gpstk::BinUtils::CRCParam params(1, 0x1, 0, 0, true, false, false);
+
+		int data = 0xc;
+
+		int * pdata = &data;
+
+//Same syntax for the computeCRC method as used in BinData.cpp 
+		int crc = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,4,params);
+		std::cout<<"1: "<<crc<<std::endl;
+		//1
+		failMesg = "CRC computation with user defined parameters on 4 bits";
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(crc == 0, failMesg);
+		testFramework.next();
+
+//test crc computation on 1 ASCII char
+
+//using user-generated parameters, all 4th order polynomials
+
+//polynomial is written without leading '1' bit,
+//			i.e. 0xD (0b1101) used in computeCRC() as 0x5 (0b101)
+
+		gpstk::BinUtils::CRCParam params1(3, 0x2, 0, 0, true, false, false); //0xb polynomial
+		int data1 = 0x72;
+
+		pdata = &data1;
+
+		int crc1 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params1);
+		std::cout<<"2: "<<crc1<<std::endl;
+		failMesg = "CRC computation with user defined parameters on 8 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(crc1 == 6, failMesg);
+		testFramework.next();
+
+
+
+//Now reflecting input data bytes
+//(defined in each instance of CRCParam)
+
+
+//Below should be 0 according to online calculator and hand-calculations
+//------------------------------------------------------------------------------------------
+		gpstk::BinUtils::CRCParam params2(3, 0x6, 0, 0, true, true, false); //0xe polynomial
+		int data2 = 0x48;
+
+		pdata= &data2;
+
+		int crc2 = gpstk::BinUtils::computeCRC((const unsigned char *) pdata,8,params2);
+		std::cout<<"2.1: "<<crc2<<std::endl;
+		testFramework.setFailMessage(failMesg, __LINE__+1);			
+		testFramework.assert(crc2 == 0, failMesg);
+		testFramework.next();
+
+//Below should be 5 according to online calculator and hand-calculations
+//-----------------------------------------------------------------------------------
+		gpstk::BinUtils::CRCParam params3(3, 0x5, 0, 0, true, true, false); //0xd polynomial
+		int data3 = 0x59;//"Y"
+
+		pdata = &data3;
+
+
+		int crc3 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params3);
+		std::cout<<"2.2: "<<crc3<<std::endl;
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(crc3 == 5, failMesg);
+		testFramework.next();
+
+//Below should be 7 according to online calculator and hand-calculations
+//-----------------------------------------------------------------------------------------
+
+		gpstk::BinUtils::CRCParam params17(3, 0x7, 0, 0 , true, true, false); //0xf polynomial
+		int data17 = 0x61;
+
+		pdata = &data17;
+
+		int crc17 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params17);
+		std::cout<<"2.25: "<<crc17<<std::endl;
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(crc17 == 7, failMesg);
+		testFramework.next();
+
+
+//Online calculator and hand-calculations are not consistent, unknown correct value
+//--------------------------------------------------------------------------------------
+		gpstk::BinUtils::CRCParam params4(3, 0x3, 0, 0, true, true, false); //0xb polynomial
+		int data4 = 0x94;//""
+
+		pdata = &data4;
+
+		int crc4 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params4);
+		std::cout<<"2.3: "<<crc4<<std::endl;
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(crc4 == 1000, failMesg);
+		testFramework.next();
+
+//Online calculator and hand-calculations are not consistent, unknown correct value
+//---------------------------------------------------------------------------
+		gpstk::BinUtils::CRCParam params5(3, 0x5, 0, 0, true, true, false); //0xd polynomial
+		int data5 = 0xA4;//""
+
+		pdata = &data5;
+
+		int crc5 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params5);
+		std::cout<<"2.4: "<<crc5<<std::endl;
+		testFramework.setFailMessage(failMesg, __LINE__+1);	
+		testFramework.assert(crc5 == 2, failMesg);
+		testFramework.next();
+
+
+//=====================================================================================
+//testing with defined parameters, still using online calculator for comparison.
+//		Calculations below have NOT been verified by hand
+
+		//CRCCCITT
+		int data6 = 0x78ab20f1;
+		pdata = &data6;
+		int crc6 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,32,gpstk::BinUtils::CRCCCITT);
+		std::cout<<"3: "<<std::hex<<crc6<<std::endl;
+		failMesg = "CRC computation with CRCCCITT parameters on 32 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";
+		testFramework.setFailMessage(failMesg, __LINE__+1);			
+		testFramework.assert(crc6 == 0xF7C3,failMesg);
+		testFramework.next();
+
+		//CRC16
+		int data7 = 0x56c8913a;
+		pdata = &data7;
+		int crc7 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,32,gpstk::BinUtils::CRC16);
+		std::cout<<"3.1: "<<std::hex<<crc7<<std::endl;
+		failMesg = "CRC computation with CRC16 parameters on 32 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";
+		testFramework.setFailMessage(failMesg, __LINE__+1);				
+		testFramework.assert(crc7 == 0xF57D, failMesg);
+		testFramework.next();
+
+		//CRC32
+		int data8 = 0x387a13b5;
+		pdata = &data8;
+		int crc8 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,32,gpstk::BinUtils::CRC32);
+		std::cout<<"3.2: "<<std::hex<<crc8<<std::endl;
+		failMesg = "CRC computation with CRC32 parameters on 32 bytes. NOTE: CRC COMPUTATION IS NOT VERIFIED";
+		testFramework.setFailMessage(failMesg, __LINE__+1);				
+		testFramework.assert(crc8 == 0x9759E445, failMesg);
+		testFramework.next();
+
+		//CRC24Q
+		//unable to use CRC24Q in online calculator for comparison. Final XOR value is
+		//			returned as "invalid"
+		//Is the CRCParam CRC24Q able to be used successfully?
+
+		return testFramework.countFails();
 	}
-	
-	long d1;
-	unsigned char *ptrd1 = (unsigned char *)& d1;
-	for (int i =0;i<sizeof(long);i++)
+
+	int xorChecksumTest(void)
 	{
-		*ptrd1 = Store[i];
-		*ptrd1++;
+		TestUtil testFramework("BinUtils", "xorChecksum", __FILE__, __LINE__);
+		testFramework.init();
+
+//=====================================================================================
+//
+//		Below try/catch block doesn't catch gpstk::Exception.
+//		gpstk::InvalidParameter seems to terminate program regardless if I catch it or not
+/*
+		try {gpstk::BinUtils::xorChecksum<int>("Hello");testFramework.failTest("The word 'Hello' should of an improper length for an int xor checksum");}
+		catch(gpstk::Exception e) {testFramework.passTest();}
+		catch(...) {testFramework.failTest();}	
+*/
+//
+//
+//		ALSO, all tests below depend on constant lengths of the data types to parse
+//			the string correctly. Is there another way around this?
+//
+//=====================================================================================
+
+		std::string failMesg;
+ 		
+ 		failMesg = "The checksum for a single word char was not computed correctly";
+		char xc = gpstk::BinUtils::xorChecksum<char>("7");
+		testFramework.setFailMessage(failMesg, __LINE__);
+		testFramework.assert(xc == '7', failMesg);
+		testFramework.next();
+
+		char xc1 = gpstk::BinUtils::xorChecksum<char>("Bc");
+		failMesg = "The checksum for a double word char was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(xc1 == '!', failMesg);
+		testFramework.next();
+
+		char xc2 = gpstk::BinUtils::xorChecksum<char>("P/Q");
+		failMesg = "The checksum for a triple word char was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(xc2 == '.', failMesg);
+		testFramework.next();
+
+//=====================================================================================
+//
+//		Reverses the order of bits in xorChecksum. Is this desired?
+//
+//=====================================================================================
+
+		short xc3 = gpstk::BinUtils::xorChecksum<short>("mn");
+		failMesg = "The checksum for a single word short was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(xc3 == 0x6E6D, failMesg); //'nm'
+		testFramework.next();
+
+		short xc4 = gpstk::BinUtils::xorChecksum<short>("59WZ");
+		failMesg = "The checksum for a double word short was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(xc4 == 0x6362, failMesg); // 'cb'
+		testFramework.next();
+
+		short xc5 = gpstk::BinUtils::xorChecksum<short>("am+*09");
+		failMesg = "The checksum for a triple word short was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(xc5 == 0x7E7A, failMesg); // '~z'
+		testFramework.next();
+
+		int xc6 = gpstk::BinUtils::xorChecksum<int>("97Bg");
+		failMesg = "The checksum for a single word int was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(xc6 == 0x67423739, failMesg); // 'gB79'
+		testFramework.next();
+
+		int xc7 = gpstk::BinUtils::xorChecksum<int>("ABCD!#$%");
+		failMesg = "The checksum for a double word int was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(xc7 == 0x61676160, failMesg); // 'aga`'
+		testFramework.next();
+
+		int xc8 = gpstk::BinUtils::xorChecksum<int>("+a0.ehZ64xYN");
+		failMesg = "The checksum for a triple word int was not computed correctly";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(xc8 == 0x5633717A, failMesg); // 'V3qz'
+		testFramework.next();
+
+		return testFramework.countFails();
+
 	}
-	
-	float e1;
-	unsigned char *ptre1 = (unsigned char *)& e1;
-	for (int i =0;i<sizeof(float);i++)
+
+	/*	Counts the number of set bits in 32 bit unsigned int	*/
+	int countBitsTest(void)
 	{
-		*ptre1 = Store[i];
-		*ptre1++;
+		TestUtil testFramework("BinUtils", "countBits", __FILE__, __LINE__);
+		testFramework.init();
+		std::string failMesg;
+
+		failMesg  = "The number of bits counted is incorrect";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(gpstk::BinUtils::countBits(5) == 2, failMesg);
+		testFramework.next();
+
+//testing if bit count is constant in a left-shift operation
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(gpstk::BinUtils::countBits(10) == 2, failMesg);
+		testFramework.next();
+
+		failMesg = "The number of bits counted is incorrect after left-shift operation";
+		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(gpstk::BinUtils::countBits(20) == 2, failMesg);
+		testFramework.next();
+
+//same but for right bit
+		failMesg = "The number of bits counted is incorrect";
+ 		testFramework.setFailMessage(failMesg, __LINE__+1);
+		testFramework.assert(gpstk::BinUtils::countBits(16) == 1, failMesg);
+		testFramework.next();
+
+		failMesg = "The number of bits counted is incorrect after a right-shift operation";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(gpstk::BinUtils::countBits(8) == 1, failMesg);
+		testFramework.next();
+
+//random case
+		failMesg = "The number of bits counted is incorrect";
+		testFramework.setFailMessage(failMesg, __LINE__+1);		
+		testFramework.assert(gpstk::BinUtils::countBits(15) == 4, failMesg);
+
+		return testFramework.countFails();	
 	}
+
+};
 	
-	double f1;
-	unsigned char *ptrf1 = (unsigned char *)& f1;
-	for (int i =0;i<sizeof(double);i++)
-	{
-		*ptrf1 = Store[i];
-		*ptrf1++;
-	}
+
+int main (void)
+{
+
+//=====================================================================================
+//
+//	Not testing inteltoHost, host to intel
+//		They only ensure the byte order is little-endian
+//
+//	Same for netToHost, or hostToNet, but they ensure byte order is big-endian
+//
+//=====================================================================================
 	
-	long double g1;
-	unsigned char *ptrg1 = (unsigned char *)& g1;
-	for (int i =0;i<sizeof(long double);i++)
-	{
-		*ptrg1 = Store[i];
-		*ptrg1++;
-	}
-	
-	gpstk::BinUtils::twiddle(a);
-	gpstk::BinUtils::twiddle(b);
-	gpstk::BinUtils::twiddle(c);
-	gpstk::BinUtils::twiddle(d);
-	gpstk::BinUtils::twiddle(e);
-	gpstk::BinUtils::twiddle(f);
-	gpstk::BinUtils::twiddle(g);
-	
-	CPPUNIT_ASSERT_EQUAL(a1,a);
-	CPPUNIT_ASSERT_EQUAL(b1,b);
-	CPPUNIT_ASSERT_EQUAL(c1,c);
-	CPPUNIT_ASSERT_EQUAL(d1,d);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(e1,e,1e-50);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(f1,f,1e-50);
-	CPPUNIT_ASSERT_DOUBLES_EQUAL(g1,g,1e-50);
-	
+
+	int check = 0, errorCounter = 0;
+	BinUtils_T testClass;
+
+	check = testClass.twiddleTest();
+	errorCounter += check;
+
+	check = testClass.decodeVarTest();
+	errorCounter += check;
+
+	check = testClass.encodeVarTest();
+	errorCounter += check;
+
+	check = testClass.computeCRCTest(); //unable to verify, see comments in computeCRCTest
+	errorCounter += check;
+
+	check = testClass.xorChecksumTest(); //dependent on size of variables, may fail on other platforms
+	errorCounter += check;
+
+	check = testClass.countBitsTest();
+	errorCounter += check;	
+
+	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
+
+	return errorCounter; //Return the total number of errors
 }
