@@ -84,7 +84,7 @@ int BinexAttrs_T :: doIsDataTests()
    TestUtil  tester( "BinexData", "isData", __FILE__, __LINE__ );
 
    BinexData  rec;
-   tester.assert(rec.isData() == true);
+   tester.assert( rec.isData(), "BinexData should be 'data'", __LINE__ );
 
    return tester.countFails();
 }
@@ -95,15 +95,16 @@ int BinexAttrs_T :: doRecordFlagsTests()
    TestUtil  tester( "BinexData", "recordflags", __FILE__, __LINE__ );
 
    BinexData  rec;
-   tester.assert(rec.getRecordFlags() == BinexData::DEFAULT_RECORD_FLAGS);
-   tester.next();
+   tester.assert( (rec.getRecordFlags() == BinexData::DEFAULT_RECORD_FLAGS),
+                  "default flags expected", __LINE__ );
 
    rec.setRecordFlags(0);
-   tester.assert(rec.getRecordFlags() == 0);
-   tester.next();
+   tester.assert( (rec.getRecordFlags() == 0),
+                  "no flags expected", __LINE__ );
 
    rec.setRecordFlags(0xFF);
-   tester.assert(rec.getRecordFlags() == BinexData::VALID_RECORD_FLAGS);
+   tester.assert( (rec.getRecordFlags() == BinexData::VALID_RECORD_FLAGS),
+                  "valid flags expected", __LINE__ );
 
    return tester.countFails();
 }
@@ -114,15 +115,16 @@ int BinexAttrs_T :: doRecordIdTests()
    TestUtil  tester( "BinexData", "recordId", __FILE__, __LINE__ );
 
    BinexData  recA;
-   tester.assert(recA.getRecordID() == BinexData::INVALID_RECORD_ID);
-   tester.next();
+   tester.assert( (recA.getRecordID() == BinexData::INVALID_RECORD_ID),
+                  "invalid record id expected", __LINE__ );
 
    BinexData  recB(123);
-   tester.assert(recB.getRecordID() == 123);
-   tester.next();
+   tester.assert( (recB.getRecordID() == 123),
+                  "record id 123 expected", __LINE__ );
 
    recB.setRecordID(456);
-   tester.assert(recB.getRecordID() == 456);
+   tester.assert( (recB.getRecordID() == 456),
+                  "record id 456 expected", __LINE__ );
 
    return tester.countFails();
 }
@@ -133,17 +135,22 @@ int BinexAttrs_T :: doMessageCapacityTests()
    TestUtil  tester( "BinexData", "messageCapacity", __FILE__, __LINE__ );
 
    BinexData  rec;
-   tester.assert(rec.getMessageCapacity() == 0);
-   tester.next();
+   tester.assert( (rec.getMessageCapacity() == 0),
+                  "expected 0 capacity", __LINE__ );
 
    BinexData::UBNXI  u;
    size_t  offset = 0;
    rec.updateMessageData(offset, u);
-   tester.assert(rec.getMessageCapacity() > 0);
-   tester.next();
+   tester.assert( (rec.getMessageCapacity() > 0),
+                  "non-zero capacity expected", __LINE__ );
 
    rec.ensureMessageCapacity(1024);
-   tester.assert(rec.getMessageCapacity() == 1024);
+   tester.assert( (rec.getMessageCapacity() == 1024),
+                  "expected capacity 1024", __LINE__ );
+
+   rec.ensureMessageCapacity(2048);
+   tester.assert( (rec.getMessageCapacity() == 2048),
+                  "expected capacity 2048", __LINE__ );
 
    return tester.countFails();
 }
@@ -154,13 +161,14 @@ int BinexAttrs_T :: doMessageLengthTests()
    TestUtil  tester( "BinexData", "messageLength", __FILE__, __LINE__ );
 
    BinexData  rec;
-   tester.assert(rec.getMessageLength() == 0);
-   tester.next();
+   tester.assert( (rec.getMessageLength() == 0),
+                  "expected length 0", __LINE__ );
 
    BinexData::UBNXI  u;
    size_t  offset = 0;
    rec.updateMessageData(offset, u);
-   tester.assert(rec.getMessageLength() > 0);
+   tester.assert( (rec.getMessageLength() > 0),
+                  "expected positive length", __LINE__ );
 
    return tester.countFails();
 }
@@ -172,25 +180,19 @@ int BinexAttrs_T :: doMessageLengthTests()
  */
 main(int argc, char *argv[])
 {
-   int  errorCount = 0;
    int  errorTotal = 0;
 
    BinexAttrs_T  testClass;  // test data is loaded here
 
-   errorCount = testClass.doIsDataTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doIsDataTests();
 
-   errorCount = testClass.doRecordFlagsTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doRecordFlagsTests();
 
-   errorCount = testClass.doRecordIdTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doRecordIdTests();
 
-   errorCount = testClass.doMessageCapacityTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doMessageCapacityTests();
 
-   errorCount = testClass.doMessageLengthTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doMessageLengthTests();
 
    return( errorTotal );
    
