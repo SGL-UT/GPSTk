@@ -53,6 +53,7 @@
 #endif
 
 #include "Exception.hpp"
+#include <memory.h>
 
 #ifndef BYTE_ORDER
 #ifdef _MSC_VER
@@ -164,7 +165,7 @@ namespace gpstk
       }
 
          /** 
-          * Remove (optinally) the item specified from the string and convert it
+          * Remove (optionally) the item specified from the string and convert it
           * from network byte order to host byte order.
           * @param str the string from which to obtain data.
           * @param pos an offset into the string to pull the data from. If this
