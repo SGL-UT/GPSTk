@@ -13,32 +13,28 @@ class ValidType_T
 	int methodTest(void)
 	{
 		TestUtil testFramework( "ValidType", "Various Methods", __FILE__, __LINE__ );
-		testFramework.init();
+		std::string failMesg;
 
 		gpstk::ValidType<float> vfloat0;
 
-//--------------ValidType_methodTest_1 - Is the invalid Valid object set as valid?
-		testFramework.assert(!vfloat0.is_valid());
-		testFramework.next();
+		failMesg = "Is the invalid Valid object set as valid?";
+		testFramework.assert(!vfloat0.is_valid(), failMesg, __LINE__);
 
-//--------------ValidType_methodTest_2 - Is the invalid Valid object's value 0?
-		testFramework.assert(abs(vfloat0.get_value()) < eps);
+		failMesg = "Is the invalid Valid object's value 0?";
+		testFramework.assert(abs(vfloat0.get_value()) < eps, failMesg, __LINE__);
 
 		gpstk::ValidType<float> vfloat (5);
 
-//--------------ValidType_methodTest_3 - Does the get_value method return the correct value?
-		testFramework.assert(vfloat.get_value() == 5);
-		testFramework.next();
+		failMesg = "Does the get_value method return the correct value?";
+		testFramework.assert(vfloat.get_value() == 5, failMesg, __LINE__);
 
-//--------------ValidType_methodTest_4 - Is the valid Valid object set as valid?
-		testFramework.assert(vfloat.is_valid());
-		testFramework.next();
+		failMesg = "Is the valid Valid object set as valid?";
+		testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
 
 		vfloat.set_valid(false);
 
-//--------------ValidType_methodTest_5 - Was the valid Valid object correctly set to invalid?
-		testFramework.assert(!vfloat.is_valid());
-		testFramework.next();
+		failMesg = "Was the valid Valid object correctly set to invalid?";
+		testFramework.assert(!vfloat.is_valid(), failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -46,7 +42,7 @@ class ValidType_T
 	int operatorTest(void)
 	{
 		TestUtil testFramework( "ValidType", "== Operator", __FILE__, __LINE__ );
-		testFramework.init();
+		std::string failMesg;
 
 		gpstk::ValidType<float> Compare1 (6.);
 		gpstk::ValidType<float> Compare2 (6.);
@@ -54,59 +50,39 @@ class ValidType_T
 		gpstk::ValidType<int> Compare4 (6);
 		gpstk::ValidType<float> vfloat;
 
-//--------------ValidType_operatorTest_1 - Are two equvalent objects equal?
-		testFramework.assert(Compare1 == Compare2);
-		testFramework.next();
+		failMesg = "Are two equvalent objects equal?";
+		testFramework.assert(Compare1 == Compare2, failMesg, __LINE__);
 
-//--------------ValidType_operatorTest_2 - Are two non-equvalent objects equal?
-		testFramework.assert(Compare1 != Compare3);
-		testFramework.next();
-
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
-//
-//				  Test 3 FAILS! Is this correct behavior? Int 6 = float 6?
-//
-/*
-//--------------ValidType_operatorTest_3 - Are two non-equvalent objects equal?
-		testFramework.assert(Compare1 != Compare4);
-		testFramework.next();
-
-*/
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+		failMesg = "Are two non-equvalent objects equal?";
+		testFramework.assert(Compare1 != Compare3, failMesg, __LINE__);
 
 		vfloat = 7.;
 
 		testFramework.changeSourceMethod("= Operator");
-//--------------ValidType_operatorTest_3 - Did the = operator store the value correctly?		
-		testFramework.assert(vfloat.get_value() == 7.);
-		testFramework.next();
+		failMesg = "Did the = operator store the value correctly?";
+		testFramework.assert(vfloat.get_value() == 7., failMesg, __LINE__);
 
-//--------------ValidType_operatorTest_4 - Did the = operator set the object as valid?
-		testFramework.assert(vfloat.is_valid());
-		testFramework.next();
+		failMesg = "Did the = operator set the object as valid?";
+		testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
 
 		testFramework.changeSourceMethod("+= Operator");
 
 		vfloat += 3.;
-//--------------ValidType_operatorTest_5 - Did the += operator store the value correctly?			
-		testFramework.assert(vfloat.get_value() == 10.);
-		testFramework.next();
+		failMesg = "Did the += operator store the value correctly?";
+		testFramework.assert(vfloat.get_value() == 10., failMesg, __LINE__);
 
-//--------------ValidType_operatorTest_6 - Did the += operator change the object's valid bool?
-		testFramework.assert(vfloat.is_valid());
-		testFramework.next();		
+		failMesg = "Did the += operator change the object's valid bool?";
+		testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);		
 
 		testFramework.changeSourceMethod("-= Operator");
 
 		vfloat -= 5.;
 
-//--------------ValidType_operatorTest_7 - Did the -= operator store the value correctly?		
-		testFramework.assert(vfloat.get_value() == 5.);
-		testFramework.next();
+		failMesg = "Did the -= operator store the value correctly?";
+		testFramework.assert(vfloat.get_value() == 5., failMesg, __LINE__);
 
-//--------------ValidType_operatorTest_8 - Did the -= operator change the object's valid bool?
-		testFramework.assert(vfloat.is_valid());
-		testFramework.next();
+		failMesg = "Did the -= operator change the object's valid bool?";
+		testFramework.assert(vfloat.is_valid(), failMesg, __LINE__);
 
 		testFramework.changeSourceMethod("<< Operator");
 
@@ -121,9 +97,8 @@ class ValidType_T
 
 		stringCompare = "11";
 
-//--------------ValidType_operatorTest_9 - Did the << operator ouput valid object correctly?
-		testFramework.assert(stringCompare == stringOutput);
-		testFramework.next();
+		failMesg = "Did the << operator ouput valid object correctly?";
+		testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
 
 		streamOutput.str("");	// Resetting stream
 		vfloat.set_valid(false);
@@ -133,8 +108,8 @@ class ValidType_T
 
 		stringCompare = "Unknown";
 
-//--------------ValidType_operatorTest_10 - Did the << operator output invalid object correctly?
-		testFramework.assert(stringCompare == stringOutput);
+		failMesg = " Did the << operator output invalid object correctly?";
+		testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}

@@ -51,15 +51,15 @@ class TripleTest
 		int setTest() 
 		{
 			TestUtil testFramework( "Triple", "Set", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test, test2(1,2,3), test3(test2);
 			test = valarray<double>(3);		
 
 			//std::cout << "The Average is: " << test.Average() << std::endl;
 
-//--------------Triple_setTest_1 - Was tje Triple created correctly?			
-			testFramework.assert((test.size() == 3) && (test2.size() == 3) && (test3.size() == 3));
+			failMesg = "Was tje Triple created correctly?";			
+			testFramework.assert((test.size() == 3) && (test2.size() == 3) && (test3.size() == 3), failMesg, __LINE__);
 			
 			return testFramework.countFails();
 		}
@@ -67,7 +67,7 @@ class TripleTest
 		int dotTest()
 		{
 			TestUtil testFramework( "Triple", "Dot", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(1,2,3),test2(2,2,2);
 			double result;
@@ -76,8 +76,8 @@ class TripleTest
 
 			//std::cout << "The dot product is: " << result << std::endl;
 
-//--------------Triple_dotTest_1 - Did the dot method function properly?			
-			testFramework.assert(result == 12);
+			failMesg = "Did the dot method function properly?";			
+			testFramework.assert(result == 12, failMesg, __LINE__);
 
 			return testFramework.countFails();	
 		}
@@ -85,7 +85,7 @@ class TripleTest
 		int crossTest()
 		{
 			TestUtil testFramework( "Triple", "Cross", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(1,2,3), test2(2,2,2), test3;
 			
@@ -93,8 +93,8 @@ class TripleTest
 
 			//std::cout << "The cross product is: " << test3 << std::endl;
 
-//--------------Triple_azAngleTest_1 - Did the method function properly?			
-			testFramework.assert((test3[0] == -2) && (test3[1] == 4) && (test3[2] == -2));
+			failMesg = "Did the method function properly?";			
+			testFramework.assert((test3[0] == -2) && (test3[1] == 4) && (test3[2] == -2), failMesg, __LINE__);
 			return testFramework.countFails();
 		}
 		/*	Verify the magnitude calculation.
@@ -102,18 +102,17 @@ class TripleTest
 		int magTest()
 		{
 			TestUtil testFramework( "Triple", "Mag", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(3,4,0);
 
-//--------------Triple_magTest_1 - Did the calculation return the correct values? 
-			testFramework.assert(test.mag() == 5);
-			testFramework.next();
+			failMesg = "Did the calculation return the correct values?"; 
+			testFramework.assert(test.mag() == 5, failMesg, __LINE__);
 
 			test[0] = 0; test[1] = 0; test[2] = -2;
 
-//--------------Triple_magTest_2 - Did the calculation return the correct values? 
-			testFramework.assert(test.mag() == 2);
+			failMesg = "Did the calculation return the correct values?"; 
+			testFramework.assert(test.mag() == 2, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -121,20 +120,19 @@ class TripleTest
 		int unitVectorTest()
 		{
 			TestUtil testFramework( "Triple", "unitVector", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(3,4,0),test2;
 			test2 = test.unitVector();
 			
-//--------------Triple_unitVectorTest_1	- Did the calculation return the correct values? 	
-			testFramework.assert( (fabs(test2[0] - 3.0/5.0)*5.0/3.0 < eps) && (fabs(test2[1] - 4.0/5.0)*5.0/4.0 < eps) && (fabs(test2[2]) < eps) );
-			testFramework.next();
+			failMesg = "Did the calculation return the correct values?"; 	
+			testFramework.assert( (fabs(test2[0] - 3.0/5.0)*5.0/3.0 < eps) && (fabs(test2[1] - 4.0/5.0)*5.0/4.0 < eps) && (fabs(test2[2]) < eps) , failMesg, __LINE__);
 
 			test[0] = 0; test[1] = 0; test[2] = -2;
 			test2 = test.unitVector();
 
-//--------------Triple_unitVectorTest_2	- Did the calculation return the correct values? 
-			testFramework.assert((test2[0] == 0) && (test2[1] == 0) && (test2[2] == -1.0));
+			failMesg = "Did the calculation return the correct values?"; 
+			testFramework.assert((test2[0] == 0) && (test2[1] == 0) && (test2[2] == -1.0), failMesg, __LINE__);
 
 			return testFramework.countFails();	
 		}
@@ -142,26 +140,24 @@ class TripleTest
 		int cosVectorTest()
 		{
 			TestUtil testFramework( "Triple", "cosVector", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(1,0,1),test2(-1,0,-1);
 			double angle;
 			
-//--------------Triple_cosVectorTest_1 - Is the computed cosine value correct?		
-			testFramework.assert(fabs(test.cosVector(test2) + 1) < eps);
-			testFramework.next();
+			failMesg = "Is the computed cosine value correct?";		
+			testFramework.assert(fabs(test.cosVector(test2) + 1) < eps, failMesg, __LINE__);
 
 			test2[0] = 0; test2[1] = 1; test2[2] = 0;
 
-//--------------Triple_cosVectorTest_2 - Is the computed cosine value correct?
-			testFramework.assert(fabs(test.cosVector(test2)) < eps);
-			testFramework.next();
+			failMesg = "Is the computed cosine value correct?";
+			testFramework.assert(fabs(test.cosVector(test2)) < eps, failMesg, __LINE__);
 
 			test[0] = 1; test[1] = 0; test[2] = 0;
 			test2[0] = 1; test2[1] = 1; test2[2] = 0;
 
-//--------------Triple_cosVectorTest_3 - Is the computed cosine value correct?
-			testFramework.assert(fabs(test.cosVector(test2) - sqrt(2.0)/2.0) < eps);
+			failMesg = "Is the computed cosine value correct?";
+			testFramework.assert(fabs(test.cosVector(test2) - sqrt(2.0)/2.0) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -169,19 +165,18 @@ class TripleTest
 		int slantRangeTest()
 		{
 			TestUtil testFramework( "Triple", "slantRange", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(4,6,3),test2(1,2,3);
 
-//--------------Triple_slantRangeTest_1 - Was the slant range calculation computed correctly?
-			testFramework.assert(fabs(test.slantRange(test2)- 5) < eps);
-			testFramework.next();
+			failMesg = "Was the slant range calculation computed correctly?";
+			testFramework.assert(fabs(test.slantRange(test2)- 5) < eps, failMesg, __LINE__);
 
 			test[0] = 11; test[1] = -12; test[2] = 10;
 			test2[0] = 1; test2[1] = 2; test2[2] = 3;
 			
-//--------------Triple_slantRangeTest_2 - Was the slant range calculation computed correctly?
-			testFramework.assert(fabs(test.slantRange(test2) - sqrt(345.0)) < eps);
+			failMesg = "Was the slant range calculation computed correctly?";
+			testFramework.assert(fabs(test.slantRange(test2) - sqrt(345.0)) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();	
 		}
@@ -189,29 +184,27 @@ class TripleTest
 		int elvAngleTest()
 		{
 			TestUtil testFramework( "Triple", "elvAngle", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(1,0,0),test2(0,-1,0);
 			double result;
 
-//--------------Triple_elvAngleTest_1 - Was the elevation angle calculation computed correctly?
-			testFramework.assert(fabs(test.elvAngle(test2) + 45) < eps);
-			testFramework.next();
+			failMesg = "Was the elevation angle calculation computed correctly?";
+			testFramework.assert(fabs(test.elvAngle(test2) + 45) < eps, failMesg, __LINE__);
 
 			test[0] = 11; test[1] = -12; test[2] = 10;
 			test2[0] = 1; test2[1] = 2; test2[2] = 3;
 			result = acos(-348.0/(sqrt(365.0)*sqrt(345.0)))*180.0/(4.0*atan(1.0));
 			result = 90 - result;
 
-//--------------Triple_elvAngleTest_2 - Was the elevation angle calculation computed correctly?
-			testFramework.assert(fabs(test.elvAngle(test2) - result) < eps);
-			testFramework.next();
+			failMesg = "Was the elevation angle calculation computed correctly?";
+			testFramework.assert(fabs(test.elvAngle(test2) - result) < eps, failMesg, __LINE__);
 
 			test[0] = 1; test[1] = 1; test[2] = 1;
 			test2[0] = 1; test2[1] = 0; test2[2] = 0;
 			
-//--------------Triple_elvAngleTest_3 - Was the elevation angle calculation computed correctly?
-			testFramework.assert(fabs(test.elvAngle(test2) - (90 - acos(-2.0/sqrt(6.0))*180.0/(4.0*atan(1.0)))) < eps);
+			failMesg = "Was the elevation angle calculation computed correctly?";
+			testFramework.assert(fabs(test.elvAngle(test2) - (90 - acos(-2.0/sqrt(6.0))*180.0/(4.0*atan(1.0)))) < eps, failMesg, __LINE__);
 			
 			return testFramework.countFails();	
 		}
@@ -220,53 +213,58 @@ class TripleTest
 		int azAngleTest()
 		{
 			TestUtil testFramework( "Triple", "azAngle", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			Triple test(1,1,1),test2(-1,1,1);
 
-//--------------Triple_azAngleTest_1 - Was the azimutal angle calculation computed correctly?	
-			testFramework.assert(fabs(test.azAngle(test2) - 60) < eps);
-			testFramework.next();
+			failMesg = "Was the azimutal angle calculation computed correctly?";	
+			testFramework.assert(fabs(test.azAngle(test2) - 60) < eps, failMesg, __LINE__);
 
 			test[0] = 11; test[1] = -12; test[2] = 10;
 			test2[0] = 1; test2[1] = 2; test2[2] = 3;
 
-//--------------Triple_azAngleTest_2 - Was the azimutal angle calculation computed correctly?	
-			testFramework.assert(fabs(test.azAngle(test2) - 35.0779447169289) < eps);
-			testFramework.next();
+			failMesg = "Was the azimutal angle calculation computed correctly?";	
+			testFramework.assert(fabs(test.azAngle(test2) - 35.0779447169289) < eps, failMesg, __LINE__);
 
 			test[0] = 1; test[1] = 0; test[2] = 0;
 			test2[0] = 0; test2[1] = 1; test2[2] = 0;
 
-//--------------Triple_azAngleTest_3 - Was the azimutal angle calculation computed correctly?	
-			testFramework.assert(fabs(test.azAngle(test2) - 90)/90 < eps);
-			testFramework.next();
+			failMesg = "Was the azimutal angle calculation computed correctly?";	
+			testFramework.assert(fabs(test.azAngle(test2) - 90)/90 < eps, failMesg, __LINE__);
 
 			test[0] = 1; test[1] = -1; test[2] = 1;
 			test2[0] = 1; test2[1] = 1; test2[2] = 1;
 
-//--------------Triple_azAngleTest_4 - Was the azimutal angle calculation computed correctly?	
-			testFramework.assert(fabs(test.azAngle(test2) - 60)/60 < eps);
+			failMesg = "Was the azimutal angle calculation computed correctly?";	
+			testFramework.assert(fabs(test.azAngle(test2) - 60)/60 < eps, failMesg, __LINE__);
 
 
 /* Special case: Using the origin as the point in which to find the azimuthal angle should ALWAYS cause test for p1+p2 != 0 to fail (see Triple.cpp).
    This next test is to ensure that the error is indeed thrown when it should. */ 
 
 			test2[0] = 0; test2[1] = 0; test2[2] = 0;
-//--------------Triple_azAngleTest_5 - Was the azimutal angle calculation computed correctly?	
-			try {test.azAngle(test2); testFramework.failTest();}
-			catch (Exception& e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			failMesg = "[testing] Triple.azAngle() at origin, [expected] exception gpstk::Exception, [actual] threw no exception";	
+			try {test.azAngle(test2); testFramework.assert(false, failMesg, __LINE__);}
+			catch (Exception& e) {testFramework.assert(true, failMesg, __LINE__);}
+			catch (...)
+			{
+				failMesg = "[testing] Triple.azAngle() at origin, [expected] exception gpstk::Exception, [actual] threw different exception";
+				testFramework.assert(false, failMesg, __LINE__);
+			}
 
 /* Special case: Using the south, (0,0,-1), direction as the position from which to find the azimuthal angle should also cause the initial check to
    get the angles to fail. */ 
 
 			test[0] = 0; test[1] = 0; test[2] = -1;
 			test2[0] = 1; test2[1] = 1; test2[2] = 1;
-//--------------Triple_azAngleTest_6 - Was the azimutal angle calculation computed correctly?	
-			try {test.azAngle(test2); testFramework.failTest();}
-			catch (Exception& e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			failMesg = "[testing] Triple.azAngle() at origin and due south, [expected] exception gpstk::Exception, [actual] threw no exception";
+			try {test.azAngle(test2); testFramework.assert(false, failMesg, __LINE__);}
+			catch (Exception& e) {testFramework.assert(true, failMesg, __LINE__);}
+			catch (...) 
+			{
+				failMesg = "[testing] Triple.azAngle() at origin and due south, [expected] exception gpstk::Exception, [actual] threw no exception";
+				testFramework.assert(false, failMesg, __LINE__);
+			}
 
 			return testFramework.countFails();
 		}
