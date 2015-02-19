@@ -87,25 +87,8 @@ private:
    string  inputUbnxiNums;
    string  inputMgfziNums;
 
-      /** Update test results and optionally show test details
-       /
-   void report(TestUtil&               test,
-               const unsigned long     expectedValue,
-               const size_t            expectedSize,
-               const BinexData::UBNXI& actual,
-               const bool              isLittleEndian = false);
 
-      /** Update test results and optionally show test details
-       /
-   void report(TestUtil&               test,
-               const long long         expectedValue,
-               const size_t            expectedSize,
-               const BinexData::MGFZI& actual,
-               const bool              isLittleEndian = false);
-
-      /**
-       * 
-       */
+      // output raw data in a readable format
    void dumpBuffer(const unsigned char* buffer, size_t size);
 
 }; // class BinexTypes_T
@@ -402,64 +385,6 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
    return tester.countFails();
 }
 
-/*
-//---------------------------------------------------------------------------
-void BinexTypes_T::report(TestUtil&               test,
-                          const unsigned long     expectedValue,
-                          const size_t            expectedSize,
-                          const BinexData::UBNXI& actual,
-                          const bool              isLittleEndian)
-{
-   unsigned long  actualValue = (unsigned long)actual;
-   size_t         actualSize  = actual.getSize();
-   
-   if (  (expectedValue != actualValue)
-      || (expectedSize  != actualSize) )
-   {
-      ostringstream  oss;
-      oss << "Expected Value = " << expectedValue;
-      oss << ", Actual Value = " << actualValue;
-      oss << ", Expected Size = " << expectedSize;
-      oss << ", Actual Size = " << actualSize;
-      oss << ", Endian = " << (isLittleEndian ? "little" : "BIG");
-      test.fail(oss.str());
-   }
-   else
-   {
-      test.pass();
-   }
-   test.print();
-}
-
-
-//---------------------------------------------------------------------------
-void BinexTypes_T::report(TestUtil&               test,
-                          const long long         expectedValue,
-                          const size_t            expectedSize,
-                          const BinexData::MGFZI& actual,
-                          const bool              isLittleEndian)
-{
-   long long  actualValue = (long long)actual;
-   size_t     actualSize  = actual.getSize();
-   
-   if (  (expectedValue != actualValue)
-      || (expectedSize  != actualSize) )
-   {
-      ostringstream  oss;
-      oss << "Expected Value = " << expectedValue;
-      oss << ", Actual Value = " << actualValue;
-      oss << ", Expected Size = " << expectedSize;
-      oss << ", Actual Size = " << actualSize;
-      oss << ", Endian = " << (isLittleEndian ? "little" : "BIG");
-      test.assert( false, oss.str(), __LINE__ );
-   }
-   else
-   {
-      test.assert( true, "", __LINE__);
-   }
-   test.print();
-}
-*/
 
 //---------------------------------------------------------------------------
 void BinexTypes_T :: dumpBuffer(const unsigned char* buffer, size_t size)
@@ -479,7 +404,6 @@ void BinexTypes_T :: dumpBuffer(const unsigned char* buffer, size_t size)
  */
 int main(int argc, char *argv[])
 {
-   int  errorCount = 0;
    int  errorTotal = 0;
 
    BinexTypes_T  testClass;  // test data is loaded here
