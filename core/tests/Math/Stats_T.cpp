@@ -45,15 +45,13 @@ class Stats_T
 		Stats_T(){eps = 1e-12;}// Default Constructor, set the precision value
 		~Stats_T() {} // Default Desructor
 
-		double eps; // Shouldn't this be private?
-
 		/*	Test to add data. Want to add single values to empty Stats class.
 			Then add another stat on top with weight. I will use the average to check
 			that data was added and that the data added was correct. */
 		int AddTest()
 		{
 			TestUtil testFramework( "Stats", "Add", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<double> test;
 			test.Add(5, 1);		
@@ -61,7 +59,8 @@ class Stats_T
 			test.Add(9,3);
 			//std::cout << "The Average is: " << test.Average() << std::endl;
 
-			testFramework.assert(test.Average()==9);
+			failMesg = "The Add() method was unsucessful";
+			testFramework.assert(test.Average()==9, failMesg, __LINE__);
 
 			return testFramework.countFails();
 			
@@ -72,7 +71,7 @@ class Stats_T
 		int AddVectorTest()
 		{
 			TestUtil testFramework( "Stats", "AddVector", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(5), weight(5);
@@ -83,7 +82,8 @@ class Stats_T
 			}
 			test.Add(input, weight);
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			testFramework.assert((test.Average() > (3.5-eps)) && (test.Average() < (3.5+eps)));
+			failMesg = "The AddVector() method was unsucessful";			
+			testFramework.assert((test.Average() > (3.5-eps)) && (test.Average() < (3.5+eps)), failMesg, __LINE__);
 
 			return testFramework.countFails();	
 		}
@@ -91,7 +91,7 @@ class Stats_T
 		int AverageTest()
 		{
 			TestUtil testFramework( "Stats", "Average", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(3), weight(3);
@@ -103,8 +103,8 @@ class Stats_T
 			test.Add(input, weight); 
 
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-
-			testFramework.assert((test.Average() > (7.0/3.0-eps)) && (test.Average() < (7.0/3.0+eps)));
+			failMesg = "The Average() method was unsucessful";
+			testFramework.assert((test.Average() > (7.0/3.0-eps)) && (test.Average() < (7.0/3.0+eps)), failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -112,7 +112,7 @@ class Stats_T
 		int MaxTest()
 		{
 			TestUtil testFramework( "Stats", "Max", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<int> test;
 			gpstk::Vector<int> input(3), weight(3);
@@ -125,7 +125,8 @@ class Stats_T
 
 			//std::cout << "The Maximum is: " << test.Maximum() << std::endl;
 
-			testFramework.assert(test.Maximum() == 3);
+			failMesg = "The Maximum() method was unsucessful";
+			testFramework.assert(test.Maximum() == 3, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -133,7 +134,7 @@ class Stats_T
 		int MinTest()
 		{
 			TestUtil testFramework( "Stats", "Min", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<int> test;
 			gpstk::Vector<int> input(3), weight(3);
@@ -145,8 +146,8 @@ class Stats_T
 			test.Add(input, weight);
 
 			//std::cout << "The Minimum is: " << test.Minimum() << std::endl;
-
-			testFramework.assert(test.Minimum() == 1);
+			failMesg = "The Minimum() method was unsucessful";
+			testFramework.assert(test.Minimum() == 1, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -154,7 +155,7 @@ class Stats_T
 		int VarianceTest()
 		{
 			TestUtil testFramework( "Stats", "Variance", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(3), weight(3);
@@ -165,8 +166,8 @@ class Stats_T
 			}
 			test.Add(input, weight);
 			//std::cout << "The Variance is: " << test.Variance() << std::endl;
-
-			testFramework.assert(test.Variance() > (5.0/9.0-eps) && test.Variance() < (5.0/9.0+eps));
+			failMesg = "The Minimum() method was unsucessful";
+			testFramework.assert(test.Variance() > (5.0/9.0-eps) && test.Variance() < (5.0/9.0+eps), failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -174,7 +175,7 @@ class Stats_T
 		int StdDevTest()
 		{
 			TestUtil testFramework( "Stats", "StdDev", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(3), weight(3);
@@ -185,7 +186,8 @@ class Stats_T
 			}
 			test.Add(input, weight);
 			//std::cout << "The Standard Deviation is: " << test.StdDev() << std::endl;
-			testFramework.assert(test.StdDev() > (sqrt(5.0/9.0)-eps) && test.StdDev() < (sqrt(5.0/9.0)+eps));
+			failMesg = "The StdDev() method was unsucessful";			
+			testFramework.assert(test.StdDev() > (sqrt(5.0/9.0)-eps) && test.StdDev() < (sqrt(5.0/9.0)+eps), failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -197,7 +199,7 @@ class Stats_T
 		int SubtractTest()
 		{
 			TestUtil testFramework( "Stats", "Subtract", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<double> test;
 			gpstk::Vector<double> input(5), weight(5);
@@ -212,7 +214,8 @@ class Stats_T
 			//std::cout << "The Average is: " << test.Average() << std::endl;
 			test.Subtract(5); // Doing this twice to get 10/3 as a result
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			testFramework.assert(test.Average() > 3.2 && test.Average() < 3.4 && test.Maximum() == 5);
+			failMesg = "The Subtract() method was unsucessful";		
+			testFramework.assert(test.Average() > 3.2 && test.Average() < 3.4 && test.Maximum() == 5, failMesg, __LINE__);
 
 			return testFramework.countFails();			
 		}
@@ -224,7 +227,7 @@ class Stats_T
 		int SubtractVectorTest()
 		{
 			TestUtil testFramework( "Stats", "SubtractVector", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<int> test;
 			gpstk::Vector<int> input(5), weight(5);
@@ -235,7 +238,8 @@ class Stats_T
 			}
 			test.Add(input, weight);
 			test.Subtract(input);
-			testFramework.assert((test.Average() > -0.000001) && (test.Average() < 0.000001) && (test.Maximum() == 5));
+			failMesg = "The SubtractVector() method was unsucessful";			
+			testFramework.assert((test.Average() > -0.000001) && (test.Average() < 0.000001) && (test.Maximum() == 5), failMesg, __LINE__);
 	
 			return testFramework.countFails();
 		}
@@ -244,7 +248,7 @@ class Stats_T
 		int operatorTest()
 		{
 			TestUtil testFramework( "Stats", "+= Operator", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::Stats<int> test1, test2;
 			test1.Add(1,1);
@@ -252,12 +256,15 @@ class Stats_T
 			test1.Add(3,3);
 			test1 += test2;
 			std::cout << test1 << std::endl;
-			testFramework.assert((test1.Average() > (7.0/3.0-eps)) && (test1.Average() < (7.0/3.0+eps)));
+			failMesg = "The += Operator was unsucessful";
+			testFramework.assert((test1.Average() > (7.0/3.0-eps)) && (test1.Average() < (7.0/3.0+eps)), failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
 
- };
+	private:
+			double eps;
+};
 
 int main() //Main function to initialize and run all tests above
 {

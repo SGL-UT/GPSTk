@@ -53,27 +53,27 @@ class PolyFit_T
 		int AddTest()
 		{
 			TestUtil testFramework( "PolyFit", "Add", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
 			double indep[6] = {0, 1, 2, 3, 4, 5}, dep[6] = {0, 1, 8, 27, 64, 125};
 
-//--------------PolyFit_addTest_1 - Did the add method function properly?
+			failMesg = "Did the add method function properly?";
 			try {
 				for(int i=0; i<6; i++)
 				{
 					test.Add(dep[i],indep[i]);
 				}
-				testFramework.passTest();
+				testFramework.assert(true, failMesg, __LINE__);
 			}
-			catch(gpstk::Exception e) {testFramework.passTest();}
+			catch(gpstk::Exception e) {testFramework.assert(true, failMesg, __LINE__);}
 			catch (...)
 			{
-				testFramework.failTest();
+				testFramework.assert(true, failMesg, __LINE__);
 			}
 /*
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+========================================================================
 Find a way to compare the stored values to the actual values
 			for(int i=0; i<6; i++)
 			{
@@ -82,7 +82,7 @@ Find a way to compare the stored values to the actual values
 			}					
 
 			//std::cout << test.Solution() << std::endl;
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+========================================================================
 */			
 			return testFramework.countFails();
 		};
@@ -92,7 +92,7 @@ Find a way to compare the stored values to the actual values
 		int SolutionTest3()
 		{
 			TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4; //Highest order in polynomial fit + 1 (constant term)
 			gpstk::PolyFit<double> test(n); 
@@ -117,8 +117,8 @@ Find a way to compare the stored values to the actual values
 					n += 1; // Increment the return value for each wrong value
 				}
 			}
-//--------------PolyFit_solutionTest3_1 - Was the solution computed correct?
-			testFramework.assert(n==0);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(n==0, failMesg, __LINE__);
 
 			return testFramework.countFails(); // Return the result of the test.
 		};
@@ -127,7 +127,7 @@ Find a way to compare the stored values to the actual values
 		int SolutionTest2()
 		{
 			TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -152,8 +152,8 @@ Find a way to compare the stored values to the actual values
 				}
 			}
 
-//--------------PolyFit_solutionTest2_1 - Was the solution computed correct?
-			testFramework.assert(n==0);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(n==0, failMesg, __LINE__);
 
 			return testFramework.countFails(); // Return the result of the test.
 		};
@@ -163,7 +163,7 @@ Find a way to compare the stored values to the actual values
 		int SolutionTest1()
 		{
 			TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -188,8 +188,8 @@ Find a way to compare the stored values to the actual values
 				}
 			}
 
-//--------------PolyFit_solutionTest1_1 - Was the solution computed correct?
-			testFramework.assert(n==0);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(n==0, failMesg, __LINE__);
 
 			return testFramework.countFails(); // Return the result of the test.
 		};
@@ -199,7 +199,7 @@ Find a way to compare the stored values to the actual values
 		int SolutionTest0()
 		{
 			TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -224,8 +224,8 @@ Find a way to compare the stored values to the actual values
 				}
 			}
 
-//--------------PolyFit_solutionTest0_1 - Was the solution computed correct?
-			testFramework.assert(n==0);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(n==0, failMesg, __LINE__);
 
 			return testFramework.countFails(); // Return the result of the test.
 		};
@@ -234,7 +234,7 @@ Find a way to compare the stored values to the actual values
 		int SolutionTest()
 		{
 			TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -259,7 +259,8 @@ Find a way to compare the stored values to the actual values
 				}
 			}
 
-			testFramework.assert(n==0);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(n==0, failMesg, __LINE__);
 
 			return testFramework.countFails(); // Return the result of the test.
 		};
@@ -269,7 +270,7 @@ Find a way to compare the stored values to the actual values
 		int SolutionFailTest()
 		{
 			TestUtil testFramework( "PolyFit", "Solution", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -287,8 +288,8 @@ Find a way to compare the stored values to the actual values
 			//std::cout << "Solution is: " << test.isSingular() << std::endl;
 			n = 0;			
 
-//--------------PolyFit_solutionFailTest_1 - Was the solution computed singular?
-			testFramework.assert(test.isSingular()); // The singular flag should be set
+			failMesg = "Was the solution computed singular?";
+			testFramework.assert(test.isSingular(), failMesg, __LINE__); // The singular flag should be set
 
 			return testFramework.countFails();
 		};
@@ -297,7 +298,7 @@ Find a way to compare the stored values to the actual values
 		int EvaluateVectorTest()
 		{
 			TestUtil testFramework( "PolyFit", "Evaluate", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -326,8 +327,8 @@ Find a way to compare the stored values to the actual values
 					n += 1; // Increment the return value for each wrong value
 				}
 			}
-//--------------PolyFit_EvaluateVectorTest_1 - Was the solution computed correct?		
-			testFramework.assert(n==0);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(n==0, failMesg, __LINE__);
 
 			return testFramework.countFails(); // Return the result of the test.
 		};
@@ -336,7 +337,7 @@ Find a way to compare the stored values to the actual values
 		int EvaluateTest()
 		{
 			TestUtil testFramework( "PolyFit", "Evaluate", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			int n = 4;
 			gpstk::PolyFit<double> test(n);
@@ -354,8 +355,8 @@ Find a way to compare the stored values to the actual values
 			soln = test.Evaluate(eval);
 			//std::cout << "Solution is: " << soln << std::endl;
 
-//--------------PolyFit_EvaluateVectorTest_1 - Was the solution computed correct?
-			testFramework.assert(fabs(soln - eval*eval) < eps);
+			failMesg = "Was the solution computed correct?";
+			testFramework.assert(fabs(soln - eval*eval) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		};

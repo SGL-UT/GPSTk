@@ -63,7 +63,7 @@ class RACRotation_T
 		int tripleFirstTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			double GPSAlt = 26000000;
 			Triple XYZ, rotatedXYZ;
@@ -76,61 +76,53 @@ class RACRotation_T
    			rotatedXYZ = rot.convertToRAC( XYZ );
 			//Compare results
 
-//--------------RACRotation_tripleFirstTest_1 - Was the X value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_2 - Was the Y value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_3 - Was the Z value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[2]);
-   			testFramework.next();			
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[2], failMesg, __LINE__);
+   		
 
    			XYZ = Triple( -1.0, -1.0, -1.0);
    			rotatedXYZ = rot.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleFirstTest_4 - Was the X value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_5 - Was the Y value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_6 - Was the Z value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[2]);
-   			testFramework.next();		
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[2], failMesg, __LINE__);
+   		
 
    			XYZ = Triple( 0.0, 0.0, -1.0);
    			rotatedXYZ = rot.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleFirstTest_7 - Was the X value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_8 - Was the Y value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_9 - Was the Z value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[2]);
-   			testFramework.next();	
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[2], failMesg, __LINE__);
+   		
 
    			XYZ = Triple( 0.0, -1.0, 0.0);
    			rotatedXYZ = rot.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleFirstTest_10 - Was the X value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_11 - Was the Y value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleFirstTest_12 - Was the Z value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[2]);	
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[2]), failMesg, __LINE__;	
 
 			return testFramework.countFails();   
 		}
@@ -143,7 +135,7 @@ class RACRotation_T
 		int tripleSecondTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			double GPSAlt = 26000000;
 			Triple XYZ, rotatedXYZ;
@@ -156,62 +148,50 @@ class RACRotation_T
    			XYZ = Triple( 1.0, 1.0, 1.0);
    			rotatedXYZ = rot2.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleSecondTest_1 - Was the X value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_2 - Was the Y value rotated properly?   			
-   			testFramework.assert(-1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(-1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_3 - Was the Z value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[2], failMesg, __LINE__);
 
    			XYZ = Triple( -1.0, -1.0, -1.0);
    			rotatedXYZ = rot2.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleSecondTest_4 - Was the X value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_5 - Was the Y value rotated properly?   			
-   			testFramework.assert(1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_6 - Was the Z value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[2], failMesg, __LINE__);
 
    			XYZ = Triple( 0.0, 0.0, -1.0);
    			rotatedXYZ = rot2.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleSecondTest_7 - Was the X value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_8 - Was the Y value rotated properly?   			
-   			testFramework.assert(1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_9 - Was the Z value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[2], failMesg, __LINE__);
 
    			XYZ = Triple( 0.0, -1.0, 0.0);
    			rotatedXYZ = rot2.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleSecondTest_10 - Was the X value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_11 - Was the Y value rotated properly?   			
-   			testFramework.assert(0 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(0 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleSecondTest_12 - Was the Z value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[2], failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -224,7 +204,7 @@ class RACRotation_T
 		int  tripleThirdTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			double GPSAlt = 26000000;
 			Triple XYZ, rotatedXYZ;
@@ -237,61 +217,50 @@ class RACRotation_T
 		   	XYZ = Triple( 1.0, 1.0, 1.0);
 		   	rotatedXYZ = rot3.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleThirdTest_1 - Was the X value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_2 - Was the Y value rotated properly?   			
-   			testFramework.assert(1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_3 - Was the Z value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[2], failMesg, __LINE__);
 
 		   	XYZ = Triple( -1.0, -1.0, -1.0);
 		   	rotatedXYZ = rot3.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleThirdTest_4 - Was the X value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_5 - Was the Y value rotated properly?   			
-   			testFramework.assert(-1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(-1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_6 - Was the Z value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[2], failMesg, __LINE__);
 
 		   	XYZ = Triple( 0.0, 0.0, -1.0);
 		   	rotatedXYZ = rot3.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleThirdTest_7 - Was the X value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_8 - Was the Y value rotated properly?   			
-   			testFramework.assert(0 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(0 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_9 - Was the Z value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[2]);
-   			testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[2], failMesg, __LINE__);
 
 		   	XYZ = Triple( 0.0, -1.0, 0.0);
 		   	rotatedXYZ = rot3.convertToRAC( XYZ );
 
-//--------------RACRotation_tripleThirdTest_10 - Was the X value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the X value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_11 - Was the Y value rotated properly?   			
-   			testFramework.assert(-1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the Y value rotated properly?";   			
+   			testFramework.assert(-1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_tripleThirdTest_12 - Was the Z value rotated properly?
-   			testFramework.assert(0 == rotatedXYZ[2]);
+			failMesg = "Was the Z value rotated properly?";
+   			testFramework.assert(0 == rotatedXYZ[2], failMesg, __LINE__);
    			
 			return testFramework.countFails();
 		}
@@ -304,7 +273,7 @@ class RACRotation_T
 		int tripleFourthTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			double GPSAlt = 26000000;
 			Triple XYZ, rotatedXYZ;
@@ -339,17 +308,14 @@ class RACRotation_T
 			double y = (-2.0+sqrt(2.0))/(2.0*sqrt(3.0));
 			double z = (1.0 - sqrt(2.0))/sqrt(3.0);
 
-//--------------RACRotation_tripleFourthTest_1 - Was the X value rotated properly?			
-		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the X value rotated properly?";			
+		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_2 - Was the Y value rotated properly?
-		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_3 - Was the Z value rotated properly?
-		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps, failMesg, __LINE__);
 
 		   	XYZ = Triple( -1.0, -1.0, -1.0);
 		   	rotatedXYZ = rot4.convertToRAC( XYZ );
@@ -358,17 +324,14 @@ class RACRotation_T
 			y = -(-2.0+sqrt(2.0))/(2.0*sqrt(3.0));
 			z = -(1.0 - sqrt(2.0))/sqrt(3.0);
 
-//--------------RACRotation_tripleFourthTest_4 - Was the X value rotated properly?			
-		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the X value rotated properly?";			
+		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_5 - Was the Y value rotated properly?
-		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_6 - Was the Z value rotated properly?
-		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps, failMesg, __LINE__);
 
 		   	XYZ = Triple( 0.0, 0.0, -1.0);
 		   	rotatedXYZ = rot4.convertToRAC( XYZ );
@@ -377,17 +340,14 @@ class RACRotation_T
 			y = -sqrt(2.0)/(2.0*sqrt(3.0));
 			z = -1.0/sqrt(3.0);
 
-//--------------RACRotation_tripleFourthTest_7 - Was the X value rotated properly?			
-		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the X value rotated properly?";			
+		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_8 - Was the Y value rotated properly?
-		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_9 - Was the Z value rotated properly?
-		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Z value rotated properly?";
+		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps, failMesg, __LINE__);
 
 		   	XYZ = Triple( 0.0, -1.0, 0.0);
 		   	rotatedXYZ = rot4.convertToRAC( XYZ );
@@ -396,16 +356,14 @@ class RACRotation_T
 			y = -1.0/(2.0*sqrt(3.0));
 			z = sqrt(2.0)/sqrt(3.0);
 
-//--------------RACRotation_tripleFourthTest_10 - Was the X value rotated properly?			
-		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the X value rotated properly?";			
+		   	testFramework.assert(fabs(x - rotatedXYZ[0]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_11 - Was the Y value rotated properly?
-		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps);
-		   	testFramework.next();
+			failMesg = "Was the Y value rotated properly?";
+		   	testFramework.assert(fabs(y - rotatedXYZ[1]) < eps, failMesg, __LINE__);
 
-//--------------RACRotation_tripleFourthTest_12 - Was the Z value rotated properly?
-		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps);
+			failMesg = "Was the Z value rotated properly?";
+		   	testFramework.assert(fabs(z - rotatedXYZ[2]) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -418,7 +376,7 @@ class RACRotation_T
 		int xvtTest (void)
 		{
 			TestUtil testFramework( "RACRotation", "convertToRAC", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			double GPSAlt = 26000000;
 			Triple XYZ, rotatedXYZ;
@@ -442,37 +400,29 @@ class RACRotation_T
 
 		   	Xvt rotatedTestPoint = rot5.convertToRAC( testPoint );
 
-//--------------RACRotation_xvtTest_1 - Were the position values stored properly?
-		   	testFramework.assert(Position(1,0,0) == (gpstk::Position)rotatedTestPoint.x);
-		   	testFramework.next();
+			failMesg = "Were the position values stored properly?";
+		   	testFramework.assert(Position(1,0,0) == (gpstk::Position)rotatedTestPoint.x, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_2 - Were the velocity values stored properly?
-		   	testFramework.assert(Triple(0,1,0) == rotatedTestPoint.v);
-		   	testFramework.next();
+			failMesg = "Were the velocity values stored properly?";
+		   	testFramework.assert(Triple(0,1,0) == rotatedTestPoint.v, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_3 - Was the first velocity value stored properly?
-   			testFramework.assert(0 == rotatedTestPoint.v[0]);
-   			testFramework.next();
+			failMesg = "Was the first velocity value stored properly?";
+   			testFramework.assert(0 == rotatedTestPoint.v[0], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_4 - Was the second velocity value stored properly?
-   			testFramework.assert(1 == rotatedTestPoint.v[1]);
-   			testFramework.next();
+			failMesg = "Was the second velocity value stored properly?";
+   			testFramework.assert(1 == rotatedTestPoint.v[1], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_5 - Was the third velocity value stored properly?
-   			testFramework.assert(0 == rotatedTestPoint.v[2]);
-   			testFramework.next();
+			failMesg = "Was the third velocity value stored properly?";
+   			testFramework.assert(0 == rotatedTestPoint.v[2], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_6 - Was the clock bias value stored properly?
-		   	testFramework.assert(0.0 == rotatedTestPoint.clkbias);
-		   	testFramework.next();
+			failMesg = "Was the clock bias value stored properly?";
+		   	testFramework.assert(0.0 == rotatedTestPoint.clkbias, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_7 - Was the clock drift value stored properly?
-		   	testFramework.assert(0.0 == rotatedTestPoint.clkdrift);
-		   	testFramework.next();
+			failMesg = "Was the clock drift value stored properly?";
+		   	testFramework.assert(0.0 == rotatedTestPoint.clkdrift, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_8 - Was the relativity correction value stored properly?
-		   	testFramework.assert(0.0 == rotatedTestPoint.relcorr);
-		   	testFramework.next();
+			failMesg = "Was the relativity correction value stored properly?";
+		   	testFramework.assert(0.0 == rotatedTestPoint.relcorr, failMesg, __LINE__);
 
 		      	// Using more comlpex test vectors.
 		   	testPoint.x = Position( 0.0, 0.5, -0.5);
@@ -483,56 +433,45 @@ class RACRotation_T
 
 		   	rotatedTestPoint = rot5.convertToRAC( testPoint );
 
-//--------------RACRotation_xvtTest_9 - Were the position values stored properly?
-		   	testFramework.assert(Position(0, -0.5, -0.5) == (gpstk::Position)rotatedTestPoint.x);
-		   	testFramework.next();
+			failMesg = "Were the position values stored properly?";
+		   	testFramework.assert(Position(0, -0.5, -0.5) == (gpstk::Position)rotatedTestPoint.x, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_10 - Were the velocity values stored properly?
-		   	testFramework.assert(Triple(1.0, 1.0, 1.0) == rotatedTestPoint.v);
-		   	testFramework.next();
+			failMesg = "Were the velocity values stored properly?";
+		   	testFramework.assert(Triple(1.0, 1.0, 1.0) == rotatedTestPoint.v, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_11 - Was the first velocity value stored properly?
-   			testFramework.assert(1 == rotatedTestPoint.v[0]);
-   			testFramework.next();
+			failMesg = "Was the first velocity value stored properly?";
+   			testFramework.assert(1 == rotatedTestPoint.v[0], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_12 - Was the second velocity value stored properly?
-   			testFramework.assert(1 == rotatedTestPoint.v[1]);
-   			testFramework.next();
+			failMesg = "Was the second velocity value stored properly?";
+   			testFramework.assert(1 == rotatedTestPoint.v[1], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_13 - Was the third velocity value stored properly?
-   			testFramework.assert(1 == rotatedTestPoint.v[2]);
-   			testFramework.next();
+			failMesg = "Was the third velocity value stored properly?";
+   			testFramework.assert(1 == rotatedTestPoint.v[2], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_14 - Was the clock bias value stored properly?
-		   	testFramework.assert(0.0 == rotatedTestPoint.clkbias);
-		   	testFramework.next();
+			failMesg = "Was the clock bias value stored properly?";
+		   	testFramework.assert(0.0 == rotatedTestPoint.clkbias, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_15 - Was the clock drift value stored properly?
-		   	testFramework.assert(0.0 == rotatedTestPoint.clkdrift);
-		   	testFramework.next();
+			failMesg = "Was the clock drift value stored properly?";
+		   	testFramework.assert(0.0 == rotatedTestPoint.clkdrift, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_16 - Was the relativity correction value stored properly?
-		   	testFramework.assert(0.0 == rotatedTestPoint.relcorr);
-		   	testFramework.next();
+			failMesg = "Was the relativity correction value stored properly?";
+		   	testFramework.assert(0.0 == rotatedTestPoint.relcorr, failMesg, __LINE__);
 
 			// The conversions should still accept any Triples
 		   	XYZ = Triple( 1.0, 1.0, -1.0);
 		   	rotatedXYZ = rot5.convertToRAC( XYZ );
 
-//--------------RACRotation_xvtTest_16 - Was the Triple converted properly?
-		   	testFramework.assert(Triple(1,-1,-1) == rotatedXYZ);
-			testFramework.next();
+			failMesg = "Was the Triple converted properly?";
+		   	testFramework.assert(Triple(1,-1,-1) == rotatedXYZ, failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_17 - Was the x value rotated properly?
-   			testFramework.assert(1 == rotatedXYZ[0]);
-   			testFramework.next();
+			failMesg = "Was the x value rotated properly?";
+   			testFramework.assert(1 == rotatedXYZ[0], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_18 - Was the y value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[1]);
-   			testFramework.next();
+			failMesg = "Was the y value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[1], failMesg, __LINE__);
 
-//--------------RACRotation_xvtTest_19 - Was the z correction value rotated properly?
-   			testFramework.assert(-1 == rotatedXYZ[2]);
+			failMesg = "Was the z correction value rotated properly?";
+   			testFramework.assert(-1 == rotatedXYZ[2], failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}

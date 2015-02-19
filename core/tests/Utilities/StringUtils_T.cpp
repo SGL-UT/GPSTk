@@ -61,7 +61,7 @@ class StringUtils_T
 		int justificationTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "Justify", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString= "1234567890"; //base string to manipulate
 			string resultString;             //storage for the correct response
@@ -73,26 +73,24 @@ class StringUtils_T
 			//Add six filler characters to the front of the string 
 			rightJustify(manipulatedString, manipulatedString.length() + 6, fillerChar);
 
-//--------------StringUtils_justificationTest_1 - Verify that rightJustify works by appending 6 '-'s to the left
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that rightJustify works by appending 6 '-'s to the left";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString + string(6, fillerChar);
 			//Add six filler characters to the end of the string
 			leftJustify(manipulatedString, manipulatedString.length()+6, fillerChar);
 
-//--------------StringUtils_justificationTest_2 - Verify that leftJustify works by appending 6 '-'s to the right
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that leftJustify works by appending 6 '-'s to the right";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 			  
 			manipulatedString = baseString;
 			resultString = string(3, fillerChar) + baseString + string(3, fillerChar);
 			//Add three filler characters to both ends of the string
 			center(manipulatedString, manipulatedString.length()+6, fillerChar);
-//--------------StringUtils_justificationTest_3 - Verify that leftJustify works by appending 3 '-'s to both sides
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+
+			failMesg = "Verify that leftJustify works by appending 3 '-'s to both sides";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -107,7 +105,7 @@ class StringUtils_T
 		int stripLeadingTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "stripLeading", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString= "---1234567890---";  //base string to manipulate
 			string resultString;                    //storage for the correct response
@@ -120,36 +118,32 @@ class StringUtils_T
 			//Strip one of the character -'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, charToBeRemoved, 1);
 
-//--------------StringUtils_stripLeadingTest_1 - Verify that stripLeading works by removing 1 '-' from the beginning of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripLeading works by removing 1 '-' from the beginning of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2,string::npos);
 			//Strip one of the string --'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, stringToBeRemoved, 1);
 
-//--------------StringUtils_stripLeadingTest_2 -Verify that stripLeading works by removing 1 '--' from the beginning of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripLeading works by removing 1 '--' from the beginning of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(3,string::npos);
 			//Strip all of the character -'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, charToBeRemoved);
 
-//--------------StringUtils_stripLeadingTest_3 - Verify that stripLeading works by removing all '-' from the beginning of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripLeading works by removing all '-' from the beginning of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2,string::npos);
 			//Strip all of the string --'s from the beginning of the string
 			manipulatedString = stripLeading(manipulatedString, stringToBeRemoved);
 
-//--------------StringUtils_stripLeadingTest_4 - Verify that stripLeading works by removing all '--' from the beginning of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripLeading works by removing all '--' from the beginning of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 			
 			return testFramework.countFails();
 		}
@@ -163,7 +157,7 @@ class StringUtils_T
 		int stripTrailingTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "stripTrailing", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString= "---1234567890---"; //base string to manipulate
 			string resultString;                   //storage for the correct response
@@ -176,36 +170,32 @@ class StringUtils_T
 			//Strip one of the character -'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, charToBeRemoved, 1);
 
-//--------------StringUtils_stripTrailingTest_1 - Verify that stripTrailing works by removing 1 '-' from the end of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripTrailing works by removing 1 '-' from the end of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-2);
 			//Strip one of the string --'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, stringToBeRemoved, 1);
 
-//--------------StringUtils_stripTrailingTest_2 - Verify that stripTrailing works by removing 1 '--' from the end of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripTrailing works by removing 1 '--' from the end of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-3);
 			//Strip all of the character -'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, charToBeRemoved);
 
-//--------------StringUtils_stripTrailingTest_3 - Verify that stripTrailing works by removing all '-' from the end of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripTrailing works by removing all '-' from the end of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(0, baseString.length()-2);
 			//Strip all of the string --'s from the end of the string
 			manipulatedString = stripTrailing(manipulatedString, stringToBeRemoved);
 
-//--------------StringUtils_stripTrailingTest_4 - Verify that stripTrailing works by removing all '--' from the end of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that stripTrailing works by removing all '--' from the end of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 			
 			return testFramework.countFails();
 		}
@@ -219,7 +209,7 @@ class StringUtils_T
 		int stripTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString= "---1234567890---"; //base string to manipulate
 			string resultString;                   //storage for the correct response
@@ -232,36 +222,32 @@ class StringUtils_T
 			//Strip one of the character -'s from both ends of the string
 			manipulatedString = strip(manipulatedString, charToBeRemoved, 1);
 
-//--------------StringUtils_stripTest_1 - Verify that strip works by removing 1 '-' from both ends of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that strip works by removing 1 '-' from both ends of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2,baseString.length()-4);
 			//Strip one of the string --'s from both ends of the string
 			manipulatedString = strip(manipulatedString, stringToBeRemoved, 1);
 
-//--------------StringUtils_stripTest_2 - Verify that strip works by removing 1 '--' from both ends of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that strip works by removing 1 '--' from both ends of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(3, baseString.length()-6);
 			//Strip all of the character -'s from both ends of the string
 			manipulatedString = strip(manipulatedString, charToBeRemoved);
 
-//--------------StringUtils_stripTest_3 - Verify that strip works by removing all '-' from both ends of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that strip works by removing all '-' from both ends of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			resultString = baseString.substr(2, baseString.length()-4);
 			//Strip all of the string --'s from both ends of the string
 			manipulatedString = strip(manipulatedString, stringToBeRemoved);
 
-//--------------StringUtils_stripTest_4 - Verify that strip works by removing all '--' from both ends of the string
-			testFramework.assert(manipulatedString == resultString);
-			testFramework.next();
+			failMesg = "Verify that strip works by removing all '--' from both ends of the string";
+			testFramework.assert(manipulatedString == resultString, failMesg, __LINE__);
 			
 			return testFramework.countFails();
 		}
@@ -275,7 +261,7 @@ class StringUtils_T
 		int translateTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "strip", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString = "Hello World! I am the Translation test String!";      //Original String to replace characters on
 			string manipulatedString;                                                  //storage for manipulated base string
@@ -288,19 +274,16 @@ class StringUtils_T
 			string expectedResult3 = "Hello World! I am the Translation test String!"; //Correctly translated base string with translateTo3
 
 			manipulatedString = translate(baseString, translateFrom, translateTo1);
-//--------------StringUtils_translateTest_1 - Verify that translate works by changing multiple characters
-			testFramework.assert(manipulatedString == expectedResult1);
-			testFramework.next();
+			failMesg = "Verify that translate works by changing multiple characters";
+			testFramework.assert(manipulatedString == expectedResult1, failMesg, __LINE__);
 
 			manipulatedString = translate(baseString, translateFrom, translateTo2);
-//--------------StringUtils_translateTest_2 - Verify that translate replaces unmatched characters with blanks
-			testFramework.assert(manipulatedString == expectedResult2);
-			testFramework.next();
+			failMesg = "Verify that translate replaces unmatched characters with blanks";
+			testFramework.assert(manipulatedString == expectedResult2, failMesg, __LINE__);
 
 			manipulatedString = translate(baseString, translateFrom, translateTo3);
-//--------------StringUtils_translateTest_2 - Verify that translate won't change things when supplied the same set of characters
-			testFramework.assert(manipulatedString == expectedResult3);
-			testFramework.next();
+			failMesg = "Verify that translate won't change things when supplied the same set of characters";
+			testFramework.assert(manipulatedString == expectedResult3, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -314,7 +297,7 @@ class StringUtils_T
 		int stringToNumberTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "asInt", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString = "12345.67890";                                    //String to convert to a number
 			int resultingInt, comparisonInt = 12345;                              //Storage for converted string and the expected result value
@@ -323,27 +306,23 @@ class StringUtils_T
 			long double resultingLongDouble, comparisonLongDouble = 12345.67890L; //Storage for converted string and the expected result value
 
 			resultingInt = asInt(baseString);
-//--------------StringUtils_stringToNumberTest_1 - Verify that asInt works as intended
-			testFramework.assert(resultingInt == comparisonInt);
-			testFramework.next();
+			failMesg = "Verify that asInt works as intended";
+			testFramework.assert(resultingInt == comparisonInt, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("asDouble");
 			resultingDouble = asDouble(baseString);
-//--------------StringUtils_stringToNumberTest_2 - Verify that asDouble works as intended
-			testFramework.assert(resultingDouble == comparisonDouble);
-			testFramework.next();
+			failMesg = "Verify that asDouble works as intended";
+			testFramework.assert(resultingDouble == comparisonDouble, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("asFloat");
 			resultingFloat = asFloat(baseString);
-//--------------StringUtils_stringToNumberTest_3 - Verify that asFloat works as intended
-			testFramework.assert(resultingFloat == comparisonFloat);
-			testFramework.next();
+			failMesg = "Verify that asFloat works as intended";
+			testFramework.assert(resultingFloat == comparisonFloat, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("asLongDouble");
 			resultingLongDouble = asLongDouble(baseString);
-//--------------StringUtils_stringToNumberTest_4 - Verify that asLongDouble works as intended
-			testFramework.assert(resultingLongDouble == comparisonLongDouble);
-			testFramework.next();
+			failMesg = "Verify that asLongDouble works as intended";
+			testFramework.assert(resultingLongDouble == comparisonLongDouble, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -360,7 +339,7 @@ class StringUtils_T
 		int numberToStringTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "asString", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string convertedString;                     //Storage for converted number
 			int sampleInt = 1234567890;                 //Example integer to test
@@ -370,24 +349,20 @@ class StringUtils_T
 
 			
 			convertedString = asString(sampleInt);
-//--------------StringUtils_numberToStringTest_1 - Verify that asString converts ints
-			testFramework.assert(asInt(convertedString) == sampleInt);
-			testFramework.next();
+			failMesg = "Verify that asString converts ints";
+			testFramework.assert(asInt(convertedString) == sampleInt, failMesg, __LINE__);
 
 			convertedString = asString(sampleDouble);
-//--------------StringUtils_numberToStringTest_2 - Verify that asString converts doubles
-			testFramework.assert(asDouble(convertedString) == sampleDouble);
-			testFramework.next();
+			failMesg = "Verify that asString converts doubles";
+			testFramework.assert(asDouble(convertedString) == sampleDouble, failMesg, __LINE__);
 
 			convertedString = asString(sampleFloat);
-//--------------StringUtils_numberToStringTest_3 - Verify that asString converts floats
-			testFramework.assert(asFloat(convertedString) == sampleFloat);
-			testFramework.next();
+			failMesg = "Verify that asString converts floats";
+			testFramework.assert(asFloat(convertedString) == sampleFloat, failMesg, __LINE__);
 
 			convertedString = asString(sampleLongDouble);
-//--------------StringUtils_numberToStringTest_4 - Verify that asString converts long doubles
-			testFramework.assert(asLongDouble(convertedString) == sampleLongDouble);
-			testFramework.next();
+			failMesg = "Verify that asString converts long doubles";
+			testFramework.assert(asLongDouble(convertedString) == sampleLongDouble, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -402,7 +377,7 @@ class StringUtils_T
 		int hexConversionTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "x2d", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string initialHexString = "0x100 foo";           //Example string with hex values in it
 			string correctConvertedHexString = "256 foo";    //Resulting string when the hex -> decimal conversion was made
@@ -411,15 +386,13 @@ class StringUtils_T
 			string manipulatedResult;                        //Storage for manipulated strings
 
 			manipulatedResult = x2d(initialHexString);
-//--------------StringUtils_hexConversionTest_1 - Verify that x2d works
-			testFramework.assert(initialHexString == correctConvertedHexString);
-			testFramework.next();
+			failMesg = "Verify that x2d works";
+			testFramework.assert(initialHexString == correctConvertedHexString, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("d2x");
 			manipulatedResult = d2x(initialDecimalString);
-//--------------StringUtils_hexConversionTest_2 - Verify that d2x works
-			testFramework.assert(initialDecimalString == correctConvertedDecimalString);
-			testFramework.next();
+			failMesg = "Verify that d2x works";
+			testFramework.assert(initialDecimalString == correctConvertedDecimalString, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -434,7 +407,7 @@ class StringUtils_T
 		int stringReplaceTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "replaceAll", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string baseString = "010101000111010";
 			string replaced1s = "0-0-0-000---0-0";
@@ -444,21 +417,18 @@ class StringUtils_T
 
 			manipulatedString = baseString;
 			manipulatedString = replaceAll(manipulatedString, string("1"), string("-"));
-//--------------StringUtils_stringReplaceTest_1 - Verify that replaceAll works with a character swap
-			testFramework.assert(manipulatedString == replaced1s);
-			testFramework.next();
+			failMesg = "Verify that replaceAll works with a character swap";
+			testFramework.assert(manipulatedString == replaced1s, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			manipulatedString = replaceAll(manipulatedString, string("1"), string("ABC"));
-//--------------StringUtils_stringReplaceTest_2 - Verify that replaceAll works with a character swap
-			testFramework.assert(manipulatedString == replaced1withABC);
-			testFramework.next();
+			failMesg = "Verify that replaceAll works with a character swap";
+			testFramework.assert(manipulatedString == replaced1withABC, failMesg, __LINE__);
 
 			manipulatedString = baseString;
 			manipulatedString = replaceAll(manipulatedString, string("1"), string("123"));
-//--------------StringUtils_stringReplaceTest_3 - Verify that replaceAll works with a character swap
-			testFramework.assert(manipulatedString == replaced1with123);
-			testFramework.next();
+			failMesg = "Verify that replaceAll works with a character swap";
+			testFramework.assert(manipulatedString == replaced1with123, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -472,7 +442,7 @@ class StringUtils_T
 		int wordTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "firstWord", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 
 			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    "; //Original string to manipulate
@@ -488,45 +458,40 @@ class StringUtils_T
 
 
 			resultString = firstWord(originalString);
-//--------------StringUtils_wordTest_1 - Verify that firstWord returns the correct word in the string
-			testFramework.assert(resultString == firstWordInString);
-			testFramework.next();	
+			failMesg = "Verify that firstWord returns the correct word in the string";
+			testFramework.assert(resultString == firstWordInString, failMesg, __LINE__);
+		
 
 			testFramework.changeSourceMethod("numWords");
 			resultInt = numWords(originalString);
-//--------------StringUtils_wordTest_2 - Verify that firstWord returns the correct word in the string
-			testFramework.assert(resultInt == numberOfWords);
-			testFramework.next();		
+			failMesg = "Verify that firstWord returns the correct word in the string";
+			testFramework.assert(resultInt == numberOfWords, failMesg, __LINE__);
+		
 
 			testFramework.changeSourceMethod("word");
 			resultString = word(originalString,4);
-//--------------StringUtils_wordTest_3 - Verify that word returns the correct word in the string (words are ordered starting with 0)
-			testFramework.assert(resultString == fifthWordInString);
-			testFramework.next();
+			failMesg = "Verify that word returns the correct word in the string (words are ordered starting with 0)";
+			testFramework.assert(resultString == fifthWordInString, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("removeWords");
 			resultString = removeWords(originalString, 3, 2); //This changes the string passed to the method
-//--------------StringUtils_wordTest_4 - Verify that removeWords removes the correct set of words
-			testFramework.assert(resultString == removedFourthFifthWords);
-			testFramework.next();
+			failMesg = "Verify that removeWords removes the correct set of words";
+			testFramework.assert(resultString == removedFourthFifthWords, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("stripFirstWord");
 			resultString = stripFirstWord(originalString); //This changes the string passed to the method
-//--------------StringUtils_wordTest_5 - Verify that the first word is stripped from the string
-			testFramework.assert(originalString == removedFirstWord);
-			testFramework.next();
+			failMesg = "Verify that the first word is stripped from the string";
+			testFramework.assert(originalString == removedFirstWord, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("removeWords");
 			resultString = removeWords(originalString,5); //This changes the string passed to the method
-//--------------StringUtils_wordTest_6 - Verify that removeWords removes the proper word from the string
-			testFramework.assert(resultString == removedSixthWord);
-			testFramework.next();
+			failMesg = "Verify that removeWords removes the proper word from the string";
+			testFramework.assert(resultString == removedSixthWord, failMesg, __LINE__);
 
 			testFramework.changeSourceMethod("words");
 			resultString = words(originalString,3);
-//--------------StringUtils_wordTest_7 - Verify that words returns all words from the correct position (4th in this case) onward
-			testFramework.assert(resultString == allWordsFromFourthOn);
-			testFramework.next();
+			failMesg = "Verify that words returns all words from the correct position (4th in this case) onward";
+			testFramework.assert(resultString == allWordsFromFourthOn, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -541,7 +506,7 @@ class StringUtils_T
 		int regularExpressionsTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "isLike", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			string originalString = "      The  Quick    Brown  Fox     Jumps  Over    The  Lazy    Dog.    "; //String to be searched
 			int resultInt;                                                                                     //Storage for isLike result
@@ -552,20 +517,20 @@ class StringUtils_T
 
 
 			resultInt = isLike(originalString, testedRegularExpression1);
-//--------------StringUtils_regularExpressionsTest_1 - Verify that isLike returns 1 when the expression is found in the given string
-			testFramework.assert(resultInt == 1);
-			testFramework.next();	
+			failMesg = "Verify that isLike returns 1 when the expression is found in the given string";
+			testFramework.assert(resultInt == 1, failMesg, __LINE__);
+		
 
 			resultInt = isLike(originalString, testedRegularExpression2);
-//--------------StringUtils_regularExpressionsTest_2 - Verify that isLike returns 0 when the expression is NOT found in the given string
-			testFramework.assert(resultInt == 0);
-			testFramework.next();	
+			failMesg = "Verify that isLike returns 0 when the expression is NOT found in the given string";
+			testFramework.assert(resultInt == 0, failMesg, __LINE__);
+		
 
 			testFramework.changeSourceMethod("matches");
 			resultString = matches(originalString, testedRegularExpression1);
-//--------------StringUtils_regularExpressionsTest_3 - Verify that matches returns the string which matches the regular expression given
-			testFramework.assert(resultString == correctResult);
-			testFramework.next();	
+			failMesg = "Verify that matches returns the string which matches the regular expression given";
+			testFramework.assert(resultString == correctResult, failMesg, __LINE__);
+		
 
 			return testFramework.countFails();
 		}
@@ -578,15 +543,14 @@ class StringUtils_T
 		int prettyPrintTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "prettyPrint", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 			string originalString("This is a very long sentence that will get cut up into lines with a maximum length of 40 characters, each line indented by a few spaces.");
 			string prettyPrintThis = originalString;
 			string prettyPrinted = "       This is a very long sentence that\n     will get cut up into lines with a\n     maximum length of 40 characters,\n     each line indented by a few spaces.\n";
 
 			prettyPrint(prettyPrintThis, "\n", "    ", "      ", 40);
-//--------------StringUtils_prettyPrintTest_1 - Verify that prettyPrint works
-			testFramework.assert(prettyPrinted == prettyPrintThis);
-			testFramework.next();
+			failMesg = "Verify that prettyPrint works";
+			testFramework.assert(prettyPrinted == prettyPrintThis, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -607,7 +571,7 @@ class StringUtils_T
 		int hexToAsciiTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 
 			stringstream hexDumpStream;
@@ -695,18 +659,16 @@ class StringUtils_T
 			string hexDumpString(hexDumpArray, sizeof(hexDumpArray));
 			hexDumpData(hexDumpStream, hexDumpString);
 
-//--------------StringUtils_hexDumpTest_1 - Verify that hexDumpData works
-			testFramework.assert(hexDumpStream.str() == correctHexDumpStream.str());
-			testFramework.next();
+			failMesg = "Verify that hexDumpData works";
+			testFramework.assert(hexDumpStream.str() == correctHexDumpStream.str(), failMesg, __LINE__);
 
 			//configure the hexDumpData, dump it to output stringstream
       			HexDumpDataConfig hdcfg(true, true, true, 8, 2, 2, 1, 0, 0, 16, true,'\'', 1);
 			hexDumpData(configHexDumpStream, hexDumpString, 6, hdcfg);
 			testFramework.changeSourceMethod("HexDumpDataConfig");
 
-//--------------StringUtils_hexDumpTest_2 - Verify that configuring the hexDumpData works
-			testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str());
-			testFramework.next();
+			failMesg = "Verify that configuring the hexDumpData works";
+			testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str(), failMesg, __LINE__);
 
                         //Correct format for the printable, with Unix-Debain output of the 0x00, 0x10, and 0x85 hex values (first, second, and last values)
 			//A NEW METHOD OF CREATING THIS OUTPUT FOR THOSE UNIQUE CHARACTERS SHOULD BE MADE. AS IT IS NOW, THIS TEST WILL FAIL FOR OTHER
@@ -718,9 +680,8 @@ class StringUtils_T
 
 			printableMessageStream << printable(hexDumpString) ;
 			testFramework.changeSourceMethod("printable");
-//--------------StringUtils_hexDumpTest_2 - Verify that prettyPrint works
-			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str());
-			testFramework.next();
+			failMesg = "Verify that prettyPrint works";
+			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str(), failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -734,7 +695,7 @@ class StringUtils_T
 		int hexDumpDataTest( void )
 		{
 			TestUtil testFramework( "StringUtils", "hexDumpData", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 
 			stringstream hexDumpStream;
@@ -818,18 +779,16 @@ class StringUtils_T
 			string hexDumpString(hexDumpArray, sizeof(hexDumpArray));
 			hexDumpData(hexDumpStream, hexDumpString);
 
-//--------------StringUtils_hexDumpTest_1 - Verify that hexDumpData works
-			testFramework.assert(hexDumpStream.str() == correctHexDumpStream.str());
-			testFramework.next();
+			failMesg = "Verify that hexDumpData works";
+			testFramework.assert(hexDumpStream.str() == correctHexDumpStream.str(), failMesg, __LINE__);
 
 			//configure the hexDumpData, dump it to output stringstream
       			HexDumpDataConfig hdcfg(true, true, true, 8, 2, 2, 1, 0, 0, 16, true,'\'', 1);
 			hexDumpData(configHexDumpStream, hexDumpString, 6, hdcfg);
 			testFramework.changeSourceMethod("HexDumpDataConfig");
 
-//--------------StringUtils_hexDumpTest_2 - Verify that configuring the hexDumpData works
-			testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str());
-			testFramework.next();
+			failMesg = "Verify that configuring the hexDumpData works";
+			testFramework.assert(configHexDumpStream.str() == correctConfigHexDumpStream.str(), failMesg, __LINE__);
 
                         //Correct format for the printable
 			correctPrintableMessage << "af030105:eph :0:52640.33340277777778A Random Message25925924"
@@ -839,9 +798,9 @@ class StringUtils_T
 
 			printableMessageStream << printable(hexDumpString) ;
 			testFramework.changeSourceMethod("printable");
-//--------------StringUtils_hexDumpTest_2 - Verify that prettyPrint works
-			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str());
-			testFramework.next();
+
+			failMesg = "Verify that prettyPrint works";
+			testFramework.assert(printableMessageStream.str() == correctPrintableMessage.str(), failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}

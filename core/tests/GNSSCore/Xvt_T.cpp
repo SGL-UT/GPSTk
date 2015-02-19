@@ -55,7 +55,10 @@ class Xvt_T
 	int getTest (void)
 	{
 		TestUtil testFramework("Xvt","Get",__FILE__,__LINE__ );
-		testFramework.init();
+		std::string failMesg;
+		{
+			/* data */
+		};
 
 		//Add in blank initialization check here
 
@@ -70,24 +73,20 @@ class Xvt_T
 		Compare.clkdrift = clockDrift;
 		Compare.relcorr = relativityCorrection;
 
-//--------------XvT_getTest_1 - Is the position value accurate?
-		testFramework.assert(pos == Compare.getPos());
-		testFramework.next();
+		failMesg = "Is the position value accurate?";
+		testFramework.assert(pos == Compare.getPos(), failMesg, __LINE__);
 
-//--------------XvT_getTest_2 - Is the velocity value accurate?
-		testFramework.assert(vel == Compare.getVel());
-		testFramework.next();
+		failMesg = "Is the velocity value accurate?";
+		testFramework.assert(vel == Compare.getVel(), failMesg, __LINE__);
 
-//--------------XvT_getTest_3 - Is the clock bias value accurate?
-		testFramework.assert(clockBias == Compare.getClockBias());
-		testFramework.next();
+		failMesg = "Is the clock bias value accurate?";
+		testFramework.assert(clockBias == Compare.getClockBias(), failMesg, __LINE__);
 
-//--------------XvT_getTest_4 - Is the clock drift value accurate?
-		testFramework.assert(clockDrift == Compare.getClockDrift());
-		testFramework.next();
+		failMesg = "Is the clock drift value accurate?";
+		testFramework.assert(clockDrift == Compare.getClockDrift(), failMesg, __LINE__);
 
-//--------------XvT_getTest_5 - Is the relativity correction value accurate?
-		testFramework.assert(relativityCorrection == Compare.getRelativityCorr());
+		failMesg = "Is the relativity correction value accurate?";
+		testFramework.assert(relativityCorrection == Compare.getRelativityCorr(), failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -95,7 +94,10 @@ class Xvt_T
 	int computeRelativityCorrectionTest (void)
 	{
 		TestUtil testFramework("Xvt","computeRelativityCorrection",__FILE__,__LINE__ );
-		testFramework.init();
+		std::string failMesg;
+		{
+			/* data */
+		};
 
 		Triple pos( 1234567000, 887654, 321 );
 		Triple vel(4321, 1234, 1342); 
@@ -104,9 +106,8 @@ class Xvt_T
 		Compare.x = pos;
 		Compare.v = vel;
 
-//--------------XvT_computeRelativityCorrectionTest_1 - Was the relativity correction computation correct?
-		testFramework.assert(abs(Compare.computeRelativityCorrection() - relcorr) < eps);
-		testFramework.next();
+		failMesg = "Was the relativity correction computation correct?";
+		testFramework.assert(abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
 
 		pos[0] = -1234567000;
 		pos[1] = 887654;
@@ -118,9 +119,8 @@ class Xvt_T
 		Compare.x = pos;
 		Compare.v = vel;
 
-//--------------XvT_computeRelativityCorrectionTest_2 - Was the relativity correction computation correct?
-		testFramework.assert(abs(Compare.computeRelativityCorrection() - relcorr) < eps);
-		testFramework.next();
+		failMesg = "Was the relativity correction computation correct?";
+		testFramework.assert(abs(Compare.computeRelativityCorrection() - relcorr) < eps, failMesg, __LINE__);
 
 		pos[0] = 0;
 		pos[1] = 0;
@@ -132,8 +132,8 @@ class Xvt_T
 		Compare.x = pos;
 		Compare.v = vel;
 
-//--------------XvT_computeRelativityCorrectionTest_3 - Was the relativity correction computation correct?
-		testFramework.assert(abs(Compare.computeRelativityCorrection()) < eps);
+		failMesg = "Was the relativity correction computation correct?";
+		testFramework.assert(abs(Compare.computeRelativityCorrection()) < eps, failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
@@ -141,12 +141,16 @@ class Xvt_T
 	int preciseRhoTest (void)
 	{
 		TestUtil testFramework("Xvt","preciseRho Method Unverified",__FILE__,__LINE__ );
-		testFramework.init();
+		std::string failMesg;
+		{
+			/* data */
+		};
 
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 //	Unable to verify if operations done in Xvt.hpp are correct
 //	Creating placeholder for testing, and setting it to fail as a signifier
-		testFramework.assert(false);
+		failMesg = "UNVERFIED preciseRhoTest. Set to FAIL until verified";
+		testFramework.assert(false, failMesg, __LINE__);
 
 		return testFramework.countFails();
 //=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
@@ -156,7 +160,10 @@ class Xvt_T
 	int operatorTest (void)
 	{
 		TestUtil testFramework("Xvt","<< Operator",__FILE__,__LINE__ );
-		testFramework.init();
+		std::string failMesg;
+		{
+			/* data */
+		};
 
 		Triple pos(1,2,3);
 		Triple vel(4,5,6);
@@ -178,8 +185,8 @@ class Xvt_T
 			// Creates a string with the contents of output via the redirection operator
 			streamOutput << output;
 
-//--------------XvT_operatorTest_1- Was the operation using the << operator successful?			
-			testFramework.passTest();
+			failMesg = "Was the operation using the << operator successful?";
+			testFramework.assert(true, failMesg, __LINE__);
 
 			stringOutput = streamOutput.str();
 
@@ -191,12 +198,17 @@ class Xvt_T
     				<< ", relcorr:" << output.relcorr;
     		stringCompare = streamCompare.str();
 
-//--------------XvT_operatorTest_2- Were the contents of the Xvt output stream correct?
-			testFramework.assert(stringCompare == stringOutput);
-			testFramework.next();
+			failMesg = "Were the contents of the Xvt output stream correct?";
+			testFramework.assert(stringCompare == stringOutput, failMesg, __LINE__);
+
 		}
-		catch (...) {std::cout<<"hi"<<std::endl;
-		testFramework.failTest(); testFramework.failTest();}
+		catch (...)
+		{
+			failMesg = "Outputting an Xvt object using the redirection operator << caused an error";
+			testFramework.assert(false, failMesg, __LINE__);
+			failMesg = "This test failed automatically because the redirection operator failed";			
+			testFramework.assert(false, failMesg, __LINE__);
+		}
 
 		return testFramework.countFails();
 	}

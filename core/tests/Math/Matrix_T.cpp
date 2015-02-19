@@ -61,7 +61,7 @@ class Matrix_T
 	int sizeTest (void)
 	{
 		TestUtil testFramework("Matrix","Size",__FILE__,__LINE__);
-		testFramework.init();
+		std::string failMesg;
 
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
    		for(int i = 0; i < 16; i++) v1[i] = i+1;
@@ -81,100 +81,77 @@ class Matrix_T
    		gpstk::Matrix<int> g(2, 2, v3);
    		gpstk::Matrix<int> h(4, 2, v4);
 
-//--------------Matrix_sizeTest_1 - Does the size method function as expected?
-		testFramework.assert((size_t)4 == a.size());
-		testFramework.next();
+		failMesg = "Does the size method function as expected?";
+		testFramework.assert((size_t)4 == a.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_2 - Does the rows method function as expected?
-		testFramework.assert((size_t)2 == a.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)2 == a.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_3 - Does the cols method function as expected?
-		testFramework.assert((size_t)2 == a.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)2 == a.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_4 - Does the size method function as expected?
-		testFramework.assert((size_t)16 == b.size());
-		testFramework.next();
+		failMesg = "Does the size method function as expected?";
+		testFramework.assert((size_t)16 == b.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_5 - Does the rows method function as expected?
-		testFramework.assert((size_t)8 == b.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)8 == b.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_6 - Does the cols method function as expected?
-		testFramework.assert((size_t)2 == b.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)2 == b.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_7 - Does the size method function as expected?
-		testFramework.assert((size_t)8 == c.size());
-		testFramework.next();
+		failMesg = "Does the size method function as expected?";
+		testFramework.assert((size_t)8 == c.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_8 - Does the rows method function as expected?
-		testFramework.assert((size_t)4 == c.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)4 == c.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_9 - Does the cols method function as expected?
-		testFramework.assert((size_t)2 == c.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)2 == c.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_10 - Does the cols method function as expected?
-		testFramework.assert((size_t)16 == d.size());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)16 == d.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_11 - Does the rows method function as expected?
-		testFramework.assert((size_t)4 == d.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)4 == d.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_12 - Does the cols method function as expected?
-		testFramework.assert((size_t)4 == d.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)4 == d.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_13 - Does the cols method function as expected?
-		testFramework.assert((size_t)16 == e.size());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)16 == e.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_14 - Does the rows method function as expected?
-		testFramework.assert((size_t)8 == e.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)8 == e.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_15 - Does the cols method function as expected?
-		testFramework.assert((size_t)2 == e.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)2 == e.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_16 - Does the cols method function as expected?
-		testFramework.assert((size_t)16 == f.size());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)16 == f.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_17 - Does the rows method function as expected?
-		testFramework.assert((size_t)4 == f.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)4 == f.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_18 - Does the cols method function as expected?
-		testFramework.assert((size_t)4 == f.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)4 == f.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_19 - Does the cols method function as expected?
-		testFramework.assert((size_t)4 == g.size());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)4 == g.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_20 - Does the rows method function as expected?
-		testFramework.assert((size_t)2 == g.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)2 == g.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_21 - Does the cols method function as expected?
-		testFramework.assert((size_t)2 == g.cols());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)2 == g.cols(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_22 - Does the cols method function as expected?
-		testFramework.assert((size_t)8 == h.size());
-		testFramework.next();
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)8 == h.size(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_23 - Does the rows method function as expected?
-		testFramework.assert((size_t)4 == h.rows());
-		testFramework.next();
+		failMesg = "Does the rows method function as expected?";
+		testFramework.assert((size_t)4 == h.rows(), failMesg, __LINE__);
 
-//--------------Matrix_sizeTest_24 - Does the cols method function as expected?
-		testFramework.assert((size_t)2 == h.cols());
+		failMesg = "Does the cols method function as expected?";
+		testFramework.assert((size_t)2 == h.cols(), failMesg, __LINE__);
 		
 		return testFramework.countFails();
 	}
@@ -183,7 +160,7 @@ class Matrix_T
 	int getTest (void)
 	{
 		TestUtil testFramework("Matrix","getTest",__FILE__,__LINE__);
-      	testFramework.init();
+      	std::string failMesg;
       	int badCount = 0;
 
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
@@ -204,80 +181,65 @@ class Matrix_T
    		gpstk::Matrix<int> g(2, 2, v3);
    		gpstk::Matrix<int> h(4, 2, v4);
 
-//--------------Matrix_getTest_1 - Is matrix a initializated properly?
+		failMesg = "Is matrix a initializated properly?";
    		for(int i = 0; i < a.rows(); i++)
       			for(int j = 0; j < a.cols(); j++)
          			if (1 != a(i,j)) {badCount++;}
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failMesg, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_2 - Is matrix b initializated properly?
+		failMesg = "Is matrix b initializated properly?";
    		for(int i = 0; i < b.rows(); i++)
       			for(int j = 0; j < b.cols(); j++)
          			if (3 != b(i,j)) {badCount++;}
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failMesg, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_3 - Is matrix c initializated properly?
+		failMesg = "Is matrix c initializated properly?";
 		for(int i = 0; i < c.rows(); i++)
 		      	for(int j = 0; j < c.cols(); j++)
          			if (5 != c(i,j)) {badCount++;}
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failMesg, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_4 - Is matrix d initializated properly?
+		failMesg = "Is matrix d initializated properly?";
 		for(int i = 0; i < d.rows(); i++)
 		      	for(int j = 0; j < d.cols(); j++)
 					if (7 != d(i,j)) {badCount++;}
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failMesg, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_5 - Is matrix e initializated properly?
 		for(int i = 0; i < e.rows(); i++)
 		      	for(int j = 0; j < e.cols(); j++)
 				if (v1(i*e.cols()+j) != e(i,j)) {badCount++;}
 
 	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 8x2 matrix. " << badCount << " of them are set improperly.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_6 - Is matrix f initializated properly?
 		for(int i = 0; i < f.rows(); i++)
 		      	for(int j = 0; j < f.cols(); j++)
 				if (v2(i*f.cols()+j) != f(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 4x4 matrix. " << badCount << " of them are set improperly.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_7 - Is matrix g initializated properly?
 		for(int i = 0; i < g.rows(); i++)
 		      	for(int j = 0; j < g.cols(); j++)
 				if (v3(i*g.cols()+j) != g(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 2x2 matrix. " << badCount << " of them are set improperly.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter
 
-//--------------Matrix_getTest_8 - Is matrix h initializated properly?
 		for(int i = 0; i < h.rows(); i++)
 		      	for(int j = 0; j < h.cols(); j++)
 			 	if (v4(i*h.cols()+j) != h(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if gpstk::Matrix set the gpstk::Vector of values properly into a 4x2 matrix. " << badCount << " of them are set improperly.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter
 
 		return testFramework.countFails();
@@ -287,7 +249,7 @@ class Matrix_T
 	int operatorTest (void)
 	{
 		TestUtil testFramework("Matrix","Operators",__FILE__,__LINE__);
-      	testFramework.init();
+      	std::string failMesg;
       	int badCount = 0;
 
    		gpstk::Vector<int> v1 = gpstk::Vector<int>(16);
@@ -315,9 +277,7 @@ class Matrix_T
          			if (v3(i*g.cols()+j)+1 != a(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if addition between two 2x2 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter;
    		a -= g; // 2x2 reset a
 
@@ -329,9 +289,7 @@ class Matrix_T
          				if (3-v1(i*e.cols()+j) != b(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if subtraction between two 8x2 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter;
    		b += e; // 8x2 reset b
 
@@ -343,9 +301,7 @@ class Matrix_T
          				if (5-v4(i*h.cols()+j) != c(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if subtraction between two 4x2 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter;
    		c += h; // 4x2 reset c
 
@@ -357,9 +313,7 @@ class Matrix_T
          			if (v2(i*f.cols()+j)+7 != d(i,j)) {badCount++;}
 	failDescriptionStream << "Check to see if addition between two 4x4 gpstk::Matrix objects works. " << badCount << " of the elements are incorrect.";
 	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	testFramework.setFailMessage(failDescriptionString, __LINE__);
-        testFramework.assert(badCount==0);
-        testFramework.next();
+        testFramework.assert(badCount==0, failDescriptionString, __LINE__);
       	badCount = 0; // Reset error counter
    		d -= f; // 4x4 reset d
 

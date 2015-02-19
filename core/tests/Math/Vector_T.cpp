@@ -47,7 +47,7 @@ class Vector_T
    int initializationTest(void)
    {
       TestUtil testFramework("Vector","initializationTest",__FILE__,__LINE__);
-      testFramework.init();
+      std::string failMesg;
 
       int badCount=0;
 
@@ -63,66 +63,58 @@ class Vector_T
 
       for(i=0; i<v1.size(); i++)
       {
-//--------------Vector_getTest_1 - Were the array values set to expectation?
+      failMesg = "Were the array values set to expectation?";
          if (1.0 != v1[i]) {badCount++;}
          if (1.0 != v1(i)) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
       badCount = 0; // Reset error counter
 
-//--------------Vector_getTest_2 - Was the size set to expectation?
-      testFramework.assert(i == v1.size());
-      testFramework.next();
+      failMesg = "Was the size set to expectation?";
+      testFramework.assert(i == v1.size(), failMesg, __LINE__);
 
       for(i=0; i<v2.size(); i++)
       {
-//--------------Vector_getTest_3 - Were the array values set to expectation?
+      failMesg = "Were the array values set to expectation?";
          if (5.0 != v2[i]) {badCount++;}
          if (5.0 != v2(i)) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
       badCount = 0; // Reset error counter
 
-//--------------Vector_getTest_4 - Was the size set to expectation?
-      testFramework.assert(i == v2.size());
-      testFramework.next();
+      failMesg = "Was the size set to expectation?";
+      testFramework.assert(i == v2.size(), failMesg, __LINE__);
 
-//--------------Vector_getTest_5 - Was the size set to expectation?
-      testFramework.assert(250 == st.size());
-      testFramework.next();
+      failMesg = "Was the size set to expectation?";
+      testFramework.assert(250 == st.size(), failMesg, __LINE__);
 
       for(i=0; i<Compare.size(); i++)
       {
-//--------------Vector_getTest_6 - Were the array values set to expectation?
+      failMesg = "Were the array values set to expectation?";
          if (1.0 != Compare[i]) {badCount++;}
          if (1.0 != Compare(i)) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
       badCount = 0; // Reset error counter
 
-//--------------Vector_getTest_7 - Was the size set to expectation?
-      testFramework.assert(i == Compare.size());
-      testFramework.next();
+      failMesg = "Was the size set to expectation?";
+      testFramework.assert(i == Compare.size(), failMesg, __LINE__);
 
       for(i=0; i<val.size(); i++)
       {
-//--------------Vector_getTest_8 - Were the array values set to expectation?
+      failMesg = "Were the array values set to expectation?";
          if (10.0 != val[i]) {badCount++;}
          if (10.0 != val(i)) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
       badCount = 0; // Reset error counter
 
-//--------------Vector_getTest_9 - Was the size set to expectation?
-      testFramework.assert(i == val.size());
+      failMesg = "Was the size set to expectation?";
+      testFramework.assert(i == val.size(), failMesg, __LINE__);
 
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//===============================================================
 // Add test for VectorBase and subvector constructors
-//=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+//===============================================================
 
       return testFramework.countFails();
    }
@@ -131,7 +123,7 @@ class Vector_T
    int operatorTest(void)
    {
       TestUtil testFramework( "Vector", "== Operator", __FILE__, __LINE__);
-      testFramework.init();
+      std::string failMesg;
 
       gpstk::Vector<double> v1(3,1.0);
       gpstk::Vector<double> v2(12,3.0);
@@ -142,19 +134,17 @@ class Vector_T
 
       for(int i = 0; i < v2.size(); i++)
       {
-//--------------Vector_operatorTest_1 - Are equivalent objects equivalent?
+      failMesg = "Are equivalent objects equivalent?";
          if (v2[i] != v3[i]) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
 
       for(int i = 0; i < v1.size(); i++)
       {
-//--------------Vector_operatorTest_2 - Are equivalent objects equivalent?
+      failMesg = "Are equivalent objects equivalent?";
          if (-v1[i] != v4[i]) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
 
       testFramework.changeSourceMethod("+= Operator");
       v2 += v3; // 6 6 6 ...
@@ -162,11 +152,10 @@ class Vector_T
 
       for(int i = 0; i < v2.size(); i++)
       {
-//--------------Vector_operatorTest_3 - Were the previous addition operators successful?
+      failMesg = "Were the previous addition operators successful?";
          if (8. != v2[i]) {badCount++;}
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
 
       testFramework.changeSourceMethod("+= Operator");
       v2 -= v3; // 5 5 5 ...
@@ -174,24 +163,22 @@ class Vector_T
    
       for(int i = 0; i < v1.size(); i++)
       {
-//--------------Vector_operatorTest_4 - Were the previous subtraction operators successful?
+      failMesg = "Were the previous subtraction operators successful?";
          if (v1[i] != v2[i]) {badCount++;} //sizes mismatch, check till v1 ends
       }
-      testFramework.assert(badCount==0);
-      testFramework.next();
+      testFramework.assert(badCount==0, failMesg, __LINE__);
 
       v2 += 2; // 3 3 3 ...
    
       v1 = v1&&v2; // 3 3 3 3 3 3 ...
 
-//--------------Vector_operatorTest_5 - Was the previous && operators successful in joining similar vectors?
-      testFramework.assert((size_t)15==v1.size());
-      testFramework.next();
+      failMesg = "Was the previous && operators successful in joining similar vectors?";
+      testFramework.assert((size_t)15==v1.size(), failMesg, __LINE__);
 
       v1 = v1&&v3;
 
-//--------------Vector_operatorTest_6 - Was the previous && operators successful in joining different vectors?
-      testFramework.assert((size_t)27==v1.size());
+      failMesg = "Was the previous && operators successful in joining different vectors?";
+      testFramework.assert((size_t)27==v1.size(), failMesg, __LINE__);
 
       return testFramework.countFails();
    }
