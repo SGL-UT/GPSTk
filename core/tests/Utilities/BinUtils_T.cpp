@@ -42,12 +42,17 @@ class BinUtils_T
 {
 	public:
 
-	/*	Stores hex values as every type in big & little endian,
-		then verifies that twiddle reverses byte order	*/
+	//==========================================================
+	//	Test Suite: twiddleTest()
+	//==========================================================
+	//
+	//	Stores hex values as every type in big & little endian,
+	//	then verifies that twiddle reverses byte order
+	//
+	//==========================================================
 	int twiddleTest(void)
 	{
 		TestUtil testFramework("BinUtils", "twiddle", __FILE__, __LINE__);
-		testFramework.init();
 
 		//std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
 		
@@ -179,34 +184,13 @@ class BinUtils_T
 
 		std::string failMesg;
 		failMesg = "The twiddle method was not successful";
-//--------------BinUtils_twiddleTest_1 - Was the twiddle method successful?		
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(a1 == a, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_2 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(b1 == b, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_3 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(c1 == c, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_4 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(d1 == d, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_5 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(abs(e1-e) < 1e-50, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_6 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(abs(f1-f) < 1e-50, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_7 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(abs(g1-g) < 1e-50, failMesg);
-		testFramework.next();
+		testFramework.assert(a1 == a, failMesg, __LINE__);
+		testFramework.assert(b1 == b, failMesg, __LINE__);
+		testFramework.assert(c1 == c, failMesg, __LINE__);
+		testFramework.assert(d1 == d, failMesg, __LINE__);
+		testFramework.assert(abs(e1-e) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(abs(f1-f) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(abs(g1-g) < 1e-50, failMesg, __LINE__);
 
 		gpstk::BinUtils::twiddle(a);
 		gpstk::BinUtils::twiddle(b);
@@ -226,43 +210,28 @@ class BinUtils_T
 
 //Testing twiddle for big Endian
 
-//--------------BinUtils_twiddleTest_1 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(a1 == a, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_2 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(b1 == b, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_3 - Was the twiddle method successful?		
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(c1 == c, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_4 - Was the twiddle method successful?		
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(d1 == d, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_5 - Was the twiddle method successful?			
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(abs(e1-e) < 1e-50, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_6 - Was the twiddle method successful?		
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(abs(f1-f) < 1e-50, failMesg);
-		testFramework.next();
-//--------------BinUtils_twiddleTest_7 - Was the twiddle method successful?
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(abs(g1-g) < 1e-50, failMesg);
-		testFramework.next();		
+		testFramework.assert(a1 == a, failMesg, __LINE__);
+		testFramework.assert(b1 == b, failMesg, __LINE__);
+		testFramework.assert(c1 == c, failMesg, __LINE__);
+		testFramework.assert(d1 == d, failMesg, __LINE__);
+		testFramework.assert(abs(e1-e) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(abs(f1-f) < 1e-50, failMesg, __LINE__);
+		testFramework.assert(abs(g1-g) < 1e-50, failMesg, __LINE__);		
 
 		return testFramework.countFails();
 	}
 
-
+	//==========================================================
+	//	Test Suite: decodeVarTest()
+	//==========================================================
+	//
+	//	Tests if item was removed from string and output bytes
+	//	are in host byte order
+	//
+	//==========================================================
 	int decodeVarTest(void)
 	{
 		TestUtil testFramework("BinUtils", "decodeVar", __FILE__, __LINE__);
-		testFramework.init();
 
 		//std::cout.setf(std::ios_base::hex,std::ios_base::basefield);
 
@@ -272,39 +241,38 @@ class BinUtils_T
 		std::string failMesg;
 
 		failMesg = "The method did not remove the first byte of the string";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(stringTest == "andom", failMesg);
-		testFramework.next();
+		testFramework.assert(stringTest == "andom", failMesg, __LINE__);
 
 		std::string stringTest0 = "Random";
 		char out0 = gpstk::BinUtils::decodeVar<char>(stringTest0,0);
 
 		failMesg = "The method did not parse the proper value";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(out0 == 0x52, failMesg);
-		testFramework.next();
+		testFramework.assert(out0 == 0x52, failMesg, __LINE__);
 
 		std::string stringTest1 = "I am 5000.";
 		int out1 = gpstk::BinUtils::decodeVar<int>(stringTest1,5);
 
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(out1 == 0x35303030, failMesg); // '5000'
-		testFramework.next();
+		testFramework.assert(out1 == 0x35303030, failMesg, __LINE__); // '5000'
 
 		std::string stringTest2 = "The word 'this' should be read";
 		float out2 = gpstk::BinUtils::decodeVar<float>(stringTest2, 10);
 
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(abs(out2 - 0x74686973) < 1e-12, failMesg); // 'this'
+		testFramework.assert(abs(out2 - 0x74686973) < 1e-12, failMesg, __LINE__); // 'this'
 
 		return testFramework.countFails();
 	}
 
 
+	//==========================================================
+	//	Test Suite: encodeVarTest()
+	//==========================================================
+	//
+	//	Tests if bytes are in network byte order
+	//
+	//==========================================================
 	int encodeVarTest(void)
 	{
 		TestUtil testFramework("BinUtils", "encodeVar", __FILE__, __LINE__);
-		testFramework.init();
 
 		char test1 = 'H';
 		std::string stringTest1 = gpstk::BinUtils::encodeVar<char>(test1);
@@ -312,35 +280,38 @@ class BinUtils_T
 		std::string failMesg;
 
 		failMesg = "The method did not output the correct string";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(stringTest1 == "H", failMesg);
-		testFramework.next();
+		testFramework.assert(stringTest1 == "H", failMesg, __LINE__);
 
 		int test2 = 0x41424344; // "ABCD"
 		std::string stringTest2 = gpstk::BinUtils::encodeVar<int>(test2);
 
 //Should be same string coming out, unless it's a little endian system.
-//		If so, byte order reversed
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(stringTest2 == "ABCD", failMesg);
-		testFramework.next();
+//		If so, byte order reversed		
+		testFramework.assert(stringTest2 == "ABCD", failMesg, __LINE__);
 
 		float test3 = 0x4D336C316F; // "M3l10"
 		std::string stringTest3 = gpstk::BinUtils::encodeVar<float>(test3);
 
 //Should be same string coming out, unless it's a little endian system.
 //		If so, byte order reversed		
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(stringTest3 == "\x52\x9A\x66\xD8", failMesg);
-		testFramework.next();
+		testFramework.assert(stringTest3 == "\x52\x9A\x66\xD8", failMesg, __LINE__);
 
 		return testFramework.countFails();
 	}
 
+	//====================================================================
+	//	Test Suite: computeCRCTest()
+	//====================================================================	
+	//
+	//	Tests if computeCRC is generating valid Cyclic Redundancy Checks
+	//
+	//	WARNING! Current method is UNVERIFIED! Unable to replicate
+	//	computeCRCTest output. Potential bug in this method
+	//
+	//=====================================================================
 	int computeCRCTest(void)
 	{
 		TestUtil testFramework("BinUtils", "computeCRC", __FILE__, __LINE__);
-		testFramework.init();
 		std::string failMesg;
 
 //====================================================================================
@@ -363,10 +334,8 @@ class BinUtils_T
 		int crc = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,4,params);
 		std::cout<<"1: "<<crc<<std::endl;
 		//1
-		failMesg = "CRC computation with user defined parameters on 4 bits";
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(crc == 0, failMesg);
-		testFramework.next();
+		failMesg = "CRC computation with user defined parameters on 4 bits";	
+		testFramework.assert(crc == 0, failMesg, __LINE__);
 
 //test crc computation on 1 ASCII char
 
@@ -382,10 +351,8 @@ class BinUtils_T
 
 		int crc1 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params1);
 		std::cout<<"2: "<<crc1<<std::endl;
-		failMesg = "CRC computation with user defined parameters on 8 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(crc1 == 6, failMesg);
-		testFramework.next();
+		failMesg = "CRC computation with user defined parameters on 8 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";	
+		testFramework.assert(crc1 == 6, failMesg, __LINE__);
 
 
 
@@ -401,10 +368,8 @@ class BinUtils_T
 		pdata= &data2;
 
 		int crc2 = gpstk::BinUtils::computeCRC((const unsigned char *) pdata,8,params2);
-		std::cout<<"2.1: "<<crc2<<std::endl;
-		testFramework.setFailMessage(failMesg, __LINE__+1);			
-		testFramework.assert(crc2 == 0, failMesg);
-		testFramework.next();
+		std::cout<<"2.1: "<<crc2<<std::endl;			
+		testFramework.assert(crc2 == 0, failMesg, __LINE__);
 
 //Below should be 5 according to online calculator and hand-calculations
 //-----------------------------------------------------------------------------------
@@ -415,10 +380,8 @@ class BinUtils_T
 
 
 		int crc3 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params3);
-		std::cout<<"2.2: "<<crc3<<std::endl;
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(crc3 == 5, failMesg);
-		testFramework.next();
+		std::cout<<"2.2: "<<crc3<<std::endl;	
+		testFramework.assert(crc3 == 5, failMesg, __LINE__);
 
 //Below should be 7 according to online calculator and hand-calculations
 //-----------------------------------------------------------------------------------------
@@ -430,9 +393,7 @@ class BinUtils_T
 
 		int crc17 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params17);
 		std::cout<<"2.25: "<<crc17<<std::endl;
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(crc17 == 7, failMesg);
-		testFramework.next();
+		testFramework.assert(crc17 == 7, failMesg, __LINE__);
 
 
 //Online calculator and hand-calculations are not consistent, unknown correct value
@@ -443,10 +404,8 @@ class BinUtils_T
 		pdata = &data4;
 
 		int crc4 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params4);
-		std::cout<<"2.3: "<<crc4<<std::endl;
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(crc4 == 1000, failMesg);
-		testFramework.next();
+		std::cout<<"2.3: "<<crc4<<std::endl;	
+		testFramework.assert(crc4 == 1000, failMesg, __LINE__);
 
 //Online calculator and hand-calculations are not consistent, unknown correct value
 //---------------------------------------------------------------------------
@@ -456,10 +415,8 @@ class BinUtils_T
 		pdata = &data5;
 
 		int crc5 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,8,params5);
-		std::cout<<"2.4: "<<crc5<<std::endl;
-		testFramework.setFailMessage(failMesg, __LINE__+1);	
-		testFramework.assert(crc5 == 2, failMesg);
-		testFramework.next();
+		std::cout<<"2.4: "<<crc5<<std::endl;	
+		testFramework.assert(crc5 == 2, failMesg, __LINE__);
 
 
 //=====================================================================================
@@ -471,30 +428,24 @@ class BinUtils_T
 		pdata = &data6;
 		int crc6 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,32,gpstk::BinUtils::CRCCCITT);
 		std::cout<<"3: "<<std::hex<<crc6<<std::endl;
-		failMesg = "CRC computation with CRCCCITT parameters on 32 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";
-		testFramework.setFailMessage(failMesg, __LINE__+1);			
-		testFramework.assert(crc6 == 0xF7C3,failMesg);
-		testFramework.next();
+		failMesg = "CRC computation with CRCCCITT parameters on 32 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";			
+		testFramework.assert(crc6 == 0xF7C3,failMesg, __LINE__);
 
 		//CRC16
 		int data7 = 0x56c8913a;
 		pdata = &data7;
 		int crc7 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,32,gpstk::BinUtils::CRC16);
 		std::cout<<"3.1: "<<std::hex<<crc7<<std::endl;
-		failMesg = "CRC computation with CRC16 parameters on 32 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";
-		testFramework.setFailMessage(failMesg, __LINE__+1);				
-		testFramework.assert(crc7 == 0xF57D, failMesg);
-		testFramework.next();
+		failMesg = "CRC computation with CRC16 parameters on 32 bits. NOTE: CRC COMPUTATION IS NOT VERIFIED";				
+		testFramework.assert(crc7 == 0xF57D, failMesg, __LINE__);
 
 		//CRC32
 		int data8 = 0x387a13b5;
 		pdata = &data8;
 		int crc8 = gpstk::BinUtils::computeCRC((const unsigned char *)pdata,32,gpstk::BinUtils::CRC32);
 		std::cout<<"3.2: "<<std::hex<<crc8<<std::endl;
-		failMesg = "CRC computation with CRC32 parameters on 32 bytes. NOTE: CRC COMPUTATION IS NOT VERIFIED";
-		testFramework.setFailMessage(failMesg, __LINE__+1);				
-		testFramework.assert(crc8 == 0x9759E445, failMesg);
-		testFramework.next();
+		failMesg = "CRC computation with CRC32 parameters on 32 bytes. NOTE: CRC COMPUTATION IS NOT VERIFIED";				
+		testFramework.assert(crc8 == 0x9759E445, failMesg, __LINE__);
 
 		//CRC24Q
 		//unable to use CRC24Q in online calculator for comparison. Final XOR value is
@@ -504,10 +455,17 @@ class BinUtils_T
 		return testFramework.countFails();
 	}
 
+	//==========================================================
+	//	Test Suite: xorChecksumTest()
+	//==========================================================
+	//
+	//	Computes xorChecksums with 1, 2 and 3 words for chars,
+	//	shorts, and ints
+	//
+	//==========================================================
 	int xorChecksumTest(void)
 	{
 		TestUtil testFramework("BinUtils", "xorChecksum", __FILE__, __LINE__);
-		testFramework.init();
 
 //=====================================================================================
 //
@@ -530,20 +488,15 @@ class BinUtils_T
  		failMesg = "The checksum for a single word char was not computed correctly";
 		char xc = gpstk::BinUtils::xorChecksum<char>("7");
 		testFramework.setFailMessage(failMesg, __LINE__);
-		testFramework.assert(xc == '7', failMesg);
-		testFramework.next();
+		testFramework.assert(xc == '7', failMesg, __LINE__);
 
 		char xc1 = gpstk::BinUtils::xorChecksum<char>("Bc");
 		failMesg = "The checksum for a double word char was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(xc1 == '!', failMesg);
-		testFramework.next();
+		testFramework.assert(xc1 == '!', failMesg, __LINE__);
 
 		char xc2 = gpstk::BinUtils::xorChecksum<char>("P/Q");
 		failMesg = "The checksum for a triple word char was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(xc2 == '.', failMesg);
-		testFramework.next();
+		testFramework.assert(xc2 == '.', failMesg, __LINE__);
 
 //=====================================================================================
 //
@@ -552,82 +505,65 @@ class BinUtils_T
 //=====================================================================================
 
 		short xc3 = gpstk::BinUtils::xorChecksum<short>("mn");
-		failMesg = "The checksum for a single word short was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(xc3 == 0x6E6D, failMesg); //'nm'
-		testFramework.next();
+		failMesg = "The checksum for a single word short was not computed correctly";		
+		testFramework.assert(xc3 == 0x6E6D, failMesg, __LINE__); //'nm'
 
 		short xc4 = gpstk::BinUtils::xorChecksum<short>("59WZ");
-		failMesg = "The checksum for a double word short was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(xc4 == 0x6362, failMesg); // 'cb'
-		testFramework.next();
+		failMesg = "The checksum for a double word short was not computed correctly";		
+		testFramework.assert(xc4 == 0x6362, failMesg, __LINE__); // 'cb'
 
 		short xc5 = gpstk::BinUtils::xorChecksum<short>("am+*09");
-		failMesg = "The checksum for a triple word short was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(xc5 == 0x7E7A, failMesg); // '~z'
-		testFramework.next();
+		failMesg = "The checksum for a triple word short was not computed correctly";		
+		testFramework.assert(xc5 == 0x7E7A, failMesg, __LINE__); // '~z'
 
 		int xc6 = gpstk::BinUtils::xorChecksum<int>("97Bg");
-		failMesg = "The checksum for a single word int was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(xc6 == 0x67423739, failMesg); // 'gB79'
-		testFramework.next();
+		failMesg = "The checksum for a single word int was not computed correctly";		
+		testFramework.assert(xc6 == 0x67423739, failMesg, __LINE__); // 'gB79'
 
 		int xc7 = gpstk::BinUtils::xorChecksum<int>("ABCD!#$%");
-		failMesg = "The checksum for a double word int was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(xc7 == 0x61676160, failMesg); // 'aga`'
-		testFramework.next();
+		failMesg = "The checksum for a double word int was not computed correctly";		
+		testFramework.assert(xc7 == 0x61676160, failMesg, __LINE__); // 'aga`'
 
 		int xc8 = gpstk::BinUtils::xorChecksum<int>("+a0.ehZ64xYN");
-		failMesg = "The checksum for a triple word int was not computed correctly";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(xc8 == 0x5633717A, failMesg); // 'V3qz'
-		testFramework.next();
+		failMesg = "The checksum for a triple word int was not computed correctly";		
+		testFramework.assert(xc8 == 0x5633717A, failMesg, __LINE__); // 'V3qz'
 
 		return testFramework.countFails();
 
 	}
 
-	/*	Counts the number of set bits in 32 bit unsigned int	*/
+	//==========================================================
+	//	Test Suite: countBitsTest()
+	//==========================================================
+	//
+	//	Counts the number of set bits in 32 bit unsigned int
+	//
+	//==========================================================
 	int countBitsTest(void)
 	{
 		TestUtil testFramework("BinUtils", "countBits", __FILE__, __LINE__);
-		testFramework.init();
 		std::string failMesg;
 
 		failMesg  = "The number of bits counted is incorrect";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(gpstk::BinUtils::countBits(5) == 2, failMesg);
-		testFramework.next();
+		testFramework.assert(gpstk::BinUtils::countBits(5) == 2, failMesg, __LINE__);
 
-//testing if bit count is constant in a left-shift operation
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(gpstk::BinUtils::countBits(10) == 2, failMesg);
-		testFramework.next();
+//testing if bit count is constant in a left-shift operation		
+		testFramework.assert(gpstk::BinUtils::countBits(10) == 2, failMesg, __LINE__);
 
 		failMesg = "The number of bits counted is incorrect after left-shift operation";
-		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(gpstk::BinUtils::countBits(20) == 2, failMesg);
-		testFramework.next();
+		testFramework.assert(gpstk::BinUtils::countBits(20) == 2, failMesg, __LINE__);
 
 //same but for right bit
 		failMesg = "The number of bits counted is incorrect";
- 		testFramework.setFailMessage(failMesg, __LINE__+1);
-		testFramework.assert(gpstk::BinUtils::countBits(16) == 1, failMesg);
-		testFramework.next();
 
-		failMesg = "The number of bits counted is incorrect after a right-shift operation";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(gpstk::BinUtils::countBits(8) == 1, failMesg);
-		testFramework.next();
+		testFramework.assert(gpstk::BinUtils::countBits(16) == 1, failMesg, __LINE__);
+
+		failMesg = "The number of bits counted is incorrect after a right-shift operation";		
+		testFramework.assert(gpstk::BinUtils::countBits(8) == 1, failMesg, __LINE__);
 
 //random case
-		failMesg = "The number of bits counted is incorrect";
-		testFramework.setFailMessage(failMesg, __LINE__+1);		
-		testFramework.assert(gpstk::BinUtils::countBits(15) == 4, failMesg);
+		failMesg = "The number of bits counted is incorrect";		
+		testFramework.assert(gpstk::BinUtils::countBits(15) == 4, failMesg, __LINE__);
 
 		return testFramework.countFails();	
 	}
@@ -646,7 +582,6 @@ int main (void)
 //	Same for netToHost, or hostToNet, but they ensure byte order is big-endian
 //
 //=====================================================================================
-	
 
 	int check = 0, errorCounter = 0;
 	BinUtils_T testClass;

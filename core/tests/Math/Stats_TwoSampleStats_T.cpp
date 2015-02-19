@@ -52,7 +52,7 @@ class Stats_TwoSampleStats_T
 		int AddTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "Add", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<int> test;
 			test.Add(1, 2);		
@@ -62,7 +62,7 @@ class Stats_TwoSampleStats_T
 			test.Add(5, 3);
 
 			//std::cout << "The Average is: " << test.Average() << std::endl;
-			testFramework.assert(test.N() == 5);
+			testFramework.assert(test.N() == 5, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -70,7 +70,7 @@ class Stats_TwoSampleStats_T
 		int AverageXTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "AverageX", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -79,8 +79,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The X average calculation is incorrect";
 			//std::cout << "The Average of X is: " << test.AverageX() << std::endl;
-			testFramework.assert(test.AverageX() == 3);
+			testFramework.assert(test.AverageX() == 3, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -88,7 +89,7 @@ class Stats_TwoSampleStats_T
 		int AverageYTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "AverageY", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -97,8 +98,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The Y average calculation is incorrect";
 			//std::cout << "The Average of Y is: " << test.AverageY() << std::endl;
-			testFramework.assert(test.AverageY() == 3);
+			testFramework.assert(test.AverageY() == 3, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -106,7 +108,7 @@ class Stats_TwoSampleStats_T
 		int MaxXTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "MaxX", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -115,8 +117,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The X maximum calculation is incorrect";
 			//std::cout << "The Maximum of X is: " << test.MaximumX() << std::endl;
-			testFramework.assert(test.MaximumX() == 5);
+			testFramework.assert(test.MaximumX() == 5, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -124,7 +127,7 @@ class Stats_TwoSampleStats_T
 		int MaxYTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "MaxY", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -133,8 +136,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The Y maximum calculation is incorrect";
 			//std::cout << "The Maximum of Y is: " << test.MaximumY() << std::endl;
-			testFramework.assert(test.MaximumY() == 5);
+			testFramework.assert(test.MaximumY() == 5, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -142,7 +146,7 @@ class Stats_TwoSampleStats_T
 		int MinXTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "MinX", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -151,8 +155,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The X minimum calculation is incorrect";
 			//std::cout << "The Minimum of X is: " << test.MinimumX() << std::endl;
-			testFramework.assert(test.MinimumX() == 1);
+			testFramework.assert(test.MinimumX() == 1, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -160,7 +165,7 @@ class Stats_TwoSampleStats_T
 		int MinYTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "MinY", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -169,8 +174,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The Y minimum calculation is incorrect";
 			//std::cout << "The Minimum of Y is: " << test.MinimumY() << std::endl;
-			testFramework.assert(test.MinimumY() == 1);
+			testFramework.assert(test.MinimumY() == 1, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -178,7 +184,7 @@ class Stats_TwoSampleStats_T
 		int VarianceXTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "VarianceX", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -187,8 +193,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The X variance calculation is incorrect";
 			//std::cout << "The Variance of X is: " << test.VarianceX() << std::endl;
-			testFramework.assert(fabs(test.VarianceX() - 2.5) < eps);
+			testFramework.assert(fabs(test.VarianceX() - 2.5) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();	
 		}
@@ -196,7 +203,7 @@ class Stats_TwoSampleStats_T
 		int VarianceYTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "VarianceY", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -205,8 +212,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The Y variance calculation is incorrect";
 			//std::cout << "The Variance of Y is: " << test.VarianceY() << std::endl;
-			testFramework.assert(fabs(test.VarianceY() - 2.5) < eps);
+			testFramework.assert(fabs(test.VarianceY() - 2.5) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();	
 		}
@@ -214,7 +222,7 @@ class Stats_TwoSampleStats_T
 		int StdDevXTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "StdDevX", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -223,8 +231,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The X Standard Deviation calculation is incorrect";
 			//std::cout << "The Standard Deviation of X is: " << test.StdDevX() << std::endl;
-			testFramework.assert(fabs(test.StdDevX() - sqrt(2.5)) < eps);
+			testFramework.assert(fabs(test.StdDevX() - sqrt(2.5)) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -232,7 +241,7 @@ class Stats_TwoSampleStats_T
 		int StdDevYTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "StdDevY", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -241,8 +250,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The Y Standard Deviation calculation is incorrect";
 			//std::cout << "The Standard Deviation of Y is: " << test.StdDevY() << std::endl;
-			testFramework.assert(fabs(test.StdDevY() - sqrt(2.5)) < eps);
+			testFramework.assert(fabs(test.StdDevY() - sqrt(2.5)) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -250,7 +260,7 @@ class Stats_TwoSampleStats_T
 		int SlopeTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "Slope", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -259,8 +269,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The slope calculation is incorrect";
 			//std::cout << "The Slope is: " << test.Slope() << std::endl;
-			testFramework.assert(fabs(test.Slope() - 0.1) < eps);
+			testFramework.assert(fabs(test.Slope() - 0.1) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -268,7 +279,7 @@ class Stats_TwoSampleStats_T
 		int InterceptTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "Intercept", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -277,8 +288,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The intercept calculation is incorrect";
 			//std::cout << "The Intercept is: " << test.Intercept() << std::endl;
-			testFramework.assert(fabs(test.Intercept() - 2.7) < eps);
+			testFramework.assert(fabs(test.Intercept() - 2.7) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -286,7 +298,7 @@ class Stats_TwoSampleStats_T
 		int SlopeUncertaintyTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "SlopeUncertainty", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -295,8 +307,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The slope uncertainty calculation is incorrect";
 			//std::cout << "The Slope Uncertainty is: " << test.SigmaSlope() << std::endl;
-			testFramework.assert(fabs(test.SigmaSlope() - 0.574456264653803) < eps);
+			testFramework.assert(fabs(test.SigmaSlope() - 0.574456264653803) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -304,7 +317,7 @@ class Stats_TwoSampleStats_T
 		int ConditionalUncertaintyTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "ConditionalUncertainty", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -313,8 +326,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The correlation uncertainty calculation is incorrect";
 			//std::cout << "The Conditional Uncertainty is: " << test.SigmaYX() << std::endl;
-			testFramework.assert(fabs(test.SigmaYX() - 1.81659021245849) < eps);
+			testFramework.assert(fabs(test.SigmaYX() - 1.81659021245849) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}
@@ -322,7 +336,7 @@ class Stats_TwoSampleStats_T
 		int CorrelationTest()
 		{
 			TestUtil testFramework( "TwoSampleStats", "Correlation", __FILE__, __LINE__ );
-			testFramework.init();
+			std::string failMesg;
 
 			gpstk::TwoSampleStats<double> test;
 			test.Add(1, 2);		
@@ -331,8 +345,9 @@ class Stats_TwoSampleStats_T
 			test.Add(4, 4);
 			test.Add(5, 3);
 
+			failMesg = "The correlation calculation is incorrect";
 			//std::cout << "The Correlation is: " << test.Correlation() << std::endl;
-			testFramework.assert(fabs(test.Correlation() - 0.1) < eps);
+			testFramework.assert(fabs(test.Correlation() - 0.1) < eps, failMesg, __LINE__);
 
 			return testFramework.countFails();
 		}

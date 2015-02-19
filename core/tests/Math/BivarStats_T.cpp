@@ -1,5 +1,6 @@
 #include "BivarStats.hpp"
 #include "Vector.hpp"
+#include "TestUtil.hpp"
 #include <iostream>
 
 class BivarStats_T
@@ -13,6 +14,9 @@ class BivarStats_T
 		// Then add another stat on top with weight. I will use the average to check
 		// that data was added and that the data added was correct.
 		{
+			TestUtil testFramework("BivarStats","Add()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -20,14 +24,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The Add method was unsuccessful";
 			//std::cout << "The Average is: " << test.average() << std::endl;
-			if (test.averageX() != 3) return 1;
-			return 0;
+			testFramework.assert(test.averageX() == 3, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int AverageXTest()
 		// Verify the X average calculation.
 		{
+			TestUtil testFramework("BivarStats","AverageX()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -35,14 +43,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The AverageX method was unsuccessful";
 			//std::cout << "The Average of X is: " << test.averageX() << std::endl;
-			if (test.averageX() != 3) return 1;
-			return 0;
+			testFramework.assert(test.averageX() == 3, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int AverageYTest()
 		// Verify the Y average calculation.
 		{
+			TestUtil testFramework("BivarStats","AverageY()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -50,14 +62,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The AverageY method was unsuccessful";
 			//std::cout << "The Average of Y is: " << test.averageY() << std::endl;
-			if (test.averageY() != 3) return 1;
-			return 0;
+			testFramework.assert(test.averageY() == 3, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int MaxXTest()
 		// Verify the X maximum calculation.
 		{
+			TestUtil testFramework("BivarStats","MaximumX()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -65,14 +81,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The MaximumX method was unsuccessful";
 			//std::cout << "The Maximum of X is: " << test.maximumX() << std::endl;
-			if (test.maximumX() != 5) return 1;
-			return 0;
+			testFramework.assert(test.maximumX() == 5, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int MaxYTest()
 		// Verify the Y maximum calculation.
 		{
+			TestUtil testFramework("BivarStats","MaximumY()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -80,14 +100,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The MaximumY method was unsuccessful";
 			//std::cout << "The Maximum of Y is: " << test.maximumY() << std::endl;
-			if (test.maximumY() != 5) return 1;
-			return 0;
+			testFramework.assert(test.maximumY() == 5, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int MinXTest()
 		// Verify the X minimum calculation.
 		{
+			TestUtil testFramework("BivarStats","MinimumX()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -95,14 +119,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The MinimumX method was unsuccessful";
 			//std::cout << "The Minimum of X is: " << test.minimumX() << std::endl;
-			if (test.minimumX() != 1) return 1;
-			return 0;
+			testFramework.assert(test.minimumX() == 1, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int MinYTest()
 		// Verify the Y minimum calculation.
 		{
+			TestUtil testFramework("BivarStats","MinimumY()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -110,14 +138,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The MinimumY method was unsuccessful";
 			//std::cout << "The Minimum of Y is: " << test.minimumY() << std::endl;
-			if (test.minimumY() != 1) return 1;
-			return 0;
+			testFramework.assert(test.minimumY() == 1, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int VarianceXTest()
 		// Verify the X variance calculation.
 		{
+			TestUtil testFramework("BivarStats","VarianceX()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -125,14 +157,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The VarianceX method was unsuccessful";
 			//std::cout << "The Variance of X is: " << test.varianceX() << std::endl;
-			if (fabs(test.varianceX() - 2.5) > eps) return 1;
-			return 0;	
+			testFramework.assert(fabs(test.varianceX() - 2.5) < eps, failMesg, __LINE__);
+			return testFramework.countFails();	
 		}
 
 		int VarianceYTest()
 		// Verify the Y variance calculation.
 		{
+			TestUtil testFramework("BivarStats","VarianceY()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -140,14 +176,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The VarianceY method was unsuccessful";
 			//std::cout << "The Variance of Y is: " << test.varianceY() << std::endl;
-			if (fabs(test.varianceY() - 2.5) > eps) return 1;
-			return 0;	
+			testFramework.assert(fabs(test.varianceY() - 2.5) < eps, failMesg, __LINE__);
+			return testFramework.countFails();	
 		}
 
 		int StdDevXTest()
 		// Verify the X Standard Deviation calculation.
 		{
+			TestUtil testFramework("BivarStats","StdDevX()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -155,13 +195,17 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The stdDevX method was unsuccessful";
 			//std::cout << "The Standard Deviation of X is: " << test.stdDevX() << std::endl;
-			if (fabs(test.stdDevX() - sqrt(2.5)) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.stdDevX() - sqrt(2.5)) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 		int StdDevYTest()
 		// Verify the Y Standard Deviation calculation.
 		{
+			TestUtil testFramework("BivarStats","StdDevY()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -169,14 +213,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The stdDevY method was unsuccessful";
 			//std::cout << "The Standard Deviation of Y is: " << test.stdDevY() << std::endl;
-			if (fabs(test.stdDevY() - sqrt(2.5)) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.stdDevY() - sqrt(2.5)) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int SlopeTest()
 		// Verify the Slope calculation.
 		{
+			TestUtil testFramework("BivarStats","Slope()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -184,14 +232,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The Slope method was unsuccessful";
 			//std::cout << "The Slope is: " << test.slope() << std::endl;
-			if (fabs(test.slope() - 0.1) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.slope() - 0.1) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int InterceptTest()
 		// Verify the Intercept calculation.
 		{
+			TestUtil testFramework("BivarStats","Intercept()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -199,14 +251,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The Intercept method was unsuccessful";
 			//std::cout << "The Intercept is: " << test.intercept() << std::endl;
-			if (fabs(test.intercept() - 2.7) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.intercept() - 2.7) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int SlopeUncertaintyTest()
 		// Verify the Slope Uncertainty calculation.
 		{
+			TestUtil testFramework("BivarStats","SlopeUncertainty()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -214,14 +270,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The sigmaSlope method was unsuccessful";
 			//std::cout << "The Slope Uncertainty is: " << test.sigmaSlope() << std::endl;
-			if (fabs(test.sigmaSlope() - 0.574456264653803) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.sigmaSlope() - 0.574456264653803) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int ConditionalUncertaintyTest()
 		// Verify the Conditional Uncertainty calculation.
 		{
+			TestUtil testFramework("BivarStats","ConditionalUncertaintyTest()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -229,14 +289,18 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The sigmaYX method was unsuccessful";
 			//std::cout << "The Conditional Uncertainty is: " << test.sigmaYX() << std::endl;
-			if (fabs(test.sigmaYX() - 1.81659021245849) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.sigmaYX() - 1.81659021245849) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
 		int CorrelationTest()
 		// Verify the Correlation calculation.
 		{
+			TestUtil testFramework("BivarStats","Correlation()",__FILE__,__LINE__);
+			std::string failMesg;
+
 			gpstk::BivarStats<double> test;
 			test.add(1, 2);		
 			test.add(2, 5);
@@ -244,105 +308,66 @@ class BivarStats_T
 			test.add(4, 4);
 			test.add(5, 3);
 
+			failMesg  = "The correlation method was unsuccessful";
 			//std::cout << "The Correlation is: " << test.correlation() << std::endl;
-			if (fabs(test.correlation() - 0.1) > eps) return 1;
-			return 0;
+			testFramework.assert(fabs(test.correlation() - 0.1) < eps, failMesg, __LINE__);
+			return testFramework.countFails();
 		}
 
  };
-
-void checkResult(int check, int& errCount)
-{
-	if (check == -1)
-	{
-		std::cout << "DIDN'T RUN!!!!" << std::endl;
-	}
-	else if (check == 0 )
-	{
-		std::cout << "GOOD!!!!" << std::endl;
-	}
-	else if (check > 0)
-	{
-		std::cout << "BAD!!!!" << std::endl;
-		std::cout << "Error Message for Bad Test is Code " << check << std::endl;
-		errCount++;
-	}
-}
 
 int main()
 {
 	int check, errorCounter = 0;
 	BivarStats_T testClass;
+
 	check = testClass.addTest();
-        std::cout << "add Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.AverageXTest();
-        std::cout << "AverageX Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.AverageYTest();
-        std::cout << "AverageY Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.MaxXTest();
-        std::cout << "MaximumX Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.MaxYTest();
-        std::cout << "MaximumY Result is: "; 
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.MinXTest();
-        std::cout << "MinimumX Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.MinYTest();
-        std::cout << "MinimumY Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.VarianceXTest(); 
-        std::cout << "VarianceX Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.VarianceYTest(); 
-        std::cout << "VarianceY Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.StdDevXTest(); 
-        std::cout << "Standard Deviation in X Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.StdDevYTest(); 
-        std::cout << "Standard Deviation in Y Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	check = testClass.SlopeTest(); 
-        std::cout << "Slope Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.InterceptTest(); 
-        std::cout << "Intercept Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.ConditionalUncertaintyTest(); 
-        std::cout << "Conditional Uncertainty Test Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.SlopeUncertaintyTest(); 
-        std::cout << "Slope Uncertainty Test Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
+
 	check = testClass.CorrelationTest(); 
-        std::cout << "Correlation Test Result is: ";
-	checkResult(check, errorCounter);
-	check = -1;
+	errorCounter += check;
 
 	std::cout << "Total Errors: " << errorCounter << std::endl;
 
