@@ -13,28 +13,13 @@
 //
 //     TestUtil myTest( "SomeClass", "SomeMethod", "myTestFile", __LINE__ );
 //
-//     myTest.init();
 //     myTest.assert( 1==2 );
-//     myTest.print();
-//
-//     myTest.next();
 //     myTest.assert( 1==1 );
-//     myTest.print();
-//
-//     myTest.next();
 //     myTest.changeSourceMethod("SomeOtherMethod");
-//     if( 2 > 1 ) myTest.failTest();
-//     else myTest.passTest();
-//
-//     if( 2 < 1 ), myTest.failTest();
-//     else myTest.passTest();
 //
 // Output: stdout from above myTest.print() calls would be:
 //
 //     TestOutput, SomeClass, SomeMethod, myTestFile, 13, 1, 1
-//     TestOutput, SomeClass, SomeMethod, myTestFile, 13, 2, 0
-//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, 13, 3, 0
-//     TestOutput, SomeClass, SomeOtherMethod, myTestFile, 13, 4, 1
 //
 //============================================================
 class TestUtil
@@ -52,7 +37,7 @@ public:
   //          verbosityInput    = the level of verbosity in the print output, default=1, but set to 0 will supress fail messages
   // Outputs: none
   //----------------------------------------
-  TestUtil( const std::string& sourceClassInput  = "Unknown", 
+  TestUtil( const std::string& sourceClassInput  = "Unknown",
             const std::string& sourceMethodInput = "Unknown",
             const std::string& testFileInput     = "Unknown",
             const         int& testLineInput     = 0,
@@ -63,7 +48,7 @@ public:
       sourceMethod( sourceMethodInput ),
       testFileName( testFileInput ),
       testFileLine( "0" ),
-      failMessage( "none" ),
+      failMessage( "Developer is a lazy slacker" ),
       failBit( 0 ),
       failCount( 0 ),
       testCount( 0 ),
@@ -73,7 +58,7 @@ public:
   {
       // convert int to string
       setTestLine( testLineInput );
-  
+
       // strip off the path from the full-path filename
       // so that "/home/user/test.txt" becomes "test.txt"
       std::string file_sep = gpstk::getFileSep();
@@ -106,157 +91,9 @@ public:
       return( gpstk::getPathTestTemp() );
   }
 
-
-  //----------------------------------------
-  // Method:  TestUtil::init()
-  // Purpose: Reset the failbit, failCount, testCount, and subtestID
-  // Usage:   To be called at the beginning of the FIRST subtest in a method
-  //          never after that.
-  // Inputs:  none
-  // Outputs: none
-  //----------------------------------------
-  void init( void )
-  {
-      failBit   = 0;
-      failCount = 0;
-      testCount = 0;
-      subtestID = 1;
-      tolerance = 0;
-      failMessage = "none";
-  }
-
-
-  //----------------------------------------
-  // Method:  TestUtil::next()
-  // Purpose: Increment the failCount and reset subtestID based on current testCount
-  // Usage:   To be called at the beginning of each subtest AFTER the first
-  // Inputs:  none
-  // Outputs: none
-  //----------------------------------------
-  void next( void )
-  {
-      failBit = 0;
-      subtestID = countTests() + 1;
-      failMessage = "none";
-  }
-
-
-  //----------------------------------------
-  // Method:  TestUtil::fail()
-  // Purpose: Fail the test! Record a failure by setting the failBit and
-  //           incrementing failCount
-  // Usage:   To be called (once!) at the end of any subtest that has failed
-  // Inputs:  2 [optional]
-  //          string fail_message
-  //          int    line_number
-  // Outputs: none
-  //----------------------------------------
-  void fail( void )
-  {
-      failBit = 1;
-      failCount++;
-      testCount++;
-  }
-
-  void fail( const std::string& fail_message )
-  {
-      setFailMessage( fail_message );
-      fail();
-  }
-
-  void fail( const std::string& fail_message, const int line_number )
-  {
-      setFailMessage( fail_message );
-      setTestLine( line_number );
-      fail();
-  }
-
-
-  //----------------------------------------
-  // Method:  TestUtil::pass()
-  // Purpose: Pass the test! Record a pass by setting the failBit=0 and
-  //           incrementing the testCount
-  // Usage:   To be called (once!) at the end of any subtest that has passed
-  // Inputs:  none
-  // Outputs: none
-  //----------------------------------------
-  void pass( void )
-  {
-      failBit = 0;
-      testCount++;
-  }
-
-
-  //----------------------------------------
-  // Method:  TestUtil::undo()
-  // Purpose: undo the test! Undo a pass/fail by unsetting failBit and
-  //           decrementing failCount (only if failed) and 
-  //           decrementing the testCount
-  // Usage:   To be called at the end of any subtest that needs to be undone
-  // Inputs:  none
-  // Outputs: none
-  //----------------------------------------
-  void undo( void )
-  {
-      if( failBit==1 )
-      { 
-          failBit = 0;
-          failCount--;
-          testCount--;
-      }
-      else
-      {
-          failBit = 0;
-          testCount--;
-      }
-      next();
-  }
-
-
-  //----------------------------------------
-  // Method:  TestUtil::print()
-  // Purpose: print test results and information on classes being tested
-  //          to stdout in a common format that is both human-readable
-  //          and easy to filter using tools like grep so as to help
-  //          isolate where problems are happening.
-  // Usage:   to be called after each test method subtest is performed
-  // Inputs:  none
-  // Outputs: none
-  // STDOUT:  "outputKeyword, sourceClass, sourceMethod, testFileName,
-  //             testMethod, subtestID, failBit"
-  //----------------------------------------
-  void print( void )
-  {
-      // print test summary description and result to stdout
-      if( failBit==1 && verbosity >=1 )
-      {
-         std::cout     <<
-         outputKeyword << ", " << 
-         "Class="      << sourceClass   << ", " << 
-         "Method="     << sourceMethod  << ", " << 
-         "testFile="   << testFileName  << ", " << 
-         "testLine="   << testFileLine  << ", " <<
-         "subtest="    << subtestID     << ", " << 
-         "failBit="    << failBit       << ", " << 
-         "failMsg="    << failMessage
-         << std::endl;     // implicit conversion from int to string
-
-      }
-      else
-      {
-         std::cout     <<
-         outputKeyword << ", " << 
-         "Class="      << sourceClass   << ", " << 
-         "Method="     << sourceMethod  << ", " << 
-         "testFile="   << testFileName  << ", " << 
-         "testLine="   << testFileLine  << ", " <<
-         "subtest="    << subtestID     << ", " << 
-         "failBit="    << failBit
-         << std::endl;     // implicit conversion from int to string
-
-      }
-  }
-
+  //############################################################
+  // NEW ASSERT() SIGNATURES
+  //############################################################
 
   //----------------------------------------
   // Method:  TestUtil::assert()
@@ -266,17 +103,48 @@ public:
   // Inputs:  boolean testExpression
   // Outputs: none
   //----------------------------------------
-  void assert( bool testExpression, const std::string& fail_message = "none")
+  void assert( bool testExpression, const std::string& fail_message, const int line_number )
   {
       if( testExpression == false )
       {
-          fail(fail_message);
+        fail( fail_message, line_number );
       }
       else
       {
           pass();
       }
       print();
+      next();
+  }
+
+
+  void assert( bool testExpression, const std::string& fail_message, const std::string& line_number )
+  {
+      if( testExpression == false )
+      {
+        fail( fail_message, line_number );
+      }
+      else
+      {
+          pass();
+      }
+      print();
+      next();
+  }
+
+  // This variant of assert() should only be used when you are forcing a test to pass.
+  void assert( bool testExpression )
+  {
+      if( testExpression == false )
+      {
+        fail( (std::string)"DO NOT USE THIS ASSERT() SIGNATURE WITH ANYTHING OTHER THAN AN EXPLICIT testExpression=TRUE" );
+      }
+      else
+      {
+        pass( );
+      }
+      print();
+      next();
   }
 
 
@@ -333,22 +201,6 @@ public:
 
 
   //----------------------------------------
-  // Method:  passTest()
-  // Purpose: For cases without booleans to use for assert(), print out
-  //          the PASS message and move to the next test.
-  // Usage:   to be called as needed to produce passing output
-  // Inputs:  none
-  // Outputs: none
-  //----------------------------------------
-  void passTest( void )
-  {
-      pass();
-      print();
-      next();
-  }
-
-
-  //----------------------------------------
   // Method:  setFailMessage()
   // Purpose: Set the message text that is reported if the test fails
   // Inputs:  2
@@ -358,19 +210,19 @@ public:
   //----------------------------------------
   void setFailMessage( const std::string& fail_message )
   {
-      failMessage  = fail_message;    
+      failMessage  = fail_message;
   }
 
   void setFailMessage( const std::string& fail_message, const int line_number )
   {
       setFailMessage( fail_message );
-      setTestLine( line_number );    
+      setTestLine( line_number );
   }
 
   void setFailMessage( const std::string& fail_message, const std::string& line_number )
   {
       setFailMessage( fail_message );
-      setTestLine( line_number );    
+      setTestLine( line_number );
   }
 
 
@@ -391,36 +243,6 @@ public:
   void setTestLine( const std::string& line_number_string )
   {
       testFileLine = line_number_string;
-  }
-
-
-  //----------------------------------------
-  // Method:  failTest()
-  // Purpose: For cases without booleans to use for assert(), print out
-  //          the FAIL message and move to the next test.
-  // Usage:   to be called as needed to produce failing output
-  // Inputs:  none
-  // Outputs: none
-  //----------------------------------------
-  void failTest( void )
-  {
-      fail();
-      print();
-      next();
-  }
-
-  void failTest( const std::string& fail_message )
-  {
-      fail( fail_message );
-      print();
-      next();
-  }
-
-  void failTest( const std::string& fail_message, const int line_number )
-  {
-      fail( fail_message, line_number );
-      print();
-      next();
   }
 
 
@@ -447,7 +269,7 @@ public:
       while( !file1_stream.eof() )
       {
           line_number++;
-        
+
           // If we reach the end of File2, but there is
           // more left in File1, then they are not equal
           if( file2_stream.eof() )
@@ -484,6 +306,10 @@ public:
 
 private:
 
+  //----------------------------------------
+  // Data Members
+  //----------------------------------------
+
   // The following are all used as part of the output from TestUtil::print()
   // to facilitate filtering of output that is thus printed to stdout
 
@@ -493,7 +319,7 @@ private:
   std::string testFileName;  // help locate test file that discovered a failure
   std::string testFileLine;  // help locate test line where the failure occured
 
-  double      tolerance;     // acceptable difference between test output and 
+  double      tolerance;     // acceptable difference between test output and
                              //  expected or baseline output
 
   int         failBit;       // store the result of a test (0=pass, 1=fail)
@@ -506,5 +332,242 @@ private:
   int subtestID; // ID of the current sub-test, used in TestUtil::print()
   int failCount; // Count of tests that have fails
   int testCount; // Count of tests that have been run
+
+//############################################################
+// METHODS REDENTLY CHANGED FROM PUBLIC TO PRIVATE.
+// FOR TESTING, REVERT TO PUBLIC
+//############################################################
+
+  //----------------------------------------
+  // Method:  TestUtil::print()
+  // Purpose: print test results and information on classes being tested
+  //          to stdout in a common format that is both human-readable
+  //          and easy to filter using tools like grep so as to help
+  //          isolate where problems are happening.
+  // Usage:   to be called after each test method subtest is performed
+  // Inputs:  none
+  // Outputs: none
+  // STDOUT:  "outputKeyword, sourceClass, sourceMethod, testFileName,
+  //             testMethod, subtestID, failBit"
+  //----------------------------------------
+  void print( void )
+  {
+      // print test summary description and result to stdout
+      if( failBit==1 && verbosity >=1 )
+      {
+         std::cout     <<
+         outputKeyword << ", " <<
+         "Class="      << sourceClass   << ", " <<
+         "Method="     << sourceMethod  << ", " <<
+         "testFile="   << testFileName  << ", " <<
+         "testLine="   << testFileLine  << ", " <<
+         "subtest="    << subtestID     << ", " <<
+         "failBit="    << failBit       << ", " <<
+         "failMsg="    << failMessage
+         << std::endl;     // implicit conversion from int to string
+
+      }
+      else
+      {
+         std::cout     <<
+         outputKeyword << ", " <<
+         "Class="      << sourceClass   << ", " <<
+         "Method="     << sourceMethod  << ", " <<
+         "testFile="   << testFileName  << ", " <<
+         "testLine="   << testFileLine  << ", " <<
+         "subtest="    << subtestID     << ", " <<
+         "failBit="    << failBit
+         << std::endl;     // implicit conversion from int to string
+
+      }
+  }
+
+  //----------------------------------------
+  // Method:  TestUtil::pass()
+  // Purpose: Pass the test! Record a pass by setting the failBit=0 and
+  //           incrementing the testCount
+  // Usage:   To be called (once!) at the end of any subtest that has passed
+  // Inputs:  none
+  // Outputs: none
+  //----------------------------------------
+  void pass( void )
+  {
+      failBit = 0;
+      testCount++;
+  }
+
+  //----------------------------------------
+  // Method:  TestUtil::fail()
+  // Purpose: Fail the test! Record a failure by setting the failBit and
+  //           incrementing failCount
+  // Usage:   To be called (once!) at the end of any subtest that has failed
+  // Inputs:  2 [optional]
+  //          string fail_message
+  //          int    line_number
+  // Outputs: none
+  //----------------------------------------
+  void fail( void )
+  {
+      failBit = 1;
+      failCount++;
+      testCount++;
+  }
+
+  void fail( const std::string& fail_message )
+  {
+      setFailMessage( fail_message );
+      fail();
+  }
+
+  void fail( const std::string& fail_message, const int line_number )
+  {
+      setFailMessage( fail_message );
+      setTestLine( line_number );
+      fail();
+  }
+
+  void fail( const std::string& fail_message, const std::string& line_number )
+  {
+      setFailMessage( fail_message );
+      setTestLine( line_number );
+      fail();
+  }
+
+
+  //----------------------------------------
+  // Method:  TestUtil::next()
+  // Purpose: Increment the failCount and reset subtestID based on current testCount
+  // Usage:   To be called at the beginning of each subtest AFTER the first
+  // Inputs:  none
+  // Outputs: none
+  //----------------------------------------
+  void next( void )
+  {
+      // increment subtest counter/ID
+      subtestID = countTests() + 1;
+
+      // reset fail parameters for next/new subtest
+      failBit = 0;
+      failMessage = "Developer is a lazy slacker";
+  }
+
+
+  //----------------------------------------
+  // Method:  TestUtil::undo()
+  // Purpose: undo the test! Undo a pass/fail by unsetting failBit and
+  //           decrementing failCount (only if failed) and
+  //           decrementing the testCount
+  // Usage:   To be called at the end of any subtest that needs to be undone
+  // Inputs:  none
+  // Outputs: none
+  //----------------------------------------
+  void undo( void )
+  {
+      if( failBit==1 )
+      {
+          failBit = 0;
+          failCount--;
+          testCount--;
+      }
+      else
+      {
+          failBit = 0;
+          testCount--;
+      }
+      next();
+  }
+
+
+//############################################################
+// METHODS RECENTLY DEPRECATED
+// FOR TESTING, UNCOMMENT THIS BLOCK
+//############################################################
+//
+//
+// public:
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void init( void )
+//   {
+//       failBit = 0;
+//       failMessage = "depricated TestUtil::init()";
+//       subtestID = 1;
+//       failCount = 0;
+//       testCount = 0;
+//       tolerance = 0;
+//   }
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void assert( bool testExpression, const std::string& fail_message="depricated"  )
+//   {
+//       if( testExpression == false )
+//       {
+//         fail( fail_message );
+//       }
+//       else
+//       {
+//         pass( );
+//       }
+//       print();
+//   }
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void failTest( void )
+//   {
+//       fail();
+//       print();
+//       next();
+//   }
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void failTest( const std::string& fail_message )
+//   {
+//       fail( fail_message );
+//       print();
+//       next();
+//   }
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void failTest( const std::string& fail_message, const int line_number )
+//   {
+//       fail( fail_message, line_number );
+//       print();
+//       next();
+//   }
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void failTest( const std::string& fail_message, const std::string& line_number )
+//   {
+//       fail( fail_message, line_number );
+//       print();
+//       next();
+//   }
+//
+//   //----------------------------------------
+//   // DEPRICATED: TO BE DELETED
+//   //----------------------------------------
+//   void passTest( void )
+//   {
+//       pass();
+//       print();
+//       next();
+//   }
+//
+// //############################################################
+// // END OF BLOCK, DEPRICATED, TO BE DELETED SOON
+// //############################################################
+
 
 };
