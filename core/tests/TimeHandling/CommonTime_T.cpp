@@ -70,7 +70,7 @@ class CommonTime_T : public CommonTime
             try
             {
                 CommonTime Zero;
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime constructor did not throw an exception.", __LINE__ );
             }
             catch(...)
             {
@@ -84,11 +84,11 @@ class CommonTime_T : public CommonTime
             {
                 CommonTime Test1;
                 Test1.set( (long)700000, (long)0, (double)0. );
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() did not throw an exception.", __LINE__ );
             }
             catch (...)
             {
-                testFramework.assert( false, "CommonTime.set() method should not have thrown an exception", __LINE__ );
+                testFramework.assert( false, "CommonTime.set() threw an exception, but should not have.", __LINE__ );
             }
 
             // Undocumented comment line:
@@ -102,11 +102,11 @@ class CommonTime_T : public CommonTime
                 CommonTime Test1;
                 Test1.set( (long)700000, (long)0, (double)0. );
                 CommonTime Test2(Test1);
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime2(CommonTime1) copy constructor did not throw an exception.", __LINE__ );
             }
             catch (...)
             {
-                testFramework.assert( false, "CommonTime Copy Constructor should not have thrown an exception", __LINE__ );
+                testFramework.assert( false, "CommonTime Copy Constructor threw an exception, but should not have", __LINE__ );
             }
 
             //----------------------------------------
@@ -117,11 +117,11 @@ class CommonTime_T : public CommonTime
                 CommonTime Test1;
                 Test1.set( (long)700000, (long)0, (double)0. );
                 CommonTime Test3 = Test1;
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime assignment operator did not throw an exception.", __LINE__ );
             }
             catch (...)
             {
-                testFramework.assert( false, "CommonTime assignment operator on same line should not have thrown an exception", __LINE__ );
+                testFramework.assert( false, "CommonTime assignment operator on same line threw an exception, but should not have", __LINE__ );
             }
 
             //----------------------------------------
@@ -133,7 +133,7 @@ class CommonTime_T : public CommonTime
                 Test1.set( (long)700000, (long)0, (double)0.);
                 CommonTime Test4;
                 Test4 = Test1;
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime assignment operator did not throw an exception", __LINE__ );
             }
             catch (...)
             {
@@ -178,7 +178,7 @@ class CommonTime_T : public CommonTime
             // For now, I'm replacing gpstk::InvalidParameter with gpstk::Exception to be consistent throughout this test application
             catch( gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with negative day should throw a gpstk::Exception", __LINE__ );
             }
             catch(...)
             {
@@ -195,7 +195,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with too many days should throw a gpstk::Exception", __LINE__  );
             }
             catch (...)
             {
@@ -212,7 +212,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with negative seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
@@ -229,7 +229,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with too many seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
@@ -246,7 +246,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with negative fractional seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
@@ -263,7 +263,7 @@ class CommonTime_T : public CommonTime
             }
             catch( gpstk::Exception e )
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with too many fractional seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch(...)
             {
@@ -280,7 +280,7 @@ class CommonTime_T : public CommonTime
             }
             catch( gpstk::Exception e )
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.set() with negative days should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
@@ -297,7 +297,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.setInterval() with too many days should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
@@ -314,7 +314,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.setInterval() with negative seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
@@ -331,7 +331,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.setInterval() with too many seconds should throw a gpstk::Exception", __LINE__ );
             }
             // catch(...)
             // {
@@ -344,15 +344,15 @@ class CommonTime_T : public CommonTime
             try
             {
                 Test.setInternal(700000,1001,-1.);
-                testFramework.assert( false, "[testing] CommonTime.setInterval() with too negative fractional seconds, [expected] exception gpstk::Exception, [actual] threw no exception", __LINE__ );
+                testFramework.assert( false, "[testing] CommonTime.setInterval() with negative fractional seconds, [expected] exception gpstk::Exception, [actual] threw no exception", __LINE__ );
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.setInterval() with negative fractional seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch (...)
             {
-                testFramework.assert( false, "[testing] CommonTime.setInterval() with too negative fractional seconds, [expected] exception gpstk::Exception, [actual] threw wrong exception", __LINE__ );
+                testFramework.assert( false, "[testing] CommonTime.setInterval() with negative fractional seconds, [expected] exception gpstk::Exception, [actual] threw wrong exception", __LINE__ );
             }
 
             //----------------------------------------
@@ -365,7 +365,7 @@ class CommonTime_T : public CommonTime
             }
             catch(gpstk::Exception e)
             {
-                testFramework.assert( true );
+                testFramework.assert( true, "[expected] CommonTime.setInterval() with too many fractional seconds should throw a gpstk::Exception", __LINE__ );
             }
             catch(...)
             {

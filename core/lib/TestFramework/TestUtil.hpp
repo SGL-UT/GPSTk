@@ -48,7 +48,7 @@ public:
       sourceMethod( sourceMethodInput ),
       testFileName( testFileInput ),
       testFileLine( "0" ),
-      failMessage( "Developer is a lazy slacker" ),
+      testMessage( "Developer is a lazy slacker" ),
       failBit( 0 ),
       failCount( 0 ),
       testCount( 0 ),
@@ -91,10 +91,6 @@ public:
       return( gpstk::getPathTestTemp() );
   }
 
-  //############################################################
-  // NEW ASSERT() SIGNATURES
-  //############################################################
-
   //----------------------------------------
   // Method:  TestUtil::assert()
   // Purpose: Takes a boolean expression, passes or fails the test, depending on
@@ -103,50 +99,42 @@ public:
   // Inputs:  boolean testExpression
   // Outputs: none
   //----------------------------------------
-  void assert( bool testExpression, const std::string& fail_message, const int line_number )
+  void assert( bool testExpression, const std::string& test_message, const int line_number )
   {
+      setTestMessage( test_message );
+      setTestLine( line_number );
+      
       if( testExpression == false )
       {
-        fail( fail_message, line_number );
+          fail();
       }
       else
       {
           pass();
       }
+
       print();
       next();
   }
 
 
-  void assert( bool testExpression, const std::string& fail_message, const std::string& line_number )
+  void assert( bool testExpression, const std::string& test_message, const std::string& line_number )
   {
+      setTestMessage( test_message );
+      setTestLine( line_number );
+      
       if( testExpression == false )
       {
-        fail( fail_message, line_number );
+          fail();
       }
       else
       {
           pass();
       }
+
       print();
       next();
   }
-
-  // This variant of assert() should only be used when you are forcing a test to pass.
-  void assert( bool testExpression )
-  {
-      if( testExpression == false )
-      {
-        fail( (std::string)"DO NOT USE THIS ASSERT() SIGNATURE WITH ANYTHING OTHER THAN AN EXPLICIT testExpression=TRUE" );
-      }
-      else
-      {
-        pass( );
-      }
-      print();
-      next();
-  }
-
 
   //----------------------------------------
   // Method:  TestUtil::countFails()
@@ -201,27 +189,27 @@ public:
 
 
   //----------------------------------------
-  // Method:  setFailMessage()
-  // Purpose: Set the message text that is reported if the test fails
+  // Method:  setTestMessage()
+  // Purpose: Set the message text that is reported when print() is called, usually a fail message
   // Inputs:  2
-  //          std::string fail_message, the text to be sent to a log to describe what failed and why
-  //          int         line_number, the line number in the test app where fail() was called
+  //          std::string test_message, the text to be sent to a log, usually to describe what failed and why
+  //          int         line_number, the line number in the test app where pass(), fail(), assert() was called
   // Outputs: none
   //----------------------------------------
-  void setFailMessage( const std::string& fail_message )
+  void setTestMessage( const std::string& test_message )
   {
-      failMessage  = fail_message;
+      testMessage  = test_message;
   }
 
-  void setFailMessage( const std::string& fail_message, const int line_number )
+  void setTestMessage( const std::string& test_message, const int line_number )
   {
-      setFailMessage( fail_message );
+      setTestMessage( test_message );
       setTestLine( line_number );
   }
 
-  void setFailMessage( const std::string& fail_message, const std::string& line_number )
+  void setTestMessage( const std::string& test_message, const std::string& line_number )
   {
-      setFailMessage( fail_message );
+      setTestMessage( test_message );
       setTestLine( line_number );
   }
 
@@ -306,9 +294,9 @@ public:
 
 private:
 
-  //----------------------------------------
-  // Data Members
-  //----------------------------------------
+  //============================================================
+  // Private Data Members
+  //============================================================
 
   // The following are all used as part of the output from TestUtil::print()
   // to facilitate filtering of output that is thus printed to stdout
@@ -323,8 +311,8 @@ private:
                              //  expected or baseline output
 
   int         failBit;       // store the result of a test (0=pass, 1=fail)
-  int         verbosity;     // if verbosity>=0, print summary line; if verbosity>=1, print failMessage when fail() is called.
-  std::string failMessage;   // if failBit==1 && verbosity>=1, print this string
+  int         verbosity;     // if verbosity>=0, print summary line; if verbosity>=1, print testMessage when fail() is called.
+  std::string testMessage;   // if failBit==1 && verbosity>=1, print this string
                              // description of why the test failed to be set by the test app developer
 
   //  since single test methods may contain multiple subtests.
@@ -333,10 +321,9 @@ private:
   int failCount; // Count of tests that have fails
   int testCount; // Count of tests that have been run
 
-//############################################################
-// METHODS REDENTLY CHANGED FROM PUBLIC TO PRIVATE.
-// FOR TESTING, REVERT TO PUBLIC
-//############################################################
+  //============================================================
+  // Private Methods 
+  //============================================================
 
   //----------------------------------------
   // Method:  TestUtil::print()
@@ -363,7 +350,7 @@ private:
          "testLine="   << testFileLine  << ", " <<
          "subtest="    << subtestID     << ", " <<
          "failBit="    << failBit       << ", " <<
-         "failMsg="    << failMessage
+         "testMsg="    << testMessage
          << std::endl;     // implicit conversion from int to string
 
       }
@@ -415,20 +402,20 @@ private:
 
   void fail( const std::string& fail_message )
   {
-      setFailMessage( fail_message );
+      setTestMessage( fail_message );
       fail();
   }
 
   void fail( const std::string& fail_message, const int line_number )
   {
-      setFailMessage( fail_message );
+      setTestMessage( fail_message );
       setTestLine( line_number );
       fail();
   }
 
   void fail( const std::string& fail_message, const std::string& line_number )
   {
-      setFailMessage( fail_message );
+      setTestMessage( fail_message );
       setTestLine( line_number );
       fail();
   }
@@ -448,7 +435,7 @@ private:
 
       // reset fail parameters for next/new subtest
       failBit = 0;
-      failMessage = "Developer is a lazy slacker";
+      testMessage = "Developer is a lazy slacker";
   }
 
 
@@ -476,98 +463,6 @@ private:
       }
       next();
   }
-
-
-//############################################################
-// METHODS RECENTLY DEPRECATED
-// FOR TESTING, UNCOMMENT THIS BLOCK
-//############################################################
-//
-//
-// public:
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void init( void )
-//   {
-//       failBit = 0;
-//       failMessage = "depricated TestUtil::init()";
-//       subtestID = 1;
-//       failCount = 0;
-//       testCount = 0;
-//       tolerance = 0;
-//   }
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void assert( bool testExpression, const std::string& fail_message="depricated"  )
-//   {
-//       if( testExpression == false )
-//       {
-//         fail( fail_message );
-//       }
-//       else
-//       {
-//         pass( );
-//       }
-//       print();
-//   }
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void failTest( void )
-//   {
-//       fail();
-//       print();
-//       next();
-//   }
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void failTest( const std::string& fail_message )
-//   {
-//       fail( fail_message );
-//       print();
-//       next();
-//   }
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void failTest( const std::string& fail_message, const int line_number )
-//   {
-//       fail( fail_message, line_number );
-//       print();
-//       next();
-//   }
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void failTest( const std::string& fail_message, const std::string& line_number )
-//   {
-//       fail( fail_message, line_number );
-//       print();
-//       next();
-//   }
-//
-//   //----------------------------------------
-//   // DEPRICATED: TO BE DELETED
-//   //----------------------------------------
-//   void passTest( void )
-//   {
-//       pass();
-//       print();
-//       next();
-//   }
-//
-// //############################################################
-// // END OF BLOCK, DEPRICATED, TO BE DELETED SOON
-// //############################################################
 
 
 };
