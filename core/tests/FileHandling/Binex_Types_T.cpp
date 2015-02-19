@@ -88,7 +88,7 @@ private:
    string  inputMgfziNums;
 
       /** Update test results and optionally show test details
-       */
+       /
    void report(TestUtil&               test,
                const unsigned long     expectedValue,
                const size_t            expectedSize,
@@ -96,7 +96,7 @@ private:
                const bool              isLittleEndian = false);
 
       /** Update test results and optionally show test details
-       */
+       /
    void report(TestUtil&               test,
                const long long         expectedValue,
                const size_t            expectedSize,
@@ -184,39 +184,56 @@ int BinexTypes_T :: doUbnxiInitializationTests()
    try
    {
       BinexData::UBNXI  u;
-      report(tester, 0, 1, u);
+
+      unsigned long  actualValue = (unsigned long)u;
+      size_t         actualSize  = u.getSize();
+
+      ostringstream  oss;
+      oss << "Expected Value = " << 0
+          << " ; Actual Value = " << actualValue
+          << " ; Expected Size = " << 1
+          << " ; Actual Size = " << actualSize;
+       
+      tester.assert( (  (0 != actualValue)
+                     || (1 != actualSize) ),
+                     oss.str(), __LINE__ );
    }
    catch (Exception& e)
    {
       ostringstream  oss;
-      oss << e;
-      tester.fail(oss.str());
-      tester.print();
+      oss << "exception creating uninitialized UBNXI" << e;
+      tester.assert( false, oss.str(), __LINE__ );
    }
-   tester.next();
-
 
       // BinexData::UBNXI_Initialization_2..n - Initialization
    NumListType::const_iterator  numIter = ubnxiNumList.begin();
    for ( ; numIter != ubnxiNumList.end(); ++numIter)
    {
       try
-      {
+      {        
             // validate value and size of each number
-         BinexData::UBNXI  u(numIter->value);
-         report(tester,
-                numIter->value, numIter->size,  // expected
-                u);                             // actual
+          BinexData::UBNXI  u(numIter->value);
+
+          unsigned long  actualValue = (unsigned long)u;
+          size_t         actualSize  = u.getSize();
+
+          ostringstream  oss;
+          oss << "Expected Value = " << numIter->value
+              << " ; Actual Value = " << actualValue
+              << " ; Expected Size = " << numIter->size
+              << " ; Actual Size = " << actualSize;
+           
+          tester.assert( (  (numIter->value != actualValue)
+                         || (numIter->size  != actualSize) ),
+                         oss.str(), __LINE__ );
       }
       catch (Exception& e)
       {
             // was this an expected exception?
          ostringstream  oss;
-         oss << e;
-         tester.assert( (numIter->size <= 0) , oss.str() );
+         oss << "unexpected exception creating initialized UBNXI" << e;
+         tester.assert( (numIter->size <= 0) , oss.str(), __LINE__ );
       }
-
-      tester.next();
    }
 
    return tester.countFails();
@@ -244,20 +261,27 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
             BinexData::UBNXI  u2;
             u2.decode(buffer, offset, (bool)isLittleEndian);
 
-            report(tester,
-                   numIter->value, numIter->size,  // expected
-                   u2,                             // actual
-                   (bool)isLittleEndian);
+            unsigned long  actualValue = (unsigned long)u2;
+            size_t         actualSize  = u2.getSize();
+
+            ostringstream  oss;
+            oss << "Expected Value = " << numIter->value
+                << " ; Actual Value = " << actualValue
+                << " ; Expected Size = " << numIter->size
+                << " ; Actual Size = " << actualSize
+                << " ; Endian = " << (isLittleEndian ? "little" : "BIG");
+             
+            tester.assert( (  (numIter->value != actualValue)
+                           || (numIter->size  != actualSize) ),
+                           oss.str(), __LINE__ );
          }
          catch (Exception& e)
          {
                // was this an expected exception?
             ostringstream  oss;
-            oss << e;
-            tester.assert( (numIter->size <= 0), oss.str() );            
+            oss << "unexpected exception encoding/decoding UBNXI" << e;
+            tester.assert( (numIter->size <= 0), oss.str(), __LINE__ );            
          }
-
-         tester.next();
       }
    }
 
@@ -274,17 +298,26 @@ int BinexTypes_T :: doMgfziInitializationTests()
    try
    {
       BinexData::MGFZI  m;
-      report(tester, 0, 1, m);
+
+      long long  actualValue = (long long)m;
+      size_t     actualSize  = m.getSize();
+
+      ostringstream  oss;
+      oss << "Expected Value = " << 0
+          << " ; Actual Value = " << actualValue
+          << " ; Expected Size = " << 1
+          << " ; Actual Size = " << actualSize;
+         
+      tester.assert( (  (0 != actualValue)
+                     || (1 != actualSize) ),
+                     oss.str(), __LINE__ );
    }
    catch (Exception& e)
    {
       ostringstream  oss;
-      oss << e;
-      tester.fail(oss.str());
-      tester.print();
-
+      oss << "exception creating uninitialized MGFZI" << e;
+      tester.assert( false, oss.str(), __LINE__ );
    }
-   tester.next();
 
       // BinexData::MGFZI_Initialization_2..n - Initialization
    NumListType::const_iterator  numIter = mgfziNumList.begin();
@@ -293,20 +326,28 @@ int BinexTypes_T :: doMgfziInitializationTests()
       try
       {
             // validate value and size of each number
-         BinexData::MGFZI  m(numIter->value);
-         report(tester,
-                numIter->value, numIter->size,  // expected
-                m);                             // actual
+          BinexData::MGFZI  m(numIter->value);
+
+          long long  actualValue = (long long)m;
+          size_t     actualSize  = m.getSize();
+
+          ostringstream  oss;
+          oss << "Expected Value = " << numIter->value
+              << " ; Actual Value = " << actualValue
+              << " ; Expected Size = " << numIter->size
+              << " ; Actual Size = " << actualSize;
+             
+          tester.assert( (  (numIter->value != actualValue)
+                         || (numIter->size  != actualSize) ),
+                         oss.str(), __LINE__ );
       }
       catch (Exception& e)
       {
             // was this an expected exception?
          ostringstream  oss;
-         oss << e;
-         tester.assert( (numIter->size <= 0) , oss.str() );
+         oss << "unexpected exception creating initialized MGFZI" << e;
+         tester.assert( (numIter->size <= 0) , oss.str(), __LINE__ );
       }
-
-      tester.next();
    }
 
    return tester.countFails();
@@ -334,27 +375,34 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
             BinexData::MGFZI  m2;
             m2.decode(buffer, offset, (bool)isLittleEndian);
 
-            report(tester,
-                   numIter->value, numIter->size,  // expected
-                   m2,                             // actual
-                   (bool)isLittleEndian);
+            long long  actualValue = (long long)m2;
+            size_t     actualSize  = m2.getSize();
+
+            ostringstream  oss;
+            oss << "Expected Value = " << numIter->value
+                << " ; Actual Value = " << actualValue
+                << " ; Expected Size = " << numIter->size
+                << " ; Actual Size = " << actualSize
+                << " ; Endian = " << (isLittleEndian ? "little" : "BIG");
+             
+            tester.assert( (  (numIter->value != actualValue)
+                           || (numIter->size  != actualSize) ),
+                           oss.str(), __LINE__ );
          }
          catch (Exception& e)
          {
                // was this an expected exception?
             ostringstream  oss;
-            oss << e;
-            tester.assert( (numIter->size <= 0) , oss.str() );            
+            oss << "unexpected exception encoding/decoding initialized MGFZI" << e;
+            tester.assert( (numIter->size <= 0) , oss.str(), __LINE__ );            
          }
-
-         tester.next();
       }
    }
 
    return tester.countFails();
 }
 
-
+/*
 //---------------------------------------------------------------------------
 void BinexTypes_T::report(TestUtil&               test,
                           const unsigned long     expectedValue,
@@ -403,15 +451,15 @@ void BinexTypes_T::report(TestUtil&               test,
       oss << ", Expected Size = " << expectedSize;
       oss << ", Actual Size = " << actualSize;
       oss << ", Endian = " << (isLittleEndian ? "little" : "BIG");
-      test.fail(oss.str());      
+      test.assert( false, oss.str(), __LINE__ );
    }
    else
    {
-      test.pass();
+      test.assert( true, "", __LINE__);
    }
    test.print();
 }
-
+*/
 
 //---------------------------------------------------------------------------
 void BinexTypes_T :: dumpBuffer(const unsigned char* buffer, size_t size)
@@ -436,17 +484,13 @@ int main(int argc, char *argv[])
 
    BinexTypes_T  testClass;  // test data is loaded here
 
-   errorCount = testClass.doUbnxiInitializationTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doUbnxiInitializationTests();
 
-   errorCount = testClass.doUbnxiEncodeDecodeTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doUbnxiEncodeDecodeTests();
 
-   errorCount = testClass.doMgfziInitializationTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doMgfziInitializationTests();
 
-   errorCount = testClass.doMgfziEncodeDecodeTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doMgfziEncodeDecodeTests();
 
    std::cout << "Total Failures for " << __FILE__ << ": " << errorTotal << std::endl;
 
