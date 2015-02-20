@@ -334,6 +334,7 @@ class ANSITime_T
   		ANSITime UTC1(13500000,TimeSystem(7));
   		ANSITime UNKNOWN(13500000,TimeSystem(0));
   		ANSITime ANY(13500000,TimeSystem(1));
+		ANSITime ANY2(13400000, TimeSystem(1));
 
 		//=====================================================================
 		//Verify same Time System but different time inequality
@@ -384,7 +385,8 @@ class ANSITime_T
 		//=====================================================================
 		//Verify TimeSystem=ANY does not matter in other operator comparisons 
 		//=====================================================================
-		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY), "Less-than operator did not find less than object due to Any TimeSystem", __LINE__);
+		testFramework.assert(ANY2 < GPS1, "Less than object with Any TimeSystem is not found to be less than", __LINE__);
+		testFramework.assert(GPS2 < ANY, "Less than object with GPS TimeSystem is not found to be less than greater object with Any TimeSystem", __LINE__);
 
 
 		testFramework.changeSourceMethod("setTimeSystem");	
