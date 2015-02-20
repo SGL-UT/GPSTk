@@ -281,29 +281,27 @@ int BinexReadWrite_T :: doForwardTests()
    BinexStream  outStream(tempFileName.c_str(),
                           std::ios::out | std::ios::binary);
 
-   tester.assert(outStream.good(), "error creating ouput stream");
+   tester.assert( outStream.good(), "error creating ouput stream", __LINE__ );
 
    outStream.exceptions(ios_base::failbit | ios_base::badbit);
    RecordList::iterator  recordIter = testRecords.begin();
    for ( ; recordIter != testRecords.end(); ++recordIter)
    {
-      tester.next();
       try
       {
          (*recordIter).putRecord(outStream);
-         tester.pass();
+         tester.assert( true, "put record", __LINE__ );
       }
       catch (Exception& e)
       {
          ostringstream  oss;
          oss << "exception writing record: " << e;
-         tester.fail(oss.str());
+         tester.assert( false, oss.str(), __LINE__ );
       }
       catch (...)
       {
-         tester.fail("unknown exception writing record");
+         tester.assert( false, "unknown exception writing record", __LINE__ );
       }
-      tester.print();
    }
    outStream.close();
    
@@ -311,17 +309,14 @@ int BinexReadWrite_T :: doForwardTests()
                          std::ios::in | std::ios::binary);
    inStream.exceptions(ios_base::failbit);
    
-   tester.next();
-   tester.assert(inStream.good(), "error creating input stream");
+   tester.assert( inStream.good(), "error creating input stream", __LINE__ );
 
    recordIter = testRecords.begin();
    while (inStream.good() && (EOF != inStream.peek() ) )
    {
-      tester.next();
-
       if (recordIter == testRecords.end() )
       {
-         tester.fail("stored records exhausted before file records");
+         tester.assert( false, "stored records exhausted before file records", __LINE__ );
          break;
       }
       BinexData record;
@@ -330,7 +325,7 @@ int BinexReadWrite_T :: doForwardTests()
          record.getRecord(inStream);
          if (record == *recordIter)
          {
-            tester.pass();
+            tester.assert( true, "get record", __LINE__ );
          }
          else
          {
@@ -340,20 +335,20 @@ int BinexReadWrite_T :: doForwardTests()
             oss << "Expected record:" << endl;
             record.dump(oss);
 
-            tester.fail(oss.str());
+            tester.assert( false, oss.str(), __LINE__ );
          }
       }
       catch (Exception& e)
       {
          ostringstream  oss;
          oss << "stream exception reading record: " << e;
-         tester.fail(oss.str());
+         tester.assert( false, oss.str(), __LINE__ );
       }
       catch (...)
       {
-         tester.fail("unknown exception reading record");
+         tester.assert( false, "unknown exception reading record", __LINE__ );
       }
-      tester.print();
+
       recordIter++;      
    }
    inStream.close();
@@ -378,16 +373,13 @@ int BinexReadWrite_T :: doReverseTests()
  */
 main(int argc, char *argv[])
 {
-   int  errorCount = 0;
    int  errorTotal = 0;
 
    BinexReadWrite_T  testClass;  // test data is loaded here
 
-   errorCount = testClass.doForwardTests();
-   errorTotal = errorTotal + errorCount;
+   errorTotal += testClass.doForwardTests();
 
-   //errorCount = testClass.doReverseTests();
-   //errorTotal = errorTotal + errorCount;
+   //errorTotal += testClass.doReverseTests();
 
    return( errorTotal );
    
