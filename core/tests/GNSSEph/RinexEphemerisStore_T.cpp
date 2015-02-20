@@ -72,30 +72,37 @@ class RinexEphemerisStore_T
 		int RESTest (void)
 		{
 			TestUtil testFramework( "RinexEphemerisStore", "Constructor", __FILE__, __LINE__ );
-			testFramework.init();
 
-//--------------RinexEphemerisStore_RESTest_1 - Verify the consturctor builds the RES object
-			try {RinexEphemerisStore Store; testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//=============================================
+			//Verify the consturctor builds the RES object
+			//=============================================
+			try {RinexEphemerisStore Store; testFramework.assert(true, "sedIdentifier", __LINE__);}
+			catch (...) {testFramework.assert(false, "Exception thrown creating RinexEphemerisStoreObject", __LINE__);}
 			RinexEphemerisStore Store; 
 
-//--------------RinexEphemerisStore_RESTest_2 - Verify the ability to load nonexistant files.
+			//=============================================
+			//Verify the ability to load nonexistant files.
+			//=============================================
 			testFramework.changeSourceMethod("loadFile");
 			try
 			{
 			  Store.loadFile(inputNotaFile.c_str());
-			  testFramework.passTest();
+			  testFramework.assert(true, "sedIdentifier", __LINE__);
 			}
 			catch (Exception& e)
 			{
-			  cout << "Expected exception thrown " << endl;
-			  cout << e << endl;
-			  testFramework.failTest();
+			  testFramework.assert(false, "Could not create and open new file.", __LINE__);
 			}
 
-//--------------RinexEphemerisStore_RESTest_3 - Verify the ability to load existant files.
-			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.passTest();}
-			catch (...) {cout << "Checking for failure!!!!" << endl; testFramework.failTest();}
+			//=============================================
+			//Verify the ability to load existant files.
+			//=============================================
+			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.assert(true, "sedIdentifier", __LINE__);}
+			catch (...) 
+			{
+				cout << "Checking for failure!!!!" << endl; 
+				testFramework.assert(false, "Could not load existing file", __LINE__);
+			}
 
 //=================================================================================================
 //   It would be nice to verify that the double name exception is indeed thrown. However the InvalidParameter exception 
@@ -109,7 +116,7 @@ class RinexEphemerisStore_T
 			}
 			catch (Exception& e) 
 			{
-				testFramework.passTest(); 
+				testFramework.assert(true, "sedIdentifier", __LINE__); 
 				cout << "Expected exception received from RinexEphemerisStore" << endl;
 			}
 			catch (...) 
@@ -120,10 +127,16 @@ class RinexEphemerisStore_T
 //=================================================================================================
 
 			testFramework.changeSourceMethod("clear");
-//--------------RinexEphemerisStore_RESTest_4 - Verify that once a clear() has been performed the repeated filename can be opened.
+			//==================================================================================
+			//Verify that once a clear() has been performed the repeated filename can be opened.
+			//==================================================================================
 			Store.gpstk::FileStore<RinexNavHeader>::clear();
-			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.passTest();}
-			catch (Exception& e) {cout << " Exception received from RinexEphemerisStore, e = " << e << endl; testFramework.failTest();} 
+			try {Store.loadFile(inputRinexNavData.c_str()); testFramework.assert(true, "sedIdentifier", __LINE__);}
+			catch (Exception& e) 
+			{
+				cout << " Exception received from RinexEphemerisStore, e = " << e << endl; 
+				testFramework.assert(false, "Could not reopen the cleared file.", __LINE__);
+			} 
 
 			return testFramework.countFails();
 
@@ -144,7 +157,7 @@ class RinexEphemerisStore_T
 		int findEphTest (void)
 		{
 			TestUtil testFramework( "GPSEphemerisStore", "findEphemeris", __FILE__, __LINE__ );
-			testFramework.init();
+
 			ofstream outputFileStream;
 
 			outputFileStream.open (findEphTestOutput.c_str());
@@ -189,24 +202,36 @@ class RinexEphemerisStore_T
 				CivilTime crazy(1950,1,31,2,0,0,2);
 				const CommonTime Comcrazy = (CommonTime)crazy;
 
-//--------------RinexEphemerisStore_findEphTest_1 - For proper input, will the method return properly?
-				try {GStore.findEphemeris(sid1,ComTime); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//==================================================
+				//For proper input, will the method return properly?
+				//==================================================
+				try {GStore.findEphemeris(sid1,ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findEphemeris threw an exception when it shouldn't.", __LINE__);}
 
-//--------------RinexEphemerisStore_findEphTest_2 - For a wrong SatID (too small), will an exception be thrown?
-				try {GStore.findEphemeris(sid0,CombTime); testFramework.failTest();}
-				catch (InvalidRequest) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//===========================================================
+				//For a wrong SatID (too small), will an exception be thrown?
+				//===========================================================
+				try 
+				{
+					GStore.findEphemeris(sid0,CombTime); 
+					testFramework.assert(false, "findEphemeris was successful when it shouldn't be", __LINE__);
+				}
+				catch (InvalidRequest) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findEphemeris threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findEphTest_3 - For a wrong SatID (too large), will an exception be thrown?
-				try {GStore.findEphemeris(sid33,CombTime); testFramework.failTest();}
-				catch (InvalidRequest) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//===========================================================
+				//For a wrong SatID (too large), will an exception be thrown?
+				//===========================================================
+				try {GStore.findEphemeris(sid33,CombTime); testFramework.assert(false, "findEphemeris was successful when it shouldn't be", __LINE__);}
+				catch (InvalidRequest) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findEphemeris threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findEphTest_4 - For an improper time, will an exception be thrown?
-				try {GStore.findEphemeris(sid32,Comcrazy); testFramework.failTest();}
-				catch (InvalidRequest) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//==================================================
+				//For an improper time, will an exception be thrown?
+				//==================================================
+				try {GStore.findEphemeris(sid32,Comcrazy); testFramework.assert(false, "findEphemeris was successful when it shouldn't be", __LINE__);}
+				catch (InvalidRequest) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findEphemeris threw an unexpected exception", __LINE__);}
 
 				//Write out findEphemeris data to output files
 				outputFileStream  << GStore.findEphemeris(sid1,ComTime);
@@ -219,10 +244,10 @@ class RinexEphemerisStore_T
 			outputFileStream.close();
 
 			testFramework.changeSourceMethod("findEphemeris Output");
-
-//--------------RinexEphemerisStore_findEphTest_5 - Check findEphemeris output with pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( findEphTestOutput, findEphTestInput, 0) );
-			testFramework.next();
+			//=======================================================
+			//Check findEphemeris output with pre-determined standard
+			//=======================================================
+			testFramework.assert( testFramework.fileEqualTest( findEphTestOutput, findEphTestInput, 0), "Output file did not match regressive standard.", __LINE__ );
 
 			return testFramework.countFails();
 		}
@@ -243,7 +268,7 @@ class RinexEphemerisStore_T
 		int getXvtTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "getXvt", __FILE__, __LINE__ );
-			testFramework.init();
+
 			stringstream fPRN1;
 			stringstream fPRN15;
 			stringstream fPRN32;
@@ -272,16 +297,18 @@ class RinexEphemerisStore_T
 			Xvt xvt32;
 			try
 			{
-//--------------RinexEphemerisStore_getXvtTest_1 - Does getXvt work in ideal settings?
+				//=======================================================
+				//Does getXvt work in ideal settings?
+				//=======================================================
 				try 
 				{
 					Store.getXvt(sid1,ComTime);
-					testFramework.passTest();
+					testFramework.assert(true, "sedIdentifier", __LINE__);
 				}
 				catch (Exception& e)
 				{
 					cout << "Exception thrown is " << e << endl;
-					testFramework.failTest();
+					testFramework.assert(false, "getXvt threw an exception when it should not", __LINE__);
 				}
 
 				xvt1 = Store.getXvt(sid1,ComTime);
@@ -292,29 +319,33 @@ class RinexEphemerisStore_T
 				fPRN15 << xvt15;
 				fPRN32 << xvt32;
 
-//--------------RinexEphemerisStore_getXvtTest_2 - Can I get an xvt for a non-real SV?
+				//=======================================================
+				//Can I get an xvt for a unlisted (too small) SV?
+				//=======================================================
 				try 
 				{
 					Store.getXvt(sid0,CombTime);
-					testFramework.failTest();
+					testFramework.assert(false, "getXvt was successful when it shouldn't be", __LINE__);
 				}
 				catch (InvalidRequest& e)
 				{
-					testFramework.passTest();
+					testFramework.assert(true, "sedIdentifier", __LINE__);
 				}
-				catch (...) {testFramework.failTest();}
+				catch (...) {testFramework.assert(false, "getXvt threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_getXvtTest_3 - Can I get an xvt for a non-real SV?
+				//=======================================================
+				//Can I get an xvt for a unlisted (too large) SV?
+				//=======================================================
 				try 
 				{
 					Store.getXvt(sid33,CombTime);
-					testFramework.failTest();
+					testFramework.assert(false, "getXvt was successful when it shouldn't be", __LINE__);
 				}
 				catch (InvalidRequest& e)
 				{
-					testFramework.passTest();
+					testFramework.assert(true, "sedIdentifier", __LINE__);
 				}
-				catch (...) {testFramework.failTest();}
+				catch (...) {testFramework.assert(false, "getXvt threw an unexpected exception", __LINE__);}
 			}
 			catch (Exception& e)
 			{
@@ -324,24 +355,24 @@ class RinexEphemerisStore_T
 
 
 			std::string comparisonOutput1  = "x:(1.43293e+07, -2.70658e+06, -2.19986e+07), v:(354.696, 2812.26, -117.977), clk bias:3.42039e-05, clk drift:1.93268e-12, relcorr:-1.49802e-09";
-
 			std::string comparisonOutput15 = "x:(1.46708e+07, 7.54272e+06, 2.07205e+07), v:(-2147.79, 1575.58, 902.848), clk bias:0.000558473, clk drift:5.91172e-12, relcorr:2.04148e-08";
-
 			std::string comparisonOutput32 = "x:(8.40859e+06, 1.71989e+07, -1.87307e+07), v:(-2248.12, -606.201, -1577.94), clk bias:2.12814e-05, clk drift:3.41061e-12, relcorr:-5.04954e-09";
-
 			testFramework.changeSourceMethod("getXvt Output");
 
-//--------------RinexEphemerisStore_getXvtTest_4 - Compare data for SatID 1 with pre-determined standard
-			testFramework.assert( fPRN1.str() == comparisonOutput1 );
-			testFramework.next();
+			//=======================================================
+			//Compare data for SatID 1 with pre-determined standard
+			//=======================================================
+			testFramework.assert( fPRN1.str() == comparisonOutput1, "Xvt redirect did not match regressive standard.", __LINE__ );
 
-//--------------RinexEphemerisStore_getXvtTest_5 - Compare data for SatID 15 with pre-determined standard
-			testFramework.assert( fPRN15.str() == comparisonOutput15 );
-			testFramework.next();
+			//=======================================================
+			//Compare data for SatID 15 with pre-determined standard
+			//=======================================================
+			testFramework.assert( fPRN15.str() == comparisonOutput15, "Xvt redirect did not match regressive standard.", __LINE__ );
 
-//--------------RinexEphemerisStore_getXvtTest_6 - Compare data for SatID 32 with pre-determined standard
-			testFramework.assert( fPRN32.str() == comparisonOutput32 );
-			testFramework.next();
+			//=======================================================
+			//Compare data for SatID 32 with pre-determined standard
+			//=======================================================
+			testFramework.assert( fPRN32.str() == comparisonOutput32, "Xvt redirect did not match regressive standard.", __LINE__ );
 
 			return testFramework.countFails();
 		}
@@ -369,7 +400,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int getXvt2Test (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "getXvt with IODC", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream fPRN1;
 			ofstream fPRN15;
@@ -421,7 +452,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 				try 
 				{
 					Store.getXvt(sid1,ComTime,IODC1);
-					testFramework.passTest();
+					testFramework.assert(true, "sedIdentifier", __LINE__);
 				}
 				catch (...) {testFramework.failTest();}
 
@@ -436,7 +467,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 					Store.getXvt(sid0,CombTime,IODC0);
 					testFramework.failTest();
 				}
-				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.failTest();}
 
 //--------------RinexEphemerisStore_getXvt2Test_3 - Is an error thrown when SatID is too large?
@@ -445,7 +476,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 					Store.getXvt(sid33,CombTime,IODC33);
 					testFramework.failTest();
 				}
-				catch (InvalidRequest& e) {testFramework.passTest();}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.failTest();}
 			}
 			catch (Exception& e)
@@ -484,7 +515,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int getSatHealthTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "getSatHealth", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			const short PRN0 = 0; // Zero PRN (Border test case)
 			const short PRN1 = 1;
@@ -515,38 +546,48 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
+				//=======================================================
+				//Does getSatHealth work in ideal conditions?
+				//=======================================================
+				try {GStore.getSatHealth(sid1,ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "getXvt threw an exception in ideal conditions", __LINE__);}
 
-//--------------RinexEphemerisStore_getSatHealthTest_1 - Does getSatHealth work in ideal conditions?
-				try {GStore.getSatHealth(sid1,ComTime); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//=======================================================
+				//Does getSatHealth return the proper value?
+				//=======================================================
+				testFramework.assert((short) 1 == GStore.getSatHealth(sid1,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
-//--------------RinexEphemerisStore_getSatHealthTest_2 - Does getSatHealth return the proper value?
-				testFramework.assert((short) 1 == GStore.getSatHealth(sid1,ComTime));
-				testFramework.next();
+				//=======================================================
+				//Does getSatHealth return the proper value?
+				//=======================================================
+				testFramework.assert((short) 1 == GStore.getSatHealth(sid15,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
-//--------------RinexEphemerisStore_getSatHealthTest_3 - Does getSatHealth return the proper value?
-				testFramework.assert((short) 1 == GStore.getSatHealth(sid15,ComTime));
-				testFramework.next();
+				//=======================================================
+				//Does getSatHealth return the proper value?
+				//=======================================================
+				testFramework.assert((short) 1 == GStore.getSatHealth(sid32,ComTime), "A listed healthy SV was not found or was found to be unhealthy.", __LINE__);
 
-//--------------RinexEphemerisStore_getSatHealthTest_4 - Does getSatHealth return the proper value?
-				testFramework.assert((short) 1 == GStore.getSatHealth(sid32,ComTime));
-				testFramework.next();
+				//=======================================================
+				//Does getSatHealth throw an error for bad SatID request?
+				//=======================================================
+				try {GStore.getSatHealth(sid0,CombTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "Error thrown for bad SatID request. 0 should have been returned.", __LINE__);}
 
-//--------------RinexEphemerisStore_getSatHealthTest_5 - Does getSatHealth throw an error for bad SatID request?
-				try {GStore.getSatHealth(sid0,CombTime); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//=======================================================
+				//Does getSatHealth throw an error for bad SatID request?
+				//=======================================================
+				try {GStore.getSatHealth(sid33,CombTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "Error thrown for bad SatID request. 0 should have been returned.", __LINE__);}
 
-//--------------RinexEphemerisStore_getSatHealthTest_6 - Does getSatHealth throw an error for bad SatID request?
-				try {GStore.getSatHealth(sid33,CombTime); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//================================================================
+				//Does getSatHealth return the proper value for bad SatID request?
+				//================================================================
+				testFramework.assert((short) 0 == GStore.getSatHealth(sid0,ComTime), "An unlisted SatID was not set to unhealthy", __LINE__);
 
-//--------------RinexEphemerisStore_getSatHealthTest_7 - Does getSatHealth return the proper value for bad SatID?
-				testFramework.assert((short) 0 == GStore.getSatHealth(sid0,ComTime));
-				testFramework.next();
-
-//--------------RinexEphemerisStore_getSatHealthTest_8 - Does getSatHealth return the proper value for bad SatID?
-				testFramework.assert((short) 0 == GStore.getSatHealth(sid33,ComTime));
-				testFramework.next();
+				//================================================================
+				//Does getSatHealth return the proper value for bad SatID request?
+				//================================================================
+				testFramework.assert((short) 0 == GStore.getSatHealth(sid33,ComTime), "An unlisted SatID was not set to unhealthy", __LINE__);
 			}
 			catch (Exception& e)
 			{
@@ -571,7 +612,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int dumpTest (void)
 		{
 			TestUtil testFramework( "GPSEphemerisStore", "dump", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream dumpTestOutputStreamForDetail0;
 			ofstream dumpTestOutputStreamForDetail1;
@@ -587,17 +628,23 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-//--------------RinexEphemerisStore_dumpTest_1 - Check that dump( , detail = 1) will work with no exceptions
-				try {Store.dump(dumpTestOutputStreamForDetail0,1); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//===========================================================
+				//Check that dump( , detail = 1) will work with no exceptions
+				//===========================================================
+				try {Store.dump(dumpTestOutputStreamForDetail0,1); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "Dump with detail=1 threw an exception when it should not", __LINE__);}
 
-//--------------RinexEphemerisStore_dumpTest_2 - Check that dump( , detail = 2) will work with no exceptions
-				try {Store.dump(dumpTestOutputStreamForDetail1,2); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//===========================================================
+				//Check that dump( , detail = 2) will work with no exceptions
+				//===========================================================
+				try {Store.dump(dumpTestOutputStreamForDetail1,2); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "Dump with detail=1 threw an exception when it should not", __LINE__);}
 
-//--------------RinexEphemerisStore_dumpTest_3 - Check that dump( , detail = 3) will work with no exceptions
-				try {Store.dump(dumpTestOutputStreamForDetail2,3); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//===========================================================
+				//Check that dump( , detail = 3) will work with no exceptions
+				//===========================================================
+				try {Store.dump(dumpTestOutputStreamForDetail2,3); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "Dump with detail=1 threw an exception when it should not", __LINE__);}
 
 
 			}
@@ -610,17 +657,20 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			dumpTestOutputStreamForDetail1.close();
 			dumpTestOutputStreamForDetail2.close();
 
-//--------------RinexEphemerisStore_dumpTest_4 - Check dump( , detail = 0) output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0, dumpTestInputForDetail0, 2) );
-			testFramework.next();
+			//====================================================================
+			//Check dump( , detail = 1) output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail0, dumpTestInputForDetail0, 2), "Dump(*,detail=1) did not match its regressive output", __LINE__ );
 
-//--------------RinexEphemerisStore_dumpTest_5 - Check dump( , detail = 1) output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1, dumpTestInputForDetail1, 2) );
-			testFramework.next();
+			//====================================================================
+			//Check dump( , detail = 2) output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail1, dumpTestInputForDetail1, 2), "Dump(*,detail=2) did not match its regressive output", __LINE__ );
 
-//--------------RinexEphemerisStore_dumpTest_6 - Check dump( , detail = 2) output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2, dumpTestInputForDetail2, 2) );
-			testFramework.next();
+			//====================================================================
+			//Check dump( , detail = 3) output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( dumpTestOutputForDetail2, dumpTestInputForDetail2, 2), "Dump(*,detail=3) did not match its regressive output", __LINE__ );
 
 			return testFramework.countFails();
 		}
@@ -636,7 +686,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int addEphemerisTest (void)
 		{
 			TestUtil testFramework( "GPSEphemerisStore", "addEphemeris", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			GPSEphemerisStore Blank;
 
@@ -672,28 +722,33 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
+				//====================================================================
+				//Verify that addEphemeris runs with no errors
+				//====================================================================
+				try{Blank.addEphemeris(eph); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "addEphemeris threw an exception when all necessary data has been provided", __LINE__);}
 
-//--------------RinexEphemerisStore_addEphemeris_1 - Verify that addEphemeris runs with no errors
-				try{Blank.addEphemeris(eph); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================================
+				//Verify that addEphemeris added by checking the initial time of the GPSEphemerisStore
+				//====================================================================================
+				testFramework.assert( ComTimeB == Blank.getInitialTime(), "addEphemeris may not have added the ephemeris or updated the initial time", __LINE__);
 
-//--------------RinexEphemerisStore_addEphemeris_2 - Verify that addEphemeris added by checking the initial time of the GPSEphemerisStore
-				testFramework.assert( ComTimeB == Blank.getInitialTime() );
-				testFramework.next();
+				//==================================================================================
+				//Verify that addEphemeris added by checking the final time of the GPSEphemerisStore
+				//==================================================================================
+				testFramework.assert( ComTimeE == Blank.getFinalTime(), "addEphemeris may not have added the ephemeris or updated the final time", __LINE__ );
 
-//--------------RinexEphemerisStore_addEphemeris_3 - Verify that addEphemeris added by checking the final time of the GPSEphemerisStore
-				testFramework.assert( ComTimeE == Blank.getFinalTime() );
-				testFramework.next();
 
 				Blank.clear();
+				//================================================================================
+				//Verify that clear() worked by checking the initial time of the GPSEphemerisStore
+				//================================================================================
+				testFramework.assert( ComDefB == Blank.getInitialTime(), "clear may not have functioned or reset the initial time", __LINE__ );
 
-//--------------RinexEphemerisStore_addEphemeris_4 - Verify that clear() worked by checking the initial time of the GPSEphemerisStore
-				testFramework.assert( ComDefB == Blank.getInitialTime() );
-				testFramework.next();
-
-//--------------RinexEphemerisStore_addEphemeris_5 - Verify that clear() worked by checking the initial time of the GPSEphemerisStore
-				testFramework.assert( ComDefE == Blank.getFinalTime() );
-				testFramework.next();
+				//================================================================================
+				//Verify that clear() worked by checking the initial time of the GPSEphemerisStore
+				//================================================================================
+				testFramework.assert( ComDefE == Blank.getFinalTime(), "clear may not have functioned or reset the final time", __LINE__ );
 			}
 			catch (Exception& e)
 			{
@@ -717,7 +772,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		{
 
 			TestUtil testFramework( "OrbitEphStore", "edit", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream editTestOutputStream;
 			editTestOutputStream.open (editTestOutput.c_str());
@@ -737,18 +792,23 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-//--------------RinexEphemerisStore_editTest_1 - Verify that the edit method runs
-				try{Store.edit(ComTMin, ComTMax); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Verify that the edit method runs
+				//====================================================================
+				try{Store.edit(ComTMin, ComTMax); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "edit threw an error when it should have functioned", __LINE__);}
 
 				Store.edit(ComTMin, ComTMax);
-//--------------RinexEphemerisStore_editTest_2 - Verify that the edit method changed the initial time
-				testFramework.assert(ComTMin == Store.getInitialTime());
-				testFramework.next();
+				//====================================================================
+				//Verify that the edit method changed the initial time
+				//====================================================================
+				testFramework.assert(ComTMin == Store.getInitialTime(), "Edit did not change the initial time", __LINE__);
 
-//--------------RinexEphemerisStore_editTest_3 - Verify that the edit method changed the initial time
-				testFramework.assert(ComTMax == Store.getFinalTime());
-				testFramework.next();
+				//====================================================================
+				//Verify that the edit method changed the final time
+				//====================================================================
+				testFramework.assert(ComTMax == Store.getFinalTime(), "Edit did not change the initial time", __LINE__);
+
 
 				Store.dump(editTestOutputStream,1);
 
@@ -759,10 +819,10 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 
 			editTestOutputStream.close();
-
-//--------------RinexEphemerisStore_editTest_4 - Check edited output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 0) );
-			testFramework.next();
+			//====================================================================
+			//Check edited output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( editTestOutput, editTestInput, 0), "Output from edit does not match regressive standard", __LINE__ );
 
 			return testFramework.countFails();
 		}
@@ -781,7 +841,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 /*		int wiperTest (void)
 		{
 			TestUtil testFramework( "RinexEphemerisStore", "wiper", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream DumpData1;
 			ofstream DumpData2;
@@ -809,7 +869,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			try
 			{
 //--------------RinexEphemerisStore_wiperTest_1 - Verify that the wiper method runs (but shouldn't wipe anything this time)
-				try {GStore.wiper(CommonTime::BEGINNING_OF_TIME); testFramework.passTest();}
+				try {GStore.wiper(CommonTime::BEGINNING_OF_TIME); testFramework.assert(true, "sedIdentifier", __LINE__);}
 				catch (...) {testFramework.failTest();}
 
 				//Wipe everything outside interval and make sure that we did wipe all the data
@@ -869,7 +929,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int clearTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "clear", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream clearTestOutputStream;
 			clearTestOutputStream.open(clearTestOutput.c_str());
@@ -879,17 +939,22 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-//--------------RinexEphemerisStore_clearTest_1 - Verify the gpstk::OrbitEphStore::clear() method runs
-				try {Store.gpstk::OrbitEphStore::clear(); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Verify the gpstk::OrbitEphStore::clear() method runs
+				//====================================================================
+				try {Store.gpstk::OrbitEphStore::clear(); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "OrbitEphStore::clear() threw an exception when it should not have", __LINE__);}
 
-//--------------RinexEphemerisStore_clearTest_2 - Verify that clear set the initial time to END_OF_TIME
-				testFramework.assert(CommonTime::END_OF_TIME == Store.getInitialTime());
-				testFramework.next();
+				//====================================================================
+				//Verify that clear set the initial time to END_OF_TIME
+				//====================================================================
+				testFramework.assert(CommonTime::END_OF_TIME == Store.getInitialTime(), "clear may not have cleared or may not have reset the initial time", __LINE__);
 
-//--------------RinexEphemerisStore_clearTest_3 - Verify that clear set the initial time to END_OF_TIME
-				testFramework.assert(CommonTime::BEGINNING_OF_TIME == Store.getFinalTime());
-				testFramework.next();
+				//====================================================================
+				//Verify that clear set the final time to BEGINNING_OF_TIME
+				//====================================================================
+				testFramework.assert(CommonTime::BEGINNING_OF_TIME == Store.getFinalTime(), "clear may not have cleared or may not have reset the final time", __LINE__);
+
 
 				Store.dump(clearTestOutputStream,1);
 			}
@@ -899,9 +964,10 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 
 			clearTestOutputStream.close();
-
-//--------------RinexEphemerisStore_clearTest_4 - Check partially wiped output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 0) );
+			//====================================================================
+			//Check partially wiped output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( clearTestOutput, clearTestInput, 0), "Output from clear does not match its regressive standard.", __LINE__ );
 			return testFramework.countFails();
 		}
 
@@ -925,7 +991,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int findUserOrbEphTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "findUserOrbitEph", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream findUserTestOutputStream;
 			findUserTestOutputStream.open(findUserTestOutput.c_str());
@@ -951,24 +1017,32 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-//--------------RinexEphemerisStore_findUserOrbEphTest_1 - Check that a missing satID (too small) yields a thrown error
-				try {Store.findUserOrbitEph(sid0,ComTime); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Check that a missing satID (too small) yields a thrown error
+				//====================================================================
+				try {Store.findUserOrbitEph(sid0,ComTime); testFramework.assert(false, "findUserOrbitEph did not throw an exception when it should have", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findUserOrbEphTest_2 - Check that a missing satID (too big) yields a thrown error
-				try {Store.findUserOrbitEph(sid33,ComTime); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Check that a missing satID (too big) yields a thrown error
+				//====================================================================
+				try {Store.findUserOrbitEph(sid33,ComTime); testFramework.assert(false, "findUserOrbitEph did not throw an exception when it should have", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findUserOrbEphTest_3 - Check that an invalid time yields a thrown error
-				try {Store.findUserOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Check that an invalid time yields a thrown error
+				//====================================================================
+				try {Store.findUserOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.assert(false, "findUserOrbitEph did not throw an exception when it should have", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findUserOrbEphTest_4 - Verify that for ideal conditions findUserOrbitEph runs
-				try {Store.findUserOrbitEph(sid1, ComTime); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Verify that for ideal conditions findUserOrbitEph runs
+				//====================================================================
+				try {Store.findUserOrbitEph(sid1, ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an exception when it should not have", __LINE__);}
 
 				const OrbitEph* Eph1 = Store.findUserOrbitEph(sid1, ComTime);
 				const OrbitEph* Eph15 = Store.findUserOrbitEph(sid15, ComTime);
@@ -987,9 +1061,10 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 
 			findUserTestOutputStream.close();
-
-//--------------RinexEphemerisStore_findUserOrbEphTest_5 - Check findUserOrbitEph output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( findUserTestOutput, findUserTestInput, 0) );
+			//====================================================================
+			//Check findUserOrbitEph output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( findUserTestOutput, findUserTestInput, 0), "findUserOrbitEph output does not match its regressive standard", __LINE__ );
 			return testFramework.countFails();
 		}
 
@@ -1011,7 +1086,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int findNearOrbEphTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "findNearOrbitEph", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			ofstream findNearTestOutputStream;
 			findNearTestOutputStream.open(findNearTestOutput.c_str());
@@ -1037,25 +1112,33 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			try
 			{
-//--------------RinexEphemerisStore_findNearOrbEphTest_1 - Check that a missing satID (too small) yields a thrown error
-				try {Store.findNearOrbitEph(sid0,ComTime); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Check that a missing satID (too small) yields a thrown error
+				//====================================================================
+				try {Store.findNearOrbitEph(sid0,ComTime); testFramework.assert(false, "findNearOrbitEph did not throw an exception when it should have", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findNearOrbitEph threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findNearOrbEphTest_2 - Check that a missing satID (too big) yields a thrown error
-				try {Store.findNearOrbitEph(sid33,ComTime); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Check that a missing satID (too big) yields a thrown error
+				//====================================================================
+				try {Store.findNearOrbitEph(sid33,ComTime); testFramework.assert(false, "findNearOrbitEph did not throw an exception when it should have", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findNearOrbitEph threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findNearOrbEphTest_3 - Check that an invalid time yields a thrown error
-				try {Store.findNearOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Check that an invalid time yields a thrown error
+				//====================================================================
+				try {Store.findNearOrbitEph(sid1,CommonTime::END_OF_TIME); testFramework.assert(false, "findNearOrbitEph did not throw an exception when it should have", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (...) {testFramework.assert(false, "findNearOrbitEph threw an unexpected exception", __LINE__);}
 
-//--------------RinexEphemerisStore_findNearOrbEphTest_4 - Verify that for ideal conditions findNearOrbitEph runs
-				try {Store.findNearOrbitEph(sid1, ComTime); testFramework.passTest();}
-				catch (Exception& e) {cout << "Caught Exception: " << e << endl; testFramework.failTest();}
-				catch (...) {testFramework.failTest();}
+				//====================================================================
+				//Verify that for ideal conditions findUserOrbitEph runs
+				//====================================================================
+				try {Store.findNearOrbitEph(sid1, ComTime); testFramework.assert(true, "sedIdentifier", __LINE__);}
+				catch (Exception& e) {cout << "Caught Exception: " << e << endl; testFramework.assert(false, "findUserOrbitEph threw an exception when it should not have", __LINE__);}
+				catch (...) {testFramework.assert(false, "findUserOrbitEph threw an exception when it should not have", __LINE__);}
 
 				const OrbitEph* Eph1 = Store.findUserOrbitEph(sid1, ComTime);
 				const OrbitEph* Eph15 = Store.findUserOrbitEph(sid15, ComTime);
@@ -1076,8 +1159,10 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 
 			findNearTestOutputStream.close();
 
-//--------------RinexEphemerisStore_findNearOrbEphTest_5 - Check findNearOrbitEph output against its pre-determined standard
-			testFramework.assert( testFramework.fileEqualTest( findNearTestOutput, findNearTestInput, 0) );
+			//====================================================================
+			//Check findNearOrbitEph output against its pre-determined standard
+			//====================================================================
+			testFramework.assert( testFramework.fileEqualTest( findNearTestOutput, findNearTestInput, 0), "findNearOrbitEph output does not match its regressive standard", __LINE__ );
 			return testFramework.countFails();
 		}
 
@@ -1094,7 +1179,7 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 		int addToListTest (void)
 		{
 			TestUtil testFramework( "OrbitEphStore", "addToList", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			const short PRN1 = 1;
 			const short PRN15 = 15;
@@ -1123,25 +1208,18 @@ NOTE: This test will need to be brought up to the newest standard should it be u
 			}
 			try
 			{
-
+				//====================================================================================
 				//Assert that the number of added members equals the size of Store (all members added)
-				testFramework.assert(Store.gpstk::OrbitEphStore::size() == GStore.gpstk::OrbitEphStore::size());
-				testFramework.next();
+				//====================================================================================
+				testFramework.assert(Store.gpstk::OrbitEphStore::size() == GStore.gpstk::OrbitEphStore::size(), "The added entries are not reflected in the GPSEphemerisStore", __LINE__ );
 
-				testFramework.assert(Store.gpstk::OrbitEphStore::size() == numberOfEntries);
-				testFramework.next();
+				testFramework.assert(Store.gpstk::OrbitEphStore::size() == numberOfEntries, "The total number of entries is not what is expected", __LINE__ );
 
+				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid1) == numberOfEntries1, "The total number of entries for SatID 1 is not what is expected", __LINE__ );
 
-				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid1) == numberOfEntries1);
-				testFramework.next();
+				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid15) == numberOfEntries15, "The total number of entries for SatID 15 is not what is expected", __LINE__ );
 
-
-				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid15) == numberOfEntries15);
-				testFramework.next();
-
-
-				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid32) == numberOfEntries32);
-				testFramework.next();
+				testFramework.assert(Store.gpstk::OrbitEphStore::size(sid32) == numberOfEntries32, "The total number of entries for SatID 32 is not what is expected", __LINE__ );
 			}
 			catch (Exception& e)
 			{
