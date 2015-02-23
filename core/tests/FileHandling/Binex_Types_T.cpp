@@ -177,8 +177,8 @@ int BinexTypes_T :: doUbnxiInitializationTests()
           << " ; Expected Size = " << 1
           << " ; Actual Size = " << actualSize;
        
-      tester.assert( (  (0 != actualValue)
-                     || (1 != actualSize) ),
+      tester.assert( (  (0 == actualValue)
+                     && (1 == actualSize) ),
                      oss.str(), __LINE__ );
    }
    catch (Exception& e)
@@ -206,8 +206,8 @@ int BinexTypes_T :: doUbnxiInitializationTests()
               << " ; Expected Size = " << numIter->size
               << " ; Actual Size = " << actualSize;
            
-          tester.assert( (  (numIter->value != actualValue)
-                         || (numIter->size  != actualSize) ),
+          tester.assert( (  (numIter->value == actualValue)
+                         && (numIter->size  == actualSize) ),
                          oss.str(), __LINE__ );
       }
       catch (Exception& e)
@@ -254,8 +254,8 @@ int BinexTypes_T :: doUbnxiEncodeDecodeTests()
                 << " ; Actual Size = " << actualSize
                 << " ; Endian = " << (isLittleEndian ? "little" : "BIG");
              
-            tester.assert( (  (numIter->value != actualValue)
-                           || (numIter->size  != actualSize) ),
+            tester.assert( (  (numIter->value == actualValue)
+                           && (numIter->size  == actualSize) ),
                            oss.str(), __LINE__ );
          }
          catch (Exception& e)
@@ -291,8 +291,8 @@ int BinexTypes_T :: doMgfziInitializationTests()
           << " ; Expected Size = " << 1
           << " ; Actual Size = " << actualSize;
          
-      tester.assert( (  (0 != actualValue)
-                     || (1 != actualSize) ),
+      tester.assert( (  (0 == actualValue)
+                     && (1 == actualSize) ),
                      oss.str(), __LINE__ );
    }
    catch (Exception& e)
@@ -320,8 +320,8 @@ int BinexTypes_T :: doMgfziInitializationTests()
               << " ; Expected Size = " << numIter->size
               << " ; Actual Size = " << actualSize;
              
-          tester.assert( (  (numIter->value != actualValue)
-                         || (numIter->size  != actualSize) ),
+          tester.assert( (  (numIter->value == actualValue)
+                         && (numIter->size  == actualSize) ),
                          oss.str(), __LINE__ );
       }
       catch (Exception& e)
@@ -368,8 +368,8 @@ int BinexTypes_T :: doMgfziEncodeDecodeTests()
                 << " ; Actual Size = " << actualSize
                 << " ; Endian = " << (isLittleEndian ? "little" : "BIG");
              
-            tester.assert( (  (numIter->value != actualValue)
-                           || (numIter->size  != actualSize) ),
+            tester.assert( (  (numIter->value == actualValue)
+                           && (numIter->size  == actualSize) ),
                            oss.str(), __LINE__ );
          }
          catch (Exception& e)
