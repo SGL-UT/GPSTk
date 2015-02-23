@@ -3,7 +3,7 @@
 #add_subdirectory (AppFrame)
 #add_subdirectory (ClockModel)
 #add_subdirectory (CommandLine)
-#add_subdirectory (FileDirProc)
+add_subdirectory (FileDirProc)
 add_subdirectory (FileHandling)
 add_subdirectory (GNSSCore)
 add_subdirectory (GNSSEph)
