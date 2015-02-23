@@ -188,7 +188,6 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
       size_t  expectedOffset = 0;
 
          // add data to the record
-      bool  ok = true;
       for (int i = 0; i < recSize; ++i)
       {
          try
@@ -199,22 +198,17 @@ int BinexUpdateExtract_T :: doPrimitiveTests()
             record.updateMessageData(offset, value, sizeof(T) );
             data.push_back(value);
 
-            if (  (offset != expectedOffset)
-               || (offset == record.getMessageLength()) )
-            {
-               ok = false;
-            }
+            tester.assert( (  (offset == expectedOffset)
+                           && (offset == record.getMessageLength()) ),
+                           "incorrect offset", __LINE__ );
          }
          catch (Exception& e)
          {
-            ok = false;
             ostringstream  oss;
             oss << "exception updating record: " << e;
             tester.assert( false, oss.str(), __LINE__ );
-            break;
          }
       }
-      tester.assert ( ok, "incorrect offset", __LINE__ );
 
       offset = 0;
 
