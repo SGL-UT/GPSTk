@@ -46,77 +46,59 @@ using namespace std;
 class YDSTime_T
 {
 	public:
-	/* Test to ensure the values in the constructor go to their intended locations */
+//==========================================================================================================================
+//	initializationTest ensures the constructors set the values properly
+//==========================================================================================================================
 	int initializationTest (void)
 	{
 		TestUtil testFramework( "YDSTime", "Constructor", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
 
-//--------------YDSTime_initializationTest_1 - Was the year value set to expectation?
-		testFramework.assert(2008 == Compare.year);
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Were the attributes set to expectation with the explicit constructor?
+		//---------------------------------------------------------------------
+		testFramework.assert(2008 == Compare.year,                     "Explicit constructor did not set the year value properly",     __LINE__);
+		testFramework.assert(2 == Compare.doy,                         "Explicit constructor did not set the day value properly",      __LINE__);
+		testFramework.assert(1 == Compare.sod,                         "Explicit constructor did not set the second value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(), "Explicit constructor did not set the TimeSystem properly",     __LINE__);
 
-//--------------YDSTime_initializationTest_2 - Was the day value set to expectation?
-		testFramework.assert(2 == Compare.doy);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_3 - Was the second value set to expectation?
-		testFramework.assert(1 == Compare.sod);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_4 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
-		testFramework.next();
 
 		testFramework.changeSourceMethod("Constructor(YDSTime)");
 		YDSTime Copy(Compare); //Initialize the copy constructor
+		//---------------------------------------------------------------------
+		//Were the attributes set to expectation with the copy constructor?
+		//---------------------------------------------------------------------
+		testFramework.assert(2008 == Copy.year,                     "Copy constructor did not set the year value properly",     __LINE__);
+		testFramework.assert(2 == Copy.doy,                         "Copy constructor did not set the day value properly",      __LINE__);
+		testFramework.assert(1 == Copy.sod,                         "Copy constructor did not set the second value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(), "Copy constructor did not set the TimeSystem properly",     __LINE__);
 
-//--------------YDSTime_initializationTest_5 - Was the year value set to expectation?
-		testFramework.assert(2008 == Copy.year);
-		testFramework.next();
 
-//--------------YDSTime_initializationTest_6 - Was the day value set to expectation?
-		testFramework.assert(2 == Copy.doy);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_7 - Was the second value set to expectation?
-		testFramework.assert(1 == Copy.sod);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_8 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());
-		testFramework.next();
-
-		testFramework.changeSourceMethod("= Operator");
+		testFramework.changeSourceMethod("OperatorSet");
 		YDSTime Assigned;
 		Assigned = Compare;
-
-//--------------YDSTime_initializationTest_5 - Was the year value set to expectation?
-		testFramework.assert(2008 == Assigned.year);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_6 - Was the day value set to expectation?
-		testFramework.assert(2 == Assigned.doy);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_7 - Was the second value set to expectation?
-		testFramework.assert(1 == Assigned.sod);
-		testFramework.next();
-
-//--------------YDSTime_initializationTest_8 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem());
+		//---------------------------------------------------------------------
+		//Were the attributes set to expectation with the Set Operator?
+		//---------------------------------------------------------------------
+		testFramework.assert(2008 == Assigned.year,                     "Set Operator did not set the year value properly",     __LINE__);
+		testFramework.assert(2 == Assigned.doy,                         "Set Operator did not set the day value properly",      __LINE__);
+		testFramework.assert(1 == Assigned.sod,                         "Set Operator did not set the second value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(), "Set Operator did not set the TimeSystem properly",     __LINE__);
 
 		return testFramework.countFails();
 	}
 
-	/* Test will check if YDSTime variable can be set from a map.
-	   Test also implicity tests whether the != operator functions. */
+
+//==========================================================================================================================
+//	Test will check if YDSTime variable can be set from a map.
+//	Test also implicity tests whether the != operator functions.
+//==========================================================================================================================
 	int setFromInfoTest (void)
 	{
 		TestUtil testFramework( "YDSTime", "setFromInfo", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		YDSTime setFromInfo1;
 		YDSTime setFromInfo2;
@@ -132,366 +114,275 @@ class YDSTime_T
 		Id['s'] = "1";
 		Id['P'] = "GPS";
 
-//--------------YDSTime_setFromInfoTest_1 - Does a proper setFromInfo work with all information provided?
-		testFramework.assert(setFromInfo1.setFromInfo(Id));
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Does a proper setFromInfo work with all information provided?
+		//---------------------------------------------------------------------
+		testFramework.assert(setFromInfo1.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
+		testFramework.assert(Compare == setFromInfo1,      "setFromInfo did not set all of the values properly",  __LINE__); 
 
-//--------------YDSTime_setFromInfoTest_2 - Did the setFromInfo set the proper values?
-		testFramework.assert(Compare == setFromInfo1);
-		testFramework.next();
 
 		Id.erase('Y');
 		Id['y'] = "06";
 
-//--------------YDSTime_setFromInfoTest_3 - Does a proper setFromInfo work with 2 digit year?
-		testFramework.assert(setFromInfo2.setFromInfo(Id));
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Does a proper setFromInfo work with 2 digit year?
+		//---------------------------------------------------------------------
+		testFramework.assert(setFromInfo2.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
+		testFramework.assert(Compare2 == setFromInfo2,     "setFromInfo did not set all of the values properly",  __LINE__); 
 
-//--------------YDSTime_setFromInfoTest_4 - Did the previous setFromInfo set the proper values?
-		testFramework.assert(Compare2 == setFromInfo2);
-		testFramework.next();
 						
 		//Can we set a three digit year with 'y' option? Answer should be no.
 		Id.erase('y');
 		Id['y'] = "006";
+		//---------------------------------------------------------------------
+		//Can a YDSTime object be set with a 3 digit year? Answer should be no. 'y' option is for 2 digit years.
+		//---------------------------------------------------------------------
+		testFramework.assert(!setFromInfo3.setFromInfo(Id), "setFromInfo allowed a 3 digit year to be set with 'y' option", __LINE__);
 
-//--------------YDSTime_setFromInfoTest_5 - Does a proper setFromInfo work with 3 digit year?
-		testFramework.assert(!setFromInfo3.setFromInfo(Id));
-		testFramework.next();
 
 		Id.erase('y');
 		Id['y'] = "2008";
+		//---------------------------------------------------------------------
+		//Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
+		//---------------------------------------------------------------------
+		testFramework.assert(!setFromInfo4.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
 
-//--------------YDSTime_setFromInfoTest_6 - Does a proper setFromInfo work with 4 digit year labeled as 2 digits?
-		testFramework.assert(!setFromInfo4.setFromInfo(Id));
-		testFramework.next();
 
 		Id.erase('y');
-
-//--------------YDSTime_setFromInfoTest_7 - Does a proper setFromInfo work with no year provided?
-		testFramework.assert(setFromInfo5.setFromInfo(Id));
-		testFramework.next();
-
-//--------------YDSTime_setFromInfoTest_8 - Did the previous setFromInfo set the proper values?
-		testFramework.assert(setFromInfo5 == Compare3);
+		//---------------------------------------------------------------------
+		//Can a CivilTime object be set without a year?
+		//---------------------------------------------------------------------
+		testFramework.assert(setFromInfo5.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
+		testFramework.assert(setFromInfo5 == Compare3,     "setFromInfo did not set all of the values properly",  __LINE__); 
 
 		return testFramework.countFails();
 	}
 
-	/* Test will check if the ways to initialize and set an YDSTime object.
-	   Test also tests whether the comparison operators and isValid method function. */
+
+//==========================================================================================================================
+//	Test will check if the ways to initialize and set an YDSTime object.
+//	Test also tests whether the comparison operators and isValid method function.
+//==========================================================================================================================
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "YDSTime", "== Operator", __FILE__, __LINE__ );
-		testFramework.init();
+		TestUtil testFramework( "YDSTime", "OperatorEquivalent", __FILE__, __LINE__ );
+
 
 		YDSTime Compare(2008,2,1);// Initialize with value
 		YDSTime LessThanYear(2005,2,1);// Initialize with value with a smaller year
-		YDSTime LessThanDOY(2008,1,1);// Initialize with value with a smaller month
-		YDSTime LessThanSOD(2008,2,0);// Initialize with value with a smaller day
+		YDSTime LessThanDOY(2008,1,1);// Initialize with value with a smaller day of year
+		YDSTime LessThanSOD(2008,2,0);// Initialize with value with a smaller second of day
 		YDSTime CompareCopy(Compare); // Initialize with copy constructor
 
-//--------------YDSTime_operatorTest_1 - Are equivalent objects equivalent?
-		testFramework.assert(Compare == CompareCopy);
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Does the == Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  Compare == CompareCopy,   "Equivalence operator found equivalent objects to be not equivalent",   __LINE__);
+		testFramework.assert(!(Compare == LessThanYear), "Equivalence operator found different year objects to be equivalent",   __LINE__);
+		testFramework.assert(!(Compare == LessThanDOY),  "Equivalence operator found different day objects to be equivalent",    __LINE__);
+		testFramework.assert(!(Compare == LessThanSOD),  "Equivalence operator found different second objects to be equivalent", __LINE__);
 
-//--------------YDSTime_operatorTest_2 - Are equivalent objects equivalent?
-		testFramework.assert(!(Compare == LessThanYear));
-		testFramework.next();
 
-		testFramework.changeSourceMethod("!= Operator");
+		testFramework.changeSourceMethod("OperatorNotEquivalent");
+		//---------------------------------------------------------------------
+		//Does the != Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  Compare != LessThanYear,  "Not-equal operator found different year objects to be equivalent",   __LINE__);
+		testFramework.assert(  Compare != LessThanDOY,   "Not-equal operator found different day objects to be equivalent",    __LINE__);
+		testFramework.assert(  Compare != LessThanSOD,   "Not-equal operator found different second objects to be equivalent", __LINE__);
+		testFramework.assert(!(Compare != CompareCopy),  "Not-equal operator found equivalent objects to not be equivalent",   __LINE__);
+   
+		testFramework.changeSourceMethod("OperatorLessThan");
+		//---------------------------------------------------------------------
+		//Does the < operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  LessThanYear < Compare,  "Less-than operator found less-than year object to not be less than",   __LINE__);
+		testFramework.assert(  LessThanDOY < Compare,   "Less-than operator found less-than day object to not be less than",    __LINE__);
+		testFramework.assert(  LessThanSOD < Compare,   "Less-than operator found less-than second object to not be less than", __LINE__);
+		testFramework.assert(!(Compare < LessThanYear), "Less-than operator found greater-than year object to be less than",    __LINE__);
+		testFramework.assert(!(Compare < LessThanDOY),  "Less-than operator found greater-than day object to be less than",     __LINE__);
+		testFramework.assert(!(Compare < LessThanSOD),  "Less-than operator found greater-than second object to be less than",  __LINE__);
+		testFramework.assert(!(Compare < CompareCopy),  "Less-than operator found equivalent objects to be less than",          __LINE__);
 
-//--------------YDSTime_operatorTest_3 - Are non-equivalent objects not equivalent?
-		testFramework.assert(Compare != LessThanYear);
-		testFramework.next();
 
-//--------------YDSTime_operatorTest_4 - Are equivalent objects not equivalent?
-		testFramework.assert(!(Compare != Compare));
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorGreaterThan");
+		//---------------------------------------------------------------------
+		//Does the > operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(!(LessThanYear > Compare), "Greater-than operator found less-than year object to be greater-than",          __LINE__);
+		testFramework.assert(!(LessThanDOY > Compare),  "Greater-than operator found less-than day object to be greater-than",           __LINE__);
+		testFramework.assert(!(LessThanSOD > Compare),  "Greater-than operator found less-than second object to be greater-than",        __LINE__);
+		testFramework.assert(  Compare > LessThanYear,  "Greater-than operator found greater-than year object to not be greater-than",   __LINE__);
+		testFramework.assert(  Compare > LessThanDOY,   "Greater-than operator found greater-than day object to not be greater-than",    __LINE__);
+		testFramework.assert(  Compare > LessThanSOD,   "Greater-than operator found greater-than second object to not be greater-than", __LINE__);
+		testFramework.assert(!(Compare > CompareCopy),  "Greater-than operator found equivalent objects to be greater-than",             __LINE__);
 
-		testFramework.changeSourceMethod("< Operator");
 
-//--------------YDSTime_operatorTest_5 - Does the < operator function when left_object < right_object by years?
-		testFramework.assert(LessThanYear < Compare);
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorLessThanOrEqualTo");
+		//---------------------------------------------------------------------
+		//Does the <= operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  LessThanYear <= Compare,  "Less-than-or-equal-to operator found less-than year object to not be less-than-or-equal-to",   __LINE__);
+		testFramework.assert(  LessThanDOY <= Compare,   "Less-than-or-equal-to operator found less-than day object to not be less-than-or-equal-to",    __LINE__);
+		testFramework.assert(  LessThanSOD <= Compare,   "Less-than-or-equal-to operator found less-than second object to not be less-than-or-equal-to", __LINE__);
+		testFramework.assert(!(Compare <= LessThanYear), "Less-than-or-equal-to operator found greater-than year object to be less-than-or-equal-to",    __LINE__);
+		testFramework.assert(!(Compare <= LessThanDOY),  "Less-than-or-equal-to operator found greater-than day object to be less-than-or-equal-to",     __LINE__);
+		testFramework.assert(!(Compare <= LessThanSOD),  "Less-than-or-equal-to operator found greater-than second object to be less-than-or-equal-to",  __LINE__);
+		testFramework.assert(  Compare <= CompareCopy,   "Less-than-or-equal-to operator found equivalent objects to not be less-than-or-equal-to",      __LINE__);
 
-//--------------YDSTime_operatorTest_6 - Does the < operator function when left_object > right_object by years?
-		testFramework.assert(!(Compare < LessThanYear));
-		testFramework.next();
 
-//--------------YDSTime_operatorTest_7 - Does the < operator function when left_object < right_object by days?
-		testFramework.assert(LessThanDOY < Compare);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_8 - Does the < operator function when left_object > right_object by days?		
-		testFramework.assert(!(Compare < LessThanDOY));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_9 - Does the < operator function when left_object < right_object by seconds?
-		testFramework.assert(LessThanSOD < Compare);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_10 - Does the < operator function when left_object > right_object by seconds?
-		testFramework.assert(!(Compare < LessThanSOD));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_11 - Does the < operator function when left_object = right_object?
-		testFramework.assert(!(Compare < CompareCopy));
-		testFramework.next();
-
-		//Greater than assertions
-		testFramework.changeSourceMethod("> Operator");
-
-//--------------YDSTime_operatorTest_12 - Does the > operator function when left_object > right_object by years?
-		testFramework.assert(Compare > LessThanYear);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_13 - Does the > operator function when left_object < right_object by years?
-		testFramework.assert(!(LessThanYear > Compare));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_14 - Does the > operator function when left_object > right_object by days?
-		testFramework.assert(Compare > LessThanDOY);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_15 - Does the > operator function when left_object < right_object by days?		
-		testFramework.assert(!(LessThanDOY > Compare));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_16 - Does the > operator function when left_object > right_object by seconds?
-		testFramework.assert(Compare > LessThanSOD);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_17 - Does the > operator function when left_object < right_object by seconds?
-		testFramework.assert(!(LessThanSOD > Compare));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_18 - Does the > operator function when left_object = right_object?
-		testFramework.assert(!(Compare > CompareCopy));
-		testFramework.next();	
-
-		//Less than equals assertion
-		testFramework.changeSourceMethod("<= Operator");
-
-//--------------YDSTime_operatorTest_19 - Does the < operator function when left_object < right_object by years?
-		testFramework.assert(LessThanYear <= Compare);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_20 - Does the <= operator function when left_object > right_object by years?
-		testFramework.assert(!(Compare <= LessThanYear));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_21 - Does the <= operator function when left_object < right_object by days?
-		testFramework.assert(LessThanDOY <= Compare);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_22 - Does the <= operator function when left_object > right_object by days?		
-		testFramework.assert(!(Compare <= LessThanDOY));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_23 - Does the <= operator function when left_object < right_object by seconds?
-		testFramework.assert(LessThanSOD <= Compare);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_24 - Does the <= operator function when left_object > right_object by seconds?
-		testFramework.assert(!(Compare <= LessThanSOD));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_25 - Does the <= operator function when left_object = right_object?
-		testFramework.assert(Compare <= CompareCopy);
-		testFramework.next();
-
-		//Greater than equals assertion
-		testFramework.changeSourceMethod(">= Operator");
-
-//--------------YDSTime_operatorTest_26 - Does the >= operator function when left_object > right_object by years?
-		testFramework.assert(Compare >= LessThanYear);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_27 - Does the >= operator function when left_object < right_object by years?
-		testFramework.assert(!(LessThanYear >= Compare));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_28 - Does the >= operator function when left_object > right_object by days?
-		testFramework.assert(Compare >= LessThanDOY);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_29 - Does the >= operator function when left_object < right_object by days?		
-		testFramework.assert(!(LessThanDOY >= Compare));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_30 - Does the >= operator function when left_object > right_object by seconds?
-		testFramework.assert(Compare >= LessThanSOD);
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_31 - Does the >= operator function when left_object < right_object by seconds?
-		testFramework.assert(!(LessThanSOD >= Compare));
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_32 - Does the > operator function when left_object = right_object?
-		testFramework.assert(!(Compare < CompareCopy));
-		testFramework.next();	
-
-		//Validity check
-		testFramework.changeSourceMethod("isValid Method");
-
-//--------------YDSTime_operatorTest_33 - Does the isValid methods function properly?
-		testFramework.assert(Compare.isValid());
+		testFramework.changeSourceMethod("OperatorGreaterThanOrEqualTo");
+		//---------------------------------------------------------------------
+		//Does the >= operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(!(LessThanYear >= Compare), "Greater-than-or-equal-to operator found less-than year object to be greater-than-or-equal-to",          __LINE__);
+		testFramework.assert(!(LessThanDOY >= Compare),  "Greater-than-or-equal-to operator found less-than day object to be greater-than-or-equal-to",           __LINE__);
+		testFramework.assert(!(LessThanSOD >= Compare),  "Greater-than-or-equal-to operator found less-than second object to be greater-than-or-equal-to",        __LINE__);
+		testFramework.assert(  Compare >= LessThanYear,  "Greater-than-or-equal-to operator found greater-than year object to not be greater-than-or-equal-to",   __LINE__);
+		testFramework.assert(  Compare >= LessThanDOY,   "Greater-than-or-equal-to operator found greater-than day object to not be greater-than-or-equal-to",    __LINE__);
+		testFramework.assert(  Compare >= LessThanSOD,   "Greater-than-or-equal-to operator found greater-than second object to not be greater-than-or-equal-to", __LINE__);
+		testFramework.assert(  Compare >= CompareCopy,   "Greater-than-or-equal-to operator found equivalent objects to not be greater-than-or-equal-to",         __LINE__);
 
 		return testFramework.countFails();
 	}
 
-	/* Test will check the reset method. */
+
+//==========================================================================================================================
+//	Test will check the reset method.
+//==========================================================================================================================
 	int resetTest (void)
 	{
 		TestUtil testFramework( "YDSTime", "reset" , __FILE__, __LINE__ );
-		testFramework.init();
+
 
 	  	YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
 
 	  	Compare.reset(); // Reset it
 
-//--------------YDSTime_operatorTest_1 - Was the time system reset to expectation?
-	  	testFramework.assert(TimeSystem(0) == Compare.getTimeSystem());
-	  	testFramework.next();
-
-//--------------YDSTime_operatorTest_2 - Was the year value reset to expectation?	  	
-		testFramework.assert(0 == (int)Compare.year); 
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_3 - Was the day value reset to expectation?
-		testFramework.assert(0 == (int)Compare.doy); 
-		testFramework.next();
-
-//--------------YDSTime_operatorTest_4 - Was the second value reset to expectation?	  	
-		testFramework.assert(0 == (int)Compare.sod); 
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Were the attributes reset to expectation?
+		//---------------------------------------------------------------------
+	  	testFramework.assert(TimeSystem(0) == Compare.getTimeSystem(),  "reset() did not set the TimeSystem to UNK",  __LINE__); 		
+		testFramework.assert(0 == (int)Compare.year,                    "reset() did not set the year value to 0",    __LINE__);
+		testFramework.assert(0 == (int)Compare.doy,                     "reset() did not set the doy value to 0",     __LINE__);  	
+		testFramework.assert(0 == (int)Compare.sod,                     "reset() did not set the sod value to 0",     __LINE__); 
 
 		return testFramework.countFails();
 	}
 
 
-	/* Test will check converting to/from CommonTime. */
+//==========================================================================================================================
+//	Test will check converting to/from CommonTime.
+//==========================================================================================================================
 	int toFromCommonTimeTest (void)
 	{
 		TestUtil testFramework( "YDSTime", "isValid", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 	  	YDSTime Compare(2008,2,1,TimeSystem::GPS); //Initialize an object
   		CommonTime Test = Compare.convertToCommonTime(); //Convert to
 
-//--------------YDSTime_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
-  		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Is the time after the BEGINNING_OF_TIME?
+		//---------------------------------------------------------------------
+  		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME, "Time provided found to be less than the beginning of time", __LINE__);
 
-//--------------YDSTime_toFromCommonTimeTest_2 - Is the set object valid?
-		testFramework.assert(Compare.isValid());
-		testFramework.next();
+
+		//---------------------------------------------------------------------
+		//Is the set object valid?
+		//---------------------------------------------------------------------
+		testFramework.assert(Compare.isValid(), "Time provided found to be unable to convert to/from CommonTime", __LINE__);
+
 
   		YDSTime Test2;
   		Test2.convertFromCommonTime(Test); //Convert From
 
- 		testFramework.changeSourceMethod("CommonTime Conversion");
-//--------------YDSTime_toFromCommonTimeTest_3 - Is the result of conversion the same?
-		testFramework.assert(Test2 == Compare);
-		testFramework.next();
-
-//--------------YDSTime_toFromCommonTimeTest_4 - Is the time system after conversion what is expected?
-		testFramework.assert(Compare.getTimeSystem()==TimeSystem(2));
-		testFramework.next();
-
-//--------------YDSTime_toFromCommonTimeTest_5 - Is the year after conversion what is expected?
-		testFramework.assert(2008 == (int)Compare.year);
-		testFramework.next();
-
-//--------------YDSTime_toFromCommonTimeTest_6 - Is the day after conversion what is expected?
-		testFramework.assert(2 == (int)Compare.doy);
-		testFramework.next();
-
-//--------------YDSTime_toFromCommonTimeTest_5 - Is the second after conversion what is expected?
-		testFramework.assert(1 == (int)Compare.sod);
-
+		testFramework.changeSourceMethod("CommonTimeConversion");
+		//---------------------------------------------------------------------
+		//Is the result of conversion the same?
+		//---------------------------------------------------------------------
+		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(),  "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
+		testFramework.assert(Test2.year == Compare.year,                       "Year provided found to be different after converting to and from CommonTime",       __LINE__);
+		testFramework.assert(Test2.doy == Compare.doy,                         "DOY provided found to be different after converting to and from CommonTime",        __LINE__);
+		testFramework.assert(Test2.sod == Compare.sod,                         "SOD provided found to be different after converting to and from CommonTime",        __LINE__);
 		return testFramework.countFails();
 	}
 
-	/* Test will check the TimeSystem comparisons when using the comparison operators. */
+
+//==========================================================================================================================
+//	Test will check the TimeSystem comparisons when using the comparison operators.
+//==========================================================================================================================
 	int timeSystemTest (void)
 	{
-		TestUtil testFramework( "YDSTime", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
-		testFramework.init();
+		TestUtil testFramework( "YDSTime", "OperatorEquivalentWithDifferingTimeSystem", __FILE__, __LINE__ );
+
 
   		YDSTime GPS1(   2008,2,1,TimeSystem::GPS    );
 		YDSTime GPS2(   2005,2,1,TimeSystem::GPS    );
 		YDSTime UTC1(   2008,2,1,TimeSystem::UTC    );
 		YDSTime UNKNOWN(2008,2,1,TimeSystem::Unknown);
 		YDSTime ANY(    2008,2,1,TimeSystem::Any    );
+		YDSTime ANY2(   2005,2,1,TimeSystem::Any    );
 
-//--------------YDSTime_timeSystemTest_1 - Verify same Time System but different time inequality
-		testFramework.assert(!(GPS1 == GPS2));
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Verify differing TimeSystem sets equivalence operator to false
+		//Note that the operator test checks for == in ALL members
+		//---------------------------------------------------------------------
+		testFramework.assert(!(GPS1 == UTC1), "Equivalence operator found objects with differing TimeSystems to be the same", __LINE__);
+		testFramework.assert(GPS1 == ANY,     "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
+		testFramework.assert(UTC1 == ANY,     "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
+		testFramework.assert(UNKNOWN == ANY,  "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
 
-//--------------YDSTime_timeSystemTest_2 - Verify same Time System equality
-		testFramework.assert(GPS1.getTimeSystem() == GPS2.getTimeSystem());
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorNotEquivalentWithDifferingTimeSystem");
+		//---------------------------------------------------------------------
+		//Verify different Time System but same time inequality
+		//---------------------------------------------------------------------
+		testFramework.assert(GPS1 != UTC1,    "Equivalent objects with differing TimeSystems are found to be equal",                                  __LINE__);
+		testFramework.assert(GPS1 != UNKNOWN, "Equivalent objects with differing TimeSystems are found to be equal",                                  __LINE__);
+		testFramework.assert(!(GPS1 != ANY),  "Equivalent objects with differing TimeSystems where one is TimeSystem::Any are found to be not-equal", __LINE__);
 
-		testFramework.changeSourceMethod("Differing TimeSystem != Operator");
-//--------------YDSTime_timeSystemTest_3 - Verify different Time System but same time inequality
-		testFramework.assert(GPS1 != UTC1);
-		testFramework.next();
-
-//--------------YDSTime_timeSystemTest_4 - Verify different Time System but same time inequality
-		testFramework.assert(GPS1 != UNKNOWN);
-		testFramework.next();
-		
-		testFramework.changeSourceMethod("ANY TimeSystem == Operator");		
-//--------------YDSTime_timeSystemTest_5 - Verify TimeSystem=ANY does not matter in TimeSystem=GPS comparisons 
-		testFramework.assert(GPS1 == ANY);
-		testFramework.next();
-
-//--------------YDSTime_timeSystemTest_6 - Verify TimeSystem=ANY does not matter in TimeSystem=UTC comparisons 
-		testFramework.assert(UTC1 == ANY);
-		testFramework.next();
-
-//--------------YDSTime_timeSystemTest_7 - Verify TimeSystem=ANY does not matter in TimeSystem=UNKOWN comparisons 
-		testFramework.assert(UNKNOWN == ANY);
-		testFramework.next();
-
-		testFramework.changeSourceMethod("ANY TimeSystem < Operator");	
-//--------------YDSTime_timeSystemTest_8 - Verify TimeSystem=ANY does not matter in other operator comparisons 
-		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY));
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorLessThanWithDifferingTimeSystem");	
+		//---------------------------------------------------------------------
+		//Verify TimeSystem=ANY does not matter in other operator comparisons 
+		//---------------------------------------------------------------------
+		testFramework.assert(ANY2 < GPS1, "Less than object with Any TimeSystem is not found to be less than", __LINE__);
+		testFramework.assert(GPS2 < ANY,"Less than object with GPS TimeSystem is not found to be less-than a greater object with Any TimeSystem", __LINE__);
 
 		testFramework.changeSourceMethod("setTimeSystem");	
   		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
-//--------------YDSTime_timeSystemTest_9 - Ensure resetting a Time System changes it
-		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2));
+		//---------------------------------------------------------------------
+		//Ensure resetting a Time System changes it
+		//---------------------------------------------------------------------
+		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2), "setTimeSystem was unable to set the TimeSystem", __LINE__);
 
 		return testFramework.countFails();
 	}
-	/* Test for the formatted printing of YDSTime objects */
+
+
+//==========================================================================================================================
+//	Test for the formatted printing of YDSTime objects
+//==========================================================================================================================
 	int printfTest (void)
 	{
 		TestUtil testFramework( "YDSTime", "printf", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		YDSTime GPS1(2008,2,1,TimeSystem::GPS);
 		YDSTime UTC1(2008,2,1,TimeSystem::UTC);
 		
-//--------------YDSTime_printfTest_1 - Verify printed output matches expectation		
-  		testFramework.assert(GPS1.printf("%04Y %02y %03j %02s %02P") == (std::string)"2008 08 002 1.000000 GPS");
-  		testFramework.next();
+		//---------------------------------------------------------------------
+		//Verify printed output matches expectation
+		//---------------------------------------------------------------------			
+  		testFramework.assert(GPS1.printf("%04Y %02y %03j %02s %02P") == (std::string)"2008 08 002 1.000000 GPS", "printf did not output in the proper format", __LINE__);
+  		testFramework.assert(UTC1.printf("%04Y %02y %03j %02s %02P") == (std::string)"2008 08 002 1.000000 UTC", "printf did not output in the proper format", __LINE__);
+  
 
-//--------------YDSTime_printfTest_2 - Verify printed output matches expectation
-  		testFramework.assert(UTC1.printf("%04Y %02y %03j %02s %02P") == (std::string)"2008 08 002 1.000000 UTC");
-  		testFramework.next();
+		//---------------------------------------------------------------------
+		//Verify printed error message matches expectation
+		//---------------------------------------------------------------------
+  		testFramework.assert(GPS1.printError("%04Y %02y %03j %02s %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime", "printError did not output in the proper format", __LINE__);
+  		testFramework.assert(UTC1.printError("%04Y %02y %03j %02s %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime", "printError did not output in the proper format", __LINE__);
 
-//--------------YDSTime_printfTest_3 - Verify printed error message matches expectation
-  		testFramework.assert(GPS1.printError("%04Y %02y %03j %02s %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime"); 
-  		testFramework.next();
-
-//--------------YDSTime_printfTest_4 - Verify printed error message matches expectation
-  		testFramework.assert(UTC1.printError("%04Y %02y %03j %02s %02P") == (std::string)"ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime ErrorBadTime");
-		testFramework.next();
 
 		return testFramework.countFails();
 	}
@@ -506,22 +397,22 @@ int main() //Main function to initialize and run all tests above
 	errorCounter += check;
 
 	check = testClass.operatorTest();
-    errorCounter += check;
+	errorCounter += check;
 
 	check = testClass.setFromInfoTest();
-    errorCounter += check;
+	errorCounter += check;
 
 	check = testClass.resetTest();
-    errorCounter += check;
+	errorCounter += check;
 
 	check = testClass.timeSystemTest();
-    errorCounter += check;
+	errorCounter += check;
 
 	check = testClass.toFromCommonTimeTest();
-    errorCounter += check;
+	errorCounter += check;
 
 	check = testClass.printfTest();
-    errorCounter += check;
+	errorCounter += check;
 	
 	std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
