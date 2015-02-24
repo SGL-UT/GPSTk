@@ -42,7 +42,7 @@
 #include <string>
 #include <iomanip>
 #include <sstream>
-
+#include <cmath>
 using namespace gpstk;
 using namespace std;
 
@@ -53,58 +53,55 @@ class JulianDate_T
 	JulianDate_T() {eps = 1E-12;}
 	~JulianDate_T() {}
 
-	/* Test to ensure the values in the constructor go to their intended locations */
+//==========================================================================================================================
+//	initializationTest ensures the constructors set the values properly
+//==========================================================================================================================
 	int  initializationTest (void)
 	{
 		TestUtil testFramework( "JulianDate", "Constructor", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
-//--------------JulianDate_initializationTest_1 - Was the jd value set to expectation?
-		//Compare.jd==135000
-		testFramework.assert(1350000 - Compare.jd < eps && Compare.jd - 1350000 < eps);
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Were the attributes set to expectation with the explicit constructor?
+		//---------------------------------------------------------------------
+		testFramework.assert(fabs(1350000 - Compare.jd) < eps,         "Explicit constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem(), "Explicit constructor did not set the TimeSystem properly", __LINE__);
 
-//--------------JulianDate_initializationTest_2 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Compare.getTimeSystem());
-		testFramework.next();
 
-		testFramework.changeSourceMethod("Constructor(JulianDate)");
+		testFramework.changeSourceMethod("ConstructorCopy");
 		JulianDate Copy(Compare); // Initialize with copy constructor
+		//---------------------------------------------------------------------
+		//Were the attributes set to expectation with the copy constructor?
+		//---------------------------------------------------------------------
+		testFramework.assert(fabs(1350000 - Copy.jd) < eps,         "Copy constructor did not set the jd value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem(), "Copy constructor did not set the TimeSystem properly", __LINE__);
 
-//--------------JulianDate_initializationTest_3 - Was the jd value set to expectation?
-		//Compare.jd==135000
-		testFramework.assert(1350000-Copy.jd < eps && Copy.jd - 1350000 < eps);
-		testFramework.next();
 
-//--------------JulianDate_initializationTest_4 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Copy.getTimeSystem());
-		testFramework.next();
-
-		testFramework.changeSourceMethod("= Operator");
+		testFramework.changeSourceMethod("OperatorSet");
 		JulianDate Assigned;
 		Assigned = Compare;
-
-//--------------JulianDate_initializationTest_5 - Was the jd value set to expectation?
-		//Compare.jd==135000
-		testFramework.assert(1350000-Assigned.jd < eps && Assigned.jd - 1350000 < eps);
-		testFramework.next();
-
-//--------------JulianDate_initializationTest_6 - Was the time system set to expectation?
-		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem());
+		//---------------------------------------------------------------------
+		//Were the attributes set to expectation with the Set Operator?
+		//---------------------------------------------------------------------
+		testFramework.assert(fabs(1350000 - Assigned.jd) < eps,         "Set Operator did not set the jd value properly",   __LINE__);
+		testFramework.assert(TimeSystem(2) == Assigned.getTimeSystem(), "Set Operator did not set the TimeSystem properly", __LINE__);
 
 		return testFramework.countFails();
 	}
 
-	/* Test will check if JulianDate variable can be set from a map.
-	   Test also implicity tests whether the != operator functions. */
+
+//==========================================================================================================================
+//	Test will check if JulianDate variable can be set from a map.
+//	Test also implicity tests whether the != operator functions.
+//==========================================================================================================================
 
 	int setFromInfoTest (void)
 	{
 
 		TestUtil testFramework( "JulianDate", "setFromInfo", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 		JulianDate setFromInfo1;
 		JulianDate setFromInfo2;
@@ -113,241 +110,225 @@ class JulianDate_T
 		Id['J'] = "1350000";
 		Id['P'] = "GPS";
 
-//--------------JulianDate_setFromInfoTest_1 - Does a proper setFromInfo work with all information provided?
-		testFramework.assert(setFromInfo1.setFromInfo(Id));
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Does a proper setFromInfo work with all information provided?
+		//---------------------------------------------------------------------
+		testFramework.assert(setFromInfo1.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
+		testFramework.assert(Compare == setFromInfo1,      "setFromInfo did not set all of the values properly",  __LINE__); 
 
-//--------------JulianDate_setFromInfoTest_2 - Did the setFromInfo set the proper values?
-		testFramework.assert(Compare == setFromInfo1);
-		testFramework.next();
 
 		Id.erase('J');
-//--------------JulianDate_setFromInfoTest_3 - Does a proper setFromInfo work with missing information?
-		testFramework.assert(setFromInfo2.setFromInfo(Id));
-		testFramework.next();
-
-//--------------JulianDate_setFromInfoTest_4 - Did the previous setFromInfo set the proper values?
-		testFramework.assert(Compare2 == setFromInfo2);		
+		//---------------------------------------------------------------------
+		//Does a proper setFromInfo work with missing information?
+		//---------------------------------------------------------------------
+		testFramework.assert(setFromInfo2.setFromInfo(Id), "setFromInfo experienced an error and returned false", __LINE__);
+		testFramework.assert(Compare2 == setFromInfo2,     "setFromInfo did not set all of the values properly",  __LINE__); 	
 
 		return testFramework.countFails();
 	}
 
-	/* Test will check if the ways to initialize and set an JulianDate object.
-	   Test also tests whether the comparison operators and isValid method function. */
+
+//==========================================================================================================================
+//	Test will check if the ways to initialize and set an JulianDate object.
+//	Test also tests whether the comparison operators and isValid method function.
+//==========================================================================================================================
 	int operatorTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "== Operator", __FILE__, __LINE__ );
-		testFramework.init();
+		TestUtil testFramework( "JulianDate", "OperatorEquivalent", __FILE__, __LINE__ );
+
 
 		JulianDate Compare(1350000); // Initialize with value
 		JulianDate LessThanJD(134000); // Initialize with value
 		JulianDate CompareCopy(Compare); // Initialize with copy constructor
 
-//--------------JulianDate_operatorTest_1 - Are equivalent objects equivalent?
-		testFramework.assert(Compare == CompareCopy);
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Does the == Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  Compare == CompareCopy,     "Equivalence operator found equivalent objects to be not equivalent", __LINE__);
+		testFramework.assert(!(Compare == LessThanJD),     "Equivalence operator found different jd objects to be equivalent",   __LINE__);
 
-//--------------JulianDate_operatorTest_2 - Are equivalent objects equivalent?
-		testFramework.assert(!(Compare == LessThanJD));
-		testFramework.next();
 
-		testFramework.changeSourceMethod("!= Operator");
-//--------------JulianDate_operatorTest_3 - Are non-equivalent objects not equivalent?
-		testFramework.assert(Compare != LessThanJD);
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorNotEquivalent");
+		//---------------------------------------------------------------------
+		//Does the != Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  Compare != LessThanJD,   "Not-equal operator found different jd objects to be equivalent",     __LINE__);
+		testFramework.assert(!(Compare != Compare),     "Not-equal operator found equivalent objects to not be equivalent",   __LINE__);
 
-//--------------JulianDate_operatorTest_4 - Are equivalent objects not equivalent?
-		testFramework.assert(!(Compare != Compare));
-		testFramework.next();
 
-		testFramework.changeSourceMethod("< Operator");
-//--------------JulianDate_operatorTest_5 - Does the < operator function when left_object < right_object?
-		testFramework.assert(LessThanJD < Compare);
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorLessThan");
+		//---------------------------------------------------------------------
+		//Does the < Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  LessThanJD < Compare,   "Less-than operator found less-than jd object to not be less than",   __LINE__);
+		testFramework.assert(!(Compare < LessThanJD),  "Less-than operator found greater-than jd object to be less than",    __LINE__);
+		testFramework.assert(!(Compare < CompareCopy), "Less-than operator found equivalent object to be less than",         __LINE__);
 
-//--------------JulianDate_operatorTest_6 - Does the < operator function when left_object > right_object?
-		testFramework.assert(!(Compare < LessThanJD));
-		testFramework.next();
 
-//--------------JulianDate_operatorTest_7 - Does the < operator function when left_object = right_object?
-		testFramework.assert(!(Compare < CompareCopy));
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorGreaterThan");
+		//---------------------------------------------------------------------
+		//Does the > Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(!(LessThanJD > Compare),  "Greater-than operator found less-than jd object to be greater than",        __LINE__);
+		testFramework.assert(  Compare > LessThanJD,   "Greater-than operator found greater-than jd object to not be greater than", __LINE__);
+		testFramework.assert(!(Compare > CompareCopy), "Greater-than operator found equivalent object to be greater than",          __LINE__);
 
-		testFramework.changeSourceMethod("> Operator");
-//--------------JulianDate_operatorTest_8 - Does the > operator function when left_object < right_object?
-		testFramework.assert(!(LessThanJD > Compare));
-		testFramework.next();
 
-//--------------JulianDate_operatorTest_9 - Does the > operator function when left_object > right_object?
-		testFramework.assert(Compare > LessThanJD);
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorLessThanOrEqualTo");
+		//---------------------------------------------------------------------
+		//Does the <= Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(  LessThanJD <= Compare,   "Less-than-or-equal-to operator found less-than jd object to not be less than or equal to",   __LINE__);
+		testFramework.assert(!(Compare <= LessThanJD),  "Less-than-or-equal-to operator found greater-than jd object to be less than or equal to",    __LINE__);
+		testFramework.assert(  Compare <= CompareCopy,  "Less-than-or-equal-to operator found equivalent object to not be less than or equal to",     __LINE__);
 
-//--------------JulianDate_operatorTest_10 - Does the > operator function when left_object = right_object?
-		testFramework.assert(!(Compare > CompareCopy));
-		testFramework.next();
 
-		testFramework.changeSourceMethod("<= Operator");
-//--------------JulianDate_operatorTest_11 - Does the <= operator function when left_object < right_object?
-		testFramework.assert(LessThanJD <= Compare);
-		testFramework.next();
-
-//--------------JulianDate_operatorTest_12 - Does the <= operator function when left_object > right_object?
-		testFramework.assert(!(Compare <= LessThanJD));
-		testFramework.next();
-
-//--------------JulianDate_operatorTest_13 - Does the <= operator function when left_object = right_object?
-		testFramework.assert(Compare <= CompareCopy);
-		testFramework.next();
-
-		testFramework.changeSourceMethod(">= Operator");
-//--------------JulianDate_operatorTest_14 - Does the >= operator function when left_object < right_object?
-		testFramework.assert(!(LessThanJD >= Compare));
-		testFramework.next();
-
-//--------------JulianDate_operatorTest_15 - Does the >= operator function when left_object > right_object?
-		testFramework.assert(Compare >= LessThanJD);
-		testFramework.next();
-
-//--------------JulianDate_operatorTest_16 - Does the >= operator function when left_object = right_object?
-		testFramework.assert(Compare >= CompareCopy);
+		testFramework.changeSourceMethod("OperatorGreaterThanOrEqualTo");
+		//---------------------------------------------------------------------
+		//Does the >= Operator function?
+		//---------------------------------------------------------------------
+		testFramework.assert(!(LessThanJD >= Compare),  "Greater-than-or-equal-to operator found less-than jd object to be greater than or equal to",        __LINE__);
+		testFramework.assert(  Compare >= LessThanJD,   "Greater-than-or-equal-to operator found greater-than jd object to not be greater than or equal to", __LINE__);
+		testFramework.assert(  Compare >= CompareCopy,  "Greater-than-or-equal-to operator found equivalent object to not be greater than or equal to",      __LINE__);
 
 		return testFramework.countFails();
 	}
 
-		/* Test will check the reset method. */
+
+//==========================================================================================================================
+//	Test will check the reset method.
+//==========================================================================================================================
 	int resetTest (void)
 	{
 		TestUtil testFramework( "JulianDate", "reset", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
 	  	Compare.reset(); // Reset it
 
-//--------------JulianDate_resetTest_1 - Was the jd value reset to expectation?
-		testFramework.assert(Compare.jd==0);
-		testFramework.next();
-
-//--------------JulianDate_resetTest_2 - Was the time system reset to expectation?
-		testFramework.assert(TimeSystem(0) == Compare.getTimeSystem());
+		//---------------------------------------------------------------------
+		//Were the attributes reset to expectation?
+		//---------------------------------------------------------------------
+		testFramework.assert(Compare.jd==0,                            "reset() did not set the jd value to 0",   __LINE__);
+		testFramework.assert(TimeSystem(0) == Compare.getTimeSystem(), "reset() did not set the TimeSystem to UNK", __LINE__);
 
 		return testFramework.countFails();
 	}
-	/* Test will check converting to/from CommonTime. */
+
+
+//==========================================================================================================================
+//	Test will check converting to/from CommonTime.
+//==========================================================================================================================
 	int  toFromCommonTimeTest (void)
 	{
 		TestUtil testFramework( "JulianDate", "isValid", __FILE__, __LINE__ );
-		testFramework.init();
+
 
 	  	JulianDate Compare(1350000,TimeSystem(2)); //Initialize an object
 
-//--------------JulianDate_toFromCommonTimeTest_1 - Is the time after the BEGINNING_OF_TIME?
-  		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME);
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Is the time after the BEGINNING_OF_TIME?
+		//---------------------------------------------------------------------
+  		testFramework.assert(Compare.convertToCommonTime() > CommonTime::BEGINNING_OF_TIME, "Time provided found to be less than the beginning of time", __LINE__);
 
-//--------------JulianDate_toFromCommonTimeTest_2 - Is the set object valid?
-		testFramework.assert(Compare.isValid());
-		testFramework.next();
+
+		//---------------------------------------------------------------------
+		//Is the set object valid?
+		//---------------------------------------------------------------------
+		testFramework.assert(Compare.isValid(), "Time provided found to be unable to convert to/from CommonTime", __LINE__);
+
 
   		CommonTime Test = Compare.convertToCommonTime(); //Convert to
 
   		JulianDate Test2;
   		Test2.convertFromCommonTime(Test); //Convert From
 
-		testFramework.changeSourceMethod("CommonTime Conversion");
-//--------------JulianDate_toFromCommonTimeTest_3 - Is the result of conversion the same?
-		testFramework.assert(Test2 == Compare);
-		testFramework.next();
-
-//--------------JulianDate_toFromCommonTimeTest_4 - Is the time system after conversion what is expected?
-		testFramework.assert(Compare.getTimeSystem()==TimeSystem(2));
-		testFramework.next();
-
-//--------------JulianDate_toFromCommonTimeTest_5 - Is the time after conversion what is expected?
-		//Compare.jd==0
-		testFramework.assert(1350000 - Compare.jd < eps && Compare.jd - 1350000 < eps);
+		testFramework.changeSourceMethod("CommonTimeConversion");
+		//---------------------------------------------------------------------
+		//Is the result of conversion the same?
+		//---------------------------------------------------------------------
+		testFramework.assert(Compare.getTimeSystem()== Test2.getTimeSystem(), "TimeSystem provided found to be different after converting to and from CommonTime", __LINE__);
+		testFramework.assert(fabs(Test2.jd - Compare.jd) < eps,               "JD provided found to be different after converting to and from CommonTime",         __LINE__);
 
 		return testFramework.countFails();
 	}
-	/* Test will check the TimeSystem comparisons when using the comparison operators. */
+
+
+//==========================================================================================================================
+//	Test will check the TimeSystem comparisons when using the comparison operators.
+//==========================================================================================================================
 	int  timeSystemTest (void)
 	{
-		TestUtil testFramework( "JulianDate", "Differing TimeSystem == Operator", __FILE__, __LINE__ );
-		testFramework.init();
+		TestUtil testFramework( "JulianDate", "OperatorEquivalentWithDifferingTimeSystem", __FILE__, __LINE__ );
+
 
   		JulianDate GPS1(1350000,TimeSystem(2));
   		JulianDate GPS2(1340000,TimeSystem(2));
   		JulianDate UTC1(1350000,TimeSystem(7));
   		JulianDate UNKNOWN(1350000,TimeSystem(0));
   		JulianDate ANY(1350000,TimeSystem(1));
+  		JulianDate ANY2(1340000,TimeSystem(1));
 
-//--------------JulianDate_timeSystemTest_1 - Verify same Time System but different time inequality
-		testFramework.assert(!(GPS1 == GPS2));
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Verify differing TimeSystem sets equivalence operator to false
+		//Note that the operator test checks for == in ALL members
+		//---------------------------------------------------------------------
+		testFramework.assert(!(GPS1 == UTC1), "Equivalence operator found objects with differing TimeSystems to be the same", __LINE__);
+		testFramework.assert(GPS1 == ANY,     "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
+		testFramework.assert(UTC1 == ANY,     "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
+		testFramework.assert(UNKNOWN == ANY,  "Differing TimeSystems where one is TimeSystem::Any is not ignored for equals", __LINE__);
 
-//--------------JulianDate_timeSystemTest_2 - Verify same Time System equality
-		testFramework.assert(GPS1.getTimeSystem() == GPS2.getTimeSystem());
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorNotEquivalentWithDifferingTimeSystem");
+		//---------------------------------------------------------------------
+		//Verify different Time System but same time inequality
+		//---------------------------------------------------------------------
+		testFramework.assert(GPS1 != UTC1,    "Equivalent objects with differing TimeSystems are found to be equal",                                  __LINE__);
+		testFramework.assert(GPS1 != UNKNOWN, "Equivalent objects with differing TimeSystems are found to be equal",                                  __LINE__);
+		testFramework.assert(!(GPS1 != ANY),  "Equivalent objects with differing TimeSystems where one is TimeSystem::Any are found to be not-equal", __LINE__);
 
-		testFramework.changeSourceMethod("Differing TimeSystem != Operator");
-//--------------JulianDate_timeSystemTest_3 - Verify different Time System but same time inequality
-		testFramework.assert(GPS1 != UTC1);
-		testFramework.next();
-
-//--------------JulianDate_timeSystemTest_4 - Verify different Time System but same time inequality
-		testFramework.assert(GPS1 != UNKNOWN);
-		testFramework.next();
-
-		testFramework.changeSourceMethod("ANY TimeSystem == Operator");		
-//--------------JulianDate_timeSystemTest_5 - Verify TimeSystem=ANY does not matter in TimeSystem=GPS comparisons 
-		testFramework.assert(GPS1 == ANY);
-		testFramework.next();
-
-//--------------JulianDate_timeSystemTest_6 - Verify TimeSystem=ANY does not matter in TimeSystem=UTC comparisons 
-		testFramework.assert(UTC1 == ANY);
-		testFramework.next();
-
-//--------------JulianDate_timeSystemTest_7 - Verify TimeSystem=ANY does not matter in TimeSystem=UNKOWN comparisons 
-		testFramework.assert(UNKNOWN == ANY);
-		testFramework.next();
-
-		testFramework.changeSourceMethod("ANY TimeSystem < Operator");	
-//--------------JulianDate_timeSystemTest_8 - Verify TimeSystem=ANY does not matter in other operator comparisons 
-		testFramework.assert(!(GPS2 == ANY) && (GPS2 < ANY));
-		testFramework.next();
+		testFramework.changeSourceMethod("OperatorLessThanWithDifferingTimeSystem");	
+		//---------------------------------------------------------------------
+		//Verify TimeSystem=ANY does not matter in other operator comparisons 
+		//---------------------------------------------------------------------
+		testFramework.assert(ANY2 < GPS1, "Less than object with Any TimeSystem is not found to be less than", __LINE__);
+		testFramework.assert(GPS2 < ANY,"Less than object with GPS TimeSystem is not found to be less-than a greater object with Any TimeSystem", __LINE__);
 
 		testFramework.changeSourceMethod("setTimeSystem");	
   		UNKNOWN.setTimeSystem(TimeSystem(2)); //Set the Unknown TimeSystem
-//--------------JulianDate_timeSystemTest_9 - Ensure resetting a Time System changes it
-		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2));
+		//---------------------------------------------------------------------
+		//Ensure resetting a Time System changes it
+		//---------------------------------------------------------------------
+		testFramework.assert(UNKNOWN.getTimeSystem()==TimeSystem(2), "setTimeSystem was unable to set the TimeSystem", __LINE__);
 
 		return testFramework.countFails();
 	}
 
-	/* Test for the formatted printing of JulianDate objects */
+
+//==========================================================================================================================
+//	Test for the formatted printing of JulianDate objects
+//==========================================================================================================================
 	int  printfTest (void)
 	{
 		TestUtil testFramework( "JulianDate", "printf", __FILE__, __LINE__ );
-		testFramework.init();
+
 
   		JulianDate GPS1(1350000,TimeSystem(2));
   		JulianDate UTC1(1350000,TimeSystem(7));
 
-//--------------JulianDate_printfTest_1 - Verify printed output matches expectation
-		testFramework.assert(GPS1.printf("%08J %02P") == (std::string)"1350000.000000 GPS");
-		testFramework.next();
+		//---------------------------------------------------------------------
+		//Verify printed output matches expectation
+		//---------------------------------------------------------------------
+		testFramework.assert(GPS1.printf("%08J %02P") == (std::string)"1350000.000000 GPS", "printf did not output in the proper format", __LINE__);
+		testFramework.assert(UTC1.printf("%08J %02P") == (std::string)"1350000.000000 UTC", "printf did not output in the proper format", __LINE__);
 
-//--------------JulianDate_printfTest_2 - Verify printed output matches expectation
-		testFramework.assert(UTC1.printf("%08J %02P") == (std::string)"1350000.000000 UTC");
-		testFramework.next();
 
 		testFramework.changeSourceMethod("printError");	
-//--------------JulianDate_printfTest_3 - Verify printed error message matches expectation
-		testFramework.assert(GPS1.printError("%08J %02P") == (std::string)"ErrorBadTime ErrorBadTime");
-		testFramework.next();
-
-//--------------JulianDate_printfTest_4 - Verify printed error message matches expectation
-		testFramework.assert(UTC1.printError("%08J %02P") == (std::string)"ErrorBadTime ErrorBadTime");
+		//---------------------------------------------------------------------
+		//Verify printed error message matches expectation
+		//---------------------------------------------------------------------
+		testFramework.assert(GPS1.printError("%08J %02P") == (std::string)"ErrorBadTime ErrorBadTime", "printError did not output in the proper format", __LINE__);
+		testFramework.assert(UTC1.printError("%08J %02P") == (std::string)"ErrorBadTime ErrorBadTime", "printError did not output in the proper format", __LINE__);
 
 		return testFramework.countFails();
 	}
