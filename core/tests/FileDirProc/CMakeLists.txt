@@ -16,9 +16,9 @@ add_test(FileDirProc_FileSpec FileSpec_T)
 #target_link_libraries(FileStore_T gpstk)
 #add_test(FileDirProc_FileStore FileStore_T)
 
-#add_executable(FileUtils_T FileUtils_T.cpp)
-#target_link_libraries(FileUtils_T gpstk)
-#add_test(FileDirProc_FileUtils FileUtils_T)
+add_executable(FileUtils_T FileUtils_T.cpp)
+target_link_libraries(FileUtils_T gpstk)
+add_test(FileDirProc_FileUtils FileUtils_T)
 
 #add_executable(RTFileFrame_T RTFileFrame_T.cpp)
 #target_link_libraries(RTFileFrame_T gpstk)
