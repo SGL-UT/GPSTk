@@ -203,6 +203,8 @@ int RinexMet_T :: bitsAsStringTest( void )
 {
     TestUtil test1( "RinexMetHeader", "bitsAsString", __FILE__, __LINE__ );
 
+    std::string test_desc = "RinexMetHeader, bitsAsString, file read compared to expected string, did not match";
+    
     gpstk::RinexMetHeader RinexMetHeader;
 
     std::string expected_string_a = "RINEX VERSION / TYPE";
@@ -216,29 +218,19 @@ int RinexMet_T :: bitsAsStringTest( void )
     std::string expected_string_i = "END OF HEADER";
     std::string expected_string_z = "*UNKNOWN/INVALID BITS*";
 
-    test1.next();
-    test1.assert( expected_string_a == RinexMetHeader.bitsAsString(RinexMetHeader.validVersion)      );
-    test1.next();
-    test1.assert( expected_string_b == RinexMetHeader.bitsAsString(RinexMetHeader.validRunBy)        );
-    test1.next();
-    test1.assert( expected_string_c == RinexMetHeader.bitsAsString(RinexMetHeader.validComment)      );
-    test1.next();
-    test1.assert( expected_string_d == RinexMetHeader.bitsAsString(RinexMetHeader.validMarkerName)   );
-    test1.next();
-    test1.assert( expected_string_e == RinexMetHeader.bitsAsString(RinexMetHeader.validMarkerNumber) );
-    test1.next();
-    test1.assert( expected_string_f == RinexMetHeader.bitsAsString(RinexMetHeader.validObsType)      );
-    test1.next();
-    test1.assert( expected_string_g == RinexMetHeader.bitsAsString(RinexMetHeader.validSensorType)   );
-    test1.next();
-    test1.assert( expected_string_h == RinexMetHeader.bitsAsString(RinexMetHeader.validSensorPos)    );
-    test1.next();
-    test1.assert( expected_string_i == RinexMetHeader.bitsAsString(RinexMetHeader.validEoH)          );
+    test1.assert( expected_string_a == RinexMetHeader.bitsAsString(RinexMetHeader.validVersion)      , test_desc, __LINE__ );
+    test1.assert( expected_string_b == RinexMetHeader.bitsAsString(RinexMetHeader.validRunBy)        , test_desc, __LINE__ );
+    test1.assert( expected_string_c == RinexMetHeader.bitsAsString(RinexMetHeader.validComment)      , test_desc, __LINE__ );
+    test1.assert( expected_string_d == RinexMetHeader.bitsAsString(RinexMetHeader.validMarkerName)   , test_desc, __LINE__ );
+    test1.assert( expected_string_e == RinexMetHeader.bitsAsString(RinexMetHeader.validMarkerNumber) , test_desc, __LINE__ );
+    test1.assert( expected_string_f == RinexMetHeader.bitsAsString(RinexMetHeader.validObsType)      , test_desc, __LINE__ );
+    test1.assert( expected_string_g == RinexMetHeader.bitsAsString(RinexMetHeader.validSensorType)   , test_desc, __LINE__ );
+    test1.assert( expected_string_h == RinexMetHeader.bitsAsString(RinexMetHeader.validSensorPos)    , test_desc, __LINE__ );
+    test1.assert( expected_string_i == RinexMetHeader.bitsAsString(RinexMetHeader.validEoH)          , test_desc, __LINE__ );
+    //Default Case
+    test1.assert( expected_string_z == RinexMetHeader.bitsAsString(RinexMetHeader.allValid21)        , test_desc, __LINE__ );
 
-    //Defult Case
-    test1.next();
-    test1.assert( expected_string_z == RinexMetHeader.bitsAsString(RinexMetHeader.allValid21) );
-    return test1.countFails();
+    return( test1.countFails() );
 }
 
 //------------------------------------------------------------
@@ -247,6 +239,9 @@ int RinexMet_T :: bitsAsStringTest( void )
 int RinexMet_T :: bitStringTest( void )
 {
     TestUtil test2( "RinexMetHeader", "bitString", __FILE__, __LINE__ );
+    
+    std::string test_desc = "RinexMetHeader, bitString, test to assure that the version validity bits are what we expect them to be";
+    std::string test_fail = "";
 
     gpstk::RinexMetHeader RinexMetHeader;
 
@@ -254,17 +249,16 @@ int RinexMet_T :: bitStringTest( void )
     std::string expected_string_a = "\"RINEX VERSION / TYPE\"";
     std::string expected_string_b = "\"RINEX VERSION / TYPE\", \"PGM / RUN BY / DATE\", \"MARKER NAME\", \"# / TYPES OF OBSERV\", \"SENSOR MOD/TYPE/ACC\", \"SENSOR POS XYZ/H\", \"END OF HEADER\"";
 
-    test2.next();
-    test2.assert( expected_string_a == RinexMetHeader.bitString( RinexMetHeader.validVersion, '\"', sep ) );
+    test_fail = ", validVersion failed";
+    test2.assert( expected_string_a == RinexMetHeader.bitString( RinexMetHeader.validVersion, '\"', sep ), test_desc + test_fail, __LINE__ );
 
-    test2.next();
-    test2.assert( expected_string_b == RinexMetHeader.bitString( RinexMetHeader.allValid21, '\"', sep ) );
+    test_fail = ", allValid21 failed";
+    test2.assert( expected_string_b == RinexMetHeader.bitString( RinexMetHeader.allValid21, '\"', sep ),   test_desc + test_fail, __LINE__ );
 
-    test2.next();
-    test2.assert( expected_string_b == RinexMetHeader.bitString( RinexMetHeader.allValid20, '\"', sep ) );
+    test_fail = ", allValid20 failed";
+    test2.assert( expected_string_b == RinexMetHeader.bitString( RinexMetHeader.allValid20, '\"', sep ),   test_desc + test_fail, __LINE__ );
+    // test2.assert( expected_string_b, RinexMetHeader.bitString(RinexMetHeader.allValid20,' ',sep),   test_desc + test_fail, __LINE__ );
 
-    // test2.next();
-    // test2.assert( expected_string_b, RinexMetHeader.bitString(RinexMetHeader.allValid20,' ',sep) );
     return test2.countFails();
 }
 
@@ -277,6 +271,11 @@ int RinexMet_T :: reallyPutRecordTest( void )
 {
   TestUtil test3( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
 
+    std::string msg_test_desc   = "RinexMetHeader, reallyPutRecordTest, exception tests";
+    std::string msg_false_pass  = ", should have thrown a gpstk::Exception but did not.";
+    std::string msg_fail        = ", should have thrown a gpstk::Exception but threw an unexpected exception.";
+    std::string msg_test_detail = "";
+    
     gpstk::RinexMetHeader RinexMetHeader;
 
     gpstk::RinexMetStream UnSupRinex( inputRinexMetUnSupRinex.c_str() );
@@ -285,13 +284,43 @@ int RinexMet_T :: reallyPutRecordTest( void )
 
     output.exceptions( std::fstream::failbit );
 
-    try { UnSupRinex >> RinexMetHeader; test3.failTest( "This passed but was expected to fail and throw a gpstk::exception", __LINE__ ); }
-    catch(gpstk::Exception e) { test3.passTest(); }
-    catch(...) { test3.failTest( "This failed as expected but should thrown a gpstk::exception", __LINE__ ); }
+    //------------------------------------------------------------
+    // Unsupported Rinex
+    //------------------------------------------------------------
+    msg_test_detail = ", Unsupported Rinex version";
+    
+    try
+    {
+        UnSupRinex >> RinexMetHeader;
+        test3.assert( false, msg_test_desc + msg_test_detail + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test3.assert( true, msg_test_desc + msg_test_detail, __LINE__ );
+    }
+    catch(...)
+    {
+        test3.assert( false, msg_test_desc + msg_test_detail + msg_fail, __LINE__ );
+    }
 
-    try { MissingMarkerName >> RinexMetHeader; test3.failTest( "This passed but was expected to fail and throw a gpstk::exception", __LINE__ ); }
-    catch(gpstk::Exception e) { test3.passTest(); }
-    catch(...) { test3.failTest( "This failed as expected but did not throw a gpstk::exception", __LINE__ ); }
+    //------------------------------------------------------------
+    // Missing Marker
+    //------------------------------------------------------------
+    msg_test_detail = ", Missing Marker Name";
+    try
+    {
+        MissingMarkerName >> RinexMetHeader;
+        test3.assert( false, msg_test_desc + msg_test_detail + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test3.assert( true, msg_test_desc + msg_test_detail, __LINE__ );
+    }
+    catch(...)
+    {
+        test3.assert( false, msg_test_desc + msg_test_detail + msg_fail, __LINE__ );
+    }
+
     return test3.countFails();
 }
 
@@ -303,6 +332,12 @@ int RinexMet_T :: reallyPutRecordTest( void )
 int RinexMet_T :: reallyGetRecordTest( void )
 {
     TestUtil test4( "RinexMetHeader", "exceptions", __FILE__, __LINE__ );
+
+    std::string msg_test_desc = "";
+    std::string msg_false_pass  = ", should have thrown a gpstk::Exception but did not.";
+    std::string msg_fail        = ", should have thrown a gpstk::Exception but threw an unexpected exception.";
+    
+    
 
     //Header file we will be testing on
     gpstk::RinexMetHeader RinexMetHeader;
@@ -349,46 +384,169 @@ int RinexMet_T :: reallyGetRecordTest( void )
     SensorType.exceptions( std::fstream::failbit );
 
 
+    //============================================================
     // Fail any of the following tests which does NOT throw a gpstk::Exception
+    //============================================================
 
-    try { ExtraH >> RinexMetHeader; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "ExtraH >> RinexMetHeader";
+    try
+    {
+        ExtraH >> RinexMetHeader;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try { UnSupRinex >> RinexMetHeader ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "UnSupRinex >> RinexMetHeader";
+    try
+    {
+        UnSupRinex >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try {  MissingSPos >> RinexMetHeader   ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "MissingSPos >> RinexMetHeader";
+    try
+    {
+        MissingSPos >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try {  ObsHeaderStringError >> RinexMetHeader   ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "ObsHeaderStringError >> RinexMetHeader";
+    try
+    {
+        ObsHeaderStringError >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try { SensorType >> RinexMetHeader    ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "SensorType >> RinexMetHeader";
+    try
+    {
+        SensorType >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try { BLL >> RinexMetHeader    ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "BLL >> RinexMetHeader";
+    try
+    {
+        BLL >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try { NMF >> RinexMetHeader     ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "NMF >> RinexMetHeader";
+    try
+    {
+        NMF >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
-    try { BOL >> RinexMetHeader    ; test4.failTest(); }
-    catch(gpstk::Exception e) { test4.passTest(); }
-    catch(...) { test4.failTest(); }
+    //----------------------------------------
+    //----------------------------------------
+    msg_test_desc = "BOL >> RinexMetHeader";
+    try
+    {
+        BOL >> RinexMetHeader ;
+        test4.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch( gpstk::Exception e )
+    {
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail, __LINE__ );
+    }
 
 
+    //----------------------------------------
     // Fail the follow test if it throws ANYTHING!
+    //----------------------------------------
+    msg_test_desc = "Normal >> RinexMetHeader";
+    std::string msg_fail_gpstk = ", should have thrown nothing, but threw a gpstk::Exception.";
+    std::string msg_fail_other = ", should have thrown nothing, but threw an exception.";
+    try
+    {
+        Normal >> RinexMetHeader ;
+        test4.assert( true, msg_test_desc, __LINE__ );
+    }
+    catch( gpstk::Exception e)
+    {
+        test4.assert( false, msg_test_desc + msg_fail_gpstk, __LINE__ );
+    }
+    catch(...)
+    {
+        test4.assert( false, msg_test_desc + msg_fail_other, __LINE__ );
+    }
 
-    try { Normal >> RinexMetHeader ; test4.passTest(); }
-    catch(gpstk::Exception e) { test4.failTest(); }
-    catch(...) { test4.failTest(); }
+
+
     return test4.countFails();
 }
 
@@ -400,6 +558,8 @@ int RinexMet_T :: reallyGetRecordTest( void )
 int RinexMet_T :: convertObsTypeSTRTest( void )
 {
     TestUtil test5( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
+    std::string msg_test_desc = "convertObsTypeSTRTest, ";
+    std::string msg_test_fail = "";
 
     gpstk::RinexMetHeader RinexMetHeader;
     gpstk::RinexMetStream Normal( inputRinexMetNormal.c_str() );
@@ -423,19 +583,29 @@ int RinexMet_T :: convertObsTypeSTRTest( void )
     std::string ZTS = "ZT";
     std::string HIS = "HI";
 
-    test5.assert( PR == RinexMetHeader.convertObsType(PRS) ); 
-    test5.next();
-    test5.assert( TD == RinexMetHeader.convertObsType(TDS) ); 
-    test5.next();
-    test5.assert( HR == RinexMetHeader.convertObsType(HRS) ); 
-    test5.next();
-    test5.assert( ZW == RinexMetHeader.convertObsType(ZWS) ); 
-    test5.next();
-    test5.assert( ZD == RinexMetHeader.convertObsType(ZDS) ); 
-    test5.next();
-    test5.assert( ZT == RinexMetHeader.convertObsType(ZTS) ); 
-    test5.next();
-    test5.assert( HI == RinexMetHeader.convertObsType(HIS) );
+    msg_test_fail = "convertObsType(PRS) did not return expected value";
+    test5.assert( PR == RinexMetHeader.convertObsType(PRS), msg_test_desc + msg_test_fail, __LINE__ ); 
+
+    msg_test_fail = "convertObsType(TDS) did not return expected value";
+    test5.assert( TD == RinexMetHeader.convertObsType(TDS), msg_test_desc + msg_test_fail, __LINE__ ); 
+
+    msg_test_fail = "convertObsType(HRS) did not return expected value";
+    test5.assert( HR == RinexMetHeader.convertObsType(HRS), msg_test_desc + msg_test_fail, __LINE__ ); 
+
+    msg_test_fail = "convertObsType(ZWS) did not return expected value";
+    test5.assert( ZW == RinexMetHeader.convertObsType(ZWS), msg_test_desc + msg_test_fail, __LINE__ ); 
+
+    msg_test_fail = "convertObsType(ZDS) did not return expected value";
+    test5.assert( ZD == RinexMetHeader.convertObsType(ZDS), msg_test_desc + msg_test_fail, __LINE__ ); 
+
+    msg_test_fail = "convertObsType(ZTS) did not return expected value";
+    test5.assert( ZT == RinexMetHeader.convertObsType(ZTS), msg_test_desc + msg_test_fail, __LINE__ ); 
+
+    msg_test_fail = "convertObsType(HIS) did not return expected value";
+    test5.assert( HI == RinexMetHeader.convertObsType(HIS), msg_test_desc + msg_test_fail, __LINE__ );
+
+
+
     return test5.countFails();
 }
 
@@ -448,6 +618,8 @@ int RinexMet_T :: convertObsTypeSTRTest( void )
 int RinexMet_T :: convertObsTypeHeaderTest( void )
 {
     TestUtil test6( "RinexMetHeader", "convertObsType", __FILE__, __LINE__ );
+    std::string msg_test_desc = "convertObsTypeHeaderTest, ";
+    std::string msg_test_fail = "";
 
     gpstk::RinexMetHeader RinexMetHeader;
     gpstk::RinexMetStream Normal( inputRinexMetNormal.c_str() );
@@ -469,22 +641,48 @@ int RinexMet_T :: convertObsTypeHeaderTest( void )
     std::string ZDS = "ZD";
     std::string ZTS = "ZT";
 
-    test6.assert( PRS == RinexMetHeader.convertObsType(PR) );
-    test6.next();
-    test6.assert( TDS == RinexMetHeader.convertObsType(TD) );
-    test6.next();
-    test6.assert( HRS == RinexMetHeader.convertObsType(HR) );
-    test6.next();
-    test6.assert( ZWS == RinexMetHeader.convertObsType(ZW) );
-    test6.next();
-    test6.assert( ZDS == RinexMetHeader.convertObsType(ZD) );
-    test6.next();
-    test6.assert( ZTS == RinexMetHeader.convertObsType(ZT) );
-    test6.next();
+    msg_test_fail = "convertObsType(PR) did not return expected value";
+    test6.assert( PRS == RinexMetHeader.convertObsType(PR), msg_test_desc + msg_test_fail, __LINE__ );
 
-    try { RinexMetHeader.convertObsType( "KE" )   ; test6.failTest(); }
-    catch(gpstk::FFStreamError) { test6.passTest(); }
-    catch(...) { test6.failTest(); }
+    msg_test_fail = "convertObsType(TD) did not return expected value";
+    test6.assert( TDS == RinexMetHeader.convertObsType(TD), msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "convertObsType(HR) did not return expected value";
+    test6.assert( HRS == RinexMetHeader.convertObsType(HR), msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "convertObsType(ZW) did not return expected value";
+    test6.assert( ZWS == RinexMetHeader.convertObsType(ZW), msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "convertObsType(ZD) did not return expected value";
+    test6.assert( ZDS == RinexMetHeader.convertObsType(ZD), msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "convertObsType(ZT) did not return expected value";
+    test6.assert( ZTS == RinexMetHeader.convertObsType(ZT), msg_test_desc + msg_test_fail, __LINE__ );
+
+
+    //----------------------------------------
+    // Fail if the following throws anything but a FFStreamError
+    //----------------------------------------
+    msg_test_desc = "convertObsType( \"KE\" ), should throw  gpstk::FFStreamError";
+    std::string msg_false_pass = ", but threw no exceptions.";
+    std::string msg_fail_other = ", but threw a different exception.";
+    try
+    {
+        RinexMetHeader.convertObsType( "KE" );
+        test6.assert( false, msg_test_desc + msg_false_pass, __LINE__ );
+    }
+    catch(gpstk::FFStreamError)
+    {
+        test6.assert( true, msg_test_desc, __LINE__  );
+    }
+    catch(...)
+    {
+        test6.assert( false, msg_test_desc + msg_fail_other, __LINE__  );
+    }
+
+
+
+    
     return test6.countFails();
 }
 
@@ -499,6 +697,8 @@ int RinexMet_T :: convertObsTypeHeaderTest( void )
 int RinexMet_T :: hardCodeTest( void )
 {
     TestUtil test7( "RinexMetHeader", "version", __FILE__, __LINE__ );
+    std::string msg_test_desc = "RinexMetHeader data member value tests, ";
+    std::string msg_test_fail = "";
 
     gpstk::RinexMetStream testRinexMetStream( inputRinexMetNormal.c_str() );
     gpstk::RinexMetStream out( outputRinexMetHardCode.c_str(), std::ios::out );
@@ -506,201 +706,275 @@ int RinexMet_T :: hardCodeTest( void )
 
     testRinexMetStream >> testRinexMetHeader;
  
-    //Start of RinexMetHeader member check to assure that what we want is whats in there
-    test7.assert( testRinexMetHeader.version     == 2.1 );
-    test7.next();
-    test7.assert( testRinexMetHeader.fileType    == (std::string)"Meteorological" );
-    test7.next();
-    test7.assert( testRinexMetHeader.fileProgram == (std::string)"GFW - RMW" );
-    test7.next();
-    test7.assert( testRinexMetHeader.fileAgency  == (std::string)"NIMA" );
-    test7.next();
-    test7.assert( testRinexMetHeader.date        == (std::string)"04/18/2004 23:58:50" );
-    test7.next();
+    //============================================================
+    // Test RinexMet Header content
+    //============================================================
+    
+    msg_test_fail = "RinexMetHeader.version, does not match expected value ";
+    test7.assert( testRinexMetHeader.version     == 2.1, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetHeader.fileType, does not match expected value ";
+    test7.assert( testRinexMetHeader.fileType    == (std::string)"Meteorological", msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetHeader.fileProgram, does not match expected value ";
+    test7.assert( testRinexMetHeader.fileProgram == (std::string)"GFW - RMW", msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetHeader.fileAgency, does not match expected value ";
+    test7.assert( testRinexMetHeader.fileAgency  == (std::string)"NIMA", msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetHeader.date, does not match expected value ";
+    test7.assert( testRinexMetHeader.date        == (std::string)"04/18/2004 23:58:50", msg_test_desc + msg_test_fail, __LINE__ );
+
 
     std::vector<std::string>::const_iterator itr1 = testRinexMetHeader.commentList.begin();
+    msg_test_fail = "weather data correct values message does not match";
     while( itr1 != testRinexMetHeader.commentList.end() )
     {
-        test7.assert( (*itr1) == (std::string)"Some weather data may have corrected values" );
-        test7.next();
+        test7.assert( (*itr1) == (std::string)"Some weather data may have corrected values", msg_test_desc + msg_test_fail, __LINE__ );
+
         itr1++;
     }
 
-    test7.assert( testRinexMetHeader.markerName   == (std::string)"85408" );
-    test7.next();
+    msg_test_fail = "RinexMetHeader.markerName, does not match expected value ";
+    test7.assert( testRinexMetHeader.markerName   == (std::string)"85408", msg_test_desc + msg_test_fail, __LINE__ );
 
-    test7.assert( testRinexMetHeader.markerNumber == (std::string)"85408" );
-    test7.next();
+    msg_test_fail = "RinexMetHeader.markerNumber, does not match expected value ";
+    test7.assert( testRinexMetHeader.markerNumber == (std::string)"85408", msg_test_desc + msg_test_fail, __LINE__ );
 
+    
+    msg_test_fail = "testRinexMetHeader.convertObsType(iterator) did not return expected value PR";
     vector<RinexMetHeader::RinexMetType>::const_iterator itr2 = testRinexMetHeader.obsTypeList.begin();
-
     if( itr2 != testRinexMetHeader.obsTypeList.end() )
     {
-       test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"PR" );
-       test7.next();
-       itr2++;
-    } else {
-      test7.failTest();
-    }
-
-    if( itr2 != testRinexMetHeader.obsTypeList.end() )
-    {
-        test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"TD" );
-        test7.next();
+        test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"PR", msg_test_desc + msg_test_fail, __LINE__ );
         itr2++;
     } else {
-      test7.failTest();
+        test7.assert( false, msg_test_desc, __LINE__ );
     }
 
+    
+    msg_test_fail = "testRinexMetHeader.convertObsType(iterator) did not return expected value TD";
     if( itr2 != testRinexMetHeader.obsTypeList.end() )
     {
-        test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"HI" );
-        test7.next();
+        test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"TD", msg_test_desc + msg_test_fail, __LINE__ );
+        itr2++;
     } else {
-      test7.failTest();
+      test7.assert( false, msg_test_desc, __LINE__ );
     }
 
+    
+    msg_test_fail = "testRinexMetHeader.convertObsType(iterator) did not return expected value HI";
+    if( itr2 != testRinexMetHeader.obsTypeList.end() )
+    {
+        test7.assert( testRinexMetHeader.convertObsType(*itr2) == (std::string)"HI", msg_test_desc + msg_test_fail, __LINE__ );
+    } else {
+      test7.assert( false, msg_test_desc, __LINE__ );
+    }
+
+    
+    //------------------------------------------------------------
+    //------------------------------------------------------------
     vector<RinexMetHeader::sensorType>::const_iterator itr3 = testRinexMetHeader.sensorTypeList.begin();
-
     if( itr3 != testRinexMetHeader.sensorTypeList.end() )
     {
-        test7.assert( (*itr3).model    == (std::string)"Vaisala" );
-        test7.next();
-        test7.assert( (*itr3).type     == (std::string)"PTB220"  );
-        test7.next();
-        test7.assert( (*itr3).accuracy == 0.1 );
-        test7.next();
-        test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) == (std::string)"PR" );
-        test7.next();
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
+        test7.assert( (*itr3).model    == (std::string)"Vaisala", msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.type did not return expected value PTB220";
+        test7.assert( (*itr3).type     == (std::string)"PTB220", msg_test_desc + msg_test_fail, __LINE__  );
+
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.accuracy did not return expected value 0.1";
+        test7.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType did not return expected value PR";
+        test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) == (std::string)"PR", msg_test_desc + msg_test_fail, __LINE__ );
+
+        itr3++;
+    } else {
+        // Must fail all four tests above
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.type test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.accuracy test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+    }
+
+    
+    //------------------------------------------------------------
+    //------------------------------------------------------------
+    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
+    {
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
+        test7.assert( (*itr3).model    == (std::string)"Vaisala", msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.type did not return expected value HMP230";
+        test7.assert( (*itr3).type     == (std::string)"HMP230", msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.accuracy did not return expected value 0.1";
+        test7.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType did not return expected value TD";
+        test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) == (std::string)"TD", msg_test_desc + msg_test_fail, __LINE__ );
+
+        itr3++;
+    } else {
+        // Must fail all four tests above
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.type test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.accuracy test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+    }
+
+    
+    //------------------------------------------------------------
+    //------------------------------------------------------------
+    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
+    {
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model did not return expected value Vaisala";
+        test7.assert( (*itr3).model    == (std::string)"Vaisala", msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.type did not return expected value HMP230";
+        test7.assert( (*itr3).type     == (std::string)"HMP230", msg_test_desc + msg_test_fail, __LINE__  );
+
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.accuracy did not return expected value 0.1";
+        test7.assert( (*itr3).accuracy == 0.1, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType did not return expected value HI";
+        test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) == (std::string)"HI", msg_test_desc + msg_test_fail, __LINE__ );
 
         itr3++;
 
     } else {
         // Must fail all four tests above
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.model test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.type test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorTypeList iterator.accuracy test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
     }
 
-    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
-    {
-        test7.assert( (*itr3).model    == (std::string)"Vaisala" );
-        test7.next();
-        test7.assert( (*itr3).type     == (std::string)"HMP230"  );
-        test7.next();
-        test7.assert( (*itr3).accuracy == 0.1 );
-        test7.next();
-        test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) == (std::string)"TD" );
-        test7.next();
-
-        itr3++;
-
-    } else {
-        // Must fail all four tests above
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-    }
-
-    if( itr3 != testRinexMetHeader.sensorTypeList.end() )
-    {
-        test7.assert( (*itr3).model    == (std::string)"Vaisala" );
-        test7.next();
-        test7.assert( (*itr3).type     == (std::string)"HMP230"  );
-        test7.next();
-        test7.assert( (*itr3).accuracy == 0.1 );
-        test7.next();
-        test7.assert( testRinexMetHeader.convertObsType((*itr3).obsType) == (std::string)"HI" );
-        test7.next();
-
-        itr3++;
-
-    } else {
-        // Must fail all four tests above
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-    }
-
+    //------------------------------------------------------------
+    //------------------------------------------------------------
     vector<RinexMetHeader::sensorPosType>::const_iterator itr4 = testRinexMetHeader.sensorPosList.begin();
 
     if( itr4 != testRinexMetHeader.sensorPosList.end() )
     {
-        test7.assert( (*itr4).position[0] ==  -740289.8363 );
-        test7.next();
-        test7.assert( (*itr4).position[1] == -5457071.7414 );
-        test7.next();
-        test7.assert( (*itr4).position[2] ==  3207245.6207 );
-        test7.next();
-        test7.assert( (*itr4).height      ==        0.0000 );
-        test7.next();
-        test7.assert( testRinexMetHeader.convertObsType((*itr4).obsType) == (std::string) "PR" );
-        test7.next();
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[0] did not return expected value";
+        test7.assert( (*itr4).position[0] ==  -740289.8363, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[1] did not return expected value";
+        test7.assert( (*itr4).position[1] == -5457071.7414, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[2] did not return expected value";
+        test7.assert( (*itr4).position[2] ==  3207245.6207, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.height did not return expected value";
+        test7.assert( (*itr4).height      ==        0.0000, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType did not return expected value PR";
+        test7.assert( testRinexMetHeader.convertObsType((*itr4).obsType) == (std::string) "PR", msg_test_desc + msg_test_fail, __LINE__ );
 
         itr4++;
 
     } else {
         // Must fail all five tests above
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[0] test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[1] test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[2] test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.height test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
     }
 
+    //------------------------------------------------------------
+    //------------------------------------------------------------
     if( itr4 != testRinexMetHeader.sensorPosList.end() )
     {
-        test7.assert( (*itr4).position[0] ==  -740289.8363 );
-        test7.next();
-        test7.assert( (*itr4).position[1] == -5457071.7414 );
-        test7.next();
-        test7.assert( (*itr4).position[2] ==  3207245.6207 );
-        test7.next();
-        test7.assert( (*itr4).height      ==        0.0000 );
-        test7.next();
-        test7.assert( testRinexMetHeader.convertObsType((*itr4).obsType) == (std::string) "TD" );
-        test7.next();
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[0] did not return expected value";
+        test7.assert( (*itr4).position[0] ==  -740289.8363, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[1] did not return expected value";
+        test7.assert( (*itr4).position[1] == -5457071.7414, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[2] did not return expected value";
+        test7.assert( (*itr4).position[2] ==  3207245.6207, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.height did not return expected value";
+        test7.assert( (*itr4).height      ==        0.0000, msg_test_desc + msg_test_fail, __LINE__ );
+
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType did not return expected value TD";
+        test7.assert( testRinexMetHeader.convertObsType((*itr4).obsType) == (std::string) "TD", msg_test_desc + msg_test_fail, __LINE__ );
+
     } else {
         // Must fail all five tests above
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
-        test7.failTest();
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[0] test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[1] test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.position[2] test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.sensorPosType iterator.height test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
+        msg_test_fail = "RinexMetHeader.convertObsType iterator.obsType test is in a block that failed";
+        test7.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
     }
     //End of Header
 
-    // Now test the RinexMetData
+    //============================================================
+    // Test the RinexMetData content
+    //============================================================
+
     out << testRinexMetHeader;
     gpstk::RinexMetData testRinexMetData;
     testRinexMetStream >> testRinexMetData;
     gpstk::CivilTime TimeGuess(2004,4,19,0,0,0);
+    
+    msg_test_desc = "RinexMetData data member value tests, ";
+    msg_test_fail = "";
 
 
-    test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess );
-    test7.next();
-    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )] == 992.6 );
-    test7.next();
-    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )] ==  23.9 );
-    test7.next();
-    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )] ==  59.7 );
-    test7.next();
+
+    msg_test_fail = "RinexMetData.time did not equal TimeGuess";
+    test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetData.data for PR does not match expected value ";
+    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )] == 992.6, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetData.data for TD does not match expected value ";
+    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )] ==  23.9, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetData.data for HI does not match expected value ";
+    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )] ==  59.7, msg_test_desc + msg_test_fail, __LINE__ );
 
     out << testRinexMetData;
     testRinexMetStream >> testRinexMetData;
     gpstk::CivilTime TimeGuess2(2004,4,19,0,15,0);
 
-    test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess2 );
-    test7.next();
-    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )] == 992.8 );
-    test7.next();
-    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )] ==  23.6 );
-    test7.next();
-    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )] ==  61.6 );
-    test7.next();
+    msg_test_fail = "RinexMetData.time did not equal TimeGuess2";
+    test7.assert( testRinexMetData.time == (gpstk::CommonTime)TimeGuess2, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetData.data for PR does not match expected value";
+    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "PR" )] == 992.8, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetData.data for TD does not match expected value";
+    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "TD" )] ==  23.6, msg_test_desc + msg_test_fail, __LINE__ );
+
+    msg_test_fail = "RinexMetData.data for HI does not match expected value";
+    test7.assert( testRinexMetData.data[testRinexMetHeader.convertObsType( "HI" )] ==  61.6, msg_test_desc + msg_test_fail, __LINE__ );
 
     out << testRinexMetData;
     while( testRinexMetStream >> testRinexMetData )
@@ -708,12 +982,14 @@ int RinexMet_T :: hardCodeTest( void )
         out << testRinexMetData;
     }
 
-    test7.assert( test7.fileEqualTest( inputRinexMetNormal, outputRinexMetHardCode, 2) );
-    test7.next();
+    msg_test_fail = "files not equal, inputRinexMetNormal and outputRinexMetHardCode";
+    test7.assert( test7.fileEqualTest( inputRinexMetNormal, outputRinexMetHardCode, 2), msg_test_desc + msg_test_fail, __LINE__  );
 
     gpstk::RinexMetStream MetDumps( outputRinexMetDumps.c_str(), std::ios::out );
     testRinexMetHeader.dump( MetDumps );
     testRinexMetData.dump( MetDumps );
+
+    
     return test7.countFails();
 }
 
@@ -727,7 +1003,10 @@ int RinexMet_T :: hardCodeTest( void )
 int RinexMet_T :: continuationTest( void )
 {
     TestUtil test8( "RinexMetHeader", "continuation", __FILE__, __LINE__ );
-
+    std::string msg_test_desc = "continuation file comparison";
+    std::string msg_test_fail = ", files are not equal, inputRinexMetContLines outputRinexMetContLines";
+    std::string msg_fail_exception = ", threw unexpected exception";
+    
     gpstk::RinexMetStream RinexMetStream( inputRinexMetContLines.c_str() );
     gpstk::RinexMetStream out( outputRinexMetContLines.c_str(), std::ios::out );
     gpstk::RinexMetStream MetDumps( outputRinexMetDumps.c_str(), std::ios::out );
@@ -749,12 +1028,11 @@ int RinexMet_T :: continuationTest( void )
             out << RinexMetData;
         }
 
-        test8.assert( test8.fileEqualTest( inputRinexMetContLines, outputRinexMetContLines, 2) );
-        test8.next();
+        test8.assert( test8.fileEqualTest( inputRinexMetContLines, outputRinexMetContLines, 2), msg_test_desc + msg_test_fail, __LINE__ );
     }
     catch(...)
     {
-        test8.failTest();
+        test8.assert( false, msg_test_desc + msg_fail_exception, __LINE__ );
     }
     return test8.countFails();
 }
@@ -772,6 +1050,8 @@ int RinexMet_T :: continuationTest( void )
 int RinexMet_T :: dataExceptionsTest( void )
 {
     TestUtil test9( "RinexMetHeader", "nodata", __FILE__, __LINE__ );
+    std::string msg_test_desc = "dataExceptionsTest, ";
+    std::string msg_test_fail = "";
  
     gpstk::RinexMetStream NoObs( inputRinexMetNoObs.c_str() );
     gpstk::RinexMetStream InvalidTimeFormat( inputRinexMetInvTimeFmt.c_str() );
@@ -792,15 +1072,15 @@ int RinexMet_T :: dataExceptionsTest( void )
         InvalidTimeFormat >> rme;
         out << rme;
 
-        test9.failTest("Test looking for a gpstk::Exception to be thrown when there is no header obs. No exception was thrown.", __LINE__);
+        test9.assert( false, "Test looking for a gpstk::Exception to be thrown when there is no header obs. No exception was thrown.", __LINE__);
     }
     catch( gpstk::Exception& e )
     {
-        test9.passTest();
+        test9.assert( true, msg_test_desc, __LINE__ );
     }
     catch(...)
     {
-        test9.failTest("Test looking for a gpstk::Exception to be thrown when there is no header obs. A different exception was thrown.", __LINE__);
+        test9.assert( false, "Test looking for a gpstk::Exception to be thrown when there is no header obs. A different exception was thrown.", __LINE__);
     }
     return test9.countFails();
 }
@@ -815,6 +1095,9 @@ int RinexMet_T :: dataExceptionsTest( void )
 int RinexMet_T :: filterOperatorsTest( void )
 {
     TestUtil test10( "RinexMetStream", "filter", __FILE__, __LINE__ );
+    std::string msg_test_desc = "filterOperatorsTest, ";
+    std::string msg_test_fail = "";
+
     try
     {
 
@@ -861,56 +1144,32 @@ int RinexMet_T :: filterOperatorsTest( void )
 
         gpstk::RinexMetDataOperatorEqualsSimple EqualsSimple;
 
-	failDescriptionStream << "Check to see if two equivalent files have the same times. They DO NOT.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( EqualsSimple(FilterData1, FilterData2) == true );
-        test10.next();
+	msg_test_fail = "Check to see if two equivalent files have the same times. They DO NOT.";
+        test10.assert( EqualsSimple(FilterData1, FilterData2) == true, msg_test_desc + msg_test_fail, __LINE__ );
 
-	failDescriptionStream << "Check to see if two files with different times have the same time values. They DO.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( EqualsSimple(FilterData1, FilterData3) == false );
-        test10.next();
+	msg_test_fail = "Check to see if two files with different times have the same time values. They DO.";
+        test10.assert( EqualsSimple(FilterData1, FilterData3) == false, msg_test_desc + msg_test_fail, __LINE__ );
 
         gpstk::RinexMetDataOperatorLessThanSimple LessThanSimple;
-	failDescriptionStream << "Check to see if one file occurred earlier than another using equivalent files. One is found to be earlier than the other.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( LessThanSimple(FilterData1, FilterData2) == false );
-        test10.next();
+	msg_test_fail = "Check to see if one file occurred earlier than another using equivalent files. One is found to be earlier than the other.";
+        test10.assert( LessThanSimple(FilterData1, FilterData2) == false, msg_test_desc + msg_test_fail, __LINE__ );
 
-	failDescriptionStream << "Check to see if one file occurred earlier than another using two files with different times. The earlier file is not found to be earlier.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( LessThanSimple(FilterData1, FilterData3) == true );
-        test10.next();
+	msg_test_fail = "Check to see if one file occurred earlier than another using two files with different times. The earlier file is not found to be earlier.";
+        test10.assert( LessThanSimple(FilterData1, FilterData3) == true, msg_test_desc + msg_test_fail, __LINE__ );
 
         gpstk::RinexMetDataOperatorLessThanFull LessThanFull(merged.obsSet);
 
-	failDescriptionStream << "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( LessThanFull(FilterData1, FilterData2) == false );
-        test10.next();
+	msg_test_fail = "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
+        test10.assert( LessThanFull(FilterData1, FilterData2) == false, msg_test_desc + msg_test_fail, __LINE__ );
 
-	failDescriptionStream << "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( LessThanFull(FilterData2, FilterData1) == false );
-        test10.next();
+	msg_test_fail = "Perform the full less than comparison on two identical files. FilterData1 has been found to be different than FilterData2.";
+        test10.assert( LessThanFull(FilterData2, FilterData1) == false, msg_test_desc + msg_test_fail, __LINE__ );
 
-	failDescriptionStream << "Perform the full less than comparison on two different files. FilterData1, an earlier date, has been found to NOT be less than FilterData3.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( LessThanFull(FilterData1, FilterData3) == true );
-        test10.next();
+	msg_test_fail = "Perform the full less than comparison on two different files. FilterData1, an earlier date, has been found to NOT be less than FilterData3.";
+        test10.assert( LessThanFull(FilterData1, FilterData3) == true, msg_test_desc + msg_test_fail, __LINE__ );
 
-	failDescriptionStream << "Perform the full less than comparison on two different files. FilterData3, a later date, has been found to be less than FilterData1.";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test10.setFailMessage(failDescriptionString, __LINE__);
-        test10.assert( LessThanFull(FilterData3, FilterData1) == false );
-        test10.next();
+	msg_test_fail = "Perform the full less than comparison on two different files. FilterData3, a later date, has been found to be less than FilterData1.";
+        test10.assert( LessThanFull(FilterData3, FilterData1) == false, msg_test_desc + msg_test_fail, __LINE__ );
 
         gpstk::CivilTime Start = gpstk::CommonTime::END_OF_TIME;
         gpstk::CivilTime End = gpstk::CommonTime::BEGINNING_OF_TIME;
@@ -919,16 +1178,19 @@ int RinexMet_T :: filterOperatorsTest( void )
         gpstk::RinexMetDataFilterTime FilterTime(Start,End);
         gpstk::RinexMetDataFilterTime FilterTime2(Start2,End2);
 
-        test10.assert( FilterTime(FilterData1) == true );
-        test10.next();
-        test10.assert( FilterTime2(FilterData1) == false );
-        test10.next();
+	msg_test_fail = "FilterTime(FilterData1) == true, should evaluate as true but evaluated as false";
+        test10.assert( FilterTime(FilterData1) == true, msg_test_desc + msg_test_fail, __LINE__ );
+
+	msg_test_fail = "FilterTime2(FilterData1) == false, should evaluate as true but evaluated as false";
+        test10.assert( FilterTime2(FilterData1) == false, msg_test_desc + msg_test_fail, __LINE__ );
     }
     catch(...)
     {
-        test10.failTest();
-
+        msg_test_fail = "Unexpected exception was thrown";
+        test10.assert( false, msg_test_desc + msg_test_fail, __LINE__ );
     }
+
+
     return test10.countFails();
 }
 
@@ -973,5 +1235,5 @@ int main()
 
     std::cout << "Total Failures for " << __FILE__ << ": " << errorCounter << std::endl;
 
-    return( 0 );
+    return( errorCounter );
 }
