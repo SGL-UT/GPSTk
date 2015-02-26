@@ -183,25 +183,16 @@ int RinexNav_T :: hardCodeTest( void )
         out << RinexNavData;
       }
 
-    test1.assert( RinexNavHeader.version == 2.1 );
+    test1.assert( RinexNavHeader.version == 2.1,                             "RinexNav Header version comparison",      __LINE__ );
+    test1.assert( RinexNavHeader.fileProgram == (std::string)"XXRINEXN V3",  "RinexNav Header file program comparison", __LINE__ );
+    test1.assert( RinexNavHeader.fileAgency == (std::string)"AIUB",          "RinexNav Header file agency comparison",  __LINE__ );
+    test1.assert( RinexNavHeader.date == (std::string)"09/02/1999 19:22:36", "RinexNav Header date comparison",         __LINE__ );
 
-    test1.next();
-    test1.assert( RinexNavHeader.fileProgram == (std::string)"XXRINEXN V3" );
-
-    test1.next();
-    test1.assert( RinexNavHeader.fileAgency == (std::string)"AIUB" );
-
-    test1.next();
-    test1.assert( RinexNavHeader.date == (std::string)"09/02/1999 19:22:36" );
-
-    //------------------------------------------------------------
     std::vector<std::string>::const_iterator itr1 = RinexNavHeader.commentList.begin();
-    test1.next();
-    test1.assert( (*itr1) == (std::string)"THIS IS ONE COMMENT" );
+    test1.assert( (*itr1) == (std::string)"THIS IS ONE COMMENT", "RinexNav Header Comment comparison", __LINE__ );
 
-    //------------------------------------------------------------
-    test1.next();
-    test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput, 2 ) );
+
+    test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput, 2 ), "RinexNav file read and then write, the two should be equal", __LINE__  );
 
     //------------------------------------------------------------
     gpstk::RinexNavStream RinexNavStream2( outputTestOutput.c_str() );
@@ -232,13 +223,11 @@ int RinexNav_T :: hardCodeTest( void )
     RinexNavHeader.dump( dmp );
     RinexNavData.dump( dmp );
 
-    test1.next();
-    test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput3, 2 ) );
+    test1.assert( test1.fileEqualTest( inputRinexNavExample, outputTestOutput3, 2 ), "test read TestOutput2", __LINE__ );
   }
   catch(...)
   {
-      test1.fail();
-      test1.print();
+    test1.assert( false, "test read TestOutput2, unexpected exception", __LINE__ );
   }
 
     return( test1.countFails() );
@@ -250,6 +239,11 @@ int RinexNav_T :: hardCodeTest( void )
 int RinexNav_T :: headerExceptionTest( void )
 {
     TestUtil test2( "RinexNavStream", "exceptions", __FILE__, __LINE__ );
+
+    std::string msg_test_desc       = " ";
+    std::string msg_expected    = ", should throw a gpstk::Exception";
+    std::string msg_false_pass  = ", but threw no exception.";
+    std::string msg_true_fail   = ", but instead threw an unknown exception.";
     
     try
     {
@@ -262,42 +256,114 @@ int RinexNav_T :: headerExceptionTest( void )
           gpstk::RinexNavStream out( outputTestOutputHeader.c_str(), std::ios::out );
           gpstk::RinexNavHeader Header;
 
-          InvalidLineLength.exceptions( std::fstream::failbit );
-          NotaNavFile.exceptions( std::fstream::failbit );
+          InvalidLineLength.exceptions(  std::fstream::failbit );
+          NotaNavFile.exceptions(        std::fstream::failbit );
           UnknownHeaderLabel.exceptions( std::fstream::failbit );
-          IncompleteHeader.exceptions( std::fstream::failbit );
-          UnsupportedRinex.exceptions( std::fstream::failbit );
-          BadHeader.exceptions( std::fstream::failbit );
+          IncompleteHeader.exceptions(   std::fstream::failbit );
+          UnsupportedRinex.exceptions(   std::fstream::failbit );
+          BadHeader.exceptions(          std::fstream::failbit );
 
-          try{ InvalidLineLength >> Header; test2.failTest(); }
-          catch(gpstk::Exception e){ test2.passTest(); }
-          catch(...){ test2.failTest(); }
+          
+          //------------------------------------------------------------
+          msg_test_desc = "InvalidLineLength test"
+          try
+          {
+              InvalidLineLength >> Header;
+              test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+          }
+          catch( gpstk::Exception e )
+          {
+              test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+          }
+          catch(...)
+          {
+              test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+          }
 
-          try{ NotaNavFile >> Header; test2.failTest(); }
-          catch(gpstk::Exception e){ test2.passTest(); }
-          catch(...){ test2.failTest(); }
+          //------------------------------------------------------------
+          msg_test_desc = "NotaNavFile test"
+          try
+          {
+              NotaNavFile >> Header;
+              test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+          }
+          catch( gpstk::Exception e )
+          {
+              test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+          }
+          catch(...)
+          {
+              test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+          }
 
-          try{ UnknownHeaderLabel >> Header; test2.failTest(); }
-          catch(gpstk::Exception e){ test2.passTest(); }
-          catch(...){ test2.failTest(); }
+          //------------------------------------------------------------
+          std::string msg_test_desc = "UnknownHeaderLabel test"
+          try
+          {
+              UnknownHeaderLabel >> Header;
+              test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+          }
+          catch( gpstk::Exception e )
+          {
+              test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+          }
+          catch(...)
+          {
+              test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+          }
 
-          try{ IncompleteHeader >> Header; test2.failTest(); }
-          catch(gpstk::Exception e){ test2.passTest(); }
-          catch(...){ test2.failTest(); }
+          //------------------------------------------------------------
+          std::string msg_test_desc = "IncompleteHeader test"
+          try
+          {
+              IncompleteHeader >> Header;
+              test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+          }
+          catch( gpstk::Exception e )
+          {
+              test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+          }
+          catch(...)
+          {
+              test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+          }
 
-          try{ UnsupportedRinex >> Header; test2.failTest(); }
-          catch(gpstk::Exception e){ test2.passTest(); }
-          catch(...){ test2.failTest(); }
+          //------------------------------------------------------------
+          std::string msg_test_desc = "UnsupportedRinex test"
+          try
+          {
+              UnsupportedRinex >> Header;
+              test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+          }
+          catch( gpstk::Exception e )
+          {
+              test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+          }
+          catch(...)
+          {
+              test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+          }
 
-          try{ BadHeader >> Header; test2.failTest(); }
-          catch(gpstk::Exception e){ test2.passTest(); }
-          catch(...){ test2.failTest(); }
+          //------------------------------------------------------------
+          std::string msg_test_desc = "BadHeader test"
+          try
+          {
+              BadHeader >> Header;
+              test2.assert( false, msg_test_desc + msg_expected + msg_false_pass , __LINE__ );
+          }
+          catch( gpstk::Exception e )
+          {
+              test2.assert( true, msg_test_desc + msg_expected, __LINE__ );
+          }
+          catch(...)
+          {
+              test2.assert( false, msg_test_desc + msg_expected + msg_true_fail, __LINE__ );
+          }
 
     }
     catch(...)
     {
-          test2.fail();
-          test2.print();
+        test2.assert( false, "test failure message", __LINE__ );
     }
 
     return( test2.countFails() );
@@ -314,6 +380,11 @@ int RinexNav_T :: streamReadWriteTest( void )
 {
     TestUtil test3( "RinexNavData", "Redirect", __FILE__, __LINE__ );
 
+    std::string msg_test_desc   = "streamReadWriteTest test";
+    std::string msg_expected    = ", compares the output file with the input file";
+    std::string msg_fail_equal  = ", files are different!";
+    std::string msg_fail_except = ", unexpectedly threw an exception.";
+
     try
     {
         RinexNavStream rinexInputStream( inputRinexNavExample.c_str()  );
@@ -326,14 +397,11 @@ int RinexNav_T :: streamReadWriteTest( void )
 	{
             rinexOutputStream << data;
 	}
-	failDescriptionStream << "Compare the output with a regression standard. The files are different!";
-	failDescriptionString = failDescriptionStream.str(); failDescriptionStream.str("");
-	test3.setFailMessage(failDescriptionString, __LINE__);
-        test3.assert( test3.fileEqualTest( inputRinexNavExample, outputRinexStore, 9) );
+        test3.assert( test3.fileEqualTest( inputRinexNavExample, outputRinexStore, 9), msg_test_desc + msg_expected + msg_fail_equal, __LINE__ );
     }
     catch(...)
     {
-        test3.failTest();
+        test3.assert( false, msg_test_desc + msg_expected + msg_fail_except, __LINE__ );
     }
 
     return( test3.countFails() );
@@ -347,6 +415,10 @@ int RinexNav_T :: streamReadWriteTest( void )
 int RinexNav_T :: filterOperatorsTest( void )
 {
     TestUtil test4( "RinexNavStream", "open", __FILE__, __LINE__ );
+
+    std::string msg_test_desc = "";
+    std::string msg_expected  = ", ";
+    std::string msg_fail      = ", ";
 
     try
     {
@@ -385,32 +457,36 @@ int RinexNav_T :: filterOperatorsTest( void )
       out << merged.theHeader;
 
       gpstk::RinexNavDataOperatorEqualsFull EqualsFull;
-      test4.assert( EqualsFull( FilterData1, FilterData2 ) );
-      test4.next();
-      test4.assert( !EqualsFull( FilterData1, FilterData3 ) );
+
+      msg_test_desc = "RinexNavDataOperatorEqualsFull, EqualsFUll FilterData1 FilterData2, fail";
+      test4.assert( EqualsFull( FilterData1, FilterData2 ), msg_test_desc, __LINE__ );
+      msg_test_desc = "RinexNavDataOperatorEqualsFull, FilterData1 not equal FilterData3, fail";
+      test4.assert( !EqualsFull( FilterData1, FilterData3 ), msg_test_desc, __LINE__ );
 
       gpstk::RinexNavDataOperatorLessThanSimple LessThanSimple;
-      test4.next();
-      test4.assert( !LessThanSimple(FilterData1, FilterData2) );
+      
+      msg_test_desc = "RinexNavDataOperatorLessThanSimple, not LessThanSimple FilterData1 FilterData3, fail";
+      test4.assert( !LessThanSimple(FilterData1, FilterData2), msg_test_desc, __LINE__ );
       //CPPUNIT_ASSERT_EQUAL(true,LessThanSimple(FilterData1, FilterData3));
 
       gpstk::RinexNavDataOperatorLessThanFull LessThanFull;
-      test4.next();
+
+      msg_test_desc = "RinexNavDataOperatorLessThanFull, not LessThanFull FilterData1 FilterData1, fail";
       //CPPUNIT_ASSERT_EQUAL(true,LessThanFull(FilterData1, FilterData3));
       //CPPUNIT_ASSERT_EQUAL(false,LessThanFull(FilterData3, FilterData1));
-      test4.assert( !LessThanFull(FilterData1, FilterData1) );
+      test4.assert( !LessThanFull(FilterData1, FilterData1), msg_test_desc, __LINE__ );
 
       std::list<long> list;
       list.push_front(6);
       gpstk::RinexNavDataFilterPRN FilterPRN(list);
-      test4.next();
-      test4.assert( FilterPRN( FilterData3 ) );
+      msg_test_desc = "RinexNavDataFilterPRN, FilterPRN FilterData3, fail";
+      test4.assert( FilterPRN( FilterData3 ), msg_test_desc, __LINE__ );
       //cout << FilterPRN(FilterData3) << std:endl;
     }
     catch(...)
     {
-        test4.fail();
-        test4.print();
+        msg_test_desc = "filterOperatorsTest, threw unexpected exception, fail";
+        test4.assert( false, msg_test_desc, __LINE__ );
     }
 
     return( test4.countFails() );
