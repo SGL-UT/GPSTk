@@ -182,7 +182,7 @@ class WxObsMap_T
 		testFramework.assert(obs2.t == obs1.t && 
 							obs2.temperature == obs1.temperature &&
 							obs2.pressure == obs1.pressure &&
-							obs2.humidity == obs1.humidity);
+							obs2.humidity == obs1.humidity, failMesg, __LINE__);
 
 		//verifying objects exist before deleting them
 		cTime.set((double) 1001);
