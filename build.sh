@@ -500,6 +500,7 @@ if [ "$test_switch" ]; then
     keyword_list+=("Stats")
     keyword_list+=("RACRotation")
     keyword_list+=("StringUtils")
+    keyword_list+=("BinUtils")
 
 
     myheader="%-16s, %4s, %4s, %4s, %5s\n"
