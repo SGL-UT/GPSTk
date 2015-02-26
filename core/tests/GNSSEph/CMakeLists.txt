@@ -32,17 +32,17 @@ add_executable(RinexSatID_T RinexSatID_T.cpp)
 target_link_libraries(RinexSatID_T gpstk)
 add_test(GNSSEph_RinexSatID RinexSatID_T)
 
-add_executable(SatID_T SatID_T.cpp)
-target_link_libraries(SatID_T gpstk)
-add_test(GNSSEph_SatID SatID_T)
+# add_executable(SatID_T SatID_T.cpp)
+# target_link_libraries(SatID_T gpstk)
+# add_test(GNSSEph_SatID SatID_T)
 
 add_executable(SP3EphemerisStore_T SP3EphemerisStore_T.cpp)
 target_link_libraries(SP3EphemerisStore_T gpstk)
 add_test(GNSSEph_SP3EphemerisStore SP3EphemerisStore_T)
 
-add_executable(SP3SatID_T SP3SatID_T.cpp)
-target_link_libraries(SP3SatID_T gpstk)
-add_test(GNSSEph_SP3SatID SP3SatID_T)
+# add_executable(SP3SatID_T SP3SatID_T.cpp)
+# target_link_libraries(SP3SatID_T gpstk)
+# add_test(GNSSEph_SP3SatID SP3SatID_T)
 
 add_executable(XvtStore_T XvtStore_T.cpp)
 target_link_libraries(XvtStore_T gpstk)
