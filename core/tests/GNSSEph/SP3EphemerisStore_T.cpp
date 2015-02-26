@@ -55,9 +55,9 @@ class SP3EphemerisStore_T
 	public:
 		SP3EphemerisStore_T() {epsilon = 1E-12;}
 
-/* =========================================================================================================================
-	Initialize Test Data Filenames
-========================================================================================================================= */
+//==========================================================================================================================
+//	Initialize Test Data Filenames
+//==========================================================================================================================
 		void init( void )
 		{
 			TestUtil test0;
@@ -77,32 +77,32 @@ class SP3EphemerisStore_T
 		}
 
 
-/* =========================================================================================================================
-	General test for the SP3EphemerisStore
-	Makes sure SP3EphemerisStore can be instantiated and can load
-	a file; also ensures that nonexistent files throw an exception
-========================================================================================================================= */
+//==========================================================================================================================
+//	General test for the SP3EphemerisStore
+//	Makes sure SP3EphemerisStore can be instantiated and can load
+//	a file; also ensures that nonexistent files throw an exception
+//==========================================================================================================================
 		int SP3ESTest(void)
 		{
 			TestUtil testFramework( "SP3EphemerisStore", "Constructor", __FILE__, __LINE__ );
-			testFramework.init();
 
 
 
-//--------------SP3EphemerisStore_SP3ESTest_1 - Verify the consturctor builds the SP3EphemerisStore object
-			try {SP3EphemerisStore Store; testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+
+			//Verify the consturctor builds the SP3EphemerisStore object
+			try {SP3EphemerisStore Store; testFramework.assert(true, "SP3EphemerisStore object successfully created", __LINE__);}
+			catch (...) {testFramework.assert(false, "SP3EphemerisStore object could not be created", __LINE__);}
 
 			SP3EphemerisStore Store;
 
-//--------------SP3EphemerisStore_SP3ESTest_2 - Verify opening an empty file throws an error
-			try {Store.loadFile(inputNotaFile); testFramework.failTest();}
-			catch (Exception& e) {testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//Verify opening an empty file throws an error
+			try {Store.loadFile(inputNotaFile); testFramework.assert(false, "Opening an empty file did not throw an exception", __LINE__);}
+			catch (Exception& e) {testFramework.assert(true, "Opening an empty file threw the correct exception", __LINE__);}
+			catch (...) {testFramework.assert(false, "Opening an empty file caused an unexpected exception", __LINE__);}
 
-//--------------SP3EphemerisStore_SP3ESTest_3 - Verify opening a file works with no errors
-			try {Store.loadFile(inputSP3Data); testFramework.passTest();}
-			catch (...) {testFramework.failTest();}
+			//Verify opening a file works with no errors
+			try {Store.loadFile(inputSP3Data); testFramework.assert(true, "Opening a valid file works with no exceptions", __LINE__);}
+			catch (...) {testFramework.assert(false, "Exception thrown when opening a valid file", __LINE__);}
 
 			//Write the dump of the loaded file
 			ofstream DumpData;
@@ -114,16 +114,15 @@ class SP3EphemerisStore_T
 		}
 
 
-/* =========================================================================================================================
-	Test for getXvt.
-	Tests the getXvt method in SP3EphemerisStore by comparing known
-	results with the method's output for various time stamps in an
-	SP3 file; also ensures nonexistent SatIDs throw an exception
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for getXvt.
+//	Tests the getXvt method in SP3EphemerisStore by comparing known
+//	results with the method's output for various time stamps in an
+//	SP3 file; also ensures nonexistent SatIDs throw an exception
+//==========================================================================================================================
 		int getXvtTest (void)
 		{
 			TestUtil testFramework( "SP3EphemerisStore", "getXvt", __FILE__, __LINE__ );
-			testFramework.init();
 
 			SP3EphemerisStore Store;
 			Store.loadFile(inputSP3Data);
@@ -151,19 +150,19 @@ class SP3EphemerisStore_T
 
 			try
 			{
-//--------------SP3EphemerisStore_getXvtTest_1 - Verify that an InvalidRequest exception is thrown when SatID is not in the data
-				try {Store.getXvt(sid0,bTime); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//Verify that an InvalidRequest exception is thrown when SatID is not in the data
+				try {Store.getXvt(sid0,bTime); testFramework.assert(false, "No exception thrown when getXvt looks for an invalid SatID", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "Expected exception thrown when getXvt looks for an invalid SatID", __LINE__);}
+				catch (...) {testFramework.assert(false, "Unexpected exception thrown when getXvt looks for an invalid SatID", __LINE__);}
 
-//--------------SP3EphemerisStore_getXvtTest_2 - Verify that an InvalidRequest exception is thrown when SatID is not in the data
-				try {Store.getXvt(sid32,bTime); testFramework.failTest();}
-				catch (InvalidRequest& e) {testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//Verify that an InvalidRequest exception is thrown when SatID is not in the data
+				try {Store.getXvt(sid32,bTime); testFramework.assert(false, "No exception thrown when getXvt looks for an invalid SatID", __LINE__);}
+				catch (InvalidRequest& e) {testFramework.assert(true, "Expected exception thrown when getXvt looks for an invalid SatID", __LINE__);}
+				catch (...) {testFramework.assert(false, "Unexpected exception thrown when getXvt looks for an invalid SatID", __LINE__);}
 
-//--------------SP3EphemerisStore_getXvtTest_3 - Verify that no exception is thrown for SatID in the data set
-				try {Store.getXvt(sid1,eTime); testFramework.passTest();}
-				catch (...) {testFramework.failTest();}
+				//Verify that no exception is thrown for SatID in the data set
+				try {Store.getXvt(sid1,eTime); testFramework.assert(true, "No exception thrown when getXvt looks for a valid SatID", __LINE__);}
+				catch (...) {testFramework.assert(false, "Exception thrown when getXvt looks for a valid SatID", __LINE__);}
 
 				outputStream1 << Store.getXvt(sid1,eTime);
 				outputStream15 << Store.getXvt(sid15,eTime);
@@ -175,31 +174,27 @@ class SP3EphemerisStore_T
 				cout << e;
 			}
 
-//--------------SP3EphemerisStore_getXvtTest_4 - Check getXvt output with pre-determined standard
-			testFramework.assert( outputStream1.str() == inputComparisonOutput1 );
-			testFramework.next();
+			//---------------------------------------------------------------------
+			//Were the values set to expectation using the explicit constructor?
+			//---------------------------------------------------------------------
+			testFramework.assert( outputStream1.str()  == inputComparisonOutput1 , "getXvt dump does not match its regressive output", __LINE__);
+			testFramework.assert( outputStream15.str() == inputComparisonOutput15, "getXvt dump does not match its regressive output", __LINE__);
+			testFramework.assert( outputStream31.str() == inputComparisonOutput31, "getXvt dump does not match its regressive output", __LINE__);
 
-//--------------SP3EphemerisStore_getXvtTest_5 - Check getXvt output with pre-determined standard
-			testFramework.assert( outputStream15.str() == inputComparisonOutput15 );
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getXvtTest_6 - Check getXvt output with pre-determined standard
-			testFramework.assert( outputStream31.str() == inputComparisonOutput31 );
-			testFramework.next();
 
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test for getInitialTime
-	Tests getInitialTime method in SP3EphemerisStore by ensuring that
-	the method outputs the initial time stamp in an SP3 file
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for getInitialTime
+//	Tests getInitialTime method in SP3EphemerisStore by ensuring that
+//	the method outputs the initial time stamp in an SP3 file
+//==========================================================================================================================
 		int getInitialTimeTest (void)
 		{
 			TestUtil testFramework( "SP3EphemerisStore", "getInitialTime", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			SP3EphemerisStore Store;
 			Store.loadFile(inputSP3Data);
@@ -209,22 +204,22 @@ class SP3EphemerisStore_T
 			CivilTime knownInitialTime_civ(1997,4,6,0,0,0);
 			CommonTime knownInitialTime = knownInitialTime_civ.convertToCommonTime();
 
-//--------------SP3EphemerisStore_getInitialTimeTest_1 - Check that the function returns the initial time from the file
-			testFramework.assert(knownInitialTime == computedInitialTime);
+			//Check that the function returns the initial time from the file
+			testFramework.assert(knownInitialTime == computedInitialTime, "getInitialTime did not return the correct initial time", __LINE__);
 
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test for getFinalTime
-	Tests getFinalTime method in SP3EphemerisStore by ensuring that
-	the method outputs the final time stamp in an SP3 file
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for getFinalTime
+//	Tests getFinalTime method in SP3EphemerisStore by ensuring that
+//	the method outputs the final time stamp in an SP3 file
+//==========================================================================================================================
 		int getFinalTimeTest (void)
 		{
 			TestUtil testFramework( "SP3EphemerisStore", "getFinalTime", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			SP3EphemerisStore Store;
 			Store.loadFile(inputSP3Data);
@@ -234,21 +229,21 @@ class SP3EphemerisStore_T
 			CivilTime knownFinalTime_civ(1997,4,6,23,45,0);
 			CommonTime knownFinalTime = knownFinalTime_civ.convertToCommonTime();
 
-//--------------SP3EphemerisStore_getFinalTimeTest_1 - Check that the function returns the initial time from the file
-			testFramework.assert(knownFinalTime == computedFinalTime);
+			//Check that the function returns the initial time from the file
+			testFramework.assert(knownFinalTime == computedFinalTime, "getFinalTime did not return the correct final time", __LINE__);
 
 			return testFramework.countFails();
 		}
-/* =========================================================================================================================
-	Test for getPosition
-	Tests getPosition method in SP3EphemerisStore by comparing the outputs
-	of the method to known values in two SP3 files--one with position and
-	velocity values and one with only position values
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for getPosition
+//	Tests getPosition method in SP3EphemerisStore by comparing the outputs
+//	of the method to known values in two SP3 files--one with position and
+//	velocity values and one with only position values
+//==========================================================================================================================
 		int getPositionTest (void)
 		{
 			TestUtil testFramework( "SP3EphemerisStore", "getPosition", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			SP3EphemerisStore igsStore;
 			igsStore.loadFile(inputSP3Data);
@@ -268,29 +263,32 @@ class SP3EphemerisStore_T
 			Triple knownPosition_igs1(-17432922.132,6688018.407,-18768291.053);
 			Triple knownPosition_igs31(-5075919.490,25101160.691,-6633797.696);
 
-//--------------SP3EphemerisStore_getPositionTest_1 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_igs1[0] - computedPosition_igs1[0])/fabs(knownPosition_igs1[0]) < epsilon);
-			testFramework.next();
+			double relativeError;
+			std::stringstream testMessageStream;
+			std::string testMessageP1 = "getPosition obtained the wrong position in the ";
+			std::string testMessageP2 = " direction for SatID 1";
+			//---------------------------------------------------------------------
+			//Check that the computed position matches the known value for SatID 1
+			//---------------------------------------------------------------------
+			for (int i = 0; i < 3; i++)
+			{
+				testMessageStream << testMessageP1 << i << testMessageP2;
+				relativeError  = fabs(knownPosition_igs1[i]  - computedPosition_igs1[i]) /fabs(knownPosition_igs1[i] );
+				testFramework.assert( relativeError < epsilon , testMessageStream.str() , __LINE__);
+				testMessageStream.str(std::string());				
+			}
 
-//--------------SP3EphemerisStore_getPositionTest_2 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_igs1[1] - computedPosition_igs1[1])/fabs(knownPosition_igs1[1]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_3 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_igs1[2] - computedPosition_igs1[2])/fabs(knownPosition_igs1[2]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_4 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_igs31[0] - computedPosition_igs31[0])/fabs(knownPosition_igs31[0]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_5 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_igs31[1] - computedPosition_igs31[1])/fabs(knownPosition_igs31[1]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_6 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_igs31[2] - computedPosition_igs31[2])/fabs(knownPosition_igs31[2]) < epsilon);
-			testFramework.next();
+			//---------------------------------------------------------------------
+			//Check that the computed position matches the known value for SatID 31
+			//---------------------------------------------------------------------
+			testMessageP2 = " direction for SatID 31";
+			for (int i = 0; i < 3; i++)
+			{
+				testMessageStream << testMessageP1 << i << testMessageP2;
+				relativeError  = fabs(knownPosition_igs31[i]  - computedPosition_igs31[i]) /fabs(knownPosition_igs31[i] );
+				testFramework.assert( relativeError < epsilon , testMessageStream.str() , __LINE__);
+				testMessageStream.str(std::string());				
+			}
 
 			SP3EphemerisStore apcStore;
 			apcStore.loadFile(inputAPCData);
@@ -304,44 +302,44 @@ class SP3EphemerisStore_T
 			Triple knownPosition_apc1(-5327654.053,-16633919.811,20164748.602);
 			Triple knownPosition_apc31(2170451.938,-22428932.839,-14059088.503);
 
-//--------------SP3EphemerisStore_getPositionTest_7 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_apc1[0] - computedPosition_apc1[0])/fabs(knownPosition_apc1[0]) < epsilon);
-			testFramework.next();
+			//---------------------------------------------------------------------
+			//Check that the computed position matches the known value for SatID 1
+			//---------------------------------------------------------------------
+			testMessageP2 = " direction for SatID 1";
+			for (int i = 0; i < 3; i++)
+			{
+				testMessageStream << testMessageP1 << i << testMessageP2;
+				relativeError = fabs(knownPosition_apc1[i]  - computedPosition_apc1[i]) /fabs(knownPosition_apc1[i] );
+				testFramework.assert( relativeError < epsilon , testMessageStream.str() , __LINE__);
+				testMessageStream.str(std::string());				
+			}
 
-//--------------SP3EphemerisStore_getPositionTest_8 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_apc1[1] - computedPosition_apc1[1])/fabs(knownPosition_apc1[1]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_9 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_apc1[2] - computedPosition_apc1[2])/fabs(knownPosition_apc1[2]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_10 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_apc31[0] - computedPosition_apc31[0])/fabs(knownPosition_apc31[0]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_11 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_apc31[1] - computedPosition_apc31[1])/fabs(knownPosition_apc31[1]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getPositionTest_12 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownPosition_apc31[2] - computedPosition_apc31[2])/fabs(knownPosition_apc31[2]) < epsilon);
-			testFramework.next();
+			//---------------------------------------------------------------------
+			//Check that the computed position matches the known value for SatID 31
+			//---------------------------------------------------------------------
+			testMessageP2 = " direction for SatID 31";
+			for (int i = 0; i < 3; i++)
+			{
+				testMessageStream << testMessageP1 << i << testMessageP2;
+				relativeError = fabs(knownPosition_apc31[i]  - computedPosition_apc31[i]) /fabs(knownPosition_apc31[i] );
+				testFramework.assert( relativeError < epsilon , testMessageStream.str() , __LINE__);
+				testMessageStream.str(std::string());				
+			}
 
 			return testFramework.countFails();
 		}
 
 
-/* =========================================================================================================================
-	Test for getVelocity
-	Tests getPosition method in SP3EphemerisStore by comparing the outputs
-	of the method to known values in an SP3 files with position and
-	velocity values
-========================================================================================================================= */
+//==========================================================================================================================
+//	Test for getVelocity
+//	Tests getPosition method in SP3EphemerisStore by comparing the outputs
+//	of the method to known values in an SP3 files with position and
+//	velocity values
+//==========================================================================================================================
 		int getVelocityTest (void)
 		{
 			TestUtil testFramework( "SP3EphemerisStore", "getVelocity", __FILE__, __LINE__ );
-			testFramework.init();
+
 
 			SP3EphemerisStore Store;
 			Store.loadFile(inputAPCData);
@@ -361,29 +359,32 @@ class SP3EphemerisStore_T
 			Triple knownVelocity_1(1541.6040306,-2000.8516260,-1256.4479944);
 			Triple knownVelocity_31(1165.3672035,-1344.4254143,2399.1497704);
 
-//--------------SP3EphemerisStore_getVelocityTest_1 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownVelocity_1[0] - computedVelocity_1[0])/fabs(knownVelocity_1[0]) < epsilon);
-			testFramework.next();
+			double relativeError;
+			std::stringstream testMessageStream;
+			std::string testMessageP2, testMessageP1 = "getVelocity obtained the wrong velocity in the ";
+			//---------------------------------------------------------------------
+			//Check that the computed position matches the known value for SatID 1
+			//---------------------------------------------------------------------
+			testMessageP2 = " direction for SatID 1";
+			for (int i = 0; i < 3; i++)
+			{
+				testMessageStream << testMessageP1 << i << testMessageP2;
+				relativeError = fabs(knownVelocity_1[i]  - computedVelocity_1[i]) /fabs(computedVelocity_1[i] );
+				testFramework.assert( relativeError < epsilon , testMessageStream.str() , __LINE__);
+				testMessageStream.str(std::string());				
+			}
 
-//--------------SP3EphemerisStore_getVelocityTest_2 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownVelocity_1[1] - computedVelocity_1[1])/fabs(knownVelocity_1[1]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getVelocityTest_3 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownVelocity_1[2] - computedVelocity_1[2])/fabs(knownVelocity_1[2]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getVelocityTest_4 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownVelocity_31[0] - computedVelocity_31[0])/fabs(knownVelocity_31[0]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getVelocityTest_5 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownVelocity_31[1] - computedVelocity_31[1])/fabs(knownVelocity_31[1]) < epsilon);
-			testFramework.next();
-
-//--------------SP3EphemerisStore_getVelocityTest_6 - Check that the computed position matches the known value
-			testFramework.assert(fabs(knownVelocity_31[2] - computedVelocity_31[2])/fabs(knownVelocity_31[2]) < epsilon);
-			testFramework.next();
+			//---------------------------------------------------------------------
+			//Check that the computed position matches the known value for SatID 1
+			//---------------------------------------------------------------------
+			testMessageP2 = " direction for SatID 31";
+			for (int i = 0; i < 3; i++)
+			{
+				testMessageStream << testMessageP1 << i << testMessageP2;
+				relativeError = fabs(knownVelocity_31[i] - computedVelocity_31[i])/fabs(computedVelocity_31[i]);
+				testFramework.assert( relativeError < epsilon , testMessageStream.str() , __LINE__);
+				testMessageStream.str(std::string());				
+			}
 
 			return testFramework.countFails();
 		}
