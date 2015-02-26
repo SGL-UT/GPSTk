@@ -104,6 +104,16 @@ namespace gpstk
                                      const vector<string>& filter)
       throw(FileHunterException)
    {
+      std::string  fileSpecType;
+      try
+      {     // ensure a valid file spec type
+         fileSpecType = FileSpec::convertFileSpecType(fst);
+      }
+      catch (FileSpecException& fse)
+      {
+         FileHunterException fhe(fse.getText(), fse.getErrorId());
+         GPSTK_THROW(fhe);
+      } 
          // try to find the field in the fileSpecList.
       vector<FileSpec>::iterator itr = fileSpecList.begin();
       while (itr != fileSpecList.end())
@@ -116,15 +126,14 @@ namespace gpstk
       if (itr != fileSpecList.end())
       {
          filterList.push_back(FilterPair(fst, filter));
-         return *this;
-      }
-         // didn't find it - throw an exception
-      else
+      }         
+      else  // didn't find it - throw an exception
       {
          FileHunterException fhe("The FileSpec does not have a field: " +
-                                 FileSpec::convertFileSpecType(fst));
-         return *this;
+                                 fileSpecType);
+         GPSTK_THROW(fhe);
       }
+      return *this;
    }
 
    vector<string> FileHunter::find(const CommonTime& start,
